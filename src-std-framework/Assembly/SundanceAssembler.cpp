@@ -240,7 +240,7 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
 
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "Assembler: creating graph...");
-  Array<ColSetType<int> > graph;
+  Array<ColSetType> graph;
   Array<int> colIndices;
   Array<double> zeros;
   getGraph(graph);
