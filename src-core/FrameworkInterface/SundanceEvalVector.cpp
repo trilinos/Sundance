@@ -465,7 +465,6 @@ void EvalVector::unaryMinus()
 void EvalVector::applyUnaryFunction(const UnaryFunctor* func,
                                     Array<RefCountPtr<EvalVector> >& funcDerivs) const 
 {
-  cerr << "applying unary func" << endl;
   for (int i=0; i<funcDerivs.size(); i++)
     {
       funcDerivs[i] = rcp(new EvalVector());

@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Kepler_SOURCES) $(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES)
+SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Kepler_SOURCES) $(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -84,7 +84,7 @@ noinst_PROGRAMS = NonlinAlgebraic$(EXEEXT) Poisson1D$(EXEEXT) \
 	Poisson2D$(EXEEXT) Poisson3D$(EXEEXT) Stokes2D$(EXEEXT) \
 	Coupled1D$(EXEEXT) Coupled2D$(EXEEXT) RadDiff1D$(EXEEXT) \
 	NoxAlgebraic$(EXEEXT) Kepler$(EXEEXT) NoxPoisson1D$(EXEEXT) \
-	PoissonOnDisk$(EXEEXT)
+	PoissonOnDisk$(EXEEXT) OptPoisson1D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-std-framework/Problem
@@ -135,6 +135,8 @@ am_NoxAlgebraic_OBJECTS = NoxAlgebraic-NoxAlgebraic.$(OBJEXT)
 NoxAlgebraic_OBJECTS = $(am_NoxAlgebraic_OBJECTS)
 am_NoxPoisson1D_OBJECTS = NoxPoisson1D-NoxPoisson1D.$(OBJEXT)
 NoxPoisson1D_OBJECTS = $(am_NoxPoisson1D_OBJECTS)
+am_OptPoisson1D_OBJECTS = OptPoisson1D-OptPoisson1D.$(OBJEXT)
+OptPoisson1D_OBJECTS = $(am_OptPoisson1D_OBJECTS)
 am_Poisson1D_OBJECTS = Poisson1D-Poisson1D.$(OBJEXT)
 Poisson1D_OBJECTS = $(am_Poisson1D_OBJECTS)
 am_Poisson2D_OBJECTS = Poisson2D-Poisson2D.$(OBJEXT)
@@ -156,6 +158,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/NoxAlgebraic-NoxAlgebraic.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/NoxPoisson1D-NoxPoisson1D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Poisson1D-Poisson1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Poisson2D-Poisson2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Poisson3D-Poisson3D.Po \
@@ -169,14 +172,15 @@ CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Kepler_SOURCES) \
 	$(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) \
-	$(NoxPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
-	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
+	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
 	$(Stokes2D_SOURCES)
 DIST_SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) \
 	$(Kepler_SOURCES) $(NonlinAlgebraic_SOURCES) \
 	$(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) \
-	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
+	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
 	$(Stokes2D_SOURCES)
 ETAGS = etags
@@ -323,6 +327,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 Poisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Poisson1D_LDADD = $(STD_FWK_LIBS) 
+OptPoisson1D_SOURCES = $(srcdir)/OptPoisson1D.cpp
+OptPoisson1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+OptPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+OptPoisson1D_LDADD = $(STD_FWK_LIBS) 
 Poisson2D_SOURCES = $(srcdir)/Poisson2D.cpp
 Poisson2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -562,6 +575,9 @@ NoxAlgebraic$(EXEEXT): $(NoxAlgebraic_OBJECTS) $(NoxAlgebraic_DEPENDENCIES)
 NoxPoisson1D$(EXEEXT): $(NoxPoisson1D_OBJECTS) $(NoxPoisson1D_DEPENDENCIES) 
 	@rm -f NoxPoisson1D$(EXEEXT)
 	$(CXXLINK) $(NoxPoisson1D_LDFLAGS) $(NoxPoisson1D_OBJECTS) $(NoxPoisson1D_LDADD) $(LIBS)
+OptPoisson1D$(EXEEXT): $(OptPoisson1D_OBJECTS) $(OptPoisson1D_DEPENDENCIES) 
+	@rm -f OptPoisson1D$(EXEEXT)
+	$(CXXLINK) $(OptPoisson1D_LDFLAGS) $(OptPoisson1D_OBJECTS) $(OptPoisson1D_LDADD) $(LIBS)
 Poisson1D$(EXEEXT): $(Poisson1D_OBJECTS) $(Poisson1D_DEPENDENCIES) 
 	@rm -f Poisson1D$(EXEEXT)
 	$(CXXLINK) $(Poisson1D_LDFLAGS) $(Poisson1D_OBJECTS) $(Poisson1D_LDADD) $(LIBS)
@@ -593,6 +609,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxAlgebraic-NoxAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxPoisson1D-NoxPoisson1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson1D-Poisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson2D-Poisson2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson3D-Poisson3D.Po@am__quote@
@@ -711,6 +728,22 @@ NoxPoisson1D-NoxPoisson1D.obj: $(srcdir)/NoxPoisson1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/NoxPoisson1D-NoxPoisson1D.Po' tmpdepfile='$(DEPDIR)/NoxPoisson1D-NoxPoisson1D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NoxPoisson1D_CXXFLAGS) $(CXXFLAGS) -c -o NoxPoisson1D-NoxPoisson1D.obj `if test -f '$(srcdir)/NoxPoisson1D.cpp'; then $(CYGPATH_W) '$(srcdir)/NoxPoisson1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NoxPoisson1D.cpp'; fi`
+
+OptPoisson1D-OptPoisson1D.o: $(srcdir)/OptPoisson1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(OptPoisson1D_CXXFLAGS) $(CXXFLAGS) -MT OptPoisson1D-OptPoisson1D.o -MD -MP -MF "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Tpo" -c -o OptPoisson1D-OptPoisson1D.o `test -f '$(srcdir)/OptPoisson1D.cpp' || echo '$(srcdir)/'`$(srcdir)/OptPoisson1D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Tpo" "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po"; else rm -f "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/OptPoisson1D.cpp' object='OptPoisson1D-OptPoisson1D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po' tmpdepfile='$(DEPDIR)/OptPoisson1D-OptPoisson1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(OptPoisson1D_CXXFLAGS) $(CXXFLAGS) -c -o OptPoisson1D-OptPoisson1D.o `test -f '$(srcdir)/OptPoisson1D.cpp' || echo '$(srcdir)/'`$(srcdir)/OptPoisson1D.cpp
+
+OptPoisson1D-OptPoisson1D.obj: $(srcdir)/OptPoisson1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(OptPoisson1D_CXXFLAGS) $(CXXFLAGS) -MT OptPoisson1D-OptPoisson1D.obj -MD -MP -MF "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Tpo" -c -o OptPoisson1D-OptPoisson1D.obj `if test -f '$(srcdir)/OptPoisson1D.cpp'; then $(CYGPATH_W) '$(srcdir)/OptPoisson1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/OptPoisson1D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Tpo" "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po"; else rm -f "$(DEPDIR)/OptPoisson1D-OptPoisson1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/OptPoisson1D.cpp' object='OptPoisson1D-OptPoisson1D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po' tmpdepfile='$(DEPDIR)/OptPoisson1D-OptPoisson1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(OptPoisson1D_CXXFLAGS) $(CXXFLAGS) -c -o OptPoisson1D-OptPoisson1D.obj `if test -f '$(srcdir)/OptPoisson1D.cpp'; then $(CYGPATH_W) '$(srcdir)/OptPoisson1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/OptPoisson1D.cpp'; fi`
 
 Poisson1D-Poisson1D.o: $(srcdir)/Poisson1D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Poisson1D_CXXFLAGS) $(CXXFLAGS) -MT Poisson1D-Poisson1D.o -MD -MP -MF "$(DEPDIR)/Poisson1D-Poisson1D.Tpo" -c -o Poisson1D-Poisson1D.o `test -f '$(srcdir)/Poisson1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Poisson1D.cpp; \

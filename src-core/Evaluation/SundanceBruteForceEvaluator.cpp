@@ -695,8 +695,7 @@ void BruteForceNonlinearUnaryOpEvaluator::eval(const EvalManager& mgr,
                      << " is not equal to operand results size="
                      << argResults->size());
 
-  cerr << "arg results = ";
-  argResults->print(cerr, expr()->getDerivSet(derivSetIndex));
+
 
   int maxOrder = 0;
   int zeroDerivIndex = -1;
@@ -719,13 +718,8 @@ void BruteForceNonlinearUnaryOpEvaluator::eval(const EvalManager& mgr,
   (*argResults)[zeroDerivIndex]->applyUnaryFunction(expr()->op(),
                                                     funcDerivs);
 
-  cerr << "func derivs = " << endl;
-  for (int i=0; i<funcDerivs.size(); i++)
-    {
-      cerr << "order=" << i << " vals= ";
-      funcDerivs[i]->print(cerr);
-      cerr << endl;
-    }
+
+  
 
   for (int i=0; i<results->size(); i++)
     {
@@ -741,6 +735,5 @@ void BruteForceNonlinearUnaryOpEvaluator::eval(const EvalManager& mgr,
         }
     }
 
-  cerr << "results = ";
-  results->print(cerr, expr()->getDerivSet(derivSetIndex));
+
 }
