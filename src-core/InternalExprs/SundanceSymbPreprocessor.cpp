@@ -69,10 +69,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 {
   TimeMonitor t(preprocTimer());
 
-  cerr << "========== setup expr ===================================== "
-       << endl
-       << "max deriv order=" << maxDiffOrder << endl
-       << "expr = " << expr << endl;
+
   const EvaluatableExpr* e 
     = dynamic_cast<const EvaluatableExpr*>(expr.ptr().get());
 

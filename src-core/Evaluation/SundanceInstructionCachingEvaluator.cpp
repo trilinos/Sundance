@@ -32,7 +32,6 @@ Evaluator* InstructionCachingEvaluatorFactory
   /* do brute-force double dispatch to create 
    * the appropriate evaluator subtype */
 
-  cerr << "creating instruction caching evaluator" << endl;
 
   const SumExpr* s = dynamic_cast<const SumExpr*>(expr);
   if (s != 0)
