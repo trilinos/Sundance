@@ -53,6 +53,7 @@
 #include "SundanceGaussianQuadrature.hpp"
 
 /* Problem level classes */
+#include "SundanceLinearProblem.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 

@@ -736,7 +736,7 @@ m4trace:configure.ac:287: -2- AH_OUTPUT([HAVE_LAPACK], [/* Define if you have LA
 m4trace:configure.ac:299: -1- AC_SUBST([FLIBS])
 m4trace:configure.ac:313: -1- AC_SUBST([XTRALDADD])
 m4trace:configure.ac:327: -1- AC_SUBST([ac_aux_dir])
-m4trace:configure.ac:352: -1- AC_CONFIG_FILES([
+m4trace:configure.ac:353: -1- AC_CONFIG_FILES([
   Makefile  
   src-utils/Makefile
   src-core/Makefile
@@ -749,6 +749,7 @@ m4trace:configure.ac:352: -1- AC_CONFIG_FILES([
   tests-std-framework/Makefile
   tests-std-framework/HomogeneousDOFMap/Makefile
   tests-std-framework/Assembly/Makefile
+  tests-std-framework/Problem/Makefile
   doc/Makefile
   doc/Doxygen/Makefile
   doc/Doxygen/Doxyfile.utils
@@ -756,16 +757,16 @@ m4trace:configure.ac:352: -1- AC_CONFIG_FILES([
   doc/Doxygen/Doxyfile.trilinos
 
 ])
-m4trace:configure.ac:354: -1- AC_SUBST([CXX])
-m4trace:configure.ac:355: -1- AC_SUBST([CXXFLAGS])
-m4trace:configure.ac:356: -1- AC_SUBST([LDFLAGS])
-m4trace:configure.ac:357: -1- AC_SUBST([DEFS])
-m4trace:configure.ac:358: -1- AC_SUBST([FLIBS])
-m4trace:configure.ac:359: -1- AC_SUBST([BLAS_LIB])
-m4trace:configure.ac:360: -1- AC_SUBST([CHACO_LIB])
-m4trace:configure.ac:361: -1- AC_SUBST([LAPACK_LIB])
-m4trace:configure.ac:362: -1- AC_SUBST([TRILINOS_DIR])
-m4trace:configure.ac:364: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:364: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
-m4trace:configure.ac:364: -1- _AC_AM_CONFIG_HEADER_HOOK([$ac_file])
-m4trace:configure.ac:364: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:355: -1- AC_SUBST([CXX])
+m4trace:configure.ac:356: -1- AC_SUBST([CXXFLAGS])
+m4trace:configure.ac:357: -1- AC_SUBST([LDFLAGS])
+m4trace:configure.ac:358: -1- AC_SUBST([DEFS])
+m4trace:configure.ac:359: -1- AC_SUBST([FLIBS])
+m4trace:configure.ac:360: -1- AC_SUBST([BLAS_LIB])
+m4trace:configure.ac:361: -1- AC_SUBST([CHACO_LIB])
+m4trace:configure.ac:362: -1- AC_SUBST([LAPACK_LIB])
+m4trace:configure.ac:363: -1- AC_SUBST([TRILINOS_DIR])
+m4trace:configure.ac:365: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:365: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:365: -1- _AC_AM_CONFIG_HEADER_HOOK([$ac_file])
+m4trace:configure.ac:365: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS

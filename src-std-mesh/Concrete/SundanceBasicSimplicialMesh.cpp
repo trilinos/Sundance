@@ -206,22 +206,41 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
           break;
         case 1:
           {
-            int a = elemVerts_.value(lid, 0);
-            int b = elemVerts_.value(lid, 1);
+            int a, b;
+            if (spatialDim()==1)
+              {
+                a = elemVerts_.value(lid, 0);
+                b = elemVerts_.value(lid, 1);
+              }
+            else
+              {
+                a = edgeVerts_.value(lid, 0);
+                b = edgeVerts_.value(lid, 1);
+              }
             const Point& pa = points_[a];
             const Point& pb = points_[b];
             Point dx = pb-pa;
             for (int q=0; q<nQuad; q++)
               {
-                physQuadPts.append(pa + refQuadPts[q]*dx);
+                physQuadPts.append(pa + refQuadPts[q][0]*dx);
               }
           }
           break;
         case 2:
           {
-            int a = elemVerts_.value(lid, 0);
-            int b = elemVerts_.value(lid, 1);
-            int c = elemVerts_.value(lid, 2);
+            int a,b,c;
+            if (spatialDim()==2)
+              {
+                a = elemVerts_.value(lid, 0);
+                b = elemVerts_.value(lid, 1);
+                c = elemVerts_.value(lid, 2);
+              }
+            else
+              {
+                a = faceVerts_.value(lid, 0);
+                b = faceVerts_.value(lid, 1);
+                c = faceVerts_.value(lid, 2);
+              }
             const Point& pa = points_[a];
             const Point& pb = points_[b];
             const Point& pc = points_[c];
