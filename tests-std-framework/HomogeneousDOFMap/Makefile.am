@@ -4,7 +4,8 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = HomogDOFMapTest1D HomogDOFMapTest2D HomogDOFMapTest3D 
+noinst_PROGRAMS = HomogDOFMapTest1D HomogDOFMapTest2D HomogDOFMapTest3D \
+EqnSetTest1D
 
 
 HomogDOFMapTest1D_SOURCES = $(srcdir)/HomogDOFMapTest1D.cpp
@@ -47,6 +48,23 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 HomogDOFMapTest3D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 HomogDOFMapTest3D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+EqnSetTest1D_SOURCES = $(srcdir)/EqnSetTest1D.cpp
+
+EqnSetTest1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+EqnSetTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+EqnSetTest1D_LDADD = $(STD_FWK_LIBS) 
+
 
 
 
