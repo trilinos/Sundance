@@ -58,6 +58,21 @@ AC_CONFIG_AUX_DIR(config)
 
 AM_CONFIG_HEADER(src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in)
 
+
+
+# Allow users to specify their own "install" command.  If none is specified,
+# the default is install-sh found in the config subdirectory.
+                                                                                
+AC_ARG_WITH(install,
+ [AC_HELP_STRING([--with-install=INSTALL_PROGRAM],
+ [Use the installation program INSTALL_PROGRAM rather the default that is provided.  For example --with-install="/path/install -p"])],
+ [
+   INSTALL=$withval
+   INSTALL_PROGRAM=$withval
+   INSTALL_SCRIPT=$withval
+   INSTALL_DATA="$withval -m 644"
+ ],)
+             
 # AM_MAINTAINER_MODE turns off maintainer-only makefile targets by
 # default, and changes configure to understand a
 # --enable-maintainer-mode option. --enable-maintainer-mode turns the
@@ -75,7 +90,7 @@ AC_CANONICAL_TARGET
 
 # Use automake
 
-AM_INIT_AUTOMAKE(Sundance, 1.1)
+AM_INIT_AUTOMAKE(1.8.2)
 
 # Specify required version of autoconf.
 
@@ -93,7 +108,6 @@ TAC_ARG_CONFIG_MPI
 
 AC_PROG_CC(cc gcc)
 AC_PROG_CXX(CC g++ gcc c++ cxx)
-BASE_CXX=${CXX}
 AC_PROG_F77(f77 g77 f90 xlf90)
 AC_PROG_RANLIB
 
@@ -140,6 +154,15 @@ TAC_ARG_ENABLE_FEATURE(examples, [Build examples for Sundance], EXAMPLES, yes)
 AM_CONDITIONAL(BUILD_EXAMPLES, test "X$ac_cv_use_examples" != "Xno")
 
 # ------------------------------------------------------------------------
+# Specify other directories 
+# ------------------------------------------------------------------------
+
+# enable use of --with-libdirs="-Llibdir1 -Llibdir2 ..." to prepend to LDFLAGS
+TAC_ARG_WITH_LIBDIRS
+# enable use of --with-incdirs="-Lincdir1 -Lincdir2 ..." to prepend to CPPFLAGS
+TAC_ARG_WITH_INCDIRS
+
+# ------------------------------------------------------------------------
 # Perform substitutions in output files
 # ------------------------------------------------------------------------
 
@@ -179,3 +202,7 @@ AC_SUBST(TRILINOS_DIR)
 AC_OUTPUT()
 
 
+# Bye World!
+echo "----------------------------------------"
+echo "Finished Running Sundance Configure Script"
+echo "----------------------------------------"

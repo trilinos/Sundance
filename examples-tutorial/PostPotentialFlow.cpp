@@ -22,7 +22,7 @@ int main(int argc, void** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/finePost.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("../../examples-tutorial/post.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
 
