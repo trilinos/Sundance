@@ -141,6 +141,39 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
   return soln;
 }
 
+SolverState<double> LinearProblem
+::solve(const LinearSolver<double>& solver,
+        Expr& soln) const 
+{
+  Tabs tab;
+  Vector<double> solnVec;
+  
+  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building system");
+
+  assembler_->assemble(A_, rhs_);
+  rhs_.scale(-1.0);
+
+  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() solving system");
+
+  status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_, solnVec)));
+
+  const SolverState<double>& state = *status_;
+  SUNDANCE_VERB_LOW(tab << 
+                    "LinearProblem::solve() done solving system: status is " 
+                    << state.stateDescription());
+
+  if (soln.ptr().get()==0)
+    {
+      soln = formSolutionExpr(solnVec);
+    }
+  else
+    {
+      DiscreteFunction::discFunc(soln)->setVector(solnVec);
+    }
+
+  return state;
+}
+
 Expr LinearProblem::formSolutionExpr(const Vector<double>& solnVector) const
 {
   return new DiscreteFunction(*(assembler_->solutionSpace()),

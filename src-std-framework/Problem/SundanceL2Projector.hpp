@@ -58,6 +58,8 @@ namespace SundanceStdFwk
   {
   public:
     /** */
+    L2Projector(){;}
+    /** */
     L2Projector(const DiscreteSpace& space, 
                 const Expr& expr);
 

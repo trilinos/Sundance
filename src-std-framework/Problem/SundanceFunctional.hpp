@@ -56,6 +56,9 @@ namespace SundanceStdFwk
   {
   public:
     /** */
+    Functional(){;}
+
+    /** */
     Functional(const Mesh& mesh, const Expr& integral, 
                const TSFExtended::VectorType<double>& vecType);
 

@@ -79,6 +79,10 @@ namespace SundanceStdFwk
     /** Return the status of the last solve */
     SolverState<double> solveStatus() const ;
 
+    /** Solve the problem, writing the solution into the given function */
+    SolverState<double> solve(const LinearSolver<double>& solver,
+                              Expr& soln) const ;
+
     /** Return the vector on the right-hand side of the linear equation */
     Vector<double> getRHS() const ;
 

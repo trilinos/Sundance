@@ -84,6 +84,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
                                    map_->numLocalDOFs(),
                                    &(dofs[0]));
 
+
   RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
   int nGhost = ghostIndices->size();
   int* ghosts = 0;
@@ -108,6 +109,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
   vecSpace_ = vecType_.createSpace(map_->numDOFs(),
                                    map_->numLocalDOFs(),
                                    &(dofs[0]));
+
 
   RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
   int nGhost = ghostIndices->size();
