@@ -48,11 +48,15 @@ const string& SumExpr::opChar() const
 
 bool SumExpr::hasNonzeroDeriv(const MultipleDeriv& d) const
 {
+  TimeMonitor t(nonzeroDerivCheckTimer());
+  hasNonzeroDerivCalls()++;
   /* check to see if we've already processed this node in the tree */
   if (derivHasBeenCached(d))
     {
+      nonzeroDerivCacheHits()++;
       return getCachedDerivNonzeroness(d);
     }
+  TimeMonitor t2(uncachedNonzeroDerivCheckTimer());
   
   /* the sum has a nonzero derivative if either operand 
    * has a nonzero derivative. */
@@ -90,4 +94,10 @@ Array<DerivSet> SumExpr::derivsRequiredFromOperands(const DerivSet& d) const
     }
 
   return tuple(leftRtn, rightRtn);
+}
+
+bool SumExpr::allTermsHaveTestFunctions() const
+{
+  return leftEvaluatable()->allTermsHaveTestFunctions()
+    && rightEvaluatable()->allTermsHaveTestFunctions();
 }

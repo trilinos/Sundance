@@ -13,6 +13,13 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& setupEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("ExprWithChildren setupEval"); 
+  return *rtn;
+}
+
 
 ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& children)
 	: EvaluatableExpr(), 
@@ -224,5 +231,16 @@ Array<DerivSet> ExprWithChildren::derivsRequiredFromOperands(const DerivSet& d) 
       rtn[i] = d;
     }
   return rtn;
+}
+
+
+
+bool ExprWithChildren::allTermsHaveTestFunctions() const
+{
+  for (int i=0; i<children_.size(); i++)
+    {
+      if (evaluatableChild(i)->allTermsHaveTestFunctions()) return true;
+    }
+  return false;
 }
 

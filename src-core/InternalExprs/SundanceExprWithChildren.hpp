@@ -89,6 +89,10 @@ namespace SundanceCore
                                 const EvaluatorFactory* factory,
                                 bool regardFuncsAsConstant) const ;
 
+          /** Return true if any child returns true. The sum expression
+           * will override this requiring all children to return true */
+          virtual bool allTermsHaveTestFunctions() const ;
+
           /** Return the set of derivatives required by the operands
            * of this expression given that this expression
            * requires the set d. For all expressions other than DiffOp,

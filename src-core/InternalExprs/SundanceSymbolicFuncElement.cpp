@@ -38,6 +38,8 @@ void SymbolicFuncElement
 
 bool SymbolicFuncElement::hasNonzeroDeriv(const MultipleDeriv& d) const
 {
+  TimeMonitor t(nonzeroDerivCheckTimer());
+
   TEST_FOR_EXCEPTION(evalPt_.get() == NULL, InternalError,
                      "SymbolicFuncElement::hasNonzeroDeriv() detected an unknown "
                      "function with an undefined evaluation point. "

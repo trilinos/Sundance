@@ -20,6 +20,13 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& createEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("evaluator creation"); 
+  return *rtn;
+}
+
 Time& sumEvalTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -70,6 +77,7 @@ Evaluator* BruteForceEvaluatorFactory
 ::createEvaluator(const EvaluatableExpr* expr,
                   int derivSetIndex) const
 {
+  TimeMonitor t(createEvalTimer());
   /* do brute-force double dispatch to create 
    * the appropriate evaluator subtype */
 

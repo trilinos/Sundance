@@ -25,6 +25,12 @@ using namespace Teuchos;
 using namespace Internal;
 using namespace Internal;
 
+static Time& findNonzerosTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("identifying nonzero functional derivs "); 
+  return *rtn;
+}
 
 DerivSet SymbPreprocessor::setupExpr(const Expr& expr, 
                                      const EvalContext& region, 
@@ -74,9 +80,15 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
                      "Non-evaluatable expr " << expr.toString()
                      << " given to SymbPreprocessor::setupExpr()");
 
+  bool missingTestFunction = !e->allTermsHaveTestFunctions();
+  TEST_FOR_EXCEPTION(missingTestFunction, RuntimeError,
+                     "Weak form " << expr << " contains at least one "
+                     "term without a test function");
+
   bool u0IsZero = false;
   DerivSet derivs = identifyNonzeroDerivs(expr, tests, unks, u0, maxDiffOrder,
                                           u0IsZero);
+
 
   e->resetDerivSuperset();
 
@@ -94,7 +106,7 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
                                                  int maxDiffOrder,
                                                  bool& u0IsZero)
 {
-  TimeMonitor t(preprocTimer());
+  TimeMonitor t(findNonzerosTimer());
 
 
   /* first we have to make sure the expression is evaluatable */
@@ -166,7 +178,12 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
   DerivSet nonzeroDerivs;
 
   /* the zeroth deriv should be computed only if the max diff order is zero */
-  if (maxDiffOrder==0) nonzeroDerivs.put(MultipleDeriv());
+  if (maxDiffOrder==0) 
+    {
+      nonzeroDerivs.put(MultipleDeriv());
+      return nonzeroDerivs;
+    }
+  
 
   /* Find any functions that might be in the expr */
   SundanceUtils::Set<Deriv> d;

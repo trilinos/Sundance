@@ -22,6 +22,8 @@ DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionStub* master,
 
 bool DiscreteFuncElement::hasNonzeroDeriv(const MultipleDeriv& md) const 
 {
+  TimeMonitor t(nonzeroDerivCheckTimer());
+
   if (md.order()==0) return true;
 
   MultipleDeriv::const_iterator iter;

@@ -34,6 +34,8 @@ namespace SundanceCore
           virtual int setupEval(const EvalContext& region,
                                 const EvaluatorFactory* factory,
                                 bool regardFuncAsConstant) const ;
+
+
         protected:
         private:
         };

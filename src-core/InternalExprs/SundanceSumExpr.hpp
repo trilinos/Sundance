@@ -148,6 +148,10 @@ namespace SundanceCore
           virtual Array<DerivSet>
           derivsRequiredFromOperands(const DerivSet& d) const ;
 
+          /** Return true if both left and right return true */
+          virtual bool allTermsHaveTestFunctions() const ;
+
+
           /** */
           virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 

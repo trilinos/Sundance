@@ -35,13 +35,27 @@ XMLObject NonlinearUnaryOp::toXML() const
 
 bool NonlinearUnaryOp::hasNonzeroDeriv(const MultipleDeriv& d) const
 {
+  TimeMonitor t(nonzeroDerivCheckTimer());
+  hasNonzeroDerivCalls()++;
+
+  if (derivHasBeenCached(d))
+    {
+      nonzeroDerivCacheHits()++;
+      return getCachedDerivNonzeroness(d);
+    }
+  TimeMonitor t2(uncachedNonzeroDerivCheckTimer());
   MultipleDeriv::const_iterator iter;
   
   for (iter=d.begin(); iter!=d.end(); iter++)
     {
       MultipleDeriv single;
       single.put(*iter);
-      if (!evaluatableArg()->hasNonzeroDeriv(single)) return false;
+      if (!evaluatableArg()->hasNonzeroDeriv(single)) 
+        {
+          addDerivToCache(d, false);
+          return false;
+        }
     }
+  addDerivToCache(d, true);
   return true;
 }

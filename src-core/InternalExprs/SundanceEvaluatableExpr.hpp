@@ -206,6 +206,11 @@ namespace SundanceCore
       const RefCountPtr<SparsityPattern>& sparsity(int derivSetIndex) const
       {return sparsityPatterns_[derivSetIndex];}
 
+      /** Test whether all terms have test functions. We'll use this
+       * to check the validity of weak forms */
+      virtual bool allTermsHaveTestFunctions() const {return false;}
+
+
       /** */
       bool hasWorkspace() const ;
 
@@ -279,7 +284,29 @@ namespace SundanceCore
       }
 
       /** */
+      static Time& nonzeroDerivCheckTimer()
+      {
+        static RefCountPtr<Time> rtn 
+          = TimeMonitor::getNewTimer("Expr nonzero deriv check"); 
+        return *rtn;
+      }
+
+      /** */
+      static Time& uncachedNonzeroDerivCheckTimer()
+      {
+        static RefCountPtr<Time> rtn 
+          = TimeMonitor::getNewTimer("Expr uncached nonzero deriv check"); 
+        return *rtn;
+      }
+
+      /** */
       static const EvaluatableExpr* getEvalExpr(const Expr& expr);
+
+      /** */
+      static int& hasNonzeroDerivCalls() {static int rtn=0; return rtn;}
+
+      /** */
+      static int& nonzeroDerivCacheHits() {static int rtn=0; return rtn;}
 
     protected:
 
@@ -310,6 +337,7 @@ namespace SundanceCore
 
       /** */
       bool& resultCacheIsValid() const {return resultCacheIsValid_;}
+
 
     private:
       /**

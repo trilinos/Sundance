@@ -14,6 +14,13 @@ using namespace TSFExtended;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
+static Time& sparsityCtorTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("SparsityPattern ctor"); 
+  return *rtn;
+}
+
 SparsityPattern::SparsityPattern(const DerivSet& derivs,
                                  const EvaluatableExpr* expr,
                                  bool regardFuncsAsConstant)
@@ -23,6 +30,8 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
     isFirstOrderSpatialDeriv_(),
     spatialDerivDir_()
 {
+  TimeMonitor t(sparsityCtorTimer());
+
   verbosity() = classVerbosity();
   DerivSet::const_iterator i;
 

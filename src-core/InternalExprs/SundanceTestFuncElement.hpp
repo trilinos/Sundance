@@ -49,6 +49,12 @@ namespace SundanceCore
       virtual void accumulateTestSet(Set<int>& testIDs) const 
       {testIDs.put(funcID());}
 
+
+
+      /** Test whether all terms have test functions. 
+       * I'm a test function, so return true */
+      virtual bool allTermsHaveTestFunctions() const {return true;}
+
       /** */
       virtual XMLObject toXML() const ;
 

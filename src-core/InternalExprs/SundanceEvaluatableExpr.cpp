@@ -25,6 +25,15 @@ static Time& derivSetLookupTimer()
   return *rtn;
 }
 
+
+static Time& registerRegionTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("registering regions"); 
+  return *rtn;
+}
+
+
 EvaluatableExpr::EvaluatableExpr()
 	: ScalarExpr(), 
     regionToDerivSetIndexMap_(),
@@ -177,6 +186,7 @@ int EvaluatableExpr::registerRegion(const EvalContext& region,
                                     bool regardFuncsAsConstant) const
 {
   Tabs tabs;
+  TimeMonitor t(registerRegionTimer());
 
 
 

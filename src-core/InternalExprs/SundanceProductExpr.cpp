@@ -46,10 +46,17 @@ const string& ProductExpr::opChar() const
 
 bool ProductExpr::hasNonzeroDeriv(const MultipleDeriv& d) const
 {
+
+  TimeMonitor t(nonzeroDerivCheckTimer());
+  hasNonzeroDerivCalls()++;
+
   if (derivHasBeenCached(d))
     {
+      nonzeroDerivCacheHits()++;
       return getCachedDerivNonzeroness(d);
     }
+
+  TimeMonitor t2(uncachedNonzeroDerivCheckTimer());
 
   bool rtn = false;
 
