@@ -26,7 +26,7 @@ namespace SundanceCore
   {
   public:
     /** */
-    Parameter(const string& name);
+    Parameter(const double& value, const string& name="");
 
     /** virtual destructor */
     virtual ~Parameter() {;}

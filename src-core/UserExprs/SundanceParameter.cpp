@@ -9,9 +9,9 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-Parameter::Parameter(const string& name)
+Parameter::Parameter(const double& value, const string& name)
 	: FuncElementBase(name), 
-    SpatiallyConstantExpr(1.0)
+    SpatiallyConstantExpr(value)
 {}
 
 

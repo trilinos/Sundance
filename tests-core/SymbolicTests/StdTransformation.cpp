@@ -49,8 +49,8 @@ int main(int argc, void** argv)
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
 
-      Expr alpha = new Parameter("alpha");
-      Expr beta = new Parameter("beta");
+      Expr alpha = new Parameter(1.0, "alpha");
+      Expr beta = new Parameter(3.14, "beta");
       Expr zero = new ZeroExpr();
 
       bool ok = true;

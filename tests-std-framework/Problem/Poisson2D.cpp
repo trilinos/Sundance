@@ -71,8 +71,10 @@ int main(int argc, void** argv)
 
       /* Define the weak form */
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-      Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2)
-        + Integral(top, -v*(1.0/3.0), quad2) 
+      Expr one = new Parameter(1.0);
+      Expr oneThird = new Parameter(1.0/3.0);
+      Expr eqn = Integral(interior, (grad*v)*(grad*u)  + one*v, quad2)
+        + Integral(top, -v*oneThird, quad2) 
         + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);
       //        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
       /* Define the Dirichlet BC */
