@@ -39,22 +39,29 @@ NonlinearUnaryOpEvaluator
 
   SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity " << endl 
-                       << *(argSparsity()));
+  SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity subset" << endl 
+                       << *(argSparsitySubset()));
 
   /* Find the index of the argument's value (zeroth-order deriv).
    * If this does not exist, we have an error.  
    */
   
   d0ArgDerivIndex_ = -1;
-  for (int i=0; i<argSparsity()->numDerivs(); i++)
+  for (int i=0; i<argSparsitySubset()->numDerivs(); i++)
     {
-      const MultipleDeriv& d = sparsity()->deriv(i);
+      const MultipleDeriv& d = argSparsitySubset()->deriv(i);
       
       if (d.order()==0)
         {
-          d0ArgDerivIndex_ = i;
-          if (argSparsity()->state(i)==ConstantDeriv)
+          /* we'll need the index of the argument's deriv in the superset
+       * of results */
+          int argIndexInSuperset = argSparsitySuperset()->getIndex(d);
+          TEST_FOR_EXCEPTION(argIndexInSuperset==-1, InternalError,
+                             "derivative " << d
+                             << " found in arg subset but not in "
+                             "arg superset");
+          d0ArgDerivIndex_ = argIndexInSuperset;
+          if (argSparsitySubset()->state(i)==ConstantDeriv)
             {
               d0ArgDerivIsConstant_ = true;
             }
@@ -71,7 +78,7 @@ NonlinearUnaryOpEvaluator
                      "argument. "
                      "The zeroth-order derivative of the argument "
                      "was not found in the sparsity pattern "
-                     + argSparsity()->toString());
+                     + argSparsitySubset()->toString());
 
 
   /*
@@ -131,7 +138,7 @@ NonlinearUnaryOpEvaluator
           d1ResultIndex_.append(i);
           addVectorIndex(i, i); /* result is a vector */
           
-          TEST_FOR_EXCEPTION(!argSparsity()->containsDeriv(d),
+          TEST_FOR_EXCEPTION(!argSparsitySubset()->containsDeriv(d),
                              InternalError,
                              "Inconsistency in sparsity patterns of nonlin "
                              "operator " + expr->toString() + " and its "
@@ -142,9 +149,9 @@ NonlinearUnaryOpEvaluator
 
           /* Record index of g_u in arg results, and also whether it
            * is a constant or a vector */
-          int index = argSparsity()->getIndex(d);
+          int index = argSparsitySuperset()->getIndex(d);
 
-          if (argSparsity()->state(index)==ConstantDeriv)
+          if (argSparsitySuperset()->state(index)==ConstantDeriv)
             {
               d1ArgDerivIndex_.append(argEval()->constantIndexMap().get(index));
               d1ArgDerivIsConstant_.append(true);
@@ -188,10 +195,10 @@ NonlinearUnaryOpEvaluator
           Array<int> d2ArgDerivIndex(3);
           Array<int> d2ArgDerivIsConstant(3);
 
-          if (argSparsity()->containsDeriv(d))
+          if (argSparsitySuperset()->containsDeriv(d))
             {
-              int index = argSparsity()->getIndex(d);
-              if (argSparsity()->state(index)==ConstantDeriv)
+              int index = argSparsitySuperset()->getIndex(d);
+              if (argSparsitySuperset()->state(index)==ConstantDeriv)
                 {
                   d2ArgDerivIndex[0] 
                     = argEval()->constantIndexMap().get(index);
@@ -219,13 +226,13 @@ NonlinearUnaryOpEvaluator
             {
               MultipleDeriv sd;
               sd.put(*iter);
-              TEST_FOR_EXCEPTION(!argSparsity()->containsDeriv(sd),
+              TEST_FOR_EXCEPTION(!argSparsitySubset()->containsDeriv(sd),
                                  InternalError,
                                  "First deriv " << sd << " not found in "
                                  "sparsity pattern for an argument that "
                                  "contains a second derivative");
-              int index = argSparsity()->getIndex(sd);
-              DerivState state = argSparsity()->state(index);
+              int index = argSparsitySuperset()->getIndex(sd);
+              DerivState state = argSparsitySuperset()->state(index);
               if (state == ConstantDeriv)
                 {
                   d2ArgDerivIndex[1+j] 

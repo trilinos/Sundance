@@ -64,7 +64,7 @@ void UnaryMinusEvaluator
   if (verbosity() > VerbLow)
     {
       cerr << tab << "operand results" << endl;
-      argSparsity()->print(cerr, vectorResults,
+      argSparsitySuperset()->print(cerr, vectorResults,
                            constantResults);
     }
 

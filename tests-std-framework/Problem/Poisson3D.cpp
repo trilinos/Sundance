@@ -63,12 +63,6 @@ int main(int argc, void** argv)
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(side4, v*(u-x), quad2)
         + EssentialBC(side6, v*(u-x), quad2);
-      // Expr bc = EssentialBC(side1, v*(u-1.0), quad2)
-//         + EssentialBC(side2, v*(u-2.0), quad2)
-//         + EssentialBC(side3, v*(u-3.0), quad2)
-//         + EssentialBC(side4, v*(u-4.0), quad2)
-//         + EssentialBC(side5, v*(u-5.0), quad2)
-//         + EssentialBC(side6, v*(u-6.0), quad2);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);

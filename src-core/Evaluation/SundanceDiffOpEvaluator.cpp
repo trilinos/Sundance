@@ -44,8 +44,8 @@ DiffOpEvaluator
 
   SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity " << endl 
-                       << *(argSparsity()));
+  SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity subset " << endl 
+                       << *(argSparsitySubset()));
 
   Map<const DiscreteFuncElementEvaluator*, int> funcToIndexMap;
 
@@ -70,21 +70,28 @@ DiffOpEvaluator
 
 
 
-  for (int i=0; i<argSparsity()->numDerivs(); i++)
+  for (int i=0; i<argSparsitySubset()->numDerivs(); i++)
     {
       Tabs tab1;
       Map<MultipleDeriv, DerivState> monomials;
       Map<MultipleDeriv, Deriv> funcTerms;
-      expr->getResultDerivs(argSparsity()->deriv(i), 
-                            argSparsity()->state(i),
+      expr->getResultDerivs(argSparsitySubset()->deriv(i), 
+                            argSparsitySubset()->state(i),
                             monomials, 
                             funcTerms);
-
+      
       SUNDANCE_VERB_MEDIUM(tab1 << "looking for effect of argument deriv " 
-                           << argSparsity()->deriv(i));
+                           << argSparsitySubset()->deriv(i));
 
       SUNDANCE_VERB_MEDIUM(tab1 << "found monomials " << monomials
                            << " and function terms " << funcTerms);
+      
+      /* we'll need the index of the argument's deriv in the superset
+       * of results */
+      int argIndexInSuperset = argSparsitySuperset()->getIndex(argSparsitySubset()->deriv(i));
+      TEST_FOR_EXCEPTION(argIndexInSuperset==-1, InternalError,
+                         "derivative " << argSparsitySubset()->deriv(i)
+                         << " found in arg subset but not in arg superset");
 
       for (Map<MultipleDeriv, Deriv>::const_iterator 
              iter = funcTerms.begin(); iter != funcTerms.end(); iter++)
@@ -149,7 +156,7 @@ DiffOpEvaluator
                              << " does not know about multiindex "
                              << mi.toString());
           
-          bool coeffIsConstant = argSparsity()->state(i)==ConstantDeriv;
+          bool coeffIsConstant = argSparsitySubset()->state(i)==ConstantDeriv;
               
           int fIndex;
           int miIndex = dfEval->miIndex(mi);
@@ -170,9 +177,10 @@ DiffOpEvaluator
           if (coeffIsConstant)
             {
               SUNDANCE_VERB_MEDIUM(tab1 << "found constant coeff function term: arg deriv "
-                                   << argSparsity()->deriv(i) << " times "
+                                   << argSparsitySubset()->deriv(i) 
+                                   << " times "
                                    << d);
-              int constArgIndex = argEval()->constantIndexMap().get(i);
+              int constArgIndex = argEval()->constantIndexMap().get(argIndexInSuperset);
               constantCoeffFuncIndices_[resultIndex].append(fIndex);
               constantCoeffFuncMi_[resultIndex].append(miIndex);
               constantFuncCoeffs_[resultIndex].append(constArgIndex);
@@ -180,9 +188,10 @@ DiffOpEvaluator
           else
             {     
               SUNDANCE_VERB_MEDIUM(tab1 << "found vec coeff function term: arg deriv "
-                                   << argSparsity()->deriv(i) << " times "
+                                   << argSparsitySubset()->deriv(i) 
+                                   << " times "
                                    << d);
-              int vectorArgIndex = argEval()->vectorIndexMap().get(i);
+              int vectorArgIndex = argEval()->vectorIndexMap().get(argIndexInSuperset);
               vectorCoeffFuncIndices_[resultIndex].append(fIndex);
               vectorCoeffFuncMi_[resultIndex].append(miIndex);
               vectorFuncCoeffs_[resultIndex].append(vectorArgIndex);
@@ -205,15 +214,16 @@ DiffOpEvaluator
           if (iter->second==ConstantDeriv)
             {
               SUNDANCE_VERB_MEDIUM(tab1 << "found constant-valued monomial: "
-                                   "arg deriv " << argSparsity()->deriv(i));
-              int constArgIndex = argEval()->constantIndexMap().get(i);
+                                   "arg deriv " 
+                                   << argSparsitySubset()->deriv(i));
+              int constArgIndex = argEval()->constantIndexMap().get(argIndexInSuperset);
               constantMonomials_[resultIndex].append(constArgIndex);
             }
           else
             {
               SUNDANCE_VERB_MEDIUM(tab1 << "found vector-valued monomial: "
-                                   "arg deriv " << argSparsity()->deriv(i));
-              int vectorArgIndex = argEval()->vectorIndexMap().get(i);
+                                   "arg deriv " << argSparsitySubset()->deriv(i));
+              int vectorArgIndex = argEval()->vectorIndexMap().get(argIndexInSuperset);
               vectorMonomials_[resultIndex].append(vectorArgIndex);
             }
         }
@@ -273,8 +283,8 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbLow)
     {
       cerr << tabs << "operand results" << endl;
-      argSparsity()->print(cerr, argVectorResults,
-                           argConstantResults);
+      argSparsitySuperset()->print(cerr, argVectorResults,
+                                   argConstantResults);
     }
 
 

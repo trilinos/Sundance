@@ -282,8 +282,9 @@ namespace SundanceCore
                      const EvalContext& context)
         : SubtypeEvaluator<ExprType>(expr, context),
           argExpr_(expr->evaluatableArg()),
-          argSparsity_(argExpr_->sparsitySubset(context, 
-                                                expr->argMultiIndices(sparsity()->allMultiIndices()))),
+          argSparsitySubset_(argExpr_->sparsitySubset(context, 
+                                                      expr->argMultiIndices(sparsity()->allMultiIndices()))),
+          argSparsitySuperset_(argExpr_->sparsitySuperset(context)),
           argEval_(argExpr_->evaluator(context))
       {
         argEval_->addClient();
@@ -302,8 +303,12 @@ namespace SundanceCore
     protected:
 
       /** */
-      const RefCountPtr<SparsitySubset>& argSparsity() const 
-      {return argSparsity_;}
+      const RefCountPtr<SparsitySubset>& argSparsitySubset() const 
+      {return argSparsitySubset_;}
+
+      /** */
+      const RefCountPtr<SparsitySuperset>& argSparsitySuperset() const 
+      {return argSparsitySuperset_;}
       
       /** */
       const EvaluatableExpr* argExpr() const {return argExpr_;}
@@ -325,7 +330,9 @@ namespace SundanceCore
     private:
       const EvaluatableExpr* argExpr_;
 
-      RefCountPtr<SparsitySubset> argSparsity_;
+      RefCountPtr<SparsitySubset> argSparsitySubset_;
+
+      RefCountPtr<SparsitySuperset> argSparsitySuperset_;
 
       RefCountPtr<Evaluator> argEval_;
     };

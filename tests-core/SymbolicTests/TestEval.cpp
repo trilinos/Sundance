@@ -111,8 +111,6 @@ int main(int argc, void** argv)
       bool isOK = true;
       Array<string> failures;
 
-#ifdef BLARF
-
       TESTER(u, U);
 
       TESTER(-u, -U);
@@ -269,22 +267,20 @@ int main(int argc, void** argv)
 
       TESTER((dx*(u*w)), (Dx*(U*W)));
 
-#endif
-
+#ifdef BLARF
        verbosity<SymbolicTransformation>() = VerbSilent;
        verbosity<EvaluationTester>() = VerbExtreme;
        verbosity<Evaluator>() = VerbExtreme;
        verbosity<EvalVector>() = VerbExtreme;
        verbosity<EvaluatableExpr>() = VerbExtreme;
        verbosity<AbstractEvalMediator>() = VerbExtreme;
-
+#endif
        Expr g = x*x + y*y;
 
        TESTER((u*(dx*(g) + dy*(g))), (U*(Dx*(X*X + Y*Y) + Dy*(X*X + Y*Y))));
-#ifdef BLARF
+       
 
-
-      TESTER((u*g + w*g), (U*(X*X + Y*Y) + W*(X*X + Y*Y)));
+       TESTER((u*g + w*g), (U*(X*X + Y*Y) + W*(X*X + Y*Y)));
 
        verbosity<SymbolicTransformation>() = VerbSilent;
        verbosity<EvaluationTester>() = VerbSilent;
@@ -335,7 +331,6 @@ int main(int argc, void** argv)
 
       TESTER(sin(u), sin(U));
 
-#endif
 
       if (isOK)
         {
