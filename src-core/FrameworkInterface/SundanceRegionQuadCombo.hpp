@@ -1,8 +1,8 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#ifndef SUNDANCE_REGION_H
-#define SUNDANCE_REGION_H
+#ifndef SUNDANCE_REGIONQUADCOMBO_H
+#define SUNDANCE_REGIONQUADCOMBO_H
 
 
 #include "SundanceDefs.hpp"
@@ -43,14 +43,14 @@ namespace SundanceCore
        * Class RegionQuadCombo is used as an identifier for regions. The
        * only thing it needs to do is to be useable as a key in a STL map.
        */
-      class RegionQuadCombo
+      class RegionQuadCombo 
         {
         public:
           /** */
           RegionQuadCombo();
           /** */
           RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
-                     const RefCountPtr<QuadratureFamilyStub>& quad);
+                          const RefCountPtr<QuadratureFamilyStub>& quad);
 
           /** */
           inline bool operator==(const RegionQuadCombo& other) const
