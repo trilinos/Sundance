@@ -86,9 +86,36 @@ computeJacobianAndFunction(Vector<double>& functionValue) const
 
   discreteU0_->setVector(currentEvalPt());
 
+  cerr << "computing J and F at eval point " << endl;
+  currentEvalPt().print(cerr);
+
   assembler_->assemble(J_, functionValue);
 
   return J_;
 }
 
+
+Vector<double> NonlinearProblem::computeFunctionValue() const 
+{
+  /* Set the vector underlying the discrete 
+   * function to the evaluation point*/
+
+  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+                     "null discrete function pointer in "
+                     "NonlinearProblem::computeFunctionValue()");
+
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+                     "null evaluation point in "
+                     "NonlinearProblem::computeFunctionValue()");
+
+  discreteU0_->setVector(currentEvalPt());
+
+  cerr << "computing J and F at eval point " << endl;
+  currentEvalPt().print(cerr);
+
+  Vector<double> rtn = range()->createMember();
+  assembler_->assemble(rtn);
+
+  return rtn;
+}
 

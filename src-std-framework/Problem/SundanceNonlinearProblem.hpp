@@ -44,6 +44,8 @@ namespace SundanceStdFwk
       /** Compute the residual and Jacobian at the current evaluation point */
       LinearOperator<double> computeJacobianAndFunction(Vector<double>& functionValue) const ;
 
+      /** Compute the residual at the current eval point */
+      TSFExtended::Vector<double> computeFunctionValue() const ;
 
       /** Get an initial guess */
       TSFExtended::Vector<double> getInitialGuess() const ;

@@ -216,6 +216,7 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
       switch(cellDim)
         {
         case 0:
+          physQuadPts.append(points_[lid]);
           break;
         case 1:
           {

@@ -157,7 +157,9 @@ void QuadratureEvalMediator
                   double basisVals = (*refBasisValues)[0][q][i];
                   sum += coeff * basisVals;
                 }
+              cerr << "c=" << c << ", q=" << q << ", f=" << sum << endl;
             }
+
         }
       else
         {
@@ -181,10 +183,10 @@ void QuadratureEvalMediator
                       sum += g*invJ[pDir + r*cellDim()]*(*refBasisValues)[r][q][i];
                     }
                 }
+              cerr << "c=" << c << ", q=" << q << ", df=" << sum << endl;
             }
         }
     }
-  
 }
 
 void QuadratureEvalMediator::computePhysQuadPts() const 

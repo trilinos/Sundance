@@ -9,6 +9,7 @@
 #include "SundanceCellSet.hpp"
 #include "SundanceTrivialGrouper.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
+#include "SundanceEvaluator.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -377,6 +378,23 @@ void Assembler::assemble(LinearOperator<double>& A,
           mesh_.getJacobians(cellDim, *workSet, *J);
           evalExprs_[1][r]->evaluate(*evalMgr_, coeffs);
 
+          if (verbosity() > VerbMedium)
+            {
+              Tabs tab2;
+              cerr << tab2 << "evaluation results: " << endl;
+              const EvalContext& context = contexts_[1][r];
+              const RefCountPtr<SparsityPattern>& sparsity 
+                = evalExprs_[1][r]->sparsity(evalExprs_[1][r]->getDerivSetIndex(context));
+
+              for (int i=0; i<coeffs->size(); i++)
+                {
+                  const MultipleDeriv& deriv = sparsity->deriv(i);
+                  cerr << "deriv=" << deriv << endl;
+                  (*coeffs)[i]->print(cerr);
+                  cerr << endl;
+                }
+            }
+
           int nTestNodes;
           int nUnkNodes;
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
@@ -431,10 +449,12 @@ void Assembler::assemble(LinearOperator<double>& A,
     }
   mat->freezeValues();
 
-  if (verbosity() > VerbHigh)
+  //  if (verbosity() > VerbHigh)
     {
       cerr << "matrix = " << endl;
       A.print(cerr);
+      cerr << "vector = " << endl;
+      b.print(cerr);
     }
 
 }
@@ -517,7 +537,25 @@ void Assembler::assemble(Vector<double>& b) const
 
           evalExprs_[0][r]->flushResultCache();
           mesh_.getJacobians(cellDim, *workSet, *J);
+          Evaluator::classVerbosity() = VerbExtreme;
           evalExprs_[0][r]->evaluate(*evalMgr_, coeffs);
+          Evaluator::classVerbosity() = VerbSilent;
+          //          if (verbosity() > VerbMedium)
+            {
+              Tabs tab2;
+              cerr << tab2 << "evaluation results: " << endl;
+              const EvalContext& context = contexts_[0][r];
+              const RefCountPtr<SparsityPattern>& sparsity 
+                = evalExprs_[0][r]->sparsity(evalExprs_[0][r]->getDerivSetIndex(context));
+
+              for (int i=0; i<coeffs->size(); i++)
+                {
+                  const MultipleDeriv& deriv = sparsity->deriv(i);
+                  cerr << "deriv=" << deriv << endl;
+                  (*coeffs)[i]->print(cerr);
+                  cerr << endl;
+                }
+            }
 
           int nTestNodes;
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
@@ -535,6 +573,12 @@ void Assembler::assemble(Vector<double>& b) const
                                      group.testID(), *localValues, vec);
             }
         }
+    }
+
+  //  if (verbosity() > VerbHigh)
+    {
+      cerr << "vector = " << endl;
+      b.print(cerr);
     }
 }
 

@@ -5,7 +5,7 @@
 EXEEXT = .exe
 
 noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Stokes2D Coupled1D Coupled2D \
-RadDiff1D
+RadDiff1D NoxAlgebraic
 
 
 
@@ -116,6 +116,22 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 RadDiff1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 RadDiff1D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+NoxAlgebraic_SOURCES = $(srcdir)/NoxAlgebraic.cpp
+
+NoxAlgebraic_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+NoxAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+NoxAlgebraic_LDADD = $(STD_FWK_LIBS) 
 
 
 

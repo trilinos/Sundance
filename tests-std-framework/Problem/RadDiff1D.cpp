@@ -59,17 +59,20 @@ int main(int argc, void** argv)
 
       
       /* Define the weak form */
-      Expr eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad);
+      Expr eqn = Integral(interior, u*(dx*v)*(dx*u), quad);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*(u-(x+1.0)), quad)
-        + EssentialBC(rightPoint, v*(u-(x+1.0)), quad);
+        + EssentialBC(rightPoint, v*(u-(x+1.0)), quad); 
 
-      ElementIntegral::classVerbosity()=VerbExtreme;
-      Evaluator::classVerbosity()=VerbExtreme;
-      StdFwkEvalMediator::classVerbosity()=VerbExtreme;
+  //     ElementIntegral::classVerbosity()=VerbExtreme;
+      //Evaluator::classVerbosity()=VerbExtreme;
+      //      Assembler::classVerbosity()=VerbExtreme;
+      NonlinearOperatorBase<double>::classVerbosity()=VerbExtreme;
+//       StdFwkEvalMediator::classVerbosity()=VerbExtreme;
 
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+      F.verbosity() = VerbExtreme;
       /* Get the initial guess */
       Vector<double> x0 = F.getInitialGuess();
 
