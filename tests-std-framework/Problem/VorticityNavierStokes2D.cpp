@@ -30,7 +30,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int n=32;
+      int n=64;
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n*np, np,
                                                          0.0, 1.0, n, 1,
                                                          meshType);
@@ -104,8 +104,8 @@ int main(int argc, void** argv)
 
       NOXSolver solver(noxParams, F);
 
-      int numReynolds = 10;
-      double finalReynolds = 500.0;
+      int numReynolds = 1;
+      double finalReynolds = 100.0;
       for (int r=1; r<=numReynolds; r++)
         {
           double Re = r*finalReynolds/((double) numReynolds);
@@ -131,7 +131,7 @@ int main(int argc, void** argv)
       Expr totalVorticityExpr = Integral(interior, u0[1], quad2);
       double totalVorticity = evaluateIntegral(mesh, totalVorticityExpr);
       cerr << "total vorticity = " << totalVorticity << endl;
-
+      cerr << "number of assemble calls: " << Assembler::numAssembleCalls() << endl;
       double tol = 1.0e-4;
       Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
     }

@@ -567,6 +567,20 @@ $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES)
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
 -lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(UTIL_LIBS) 
 
+XML_LIB_PATH = \
+-L$(top_builddir)/src-std-framework 
+
+XML_INCLUDE_PATH = \
+-I$(top_srcdir)/src-xml \
+-I$(top_builddir)/src-xml 
+
+XML_INCLUDES = $(XML_INCLUDE_PATH) $(STD_FWK_INCLUDE_PATH) \
+$(STD_MESH_INCLUDE_PATH) $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES)
+
+XML_LIBS = $(XML_LIB_PATH) $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) \
+$(CORE_LIB_PATH) -lsundanceXML -lsundanceStdFwk \
+-lsundanceStdMesh -lsundanceCore $(UTIL_LIBS) 
+
 MPI_LIBS = $(TEUCHOS_MPI_LIBS)
 MPI_LIBDIR = $(TEUCHOS_MPI_LIBDIR)
 MPI_INC = $(TEUCHOS_MPI_INC)

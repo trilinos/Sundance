@@ -14,8 +14,25 @@
 
 @SET_MAKE@
 
-#@HEADER
-#@HEADER
+# @HEADER
+# @HEADER
+
+#np# Note the following paragraph.
+# ------------------------------------------------------------------------
+# For each category, create two variables - NAME and NAME_H. The
+# second is the list of headers to be installed, i.e., any header that
+# might someday be needed by some other code outside New_Package. The first is
+# the list of all source and any other header files.
+# ------------------------------------------------------------------------
+
+#
+#np# There is, at present, no distinction between most of the categories, 
+#np# other than those which start with EXTRA_.  All categories which do not
+#np# start with EXTRA_ are included in all builds.  Categories which start
+#np# with EXTRA_ are included in some builds (typically controlled by 
+#np# --with-xyz or --without-xyz)
+#
+#np# Make sure to list all source files in one of the following categories.
 
 # ************************************************************************
 # 
@@ -57,7 +74,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) $(MeshTest3D_SOURCES)
+SOURCES = $(Sundance_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -65,7 +82,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ../..
+top_builddir = ..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -80,11 +97,10 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-noinst_PROGRAMS = MeshTest1D$(EXEEXT) MeshTest2D$(EXEEXT) \
-	MeshTest3D$(EXEEXT)
+noinst_PROGRAMS = Sundance$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-subdir = tests-std-mesh/Simple
+subdir = src-xml
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
@@ -99,30 +115,30 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_MeshTest1D_OBJECTS = MeshTest1D-MeshTest1D.$(OBJEXT)
-MeshTest1D_OBJECTS = $(am_MeshTest1D_OBJECTS)
+am__objects_1 = Sundance-SundanceExprParser.$(OBJEXT) \
+	Sundance-SundanceExprScanner.$(OBJEXT) \
+	Sundance-SundanceToken.$(OBJEXT)
+am_Sundance_OBJECTS = Sundance-SundanceInterpreter.$(OBJEXT) \
+	$(am__objects_1)
+Sundance_OBJECTS = $(am_Sundance_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
-am_MeshTest2D_OBJECTS = MeshTest2D-MeshTest2D.$(OBJEXT)
-MeshTest2D_OBJECTS = $(am_MeshTest2D_OBJECTS)
-am_MeshTest3D_OBJECTS = MeshTest3D-MeshTest3D.$(OBJEXT)
-MeshTest3D_OBJECTS = $(am_MeshTest3D_OBJECTS)
+am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/MeshTest1D-MeshTest1D.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/MeshTest2D-MeshTest2D.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/MeshTest3D-MeshTest3D.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Sundance-SundanceExprParser.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Sundance-SundanceExprScanner.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Sundance-SundanceInterpreter.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Sundance-SundanceToken.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) \
-	$(MeshTest3D_SOURCES)
-DIST_SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) \
-	$(MeshTest3D_SOURCES)
+SOURCES = $(Sundance_SOURCES)
+DIST_SOURCES = $(Sundance_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -238,24 +254,20 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-MeshTest1D_SOURCES = $(srcdir)/MeshTest1D.cpp
-MeshTest1D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+XML_SOURCES = \
+$(top_srcdir)/src-xml/SundanceExprParser.cpp \
+$(top_srcdir)/src-xml/SundanceExprScanner.cpp \
+$(top_srcdir)/src-xml/SundanceToken.cpp 
+
+Sundance_SOURCES = $(srcdir)/SundanceInterpreter.cpp $(XML_SOURCES)
+Sundance_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a
 
-MeshTest1D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest1D_LDADD = $(STD_MESH_LIBS) 
-MeshTest2D_SOURCES = $(srcdir)/MeshTest2D.cpp
-MeshTest2D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-MeshTest2D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest2D_LDADD = $(STD_MESH_LIBS) 
-MeshTest3D_SOURCES = $(srcdir)/MeshTest3D.cpp
-MeshTest3D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-MeshTest3D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest3D_LDADD = $(STD_MESH_LIBS) 
+Sundance_CXXFLAGS = $(STD_FWK_INCLUDES)
+Sundance_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -374,9 +386,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  tests-std-mesh/Simple/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src-xml/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  tests-std-mesh/Simple/Makefile
+	  $(AUTOMAKE) --foreign  src-xml/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -397,15 +409,9 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-MeshTest1D$(EXEEXT): $(MeshTest1D_OBJECTS) $(MeshTest1D_DEPENDENCIES) 
-	@rm -f MeshTest1D$(EXEEXT)
-	$(CXXLINK) $(MeshTest1D_LDFLAGS) $(MeshTest1D_OBJECTS) $(MeshTest1D_LDADD) $(LIBS)
-MeshTest2D$(EXEEXT): $(MeshTest2D_OBJECTS) $(MeshTest2D_DEPENDENCIES) 
-	@rm -f MeshTest2D$(EXEEXT)
-	$(CXXLINK) $(MeshTest2D_LDFLAGS) $(MeshTest2D_OBJECTS) $(MeshTest2D_LDADD) $(LIBS)
-MeshTest3D$(EXEEXT): $(MeshTest3D_OBJECTS) $(MeshTest3D_DEPENDENCIES) 
-	@rm -f MeshTest3D$(EXEEXT)
-	$(CXXLINK) $(MeshTest3D_LDFLAGS) $(MeshTest3D_OBJECTS) $(MeshTest3D_LDADD) $(LIBS)
+Sundance$(EXEEXT): $(Sundance_OBJECTS) $(Sundance_DEPENDENCIES) 
+	@rm -f Sundance$(EXEEXT)
+	$(CXXLINK) $(Sundance_LDFLAGS) $(Sundance_OBJECTS) $(Sundance_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -413,9 +419,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest1D-MeshTest1D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest2D-MeshTest2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest3D-MeshTest3D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceExprParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceExprScanner.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceInterpreter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceToken.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -433,53 +440,69 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-MeshTest1D-MeshTest1D.o: $(srcdir)/MeshTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest1D-MeshTest1D.o -MD -MP -MF "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" -c -o MeshTest1D-MeshTest1D.o `test -f '$(srcdir)/MeshTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" "$(DEPDIR)/MeshTest1D-MeshTest1D.Po"; else rm -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest1D.cpp' object='MeshTest1D-MeshTest1D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest1D-MeshTest1D.Po' tmpdepfile='$(DEPDIR)/MeshTest1D-MeshTest1D.TPo' @AMDEPBACKSLASH@
+Sundance-SundanceInterpreter.o: $(srcdir)/SundanceInterpreter.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceInterpreter.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" -c -o Sundance-SundanceInterpreter.o `test -f '$(srcdir)/SundanceInterpreter.cpp' || echo '$(srcdir)/'`$(srcdir)/SundanceInterpreter.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" "$(DEPDIR)/Sundance-SundanceInterpreter.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SundanceInterpreter.cpp' object='Sundance-SundanceInterpreter.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceInterpreter.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceInterpreter.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest1D-MeshTest1D.o `test -f '$(srcdir)/MeshTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest1D.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceInterpreter.o `test -f '$(srcdir)/SundanceInterpreter.cpp' || echo '$(srcdir)/'`$(srcdir)/SundanceInterpreter.cpp
 
-MeshTest1D-MeshTest1D.obj: $(srcdir)/MeshTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest1D-MeshTest1D.obj -MD -MP -MF "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" -c -o MeshTest1D-MeshTest1D.obj `if test -f '$(srcdir)/MeshTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" "$(DEPDIR)/MeshTest1D-MeshTest1D.Po"; else rm -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest1D.cpp' object='MeshTest1D-MeshTest1D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest1D-MeshTest1D.Po' tmpdepfile='$(DEPDIR)/MeshTest1D-MeshTest1D.TPo' @AMDEPBACKSLASH@
+Sundance-SundanceInterpreter.obj: $(srcdir)/SundanceInterpreter.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceInterpreter.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" -c -o Sundance-SundanceInterpreter.obj `if test -f '$(srcdir)/SundanceInterpreter.cpp'; then $(CYGPATH_W) '$(srcdir)/SundanceInterpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SundanceInterpreter.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" "$(DEPDIR)/Sundance-SundanceInterpreter.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SundanceInterpreter.cpp' object='Sundance-SundanceInterpreter.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceInterpreter.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceInterpreter.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest1D-MeshTest1D.obj `if test -f '$(srcdir)/MeshTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest1D.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceInterpreter.obj `if test -f '$(srcdir)/SundanceInterpreter.cpp'; then $(CYGPATH_W) '$(srcdir)/SundanceInterpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SundanceInterpreter.cpp'; fi`
 
-MeshTest2D-MeshTest2D.o: $(srcdir)/MeshTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest2D-MeshTest2D.o -MD -MP -MF "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" -c -o MeshTest2D-MeshTest2D.o `test -f '$(srcdir)/MeshTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest2D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" "$(DEPDIR)/MeshTest2D-MeshTest2D.Po"; else rm -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest2D.cpp' object='MeshTest2D-MeshTest2D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest2D-MeshTest2D.Po' tmpdepfile='$(DEPDIR)/MeshTest2D-MeshTest2D.TPo' @AMDEPBACKSLASH@
+Sundance-SundanceExprParser.o: $(top_srcdir)/src-xml/SundanceExprParser.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprParser.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" -c -o Sundance-SundanceExprParser.o `test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprParser.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" "$(DEPDIR)/Sundance-SundanceExprParser.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprParser.cpp' object='Sundance-SundanceExprParser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceExprParser.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceExprParser.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest2D-MeshTest2D.o `test -f '$(srcdir)/MeshTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest2D.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprParser.o `test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprParser.cpp
 
-MeshTest2D-MeshTest2D.obj: $(srcdir)/MeshTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest2D-MeshTest2D.obj -MD -MP -MF "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" -c -o MeshTest2D-MeshTest2D.obj `if test -f '$(srcdir)/MeshTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest2D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" "$(DEPDIR)/MeshTest2D-MeshTest2D.Po"; else rm -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest2D.cpp' object='MeshTest2D-MeshTest2D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest2D-MeshTest2D.Po' tmpdepfile='$(DEPDIR)/MeshTest2D-MeshTest2D.TPo' @AMDEPBACKSLASH@
+Sundance-SundanceExprParser.obj: $(top_srcdir)/src-xml/SundanceExprParser.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprParser.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" -c -o Sundance-SundanceExprParser.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprParser.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" "$(DEPDIR)/Sundance-SundanceExprParser.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprParser.cpp' object='Sundance-SundanceExprParser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceExprParser.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceExprParser.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest2D-MeshTest2D.obj `if test -f '$(srcdir)/MeshTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest2D.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprParser.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprParser.cpp'; fi`
 
-MeshTest3D-MeshTest3D.o: $(srcdir)/MeshTest3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest3D-MeshTest3D.o -MD -MP -MF "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" -c -o MeshTest3D-MeshTest3D.o `test -f '$(srcdir)/MeshTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest3D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" "$(DEPDIR)/MeshTest3D-MeshTest3D.Po"; else rm -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest3D.cpp' object='MeshTest3D-MeshTest3D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest3D-MeshTest3D.Po' tmpdepfile='$(DEPDIR)/MeshTest3D-MeshTest3D.TPo' @AMDEPBACKSLASH@
+Sundance-SundanceExprScanner.o: $(top_srcdir)/src-xml/SundanceExprScanner.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprScanner.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" -c -o Sundance-SundanceExprScanner.o `test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprScanner.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" "$(DEPDIR)/Sundance-SundanceExprScanner.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprScanner.cpp' object='Sundance-SundanceExprScanner.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceExprScanner.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceExprScanner.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest3D-MeshTest3D.o `test -f '$(srcdir)/MeshTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest3D.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprScanner.o `test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprScanner.cpp
 
-MeshTest3D-MeshTest3D.obj: $(srcdir)/MeshTest3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest3D-MeshTest3D.obj -MD -MP -MF "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" -c -o MeshTest3D-MeshTest3D.obj `if test -f '$(srcdir)/MeshTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest3D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" "$(DEPDIR)/MeshTest3D-MeshTest3D.Po"; else rm -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest3D.cpp' object='MeshTest3D-MeshTest3D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest3D-MeshTest3D.Po' tmpdepfile='$(DEPDIR)/MeshTest3D-MeshTest3D.TPo' @AMDEPBACKSLASH@
+Sundance-SundanceExprScanner.obj: $(top_srcdir)/src-xml/SundanceExprScanner.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprScanner.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" -c -o Sundance-SundanceExprScanner.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" "$(DEPDIR)/Sundance-SundanceExprScanner.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprScanner.cpp' object='Sundance-SundanceExprScanner.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceExprScanner.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceExprScanner.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest3D-MeshTest3D.obj `if test -f '$(srcdir)/MeshTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest3D.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprScanner.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; fi`
+
+Sundance-SundanceToken.o: $(top_srcdir)/src-xml/SundanceToken.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceToken.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceToken.Tpo" -c -o Sundance-SundanceToken.o `test -f '$(top_srcdir)/src-xml/SundanceToken.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceToken.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceToken.Tpo" "$(DEPDIR)/Sundance-SundanceToken.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceToken.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceToken.cpp' object='Sundance-SundanceToken.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceToken.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceToken.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceToken.o `test -f '$(top_srcdir)/src-xml/SundanceToken.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceToken.cpp
+
+Sundance-SundanceToken.obj: $(top_srcdir)/src-xml/SundanceToken.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceToken.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceToken.Tpo" -c -o Sundance-SundanceToken.obj `if test -f '$(top_srcdir)/src-xml/SundanceToken.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceToken.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceToken.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceToken.Tpo" "$(DEPDIR)/Sundance-SundanceToken.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceToken.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceToken.cpp' object='Sundance-SundanceToken.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Sundance-SundanceToken.Po' tmpdepfile='$(DEPDIR)/Sundance-SundanceToken.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceToken.obj `if test -f '$(top_srcdir)/src-xml/SundanceToken.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceToken.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceToken.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -529,7 +552,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/../..
+	$(mkdir_p) $(distdir)/..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

@@ -4212,7 +4212,7 @@ fi;
 # Output files
 # ------------------------------------------------------------------------
 
-                                                                                                                                                                                                                                                ac_config_files="$ac_config_files Makefile Makefile.export examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-std-framework/SundanceDefaultPath.hpp tests-utils/Makefile tests-utils/Functors/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile doc/Makefile doc/Doxygen/Makefile doc/Doxygen/Doxyfile.utils doc/Doxygen/Doxyfile.core doc/Doxygen/Doxyfile.trilinos"
+                                                                                                                                                                                                                                                          ac_config_files="$ac_config_files Makefile Makefile.export examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile doc/Makefile doc/Doxygen/Makefile doc/Doxygen/Doxyfile.utils doc/Doxygen/Doxyfile.core doc/Doxygen/Doxyfile.trilinos"
 
 
 
@@ -4831,6 +4831,7 @@ do
   "src-std-mesh/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-std-mesh/Makefile" ;;
   "src-std-framework/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-std-framework/Makefile" ;;
   "src-std-framework/SundanceDefaultPath.hpp" ) CONFIG_FILES="$CONFIG_FILES src-std-framework/SundanceDefaultPath.hpp" ;;
+  "src-xml/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-xml/Makefile" ;;
   "tests-utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-utils/Makefile" ;;
   "tests-utils/Functors/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-utils/Functors/Makefile" ;;
   "tests-core/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-core/Makefile" ;;

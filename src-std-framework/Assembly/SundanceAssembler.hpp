@@ -90,6 +90,8 @@ namespace SundanceStdFwk
         matNeedsConfiguration_ = true;
       }
 
+      /** */
+      static int& numAssembleCalls() {static int rtn=0; return rtn;}
       
     private:
 
@@ -180,6 +182,7 @@ namespace SundanceStdFwk
       int lowestRow_;
 
       VectorType<double> vecType_;
+
     };
   }
 }

@@ -272,6 +272,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
+  numAssembleCalls()++;
 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
@@ -466,7 +467,7 @@ void Assembler::assemble(Vector<double>& b) const
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
-
+  numAssembleCalls()++;
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
   SUNDANCE_OUT(verbosity() > VerbSilent, 

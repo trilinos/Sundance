@@ -1,7 +1,7 @@
 <ParameterList>
   <ParameterList name="Linear Solver">
     <Parameter name="Graph Fill" type="int" value="1"/>
-    <Parameter name="Max Iterations" type="int" value="200"/>
+    <Parameter name="Max Iterations" type="int" value="800"/>
     <Parameter name="Method" type="string" value="BICGSTAB"/>
     <Parameter name="Precond" type="string" value="ILUK"/>
     <Parameter name="Tolerance" type="double" value="1e-12"/>

@@ -132,7 +132,7 @@ namespace SundanceStdFwk
 
     static void passFailTest(double error, double tol);
 
-    
+    static string searchForFile(const string& name);    
 
   private:
     static CommandLineProcessor& clp()
@@ -142,7 +142,7 @@ namespace SundanceStdFwk
 
     static void setSettings(const string& settingsFile);
 
-    static string searchForFile(const string& name);
+
 
     static VerbositySetting verbosity(const string& str);
 
