@@ -41,6 +41,8 @@ namespace SundanceCore
     return new NonlinearUnaryOp(arg, rcp(new PowerFunctor(p)));
   }
 
+  /** \name Elementary math functions */
+  //@{
   SUNDANCE_UNARY_OP(reciprocal, StdReciprocal, "reciprocal function");
 
   SUNDANCE_UNARY_OP(fabs, StdFabs, "absolute value");
@@ -76,7 +78,7 @@ namespace SundanceCore
   SUNDANCE_UNARY_OP(acosh, StdACosh, "inverse hyperbolic cosine");
 
   SUNDANCE_UNARY_OP(atanh, StdATanh, "inverse hyperbolic tangent");
-
+//@}
 
 }
 

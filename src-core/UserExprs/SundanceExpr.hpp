@@ -19,6 +19,145 @@ namespace SundanceCore
    * User-level expression class. Expr is a handle to a
    * reference-counted pointer to a ExprBase subtype. As such,
    * expression copies and assignments are shallow.
+   *
+   * <h2> Lists </h2>
+   *
+   * Expressions can be grouped into lists with an arbitrary structure. Important
+   * special cases are scalar, vector, and tensor expressions.
+   *
+   * <h3> Creating Lists </h3>
+   *
+   * <ul>
+   * <li> Vector expressions
+   * \code
+   * Expr v = List(vx, vy, vz);
+   * \endcode
+   * <li> Heterogeneous lists
+   * \code
+   * // Form vector {vx, vy, vz} 
+   * Expr v = List(vx, vy, vz);
+   * Expr q = new TestFunction(new Lagrange(1));
+   * // Form heterogeneous list {{vx, vy, vz}, q}
+   * Expr state = List(v, q);
+   * \endcode
+   * </ul>   
+   *
+   * <h3> Probing Lists </h3>
+   *
+   * <ul>
+   * <li> Finding the size of the top level of a list
+   * \code
+   * // Form vector {vx, vy, vz} 
+   * Expr v = List(vx, vy, vz);
+   * Expr q = new TestFunction(new Lagrange(1));
+   * // Form heterogeneous list {{vx, vy, vz}, q}
+   * Expr state = List(v, q);
+   * // Check top-level size of state list {{vx, vy, vz}, q}
+   * int stateSize = state.size(); // returns 2
+   * \endcode
+   * <li> Finding the total size of a list
+   * \code
+   * // Check total size of state list 
+   * int totalSize = state.totalSize(); // returns 4
+   * \endcode
+   * </ul>
+   * 
+   * <h3> Manipulating Lists </h3>
+   * 
+   * 
+   * 
+   * <h2> Arithmetic Operations </h2>
+   *
+   * <ul>
+   * <li> Addition
+   * \code
+   * Expr sum = x + y;
+   * \endcode
+   * The operands must have identical list structures.
+   *
+   * <li> Subtraction
+   * \code
+   * Expr diff = x - y;
+   * \endcode
+   * The operands must have identical list structures.
+   * 
+   * <li> Multiplication
+   * \code
+   * Expr product = x * y;
+   * \endcode
+   * The operands must have list
+   * structures such that the product can be interpreted as a
+   * scalar-vector product or as an inner product between vectors
+   * or tensors. The multiplication operator is also used to
+   * represent the application of a differential operator.
+   *
+   * <li> Division
+   * \code
+   * Expr quotient = x / y;
+   * \endcode
+   * The denominator must be scalar-valued.
+   * </ul>
+   *
+   * <h2> Expression Subtypes </h2>
+   * The user-level expression subtypes are listed below, along with examples of their use.
+   * <ul>
+   * <li> UnknownFunction - Represents an unknown function in a finite-element problem.
+   * Unknown functions can be scalar-valued or vector valued.
+   *
+   * Example of creation of a scalar-valued unknown function:
+   * \code
+   * Expr u = new UnknownFunction(new Lagrange(1));
+   * \endcode
+   *
+   * Example of creation of a vector-valued unknown function:
+   * \code
+   * Expr u = new UnknownFunction(List(new Lagrange(1), new Lagrange(1)));
+   * \endcode
+   *
+   * <li> TestFunction - Represents a test function in a finite-element problem.
+   * Test functions can be scalar-valued or vector valued.
+   *
+   * Example of creation of a scalar-valued test function:
+   * \code
+   * Expr v = new TestFunction(new Lagrange(1));
+   * \endcode
+   *
+   * Example of creation of a vector-valued test function:
+   * \code
+   * Expr u = new TestFunction(List(new Lagrange(1), new Lagrange(1)));
+   * \endcode
+   * 
+   * <li> Derivative - Represents a spatial derivative operator. 
+   * Spatial derivatives are applied
+   * using the multiplication operator. 
+   * \code
+   * Expr dx = new Derivative(0);
+   * Expr convect = (u*dx)*u;
+   * \endcode
+   * Derivative expressions are scalar valued. However, vector differential operators
+   * can be created using the List operator. For example,
+   * \code
+   * Expr dx = new Derivative(0);
+   * Expr dy = new Derivative(1);
+   * Expr grad = List(dx, dy);
+   * \endcode
+   * 
+   * <li> CoordExpr - Represents a coordinate functions. 
+   * \code
+   * Expr x = new CoordExpr(0);
+   * Expr y = new CoordExpr(1);
+   * Expr r = sqrt(x*x + y*y);
+   * \endcode
+   * Coordinate expressions are scalar valued.
+   *
+   * <li> CellDiameterExpr - Represents the diameter of a cell. Cell
+   * diameters are often used in stabilized methods. 
+   * \code
+   * Expr h = new CellDiameterExpr();
+   * Expr streamlineDiffusion = eps*h*h*((u*grad)*v)*((u*grad)*T);
+   * \endcode
+   * Cell diameter expressions are scalar valued.
+   * </ul>
    */
   class Expr : public TSFExtended::Handle<Internal::ExprBase>
     {
@@ -60,7 +199,7 @@ namespace SundanceCore
       /** Number of elements in top level of list */
       int size() const ;
 
-      /** Total number of elements in list */
+      /** Total number of elements in list. */
       int totalSize() const ;
 
       /** Append a new element to this list */
