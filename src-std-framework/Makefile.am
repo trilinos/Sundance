@@ -85,10 +85,12 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.cpp
 
 SUNDANCE_ASSEMBLY_H = \
-$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp
+$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceWeakFormBatch.hpp
 
 SUNDANCE_ASSEMBLY = \
-$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp
+$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceWeakFormBatch.cpp
 
 
 

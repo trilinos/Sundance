@@ -75,6 +75,9 @@ namespace SundanceUtils
       /* first compare types */
       const PointerType* me = ptr().get();
       const PointerType* you = other.ptr().get();
+      if (me==0 && you==0) return false;
+      if (me==0) return true;
+      if (you==0) return false;
       if (typeid(*me).before(typeid(*you))) return true;
       if (typeid(*you).before(typeid(*me))) return false;
       

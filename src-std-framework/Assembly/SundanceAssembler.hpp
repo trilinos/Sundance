@@ -7,6 +7,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceEquationSet.hpp"
+#include "SundanceWeakFormBatch.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -26,7 +27,7 @@ namespace SundanceStdFwk
     /** 
      * 
      */
-    class Assembler : public TSFExtended::ObjectWithVerbosity<DOFMapBase>,
+    class Assembler : public TSFExtended::ObjectWithVerbosity<Assembler>,
                       public TSFExtended::Printable
     {
     public:
@@ -47,7 +48,7 @@ namespace SundanceStdFwk
 
     private:
       
-      void init();
+      void addToWeakFormBatch(const DerivSet& derivs);
 
       void getGraph(Array<Set<int> >& graph);
 
@@ -68,6 +69,8 @@ namespace SundanceStdFwk
       Array<Expr> rqcExprs_;
 
       Array<DerivSet> rqcDerivSet_;
+
+      Array<Array<RefCountPtr<WeakFormBatch> > > weakForms_;
       
     };
   }

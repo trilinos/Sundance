@@ -14,16 +14,8 @@
 
 @SET_MAKE@
 
-# @HEADER
-# @HEADER
-
-#np# Note the following paragraph.
-# ------------------------------------------------------------------------
-# For each category, create two variables - NAME and NAME_H. The
-# second is the list of headers to be installed, i.e., any header that
-# might someday be needed by some other code outside New_Package. The first is
-# the list of all source and any other header files.
-# ------------------------------------------------------------------------
+#@HEADER
+#@HEADER
 
 # ************************************************************************
 # 
@@ -65,8 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-
-SOURCES = $(libsundanceUtils_a_SOURCES) $(EXTRA_libsundanceUtils_a_SOURCES)
+SOURCES = $(AssemblerTest1D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -74,7 +65,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ..
+top_builddir = ../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -89,10 +80,10 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-DIST_COMMON = $(include_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/SundanceConfig.h.in \
+noinst_PROGRAMS = AssemblerTest1D$(EXEEXT)
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-subdir = src-utils
+subdir = tests-std-framework/Assembly
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_cxx_bool.m4 \
 	$(top_srcdir)/config/ac_cxx_have_stl.m4 \
@@ -118,37 +109,30 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_cxx_bool.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
-CONFIG_HEADER = SundanceConfig.h
+CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
-AR = ar
-ARFLAGS = cru
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(execincludedir)"
-libLIBRARIES_INSTALL = $(INSTALL_DATA)
-LIBRARIES = $(lib_LIBRARIES)
-libsundanceUtils_a_AR = $(AR) $(ARFLAGS)
+PROGRAMS = $(noinst_PROGRAMS)
+am_AssemblerTest1D_OBJECTS =  \
+	AssemblerTest1D-AssemblerTest1D.$(OBJEXT)
+AssemblerTest1D_OBJECTS = $(am_AssemblerTest1D_OBJECTS)
 am__DEPENDENCIES_1 =
-libsundanceUtils_a_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am__objects_1 = SundanceExceptions.$(OBJEXT) SundanceTabs.$(OBJEXT)
-am__objects_2 = $(am__objects_1)
-am_libsundanceUtils_a_OBJECTS = $(am__objects_2)
-libsundanceUtils_a_OBJECTS = $(am_libsundanceUtils_a_OBJECTS)
-DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/SundanceExceptions.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/SundanceTabs.Po
+@AMDEP_TRUE@DEP_FILES =  \
+@AMDEP_TRUE@	./$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(libsundanceUtils_a_SOURCES) \
-	$(EXTRA_libsundanceUtils_a_SOURCES)
-DIST_SOURCES = $(libsundanceUtils_a_SOURCES) \
-	$(EXTRA_libsundanceUtils_a_SOURCES)
-includeHEADERS_INSTALL = $(INSTALL_HEADER)
-nodist_execincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(include_HEADERS) $(nodist_execinclude_HEADERS)
+SOURCES = $(AssemblerTest1D_SOURCES)
+DIST_SOURCES = $(AssemblerTest1D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -181,7 +165,7 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
-EXEEXT = @EXEEXT@
+EXEEXT = .exe
 EXPAT_INC = @EXPAT_INC@
 EXPAT_LIBS = @EXPAT_LIBS@
 F77 = @F77@
@@ -275,40 +259,15 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
+AssemblerTest1D_SOURCES = $(srcdir)/AssemblerTest1D.cpp
+AssemblerTest1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
 
-#
-#np# There is, at present, no distinction between most of the categories, 
-#np# other than those which start with EXTRA_.  All categories which do not
-#np# start with EXTRA_ are included in all builds.  Categories which start
-#np# with EXTRA_ are included in some builds (typically controlled by 
-#np# --with-xyz or --without-xyz)
-#
-#np# Make sure to list all source files in one of the following categories.
-SUNDANCE_UTILITIES_H = \
-$(top_srcdir)/src-utils/Utilities/SundanceArrayOfTuples.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceDebug.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceDefs.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceExceptions.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceMap.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceMultiSet.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceNoncopyable.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceObjectWithInstanceID.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceOrderedHandle.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceOrderedTuple.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceOut.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceSet.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceTabs.hpp 
-
-SUNDANCE_UTILITIES = \
-$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp \
-$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp 
-
-UTIL_SOURCES = \
-$(SUNDANCE_UTILITIES) 
-
-UTIL_SOURCES_H = \
-$(SUNDANCE_UTILITIES_H) 
-
+AssemblerTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+AssemblerTest1D_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -402,85 +361,7 @@ TRILINOS_INCLUDES = -I$(TRILINOS_DIR)/include
 TRILINOS_LIBS = -L$(TRILINOS_DIR)/lib -lTSFExtended -lTSFCore -lTSFCoreUtils \
                 -lteuchos
 
-
-#
-#np#  Files which are included in select builds are typically have
-#np#  names that start with EXTRA
-#
-#np#  EXTRA_MPI is control by --with-mpi and --without-mpi which is
-#np#  set up by TAC_ARC_CONFIG_MPI 
-#
-EXTRA_MPI_H = 
-EXTRA_MPI = 
-@HAVE_MPI_FALSE@MPI_H = 
-@HAVE_MPI_TRUE@MPI_H = \
-@HAVE_MPI_TRUE@	$(EXTRA_MPI_H)
-
-@HAVE_MPI_FALSE@MPI = 
-@HAVE_MPI_TRUE@MPI = \
-@HAVE_MPI_TRUE@	$(EXTRA_MPI)
-
-AM_CPPFLAGS = $(UTIL_INCLUDES)
-
-# ------------------------------------------------------------------------
-# Sundance library specifications
-# ------------------------------------------------------------------------
-UTIL_LIB = libsundanceUtils.a
-
-#np# replace new_package with the name of the package being autotool'ed here
-libsundanceUtils_a_SOURCES = $(UTIL_SOURCES)
-
-#np# replace new_package with the name of the package being autotool'ed here
-EXTRA_libsundanceUtils_a_SOURCES = \
-$(EXTRA_MPI) \
-$(EXTRA_MPI_H) 
-
-@USE_ALTERNATE_AR_FALSE@libsundance_a_AR = $(AR) cru
-
-#We need the following to support separate build directories
-#AM_CPPFLAGS=-I$(builddir)/src
-# ------------------------------------------------------------------------
-# For using a special archiver
-# ------------------------------------------------------------------------
-
-# SPECIAL NOTE: Why is the "else" there?  For some reason, automake
-# fails to define <lib>_AR of USE_ALTERNATE_AR is false, so we have to
-# define it manually.
-@USE_ALTERNATE_AR_TRUE@libsundance_a_AR = $(ALTERNATE_AR)
-
-# ------------------------------------------------------------------------
-# Some C++ compilers create extra .o-files for templates. We need to
-# be sure to include these, and this is the hack to do it.
-# ------------------------------------------------------------------------
-libsundanceUtils_a_LIBADD = $(UTIL_TEMPLATE_OBJS) $(XTRALDADD) 
-
-# ------------------------------------------------------------------------
-# List of all libraries to install in $(libexecdir)
-# ------------------------------------------------------------------------
-lib_LIBRARIES = $(UTIL_LIB)
-
-# ------------------------------------------------------------------------
-# List of all headers to install in $(includedir)
-# ------------------------------------------------------------------------
-include_HEADERS = $(UTIL_SOURCES_H) 
-
-# ------------------------------------------------------------------------
-# Special stuff to install in our special $(execincludedir)
-# ------------------------------------------------------------------------
-
-# SPECIAL NOTE: SundanceConfig.h is a machine-dependent file, so we need
-# to install it in the machine-dependent directory. However, that is
-# not a default installation directory, so we had to create it
-# special.
-execincludedir = $(exec_prefix)/include
-nodist_execinclude_HEADERS = SundanceConfig.h
-
-# ------------------------------------------------------------------------
-# Files to be deleted by 'make maintainer-clean'
-# ------------------------------------------------------------------------
-MAINTAINERCLEANFILES = Makefile.in 
-all: SundanceConfig.h
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .cpp .o .obj
@@ -493,9 +374,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src-utils/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  tests-std-framework/Assembly/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src-utils/Makefile
+	  $(AUTOMAKE) --foreign  tests-std-framework/Assembly/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -514,55 +395,11 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-SundanceConfig.h: stamp-h1
-	@if test ! -f $@; then \
-	  rm -f stamp-h1; \
-	  $(MAKE) stamp-h1; \
-	else :; fi
-
-stamp-h1: $(srcdir)/SundanceConfig.h.in $(top_builddir)/config.status
-	@rm -f stamp-h1
-	cd $(top_builddir) && $(SHELL) ./config.status src-utils/SundanceConfig.h
-$(srcdir)/SundanceConfig.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
-	cd $(top_srcdir) && $(AUTOHEADER)
-	rm -f stamp-h1
-	touch $@
-
-distclean-hdr:
-	-rm -f SundanceConfig.h stamp-h1
-install-libLIBRARIES: $(lib_LIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(libdir)" || $(mkdir_p) "$(DESTDIR)$(libdir)"
-	@list='$(lib_LIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f="`echo $$p | sed -e 's|^.*/||'`"; \
-	    echo " $(libLIBRARIES_INSTALL) '$$p' '$(DESTDIR)$(libdir)/$$f'"; \
-	    $(libLIBRARIES_INSTALL) "$$p" "$(DESTDIR)$(libdir)/$$f"; \
-	  else :; fi; \
-	done
-	@$(POST_INSTALL)
-	@list='$(lib_LIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    p="`echo $$p | sed -e 's|^.*/||'`"; \
-	    echo " $(RANLIB) '$(DESTDIR)$(libdir)/$$p'"; \
-	    $(RANLIB) "$(DESTDIR)$(libdir)/$$p"; \
-	  else :; fi; \
-	done
-
-uninstall-libLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LIBRARIES)'; for p in $$list; do \
-	  p="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f '$(DESTDIR)$(libdir)/$$p'"; \
-	  rm -f "$(DESTDIR)$(libdir)/$$p"; \
-	done
-
-clean-libLIBRARIES:
-	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
-libsundanceUtils.a: $(libsundanceUtils_a_OBJECTS) $(libsundanceUtils_a_DEPENDENCIES) 
-	-rm -f libsundanceUtils.a
-	$(libsundanceUtils_a_AR) libsundanceUtils.a $(libsundanceUtils_a_OBJECTS) $(libsundanceUtils_a_LIBADD)
-	$(RANLIB) libsundanceUtils.a
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+AssemblerTest1D$(EXEEXT): $(AssemblerTest1D_OBJECTS) $(AssemblerTest1D_DEPENDENCIES) 
+	@rm -f AssemblerTest1D$(EXEEXT)
+	$(CXXLINK) $(AssemblerTest1D_LDFLAGS) $(AssemblerTest1D_OBJECTS) $(AssemblerTest1D_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -570,8 +407,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExceptions.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTabs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -589,72 +425,22 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-SundanceExceptions.o: $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExceptions.o -MD -MP -MF "$(DEPDIR)/SundanceExceptions.Tpo" -c -o SundanceExceptions.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceExceptions.Tpo" "$(DEPDIR)/SundanceExceptions.Po"; else rm -f "$(DEPDIR)/SundanceExceptions.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp' object='SundanceExceptions.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceExceptions.Po' tmpdepfile='$(DEPDIR)/SundanceExceptions.TPo' @AMDEPBACKSLASH@
+AssemblerTest1D-AssemblerTest1D.o: $(srcdir)/AssemblerTest1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -MT AssemblerTest1D-AssemblerTest1D.o -MD -MP -MF "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" -c -o AssemblerTest1D-AssemblerTest1D.o `test -f '$(srcdir)/AssemblerTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/AssemblerTest1D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po"; else rm -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/AssemblerTest1D.cpp' object='AssemblerTest1D-AssemblerTest1D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po' tmpdepfile='$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceExceptions.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -c -o AssemblerTest1D-AssemblerTest1D.o `test -f '$(srcdir)/AssemblerTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/AssemblerTest1D.cpp
 
-SundanceExceptions.obj: $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExceptions.obj -MD -MP -MF "$(DEPDIR)/SundanceExceptions.Tpo" -c -o SundanceExceptions.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceExceptions.Tpo" "$(DEPDIR)/SundanceExceptions.Po"; else rm -f "$(DEPDIR)/SundanceExceptions.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp' object='SundanceExceptions.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceExceptions.Po' tmpdepfile='$(DEPDIR)/SundanceExceptions.TPo' @AMDEPBACKSLASH@
+AssemblerTest1D-AssemblerTest1D.obj: $(srcdir)/AssemblerTest1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -MT AssemblerTest1D-AssemblerTest1D.obj -MD -MP -MF "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" -c -o AssemblerTest1D-AssemblerTest1D.obj `if test -f '$(srcdir)/AssemblerTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/AssemblerTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/AssemblerTest1D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po"; else rm -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/AssemblerTest1D.cpp' object='AssemblerTest1D-AssemblerTest1D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po' tmpdepfile='$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceExceptions.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; fi`
-
-SundanceTabs.o: $(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTabs.o -MD -MP -MF "$(DEPDIR)/SundanceTabs.Tpo" -c -o SundanceTabs.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTabs.Tpo" "$(DEPDIR)/SundanceTabs.Po"; else rm -f "$(DEPDIR)/SundanceTabs.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp' object='SundanceTabs.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceTabs.Po' tmpdepfile='$(DEPDIR)/SundanceTabs.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTabs.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp
-
-SundanceTabs.obj: $(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTabs.obj -MD -MP -MF "$(DEPDIR)/SundanceTabs.Tpo" -c -o SundanceTabs.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTabs.Tpo" "$(DEPDIR)/SundanceTabs.Po"; else rm -f "$(DEPDIR)/SundanceTabs.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp' object='SundanceTabs.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceTabs.Po' tmpdepfile='$(DEPDIR)/SundanceTabs.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTabs.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -c -o AssemblerTest1D-AssemblerTest1D.obj `if test -f '$(srcdir)/AssemblerTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/AssemblerTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/AssemblerTest1D.cpp'; fi`
 uninstall-info-am:
-install-includeHEADERS: $(include_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(includedir)" || $(mkdir_p) "$(DESTDIR)$(includedir)"
-	@list='$(include_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(includeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includedir)/$$f'"; \
-	  $(includeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includedir)/$$f"; \
-	done
-
-uninstall-includeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(include_HEADERS)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f '$(DESTDIR)$(includedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(includedir)/$$f"; \
-	done
-install-nodist_execincludeHEADERS: $(nodist_execinclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(execincludedir)" || $(mkdir_p) "$(DESTDIR)$(execincludedir)"
-	@list='$(nodist_execinclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(nodist_execincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(execincludedir)/$$f'"; \
-	  $(nodist_execincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(execincludedir)/$$f"; \
-	done
-
-uninstall-nodist_execincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nodist_execinclude_HEADERS)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f '$(DESTDIR)$(execincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(execincludedir)/$$f"; \
-	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -666,11 +452,11 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS:  $(HEADERS) $(SOURCES) SundanceConfig.h.in $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS) SundanceConfig.h.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -682,11 +468,11 @@ TAGS:  $(HEADERS) $(SOURCES) SundanceConfig.h.in $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES) SundanceConfig.h.in $(TAGS_DEPENDENCIES) \
+CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS) SundanceConfig.h.in $(LISP) $(TAGS_FILES)'; \
+	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
 	  done | \
@@ -705,7 +491,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/.. $(distdir)/../src-utils/Utilities
+	$(mkdir_p) $(distdir)/../..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -734,11 +520,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(HEADERS) SundanceConfig.h
+all-am: Makefile $(PROGRAMS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)" "$(DESTDIR)$(execincludedir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -763,16 +546,15 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
-clean-am: clean-generic clean-libLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-hdr distclean-tags
+	distclean-tags
 
 dvi: dvi-am
 
@@ -784,10 +566,9 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS
+install-data-am:
 
-install-exec-am: install-libLIBRARIES \
-	install-nodist_execincludeHEADERS
+install-exec-am:
 
 install-info: install-info-am
 
@@ -812,22 +593,18 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-includeHEADERS uninstall-info-am \
-	uninstall-libLIBRARIES uninstall-nodist_execincludeHEADERS
+uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLIBRARIES ctags distclean distclean-compile \
-	distclean-generic distclean-hdr distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-exec install-exec-am \
-	install-includeHEADERS install-info install-info-am \
-	install-libLIBRARIES install-man \
-	install-nodist_execincludeHEADERS install-strip installcheck \
+	clean-noinstPROGRAMS ctags distclean distclean-compile \
+	distclean-generic distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-includeHEADERS uninstall-info-am \
-	uninstall-libLIBRARIES uninstall-nodist_execincludeHEADERS
+	uninstall-am uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -9,6 +9,7 @@
 #include "SundancePoint.hpp"
 #include "SundanceMultiIndex.hpp"
 #include "TSFHandleable.hpp"
+#include "TSFPrintable.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -28,7 +29,8 @@ namespace SundanceStdFwk
     /** 
      * 
      */
-    class BasisFamilyBase : public Handleable<BasisFamilyBase>
+    class BasisFamilyBase : public Handleable<BasisFamilyBase>,
+                            public TSFExtended::Printable
     {
     public:
       /** */
@@ -39,6 +41,10 @@ namespace SundanceStdFwk
 
       /** */
       virtual XMLObject toXML() const = 0 ;
+
+      /** */
+      virtual void print(ostream& os) const 
+      {os << toXML().toString();}
 
       /** 
        * Get a description of the DOF numbering scheme for this
