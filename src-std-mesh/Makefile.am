@@ -59,14 +59,16 @@ $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundancePartitionedLineMesher.hpp \
-$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.hpp 
+$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.hpp \
+$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.hpp 
 
 SUNDANCE_MESHSOURCES = \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundancePartitionedLineMesher.cpp \
-$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.cpp 
+$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.cpp \
+$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp 
 
 SUNDANCE_MESHTRANSFORMATIONS_H = \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.hpp \

@@ -394,6 +394,7 @@ void HomogeneousDOFMap::getSingleFuncDOFsForCellBatch(int cellDim,
   TimeMonitor timer(dofBatchLookupTimer());
   SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID << " funcID=" << funcID);
+  if (cellLID.size()==0) return;
   dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() );
   int nf = funcIDList().size();
   SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
@@ -458,8 +459,10 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
                                             int& nNodes) const 
 {
   TimeMonitor timer(dofBatchLookupTimer());
+
   SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID);
+  if (cellLID.size()==0) return;
 
   int nf = funcIDList().size();
   int nCells = cellLID.size();
@@ -541,6 +544,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
   TimeMonitor timer(dofBatchLookupTimer());
   SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID << ", funcs=" << funcID);
+  if (cellLID.size()==0) return;
   dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * funcID.size() );
   int nf = funcIDList().size();
   int nCells = cellLID.size();

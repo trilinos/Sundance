@@ -13,8 +13,8 @@ MeshSourceBase::MeshSourceBase(const MeshType& meshType,
     hasCachedMesh_(),
     meshType_(meshType),
     comm_(comm),
-    nodeAttributes_(),
-    elemAttributes_()
+    nodeAttributes_(rcp(new Array<Array<double> >())),
+    elemAttributes_(rcp(new Array<Array<double> >()))
 {
 }
 
@@ -32,8 +32,8 @@ void MeshSourceBase
 ::getAttributes(RefCountPtr<Array<Array<double> > >& nodeAttributes,
                 RefCountPtr<Array<Array<double> > >& elemAttributes) const
 {
-  nodeAttributes = nodeAttributes;
-  elemAttributes = elemAttributes;
+  nodeAttributes = nodeAttributes_;
+  elemAttributes = elemAttributes_;
 }
 
 Mesh MeshSourceBase::createMesh(int dim) const

@@ -1,4 +1,6 @@
-#include "TriangleMeshReader.hpp"
+#include "SundanceTriangleMeshReader.hpp"
+#include "SundanceOut.hpp"
+#include "SundanceExceptions.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
@@ -7,17 +9,15 @@ using namespace Teuchos;
 using namespace SundanceUtils;
 
 
-TriangleMeshReader::TriangleMeshReader(const string& filename,
+TriangleMeshReader::TriangleMeshReader(const string& fname,
                                        const MeshType& meshType,
                                        const MPIComm& comm)
-  : MeshReaderBase(filename, meshType, comm),
-    nodeFilename_(),
-    elemFilename_(),
-    parFilename_()
+  : MeshReaderBase(fname, meshType, comm),
+    nodeFilename_(filename()),
+    elemFilename_(filename()),
+    parFilename_(filename())
 {
-  string nodeFilename_ = filename_;
-  string elemFilename_ = filename_;
-  string parFilename_ = filename_;
+  
 
   if (nProc() > 1)
     {
@@ -28,10 +28,18 @@ TriangleMeshReader::TriangleMeshReader(const string& filename,
   nodeFilename_ = nodeFilename_ + ".node";
   elemFilename_ = elemFilename_ + ".ele";
   parFilename_ = parFilename_ + ".par";
+  
+  verbosity() = classVerbosity();
+  SUNDANCE_OUT(verbosity() > VerbLow,
+               "node filename = " << nodeFilename_);
+  
+  SUNDANCE_OUT(verbosity() > VerbLow,
+               "elem filename = " << elemFilename_);
+  
 }
 
 
-Mesh TriangleMeshReader::getMesh() const 
+Mesh TriangleMeshReader::fillMesh() const 
 {
   Mesh mesh;
 
@@ -40,41 +48,44 @@ Mesh TriangleMeshReader::getMesh() const
   Array<int> cellGID;
   Array<int> cellOwner;
 
-  readParallelInfo(ptGID, ptOwner, elemGID, elemOwner);
+  readParallelInfo(ptGID, ptOwner, cellGID, cellOwner);
 
-  readNodes(ptGID, ptOwner);
+  mesh = readNodes(ptGID, ptOwner);
 
-  readElems(elemGID, elemOwner);
+  readElems(mesh, ptGID, cellGID, cellOwner);
 
-  mesh.assignGlobalIndices();
+  //  mesh.assignGlobalIndices();
 
 	return mesh;
 }
 
 void TriangleMeshReader::readParallelInfo(Array<int>& ptGID, 
                                           Array<int>& ptOwner,
-                                          Array<int>& elemGID, 
-                                          Array<int>& elemOwner,
-                                          int& nPoints,
-                                          int& nCells) const
+                                          Array<int>& cellGID, 
+                                          Array<int>& cellOwner) const
 {
+  int nPoints;
+  int nElems;
+  string line;
+  Array<string> tokens;
   try
     {
       ptGID.resize(0);
       ptOwner.resize(0);
-      elemGID.resize(0);
-      elemOwner.resize(0);
+      cellGID.resize(0);
+      cellOwner.resize(0);
 
       /* if we're running in parallel, read the info on processor 
        * distribution */
       if (nProc() > 1)
         {
-          ifstream parStream = openFile(parFilename_, "parallel info");
+          RefCountPtr<ifstream> parStream 
+            = openFile(parFilename_, "parallel info");
      
           /* read the number of processors and the processor rank in 
            * the file. These must be consistent with the current number of
            * processors and the current rank */
-          getNextLine(parStream, line, tokens, '#');
+          getNextLine(*parStream, line, tokens, '#');
       
           TEST_FOR_EXCEPTION(tokens.length() != 2, RuntimeError,
                              "TriangleMeshReader::getMesh() expects 2 entries "
@@ -101,7 +112,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
                              << pid << " in the file " << parFilename_);
 
           /* read the number of points */
-          getNextLine(parStream, line, tokens, '#');
+          getNextLine(*parStream, line, tokens, '#');
 
           TEST_FOR_EXCEPTION(tokens.length() != 1, RuntimeError,
                              "TriangleMeshReader::getMesh() requires 1 entry "
@@ -116,7 +127,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
 
           for (int i=0; i<nPoints; i++)
             {
-              getNextLine(parStream, line, tokens, '#');
+              getNextLine(*parStream, line, tokens, '#');
 
               TEST_FOR_EXCEPTION(tokens.length() != 3, RuntimeError,
                                  "TriangleMeshReader::getMesh() requires 3 "
@@ -131,7 +142,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
 
           /* Read the number of elements */
 
-          getNextLine(parStream, line, tokens, '#');
+          getNextLine(*parStream, line, tokens, '#');
 
           TEST_FOR_EXCEPTION(tokens.length() != 1, RuntimeError,
                              "TriangleMeshReader::getMesh() requires 1 entry "
@@ -140,10 +151,9 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
 
           nElems = StrUtils::atoi(tokens[0]);
 
-          if (verbose())
-            {
-              Out::println("read nElem=" + Teuchos::toString(nElems));
-            }
+          SUNDANCE_OUT(verbosity() > VerbLow,
+                       "read nElems = " << nElems);
+
 
           /* read the global ID and the owner PID for each element */
 
@@ -151,7 +161,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
           cellOwner.resize(nElems);
           for (int i=0; i<nElems; i++)
             {
-              getNextLine(parStream, line, tokens, '#');
+              getNextLine(*parStream, line, tokens, '#');
 
               TEST_FOR_EXCEPTION(tokens.length() != 3, RuntimeError,
                                  "TriangleMeshReader::getMesh() requires 3 "
@@ -173,27 +183,29 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
     }
 }
 
-void TriangleMeshReader::readNodes(const Array<int>& ptGID,
-                                   const Array<int>& ptOwner) const 
+Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
+                                   Array<int>& ptOwner) const 
 {
-  
+  Mesh mesh;
+  string line;
+  Array<string> tokens;
+  int nPoints;
+
   /* Open the node file so we can read in the nodes */
 	
-	ifstream nodeStream = openFile(nodeFile_, "node info");
+	RefCountPtr<ifstream> nodeStream = openFile(nodeFilename_, "node info");
 	
   /* read the header line */
-  getNextLine(parStream, line, tokens, '#');
+  getNextLine(*nodeStream, line, tokens, '#');
   TEST_FOR_EXCEPTION(tokens.length() != 4, RuntimeError,
                      "TriangleMeshReader::getMesh() requires 4 "
                      "entries on the header line in "
                      "the .node file. Found line \n[" << line
                      << "]\n in file " << nodeFilename_);
 	string headerLine = line;
-  if (verbose())
-    {
-      Out::println("read pt header " + line);
-    }
-
+  SUNDANCE_OUT(verbosity() > VerbMedium,
+               "read point header " << line);
+  
   
 	if (nProc()==1)
     {
@@ -218,23 +230,20 @@ void TriangleMeshReader::readNodes(const Array<int>& ptGID,
                          << parFilename_ << " had nPoints=" << nPoints);
     }
 
-  if (verbose())
-    {
-      Out::println("expecting to read " + Teuchos::toString(nPoints) + " points");
-    }
+  SUNDANCE_OUT(verbosity() > VerbHigh,
+               "expecting to read " << nPoints << " points");
   
 	int dimension = atoi(tokens[1]);
 	int nAttributes = atoi(tokens[2]);
 	int nBdryMarkers = atoi(tokens[3]);
 
   /* now that we know the dimension, we can build the mesh object */
-	Mesh mesh = meshType.createEmptyMesh(dimension);
+	mesh = createMesh(dimension);
 
   /* size point-related arrays */
 	Array<int> ptIndices(nPoints);
-	Array<int> rawIndices(nPoints);
 	Array<bool> usedPoint(nPoints);
-	pointAttributes_.resize(nPoints);
+	nodeAttributes()->resize(nPoints);
 
 	int offset=0;
 	bool first = true;
@@ -242,7 +251,7 @@ void TriangleMeshReader::readNodes(const Array<int>& ptGID,
   /* read all the points */
   for (int count=0; count<nPoints; count++)
     {
-      getNextLine(parStream, line, tokens, '#');
+      getNextLine(*nodeStream, line, tokens, '#');
       
       TEST_FOR_EXCEPTION(tokens.length() 
                          != (1 + dimension + nAttributes + nBdryMarkers),
@@ -262,14 +271,15 @@ void TriangleMeshReader::readNodes(const Array<int>& ptGID,
                              "either 0-offset or 1-offset numbering. Found an "
                              "initial offset of " << offset << " in line \n["
                              << line << "]\n of file " << nodeFilename_);
+          first = false;
         }
       
       /* now we can add the point to the mesh */
-      rawIndices[atoi(tokens[0]) - offset] = count;
 			double x = atof(tokens[1]); 
 			double y = atof(tokens[2]);
       double z = 0.0;
       Point pt;
+      int ptLabel = 0;
 
       if (dimension==3)
 				{
@@ -279,29 +289,32 @@ void TriangleMeshReader::readNodes(const Array<int>& ptGID,
 			else 
 				{
           pt = Point(x,y);
-					ptIndices[count] = mesh.addPoint(Point(x, y), ptOwner[count], ptGID[count]);
 				}
 
       ptIndices[count] 
         = mesh.addVertex(ptGID[count], pt, ptOwner[count], ptLabel);
 
-			pointAttributes_[count].resize(nAttributes);
+      (*nodeAttributes())[count].resize(nAttributes);
 			for (int i=0; i<nAttributes; i++)
 				{
-					pointAttributes_[count][i] = atof(tokens[dimension+1+i]);
+					(*nodeAttributes())[count][i] = atof(tokens[dimension+1+i]);
 				}
 		}
-
+  return mesh;
 }
 
-void TriangleMeshReader::readElems(const Array<int>& elemGID,
-                                   const Array<int>& elemOwner) const 
+void TriangleMeshReader::readElems(Mesh& mesh,
+                                   const Array<int>& ptGID,
+                                   Array<int>& elemGID,
+                                   Array<int>& elemOwner) const 
 {
+  string line;  
+  Array<string> tokens;
 	/* Open the element file */
 	
-	ifstream elemStream = openFile(elemFilename_, "element info");
+	RefCountPtr<ifstream> elemStream = openFile(elemFilename_, "element info");
 
-  getNextLine(parStream, line, tokens, '#');
+  getNextLine(*elemStream, line, tokens, '#');
 
   TEST_FOR_EXCEPTION(tokens.length() != 3, RuntimeError,
                      "TriangleMeshReader::getMesh() requires 3 "
@@ -309,8 +322,8 @@ void TriangleMeshReader::readElems(const Array<int>& elemGID,
                      "the .ele file. Found line \n[" << line
                      << "]\n in file " << elemFilename_);
                    
-  int nElems = elemGID.length();
-
+  int nElems = 0;
+  int offset = 1;
 	if (nProc()==1)
     {
       nElems = atoi(tokens[0]);
@@ -336,20 +349,21 @@ void TriangleMeshReader::readElems(const Array<int>& elemGID,
 
 	int ptsPerElem = atoi(tokens[1]);
 
-  TEST_FOR_EXCEPTION(ptsPerElem != dimension+1, RuntimeError,
+  TEST_FOR_EXCEPTION(ptsPerElem != mesh.spatialDim()+1, RuntimeError,
                      "TriangleMeshReader::readElems() found inconsistency "
                      "between number of points per element=" << ptsPerElem 
-                     << " and dimension=" << dimension << ". Number of pts "
+                     << " and dimension=" << mesh.spatialDim() << ". Number of pts "
                      "per element should be dimension + 1");
 
-	nAttributes = atoi(tokens[2]);
-	cellAttributes_.resize(nElems);
+	int nAttributes = atoi(tokens[2]);
+	elemAttributes()->resize(nElems);
 
-  Array<int> nodes(dimension);
+  int dim = mesh.spatialDim();
+  Array<int> nodes(dim+1);
 
   for (int count=0; count<nElems; count++)
     {
-      getNextLine(parStream, line, tokens, '#');
+      getNextLine(*elemStream, line, tokens, '#');
       
       TEST_FOR_EXCEPTION(tokens.length() 
                          != (1 + ptsPerElem + nAttributes),
@@ -360,17 +374,18 @@ void TriangleMeshReader::readElems(const Array<int>& elemGID,
                          << " entries but found line \n[" << 
                          line << "]\n in file " << elemFilename_);
 
-      for (int d=0; d<dimension; d++)
+      for (int d=0; d<=dim; d++)
         {
-          nodes[d] = ptGID[rawIndices[atoi(tokens[d+1])-offset]]
+          nodes[d] = ptGID[atoi(tokens[d+1])-offset];
         }
-      
+
+      int elemLabel = 0;
       mesh.addElement(elemGID[count], nodes, elemOwner[count], elemLabel);
 			
-			cellAttributes_[count].resize(nAttributes);
+			(*elemAttributes())[count].resize(nAttributes);
 			for (int i=0; i<nAttributes; i++)
 				{
-					cellAttributes_[count][i] = atof(tokens[1+ptsPerElem+i]);
+					(*elemAttributes())[count][i] = atof(tokens[1+ptsPerElem+i]);
 				}
     }
 

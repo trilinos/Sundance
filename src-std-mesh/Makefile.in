@@ -150,7 +150,8 @@ am__objects_3 = SundanceExtrusionMeshTransformation.$(OBJEXT) \
 am__objects_4 = SundanceMeshReaderBase.$(OBJEXT) \
 	SundanceMeshSourceBase.$(OBJEXT) SundanceMeshSource.$(OBJEXT) \
 	SundancePartitionedLineMesher.$(OBJEXT) \
-	SundancePartitionedRectangleMesher.$(OBJEXT)
+	SundancePartitionedRectangleMesher.$(OBJEXT) \
+	SundanceTriangleMeshReader.$(OBJEXT)
 am__objects_5 = SundanceFieldWriter.$(OBJEXT) \
 	SundanceFieldWriterBase.$(OBJEXT) \
 	SundanceTriangleWriter.$(OBJEXT) \
@@ -184,6 +185,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundancePartitionedLineMesher.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundancePartitionedRectangleMesher.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundancePoint.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceTriangleMeshReader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceTriangleWriter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceVTKWriter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceVerboseFieldWriter.Po
@@ -364,14 +366,16 @@ $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundancePartitionedLineMesher.hpp \
-$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.hpp 
+$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.hpp \
+$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.hpp 
 
 SUNDANCE_MESHSOURCES = \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundancePartitionedLineMesher.cpp \
-$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.cpp 
+$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.cpp \
+$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp 
 
 SUNDANCE_MESHTRANSFORMATIONS_H = \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.hpp \
@@ -675,6 +679,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePartitionedLineMesher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePartitionedRectangleMesher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePoint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTriangleMeshReader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTriangleWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceVTKWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceVerboseFieldWriter.Po@am__quote@
@@ -998,6 +1003,22 @@ SundancePartitionedRectangleMesher.obj: $(top_srcdir)/src-std-mesh/Sources/Sunda
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundancePartitionedRectangleMesher.Po' tmpdepfile='$(DEPDIR)/SundancePartitionedRectangleMesher.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundancePartitionedRectangleMesher.obj `if test -f '$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.cpp'; fi`
+
+SundanceTriangleMeshReader.o: $(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTriangleMeshReader.o -MD -MP -MF "$(DEPDIR)/SundanceTriangleMeshReader.Tpo" -c -o SundanceTriangleMeshReader.o `test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTriangleMeshReader.Tpo" "$(DEPDIR)/SundanceTriangleMeshReader.Po"; else rm -f "$(DEPDIR)/SundanceTriangleMeshReader.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp' object='SundanceTriangleMeshReader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceTriangleMeshReader.Po' tmpdepfile='$(DEPDIR)/SundanceTriangleMeshReader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTriangleMeshReader.o `test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp
+
+SundanceTriangleMeshReader.obj: $(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTriangleMeshReader.obj -MD -MP -MF "$(DEPDIR)/SundanceTriangleMeshReader.Tpo" -c -o SundanceTriangleMeshReader.obj `if test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTriangleMeshReader.Tpo" "$(DEPDIR)/SundanceTriangleMeshReader.Po"; else rm -f "$(DEPDIR)/SundanceTriangleMeshReader.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp' object='SundanceTriangleMeshReader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceTriangleMeshReader.Po' tmpdepfile='$(DEPDIR)/SundanceTriangleMeshReader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTriangleMeshReader.obj `if test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.cpp'; fi`
 
 SundanceFieldWriter.o: $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFieldWriter.o -MD -MP -MF "$(DEPDIR)/SundanceFieldWriter.Tpo" -c -o SundanceFieldWriter.o `test -f '$(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.cpp; \

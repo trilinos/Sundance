@@ -11,7 +11,7 @@ namespace SundanceStdMesh
 {
   using namespace TSFExtended;
   using namespace Teuchos;
-using namespace SundanceUtils;
+  using namespace SundanceUtils;
   using namespace Internal;
   /**
    * TriangleMeshReader reads a mesh stored in Shewchuk's Triangle format.
@@ -74,7 +74,7 @@ using namespace SundanceUtils;
 
 
     /** Create a mesh */
-    virtual Mesh getMesh() const ;
+    virtual Mesh fillMesh() const ;
 
     /** Print a short descriptive string */
     virtual string describe() const 
@@ -91,12 +91,14 @@ using namespace SundanceUtils;
                           Array<int>& elemGID, Array<int>& elemOwner) const ;
 
     /** */
-    void readNodes(const Array<int>& ptGID,
-                   const Array<int>& ptOwner) const ;
+    Mesh readNodes(Array<int>& ptGID,
+                   Array<int>& ptOwner) const ;
 
     /** */
-    void readElems(const Array<int>& elemGID,
-                   const Array<int>& elemOwner) const ;
+    void readElems(Mesh& mesh,
+                   const Array<int>& nodeGID,
+                   Array<int>& elemGID,
+                   Array<int>& elemOwner) const ;
     
 
     /** */
