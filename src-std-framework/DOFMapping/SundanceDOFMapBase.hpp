@@ -94,6 +94,8 @@ using namespace SundanceStdMesh::Internal;
       int lowestLocalDOF_;
 
       int numLocalDOFs_;
+
+      Array<Array<int> > dofsHaveBeenAssigned_;
       
     };
   }

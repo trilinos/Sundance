@@ -75,6 +75,10 @@ namespace SundanceStdFwk
       /** */
       void getJacobians(const Array<int>& workSet,
                         CellJacobianBatch& J) const ;
+
+      /** */
+      const RefCountPtr<SparsityPattern>& sparsity() const {return sparsity_;}
+
     private:
       /** */
       int cellDim_;
@@ -99,6 +103,9 @@ namespace SundanceStdFwk
 
       /** */
       mutable RefCountPtr<StdFwkEvalMediator> mediator_;
+
+      /** */
+      RefCountPtr<SparsityPattern> sparsity_;
 
       /** */
       mutable bool needsInit_;

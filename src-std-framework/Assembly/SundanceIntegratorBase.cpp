@@ -32,6 +32,7 @@ IntegratorBase::IntegratorBase(const Mesh& mesh,
     nonzeroDerivs_(nonzeroDerivs),
     rqc_(rqc),
     mediator_(),
+    sparsity_(expr_->sparsity(expr_->getDerivSetIndex(rqc))),
     needsInit_(true)
 {}
 
@@ -48,6 +49,7 @@ void IntegratorBase::integrate(const RefCountPtr<Array<int> >& workSet,
 
   evalMgr_->setMediator(mediator_);
   evalMgr_->setRegion(rqc_);
+  mediator_->setCellBatch(workSet);
   innerIntegrate(workSet, localMat);
 }
 

@@ -325,8 +325,13 @@ void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID, int& nextDOF)
 void HomogeneousDOFMap::getDOFsForCell(int cellDim, int cellLID,
                                        int funcID, Array<int>& dofs) const 
 {
+  SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
+               << " cellLID=" << cellLID << " funcID=" << funcID);
   dofs.resize(totalNNodesPerCell_[cellDim]);
   int nf = funcIDList().size();
+  SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
+               << " total nNodes=" << totalNNodesPerCell_[cellDim]);
+  
   
   /* first get the DOFs for the nodes associated with the cell's interior */
   for (int n=0; n<localNodePtrs_[cellDim][cellDim][0].size(); n++)
@@ -340,19 +345,28 @@ void HomogeneousDOFMap::getDOFsForCell(int cellDim, int cellLID,
     {
       Array<int> facetLID(numFacets_[cellDim][d]);
       mesh().getFacetArray(cellDim, cellLID, d, facetLID);
-      SUNDANCE_OUT(verbosity() > VerbHigh, "d=" << d << " facets are " << facetLID);
+
+      SUNDANCE_OUT(verbosity() > VerbHigh, 
+                   "d=" << d << " facets are " << facetLID);
+      
       for (int f=0; f<facetLID.size(); f++)
         {
+          SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
+                       "dofs for all nodes of this facet are: "
+                       << dofs_[d][facetLID[f]]);
           for (int n=0; n<localNodePtrs_[cellDim][d][f].size(); n++)
             {
               SUNDANCE_OUT(verbosity() > VerbHigh, "n=" << n);
               int ptr = localNodePtrs_[cellDim][d][f][n];
               SUNDANCE_OUT(verbosity() > VerbHigh, "local ptr=" << ptr);
+              SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
+                           << dofs_[d][facetLID[f]][funcID + nf*n]);
               dofs[ptr] = dofs_[d][facetLID[f]][funcID + nf*n];
             }
         }
     }
 }    
+
 
 
 void HomogeneousDOFMap::computeOffsets(int dim, int localCount)

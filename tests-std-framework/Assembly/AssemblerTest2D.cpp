@@ -33,6 +33,10 @@
 #include "SundanceAssembler.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
+#include "SundanceBasicInserter.hpp"
+#include "SundanceBasicIntegrator.hpp"
+#include "TSFVectorType.hpp"
+#include "TSFEpetraVectorType.hpp"
 
 using namespace TSFExtended;
 using namespace Teuchos;
@@ -72,17 +76,19 @@ int main(int argc, void** argv)
                                                          0.0, 1.0, 2, 1,
                                                          meshType);
 
-      Mesh mesh = mesher.getMesh();
+      Mesh mesh = mesher.getMesh(); 
+      FieldWriter w = new VerboseFieldWriter();
+      w.addMesh(mesh);
+      w.write();
 
       Array<int> funcs = tuple(0);
 
-      //verbosity<CellFilter>() = VerbExtreme;
       //verbosity<CellSet>() = VerbExtreme;
 
       CellFilter interior = new MaximalCellFilter();
-      CellFilter points = new DimensionalCellFilter(0);
-      CellPredicate leftPointFunc = new PositionalCellPredicate(leftPointTest);
-      CellFilter leftPoint = points.subset(leftPointFunc);
+      CellFilter edges = new DimensionalCellFilter(1);
+      CellPredicate leftEdgeFunc = new PositionalCellPredicate(leftPointTest);
+      CellFilter leftEdge = edges.subset(leftEdgeFunc);
       
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -95,28 +101,49 @@ int main(int argc, void** argv)
       
 
       QuadratureFamily quad = new GaussianQuadrature(2);
-      Expr eqn = Integral(interior, (dx*v)*(dx*u) + v*y*dy*u + (1.0+x*x)*v, quad);
-      Expr bc = EssentialBC(leftPoint, v*u, quad);
+      Expr eqn = Integral(interior, (dx*v)*(dx*u) + (1.0+x*x)*v, quad);
+      Expr bc = EssentialBC(leftEdge, v*u, quad);
 
       RefCountPtr<EquationSet> eqnSet 
         = rcp(new EquationSet(eqn, bc, v, u, u0, 
                               rcp(new BruteForceEvaluatorFactory())));
 
-     //  verbosity<Assembler>() = VerbExtreme;
-//       //      verbosity<EvalVector>() = VerbExtreme;
-//       // verbosity<QuadratureEvalMediator>() = VerbExtreme;
-//       //verbosity<EvaluatableExpr>() = VerbExtreme;
-//       //verbosity<Evaluator>() = VerbExtreme;
-//       //      EvalVector::shadowOps() = true;
+      EquationSet::classVerbosity() = VerbHigh;
+      HomogeneousDOFMap::classVerbosity() = VerbExtreme;
+      Expr::showAllParens() = true;
 
-//       EquationSet::classVerbosity() = VerbHigh;
-//       Expr::showAllParens() = true;
-//       Assembler assembler(mesh, eqnSet); 
+      RefCountPtr<InserterFactoryBase> inserterFactory
+        = rcp(new GenericInserterFactory<BasicInserter>());
 
-//       assembler.print(cerr);
+      RefCountPtr<IntegratorFactoryBase> integratorFactory
+        = rcp(new GenericIntegratorFactory<BasicIntegrator>());
+
+      VectorType<double> vecType = new EpetraVectorType();
+
+      Assembler assembler(mesh, eqnSet, inserterFactory, 
+                          integratorFactory, vecType); 
+
+      RefCountPtr<DOFMapBase> rowMap = assembler.rowMap();
+      cerr << "DOF Map" << endl;
+      for (int c=0; c<mesh.numCells(0); c++)
+        {
+          Array<int> dofs;
+          rowMap->getDOFsForCell(0, c, 0, dofs);
+          cerr << c << " " << dofs << endl;
+        }
+      cerr << "bc rows " << endl << *(assembler.bcRows()) << endl;
       
+      Array<Set<int> > graph;
+      assembler.getGraph(graph);
 
-//       assembler.assemble();
+      cerr << "graph" << endl;
+      for (int i=0; i<graph.size(); i++) 
+        {
+          cerr << "row=" << i << " " << graph[i] << endl;
+        }
+
+      LinearOperator<double> A;
+      Vector<double> b;
 
     }
 	catch(exception& e)

@@ -174,6 +174,10 @@ void DOFMapBuilder::markBCRows()
       CellFilter region = eqn_->region(r);
       int dim = region.dimension(mesh_);
       CellSet cells = region.getCells(mesh_);
+      
+      cerr << "finding bc rows for cell filter " << region << endl;
+      cerr << "dim is " << dim << endl;
+      cerr << "cells are " << cells << endl;
 
       /* find the functions that appear in BCs on this region */
       const Set<int>& bcFuncs = eqn_->bcTestsOnRegion(r);
@@ -185,7 +189,9 @@ void DOFMapBuilder::markBCRows()
                f != bcFuncs.end(); f++)
             {
               Array<int> dofs;
-              rowMap_->getDOFsForCell(dim, cellLID, *f, dofs);
+              int fid = eqn_->reducedTestID(*f);
+              rowMap_->getDOFsForCell(dim, cellLID, fid, dofs);
+              cerr << "cell=" << cellLID << " dofs=" << dofs << endl;
               for (int i=0; i<dofs.size(); i++) bcRows_->put(dofs[i]);
             }
         }

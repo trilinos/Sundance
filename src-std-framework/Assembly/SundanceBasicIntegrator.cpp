@@ -26,7 +26,25 @@ BasicIntegrator::BasicIntegrator(const Mesh& mesh,
                                  const RegionQuadCombo& rqc,
                                  const RefCountPtr<EvalManager>& evalMgr)
   : IntegratorBase(mesh, expr, nonzeroDerivs, rqc, evalMgr)
-{;}
+{
+//   Set<BasisFamily> basisSet;
+//   Set<MultiIndex> miSet;
+  
+
+//   for (int i=0; i<sparsity()->numDerivs(); i++)
+//     {
+//       const MultipleDeriv& deriv = sparsity()->deriv(i);
+//       WeakForm wf = getWeakForm(deriv, i, sparsity()->isConstant(i));
+//       if (wf.isOneForm())
+//         {
+//           oneForms_.append(wf);
+//         }
+//       else
+//         {
+//           twoForms_.append(wf);
+//         }
+//     }
+}
 
 
 
@@ -41,6 +59,23 @@ void BasicIntegrator
 ::innerIntegrate(const RefCountPtr<Array<int> >& workSet,
                  RefCountPtr<LocalMatrixBatch>& localMat) const
 {
+  // CellJacobianBatch J;
+//   getJacobians(workSet, J);
+//   RefCountPtr<EvalVectorArray> results;
+//   evaluate(results);
+
+//    for (int i=0; i<twoForms_.size(); i++)
+//     {
+//       const WeakForm& wf = twoForms_[i];
+//       if (wf.hasConstantCoeff())
+//         {
+//           constantCoeffTwoFormIntegration(wf, workSet, localMat);
+//         }
+//       else
+//         {
+//           variableCoeffOneFormIntegration(wf, workSet, localMat);
+//         }
+//     }
   
 }
 
@@ -48,3 +83,6 @@ void BasicIntegrator
 void BasicIntegrator::init()
 {
 }
+
+
+                                  
