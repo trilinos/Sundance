@@ -474,32 +474,40 @@ void EvalVector::applyUnaryFunction(const UnaryFunctor* func,
   
   if (isConstant()) 
     {
-      double x = getConstantValue();
-      Array<double> f(funcDerivs.size());
-      func->eval(x, &(f[0]), f.size()-1);
-      for (int i=0; i<f.size(); i++)
+      double xVal = getConstantValue();
+      const double* const x = &xVal;
+      double f;
+      double df;
+      if (funcDerivs.size()==1)
         {
-          funcDerivs[i]->setToConstantValue(f[i]);
+          func->eval(x, 1, &f);
+          funcDerivs[0]->setToConstantValue(f);
+        }
+      else
+        {
+          func->eval(x, 1, &f, &df);
+          funcDerivs[0]->setToConstantValue(f);
+          funcDerivs[1]->setToConstantValue(f);
         }
     }
   else
     {
       const double* const x = start();
-      Array<double> f(funcDerivs.size());
-
-      for (int i=0; i<funcDerivs.size(); i++) 
+      if (funcDerivs.size()==1)
         {
-          funcDerivs[i]->resize(length());
+          funcDerivs[0]->resize(length());
+          double* f = funcDerivs[0]->start();
+          func->eval(x, length(), f);
         }
-
-      for (int i=0; i<length(); i++)
+      else
         {
-          func->eval(x[i], &(f[0]), f.size()-1);
-          for (int j=0; j<funcDerivs.size(); j++) 
-            {
-              funcDerivs[j]->start()[i] = f[j];
-            }
+          funcDerivs[0]->resize(length());
+          funcDerivs[1]->resize(length());
+          double* f = funcDerivs[0]->start();
+          double* df = funcDerivs[1]->start();
+          func->eval(x, length(), f, df);
         }
+      
     }
       
   if (shadowOps())

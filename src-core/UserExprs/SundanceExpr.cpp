@@ -17,6 +17,7 @@
 #include "SundanceStdSumTransformations.hpp"
 #include "SundanceStdProductTransformations.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
+#include "SundanceStdMathOps.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
