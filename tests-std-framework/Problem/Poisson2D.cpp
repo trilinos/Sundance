@@ -24,8 +24,8 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 2*np, np,
-                                                         0.0, 2.0, 2, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 40*np, np,
+                                                         0.0, 2.0, 40, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
