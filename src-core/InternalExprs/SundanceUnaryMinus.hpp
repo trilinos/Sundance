@@ -9,6 +9,8 @@
 #include "SundanceUnaryMinusEvaluator.hpp"
 
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceCore
 {
   using namespace SundanceUtils;
@@ -44,5 +46,9 @@ namespace SundanceCore
         };
     }
 }
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
+
+
 
 #endif

@@ -11,6 +11,9 @@
 #include "SundanceCellType.hpp"
 #include "SundancePoint.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
+
 namespace SundanceStdFwk
 {
   using namespace SundanceUtils;
@@ -66,6 +69,8 @@ namespace SundanceStdFwk
   }
 }
 
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 #endif
 

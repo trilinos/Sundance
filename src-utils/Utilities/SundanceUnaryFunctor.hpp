@@ -10,6 +10,8 @@
 #include "Teuchos_ScalarTraits.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceUtils
 {
   using namespace Teuchos;
@@ -190,5 +192,8 @@ inline void functorName::eval2(const double* const x, \
       }\
 }
 
+
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 #endif

@@ -12,6 +12,8 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceDOFMapBase.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceStdFwk
 {
  using namespace SundanceUtils;
@@ -121,5 +123,9 @@ using namespace SundanceStdMesh::Internal;
     };
   }
 }
+
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
+
 
 #endif

@@ -9,6 +9,8 @@
 #include "SundanceSymbolicFunc.hpp"
 
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 
 namespace SundanceCore
 {
@@ -57,6 +59,10 @@ namespace SundanceCore
     };
   }
 }
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
+
+
 
 
 #endif

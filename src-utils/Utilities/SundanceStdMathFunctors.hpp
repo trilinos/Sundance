@@ -8,6 +8,8 @@
 #include "SundanceExceptions.hpp"
 #include "SundanceUnaryFunctor.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceUtils
 {
   using namespace Teuchos;
@@ -107,5 +109,8 @@ namespace SundanceUtils
 
 
 }
+
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 #endif

@@ -7,6 +7,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceEvaluator.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceCore 
 {
   class CoordExpr;
@@ -45,7 +47,8 @@ namespace SundanceCore
   }
 }
 
-
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 

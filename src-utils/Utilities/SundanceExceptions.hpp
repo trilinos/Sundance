@@ -9,6 +9,9 @@
 #include "Teuchos_TestForException.hpp"
 #include <stdexcept>
 
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 #define SUNDANCE_ERROR(msg) \
 { \
   TestForException_break(); \
@@ -78,6 +81,9 @@ namespace SundanceUtils
       BadSymbolicsError(const string& msg);
     };
 }
+
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 #endif

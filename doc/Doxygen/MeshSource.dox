@@ -20,20 +20,7 @@ object called a MeshSource. MeshSource is an abstract, extensible interface
 for mesh readers and mesh generators. An existing mesh can be transformed
 into another by means of a MeshTransformation object. 
 
-\subsection mesh_type Mesh Types
 
-A simulation developer need not be concerned with mesh types, and can 
-safely skip to the next section. 
-
-The <i> internal </i> mesh representation used by Sundance is designed
-to be flexible and extensible, allowing new mesh technology to be 
-incorporated as it is developed. The choice of mesh representation
-is done by selecting a Mesh sources create meshes through an
-abstract creation interface, so that in principle any mesh type
-can be created by any mesh source.
-Currently, the only mesh representation implemented is
-BasicSimplicialMesh, which can represent meshes comprised of
-lines, triangles, and tetrahedra in 1, 2, and 3 dimensions, respectively.
 
 
 \subsection mesh_par Parallel Meshes
@@ -64,6 +51,20 @@ with extensions for distributed meshes.
 </ul>
 
 
+\section mesh_type Mesh Types
+
+A simulation developer need not be concerned with mesh types, and can 
+safely skip to the next section. 
+
+The <i> internal </i> mesh representation used by Sundance is designed
+to be flexible and extensible, allowing new mesh technology to be 
+incorporated as it is developed. The choice of mesh representation
+is done by selecting a Mesh sources create meshes through an
+abstract creation interface, so that in principle any mesh type
+can be created by any mesh source.
+Currently, the only mesh representation implemented is
+BasicSimplicialMesh, which can represent meshes comprised of
+lines, triangles, and tetrahedra in 1, 2, and 3 dimensions, respectively.
 
 
 

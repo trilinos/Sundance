@@ -48,6 +48,12 @@ DiscreteSpace discSpace(mesh, List(new Lagrange(2), new Lagrange(2), new Lagrang
 
 \section df_ctor Creation of DiscreteFunctions
 
+There are several ways to create DiscreteFunctions. The starting point
+is always the creation of a DiscreteSpace, which is used to configure
+the vector underlying the discrete function. What remains is to initialize
+the values of this vector. The most commonly used initialization
+methods are \ref df_proj and \ref df_const. 
+
 \subsection df_proj Projection of expressions onto discrete spaces
 
 A simple way to render an expression \f$f\f$ onto a discrete space \f$V\f$
@@ -83,7 +89,12 @@ for all of these projections.
 
 \subsection df_read Reading of discrete functions from files
 
+Needs to be written.
+
 \subsection df_create Direct creation of discrete functions
+
+With these methods we explicitly set the values of the vector
+underlying the discrete function.
 
 \subsubsection df_const Initialization to a constant value
 

@@ -48,9 +48,19 @@ namespace SundanceStdMesh
     void getAttributes(RefCountPtr<Array<Array<double> > >& nodeAttributes,
                        RefCountPtr<Array<Array<double> > >& elemAttributes) const ;
 
-    static bool& serializeLocal() {static bool rtn=false; return rtn;}
-
+    /** Return the mesh type to be used by default if no MeshType
+     * is given in a MeshSource subtype ctor. The default mesh type
+     * can be set by including a specifer such as
+     * <pre>
+     * <DefaultMesh type="BasicSimplicial"/>
+     * </pre>
+     * as a child in the XML configuration file. 
+     */
     static MeshType& defaultMeshType() ;
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+    static bool& serializeLocal() {static bool rtn=false; return rtn;}
+#endif
 
   private:
     

@@ -7,6 +7,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceEvaluator.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceCore 
 {
   class CellDiameterExpr;
@@ -41,6 +43,8 @@ namespace SundanceCore
   }
 }
 
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 

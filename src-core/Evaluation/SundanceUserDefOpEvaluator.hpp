@@ -9,6 +9,8 @@
 #include "SundanceEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceCore 
 {
   class UserDefOp;
@@ -80,6 +82,8 @@ namespace SundanceCore
     }; 
   }
 }
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 #endif

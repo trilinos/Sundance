@@ -35,11 +35,11 @@ namespace SundanceStdMesh
    * to be split into files, one for each processor. Data
    * on mesh "joe" for the <i>nnn</i>-th processor will be found in the files
    * <ul>
-   * <li> <tt>joe.node.<tt><i>nnn</i>
-   * <li> <tt>joe.ele.<tt><i>nnn</i>
-   * <li> <tt>joe.par.<tt><i>nnn</i>
+   * <li> <tt>joe.node.</tt><i>nnn</i>
+   * <li> <tt>joe.ele.</tt><i>nnn</i>
+   * <li> <tt>joe.par.</tt><i>nnn</i>
    * </ul>
-   * The <tt>.node.</tt><i>nnn</i> and <tt>.ele.<tt><i>nnn</i> files contain the
+   * The <tt>.node.</tt><i>nnn</i> and <tt>.ele.</tt><i>nnn</i> files contain the
    * node and element data for the part of the mesh seen 
    * by the <i>nnn</i>-th
    * processor. The node and element 

@@ -3,7 +3,7 @@ using SundanceStdFwk::QuadratureFamily;
 
 /*! \mainpage Sundance 
 
-\section intro Introduction
+<H2> Introduction </H2>
 
 Sundance is a library of C++ components with which one can quickly develop 
 high-performance parallel PDE simulators. It is built on top of an engine
@@ -11,30 +11,23 @@ for automatic differentiation of symbolic objects, thereby enabling
 differentiable simulations for use in optimization, uncertainty 
 quantification, and adaptive error control.
 
-\section tutorial Tutorial
+<H2> Tutorial </H2>
 
 A <A HREF="../Tutorial/Tutorial.pdf"> tutorial </A>
 on setting up linear and nonlinear PDE simulations is available in 
 <A HREF="../Tutorial/Tutorial.pdf"> PDF </A> format.
 
-\section FAQ
+<H2> FAQ </H2>
 
 <ul>
 <li> \ref faq_page 
 </ul>
 
-\section components User's Guide
 
-<b>Warning!</b> Only a small fraction of Sundance classes are needed
-by a user writing a simulation code. 
-Clicking on the banner links (i.e. "Class List", "File
-List" etc.)  points to <b> everything </b> and therefore
-can be a bit overwhelming and is not an efficient way to 
-browse what is in Sundance. Instead, it is
-recommended that one use the outline below as a guide to exploring
-Sundance components. 
+<H2> User's Guide </H2>
 
-\subsection prob_definition Components for Simulation Setup
+
+<H4> Components for Simulation Setup </H4>
 <ul> 
 <li> \ref mesh_source are used to create, import, or transform discrete geometry
 <li> \ref cell_filter are used to define subregions (e.g., node sets, side sets)
@@ -42,14 +35,14 @@ Sundance components.
 <li> \ref discretefuncs are used to represent finite-element spaces and fields
 </ul>
 
-\subsection probs Problem Setup
+<H4> Problem Setup </H4>
 
 <ul> 
 <li> Setup of \ref linear_problems
 <li> Setup of \ref nonlinear_problems
 </ul>
 
-\subsection solvers Solvers
+<H4> Solvers </H4>
 
 Sundance does not have its own solvers; rather, it 
 uses the Trilinos family of solvers. These are fully documented at
@@ -62,7 +55,7 @@ parameters.
 <li> \ref nonlinear_solvers 
 </ul>
 
-\subsection output Output and Visualization
+<H4> Output and Visualization </H4>
 
 
 

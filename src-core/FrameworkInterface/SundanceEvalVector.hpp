@@ -11,6 +11,9 @@
 #include "SundanceUnaryFunctor.hpp"
 #include "SundanceNoncopyable.hpp"
 
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace SundanceCore
 {
   using namespace SundanceUtils;
@@ -307,5 +310,8 @@ namespace std
     return os;
   }
 }
+
+                  
+#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 #endif
