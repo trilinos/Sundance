@@ -180,6 +180,7 @@ void BruteForceSumEvaluator::eval(const EvalManager& mgr,
       if (iLeft == -1)
         {
           (*results)[i]->copy((*rightResults)[iRight]);
+          if (expr()->sign()<0 && !(*results)[i]->isZero()) (*results)[i]->unaryMinus();
         }
       else if (iRight == -1)
         {
@@ -188,10 +189,18 @@ void BruteForceSumEvaluator::eval(const EvalManager& mgr,
       else
         {
           (*results)[i]->copy((*leftResults)[iLeft]);
+          if (verbosity() > 1) cerr << endl 
+                                    << tabs << "sign=" 
+                                    << expr()->sign() << endl;
           if (expr()->sign() > 0) 
-            (*results)[i]->addScaled((*rightResults)[iRight], 1.0);
-          else 
-            (*results)[i]->addScaled((*rightResults)[iRight], -1.0);
+            {
+
+              (*results)[i]->addScaled((*rightResults)[iRight], 1.0);
+            }
+          else
+            { 
+              (*results)[i]->addScaled((*rightResults)[iRight], -1.0);
+            }
         }
     }
 

@@ -1,7 +1,10 @@
 #include "Sundance.hpp"
+#include "SundanceEvaluator.hpp"
+
+using namespace SundanceCore::Internal;
 
 /** 
- * Solves the Poisson equation in 1D
+ * Solves the Helmholtz equation in 1D
  */
 
 bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
@@ -20,7 +23,9 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
+      const double pi = 4.0*atan(1.0);
+      MeshSource mesher = new PartitionedLineMesher(0.0, pi/4.0, 
+                                                    10*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -45,9 +50,13 @@ int main(int argc, void** argv)
 
       
       /* Define the weak form */
-      Expr eqn = Integral(interior, -(dx*v)*(dx*u) - 2.0*v, quad);
+      Expr eqn = Integral(interior, (dx*v)*(dx*u) - v*u, quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*u, quad);
+      Expr bc = EssentialBC(leftPoint, v*(u-cos(x)), quad);
+
+      Assembler::classVerbosity() = VerbExtreme;
+      Evaluator::classVerbosity() = VerbExtreme;
+      EvalVector::classVerbosity() = VerbExtreme;
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
@@ -60,41 +69,32 @@ int main(int argc, void** argv)
       azOptions[AZ_precond] = AZ_dom_decomp;
       azOptions[AZ_subdomain_solve] = AZ_ilu;
       azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
+      azOptions[AZ_max_iter] = 100;
       azParams[AZ_tol] = 1.0e-13;
       
       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
+
+
       Expr soln = prob.solve(solver);
 
-      const DiscreteFunction* df = dynamic_cast<DiscreteFunction*>(soln.ptr().get());
-      TEST_FOR_EXCEPTION(df==0, RuntimeError,
-                         "solution is not a discrete function");
-      Vector<double> solnVec = df->vector();
-      cerr << "solution vector = " << endl;
-      solnVec.print(cerr);
- 
-      Expr exactSoln = x*(x-2.0);
+      /* Write the field in Matlab format */
+      FieldWriter w = new MatlabWriter("Helmholtz1d.dat");
+      w.addMesh(mesh);
+      w.addField("u", new ExprFieldWrapper(soln[0]));
+      w.write();
+
+      Expr exactSoln = cos(x) + sin(x);
 
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
                               err*err,
                               new GaussianQuadrature(6));
 
-      Expr derivErr = dx*(exactSoln-soln);
-      Expr derivErrExpr = Integral(interior, 
-                                   derivErr*derivErr, 
-                                   new GaussianQuadrature(4));
-
       FunctionalEvaluator errInt(mesh, errExpr);
-      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
-
-      double derivErrorSq = derivErrInt.evaluate();
-      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
-
     }
 	catch(exception& e)
 		{

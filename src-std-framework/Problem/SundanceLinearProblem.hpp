@@ -56,7 +56,10 @@ namespace SundanceStdFwk
     /** */
     const RefCountPtr<DOFMapBase>& colMap() const 
     {return assembler_->colMap();}
-
+    
+    /** */
+    const RefCountPtr<Set<int> >& bcRows() const 
+    {return assembler_->bcRows();}
 
 
   private:

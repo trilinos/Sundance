@@ -23,8 +23,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 16;
-      int ny = 16;
+      int nx = 64;
+      int ny = 64;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, nx*np, np,
                                                          -1.0, 1.0, ny, 1,
@@ -78,17 +78,16 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      double beta = 0.1;
+      double beta = 0.02;
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
-                          + (grad*vy)*(grad*uy) - p*(dx*vx+dy*vy)
+                          + (grad*vy)*(grad*uy)  - p*(dx*vx+dy*vy)
                           + (h*h*beta)*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
                           quad2);
         
       /* Define the Dirichlet BC */
       Expr uInflow = 0.5*(1.0-y*y);
-      Expr bc = EssentialBC(left, vx*ux + vy*uy, quad2)
-        + EssentialBC(right, vx*ux + vy*uy, quad2)
-        + EssentialBC(top, vx*(ux-y) + vy*uy, quad2)
+      Expr bc = EssentialBC(left, vx*(ux-uInflow) + vy*uy, quad2)
+        + EssentialBC(top, vx*ux + vy*uy, quad2)
         + EssentialBC(bottom, vx*ux + vy*uy, quad2);
 
 
@@ -96,7 +95,7 @@ int main(int argc, void** argv)
 
       Assembler::workSetSize() = 100;
       FunctionalEvaluator::workSetSize() = 100;
-      //      Assembler::classVerbosity() = VerbExtreme;
+      //   Assembler::classVerbosity() = VerbExtreme;
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
@@ -120,10 +119,9 @@ int main(int argc, void** argv)
       solverParams.set("Type", "TSF");
       solverParams.set("Method", "BICGSTAB");
       solverParams.set("Max Iterations", 5000);
-      solverParams.set("Restart", 100);
       solverParams.set("Tolerance", 1.0e-12);
       solverParams.set("Precond", "ILUK");
-      solverParams.set("Graph Fill", 3);
+      solverParams.set("Graph Fill", 2);
       solverParams.set("Verbosity", 4);
 
       params.set("Linear Solver", solverParams);
@@ -133,6 +131,27 @@ int main(int argc, void** argv)
         = LinearSolverBuilder::createSolver(params);
 
       Expr soln = prob.solve(solver);
+
+      Expr exactUx = uInflow;
+      Expr exactUy = 0.0;
+      Expr errX = exactUx - soln[0];
+      Expr errY = exactUy - soln[1];
+
+      Expr errXExpr = Integral(interior, 
+                              errX*errX,
+                              new GaussianQuadrature(6));
+
+      Expr errYExpr = Integral(interior, 
+                              errY*errY,
+                              new GaussianQuadrature(6));
+
+      FunctionalEvaluator errXInt(mesh, errXExpr);
+      FunctionalEvaluator errYInt(mesh, errYExpr);
+
+      double errorXSq = errXInt.evaluate();
+      double errorYSq = errYInt.evaluate();
+      cerr << "error norm |u_x - u_x(0)| = " << sqrt(errorXSq) << endl << endl;
+      cerr << "error norm |u_y - u_y(0)| = " << sqrt(errorYSq) << endl << endl;
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Stokes2d");
