@@ -5,11 +5,10 @@
  * Solves the Stokes equation in 2D
  */
 
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
-bool bottomPointTest(const Point& x) {return fabs(x[1]) < 1.0e-10;}
-bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
-bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-10;}
-bool cornerPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10 &&fabs(x[1]-0.5) < 1.0e-10  ;}
+bool leftPointTest(const Point& x) {return fabs(x[0]+1.0) < 1.0e-4;}
+bool bottomPointTest(const Point& x) {return fabs(x[1]+1.0) < 1.0e-4;}
+bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-4;}
+bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-4;}
 
 int main(int argc, void** argv)
 {
@@ -24,18 +23,18 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 10;
-      int ny = 10;
+      int nx = 16;
+      int ny = 16;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
-                                                         0.0, 1.0, ny, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, nx*np, np,
+                                                         -1.0, 1.0, ny, 1,
                                                          meshType);
 
 
 
 
       Mesh mesh = mesher.getMesh();
-      double h = 1.0/((double) ny);
+      double h = 2.0/((double) ny);
 
 //       FieldWriter wMesh = new VerboseFieldWriter();
 //       wMesh.addMesh(mesh);
@@ -50,12 +49,12 @@ int main(int argc, void** argv)
       CellPredicate rightPointFunc = new PositionalCellPredicate(rightPointTest);
       CellPredicate topPointFunc = new PositionalCellPredicate(topPointTest);
       CellPredicate bottomPointFunc = new PositionalCellPredicate(bottomPointTest);
-      CellPredicate cornerPointFunc = new PositionalCellPredicate(cornerPointTest);
+
       CellFilter left = edges.subset(leftPointFunc);
       CellFilter right = edges.subset(rightPointFunc);
       CellFilter top = edges.subset(topPointFunc);
       CellFilter bottom = edges.subset(bottomPointFunc);
-      CellFilter corner = points.subset(cornerPointFunc);
+
 
       
       /* Create unknown and test functions, discretized using first-order
@@ -79,18 +78,18 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      double beta = 1.0;
+      double beta = 0.1;
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           + (grad*vy)*(grad*uy) - p*(dx*vx+dy*vy)
-                          - (h*h*beta)*(grad*q)*(grad*p) - q*(dx*ux+dy*uy),
+                          + (h*h*beta)*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
                           quad2);
         
       /* Define the Dirichlet BC */
       Expr uInflow = 0.5*(1.0-y*y);
-      Expr bc =  EssentialBC(left, vx*(ux-uInflow) + vy*uy , quad4)
-                   + EssentialBC(top, vx*ux + vy*uy, quad2)
-        + EssentialBC(bottom, vx*ux + vy*uy, quad2)
-        + EssentialBC(corner, q*(p-x), quad2);
+      Expr bc = EssentialBC(left, vx*ux + vy*uy, quad2)
+        + EssentialBC(right, vx*ux + vy*uy, quad2)
+        + EssentialBC(top, vx*(ux-y) + vy*uy, quad2)
+        + EssentialBC(bottom, vx*ux + vy*uy, quad2);
 
 
    
@@ -103,27 +102,35 @@ int main(int argc, void** argv)
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
                          List(ux, uy, p), vecType);
 
+      LinearOperator<double> A = prob.getOperator();
+      ofstream ms("matrix.dat");
+      A.print(ms);
+      ofstream vs("vector.dat");
+      Vector<double> b = prob.getRHS();
+      b.print(vs);
+      ofstream maps("map.dat");
+      prob.rowMap()->print(maps);
 
-//       ParameterList solverParams;
+      FieldWriter w1 = new VerboseFieldWriter("mesh.dat");
+      w1.addMesh(mesh);
+      w1.write();
 
-//       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-//       solverParams.set(IterativeSolver<double>::maxitersParam(), 5000);
-//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-10);
+      ParameterList params;
+      ParameterList solverParams;
+      solverParams.set("Type", "TSF");
+      solverParams.set("Method", "BICGSTAB");
+      solverParams.set("Max Iterations", 5000);
+      solverParams.set("Restart", 100);
+      solverParams.set("Tolerance", 1.0e-12);
+      solverParams.set("Precond", "ILUK");
+      solverParams.set("Graph Fill", 3);
+      solverParams.set("Verbosity", 4);
 
-//       LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
+      params.set("Linear Solver", solverParams);
 
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-6;
-
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(params);
 
       Expr soln = prob.solve(solver);
 
@@ -135,15 +142,7 @@ int main(int argc, void** argv)
       w.addField("p", new ExprFieldWrapper(soln[2]));
       w.write();
 
-      Expr uxErr = soln[0] - uInflow;
-      Expr errExpr = Integral(interior, 
-                              uxErr*uxErr,
-                              new GaussianQuadrature(4));
 
-      FunctionalEvaluator errInt(mesh, errExpr);
-
-      double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
     }
 	catch(exception& e)
 		{

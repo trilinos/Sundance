@@ -49,6 +49,15 @@ namespace SundanceStdFwk
     /** */
     LinearOperator<double> getOperator() const ;
 
+    /** */
+    const RefCountPtr<DOFMapBase>& rowMap() const 
+    {return assembler_->rowMap();}
+    
+    /** */
+    const RefCountPtr<DOFMapBase>& colMap() const 
+    {return assembler_->colMap();}
+
+
 
   private:
       

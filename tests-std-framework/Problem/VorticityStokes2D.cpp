@@ -27,8 +27,8 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 32*np, np,
-                                                         0.0, 1.0, 32, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 64*np, np,
+                                                         0.0, 1.0, 64, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -89,19 +89,21 @@ int main(int argc, void** argv)
       LinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega), 
                          List(psi, omega), vecType);
 
-      // /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
+      ParameterList params;
+      ParameterList solverParams;
+      solverParams.set("Type", "TSF");
+      solverParams.set("Method", "BICGSTAB");
+      solverParams.set("Max Iterations", 200);
+      solverParams.set("Tolerance", 1.0e-12);
+      solverParams.set("Precond", "ILUK");
+      solverParams.set("Graph Fill", 1);
+      solverParams.set("Verbosity", 4);
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_ls;
-      azOptions[AZ_poly_ord] = 4;
-      //      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      //azOptions[AZ_graph_fill] = 2;
-      azOptions[AZ_max_iter] = 10000;
-      azParams[AZ_tol] = 1.0e-12;
+      params.set("Linear Solver", solverParams);
 
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(params);
 
     
 

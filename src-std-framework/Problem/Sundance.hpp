@@ -68,6 +68,7 @@
 #include "TSFAztecSolver.hpp"
 #include "TSFLinearSolver.hpp"
 #include "TSFLinearCombination.hpp"
+#include "TSFLinearSolverBuilder.hpp"
 
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
