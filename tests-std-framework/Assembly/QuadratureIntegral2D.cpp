@@ -22,6 +22,7 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
+#include "SundanceFIATLagrange.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceSymbPreprocessor.hpp"
@@ -77,9 +78,9 @@ int main(int argc, void** argv)
 
       CellType cellType = TriangleCell;
 
-      Point a = Point(2.0, 0.0);
-      Point b = Point(2.5, 0.2);
-      Point c = Point(1.0, 1.0);
+      Point a = Point(0.0, 0.0);
+      Point b = Point(1.0, 0.0);
+      Point c = Point(0.0, 1.0);
       CellJacobianBatch JBatch;
       JBatch.resize(1, 2, 2);
       double* J = JBatch.jVals(0);
@@ -110,9 +111,9 @@ int main(int argc, void** argv)
       cerr << endl << endl 
            << "---------------- One-forms --------------------" 
            << endl << endl;
-      for (int p=0; p<=pMax; p++)
+      for (int p=1; p<=pMax; p++)
         {
-          BasisFamily P = new Lagrange(p);
+          BasisFamily P = new FIATLagrange(p);
           for (int dp=0; dp<=1; dp++)
             {
               if (dp > p) continue;
@@ -141,12 +142,12 @@ int main(int argc, void** argv)
       cerr << endl << endl 
            << "---------------- Two-forms --------------------" 
            << endl << endl;
-      for (int p=0; p<=pMax; p++)
+      for (int p=1; p<=pMax; p++)
         {
-          BasisFamily P = new Lagrange(p);
-          for (int q=0; q<=pMax; q++)
+          BasisFamily P = new FIATLagrange(p);
+          for (int q=1; q<=pMax; q++)
             {
-              BasisFamily Q = new Lagrange(q);
+              BasisFamily Q = new FIATLagrange(q);
               for (int dp=0; dp<=1; dp++)
                 {
                   if (dp > p) continue;

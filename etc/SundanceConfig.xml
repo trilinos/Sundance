@@ -11,15 +11,15 @@
 
 <!-- Verbosity settings -->
 
-<Verbosity context="Assembly" value="Extreme"/>
+<Verbosity context="Assembly" value="Silent"/>
 
-<Verbosity context="Evaluation" value="Silnet"/>
+<Verbosity context="Evaluation" value="Silent"/>
 
 <Verbosity context="Quadrature" value="Silent"/>
 
 <Verbosity context="Reference Integration" value="Silent"/>
 
-<Verbosity context="DOF Mapping" value="Extreme"/>
+<Verbosity context="DOF Mapping" value="Silent"/>
 
 <Verbosity context="Integral Grouping" value="Silent"/>
 

@@ -223,6 +223,11 @@ void DOFMapBuilder::markBCRows()
 
       rowMap_->getDOFsForCellBatch(dim, cellLID, bcFuncID, dofs, nTestNodes);
       int offset = rowMap_->lowestLocalDOF();
-      for (int n=0; n<dofs.size(); n++) (*isBCRow_)[dofs[n]-offset]=true;
+      int high = offset + rowMap_->numLocalDOFs();
+      for (int n=0; n<dofs.size(); n++) 
+        {
+          if (dofs[n] < offset || dofs[n] >= high) continue;
+          (*isBCRow_)[dofs[n]-offset]=true;
+        }
     }
 }

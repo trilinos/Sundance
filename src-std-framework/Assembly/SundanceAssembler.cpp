@@ -628,6 +628,8 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
 
   int highestIndex = lowestRow_ + rowMap_->numLocalDOFs();
 
+  int lowestLocalRow = rowMap_->lowestLocalDOF();
+
   if (verbosity() > VerbHigh)
     {
       cerr << "isBC " << isBCRqc << endl;
@@ -648,8 +650,9 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
               for (int r=0; r<rowsPerFunc; r++)
                 {
                   int row = testIndices[r+testID[t]*rowsPerFunc];
+                  int localRowIndex = row - lowestLocalRow;
                   skipRow[r] = row < lowestRow_ || row >= highestIndex
-                    || !(*isBCRow_)[row];
+                    || !(*isBCRow_)[localRowIndex];
                 }
             }
           else
@@ -657,8 +660,9 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
               for (int r=0; r<rowsPerFunc; r++)
                 {
                   int row = testIndices[r+testID[t]*rowsPerFunc];
+                  int localRowIndex = row - lowestLocalRow;
                   skipRow[r] = row < lowestRow_ || row >= highestIndex
-                    || (*isBCRow_)[row];
+                    || (*isBCRow_)[localRowIndex];
                 }
             }
      
@@ -713,13 +717,16 @@ void Assembler::insertLocalVectorBatch(int cellDim,
                tab << "Assembler: values are " << localValues);
   int rowsPerFunc = nTestNodes*workSet.size();
 
+  int lowestLocalRow = rowMap_->lowestLocalDOF();
+
   for (int i=0; i<testID.size(); i++)
     {
       for (int r=0; r<rowsPerFunc; r++)
         {
           int rowIndex = testIndices[r + testID[i]*rowsPerFunc];
-          if (isBCRqc!=(*isBCRow_)[rowIndex] 
-              || !(rowMap_->isLocalDOF(rowIndex))) continue;
+          int localRowIndex = rowIndex - lowestLocalRow;
+          if (!(rowMap_->isLocalDOF(rowIndex))
+              || isBCRqc!=(*isBCRow_)[localRowIndex]) continue;
           {
             vec->addToElement(rowIndex, localValues[r]);
           }
@@ -751,6 +758,8 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
   SUNDANCE_OUT(verbosity() > VerbLow, tab << "Creating graph: there are " << rowMap()->numLocalDOFs()
                << " local equations");
 
+
+  int lowestLocalRow = rowMap_->lowestLocalDOF();
   graph.resize(rowMap()->numLocalDOFs());
 
   for (int d=0; d<eqn_->numRegions(); d++)
@@ -881,7 +890,7 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
                                 = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
                                 //                                = (*testLocalDOFs)[nTestNodes*(c+nCells*t)+n];
                               if (row < lowestRow_ || row >= highestRow
-                                  || (*isBCRow_)[row]) continue;
+                                  || (*isBCRow_)[row-lowestRow_]) continue;
                               ColSetType& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
@@ -912,7 +921,7 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
                               int row
                                 = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
                               if (row < lowestRow_ || row >= highestRow
-                                  || !(*isBCRow_)[row]) continue;
+                                  || !(*isBCRow_)[row-lowestRow_]) continue;
                               ColSetType& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
