@@ -40,6 +40,9 @@ namespace SundanceStdFwk
       /** return the spatial dimension of the basis elements */
       int dim() const ;
 
+      /** return the number of nodes for this basis on the given cell type */
+      int nNodes(const CellType& cellType) const ;
+
       /** */
       bool operator==(const BasisFamily& other) const ;
 

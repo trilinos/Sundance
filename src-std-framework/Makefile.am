@@ -100,6 +100,7 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorFactoryBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.hpp 
 
 SUNDANCE_ASSEMBLY = \
@@ -109,7 +110,8 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceBasicIntegrator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceInserterBase.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorBase.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp 
+$(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp 
 
 
 

@@ -58,7 +58,10 @@ using namespace SundanceUtils;
           CellJacobianBatch();
 
           /** get the spatial dimension */
-          int dim() const {return dim_;}
+          int spatialDim() const {return spatialDim_;}
+
+          /** get the cell dimension */
+          int cellDim() const {return cellDim_;}
 
           /** get the number of cells in the batch */
           int numCells() const {return numCells_;}
@@ -67,11 +70,11 @@ using namespace SundanceUtils;
           int numQuadPoints() const {return numQuad_;}
 
           /** resize the batch */
-          void resize(int numCells, int numQuad, int dim);
+          void resize(int numCells, int numQuad, int spatialDim, int cellDim);
 
           /** resize the batch, using one quadrature point per cell 
            * (appropriate for affine elements) */
-          void resize(int numCells, int dim);
+          void resize(int numCells, int spatialDim, int cellDim);
 
           /** Get a pointer to the values at the q-th quadrature 
            * point on the c-th cell.
@@ -85,6 +88,10 @@ using namespace SundanceUtils;
            */
           double* jVals(int c)
           {return &(J_[c*jSize_]);}
+
+          /** */
+          double* detJ(int c)
+          {return &(detJ_[c]);}
 
           /** get the vector of determinant values */
           const Array<double>& detJ() const {return detJ_;}
@@ -116,6 +123,8 @@ using namespace SundanceUtils;
            */
           void getInvJ(int cell, Array<double>& invJ) const 
           {getInvJ(cell, 0, invJ);}
+
+          
           
         private:
 
@@ -123,7 +132,8 @@ using namespace SundanceUtils;
 
           void computeInverses() const ;
 
-          int dim_;
+          int spatialDim_;
+          int cellDim_;
           int jSize_;
           int numCells_;
           int numQuad_;

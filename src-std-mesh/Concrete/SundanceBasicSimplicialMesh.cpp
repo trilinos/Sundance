@@ -65,80 +65,126 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
 void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
                                        CellJacobianBatch& jBatch) const
 {
-  jBatch.resize(cellLID.size(), cellDim);
+
   
   TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
                      "cellDim=" << cellDim 
                      << " is not in expected range [0, " << spatialDim()
                      << "]");
 
-  Array<double> J(cellDim*cellDim);
+  jBatch.resize(cellLID.size(), spatialDim(), cellDim);
+
+  if (cellDim < spatialDim())
+    {
+      for (int i=0; i<cellLID.size(); i++)
+        {
+          int lid = cellLID[i];
+          double* detJ = jBatch.detJ(i);
+          switch(cellDim)
+            {
+            case 0:
+              *detJ = 1.0;
+              break;
+            case 1:
+              {
+                int a = edgeVerts_.value(lid, 0);
+                int b = edgeVerts_.value(lid, 1);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                Point dx = pb-pa;
+                *detJ = sqrt(dx*dx);
+              }
+              break;
+            case 2:
+              {
+                int a = faceVerts_.value(lid, 0);
+                int b = faceVerts_.value(lid, 1);
+                int c = faceVerts_.value(lid, 2);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                const Point& pc = points_[c];
+                Point directedArea = cross(pc-pa, pb-pa);
+                *detJ = sqrt(directedArea*directedArea);
+              }
+              break;
+            default:
+              TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+                                 "cellDim=" << cellDim 
+                                 << " in BasicSimplicialMesh::getJacobians()");
+            }
+        }
+    }
+  else
+    {
+      Array<double> J(cellDim*cellDim);
   
 
-  for (int i=0; i<cellLID.size(); i++)
-    {
-      int lid = cellLID[i];
-      double* J = jBatch.jVals(i);
-      switch(cellDim)
+      for (int i=0; i<cellLID.size(); i++)
         {
-        case 0:
-          J[0] = 1.0;
-          break;
-        case 1:
-          {
-            int a = elemVerts_.value(lid, 0);
-            int b = elemVerts_.value(lid, 1);
-            const Point& pa = points_[a];
-            const Point& pb = points_[b];
-            J[0] = fabs(pa[0]-pb[0]);
-          }
-          break;
-        case 2:
-          {
-            int a = elemVerts_.value(lid, 0);
-            int b = elemVerts_.value(lid, 1);
-            int c = elemVerts_.value(lid, 2);
-            const Point& pa = points_[a];
-            const Point& pb = points_[b];
-            const Point& pc = points_[c];
-            J[0] = pb[0] - pa[0];
-            J[1] = pc[0] - pa[0];
-            J[2] = pb[1] - pa[1];
-            J[3] = pc[1] - pa[1];
+          int lid = cellLID[i];
+          double* J = jBatch.jVals(i);
+          switch(cellDim)
+            {
+            case 0:
+              J[0] = 1.0;
+              break;
+            case 1:
+              {
+                int a = elemVerts_.value(lid, 0);
+                int b = elemVerts_.value(lid, 1);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                J[0] = fabs(pa[0]-pb[0]);
+              }
+              break;
+            case 2:
+              {
+                int a = elemVerts_.value(lid, 0);
+                int b = elemVerts_.value(lid, 1);
+                int c = elemVerts_.value(lid, 2);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                const Point& pc = points_[c];
+                J[0] = pb[0] - pa[0];
+                J[1] = pc[0] - pa[0];
+                J[2] = pb[1] - pa[1];
+                J[3] = pc[1] - pa[1];
             
-          }
-          break;
-        case 3:
-          {
-            int a = elemVerts_.value(lid, 0);
-            int b = elemVerts_.value(lid, 1);
-            int c = elemVerts_.value(lid, 2);
-            int d = elemVerts_.value(lid, 3);
-            const Point& pa = points_[a];
-            const Point& pb = points_[b];
-            const Point& pc = points_[c];
-            const Point& pd = points_[d];
-            J[0] = pb[0] - pa[0];
-            J[1] = pc[0] - pa[0];
-            J[2] = pd[0] - pa[0];
-            J[3] = pb[1] - pa[1];
-            J[4] = pc[1] - pa[1];
-            J[5] = pd[1] - pa[1];
-            J[6] = pb[2] - pa[2];
-            J[7] = pc[2] - pa[2];
-            J[8] = pd[2] - pa[2];
-          }
-          break;
-        default:
-          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
-                             "in BasicSimplicialMesh::getJacobians()");
+              }
+              break;
+            case 3:
+              {
+                int a = elemVerts_.value(lid, 0);
+                int b = elemVerts_.value(lid, 1);
+                int c = elemVerts_.value(lid, 2);
+                int d = elemVerts_.value(lid, 3);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                const Point& pc = points_[c];
+                const Point& pd = points_[d];
+                J[0] = pb[0] - pa[0];
+                J[1] = pc[0] - pa[0];
+                J[2] = pd[0] - pa[0];
+                J[3] = pb[1] - pa[1];
+                J[4] = pc[1] - pa[1];
+                J[5] = pd[1] - pa[1];
+                J[6] = pb[2] - pa[2];
+                J[7] = pc[2] - pa[2];
+                J[8] = pd[2] - pa[2];
+              }
+              break;
+            default:
+              TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+                                 "cellDim=" << cellDim 
+                                 << " in BasicSimplicialMesh::getJacobians()");
+            }
         }
     }
 }
 
 void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
-                               const Array<Point>& refQuadPts,
-                               Array<Point>& physQuadPts) const
+                                      const Array<Point>& refQuadPts,
+                                      Array<Point>& physQuadPts) const
 {
   TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
                      "cellDim=" << cellDim 
@@ -388,13 +434,13 @@ CellType BasicSimplicialMesh::cellType(int cellDim) const
 }
 
 int BasicSimplicialMesh::label(int cellDim, 
-                                  int cellLID) const
+                               int cellLID) const
 {
   return labels_[cellDim][cellLID];
 }
 
 int BasicSimplicialMesh::addVertex(int globalIndex, const Point& x,
-                              int ownerProcID, int label)
+                                   int ownerProcID, int label)
 {
 
   SUNDANCE_OUT(verbosity() > VerbLow,

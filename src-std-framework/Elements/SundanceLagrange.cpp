@@ -4,6 +4,7 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -19,6 +20,53 @@ XMLObject Lagrange::toXML() const
   XMLObject rtn("Lagrange");
   rtn.addAttribute("order", Teuchos::toString(order()));
   return rtn;
+}
+
+int Lagrange::nNodes(const CellType& cellType) const
+{
+  switch(cellType)
+    {
+    case PointCell:
+      return 1;
+    case LineCell:
+      return 1 + order_;
+    case TriangleCell:
+      {
+        switch(order_)
+          {
+          case 0:
+            return 1;
+          case 1:
+            return 3;
+          case 2:
+            return 6;
+          default:
+            TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
+                               << " not implemented in Lagrange basis");
+            return -1; // -Wall
+          }
+      }
+    case TetCell:
+      {switch(order_)
+          {
+          case 0:
+            return 1;
+          case 1:
+            return 4;
+          case 2:
+            return 10;
+          default:
+            TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
+                               << " not implemented in Lagrange basis");
+            return -1; // -Wall
+          }
+
+      }
+    default:
+      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+                         << cellType << " not implemented in Lagrange basis");
+      return -1; // -Wall
+    }
 }
 
 void Lagrange::getLocalDOFs(const CellType& cellType,
@@ -158,7 +206,9 @@ void Lagrange::evalOnTriangle(const Point& pt,
 	ADReal one(1.0, 2);
 
   Array<ADReal> tmp;
-  
+
+  SUNDANCE_OUT(verbosity() > VerbHigh, "x=" << x.value() << " y="
+               << y.value());
 
 	switch(order_)
 		{
@@ -190,9 +240,12 @@ void Lagrange::evalOnTriangle(const Point& pt,
 
 	for (int i=0; i<tmp.length(); i++)
 		{
+      SUNDANCE_OUT(verbosity() > VerbHigh,
+                   "tmp[" << i << "]=" << tmp[i].value() 
+                   << " grad=" << tmp[i].gradient());
 			if (deriv.order()==0) result[i] = tmp[i].value();
 			else 
-				result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+          result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
 		}
 }
 

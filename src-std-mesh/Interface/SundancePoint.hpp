@@ -75,11 +75,15 @@ namespace SundanceStdMesh
 namespace std
 {
   ostream& operator<<(ostream& os, const SundanceStdMesh::Point& p);
+
 }
 
 namespace SundanceStdMesh
 {
   inline Point operator*(const double& a, const Point& p);
+
+  inline Point cross(const Point& x, const Point& y);
+
 
 
   inline Point::Point()
@@ -239,6 +243,13 @@ namespace SundanceStdMesh
     {
       return p.operator*(a);
     }
+
+  inline Point cross(const Point& a, const Point& b)
+  {
+    return Point( a[1]*b[2] - b[1]*a[2], 
+                  -a[0]*b[2] + a[2]*b[0],
+                  a[0]*b[1] - a[1]*b[0]);
+  }
 
   inline string Point::toString() const
     {

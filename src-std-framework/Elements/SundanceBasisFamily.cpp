@@ -44,6 +44,11 @@ int BasisFamily::size(const Array<BasisFamily>& b)
   return rtn;
 }
 
+int BasisFamily::nNodes(const CellType& cellType) const 
+{
+  return ptr()->nNodes(cellType);
+}
+
 BasisFamily BasisFamily::getBasis(const Expr& expr)
 {
   TEST_FOR_EXCEPTION(expr.size() > 1, RuntimeError, "non-scalar expression in BasisFamily::getBasis()");

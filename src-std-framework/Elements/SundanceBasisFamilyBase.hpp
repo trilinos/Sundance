@@ -10,6 +10,7 @@
 #include "SundanceMultiIndex.hpp"
 #include "TSFHandleable.hpp"
 #include "TSFPrintable.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -30,7 +31,8 @@ namespace SundanceStdFwk
      * 
      */
     class BasisFamilyBase : public Handleable<BasisFamilyBase>,
-                            public TSFExtended::Printable
+                            public TSFExtended::Printable,
+                            public TSFExtended::ObjectWithVerbosity<BasisFamilyBase>
     {
     public:
       /** */
@@ -90,6 +92,10 @@ namespace SundanceStdFwk
        */
       virtual void getLocalDOFs(const CellType& cellType,
                                 Array<Array<Array<int> > >& dofs) const = 0 ;
+
+      /** Return the number of nodes associated with this basis on 
+       * the given cell type */
+      virtual int nNodes(const CellType& cellType) const = 0 ;
 
       /** 
        * Evaluate the basis function on an array of points on the 

@@ -30,14 +30,21 @@ namespace SundanceStdFwk
       /** Create an ADReal object that varies linearly with
        * one coordinate direction  */
       ADReal(double value, int direction, int spatialDimension)
-        : value_(value), gradient_(spatialDimension, 0.0)
+        : value_(value), gradient_()
       {
+        if (spatialDimension==1) gradient_ = Point(0.0);
+        if (spatialDimension==2) gradient_ = Point(0.0, 0.0);
+        if (spatialDimension==3) gradient_ = Point(0.0, 0.0, 0.0);
         gradient_[direction] = 1.0;
       }
       /** Create a constant-valued ADReal object in a multidimensional space */
       ADReal(double value, int spatialDimension)
-        : value_(value), gradient_(spatialDimension, 0.0)
-      {;}
+        : value_(value), gradient_()
+      {
+        if (spatialDimension==1) gradient_ = Point(0.0);
+        if (spatialDimension==2) gradient_ = Point(0.0, 0.0);
+        if (spatialDimension==3) gradient_ = Point(0.0, 0.0, 0.0);
+      }
 
       /** unary minus */
       ADReal operator-() const ;
