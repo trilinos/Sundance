@@ -147,6 +147,7 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
                      << "]");
 
   int nQuad = refQuadPts.size();
+  Array<double> J(cellDim*cellDim);
 
   physQuadPts.reserve(cellLID.size() * refQuadPts.size());
 
@@ -179,6 +180,17 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
             const Point& pa = points_[a];
             const Point& pb = points_[b];
             const Point& pc = points_[c];
+            J[0] = pb[0] - pa[0];
+            J[1] = pc[0] - pa[0];
+            J[2] = pb[1] - pa[1];
+            J[3] = pc[1] - pa[1];
+            for (int q=0; q<nQuad; q++)
+              {
+                physQuadPts.append(pa 
+                                   + Point(J[0]*refQuadPts[q][0] +J[1]*refQuadPts[q][1],
+                                           J[2]*refQuadPts[q][0] +J[3]*refQuadPts[q][1]) );
+              }
+            
           }
           break;
         case 3:

@@ -49,6 +49,7 @@ int main(int argc, void** argv)
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;
       Expr::showAllParens() = true;
+      EvalVector::shadowOps() = true;
 
       Expr v = new TestFunctionStub("v");
 

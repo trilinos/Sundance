@@ -48,6 +48,7 @@ int main(int argc, void** argv)
       verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;
+      EvalVector::shadowOps() = true;
 
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);

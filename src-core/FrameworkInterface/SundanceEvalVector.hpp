@@ -78,13 +78,9 @@ namespace SundanceCore
       virtual const double* const start() const {return &(vectorVal_[0]);}
       //@}
 
-      /** Return true if we are evaluating numerically, false
-       * if we are doing string calculations. */
-      bool numerical() const {return numerical_;}
-
-      /** Return true if we are evaluating numerically, false
-       * if we are doing string calculations. */
-      void doStringEval() {numerical_ = false;}
+      /** Return true if we are shadowing numerical operations with
+       * string operations */
+      static bool& shadowOps() {static bool rtn = false; return rtn;}
 
       /** \name Methods for handling special values */
       //@{
@@ -123,7 +119,7 @@ namespace SundanceCore
 
       /** Set the string value of this vector, concurrently setting
        * isConstant, isZero, and isOne to false. */
-      void setToStringValue(const string& stringVal);
+      void setStringValue(const string& stringVal);
       //@}
 
       /** \name Mathematical operations */
@@ -191,9 +187,6 @@ namespace SundanceCore
        * equal to one (1.0) */
       bool isOne_;
 
-      /** flag indicating whether this vector will do numerical calculations
-       * or string calculations. */
-      bool numerical_;
     };
   }
 }

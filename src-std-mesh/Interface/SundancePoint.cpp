@@ -17,16 +17,18 @@ void Point::boundsCheck(int i) const
 
 namespace std
 {
-ostream& operator<<(ostream& os, const Point& point)
-{
-	os << "(";
-	for (int i=0; i<point.dim(); i++)
-		{
-			os << point[i];
-			if (i<(point.dim()-1)) os << ", ";
-		}
-	os << ")";
-	return os;
-}
+  ostream& operator<<(ostream& os, const Point& point)
+  {
+    os << "(";
+    os.precision(12);
+    for (int i=0; i<point.dim(); i++)
+      {
+        
+        os << point[i];
+        if (i<(point.dim()-1)) os << ", ";
+      }
+    os << ")";
+    return os;
+  }
 }
 

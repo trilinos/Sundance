@@ -22,8 +22,7 @@ EvalVector::EvalVector()
     constantVal_(0.0), 
     isConstant_(true),
     isZero_(true),
-    isOne_(false),
-    numerical_(true)
+    isOne_(false)
 {}
 
 EvalVector::EvalVector(int n)
@@ -33,8 +32,7 @@ EvalVector::EvalVector(int n)
     constantVal_(0.0), 
     isConstant_(false),
     isZero_(false),
-    isOne_(false),
-    numerical_(true)
+    isOne_(false)
 {}
 
 void EvalVector::setToZero() 
@@ -43,7 +41,6 @@ void EvalVector::setToZero()
   isOne_ = false;
   isConstant_ = true;
   isZero_ = true;
-  numerical_ = true;
 }
 
 void EvalVector::setToOne() 
@@ -52,7 +49,6 @@ void EvalVector::setToOne()
   isOne_ = true;
   isConstant_ = true;
   isZero_ = false;
-  numerical_ = true;
 }
 
 void EvalVector::setToConstantValue(const double& constantVal)
@@ -61,7 +57,6 @@ void EvalVector::setToConstantValue(const double& constantVal)
   isOne_ = false;
   isConstant_ = true;
   isZero_ = false;
-  numerical_ = true;
 }
 
 void EvalVector::setToVectorValue()
@@ -69,16 +64,11 @@ void EvalVector::setToVectorValue()
   isOne_ = false;
   isConstant_ = false;
   isZero_ = false;
-  numerical_ = true;
 }
 
-void EvalVector::setToStringValue(const string& stringVal)
+void EvalVector::setStringValue(const string& stringVal)
 {
-  isOne_ = false;
-  isConstant_ = false;
-  isZero_ = false;
   stringVal_ = stringVal;
-  numerical_ = false;
 }
 
 string EvalVector::getStringValue() const 
@@ -122,53 +112,39 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
         }
       else 
         {
-          if (numerical())
+          resize(other->length());
+          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                             "mismatched vector lengths: me="
+                             << length() << ", you=" << other->length());
+          double* const x = start();
+          const double* const y = other->start();
+          if (scalar==1.0)
             {
-              resize(other->length());
-              TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
-                                 "mismatched vector lengths: me="
-                                 << length() << ", you=" << other->length());
-              double* const x = start();
-              const double* const y = other->start();
-              if (scalar==1.0)
+              for (int i=0; i<length(); i++)
                 {
-                  for (int i=0; i<length(); i++)
-                    {
-                      x[i] = y[i];
-                    }
+                  x[i] = y[i];
                 }
-              else if (scalar==-1.0)
-                {
-                  for (int i=0; i<length(); i++)
-                    {
-                      x[i] = -y[i];
-                    }
-                }
-              else 
-                {
-                  for (int i=0; i<length(); i++)
-                    {
-                      x[i] = scalar*y[i];
-                    }
-                }
-              setToVectorValue();
+              if (shadowOps()) setStringValue(other->getStringValue());
             }
-          else
+          else if (scalar==-1.0)
             {
-              if (scalar==1.0)
+              for (int i=0; i<length(); i++)
                 {
-                  setToStringValue(other->getStringValue());
+                  x[i] = -y[i];
                 }
-              else if (scalar==-1.0)
-                {
-                  setToStringValue("-" + other->getStringValue());
-                }
-              else 
-                {
-                  setToStringValue(Teuchos::toString(scalar)
-                                 + "*" + other->getStringValue());
-                }
+              if (shadowOps()) setStringValue("-"+other->getStringValue());
             }
+          else 
+            {
+              for (int i=0; i<length(); i++)
+                {
+                  x[i] = scalar*y[i];
+                }
+              if (shadowOps()) setStringValue(Teuchos::toString(scalar)
+                                              + "*" 
+                                              + other->getStringValue());
+            }
+          setToVectorValue();
  
         }
     }
@@ -181,130 +157,105 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
   else if (isConstant())
     {
       if (verbosity() > VerbLow) cerr << tabs << "left is constant" << endl;
-      if (numerical())
+      resize(other->length());
+      TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                         "mismatched vector lengths: me="
+                         << length() << ", you=" << other->length());
+      double c = getConstantValue();
+      double* const x = start();
+      const double* const y = other->start();
+      if (scalar==1.0)
         {
-          resize(other->length());
-          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
-                             "mismatched vector lengths: me="
-                             << length() << ", you=" << other->length());
-          double c = getConstantValue();
-          double* const x = start();
-          const double* const y = other->start();
-          if (scalar==1.0)
+          for (int i=0; i<length(); i++)
             {
-              for (int i=0; i<length(); i++)
-                {
-                  x[i] = c + y[i]; 
-                }
+              x[i] = c + y[i]; 
             }
-          else if (scalar==-1.0)
+          if (shadowOps()) 
             {
-              for (int i=0; i<length(); i++)
-                {
-                  x[i] = c - y[i]; 
-                }
-            }
-          else 
-            {
-              for (int i=0; i<length(); i++)
-                {
-                  x[i] = c + scalar*y[i]; 
-                }
-            }
-          setToVectorValue();
-        }
-      else /* phony calculation with strings */
-        {
-          if (scalar==1.0)
-            {
-              setToStringValue("(" + Teuchos::toString(getConstantValue())
+              setStringValue("(" + Teuchos::toString(getConstantValue())
                              + "+" + other->getStringValue() + ")");
             }
-          else if (scalar==-1.0)
+        }
+      else if (scalar==-1.0)
+        {
+          for (int i=0; i<length(); i++)
             {
-              setToStringValue("(" + Teuchos::toString(getConstantValue())
+              x[i] = c - y[i]; 
+            }
+          if (shadowOps()) 
+            {
+              setStringValue("(" + Teuchos::toString(getConstantValue())
                              + "-" + other->getStringValue() + ")");
             }
-          else
+        }
+      else 
+        {
+          for (int i=0; i<length(); i++)
             {
-              setToStringValue("(" + Teuchos::toString(getConstantValue())
+              x[i] = c + scalar*y[i]; 
+            }
+          if (shadowOps()) 
+            {
+              setStringValue("(" + Teuchos::toString(getConstantValue())
                              + "+" + Teuchos::toString(scalar)
                              + "*" + other->getStringValue() + ")");
             }
         }
+      setToVectorValue();
+       
     }
   else if (other->isConstant())
     {
       if (verbosity() > VerbLow) cerr << tabs << "right is constant" << endl;
       double c = scalar*other->getConstantValue();
 
-      if (numerical())
+      double* const x = start();
+      for (int i=0; i<length(); i++)
         {
-          double* const x = start();
-          for (int i=0; i<length(); i++)
-            {
-              x[i] += c;
-            }
-          setToVectorValue();
+          x[i] += c;
         }
-      else
-        {
-          setToStringValue("(" + Teuchos::toString(getStringValue())
-                         + "+" + Teuchos::toString(c) + ")");
-        }
+      setToVectorValue();
+      if (shadowOps()) setStringValue("(" + Teuchos::toString(getStringValue())
+                                      + "+" + Teuchos::toString(c) + ")");
     }
   else
     {
       if (verbosity() > VerbLow) cerr << tabs << "both are non-constant" << endl;
-      if (numerical())
+      TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                         "mismatched vector lengths: me="
+                         << length() << ", you=" << other->length());
+      double* const x = start();
+      const double* const y = other->start();
+      if (scalar==1.0)
         {
-          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
-                             "mismatched vector lengths: me="
-                             << length() << ", you=" << other->length());
-          double* const x = start();
-          const double* const y = other->start();
-          if (scalar==1.0)
+          for (int i=0; i<length(); i++)
             {
-              for (int i=0; i<length(); i++)
-                {
-                  x[i] += y[i]; 
-                }
+              x[i] += y[i]; 
             }
-          else if (scalar==-1.0)
-            {
-              for (int i=0; i<length(); i++)
-                {
-                  x[i] -= y[i]; 
-                }
-            }
-          else 
-            {
-              for (int i=0; i<length(); i++)
-                {
-                  x[i] += scalar*y[i]; 
-                }
-            }
-          setToVectorValue();
+          if (shadowOps()) setStringValue("(" + getStringValue() + "+" 
+                                          + other->getStringValue() + ")");
         }
-      else
+      else if (scalar==-1.0)
         {
-          if (scalar==1.0)
+          for (int i=0; i<length(); i++)
             {
-              setToStringValue("(" + getStringValue() + "+" 
-                             + other->getStringValue() + ")");
+              x[i] -= y[i]; 
             }
-          else if (scalar==-1.0)
-            {
-              setToStringValue("(" + getStringValue() + "-" 
-                             + other->getStringValue() +")");
-            }
-          else 
-            {
-              setToStringValue("(" + getStringValue() + "+" 
-                             + Teuchos::toString(scalar) 
-                             + "*" + other->getStringValue()+")");
-            }
+          if (shadowOps()) setStringValue("(" + getStringValue() + "-" 
+                                          + other->getStringValue() +")");
         }
+      else 
+        {
+          for (int i=0; i<length(); i++)
+            {
+              x[i] += scalar*y[i]; 
+            }
+          if (shadowOps()) setStringValue("(" + getStringValue() + "+" 
+                                          + Teuchos::toString(scalar) 
+                                          + "*" + other->getStringValue()
+                                          +")");
+        }
+      setToVectorValue();
     }
 
   if (verbosity() > VerbLow) 
@@ -317,7 +268,6 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
 
 void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
 {
-  cerr << "MULTIPLYING ***************************************" << endl;
   SUNDANCE_OUT(verbosity() > VerbLow, "multiplying " << getStringValue()
                << " and " << other->getStringValue());
 
@@ -335,64 +285,55 @@ void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
     }
   else if (isConstant())
     {
-      if (numerical())
+      resize(other->length());
+      TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                         "mismatched vector lengths: me="
+                         << length() << ", you=" << other->length());
+      
+      double c = getConstantValue();
+      double* const x = start();
+      const double* const y = other->start();
+      for (int i=0; i<length(); i++)
         {
-          resize(other->length());
-          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
-                             "mismatched vector lengths: me="
-                             << length() << ", you=" << other->length());
-          
-          double c = getConstantValue();
-          double* const x = start();
-          const double* const y = other->start();
-          for (int i=0; i<length(); i++)
-            {
-              x[i] = c*y[i];
-            }
-          setToVectorValue();
+          x[i] = c*y[i];
         }
-      else
+      setToVectorValue();
+      if (shadowOps())
         {
-          setToStringValue(Teuchos::toString(getConstantValue())
-                           + "*" + other->getStringValue());
+          setStringValue(Teuchos::toString(getConstantValue())
+                         + "*" + other->getStringValue());
         }
     }
   else if (other->isConstant())
     {
-      if (numerical())
+      double* const x = start();
+      double c = other->getConstantValue();      
+      for (int i=0; i<length(); i++)
         {
-          double* const x = start();
-          double c = other->getConstantValue();      
-          for (int i=0; i<length(); i++)
-            {
-              x[i] *= c;
-            }
-          setToVectorValue();
+          x[i] *= c;
         }
-      else
+      setToVectorValue();
+      if (shadowOps())
         {
-          setToStringValue(Teuchos::toString(other->getConstantValue())
-                           + "*" + getStringValue());
+          setStringValue(Teuchos::toString(other->getConstantValue())
+                         + "*" + getStringValue());
         }
     }
   else
     {
-      if (numerical())
+      TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                         "mismatched vector lengths: me="
+                         << length() << ", you=" << other->length());                 
+      double* const x = start();
+      const double* const y = other->start();\
+      for (int i=0; i<length(); i++)
         {
-          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
-                             "mismatched vector lengths: me="
-                             << length() << ", you=" << other->length());                 
-          double* const x = start();
-          const double* const y = other->start();\
-          for (int i=0; i<length(); i++)
-            {
-              x[i] *= y[i]; 
-            }
-          setToVectorValue();
+          x[i] *= y[i]; 
         }
-      else
+      setToVectorValue();
+      if (shadowOps())
         {
-          setToStringValue(getStringValue() + "*" + other->getStringValue());
+          setStringValue(getStringValue() + "*" + other->getStringValue());
         }
     }
 }
@@ -418,66 +359,51 @@ void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
       return;
     }
 
-  if (numerical())
-    {
-      resize(a->length());
+  resize(a->length());
 
-      TEST_FOR_EXCEPTION(length()!=a->length(), InternalError,
-                         "mismatched vector lengths: me="
-                         << length() << ", a=" << a->length());
-      TEST_FOR_EXCEPTION(length()!=b->length(), InternalError,
-                         "mismatched vector lengths: me="
-                         << length() << ", b=" << b->length());
+  TEST_FOR_EXCEPTION(length()!=a->length(), InternalError,
+                     "mismatched vector lengths: me="
+                     << length() << ", a=" << a->length());
+  TEST_FOR_EXCEPTION(length()!=b->length(), InternalError,
+                     "mismatched vector lengths: me="
+                     << length() << ", b=" << b->length());
 
-      double* const x = start();
-      const double* const y = a->start();
-      const double* const z = b->start();
+  double* const x = start();
+  const double* const y = a->start();
+  const double* const z = b->start();
       
-      if (isZero())
+  if (isZero())
+    {
+      for (int i=0; i<length(); i++)
         {
-          for (int i=0; i<length(); i++)
-            {
-              x[i] = y[i]*z[i];
-            }
-          setToVectorValue();
+          x[i] = y[i]*z[i];
         }
-      else if (isConstant())
+      if (shadowOps()) setStringValue("(" + a->getStringValue() 
+                                      + "*" + b->getStringValue() 
+                                      + ")");
+    }
+  else if (isConstant())
+    {
+      double c = getConstantValue();
+      for (int i=0; i<length(); i++)
         {
-          double c = getConstantValue();
-          for (int i=0; i<length(); i++)
-            {
-              x[i] = c + y[i]*z[i];
-            }
-          setToVectorValue();
+          x[i] = c + y[i]*z[i];
         }
-      else
-        {
-          for (int i=0; i<length(); i++)
-            {
-              x[i] += y[i]*z[i];
-            }
-        }
+      if (shadowOps()) setStringValue("(" + Teuchos::toString(c) 
+                                      + "+(" + a->getStringValue() 
+                                      + "*" + b->getStringValue() 
+                                      + "))");
     }
   else
     {
-      if (isZero())
+      for (int i=0; i<length(); i++)
         {
-          setToStringValue("(" + a->getStringValue() 
-                           + "*" + b->getStringValue() + ")");
+          x[i] += y[i]*z[i];
         }
-      else if (isConstant())
-        {
-          double c = getConstantValue();
-          setToStringValue("(" + Teuchos::toString(c) 
-                           + "+(" + a->getStringValue() 
-                           + "*" + b->getStringValue() + "))");
-        }
-      else
-        {
-          setToStringValue("(" + getStringValue() + "+(" 
-                           + a->getStringValue() 
-                           + "*" + b->getStringValue() + "))");
-        }
+      if (shadowOps()) setStringValue("(" + getStringValue() + "+(" 
+                                      + a->getStringValue() 
+                                      + "*" + b->getStringValue() 
+                                      + "))");
     }
 }
 
@@ -490,19 +416,14 @@ void EvalVector::sqrt()
     }
   else
     {
-      if (numerical())
+      double* const x = start();
+      
+      for (int i=0; i<length(); i++)
         {
-          double* const x = start();
-          
-          for (int i=0; i<length(); i++)
-            {
-              x[i] = ::sqrt(x[i]);
-            }
+          x[i] = ::sqrt(x[i]);
         }
-      else
-        {
-          setToStringValue("sqrt(" + getStringValue() + ")");
-        }
+      
+      if (shadowOps()) setStringValue("sqrt(" + getStringValue() + ")");
     }
 }
 
@@ -514,19 +435,14 @@ void EvalVector::unaryMinus()
     }
   else
     {
-      if (numerical())
-        {
-          double* const x = start();
+      double* const x = start();
           
-          for (int i=0; i<length(); i++)
-            {
-              x[i] *= -1.0;
-            }
-        }
-      else
+      for (int i=0; i<length(); i++)
         {
-          setToStringValue("(-" + getStringValue() + ")");
+          x[i] *= -1.0;
         }
+
+      if (shadowOps()) setStringValue("(-" + getStringValue() + ")");
     }
 }
 
@@ -547,40 +463,31 @@ void EvalVector::copy(const RefCountPtr<EvalVector>& other)
     }
   else 
     {
-      if (numerical())
+      resize(other->length());
+
+      TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                         "mismatched vector lengths in EvalVector::copy()");
+
+      double* const x = start();
+      const double* const y = other->start();
+
+      for (int i=0; i<length(); i++)
         {
-          resize(other->length());
-
-          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
-                             "mismatched vector lengths");
-
-          double* const x = start();
-          const double* const y = other->start();
-
-          for (int i=0; i<length(); i++)
-            {
-              x[i] = y[i];
-            }
-          setToVectorValue();
+          x[i] = y[i];
         }
-      else
-        {
-          setToStringValue(other->getStringValue());
-        }
+      setToVectorValue();
+      if (shadowOps()) setStringValue(other->getStringValue());
     }
 }
 
 void EvalVector::print(ostream& os) const 
 {
-  if (numerical()) 
-    {
-      os << "numerical[";
-      if (isConstant_) os << constantVal_;
-      else os << vectorVal_;
-      os << "]";
-    }
+  os << "[";
+  if (isConstant_) os << constantVal_;
   else
     {
-      os << "string[" << stringVal_ << "]" << endl;
+      if (shadowOps()) os << stringVal_;
+      else os << vectorVal_;
     }
+  os << "]";
 }

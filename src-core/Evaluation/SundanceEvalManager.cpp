@@ -29,24 +29,21 @@ EvalManager::EvalManager()
 void EvalManager::evalCoordExpr(const CoordExpr* expr,
                                 RefCountPtr<EvalVector> const & result) const 
 {
-  if (numericalEval())
+  if (mediator() != 0)
     {
-      //TEST_FOR_EXCEPTION(!result->numerical(), InternalError,
-      //                   "EvalManager::evalCoordExpr expecting a "
-      //                   "numerical-valued vector");
       result->setToVectorValue();
       mediator()->evalCoordExpr(expr, result.get());
-      cerr << "result of coord expr evaluation = " ;
-      result->print(cerr);
-      cerr << endl;
-        
     }
   else
     {
-      TEST_FOR_EXCEPTION(result->numerical(), InternalError,
-                         "EvalManager::evalCoordExpr expecting a "
-                         "string-valued vector");
-      result->setToStringValue(expr->toString());
+      result->setToVectorValue();
+      result->resize(1);
+      result->setElement(0, 1.0);
+    }
+  
+  if (result->shadowOps())
+    {
+      result->setStringValue(expr->toString());
     }
 }
 
@@ -55,26 +52,28 @@ void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                        const MultiIndex& mi,
                                        RefCountPtr<EvalVector> const & result) const 
 {
-  if (numericalEval())
+  if (mediator() != 0)
     {
-      //TEST_FOR_EXCEPTION(!result->numerical(), InternalError,
-      //                   "EvalManager::evalDiscreteFuncElement expecting a "
-      //                   "numerical-valued vector");
+      result->setToVectorValue();
       mediator()->evalDiscreteFuncElement(expr, mi, result.get());
     }
   else
     {
-      TEST_FOR_EXCEPTION(result->numerical(), InternalError,
-                         "EvalManager::evalDiscreteFuncElement expecting a "
-                         "string-valued vector");
+      result->setToVectorValue();
+      result->resize(1);
+      result->setElement(0, 1.0);
+    }
+  
+  if (result->shadowOps())
+    {
       if (mi.order()==0)
         {
-          result->setToStringValue(expr->toString());
+          result->setStringValue(expr->toString());
         }
       else
         {
           string str = "D[" + expr->toString() + ", " + mi.coordForm() + "]";
-          result->setToStringValue(str);
+          result->setStringValue(str);
         }
     }
 }

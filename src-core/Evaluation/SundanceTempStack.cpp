@@ -15,7 +15,6 @@ using namespace Teuchos;
 
 TempStack::TempStack(int vecSize)
   : 
-  numericalEval_(true),
   vecSize_(vecSize),
   fullVecStack_(),
   trivialVecStack_(),
@@ -30,7 +29,6 @@ TempStack::TempStack(int vecSize)
 
 TempStack::TempStack()
   : 
-  numericalEval_(false),
   vecSize_(0),
   fullVecStack_(),
   trivialVecStack_(),
@@ -51,7 +49,6 @@ RefCountPtr<EvalVector> TempStack::popTrivialVector()
     {
       trivialVecsAllocated_++;
       rtn = rcp(new EvalVector());
-      if (!numericalEval_) rtn->doStringEval();
     }
   else
     {
@@ -71,7 +68,6 @@ RefCountPtr<EvalVector> TempStack::popFullVector()
     {
       fullVecsAllocated_++;
       rtn = rcp(new EvalVector(vecSize_));
-      if (!numericalEval_) rtn->doStringEval();
     }
   else
     {
