@@ -16,6 +16,9 @@ DOFMapBase::DOFMapBase(const Mesh& mesh)
     mesh_(mesh),
     cellSets_(),
     funcIDOnCellSets_(),
-    cellDimOnCellSets_()
+    cellDimOnCellSets_(),
+    lowestLocalDOF_(),
+    numDOFs_(),
+    dofsHaveBeenAssigned_()
 {;}
 

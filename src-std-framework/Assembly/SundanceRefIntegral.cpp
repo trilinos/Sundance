@@ -30,8 +30,9 @@ extern "C"
 RefIntegral::RefIntegral(int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
+                         const Array<int>& alpha,
                          int testDerivOrder)
-  : ElementIntegral(dim, cellType, testBasis, testDerivOrder), W_()
+  : ElementIntegral(dim, cellType, testBasis, alpha, testDerivOrder), W_()
 {
   Tabs tab0;
   verbosity() = classVerbosity();
@@ -106,12 +107,14 @@ RefIntegral::RefIntegral(int dim,
 RefIntegral::RefIntegral(int dim,
                          const CellType& cellType,
                          const BasisFamily& testBasis,
+                         const Array<int>& alpha,
                          int testDerivOrder,
                          const BasisFamily& unkBasis,
+                         const Array<int>& beta,
                          int unkDerivOrder)
   : ElementIntegral(dim, cellType, 
-                    testBasis, testDerivOrder, 
-                    unkBasis, unkDerivOrder), W_()
+                    testBasis, alpha, testDerivOrder, 
+                    unkBasis, beta, unkDerivOrder), W_()
 
 {
   Tabs tab0;
@@ -192,7 +195,7 @@ RefIntegral::RefIntegral(int dim,
                     {
                       value(t, nt, u, nu) 
                         += chop(quadWeights[q] * testBasisVals[t][q][nt] 
-                        * unkBasisVals[u][q][nu]);
+                                * unkBasisVals[u][q][nu]);
                     }
                 }
             }
@@ -265,7 +268,7 @@ void RefIntegral::print(ostream& os) const
               for (int u=0; u<dim(); u++)
                 {
                   os << tab2 << "test dir=" << t 
-                       << ", unk dir=" << u << endl;
+                     << ", unk dir=" << u << endl;
                   Tabs tab3;
                   os << tab3 << "{";
                   for (int nt=0; nt<nNodesTest(); nt++) 
@@ -334,7 +337,6 @@ void RefIntegral::print(ostream& os) const
 
 
 void RefIntegral::transformOneForm(const CellJacobianBatch& J,  
-                                   const Array<int>& alpha,
                                    const Array<double>& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
@@ -366,7 +368,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
       A->resize(J.numCells() * nNodes()); 
       int info=0;
 
-      createOneFormTransformationMatrix(J, alpha, coeff);
+      createOneFormTransformationMatrix(J, alpha(), coeff);
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G());
@@ -379,8 +381,6 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
 }
 
 void RefIntegral::transformTwoForm(const CellJacobianBatch& J,  
-                                   const Array<int>& alpha,
-                                   const Array<int>& beta,
                                    const Array<double>& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
@@ -412,7 +412,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       A->resize(J.numCells() * nNodes()); 
       int info=0;
 
-      createTwoFormTransformationMatrix(J, alpha, beta, coeff);
+      createTwoFormTransformationMatrix(J, alpha(), beta(), coeff);
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G());

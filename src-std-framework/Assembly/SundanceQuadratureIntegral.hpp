@@ -33,6 +33,7 @@ namespace SundanceStdFwk
       QuadratureIntegral(int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
+                         const Array<int>& alpha,
                          int testDerivOrder,
                          const QuadratureFamily& quad);
 
@@ -40,21 +41,29 @@ namespace SundanceStdFwk
       QuadratureIntegral(int dim,
                          const CellType& cellType,
                          const BasisFamily& testBasis,
+                         const Array<int>& alpha,
                          int testDerivOrder,
                          const BasisFamily& unkBasis,
+                         const Array<int>& beta,
                          int unkDerivOrder,
                          const QuadratureFamily& quad);
+
+      /** */
+      void transform(const CellJacobianBatch& J, 
+                     const double* const coeff,
+                     RefCountPtr<Array<double> >& A) const 
+      {
+        if (isTwoForm()) transformTwoForm(J, coeff, A);
+        else transformOneForm(J, coeff, A);
+      }
       
       /** */
       void transformTwoForm(const CellJacobianBatch& J, 
-                            const Array<int>& alpha,
-                            const Array<int>& beta,
                             const double* const coeff,
                             RefCountPtr<Array<double> >& A) const ;
       
       /** */
       void transformOneForm(const CellJacobianBatch& J, 
-                            const Array<int>& alpha,
                             const double* const coeff,
                             RefCountPtr<Array<double> >& A) const ;
 

@@ -68,7 +68,7 @@ int main(int argc, void** argv)
 
       MeshType meshType = new BasicSimplicialMeshType();
 
-      int np = MPIComm::world().getNProc();
+        int np = MPIComm::world().getNProc();
 
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
 
@@ -100,7 +100,7 @@ int main(int argc, void** argv)
       verbosity<EquationSet>() = VerbExtreme;
 
       QuadratureFamily quad = new GaussianQuadrature(2);
-      Expr eqn = Integral(interior, (dx*v)*(dx*u) + (1.0+x*x)*v, quad);
+      Expr eqn = Integral(interior, (dx*v)*(dx*u) + v, quad);
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
       RefCountPtr<EquationSet> eqnSet 
@@ -114,14 +114,13 @@ int main(int argc, void** argv)
       //      EvalVector::shadowOps() = true;
 
       EquationSet::classVerbosity() = VerbHigh;
+      Assembler::classVerbosity() = VerbHigh;
+      IntegralGroup::classVerbosity() = VerbHigh;
       Expr::showAllParens() = true;
-
-      RefCountPtr<InserterFactoryBase> inserterFactory
-        = rcp(new GenericInserterFactory<BasicInserter>());
 
       VectorType<double> vecType = new EpetraVectorType();
 
-      Assembler assembler(mesh, eqnSet, inserterFactory, vecType); 
+      Assembler assembler(mesh, eqnSet, vecType); 
 
       Array<Set<int> > graph;
       assembler.getGraph(graph);
@@ -135,7 +134,10 @@ int main(int argc, void** argv)
       LinearOperator<double> A;
       Vector<double> b;
 
-      // assembler.assemble(A, b);
+      assembler.assemble(A, b);
+
+      cerr << "Matrix = " << endl << A << endl;
+      cerr << "RHS = " << endl << b << endl;
 
     }
 	catch(exception& e)

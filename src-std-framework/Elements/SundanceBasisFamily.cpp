@@ -17,10 +17,6 @@ using namespace Teuchos;
 
 
 
-XMLObject BasisFamily::toXML() const 
-{
-  return ptr()->toXML();
-}
 
 int BasisFamily::order() const 
 {

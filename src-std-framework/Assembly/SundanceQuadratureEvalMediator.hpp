@@ -42,13 +42,13 @@ namespace SundanceStdFwk
       /** Evaluate the given coordinate expression, putting
        * its numerical values in the given LoadableVector. */
       virtual void evalCoordExpr(const CoordExpr* expr,
-                                 LoadableVector* const vec) const ;
+                                 SundanceCore::Internal::LoadableVector* const vec) const ;
 
       /** Evaluate the given discrete function, putting
        * its numerical values in the given LoadableVector. */
       virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                            const MultiIndex& mi,
-                                           LoadableVector* const vec) const ;
+                                           SundanceCore::Internal::LoadableVector* const vec) const ;
 
       /** */
       virtual void setCellType(const CellType& cellType) ;

@@ -68,6 +68,8 @@ int main(int argc, void** argv)
 
       int pMax = 1;
       int maxDim=2;
+      Array<int> alpha(1);
+      Array<int> beta(1);
 
       verbosity<RefIntegral>() = VerbMedium;
 
@@ -83,7 +85,7 @@ int main(int argc, void** argv)
               BasisFamily P = new Lagrange(p);
               for (int d=0; d<=1; d++)
                 {
-                  RefIntegral ref(dim, cellType, P, d);
+                  RefIntegral ref(dim, cellType, P, alpha, d);
                 }
             }
           
@@ -98,7 +100,8 @@ int main(int argc, void** argv)
                     {
                       for (int dq=0; dq<=1; dq++)
                         {
-                          RefIntegral ref(dim, cellType, P, dp, Q, dq);
+                          RefIntegral ref(dim, cellType, P, alpha, dp, 
+                                          Q, beta, dq);
                         }
                     }
                 }

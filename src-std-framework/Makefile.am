@@ -92,27 +92,26 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.cpp
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceBasicInserter.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceInserterBase.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceInserterFactoryBase.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceIntegrator.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceGrouperBase.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.hpp 
+$(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.hpp 
 
 SUNDANCE_ASSEMBLY = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceBasicInserter.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceInserterBase.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceIntegrator.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceGrouperBase.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp 
+$(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp 
 
 
 

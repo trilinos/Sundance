@@ -213,6 +213,7 @@ void HomogeneousDOFMap::initMap()
     {
       setLowestLocalDOF(0);
       setNumLocalDOFs(nextDOF);
+      setTotalNumDOFs(nextDOF);
     }
   
 }
@@ -387,7 +388,9 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
                << " I have " << localCount << " cells");
 
   Array<int> dofOffsets;
-  MPIContainerComm<int>::accumulate(localCount, dofOffsets, mesh().comm());
+  int totalDOFCount;
+  MPIContainerComm<int>::accumulate(localCount, dofOffsets, totalDOFCount,
+                                    mesh().comm());
   int myOffset = dofOffsets[mesh().comm().getRank()];
 
   SUNDANCE_OUT(verbosity() > VerbMedium, 
@@ -415,6 +418,7 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
 
   setLowestLocalDOF(myOffset);
   setNumLocalDOFs(localCount);
+  setTotalNumDOFs(totalDOFCount);
 
   SUNDANCE_OUT(verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank() 

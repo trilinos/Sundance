@@ -5,8 +5,9 @@
 #define SUNDANCE_GROUPER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceElementIntegral.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceSparsityPattern.hpp"
+#include "SundanceIntegralGroup.hpp"
+
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -37,7 +38,7 @@ namespace SundanceStdFwk
 
       /** */
       virtual void findGroups(const RefCountPtr<SparsityPattern>& sparsity,
-                              RefCountPtr<LocalMatrixContainer>& A) const = 0 ;
+                              Array<IntegralGroup>& groups) const = 0 ;
                               
     };
 

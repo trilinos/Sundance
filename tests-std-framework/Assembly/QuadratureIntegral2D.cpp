@@ -116,14 +116,15 @@ int main(int argc, void** argv)
           for (int dp=0; dp<=1; dp++)
             {
               if (dp > p) continue;
-              QuadratureIntegral ref(dim, cellType, P, dp, quad);
+
               int numTestDir = 1;
               if (dp==1) numTestDir = dim;
               for (int t=0; t<numTestDir; t++)
                 {
                   Array<int> alpha = tuple(t);
                   Tabs tab;
-                  ref.transformOneForm(JBatch, alpha, f, A);
+                  QuadratureIntegral ref(dim, cellType, P, alpha, dp, quad);
+                  ref.transformOneForm(JBatch, f, A);
                   cerr << tab << "transformed element" << endl;
                   cerr << tab << "t=" << t << endl;
                   cerr << tab << "{";
@@ -152,7 +153,7 @@ int main(int argc, void** argv)
                   for (int dq=0; dq<=1; dq++)
                     {
                       if (dq > q) continue;
-                      QuadratureIntegral ref(dim, cellType, P, dp, Q, dq, quad);
+
                       int numTestDir = 1;
                       if (dp==1) numTestDir = dim;
                       for (int t=0; t<numTestDir; t++)
@@ -164,8 +165,9 @@ int main(int argc, void** argv)
                             {
                               Tabs tab;
                               Array<int> beta = tuple(u);
-                              ref.transformTwoForm(JBatch, 
-                                                   alpha, beta, f, A);
+                              QuadratureIntegral ref(dim, cellType, P, alpha, 
+                                                     dp, Q, beta, dq, quad);
+                              ref.transformTwoForm(JBatch, f, A);
                               cerr << tab << "transformed element" << endl;
                               cerr << tab << "t=" << t << ", u=" << u << endl;
                               cerr << tab << "{";

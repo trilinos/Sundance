@@ -18,6 +18,7 @@ using namespace TSFExtended;
 ElementIntegral::ElementIntegral(int dim, 
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
+                                 const Array<int>& alpha,
                                  int testDerivOrder)
   : dim_(dim),
     testDerivOrder_(testDerivOrder), 
@@ -27,17 +28,21 @@ ElementIntegral::ElementIntegral(int dim,
     nRefDerivUnk_(-1),
     nNodesUnk_(-1),
     nNodes_(nNodesTest_),
-    isTwoForm_(false)
+    isTwoForm_(false),
+    alpha_(alpha),
+    beta_()
 {;}
 
 
 
 ElementIntegral::ElementIntegral(int dim,
-                         const CellType& cellType,
-                         const BasisFamily& testBasis,
-                         int testDerivOrder,
-                         const BasisFamily& unkBasis,
-                         int unkDerivOrder)
+                                 const CellType& cellType,
+                                 const BasisFamily& testBasis,
+                                 const Array<int>& alpha,
+                                 int testDerivOrder,
+                                 const BasisFamily& unkBasis,
+                                 const Array<int>& beta,
+                                 int unkDerivOrder)
   : dim_(dim),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(dim, testDerivOrder)),
@@ -46,7 +51,9 @@ ElementIntegral::ElementIntegral(int dim,
     nRefDerivUnk_(ipow(dim, unkDerivOrder)),
     nNodesUnk_(unkBasis.nNodes(cellType)), 
     nNodes_(nNodesTest_*nNodesUnk_),
-    isTwoForm_(true)
+    isTwoForm_(true),
+    alpha_(alpha),
+    beta_(beta)
 {;}
 
 int ElementIntegral::ipow(int base, int power) 

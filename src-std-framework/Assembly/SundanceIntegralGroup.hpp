@@ -5,61 +5,82 @@
 #define SUNDANCE_INTEGRALGROUP_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceDOFMapBuilder.hpp"
+#include "SundanceElementIntegral.hpp"
+#include "SundanceEvalVectorArray.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
+  using namespace Teuchos;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
   namespace Internal
   {
     /** 
      *
      */
-    class IntegralGroup
+    class IntegralGroup : public TSFExtended::ObjectWithVerbosity<IntegralGroup>
     {
     public:
       /** */
-      LocalMatrixContainer(const Array<int>& isTwoForm,
-                       const Array<Array<int> >& testID,
-                       const Array<Array<int> >& unkID,
-                       const Array<Array<double> >& coeffs);
+      IntegralGroup(const Array<int>& testID,
+                    const Array<RefCountPtr<ElementIntegral> >& integrals,
+                    const Array<Array<int> >& resultIndices);
+      /** */
+      IntegralGroup(const Array<int>& testID,
+                    const Array<int>& unkID,
+                    const Array<RefCountPtr<ElementIntegral> >& integrals,
+                    const Array<Array<int> >& resultIndices);
 
-      /** Return the data vector for the i-th batch */
-      const RefCountPtr<Array<double> >& dataVector(int i) const 
-      {return workspace()[i];}
 
-      /** Indicate whether the i-th batch is a two form */
-      bool isTwoForm(int i) const {return isTwoForm_[i];}
+      /** Indicate whether this is a group of two-forms */
+      bool isTwoForm() const {return isTwoForm_;}
 
-      /** Return the array of testIDs whose local matrix values are grouped int
-       * the i-th batch */
-      const Array<int>& testID(int i) const {return testID_[i];}
+      /** Return the number of rows in the local matrices or vectors
+       * computed by this integral group */
+      int nTestNodes() const {return nTestNodes_;}
 
-      /** Return the array of unkIDs whose local matrix values are grouped int
-       * the i-th batch */
-      const Array<int>& unkID(int i) const {return unkID_[i];}
+      /** Return the number of columns in the local matrices 
+       * computed by this integral group */
+      int nUnkNodes() const {return nUnkNodes_;}
 
-      /** Return the array of coefficients to be used with the i-th batch */
-      const Array<double>& coeffs(int i) const {return coeffs_[i];}
+      /** Return the test functions using this integral group */
+      const Array<int>& testID() const {return testID_;}
+
+      /** Return the unknown functions using this integral group */
+      const Array<int>& unkID() const {return unkID_;}
+
+      /** Evaluate this integral group */
+      bool evaluate(const CellJacobianBatch& J,
+                    const RefCountPtr<EvalVectorArray>& coeffs,
+                    RefCountPtr<Array<double> >& A) const ;
+
 
     private:
       
       /** */
-      static Array<RefCountPtr<Array<double> > >& workspace() 
-      {static Array<RefCountPtr<Array<double> > > rtn; return rtn;}
+      bool isTwoForm_;
 
       /** */
-      Array<int> isTwoForm_;
+      int nTestNodes_;
 
       /** */
-      Array<Array<int> > testID_;
+      int nUnkNodes_;
 
       /** */
-      Array<Array<int> > unkID_;
+      Array<int> testID_;
 
       /** */
-      Array<Array<double> > coeffs_;
+      Array<int> unkID_;
+
+      /** */
+      Array<RefCountPtr<ElementIntegral> > integrals_;
+
+      /** */
+      Array<Array<int> > resultIndices_;
     };
   }
 }

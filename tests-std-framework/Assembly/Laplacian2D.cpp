@@ -92,13 +92,13 @@ int main(int argc, void** argv)
         {
           Tabs tab;
           BasisFamily P = new Lagrange(p);
-          RefIntegral ref(dim, cellType, P, 1, P, 1);
-          Array<int> alpha = tuple(0, 1);
-          Array<int> beta = tuple(0, 1);
+
           Array<double> coeff = tuple(1.0, 1.0);
-          
-          ref.transformTwoForm(JBatch, 
-                               alpha, beta, coeff, A);
+          Array<int> alpha = tuple(0,1);
+          Array<int> beta = tuple(0,1);
+          RefIntegral ref(dim, cellType, P, alpha, 1, P, beta, 1);          
+          ref.transformTwoForm(JBatch, coeff, A);
+
           cerr << tab << "transformed element" << endl;
           cerr << tab << "{";
           for (int r=0; r<ref.nNodesTest(); r++)

@@ -30,9 +30,10 @@ extern "C"
 QuadratureIntegral::QuadratureIntegral(int dim, 
                                        const CellType& cellType,
                                        const BasisFamily& testBasis,
+                                       const Array<int>& alpha,
                                        int testDerivOrder,
                                        const QuadratureFamily& quad)
-  : ElementIntegral(dim, cellType, testBasis, testDerivOrder),
+  : ElementIntegral(dim, cellType, testBasis, alpha, testDerivOrder),
     W_(),
     nQuad_(0),
     useSumFirstMethod_(false)
@@ -112,13 +113,15 @@ QuadratureIntegral::QuadratureIntegral(int dim,
 QuadratureIntegral::QuadratureIntegral(int dim,
                                        const CellType& cellType,
                                        const BasisFamily& testBasis,
+                                       const Array<int>& alpha,
                                        int testDerivOrder,
                                        const BasisFamily& unkBasis,
+                                       const Array<int>& beta,
                                        int unkDerivOrder,
                                        const QuadratureFamily& quad)
   : ElementIntegral(dim, cellType, 
-                    testBasis, testDerivOrder, 
-                    unkBasis, unkDerivOrder), 
+                    testBasis, alpha, testDerivOrder, 
+                    unkBasis, beta, unkDerivOrder), 
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)
@@ -230,7 +233,6 @@ void QuadratureIntegral::print(ostream& os) const
 }
 
 void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,  
-                                          const Array<int>& alpha,
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
@@ -265,7 +267,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
       int nCells = J.numCells();
       A->resize(nCells * nNodes()); 
 
-      createOneFormTransformationMatrix(J, alpha);
+      createOneFormTransformationMatrix(J, alpha());
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G());
@@ -282,8 +284,6 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
 }
 
 void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,  
-                                          const Array<int>& alpha,
-                                          const Array<int>& beta,
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
@@ -319,7 +319,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
       int nCells = J.numCells();
       A->resize(nCells * nNodes()); 
 
-      createTwoFormTransformationMatrix(J, alpha, beta);
+      createTwoFormTransformationMatrix(J, alpha(), beta());
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G());

@@ -33,8 +33,6 @@
 #include "SundanceAssembler.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
-#include "SundanceBasicInserter.hpp"
-#include "SundanceIntegrator.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
 
@@ -112,12 +110,9 @@ int main(int argc, void** argv)
       HomogeneousDOFMap::classVerbosity() = VerbExtreme;
       Expr::showAllParens() = true;
 
-      RefCountPtr<InserterFactoryBase> inserterFactory
-        = rcp(new GenericInserterFactory<BasicInserter>());
-
       VectorType<double> vecType = new EpetraVectorType();
 
-      Assembler assembler(mesh, eqnSet, inserterFactory, vecType); 
+      Assembler assembler(mesh, eqnSet, vecType); 
 
       RefCountPtr<DOFMapBase> rowMap = assembler.rowMap();
       cerr << "DOF Map" << endl;

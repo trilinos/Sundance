@@ -7,10 +7,16 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceEquationSet.hpp"
-#include "SundanceIntegrator.hpp"
-#include "SundanceInserterBase.hpp"
-#include "SundanceInserterFactoryBase.hpp"
+#include "SundanceIntegralGroup.hpp"
+#include "SundanceGrouperBase.hpp"
 #include "SundanceEvalManager.hpp"
+#include "SundanceStdFwkEvalMediator.hpp"
+#include "SundanceEvaluatableExpr.hpp"
+#include "TSFLoadableVector.hpp"
+#include "TSFLoadableMatrix.hpp"
+#include "TSFLinearOperator.hpp"
+#include "TSFVector.hpp"
+#include "TSFVectorType.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -35,25 +41,23 @@ namespace SundanceStdFwk
       /** */
       Assembler(const Mesh& mesh, 
                 const RefCountPtr<EquationSet>& eqn,
-                const RefCountPtr<InserterFactoryBase>& inserterFactory,
                 const VectorType<double>& vectorType,
                 const VerbositySetting& verb = classVerbosity());
       
       /** */
       const RefCountPtr<DOFMapBase>& rowMap() const 
-      {return inserter_->rowMap();}
+      {return rowMap_;}
 
       /** */
       const RefCountPtr<DOFMapBase>& colMap() const 
-      {return inserter_->colMap();}
+      {return colMap_;}
 
       /** */
-      const RefCountPtr<Set<int> >& bcRows() const 
-      {return inserter_->bcRows();}
+      const RefCountPtr<Set<int> >& bcRows() {return bcRows_;}
 
       /** */
-      void assemble(LinearOperator<double>& A,
-                    Vector<double>& b) const ;
+      void assemble(TSFExtended::LinearOperator<double>& A,
+                    TSFExtended::Vector<double>& b) const ;
 
       /** */
       static int& workSetSize() 
@@ -63,6 +67,23 @@ namespace SundanceStdFwk
       void getGraph(Array<Set<int> >& graph) const ;
       
     private:
+
+      /** */
+      void insertLocalMatrixValues(int cellDim, const Array<int>& workSet,
+                                   bool isBCRqc, 
+                                   int nTestNodes, int nUnkNodes,
+                                   const Array<int>& testID,
+                                   const Array<int>& unkID, 
+                                   const Array<double>& localValues,
+                                   TSFExtended::LoadableMatrix<double>* mat) const ;
+
+      /** */
+      void insertLocalVectorValues(int cellDim, const Array<int>& workSet,
+                                   bool isBCRqc, 
+                                   int nTestNodes, 
+                                   const Array<int>& testID,
+                                   const Array<double>& localValues,
+                                   TSFExtended::LoadableVector<double>* vec) const ;
 
       /** */
       bool isBCRow(int dof) const {return isBCRow_[dof-lowestRow_];}
@@ -75,13 +96,21 @@ namespace SundanceStdFwk
 
       RefCountPtr<EquationSet> eqn_;
 
+      RefCountPtr<DOFMapBase> rowMap_;
+
+      RefCountPtr<DOFMapBase> colMap_;
+
+      RefCountPtr<Set<int> > bcRows_;
+
       Array<RegionQuadCombo> rqc_;
 
       Array<int> isBCRqc_;
 
-      RefCountPtr<InserterBase> inserter_;
+      Array<Array<IntegralGroup> > groups_;
 
-      Array<RefCountPtr<Integrator> > integrator_;
+      Array<RefCountPtr<StdFwkEvalMediator> > mediators_;
+
+      Array<const EvaluatableExpr*> evalExprs_;
 
       RefCountPtr<EvalManager> evalMgr_;
 
@@ -89,6 +118,7 @@ namespace SundanceStdFwk
 
       int lowestRow_;
 
+      VectorType<double> vecType_;
     };
   }
 }

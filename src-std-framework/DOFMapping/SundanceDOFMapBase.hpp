@@ -64,11 +64,16 @@ using namespace SundanceStdMesh::Internal;
       /** */
       int numLocalDOFs() const {return numLocalDOFs_;}
 
+      /** */
+      int numDOFs() const {return numDOFs_;}
+
     protected:
 
       void setLowestLocalDOF(int low) {lowestLocalDOF_ = low;}
 
       void setNumLocalDOFs(int numDOFs) {numLocalDOFs_ = numDOFs;}
+
+      void setTotalNumDOFs(int numDOFs) {numDOFs_ = numDOFs;}
 
       const Mesh& mesh() const {return mesh_;}
 
@@ -94,6 +99,8 @@ using namespace SundanceStdMesh::Internal;
       int lowestLocalDOF_;
 
       int numLocalDOFs_;
+
+      int numDOFs_;
 
       Array<Array<int> > dofsHaveBeenAssigned_;
       

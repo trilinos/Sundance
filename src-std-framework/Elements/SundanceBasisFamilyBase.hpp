@@ -41,13 +41,6 @@ namespace SundanceStdFwk
       /** */
       virtual ~BasisFamilyBase(){;}
 
-      /** */
-      virtual XMLObject toXML() const = 0 ;
-
-      /** */
-      virtual void print(ostream& os) const 
-      {os << toXML().toString();}
-
       /** 
        * Get a description of the DOF numbering scheme for this
        * basis function on the given cell type. The DOF description

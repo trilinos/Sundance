@@ -15,11 +15,9 @@ Lagrange::Lagrange(int order)
   : ScalarBasis(), order_(order)
 {;}
 
-XMLObject Lagrange::toXML() const 
+void Lagrange::print(ostream& os) const 
 {
-  XMLObject rtn("Lagrange");
-  rtn.addAttribute("order", Teuchos::toString(order()));
-  return rtn;
+  os << "Lagrange(" << order_ << ")";
 }
 
 int Lagrange::nNodes(const CellType& cellType) const

@@ -35,17 +35,20 @@ namespace SundanceStdFwk
     public:
       /** Construct a one-form */
       ElementIntegral(int dim, 
-                  const CellType& cellType,
-                  const BasisFamily& testBasis,
-                  int testDerivOrder);
+                      const CellType& cellType,
+                      const BasisFamily& testBasis,
+                      const Array<int>& alpha,
+                      int testDerivOrder);
 
       /** Construct a two-form */
       ElementIntegral(int dim,
-                  const CellType& cellType,
-                  const BasisFamily& testBasis,
-                  int testDerivOrder,
-                  const BasisFamily& unkBasis,
-                  int unkDerivOrder);
+                      const CellType& cellType,
+                      const BasisFamily& testBasis,
+                      const Array<int>& alpha,
+                      int testDerivOrder,
+                      const BasisFamily& unkBasis,
+                      const Array<int>& beta,
+                      int unkDerivOrder);
 
       /** Indicate whether this element integral is a two form */
       bool isTwoForm() const {return isTwoForm_;}
@@ -84,6 +87,12 @@ namespace SundanceStdFwk
        * integral. */
       int unkDerivOrder() const {return unkDerivOrder_;}
 
+      /** */
+      const Array<int>& alpha() const {return alpha_;}
+
+      /** */
+      const Array<int>& beta() const {return beta_;}
+
       /** Workspace for element transformations */
       static Array<double>& G() {static Array<double> rtn; return rtn;}
 
@@ -120,6 +129,10 @@ namespace SundanceStdFwk
       int nNodes_;
 
       bool isTwoForm_;
+
+      Array<int> alpha_;
+
+      Array<int> beta_;
       
     };
   }

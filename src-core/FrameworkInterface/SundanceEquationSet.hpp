@@ -139,6 +139,16 @@ namespace SundanceCore
       const DerivSet& nonzeroBCFunctionalDerivs(const RegionQuadCombo& r) const
       {return bcRegionQuadComboNonzeroDerivs_.get(r);}
 
+
+      /** Indicates whether any test-unk pairs appear in the given domain */
+      bool hasTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+      {return testUnkPairsOnRegions_.containsKey(domain);}
+
+
+      /** Indicates whether any BC test-unk pairs appear in the given domain */
+      bool hasBCTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+      {return bcTestUnkPairsOnRegions_.containsKey(domain);}
+
       /** Returns the (test, unk) pairs appearing on the given domain.
        * This is required for determining the sparsity structure of the
        * matrix */

@@ -32,7 +32,7 @@ namespace SundanceStdFwk
     virtual ~Lagrange(){;}
 
     /** */
-    virtual XMLObject toXML() const ;
+    virtual void print(ostream& os) const ;
 
     /** */
     virtual int order() const {return order_;}

@@ -98,14 +98,15 @@ int main(int argc, void** argv)
           for (int dp=0; dp<=1; dp++)
             {
               if (dp > p) continue;
-              RefIntegral ref(dim, cellType, P, dp);
+
               int numTestDir = 1;
               if (dp==1) numTestDir = dim;
               for (int t=0; t<numTestDir; t++)
                 {
                   Array<int> alpha = tuple(t);
                   Tabs tab;
-                  ref.transformOneForm(JBatch, alpha, coeff, A);
+                  RefIntegral ref(dim, cellType, P, alpha, dp);
+                  ref.transformOneForm(JBatch, coeff, A);
                   cerr << tab << "transformed element" << endl;
                   cerr << tab << "t=" << t << endl;
                   cerr << tab << "{";
@@ -141,7 +142,6 @@ int main(int argc, void** argv)
                   for (int dq=0; dq<=1; dq++)
                     {
                       if (dq > q) continue;
-                      RefIntegral ref(dim, cellType, P, dp, Q, dq);
                       for (int t=0; t<numTestDir; t++)
                         {
                           Array<int> alpha = tuple(t);
@@ -151,8 +151,9 @@ int main(int argc, void** argv)
                             {
                               Tabs tab;
                               Array<int> beta = tuple(u);
-                              ref.transformTwoForm(JBatch, 
-                                                   alpha, beta, coeff, A);
+                              RefIntegral ref(dim, cellType, P, alpha,
+                                              dp, Q, beta, dq);
+                              ref.transformTwoForm(JBatch, coeff, A);
                               cerr << tab << "transformed element" << endl;
                               cerr << tab << "t=" << t << ", u=" << u << endl;
                               cerr << tab << "{";

@@ -674,7 +674,8 @@ void BasicSimplicialMesh::synchronizeGIDNumbering(int dim, int localCount)
   comm().synchronize();
   comm().synchronize();
   Array<int> gidOffsets;
-  MPIContainerComm<int>::accumulate(localCount, gidOffsets, comm());
+  int total;
+  MPIContainerComm<int>::accumulate(localCount, gidOffsets, total, comm());
   int myOffset = gidOffsets[comm().getRank()];
 
   SUNDANCE_OUT(verbosity() > VerbMedium, 

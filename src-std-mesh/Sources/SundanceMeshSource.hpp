@@ -47,11 +47,8 @@ namespace SundanceStdMesh
     void getAttributes(RefCountPtr<Array<Array<double> > >& nodeAttributes,
                        RefCountPtr<Array<Array<double> > >& elemAttributes) const ;
 
-    const bool& serializeLocal() const {return serializeLocal_;}
-
-    bool& serializeLocal() {return serializeLocal_;}
+    static bool& serializeLocal() {static bool rtn=false; return rtn;}
   private:
-    bool serializeLocal_;
     
   };
 }
