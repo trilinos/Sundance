@@ -1,3 +1,6 @@
+/* @HEADER@ */
+/* @HEADER@ */
+
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceParameter.hpp"

@@ -1,3 +1,7 @@
+/* @HEADER@ */
+/* @HEADER@ */
+
+
 #include "Sundance.hpp"
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"

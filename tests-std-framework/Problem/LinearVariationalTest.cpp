@@ -1,3 +1,6 @@
+/* @HEADER@ */
+/* @HEADER@ */
+
 #include "Sundance.hpp"
 
 using SundanceCore::List;
