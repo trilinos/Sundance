@@ -63,13 +63,6 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
-      const DiscreteFunction* df = dynamic_cast<DiscreteFunction*>(soln.ptr().get());
-      TEST_FOR_EXCEPTION(df==0, RuntimeError,
-                         "solution is not a discrete function");
-      Vector<double> solnVec = df->vector();
-      cerr << "solution vector = " << endl;
-      solnVec.print(cerr);
- 
       Expr exactSoln = x*(x-2.0);
 
       Expr errExpr = Integral(interior, 

@@ -19,6 +19,7 @@ DOFMapBase::DOFMapBase(const Mesh& mesh)
     cellDimOnCellSets_(),
     lowestLocalDOF_(),
     numDOFs_(),
+    ghostIndices_(rcp(new Array<int>())),
     dofsHaveBeenAssigned_()
 {;}
 

@@ -48,7 +48,7 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
           discreteSpace_ = f->discreteSpace();
           map_ = f->map();
           indices_ = tuple(dfe->myIndex());
-          df_ = df;
+          df_ = f;
         }
 
       TEST_FOR_EXCEPTION(df == 0 && dfe == 0, RuntimeError,

@@ -81,6 +81,11 @@ using namespace SundanceStdMesh::Internal;
       /** */
       int numDOFs() const {return numDOFs_;}
 
+      /** */
+      const RefCountPtr<Array<int> >& ghostIndices() const 
+      {return ghostIndices_;}
+
+
     protected:
 
       void setLowestLocalDOF(int low) {lowestLocalDOF_ = low;}
@@ -99,6 +104,8 @@ using namespace SundanceStdMesh::Internal;
 
       Array<int>& cellDimOnCellSets() {return cellDimOnCellSets_;}
 
+      void addGhostIndex(int dof) {ghostIndices_->append(dof);}
+
     private:
       int localProcID_;
 
@@ -115,6 +122,8 @@ using namespace SundanceStdMesh::Internal;
       int numLocalDOFs_;
 
       int numDOFs_;
+
+      RefCountPtr<Array<int> > ghostIndices_;
 
       Array<Array<int> > dofsHaveBeenAssigned_;
       

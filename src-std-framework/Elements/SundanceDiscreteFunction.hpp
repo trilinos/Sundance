@@ -67,7 +67,8 @@ namespace SundanceStdFwk
                         Array<double>& localValues) const ;
 
 
-    RefCountPtr<GhostView<double> > ghostView() const ;
+    RefCountPtr<GhostView<double> > ghostView() const 
+    {updateGhosts(); return ghostView_;}
 
 
   private:

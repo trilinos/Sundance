@@ -11,7 +11,7 @@
 
 <!-- Verbosity settings -->
 
-<Verbosity context="Assembly" value="Low"/>
+<Verbosity context="Assembly" value="Extreme"/>
 
 <Verbosity context="Evaluation" value="Silnet"/>
 
@@ -19,7 +19,7 @@
 
 <Verbosity context="Reference Integration" value="Silent"/>
 
-<Verbosity context="DOF Mapping" value="Silent"/>
+<Verbosity context="DOF Mapping" value="Extreme"/>
 
 <Verbosity context="Integral Grouping" value="Silent"/>
 

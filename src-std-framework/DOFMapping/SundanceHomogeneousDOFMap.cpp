@@ -316,7 +316,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
           int cellGID = outgoingCellRequests[p][c];
           int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
           int dof = dofsFromProc[c];
-          setDOFs(cellDim, cellLID, dof);
+          setDOFs(cellDim, cellLID, dof, true);
         }
     }
   
@@ -324,7 +324,8 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
 
 
 
-void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID, int& nextDOF)
+void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID, int& nextDOF,
+                                bool isRemote)
 {
   Array<int>& cellDOFs = dofs_[cellDim][cellLID];
   
@@ -335,7 +336,9 @@ void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID, int& nextDOF)
     {
       for (int f=0; f<nf; f++)
         {
-          cellDOFs[funcIDList()[f] + nf*i] = nextDOF++;
+          int k = nextDOF++;
+          cellDOFs[funcIDList()[f] + nf*i] = k;
+          if (isRemote) addGhostIndex(k);
         }
     }
 }

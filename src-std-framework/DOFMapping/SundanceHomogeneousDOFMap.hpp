@@ -74,7 +74,8 @@ using namespace SundanceStdMesh::Internal;
       void initMap();
 
       /** */
-      void setDOFs(int cellDim, int cellLID, int& nextDOF);
+      void setDOFs(int cellDim, int cellLID, 
+                   int& nextDOF, bool isRemote=false);
 
       /** */
       void shareDOFs(int cellDim,
