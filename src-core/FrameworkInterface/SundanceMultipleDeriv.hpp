@@ -79,6 +79,10 @@ namespace SundanceCore
       /** Return the order of spatial differentiation in this
        * derivative */
       int spatialOrder() const ;
+
+      /** Return a multiindex representing the spatial derivs in this
+       * multiple derivative */
+      MultiIndex spatialDeriv() const ;
           
           
       /** Return by reference argument the partitioning of

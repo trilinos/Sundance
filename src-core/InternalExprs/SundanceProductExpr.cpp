@@ -195,6 +195,12 @@ void ProductExpr::findNonzeros(const EvalContext& context,
                * than the max order of our multiindices */
               if (dRight.spatialOrder() + dLeft.spatialOrder() > maxSpatialOrder) continue;
 
+              MultiIndex netDeriv = dRight.spatialDeriv() + dLeft.spatialDeriv();
+              if (dRight.spatialOrder()==dRight.order()
+                  && dLeft.spatialOrder()==dLeft.order()
+                  && !multiIndices.contains(netDeriv)) continue;
+
+              
               // /*
 //                * Skip combinations that do not contribute to the
 //                * variational derivatives required at this point.

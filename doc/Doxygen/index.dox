@@ -25,19 +25,16 @@ degree of flexibility in the formulation, discretization, and solution
 of a problem. 
 
 
-
-<H2> Tutorial </H2>
-
-A <A HREF="../Tutorial/Tutorial.pdf"> tutorial </A>
+<H2> Getting Started </H2>
+<ul>
+<li> \ref downloads_page
+<li> \ref licensing_page 
+<li> \ref installation_page
+<li> A <b><A HREF="../Tutorial/Tutorial.pdf"> tutorial </A></b>
 on setting up linear and nonlinear PDE simulations is available in 
 <A HREF="../Tutorial/Tutorial.pdf"> PDF </A> format.
-
-<H2> FAQ </H2>
-
-<ul>
 <li> \ref faq_page 
 </ul>
-
 
 <H2> Online User's Guide </H2>
 

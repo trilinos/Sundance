@@ -71,7 +71,8 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for " 
-                       << toString());
+                       << toString() << " subject to multiindex set "
+                       << multiIndices.toString());
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
                        allFuncIDs, regardFuncsAsConstant))
     {

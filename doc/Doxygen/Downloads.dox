@@ -1,0 +1,22 @@
+
+/*! \page downloads_page Downloading Sundance
+
+<H2> Version 2.0 </H2>
+
+<ul>
+<li> <A HREF="sundance-2.0.tgz"> Sundance 2.0 </a> (14 March 2005)
+</ul>
+
+<H2> Unpacking Sundance </H2>
+
+<ul>
+<li> To unpack Sundance, type
+\code
+tar -zxf sundance-2.0.tar.gz
+\endcode
+or
+\code
+gunzip -c sundance-2.0.tar.gz | tar -xf -
+\endcode
+</ul>
+*/

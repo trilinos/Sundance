@@ -2,6 +2,7 @@
 /* @HEADER@ */
 
 #include "SundanceMultipleDeriv.hpp"
+#include "SundanceCoordDeriv.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -21,6 +22,20 @@ int MultipleDeriv::spatialOrder() const
       if (i->isCoordDeriv())
         {
           rtn += 1;
+        }
+    }
+  return rtn;
+}
+
+MultiIndex MultipleDeriv::spatialDeriv() const
+{
+  MultiIndex rtn;
+  for (MultipleDeriv::const_iterator i=begin(); i!=end(); i++)
+    {
+      if (i->isCoordDeriv())
+        {
+          int d = i->coordDeriv()->dir();
+          rtn[d] += 1;
         }
     }
   return rtn;
