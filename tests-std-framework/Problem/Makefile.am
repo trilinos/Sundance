@@ -6,7 +6,7 @@ EXEEXT = .exe
 
 noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Poisson3D Stokes2D \
 Coupled1D Coupled2D RadDiff1D NoxAlgebraic Kepler NoxPoisson1D \
-PoissonOnDisk OptPoisson1D
+PoissonOnDisk OptPoisson1D Eikonal2D TCATA1D
 
 
 
@@ -191,9 +191,6 @@ Kepler_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 Kepler_LDADD = $(STD_FWK_LIBS) 
 
-
-
-
 PoissonOnDisk_SOURCES = $(srcdir)/PoissonOnDisk.cpp
 
 PoissonOnDisk_DEPENDENCIES = \
@@ -206,8 +203,29 @@ PoissonOnDisk_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 PoissonOnDisk_LDADD = $(STD_FWK_LIBS) 
 
+Eikonal2D_SOURCES = $(srcdir)/Eikonal2D.cpp
 
+Eikonal2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
 
+Eikonal2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+Eikonal2D_LDADD = $(STD_FWK_LIBS) 
+
+TCATA1D_SOURCES = $(srcdir)/TCATA1D.cpp
+
+TCATA1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+TCATA1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+TCATA1D_LDADD = $(STD_FWK_LIBS) 
 
 
 include $(top_srcdir)/Makefile.common
