@@ -107,8 +107,6 @@ int main(int argc, void** argv)
                                    pow(dx*(soln-exactSoln), 2),
                                    new GaussianQuadrature(2));
 
-      Assembler::classVerbosity() = VerbExtreme;
-      IntegralGroup::classVerbosity() = VerbExtreme;
       double errorSq = evaluateIntegral(mesh, errExpr);
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 

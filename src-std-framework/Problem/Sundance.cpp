@@ -41,6 +41,7 @@
 #include "SundanceGrouperBase.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceDefaultPath.hpp"
+#include "SundanceVersionString.hpp"
 
 
 static Time& totalTimer() 
@@ -54,6 +55,17 @@ void Sundance::init(int* argc, void*** argv)
 {
   /* start up MPI. In a serial run, this will be a no-op */
   MPISession::init(argc, argv);
+
+  Tabs tab;
+
+  cerr << "Simulation built using Sundance version " << VersionString::number() 
+       << " (" << VersionString::date() << ")" << endl;
+
+  cerr << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
+       << endl;
+  cerr << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
+  cerr << tab << endl;
+  
 
   /* read standard command line flags */
   string configFilename = "SundanceConfig.xml";
