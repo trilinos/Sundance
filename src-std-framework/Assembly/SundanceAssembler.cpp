@@ -133,8 +133,8 @@ Assembler
           contexts_[order-1].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
           evalExprs_[order-1].append(ee);
-          const RefCountPtr<SparsityPattern>& sparsity 
-            = ee->sparsity(ee->getDerivSetIndex(context));
+          const RefCountPtr<SparsitySuperset>& sparsity 
+            = ee->sparsitySuperset(context);
           SUNDANCE_OUT(verbosity() > VerbMedium,
                        "sparsity pattern " << *sparsity);
 
@@ -169,8 +169,8 @@ Assembler
           contexts_[order-1].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
           evalExprs_[order-1].append(ee);
-          const RefCountPtr<SparsityPattern>& sparsity 
-            = ee->sparsity(ee->getDerivSetIndex(context));
+          const RefCountPtr<SparsitySuperset>& sparsity 
+            = ee->sparsitySuperset(context);
           SUNDANCE_OUT(verbosity() > VerbMedium,
                        "sparsity pattern " << *sparsity);
 
@@ -279,7 +279,8 @@ void Assembler::assemble(LinearOperator<double>& A,
                "work set size is " << workSetSize()); 
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
 
-  RefCountPtr<EvalVectorArray> coeffs;
+  Array<RefCountPtr<EvalVector> > vectorCoeffs;
+  Array<double> constantCoeffs;
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   RefCountPtr<Array<int> > testLocalDOFs 
@@ -349,6 +350,10 @@ void Assembler::assemble(LinearOperator<double>& A,
       SUNDANCE_OUT(verbosity() > VerbLow, 
                    tab0 << "cell type = " << cellType);
 
+
+      const Evaluator* evaluator 
+        = evalExprs_[1][r]->evaluator(contexts_[1][r]).get();
+
       /* do the cells in batches of the work set size */
 
       CellIterator iter=cells.begin();
@@ -374,25 +379,18 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           mediators_[r]->setCellBatch(workSet);
 
-          evalExprs_[1][r]->flushResultCache();
+          evaluator->resetNumCalls();
           mesh_.getJacobians(cellDim, *workSet, *J);
-          evalExprs_[1][r]->evaluate(*evalMgr_, coeffs);
+          evalExprs_[1][r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
           if (verbosity() > VerbMedium)
             {
               Tabs tab2;
               cerr << tab2 << "evaluation results: " << endl;
               const EvalContext& context = contexts_[1][r];
-              const RefCountPtr<SparsityPattern>& sparsity 
-                = evalExprs_[1][r]->sparsity(evalExprs_[1][r]->getDerivSetIndex(context));
-
-              for (int i=0; i<coeffs->size(); i++)
-                {
-                  const MultipleDeriv& deriv = sparsity->deriv(i);
-                  cerr << "deriv=" << deriv << endl;
-                  (*coeffs)[i]->print(cerr);
-                  cerr << endl;
-                }
+              const RefCountPtr<SparsitySuperset>& sparsity 
+                = evalExprs_[1][r]->sparsitySuperset(context);
+              sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
           int nTestNodes;
@@ -416,7 +414,9 @@ void Assembler::assemble(LinearOperator<double>& A,
           for (int g=0; g<groups_[1][r].size(); g++)
             {
               const IntegralGroup& group = groups_[1][r][g];
-              if (!group.evaluate(*J, coeffs, localValues)) continue;
+              if (!group.evaluate(*J, vectorCoeffs,
+                                  constantCoeffs, 
+                                  localValues)) continue;
 
               if (verbosity() > VerbHigh)
                 {
@@ -473,7 +473,8 @@ void Assembler::assemble(Vector<double>& b) const
                "work set size is " << workSetSize()); 
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
 
-  RefCountPtr<EvalVectorArray> coeffs;
+  Array<RefCountPtr<EvalVector> > vectorCoeffs;
+  Array<double> constantCoeffs;
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   RefCountPtr<Array<int> > testLocalDOFs 
@@ -516,6 +517,8 @@ void Assembler::assemble(Vector<double>& b) const
       SUNDANCE_OUT(verbosity() > VerbLow, 
                    tab0 << "cell type = " << cellType);
 
+      const Evaluator* evaluator 
+        = evalExprs_[0][r]->evaluator(contexts_[0][r]).get();
       /* do the cells in batches of the work set size */
 
       CellIterator iter=cells.begin();
@@ -537,9 +540,9 @@ void Assembler::assemble(Vector<double>& b) const
 
           mediators_[r]->setCellBatch(workSet);
 
-          evalExprs_[0][r]->flushResultCache();
+          evaluator->resetNumCalls();
           mesh_.getJacobians(cellDim, *workSet, *J);
-          evalExprs_[0][r]->evaluate(*evalMgr_, coeffs);
+          evalExprs_[0][r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
           if (verbosity() > VerbMedium)
             {
@@ -547,16 +550,9 @@ void Assembler::assemble(Vector<double>& b) const
               cerr << tab2 << " ----------- evaluation results: ------" << endl;
               cerr << tab2 << "expr=" << evalExprs_[0][r]->toString() << endl;
               const EvalContext& context = contexts_[0][r];
-              const RefCountPtr<SparsityPattern>& sparsity 
-                = evalExprs_[0][r]->sparsity(evalExprs_[0][r]->getDerivSetIndex(context));
-
-              for (int i=0; i<coeffs->size(); i++)
-                {
-                  const MultipleDeriv& deriv = sparsity->deriv(i);
-                  cerr << "deriv=" << deriv << endl;
-                  (*coeffs)[i]->print(cerr);
-                  cerr << endl;
-                }
+              const RefCountPtr<SparsitySuperset>& sparsity 
+                = evalExprs_[0][r]->sparsitySuperset(context);
+              sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
           int nTestNodes;
@@ -567,7 +563,9 @@ void Assembler::assemble(Vector<double>& b) const
           for (int g=0; g<groups_[0][r].size(); g++)
             {
               const IntegralGroup& group = groups_[0][r][g];
-              if (!group.evaluate(*J, coeffs, localValues)) 
+              if (!group.evaluate(*J, vectorCoeffs, 
+                                  constantCoeffs, 
+                                  localValues)) 
                 {
                   if (verbosity() > VerbMedium)
                     {

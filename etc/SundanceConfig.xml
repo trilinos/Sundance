@@ -2,18 +2,31 @@
 
 <!-- Set size of work set, i.e., the number of cells -->
 
-<Parameter name="Work Set Size" value="5"/>
+<Parameter name="Work Set Size" value="100"/>
 
 <!-- Whether to check the result of each unary function operation -->
 
 <Parameter name="Check for Floating Point Errors" value="false"/>
 
 
-<!-- Verbosity settings -->
+<!-- Whether to compute a string representation of calculations  -->
+
+<Parameter name="Shadow Calculations with String Values" value="true"/>
+
+
+<!-- -------------------------------------------------------------- -->
+<!-- -------------------Verbosity settings ------------------------ -->
+<!--                                                                -->
+<!-- Valid verbosity values are Silent, Low, Medium, High, Extreme  -->
+<!--                                                                -->
+<!-- -------------------------------------------------------------- -->
+
 
 <Verbosity context="Assembly" value="Silent"/>
 
 <Verbosity context="Evaluation" value="Silent"/>
+
+<Verbosity context="Integration Management" value="Silent"/>
 
 <Verbosity context="Quadrature" value="Silent"/>
 
@@ -24,6 +37,9 @@
 <Verbosity context="Integral Grouping" value="Silent"/>
 
 <Verbosity context="Symbolic Sparsity Determination" value="Silent"/>
+
+
+
 
 <DefaultMesh type="BasicSimplicial"/>
 

@@ -192,6 +192,8 @@ AC_CONFIG_FILES([
   src-std-mesh/Makefile
   src-std-framework/Makefile
   src-std-framework/SundanceDefaultPath.hpp
+  tests-utils/Makefile
+  tests-utils/Functors/Makefile
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
   tests-std-mesh/Makefile

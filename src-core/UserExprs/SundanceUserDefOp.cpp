@@ -2,17 +2,38 @@
 /* @HEADER@ */
 
 #include "SundanceUserDefOp.hpp"
+#include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 UserDefOp::UserDefOp(const Expr& arg,
                      const RefCountPtr<UserDefFunctor>& op)
   : ExprWithChildren(getScalarArgs(arg)), op_(op)
-{;}
+{
+  for (int i=0; i<numChildren(); i++)
+    {
+      if (isEvaluatable(evaluatableChild(i)))
+        {
+          for (int d=0; d<MultiIndex::maxDim(); d++) 
+            {
+              if (evaluatableChild(i)->orderOfDependency(d) != 0) 
+                {
+                  setOrderOfDependency(d, -1);
+                }
+              else
+                {
+                  setOrderOfDependency(d, 0);
+                }
+            }
+        }
+    }
+}
 
 ostream& UserDefOp::toText(ostream& os, bool paren) const 
 {
@@ -44,35 +65,38 @@ XMLObject UserDefOp::toXML() const
   return rtn;
 }
 
-bool UserDefOp::hasNonzeroDeriv(const MultipleDeriv& d) const
+void UserDefOp::findNonzeros(const EvalContext& context,
+                             const Set<MultiIndex>& multiIndices,
+                             bool regardFuncsAsConstant) const
 {
-  TimeMonitor t(nonzeroDerivCheckTimer());
-  hasNonzeroDerivCalls()++;
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for user-defined "
+                       "nonlinear op" << toString() 
+                       << " subject to multiindices " << multiIndices); 
 
-  if (derivHasBeenCached(d))
+  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
     {
-      nonzeroDerivCacheHits()++;
-      return getCachedDerivNonzeroness(d);
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      return;
     }
-  TimeMonitor t2(uncachedNonzeroDerivCheckTimer());
 
-  MultipleDeriv::const_iterator iter;
-  
- 
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
-  bool gotit = false;
   for (int i=0; i<numChildren(); i++)
     {
-      if (evaluatableChild(i)->hasNonzeroDeriv(d))
+      evaluatableChild(i)->findNonzeros(context, multiIndices,
+                                        regardFuncsAsConstant);
+
+      RefCountPtr<SparsitySubset> argSparsitySubset 
+        = evaluatableChild(i)->sparsitySubset(context, multiIndices);
+
+      for (int j=0; j<argSparsitySubset->numDerivs(); j++)
         {
-          addDerivToCache(d, true);
-          gotit = true;
+          subset->addDeriv(argSparsitySubset->deriv(j), VectorDeriv);
         }
     }
-  if (gotit) return true;
 
-  addDerivToCache(d, false);
-  return false;
+  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
 }
 
 

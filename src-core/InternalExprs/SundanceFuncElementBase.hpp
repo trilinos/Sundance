@@ -42,7 +42,10 @@ namespace SundanceCore
         {
         public:
           /** */
-          FuncElementBase(const string& name);
+          FuncElementBase(const string& rootName,
+                          const string& suffix);
+          /** */
+          FuncElementBase(const string& rootName);
 
           /** virtual destructor */
           virtual ~FuncElementBase() {;}
@@ -53,6 +56,12 @@ namespace SundanceCore
           /** Return the name of this function */
           const string& name() const {return name_;}
 
+          /** Return the root name of this function */
+          const string& rootName() const {return rootName_;}
+
+          /** Return the root name of this function */
+          const string& suffix() const {return suffix_;}
+
           /** Write self in text form */
           virtual ostream& toText(ostream& os, bool paren) const ;
 
@@ -62,6 +71,10 @@ namespace SundanceCore
         private:
 
           string name_;
+
+          string rootName_;
+
+          string suffix_;
 
           int id_;
 

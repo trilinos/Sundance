@@ -2,7 +2,6 @@
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
 
-using SundanceCore::List;
 /** 
  * 
  */
@@ -14,7 +13,7 @@ public:
   BesselJFunc(int n) : UserDefFunctor("J_" + Teuchos::toString(n)), n_(n) {;}
 
   /** */
-  virtual double eval(const Array<double>& vars) const ;
+  virtual double eval0(const Array<double>& vars) const ;
 
 private:
   int n_;
@@ -51,7 +50,7 @@ public:
     : UserDefFunctor("Drum_" + Teuchos::toString(n)), A_(A), n_(n) {;}
 
   /** */
-  virtual double eval(const Array<double>& vars) const ;
+  virtual double eval0(const Array<double>& vars) const ;
 
 private:
   double A_;
@@ -61,7 +60,7 @@ private:
 
 /* Definition of eval() function. This is where the "meat" is. */
 
-double DrumFuncFunctor::eval(const Array<double>& vars) const
+double DrumFuncFunctor::eval0(const Array<double>& vars) const
 {
   double x = vars[0];
   double y = vars[1];
@@ -143,7 +142,7 @@ int main(int argc, void** argv)
 
 /* Definition of BesselJFunc::eval() */
 
-double BesselJFunc::eval(const Array<double>& vars) const
+double BesselJFunc::eval0(const Array<double>& vars) const
 {
   return jn(n_, vars[0]);
 }

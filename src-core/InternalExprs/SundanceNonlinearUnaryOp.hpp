@@ -12,6 +12,7 @@
 #include "SundanceMap.hpp"
 #include "SundanceSet.hpp"
 #include "SundanceMultipleDeriv.hpp"
+#include "SundanceNonlinearUnaryOpEvaluator.hpp"
 
 
 
@@ -30,7 +31,8 @@ namespace SundanceCore
     /**
      *
      */
-    class NonlinearUnaryOp : public UnaryExpr
+    class NonlinearUnaryOp : public UnaryExpr,
+                    public GenericEvaluatorFactory<NonlinearUnaryOp, NonlinearUnaryOpEvaluator>
     {
     public:
       /** construct with an argument and the functor defining the operation */
@@ -39,6 +41,12 @@ namespace SundanceCore
 
       /** virtual destructor */
       virtual ~NonlinearUnaryOp() {;}
+
+      /** Preprocessing step to determine which functional 
+       * derivatives are nonzero */
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
+                                bool regardFuncsAsConstant) const ;
 
       /** Write a simple text description suitable
        * for output to a terminal */
@@ -52,11 +60,6 @@ namespace SundanceCore
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
-
-      /** The function is nonlinear, so 
-       * all mixed partials are assumed to be nonzero as long as
-       * their constituent single derivs are nonzero. */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const ;
 
 
       /** Access to the operator */

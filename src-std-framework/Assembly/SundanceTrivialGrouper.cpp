@@ -21,7 +21,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                 const CellType& cellType,
                                 int cellDim,
                                 const QuadratureFamily& quad,
-                                const RefCountPtr<SparsityPattern>& sparsity,
+                                const RefCountPtr<SparsitySuperset>& sparsity,
                                 Array<IntegralGroup>& groups) const
 {
   Tabs tab;
@@ -34,13 +34,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   SUNDANCE_OUT(verb > VerbMedium,  
                tab << "sparsity = " << endl << *sparsity << endl);
 
+  int vecCount=0;
+  int constCount=0;
+
   for (int i=0; i<sparsity->numDerivs(); i++)
     {
       Tabs tab1;
-
-      TEST_FOR_EXCEPTION(sparsity->isZero(i), InternalError,
-                         "Structurally zero functional derivative detected "
-                         "at the root level");
 
       const MultipleDeriv& d = sparsity->deriv(i);
       if (d.order()==0) continue;
@@ -70,6 +69,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                    tab1 << "coeff is non-constant");
 
       RefCountPtr<ElementIntegral> integral;
+      int resultIndex;
       if (sparsity->isConstant(i))
         {
           if (isOneForm)
@@ -100,6 +100,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                              testBasis, alpha, miTest.order(),
                                              unkBasis, beta, miUnk.order()));
             }
+          resultIndex = constCount++;
         }
       else
         {
@@ -133,18 +134,19 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                                     unkBasis, beta, 
                                                     miUnk.order(), quad));
             }
+          resultIndex = vecCount++;
         }
 
       if (isOneForm)
         {
           groups.append(IntegralGroup(tuple(testID), tuple(integral),
-                                      tuple(tuple(i))));
+                                      tuple(tuple(resultIndex))));
         }
       else
         {
           groups.append(IntegralGroup(tuple(testID), tuple(unkID),
                                       tuple(integral),
-                                      tuple(tuple(i))));
+                                      tuple(tuple(resultIndex))));
         }
     }
 }

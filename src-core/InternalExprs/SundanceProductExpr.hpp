@@ -7,7 +7,7 @@
 #define SUNDANCE_PRODUCTEXPR_H
 
 #include "SundanceBinaryExpr.hpp"
-
+#include "SundanceProductEvaluator.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -21,32 +21,29 @@ namespace SundanceCore
 
   namespace Internal
   {
-    /** */
-    class ProductExpr : public BinaryExpr
+    /** 
+     * ProductExpr represents a product of two scalar-valued expressions
+     */
+    class ProductExpr : public BinaryExpr,
+                        public GenericEvaluatorFactory<ProductExpr, ProductEvaluator>
     {
     public:
       /** */
       ProductExpr(const RefCountPtr<ScalarExpr>& left,
                   const RefCountPtr<ScalarExpr>& right);
 
-      /** */
+      /** virtual dtor */
       virtual ~ProductExpr() {;}
 
       /** Indicate whether this expression is a "hungry"
        * differential operator that is awaiting an argument. */
       virtual bool isHungryDiffOp() const ;
 
-      /**
-       * Indicate whether the given functional derivative is nonzero
-       */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const ;
-
-      /** Return the set of derivatives required by the operands
-       * of this expression given that this expression
-       * requires the set d. */
-      virtual Array<DerivSet>
-      derivsRequiredFromOperands(const DerivSet& d) const ;
-
+      /** Preprocessing step to determine which functional 
+       * derivatives are nonzero */
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
+                                bool regardFuncsAsConstant) const ;
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
@@ -59,6 +56,13 @@ namespace SundanceCore
       virtual const string& xmlTag() const ;
       /** */
       virtual const string& opChar() const ;
+
+    private:
+
+      /** */
+      void findChildMultiIndexSets(const Set<MultiIndex>& miSet,
+                                   Set<MultiIndex>& miLeft,
+                                   Set<MultiIndex>& miRight) const ;
 
     };
   }

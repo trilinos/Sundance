@@ -12,7 +12,7 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-using SundanceUtils::Map;
+
 namespace SundanceStdFwk
 
 {
@@ -21,7 +21,7 @@ namespace SundanceStdFwk
   using namespace SundanceStdMesh::Internal;
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
-
+  using SundanceUtils::Map;
 
   namespace Internal
   {
@@ -30,36 +30,11 @@ namespace SundanceStdFwk
     /**
 
      * StdFwkEvalMediator evaluates mesh-dependent functions in the
-
      * standard framework. A number of subtypes are supported: 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
      * QuadratureEvalMediator, which does evaluation on quadrature points,
      * and NodalEvalMediator, which does evaluation at nodal points. 
      */
     class StdFwkEvalMediator : public AbstractEvalMediator,
-                               public ObjectWithVerbosity<StdFwkEvalMediator>,
                                public TSFExtended::Printable
     {
     public:

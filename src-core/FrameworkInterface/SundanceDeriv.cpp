@@ -24,6 +24,7 @@ bool Deriv::operator<(const Deriv& other) const
 bool Deriv::operator==(const Deriv& other) const
 {
   if (*this < other || other < *this) return false;
+  return true;
 }
 
 

@@ -66,15 +66,7 @@ bool MultiIndex::operator<(const MultiIndex& m) const
 	return false;
 }
 
-int MultiIndex::hashCode() const 
-{
-	int h = 0;
-	for (int i=0; i<maxDim(); i++)
-		{
-			h += (m_[i]+1)*(i+1);
-		}
-	return h;
-}
+
 
 Array<MultiIndex> MultiIndex::getLowerMultiIndices() const
 {

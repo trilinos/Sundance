@@ -11,7 +11,15 @@ using namespace Teuchos;
 
 UnaryMinus::UnaryMinus(const RefCountPtr<ScalarExpr>& arg)
   : UnaryExpr(arg)
-{;}
+{
+  if (isEvaluatable(arg.get()))
+    {
+      for (int d=0; d<MultiIndex::maxDim(); d++) 
+        {
+          setOrderOfDependency(d, evaluatableArg()->orderOfDependency(d));
+        }
+    }
+}
 
 ostream& UnaryMinus::toText(ostream& os, bool paren) const 
 {

@@ -11,7 +11,7 @@
 #include "SundanceMap.hpp"
 #include "SundanceSet.hpp"
 #include "SundanceMultipleDeriv.hpp"
-
+#include "SundanceDiffOpEvaluator.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -29,7 +29,8 @@ namespace SundanceCore
     /**
      *
      */
-    class DiffOp : public UnaryExpr
+    class DiffOp : public UnaryExpr,
+                   public GenericEvaluatorFactory<DiffOp, DiffOpEvaluator>
     {
     public:
       /** ctor */
@@ -48,17 +49,7 @@ namespace SundanceCore
       /** Write in XML */
       virtual XMLObject toXML() const ;
 
-      /**
-       * Indicate whether the given functional derivative is nonzero
-       */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& f) const ;
-
-      /**
-       * Find all functions and their derivatives beneath my level
-       * in the tree. For FuncElementBase, this appends a derivative
-       * wrt me.
-       */
-      virtual void getRoughDependencies(Set<Deriv>& funcs) const ;
+      
 
       /** */
       const Deriv& myCoordDeriv() const {return myCoordDeriv_;}
@@ -76,22 +67,47 @@ namespace SundanceCore
       {return requiredFunctions_.containsKey(d);}
 
     
-
-      /** Return the set of derivatives required by the operands
-       * of this expression given that this expression
-       * requires the set d. For all expressions other than DiffOp,
-       * the operand derivative set is identical to the input derivative
-       * set. DiffOp will require a different set of derivatives from
-       * its operand. */
-      virtual Array<DerivSet>
-      derivsRequiredFromOperands(const DerivSet& d) const ;
+      
+      /** 
+       * Determine which functional and spatial derivatives are nonzero in the
+       * given context. We also keep track of which derivatives
+       * are known to be constant, which can simplify evaluation. 
+       */
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
+                                bool regardFuncsAsConstant) const ;
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
 
+      /** Determine the functional derivatives of this expression that
+       * are produced through the chain rule
+       * by the presence of the given derivative of the argument. 
+       */
+      void getResultDerivs(const MultipleDeriv& argDeriv,
+                           const DerivState& sourceState,
+                           Map<MultipleDeriv, DerivState>& isolatedTerms,
+                           Map<MultipleDeriv, Deriv>& funcTerms) const ;
+
+
+      /** */
+      virtual Set<MultiIndex> argMultiIndices(const Set<MultiIndex>& myMultiindices) const ;
+        
+      /** */
+      bool ignoreFuncTerms() const {return ignoreFuncTerms_;}
+
+
+
+    protected:
 
     private:
+
+      
+      bool canBackOutDeriv(const Deriv& d, const MultiIndex& x, 
+                           Deriv& rtnDeriv) const ;
+
+      
 
       MultiIndex mi_;
 
@@ -101,6 +117,8 @@ namespace SundanceCore
       mutable Map<MultipleDeriv, SundanceUtils::Set<Deriv>, 
                   increasingOrder<MultipleDeriv> > requiredFunctions_;
 
+
+      mutable bool ignoreFuncTerms_;
     };
   }
 }

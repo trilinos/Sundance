@@ -15,7 +15,6 @@
 #include "SundanceDimensionalCellFilter.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 #include "SundanceSymbolicTransformation.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceTestFunction.hpp"
 #include "SundanceUnknownFunction.hpp"
 #include "SundanceDiscreteFunction.hpp"
@@ -32,7 +31,6 @@
 #include "SundanceZeroExpr.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceEvalVector.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceBasicInserter.hpp"
 #include "SundanceIntegrator.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
@@ -103,8 +101,7 @@ int main(int argc, void** argv)
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
       RefCountPtr<EquationSet> eqnSet 
-        = rcp(new EquationSet(eqn, bc, v, u, u0, 
-                              rcp(new BruteForceEvaluatorFactory())));
+        = rcp(new EquationSet(eqn, bc, v, u, u0));
 
       //      verbosity<EvalVector>() = VerbExtreme;
       // verbosity<QuadratureEvalMediator>() = VerbExtreme;

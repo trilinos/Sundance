@@ -54,77 +54,84 @@ m4trace:configure.ac:44: -1- AC_SUBST([LIBS])
 m4trace:configure.ac:54: -1- AC_CONFIG_AUX_DIR([config])
 m4trace:configure.ac:59: -1- AM_CONFIG_HEADER([src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in])
 m4trace:configure.ac:59: -1- _m4_warn([obsolete], [The macro `AM_CONFIG_HEADER' is obsolete.
-You should run autoupdate.], [/usr/local/share/aclocal-1.8/header.m4:23: AM_CONFIG_HEADER is expanded from...
+You should run autoupdate.], [/usr/share/aclocal-1.8/header.m4:23: AM_CONFIG_HEADER is expanded from...
 configure.ac:59: the top level])
 m4trace:configure.ac:59: -1- AC_CONFIG_HEADERS([src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in])
-m4trace:configure.ac:70: -1- AM_MAINTAINER_MODE
-m4trace:configure.ac:70: -1- AM_CONDITIONAL([MAINTAINER_MODE], [test $USE_MAINTAINER_MODE = yes])
-m4trace:configure.ac:70: -1- AC_SUBST([MAINTAINER_MODE_TRUE])
-m4trace:configure.ac:70: -1- AC_SUBST([MAINTAINER_MODE_FALSE])
-m4trace:configure.ac:70: -1- AC_SUBST([MAINT])
-m4trace:configure.ac:74: -1- AC_CANONICAL_HOST
-m4trace:configure.ac:74: -1- AC_SUBST([build], [$ac_cv_build])
-m4trace:configure.ac:74: -1- AC_SUBST([build_cpu], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([build_vendor], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([build_os], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([host], [$ac_cv_host])
-m4trace:configure.ac:74: -1- AC_SUBST([host_cpu], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([host_vendor], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([host_os], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([target], [$ac_cv_target])
-m4trace:configure.ac:74: -1- AC_SUBST([target_cpu], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.ac:74: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.ac:78: -1- AM_INIT_AUTOMAKE([Sundance], [1.1])
-m4trace:configure.ac:78: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
-m4trace:configure.ac:78: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
-m4trace:configure.ac:78: -1- AM_AUTOMAKE_VERSION([1.8.4])
-m4trace:configure.ac:78: -1- AC_PROG_INSTALL
-m4trace:configure.ac:78: -1- AC_SUBST([INSTALL_PROGRAM])
-m4trace:configure.ac:78: -1- AC_SUBST([INSTALL_SCRIPT])
-m4trace:configure.ac:78: -1- AC_SUBST([INSTALL_DATA])
-m4trace:configure.ac:78: -1- AC_SUBST([CYGPATH_W])
-m4trace:configure.ac:78: -1- AC_SUBST([PACKAGE], [Sundance])
-m4trace:configure.ac:78: -1- AC_SUBST([VERSION], [1.1])
-m4trace:configure.ac:78: -1- _AM_IF_OPTION([no-define], [], [AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Name of package])
+m4trace:configure.ac:74: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+configure.ac:74: the top level])
+m4trace:configure.ac:85: -1- AM_MAINTAINER_MODE
+m4trace:configure.ac:85: -1- AM_CONDITIONAL([MAINTAINER_MODE], [test $USE_MAINTAINER_MODE = yes])
+m4trace:configure.ac:85: -1- AC_SUBST([MAINTAINER_MODE_TRUE])
+m4trace:configure.ac:85: -1- AC_SUBST([MAINTAINER_MODE_FALSE])
+m4trace:configure.ac:85: -1- AC_SUBST([MAINT])
+m4trace:configure.ac:89: -1- AC_CANONICAL_HOST
+m4trace:configure.ac:89: -1- AC_SUBST([build], [$ac_cv_build])
+m4trace:configure.ac:89: -1- AC_SUBST([build_cpu], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([build_vendor], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([build_os], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([host], [$ac_cv_host])
+m4trace:configure.ac:89: -1- AC_SUBST([host_cpu], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([host_vendor], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([host_os], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([target], [$ac_cv_target])
+m4trace:configure.ac:89: -1- AC_SUBST([target_cpu], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.ac:89: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.ac:93: -1- AM_INIT_AUTOMAKE([1.8.2])
+m4trace:configure.ac:93: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
+m4trace:configure.ac:93: -1- AM_SET_CURRENT_AUTOMAKE_VERSION
+m4trace:configure.ac:93: -1- AM_AUTOMAKE_VERSION([1.8.3])
+m4trace:configure.ac:93: -1- AC_PROG_INSTALL
+m4trace:configure.ac:93: -1- AC_SUBST([INSTALL_PROGRAM])
+m4trace:configure.ac:93: -1- AC_SUBST([INSTALL_SCRIPT])
+m4trace:configure.ac:93: -1- AC_SUBST([INSTALL_DATA])
+m4trace:configure.ac:93: -1- AC_SUBST([CYGPATH_W])
+m4trace:configure.ac:93: -1- _AM_SET_OPTIONS([1.8.2])
+m4trace:configure.ac:93: -1- _AM_SET_OPTION([1.8.2])
+m4trace:configure.ac:93: -2- _AM_MANGLE_OPTION([1.8.2])
+m4trace:configure.ac:93: -1- AC_SUBST([PACKAGE], ['AC_PACKAGE_TARNAME'])
+m4trace:configure.ac:93: -1- AC_SUBST([VERSION], ['AC_PACKAGE_VERSION'])
+m4trace:configure.ac:93: -1- _AM_IF_OPTION([no-define], [], [AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Name of package])
  AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [Version number of package])])
-m4trace:configure.ac:78: -2- _AM_MANGLE_OPTION([no-define])
-m4trace:configure.ac:78: -1- AC_DEFINE_TRACE_LITERAL([PACKAGE])
-m4trace:configure.ac:78: -1- AH_OUTPUT([PACKAGE], [/* Name of package */
+m4trace:configure.ac:93: -2- _AM_MANGLE_OPTION([no-define])
+m4trace:configure.ac:93: -1- AC_DEFINE_TRACE_LITERAL([PACKAGE])
+m4trace:configure.ac:93: -1- AH_OUTPUT([PACKAGE], [/* Name of package */
 #undef PACKAGE])
-m4trace:configure.ac:78: -1- AC_DEFINE_TRACE_LITERAL([VERSION])
-m4trace:configure.ac:78: -1- AH_OUTPUT([VERSION], [/* Version number of package */
+m4trace:configure.ac:93: -1- AC_DEFINE_TRACE_LITERAL([VERSION])
+m4trace:configure.ac:93: -1- AH_OUTPUT([VERSION], [/* Version number of package */
 #undef VERSION])
-m4trace:configure.ac:78: -1- AM_SANITY_CHECK
-m4trace:configure.ac:78: -1- AM_MISSING_PROG([ACLOCAL], [aclocal-${am__api_version}])
-m4trace:configure.ac:78: -1- AM_MISSING_HAS_RUN
-m4trace:configure.ac:78: -1- AM_AUX_DIR_EXPAND
-m4trace:configure.ac:78: -1- AC_SUBST([ACLOCAL])
-m4trace:configure.ac:78: -1- AM_MISSING_PROG([AUTOCONF], [autoconf])
-m4trace:configure.ac:78: -1- AC_SUBST([AUTOCONF])
-m4trace:configure.ac:78: -1- AM_MISSING_PROG([AUTOMAKE], [automake-${am__api_version}])
-m4trace:configure.ac:78: -1- AC_SUBST([AUTOMAKE])
-m4trace:configure.ac:78: -1- AM_MISSING_PROG([AUTOHEADER], [autoheader])
-m4trace:configure.ac:78: -1- AC_SUBST([AUTOHEADER])
-m4trace:configure.ac:78: -1- AM_MISSING_PROG([MAKEINFO], [makeinfo])
-m4trace:configure.ac:78: -1- AC_SUBST([MAKEINFO])
-m4trace:configure.ac:78: -1- AM_MISSING_PROG([AMTAR], [tar])
-m4trace:configure.ac:78: -1- AC_SUBST([AMTAR])
-m4trace:configure.ac:78: -1- AM_PROG_INSTALL_SH
-m4trace:configure.ac:78: -1- AC_SUBST([install_sh])
-m4trace:configure.ac:78: -1- AM_PROG_INSTALL_STRIP
-m4trace:configure.ac:78: -1- AC_SUBST([STRIP])
-m4trace:configure.ac:78: -1- AC_SUBST([ac_ct_STRIP])
-m4trace:configure.ac:78: -1- AC_SUBST([INSTALL_STRIP_PROGRAM])
-m4trace:configure.ac:78: -1- AM_PROG_MKDIR_P
-m4trace:configure.ac:78: -1- AC_SUBST([mkdir_p])
-m4trace:configure.ac:78: -1- AC_PROG_AWK
-m4trace:configure.ac:78: -1- AC_SUBST([AWK])
-m4trace:configure.ac:78: -1- AC_PROG_MAKE_SET
-m4trace:configure.ac:78: -1- AC_SUBST([SET_MAKE])
-m4trace:configure.ac:78: -1- AM_SET_LEADING_DOT
-m4trace:configure.ac:78: -1- AC_SUBST([am__leading_dot])
-m4trace:configure.ac:78: -1- _AM_IF_OPTION([no-dependencies], [], [AC_PROVIDE_IFELSE([AC_PROG_CC],
+m4trace:configure.ac:93: -1- AM_SANITY_CHECK
+m4trace:configure.ac:93: -1- AM_MISSING_PROG([ACLOCAL], [aclocal-${am__api_version}])
+m4trace:configure.ac:93: -1- AM_MISSING_HAS_RUN
+m4trace:configure.ac:93: -1- AM_AUX_DIR_EXPAND
+m4trace:configure.ac:93: -1- AC_SUBST([ACLOCAL])
+m4trace:configure.ac:93: -1- AM_MISSING_PROG([AUTOCONF], [autoconf])
+m4trace:configure.ac:93: -1- AC_SUBST([AUTOCONF])
+m4trace:configure.ac:93: -1- AM_MISSING_PROG([AUTOMAKE], [automake-${am__api_version}])
+m4trace:configure.ac:93: -1- AC_SUBST([AUTOMAKE])
+m4trace:configure.ac:93: -1- AM_MISSING_PROG([AUTOHEADER], [autoheader])
+m4trace:configure.ac:93: -1- AC_SUBST([AUTOHEADER])
+m4trace:configure.ac:93: -1- AM_MISSING_PROG([MAKEINFO], [makeinfo])
+m4trace:configure.ac:93: -1- AC_SUBST([MAKEINFO])
+m4trace:configure.ac:93: -1- AM_MISSING_PROG([AMTAR], [tar])
+m4trace:configure.ac:93: -1- AC_SUBST([AMTAR])
+m4trace:configure.ac:93: -1- AM_PROG_INSTALL_SH
+m4trace:configure.ac:93: -1- AC_SUBST([install_sh])
+m4trace:configure.ac:93: -1- AM_PROG_INSTALL_STRIP
+m4trace:configure.ac:93: -1- AC_SUBST([STRIP])
+m4trace:configure.ac:93: -1- AC_SUBST([ac_ct_STRIP])
+m4trace:configure.ac:93: -1- AC_SUBST([INSTALL_STRIP_PROGRAM])
+m4trace:configure.ac:93: -1- AM_PROG_MKDIR_P
+m4trace:configure.ac:93: -1- AC_SUBST([mkdir_p])
+m4trace:configure.ac:93: -1- AC_PROG_AWK
+m4trace:configure.ac:93: -1- AC_SUBST([AWK])
+m4trace:configure.ac:93: -1- AC_PROG_MAKE_SET
+m4trace:configure.ac:93: -1- AC_SUBST([SET_MAKE])
+m4trace:configure.ac:93: -1- AM_SET_LEADING_DOT
+m4trace:configure.ac:93: -1- AC_SUBST([am__leading_dot])
+m4trace:configure.ac:93: -1- _AM_IF_OPTION([no-dependencies], [], [AC_PROVIDE_IFELSE([AC_PROG_CC],
                   [_AM_DEPENDENCIES(CC)],
                   [define([AC_PROG_CC],
                           defn([AC_PROG_CC])[_AM_DEPENDENCIES(CC)])])dnl
@@ -133,615 +140,179 @@ AC_PROVIDE_IFELSE([AC_PROG_CXX],
                   [define([AC_PROG_CXX],
                           defn([AC_PROG_CXX])[_AM_DEPENDENCIES(CXX)])])dnl
 ])
-m4trace:configure.ac:78: -2- _AM_MANGLE_OPTION([no-dependencies])
-m4trace:configure.ac:95: -1- AC_PROG_CC([cc gcc])
-m4trace:configure.ac:95: -1- AC_SUBST([CC])
-m4trace:configure.ac:95: -1- AC_SUBST([CFLAGS])
-m4trace:configure.ac:95: -1- AC_SUBST([LDFLAGS])
-m4trace:configure.ac:95: -1- AC_SUBST([CPPFLAGS])
-m4trace:configure.ac:95: -1- AC_SUBST([CC])
-m4trace:configure.ac:95: -1- AC_SUBST([ac_ct_CC])
-m4trace:configure.ac:95: -1- AC_SUBST([EXEEXT], [$ac_cv_exeext])
-m4trace:configure.ac:95: -1- AC_SUBST([OBJEXT], [$ac_cv_objext])
-m4trace:configure.ac:95: -1- _AM_DEPENDENCIES([CC])
-m4trace:configure.ac:95: -1- AM_SET_DEPDIR
-m4trace:configure.ac:95: -1- AC_SUBST([DEPDIR], ["${am__leading_dot}deps"])
-m4trace:configure.ac:95: -1- AM_OUTPUT_DEPENDENCY_COMMANDS
-m4trace:configure.ac:95: -1- AM_MAKE_INCLUDE
-m4trace:configure.ac:95: -1- AC_SUBST([am__include])
-m4trace:configure.ac:95: -1- AC_SUBST([am__quote])
-m4trace:configure.ac:95: -1- AM_DEP_TRACK
-m4trace:configure.ac:95: -1- AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
-m4trace:configure.ac:95: -1- AC_SUBST([AMDEP_TRUE])
-m4trace:configure.ac:95: -1- AC_SUBST([AMDEP_FALSE])
-m4trace:configure.ac:95: -1- AC_SUBST([AMDEPBACKSLASH])
-m4trace:configure.ac:95: -1- AC_SUBST([CCDEPMODE], [depmode=$am_cv_CC_dependencies_compiler_type])
-m4trace:configure.ac:95: -1- AM_CONDITIONAL([am__fastdepCC], [
+m4trace:configure.ac:93: -2- _AM_MANGLE_OPTION([no-dependencies])
+m4trace:configure.ac:103: -1- TAC_ARG_CONFIG_MPI
+m4trace:configure.ac:103: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1303: AC_ARG_ENABLE is expanded from...
+config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
+configure.ac:103: the top level])
+m4trace:configure.ac:103: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
+configure.ac:103: the top level])
+m4trace:configure.ac:103: -1- AC_SUBST([MPI_CXX])
+m4trace:configure.ac:103: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
+configure.ac:103: the top level])
+m4trace:configure.ac:103: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
+configure.ac:103: the top level])
+m4trace:configure.ac:103: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
+configure.ac:103: the top level])
+m4trace:configure.ac:103: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
+configure.ac:103: the top level])
+m4trace:configure.ac:103: -1- AC_DEFINE_TRACE_LITERAL([HAVE_MPI])
+m4trace:configure.ac:103: -1- AH_OUTPUT([HAVE_MPI], [/* define if we want to use MPI */
+#undef HAVE_MPI])
+m4trace:configure.ac:103: -1- AM_CONDITIONAL([HAVE_MPI], [test "X${HAVE_PKG_MPI}" = "Xyes"])
+m4trace:configure.ac:103: -1- AC_SUBST([HAVE_MPI_TRUE])
+m4trace:configure.ac:103: -1- AC_SUBST([HAVE_MPI_FALSE])
+m4trace:configure.ac:103: -1- AC_SUBST([MPI_CXX_EXISTS])
+m4trace:configure.ac:103: -1- AC_SUBST([MPI_CC_EXISTS])
+m4trace:configure.ac:103: -1- AC_SUBST([MPI_F77_EXISTS])
+m4trace:configure.ac:109: -1- AC_PROG_CC([cc gcc])
+m4trace:configure.ac:109: -1- AC_SUBST([CC])
+m4trace:configure.ac:109: -1- AC_SUBST([CFLAGS])
+m4trace:configure.ac:109: -1- AC_SUBST([LDFLAGS])
+m4trace:configure.ac:109: -1- AC_SUBST([CPPFLAGS])
+m4trace:configure.ac:109: -1- AC_SUBST([CC])
+m4trace:configure.ac:109: -1- AC_SUBST([ac_ct_CC])
+m4trace:configure.ac:109: -1- AC_SUBST([EXEEXT], [$ac_cv_exeext])
+m4trace:configure.ac:109: -1- AC_SUBST([OBJEXT], [$ac_cv_objext])
+m4trace:configure.ac:109: -1- _AM_DEPENDENCIES([CC])
+m4trace:configure.ac:109: -1- AM_SET_DEPDIR
+m4trace:configure.ac:109: -1- AC_SUBST([DEPDIR], ["${am__leading_dot}deps"])
+m4trace:configure.ac:109: -1- AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:109: -1- AM_MAKE_INCLUDE
+m4trace:configure.ac:109: -1- AC_SUBST([am__include])
+m4trace:configure.ac:109: -1- AC_SUBST([am__quote])
+m4trace:configure.ac:109: -1- AM_DEP_TRACK
+m4trace:configure.ac:109: -1- AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
+m4trace:configure.ac:109: -1- AC_SUBST([AMDEP_TRUE])
+m4trace:configure.ac:109: -1- AC_SUBST([AMDEP_FALSE])
+m4trace:configure.ac:109: -1- AC_SUBST([AMDEPBACKSLASH])
+m4trace:configure.ac:109: -1- AC_SUBST([CCDEPMODE], [depmode=$am_cv_CC_dependencies_compiler_type])
+m4trace:configure.ac:109: -1- AM_CONDITIONAL([am__fastdepCC], [
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CC_dependencies_compiler_type" = gcc3])
-m4trace:configure.ac:95: -1- AC_SUBST([am__fastdepCC_TRUE])
-m4trace:configure.ac:95: -1- AC_SUBST([am__fastdepCC_FALSE])
-m4trace:configure.ac:96: -1- AC_PROG_CXX([CC g++ gcc c++ cxx])
-m4trace:configure.ac:96: -1- AC_SUBST([CXX])
-m4trace:configure.ac:96: -1- AC_SUBST([CXXFLAGS])
-m4trace:configure.ac:96: -1- AC_SUBST([LDFLAGS])
-m4trace:configure.ac:96: -1- AC_SUBST([CPPFLAGS])
-m4trace:configure.ac:96: -1- AC_SUBST([CXX])
-m4trace:configure.ac:96: -1- AC_SUBST([ac_ct_CXX])
-m4trace:configure.ac:96: -1- _AM_DEPENDENCIES([CXX])
-m4trace:configure.ac:96: -1- AC_SUBST([CXXDEPMODE], [depmode=$am_cv_CXX_dependencies_compiler_type])
-m4trace:configure.ac:96: -1- AM_CONDITIONAL([am__fastdepCXX], [
+m4trace:configure.ac:109: -1- AC_SUBST([am__fastdepCC_TRUE])
+m4trace:configure.ac:109: -1- AC_SUBST([am__fastdepCC_FALSE])
+m4trace:configure.ac:110: -1- AC_PROG_CXX([CC g++ gcc c++ cxx])
+m4trace:configure.ac:110: -1- AC_SUBST([CXX])
+m4trace:configure.ac:110: -1- AC_SUBST([CXXFLAGS])
+m4trace:configure.ac:110: -1- AC_SUBST([LDFLAGS])
+m4trace:configure.ac:110: -1- AC_SUBST([CPPFLAGS])
+m4trace:configure.ac:110: -1- AC_SUBST([CXX])
+m4trace:configure.ac:110: -1- AC_SUBST([ac_ct_CXX])
+m4trace:configure.ac:110: -1- _AM_DEPENDENCIES([CXX])
+m4trace:configure.ac:110: -1- AC_SUBST([CXXDEPMODE], [depmode=$am_cv_CXX_dependencies_compiler_type])
+m4trace:configure.ac:110: -1- AM_CONDITIONAL([am__fastdepCXX], [
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CXX_dependencies_compiler_type" = gcc3])
-m4trace:configure.ac:96: -1- AC_SUBST([am__fastdepCXX_TRUE])
-m4trace:configure.ac:96: -1- AC_SUBST([am__fastdepCXX_FALSE])
-m4trace:configure.ac:98: -1- AC_SUBST([F77])
-m4trace:configure.ac:98: -1- AC_SUBST([FFLAGS])
-m4trace:configure.ac:98: -1- AC_SUBST([LDFLAGS])
-m4trace:configure.ac:98: -1- AC_SUBST([F77])
-m4trace:configure.ac:98: -1- AC_SUBST([ac_ct_F77])
-m4trace:configure.ac:99: -1- AC_PROG_RANLIB
-m4trace:configure.ac:99: -1- AC_SUBST([RANLIB])
-m4trace:configure.ac:99: -1- AC_SUBST([ac_ct_RANLIB])
-m4trace:configure.ac:105: -1- TAC_ARG_CONFIG_MPI
-m4trace:configure.ac:105: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1303: AC_ARG_ENABLE is expanded from...
-config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:105: the top level])
-m4trace:configure.ac:105: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:105: the top level])
-m4trace:configure.ac:105: -1- AC_SUBST([MPI_CXX])
-m4trace:configure.ac:105: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:105: the top level])
-m4trace:configure.ac:105: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:105: the top level])
-m4trace:configure.ac:105: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:105: the top level])
-m4trace:configure.ac:105: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:105: the top level])
-m4trace:configure.ac:105: -1- AC_DEFINE_TRACE_LITERAL([HAVE_MPI])
-m4trace:configure.ac:105: -1- AH_OUTPUT([HAVE_MPI], [/* define if we want to use MPI */
-#undef HAVE_MPI])
-m4trace:configure.ac:105: -1- AM_CONDITIONAL([HAVE_MPI], [test "X${HAVE_PKG_MPI}" = "Xyes"])
-m4trace:configure.ac:105: -1- AC_SUBST([HAVE_MPI_TRUE])
-m4trace:configure.ac:105: -1- AC_SUBST([HAVE_MPI_FALSE])
-m4trace:configure.ac:105: -1- AC_SUBST([MPI_CXX_EXISTS])
-m4trace:configure.ac:105: -1- AC_SUBST([MPI_CC_EXISTS])
-m4trace:configure.ac:105: -1- AC_SUBST([MPI_F77_EXISTS])
-m4trace:configure.ac:111: -1- TAC_ARG_CONFIG_CHACO
-m4trace:configure.ac:111: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1303: AC_ARG_ENABLE is expanded from...
-config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
-configure.ac:111: the top level])
-m4trace:configure.ac:111: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
-configure.ac:111: the top level])
-m4trace:configure.ac:111: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
-configure.ac:111: the top level])
-m4trace:configure.ac:111: -1- AC_DEFINE_TRACE_LITERAL([HAVE_CHACO])
-m4trace:configure.ac:111: -1- AH_OUTPUT([HAVE_CHACO], [/* define if we want to use Chaco */
-#undef HAVE_CHACO])
-m4trace:configure.ac:111: -1- AM_CONDITIONAL([HAVE_CHACO], [test "X${HAVE_PKG_CHACO}" = "Xyes"])
-m4trace:configure.ac:111: -1- AC_SUBST([HAVE_CHACO_TRUE])
-m4trace:configure.ac:111: -1- AC_SUBST([HAVE_CHACO_FALSE])
-m4trace:configure.ac:117: -1- TAC_ARG_CONFIG_EXPAT
-m4trace:configure.ac:117: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_config_expat.m4:85: TAC_ARG_CONFIG_EXPAT is expanded from...
-configure.ac:117: the top level])
-m4trace:configure.ac:117: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_config_expat.m4:85: TAC_ARG_CONFIG_EXPAT is expanded from...
-configure.ac:117: the top level])
-m4trace:configure.ac:117: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_config_expat.m4:85: TAC_ARG_CONFIG_EXPAT is expanded from...
-configure.ac:117: the top level])
-m4trace:configure.ac:117: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_config_expat.m4:85: TAC_ARG_CONFIG_EXPAT is expanded from...
-configure.ac:117: the top level])
-m4trace:configure.ac:117: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_config_expat.m4:85: TAC_ARG_CONFIG_EXPAT is expanded from...
-configure.ac:117: the top level])
-m4trace:configure.ac:117: -1- AC_DEFINE_TRACE_LITERAL([HAVE_EXPAT])
-m4trace:configure.ac:117: -1- AH_OUTPUT([HAVE_EXPAT], [/* define if we want to use EXPAT */
-#undef HAVE_EXPAT])
-m4trace:configure.ac:117: -1- AC_SUBST([EXPAT_LIBS])
-m4trace:configure.ac:117: -1- AC_SUBST([EXPAT_INC])
-m4trace:configure.ac:117: -1- AM_CONDITIONAL([HAVE_EXPAT], [test "X${HAVE_PKG_EXPAT}" = "Xyes"])
-m4trace:configure.ac:117: -1- AC_SUBST([HAVE_EXPAT_TRUE])
-m4trace:configure.ac:117: -1- AC_SUBST([HAVE_EXPAT_FALSE])
-m4trace:configure.ac:125: -1- TAC_ARG_ENABLE_COMPILER_OPTIONS
-m4trace:configure.ac:132: -1- TAC_ARG_WITH_FLAGS([ccflags], [CCFLAGS])
-m4trace:configure.ac:132: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_with_flags.m4:30: TAC_ARG_WITH_FLAGS is expanded from...
-configure.ac:132: the top level])
-m4trace:configure.ac:133: -1- TAC_ARG_WITH_FLAGS([cxxflags], [CXXFLAGS])
-m4trace:configure.ac:133: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_with_flags.m4:30: TAC_ARG_WITH_FLAGS is expanded from...
-configure.ac:133: the top level])
-m4trace:configure.ac:134: -1- TAC_ARG_WITH_FLAGS([cflags], [CFLAGS])
-m4trace:configure.ac:134: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_with_flags.m4:30: TAC_ARG_WITH_FLAGS is expanded from...
-configure.ac:134: the top level])
-m4trace:configure.ac:135: -1- TAC_ARG_WITH_FLAGS([fflags], [FFLAGS])
-m4trace:configure.ac:135: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_with_flags.m4:30: TAC_ARG_WITH_FLAGS is expanded from...
-configure.ac:135: the top level])
-m4trace:configure.ac:136: -1- TAC_ARG_WITH_FLAGS([ldflags], [LDFLAGS])
-m4trace:configure.ac:136: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_with_flags.m4:30: TAC_ARG_WITH_FLAGS is expanded from...
-configure.ac:136: the top level])
-m4trace:configure.ac:142: -1- TAC_ARG_WITH_AR
-m4trace:configure.ac:142: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+m4trace:configure.ac:110: -1- AC_SUBST([am__fastdepCXX_TRUE])
+m4trace:configure.ac:110: -1- AC_SUBST([am__fastdepCXX_FALSE])
+m4trace:configure.ac:111: -1- AC_SUBST([F77])
+m4trace:configure.ac:111: -1- AC_SUBST([FFLAGS])
+m4trace:configure.ac:111: -1- AC_SUBST([LDFLAGS])
+m4trace:configure.ac:111: -1- AC_SUBST([F77])
+m4trace:configure.ac:111: -1- AC_SUBST([ac_ct_F77])
+m4trace:configure.ac:112: -1- AC_PROG_RANLIB
+m4trace:configure.ac:112: -1- AC_SUBST([RANLIB])
+m4trace:configure.ac:112: -1- AC_SUBST([ac_ct_RANLIB])
+m4trace:configure.ac:119: -1- TAC_ARG_WITH_AR
+m4trace:configure.ac:119: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_ar.m4:38: TAC_ARG_WITH_AR is expanded from...
-configure.ac:142: the top level])
-m4trace:configure.ac:142: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [true])
-m4trace:configure.ac:142: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
-m4trace:configure.ac:142: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
-m4trace:configure.ac:142: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [false])
-m4trace:configure.ac:142: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
-m4trace:configure.ac:142: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
-m4trace:configure.ac:142: -1- AC_SUBST([ALTERNATE_AR])
-m4trace:configure.ac:147: -1- TAC_ARG_CHECK_MPI
-m4trace:configure.ac:147: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
-config/tac_arg_check_mpi.m4:68: TAC_ARG_CHECK_MPI is expanded from...
-configure.ac:147: the top level])
-m4trace:configure.ac:147: -1- _m4_warn([obsolete], [The macro `AC_TRY_CPP' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2107: AC_TRY_CPP is expanded from...
-config/tac_arg_check_mpi.m4:68: TAC_ARG_CHECK_MPI is expanded from...
-configure.ac:147: the top level])
-m4trace:configure.ac:147: -1- AC_SUBST([CXXCPP])
-m4trace:configure.ac:147: -1- AC_SUBST([CPPFLAGS])
-m4trace:configure.ac:147: -1- AC_SUBST([CXXCPP])
-m4trace:configure.ac:155: -1- AC_DEFINE_TRACE_LITERAL([TFLOP])
-m4trace:configure.ac:155: -1- AH_OUTPUT([TFLOP], [/* define if compiling for ASCI Red, aka TFLOP */
-#undef TFLOP])
-m4trace:configure.ac:164: -1- AC_CHECK_HEADERS([cstdlib stdlib.h cstdio stdio.h cassert assert.h], [], [], [])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_CSTDLIB], [/* Define to 1 if you have the <cstdlib> header file. */
-#undef HAVE_CSTDLIB])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_STDLIB_H], [/* Define to 1 if you have the <stdlib.h> header file. */
-#undef HAVE_STDLIB_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_CSTDIO], [/* Define to 1 if you have the <cstdio> header file. */
-#undef HAVE_CSTDIO])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_STDIO_H], [/* Define to 1 if you have the <stdio.h> header file. */
-#undef HAVE_STDIO_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_CASSERT], [/* Define to 1 if you have the <cassert> header file. */
-#undef HAVE_CASSERT])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_ASSERT_H], [/* Define to 1 if you have the <assert.h> header file. */
-#undef HAVE_ASSERT_H])
-m4trace:configure.ac:164: -1- AC_HEADER_STDC
-m4trace:configure.ac:164: -1- AC_SUBST([EGREP])
-m4trace:configure.ac:164: -1- AC_DEFINE_TRACE_LITERAL([STDC_HEADERS])
-m4trace:configure.ac:164: -1- AH_OUTPUT([STDC_HEADERS], [/* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS])
-m4trace:configure.ac:164: -1- AC_CHECK_HEADERS([sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
-		  inttypes.h stdint.h unistd.h], [], [], [$ac_includes_default])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_SYS_TYPES_H], [/* Define to 1 if you have the <sys/types.h> header file. */
-#undef HAVE_SYS_TYPES_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_SYS_STAT_H], [/* Define to 1 if you have the <sys/stat.h> header file. */
-#undef HAVE_SYS_STAT_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_STDLIB_H], [/* Define to 1 if you have the <stdlib.h> header file. */
-#undef HAVE_STDLIB_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_STRING_H], [/* Define to 1 if you have the <string.h> header file. */
-#undef HAVE_STRING_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_MEMORY_H], [/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_STRINGS_H], [/* Define to 1 if you have the <strings.h> header file. */
-#undef HAVE_STRINGS_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_INTTYPES_H], [/* Define to 1 if you have the <inttypes.h> header file. */
-#undef HAVE_INTTYPES_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_STDINT_H], [/* Define to 1 if you have the <stdint.h> header file. */
-#undef HAVE_STDINT_H])
-m4trace:configure.ac:164: -1- AH_OUTPUT([HAVE_UNISTD_H], [/* Define to 1 if you have the <unistd.h> header file. */
-#undef HAVE_UNISTD_H])
-m4trace:configure.ac:165: -1- AC_CHECK_HEADERS([cmath math.h iostream iostream.h string string.h], [], [], [])
-m4trace:configure.ac:165: -1- AH_OUTPUT([HAVE_CMATH], [/* Define to 1 if you have the <cmath> header file. */
-#undef HAVE_CMATH])
-m4trace:configure.ac:165: -1- AH_OUTPUT([HAVE_MATH_H], [/* Define to 1 if you have the <math.h> header file. */
-#undef HAVE_MATH_H])
-m4trace:configure.ac:165: -1- AH_OUTPUT([HAVE_IOSTREAM], [/* Define to 1 if you have the <iostream> header file. */
-#undef HAVE_IOSTREAM])
-m4trace:configure.ac:165: -1- AH_OUTPUT([HAVE_IOSTREAM_H], [/* Define to 1 if you have the <iostream.h> header file. */
-#undef HAVE_IOSTREAM_H])
-m4trace:configure.ac:165: -1- AH_OUTPUT([HAVE_STRING], [/* Define to 1 if you have the <string> header file. */
-#undef HAVE_STRING])
-m4trace:configure.ac:165: -1- AH_OUTPUT([HAVE_STRING_H], [/* Define to 1 if you have the <string.h> header file. */
-#undef HAVE_STRING_H])
-m4trace:configure.ac:166: -1- AC_CHECK_HEADERS([sstream strstream sstream.h strstream.h], [], [], [])
-m4trace:configure.ac:166: -1- AH_OUTPUT([HAVE_SSTREAM], [/* Define to 1 if you have the <sstream> header file. */
-#undef HAVE_SSTREAM])
-m4trace:configure.ac:166: -1- AH_OUTPUT([HAVE_STRSTREAM], [/* Define to 1 if you have the <strstream> header file. */
-#undef HAVE_STRSTREAM])
-m4trace:configure.ac:166: -1- AH_OUTPUT([HAVE_SSTREAM_H], [/* Define to 1 if you have the <sstream.h> header file. */
-#undef HAVE_SSTREAM_H])
-m4trace:configure.ac:166: -1- AH_OUTPUT([HAVE_STRSTREAM_H], [/* Define to 1 if you have the <strstream.h> header file. */
-#undef HAVE_STRSTREAM_H])
-m4trace:configure.ac:202: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-configure.ac:202: the top level])
-m4trace:configure.ac:212: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-configure.ac:212: the top level])
-m4trace:configure.ac:221: -1- AM_CONDITIONAL([USE_TRILINOS_SOURCES], [test "X${USE_TRILINOS_SOURCES}" = "Xyes"])
-m4trace:configure.ac:221: -1- AC_SUBST([USE_TRILINOS_SOURCES_TRUE])
-m4trace:configure.ac:221: -1- AC_SUBST([USE_TRILINOS_SOURCES_FALSE])
-m4trace:configure.ac:226: -1- AC_C_CONST
-m4trace:configure.ac:226: -1- AC_DEFINE_TRACE_LITERAL([const])
-m4trace:configure.ac:226: -1- AH_OUTPUT([const], [/* Define to empty if `const\' does not conform to ANSI C. */
-#undef const])
-m4trace:configure.ac:227: -1- AC_C_INLINE
-m4trace:configure.ac:227: -1- AH_OUTPUT([inline], [/* Define to `__inline__\' or `__inline\' if that\'s what the C compiler
-   calls it, or to nothing if \'inline\' is not supported under any name.  */
-#ifndef __cplusplus
-#undef inline
-#endif])
-m4trace:configure.ac:232: -1- AC_CXX_NAMESPACES
-m4trace:configure.ac:232: -1- _m4_warn([obsolete], [The macro `AC_LANG_SAVE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_namespaces.m4:22: AC_CXX_NAMESPACES is expanded from...
-configure.ac:232: the top level])
-m4trace:configure.ac:232: -1- _m4_warn([obsolete], [instead of using `AC_LANG', `AC_LANG_SAVE',
-and `AC_LANG_RESTORE', you should use `AC_LANG_PUSH' and `AC_LANG_POP'.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_namespaces.m4:22: AC_CXX_NAMESPACES is expanded from...
-configure.ac:232: the top level])
-m4trace:configure.ac:232: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_namespaces.m4:22: AC_CXX_NAMESPACES is expanded from...
-configure.ac:232: the top level])
-m4trace:configure.ac:232: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2180: AC_TRY_COMPILE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_namespaces.m4:22: AC_CXX_NAMESPACES is expanded from...
-configure.ac:232: the top level])
-m4trace:configure.ac:232: -1- _m4_warn([obsolete], [The macro `AC_LANG_RESTORE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:172: AC_LANG_RESTORE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_namespaces.m4:22: AC_CXX_NAMESPACES is expanded from...
-configure.ac:232: the top level])
-m4trace:configure.ac:232: -1- AC_DEFINE_TRACE_LITERAL([HAVE_NAMESPACES])
-m4trace:configure.ac:232: -1- AH_OUTPUT([HAVE_NAMESPACES], [/* define if the compiler implements namespaces */
-#undef HAVE_NAMESPACES])
-m4trace:configure.ac:233: -1- AC_CXX_HAVE_STL
-m4trace:configure.ac:233: -1- _m4_warn([obsolete], [The macro `AC_LANG_SAVE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_have_stl.m4:26: AC_CXX_HAVE_STL is expanded from...
-configure.ac:233: the top level])
-m4trace:configure.ac:233: -1- _m4_warn([obsolete], [instead of using `AC_LANG', `AC_LANG_SAVE',
-and `AC_LANG_RESTORE', you should use `AC_LANG_PUSH' and `AC_LANG_POP'.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_have_stl.m4:26: AC_CXX_HAVE_STL is expanded from...
-configure.ac:233: the top level])
-m4trace:configure.ac:233: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_have_stl.m4:26: AC_CXX_HAVE_STL is expanded from...
-configure.ac:233: the top level])
-m4trace:configure.ac:233: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2180: AC_TRY_COMPILE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_have_stl.m4:26: AC_CXX_HAVE_STL is expanded from...
-configure.ac:233: the top level])
-m4trace:configure.ac:233: -1- _m4_warn([obsolete], [The macro `AC_LANG_RESTORE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:172: AC_LANG_RESTORE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_have_stl.m4:26: AC_CXX_HAVE_STL is expanded from...
-configure.ac:233: the top level])
-m4trace:configure.ac:233: -1- AC_DEFINE_TRACE_LITERAL([HAVE_STL])
-m4trace:configure.ac:233: -1- AH_OUTPUT([HAVE_STL], [/* define if the compiler supports Standard Template Library */
-#undef HAVE_STL])
-m4trace:configure.ac:234: -1- AC_CXX_BOOL
-m4trace:configure.ac:234: -1- _m4_warn([obsolete], [The macro `AC_LANG_SAVE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_bool.m4:27: AC_CXX_BOOL is expanded from...
-configure.ac:234: the top level])
-m4trace:configure.ac:234: -1- _m4_warn([obsolete], [instead of using `AC_LANG', `AC_LANG_SAVE',
-and `AC_LANG_RESTORE', you should use `AC_LANG_PUSH' and `AC_LANG_POP'.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_bool.m4:27: AC_CXX_BOOL is expanded from...
-configure.ac:234: the top level])
-m4trace:configure.ac:234: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_bool.m4:27: AC_CXX_BOOL is expanded from...
-configure.ac:234: the top level])
-m4trace:configure.ac:234: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2180: AC_TRY_COMPILE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_bool.m4:27: AC_CXX_BOOL is expanded from...
-configure.ac:234: the top level])
-m4trace:configure.ac:234: -1- _m4_warn([obsolete], [The macro `AC_LANG_RESTORE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:172: AC_LANG_RESTORE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_bool.m4:27: AC_CXX_BOOL is expanded from...
-configure.ac:234: the top level])
-m4trace:configure.ac:234: -1- AC_DEFINE_TRACE_LITERAL([HAVE_BOOL])
-m4trace:configure.ac:234: -1- AH_OUTPUT([HAVE_BOOL], [/* define if bool is a built-in type */
-#undef HAVE_BOOL])
-m4trace:configure.ac:235: -1- AC_CXX_MUTABLE
-m4trace:configure.ac:235: -1- _m4_warn([obsolete], [The macro `AC_LANG_SAVE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_mutable.m4:27: AC_CXX_MUTABLE is expanded from...
-configure.ac:235: the top level])
-m4trace:configure.ac:235: -1- _m4_warn([obsolete], [instead of using `AC_LANG', `AC_LANG_SAVE',
-and `AC_LANG_RESTORE', you should use `AC_LANG_PUSH' and `AC_LANG_POP'.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_mutable.m4:27: AC_CXX_MUTABLE is expanded from...
-configure.ac:235: the top level])
-m4trace:configure.ac:235: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_mutable.m4:27: AC_CXX_MUTABLE is expanded from...
-configure.ac:235: the top level])
-m4trace:configure.ac:235: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2180: AC_TRY_COMPILE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_mutable.m4:27: AC_CXX_MUTABLE is expanded from...
-configure.ac:235: the top level])
-m4trace:configure.ac:235: -1- _m4_warn([obsolete], [The macro `AC_LANG_RESTORE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:172: AC_LANG_RESTORE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_mutable.m4:27: AC_CXX_MUTABLE is expanded from...
-configure.ac:235: the top level])
-m4trace:configure.ac:235: -1- AC_DEFINE_TRACE_LITERAL([HAVE_MUTABLE])
-m4trace:configure.ac:235: -1- AH_OUTPUT([HAVE_MUTABLE], [/* define if the compiler supports the mutable keyword */
-#undef HAVE_MUTABLE])
-m4trace:configure.ac:236: -1- AC_CXX_NEW_FOR_SCOPING
-m4trace:configure.ac:236: -1- _m4_warn([obsolete], [The macro `AC_LANG_SAVE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_new_for_scoping.m4:28: AC_CXX_NEW_FOR_SCOPING is expanded from...
-configure.ac:236: the top level])
-m4trace:configure.ac:236: -1- _m4_warn([obsolete], [instead of using `AC_LANG', `AC_LANG_SAVE',
-and `AC_LANG_RESTORE', you should use `AC_LANG_PUSH' and `AC_LANG_POP'.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_new_for_scoping.m4:28: AC_CXX_NEW_FOR_SCOPING is expanded from...
-configure.ac:236: the top level])
-m4trace:configure.ac:236: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_new_for_scoping.m4:28: AC_CXX_NEW_FOR_SCOPING is expanded from...
-configure.ac:236: the top level])
-m4trace:configure.ac:236: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2180: AC_TRY_COMPILE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_new_for_scoping.m4:28: AC_CXX_NEW_FOR_SCOPING is expanded from...
-configure.ac:236: the top level])
-m4trace:configure.ac:236: -1- _m4_warn([obsolete], [The macro `AC_LANG_RESTORE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:172: AC_LANG_RESTORE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_new_for_scoping.m4:28: AC_CXX_NEW_FOR_SCOPING is expanded from...
-configure.ac:236: the top level])
-m4trace:configure.ac:236: -1- AC_DEFINE_TRACE_LITERAL([HAVE_NEW_FOR_SCOPING])
-m4trace:configure.ac:236: -1- AH_OUTPUT([HAVE_NEW_FOR_SCOPING], [/* define if the compiler accepts the new for scoping rules */
-#undef HAVE_NEW_FOR_SCOPING])
-m4trace:configure.ac:238: -1- AC_CXX_STD_SPRINTF
-m4trace:configure.ac:238: -1- _m4_warn([obsolete], [The macro `AC_LANG_SAVE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_std_sprintf.m4:47: AC_CXX_STD_SPRINTF is expanded from...
-configure.ac:238: the top level])
-m4trace:configure.ac:238: -1- _m4_warn([obsolete], [instead of using `AC_LANG', `AC_LANG_SAVE',
-and `AC_LANG_RESTORE', you should use `AC_LANG_PUSH' and `AC_LANG_POP'.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:166: AC_LANG_SAVE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_std_sprintf.m4:47: AC_CXX_STD_SPRINTF is expanded from...
-configure.ac:238: the top level])
-m4trace:configure.ac:238: -1- _m4_warn([obsolete], [The macro `AC_LANG_CPLUSPLUS' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/c.m4:103: AC_LANG_CPLUSPLUS is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_std_sprintf.m4:47: AC_CXX_STD_SPRINTF is expanded from...
-configure.ac:238: the top level])
-m4trace:configure.ac:238: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2180: AC_TRY_COMPILE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_std_sprintf.m4:47: AC_CXX_STD_SPRINTF is expanded from...
-configure.ac:238: the top level])
-m4trace:configure.ac:238: -1- _m4_warn([obsolete], [The macro `AC_TRY_COMPILE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:2180: AC_TRY_COMPILE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_std_sprintf.m4:47: AC_CXX_STD_SPRINTF is expanded from...
-configure.ac:238: the top level])
-m4trace:configure.ac:238: -1- _m4_warn([obsolete], [The macro `AC_LANG_RESTORE' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/lang.m4:172: AC_LANG_RESTORE is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1799: AC_CACHE_VAL is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1808: AC_CACHE_CHECK is expanded from...
-config/ac_cxx_std_sprintf.m4:47: AC_CXX_STD_SPRINTF is expanded from...
-configure.ac:238: the top level])
-m4trace:configure.ac:238: -1- AC_DEFINE_TRACE_LITERAL([HAVE_STD_SPRINTF])
-m4trace:configure.ac:238: -1- AH_OUTPUT([HAVE_STD_SPRINTF], [/* define if std::sprintf is supported */
-#undef HAVE_STD_SPRINTF])
-m4trace:configure.ac:244: -1- TAC_ARG_ENABLE_FEATURE([oldifpack], [Build old ifpack], [OLDIFPACK], [no])
-m4trace:configure.ac:244: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:119: the top level])
+m4trace:configure.ac:119: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [true])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
+m4trace:configure.ac:119: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [false])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
+m4trace:configure.ac:119: -1- AC_SUBST([ALTERNATE_AR])
+m4trace:configure.ac:125: -1- TAC_ARG_CONFIG_CHACO
+m4trace:configure.ac:125: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1303: AC_ARG_ENABLE is expanded from...
+config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
+configure.ac:125: the top level])
+m4trace:configure.ac:125: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
+configure.ac:125: the top level])
+m4trace:configure.ac:125: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
+configure.ac:125: the top level])
+m4trace:configure.ac:125: -1- AC_DEFINE_TRACE_LITERAL([HAVE_CHACO])
+m4trace:configure.ac:125: -1- AH_OUTPUT([HAVE_CHACO], [/* define if we want to use Chaco */
+#undef HAVE_CHACO])
+m4trace:configure.ac:125: -1- AM_CONDITIONAL([HAVE_CHACO], [test "X${HAVE_PKG_CHACO}" = "Xyes"])
+m4trace:configure.ac:125: -1- AC_SUBST([HAVE_CHACO_TRUE])
+m4trace:configure.ac:125: -1- AC_SUBST([HAVE_CHACO_FALSE])
+m4trace:configure.ac:134: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:134: the top level])
+m4trace:configure.ac:160: -1- TAC_ARG_ENABLE_FEATURE([tests], [Build tests for Sundance], [TESTS], [yes])
+m4trace:configure.ac:160: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_enable_feature.m4:39: TAC_ARG_ENABLE_FEATURE is expanded from...
-configure.ac:244: the top level])
-m4trace:configure.ac:244: -1- AC_DEFINE_TRACE_LITERAL([HAVE_OLDIFPACK])
-m4trace:configure.ac:244: -1- AH_OUTPUT([HAVE_OLDIFPACK], [/* Define if want to build oldifpack */
-#undef HAVE_OLDIFPACK])
-m4trace:configure.ac:245: -1- AM_CONDITIONAL([BUILD_OLDIFPACK], [test "X$ac_cv_use_oldifpack" != "Xno"])
-m4trace:configure.ac:245: -1- AC_SUBST([BUILD_OLDIFPACK_TRUE])
-m4trace:configure.ac:245: -1- AC_SUBST([BUILD_OLDIFPACK_FALSE])
-m4trace:configure.ac:254: -1- TAC_ARG_WITH_LIBDIRS
-m4trace:configure.ac:254: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:160: the top level])
+m4trace:configure.ac:160: -1- AC_DEFINE_TRACE_LITERAL([HAVE_TESTS])
+m4trace:configure.ac:160: -1- AH_OUTPUT([HAVE_TESTS], [/* Define if want to build tests */
+#undef HAVE_TESTS])
+m4trace:configure.ac:161: -1- AM_CONDITIONAL([BUILD_TESTS], [test "X$ac_cv_use_tests" != "Xno"])
+m4trace:configure.ac:161: -1- AC_SUBST([BUILD_TESTS_TRUE])
+m4trace:configure.ac:161: -1- AC_SUBST([BUILD_TESTS_FALSE])
+m4trace:configure.ac:163: -1- TAC_ARG_ENABLE_FEATURE([examples], [Build examples for Sundance], [EXAMPLES], [yes])
+m4trace:configure.ac:163: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+config/tac_arg_enable_feature.m4:39: TAC_ARG_ENABLE_FEATURE is expanded from...
+configure.ac:163: the top level])
+m4trace:configure.ac:163: -1- AC_DEFINE_TRACE_LITERAL([HAVE_EXAMPLES])
+m4trace:configure.ac:163: -1- AH_OUTPUT([HAVE_EXAMPLES], [/* Define if want to build examples */
+#undef HAVE_EXAMPLES])
+m4trace:configure.ac:164: -1- AM_CONDITIONAL([BUILD_EXAMPLES], [test "X$ac_cv_use_examples" != "Xno"])
+m4trace:configure.ac:164: -1- AC_SUBST([BUILD_EXAMPLES_TRUE])
+m4trace:configure.ac:164: -1- AC_SUBST([BUILD_EXAMPLES_FALSE])
+m4trace:configure.ac:171: -1- TAC_ARG_WITH_LIBDIRS
+m4trace:configure.ac:171: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_libdirs.m4:23: TAC_ARG_WITH_LIBDIRS is expanded from...
-configure.ac:254: the top level])
-m4trace:configure.ac:256: -1- TAC_ARG_WITH_INCDIRS
-m4trace:configure.ac:256: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+configure.ac:171: the top level])
+m4trace:configure.ac:173: -1- TAC_ARG_WITH_INCDIRS
+m4trace:configure.ac:173: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [/home/krlong/Software/Development/autoconf-2.59/tests/../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_incdirs.m4:23: TAC_ARG_WITH_INCDIRS is expanded from...
-configure.ac:256: the top level])
-m4trace:configure.ac:259: -1- AC_SUBST([FLIBS])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_DUMMY_MAIN])
-m4trace:configure.ac:259: -1- AH_OUTPUT([F77_DUMMY_MAIN], [/* Define to dummy `main\' function (if any) required to link to the Fortran
-   libraries. */
-#undef F77_DUMMY_MAIN])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([FC_DUMMY_MAIN_EQ_F77])
-m4trace:configure.ac:259: -1- AH_OUTPUT([FC_DUMMY_MAIN_EQ_F77], [/* Define if F77 and FC dummy `main\' functions are identical. */
-#undef FC_DUMMY_MAIN_EQ_F77])
-m4trace:configure.ac:259: -1- AH_OUTPUT([F77_FUNC], [/* Define to a macro mangling the given C identifier (in lower and upper
-   case), which must not contain underscores, for linking with Fortran. */
-#undef F77_FUNC])
-m4trace:configure.ac:259: -1- AH_OUTPUT([F77_FUNC_], [/* As F77_FUNC, but for C identifiers containing underscores. */
-#undef F77_FUNC_])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC(name,NAME)])
-m4trace:configure.ac:259: -1- AC_DEFINE_TRACE_LITERAL([F77_FUNC_(name,NAME)])
-m4trace:configure.ac:270: -1- TAC_ARG_WITH_BLASLIB
-m4trace:configure.ac:270: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_with_blaslib.m4:29: TAC_ARG_WITH_BLASLIB is expanded from...
-configure.ac:270: the top level])
-m4trace:configure.ac:271: -1- TAC_ARG_WITH_LAPACKLIB
-m4trace:configure.ac:271: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_with_lapacklib.m4:27: TAC_ARG_WITH_LAPACKLIB is expanded from...
-configure.ac:271: the top level])
-m4trace:configure.ac:281: -1- ACX_BLAS([], [AC_MSG_ERROR([[Cannot find blas library, please specify additional locations using --with-libdirs or additional lib names using --with-blaslib]])])
-m4trace:configure.ac:281: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/acx_blas.m4:151: ACX_BLAS is expanded from...
-configure.ac:281: the top level])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([atlas], [ATL_xerbla], [AC_CHECK_LIB(f77blas, $sgemm,
-		[AC_CHECK_LIB(cblas, cblas_dgemm,
-			[acx_blas_ok=yes
-			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
-			[], [-lf77blas -latlas])],
-			[], [-latlas])])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([f77blas], [$sgemm], [AC_CHECK_LIB(cblas, cblas_dgemm,
-			[acx_blas_ok=yes
-			 BLAS_LIBS="-lcblas -lf77blas -latlas"],
-			[], [-lf77blas -latlas])], [], [-latlas])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([cblas], [cblas_dgemm], [acx_blas_ok=yes
-			 BLAS_LIBS="-lcblas -lf77blas -latlas"], [], [-lf77blas -latlas])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([blas], [$sgemm], [AC_CHECK_LIB(dgemm, $dgemm,
-		[AC_CHECK_LIB(sgemm, $sgemm,
-			[acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"],
-			[], [-lblas])],
-			[], [-lblas])])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([dgemm], [$dgemm], [AC_CHECK_LIB(sgemm, $sgemm,
-			[acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"],
-			[], [-lblas])], [], [-lblas])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([sgemm], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lsgemm -ldgemm -lblas"], [], [-lblas])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([cxml], [$sgemm], [acx_blas_ok=yes;BLAS_LIBS="-lcxml"])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([dxml], [$sgemm], [acx_blas_ok=yes;BLAS_LIBS="-ldxml"])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([sunmath], [acosp], [AC_CHECK_LIB(sunperf, $sgemm,
-        			[BLAS_LIBS="-xlic_lib=sunperf -lsunmath"
-                                 acx_blas_ok=yes],[],[-lsunmath])])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([sunperf], [$sgemm], [BLAS_LIBS="-xlic_lib=sunperf -lsunmath"
-                                 acx_blas_ok=yes], [], [-lsunmath])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([scs], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lscs"])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([complib.sgimath], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lcomplib.sgimath"])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([blas], [$sgemm], [AC_CHECK_LIB(essl, $sgemm,
-			[acx_blas_ok=yes; BLAS_LIBS="-lessl -lblas"],
-			[], [-lblas $FLIBS])])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([essl], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lessl -lblas"], [], [-lblas $FLIBS])
-m4trace:configure.ac:281: -1- AC_CHECK_LIB([blas], [$sgemm], [acx_blas_ok=yes; BLAS_LIBS="-lblas"])
-m4trace:configure.ac:281: -1- AC_SUBST([BLAS_LIBS])
-m4trace:configure.ac:281: -2- AC_DEFINE_TRACE_LITERAL([HAVE_BLAS])
-m4trace:configure.ac:281: -2- AH_OUTPUT([HAVE_BLAS], [/* Define if you have a BLAS library. */
-#undef HAVE_BLAS])
-m4trace:configure.ac:287: -1- ACX_LAPACK([], [AC_MSG_ERROR([[Cannot find lapack library, please specify additional locations using --with-libdirs or additional lib names using --with-lapacklib]])])
-m4trace:configure.ac:287: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-/home/kevin/Software/Development/autoconf-2.59/LINUX/tests/../../lib/autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-config/acx_lapack.m4:96: ACX_LAPACK is expanded from...
-configure.ac:287: the top level])
-m4trace:configure.ac:287: -1- AC_CHECK_LIB([$lapack], [$sgecon], [acx_lapack_ok=yes; LAPACK_LIBS="-l$lapack"], [], [$FLIBS])
-m4trace:configure.ac:287: -1- AC_SUBST([LAPACK_LIBS])
-m4trace:configure.ac:287: -2- AC_DEFINE_TRACE_LITERAL([HAVE_LAPACK])
-m4trace:configure.ac:287: -2- AH_OUTPUT([HAVE_LAPACK], [/* Define if you have LAPACK library. */
-#undef HAVE_LAPACK])
-m4trace:configure.ac:299: -1- AC_SUBST([FLIBS])
-m4trace:configure.ac:313: -1- AC_SUBST([XTRALDADD])
-m4trace:configure.ac:327: -1- AC_SUBST([ac_aux_dir])
-m4trace:configure.ac:354: -1- AC_CONFIG_FILES([
+configure.ac:173: the top level])
+m4trace:configure.ac:179: -1- AC_SUBST([ac_aux_dir])
+m4trace:configure.ac:180: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
+m4trace:configure.ac:212: -1- AC_CONFIG_FILES([
   Makefile  
+  Makefile.export
+  examples-tutorial/Makefile
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile
   src-std-framework/Makefile
+  src-std-framework/SundanceDefaultPath.hpp
+  tests-utils/Makefile
+  tests-utils/Functors/Makefile
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
   tests-std-mesh/Makefile
@@ -758,16 +329,9 @@ m4trace:configure.ac:354: -1- AC_CONFIG_FILES([
   doc/Doxygen/Doxyfile.trilinos
 
 ])
-m4trace:configure.ac:356: -1- AC_SUBST([CXX])
-m4trace:configure.ac:357: -1- AC_SUBST([CXXFLAGS])
-m4trace:configure.ac:358: -1- AC_SUBST([LDFLAGS])
-m4trace:configure.ac:359: -1- AC_SUBST([DEFS])
-m4trace:configure.ac:360: -1- AC_SUBST([FLIBS])
-m4trace:configure.ac:361: -1- AC_SUBST([BLAS_LIB])
-m4trace:configure.ac:362: -1- AC_SUBST([CHACO_LIB])
-m4trace:configure.ac:363: -1- AC_SUBST([LAPACK_LIB])
-m4trace:configure.ac:364: -1- AC_SUBST([TRILINOS_DIR])
-m4trace:configure.ac:366: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:366: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
-m4trace:configure.ac:366: -1- _AC_AM_CONFIG_HEADER_HOOK([$ac_file])
-m4trace:configure.ac:366: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS
+m4trace:configure.ac:214: -1- AC_SUBST([CHACO_LIB])
+m4trace:configure.ac:215: -1- AC_SUBST([TRILINOS_DIR])
+m4trace:configure.ac:217: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:217: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:217: -1- _AC_AM_CONFIG_HEADER_HOOK([$ac_file])
+m4trace:configure.ac:217: -1- _AM_OUTPUT_DEPENDENCY_COMMANDS

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+BUILD_DIR=`pwd`
+
+../configure CXXFLAGS="-g -fprofile-arcs -ftest-coverage" \
+--enable-mpi --with-mpi-libs="-lmpich -lpmpich" \
+--with-trilinos=$HOME/Projects/Trilinos/LINUX-GCOV \
+--prefix=$BUILD_DIR
+

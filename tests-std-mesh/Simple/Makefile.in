@@ -291,10 +291,12 @@ CORE_INCLUDE_PATH = \
 -I$(top_srcdir)/src-core/Evaluation \
 -I$(top_srcdir)/src-core/FrameworkInterface \
 -I$(top_srcdir)/src-core/SymbolicTransformations \
+-I$(top_srcdir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/UserExprs \
 -I$(top_builddir)/src-core/InternalExprs \
 -I$(top_builddir)/src-core/Evaluation \
 -I$(top_builddir)/src-core/FrameworkInterface \
+-I$(top_builddir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/SymbolicTransformations 
 
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) 

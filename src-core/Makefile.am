@@ -57,7 +57,8 @@ $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceSparsityPattern.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceSparsitySubset.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceSparsitySuperset.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSpatiallyConstantExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSumExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSumOfBCs.hpp \
@@ -67,7 +68,6 @@ $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFunc.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceTestFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceUnaryFunctor.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.hpp 
@@ -87,7 +87,8 @@ $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceSparsityPattern.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceSparsitySubset.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceSparsitySuperset.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSpatiallyConstantExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSumExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSumOfBCs.cpp \
@@ -97,26 +98,43 @@ $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFunc.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceTestFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceUnaryFunctor.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp 
 
 SUNDANCE_EVALUATION_H = \
-$(top_srcdir)/src-core/Evaluation/SundanceBruteForceEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceDiffOpEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.hpp \
-$(top_srcdir)/src-core/Evaluation/SundanceInstructionCachingEvaluator.hpp \
-$(top_srcdir)/src-core/Evaluation/SundanceTempStack.hpp 
+$(top_srcdir)/src-core/Evaluation/SundanceNonlinearUnaryOpEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceProductEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceStringEvalMediator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceSumEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceSymbolicFuncEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceTempStack.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.hpp 
+
 
 SUNDANCE_EVALUATION = \
-$(top_srcdir)/src-core/Evaluation/SundanceBruteForceEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceDiffOpEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.cpp \
-$(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.cpp \
-$(top_srcdir)/src-core/Evaluation/SundanceInstructionCachingEvaluator.cpp \
-$(top_srcdir)/src-core/Evaluation/SundanceTempStack.cpp 
+$(top_srcdir)/src-core/Evaluation/SundanceNonlinearUnaryOpEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceProductEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceStringEvalMediator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceSumEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceSymbolicFuncEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceTempStack.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp 
 
 
 SUNDANCE_FRAMEWORKINTERFACE_H = \
@@ -129,7 +147,6 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContext.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVectorArray.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.hpp \
@@ -149,7 +166,6 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVectorArray.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.cpp \
@@ -180,6 +196,26 @@ $(top_srcdir)/src-core/SymbolicTransformations/SundanceProductTransformationSequ
 $(top_srcdir)/src-core/SymbolicTransformations/SundanceStdProductTransformations.cpp
 
 
+SUNDANCE_TESTUTILITIES_H = \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADBasis.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADCoord.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADDerivative.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADField.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceEvaluationTester.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestDiscreteFunction.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestEvalMediator.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestUnknownFunction.hpp 
+
+SUNDANCE_TESTUTILITIES = \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADBasis.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADCoord.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADDerivative.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceADField.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceEvaluationTester.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestDiscreteFunction.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestEvalMediator.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestUnknownFunction.cpp 
+
 
 
 
@@ -188,14 +224,16 @@ $(SUNDANCE_USEREXPRS) \
 $(SUNDANCE_INTERNALEXPRS) \
 $(SUNDANCE_EVALUATION) \
 $(SUNDANCE_FRAMEWORKINTERFACE) \
-$(SUNDANCE_TRANSFORMATIONS) 
+$(SUNDANCE_TRANSFORMATIONS) \
+$(SUNDANCE_TESTUTILITIES)
 
 CORE_SOURCES_H = \
 $(SUNDANCE_USEREXPRS_H) \
 $(SUNDANCE_INTERNALEXPRS_H) \
 $(SUNDANCE_EVALUATION_H) \
 $(SUNDANCE_FRAMEWORKINTERFACE_H) \
-$(SUNDANCE_TRANSFORMATIONS_H)
+$(SUNDANCE_TRANSFORMATIONS_H) \
+$(SUNDANCE_TESTUTILITIES_H) 
 
 include $(top_srcdir)/Makefile.common
 
@@ -223,7 +261,7 @@ MPI =
 
 endif
 
-AM_CPPFLAGS = $(CORE_INCLUDES)
+AM_CPPFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 # ------------------------------------------------------------------------
 # Sundance library specifications

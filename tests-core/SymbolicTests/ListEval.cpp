@@ -15,8 +15,7 @@
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
-#include "SundanceEvalVectorArray.hpp"
+
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceEquationSet.hpp"
 
@@ -78,31 +77,26 @@ int main(int argc, void** argv)
 
       RegionQuadCombo internalRegion(rcp(new CellFilterStub()), 
                                 rcp(new QuadratureFamilyStub(0)));
-      EvalContext internalContext(internalRegion, 0);
+      EvalContext internalContext(internalRegion, 2, 0);
 
       RegionQuadCombo bcRegion(rcp(new CellFilterStub()), 
                                 rcp(new QuadratureFamilyStub(0)));
-      EvalContext bcContext(bcRegion, 0);
+      EvalContext bcContext(bcRegion, 2, 0);
 
       EvalManager mgr;
       mgr.setRegion(internalContext);
 
-      RefCountPtr<EvaluatorFactory> factory 
-        = rcp(new BruteForceEvaluatorFactory());
-      
       DerivSet dIn = SymbPreprocessor::setupExpr(navierStokes, 
                                                List(v,q),
                                                List(u,p),
                                                List(u0,p0),
-                                               internalContext,
-                                               factory.get(), 2);
+                                               internalContext);
       
       DerivSet dBC = SymbPreprocessor::setupExpr(bc,
                                                  List(v,q),
                                                  List(u,p),
                                                  List(u0,p0),
-                                                 bcContext,
-                                                 factory.get(), 2);
+                                                 bcContext);
       RefCountPtr<EvalVectorArray> results;
 
 
@@ -111,7 +105,7 @@ int main(int argc, void** argv)
       ev->evaluate(mgr, results);
       
       cerr << "---- internal -------" << endl;
-      results->print(cerr, dIn);
+      results->print(cerr, ev->sparsitySuperset(internalContext).get());
 
       mgr.setRegion(bcContext);
 
@@ -121,12 +115,11 @@ int main(int argc, void** argv)
       ev2->evaluate(mgr, results);
       
       cerr << "---- bc -------" << endl;
-      results->print(cerr, dBC);
+      results->print(cerr,ev2->sparsitySuperset(bcContext).get());
 
       Expr weak = Integral(new CellFilterStub(), navierStokes);
       Expr weakBC = EssentialBC(new CellFilterStub(), bc);
-      EquationSet eqns(weak, weakBC, List(v,q), List(u,p), List(u0,p0),
-                       rcp(new BruteForceEvaluatorFactory()));
+      EquationSet eqns(weak, weakBC, List(v,q), List(u,p), List(u0,p0));
       
     }
 	catch(exception& e)

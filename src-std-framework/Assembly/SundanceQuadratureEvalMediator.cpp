@@ -51,18 +51,24 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType)
 }
 
 void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
-                                           EvalVector* const vec) const
+                                           RefCountPtr<EvalVector>& vec) const 
 {
-  SUNDANCE_OUT(verbosity() > VerbSilent, "evaluating coord expr " << expr->toXML().toString());
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs 
+                       << "QuadratureEvalMediator evaluating coord expr " 
+                       << expr->toString());
   
   computePhysQuadPts();
   int nQuad = physQuadPts_.length();
   int d = expr->dir();
-  //  cerr << "num phys quad=" << nQuad << endl;
+  
+  SUNDANCE_VERB_HIGH(tabs << "number of quad pts=" << nQuad);
+
   vec->resize(nQuad);
+  double * const xx = vec->start();
   for (int q=0; q<nQuad; q++) 
     {
-      vec->setElement(q, physQuadPts_[q][d]);
+      xx[q] = physQuadPts_[q][d];
     }
 }
 
@@ -110,53 +116,57 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
 
 void QuadratureEvalMediator
 ::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
-                          const MultiIndex& mi,
-                          EvalVector* const vec) const
+                          const Array<MultiIndex>& multiIndices,
+                          Array<RefCountPtr<EvalVector> >& vec) const
 {
   const DiscreteFunction* f = dynamic_cast<const DiscreteFunction*>(expr->master());
   TEST_FOR_EXCEPTION(f==0, InternalError,
                      "QuadratureEvalMediator::evalDiscreteFuncElement() called "
                      "with expr that is not a discrete function");
 
-  vec->resize(cellLID()->size() * quadWgts().size());
-
-  if (mi.order() == 0)
+  for (int i=0; i<multiIndices.size(); i++)
     {
-      if (!fCache().containsKey(f) || !fCacheIsValid()[f])
+      const MultiIndex& mi = multiIndices[i];
+      vec[i]->resize(cellLID()->size() * quadWgts().size());
+  
+      if (mi.order() == 0)
         {
-          fillFunctionCache(f, mi);
+          if (!fCache().containsKey(f) || !fCacheIsValid()[f])
+            {
+              fillFunctionCache(f, mi);
+            }
+          const RefCountPtr<Array<double> >& cacheVals 
+            = fCache()[f];
+          int nFuncs = f->discreteSpace().nFunc();
+          int nPts = cellLID()->size() * quadWgts().size();
+          int myIndex = expr->myIndex();
+          const double* cachePtr = &((*cacheVals)[0]);
+          double* vecPtr = vec[i]->start();
+          for (int i=0; i<nPts; i++) 
+            {
+              vecPtr[i] = cachePtr[i*nFuncs + myIndex];
+            }
         }
-      const RefCountPtr<Array<double> >& cacheVals 
-        = fCache()[f];
-      int nFuncs = f->discreteSpace().nFunc();
-      int nPts = cellLID()->size() * quadWgts().size();
-      int myIndex = expr->myIndex();
-      const double* cachePtr = &((*cacheVals)[0]);
-      double* vecPtr = vec->start();
-      for (int i=0; i<nPts; i++) 
+      else
         {
-          vecPtr[i] = cachePtr[i*nFuncs + myIndex];
-        }
-    }
-  else
-    {
-      if (!dfCache().containsKey(f) || !dfCacheIsValid()[f])
-        {
-          fillFunctionCache(f, mi);
-        }
-      const RefCountPtr<Array<double> >& cacheVals 
-        = dfCache()[f];
-      int nFuncs = f->discreteSpace().nFunc();
-      int dim = cellDim();
-      int nPts = cellLID()->size() * quadWgts().size();
-      int pDir = mi.firstOrderDirection();
-      int myIndex = expr->myIndex();
-      /* offset to the first entry of the pDir'th derivative */
-      const double* cachePtr = &((*cacheVals)[pDir*nPts*nFuncs]);
-      double* vecPtr = vec->start();
-      for (int i=0; i<nPts; i++) 
-        {
-          vecPtr[i] = cachePtr[i*nFuncs + myIndex];
+          if (!dfCache().containsKey(f) || !dfCacheIsValid()[f])
+            {
+              fillFunctionCache(f, mi);
+            }
+          const RefCountPtr<Array<double> >& cacheVals 
+            = dfCache()[f];
+          int nFuncs = f->discreteSpace().nFunc();
+          int dim = cellDim();
+          int nPts = cellLID()->size() * quadWgts().size();
+          int pDir = mi.firstOrderDirection();
+          int myIndex = expr->myIndex();
+          /* offset to the first entry of the pDir'th derivative */
+          const double* cachePtr = &((*cacheVals)[pDir*nPts*nFuncs]);
+          double* vecPtr = vec[i]->start();
+          for (int i=0; i<nPts; i++) 
+            {
+              vecPtr[i] = cachePtr[i*nFuncs + myIndex];
+            }
         }
     }
 }

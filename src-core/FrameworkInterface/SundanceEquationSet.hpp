@@ -12,7 +12,6 @@
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalContext.hpp"
-#include "SundanceEvaluatorFactory.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -45,8 +44,7 @@ namespace SundanceCore
                   const Expr& bcs,
                   const Expr& tests, 
                   const Expr& unks,
-                  const Expr& unkLinearizationPts,
-                  const RefCountPtr<EvaluatorFactory>& evalFactory);
+                  const Expr& unkLinearizationPts);
 
       /** \name Methods to access information required for building DOF maps */
       //@{

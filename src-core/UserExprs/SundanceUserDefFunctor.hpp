@@ -28,10 +28,13 @@ namespace SundanceCore
       UserDefFunctor(const string& name) : name_(name) {;}
 
       /** */
+      virtual ~UserDefFunctor(){;}
+
+      /** */
       const string& name() const {return name_;}
 
       /** */
-      virtual double eval(const Array<double>& vars) const = 0 ;
+      virtual double eval0(const Array<double>& vars) const = 0 ;
                         
 
     private:

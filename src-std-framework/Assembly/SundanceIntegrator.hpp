@@ -58,7 +58,7 @@ namespace SundanceStdFwk
       const EvaluatableExpr *const expr() const {return expr_;}
 
       /** */
-      const RefCountPtr<SparsityPattern>& sparsity() const {return sparsity_;}
+      const RefCountPtr<SparsitySuperset>& sparsity() const {return sparsity_;}
 
     private:
       /** */
@@ -86,7 +86,7 @@ namespace SundanceStdFwk
       mutable RefCountPtr<StdFwkEvalMediator> mediator_;
 
       /** */
-      RefCountPtr<SparsityPattern> sparsity_;
+      RefCountPtr<SparsitySuperset> sparsity_;
 
     };
 

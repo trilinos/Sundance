@@ -25,7 +25,6 @@
 #include "SundanceDerivative.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceDOFMapBuilder.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
 #include "TSFEpetraVectorType.hpp"
 
 using namespace TSFExtended;
@@ -90,8 +89,7 @@ int main(int argc, void** argv)
       Expr bc = EssentialBC(leftPoint, v*u);
 
       RefCountPtr<EquationSet> eqnSet 
-        = rcp(new EquationSet(eqn, bc, v, u, u0, 
-                              rcp(new BruteForceEvaluatorFactory())));
+        = rcp(new EquationSet(eqn, bc, v, u, u0));
                                                             
       DOFMapBuilder builder(mesh, eqnSet); 
 

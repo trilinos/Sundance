@@ -8,10 +8,8 @@
 #include "SundanceRefIntegral.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceUnaryFunctor.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
-#include "SundanceInstructionCachingEvaluator.hpp"
 #include "SundanceGrouperBase.hpp"
-#include "SundanceSparsityPattern.hpp"
+#include "SundanceSparsitySuperset.hpp"
 #include "SundanceDefaultPath.hpp"
 
 
@@ -179,6 +177,10 @@ void Sundance::setSettings(const string& settingsFile)
             {
               UnaryFunctor::checkResults() = child.getRequiredBool("value");
             }
+          else if (name=="Shadow Calculations with String Values")
+            {
+              EvalVector::shadowOps() = child.getRequiredBool("value");
+            }
         }
       else if (child.getTag()=="Verbosity")
         {
@@ -192,6 +194,10 @@ void Sundance::setSettings(const string& settingsFile)
           else if (context=="Assembly")
             {
               Internal::Assembler::classVerbosity() = verbosity(value);
+            }
+          else if (context=="Integration Management")
+            {
+              Internal::IntegralGroup::classVerbosity() = verbosity(value);
             }
           else if (context=="Quadrature")
             {
@@ -207,7 +213,8 @@ void Sundance::setSettings(const string& settingsFile)
             }
           else if (context=="Symbolic Sparsity Determination")
             {
-              SundanceCore::Internal::SparsityPattern::classVerbosity() = verbosity(value);
+              SundanceCore::Internal::SparsitySuperset::classVerbosity() = verbosity(value);
+              SundanceCore::Internal::EvaluatableExpr::classVerbosity() = verbosity(value);
             }
           else if (context=="Integral Grouping")
             {
@@ -233,24 +240,6 @@ void Sundance::setSettings(const string& settingsFile)
                 = rcp(new GaussianQuadrature(order));
             }
         }
-      else if (child.getTag()=="Evaluation")
-        {
-          string type = child.getRequired("type");
-          if (type=="Instruction Caching")
-            {
-              EvaluatorFactory::defaultEvaluator() 
-                = rcp(new InstructionCachingEvaluatorFactory());
-              cerr << "Evaluation method: instruction caching"<< endl;
-            }
-          else
-            {
-              EvaluatorFactory::defaultEvaluator() 
-                = rcp(new BruteForceEvaluatorFactory());
-              cerr << "Evaluation method: brute force"<< endl;
-            }
-        }
-      
-      
     }
 }
 

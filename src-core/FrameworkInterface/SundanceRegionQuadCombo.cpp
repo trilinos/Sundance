@@ -9,6 +9,7 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
+
 RegionQuadCombo::RegionQuadCombo()
   : id_(-1), domain_(), quad_()
 {;}
@@ -38,9 +39,9 @@ string RegionQuadCombo::toString() const
     + " quad=" + quad_->describe() + "]";
 }
 
-Map<RegPair, int>& RegionQuadCombo::domainAndQuadToIDMap()
+SundanceUtils::Map<RegPair, int>& RegionQuadCombo::domainAndQuadToIDMap()
 {
-  static Map<RegPair, int> rtn = Map<RegPair, int>();
+  static SundanceUtils::Map<RegPair, int> rtn = SundanceUtils::Map<RegPair, int>();
   return rtn;
 }
 

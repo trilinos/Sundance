@@ -6,7 +6,8 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceElementIntegral.hpp"
-#include "SundanceEvalVectorArray.hpp"
+#include "SundanceEvalVector.hpp"
+
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -55,7 +56,8 @@ namespace SundanceStdFwk
 
       /** Evaluate this integral group */
       bool evaluate(const CellJacobianBatch& J,
-                    const RefCountPtr<EvalVectorArray>& coeffs,
+                    const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
+                    const Array<double>& constantCoeffs,
                     RefCountPtr<Array<double> >& A) const ;
 
 

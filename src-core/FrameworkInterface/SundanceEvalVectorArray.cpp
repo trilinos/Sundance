@@ -3,7 +3,7 @@
 
 
 #include "SundanceEvalVectorArray.hpp"
-#include "SundanceDerivSet.hpp"
+#include "SundanceSparsitySuperset.hpp"
 #include "SundanceTabs.hpp"
 
 using namespace SundanceCore;
@@ -37,31 +37,29 @@ void EvalVectorArray::steal(const RefCountPtr<EvalVectorArray>& other)
     }
 }
 
-ostream& EvalVectorArray::print(ostream& os, const DerivSet& derivs) const
+ostream& EvalVectorArray::print(ostream& os, 
+                                const SparsitySuperset* derivs) const
 {
   Tabs tab;
-  TEST_FOR_EXCEPTION(derivs.size() != size(),
+  TEST_FOR_EXCEPTION(derivs->numDerivs() != size(),
                      InternalError,
-                     "mismatch between deriv set size=" << derivs.size()
+                     "mismatch between deriv set size=" << derivs->numDerivs()
                      << "and result vector size " << size()
                      << "in EvalVectorArray::print");
 
-  DerivSet::const_iterator iter;
-
   int maxlen = 25;
-  for (iter=derivs.begin(); iter != derivs.end(); iter++)
+  for (int i=0; i<derivs->numDerivs(); i++)
     {
-      int s = (*iter).toString().length();
+      int s = derivs->deriv(i).toString().length();
       if (s > maxlen) maxlen = s;
     }
   
-  int i = 0;
-  for (iter=derivs.begin(); iter != derivs.end(); i++, iter++)
+  for (int i=0; i<derivs->numDerivs(); i++)
     {
       os << tab;
       os.width(maxlen);
       os.setf(ios_base::left, ios_base::adjustfield);
-      os << (*iter).toString() << "\t\t";
+      os << derivs->deriv(i).toString() << "\t\t";
       (*this)[i]->print(os);
       os << endl;
     }

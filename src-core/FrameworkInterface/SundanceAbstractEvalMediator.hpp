@@ -8,7 +8,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceEvalVector.hpp"
-
+#include "TSFObjectWithVerbosity.hpp"
 
 namespace SundanceCore
 {
@@ -32,7 +32,8 @@ namespace SundanceCore
        * for evaluating those expressions whose
        * calculation must be delegated to the framework.
        */
-      class AbstractEvalMediator
+      class AbstractEvalMediator 
+        : public TSFExtended::ObjectWithVerbosity<AbstractEvalMediator>
         {
         public:
           /** */
@@ -41,26 +42,20 @@ namespace SundanceCore
           /** */
           virtual ~AbstractEvalMediator(){;}
 
-          /** Return the size of the vectors used by this evaluator */
-          int vecSize() const {return vecSize_;}
-
-          /** Change the size of the vectors used by this evaluator */
-          void setVecSize(int newSize) {vecSize_ = newSize;}
+          
 
           /** Evaluate the given coordinate expression, putting
            * its numerical values in the given LoadableVector. */
           virtual void evalCoordExpr(const CoordExpr* expr,
-                                     EvalVector* const vec) const {;}
+                                     RefCountPtr<EvalVector>& vec) const = 0 ;
 
           /** Evaluate the given discrete function, putting
            * its numerical values in the given LoadableVector. */
           virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
-                                               const MultiIndex& mi,
-                                               EvalVector* const vec) const 
-          {;}
+                                               const Array<MultiIndex>& mi,
+                                               Array<RefCountPtr<EvalVector> >& vec) const = 0 ;
 
         private:
-          int vecSize_;
         };
     }
 }

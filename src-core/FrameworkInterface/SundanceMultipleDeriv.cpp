@@ -13,42 +13,76 @@ MultipleDeriv::MultipleDeriv()
   : MultiSet<Deriv>()
 {}
 
-void MultipleDeriv::productRulePermutations(Array<MultipleDeriv>& left,
-                                            Array<MultipleDeriv>& right) const
+int MultipleDeriv::spatialOrder() const 
+{
+  int rtn = 0;
+  for (MultipleDeriv::const_iterator i=begin(); i!=end(); i++)
+    {
+      if (i->isCoordDeriv())
+        {
+          rtn += 1;
+        }
+    }
+  return rtn;
+}
+
+MultipleDeriv MultipleDeriv::product(const MultipleDeriv& other) const 
+{
+  MultipleDeriv rtn;
+  
+  for (MultipleDeriv::const_iterator i=begin(); i!=end(); i++)
+    {
+      rtn.put(*i);
+    }
+  for (MultipleDeriv::const_iterator i=other.begin(); i!=other.end(); i++)
+    {
+      rtn.put(*i);
+    }
+  return rtn;
+  
+}
+void MultipleDeriv
+::productRulePermutations(ProductRulePerms& perms) const 
 {
   int N = order();
 
   if (N==0)
     {
-      left = Array<MultipleDeriv>(1);
-      right = Array<MultipleDeriv>(1);
-      MultipleDeriv d0;
-      left[0] = d0;
-      right[0] = d0;
+      MultipleDeriv md0;
+      DerivPair p(md0, md0);
+      perms.put(p, 1);
       return;
     }
 
   int p2 = pow2(N);
 
-  left = Array<MultipleDeriv>(p2);
-  right = Array<MultipleDeriv>(p2);
-
-  std::multiset<Deriv>::const_iterator iter;
-
   for (int i=0; i<p2; i++)
     {
+      MultipleDeriv left;
+      MultipleDeriv right;
       Array<int> bits = bitsOfAnInteger(i, N);
       int j=0; 
+      MultipleDeriv::const_iterator iter;
       for (iter=begin(); iter != end(); iter++, j++)
         {
           if (bits[j]==true)
             {
-              left[i].put(*iter);
+              left.put(*iter);
             }
           else
             {
-              right[i].put(*iter);
+              right.put(*iter);
             }
+        }
+      DerivPair p(left, right);
+      if (!perms.containsKey(p))
+        {
+          perms.put(p, 1);
+        }
+      else
+        {
+          int count = perms.get(p);
+          perms.put(p, count+1);
         }
     }
 }
@@ -73,7 +107,7 @@ int MultipleDeriv::pow2(int n)
 {
   static Array<int> p2(1,1);
 
-  if (n >= p2.size())
+  if ((unsigned int) n >= p2.size())
     {
       int oldN = p2.size(); 
       for (int i=oldN; i<=n; i++) p2.push_back(p2[i-1]*2);

@@ -6,6 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceUserDefFunctor.hpp"
+#include "SundanceUserDefOpEvaluator.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceUnaryExpr.hpp"
 #include "SundanceDeriv.hpp"
@@ -26,7 +27,8 @@ namespace SundanceCore
     /**
      *
      */
-    class UserDefOp : public ExprWithChildren
+  class UserDefOp : public ExprWithChildren,
+                    public GenericEvaluatorFactory<UserDefOp, UserDefOpEvaluator>
     {
     public:
       /** construct with an argument and the functor defining the operation */
@@ -49,10 +51,14 @@ namespace SundanceCore
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-      /** The function is nonlinear, so 
-       * all mixed partials are assumed to be nonzero as long as
-       * their constituent single derivs are nonzero. */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const ;
+      /** 
+       * Determine which functional and spatial derivatives are nonzero in the
+       * given context. We also keep track of which derivatives
+       * are known to be constant, which can simplify evaluation. 
+       */
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
+                                bool regardFuncsAsConstant) const ;
 
 
       /** Access to the operator */

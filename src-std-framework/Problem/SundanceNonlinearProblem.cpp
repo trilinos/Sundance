@@ -5,10 +5,8 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceAssembler.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
-#include "SundanceEvaluatorFactory.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -43,8 +41,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     
 {
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, test, unk, u0, 
-                          EvaluatorFactory::defaultEvaluator()));
+    = rcp(new EquationSet(eqn, bc, test, unk, u0));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, vecType));
 

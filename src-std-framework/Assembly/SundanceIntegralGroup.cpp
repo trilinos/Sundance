@@ -37,6 +37,8 @@ IntegralGroup
     integrals_(integrals),
     resultIndices_(resultIndices)
 {
+  verbosity() = classVerbosity();
+
   for (int i=0; i<integrals.size(); i++)
     {
       int nt = integrals[i]->nNodesTest();
@@ -62,6 +64,8 @@ IntegralGroup
     integrals_(integrals),
     resultIndices_(resultIndices)
 {
+  verbosity() = classVerbosity();
+
   for (int i=0; i<integrals.size(); i++)
     {
       int nt = integrals[i]->nNodesTest();
@@ -78,14 +82,14 @@ IntegralGroup
     }
 }
 
-bool IntegralGroup::evaluate(const CellJacobianBatch& J,
-                             const RefCountPtr<EvalVectorArray>& coeffs,
-                             RefCountPtr<Array<double> >& A) const
+bool IntegralGroup
+::evaluate(const CellJacobianBatch& J,
+           const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
+           const Array<double>& constantCoeffs,
+           RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(integrationTimer());
   Tabs tab0;
-  bool nonzero = false;
-
 
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
@@ -102,13 +106,13 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
 
       if (ref!=0)
         {
-          SUNDANCE_OUT(verbosity() > VerbSilent,
+          SUNDANCE_OUT(verbosity() > VerbMedium,
                        tab << "Integrating term group " << i 
                        << " by transformed reference integral");
           Array<double> f(resultIndices_[i].size());
           for (int j=0; j<f.size(); j++)
             {
-              f[j] = (*coeffs)[resultIndices_[i][j]]->getConstantValue();
+              f[j] = constantCoeffs[resultIndices_[i][j]];
             }
           SUNDANCE_OUT(verbosity() > VerbSilent,
                        tab << "Coefficients are " << f);
@@ -116,28 +120,23 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
         }
       else 
         {
-          if ((*coeffs)[resultIndices_[i][0]]->isZero()) 
-            {
-              // cerr << "coefficient is zero" << endl;
-              continue;
-            }
-          TEST_FOR_EXCEPTION((*coeffs)[resultIndices_[i][0]]->isConstant(),
-                             InternalError,
-                             "Integrating a constant term="
-                             <<(*coeffs)[resultIndices_[i][0]]->getConstantValue()
-                             << " by quadrature");
-          SUNDANCE_OUT(verbosity() > VerbSilent,
+          SUNDANCE_OUT(verbosity() > VerbMedium,
                        tab << "Integrating term group " << i 
                        << " by quadrature");
-          //    cerr << "number of coeff terms = " << coeffs->size() << endl;
-          const double* const f = (*coeffs)[resultIndices_[i][0]]->start();
+          TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i][0]]->length()==0,
+                             InternalError,
+                             "zero-length coeff vector detected in "
+                             "quadrature integration branch of "
+                             "IntegralGroup::evaluate(). String value is ["
+                             << vectorCoeffs[resultIndices_[i][0]]->str()
+                             << "]");
+          const double* const f = vectorCoeffs[resultIndices_[i][0]]->start();
           quad->transform(J, f, A);
         }
-      nonzero = true;
     }
   SUNDANCE_OUT(verbosity() > VerbSilent, tab0 << "done");
 
-  return nonzero;
+  return true;
 }
 
 

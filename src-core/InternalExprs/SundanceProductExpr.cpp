@@ -11,12 +11,24 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 
 ProductExpr::ProductExpr(const RefCountPtr<ScalarExpr>& left,
                          const RefCountPtr<ScalarExpr>& right)
 	: BinaryExpr(left, right, 1)
-{}
+{
+  if (isEvaluatable(left.get()) && isEvaluatable(right.get()))
+    {
+      for (int d=0; d<MultiIndex::maxDim(); d++) 
+        {
+          int lod = leftEvaluatable()->orderOfDependency(d);
+          int rod = rightEvaluatable()->orderOfDependency(d);
+          if (lod < 0 || rod < 0) setOrderOfDependency(d, -1);
+          else setOrderOfDependency(d, lod+rod);
+        }
+    }
+}
 
 
 bool ProductExpr::isHungryDiffOp() const
@@ -42,92 +54,116 @@ const string& ProductExpr::opChar() const
 	return timesStr;
 }
 
-
-
-bool ProductExpr::hasNonzeroDeriv(const MultipleDeriv& d) const
+void ProductExpr::findChildMultiIndexSets(const Set<MultiIndex>& miSet,
+                                          Set<MultiIndex>& miLeft,
+                                          Set<MultiIndex>& miRight) const
 {
-
-  TimeMonitor t(nonzeroDerivCheckTimer());
-  hasNonzeroDerivCalls()++;
-
-  if (derivHasBeenCached(d))
+  for (Set<MultiIndex>::const_iterator i=miSet.begin(); 
+       i != miSet.end(); i++)
     {
-      nonzeroDerivCacheHits()++;
-      return getCachedDerivNonzeroness(d);
-    }
+      const MultiIndex& mi = *i;
 
-  TimeMonitor t2(uncachedNonzeroDerivCheckTimer());
+      TEST_FOR_EXCEPTION(mi.order() > 1, RuntimeError,
+                         "multiindex order restricted to 0,1");
 
-  bool rtn = false;
-
-  if (d.order()==0)
-    {
-      rtn = true;
-    }
-  else
-    {
-      /* If at least one term in the product rule expansion is nonzero, 
-       * we have a nonzero derivative */
-      Array<MultipleDeriv> leftOps;
-      Array<MultipleDeriv> rightOps;
-
-      d.productRulePermutations(leftOps, rightOps);
-
-      for (int i=0; i<leftOps.size(); i++)
+      /* if first derivatives are needed, by the product rule we
+       * may need zero-order derivs also */
+      if (mi.order() == 1) 
         {
-          if (leftEvaluatable()->hasNonzeroDeriv(leftOps[i]) 
-              && rightEvaluatable()->hasNonzeroDeriv(rightOps[i]))
+          int d = mi.firstOrderDirection();
+          if (leftEvaluatable()->orderOfDependency(d) != 0)
             {
-              rtn = true;
-              break;
+              miRight.put(MultiIndex());
+              miLeft.put(mi);
             }
-        }
-    }
-
-  addDerivToCache(d, rtn);
-
-  return rtn;
-}
-
-Array<DerivSet> 
-ProductExpr::derivsRequiredFromOperands(const DerivSet& d) const
-{
-  Tabs tabs;
-
-  if (verbosity() > 1)
-    {
-      cerr << tabs << "ProductExpr::derivsRequiredFromOperands()" << endl;
-    }
-  
-  DerivSet leftRtn;
-  DerivSet rightRtn;
-
-  for (DerivSet::const_iterator i=d.begin(); i != d.end(); i++)
-    {
-      const MultipleDeriv& di = *i;
-      if (di.order()==0)
-        {
-          leftRtn.put(di);
-          rightRtn.put(di);
+          if (rightEvaluatable()->orderOfDependency(d) != 0)
+            {
+              miLeft.put(MultiIndex());
+              miRight.put(mi);
+            }
         }
       else
         {
-          Array<MultipleDeriv> leftOps;
-          Array<MultipleDeriv> rightOps;
-          
-          di.productRulePermutations(leftOps, rightOps);
-          
-          for (int j=0; j<leftOps.size(); j++)
+          miLeft.put(mi);
+          miRight.put(mi);
+        }
+    }
+}
+
+
+
+
+
+void ProductExpr::findNonzeros(const EvalContext& context,
+                               const Set<MultiIndex>& multiIndices,
+                               bool regardFuncsAsConstant) const
+{
+
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for product expr" 
+                       << toString() << " subject to multiindices "
+                       << multiIndices);
+
+  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      return;
+    }
+
+  Set<MultiIndex> miLeft;
+  Set<MultiIndex> miRight;
+  findChildMultiIndexSets(multiIndices, miLeft, miRight);
+
+  int maxSpatialOrder = maxOrder(multiIndices);
+  int maxDiffOrder = context.topLevelDiffOrder() + maxSpatialOrder;
+
+  SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting left operand's nonzeros");
+  leftEvaluatable()->findNonzeros(context, miLeft,
+                                  regardFuncsAsConstant);
+
+  SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting right operand's nonzeros");
+  rightEvaluatable()->findNonzeros(context, miRight,
+                                   regardFuncsAsConstant);
+
+  RefCountPtr<SparsitySubset> leftSparsity 
+    = leftEvaluatable()->sparsitySubset(context, miLeft);
+
+  RefCountPtr<SparsitySubset> rightSparsity 
+    = rightEvaluatable()->sparsitySubset(context, miRight);
+
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+
+  for (int i=0; i<leftSparsity->numDerivs(); i++)
+    {
+      const MultipleDeriv& dLeft = leftSparsity->deriv(i);
+     
+      for (int j=0; j<rightSparsity->numDerivs(); j++)
+        {
+          const MultipleDeriv& dRight = rightSparsity->deriv(j);
+
+          /* Skip combinations of functional derivatives that contribute
+           * only to derivatives of an order we don't need */
+          if (dRight.order() + dLeft.order() > maxDiffOrder) continue;
+
+          /* Skip combinations of spatial derivs of greater order
+           * than the max order of our multiindices */
+          if (dRight.spatialOrder() + dLeft.spatialOrder() > maxSpatialOrder) continue;
+      
+          /* The current left and right nonzero functional derivatives
+           * dLeft, dRight will contribute to the dLeft*dRight 
+           * functional derivative */
+          MultipleDeriv productDeriv = dLeft;
+          for (MultipleDeriv::const_iterator k=dRight.begin();
+               k != dRight.end(); k++)
             {
-              if (leftEvaluatable()->hasNonzeroDeriv(leftOps[j]) 
-                  && rightEvaluatable()->hasNonzeroDeriv(rightOps[j]))
-                {
-                  leftRtn.put(leftOps[j]);
-                  rightRtn.put(rightOps[j]);
-                }
+              productDeriv.insert(*k);
             }
+          /* Use the more general of the two operands' states */
+          DerivState newState = max(leftSparsity->state(i), 
+                                    rightSparsity->state(j));
+          subset->addDeriv(productDeriv, newState);
         }
     }
 
-  return tuple(leftRtn, rightRtn);
+  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
 }

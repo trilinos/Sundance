@@ -9,9 +9,7 @@
 #include "Teuchos_Array.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceUnaryFunctor.hpp"
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
+#include "SundanceNoncopyable.hpp"
 
 namespace SundanceCore
 {
@@ -21,179 +19,289 @@ namespace SundanceCore
     using namespace Teuchos;
 
     /**
-     * EvalVector is used internally by Sundance for numerical evaluation
-     * of expressions and their functional derivatives.
      *
-     * Why yet another vector class? EvalVector has two significant
-     * features not supported by existing vector classes: (1) since we
-     * will often be able to identify symbolically terms that are
-     * zero, one, or constant in certain regions, EvalVector has the
-     * ability to represent those values exactly and save vector
-     * calculations; (2) EvalVector has the ability to "shadow" a numerical
-     * calculation with a string calculation which produces a string
-     * showing all the steps carried out during the calculation. 
-     *
-     * The methods isZero(), isOne(), and isConstant() indicate whether
-     * the vector has a constant or trivial value that can be used to simplify
-     * calculations and avoid full vector operations. 
-     *
-     * Whatever framework Sundance is connected to 
-     * will need to insert numerical values into an
-     * EvalVector. This is done using the LoadableVector interface,
-     * implemented by EvalVector.
      */
-    class EvalVector : public TSFExtended::ObjectWithVerbosity<EvalVector>
+    class EvalVector : public Noncopyable,
+      public TSFExtended::ObjectWithVerbosity<EvalVector>
     {
+      friend class EvalManager;
       friend class TempStack;
 
     private:
-      /** Create a vector, initialized to zero. Ctors are private; the
-       * friend class TempStack can create EvalVectors */
-      EvalVector();
-      
-      /** Create a vector of length n. Ctors are private; the
-       * friend class TempStack can create EvalVectors*/
-      EvalVector(int n);
+
+      /** */
+      EvalVector(TempStack* s);
+
+      /** */
+      EvalVector(TempStack* s, const RefCountPtr<Array<double> >& data,
+                 const string& str);
+
 
     public:
-
-      /** \name Element loading functions */
-      //@{
-      /** Change the size of the vector to newSize */
-      void resize(int newSize) {vectorVal_.resize(newSize);}
-          
-      /** Return the length of the vector */
-      int length() const {return vectorVal_.length();}
-
-      /** Set the i-th element to x */
-      void setElement(int i, const double& x) {vectorVal_[i] = x;}
-
-      /** Return a pointer to the physical start of the vector. */
-      double* const start() {return &(vectorVal_[0]);}
-
-      /** Return a pointer to the physical start of the vector. */
-      const double* const start() const {return &(vectorVal_[0]);}
-      //@}
-
-      /** Return true if we are shadowing numerical operations with
-       * string operations */
-      static bool& shadowOps() {static bool rtn = false; return rtn;}
-
-      /** \name Methods for handling special values */
-      //@{
-      /** Return true if this vector is a constant */
-      bool isConstant() const {return isConstant_;}
-      
-      /** Return true if this vector is zero */
-      bool isZero() const {return isZero_;}
-      
-      /** Return true if this vector is one */
-      bool isOne() const {return isOne_;}
-
-      /** Set this vector to zero */
-      void setToZero();
-
-      /** Set this vector to one */
-      void setToOne();
-
-      /** Set this vector to a constant value */
-      void setToConstantValue(const double& constantVal);
-
-      /** Return the constant value of this vector */
-      const double& getConstantValue() const {return constantVal_;}
-
-      /** Make this vector use its vector values rather than
-       * any constant values. The elements of the vector are assumed
-       * to be set elsewhere; this method simply sets isConstant,
-       * isZero, and isOne to false. */
-      void setToVectorValue();
-      //@}
-
-      /** \name Methods for working with string values */
-      //@{
-      /** Return the string value of this vector */
-      string getStringValue() const ;
-
-      /** Set the string value of this vector, concurrently setting
-       * isConstant, isZero, and isOne to false. */
-      void setStringValue(const string& stringVal);
-      //@}
+      /** 
+       * EvalVector has a nontrivial destructor. Upon destruction, 
+       * the vector's underlying data object is not destroyed, but rather
+       * is put back on the stack of temporary vectors. 
+       */
+      ~EvalVector();
 
       /** \name Mathematical operations */
       //@{
-      /** Add another vector to this one. Special cases in which
-       * either operand is zero or constant are checked. If numerical()
-       * is true, the calculation is done numerically; otherwise,
-       * a string computation is performed. */
-      void addScaled(const RefCountPtr<EvalVector>& other,
-                     const double& scalar) ;
 
-      /** Elementwise multiply this vector with another vector.
-       * Special cases in which either operand is zero, one, or
-       * constant are checked. If numerical() is true, the
-       * calculation is done numerically; otherwise, a string
-       * computation is performed. */
-      void multiply(const RefCountPtr<EvalVector>& other) ;
+      /** */
+      void add_SV(const double& alpha, 
+                  const EvalVector* B) ;
 
-      /** Add a product a*b to this vector. Special cases in which
-       * either operand is zero, one, or constant are checked. If
-       * numerical() is true, the calculation is done numerically;
-       * otherwise, a string computation is performed.*/
-      void addProduct(const RefCountPtr<EvalVector>& a,
-                      const RefCountPtr<EvalVector>& b) ;
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this + alpha*B*C
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void add_SVV(const double& alpha,
+                   const EvalVector* B,
+                   const EvalVector* C) ;
 
-      /** Take the square root of this vector. If numerical() is
-       * true, the calculation is done numerically; otherwise, a
-       * string computation is performed. */
-      void sqrt() ;
+      /** */
+      void add_V(const EvalVector* A) ;
 
-      /** Apply the given unary function to this vector, returning
-       * the value and the requested number of derivatives */
-      void applyUnaryFunction(const UnaryFunctor* func,
-                              Array<RefCountPtr<EvalVector> >& funcDerivs) const ;
+      /** */
+      void add_S(const double& alpha);
 
-      /** Copy a vector into this vector. If numerical() is true,
-       * the calculation is done numerically; otherwise, a string
-       * computation is performed.*/
-      void copy(const RefCountPtr<EvalVector>& other) ;
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this + A*B
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void add_VV(const EvalVector* A,
+                  const EvalVector* B) ;
 
-      /** negate this vector.  */
-      void unaryMinus() ;
-      //@}
 
+      /**  
+       * Perform a scaled addition with another vector,
+       * \f[ 
+       * this = \alpha this + \beta C
+       * \f]
+       * The operation is done in-place, overwriting the old values of the
+       * vector. 
+       */
+      void multiply_S_add_SV(const double& alpha, 
+                             const double& beta,
+                             const EvalVector* C) ;
+
+      /** Scale and add a constant to this vector. 
+       * The operation is done in-place, overwriting the old values of
+       * the vector. Each element x[i] is updated as:
+       * \f[
+       * this = alpha * this + beta
+       * \f]
+       */
+      void multiply_S_add_S(const double& alpha,
+                            const double& beta) ;
+
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this*A + B*C*D
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void multiply_V_add_VVV(const EvalVector* A,
+                              const EvalVector* B,
+                              const EvalVector* C,
+                              const EvalVector* D) ;
+
+
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this*A + beta*C*D
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void multiply_V_add_SVV(const EvalVector* A,
+                              const double& beta,
+                              const EvalVector* C,
+                              const EvalVector* D) ;
+
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this*A + beta*C
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void multiply_V_add_SV(const EvalVector* A,
+                             const double& beta,
+                             const EvalVector* C) ;
+
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this*A*B
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void multiply_VV(const EvalVector* A,
+                       const EvalVector* B) ;
+
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this*alpha*B
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void multiply_SV(const double& alpha,
+                       const EvalVector* B) ;
+
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this*A
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void multiply_V(const EvalVector* A) ;
+
+      /**
+       * Perform the operation 
+       * \f[ 
+       * this = this*alpha
+       * \f]
+       * which shows up in the chain rule expansion of a second derivative.
+       * 
+       */
+      void multiply_S(const double& alpha) ;
+
+      /**
+       *
+       */
+      void setTo_S_add_SVV(const double& alpha,
+                           const double& beta,
+                           const EvalVector* C,
+                           const EvalVector* D);
+
+      /**
+       *
+       */
+      void setTo_S_add_VV(const double& alpha,
+                          const EvalVector* B,
+                          const EvalVector* C);
+
+      /**
+       *
+       */
+      void setTo_S_add_SV(const double& alpha,
+                           const double& beta,
+                           const EvalVector* C);
+
+      /** 
+       *
+       */
+      void setTo_S_add_V(const double& alpha,
+                         const EvalVector* B);
+
+
+      /**
+       *
+       */
+      void setTo_V(const EvalVector* A);
+
+      /**
+       *
+       */
+      void setTo_VV(const EvalVector* A,
+                    const EvalVector* B);
+
+      /**
+       *
+       */
+      void setTo_SV(const double& alpha,
+                    const EvalVector* B);
+
+      /**
+       *
+       */
+      void setTo_SVV(const double& alpha,
+                     const EvalVector* B,
+                     const EvalVector* C);
+
+      
+
+
+      /**
+       * Set every element to a constant value
+       */
+      void setToConstant(const double& alpha) ;
+
+      /** 
+       * Apply a unary function
+       */
+      void applyUnaryOperator(const UnaryFunctor* func, 
+                              Array<RefCountPtr<EvalVector> >& opDerivs);
+      
+      
+      /** */
+      RefCountPtr<EvalVector> clone() const ;
+
+      /** */
+      void resize(int n);
+
+      /** */
+      int length() const {return data_->size();}
+      
       /** */
       void print(ostream& os) const ;
 
+      /** */
+      const double * const start() const {return &((*data_)[0]);}
+
+      /** */
+      double * const start() {return &((*data_)[0]);}
+
+      const string& str() const {return str_;}
+
+      void setString(const string& str) {str_ = str;}
+
+      static bool& shadowOps() {static bool rtn = false; return rtn;}
+
+      bool isValid() const {return data_.get() != 0 && s_ != 0;}
+      //@}
+
+      
+
     private:
-      /** The elements of this vector, used if isConstant() is false and
-       * we are doing numerical calculations. */
-      Array<double> vectorVal_;
 
-      /** the string value of this vector, used if isConstant()
-       * is false and we are doing string, rather than numerical,
-       * calculations */
-      string stringVal_;
+      mutable TempStack* s_;
 
-      /** the constant value of this vector, used if isConstant() is true */
-      double constantVal_;
+      RefCountPtr<Array<double> > data_;
 
-      /** flag indicating whether all elements of this vector are
-       * equal to a real constant */
-      bool isConstant_;
-
-      /** flag indicating whether all elements of this vector are
-       * equal to zero (0.0) */
-      bool isZero_;
-
-      /** flag indicating whether all elements of this vector are
-       * equal to one (1.0) */
-      bool isOne_;
+      string str_;
 
     };
   }
 }
 
+namespace std
+{
+  inline ostream& operator<<(ostream& os, 
+                             const SundanceCore::Internal::EvalVector& vec)
+  {
+    vec.print(os);
+    return os;
+  }
+}
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

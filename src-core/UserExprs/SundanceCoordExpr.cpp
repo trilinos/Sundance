@@ -4,18 +4,23 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCoordDeriv.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceSparsityPattern.hpp"
+#include "SundanceSparsitySuperset.hpp"
+#include "SundanceOut.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 CoordExpr::CoordExpr(int dir, const string& name)
-  : FuncElementBase(coordName(dir, name)), 
-    LeafExpr(), dir_(dir)
-{;}
+  : LeafExpr(), FuncElementBase(coordName(dir, name), ""), 
+    dir_(dir)
+{
+  setOrderOfDependency(dir, 1);
+}
 
 XMLObject CoordExpr::toXML() const 
 {
@@ -43,16 +48,38 @@ string CoordExpr::coordName(int dir, const string& name)
     }
 }
 
-bool CoordExpr::hasNonzeroDeriv(const MultipleDeriv& d) const
-{
-  if (d.order()==0) return true;
 
-  if (d.order()==1)
+
+void CoordExpr::findNonzeros(const EvalContext& context,
+                             const Set<MultiIndex>& multiIndices,
+                             bool regardFuncsAsConstant) const
+{
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for coord func " << toString()
+                       << " subject to multi index set " 
+                       << multiIndices.toString());
+
+  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
     {
-      const CoordDeriv* sd = (*(d.begin())).coordDeriv();
-      return (sd != 0 && sd->dir()==dir_);
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      return;
     }
-  return false;
+
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+
+  MultiIndex myDirection;
+  myDirection[dir_] = 1;
+  if (multiIndices.contains(myDirection)) 
+    {
+      subset->addDeriv(new CoordDeriv(dir_), ConstantDeriv);
+    }
+  MultiIndex empty;
+  if (multiIndices.contains(empty))
+    {
+      subset->addDeriv(MultipleDeriv(), VectorDeriv);
+    }
+
+  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
 }
 
 

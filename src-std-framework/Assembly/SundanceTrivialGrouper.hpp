@@ -38,7 +38,7 @@ namespace SundanceStdFwk
                               const CellType& cellType,
                               int cellDim,
                               const QuadratureFamily& quad,
-                              const RefCountPtr<SparsityPattern>& sparsity,
+                              const RefCountPtr<SparsitySuperset>& sparsity,
                               Array<IntegralGroup>& groups) const ;
                               
     };

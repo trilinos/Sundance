@@ -14,8 +14,8 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name, int nElems)
 {
   for (int i=0; i<nElems; i++)
     {
-      string elemName = name + "[" + Teuchos::toString(i) + "]";
-      append(new DiscreteFuncElement(this, elemName, i));
+      string suffix = "[" + Teuchos::toString(i) + "]";
+      append(new DiscreteFuncElement(this, name, suffix, i));
     }
 }
 

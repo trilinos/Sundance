@@ -6,8 +6,8 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceUnaryExpr.hpp"
+#include "SundanceUnaryMinusEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
@@ -18,7 +18,8 @@ namespace SundanceCore
   namespace Internal
     {
       /** */
-      class UnaryMinus : public UnaryExpr
+      class UnaryMinus : public UnaryExpr,
+                         GenericEvaluatorFactory<UnaryMinus, UnaryMinusEvaluator>
         {
         public:
           /** construct with the argument */
@@ -26,13 +27,6 @@ namespace SundanceCore
 
           /** virtual dtor */
           virtual ~UnaryMinus() {;}
-
-          /** Indicate whether the given derivative of this expression
-           * is nonzero. The
-           * derivative is nonzero if the operand's derivative is 
-           * nonzero. */
-          virtual bool hasNonzeroDeriv(const MultipleDeriv& f) const
-            {return evaluatableArg()->hasNonzeroDeriv(f);}
 
 
           /** */
@@ -51,5 +45,4 @@ namespace SundanceCore
     }
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

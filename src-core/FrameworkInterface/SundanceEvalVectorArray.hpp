@@ -22,7 +22,7 @@ namespace SundanceCore
 
   namespace Internal
     {
-      class DerivSet;
+      class SparsitySuperset;
 
       /**
        *
@@ -40,7 +40,7 @@ namespace SundanceCore
           void steal(const RefCountPtr<EvalVectorArray>& other);
 
           /** */
-          ostream& print(ostream& os, const DerivSet& derivs) const ;
+          ostream& print(ostream& os, const SparsitySuperset* derivs) const ;
         };
     }
 }

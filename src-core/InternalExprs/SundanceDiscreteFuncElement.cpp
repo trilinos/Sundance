@@ -3,6 +3,7 @@
 
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
+#include "SundanceCoordDeriv.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -10,30 +11,53 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionStub* master, 
                                          const string& name,
+                                         const string& suffix,
                                          int myIndex)
 	: LeafExpr(), 
-    FuncElementBase(name),
+    FuncElementBase(name, suffix),
     master_(master),
     myIndex_(myIndex)
 {}
 
-bool DiscreteFuncElement::hasNonzeroDeriv(const MultipleDeriv& md) const 
+void DiscreteFuncElement::findNonzeros(const EvalContext& context,
+                                       const Set<MultiIndex>& multiIndices,
+                                       bool regardFuncsAsConstant) const
 {
-  TimeMonitor t(nonzeroDerivCheckTimer());
 
-  if (md.order()==0) return true;
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for discrete func " 
+                       << toString() << " subject to multiindices "
+                       << multiIndices);
 
-  MultipleDeriv::const_iterator iter;
-  
-  for (iter=md.begin(); iter != md.end(); iter++)
+  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
     {
-      const Deriv& d = *iter;
-      if (!d.isCoordDeriv()) return false;
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      return;
     }
-  return true;
+
+
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+  
+  for (Set<MultiIndex>::const_iterator 
+         i=multiIndices.begin(); i != multiIndices.end(); i++)
+    {
+      if (i->order()==1)
+        {
+          subset->addDeriv(new CoordDeriv(i->firstOrderDirection()), 
+                           VectorDeriv);
+        }
+      if (i->order()==0)
+        {
+          subset->addDeriv(MultipleDeriv(),
+                           VectorDeriv);
+        }
+    }
+
+  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
 }
 
 XMLObject DiscreteFuncElement::toXML() const 

@@ -5,7 +5,7 @@
 #define SUNDANCE_GROUPER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSparsityPattern.hpp"
+#include "SundanceSparsitySuperset.hpp"
 #include "SundanceIntegralGroup.hpp"
 #include "SundanceEquationSet.hpp"
 
@@ -42,7 +42,7 @@ namespace SundanceStdFwk
                               const CellType& cellType,
                               int cellDim,
                               const QuadratureFamily& quad,
-                              const RefCountPtr<SparsityPattern>& sparsity,
+                              const RefCountPtr<SparsitySuperset>& sparsity,
                               Array<IntegralGroup>& groups) const = 0 ;
 
     protected:

@@ -13,19 +13,9 @@
 bool bdryPointTest(const Point& x) 
 {
   static int nBdryPts = 0;
-  cerr << "trying point " << x << endl;
 
   double r2 = x[0]*x[0]+x[1]*x[1];
-  cerr << "r^2 = " << r2 << endl;
-  cerr << "r^2-100.0 = " << r2-100.0 << endl;
   bool rtn = ::fabs(r2 - 100.0) < 1.0e-6;
-  if (rtn==true) 
-    {
-      cerr << "-------------------------------------------------------- got one!"
-           << endl;
-      nBdryPts++;
-      cerr << "num bdry pts = " << nBdryPts << endl;
-    }
   return rtn;
 }
 
@@ -38,7 +28,7 @@ public:
   BesselI0Func() : UserDefFunctor("I0") {;}
 
   /** */
-  virtual double eval(const Array<double>& vars) const 
+  virtual double eval0(const Array<double>& vars) const 
   {
     double* x = const_cast<double*>(&(vars[0]));
     return besi0_(x);

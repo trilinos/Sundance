@@ -5,10 +5,6 @@
 #define SUNDANCE_EVALUATORFACTORY_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
@@ -16,38 +12,52 @@ namespace SundanceCore
   namespace Internal
     {
       class Evaluator;
+      class EvalContext;
       class EvaluatableExpr;
+
       using namespace Teuchos;
-      
+
       /**
        *
        */
-      class EvaluatorFactory
+      class EvaluatorFactory 
         {
         public:
           /** */
-          EvaluatorFactory();
+          EvaluatorFactory(){;}
 
           /** */
           virtual ~EvaluatorFactory(){;}
 
           /** */
-          virtual Evaluator* 
-          createEvaluator(const EvaluatableExpr* expr,
-                          int derivSetIndex) const = 0 ;
+          virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+                                             const EvalContext& context) const = 0 ;
+
+        };
+      
+      
+      /**
+       *
+       */
+      template <class ExprT, class EvalT>
+      class GenericEvaluatorFactory : virtual public EvaluatorFactory
+        {
+        public:
+          /** */
+          GenericEvaluatorFactory(){;}
 
           /** */
-          static RefCountPtr<EvaluatorFactory>& defaultEvaluator();
+          virtual ~GenericEvaluatorFactory(){;}
 
-        protected:
-          /** Method to create those evaluators that can be built by
-           * the base evaluator factory */
-          Evaluator* commonCreate(const EvaluatableExpr* expr) const ;
-        private:
+          /** */
+          virtual Evaluator* 
+          createEvaluator(const EvaluatableExpr* expr,
+                          const EvalContext& context) const 
+            {
+              return new EvalT(dynamic_cast<const ExprT*>(expr), context);
+            }
         };
     }
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

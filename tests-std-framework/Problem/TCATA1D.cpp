@@ -23,7 +23,7 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       //  DOFMapBase::classVerbosity() = VerbExtreme;
@@ -165,10 +165,13 @@ int main(int argc, void** argv)
 
       
 
+      double tol = 1.0e-12;
+      Sundance::passFailTest(0, tol);
+
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      Sundance::handleException(e);
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

@@ -37,6 +37,7 @@ namespace SundanceCore
       /** */
       UnknownFuncElement(const UnknownFunctionStub* master,
                          const string& name,
+                         const string& suffix,
                          int myIndex);
 
       /** virtual destructor */

@@ -48,9 +48,6 @@ namespace SundanceCore
 
           /** extract the underlying ScalarExpr from an Expr. */
           static RefCountPtr<ScalarExpr> getScalar(const Expr& expr); 
-
-          /** get/set verbosity level */
-          static int& verbosity() {static int rtn = 0; return rtn;}
         };
   }
 }

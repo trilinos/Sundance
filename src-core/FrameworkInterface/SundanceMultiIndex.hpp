@@ -53,13 +53,10 @@ namespace SundanceCore
           Array<MultiIndex> getLowerMultiIndices() const ;
 
           /** */
-          virtual string toString() const ;
+          string toString() const ;
 
           /** */
           XMLObject toXML() const ;
-
-          /** */
-          virtual int hashCode() const ;
 
           /** */
           int order() const ;
@@ -82,13 +79,21 @@ namespace SundanceCore
 namespace Teuchos
 {
   using std::string;
-  /** \relates SundanceCore::Internal::MultiIndex */
-  inline int hashCode(const SundanceCore::Internal::MultiIndex& h)
-    {return h.hashCode();}
 
   /** \relates SundanceCore::Internal::MultiIndex */
   inline string toString(const SundanceCore::Internal::MultiIndex& h)
     {return h.toString();}
+}
+
+namespace std
+{
+  /** \relates SundanceCore::Internal::MultiIndex */
+  inline ostream& operator<<(ostream& os, 
+                             const SundanceCore::Internal::MultiIndex& h)
+  {
+    os << h.toString();
+    return os;
+  }
 }
 
 

@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(BesselTest2D_SOURCES) $(ConstancyBug_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(Helmholtz1D_SOURCES) $(Kepler_SOURCES) $(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(TCATA1D_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
+SOURCES = $(BesselTest2D_SOURCES) $(ConstancyBug_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(Helmholtz1D_SOURCES) $(Kepler_SOURCES) $(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -85,7 +85,7 @@ noinst_PROGRAMS = NonlinAlgebraic$(EXEEXT) Poisson1D$(EXEEXT) \
 	Coupled1D$(EXEEXT) Coupled2D$(EXEEXT) RadDiff1D$(EXEEXT) \
 	NoxAlgebraic$(EXEEXT) Kepler$(EXEEXT) NoxPoisson1D$(EXEEXT) \
 	PoissonOnDisk$(EXEEXT) OptPoisson1D$(EXEEXT) \
-	Eikonal2D$(EXEEXT) TCATA1D$(EXEEXT) VorticityStokes2D$(EXEEXT) \
+	Eikonal2D$(EXEEXT) VorticityStokes2D$(EXEEXT) \
 	Stokes1D$(EXEEXT) Helmholtz1D$(EXEEXT) \
 	VorticityNavierStokes2D$(EXEEXT) ConstancyBug$(EXEEXT) \
 	BesselTest2D$(EXEEXT)
@@ -147,8 +147,6 @@ am_Stokes1D_OBJECTS = Stokes1D-Stokes1D.$(OBJEXT)
 Stokes1D_OBJECTS = $(am_Stokes1D_OBJECTS)
 am_Stokes2D_OBJECTS = Stokes2D-Stokes2D.$(OBJEXT)
 Stokes2D_OBJECTS = $(am_Stokes2D_OBJECTS)
-am_TCATA1D_OBJECTS = TCATA1D-TCATA1D.$(OBJEXT)
-TCATA1D_OBJECTS = $(am_TCATA1D_OBJECTS)
 am_VorticityNavierStokes2D_OBJECTS =  \
 	VorticityNavierStokes2D-VorticityNavierStokes2D.$(OBJEXT)
 VorticityNavierStokes2D_OBJECTS =  \
@@ -177,7 +175,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/RadDiff1D-RadDiff1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Stokes1D-Stokes1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Stokes2D-Stokes2D.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/TCATA1D-TCATA1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/VorticityNavierStokes2D-VorticityNavierStokes2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/VorticityStokes2D-VorticityStokes2D.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -196,7 +193,7 @@ SOURCES = $(BesselTest2D_SOURCES) $(ConstancyBug_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
-	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(TCATA1D_SOURCES) \
+	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) \
 	$(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 DIST_SOURCES = $(BesselTest2D_SOURCES) $(ConstancyBug_SOURCES) \
@@ -206,7 +203,7 @@ DIST_SOURCES = $(BesselTest2D_SOURCES) $(ConstancyBug_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
-	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(TCATA1D_SOURCES) \
+	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) \
 	$(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 ETAGS = etags
@@ -459,15 +456,18 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 Eikonal2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Eikonal2D_LDADD = $(STD_FWK_LIBS) 
-TCATA1D_SOURCES = $(srcdir)/TCATA1D.cpp
-TCATA1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
 
-TCATA1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-TCATA1D_LDADD = $(STD_FWK_LIBS) 
+#TCATA1D_SOURCES = $(srcdir)/TCATA1D.cpp
+#
+#TCATA1D_DEPENDENCIES = \
+#$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+#$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+#$(top_builddir)/src-core/libsundanceCore.a \
+#$(top_builddir)/src-utils/libsundanceUtils.a
+#
+#TCATA1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+#
+#TCATA1D_LDADD = $(STD_FWK_LIBS) 
 VorticityStokes2D_SOURCES = $(srcdir)/VorticityStokes2D.cpp
 VorticityStokes2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -549,10 +549,12 @@ CORE_INCLUDE_PATH = \
 -I$(top_srcdir)/src-core/Evaluation \
 -I$(top_srcdir)/src-core/FrameworkInterface \
 -I$(top_srcdir)/src-core/SymbolicTransformations \
+-I$(top_srcdir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/UserExprs \
 -I$(top_builddir)/src-core/InternalExprs \
 -I$(top_builddir)/src-core/Evaluation \
 -I$(top_builddir)/src-core/FrameworkInterface \
+-I$(top_builddir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/SymbolicTransformations 
 
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) 
@@ -693,9 +695,6 @@ Stokes1D$(EXEEXT): $(Stokes1D_OBJECTS) $(Stokes1D_DEPENDENCIES)
 Stokes2D$(EXEEXT): $(Stokes2D_OBJECTS) $(Stokes2D_DEPENDENCIES) 
 	@rm -f Stokes2D$(EXEEXT)
 	$(CXXLINK) $(Stokes2D_LDFLAGS) $(Stokes2D_OBJECTS) $(Stokes2D_LDADD) $(LIBS)
-TCATA1D$(EXEEXT): $(TCATA1D_OBJECTS) $(TCATA1D_DEPENDENCIES) 
-	@rm -f TCATA1D$(EXEEXT)
-	$(CXXLINK) $(TCATA1D_LDFLAGS) $(TCATA1D_OBJECTS) $(TCATA1D_LDADD) $(LIBS)
 VorticityNavierStokes2D$(EXEEXT): $(VorticityNavierStokes2D_OBJECTS) $(VorticityNavierStokes2D_DEPENDENCIES) 
 	@rm -f VorticityNavierStokes2D$(EXEEXT)
 	$(CXXLINK) $(VorticityNavierStokes2D_LDFLAGS) $(VorticityNavierStokes2D_OBJECTS) $(VorticityNavierStokes2D_LDADD) $(LIBS)
@@ -727,7 +726,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadDiff1D-RadDiff1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes1D-Stokes1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes2D-Stokes2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TCATA1D-TCATA1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VorticityNavierStokes2D-VorticityNavierStokes2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VorticityStokes2D-VorticityStokes2D.Po@am__quote@
 
@@ -1034,22 +1032,6 @@ Stokes2D-Stokes2D.obj: $(srcdir)/Stokes2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Stokes2D-Stokes2D.Po' tmpdepfile='$(DEPDIR)/Stokes2D-Stokes2D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes2D_CXXFLAGS) $(CXXFLAGS) -c -o Stokes2D-Stokes2D.obj `if test -f '$(srcdir)/Stokes2D.cpp'; then $(CYGPATH_W) '$(srcdir)/Stokes2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Stokes2D.cpp'; fi`
-
-TCATA1D-TCATA1D.o: $(srcdir)/TCATA1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TCATA1D_CXXFLAGS) $(CXXFLAGS) -MT TCATA1D-TCATA1D.o -MD -MP -MF "$(DEPDIR)/TCATA1D-TCATA1D.Tpo" -c -o TCATA1D-TCATA1D.o `test -f '$(srcdir)/TCATA1D.cpp' || echo '$(srcdir)/'`$(srcdir)/TCATA1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TCATA1D-TCATA1D.Tpo" "$(DEPDIR)/TCATA1D-TCATA1D.Po"; else rm -f "$(DEPDIR)/TCATA1D-TCATA1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/TCATA1D.cpp' object='TCATA1D-TCATA1D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TCATA1D-TCATA1D.Po' tmpdepfile='$(DEPDIR)/TCATA1D-TCATA1D.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TCATA1D_CXXFLAGS) $(CXXFLAGS) -c -o TCATA1D-TCATA1D.o `test -f '$(srcdir)/TCATA1D.cpp' || echo '$(srcdir)/'`$(srcdir)/TCATA1D.cpp
-
-TCATA1D-TCATA1D.obj: $(srcdir)/TCATA1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TCATA1D_CXXFLAGS) $(CXXFLAGS) -MT TCATA1D-TCATA1D.obj -MD -MP -MF "$(DEPDIR)/TCATA1D-TCATA1D.Tpo" -c -o TCATA1D-TCATA1D.obj `if test -f '$(srcdir)/TCATA1D.cpp'; then $(CYGPATH_W) '$(srcdir)/TCATA1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/TCATA1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TCATA1D-TCATA1D.Tpo" "$(DEPDIR)/TCATA1D-TCATA1D.Po"; else rm -f "$(DEPDIR)/TCATA1D-TCATA1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/TCATA1D.cpp' object='TCATA1D-TCATA1D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TCATA1D-TCATA1D.Po' tmpdepfile='$(DEPDIR)/TCATA1D-TCATA1D.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TCATA1D_CXXFLAGS) $(CXXFLAGS) -c -o TCATA1D-TCATA1D.obj `if test -f '$(srcdir)/TCATA1D.cpp'; then $(CYGPATH_W) '$(srcdir)/TCATA1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/TCATA1D.cpp'; fi`
 
 VorticityNavierStokes2D-VorticityNavierStokes2D.o: $(srcdir)/VorticityNavierStokes2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VorticityNavierStokes2D_CXXFLAGS) $(CXXFLAGS) -MT VorticityNavierStokes2D-VorticityNavierStokes2D.o -MD -MP -MF "$(DEPDIR)/VorticityNavierStokes2D-VorticityNavierStokes2D.Tpo" -c -o VorticityNavierStokes2D-VorticityNavierStokes2D.o `test -f '$(srcdir)/VorticityNavierStokes2D.cpp' || echo '$(srcdir)/'`$(srcdir)/VorticityNavierStokes2D.cpp; \

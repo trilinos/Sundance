@@ -78,7 +78,7 @@ void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
 
 void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign) 
 {
-  for (int d=0; d<other->regions_.size(); d++)
+  for (unsigned int d=0; d<other->regions_.size(); d++)
     {
       for (int q=0; q<other->numTerms(d); q++)
         {
@@ -92,7 +92,7 @@ void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr)
 {
   double a = expr->value();
 
-  for (int d=0; d<regions_.size(); d++)
+  for (unsigned int d=0; d<regions_.size(); d++)
     {
       for (int q=0; q<numTerms(d); q++)
         {
@@ -103,7 +103,7 @@ void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr)
 
 void SumOfIntegrals::changeSign()
 {
-  for (int d=0; d<regions_.size(); d++)
+  for (unsigned int d=0; d<regions_.size(); d++)
     {
       for (int q=0; q<numTerms(d); q++)
         {
@@ -115,7 +115,7 @@ void SumOfIntegrals::changeSign()
 Set<int> SumOfIntegrals::unksOnRegion(int d) const 
 {
   Set<int> rtn;
-  for (int t=0; t<expr_[d].size(); t++)
+  for (unsigned int t=0; t<expr_[d].size(); t++)
     { 
       expr_[d][t].ptr()->accumulateUnkSet(rtn);
     }
@@ -125,7 +125,7 @@ Set<int> SumOfIntegrals::unksOnRegion(int d) const
 Set<int> SumOfIntegrals::testsOnRegion(int d) const 
 {
   Set<int> rtn;
-  for (int t=0; t<expr_[d].size(); t++)
+  for (unsigned int t=0; t<expr_[d].size(); t++)
     { 
       expr_[d][t].ptr()->accumulateTestSet(rtn);
     }
@@ -136,7 +136,7 @@ Set<int> SumOfIntegrals::testsOnRegion(int d) const
 
 RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
 {
-  for (int d=0; d<regions_.size(); d++)
+  for (unsigned int d=0; d<regions_.size(); d++)
     {
       if (!regions_[d].ptr()->isNullRegion())
         {
@@ -155,9 +155,9 @@ RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
 ostream& SumOfIntegrals::toText(ostream& os, bool paren) const
 {
   os << "Sum of Integrals[" << endl;
-  for (int d=0; d<regions_.size(); d++)
+  for (unsigned int d=0; d<regions_.size(); d++)
     {
-      for (int t=0; t<quad_[d].size(); t++)
+      for (unsigned int t=0; t<quad_[d].size(); t++)
         { 
           os << "Integral[" << endl;
           os << regions_[d].ptr()->toXML() << endl;
@@ -182,11 +182,11 @@ ostream& SumOfIntegrals::toLatex(ostream& os, bool paren) const
 XMLObject SumOfIntegrals::toXML() const 
 {
   XMLObject rtn("SumOfIntegrals");
-  for (int d=0; d<regions_.size(); d++)
+  for (unsigned int d=0; d<regions_.size(); d++)
     {
       XMLObject child("Integral");
       rtn.addChild(child);
-      for (int t=0; t<quad_[d].size(); t++)
+      for (unsigned int t=0; t<quad_[d].size(); t++)
         {
           child.addChild(quad_[d][t].ptr()->toXML());
           child.addChild(expr_[d][t].toXML());

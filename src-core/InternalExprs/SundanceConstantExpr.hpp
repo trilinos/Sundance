@@ -45,7 +45,6 @@ namespace SundanceCore
            */
           virtual void getRoughDependencies(Set<Deriv>& /* funcs */) const {;}
 
-
           /** */
           virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
         protected:

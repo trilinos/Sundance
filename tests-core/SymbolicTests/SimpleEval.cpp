@@ -1,4 +1,5 @@
 #include "SundanceExpr.hpp"
+#include "SundanceStdMathOps.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceTestFunctionStub.hpp"
@@ -15,11 +16,9 @@
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
-#include "SundanceEvalVectorArray.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceSymbPreprocessor.hpp"
-
+#include "SundanceStringEvalMediator.hpp"
 
 using namespace SundanceUtils;
 using namespace SundanceCore;
@@ -33,12 +32,7 @@ static Time& totalTimer()
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
-static Time& ioTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("result output"); 
-  return *rtn;
-}
+
 static Time& doitTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -58,8 +52,10 @@ void doit(const Expr& e,
   EvalManager mgr;
   mgr.setRegion(region);
 
-  RefCountPtr<EvaluatorFactory> factory 
-    = rcp(new BruteForceEvaluatorFactory());
+  static RefCountPtr<AbstractEvalMediator> mediator 
+    = rcp(new StringEvalMediator());
+
+  mgr.setMediator(mediator);
 
   const EvaluatableExpr* ev 
     = dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get());
@@ -68,14 +64,26 @@ void doit(const Expr& e,
                                            tests,
                                            unks,
                                            u0,
-                                           region, factory.get(), 2);
+                                           region);
 
-  RefCountPtr<EvalVectorArray> results;
+  Tabs tab;
+  cerr << tab << *ev->sparsitySuperset(region) << endl;
+  //  ev->showSparsity(cerr, region);
 
-  ev->evaluate(mgr, results);
+  // RefCountPtr<EvalVectorArray> results;
 
-  results->print(cerr, d);
+  Array<double> constantResults;
+  Array<RefCountPtr<EvalVector> > vectorResults;
+
+  ev->evaluate(mgr, constantResults, vectorResults);
+
+  ev->sparsitySuperset(region)->print(cerr, vectorResults, constantResults);
+
+  
+  // results->print(cerr, ev->sparsitySuperset(region).get());
 }
+
+
 
 void testExpr(const Expr& e,  
               const Expr& tests,
@@ -84,7 +92,10 @@ void testExpr(const Expr& e,
               const EvalContext& region)
 {
   cerr << endl 
-       << "-------- testing " << e.toString() << " -------- " << endl;
+       << "------------------------------------------------------------- " << endl;
+  cerr  << "-------- testing " << e.toString() << " -------- " << endl;
+  cerr << endl 
+       << "------------------------------------------------------------- " << endl;
 
   try
     {
@@ -113,10 +124,13 @@ int main(int argc, void** argv)
       MPISession::init(&argc, &argv);
 
       TimeMonitor t(totalTimer());
+
+      int maxDiffOrder = 2;
+
       verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbSilent;
+      verbosity<Evaluator>() = VerbExtreme;
       verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbSilent;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
@@ -137,61 +151,24 @@ int main(int argc, void** argv)
 
       Expr u0 = new DiscreteFunctionStub("u0");
       Expr w0 = new DiscreteFunctionStub("w0");
+      Expr zero = new ZeroExpr();
 
       Array<Expr> tests;
 
-      tests.append(v);
 
-      tests.append(s + v);
 
-      tests.append(u*v);
-
-      tests.append(u*v + s);
-
-      tests.append(s + u*v);
-
-      tests.append(s + v+u);
-
-      tests.append(v + v*u*u);
-
-      tests.append(v*u*u + v);
-
-      tests.append(v*w + v*u*u);
-
-      tests.append(v*u*u + v*w);
-
-      tests.append(v*(u+w));
-
-      tests.append((u+w)*v);
-
-      tests.append((v+s)*(u+w));
-
-      tests.append(dx*v);
-
-      tests.append(dx*v + dx*s);
-
-      tests.append((dx*u)*(dx*v));
-
-      tests.append(u*(dx*v));
-
-      tests.append((dx*v)*u);
-
-      tests.append((dx*u)*v);
-
-      tests.append(v*(dx*u));
-
-      tests.append(v*u*dx*u + v*w*dy*u);
+       tests.append(v*(dx*(u - u0)));
 
 
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(0)));
-          EvalContext context(rqc, EvalContext::nextID());
+          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
                    SundanceCore::List(v, s),
                    SundanceCore::List(u, w),
-                   SundanceCore::List(u0, w0),
+                   SundanceCore::List(zero, zero),
                    context);
         }
 

@@ -46,6 +46,10 @@ namespace SundanceCore
           a scalar. */
       Expr operator/(const Expr& other) const ;
 
+      /** Divide an expression by a double. */
+      Expr operator/(const double& other) const 
+      {return operator*(1.0/other);}
+
       /** Unary minus operator */
       Expr operator-() const ;
 
@@ -74,10 +78,7 @@ namespace SundanceCore
       XMLObject toXML() const ;
 
 
-      /**
-       *
-       */
-      void showDerivs() const;
+      
 
       /** */
       void setParameterValue(const double& value);

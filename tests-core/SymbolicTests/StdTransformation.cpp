@@ -91,7 +91,7 @@ int main(int argc, void** argv)
 
       ok = ok && checkStringForms( (alpha * u) * v, alpha * (u * v) );
 
-      ok = ok && checkStringForms( dx * (alpha * u), alpha * dx * u);
+      ok = ok && checkStringForms( dx * (alpha * u), alpha * (dx * u));
 
       ok = ok && checkStringForms( dx * (alpha + u), dx * u);
 

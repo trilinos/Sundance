@@ -59,66 +59,7 @@ string Expr::toLatex() const
 }
 
 
-void Expr::showDerivs() const
-{
-  DerivSet nonzeroDerivs;
 
-  const EvaluatableExpr* e = dynamic_cast<const EvaluatableExpr*>(ptr().get());
-  
-  /* Look for first derivs */
-  SundanceUtils::Set<Deriv> d;
-  e->getRoughDependencies(d);
-  Array<Deriv> d1;
-  
-  for (Set<Deriv>::const_iterator i=d.begin(); i != d.end(); i++)
-    {
-      d1.append(*i);
-      MultipleDeriv m;
-      m.put(*i);
-      if (e->hasNonzeroDeriv(m)) 
-        {
-          nonzeroDerivs.put(m);
-        }
-    }
-
-
-  /* assemble second derivs*/
-  for (int i=0; i<d1.size(); i++)
-    {
-      for (int j=0; j<=i; j++)
-        {
-          MultipleDeriv m;
-          m.put(d1[i]);
-          m.put(d1[j]);
-          if (e->hasNonzeroDeriv(m)) 
-            {
-              nonzeroDerivs.put(m);
-            }
-        }
-    }
-      
-  /* assemble third derivs*/
-  for (int i=0; i<d1.size(); i++)
-    {
-      for (int j=0; j<=i; j++)
-        {
-          for (int k=0; k<=j; k++)
-            {
-              MultipleDeriv m;
-              m.put(d1[i]);
-              m.put(d1[j]);
-              m.put(d1[k]);
-              if (e->hasNonzeroDeriv(m)) 
-                {
-                  nonzeroDerivs.put(m);
-                }
-            }
-        }
-    }
-
-  cerr << "nonzero derivs: " << nonzeroDerivs << endl;
-  
-}
 
 
 
@@ -192,7 +133,7 @@ Expr Expr::sum(const Expr& other, int sign) const
 
   if (trans.doTransform(sThis, sOther, sign, rtn)) 
     {
-      if (SymbolicTransformation::verbosity() > 0)
+      if (SymbolicTransformation::classVerbosity() > 0)
         {
           Out::println("Expr::sum() transformed sum\n[" 
                        + toString() + "+"
@@ -306,7 +247,7 @@ Expr Expr::multiply(const Expr& other) const
 
   if (trans.doTransform(sThis, sOther, rtn)) 
     {
-      if (SymbolicTransformation::verbosity() > 0)
+      if (SymbolicTransformation::classVerbosity() > 0)
         {
           Out::println("Expr::operator*() transformed product\n[" 
                        + toString() + "*"

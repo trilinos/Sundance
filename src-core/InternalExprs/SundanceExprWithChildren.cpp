@@ -5,6 +5,9 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceExpr.hpp"
+#include "SundanceEvaluatorFactory.hpp"
+#include "SundanceEvaluator.hpp"
+#include "SundanceUnknownFuncElement.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -13,69 +16,17 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-static Time& setupEvalTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("ExprWithChildren setupEval"); 
-  return *rtn;
-}
 
 
 ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& children)
 	: EvaluatableExpr(), 
-    children_(children),
-    childDerivSetIndices_(children.size())
+    children_(children)
 {}
 
-int ExprWithChildren::setupEval(const EvalContext& region,
-                                const EvaluatorFactory* factory,
-                                bool regardFuncsAsConstant) const
-{
-  Tabs tabs;
-
-  /* If we've been here already with this region, we're done. 
-   * If the deriv set is already known, but on another region, 
-   * we have to go on and bind the deriv set to the the region in the
-   * children */
-  bool derivSetIsKnown;
-  if (checkForKnownRegion(region, derivSetIsKnown))
-    {
-      SUNDANCE_OUT(verbosity() > VerbLow,
-                   tabs << "ExprWithChildren::setupEval() knows region "
-                   << region);
-      return getDerivSetIndex(region);
-    }
-
-  SUNDANCE_OUT(verbosity() > VerbLow,
-               tabs << "ExprWithChildren::setupEval() does not know region "
-               << region);
-  SUNDANCE_OUT(verbosity() > VerbLow && derivSetIsKnown,
-               tabs << "the deriv set is known");
-  SUNDANCE_OUT(verbosity() > VerbLow && !derivSetIsKnown,
-               tabs << "the deriv set is not known");
-
-  /* If we have reached this line, the region is new.
-   * Register it with the deriv set, however, we should only create 
-   * evaluators and sparsity patterns if the deriv set is unknown */
-  int derivSetIndex = registerRegion(region, derivSetIsKnown,
-                                     currentDerivSuperset(), 
-                                     factory, regardFuncsAsConstant);
-
-  /* set up the children */
-  childDerivSetIndices_.append(Array<int>());
-  for (int i=0; i<children_.size(); i++)
-    {
-      int childDSI = evaluatableChild(i)->setupEval(region, factory, regardFuncsAsConstant);
-      childDerivSetIndices_[i].append(childDSI);
-    }
-
-  return derivSetIndex;
-  
-}
 
 bool ExprWithChildren::isConstant() const
 {
-  for (int i=0; i<children_.size(); i++) 
+  for (unsigned int i=0; i<children_.size(); i++) 
     {
       if (!children_[i]->isConstant()) return false;
     }
@@ -84,7 +35,7 @@ bool ExprWithChildren::isConstant() const
 
 void ExprWithChildren::accumulateUnkSet(Set<int>& unkIDs) const
 {
-  for (int i=0; i<children_.size(); i++) 
+  for (unsigned int i=0; i<children_.size(); i++) 
     {
       children_[i]->accumulateUnkSet(unkIDs);
     }
@@ -92,7 +43,7 @@ void ExprWithChildren::accumulateUnkSet(Set<int>& unkIDs) const
 
 void ExprWithChildren::accumulateTestSet(Set<int>& testIDs) const
 {
-  for (int i=0; i<children_.size(); i++) 
+  for (unsigned int i=0; i<children_.size(); i++) 
     {
       children_[i]->accumulateTestSet(testIDs);
     }
@@ -111,136 +62,125 @@ const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
   return e;
 }
 
-void ExprWithChildren::getRoughDependencies(Set<Deriv>& funcs) const
-{
-  for (int i=0; i<children_.size(); i++)
-    {
-      evaluatableChild(i)->getRoughDependencies(funcs);
-    }
-}
 
-void ExprWithChildren::resetReferenceCount() const
-{
-  refCount()++;
-
-  /* Only update the reference count of the operands if this is the
-   * first time this expression has been referenced. If this expression
-   * is referenced multiple times, we still only need to evaluate the
-   * operands once */
-  if (refCount() == 1) 
-    {
-      for (int i=0; i<children_.size(); i++)
-        {
-          evaluatableChild(i)->resetReferenceCount();
-        }
-    }
-}
-
-void ExprWithChildren::flushResultCache() const
-{
-  resultCacheIsValid() = false;
-  for (int i=0; i<children_.size(); i++)
-    {
-      evaluatableChild(i)->flushResultCache();
-    }
-}
-
-bool ExprWithChildren::hasWorkspace() const
-{
-  TEST_FOR_EXCEPTION(refCount() <= 0, InternalError,
-                     "bad ref count in ExprWithChildren::hasWorkspace()");
-  refCount()--;
-  if (refCount()==0) 
-    {
-      for (int i=0; i<children_.size(); i++)
-        {
-          evaluatableChild(i)->hasWorkspace();
-        }
-      return true;
-    }
-  return false;
-}
-
-void ExprWithChildren::resetDerivSuperset() const 
-{
-  currentDerivSuperset() = DerivSet();
-  
-  for (int i=0; i<children_.size(); i++)
-    {
-      evaluatableChild(i)->resetDerivSuperset();
-    }
-}
-
-void ExprWithChildren::findDerivSuperset(const DerivSet& derivs) const 
+void ExprWithChildren::findNonzeros(const EvalContext& context,
+                                    const Set<MultiIndex>& multiIndices,
+                                    bool regardFuncsAsConstant) const
 {
   Tabs tabs;
-  
-  if (verbosity() > 1)
+  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for " 
+                       << toString());
+  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
     {
-      cerr << tabs << "finding deriv superset for expr " << toString()
-           << endl;
-      {
-        Tabs tabs1;
-        cerr << tabs1 << "required derivs are " << derivs.toString() << endl;
-        cerr << tabs1 << "current derivs superset is " 
-             << currentDerivSuperset().toString() << endl;
-      }
-    }
-  
-  currentDerivSuperset().merge(derivs);
-
-  if (verbosity() > 1)
-    {
-      Tabs tabs1;
-      cerr << tabs1 << "merged superset is " 
-           << currentDerivSuperset().toString() << endl;
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      return;
     }
 
-  Array<DerivSet> childDerivs = derivsRequiredFromOperands(derivs);
-  for (int i=0; i<children_.size(); i++)
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+
+  /* The sparsity pattern is the union of the 
+   * operands' sparsity patterns. If any functional derivatives
+   * appear in multiple operands, the state of that derivative is
+   * the more general of the states */
+  for (unsigned int i=0; i<children_.size(); i++)
     {
-      Tabs tabs1;
+      Tabs tab1;
+      SUNDANCE_VERB_MEDIUM(tab1 << "finding nonzeros for child " 
+                           << evaluatableChild(i)->toString());
+      evaluatableChild(i)->findNonzeros(context, multiIndices,
+                                        regardFuncsAsConstant);
+
+      RefCountPtr<SparsitySubset> childSparsitySubset 
+        = evaluatableChild(i)->sparsitySubset(context, multiIndices);
       
-      if (verbosity() > 1)
+      for (int j=0; j<childSparsitySubset->numDerivs(); j++)
         {
-          cerr << tabs1 << "recursing to child " << i 
-               << ": " << children_[i]->toString() << endl;
-        } 
-      if (verbosity() > 1)
-        {
-          cerr << tabs1 << "child " << i << " requires " 
-               << childDerivs[i].toString() << endl;
+          subset->addDeriv(childSparsitySubset->deriv(j),
+                           childSparsitySubset->state(j));
         }
-      //      childDerivs[i].merge(currentDerivSuperset());
-      evaluatableChild(i)->findDerivSuperset(childDerivs[i]);
     }
+
+  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
 }
 
-Array<DerivSet> ExprWithChildren::derivsRequiredFromOperands(const DerivSet& d) const
+void ExprWithChildren::setupEval(const EvalContext& context) const
 {
-  Tabs tabs;
-
-  if (verbosity() > 1)
-    {
-      cerr << tabs << "ExprWithChildren::derivsRequiredFromOperands()" << endl;
-    }
   
-  Array<DerivSet> rtn(children_.size());
-  for (int i=0; i<children_.size(); i++)
+  for (unsigned int i=0; i<children_.size(); i++)
     {
-      rtn[i] = d;
+      evaluatableChild(i)->setupEval(context);
     }
-  return rtn;
+
+  if (!evaluators().containsKey(context))
+    {
+      RefCountPtr<Evaluator> eval = rcp(createEvaluator(this, context));
+      evaluators().put(context, eval);
+    }
 }
 
+void ExprWithChildren::showSparsity(ostream& os, 
+                                    const EvalContext& context) const
+{
+  Tabs tab0;
+  os << tab0 << "Node: " << toString() << endl;
+  sparsitySuperset(context)->displayAll(os);
+  for (unsigned int i=0; i<children_.size(); i++)
+    {
+      Tabs tab1;
+      os << tab1 << "Child " << i << endl;
+      evaluatableChild(i)->showSparsity(os, context);
+    }
+}
 
 
 bool ExprWithChildren::allTermsHaveTestFunctions() const
 {
-  for (int i=0; i<children_.size(); i++)
+  for (unsigned int i=0; i<children_.size(); i++)
     {
       if (evaluatableChild(i)->allTermsHaveTestFunctions()) return true;
     }
   return false;
 }
 
+void ExprWithChildren::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
+{
+  for (unsigned int i=0; i<children_.size(); i++)
+    {
+      const RefCountPtr<ExprBase>& e = children_[i];
+      const UnknownFuncElement* u 
+        = dynamic_cast<const UnknownFuncElement*>(e.get());
+      if (u != 0)
+        {
+          Expr expr(e);
+          if (!unkID.contains(u->funcID())) 
+            {
+              unks.append(expr);
+              unkID.put(u->funcID());
+            }
+        }
+      evaluatableChild(i)->getUnknowns(unkID, unks);
+    }
+  
+}
+
+
+int ExprWithChildren::countNodes() const
+{
+  if (nodesHaveBeenCounted()) 
+    {
+      return 0;
+    }
+
+  /* count self */
+  int count = EvaluatableExpr::countNodes();
+
+  /* count children */
+  for (unsigned int i=0; i<children_.size(); i++)
+    {
+      if (!evaluatableChild(i)->nodesHaveBeenCounted())
+        {
+          count += evaluatableChild(i)->countNodes();
+        }
+    }
+  return count;
+}

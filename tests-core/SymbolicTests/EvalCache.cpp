@@ -15,8 +15,7 @@
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
-#include "SundanceEvalVectorArray.hpp"
+
 #include "SundanceSymbPreprocessor.hpp"
 
 
@@ -74,19 +73,15 @@ int main(int argc, void** argv)
 
       RegionQuadCombo region(rcp(new CellFilterStub()),
                         rcp(new QuadratureFamilyStub(0)));
-      EvalContext context(region, 0);
+      EvalContext context(region, 2, 0);
       EvalManager mgr;
       mgr.setRegion(context);
 
-      RefCountPtr<EvaluatorFactory> factory 
-        = rcp(new BruteForceEvaluatorFactory());
-      
       DerivSet ds = SymbPreprocessor::setupExpr(expr,
                                                 SundanceCore::List(v),
                                                 SundanceCore::List(a,b,c),
                                                 SundanceCore::List(a0,b0,c0),
-                                                context,
-                                                factory.get(), 2);
+                                                context);
       
       RefCountPtr<EvalVectorArray> results;
 
@@ -96,13 +91,12 @@ int main(int argc, void** argv)
 
       cerr << "---- first pass -------" << endl;
       ev->evaluate(mgr, results);
-      results->print(cerr, ds);
+      results->print(cerr, ev->sparsitySuperset(context).get());
 
       
       cerr << "---- second pass -------" << endl;
-      ev->flushResultCache();
       ev->evaluate(mgr, results);
-      results->print(cerr, ds);
+      results->print(cerr, ev->sparsitySuperset(context).get());
 
 
     }

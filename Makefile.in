@@ -103,7 +103,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = src-utils src-core src-std-mesh src-std-framework \
-	examples-tutorial tests-core tests-std-mesh \
+	examples-tutorial tests-utils tests-core tests-std-mesh \
 	tests-std-framework
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
@@ -259,7 +259,7 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 # SUBDIRS = src example test 
 @BUILD_EXAMPLES_TRUE@EXAMPLES_SUBDIR = examples-tutorial
 @BUILD_TESTS_FALSE@SUBDIRS = src-utils src-core src-std-mesh src-std-framework $(EXAMPLES_SUBDIR)
-@BUILD_TESTS_TRUE@SUBDIRS = src-utils src-core tests-core src-std-mesh tests-std-mesh \
+@BUILD_TESTS_TRUE@SUBDIRS = src-utils tests-utils src-core tests-core src-std-mesh tests-std-mesh \
 @BUILD_TESTS_TRUE@src-std-framework tests-std-framework $(EXAMPLES_SUBDIR)
 
 all: all-recursive

@@ -40,15 +40,20 @@ namespace SundanceCore
 
           /** */
           void evalCoordExpr(const CoordExpr* expr,
-                             RefCountPtr<EvalVector> const & result) const ;
+                             RefCountPtr<EvalVector>&  result) const ;
 
           /** */
           void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
-                                       const MultiIndex& mi,
-                                       RefCountPtr<EvalVector> const & result) const ;
+                                       const Array<MultiIndex>& mi,
+                                       Array<RefCountPtr<EvalVector> >& result) const ;
 
+          /** */
           void setMediator(const RefCountPtr<AbstractEvalMediator>& med) 
           {mediator_ = med;}
+
+          /** */
+          void setVecSize(int vecSize) {stack().setVecSize(vecSize);}
+          
 
           /** Return a pointer to the mediator. We'll need the
            * mediator for computing framework-specific functions.
@@ -63,17 +68,21 @@ namespace SundanceCore
           const EvalContext& getRegion() const {return region_;}
 
           /** */
-          TempStack& stack() const {return stack_;}
+          static TempStack& stack();
+
+          /** */
+          int getMaxDiffOrder() const ;
+
+
+          /** */
+          RefCountPtr<EvalVector> popVector() const ;
 
         private:
-
-          bool numericalEval() const {mediator_.get() != 0;}
 
           EvalContext region_;
 
           RefCountPtr<AbstractEvalMediator> mediator_;
 
-          mutable TempStack stack_;
       };
 
     }

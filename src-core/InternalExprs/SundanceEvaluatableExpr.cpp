@@ -18,352 +18,118 @@ using namespace TSFExtended;
 using namespace Internal;
 using namespace Internal;
 
-static Time& derivSetLookupTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("deriv set lookup"); 
-  return *rtn;
-}
 
-
-static Time& registerRegionTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("registering regions"); 
-  return *rtn;
-}
 
 
 EvaluatableExpr::EvaluatableExpr()
 	: ScalarExpr(), 
-    regionToDerivSetIndexMap_(),
-    derivSetToDerivSetIndexMap_(),
-    derivSets_(),
-    sparsityPatterns_(),
     evaluators_(),
-    derivNonzeronessCache_(),
-    evalRefCount_(0),
-    resultCacheIsValid_(false),
-    resultCache_(),
-    currentDerivSuperset_()
+    sparsity_(),
+    orderOfDependency_(MultiIndex::maxDim(), -1),
+    nodesHaveBeenCounted_(false)
 {}
 
-bool EvaluatableExpr::hasWorkspace() const
+
+
+
+RefCountPtr<SparsitySubset> 
+EvaluatableExpr::sparsitySubset(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices) const 
 {
-  TEST_FOR_EXCEPTION(refCount() <= 0, InternalError,
-                     "bad ref count in EvaluatableExpr::hasWorkspace()");
-  refCount()--;
-  if (refCount()==0) return true;
-  return false;
+  RefCountPtr<SparsitySuperset> super = sparsitySuperset(context);
+
+  if (!super->hasSubset(multiIndices))
+    {
+      super->addSubset(multiIndices);
+    }
+  return super->subset(multiIndices);
 }
 
 
 
 
-
-DerivSet EvaluatableExpr::identifyNonzeroDerivs() const
+RefCountPtr<SparsitySuperset> 
+EvaluatableExpr::sparsitySuperset(const EvalContext& context) const 
 {
-  DerivSet nonzeroDerivs;
+  RefCountPtr<SparsitySuperset> rtn;
 
-  /* the zeroth deriv is always nonzero */
-  nonzeroDerivs.put(MultipleDeriv());
-
-  /* Look for first derivs */
-  SundanceUtils::Set<Deriv> d;
-  getRoughDependencies(d);
-
-
-
-  Array<Deriv> d1;
-  
-  for (Set<Deriv>::const_iterator i=d.begin(); i != d.end(); i++)
+  if (sparsity_.containsKey(context))
     {
-      d1.append(*i);
-      MultipleDeriv m;
-      m.put(*i);
-      if (hasNonzeroDeriv(m)) 
-        {
-          nonzeroDerivs.put(m);
-        }
-    }
-  /* assemble second derivs*/
-  for (int i=0; i<d1.size(); i++)
-    {
-      for (int j=0; j<=i; j++)
-        {
-          MultipleDeriv m;
-          m.put(d1[i]);
-          m.put(d1[j]);
-          if (hasNonzeroDeriv(m)) 
-            {
-              nonzeroDerivs.put(m);
-            }
-        }
-    }
-
-  return nonzeroDerivs;
-  
-}
-
-bool EvaluatableExpr::checkForKnownRegion(const EvalContext& region,
-                                          bool& derivSetIsKnown) const
-{
-
-  Tabs tabs;
-  if (verbosity() > 1) 
-    {
-      cerr << tabs << "checking for region " << region.toString()
-           << " in expr " 
-           << toString() << endl;
-    }
-  if (regionToDerivSetIndexMap_.containsKey(region))
-    {
-      if (verbosity() > 1)
-        {
-          Tabs tabs1;
-          cerr << tabs1 << "region " << region.toString() 
-               << " already known "
-               << endl;
-        }
-      if (derivSetToDerivSetIndexMap_.containsKey(currentDerivSuperset()))
-        {
-          derivSetIsKnown = true;
-        }
-      else
-        {
-          derivSetIsKnown = false;
-        }
-      return true;
+      rtn = sparsity_.get(context);
     }
   else
     {
-      Tabs tabs1;
-      if (verbosity() > 1) 
-      {
-        cerr << tabs1 << "region " << region.toString() << " is new "
-           << endl;
-        cerr << tabs1 << "binding it to deriv set " << currentDerivSuperset()
-             << endl;
-      }
-      /* if the region is new but the deriv set is already known,
-       * return true */
-      if (derivSetToDerivSetIndexMap_.containsKey(currentDerivSuperset()))
-        {
-          Tabs tabs2;
-
-          int i = derivSetToDerivSetIndexMap_.get(currentDerivSuperset());
-          if (verbosity() > 1)
-            {
-              cerr << tabs2 << "region is unknown, but deriv set " 
-                   << currentDerivSuperset()
-                   << " is already known, with index " << i << endl;
-            }
-
-          derivSetIsKnown = true;
-        }
-      else
-        {
-          /* If both the region and deriv set are new, return false,
-           * which will tell the client that createNewDerivSet() needs
-           * to be called */
-          Tabs tabs2;
-          if (verbosity() > 1)
-            {
-              cerr << tabs2 << "deriv set " << currentDerivSuperset()
-                   << " is new " << endl;
-            }
-          derivSetIsKnown = false;
-        }
-      return false;
+      rtn = rcp(new SparsitySuperset());
+      sparsity_.put(context, rtn);
     }
-}
-
-
-int EvaluatableExpr::registerRegion(const EvalContext& region,
-                                    bool derivSetIsKnown,
-                                    const DerivSet& derivs,
-                                    const EvaluatorFactory* factory,
-                                    bool regardFuncsAsConstant) const
-{
-  Tabs tabs;
-  TimeMonitor t(registerRegionTimer());
-
-
-
-  if (verbosity() > 1) 
-    {
-      cerr << tabs << "expr " << toString() << " registering deriv set "
-           << derivs.toString() << endl;
-    }
-
-  /* paranoid check: make sure this region hasn't already been processed. */
-  TEST_FOR_EXCEPTION(derivSetIsKnown 
-                     && regionToDerivSetIndexMap_.containsKey(region),
-                     InternalError,
-                     "region " << region.toString() << " already registered "
-                     "with expr " << toString() << 
-                     " but EvaluatableExpr::registerRegion() was called "
-                     "nonetheless");
-  
-  /* paranoid check: make sure this deriv set hasn't already been added */
-  TEST_FOR_EXCEPTION(!derivSetIsKnown 
-                     && derivSetToDerivSetIndexMap_.containsKey(derivs),
-                     InternalError,
-                     "derivSet " << derivs << " already registered with expr "
-                     << toString() << 
-                     " but EvaluatableExpr::registerRegion() was called anyway");
-
-  int rtn;
-  if (derivSetIsKnown)
-    {
-      /* if the deriv set is known, get its index */
-      rtn = derivSetToDerivSetIndexMap_.get(derivs);
-    }
-  else
-    {
-      /* if this is a new deriv set, then
-       * the index for this deriv set is the next index 
-       * in the sparsity array */
-      rtn = sparsityPatterns_.size();
-    }
-
-  if (verbosity() > 1) 
-    {
-      Tabs tabs1;
-      cerr << tabs1 << "deriv set index will be " << rtn << endl;
-    }
-  
-  /* If the deriv set is new, 
-   * create the sparsity pattern for this deriv set */
-  if (!derivSetIsKnown)
-    {
-      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "creating sparsity pattern");
-      sparsityPatterns_.append(rcp(new SparsityPattern(derivs, this, regardFuncsAsConstant)));
-    }
-  else
-    {
-      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "reusing sparsity pattern");
-    }
-
-  SUNDANCE_OUT(verbosity() > VerbMedium,
-               tabs << "found sparsity pattern:\n"
-               << *(sparsityPatterns_[rtn]));
-
-
-  /** If the deriv set is new, 
-   * create the evaluator for this deriv set */
-  if (!derivSetIsKnown)
-    {
-      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "creating evaluator");
-      evaluators_.append(rcp(factory->createEvaluator(this, rtn)));
-    }
-  else
-    {
-      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "reusing evaluator");
-    }
-
-  /* set up mapping from deriv set to deriv set index */  
-  if (!derivSetIsKnown)
-    {
-      SUNDANCE_OUT(verbosity() > VerbLow, 
-                   tabs << "registering deriv set at DSI=" << rtn);
-      derivSetToDerivSetIndexMap_.put(derivs, rtn);
-      derivSets_.append(derivs);
-    }
-
-  regionToDerivSetIndexMap_.put(region, rtn);
-
   return rtn;
 }
 
 
 
-void EvaluatableExpr::flushResultCache() const 
+
+const RefCountPtr<Evaluator>&
+EvaluatableExpr::evaluator(const EvalContext& context) const 
 {
-  if (verbosity() > 2) 
-    {
-      cerr << "flushing result cache for " << toString() << endl;
-    }
-  resultCacheIsValid_=false;
+  TEST_FOR_EXCEPTION(!evaluators_.containsKey(context), RuntimeError, 
+                     "Evaluator not found for context " << context);
+  return evaluators_.get(context);
 }
+
+bool EvaluatableExpr::nonzerosAreKnown(const EvalContext& context,
+                                       const Set<MultiIndex>& multiIndices,
+                                       bool regardFuncsAsConstant) const 
+{
+  NonzeroSpecifier spec(context, multiIndices, regardFuncsAsConstant);
+  return knownNonzeros_.contains(spec);
+}
+
+void EvaluatableExpr::addKnownNonzero(const EvalContext& context,
+                                      const Set<MultiIndex>& multiIndices,
+                                      bool regardFuncsAsConstant) const 
+{
+  NonzeroSpecifier spec(context, multiIndices, regardFuncsAsConstant);
+  knownNonzeros_.put(spec);
+}
+
+
 
 void EvaluatableExpr::evaluate(const EvalManager& mgr,
-                               RefCountPtr<EvalVectorArray>& results) const
+                               Array<double>& constantResults,
+                               Array<RefCountPtr<EvalVector> >& vectorResults) const
 {
-  TimeMonitor t(evalTimer());
-
-  Tabs tab;
-
-  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "evaluating " << toString());
-
-
-
-  if (!resultCacheIsValid_)
-    {
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
-                   "computing values for " << toString());
-      int derivSetIndex = getDerivSetIndex(mgr.getRegion());
-      evaluator(derivSetIndex)->eval(mgr, resultCache_);
-      resultCacheIsValid_ = true;
-    }
-  else
-    {
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
-                   "reusing values for " << toString());
-    }
-  results = resultCache_;
+  evaluator(mgr.getRegion())->eval(mgr, constantResults, vectorResults);
 }
 
-void EvaluatableExpr::findDerivSuperset(const DerivSet& derivs) const 
+void EvaluatableExpr::setupEval(const EvalContext& context) const
 {
-  Tabs tabs;
-  if (verbosity() > 1)
+  if (!evaluators_.containsKey(context))
     {
-      Tabs tabs1;
-      cerr << tabs << "finding deriv superset for expr: " << toString()
-           << endl;
-      cerr << tabs1 << "required derivs are " << derivs.toString() << endl;
-      cerr << tabs1 << "current derivs superset is " 
-           << currentDerivSuperset().toString() << endl;
-    }
-  currentDerivSuperset().merge(derivs);
-
-  if (verbosity() > 1)
-    {
-      Tabs tabs1;
-      cerr << tabs1 << "merged superset is " 
-           << currentDerivSuperset().toString() << endl;
+      RefCountPtr<Evaluator> eval = rcp(createEvaluator(this, context));
+      evaluators_.put(context, eval);
     }
 }
 
-int EvaluatableExpr::getDerivSetIndex(const EvalContext& region) const
+void EvaluatableExpr::showSparsity(ostream& os, 
+                                   const EvalContext& context) const
 {
-  TimeMonitor timer(derivSetLookupTimer());
-  Tabs tabs;
-  if (verbosity() > 1)
+  Tabs tab0;
+  os << tab0 << "Node: " << toString() << endl;
+  sparsitySuperset(context)->displayAll(os);
+}
+
+
+
+int EvaluatableExpr::maxOrder(const Set<MultiIndex>& m) const 
+{
+  int rtn = 0;
+  for (Set<MultiIndex>::const_iterator i=m.begin(); i != m.end(); i++)
     {
-      cerr << tabs << "finding deriv set index for region: " 
-           << region.toString()
-           << endl;
-      cerr << tabs << "map is " << regionToDerivSetIndexMap_ << endl;
+      rtn = max(i->order(), rtn);
     }
-
-  TEST_FOR_EXCEPTION(!regionToDerivSetIndexMap_.containsKey(region),
-                     InternalError,
-                     "EvaluatableExpr::getDerivSetIndex: region " 
-                     << region.toString() << " not found in map " 
-                     << regionToDerivSetIndexMap_);
-
-  int rtn = regionToDerivSetIndexMap_.get(region);
-
-  if (verbosity() > 1)
-    {
-      cerr << tabs << "found DSI = " << rtn << endl;
-    }
-
   return rtn;
-  
 }
+
 
 const EvaluatableExpr* EvaluatableExpr::getEvalExpr(const Expr& expr)
 {
@@ -378,3 +144,18 @@ const EvaluatableExpr* EvaluatableExpr::getEvalExpr(const Expr& expr)
 
   return rtn;
 }
+
+
+bool EvaluatableExpr::isEvaluatable(const ExprBase* expr) 
+{
+  return dynamic_cast<const EvaluatableExpr*>(expr) != 0;
+}
+
+
+int EvaluatableExpr::countNodes() const
+{
+  nodesHaveBeenCounted_ = true;
+  return 1;
+}
+
+

@@ -6,6 +6,8 @@
 
 #include "SundanceFuncElementBase.hpp"
 #include "SundanceLeafExpr.hpp"
+#include "SundanceEvaluatorFactory.hpp"
+#include "SundanceCoordExprEvaluator.hpp"
 
 namespace SundanceCore
 {
@@ -14,6 +16,7 @@ namespace SundanceCore
 
   /** */
   class CoordExpr : public FuncElementBase,
+                    public GenericEvaluatorFactory<CoordExpr, CoordExprEvaluator>,
                     virtual public LeafExpr
     {
     public:
@@ -31,26 +34,24 @@ namespace SundanceCore
       int dir() const {return dir_;}
 
 
-      /**
-       * Indicate whether the given functional derivative is nonzero
+    
+
+      /** 
+       * Determine which functional and spatial derivatives are nonzero in the
+       * given context. We also keep track of which functional derivatives
+       * are known to be constant, which can simplify evaluation. 
        */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& f) const ;
-
-      /**
-       * Find all functions and their derivatives beneath my level
-       * in the tree.
-       */
-      virtual void getRoughDependencies(Set<Deriv>& funcs) const {;}
-
-
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
+                                bool regardFuncsAsConstant) const ;
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
+      static string coordName(int dir, const string& name);
+
     private:
       int dir_;
-
-      static string coordName(int dir, const string& name);
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
 
     };

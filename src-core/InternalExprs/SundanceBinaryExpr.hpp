@@ -18,7 +18,10 @@ namespace SundanceCore
 
   namespace Internal
     {
-      /** */
+      /** 
+       * BinaryExpr is a base class for binary expressions, e.g., sums
+       * and products. It provides a number of helper methods.
+       */
       class BinaryExpr : public ExprWithChildren
         {
         public:
@@ -60,16 +63,6 @@ namespace SundanceCore
 
           /** Downcast the right expr to a scalar expr */
           const ScalarExpr* rightScalar() const {return scalarChild(1);}
-
-          /** Return the index by which the given deriv set is
-           * known by the left operand */
-          int leftDerivSetIndex(int derivSetIndex) const 
-          {return childDerivSetIndex(0, derivSetIndex);}
-
-          /** Return the index by which the given deriv set is
-           * known by the right operand*/
-          int rightDerivSetIndex(int derivSetIndex) const 
-          {return childDerivSetIndex(1, derivSetIndex);}
 
         protected:
 

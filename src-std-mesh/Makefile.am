@@ -30,8 +30,8 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshTypeBase.hpp \
-$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.hpp \
-$(top_srcdir)/src-std-mesh/Interface/SundancePoint.hpp
+$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.hpp 
+
 
 
 SUNDANCE_MESHINTERFACE = \
@@ -42,8 +42,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.cpp \
-$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp \
-$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp
+$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp 
 
 SUNDANCE_CONCRETEMESHES_H = \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.hpp \
@@ -139,7 +138,7 @@ MPI =
 
 endif
 
-AM_CPPFLAGS = $(STD_MESH_INCLUDES)
+AM_CPPFLAGS = $(STD_MESH_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 # ------------------------------------------------------------------------
 # Sundance library specifications

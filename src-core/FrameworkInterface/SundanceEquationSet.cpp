@@ -21,8 +21,7 @@ EquationSet::EquationSet(const Expr& eqns,
                          const Expr& bcs,
                          const Expr& tests, 
                          const Expr& unks,
-                         const Expr& unkLinearizationPts,
-                         const RefCountPtr<EvaluatorFactory>& evalFactory)
+                         const Expr& unkLinearizationPts)
   : regions_(),
     testsOnRegions_(),
     unksOnRegions_(),
@@ -153,14 +152,12 @@ EquationSet::EquationSet(const Expr& eqns,
           regionQuadComboExprs_.put(rqc, term);
           for (int order=1; order<=2; order++)
             {
-              EvalContext context(rqc, contextID[order-1]);
+              EvalContext context(rqc, order, contextID[order-1]);
               DerivSet nonzeros 
                 = SymbPreprocessor::setupExpr(term, tests,
                                               unks, 
                                               unkLinearizationPts,
-                                              context,
-                                              evalFactory.get(),
-                                              order);
+                                              context);
               if (order==2) addToTestUnkPairs(rqc.domain(), nonzeros, false);
               rqcToContext_[order-1].put(rqc, context);
               regionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);
@@ -208,14 +205,12 @@ EquationSet::EquationSet(const Expr& eqns,
               bcRegionQuadComboExprs_.put(rqc, bcSum->expr(d,t)); 
               for (int order=1; order<=2; order++)
                 {
-                  EvalContext context(rqc, contextID[order-1]);
+                  EvalContext context(rqc, order, contextID[order-1]);
                   DerivSet nonzeros 
                     = SymbPreprocessor::setupExpr(term, tests,
                                                   unks, 
                                                   unkLinearizationPts,
-                                                  context,
-                                                  evalFactory.get(),
-                                                  order);
+                                                  context);
                   if (order==2) addToTestUnkPairs(rqc.domain(), nonzeros, true);
                   bcRqcToContext_[order-1].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);

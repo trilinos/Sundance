@@ -41,16 +41,17 @@ namespace SundanceStdFwk
       /** */
       virtual ~QuadratureEvalMediator(){;}
 
+      
       /** Evaluate the given coordinate expression, putting
        * its numerical values in the given EvalVector. */
       virtual void evalCoordExpr(const CoordExpr* expr,
-                                 EvalVector* const vec) const ;
-
+                                 RefCountPtr<EvalVector>& vec) const ;
+      
       /** Evaluate the given discrete function, putting
        * its numerical values in the given EvalVector. */
       virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
-                                           const MultiIndex& mi,
-                                           EvalVector* const vec) const ;
+                                           const Array<MultiIndex>& mi,
+                                           Array<RefCountPtr<EvalVector> >& vec) const ;
 
       /** */
       virtual void setCellType(const CellType& cellType) ;

@@ -2,6 +2,7 @@
 /* @HEADER@ */
 
 #include "SundanceCoordDeriv.hpp"
+#include "SundanceCoordExpr.hpp"
 #include "SundanceDeriv.hpp"
 
 
@@ -13,7 +14,7 @@ using namespace Teuchos;
 
 CoordDeriv::CoordDeriv(int dir)
   : DerivBase(), dir_(dir)
-{;}
+{}
 
 bool CoordDeriv::lessThan(const Deriv& other) const
 {
@@ -30,7 +31,7 @@ bool CoordDeriv::lessThan(const Deriv& other) const
 
 string CoordDeriv::toString() const 
 {
-  return "CoordDeriv[" + Teuchos::toString(dir_) + "]";
+  return CoordExpr::coordName(dir_, "");
 }
 
 

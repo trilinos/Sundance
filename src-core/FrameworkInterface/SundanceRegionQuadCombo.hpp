@@ -17,12 +17,13 @@
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 
-using SundanceUtils::Map;
+
 namespace SundanceCore
 {
   using namespace Teuchos;
   using namespace SundanceUtils;
   using std::string;
+  using SundanceUtils::Map;
 
 
   namespace Internal

@@ -13,8 +13,9 @@ using namespace Teuchos;
 
 UnknownFuncElement::UnknownFuncElement(const UnknownFunctionStub* master,
                                        const string& name,
+                                       const string& suffix,
                                        int myIndex)
-	: SymbolicFuncElement(name, myIndex), master_(master)
+	: SymbolicFuncElement(name, suffix, myIndex), master_(master)
 {}
 
 

@@ -20,62 +20,40 @@ using namespace Teuchos;
 
 EvalManager::EvalManager()
   : region_(),
-    mediator_(),
-    stack_()
+    mediator_()
 {}
 
 
 
 void EvalManager::evalCoordExpr(const CoordExpr* expr,
-                                RefCountPtr<EvalVector> const & result) const 
+                                RefCountPtr<EvalVector>& result) const 
 {
-  if (mediator() != 0)
-    {
-      result->setToVectorValue();
-      mediator()->evalCoordExpr(expr, result.get());
-    }
-  else
-    {
-      result->setToVectorValue();
-      result->resize(1);
-      result->setElement(0, 1.0);
-    }
-  
-  if (result->shadowOps())
-    {
-      result->setStringValue(expr->toString());
-    }
+  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+                     "uninitialized mediator in "
+                     "EvalManager::evalCoordExpr");
+  mediator()->evalCoordExpr(expr, result);
 }
 
 
 void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
-                                       const MultiIndex& mi,
-                                       RefCountPtr<EvalVector> const & result) const 
+                                          const Array<MultiIndex>& mi,
+                                          Array<RefCountPtr<EvalVector> >& result) const 
 {
-  if (mediator() != 0)
-    {
-      result->setToVectorValue();
-      mediator()->evalDiscreteFuncElement(expr, mi, result.get());
-    }
-  else
-    {
-      result->setToVectorValue();
-      result->resize(1);
-      result->setElement(0, 1.0);
-    }
-  
-  if (result->shadowOps())
-    {
-      if (mi.order()==0)
-        {
-          result->setStringValue(expr->toString());
-        }
-      else
-        {
-          string str = "D[" + expr->toString() + ", " + mi.coordForm() + "]";
-          result->setStringValue(str);
-        }
-    }
+  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+                     "uninitialized mediator in "
+                     "EvalManager::evalDiscreteFuncElement");
+
+  mediator()->evalDiscreteFuncElement(expr, mi, result);
 }
 
 
+RefCountPtr<EvalVector> EvalManager::popVector() const
+{
+  return stack().popVector();
+}
+
+TempStack& EvalManager::stack()
+{
+  static TempStack rtn;
+  return rtn;
+}

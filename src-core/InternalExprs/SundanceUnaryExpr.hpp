@@ -38,12 +38,10 @@ namespace SundanceCore
           const EvaluatableExpr* evaluatableArg() const 
           {return evaluatableChild(0);}
 
+          /** */
+          virtual Set<MultiIndex> argMultiIndices(const Set<MultiIndex>& multiIndices) const 
+          {return multiIndices;}
           
-
-          /** Return the index by which the given deriv set is known
-           * by the operand. */
-          int argDerivSetIndex(int derivSetIndex) const 
-          {return childDerivSetIndex(0, derivSetIndex);}
 
         protected:
         private:

@@ -89,7 +89,7 @@ EXAMPLES_SUBDIR=examples-tutorial
 endif
 
 if BUILD_TESTS
-SUBDIRS = src-utils src-core tests-core src-std-mesh tests-std-mesh \
+SUBDIRS = src-utils tests-utils src-core tests-core src-std-mesh tests-std-mesh \
 src-std-framework tests-std-framework $(EXAMPLES_SUBDIR)
 else
 SUBDIRS = src-utils src-core src-std-mesh src-std-framework $(EXAMPLES_SUBDIR)

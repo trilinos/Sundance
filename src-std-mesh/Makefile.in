@@ -125,8 +125,7 @@ am__objects_1 = SundanceCellJacobianBatch.$(OBJEXT) \
 	SundanceCellReordererImplemBase.$(OBJEXT) \
 	SundanceCellReorderer.$(OBJEXT) \
 	SundanceIdentityReorderer.$(OBJEXT) SundanceMesh.$(OBJEXT) \
-	SundanceMeshBase.$(OBJEXT) SundanceMeshType.$(OBJEXT) \
-	SundancePoint.$(OBJEXT)
+	SundanceMeshBase.$(OBJEXT) SundanceMeshType.$(OBJEXT)
 am__objects_2 = SundanceBasicSimplicialMesh.$(OBJEXT) \
 	SundanceBasicVertexSet.$(OBJEXT)
 am__objects_3 = SundanceExtrusionMeshTransformation.$(OBJEXT) \
@@ -173,7 +172,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceMeshType.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundancePartitionedLineMesher.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundancePartitionedRectangleMesher.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/SundancePoint.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceTriangleMeshReader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceTriangleWriter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceVTKWriter.Po \
@@ -316,8 +314,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshTypeBase.hpp \
-$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.hpp \
-$(top_srcdir)/src-std-mesh/Interface/SundancePoint.hpp
+$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.hpp 
 
 SUNDANCE_MESHINTERFACE = \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellJacobianBatch.cpp \
@@ -327,8 +324,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.cpp \
-$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp \
-$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp
+$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp 
 
 SUNDANCE_CONCRETEMESHES_H = \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.hpp \
@@ -433,10 +429,12 @@ CORE_INCLUDE_PATH = \
 -I$(top_srcdir)/src-core/Evaluation \
 -I$(top_srcdir)/src-core/FrameworkInterface \
 -I$(top_srcdir)/src-core/SymbolicTransformations \
+-I$(top_srcdir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/UserExprs \
 -I$(top_builddir)/src-core/InternalExprs \
 -I$(top_builddir)/src-core/Evaluation \
 -I$(top_builddir)/src-core/FrameworkInterface \
+-I$(top_builddir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/SymbolicTransformations 
 
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) 
@@ -505,7 +503,7 @@ EXTRA_MPI =
 @HAVE_MPI_TRUE@MPI = \
 @HAVE_MPI_TRUE@	$(EXTRA_MPI)
 
-AM_CPPFLAGS = $(STD_MESH_INCLUDES)
+AM_CPPFLAGS = $(STD_MESH_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 # ------------------------------------------------------------------------
 # Sundance library specifications
@@ -656,7 +654,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMeshType.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePartitionedLineMesher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePartitionedRectangleMesher.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePoint.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTriangleMeshReader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTriangleWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceVTKWriter.Po@am__quote@
@@ -805,22 +802,6 @@ SundanceMeshType.obj: $(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceMeshType.Po' tmpdepfile='$(DEPDIR)/SundanceMeshType.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMeshType.obj `if test -f '$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp'; fi`
-
-SundancePoint.o: $(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundancePoint.o -MD -MP -MF "$(DEPDIR)/SundancePoint.Tpo" -c -o SundancePoint.o `test -f '$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundancePoint.Tpo" "$(DEPDIR)/SundancePoint.Po"; else rm -f "$(DEPDIR)/SundancePoint.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp' object='SundancePoint.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundancePoint.Po' tmpdepfile='$(DEPDIR)/SundancePoint.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundancePoint.o `test -f '$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp
-
-SundancePoint.obj: $(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundancePoint.obj -MD -MP -MF "$(DEPDIR)/SundancePoint.Tpo" -c -o SundancePoint.obj `if test -f '$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundancePoint.Tpo" "$(DEPDIR)/SundancePoint.Po"; else rm -f "$(DEPDIR)/SundancePoint.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp' object='SundancePoint.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundancePoint.Po' tmpdepfile='$(DEPDIR)/SundancePoint.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundancePoint.obj `if test -f '$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Interface/SundancePoint.cpp'; fi`
 
 SundanceBasicSimplicialMesh.o: $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasicSimplicialMesh.o -MD -MP -MF "$(DEPDIR)/SundanceBasicSimplicialMesh.Tpo" -c -o SundanceBasicSimplicialMesh.o `test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp; \

@@ -60,7 +60,6 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceSideCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp
 
 SUNDANCE_ELEMENTS_H = \
-$(top_srcdir)/src-std-framework/Elements/SundanceADReal.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
@@ -80,7 +79,6 @@ $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
 
 SUNDANCE_ELEMENTS = \
-$(top_srcdir)/src-std-framework/Elements/SundanceADReal.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
@@ -189,7 +187,7 @@ MPI =
 
 endif
 
-AM_CPPFLAGS = $(STD_FWK_INCLUDES)
+AM_CPPFLAGS = $(STD_FWK_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 # ------------------------------------------------------------------------
 # Sundance library specifications

@@ -16,5 +16,3 @@ UnaryExpr::UnaryExpr(const RefCountPtr<ScalarExpr>& arg)
 {}
 
 
-
-

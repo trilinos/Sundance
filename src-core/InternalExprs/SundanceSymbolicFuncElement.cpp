@@ -4,20 +4,25 @@
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceSymbolicFunc.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceTestFuncElement.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceDerivSet.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceCoordDeriv.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
+
 
 SymbolicFuncElement::SymbolicFuncElement(const string& name,
+                                         const string& suffix,
                                          int myIndex)
-	: FuncElementBase(name), EvaluatableExpr(), 
+	: EvaluatableExpr(), FuncElementBase(name, suffix),
     evalPt_(),
     evalPtDerivSetIndices_(),
     myIndex_(myIndex)
@@ -36,90 +41,49 @@ void SymbolicFuncElement
   evalPt_ = u0;
 }
 
-bool SymbolicFuncElement::hasNonzeroDeriv(const MultipleDeriv& d) const
+void SymbolicFuncElement::findNonzeros(const EvalContext& context,
+                                       const Set<MultiIndex>& multiIndices,
+                                       bool regardFuncsAsConstant) const
 {
-  TimeMonitor t(nonzeroDerivCheckTimer());
 
-  TEST_FOR_EXCEPTION(evalPt_.get() == NULL, InternalError,
-                     "SymbolicFuncElement::hasNonzeroDeriv() detected an unknown "
-                     "function with an undefined evaluation point. "
-                     "Please define an evaluation point for the function "
-                     << toString());
-
-  /* If we are evaluating a zeroth derivative, i.e., the function itself,
-   * the derivative is nonzero */
-  if (d.order()==0) return true;
-
-  /* If we are evaluating a first derivative, the derivative is zero
-   * unless it is a functional derivative with respect to this function */
-  if (d.order()==1)
-    {
-      Deriv deriv = *(d.begin());
-      const FunctionalDeriv* f = deriv.funcDeriv();
-
-      return (f != 0 && funcID()==f->funcID() && 
-              f->multiIndex().order()==0);
-    }
-
-  /* All higher-order functional derivatives are zero */
-  return false;
-}
-
-void SymbolicFuncElement::getRoughDependencies(Set<Deriv>& funcs) const
-{
-  funcs.put(new FunctionalDeriv(this, MultiIndex()));
-}
-
-
-int SymbolicFuncElement::setupEval(const EvalContext& region,
-                               const EvaluatorFactory* factory,
-                                bool regardFuncsAsConstant) const
-{
-  /* If we've been here already with this deriv set, we're done.
-   * If we've been here with this deriv set, but in another region,
-   * map the region to the deriv set. */
-  bool derivSetIsKnown;
-  if (checkForKnownRegion(region, derivSetIsKnown))
-    {
-      return getDerivSetIndex(region);
-    }
-
-  /* Create a new entry in our tables of deriv sets. This step creates
-  * a sparsity pattern for the current deriv set. */
-  int derivSetIndex = registerRegion(region, derivSetIsKnown,
-                                     currentDerivSuperset(), 
-                                     factory,
-                                regardFuncsAsConstant);
-  
-  /* set up the eval point, returning the index by which the eval point
-   * refers to this deriv set.  */
-  int evalPtDerivSetIndex 
-    = evalPt()->setupEval(region, 
-                          factory,
-                                regardFuncsAsConstant);
-  
-  /* store the eval point's deriv set index */
-  evalPtDerivSetIndices_.append(evalPtDerivSetIndex);
-  
-  return derivSetIndex;
-}
-
-void SymbolicFuncElement::resetDerivSuperset() const 
-{
-  currentDerivSuperset() = DerivSet();
-  
-  evalPt()->resetDerivSuperset();
-}
-
-void SymbolicFuncElement::findDerivSuperset(const DerivSet& derivs) const 
-{
   Tabs tabs;
-  if (verbosity() > 1)
-    {
-      cerr << tabs << "finding deriv superset for symbol " << toString()
-           << endl;
-    }
-  currentDerivSuperset().merge(derivs);
+  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for symbolic func " 
+                       << toString()
+                       << " subject to multi index set " 
+                       << multiIndices.toString());
 
-  evalPt()->findDerivSuperset(derivs);
+  
+  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      return;
+    }
+
+
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+
+  bool isTest = (0 != dynamic_cast<const TestFuncElement*>(this));
+
+  if (!regardFuncsAsConstant && !isTest)
+    {
+      subset->addDeriv(MultipleDeriv(), VectorDeriv);
+    }
+  
+  subset->addDeriv(new FunctionalDeriv(this, MultiIndex()),
+                   ConstantDeriv);
+
+  const DiscreteFuncElement* df 
+    = dynamic_cast<const DiscreteFuncElement*>(evalPt());
+  if (df != 0)
+    {
+      df->findNonzeros(context, multiIndices, regardFuncsAsConstant);
+    }
+
+  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
 }
+
+
+
+
+
+

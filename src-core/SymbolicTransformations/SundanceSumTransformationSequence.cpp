@@ -20,7 +20,7 @@ bool SumTransformationSequence::doTransform(const RefCountPtr<ScalarExpr>& left,
                                             const RefCountPtr<ScalarExpr>& right,
                                             int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
-  for (int i=0; i<size(); i++)
+  for (unsigned int i=0; i<size(); i++)
     {
       if ((*this)[i]->doTransform(left, right, sign, rtn)) return true;
     }

@@ -7,6 +7,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceFuncElementBase.hpp"
+#include "SundanceDiscreteFuncEvaluator.hpp"
 #include "SundanceLeafExpr.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -36,12 +37,14 @@ namespace SundanceCore
      * <tt>master()</tt> method of this class.
      */
     class DiscreteFuncElement : public virtual LeafExpr,
-                                public virtual FuncElementBase
+                                public virtual FuncElementBase,
+                                public GenericEvaluatorFactory<DiscreteFuncElement, DiscreteFuncElementEvaluator>
     {
     public:
       /** */
       DiscreteFuncElement(DiscreteFunctionStub* master, 
                           const string& name,
+                          const string& suffix,
                           int myIndex);
 
       /** virtual destructor */
@@ -58,17 +61,14 @@ namespace SundanceCore
       /** Get my index into the master's list of elements */
       int myIndex() const {return myIndex_;}
 
-      /**
-       * Indicate whether the given functional derivative is nonzero.
+     /** 
+       * Determine which functional and spatial derivatives are nonzero in the
+       * given context. We also keep track of which derivatives
+       * are known to be constant, which can simplify evaluation. 
        */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const ;
-
-
-      /**
-       * Find all functions and their derivatives beneath my level
-       * in the tree. For discrete functions, this does nothing. 
-       */
-      virtual void getRoughDependencies(Set<Deriv>& /* funcs */) const {;}
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
+                                bool regardFuncsAsConstant) const ;
 
       /** */
       virtual XMLObject toXML() const ;

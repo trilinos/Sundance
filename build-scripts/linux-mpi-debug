@@ -2,8 +2,7 @@
 
 BUILD_DIR=`pwd`
 
-../configure CXXFLAGS="-g" \
---enable-mpi --with-mpi-libs="-lmpich -lpmpich" \
+../configure CXXFLAGS="-g" --enable-mpi --with-mpi-compilers \
 --with-trilinos=$HOME/Projects/Trilinos/LINUX-DEBUG \
 --prefix=$BUILD_DIR
 

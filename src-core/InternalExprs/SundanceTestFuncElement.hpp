@@ -36,6 +36,7 @@ namespace SundanceCore
       /** */
       TestFuncElement(const TestFunctionStub* master,
                       const string& name,
+                      const string& suffix,
                       int myIndex);
 
       /** virtual destructor */

@@ -93,6 +93,13 @@ using namespace SundanceCore;
 using namespace SundanceStdMesh;
 using namespace SundanceUtils;
 
+/* do explicit qualification of List to avoid conflicts
+ * with the unfriendly lack of namespaces in MPI2C++
+ */
+using SundanceCore::List;
+
+
+
 namespace SundanceStdFwk
 {
   class Sundance

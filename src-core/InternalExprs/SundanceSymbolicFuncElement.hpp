@@ -10,6 +10,7 @@
 #include "SundanceEvaluatableExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
+#include "SundanceSymbolicFuncEvaluator.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -29,11 +30,13 @@ namespace SundanceCore
      * list-valued SymbolicFunction. 
      */
     class SymbolicFuncElement : public FuncElementBase,
-                                virtual public EvaluatableExpr
+                                virtual public EvaluatableExpr,
+                                public GenericEvaluatorFactory<SymbolicFuncElement, SymbolicFuncElementEvaluator>
     {
     public:
       /** */
-      SymbolicFuncElement(const string& name, int myIndex);
+      SymbolicFuncElement(const string& name, const string& suffix,
+                          int myIndex);
       
       /** virtual destructor */
       virtual ~SymbolicFuncElement() {;}
@@ -62,31 +65,20 @@ namespace SundanceCore
        * function is to be evaluated. */
       const EvaluatableExpr* evalPt() const {return evalPt_.get();}
 
-      /**
-       * Indicate whether the given functional derivative is nonzero.
-       */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& f) const ;
+      
 
-      /**
-       * Find all functions and their derivatives beneath my level
-       * in the tree. For an unknown function, we append a functional
-       * derivative wrt me to the list of derivatives.
+      /** \name Preprocessing */
+      //@{
+      /** 
+       * Determine which functional and spatial derivatives are nonzero in the
+       * given context. We also keep track of which functional derivatives
+       * are known to be constant, which can simplify evaluation. 
        */
-      virtual void getRoughDependencies(Set<Deriv>& funcs) const ;
-
-      /**
-       * Create an evaluator for this region and deriv set, and 
-       * do any other setup required for evaluation. 
-       */
-      virtual int setupEval(const EvalContext& region,
-                            const EvaluatorFactory* factory,
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
                                 bool regardFuncsAsConstant) const ;
 
-      /** */
-      virtual void findDerivSuperset(const DerivSet& derivs) const ;
-
-      /** */
-      virtual void resetDerivSuperset() const ;
+      
 
       /** */
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}

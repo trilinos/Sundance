@@ -5,7 +5,7 @@
 #define SUNDANCE_GROUPER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSparsityPattern.hpp"
+#include "SundanceSparsitySuperset.hpp"
 #include "SundanceIntegralGroup.hpp"
 
 
@@ -37,7 +37,7 @@ namespace SundanceStdFwk
       virtual ~GrouperBase(){;}
 
       /** */
-      virtual void findGroups(const RefCountPtr<SparsityPattern>& sparsity,
+      virtual void findGroups(const RefCountPtr<SparsitySuperset>& sparsity,
                               Array<IntegralGroup>& groups) const = 0 ;
                               
     };

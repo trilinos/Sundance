@@ -1,3 +1,4 @@
+
 /* @HEADER@ */
 /* @HEADER@ */
 
@@ -14,13 +15,14 @@
 #include "SundanceMap.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
-using SundanceUtils::Map;
+
 namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace Internal;
   using std::string;
+  using SundanceUtils::Map;
 
   namespace Internal
     {

@@ -32,29 +32,18 @@ namespace SundanceCore
                                   const Expr& tests,
                                   const Expr& unks,
                                   const Expr& u0,
-                                  const EvalContext& region, 
-                                  const EvaluatorFactory* factory,
-                                  int maxDiffOrder);
+                                  const EvalContext& region);
         /** */
         static DerivSet setupExpr(const Expr& expr, 
-                                  const EvalContext& region, 
-                                  const EvaluatorFactory* factory);
+                                  const Expr& unks,
+                                  const Expr& u0,
+                                  const EvalContext& region);
+        /** */
+        static DerivSet setupExpr(const Expr& expr, 
+                                  const EvalContext& region);
 
         /** */
-        static DerivSet identifyNonzeroDerivs(const Expr& expr,
-                                              const Expr& tests,
-                                              const Expr& unks,
-                                              const Expr& u0,
-                                              int maxDiffOrder,
-                                              bool& u0IsZero);
-
-      /** */
-      static Time& preprocTimer() 
-      {
-        static RefCountPtr<Time> rtn 
-          = TimeMonitor::getNewTimer("Expr preprocessing"); 
-        return *rtn;
-      }
+        TEUCHOS_TIMER(preprocTimer, "symbolic preprocessing");
       };
   }
 }

@@ -19,17 +19,29 @@ namespace SundanceCore
 
   namespace Internal
     {
-      /** */
+      /** 
+       * ExprWithChildren is a base class for any evaluatable expression
+       * that has child nodes, for example, sums and unary operators.
+       * ExprWithChildren adds nothing new to the expr interface, but 
+       * provides some common utilities for getting children
+       * and recursing to children.
+       */
       class ExprWithChildren : public virtual EvaluatableExpr
         {
         public:
-          /** construct with left and right operands */
+          /** construct with a list of child operands */
           ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& children);
 
           /** virtual dtor */
           virtual ~ExprWithChildren() {;}
 
-          /** */
+          /**
+           * Do preprocessing to set up sparse evaluation in the given region 
+           */
+          virtual void setupEval(const EvalContext& context) const ;
+
+          /** Determine whether this expression is constant. It will
+           * be constant if all children are constant. */
           virtual bool isConstant() const ;
 
           /** Append to the set of unknown func IDs present in 
@@ -53,62 +65,33 @@ namespace SundanceCore
           /** Get a handle to the i-th child */
           Expr child(int i) const {return Expr::handle(children_[i]);}
 
-
-          /** Return the index by which the given deriv set is
-           * known by the given child */
-          int childDerivSetIndex(int child, int derivSetIndex) const 
-          {return childDerivSetIndices_[child][derivSetIndex];}
-
-          /**
-           * Find all functions and their derivatives beneath my level
-           * in the tree. 
+          /** 
+           * Generic ExprWithChildren objects find the sparsity to be
+           * the union of the children's sparsity patterns. DiffOp and
+           * ProductExpr will need to override this method.
            */
-          virtual void getRoughDependencies(Set<Deriv>& funcs) const ;
-
-          /**
-           * Recompute the reference counts for this node and its
-           * children.
-           */
-          virtual void resetReferenceCount() const ;
-
-          /** flush the cache of computed values */
-          virtual void flushResultCache() const ;
-
-          /** */
-          virtual bool hasWorkspace() const ;
-
-          /** */
-          virtual void findDerivSuperset(const DerivSet& derivs) const ;
-
-          /** */
-          virtual void resetDerivSuperset() const ;
-
-          /** Do the steps that are common over all binary ops
-           * for setting up evaluation of a new deriv set.
-           * @return index of the deriv set
-           */
-          virtual int setupEval(const EvalContext& region,
-                                const EvaluatorFactory* factory,
-                                bool regardFuncsAsConstant) const ;
-
+          virtual void findNonzeros(const EvalContext& context,
+                                    const Set<MultiIndex>& multiIndices,
+                                    bool regardFuncsAsConstant) const ;
+          
           /** Return true if any child returns true. The sum expression
            * will override this requiring all children to return true */
           virtual bool allTermsHaveTestFunctions() const ;
 
-          /** Return the set of derivatives required by the operands
-           * of this expression given that this expression
-           * requires the set d. For all expressions other than DiffOp,
-           * the operand derivative set is identical to the input derivative
-           * set. DiffOp will require a different set of derivatives from
-           * its operand. */
-          virtual Array<DerivSet>
-          derivsRequiredFromOperands(const DerivSet& d) const ;
+          /** */
+          virtual void showSparsity(ostream& os, 
+                                    const EvalContext& context) const ;
 
+          /** */
+          virtual void getUnknowns(Set<int>& unkID, Array<Expr>& unks) const ;
+
+          
+          /** */
+          virtual int countNodes() const ;
         private:
           Array<RefCountPtr<ScalarExpr> > children_;
-          
-          mutable Array< Array<int> > childDerivSetIndices_;
-        };
+      };          
+
     }
 }
 

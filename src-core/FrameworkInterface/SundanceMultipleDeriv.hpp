@@ -7,7 +7,10 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceMultiSet.hpp"
+#include "SundanceOrderedTuple.hpp"
+#include "SundanceMap.hpp"
 #include "Teuchos_Array.hpp"
+
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -18,6 +21,12 @@ namespace SundanceCore
   using namespace SundanceUtils;
   namespace Internal
     {
+      class MultipleDeriv;
+      /** */
+      typedef OrderedPair<MultipleDeriv, MultipleDeriv> DerivPair; 
+      
+      /** */
+      typedef SundanceUtils::Map<DerivPair, int> ProductRulePerms;
       /** Class MultipleDeriv is a multiple functional derivative operator
        * represented as a multiset of first-order derivatives.
        * The derivatives are each Deriv objects, so the multiple
@@ -57,6 +66,7 @@ namespace SundanceCore
       class MultipleDeriv : public MultiSet<Internal::Deriv>
         {
         public:
+
           /** Construct an empty multiple derivative */
           MultipleDeriv();
 
@@ -66,11 +76,20 @@ namespace SundanceCore
            * size of the set. */
           int order() const {return size();}
 
+          /** Return the order of spatial differentiation in this
+           * derivative */
+          int spatialOrder() const ;
+          
+          
           /** Return by reference argument the partitioning of
            * derivatives when this derivative is applied to a product.
            */
-          void productRulePermutations(Array<MultipleDeriv>& left,
-                                       Array<MultipleDeriv>& right) const ;
+          void productRulePermutations(ProductRulePerms& perms) const ;
+
+          /** return the product of two multiple derivatives, which
+           * is the union of the two multisets */
+          MultipleDeriv product(const MultipleDeriv& other) const ;
+
 
         private:
           /** \name Utilities used in computing product rule permutations */

@@ -106,6 +106,8 @@ bool AssociateHungryDiffOpWithOperand::doTransform(const RefCountPtr<ScalarExpr>
                                                    const RefCountPtr<ScalarExpr>& right,
                                                    RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               "trying AssociateHungryDiffOpWithOperand");
   if (left->isHungryDiffOp())
     {
       /* if the left operand is a product including 
@@ -136,6 +138,7 @@ bool KillDiffOpOnConstant::doTransform(const RefCountPtr<ScalarExpr>& left,
                                        const RefCountPtr<ScalarExpr>& right,
                                        RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(verbosity() > VerbLow, "trying KillDiffOpOnConstant");
   if (left->isHungryDiffOp())
     {
       /* first check that the operand is not a constant, in case someone
@@ -174,6 +177,8 @@ bool BringConstantOutsideDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left
                                              const RefCountPtr<ScalarExpr>& right,
                                              RefCountPtr<ScalarExpr>& rtn) const
 {
+  
+  SUNDANCE_OUT(verbosity() > VerbLow,  "trying BringConstantOutsideDiffOp");
   if (left->isHungryDiffOp())
     {
       /* transform op*(constant*u) --> constant*op*u */
@@ -199,6 +204,7 @@ bool DistributeSumOfDiffOps::doTransform(const RefCountPtr<ScalarExpr>& left,
                                          const RefCountPtr<ScalarExpr>& right,
                                          RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(verbosity() > VerbLow,"trying DistributeSumOfDiffOps");
   if (left->isHungryDiffOp())
     {
       /* if the left operand is a sum of hungry diff ops, distribute this
@@ -226,6 +232,7 @@ bool ApplySimpleDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left,
                                     const RefCountPtr<ScalarExpr>& right,
                                     RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(verbosity() > VerbLow, "trying ApplySimpleDiffOp");
   if (left->isHungryDiffOp())
     {
       const Derivative* dLeft 
@@ -410,5 +417,5 @@ bool TakeConstantUnderIntegralSign::doTransform(const RefCountPtr<ScalarExpr>& l
     {
       return false;
     }
-                    
+  return false;
 }

@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(EvalCache_SOURCES) $(Integrals_SOURCES) $(ListEval_SOURCES) $(SimpleEval_SOURCES) $(StdTransformation_SOURCES)
+SOURCES = $(DepthScalabilityTest_SOURCES) $(ScalabilityTest_SOURCES) $(SimpleEval_SOURCES) $(StdTransformation_SOURCES) $(TestEval_SOURCES) $(VecOpTest_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -80,8 +80,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-noinst_PROGRAMS = SimpleEval$(EXEEXT) StdTransformation$(EXEEXT) \
-	ListEval$(EXEEXT) Integrals$(EXEEXT) EvalCache$(EXEEXT)
+noinst_PROGRAMS = SimpleEval$(EXEEXT) TestEval$(EXEEXT) \
+	StdTransformation$(EXEEXT) VecOpTest$(EXEEXT) \
+	ScalabilityTest$(EXEEXT) DepthScalabilityTest$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-core/SymbolicTests
@@ -99,39 +100,45 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_EvalCache_OBJECTS = EvalCache-EvalCache.$(OBJEXT)
-EvalCache_OBJECTS = $(am_EvalCache_OBJECTS)
+am_DepthScalabilityTest_OBJECTS =  \
+	DepthScalabilityTest-DepthScalabilityTest.$(OBJEXT)
+DepthScalabilityTest_OBJECTS = $(am_DepthScalabilityTest_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
-am_Integrals_OBJECTS = Integrals-Integrals.$(OBJEXT)
-Integrals_OBJECTS = $(am_Integrals_OBJECTS)
-am_ListEval_OBJECTS = ListEval-ListEval.$(OBJEXT)
-ListEval_OBJECTS = $(am_ListEval_OBJECTS)
+am_ScalabilityTest_OBJECTS =  \
+	ScalabilityTest-ScalabilityTest.$(OBJEXT)
+ScalabilityTest_OBJECTS = $(am_ScalabilityTest_OBJECTS)
 am_SimpleEval_OBJECTS = SimpleEval-SimpleEval.$(OBJEXT)
 SimpleEval_OBJECTS = $(am_SimpleEval_OBJECTS)
 am_StdTransformation_OBJECTS =  \
 	StdTransformation-StdTransformation.$(OBJEXT)
 StdTransformation_OBJECTS = $(am_StdTransformation_OBJECTS)
+am_TestEval_OBJECTS = TestEval-TestEval.$(OBJEXT)
+TestEval_OBJECTS = $(am_TestEval_OBJECTS)
+am_VecOpTest_OBJECTS = VecOpTest-VecOpTest.$(OBJEXT)
+VecOpTest_OBJECTS = $(am_VecOpTest_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/EvalCache-EvalCache.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/Integrals-Integrals.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/ListEval-ListEval.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ScalabilityTest-ScalabilityTest.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SimpleEval-SimpleEval.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/StdTransformation-StdTransformation.Po
+@AMDEP_TRUE@	./$(DEPDIR)/StdTransformation-StdTransformation.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/TestEval-TestEval.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/VecOpTest-VecOpTest.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(EvalCache_SOURCES) $(Integrals_SOURCES) \
-	$(ListEval_SOURCES) $(SimpleEval_SOURCES) \
-	$(StdTransformation_SOURCES)
-DIST_SOURCES = $(EvalCache_SOURCES) $(Integrals_SOURCES) \
-	$(ListEval_SOURCES) $(SimpleEval_SOURCES) \
-	$(StdTransformation_SOURCES)
+SOURCES = $(DepthScalabilityTest_SOURCES) $(ScalabilityTest_SOURCES) \
+	$(SimpleEval_SOURCES) $(StdTransformation_SOURCES) \
+	$(TestEval_SOURCES) $(VecOpTest_SOURCES)
+DIST_SOURCES = $(DepthScalabilityTest_SOURCES) \
+	$(ScalabilityTest_SOURCES) $(SimpleEval_SOURCES) \
+	$(StdTransformation_SOURCES) $(TestEval_SOURCES) \
+	$(VecOpTest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -254,32 +261,38 @@ SimpleEval_SOURCES = $(srcdir)/SimpleEval.cpp
 SimpleEval_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a 
 
-SimpleEval_CXXFLAGS = $(CORE_INCLUDES)
+SimpleEval_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 SimpleEval_LDADD = $(CORE_LIBS) 
+VecOpTest_SOURCES = $(srcdir)/VecOpTest.cpp 
+VecOpTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+VecOpTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+VecOpTest_LDADD = $(CORE_LIBS) 
+ScalabilityTest_SOURCES = $(srcdir)/ScalabilityTest.cpp 
+ScalabilityTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+ScalabilityTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+ScalabilityTest_LDADD = $(CORE_LIBS) 
+DepthScalabilityTest_SOURCES = $(srcdir)/DepthScalabilityTest.cpp 
+DepthScalabilityTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+DepthScalabilityTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+DepthScalabilityTest_LDADD = $(CORE_LIBS) 
+TestEval_SOURCES = $(srcdir)/TestEval.cpp 
+TestEval_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+TestEval_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+TestEval_LDADD = $(CORE_LIBS) 
 StdTransformation_SOURCES = $(srcdir)/StdTransformation.cpp 
 StdTransformation_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a 
 
-StdTransformation_CXXFLAGS = $(CORE_INCLUDES)
+StdTransformation_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 StdTransformation_LDADD = $(CORE_LIBS) 
-ListEval_SOURCES = $(srcdir)/ListEval.cpp 
-ListEval_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a 
-
-ListEval_CXXFLAGS = $(CORE_INCLUDES)
-ListEval_LDADD = $(CORE_LIBS) 
-Integrals_SOURCES = $(srcdir)/Integrals.cpp 
-Integrals_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a 
-
-Integrals_CXXFLAGS = $(CORE_INCLUDES)
-Integrals_LDADD = $(CORE_LIBS)
-EvalCache_SOURCES = $(srcdir)/EvalCache.cpp 
-EvalCache_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a 
-
-EvalCache_CXXFLAGS = $(CORE_INCLUDES)
-EvalCache_LDADD = $(CORE_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -315,10 +328,12 @@ CORE_INCLUDE_PATH = \
 -I$(top_srcdir)/src-core/Evaluation \
 -I$(top_srcdir)/src-core/FrameworkInterface \
 -I$(top_srcdir)/src-core/SymbolicTransformations \
+-I$(top_srcdir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/UserExprs \
 -I$(top_builddir)/src-core/InternalExprs \
 -I$(top_builddir)/src-core/Evaluation \
 -I$(top_builddir)/src-core/FrameworkInterface \
+-I$(top_builddir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/SymbolicTransformations 
 
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) 
@@ -405,21 +420,24 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-EvalCache$(EXEEXT): $(EvalCache_OBJECTS) $(EvalCache_DEPENDENCIES) 
-	@rm -f EvalCache$(EXEEXT)
-	$(CXXLINK) $(EvalCache_LDFLAGS) $(EvalCache_OBJECTS) $(EvalCache_LDADD) $(LIBS)
-Integrals$(EXEEXT): $(Integrals_OBJECTS) $(Integrals_DEPENDENCIES) 
-	@rm -f Integrals$(EXEEXT)
-	$(CXXLINK) $(Integrals_LDFLAGS) $(Integrals_OBJECTS) $(Integrals_LDADD) $(LIBS)
-ListEval$(EXEEXT): $(ListEval_OBJECTS) $(ListEval_DEPENDENCIES) 
-	@rm -f ListEval$(EXEEXT)
-	$(CXXLINK) $(ListEval_LDFLAGS) $(ListEval_OBJECTS) $(ListEval_LDADD) $(LIBS)
+DepthScalabilityTest$(EXEEXT): $(DepthScalabilityTest_OBJECTS) $(DepthScalabilityTest_DEPENDENCIES) 
+	@rm -f DepthScalabilityTest$(EXEEXT)
+	$(CXXLINK) $(DepthScalabilityTest_LDFLAGS) $(DepthScalabilityTest_OBJECTS) $(DepthScalabilityTest_LDADD) $(LIBS)
+ScalabilityTest$(EXEEXT): $(ScalabilityTest_OBJECTS) $(ScalabilityTest_DEPENDENCIES) 
+	@rm -f ScalabilityTest$(EXEEXT)
+	$(CXXLINK) $(ScalabilityTest_LDFLAGS) $(ScalabilityTest_OBJECTS) $(ScalabilityTest_LDADD) $(LIBS)
 SimpleEval$(EXEEXT): $(SimpleEval_OBJECTS) $(SimpleEval_DEPENDENCIES) 
 	@rm -f SimpleEval$(EXEEXT)
 	$(CXXLINK) $(SimpleEval_LDFLAGS) $(SimpleEval_OBJECTS) $(SimpleEval_LDADD) $(LIBS)
 StdTransformation$(EXEEXT): $(StdTransformation_OBJECTS) $(StdTransformation_DEPENDENCIES) 
 	@rm -f StdTransformation$(EXEEXT)
 	$(CXXLINK) $(StdTransformation_LDFLAGS) $(StdTransformation_OBJECTS) $(StdTransformation_LDADD) $(LIBS)
+TestEval$(EXEEXT): $(TestEval_OBJECTS) $(TestEval_DEPENDENCIES) 
+	@rm -f TestEval$(EXEEXT)
+	$(CXXLINK) $(TestEval_LDFLAGS) $(TestEval_OBJECTS) $(TestEval_LDADD) $(LIBS)
+VecOpTest$(EXEEXT): $(VecOpTest_OBJECTS) $(VecOpTest_DEPENDENCIES) 
+	@rm -f VecOpTest$(EXEEXT)
+	$(CXXLINK) $(VecOpTest_LDFLAGS) $(VecOpTest_OBJECTS) $(VecOpTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -427,11 +445,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EvalCache-EvalCache.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Integrals-Integrals.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ListEval-ListEval.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScalabilityTest-ScalabilityTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleEval-SimpleEval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StdTransformation-StdTransformation.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestEval-TestEval.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VecOpTest-VecOpTest.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -449,53 +468,37 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-EvalCache-EvalCache.o: $(srcdir)/EvalCache.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(EvalCache_CXXFLAGS) $(CXXFLAGS) -MT EvalCache-EvalCache.o -MD -MP -MF "$(DEPDIR)/EvalCache-EvalCache.Tpo" -c -o EvalCache-EvalCache.o `test -f '$(srcdir)/EvalCache.cpp' || echo '$(srcdir)/'`$(srcdir)/EvalCache.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/EvalCache-EvalCache.Tpo" "$(DEPDIR)/EvalCache-EvalCache.Po"; else rm -f "$(DEPDIR)/EvalCache-EvalCache.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/EvalCache.cpp' object='EvalCache-EvalCache.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/EvalCache-EvalCache.Po' tmpdepfile='$(DEPDIR)/EvalCache-EvalCache.TPo' @AMDEPBACKSLASH@
+DepthScalabilityTest-DepthScalabilityTest.o: $(srcdir)/DepthScalabilityTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(DepthScalabilityTest_CXXFLAGS) $(CXXFLAGS) -MT DepthScalabilityTest-DepthScalabilityTest.o -MD -MP -MF "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Tpo" -c -o DepthScalabilityTest-DepthScalabilityTest.o `test -f '$(srcdir)/DepthScalabilityTest.cpp' || echo '$(srcdir)/'`$(srcdir)/DepthScalabilityTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Tpo" "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Po"; else rm -f "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/DepthScalabilityTest.cpp' object='DepthScalabilityTest-DepthScalabilityTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Po' tmpdepfile='$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(EvalCache_CXXFLAGS) $(CXXFLAGS) -c -o EvalCache-EvalCache.o `test -f '$(srcdir)/EvalCache.cpp' || echo '$(srcdir)/'`$(srcdir)/EvalCache.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(DepthScalabilityTest_CXXFLAGS) $(CXXFLAGS) -c -o DepthScalabilityTest-DepthScalabilityTest.o `test -f '$(srcdir)/DepthScalabilityTest.cpp' || echo '$(srcdir)/'`$(srcdir)/DepthScalabilityTest.cpp
 
-EvalCache-EvalCache.obj: $(srcdir)/EvalCache.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(EvalCache_CXXFLAGS) $(CXXFLAGS) -MT EvalCache-EvalCache.obj -MD -MP -MF "$(DEPDIR)/EvalCache-EvalCache.Tpo" -c -o EvalCache-EvalCache.obj `if test -f '$(srcdir)/EvalCache.cpp'; then $(CYGPATH_W) '$(srcdir)/EvalCache.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/EvalCache.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/EvalCache-EvalCache.Tpo" "$(DEPDIR)/EvalCache-EvalCache.Po"; else rm -f "$(DEPDIR)/EvalCache-EvalCache.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/EvalCache.cpp' object='EvalCache-EvalCache.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/EvalCache-EvalCache.Po' tmpdepfile='$(DEPDIR)/EvalCache-EvalCache.TPo' @AMDEPBACKSLASH@
+DepthScalabilityTest-DepthScalabilityTest.obj: $(srcdir)/DepthScalabilityTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(DepthScalabilityTest_CXXFLAGS) $(CXXFLAGS) -MT DepthScalabilityTest-DepthScalabilityTest.obj -MD -MP -MF "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Tpo" -c -o DepthScalabilityTest-DepthScalabilityTest.obj `if test -f '$(srcdir)/DepthScalabilityTest.cpp'; then $(CYGPATH_W) '$(srcdir)/DepthScalabilityTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/DepthScalabilityTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Tpo" "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Po"; else rm -f "$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/DepthScalabilityTest.cpp' object='DepthScalabilityTest-DepthScalabilityTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Po' tmpdepfile='$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(EvalCache_CXXFLAGS) $(CXXFLAGS) -c -o EvalCache-EvalCache.obj `if test -f '$(srcdir)/EvalCache.cpp'; then $(CYGPATH_W) '$(srcdir)/EvalCache.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/EvalCache.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(DepthScalabilityTest_CXXFLAGS) $(CXXFLAGS) -c -o DepthScalabilityTest-DepthScalabilityTest.obj `if test -f '$(srcdir)/DepthScalabilityTest.cpp'; then $(CYGPATH_W) '$(srcdir)/DepthScalabilityTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/DepthScalabilityTest.cpp'; fi`
 
-Integrals-Integrals.o: $(srcdir)/Integrals.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Integrals_CXXFLAGS) $(CXXFLAGS) -MT Integrals-Integrals.o -MD -MP -MF "$(DEPDIR)/Integrals-Integrals.Tpo" -c -o Integrals-Integrals.o `test -f '$(srcdir)/Integrals.cpp' || echo '$(srcdir)/'`$(srcdir)/Integrals.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Integrals-Integrals.Tpo" "$(DEPDIR)/Integrals-Integrals.Po"; else rm -f "$(DEPDIR)/Integrals-Integrals.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Integrals.cpp' object='Integrals-Integrals.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Integrals-Integrals.Po' tmpdepfile='$(DEPDIR)/Integrals-Integrals.TPo' @AMDEPBACKSLASH@
+ScalabilityTest-ScalabilityTest.o: $(srcdir)/ScalabilityTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScalabilityTest_CXXFLAGS) $(CXXFLAGS) -MT ScalabilityTest-ScalabilityTest.o -MD -MP -MF "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Tpo" -c -o ScalabilityTest-ScalabilityTest.o `test -f '$(srcdir)/ScalabilityTest.cpp' || echo '$(srcdir)/'`$(srcdir)/ScalabilityTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Tpo" "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Po"; else rm -f "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ScalabilityTest.cpp' object='ScalabilityTest-ScalabilityTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ScalabilityTest-ScalabilityTest.Po' tmpdepfile='$(DEPDIR)/ScalabilityTest-ScalabilityTest.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Integrals_CXXFLAGS) $(CXXFLAGS) -c -o Integrals-Integrals.o `test -f '$(srcdir)/Integrals.cpp' || echo '$(srcdir)/'`$(srcdir)/Integrals.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScalabilityTest_CXXFLAGS) $(CXXFLAGS) -c -o ScalabilityTest-ScalabilityTest.o `test -f '$(srcdir)/ScalabilityTest.cpp' || echo '$(srcdir)/'`$(srcdir)/ScalabilityTest.cpp
 
-Integrals-Integrals.obj: $(srcdir)/Integrals.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Integrals_CXXFLAGS) $(CXXFLAGS) -MT Integrals-Integrals.obj -MD -MP -MF "$(DEPDIR)/Integrals-Integrals.Tpo" -c -o Integrals-Integrals.obj `if test -f '$(srcdir)/Integrals.cpp'; then $(CYGPATH_W) '$(srcdir)/Integrals.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Integrals.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Integrals-Integrals.Tpo" "$(DEPDIR)/Integrals-Integrals.Po"; else rm -f "$(DEPDIR)/Integrals-Integrals.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Integrals.cpp' object='Integrals-Integrals.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Integrals-Integrals.Po' tmpdepfile='$(DEPDIR)/Integrals-Integrals.TPo' @AMDEPBACKSLASH@
+ScalabilityTest-ScalabilityTest.obj: $(srcdir)/ScalabilityTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScalabilityTest_CXXFLAGS) $(CXXFLAGS) -MT ScalabilityTest-ScalabilityTest.obj -MD -MP -MF "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Tpo" -c -o ScalabilityTest-ScalabilityTest.obj `if test -f '$(srcdir)/ScalabilityTest.cpp'; then $(CYGPATH_W) '$(srcdir)/ScalabilityTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ScalabilityTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Tpo" "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Po"; else rm -f "$(DEPDIR)/ScalabilityTest-ScalabilityTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ScalabilityTest.cpp' object='ScalabilityTest-ScalabilityTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ScalabilityTest-ScalabilityTest.Po' tmpdepfile='$(DEPDIR)/ScalabilityTest-ScalabilityTest.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Integrals_CXXFLAGS) $(CXXFLAGS) -c -o Integrals-Integrals.obj `if test -f '$(srcdir)/Integrals.cpp'; then $(CYGPATH_W) '$(srcdir)/Integrals.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Integrals.cpp'; fi`
-
-ListEval-ListEval.o: $(srcdir)/ListEval.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ListEval_CXXFLAGS) $(CXXFLAGS) -MT ListEval-ListEval.o -MD -MP -MF "$(DEPDIR)/ListEval-ListEval.Tpo" -c -o ListEval-ListEval.o `test -f '$(srcdir)/ListEval.cpp' || echo '$(srcdir)/'`$(srcdir)/ListEval.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ListEval-ListEval.Tpo" "$(DEPDIR)/ListEval-ListEval.Po"; else rm -f "$(DEPDIR)/ListEval-ListEval.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ListEval.cpp' object='ListEval-ListEval.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ListEval-ListEval.Po' tmpdepfile='$(DEPDIR)/ListEval-ListEval.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ListEval_CXXFLAGS) $(CXXFLAGS) -c -o ListEval-ListEval.o `test -f '$(srcdir)/ListEval.cpp' || echo '$(srcdir)/'`$(srcdir)/ListEval.cpp
-
-ListEval-ListEval.obj: $(srcdir)/ListEval.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ListEval_CXXFLAGS) $(CXXFLAGS) -MT ListEval-ListEval.obj -MD -MP -MF "$(DEPDIR)/ListEval-ListEval.Tpo" -c -o ListEval-ListEval.obj `if test -f '$(srcdir)/ListEval.cpp'; then $(CYGPATH_W) '$(srcdir)/ListEval.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ListEval.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ListEval-ListEval.Tpo" "$(DEPDIR)/ListEval-ListEval.Po"; else rm -f "$(DEPDIR)/ListEval-ListEval.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ListEval.cpp' object='ListEval-ListEval.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ListEval-ListEval.Po' tmpdepfile='$(DEPDIR)/ListEval-ListEval.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ListEval_CXXFLAGS) $(CXXFLAGS) -c -o ListEval-ListEval.obj `if test -f '$(srcdir)/ListEval.cpp'; then $(CYGPATH_W) '$(srcdir)/ListEval.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ListEval.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScalabilityTest_CXXFLAGS) $(CXXFLAGS) -c -o ScalabilityTest-ScalabilityTest.obj `if test -f '$(srcdir)/ScalabilityTest.cpp'; then $(CYGPATH_W) '$(srcdir)/ScalabilityTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ScalabilityTest.cpp'; fi`
 
 SimpleEval-SimpleEval.o: $(srcdir)/SimpleEval.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SimpleEval_CXXFLAGS) $(CXXFLAGS) -MT SimpleEval-SimpleEval.o -MD -MP -MF "$(DEPDIR)/SimpleEval-SimpleEval.Tpo" -c -o SimpleEval-SimpleEval.o `test -f '$(srcdir)/SimpleEval.cpp' || echo '$(srcdir)/'`$(srcdir)/SimpleEval.cpp; \
@@ -528,6 +531,38 @@ StdTransformation-StdTransformation.obj: $(srcdir)/StdTransformation.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/StdTransformation-StdTransformation.Po' tmpdepfile='$(DEPDIR)/StdTransformation-StdTransformation.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(StdTransformation_CXXFLAGS) $(CXXFLAGS) -c -o StdTransformation-StdTransformation.obj `if test -f '$(srcdir)/StdTransformation.cpp'; then $(CYGPATH_W) '$(srcdir)/StdTransformation.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/StdTransformation.cpp'; fi`
+
+TestEval-TestEval.o: $(srcdir)/TestEval.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TestEval_CXXFLAGS) $(CXXFLAGS) -MT TestEval-TestEval.o -MD -MP -MF "$(DEPDIR)/TestEval-TestEval.Tpo" -c -o TestEval-TestEval.o `test -f '$(srcdir)/TestEval.cpp' || echo '$(srcdir)/'`$(srcdir)/TestEval.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestEval-TestEval.Tpo" "$(DEPDIR)/TestEval-TestEval.Po"; else rm -f "$(DEPDIR)/TestEval-TestEval.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/TestEval.cpp' object='TestEval-TestEval.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestEval-TestEval.Po' tmpdepfile='$(DEPDIR)/TestEval-TestEval.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TestEval_CXXFLAGS) $(CXXFLAGS) -c -o TestEval-TestEval.o `test -f '$(srcdir)/TestEval.cpp' || echo '$(srcdir)/'`$(srcdir)/TestEval.cpp
+
+TestEval-TestEval.obj: $(srcdir)/TestEval.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TestEval_CXXFLAGS) $(CXXFLAGS) -MT TestEval-TestEval.obj -MD -MP -MF "$(DEPDIR)/TestEval-TestEval.Tpo" -c -o TestEval-TestEval.obj `if test -f '$(srcdir)/TestEval.cpp'; then $(CYGPATH_W) '$(srcdir)/TestEval.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/TestEval.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/TestEval-TestEval.Tpo" "$(DEPDIR)/TestEval-TestEval.Po"; else rm -f "$(DEPDIR)/TestEval-TestEval.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/TestEval.cpp' object='TestEval-TestEval.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestEval-TestEval.Po' tmpdepfile='$(DEPDIR)/TestEval-TestEval.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TestEval_CXXFLAGS) $(CXXFLAGS) -c -o TestEval-TestEval.obj `if test -f '$(srcdir)/TestEval.cpp'; then $(CYGPATH_W) '$(srcdir)/TestEval.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/TestEval.cpp'; fi`
+
+VecOpTest-VecOpTest.o: $(srcdir)/VecOpTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VecOpTest_CXXFLAGS) $(CXXFLAGS) -MT VecOpTest-VecOpTest.o -MD -MP -MF "$(DEPDIR)/VecOpTest-VecOpTest.Tpo" -c -o VecOpTest-VecOpTest.o `test -f '$(srcdir)/VecOpTest.cpp' || echo '$(srcdir)/'`$(srcdir)/VecOpTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VecOpTest-VecOpTest.Tpo" "$(DEPDIR)/VecOpTest-VecOpTest.Po"; else rm -f "$(DEPDIR)/VecOpTest-VecOpTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VecOpTest.cpp' object='VecOpTest-VecOpTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/VecOpTest-VecOpTest.Po' tmpdepfile='$(DEPDIR)/VecOpTest-VecOpTest.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VecOpTest_CXXFLAGS) $(CXXFLAGS) -c -o VecOpTest-VecOpTest.o `test -f '$(srcdir)/VecOpTest.cpp' || echo '$(srcdir)/'`$(srcdir)/VecOpTest.cpp
+
+VecOpTest-VecOpTest.obj: $(srcdir)/VecOpTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VecOpTest_CXXFLAGS) $(CXXFLAGS) -MT VecOpTest-VecOpTest.obj -MD -MP -MF "$(DEPDIR)/VecOpTest-VecOpTest.Tpo" -c -o VecOpTest-VecOpTest.obj `if test -f '$(srcdir)/VecOpTest.cpp'; then $(CYGPATH_W) '$(srcdir)/VecOpTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VecOpTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VecOpTest-VecOpTest.Tpo" "$(DEPDIR)/VecOpTest-VecOpTest.Po"; else rm -f "$(DEPDIR)/VecOpTest-VecOpTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VecOpTest.cpp' object='VecOpTest-VecOpTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/VecOpTest-VecOpTest.Po' tmpdepfile='$(DEPDIR)/VecOpTest-VecOpTest.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VecOpTest_CXXFLAGS) $(CXXFLAGS) -c -o VecOpTest-VecOpTest.obj `if test -f '$(srcdir)/VecOpTest.cpp'; then $(CYGPATH_W) '$(srcdir)/VecOpTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VecOpTest.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -700,6 +735,35 @@ uninstall-am: uninstall-info-am
 # ------------------------------------------------------------------------
 
 include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export
+
+#ListEval_SOURCES = $(srcdir)/ListEval.cpp 
+#
+#ListEval_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+#$(top_builddir)/src-utils/libsundanceUtils.a 
+#
+#ListEval_CXXFLAGS = $(CORE_INCLUDES)
+#
+#ListEval_LDADD = $(CORE_LIBS) 
+#
+#
+#Integrals_SOURCES = $(srcdir)/Integrals.cpp 
+#
+#Integrals_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+#$(top_builddir)/src-utils/libsundanceUtils.a 
+#
+#Integrals_CXXFLAGS = $(CORE_INCLUDES)
+#
+#Integrals_LDADD = $(CORE_LIBS)
+#
+#
+#EvalCache_SOURCES = $(srcdir)/EvalCache.cpp 
+#
+#EvalCache_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+#$(top_builddir)/src-utils/libsundanceUtils.a 
+#
+#EvalCache_CXXFLAGS = $(CORE_INCLUDES)
+#
+#EvalCache_LDADD = $(CORE_LIBS) 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -15,8 +15,7 @@
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceBruteForceEvaluator.hpp"
-#include "SundanceEvalVectorArray.hpp"
+
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceIntegral.hpp"
 #include "SundanceEssentialBC.hpp"
@@ -45,7 +44,7 @@ int main(int argc, void** argv)
 
       TimeMonitor t(totalTimer());
      
-      SymbolicTransformation::verbosity() = VerbExtreme;
+      SymbolicTransformation::classVerbosity() = VerbSilent;
       verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;

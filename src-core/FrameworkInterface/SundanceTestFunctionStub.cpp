@@ -15,8 +15,8 @@ TestFunctionStub::TestFunctionStub(const string& name, int nElems)
 {
   for (int i=0; i<nElems; i++)
     {
-      string elemName = name + "[" + Teuchos::toString(i) + "]";
-      append(new TestFuncElement(this, elemName, i));
+      string suffix = "[" + Teuchos::toString(i) + "]";
+      append(new TestFuncElement(this, name, suffix, i));
     }
 }
 
