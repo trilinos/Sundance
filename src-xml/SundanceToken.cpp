@@ -23,9 +23,11 @@ Token::Token(const string& tok)
 	else if (tok_[0]==')') type_=TT_CloseParen;
 	else if (tok_[0]=='{') type_=TT_OpenBrace;
 	else if (tok_[0]=='}') type_=TT_CloseBrace;
-	else if (tok_[0]=='[') type_=TT_OpenBrace;
-	else if (tok_[0]==']') type_=TT_CloseBrace;
+	else if (tok_[0]=='[') type_=TT_OpenBracket;
+	else if (tok_[0]==']') type_=TT_CloseBracket;
 	else if (tok_[0]==',') type_=TT_Comma;
+	else if (tok_[0]=='.') type_=TT_Dot;
+	else if (tok_[0]=='\'') type_=TT_QuotedString;
 
 	else if (tok_[0]=='+') type_=TT_Plus;
 	else if (tok_[0]=='-') type_=TT_Minus;
@@ -61,5 +63,16 @@ const string& Token::name() const
 	return tok_;
 }
 
+
+string Token::stripQuotes() const 
+{
+  TEST_FOR_EXCEPTION(type_!=TT_QuotedString, InternalError,
+                     "Token::name() called for non-Name type token");
+  int n = tok_.length();
+  string rtn;
+  if (n==2) return rtn;
+  return tok_.substr(1, n-2);
+
+}
 
 

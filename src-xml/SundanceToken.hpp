@@ -11,7 +11,7 @@ namespace SundanceXML
                   TT_Divide, TT_Constant, TT_Name, TT_Equal,
                   TT_LessThan, TT_GreaterThan, TT_LessThanOrEqual,
                   TT_GreaterThanOrEqual, TT_And, TT_Or,
-                  TT_Not, TT_NotEqual, TT_End};
+                  TT_Not, TT_NotEqual, TT_QuotedString, TT_Dot, TT_End};
 
   class Token
     {
@@ -29,6 +29,8 @@ namespace SundanceXML
       bool isOpenBracket() const {return type_==TT_OpenBracket;}
       bool isCloseBracket() const {return type_==TT_CloseBracket;}
       bool isComma() const {return type_==TT_Comma;}
+      bool isDot() const {return type_==TT_Dot;}
+      bool isQuotedString() const {return type_==TT_QuotedString;}
 
       bool isPlus() const {return type_==TT_Plus;}
       bool isMinus() const {return type_==TT_Minus;}
@@ -54,16 +56,29 @@ namespace SundanceXML
       const string& name() const ;
 
       const string& tok() const {return tok_;}
+      string stripQuotes() const ;
       void print(ostream& os) const {os << tok_;}
     private:
       string tok_;
       TokenType type_;
     };
+}
 
-  inline ostream& operator<<(ostream& os, const Token& t)
+namespace std
+{
+  inline ostream& operator<<(ostream& os, const SundanceXML::Token& t)
     {
       t.print(os);
       return os;
+    }
+}
+
+namespace Teuchos
+{
+
+  inline std::string toString(const SundanceXML::Token& tok)
+    {
+      return tok.tok();
     }
 
 }

@@ -18,6 +18,8 @@ ExprScanner::ExprScanner(const string& line)
       tok_.append(tok);
     }
 	tok_.append(tok);
+
+  //  cerr << "found tokens " << tok_ << endl;
 }
 
 bool ExprScanner::hasMore() const 
@@ -30,8 +32,6 @@ const Token& ExprScanner::pop() const
   const Token& rtn = tok_[ptr_];
   ptr_++;
   return rtn;
-
-	return tok_[0];
 }
 
 const Token& ExprScanner::peek() const
@@ -70,7 +70,13 @@ bool ExprScanner::isWhite(char c) const
 
 bool ExprScanner::isDelimiter(char c) const 
 {
-  if (strchr("()+-*/,{};", c) && c!='\0') return true;
+  if (strchr("()+-*/,{};[]", c) && c!='\0') return true;
+  return false;
+}
+
+bool ExprScanner::isQuote(char c) const 
+{
+  if (strchr("'", c) && c!='\0') return true;
   return false;
 }
 
@@ -101,7 +107,29 @@ Token ExprScanner::getToken(const string& line, int& place) const
   if (isDelimiter(line[place]))
     {
       currentToken = line[place];
+      //      cerr << "tok \\" << currentToken << "\\ is a delim" << endl;
       place++;
+      return Token(currentToken);
+    }
+
+  // check for delimiter
+  if (isQuote(line[place]))
+    {
+      currentToken = line[place];
+      place++;
+      do
+        {
+          TEST_FOR_EXCEPTION(place >= (int) line.length(),
+                             RuntimeError,
+                             "unclosed quote in line " << line);
+          char next = line[place];
+          currentToken += next;
+          place++;
+          if (isQuote(next)) break;
+        } 
+      while (true);
+
+      // cerr << "tok \\" << currentToken << "\\ is a quoted string" << endl;
       return Token(currentToken);
     }
 
@@ -109,12 +137,14 @@ Token ExprScanner::getToken(const string& line, int& place) const
   if (isLogical(line[place]))
     {
       currentToken = line[place];
+
       if (isLogical(line[place+1]))
         {
           currentToken += line[place+1];
           place++;
         }
       place++;
+      // cerr << "tok \\" << currentToken << "\\ is a logical" << endl;
       return Token(currentToken);
     }
 			
@@ -130,7 +160,8 @@ Token ExprScanner::getToken(const string& line, int& place) const
         {
           currentToken += line[place];
           place++;
-        }
+        } 
+      // cerr << "tok \\" << currentToken << "\\ is a number" << endl;
       return Token(currentToken);
     }
 			
@@ -138,13 +169,18 @@ Token ExprScanner::getToken(const string& line, int& place) const
   if (isalpha(line[place]))
     {
       currentToken = line[place];
+
       place++;
       while (!(place >= (int) line.length() 
-               || isDelimiter(line[place]) || isWhite(line[place])))
+               || isDelimiter(line[place]) 
+               || isLogical(line[place]) 
+               || isQuote(line[place]) 
+               || isWhite(line[place])))
         {
           currentToken += line[place];
           place++;
         }
+      // cerr << "tok \\" << currentToken << "\\ is a name" << endl;
       return Token(currentToken);
     }
 			

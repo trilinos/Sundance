@@ -13,6 +13,7 @@
 
 namespace SundanceCore
 {
+
   using namespace SundanceUtils;
   /**
    * User-level expression class. Expr is a handle to a

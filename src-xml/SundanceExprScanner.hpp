@@ -23,6 +23,7 @@ namespace SundanceXML
       bool isLogical(char c) const ;
       bool isWhite(char c) const ;
       bool isDelimiter(char c) const ;
+      bool isQuote(char c) const ;
       Token getToken(const string& line, int& place) const ;
 
       Teuchos::Array<Token> tok_;

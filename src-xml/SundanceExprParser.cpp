@@ -26,20 +26,25 @@ XMLObject ExprParser::evaluate(const string& line)
 void ExprParser::assignLevel(const ExprScanner& scanner, XMLObject& result)
 {
 	string tmp;
-	Token token = scanner.pop();
-  tmp = token.tok();
+  //  cerr << "entering assign level " << endl;
 
-  result = XMLObject("Assign");
-  result.addAttribute("target", tmp);
-
-  token = scanner.pop();
-
-  XMLObject lhs;
-  if (token.isAssign())
+  if (scanner.peekAtNext().isAssign())
     {
+      Token token = scanner.pop();
+      tmp = token.tok();
+      result = XMLObject("Assign");
+      result.addAttribute("target", tmp);
+      token = scanner.pop();
+      XMLObject lhs;
       addLevel(scanner, lhs);
+      result.addChild(lhs);
     }
-  result.addChild(lhs);
+  else
+    {
+      addLevel(scanner, result);
+    }
+
+  //  cerr << "leaving assign level xml=" << result << endl;
 }
 
 
@@ -51,6 +56,7 @@ void ExprParser::addLevel(const ExprScanner& scanner,
   bool isFirstTerm = true;
   bool multipleTerms = false;
 
+  //  cerr << "entering add level " << endl;
   multLevel(scanner, tmp);
   Token token = scanner.peek();
 
@@ -78,11 +84,13 @@ void ExprParser::addLevel(const ExprScanner& scanner,
         }
     };
   if (isFirstTerm) result = tmp;
+  //  cerr << "leaving add level xml=" << result << endl;
 }
 				
 void ExprParser::multLevel(const ExprScanner& scanner,
 													 XMLObject& result) 
 {
+  //  cerr << "entering mult level " << endl;
   XMLObject tmp;
   bool isTimes;
   bool isFirstTerm = true;
@@ -115,14 +123,17 @@ void ExprParser::multLevel(const ExprScanner& scanner,
         }
     };
   if (isFirstTerm) result = tmp;
+  //  cerr << "leaving mult level xml=" << result << endl;
 }
 				
 void ExprParser::unaryLevel(const ExprScanner& scanner,
                             XMLObject& result)
 {
+  //  cerr << "entering unary level " << endl;
   XMLObject tmp;
   bool isMinus=false;
   bool isFunction=false;
+  bool isIndexed=false;
 
   // look at the first token, to see if it is a function name, a unary
   // minus, or a unary plus.
@@ -136,6 +147,13 @@ void ExprParser::unaryLevel(const ExprScanner& scanner,
       if (scanner.peekAtNext().isOpenParen())
         {
           isFunction = true;
+          token = scanner.pop();
+        }
+      // if the next token is an open bracket, the initial name is to be
+      // interpreted as a function.
+      if (scanner.peekAtNext().isOpenBracket())
+        {
+          isIndexed = true;
           token = scanner.pop();
         }
     }
@@ -172,17 +190,36 @@ void ExprParser::unaryLevel(const ExprScanner& scanner,
             }
         }
     }
+  else if (isIndexed) 
+    {
+      result = XMLObject("IndexedVar");
+      result.addAttribute("name", start.name());
+      if (tmp.getTag() != "ArgumentList")
+        {
+          result.addChild(tmp);
+        }
+      else
+        {
+          for (int i=0; i<tmp.numChildren(); i++)
+            {
+              result.addChild(tmp.getChild(i));
+            }
+        }
+    }
   else result = tmp;
 
   token = scanner.peek();
 
   TEST_FOR_EXCEPTION(token.isOpenParen(), RuntimeError,
                      "open paren at unary level: " << scanner.showError());
+
+  // cerr << "leaving unary level xml=" << result << endl;
 }
 
 void ExprParser::parenLevel(const ExprScanner& scanner,
                             XMLObject& result)
 {
+  // cerr << "entering paren level" << endl;
   XMLObject tmp;
 			
   Token token = scanner.peek();
@@ -192,7 +229,7 @@ void ExprParser::parenLevel(const ExprScanner& scanner,
       token = scanner.pop();
       result = XMLObject("ArgumentList");
       TEST_FOR_EXCEPTION(token.isCloseParen(), RuntimeError,
-                     "empty paren: " << scanner.showError());
+                         "empty paren: " << scanner.showError());
       do
         {
           if (token.isComma()) 
@@ -219,7 +256,7 @@ void ExprParser::parenLevel(const ExprScanner& scanner,
       result = XMLObject("List");
       token = scanner.pop();
       TEST_FOR_EXCEPTION(token.isCloseBrace(), RuntimeError,
-                     "empty braces: " << scanner.showError());
+                         "empty braces: " << scanner.showError());
       do
         {
           if (token.isComma()) 
@@ -229,9 +266,29 @@ void ExprParser::parenLevel(const ExprScanner& scanner,
           result.addChild(tmp);
         } 
       while (token.isComma());
-      // expect end paren. 
+      // expect end brace. 
       TEST_FOR_EXCEPTION(!token.isCloseBrace(), RuntimeError,
                          "close brace not found: " <<  scanner.showError());
+      token = scanner.pop();
+    }
+  else if (token.isOpenBracket())
+    {
+      result = XMLObject("Index");
+      token = scanner.pop();
+      TEST_FOR_EXCEPTION(token.isCloseBracket(), RuntimeError,
+                         "empty bracket: " << scanner.showError());
+      do
+        {
+          if (token.isComma()) 
+            token = scanner.pop();
+          addLevel(scanner, tmp);
+          token = scanner.peek();
+          result.addChild(tmp);
+        } 
+      while (token.isComma());
+      // expect end brace. 
+      TEST_FOR_EXCEPTION(!token.isCloseBracket(), RuntimeError,
+                         "close bracket not found: " <<  scanner.showError());
       token = scanner.pop();
     }
   else 
@@ -239,22 +296,32 @@ void ExprParser::parenLevel(const ExprScanner& scanner,
       primitiveLevel(scanner, result);
       token = scanner.pop();
     }
+
+  //  cerr << "leaving paren level xml=" << result << endl;
 }
+
 
 void ExprParser::primitiveLevel(const ExprScanner& scanner,
                                 XMLObject& result) 
 {
-			Token token = scanner.peek();
-			if (token.isConstant())
-				{
-					result = XMLObject("Constant");
-					result.addAttribute("value", toString(token.value()));
-				}
-			else 
-				{
-					result = XMLObject("Expr");
-					result.addAttribute("name", token.name());
-				}
+  //  cerr << "entering paren level" << endl;
+  Token token = scanner.peek();
+  if (token.isConstant())
+    {
+      result = XMLObject("Constant");
+      result.addAttribute("value", Teuchos::toString(token.value()));
+    }
+  else if (token.isQuotedString())
+    {
+      result = XMLObject("String");
+      result.addAttribute("value", token.stripQuotes());
+    }
+  else 
+    {
+      result = XMLObject("Var");
+      result.addAttribute("name", token.name());
+    }
+  // cerr << "leaving primitive level xml=" << result << endl;
 }
 
 

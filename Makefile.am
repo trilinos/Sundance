@@ -90,9 +90,9 @@ endif
 
 if BUILD_TESTS
 SUBDIRS = src-utils tests-utils src-core tests-core src-std-mesh tests-std-mesh \
-src-std-framework tests-std-framework src-xml $(EXAMPLES_SUBDIR)
+src-std-framework tests-std-framework src-xml  $(EXAMPLES_SUBDIR)
 else
-SUBDIRS = src-utils src-core src-std-mesh src-std-framework src-xml $(EXAMPLES_SUBDIR)
+SUBDIRS = src-utils src-core src-std-mesh src-std-framework src-xml  $(EXAMPLES_SUBDIR)
 endif
 
 
