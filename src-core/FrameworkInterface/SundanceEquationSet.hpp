@@ -243,8 +243,10 @@ namespace SundanceCore
 
       /** */
       void addToVarUnkPairs(const OrderedHandle<CellFilterStub>& domain,
-                             const DerivSet& nonzeros, 
-                             bool isBC);
+                            const Set<int>& vars,
+                            const Set<int>& unks,
+                            const DerivSet& nonzeros, 
+                            bool isBC);
 
       /** */
       Array<OrderedHandle<CellFilterStub> > regions_;

@@ -502,6 +502,10 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+               << " ************* Active funcs are " << activeFuncIDs << endl);
+  
   e->findNonzeros(region, multiIndices, activeFuncIDs, false);
 
    SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,

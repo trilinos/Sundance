@@ -420,7 +420,8 @@ void EquationSet::init(const Expr& eqns,
                                                          unkLinearizationPts,
                                                          context);
                 }
-              addToVarUnkPairs(rqc.domain(), nonzeros, false);
+              addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
+                               nonzeros, false);
               rqcToContext_[MatrixAndVector].put(rqc, context);
               regionQuadComboNonzeroDerivs_[MatrixAndVector].put(rqc, 
                                                                  nonzeros);
@@ -560,7 +561,8 @@ void EquationSet::init(const Expr& eqns,
                                                              unkLinearizationPts,
                                                              context);
                     }
-                  addToVarUnkPairs(rqc.domain(), nonzeros, true);
+                  addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
+                                   nonzeros, true);
                   bcRqcToContext_[MatrixAndVector].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[MatrixAndVector].put(rqc, 
                                                                        nonzeros);
@@ -655,6 +657,8 @@ void EquationSet::init(const Expr& eqns,
 
 void EquationSet
 ::addToVarUnkPairs(const OrderedHandle<CellFilterStub>& domain,
+                   const Set<int>& vars,
+                   const Set<int>& unks,
                    const DerivSet& nonzeros, 
                    bool isBC)
 {
@@ -701,17 +705,12 @@ void EquationSet
           TEST_FOR_EXCEPTION(fd==0, InternalError, "non-functional deriv "
                              << d << " detected in EquationSet::"
                              "addToVarUnkPairs()");
-          const UnknownFuncElement* u 
-            = dynamic_cast<const UnknownFuncElement*>(fd->func());
-          const TestFuncElement* t 
-            = dynamic_cast<const TestFuncElement*>(fd->func());
-
-          if (u != 0)
+          if (unks.contains(fd->funcID()))
             {
               unkID = fd->funcID();
               continue;
             }
-          if (t != 0)
+          if (vars.contains(fd->funcID()))
             {
               varID = fd->funcID();
               continue;

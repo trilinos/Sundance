@@ -67,6 +67,7 @@
 #include "SundanceL2Projector.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
+#include "SundanceFunctional.hpp"
 #include "SundanceExprFieldWrapper.hpp"
 
 /* Solvers & stuff */

@@ -130,6 +130,7 @@ Expr FunctionalEvaluator::evalGradient(double& value) const
 
 double FunctionalEvaluator::fdGradientCheck(double h) const
 {
+  bool showAll = false;
   Tabs tabs;
   double f0, fPlus, fMinus;
   Vector<double> gradF0 = evalGradientVector(f0);
@@ -137,8 +138,6 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
 
   DiscreteFunction* df = DiscreteFunction::discFunc(varValues_);
   Vector<double> x = df->getVector();
-
-  cerr << "vec ptr = " << x.ptr().get() << endl;
 
   LoadableVector<double>* loadableX 
     = dynamic_cast<LoadableVector<double>*>(x.ptr().get());
@@ -162,7 +161,6 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
     {
       double tmp = xView->getElement(i);
       loadableX->setElement(i, tmp + h);
-      cerr << "elkement is now " << x.getElement(i) << endl;
       df->setVector(x);
       fPlus = evaluate();
       loadableX->setElement(i, tmp - h);
@@ -170,10 +168,13 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
       fMinus = evaluate();
       
       df_dx[i] = (fPlus - fMinus)/2.0/h;
-      cerr << "i " << i << " x_i=" << tmp 
-           << " f(x)=" << f0 
-           << " f(x+h)=" << fPlus 
-           << " f(x-h)=" << fMinus << endl;
+      if (showAll)
+        {
+          cerr << "i " << i << " x_i=" << tmp 
+               << " f(x)=" << f0 
+               << " f(x+h)=" << fPlus 
+               << " f(x-h)=" << fMinus << endl;
+        }
       loadableX->setElement(i, tmp);
     }
   
@@ -185,9 +186,12 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
       double den = fabs(df_dx[i]) + fabs(gradF0View->getElement(i));
       double r = 0.0;
       if (fabs(den) > 1.0e-10) r = num/den;
-      cerr << "i " << i << " FD=" << df_dx[i] 
-           << " grad=" << gradF0View->getElement(i)
-           << " r=" << r << endl;
+      if (showAll)
+        {
+          cerr << "i " << i << " FD=" << df_dx[i] 
+               << " grad=" << gradF0View->getElement(i)
+               << " r=" << r << endl;
+        }
       if (maxErr < r) maxErr = r;
     }
 

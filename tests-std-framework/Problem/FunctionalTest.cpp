@@ -21,7 +21,7 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 2;
+      int nx = 8;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
                                                          0.0, 1.0, nx, 1,
@@ -49,11 +49,17 @@ int main(int argc, void** argv)
       double I1Exact = 1.0/pi;
       cerr << "exact: " << I1Exact << endl;
 
+      double error = fabs(f1 - I1Exact);
+      cerr << "error = " << fabs(f1 - I1Exact) << endl;
+
       Expr I2 = Integral(interior, x*x*sin(pi*x), quad4);
       double f2 = evaluateIntegral(mesh, I2);
       cerr << "integral of x^2 sin(pi*x) = " << f2 << endl;
       double I2Exact = (1.0 - 4.0/pi/pi)/pi;
       cerr << "exact: " << I2Exact << endl;
+
+      error = max(error, fabs(f2 - I2Exact));
+      cerr << "error = " << fabs(f2 - I2Exact) << endl;
 
       Expr I3 = Integral(interior, sin(pi*x)*sin(pi*x), quad4);
       double f3 = evaluateIntegral(mesh, I3);
@@ -61,11 +67,17 @@ int main(int argc, void** argv)
       double I3Exact = 0.5;
       cerr << "exact: " << I3Exact << endl;
 
+      error = max(error, fabs(f3 - I3Exact));
+      cerr << "error = " << fabs(f3 - I3Exact) << endl;
+
       Expr I4 = Integral(interior, x*x*(pi-x)*(pi-x), quad4);
       double f4 = evaluateIntegral(mesh, I4);
       cerr << "integral of x^2 (pi-x)^2 = " << f4 << endl;
       double I4Exact = pi*pi/3.0 - pi/2 + 1.0/5.0;
       cerr << "exact: " << I4Exact << endl;
+
+      error = max(error, fabs(f4 - I4Exact));
+      cerr << "error = " << fabs(f4 - I4Exact) << endl;
 
 
       /* now compute a functional at a particular value of a field */
@@ -75,11 +87,6 @@ int main(int argc, void** argv)
       L2Projector projector(discSpace, x*(pi-x));
       Expr alpha0 = projector.project();
 
-      DiscreteFunction* da = DiscreteFunction::discFunc(alpha0);
-      Vector<double> aVec = da->getVector();
-      cerr << "discfunc ptr = " << da << endl;
-      cerr << "vec ptr = " << aVec.ptr().get() << endl;
-      
       Expr g = Integral(interior, 0.5*pow(alpha-sin(pi*x), 2.0) , quad4);
 
       double gExact = 0.5*(-2.0*pi*I1Exact + I3Exact + 2.0*I2Exact + I4Exact);
@@ -90,17 +97,26 @@ int main(int argc, void** argv)
       double gVal = gEval.evaluate();
       cerr << "integral value = " << gVal << endl;
       cerr << "exact value = " << gExact << endl;
-
+      error = max(error, fabs(gVal - gExact));
+      cerr << "error = " << fabs(gVal - gExact) << endl;
 
       /* now compute the derivative of a functional wrt a field variable */
 
       Expr dGdAlpha = gEval.evalGradient(gVal);
       cerr << "integral value = " << gVal << endl;
-      
+      error = max(error, fabs(gVal - gExact));
+      cerr << "error = " << fabs(gVal - gExact) << endl;
+
+      double h = 1.0e-2;
       double diffErr = gEval.fdGradientCheck(1.0e-2);
 
-      double tol = 1.0e-10;
-      Sundance::passFailTest(gVal - gExact, tol);
+      error = max(error, fabs(diffErr));
+      cerr << "error = " << error << endl;
+
+      double tol = 1.0e-8;
+      Sundance::passFailTest(error, tol);
+
+
     }
 	catch(exception& e)
 		{
