@@ -25,6 +25,8 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceStdMathOps.hpp"
 #include "SundanceParameter.hpp"
+#include "SundanceUserDefFunctor.hpp"
+#include "SundanceUserDefOp.hpp"
 
 /* Meshes */
 #include "SundanceMesh.hpp"
