@@ -20,7 +20,8 @@ using namespace SundanceStdMesh::Internal;
   using namespace Teuchos;
 
   /** 
-   *
+   * MaximalCellFilter is a filter that identifies all mesh
+   * cells of maximal dimension.
    **/
   class MaximalCellFilter : public CellFilterBase 
   {

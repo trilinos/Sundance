@@ -15,7 +15,12 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
 
-  /** */
+  /** 
+   * QuadratureFamily is a geometry-independent specification of
+   * a method by which quadrature is to be carried out. For example,
+   * a GaussianQuadrature family will generate Gaussian
+   * quadrature points on any cell type.
+   */
   class QuadratureFamily : public Handle<QuadratureFamilyStub>
   {
   public:

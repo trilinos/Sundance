@@ -18,7 +18,6 @@ namespace SundanceUtils
   using std::ostream;
 
   /**
-   * \ingroup UserLevelGeometry
    * Point represents a spatial point.
    */
   class Point

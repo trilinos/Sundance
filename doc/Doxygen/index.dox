@@ -24,7 +24,7 @@ on setting up linear and nonlinear PDE simulations is available in
 </ul>
 
 
-<H2> User's Guide </H2>
+<H2> Online User's Guide </H2>
 
 
 <H4> Components for Simulation Setup </H4>
@@ -57,8 +57,9 @@ parameters.
 
 <H4> Output and Visualization </H4>
 
+<H4> Examples </H4>
 
-
-
+Some example simulators developed in Sundance
+can be found <A HREF="examples.html"> here </A>
 
 */

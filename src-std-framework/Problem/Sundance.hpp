@@ -103,6 +103,12 @@ using SundanceCore::List;
 
 namespace SundanceStdFwk
 {
+  /**
+   * Class Sundance provides several static methods for
+   * managing the environment of a simulation. Every simulation code
+   * should begin with a call to Sundance::init() and end with
+   * a call to Sundance::finalize().
+   */
   class Sundance
   {
   public:
@@ -123,16 +129,31 @@ namespace SundanceStdFwk
                           bool& value, 
                           const string& helpMsg);
 
-
+    /** 
+     * Do initialization steps such as starting MPI (if necessary), 
+     * parsing the Unix command
+     * line, and reading runtime options from the configuration file.
+     * MPI is initialized through a call to Teuchos::MPISession::init(), 
+     * which in turn checks whether MPI needs initialization and calls
+     * MPI_Init() if necessary. If some other library you're using has
+     * its own MPI initialization system, it is thus perfectly safe to
+     * call Sundance::init() as well.
+     */
     static void init(int* argc, void*** argv);
     
+    /** 
+     * Do finalization steps such as calling MPI_finalize() (if necessary),
+     * and collecting and printing timing information.
+     */
     static void finalize();
     
+    /** */
     static void handleException(std::exception& e);
 
-
+    /** */
     static void passFailTest(double error, double tol);
 
+    /** */
     static string searchForFile(const string& name);    
 
   private:

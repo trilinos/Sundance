@@ -25,7 +25,8 @@ namespace SundanceStdFwk
   using namespace Teuchos;
 
     /** 
-     * 
+     * NonlinearProblem encapsulates a discrete nonlinear problem, and can
+     * be passed to a nonlinear solver such as NOX.
      */
   class NonlinearProblem 
     : public TSFExtended::ObjectWithVerbosity<NonlinearProblem>,
@@ -53,6 +54,10 @@ namespace SundanceStdFwk
       /** Get an initial guess */
       TSFExtended::Vector<double> getInitialGuess() const ;
 
+
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
       /* Handle boilerplate */
       GET_RCP(TSFExtended::NonlinearOperatorBase<double>);
 
@@ -69,9 +74,12 @@ namespace SundanceStdFwk
 
       /** */
       mutable DiscreteFunction* discreteU0_;
+#endif /* DOXYGEN_DEVELOPER_ONLY */
       
     };
 }
+
+
 
 
 #endif

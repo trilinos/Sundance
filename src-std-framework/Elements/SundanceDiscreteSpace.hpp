@@ -23,7 +23,8 @@ namespace SundanceStdFwk
   using namespace Internal;
 
   /** 
-   *
+   * DiscreteSpace represents a discrete finite-element space (i.e., 
+   * a mesh and a basis).
    */
   class DiscreteSpace : public ObjectWithVerbosity<DiscreteSpace>
   {

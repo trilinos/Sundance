@@ -5,7 +5,6 @@
 #ifndef SUNDANCE_POSITIONALCELLPREDICATE_H
 #define SUNDANCE_POSITIONALCELLPREDICATE_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellPredicateBase.hpp"
@@ -17,6 +16,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
   using namespace Teuchos;
 
+  /** Prototype for predicates used to filter points. */
   typedef bool positionalPredicate(const Point& x);
   
   namespace Internal
@@ -52,6 +52,6 @@ using namespace SundanceStdMesh::Internal;
     };
   }
 }
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

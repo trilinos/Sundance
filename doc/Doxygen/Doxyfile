@@ -386,7 +386,8 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../src-std-framework/CellFilter \
                          ../src-std-framework/DOFMapping \
                          ../src-std-framework/Problem \
-                         ../src-std-framework/Elements
+                         ../src-std-framework/Elements \
+                         ../examples-tutorial
 
 
 # If the value of the INPUT tag contains directories, you can use the 
@@ -425,7 +426,8 @@ EXCLUDE_PATTERNS       =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = 
+EXAMPLE_PATH           = ../test-std-framework/Problems \
+                         ../examples-tutorial
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

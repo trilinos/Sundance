@@ -25,7 +25,8 @@ namespace SundanceCore
   using std::ostream;
 
     /**
-     *
+     * UserDefOp provides a hook for inserting a user-defined nonlinear
+     * function into the Sundance Expr system.
      */
   class UserDefOp : public ExprWithChildren,
                     public GenericEvaluatorFactory<UserDefOp, UserDefOpEvaluator>

@@ -17,7 +17,10 @@ namespace SundanceStdFwk
   using namespace Internal;
 
   /** 
-   *
+   * UnknownFunction represents an unknown function in a finite
+   * element problem. Unknown functions can be scalar or vector valued, as
+   * determined at runtime through the type of basis with which
+   * they are constructed.
    */
   class UnknownFunction : public UnknownFunctionStub,
                           public FuncWithBasis

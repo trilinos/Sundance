@@ -21,7 +21,8 @@ namespace SundanceStdFwk
 
 
   /** 
-   *
+   * DiscreteFunction represents a function that is discretized
+   * on a finite-element space.
    */
   class DiscreteFunction : public DiscreteFunctionStub,
                            public FuncWithBasis

@@ -13,7 +13,10 @@ namespace SundanceCore
   using namespace SundanceUtils;
   using namespace SundanceCore::Internal;
 
-  /** */
+  /**
+   * Expression that returns a characteristic size for each cell on 
+   * which it is evaluated. 
+   */
   class CellDiameterExpr 
     : public GenericEvaluatorFactory<CellDiameterExpr, CellDiameterExprEvaluator>,
       virtual public LeafExpr

@@ -14,7 +14,13 @@ namespace SundanceCore
   using namespace SundanceUtils;
   using namespace SundanceCore::Internal;
 
-  /** */
+  /** 
+   * CoordExpr is an 
+   * expression that returns one of the cartesian coordinates for
+   * each point at which it evaluated. Which coordinate (i.e., \f$x\f$,
+   * \f$y\f$, or \f$z\f$) to be represented is specified by the first
+   * argement to the constructor. 
+   */
   class CoordExpr : public FuncElementBase,
                     public GenericEvaluatorFactory<CoordExpr, CoordExprEvaluator>,
                     virtual public LeafExpr

@@ -1,6 +1,55 @@
 
 /*! \page cell_filter Cell Filters
 
+A weak PDE problem is stated in terms of integrals over subsets of a 
+geometric domain. Typically, there will be an integral over the interior
+plus surface terms for the boundary conditions. In other cases such
+as fluid-structure interactions we may apply different weak equations
+on distinct maximal-dimension subsets of the entire domain. There may
+be point forces applied, or in the case of inverse problems, 
+measurements taken at points. In contact problems, the subdomains on which
+constraints are to be applied will be determined as part of the solution.
+It is thus necessary to have a very flexible system for specification
+of geometric regions. 
+
+Any specification of a domain of integration must be able to identify
+on a mesh the set of cells on which a particular integration is to be done.
+In general, then, a specification of a subregion is a specification
+of a <b> filter </b> that can extract from a mesh the 
+subset of cells which satisfies some condition. Such a filter 
+can always be defined
+in terms of a <b> predicate, </b> i.e., an operator that examines a cell
+and returns a boolean variable indicating whether that cell is in the
+subdomain. However, in many cases, explicit use of a predicate function
+can be bypassed; for instance, a filter that identifies all cells
+of maximal dimension can, with an intelligently designed mesh interface,
+find the maximal cells without first examining <i> all </i> cells in the mesh.
+
+\section cf_subtype CellFilter Derived Classes
+
+<ul>
+<li> MaximalCellFilter
+<li> BoundaryCellFilter
+<li> DimensionalCellFilter
+</ul>
+
+\section cf_ops CellFilter Operations
+
+<ul>
+<li> Subset extraction
+<li> Set union
+<li> Set intersection
+<li> Set difference
+</ul>
+
+
+\section cf_pred CellFilter Predicates
+
+<ul>
+<li> Position-based predicates
+<li> Label-based predicates
+<li> User-defined predicates
+</ul>
 
 
 */

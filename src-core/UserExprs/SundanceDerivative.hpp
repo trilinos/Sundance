@@ -17,11 +17,15 @@ namespace SundanceCore
   using std::string;
   using std::ostream;
 
-  /** */
+  /** 
+   * Derivative is an expression subtype representing 
+   * a first-order spatial partial derivative operator.
+   */
   class Derivative : public Internal::ScalarExpr
     {
     public:
-      /** ctor */
+      /** Construct an operator for spatial differentiation with respect to
+       * the given direction (0=x, 1=y, or 2=z).  */
       Derivative(int direction);
 
       /** virtual destructor */

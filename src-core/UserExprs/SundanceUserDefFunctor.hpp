@@ -19,7 +19,8 @@ namespace SundanceCore
   using std::ostream;
 
     /**
-     * 
+     * UserDefFunctor defines an interface for callbacks used to implement
+     * user-defined nonlinear operators in the Sundance Expr system.
      */
     class UserDefFunctor
     {

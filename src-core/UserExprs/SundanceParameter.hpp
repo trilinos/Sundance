@@ -20,7 +20,16 @@ namespace SundanceCore
   using std::string;
   using std::ostream;
 
-  /** */
+  /** 
+   * A Parameter is an expression subtype used to represent
+   * a spatially-constant parameter that may change during the
+   * course of a simulation, for example, the time in a transient
+   * simulation or a continuation parameter when using a homotopy method.
+   * While it is possible to use simple double-precision 
+   * constants in expressions, their values are immutable once created.
+   * When a constant's value may need to be changed, use a Parameter rather
+   * than a simple double.
+   */
   class Parameter : public Internal::FuncElementBase,
                     public Internal::SpatiallyConstantExpr
   {

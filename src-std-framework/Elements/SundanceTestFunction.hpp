@@ -17,10 +17,13 @@ namespace SundanceStdFwk
   using namespace Internal;
 
   /** 
-   *
+   * TestFunction represents a test function in a finite
+   * element problem. Test functions can be scalar or vector valued, as
+   * determined at runtime through the type of basis with which
+   * they are constructed.
    */
   class TestFunction : public TestFunctionStub,
-                          public FuncWithBasis
+                       public FuncWithBasis
   {
   public:
     /** */
@@ -28,7 +31,9 @@ namespace SundanceStdFwk
       : TestFunctionStub(name, basis.dim()), FuncWithBasis(basis)
     {;}
 
-    /** */
+    /** 
+     * 
+     */
     TestFunction(const Array<BasisFamily>& basis, const string& name="")
       : TestFunctionStub(name, BasisFamily::size(basis)), 
         FuncWithBasis(basis)

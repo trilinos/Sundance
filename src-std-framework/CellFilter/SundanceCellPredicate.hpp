@@ -20,7 +20,9 @@ using namespace SundanceStdMesh::Internal;
   using namespace Internal;
   
     /** 
-     * User-level predicate class for selecting cells
+     * User-level handle for predicates (deriving from CellPredicateBase)
+     * used to decide whether
+     * a given cell passes a CellFilter.
      */
   class CellPredicate : public TSFExtended::Handle<CellPredicateBase>
   {

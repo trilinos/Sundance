@@ -5,7 +5,6 @@
 #ifndef SUNDANCE_CELLPREDICATEBASE_H
 #define SUNDANCE_CELLPREDICATEBASE_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
@@ -28,8 +27,12 @@ using namespace SundanceStdMesh::Internal;
     /** 
      * CellPredicateBase is the base class for predicate objects
      * that test cells
-     * against some condition.
-     * @see LabelCellPredicate, PositionalCellPredicate
+     * against some condition. A simulation developer needing
+     * some specialized method for identifying cells might implement
+     * a custom cell predicate by extending this function. However,
+     * the most common cases, selection by cell label or cell position,
+     * have already been implemented 
+     * in LabelCellPredicate and PositionalCellPredicate.
      */
     class CellPredicateBase 
       : public TSFExtended::Handleable<CellPredicateBase>,
@@ -57,6 +60,7 @@ using namespace SundanceStdMesh::Internal;
       /** */
       virtual bool lessThan(const CellPredicateBase* other) const = 0 ;
 
+
       /** */
       virtual string typeName() const {return typeid(*this).name();}
     protected:
@@ -73,9 +77,10 @@ using namespace SundanceStdMesh::Internal;
 
       mutable int cellDim_;
 
+
+
     };
   }
 }
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

@@ -5,8 +5,6 @@
 #ifndef SUNDANCE_LABELCELLPREDICATE_H
 #define SUNDANCE_LABELCELLPREDICATE_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceCellPredicateBase.hpp"
 
@@ -53,6 +51,5 @@ using namespace SundanceStdMesh::Internal;
     };
   }
 }
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

@@ -18,7 +18,9 @@ namespace SundanceStdMesh
 using namespace SundanceUtils;
   using namespace Internal;
   /**
-   *
+   * Mesh is the user-level object representing discrete geometry. 
+   * The Mesh class is a handle to a MeshBase, which is an abstract interface
+   * for meshes. 
    */
   class Mesh : public Handle<MeshBase>
   {
