@@ -1,9 +1,10 @@
 #include "SundanceMeshType.hpp"
 
-using namespace Sundance;
-using namespace Sundance::StdMesh::Internal;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
 using namespace TSFExtended;
 using namespace Teuchos;
+using namespace SundanceUtils;
 
 
 

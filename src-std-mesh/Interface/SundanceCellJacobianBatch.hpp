@@ -10,9 +10,10 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   using namespace Teuchos;
+using namespace SundanceUtils;
   using std::string;
   using std::ostream;
 

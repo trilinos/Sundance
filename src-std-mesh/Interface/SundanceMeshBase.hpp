@@ -9,7 +9,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundancePoint.hpp"
-#include "SundanceCellTopologyCode.hpp"
+#include "SundanceCellType.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceObjectWithInstanceID.hpp"
 #include "Teuchos_MPIComm.hpp"
@@ -17,11 +17,12 @@
 #include "SundanceCellReorderer.hpp"
 #include "SundanceCellReordererImplemBase.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {
     using namespace Teuchos;
+using namespace SundanceUtils;
     class CellJacobianBatch;
 
     /**
@@ -139,7 +140,7 @@ namespace Sundance
       /**
        * Get the cell type used in the given dimension.
        */
-      virtual CellTopologyCode cellType(int cellDim) const = 0 ;
+      virtual CellType cellType(int cellDim) const = 0 ;
 
 
       /** Get the label of the given cell */

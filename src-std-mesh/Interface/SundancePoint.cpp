@@ -2,9 +2,10 @@
 
 
 
-using namespace Sundance;
+using namespace SundanceStdMesh;
 
 using namespace Teuchos;
+using namespace SundanceUtils;
 
 
 
@@ -14,7 +15,7 @@ void Point::boundsCheck(int i) const
                      "Point::boundsCheck()");
 }
 
-namespace Sundance
+namespace std
 {
 ostream& operator<<(ostream& os, const Point& point)
 {

@@ -8,7 +8,7 @@
 #include "SundanceMeshTransformationBase.hpp"
 #include "TSFHandle.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   /**
    * MeshTransformation is the user-level interface for mesh filters, i.e.,

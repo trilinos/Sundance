@@ -4,19 +4,20 @@
 #include "SundanceMesh.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace Sundance::StdMesh::Internal;
-using namespace Sundance;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceStdMesh;
 using namespace Teuchos;
+using namespace SundanceUtils;
 using namespace TSFExtended;
 
 
-MeshCreationInterface* Mesh::creatableMesh()
+CreatableMesh* Mesh::creatableMesh()
 {
-  MeshCreationInterface* mci 
-    = dynamic_cast<MeshCreationInterface*>(ptr().get());
+  CreatableMesh* mci 
+    = dynamic_cast<CreatableMesh*>(ptr().get());
   TEST_FOR_EXCEPTION(mci==0, RuntimeError, 
                      "Mesh::creatableMesh() could not convert mesh to "
-                     "a type deriving from MeshCreationInterface");
+                     "a type deriving from CreatableMesh");
 
   return mci;
 }

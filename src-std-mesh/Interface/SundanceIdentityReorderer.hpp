@@ -12,12 +12,13 @@
 #include "SundanceCellReordererBase.hpp"
 #include "TSFHandleable.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   using namespace TSFExtended;
   namespace Internal
   {
     using namespace Teuchos;
+using namespace SundanceUtils;
 
 
     /**

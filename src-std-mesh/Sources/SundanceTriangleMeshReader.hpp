@@ -7,10 +7,11 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshReaderBase.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   using namespace TSFExtended;
   using namespace Teuchos;
+using namespace SundanceUtils;
   using namespace Internal;
   /**
    * TriangleMeshReader reads a mesh stored in Shewchuk's Triangle format.

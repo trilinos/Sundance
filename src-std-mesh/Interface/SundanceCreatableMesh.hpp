@@ -1,8 +1,8 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#ifndef SUNDANCE_MESHCREATIONINTERFACE_H
-#define SUNDANCE_MESHCREATIONINTERFACE_H
+#ifndef SUNDANCE_CREATABLEMESH_H
+#define SUNDANCE_CREATABLEMESH_H
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -13,22 +13,22 @@
 #include "SundanceMeshBase.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {
     /**
      *
      */
-    class MeshCreationInterface : public MeshBase
+    class CreatableMesh : public MeshBase
     {
     public:
       /** */
-      MeshCreationInterface(int dim, const MPIComm& comm)
+      CreatableMesh(int dim, const MPIComm& comm)
         : MeshBase(dim, comm) {;}
 
       /** */
-      virtual ~MeshCreationInterface(){;}
+      virtual ~CreatableMesh(){;}
 
       /** */
       virtual void estimateNumVertices(int nPts) {;}

@@ -14,11 +14,12 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {
     using namespace Teuchos;
+using namespace SundanceUtils;
 
     /**
      * MeshTypeBase is a factory class for empty meshes, allowing generic

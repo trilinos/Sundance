@@ -8,21 +8,21 @@
 
 #include "SundanceDefs.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   /** */
-  enum CellTopologyCode {NullCell, PointCell, LineCell, TriangleCell, 
+  enum CellType {NullCell, PointCell, LineCell, TriangleCell, 
                          TetCell, QuadCell, BrickCell, PrismCell};
 
-  /** \relates CellTopologyCode */
-  string toString(const CellTopologyCode& c) ;
+  /** \relates CellType */
+  string toString(const CellType& c) ;
 
-  /** \relates CellTopologyCode */
-  int dimension(const CellTopologyCode& c) ;
+  /** \relates CellType */
+  int dimension(const CellType& c) ;
 
 
-  /** \relates CellTopologyCode */
-  inline ostream& operator<<(ostream& os, const CellTopologyCode& c)
+  /** \relates CellType */
+  inline ostream& operator<<(ostream& os, const CellType& c)
   {
     os << toString(c);
     return os;

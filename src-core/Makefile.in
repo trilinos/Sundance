@@ -560,12 +560,12 @@ SUNDANCE_DIR = $(top_srcdir)
 # - LAPACK_LIBS, BLAS_LIBS, and FLIBS are defined automatically by autoconf. 
 #
 # ------------------------------------------------------------------------
-ALL_LIBS = $(CORE_LIBS) $(EXPAT_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 UTIL_LIBS = \
 -L$(top_builddir)/src-utils \
 -L$(top_builddir)/src-utils/Utilities \
 -L$(top_srcdir)/src-utils/Utilities \
--lsundanceUtils $(TRILINOS_LIBS)
+-lsundanceUtils \
+$(TRILINOS_LIBS) $(EXPAT_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
 UTIL_INCLUDES = \
 -I$(top_builddir)/src-utils \
@@ -599,6 +599,34 @@ CORE_INCLUDES = \
 -I$(top_builddir)/src-core/Evaluation \
 -I$(top_builddir)/src-core/FrameworkInterface \
 -I$(top_builddir)/src-core/SymbolicTransformations \
+	$(UTIL_INCLUDES)
+
+STD_MESH_LIBS = \
+-L$(top_builddir)/src-std-mesh \
+-L$(top_builddir)/src-std-mesh/Concrete \
+-L$(top_builddir)/src-std-mesh/Interface \
+-L$(top_builddir)/src-std-mesh/Sources \
+-L$(top_builddir)/src-std-mesh/Transformations \
+-L$(top_builddir)/src-std-mesh/Writers \
+-L$(top_srcdir)/src-std-mesh/Concrete \
+-L$(top_srcdir)/src-std-mesh/Interface \
+-L$(top_srcdir)/src-std-mesh/Sources \
+-L$(top_srcdir)/src-std-mesh/Transformations \
+-L$(top_srcdir)/src-std-mesh/Writers \
+-lsundanceStdMesh $(UTIL_LIBS)
+
+STD_MESH_INCLUDES = \
+-I$(top_builddir)/src-std-mesh \
+-I$(top_srcdir)/src-std-mesh/Concrete \
+-I$(top_srcdir)/src-std-mesh/Interface \
+-I$(top_srcdir)/src-std-mesh/Sources \
+-I$(top_srcdir)/src-std-mesh/Transformations \
+-I$(top_srcdir)/src-std-mesh/Writers \
+-I$(top_builddir)/src-std-mesh/Concrete \
+-I$(top_builddir)/src-std-mesh/Interface \
+-I$(top_builddir)/src-std-mesh/Sources \
+-I$(top_builddir)/src-std-mesh/Transformations \
+-I$(top_builddir)/src-std-mesh/Writers \
 	$(UTIL_INCLUDES)
 
 

@@ -8,7 +8,7 @@
 #include "SundanceMeshSourceBase.hpp"
 #include "TSFHandle.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   /**
    * MeshSource is the user-level interface for objects such as

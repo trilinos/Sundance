@@ -5,9 +5,10 @@
 #include "SundanceMesh.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace Sundance::StdMesh::Internal;
-using namespace Sundance;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceStdMesh;
 using namespace Teuchos;
+using namespace SundanceUtils;
 
 
 MeshBase::MeshBase(int dim, const MPIComm& comm) 

@@ -285,7 +285,7 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 #endif
 
 #SUBDIRS = src $(TEST_SUBDIR)
-SUBDIRS = src-utils src-core tests-core
+SUBDIRS = src-utils src-core tests-core src-std-mesh tests-std-mesh
 all: all-recursive
 
 .SUFFIXES:
@@ -391,7 +391,6 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	  $(AWK) '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	mkid -fID $$unique
-tags: TAGS
 
 TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
@@ -681,6 +680,9 @@ dox:
 
 trilinos-dox: 
 	cd doc/Doxygen;	$(MAKE) trilinos-dox; 
+
+tags:
+	etags */*/*.hpp */*/*.cpp
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

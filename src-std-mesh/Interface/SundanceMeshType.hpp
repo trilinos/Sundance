@@ -9,9 +9,10 @@
 #include "SundanceMesh.hpp"
 #include "TSFHandle.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   using namespace Teuchos;
+  using namespace SundanceUtils;
   using namespace TSFExtended;
 
   /**

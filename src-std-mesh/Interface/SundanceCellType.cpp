@@ -1,15 +1,15 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#include "SundanceCellTopologyCode.hpp"
+#include "SundanceCellType.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace Sundance::StdMesh::Internal;
+using namespace SundanceStdMesh::Internal;
 
-namespace Sundance
+namespace SundanceStdMesh
 {
 
-  string toString(const CellTopologyCode& cellType)
+  string toString(const CellType& cellType)
   {
     switch(cellType)
       {
@@ -33,7 +33,7 @@ namespace Sundance
 
   }
 
-  int dimension(const CellTopologyCode& cellType)
+  int dimension(const CellType& cellType)
   {
     switch(cellType)
       {

@@ -4,9 +4,10 @@
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace Sundance::StdMesh::Internal;
-using namespace Sundance;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceStdMesh;
 using namespace Teuchos;
+using namespace SundanceUtils;
 
 /* declare dgesv(), the LAPACK linear system solver */
 extern "C"

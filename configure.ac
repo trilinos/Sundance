@@ -334,8 +334,11 @@ AC_CONFIG_FILES([
   Makefile  
   src-utils/Makefile
   src-core/Makefile
+  src-std-mesh/Makefile
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
+  tests-std-mesh/Makefile
+  tests-std-mesh/Simple/Makefile
   doc/Makefile
   doc/Doxygen/Makefile
   doc/Doxygen/Doxyfile.utils

@@ -10,11 +10,12 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {
     using namespace Teuchos;
+    using namespace SundanceUtils;
 
     /**
      * VertexSet is a helper class whose use reduces the number
@@ -124,11 +125,11 @@ namespace Sundance
 namespace Teuchos
 {
   /** \relates VertexSet */
-  inline int hashCode(const Sundance::StdMesh::Internal::VertexSet& v) 
+  inline int hashCode(const SundanceStdMesh::Internal::VertexSet& v) 
   {return v.hashCode();}
 
   /** \relates VertexSet */
-  inline string toString(const Sundance::StdMesh::Internal::VertexSet& v) 
+  inline string toString(const SundanceStdMesh::Internal::VertexSet& v) 
   {return v.toString();}
 }
 

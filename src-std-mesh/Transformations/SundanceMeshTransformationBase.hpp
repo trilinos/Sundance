@@ -14,9 +14,9 @@
 #include "TSFPrintable.hpp"
 #include "SundanceNoncopyable.hpp"
 #include "TSFObjectWithVerbosity.hpp"
-#include "SundanceMeshCreationInterface.hpp"
+#include "SundanceCreatableMesh.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {

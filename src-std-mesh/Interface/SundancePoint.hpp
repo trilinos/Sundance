@@ -10,9 +10,9 @@
 
 
 
-namespace Sundance
+namespace SundanceStdMesh
 {
-
+  using namespace SundanceUtils;
   using std::string;
 
   using std::ostream;
@@ -69,8 +69,16 @@ namespace Sundance
       int dim_;
       double x_[3];
     };
+}
 
-  ostream& operator<<(ostream& os, const Point& p);
+
+namespace std
+{
+  ostream& operator<<(ostream& os, const SundanceStdMesh::Point& p);
+}
+
+namespace SundanceStdMesh
+{
   inline Point operator*(const double& a, const Point& p);
 
 
@@ -247,10 +255,15 @@ namespace Sundance
 
 namespace Teuchos
 {
-  inline string toString(const Sundance::Point& x)
+  inline string toString(const SundanceStdMesh::Point& x)
     {
       return x.toString();
     }
+}
+
+namespace std
+{
+  ostream& operator<<(ostream& os, const SundanceStdMesh::Point& p);
 }
 
 

@@ -6,15 +6,16 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshBase.hpp"
-#include "SundanceMeshCreationInterface.hpp"
+#include "SundanceCreatableMesh.hpp"
 #include "SundanceIdentityReorderer.hpp"
 #include "SundanceCellReorderer.hpp"
 #include "TSFHandle.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   using namespace TSFExtended;
   using namespace Teuchos;
+using namespace SundanceUtils;
   using namespace Internal;
   /**
    *
@@ -138,7 +139,7 @@ namespace Sundance
     /**
      * Get the type of the given cell
      */
-    CellTopologyCode cellType(int cellDim) const 
+    CellType cellType(int cellDim) const 
     {return ptr()->cellType(cellDim);}
 
     /** Get the label of the given cell */
@@ -204,7 +205,7 @@ namespace Sundance
 
   private:
     /** */
-    MeshCreationInterface* creatableMesh();
+    CreatableMesh* creatableMesh();
   };
 }
 

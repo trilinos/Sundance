@@ -7,10 +7,11 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshTransformationBase.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   using namespace TSFExtended;
   using namespace Teuchos;
+using namespace SundanceUtils;
   using namespace Internal;
   /**
    * ExtrusionMeshTransformation extrudes a 2D mesh to 3D. 

@@ -31,7 +31,7 @@ namespace SundanceUtils
     { \
       TeuchosOStringStream omsg; \
       omsg << msg; \
-      Out::println(string(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg))); \
+      SundanceUtils::Out::println(string(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg))); \
     } \
 }
 

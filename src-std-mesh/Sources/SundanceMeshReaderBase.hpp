@@ -12,7 +12,7 @@
 #include "SundanceMeshSourceBase.hpp"
 #include "Teuchos_StrUtils.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {

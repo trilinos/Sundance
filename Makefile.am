@@ -88,7 +88,7 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 #endif
 
 #SUBDIRS = src $(TEST_SUBDIR)
-SUBDIRS = src-utils src-core tests-core
+SUBDIRS = src-utils src-core tests-core src-std-mesh tests-std-mesh
 
 
 ## #######################################################################
@@ -98,11 +98,15 @@ SUBDIRS = src-utils src-core tests-core
 dox: 
 	cd doc/Doxygen;	$(MAKE) dox; 
 
-
-
 trilinos-dox: 
 	cd doc/Doxygen;	$(MAKE) trilinos-dox; 
 
 
 
 
+## #######################################################################
+## emacs tags
+## #######################################################################
+
+tags:
+	etags */*/*.hpp */*/*.cpp

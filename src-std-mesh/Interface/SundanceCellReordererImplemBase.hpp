@@ -12,7 +12,7 @@
 #include "TSFObjectWithVerbosity.hpp"
 #include <typeinfo>
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {

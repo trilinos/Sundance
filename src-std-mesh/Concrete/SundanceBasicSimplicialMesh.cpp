@@ -7,15 +7,16 @@
 #include "SundanceOut.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
-using namespace Sundance::StdMesh::Internal;
-using namespace Sundance::StdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceStdMesh;
 using namespace Teuchos;
+using namespace SundanceUtils;
 
 
 //#define SKIP_FACES
 
 BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
-	: MeshCreationInterface(dim, comm),
+	: CreatableMesh(dim, comm),
     numCells_(dim+1),
     points_(),
     edgeVerts_(2),
@@ -218,7 +219,7 @@ int BasicSimplicialMesh::mapLIDToGID(int cellDim, int localIndex) const
   return LIDToGIDMap_[cellDim][localIndex];
 }
 
-CellTopologyCode BasicSimplicialMesh::cellType(int cellDim) const
+CellType BasicSimplicialMesh::cellType(int cellDim) const
 {
 
   switch(cellDim)

@@ -7,10 +7,11 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshSourceBase.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   using namespace TSFExtended;
   using namespace Teuchos;
+using namespace SundanceUtils;
   using namespace Internal;
   /**
    * PartitionedRectangleMesher meshes the rectangle 

@@ -2,8 +2,9 @@
 #include "Teuchos_Utils.hpp"
 
 using namespace Teuchos;
-using namespace Sundance;
-using namespace Sundance::StdMesh::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
 
 
 string VertexSet::toString() const

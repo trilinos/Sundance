@@ -14,11 +14,12 @@
 #include "TSFPrintable.hpp"
 #include "TSFDescribable.hpp"
 
-namespace Sundance
+namespace SundanceStdMesh
 {
   namespace Internal
   {
     using namespace Teuchos;
+using namespace SundanceUtils;
 
     /**
      * Factory class to instantiate cell reorderers for specific meshes
