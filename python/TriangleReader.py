@@ -9,8 +9,9 @@ from sets import Set
 
 class TriangleReader :
 
-    def __init__(self, filename) :
+    def __init__(self, filename, indexOffset) :
         self.filename_ = filename
+        self.indexOffset_ = indexOffset
 
     def getMesh(self) :
 
@@ -74,7 +75,7 @@ class TriangleReader :
              ele = int(toks[0])
              verts = Set()
              for i in range(d+1) :
-                 node = int(toks[i+1])
+                 node = int(toks[i+1])-self.indexOffset_
                  verts.add(node)
              mesh.addElem(verts)
         

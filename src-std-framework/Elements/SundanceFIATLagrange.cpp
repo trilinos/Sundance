@@ -36,6 +36,17 @@ FIATLagrange::FIATLagrange(int order)
   for (i=0;i<2;i++) {
     SundanceStdFwk::Internal::doublesIntoArray(dim,dim,D[order][i],derivMats_[i]);
   }
+
+  static bool first = true;
+  if (first)
+    {
+      cerr << endl 
+           << " ----------------- FIAT internal tables ----------------------" 
+           << endl;
+      cerr << "VDM_ = " << VDM_ << endl << endl;
+      cerr << "derivMats_ = " << derivMats_ << endl << endl << endl;
+      first = false;
+    }
 }
 
 void FIATLagrange::print(ostream& os) const 
@@ -124,7 +135,7 @@ void FIATLagrange::refEval(const CellType& cellType,
       }
       
       /* copy result, transposing */
-      for (int k=0; i<pts.length(); i++) result[i].resize(dim);
+      for (int k=0; k<pts.length(); k++) result[k].resize(dim);
       for (i=0;i<dim;i++) {
         for (j=0;j<pts.length();j++) {
           result[j][i] = tmp2[i][j];

@@ -18,8 +18,8 @@ namespace SundanceStdMesh
   {
   public:
     /** */
-    TriangleWriter(const string& filename="") 
-      : FieldWriterBase(filename), indexOffset_(0) {;}
+    TriangleWriter(const string& filename="", int indexOffset=0) 
+      : FieldWriterBase(filename), indexOffset_(indexOffset) {;}
     
     /** virtual dtor */
     virtual ~TriangleWriter(){;}

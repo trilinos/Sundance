@@ -12,9 +12,11 @@ int main(int argc, void** argv)
 		{
       string inputFile;
       string outputFile;
+      int indexOffset=0;
 
       Sundance::setOption("i", inputFile, "Input mesh file");
       Sundance::setOption("o", outputFile, "Output mesh file");
+      Sundance::setOption("offset", indexOffset, "Index offset");
 
       Sundance::init(&argc, &argv);
 
@@ -26,7 +28,7 @@ int main(int argc, void** argv)
       Mesh mesh = mesher.getMesh();
 
 
-      FieldWriter w = new TriangleWriter(outputFile);
+      FieldWriter w = new TriangleWriter(outputFile, indexOffset);
       w.addMesh(mesh);
       w.write();
 

@@ -12,8 +12,9 @@ import string
 class Chaco :
 
     # create a partitioner object
-    def __init__(self, filename) :
+    def __init__(self, filename, indexOffset) :
         self.filename_ = filename
+        self.indexOffset_ = indexOffset
 
 
     # driver routine for the partitioning
@@ -31,16 +32,24 @@ class Chaco :
         paramsFile.write('PROMPT=false\n')
         paramsFile.write('ARCHITECTURE=1\n')
         paramsFile.write('REFINE_PARTITION=4\n')
+        paramsFile.write('REFINE_MAP=true\n')
+        paramsFile.write('KL_BAD_MOVES=20\n')
+        paramsFile.write('KL_NTRIES_BAD=10\n')
+        paramsFile.write('KL_IMBALANCE=0.02\n')
         paramsFile.write('INTERNAL_VERTICES=true\n')
         paramsFile.write('MATCH_TYPE=4\n')
+        paramsFile.write('HEAVY_MATCH=true\n')
+        paramsFile.write('TERM_PROP=true\n')
         paramsFile.write('COARSE_NLEVEL_KL=1\n')
+        paramsFile.write('COARSEN_RATIO_MIN=0.7\n')
         paramsFile.write('CUT_TO_HOP_COST=1.0\n')
+        paramsFile.write('RANDOM_SEED=12345\n')
         paramsFile.flush()
         inputFile = file('chacoInput', 'w')
         inputFile.write('%s.graph\n' % self.filename_)
         inputFile.write('%s.assign\n' % self.filename_)
         inputFile.write('1\n')
-        inputFile.write('400\n')
+        inputFile.write('100\n')
         inputFile.write('%d\n' % nProcs)
         inputFile.write('1\n')
         inputFile.write('n\n')
@@ -66,4 +75,4 @@ class Chaco :
         partFile = file(filename + '.part', 'w')
         partFile.write('%d %d\n' % (len(assignments), nProcs))
         for i in range(len(assignments)) :
-            partFile.write('%d %d\n' % (i, assignments[i]))
+            partFile.write('%d %d\n' % (i+self.indexOffset_, assignments[i]+self.indexOffset_))

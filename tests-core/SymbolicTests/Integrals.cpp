@@ -69,11 +69,13 @@ int main(int argc, void** argv)
 
       Handle<QuadratureFamilyStub> quad8 = new QuadratureFamilyStub(8);
       
-      Expr eqn = Integral(interior, (grad*u)*(grad*v))
+      Expr eqn = Integral(interior, (grad*u)*(grad*v), quad8)
         + Integral(interior, y*v, quad8)
-        + Integral(left, v*x*x);
+        + Integral(interior, u*v, quad8)
+        + Integral(left, v*x*x, quad8) + Integral(interior, 0.0, quad8);
 
-      Expr bc = EssentialBC(right, v*u) + EssentialBC(top, v*(u-x));
+      Expr bc = EssentialBC(right, v*u, quad8) 
+        + EssentialBC(top, v*(u-x), quad8);
 
       cerr << "eqn = " << endl << eqn.toString() << endl;
       cerr << "bc = " << endl << bc.toString() << endl;

@@ -66,11 +66,11 @@ class Mesh :
          for i in range(self.numElems()) :
              line = ''
              for j in neighbors[i] :
-                 line = line +  '%d ' % (j+1)
+                 line = line +  '%d ' % (j+1) 
              graphFile.write(line + '\n');
 
 
-    def remapEntities(assignments, nProc) :
+    def remapEntities(self, assignments, nProc) :
 
         procBuckets = []
 
@@ -91,7 +91,7 @@ class Mesh :
 
         return entityMap
 
-    def getNodeAssignments(nProc, elemAssignments) :
+    def getNodeAssignments(self, nProc, elemAssignments) :
         nodeAssignments = []
         nodeOwners = []
         nodesPerProc = range(nProc)
@@ -102,6 +102,46 @@ class Mesh :
             nodesPerProc[elemAssignments[owner]] = nodesPerProc[elemAssignments[owner]]+1
     
         return (nodeAssignments, nodeOwners, nodesPerProc)
+
+
+    def getOffProcData(self, p, elemAssignments, nodeAssignments) :
+
+        # first pass: find off-proc nodes required by on-proc elems
+        offProcNodes = Set()
+        for e in range(len(self.elemVerts_)) :
+            if elemAssignments[e] != p :
+                continue
+            for v in self.elemVerts_[e] :
+                if nodeAssignments[v] == p :
+                    continue
+                offProcNodes.add(v)
+
+        # second pass: find off-proc elems required by the nodes
+        # obtained in the previous step
+        offProcElems = Set()
+        for v in offProcNodes :
+            for e in self.vertToElemMap_[v] :
+                if elemAssignments[e] == p :
+                    continue
+                offProcElems.add(e)
+
+        # third pass: find the additional nodes required by the off-proc
+        # elems found in the previous step
+
+        for e in offProcElems :
+            for v in self.elemVerts_[e] :
+                if nodeAssignments[v] == p :
+                    continue
+                offProcNodes.add(v)
+
+        return (offProcNodes, offProcElems)
+    
+            
+
+
+        
+                
+            
 
         
         

@@ -74,8 +74,6 @@ int main(int argc, void** argv)
       int pMax = 1;
       int dim=2;
 
-      verbosity<RefIntegral>() = VerbMedium;
-
       CellType cellType = TriangleCell;
 
       Point a = Point(0.0, 0.0);
@@ -88,6 +86,53 @@ int main(int argc, void** argv)
       J[1] = c[0] - a[0];
       J[2] = b[1] - a[1];
       J[3] = c[1] - a[1];
+
+
+      /* ------ evaluate Lagrange and FIAT-Lagrange at the vertices */
+      Array<Point> verts = tuple(a,b,c);
+      BasisFamily lagrange = new Lagrange(1);
+      BasisFamily fiatLagrange = new FIATLagrange(1);
+      
+      MultiIndex d0(0,0,0);
+      MultiIndex dx(1,0,0);
+      MultiIndex dy(0,1,0);
+
+      Array<Array<double> > result;
+
+      cerr << "------ Evaluating bases at vertices ----------" << endl
+           << endl;
+
+      cerr << "Evaluating phi(vert) with FIAT-Lagrange" << endl;
+      fiatLagrange.ptr()->refEval(cellType, verts, d0, result);
+      cerr << "results = " << result << endl << endl;
+
+      cerr << "Evaluating phi(vert) with Lagrange" << endl;
+      lagrange.ptr()->refEval(cellType, verts, d0, result);
+      cerr << "results = " << result << endl << endl;
+
+      cerr << endl ;
+
+      cerr << "Evaluating Dx*phi(vert) with FIAT-Lagrange" << endl;
+      fiatLagrange.ptr()->refEval(cellType, verts, dx, result);
+      cerr << "results = " << result << endl << endl;
+
+      cerr << "Evaluating Dx*phi(vert) with Lagrange" << endl;
+      lagrange.ptr()->refEval(cellType, verts, dx, result);
+      cerr << "results = " << result << endl << endl;
+
+      cerr << endl ;
+      
+      cerr << "Evaluating Dy*phi(vert) with FIAT-Lagrange" << endl;
+      fiatLagrange.ptr()->refEval(cellType, verts, dy, result);
+      cerr << "results = " << result << endl << endl;
+
+      cerr << "Evaluating Dy*phi(vert) with Lagrange" << endl;
+      lagrange.ptr()->refEval(cellType, verts, dy, result);
+      cerr << "results = " << result << endl << endl;
+
+      
+
+      /* --------- evaluate integrals over elements ----------- */
       
       RefCountPtr<Array<double> > A = rcp(new Array<double>());
           
@@ -117,7 +162,8 @@ int main(int argc, void** argv)
           for (int dp=0; dp<=1; dp++)
             {
               if (dp > p) continue;
-
+              Tabs tab0;
+              cerr << tab0 << "test function deriv order = " << dp << endl;
               int numTestDir = 1;
               if (dp==1) numTestDir = dim;
               for (int t=0; t<numTestDir; t++)
@@ -126,15 +172,15 @@ int main(int argc, void** argv)
                   Tabs tab;
                   QuadratureIntegral ref(dim, cellType, P, alpha, dp, quad);
                   ref.transformOneForm(JBatch, f, A);
-                  cerr << tab << "transformed element" << endl;
-                  cerr << tab << "t=" << t << endl;
+                  cerr << tab << "test deriv direction =" << t << endl;
+                  cerr << tab << "transformed local vector: " << endl;
                   cerr << tab << "{";
                   for (int r=0; r<ref.nNodesTest(); r++)
                     {
                       if (r!=0) cerr << ", ";
                       cerr << (*A)[r];
                     }
-                  cerr << "}";
+                  cerr << "}" << endl << endl;
                 }
             }
         }
@@ -151,10 +197,14 @@ int main(int argc, void** argv)
               for (int dp=0; dp<=1; dp++)
                 {
                   if (dp > p) continue;
+                  Tabs tab0;
+                  cerr << tab0 << "test function deriv order = " << dp << endl;
                   for (int dq=0; dq<=1; dq++)
                     {
                       if (dq > q) continue;
-
+                      Tabs tab1;
+                      cerr << tab1 
+                           << "unk function deriv order = " << dq << endl;
                       int numTestDir = 1;
                       if (dp==1) numTestDir = dim;
                       for (int t=0; t<numTestDir; t++)
@@ -169,9 +219,12 @@ int main(int argc, void** argv)
                               QuadratureIntegral ref(dim, cellType, P, alpha, 
                                                      dp, Q, beta, dq, quad);
                               ref.transformTwoForm(JBatch, f, A);
-                              cerr << tab << "transformed element" << endl;
-                              cerr << tab << "t=" << t << ", u=" << u << endl;
+
+                              cerr << tab << "test deriv direction =" << 
+                                t << ", unk deriv direction =" << u << endl;
+                              cerr << tab << "transformed local stiffness matrix" << endl;
                               cerr << tab << "{";
+
                               for (int r=0; r<ref.nNodesTest(); r++)
                                 {
                                   if (r!=0) cerr << ", ";
@@ -183,7 +236,7 @@ int main(int argc, void** argv)
                                     }
                                   cerr << "}";
                                 }
-                              cerr << "}" << endl;
+                              cerr << "}" << endl << endl;
                             }
                         }
                     }
