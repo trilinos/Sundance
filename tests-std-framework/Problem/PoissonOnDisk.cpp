@@ -2,27 +2,8 @@
 #include "SundanceEvaluator.hpp"
 
 /** 
- * Solves the Poisson equation in 2D
+ * Solves the Poisson equation in 2D on the unit disk
  */
-
-bool bdryPointTest(const Point& x) 
-{
-  static int nBdryPts = 0;
-  cerr << "trying point " << x << endl;
-
-  double r2 = x[0]*x[0]+x[1]*x[1];
-  cerr << "r^2 = " << r2 << endl;
-  cerr << "r^2-100.0 = " << r2-100.0 << endl;
-  bool rtn = ::fabs(r2 - 100.0) < 1.0e-1;
-  if (rtn==true) 
-    {
-      cerr << "-------------------------------------------------------- got one!"
-                      << endl;
-      nBdryPts++;
-      cerr << "num bdry pts = " << nBdryPts << endl;
-    }
-  return rtn;
-}
 
 int main(int argc, void** argv)
 {
@@ -37,26 +18,23 @@ int main(int argc, void** argv)
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
+      /* Get a mesh */
       MeshType meshType = new BasicSimplicialMeshType();
-      //      MeshSource::classVerbosity() = VerbExtreme;
-      MeshSource meshReader = new TriangleMeshReader("../../../tests-std-framework/Problem/disk.1", meshType);
+      MeshSource meshReader = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/disk.ncdf", meshType);
 
       Mesh mesh = meshReader.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
-      CellFilter edges = new DimensionalCellFilter(1);
-      CellPredicate bdryPointFunc = new PositionalCellPredicate(bdryPointTest);
-      CellFilter bdry = edges.subset(bdryPointFunc);
+      CellFilter bdry = new BoundaryCellFilter();
+
 
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(2), "u");
-      Expr v = new TestFunction(new Lagrange(2), "v");
+      Expr u = new UnknownFunction(new Lagrange(1), "u");
+      Expr v = new TestFunction(new Lagrange(1), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
@@ -70,7 +48,6 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(bdry, v*u, quad4);
@@ -94,11 +71,29 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
+      double R = 1.0;
+      Expr exactSoln = 0.25*(x*x + y*y - R*R);
+
+      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
+      Expr du = L2Projector(discSpace, exactSoln-soln).project();
+
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("PoissonOnDisk");
       w.addMesh(mesh);
       w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.addField("error", new ExprFieldWrapper(du));
       w.write();
+
+      
+      Expr errExpr = Integral(interior, 
+                              pow(soln-exactSoln, 2),
+                              new GaussianQuadrature(4));
+
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      double tol = 1.0e-4;
+      Sundance::passFailTest(sqrt(errorSq), tol);
 
     }
 	catch(exception& e)

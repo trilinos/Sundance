@@ -81,7 +81,7 @@ int main(int argc, void** argv)
       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
       double tol = 1.0e-12;
-      Sundance::passFailTest(errorSq, tol);
+      Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
 		{

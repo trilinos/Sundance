@@ -90,6 +90,9 @@ int main(int argc, void** argv)
 
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+
+      double tol = 1.0e-12;
+      Sundance::passFailTest(errorSq, tol);
       
     }
 	catch(exception& e)

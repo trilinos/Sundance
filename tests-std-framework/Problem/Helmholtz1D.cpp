@@ -25,7 +25,7 @@ int main(int argc, void** argv)
       MeshType meshType = new BasicSimplicialMeshType();
       const double pi = 4.0*atan(1.0);
       MeshSource mesher = new PartitionedLineMesher(0.0, pi/4.0, 
-                                                    10*np, meshType);
+                                                    40*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -95,6 +95,9 @@ int main(int argc, void** argv)
 
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      double tol = 1.0e-6;
+      Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
 		{

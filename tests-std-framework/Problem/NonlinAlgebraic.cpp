@@ -90,6 +90,16 @@ int main(int argc, void** argv)
           cerr << "solution is " << endl << x0 << endl;
         }
 
+      double err = 0.0;
+      for (int i=0; i<x0.space().dim(); i++) 
+        {
+          err += pow(x0.getElement(i) - sqrt(2.0), 2.0);
+        }
+      err = sqrt(err)/x0.space().dim();
+
+      cerr << "error norm is " << endl << err << endl;
+      double tol = 1.0e-12;
+      Sundance::passFailTest(err, tol);
     }
 	catch(exception& e)
 		{

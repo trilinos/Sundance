@@ -62,6 +62,9 @@ int main(int argc, void** argv)
       cerr << "setting up norm" << endl;
       double errorSq = evaluateIntegral(mesh, errExpr);
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      double tol = 1.0e-12;
+      Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
 		{

@@ -75,7 +75,7 @@ int main(int argc, void** argv)
       /* Define the weak form */
       Expr eqn = Integral(interior, (grad*vPsi)*(grad*psi) 
                           + (grad*vOmega)*(grad*omega) + vPsi*omega, quad4)
-        + Integral(top, 1.0*vPsi, quad2);
+        + Integral(top, -1.0*vPsi, quad2);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(bottom, vOmega*psi, quad4) 
         + EssentialBC(top, vOmega*psi, quad4) 
@@ -117,11 +117,19 @@ int main(int argc, void** argv)
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("VorticityStokes2d");
       w.addMesh(mesh);
-      w.addField("vorticity", new ExprFieldWrapper(soln[0]));
-      w.addField("streamfunction", new ExprFieldWrapper(soln[1]));
+      w.addField("psi", new ExprFieldWrapper(soln[0]));
+      w.addField("omega", new ExprFieldWrapper(soln[1]));
       w.write();
 
+      /* As a check, we integrate the vorticity over the domain. By 
+       * Stokes' theorem this should be equal to the line integral
+       * of the velocity around the boundary. */
+      Expr totalVorticityExpr = Integral(interior, soln[1], quad2);
+      double totalVorticity = evaluateIntegral(mesh, totalVorticityExpr);
+      cerr << "total vorticity = " << totalVorticity << endl;
 
+      double tol = 1.0e-4;
+      Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
     }
 	catch(exception& e)
 		{

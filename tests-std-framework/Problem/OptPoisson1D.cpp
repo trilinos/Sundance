@@ -106,6 +106,11 @@ int main(int argc, void** argv)
       cerr << "|alpha - alpha_exact| = " 
            << sqrt(alphaInt.evaluate()) << endl;
 
+      double tol = 1.0e-5;
+      Sundance::passFailTest(sqrt(uInt.evaluate()) 
+                             + sqrt(lambdaInt.evaluate()) 
+                             + sqrt(alphaInt.evaluate()),
+                             tol);
     }
 	catch(exception& e)
 		{

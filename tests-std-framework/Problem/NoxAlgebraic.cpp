@@ -108,7 +108,9 @@ int main(int argc, void** argv)
       grp.print();
 
 
-      
+      cerr << "|F| is " << endl << grp.getNormF() << endl;
+      double tol = 1.0e-10;
+      Sundance::passFailTest(grp.getNormF(), tol);
 
     }
 	catch(exception& e)
