@@ -23,7 +23,7 @@ on setting up linear and nonlinear PDE simulations is available in
 <li> \ref faq_page 
 </ul>
 
-\section components Reference Guide
+\section components User's Guide
 
 <b>Warning!</b> Only a small fraction of Sundance classes are needed
 by a user writing a simulation code. 
@@ -39,6 +39,14 @@ Sundance components.
 <li> \ref mesh_source are used to create, import, or transform discrete geometry
 <li> \ref cell_filter are used to define subregions (e.g., node sets, side sets)
 <li> \ref exprs are used to define equations and boundary conditions
+<li> \ref discretefuncs are used to represent finite-element spaces and fields
+</ul>
+
+\subsection probs Problem Setup
+
+<ul> 
+<li> Setup of \ref linear_problems
+<li> Setup of \ref nonlinear_problems
 </ul>
 
 \subsection solvers Solvers

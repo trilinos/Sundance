@@ -25,7 +25,8 @@ namespace SundanceStdFwk
   using namespace Teuchos;
 
   /** 
-   * 
+   * LinearProblem encapsulates all information needed to form
+   * a discrete linear problem.
    */
   class LinearProblem 
     : public TSFExtended::ObjectWithVerbosity<LinearProblem>

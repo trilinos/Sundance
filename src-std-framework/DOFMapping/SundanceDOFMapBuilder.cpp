@@ -202,15 +202,11 @@ void DOFMapBuilder::markBCRows()
   Array<int> dofs;
   Array<int> cellLID;
 
-  cerr << "Marking BC rows" << endl;
   for (int r=0; r<eqn_->numRegions(); r++)
     {
       /* find the cells in this region */
       CellFilter region = eqn_->region(r);
 
-      cerr << "trying region " << region 
-           << ": isBCRegion=" << eqn_->isBCRegion(r)
-           << endl;
       if (!eqn_->isBCRegion(r)) continue;
 
       int dim = region.dimension(mesh_);
@@ -229,7 +225,6 @@ void DOFMapBuilder::markBCRows()
           bcFuncID[f] = eqn_->reducedTestID(bcFuncID[f]);
         }
 
-      cerr << "cellLID = " << cellLID << endl;
       rowMap_->getDOFsForCellBatch(dim, cellLID, bcFuncID, dofs, nTestNodes);
       int offset = rowMap_->lowestLocalDOF();
       int high = offset + rowMap_->numLocalDOFs();
@@ -239,5 +234,4 @@ void DOFMapBuilder::markBCRows()
           (*isBCRow_)[dofs[n]-offset]=true;
         }
     }
-  cerr << "isBCRow = " << *isBCRow_ << endl;
 }

@@ -363,10 +363,13 @@ WARN_LOGFILE           =
 
 INPUT                  = ../doc/Doxygen/index.dox \
                          ../doc/Doxygen/Expr.dox \
+                         ../doc/Doxygen/DiscreteFunc.dox \
                          ../doc/Doxygen/MeshSource.dox \
                          ../doc/Doxygen/CellFilter.dox \
                          ../doc/Doxygen/LinearSolvers.dox \
                          ../doc/Doxygen/NonlinearSolvers.dox \
+                         ../doc/Doxygen/LinearProblem.dox \
+                         ../doc/Doxygen/NonlinearProblem.dox \
                          ../doc/Doxygen/FAQ.dox \
                          ../src-utils/Utilities \
                          ../src-core/Evaluation \
@@ -382,6 +385,7 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../src-std-framework/Assembly \
                          ../src-std-framework/CellFilter \
                          ../src-std-framework/DOFMapping \
+                         ../src-std-framework/Problem \
                          ../src-std-framework/Elements
 
 

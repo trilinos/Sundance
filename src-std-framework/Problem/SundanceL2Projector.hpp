@@ -24,7 +24,9 @@ namespace SundanceStdFwk
   using namespace SundanceCore::Internal;
   using namespace Teuchos;
 
-  /** */
+  /**
+   * L2Projector projects an expression onto a DiscreteSpace. 
+   */
   class L2Projector
   {
   public:
