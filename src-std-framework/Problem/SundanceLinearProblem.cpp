@@ -38,7 +38,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                                    const VectorType<double>& vecType)
   : assembler_(),
     A_(),
-    rhs_()
+    rhs_(),
+    status_()
 {
   Expr u = unk.flatten();
   Expr v = test.flatten();
@@ -73,6 +74,13 @@ TSFExtended::LinearOperator<double> LinearProblem::getOperator() const
   return A_;
 }
 
+SolverState<double> LinearProblem::solveStatus() const
+{
+  TEST_FOR_EXCEPTION(status_.get()==0, RuntimeError,
+                     "Null status pointer in LinearProblem::solveStatus().");
+  return *status_;
+}
+
 Expr LinearProblem::solve(const LinearSolver<double>& solver) const 
 {
   Vector<double> solnVec;
@@ -80,16 +88,16 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
   assembler_->assemble(A_, rhs_);
   rhs_.scale(-1.0);
 
-  SolverState<double> state = solver.solve(A_, rhs_, solnVec);
-  TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
-                     RuntimeError,
-                     "solve failed!");
+  status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_, solnVec)));
 
-  
-
-  Expr soln = new DiscreteFunction(*(assembler_->solutionSpace()),
-                                   solnVec, "soln");
+  Expr soln = formSolutionExpr(solnVec);
 
   return soln;
+}
+
+Expr LinearProblem::formSolutionExpr(const Vector<double>& solnVector) const
+{
+  return new DiscreteFunction(*(assembler_->solutionSpace()),
+                              solnVector, "soln");
 }
 

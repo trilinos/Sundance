@@ -37,7 +37,6 @@ of a problem.
 <li> A <b><A HREF="../Tutorial/Tutorial.pdf"> tutorial </A></b>
 on setting up linear and nonlinear PDE simulations is available in 
 <A HREF="../Tutorial/Tutorial.pdf"> PDF </A> format.
-<li> \ref faq_page 
 </ul>
 
 <H2> Online User's Guide </H2>
@@ -65,24 +64,16 @@ on setting up linear and nonlinear PDE simulations is available in
 <ul> 
 <li> Specification of \ref equations
 <li> Specification of \ref bcs
-<li> Setup of \ref linear_problems
-<li> Setup of \ref nonlinear_problems
+<li> Setup and use of \ref linear_problems
+<li> Setup and use of \ref nonlinear_problems
 </ul>
 
 <H4> Solvers </H4>
-
-%Sundance does not have its own solvers; rather, it 
-uses the Trilinos family of solvers. These are fully documented at
-the <A HREF="http://software.sandia.gov/Trilinos/"> Trilinos Website </A>
-so only a brief description is given here, concentrating on user input
-parameters.  
-
 <ul>
 <li> \ref linear_solvers 
 <li> \ref nonlinear_solvers 
 </ul>
 
-<H4> Output and Visualization </H4>
 
 <H4> Examples </H4>
 

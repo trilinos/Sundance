@@ -5,13 +5,13 @@ using SundanceCore::List;
  * Solves the coupled equations
  *
  * u_xx = v
- * v_xx = 1
+ * v_xx = x
  * u(0) = u(1) = 0
  * v(0) = v(1) = 0
  *
  * The solution is
- * v(x) = -1/2 x (1-x)
- * u(x) = 1/24 x (x^3 - 2 x^2 + 1)
+ * v(x) = \frac{1}{6} x (x^2 - 1)
+ * u(x) = \frac{1}{120} x^5 - \frac{1}{36} x^3 + \frac{7}{360} x
  */
 
 bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
