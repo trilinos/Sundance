@@ -9,10 +9,12 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
+using namespace TSFExtended;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+
 
 
 

@@ -42,15 +42,15 @@ namespace SundanceStdFwk
       virtual ~QuadratureEvalMediator(){;}
 
       /** Evaluate the given coordinate expression, putting
-       * its numerical values in the given LoadableVector. */
+       * its numerical values in the given EvalVector. */
       virtual void evalCoordExpr(const CoordExpr* expr,
-                                 SundanceCore::Internal::LoadableVector* const vec) const ;
+                                 EvalVector* const vec) const ;
 
       /** Evaluate the given discrete function, putting
-       * its numerical values in the given LoadableVector. */
+       * its numerical values in the given EvalVector. */
       virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                            const MultiIndex& mi,
-                                           SundanceCore::Internal::LoadableVector* const vec) const ;
+                                           EvalVector* const vec) const ;
 
       /** */
       virtual void setCellType(const CellType& cellType) ;

@@ -51,7 +51,7 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType)
 }
 
 void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
-                                           SundanceCore::Internal::LoadableVector* const vec) const
+                                           EvalVector* const vec) const
 {
   SUNDANCE_OUT(verbosity() > VerbSilent, "evaluating coord expr " << expr->toXML().toString());
   
@@ -111,7 +111,7 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
 void QuadratureEvalMediator
 ::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                           const MultiIndex& mi,
-                          SundanceCore::Internal::LoadableVector* const vec) const
+                          EvalVector* const vec) const
 {
   const DiscreteFunction* f = dynamic_cast<const DiscreteFunction*>(expr->master());
   TEST_FOR_EXCEPTION(f==0, InternalError,

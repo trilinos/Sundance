@@ -29,10 +29,12 @@ int main(int argc, void** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter faces = new DimensionalCellFilter(2);
-      CellPredicate topFunc = new LabelCellPredicate(1);
-      CellPredicate bottomFunc = new LabelCellPredicate(2);
-      CellFilter top = faces.subset(topFunc);
-      CellFilter bottom = faces.subset(bottomFunc);
+      CellFilter side1 = faces.labeledSubset(1);
+      CellFilter side2 = faces.labeledSubset(2);
+      CellFilter side3 = faces.labeledSubset(3);
+      CellFilter side4 = faces.labeledSubset(4);
+      CellFilter side5 = faces.labeledSubset(5);
+      CellFilter side6 = faces.labeledSubset(6);
 
       
       /* Create unknown and test functions, discretized using first-order
@@ -55,11 +57,17 @@ int main(int argc, void** argv)
 
       /* Define the weak form */
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-      Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2);
+      Expr eqn = Integral(interior, (grad*v)*(grad*u) +2.0*v, quad2);
 
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, v*(u-z), quad2)
-        + EssentialBC(top, v*(u-z), quad2);
+      Expr bc = EssentialBC(side4, v*(u-x), quad2)
+        + EssentialBC(side6, v*(u-x), quad2);
+      // Expr bc = EssentialBC(side1, v*(u-1.0), quad2)
+//         + EssentialBC(side2, v*(u-2.0), quad2)
+//         + EssentialBC(side3, v*(u-3.0), quad2)
+//         + EssentialBC(side4, v*(u-4.0), quad2)
+//         + EssentialBC(side5, v*(u-5.0), quad2)
+//         + EssentialBC(side6, v*(u-6.0), quad2);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
@@ -74,13 +82,24 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
+      Expr exactSoln = (x + 1.0)*x - 1.0/4.0;
+
+
+      DiscreteSpace discSpace(mesh, new Lagrange(2), vecType);
+      L2Projector proj1(discSpace, exactSoln);
+      L2Projector proj2(discSpace, soln-exactSoln);
+      Expr exactDisc = proj1.project();
+      Expr errorDisc = proj2.project();
+
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Poisson3d");
       w.addMesh(mesh);
       w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.addField("exact soln", new ExprFieldWrapper(exactDisc));
+      w.addField("error", new ExprFieldWrapper(errorDisc));
       w.write();
 
-      Expr exactSoln = (0.5*x + 1.0)*x - 1.0/8.0;
+
       Expr errExpr = Integral(interior, 
                               pow(soln-exactSoln, 2.0),
                               new GaussianQuadrature(4));
