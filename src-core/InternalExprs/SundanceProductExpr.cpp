@@ -190,33 +190,33 @@ void ProductExpr::findNonzeros(const EvalContext& context,
                * than the max order of our multiindices */
               if (dRight.spatialOrder() + dLeft.spatialOrder() > maxSpatialOrder) continue;
 
-              /*
-               * Skip combinations that do not contribute to the
-               * variational derivatives required at this point.
-               */
-              MultiSet<int> funcs;
-              for (MultipleDeriv::const_iterator k=dLeft.begin();
-                   k != dLeft.end(); k++)
-                {
-                  const Deriv& d = *k;
-                  if (d.isFunctionalDeriv()) 
-                    {
-                      int fid = d.funcDeriv()->funcID();
-                      funcs.put(fid);
-                    }
-                }
-              for (MultipleDeriv::const_iterator k=dRight.begin();
-                   k != dRight.end(); k++)
-                {
-                  const Deriv& d = *k;
-                  if (d.isFunctionalDeriv()) 
-                    {
-                      int fid = d.funcDeriv()->funcID();
-                      funcs.put(fid);
-                    }
-                }
+              // /*
+//                * Skip combinations that do not contribute to the
+//                * variational derivatives required at this point.
+//                */
+//               MultiSet<int> funcs;
+//               for (MultipleDeriv::const_iterator k=dLeft.begin();
+//                    k != dLeft.end(); k++)
+//                 {
+//                   const Deriv& d = *k;
+//                   if (d.isFunctionalDeriv()) 
+//                     {
+//                       int fid = d.funcDeriv()->funcID();
+//                       funcs.put(fid);
+//                     }
+//                 }
+//               for (MultipleDeriv::const_iterator k=dRight.begin();
+//                    k != dRight.end(); k++)
+//                 {
+//                   const Deriv& d = *k;
+//                   if (d.isFunctionalDeriv()) 
+//                     {
+//                       int fid = d.funcDeriv()->funcID();
+//                       funcs.put(fid);
+//                     }
+//                 }
           
-              if (!activeFuncIDs.contains(funcs)) continue;
+//               if (!activeFuncIDs.contains(funcs)) continue;
 
 
               /* The current left and right nonzero functional derivatives

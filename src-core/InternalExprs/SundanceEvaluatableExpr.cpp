@@ -106,7 +106,7 @@ void EvaluatableExpr::addKnownNonzero(const EvalContext& context,
 
 bool EvaluatableExpr::isActive(const Set<MultiSet<int> >& activeFuncIDs) const 
 {
-  
+  return true;
 }
 
 void EvaluatableExpr::evaluate(const EvalManager& mgr,

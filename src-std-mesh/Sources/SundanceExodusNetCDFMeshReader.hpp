@@ -16,7 +16,7 @@ namespace SundanceStdMesh
   using namespace SundanceUtils;
   using namespace Internal;
   /**
-   * ExodusNetcdfMeshReader reads a mesh from a NetCDF dump of an Exodus file.
+   * ExodusNetCDFMeshReader reads a mesh from a NetCDF dump of an Exodus file.
    * This will often be less efficient than reading from an exodus file
    * directly, but does not require any proprietary libraries.
    * 
