@@ -15,7 +15,7 @@ using namespace SundanceUtils;
 
 using namespace Teuchos;
 using namespace Internal;
-using namespace FrameworkInterface;
+using namespace Internal;
 
 
 EvaluatableExpr::EvaluatableExpr()
@@ -89,7 +89,7 @@ DerivSet EvaluatableExpr::identifyNonzeroDerivs() const
   
 }
 
-bool EvaluatableExpr::checkForKnownRegion(const EvalRegion& region) const
+bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region) const
 {
 
   Tabs tabs;
@@ -152,7 +152,7 @@ bool EvaluatableExpr::checkForKnownRegion(const EvalRegion& region) const
 }
 
 
-int EvaluatableExpr::registerRegion(const EvalRegion& region,
+int EvaluatableExpr::registerRegion(const RegionQuadCombo& region,
                                      const DerivSet& derivs,
                                      const EvaluatorFactory* factory) const
 {
@@ -266,7 +266,7 @@ void EvaluatableExpr::findDerivSuperset(const DerivSet& derivs) const
   currentDerivSuperset().merge(derivs);
 }
 
-int EvaluatableExpr::getDerivSetIndex(const EvalRegion& region) const
+int EvaluatableExpr::getDerivSetIndex(const RegionQuadCombo& region) const
 {
   Tabs tabs;
   if (verbosity() > 1)

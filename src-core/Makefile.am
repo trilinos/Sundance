@@ -41,21 +41,14 @@ SUNDANCE_INTERNALEXPRS_H = \
 $(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceConstantExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceCoordDeriv.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceDerivBase.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceDeriv.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceDerivSet.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiffOp.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiscreteFuncElement.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceEquationSet.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceEvaluatableExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceFunctionalDeriv.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceMultiIndex.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceMultipleDeriv.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSparsityPattern.hpp \
@@ -76,21 +69,14 @@ SUNDANCE_INTERNALEXPRS = \
 $(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceConstantExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceCoordDeriv.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceDerivBase.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceDeriv.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceDerivSet.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiffOp.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiscreteFuncElement.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceEquationSet.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceEvaluatableExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceFunctionalDeriv.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceMultiIndex.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceMultipleDeriv.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSparsityPattern.cpp \
@@ -112,9 +98,6 @@ $(top_srcdir)/src-core/Evaluation/SundanceBruteForceEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.hpp \
-$(top_srcdir)/src-core/Evaluation/SundanceEvalRegion.hpp \
-$(top_srcdir)/src-core/Evaluation/SundanceEvalVector.hpp \
-$(top_srcdir)/src-core/Evaluation/SundanceEvalVectorArray.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.hpp 
 
 SUNDANCE_EVALUATION = \
@@ -122,33 +105,50 @@ $(top_srcdir)/src-core/Evaluation/SundanceBruteForceEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.cpp \
-$(top_srcdir)/src-core/Evaluation/SundanceEvalRegion.cpp \
-$(top_srcdir)/src-core/Evaluation/SundanceEvalVector.cpp \
-$(top_srcdir)/src-core/Evaluation/SundanceEvalVectorArray.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.cpp 
 
 
 SUNDANCE_FRAMEWORKINTERFACE_H = \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterBase.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionBase.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContext.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalMediator.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceAbstractEvalMediator.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDerivBase.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContextStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVectorArray.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceNullCellFilterBase.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceQuadratureFamilyBase.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceTestFunctionBase.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceUnknownFunctionBase.hpp 
+$(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceMultipleDeriv.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceNullCellFilterStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceQuadratureFamilyStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceRegionQuadCombo.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceTestFunctionStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceUnknownFunctionStub.hpp 
 
 SUNDANCE_FRAMEWORKINTERFACE = \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterBase.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionBase.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContext.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalMediator.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceAbstractEvalMediator.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterStub.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDerivBase.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContextStub.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVectorArray.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceNullCellFilterBase.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceQuadratureFamilyBase.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceTestFunctionBase.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceUnknownFunctionBase.cpp 
+$(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceMultipleDeriv.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceNullCellFilterStub.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceQuadratureFamilyStub.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceRegionQuadCombo.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceTestFunctionStub.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceUnknownFunctionStub.cpp 
 
 
 SUNDANCE_TRANSFORMATIONS_H = \

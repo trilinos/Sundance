@@ -1,14 +1,16 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#include "SundanceLoadableVector.hpp"
+#include "SundanceEvalContextStub.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace Teuchos;
 
-
-LoadableVector::LoadableVector()
+EvalContextStub::EvalContextStub()
 {;}
+
+
+

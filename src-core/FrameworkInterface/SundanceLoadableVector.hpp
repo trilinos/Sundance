@@ -13,7 +13,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
 
-  namespace FrameworkInterface
+  namespace Internal
     {
       /**
        * LoadableVector is the interface through which a framework

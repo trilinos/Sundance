@@ -1,8 +1,8 @@
 #include "SundanceExpr.hpp"
 #include "SundanceDerivative.hpp"
-#include "SundanceUnknownFunctionBase.hpp"
-#include "SundanceTestFunctionBase.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestFunctionStub.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
@@ -13,7 +13,7 @@
 #include "Teuchos_MPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceDerivSet.hpp"
-#include "SundanceEvalRegion.hpp"
+#include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceEvalVectorArray.hpp"
@@ -52,8 +52,8 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
 
-			Expr u = new UnknownFunctionBase("u");
-			Expr v = new TestFunctionBase("v");
+			Expr u = new UnknownFunctionStub("u");
+			Expr v = new TestFunctionStub("v");
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -61,12 +61,12 @@ int main(int argc, void** argv)
 
       Expr grad = List(dx, dy);
 
-      Handle<CellFilterBase> interior = new CellFilterBase();
-      Handle<CellFilterBase> left = new CellFilterBase();
-      Handle<CellFilterBase> right = new CellFilterBase();
-      Handle<CellFilterBase> top = new CellFilterBase();
+      Handle<CellFilterStub> interior = new CellFilterStub();
+      Handle<CellFilterStub> left = new CellFilterStub();
+      Handle<CellFilterStub> right = new CellFilterStub();
+      Handle<CellFilterStub> top = new CellFilterStub();
 
-      Handle<QuadratureFamilyBase> quad8 = new QuadratureFamilyBase(8);
+      Handle<QuadratureFamilyStub> quad8 = new QuadratureFamilyStub(8);
       
       Expr eqn = Integral(interior, (grad*u)*(grad*v))
         + Integral(interior, y*v, quad8)

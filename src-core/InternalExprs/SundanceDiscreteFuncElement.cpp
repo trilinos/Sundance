@@ -2,16 +2,16 @@
 /* @HEADER@ */
 
 #include "SundanceDiscreteFuncElement.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionBase* master, 
+DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionStub* master, 
                                          const string& name,
                                          int myIndex)
 	: LeafExpr(), 

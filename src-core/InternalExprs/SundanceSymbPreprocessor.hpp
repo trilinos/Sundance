@@ -16,7 +16,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace FrameworkInterface;
+  using namespace Internal;
 
   using std::string;
   using std::ostream;
@@ -32,7 +32,7 @@ namespace SundanceCore
                                   const Expr& tests,
                                   const Expr& unks,
                                   const Expr& u0,
-                                  const EvalRegion& region, 
+                                  const RegionQuadCombo& region, 
                                   const EvaluatorFactory* factory);
 
         /** */

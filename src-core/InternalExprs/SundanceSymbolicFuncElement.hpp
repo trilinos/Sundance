@@ -9,7 +9,7 @@
 #include "SundanceFuncElementBase.hpp"
 #include "SundanceEvaluatableExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -78,7 +78,7 @@ namespace SundanceCore
        * Create an evaluator for this region and deriv set, and 
        * do any other setup required for evaluation. 
        */
-      virtual int setupEval(const EvalRegion& region,
+      virtual int setupEval(const RegionQuadCombo& region,
                             const EvaluatorFactory* factory) const ;
 
       /** */

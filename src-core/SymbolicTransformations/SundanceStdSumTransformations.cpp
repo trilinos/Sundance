@@ -17,7 +17,7 @@
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSumOfIntegrals.hpp"
 #include "SundanceSumOfBCs.hpp"
-#include "SundanceNullCellFilterBase.hpp"
+#include "SundanceNullCellFilterStub.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceCore;
@@ -293,7 +293,7 @@ bool SumIntegrals::doTransform(const RefCountPtr<ScalarExpr>& left,
                              "Attempting to add non-constant expression "
                              << right->toString() << " to an integral");
 
-          Expr r = Integral(l->nullDomain(), Expr::handle(right));
+          Expr r = Integral(l->nullRegion(), Expr::handle(right));
           const SumOfIntegrals* sr 
             = dynamic_cast<const SumOfIntegrals*>(r.ptr().get());
           l->merge(sr, sign);
@@ -312,7 +312,7 @@ bool SumIntegrals::doTransform(const RefCountPtr<ScalarExpr>& left,
                              "Attempting to add non-constant expression "
                              << left->toString() << " to an integral");
 
-          Expr l = Integral(r->nullDomain(), Expr::handle(right));
+          Expr l = Integral(r->nullRegion(), Expr::handle(right));
           const SumOfIntegrals* sl 
             = dynamic_cast<const SumOfIntegrals*>(l.ptr().get());
           r->merge(sl, 1);

@@ -1,7 +1,7 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#include "SundanceQuadratureFamilyBase.hpp"
+#include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceOut.hpp"
 
 
@@ -9,17 +9,17 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-QuadratureFamilyBase::QuadratureFamilyBase(int order)
+QuadratureFamilyStub::QuadratureFamilyStub(int order)
 : order_(order)
 {;}
 
-XMLObject QuadratureFamilyBase::toXML() const
+XMLObject QuadratureFamilyStub::toXML() const
 {
-  XMLObject rtn("QuadratureFamilyBase");
+  XMLObject rtn("QuadratureFamilyStub");
   rtn.addAttribute("order", Teuchos::toString(order()));
   return rtn;
 }

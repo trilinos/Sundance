@@ -69,7 +69,7 @@ void SymbolicFuncElement::getRoughDependencies(Set<Deriv>& funcs) const
 }
 
 
-int SymbolicFuncElement::setupEval(const EvalRegion& region,
+int SymbolicFuncElement::setupEval(const RegionQuadCombo& region,
                                const EvaluatorFactory* factory) const
 {
   /* If we've been here already with this deriv set, we're done.

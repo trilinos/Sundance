@@ -24,7 +24,7 @@ namespace SundanceCore
 
   using namespace Internal;
 
-  namespace FrameworkInterface
+  namespace Internal
     {
       /**
        * Base class for evaluation mediator objects. 
@@ -32,14 +32,14 @@ namespace SundanceCore
        * for evaluating those expressions whose
        * calculation must be delegated to the framework.
        */
-      class EvalMediator
+      class AbstractEvalMediator
         {
         public:
           /** */
-          EvalMediator();
+          AbstractEvalMediator();
 
           /** */
-          virtual ~EvalMediator(){;}
+          virtual ~AbstractEvalMediator(){;}
 
           /** Return the size of the vectors used by this evaluator */
           int vecSize() const {return vecSize_;}

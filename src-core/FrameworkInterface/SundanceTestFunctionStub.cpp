@@ -1,7 +1,7 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#include "SundanceTestFunctionBase.hpp"
+#include "SundanceTestFunctionStub.hpp"
 #include "SundanceTestFuncElement.hpp"
 
 using namespace SundanceCore;
@@ -10,7 +10,7 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-TestFunctionBase::TestFunctionBase(const string& name, int nElems)
+TestFunctionStub::TestFunctionStub(const string& name, int nElems)
 	: SymbolicFunc()
 {
   for (int i=0; i<nElems; i++)

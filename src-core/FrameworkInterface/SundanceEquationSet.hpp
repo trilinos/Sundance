@@ -20,7 +20,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace FrameworkInterface;
+  using namespace Internal;
   using std::string;
 
   namespace Internal
@@ -51,53 +51,95 @@ namespace SundanceCore
 
       /** Returns the number of regions on which pieces of the equation
        * or BCs are defined. */
-      int numRegions() const ;
+      int numRegions() const {return regions_.size();}
+      
       /** Returns the d-th region for this equation set */
-      const RefCountPtr<CellFilterBase>& region(int d) const ;
+      const RefCountPtr<CellFilterStub>& region(int d) const 
+      {return regions_[d].ptr();}
+
+      /** Returns the number of test functions in this equation set */
+      int numTests() const {return testFuncs_.size();}
+
+      /** Returns the number of unk functions in this equation set */
+      int numUnks() const {return unkFuncs_.size();}
+
+      /** Returns the i-th test function */
+      const Expr& testFunc(int i) const {return testFuncs_[i];}
+
+      /** Returns the i-th test function */
+      const Expr& unkFunc(int i) const {return unkFuncs_[i];}
 
       /** Returns the test functions that appear explicitly
        * on the d-th region */
-      const Array<Expr>& testsOnRegion(int d) const ;
+      const Set<int>& testsOnRegion(int d) const 
+      {return testsOnRegions_.get(regions_[d]);}
 
       /** Returns the unknown functions that appear explicitly on the
        * d-th region. */
-      const Array<Expr>& unksOnRegion(int d) const ;
+      const Set<int>& unksOnRegion(int d) const 
+      {return unksOnRegions_.get(regions_[d]);}
 
       /** Returns the test functions that appear in BCs on the d-th region.
        * We can use this information to tag certain rows as BC rows */
-      const Array<Expr>& bcTestsOnRegion(int d) const ;
+      const Set<int>& bcTestsOnRegion(int d) const 
+      {return bcTestsOnRegions_.get(regions_[d]);}
 
       /** Returns the unknown functions that appear in BCs on the d-th region.
        * We can use this information to tag certain columns as BC
        * columns in the event we're doing symmetrized BC application */
-      const Array<Expr>& bcUnksOnRegion(int d) const ;
+      const Set<int>& bcUnksOnRegion(int d) const 
+      {return bcUnksOnRegions_.get(regions_[d]);}
       //@}
 
-      /** */
-      const Array<RegionQuadCombo>& regionQuadCombos() const {return regionQuadComboArray_;}
+
+      /** \name Methods needed during setup of integration and evaluation */
+      //@{
+      /** Returns the list of distinct subregion-quadrature combinations
+       * appearing in the equation set. */
+      const Array<RegionQuadCombo>& regionQuadCombos() const 
+      {return regionQuadCombos_;}
+
+      /** Returns the list of distinct subregion-quadrature combinations
+       * appearing in the boundary conditions */
+      const Array<RegionQuadCombo>& bcRegionQuadCombos() const 
+      {return bcRegionQuadCombos_;}
+
+      /** Returns the set of nonzero functional derivatives appearing
+       * in the equation set at the given subregion-quadrature combination */
+      const DerivSet& nonzeroFunctionalDerivs(const RegionQuadCombo& r) const 
+      {return regionQuadComboNonzeroDerivs_.get(r);}
+
+      /** Returns the set of nonzero functional derivatives appearing
+       * in the boundary conditions
+       *  at the given subregion-quadrature combination */
+      const DerivSet& nonzeroBCFunctionalDerivs(const RegionQuadCombo& r) const
+      {return bcRegionQuadComboNonzeroDerivs_.get(r);}
+      
+      
+      //@}
           
     private:
       /** */
-      Set<OrderedHandle<CellFilterBase> > regions_;
+      Array<OrderedHandle<CellFilterStub> > regions_;
 
       /** */
-      Map<OrderedHandle<CellFilterBase>, Set<int> > testsOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, Set<int> > testsOnRegions_;
 
       /** */
-      Map<OrderedHandle<CellFilterBase>, Set<int> > unksOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, Set<int> > unksOnRegions_;
 
       /** */
-      Map<OrderedHandle<CellFilterBase>, Set<int> > bcTestsOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, Set<int> > bcTestsOnRegions_;
 
       /** */
-      Map<OrderedHandle<CellFilterBase>, Set<int> > bcUnksOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, Set<int> > bcUnksOnRegions_;
 
 
       /** */
-      Set<RegionQuadCombo> regionQuadCombos_;
+      Array<RegionQuadCombo> regionQuadCombos_;
 
       /** */
-      Set<RegionQuadCombo> bcRegionQuadCombos_;
+      Array<RegionQuadCombo> bcRegionQuadCombos_;
 
       /** */
       Map<RegionQuadCombo, Expr> regionQuadComboExprs_;

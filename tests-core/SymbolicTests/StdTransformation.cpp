@@ -1,6 +1,6 @@
 #include "SundanceExpr.hpp"
 #include "SundanceDerivative.hpp"
-#include "SundanceUnknownFunctionBase.hpp"
+#include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
@@ -39,9 +39,9 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
 
-			Expr u = new UnknownFunctionBase("u");
-			Expr v = new UnknownFunctionBase("v");
-			Expr w = new UnknownFunctionBase("w");
+			Expr u = new UnknownFunctionStub("u");
+			Expr v = new UnknownFunctionStub("v");
+			Expr w = new UnknownFunctionStub("w");
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);

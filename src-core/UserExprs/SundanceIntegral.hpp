@@ -6,8 +6,8 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
-#include "SundanceQuadratureFamilyBase.hpp"
-#include "SundanceCellFilterBase.hpp"
+#include "SundanceQuadratureFamilyStub.hpp"
+#include "SundanceCellFilterStub.hpp"
 #include "TSFHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
@@ -16,17 +16,17 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace TSFExtended;
-  using namespace FrameworkInterface;
+  using namespace Internal;
   using namespace Teuchos;
 
   /** \relates Expr */
-  Expr Integral(const Handle<CellFilterBase>& domain,
+  Expr Integral(const Handle<CellFilterStub>& domain,
                 const Expr& integrand);
 
   /** \relates Expr */
-  Expr Integral(const Handle<CellFilterBase>& domain,
+  Expr Integral(const Handle<CellFilterStub>& domain,
                 const Expr& integrand,
-                const Handle<QuadratureFamilyBase>& quad);
+                const Handle<QuadratureFamilyStub>& quad);
 
   
 }

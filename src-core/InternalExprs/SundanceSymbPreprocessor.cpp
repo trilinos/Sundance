@@ -8,11 +8,11 @@
 #include "SundanceExpr.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceUnknownFuncElement.hpp"
-#include "SundanceUnknownFunctionBase.hpp"
-#include "SundanceTestFunctionBase.hpp"
+#include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestFunctionStub.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_Utils.hpp"
@@ -22,14 +22,14 @@ using namespace SundanceUtils;
 
 using namespace Teuchos;
 using namespace Internal;
-using namespace FrameworkInterface;
+using namespace Internal;
 
 
 DerivSet SymbPreprocessor::setupExpr(const Expr& expr, 
                                      const Expr& tests,
                                      const Expr& unks,
                                      const Expr& u0, 
-                                     const EvalRegion& region, 
+                                     const RegionQuadCombo& region, 
                                      const EvaluatorFactory* factory)
 {
   TimeMonitor t(preprocTimer());

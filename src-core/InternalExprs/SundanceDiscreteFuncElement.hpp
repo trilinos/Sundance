@@ -14,9 +14,9 @@
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace FrameworkInterface
+  namespace Internal
   {
-    class DiscreteFunctionBase;
+    class DiscreteFunctionStub;
   }
 
   namespace Internal
@@ -31,8 +31,8 @@ namespace SundanceCore
      * of a (possibly) vector-valued discrete function. 
      *
      * DiscreteFuncElement is framework-independent. Any framework-specific
-     * information should go in a subclass of DiscreteFunctionBase.
-     * The DiscreteFunctionBase object can be accessed through the
+     * information should go in a subclass of DiscreteFunctionStub.
+     * The DiscreteFunctionStub object can be accessed through the
      * <tt>master()</tt> method of this class.
      */
     class DiscreteFuncElement : public virtual LeafExpr,
@@ -40,7 +40,7 @@ namespace SundanceCore
     {
     public:
       /** */
-      DiscreteFuncElement(DiscreteFunctionBase* master, 
+      DiscreteFuncElement(DiscreteFunctionStub* master, 
                           const string& name,
                           int myIndex);
 
@@ -49,11 +49,11 @@ namespace SundanceCore
 
       /** Get the master discrete function 
        * of which this object is an element */
-      const DiscreteFunctionBase* master() const {return master_;}
+      const DiscreteFunctionStub* master() const {return master_;}
 
       /** Get the master discrete function 
        * of which this object is an element */
-      DiscreteFunctionBase* master() {return master_;}
+      DiscreteFunctionStub* master() {return master_;}
 
       /** Get my index into the master's list of elements */
       int myIndex() const {return myIndex_;}
@@ -78,7 +78,7 @@ namespace SundanceCore
       
     private:
 
-      DiscreteFunctionBase* master_;
+      DiscreteFunctionStub* master_;
 
       int myIndex_;
       

@@ -19,17 +19,17 @@ EquationSet::EquationSet(const Expr& eqns,
                          const Expr& unks,
                          const Expr& unkLinearizationPts,
                          const RefCountPtr<EvaluatorFactory>& evalFactory)
-  : domains_(),
-    testsOnDomains_(),
-    unksOnDomains_(),
-    bcTestsOnDomains_(),
-    bcUnksOnDomains_(),
-    regions_(),
-    bcRegions_(),
-    regionExprs_(),
-    bcRegionExprs_(),
-    regionNonzeroDerivs_(),
-    bcRegionNonzeroDerivs_(),
+  : regions_(),
+    testsOnRegions_(),
+    unksOnRegions_(),
+    bcTestsOnRegions_(),
+    bcUnksOnRegions_(),
+    regionQuadCombos_(),
+    bcRegionQuadCombos_(),
+    regionQuadComboExprs_(),
+    bcRegionQuadComboExprs_(),
+    regionQuadComboNonzeroDerivs_(),
+    bcRegionQuadComboNonzeroDerivs_(),
     testFuncs_(tests),
     unkFuncs_(unks),
     unkLinearizationPts_(unkLinearizationPts),
@@ -80,83 +80,91 @@ EquationSet::EquationSet(const Expr& eqns,
                    "...problem has no EssentialBCs");
     }
 
-  /* Now compile a list of all domains appearing in either the eqns or
+
+  Set<OrderedHandle<CellFilterStub> > regionSet;
+  Set<RegionQuadCombo> rqcSet;
+  Set<RegionQuadCombo> rqcBCSet;
+
+  /* Now compile a list of all regions appearing in either the eqns or
    * the BCs */
-  for (int d=0; d<integralSum->numDomains(); d++)
+
+  /* Do the non-bc eqns first */
+  for (int d=0; d<integralSum->numRegions(); d++)
     {
-      OrderedHandle<CellFilterBase> dom = integralSum->domain(d);
-      if (!domains_.contains(dom)) 
+      OrderedHandle<CellFilterStub> reg = integralSum->region(d);
+      if (!regionSet.contains(reg)) 
         {
-          domains_.put(dom);
-          testsOnDomains_.put(dom, integralSum->testsOnDomain(d));
-          unksOnDomains_.put(dom, integralSum->unksOnDomain(d));
+          regionSet.put(reg);
+          testsOnRegions_.put(reg, integralSum->testsOnRegion(d));
+          unksOnRegions_.put(reg, integralSum->unksOnRegion(d));
         }
       else
         {
-          Set<int>& t = testsOnDomains_.get(dom);
-          t.merge(integralSum->testsOnDomain(d));
-          Set<int>& u = unksOnDomains_.get(dom);
-          u.merge(integralSum->unksOnDomain(d));
+          Set<int>& t = testsOnRegions_.get(reg);
+          t.merge(integralSum->testsOnRegion(d));
+          Set<int>& u = unksOnRegions_.get(reg);
+          u.merge(integralSum->unksOnRegion(d));
         }
       for (int t=0; t<integralSum->numTerms(d); t++)
         {
-          EvalRegion reg(dom.ptr(), integralSum->quad(d,t));
+          RegionQuadCombo rqc(reg.ptr(), integralSum->quad(d,t));
           Expr term = integralSum->expr(d,t);
-          regions_.put(reg);
-          regionExprs_.put(reg, term);
+          rqcSet.put(rqc);
+          regionQuadComboExprs_.put(rqc, term);
           DerivSet nonzeros = SymbPreprocessor::setupExpr(term, tests,
                                                           unks, 
                                                           unkLinearizationPts,
-                                                          reg,
+                                                          rqc,
                                                           evalFactory.get());
-          regionNonzeroDerivs_.put(reg, nonzeros);
+          regionQuadComboNonzeroDerivs_.put(rqc, nonzeros);
         }
     }
   
+  /* now do the BCs */
   if (hasBCs)
     {
       /* functions found in the BCs both in the overall lists and 
        * also in the bc-specific lists */
-      for (int d=0; d<bcSum->numDomains(); d++)
+      for (int d=0; d<bcSum->numRegions(); d++)
         {
-          OrderedHandle<CellFilterBase> dom = bcSum->domain(d);
-          if (!domains_.contains(dom)) 
+          OrderedHandle<CellFilterStub> reg = bcSum->region(d);
+          if (!regionSet.contains(reg)) 
             {
-              domains_.put(dom);
-              testsOnDomains_.put(dom, bcSum->testsOnDomain(d));
-              unksOnDomains_.put(dom, bcSum->unksOnDomain(d));
-              bcTestsOnDomains_.put(dom, bcSum->testsOnDomain(d));
-              bcUnksOnDomains_.put(dom, bcSum->unksOnDomain(d));
+              regionSet.put(reg);
+              testsOnRegions_.put(reg, bcSum->testsOnRegion(d));
+              unksOnRegions_.put(reg, bcSum->unksOnRegion(d));
+              bcTestsOnRegions_.put(reg, bcSum->testsOnRegion(d));
+              bcUnksOnRegions_.put(reg, bcSum->unksOnRegion(d));
             }
           else
             {
-              if (!bcTestsOnDomains_.containsKey(dom))
+              if (!bcTestsOnRegions_.containsKey(reg))
                 {
-                  bcTestsOnDomains_.put(dom, bcSum->testsOnDomain(d));
+                  bcTestsOnRegions_.put(reg, bcSum->testsOnRegion(d));
                 }
-              if (!bcUnksOnDomains_.containsKey(dom))
+              if (!bcUnksOnRegions_.containsKey(reg))
                 {
-                  bcUnksOnDomains_.put(dom, bcSum->unksOnDomain(d));
+                  bcUnksOnRegions_.put(reg, bcSum->unksOnRegion(d));
                 }
-              Set<int>& t = testsOnDomains_.get(dom);
-              t.merge(bcSum->testsOnDomain(d));
-              Set<int>& u = unksOnDomains_.get(dom);
-              u.merge(bcSum->unksOnDomain(d));
+              Set<int>& t = testsOnRegions_.get(reg);
+              t.merge(bcSum->testsOnRegion(d));
+              Set<int>& u = unksOnRegions_.get(reg);
+              u.merge(bcSum->unksOnRegion(d));
             }
         
           for (int t=0; t<bcSum->numTerms(d); t++)
             {
-              EvalRegion reg(dom.ptr(), bcSum->quad(d,t));
+              RegionQuadCombo rqc(reg.ptr(), bcSum->quad(d,t));
               Expr term = bcSum->expr(d,t);
-              bcRegions_.put(reg);
-              bcRegionExprs_.put(reg, bcSum->expr(d,t));
+              rqcBCSet.put(rqc);
+              bcRegionQuadComboExprs_.put(rqc, bcSum->expr(d,t));
               DerivSet nonzeros 
                 = SymbPreprocessor::setupExpr(term, tests,
                                               unks, 
                                               unkLinearizationPts,
-                                              reg,
+                                              rqc,
                                               evalFactory.get());
-              bcRegionNonzeroDerivs_.put(reg, nonzeros);
+              bcRegionQuadComboNonzeroDerivs_.put(rqc, nonzeros);
             }
         }
     }
@@ -164,19 +172,24 @@ EquationSet::EquationSet(const Expr& eqns,
   
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
-               "Tests appearing on each domain: " << endl << testsOnDomains_);
+               "Tests appearing on each region: " << endl << testsOnRegions_);
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
-               "Unks appearing on each domain: " << endl << unksOnDomains_);
+               "Unks appearing on each region: " << endl << unksOnRegions_);
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
-               "Tests appearing on each BC domain: " 
-               << endl << bcTestsOnDomains_);
+               "Tests appearing on each BC region: " 
+               << endl << bcTestsOnRegions_);
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
-               "Unks appearing on each BC domain: " 
-               << endl << bcUnksOnDomains_);
+               "Unks appearing on each BC region: " 
+               << endl << bcUnksOnRegions_);
 
+
+  /* convert sets to arrays */
+  regions_ = regionSet.elements();
+  regionQuadCombos_ = rqcSet.elements();
+  bcRegionQuadCombos_ = rqcBCSet.elements();
   
 
 }

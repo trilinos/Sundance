@@ -1,8 +1,8 @@
 #include "SundanceExpr.hpp"
 #include "SundanceDerivative.hpp"
-#include "SundanceUnknownFunctionBase.hpp"
-#include "SundanceTestFunctionBase.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestFunctionStub.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
@@ -13,7 +13,7 @@
 #include "Teuchos_MPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceDerivSet.hpp"
-#include "SundanceEvalRegion.hpp"
+#include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceEvalVectorArray.hpp"
@@ -23,7 +23,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 static Time& totalTimer() 
@@ -49,15 +49,15 @@ int main(int argc, void** argv)
       EvaluatableExpr::verbosity() = 0;
       Expr::showAllParens() = true;
 
-      Expr v = new TestFunctionBase("v");
+      Expr v = new TestFunctionStub("v");
 
-			Expr a = new UnknownFunctionBase("a");
-			Expr b = new UnknownFunctionBase("b");
-			Expr c = new UnknownFunctionBase("c");
+			Expr a = new UnknownFunctionStub("a");
+			Expr b = new UnknownFunctionStub("b");
+			Expr c = new UnknownFunctionStub("c");
 
-			Expr a0 = new DiscreteFunctionBase("a0");
-			Expr b0 = new DiscreteFunctionBase("b0");
-			Expr c0 = new DiscreteFunctionBase("c0");
+			Expr a0 = new DiscreteFunctionStub("a0");
+			Expr b0 = new DiscreteFunctionStub("b0");
+			Expr c0 = new DiscreteFunctionStub("c0");
 
       Expr dx = new Derivative(0);
 
@@ -70,8 +70,8 @@ int main(int argc, void** argv)
 
       
 
-      EvalRegion region(rcp(new CellFilterBase()),
-                        rcp(new QuadratureFamilyBase(0)));
+      RegionQuadCombo region(rcp(new CellFilterStub()),
+                        rcp(new QuadratureFamilyStub(0)));
       EvalManager mgr;
       mgr.setRegion(region);
 

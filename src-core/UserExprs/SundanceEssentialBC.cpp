@@ -10,18 +10,18 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace SundanceCore::Internal;
 using namespace TSFExtended;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 
-Expr SundanceCore::EssentialBC(const Handle<CellFilterBase>& domain,
+Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
                                const Expr& integrand)
 {
-  RefCountPtr<QuadratureFamilyBase> quad = rcp(new QuadratureFamilyBase(0));
+  RefCountPtr<QuadratureFamilyStub> quad = rcp(new QuadratureFamilyStub(0));
   return new SumOfBCs(domain.ptr(), integrand, quad);
 }
 
-Expr SundanceCore::EssentialBC(const Handle<CellFilterBase>& domain,
+Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
                                const Expr& integrand,
-                               const Handle<QuadratureFamilyBase>& quad)
+                               const Handle<QuadratureFamilyStub>& quad)
 {
   return new SumOfBCs(domain.ptr(), integrand, quad.ptr());
 }

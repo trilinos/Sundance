@@ -1,7 +1,9 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#include "SundanceEvalContext.hpp"
+#include "SundanceDerivBase.hpp"
+
+ 
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -9,8 +11,6 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-EvalContext::EvalContext()
+DerivBase::DerivBase()
 {;}
-
-
 

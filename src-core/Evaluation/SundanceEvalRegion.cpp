@@ -1,25 +1,25 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#include "SundanceEvalRegion.hpp"
+#include "SundanceRegionQuadCombo.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-EvalRegion::EvalRegion()
+RegionQuadCombo::RegionQuadCombo()
   : id_(-1)
 {;}
 
-EvalRegion::EvalRegion(const RefCountPtr<CellFilterBase>& domain,
-                       const RefCountPtr<QuadratureFamilyBase>& quad)
+RegionQuadCombo::RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
+                       const RefCountPtr<QuadratureFamilyStub>& quad)
   : id_(getID(domain, quad))
 {;}
 
-int EvalRegion::getID(const RefCountPtr<CellFilterBase>& domain,
-                      const RefCountPtr<QuadratureFamilyBase>& quad)
+int RegionQuadCombo::getID(const RefCountPtr<CellFilterStub>& domain,
+                      const RefCountPtr<QuadratureFamilyStub>& quad)
 {
   RegPair p(domain, quad);
 
@@ -31,13 +31,13 @@ int EvalRegion::getID(const RefCountPtr<CellFilterBase>& domain,
   return domainAndQuadToIDMap().get(p);
 }
 
-string EvalRegion::toString() const
+string RegionQuadCombo::toString() const
 {
-  return "EvalRegion[id="
+  return "RegionQuadCombo[id="
     + Teuchos::toString(id_) + "]";
 }
 
-Map<RegPair, int>& EvalRegion::domainAndQuadToIDMap()
+Map<RegPair, int>& RegionQuadCombo::domainAndQuadToIDMap()
 {
   static Map<RegPair, int> rtn = Map<RegPair, int>();
   return rtn;

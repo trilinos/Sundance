@@ -13,7 +13,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace FrameworkInterface;
+  using namespace Internal;
   using std::string;
 
   namespace Internal
@@ -25,10 +25,10 @@ namespace SundanceCore
       class SumOfBCs : public SumOfIntegrals
         {
         public:
-          /** Construct given an integral over a single domain */
-          SumOfBCs(const RefCountPtr<CellFilterBase>& domain,
+          /** Construct given an integral over a single region */
+          SumOfBCs(const RefCountPtr<CellFilterStub>& region,
                          const Expr& expr,
-                         const RefCountPtr<QuadratureFamilyBase>& quad);
+                         const RefCountPtr<QuadratureFamilyStub>& quad);
 
           /** */
           virtual ~SumOfBCs(){;}

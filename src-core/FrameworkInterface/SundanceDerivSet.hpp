@@ -21,8 +21,8 @@ namespace SundanceCore
     {
 
       /**
-       * DerivSet is a set of multiple derivatives, sorted by differentiation
-       * order.
+       * DerivSet is a set of multiple derivatives, sorted by 
+       * increasing differentiation order.
        *
        * The sorting is important because we should evaluate derivatives
        * of products in decreasing order of differentiation order.
@@ -31,7 +31,7 @@ namespace SundanceCore
         increasingOrder<MultipleDeriv> >
         {
         public:
-          /** */
+          /** Construct an empty set of functional derivatives */
           DerivSet();
 
         };

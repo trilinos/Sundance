@@ -25,14 +25,14 @@ namespace SundanceCore
       /** 
        * 
        */
-      class EvalContext
+      class EvalContextStub
         {
         public:
           /** */
-          EvalContext();
+          EvalContextStub();
           
           /** */
-          virtual ~EvalContext(){;}
+          virtual ~EvalContextStub(){;}
 
           
 

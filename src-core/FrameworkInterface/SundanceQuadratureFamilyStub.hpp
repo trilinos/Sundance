@@ -1,8 +1,8 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#ifndef SUNDANCE_QUADRATUREFAMILYBASE_H
-#define SUNDANCE_QUADRATUREFAMILYBASE_H
+#ifndef SUNDANCE_QUADRATUREFAMILYSTUB_H
+#define SUNDANCE_QUADRATUREFAMILYSTUB_H
 
 #include "SundanceDefs.hpp"
 #include "SundanceNoncopyable.hpp"
@@ -17,23 +17,23 @@
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace FrameworkInterface
+  namespace Internal
   {
     using namespace Teuchos;
     using namespace Internal;
 
-    class QuadratureFamilyBase 
-      : public TSFExtended::Handleable<QuadratureFamilyBase>,
+    class QuadratureFamilyStub 
+      : public TSFExtended::Handleable<QuadratureFamilyStub>,
         public TSFExtended::Printable,
         public TSFExtended::Describable,
         public Noncopyable
     {
     public:
       /** Empty ctor */
-      QuadratureFamilyBase(int order);
+      QuadratureFamilyStub(int order);
 
       /** virtual dtor */
-      virtual ~QuadratureFamilyBase(){;}
+      virtual ~QuadratureFamilyStub(){;}
 
       /** Return the order of the quadrature rule */
       int order() const {return order_;}
@@ -42,7 +42,7 @@ namespace SundanceCore
       virtual XMLObject toXML() const ;
 
       /** Ordering for storage in STL maps */
-      virtual bool lessThan(const QuadratureFamilyBase* other) const 
+      virtual bool lessThan(const QuadratureFamilyStub* other) const 
       {return order() < other->order();}
 
       /** \name Printable interface */
@@ -55,12 +55,12 @@ namespace SundanceCore
       //@{
       /** Print to a stream */
       virtual string describe() const 
-      {return "QuadratureFamilyBase[order=" + Teuchos::toString(order()) 
+      {return "QuadratureFamilyStub[order=" + Teuchos::toString(order()) 
          +  "]";}
       //@}
 
       /** */
-      virtual RefCountPtr<QuadratureFamilyBase> getRcp() {return rcp(this);}
+      virtual RefCountPtr<QuadratureFamilyStub> getRcp() {return rcp(this);}
       
     private:
       int order_;

@@ -7,8 +7,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceScalarExpr.hpp"
-#include "SundanceQuadratureFamilyBase.hpp"
-#include "SundanceCellFilterBase.hpp"
+#include "SundanceQuadratureFamilyStub.hpp"
+#include "SundanceCellFilterStub.hpp"
 #include "SundanceOrderedHandle.hpp"
 #include "Teuchos_Array.hpp"
 #include "SundanceMap.hpp"
@@ -19,7 +19,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace FrameworkInterface;
+  using namespace Internal;
   using std::string;
 
   namespace Internal
@@ -28,7 +28,7 @@ namespace SundanceCore
 
       /** 
        * SumOfIntegrals represents a sum of integrals,
-       * grouped by domain and quadrature rule
+       * grouped by region and quadrature rule
        *
        * \f[
        * \sum_{d=0}^{N_d-1} \left[\sum_{q=0}^{N_{q,d}-1} 
@@ -41,18 +41,18 @@ namespace SundanceCore
       class SumOfIntegrals : public ScalarExpr
         {
         public:
-          /** Construct given an integral over a single domain */
-          SumOfIntegrals(const RefCountPtr<CellFilterBase>& domain,
+          /** Construct given an integral over a single region */
+          SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
                          const Expr& expr,
-                         const RefCountPtr<QuadratureFamilyBase>& quad);
+                         const RefCountPtr<QuadratureFamilyStub>& quad);
 
           /** */
           virtual ~SumOfIntegrals(){;}
 
           /** Add another term to this integral */
-          void addTerm(const RefCountPtr<CellFilterBase>& domain,
+          void addTerm(const RefCountPtr<CellFilterStub>& region,
                        const Expr& expr,
-                       const RefCountPtr<QuadratureFamilyBase>& quad, 
+                       const RefCountPtr<QuadratureFamilyStub>& quad, 
                        int sign) ;
 
           /** Add this sum of integrals to another sum of integrals */
@@ -64,35 +64,35 @@ namespace SundanceCore
           /** Change the sign of all terms in the sum */
           void changeSign() ;
 
-          /** Return the number of subdomains */
-          int numDomains() const {return domains_.size();}
+          /** Return the number of subregions */
+          int numRegions() const {return regions_.size();}
 
-          /** Return the d-th domain */
-          const RefCountPtr<CellFilterBase>& domain(int d) const 
-          {return domains_[d].ptr();}
+          /** Return the d-th region */
+          const RefCountPtr<CellFilterStub>& region(int d) const 
+          {return regions_[d].ptr();}
 
           /** Return the number of different quadrature rules used in the
-           * d-th domain */
+           * d-th region */
           int numTerms(int d) const {return quad_[d].size();}
 
-          /** Return the q-th quadrature rule used in the d-th domain */
-          const RefCountPtr<QuadratureFamilyBase>& quad(int d, int q) const 
+          /** Return the q-th quadrature rule used in the d-th region */
+          const RefCountPtr<QuadratureFamilyStub>& quad(int d, int q) const 
           {return quad_[d][q].ptr();}
 
           /** Return the integrand for the q-th quadrature rule in the
-           * d-th domain */
+           * d-th region */
           const Expr& expr(int d, int q) const 
           {return expr_[d][q];}
 
-          /** Return the set of unknown functions defined on the d-th domain */
-          Set<int> unksOnDomain(int d) const ;
+          /** Return the set of unknown functions defined on the d-th region */
+          Set<int> unksOnRegion(int d) const ;
 
-          /** Return the set of test functions defined on the d-th domain */
-          Set<int> testsOnDomain(int d) const ;
+          /** Return the set of test functions defined on the d-th region */
+          Set<int> testsOnRegion(int d) const ;
 
           /** Return a null cell filter of a type consistent with the
            * other filters in this integral */
-          RefCountPtr<CellFilterBase> nullDomain() const ;
+          RefCountPtr<CellFilterStub> nullRegion() const ;
 
           /** Write a simple text description suitable 
            * for output to a terminal */
@@ -108,15 +108,15 @@ namespace SundanceCore
           virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
         private:
-          Array<OrderedHandle<CellFilterBase> > domains_;
+          Array<OrderedHandle<CellFilterStub> > regions_;
 
-          Array<Array<OrderedHandle<QuadratureFamilyBase> > > quad_;
+          Array<Array<OrderedHandle<QuadratureFamilyStub> > > quad_;
 
           Array<Array<Expr> > expr_;
 
-          Map<OrderedHandle<CellFilterBase>, int>  cellSetToIndexMap_;
+          Map<OrderedHandle<CellFilterStub>, int>  cellSetToIndexMap_;
 
-          Array<Map<OrderedHandle<QuadratureFamilyBase>, int> > quadToIndexMap_;
+          Array<Map<OrderedHandle<QuadratureFamilyStub>, int> > quadToIndexMap_;
         };
     }
 }

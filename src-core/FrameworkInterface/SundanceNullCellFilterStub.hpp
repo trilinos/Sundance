@@ -1,10 +1,10 @@
-#ifndef SUNDANCE_NULLCELLFILTER_BASEH
-#define SUNDANCE_NULLCELLFILTERBASE_H
+#ifndef SUNDANCE_NULLCELLFILTER_STUBH
+#define SUNDANCE_NULLCELLFILTERSTUB_H
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
-#include "SundanceCellFilterBase.hpp"
+#include "SundanceCellFilterStub.hpp"
 
 
 
@@ -14,7 +14,7 @@ namespace SundanceCore
   using namespace Teuchos;
   using namespace Internal;
   
-  namespace FrameworkInterface
+  namespace Internal
   {
     /** 
      *
@@ -22,20 +22,20 @@ namespace SundanceCore
      *
      *  
      */
-    class NullCellFilterBase : public CellFilterBase
+    class NullCellFilterStub : public CellFilterStub
     {
     public:
       /** Empty ctor */
-      NullCellFilterBase();
+      NullCellFilterStub();
 
       /** virtual dtor */
-      virtual ~NullCellFilterBase(){;}
+      virtual ~NullCellFilterStub(){;}
 
       /** Write to XML */
       virtual XMLObject toXML() const ;
 
       /** Ordering for storage in STL maps */
-      virtual bool lessThan(const CellFilterBase* other) const ;
+      virtual bool lessThan(const CellFilterStub* other) const ;
 
       /** \name Printable interface */
       //@{
@@ -47,11 +47,11 @@ namespace SundanceCore
       //@{
       /** Print to a stream */
       virtual string describe() const 
-      {return "NullCellFilterBase";}
+      {return "NullCellFilterStub";}
       //@}
 
       /** */
-      virtual RefCountPtr<CellFilterBase> getRcp() {return rcp(this);}
+      virtual RefCountPtr<CellFilterStub> getRcp() {return rcp(this);}
 
     };
   }

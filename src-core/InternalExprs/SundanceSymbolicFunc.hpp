@@ -8,7 +8,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceListExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -18,7 +18,7 @@ namespace SundanceCore
   namespace Internal
   {
 
-    using namespace FrameworkInterface;
+    using namespace Internal;
     using namespace Teuchos;
     
     using std::string;
@@ -55,7 +55,7 @@ namespace SundanceCore
        * the functional derivatives that arise in a nonlinear expression
        * being linearized about \f$u_0\f$. 
        */
-      void substituteFunction(const RefCountPtr<DiscreteFunctionBase>& u0) const ;
+      void substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const ;
 
     };
   }

@@ -14,17 +14,10 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-Deriv::Deriv()
-  : ptr_()
-{}
-
-Deriv::Deriv(DerivBase* ptr)
-  : ptr_(ptr->getRcp())
-{}
 
 bool Deriv::operator<(const Deriv& other) const 
 {
-  return ptr_->lessThan(other);
+  return ptr()->lessThan(other);
 }
 
 bool Deriv::operator==(const Deriv& other) const
@@ -35,17 +28,17 @@ bool Deriv::operator==(const Deriv& other) const
 
 string Deriv::toString() const 
 {
-  return ptr_->toString();
+  return ptr()->toString();
 }
 
 const FunctionalDeriv* Deriv::funcDeriv() const 
 {
-  return dynamic_cast<FunctionalDeriv*>(ptr_.get());
+  return dynamic_cast<FunctionalDeriv*>(ptr().get());
 }
 
 const CoordDeriv* Deriv::coordDeriv() const 
 {
-  return dynamic_cast<CoordDeriv*>(ptr_.get());
+  return dynamic_cast<CoordDeriv*>(ptr().get());
 }
 
 

@@ -45,9 +45,8 @@ namespace SundanceCore
           /** */
           virtual string toString() const ;
 
-          /** */
-          virtual RefCountPtr<DerivBase> getRcp()
-            {return rcp(this);}
+          /* handleable boilerplate */
+          GET_RCP(DerivBase);
 
           /** */
           static int maxDim() {static int rtn=3; return rtn;}

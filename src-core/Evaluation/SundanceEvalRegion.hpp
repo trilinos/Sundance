@@ -1,15 +1,15 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#ifndef SUNDANCE_EVALREGION_H
-#define SUNDANCE_EVALREGION_H
+#ifndef SUNDANCE_REGION_H
+#define SUNDANCE_REGION_H
 
 
 #include "SundanceDefs.hpp"
 #include "SundanceMap.hpp"
 #include "Teuchos_Utils.hpp"
-#include "SundanceCellFilterBase.hpp"
-#include "SundanceQuadratureFamilyBase.hpp"
+#include "SundanceCellFilterStub.hpp"
+#include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceOrderedTuple.hpp"
 #include "SundanceOrderedHandle.hpp"
 
@@ -25,12 +25,12 @@ namespace SundanceCore
   using std::string;
 
 
-  namespace FrameworkInterface
+  namespace Internal
     {
 
       /** */
-      typedef OrderedPair<OrderedHandle<CellFilterBase>,
-                          OrderedHandle<QuadratureFamilyBase> > RegPair;
+      typedef OrderedPair<OrderedHandle<CellFilterStub>,
+                          OrderedHandle<QuadratureFamilyStub> > RegPair;
       /** 
        * Expressions may appear in more than one subregions of a problem,
        * for instance in an internal domain and also on a boundary. On
@@ -40,27 +40,27 @@ namespace SundanceCore
        * It is therefore necessary to build and store
        * sparsity information on a region-by-region basis. 
        *
-       * Class EvalRegion is used as an identifier for regions. The
+       * Class RegionQuadCombo is used as an identifier for regions. The
        * only thing it needs to do is to be useable as a key in a STL map.
        */
-      class EvalRegion
+      class RegionQuadCombo
         {
         public:
           /** */
-          EvalRegion();
+          RegionQuadCombo();
           /** */
-          EvalRegion(const RefCountPtr<CellFilterBase>& domain,
-                     const RefCountPtr<QuadratureFamilyBase>& quad);
+          RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
+                     const RefCountPtr<QuadratureFamilyStub>& quad);
 
           /** */
-          inline bool operator==(const EvalRegion& other) const
+          inline bool operator==(const RegionQuadCombo& other) const
             {return id_==other.id_;}
 
           /** */
           string toString() const ;
 
           /** */
-          bool operator<(const EvalRegion& other) const
+          bool operator<(const RegionQuadCombo& other) const
             {return id_ < other.id_;}
 
         private:
@@ -69,14 +69,14 @@ namespace SundanceCore
           int id_;
 
           /** */
-          RefCountPtr<CellFilterBase> domain_;
+          RefCountPtr<CellFilterStub> domain_;
 
           /** */
-          RefCountPtr<QuadratureFamilyBase> quad_;
+          RefCountPtr<QuadratureFamilyStub> quad_;
           
           /** */
-          static int getID(const RefCountPtr<CellFilterBase>& domain,
-                           const RefCountPtr<QuadratureFamilyBase>& quad);
+          static int getID(const RefCountPtr<CellFilterStub>& domain,
+                           const RefCountPtr<QuadratureFamilyStub>& quad);
 
           /** */
           static int topID() {static int rtn=0; return rtn++;}
@@ -90,9 +90,9 @@ namespace SundanceCore
 
 namespace std
 {
-  /** \relates SundanceCore::FrameworkInterface::EvalRegion*/
+  /** \relates SundanceCore::Internal::RegionQuadCombo*/
   inline ostream& operator<<(ostream& os, 
-                             const SundanceCore::FrameworkInterface::EvalRegion& c)
+                             const SundanceCore::Internal::RegionQuadCombo& c)
   {
     os << c.toString();
     return os;
@@ -103,8 +103,8 @@ namespace Teuchos
 {
   using std::string;
 
-  /** \relates SundanceCore::FrameworkInterface::EvalRegion */
-  inline string toString(const SundanceCore::FrameworkInterface::EvalRegion& h)
+  /** \relates SundanceCore::Internal::RegionQuadCombo */
+  inline string toString(const SundanceCore::Internal::RegionQuadCombo& h)
     {return h.toString();}
 
 }

@@ -23,23 +23,16 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace SundanceCore::Internal;
 
-Expr::Expr(ExprBase* ptr)
-	: ptr_(ptr->getRcp())
-{}
-
 Expr::Expr(const double& c)
-	: ptr_(rcp(new ConstantExpr(c)))
+	: TSFExtended::Handle<ExprBase>(rcp(new ConstantExpr(c)))
 {;}
 
-Expr::Expr(const RefCountPtr<ExprBase>& ptr)
-	: ptr_(ptr)
-{}
 
 XMLObject Expr::toXML() const
 {
   TimeMonitor t(outputTimer());
 
-	return ptr_->toXML();
+	return ptr()->toXML();
 }
 
 string Expr::toString() const 
@@ -66,7 +59,7 @@ void Expr::showDerivs() const
 {
   DerivSet nonzeroDerivs;
 
-  const EvaluatableExpr* e = dynamic_cast<const EvaluatableExpr*>(ptr_.get());
+  const EvaluatableExpr* e = dynamic_cast<const EvaluatableExpr*>(ptr().get());
   
   /* Look for first derivs */
   SundanceUtils::Set<Deriv> d;
@@ -422,7 +415,7 @@ void Expr::append(const Expr& expr)
       Array<Expr> e(2);
       e[0] = *this;
       e[1] = expr;
-      ptr_ = rcp(new ListExpr(e));
+      ptr() = rcp(new ListExpr(e));
     }
 }
 

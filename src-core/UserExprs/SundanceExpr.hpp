@@ -19,14 +19,11 @@ namespace SundanceCore
    * reference-counted pointer to a ExprBase subtype. As such,
    * expression copies and assignments are shallow.
    */
-  class Expr
+  class Expr : public TSFExtended::Handle<Internal::ExprBase>
     {
     public:
-      /** empty ctor */
-      Expr() : ptr_() {;}
-
-      /** Construct with a pointer to an ExprBase subtype. */
-      Expr(Internal::ExprBase* ptr);
+      /* boilerplate handle ctors */
+      HANDLE_CTORS(Expr, Internal::ExprBase);
 
       /** Construct with a constant. Creates a ConstantExpr. */
       Expr(const double& c);
@@ -85,10 +82,7 @@ namespace SundanceCore
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-      /**
-       * Expose the pointer underlying this object.
-       */
-      const RefCountPtr<Internal::ExprBase>& ptr() const {return ptr_;}
+     
 
       /**
        * Turn evaluation caching on
@@ -121,10 +115,8 @@ namespace SundanceCore
 
 
     private:
-      RefCountPtr<Internal::ExprBase> ptr_;
 
-      /** Construct an expression handle given an existing RCP */
-      Expr(const RefCountPtr<Internal::ExprBase>& ptr);
+      
 
       /** Add two scalar expressions */
       Expr sum(const Expr& other, int sign) const ;

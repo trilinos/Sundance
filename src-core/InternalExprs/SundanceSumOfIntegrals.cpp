@@ -9,43 +9,43 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-SumOfIntegrals::SumOfIntegrals(const RefCountPtr<CellFilterBase>& domain,
+SumOfIntegrals::SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
                                const Expr& expr,
-                               const RefCountPtr<QuadratureFamilyBase>& quad)
-  : ScalarExpr(), domains_(),
+                               const RefCountPtr<QuadratureFamilyStub>& quad)
+  : ScalarExpr(), regions_(),
     quad_(),
     expr_(),
     cellSetToIndexMap_(),
     quadToIndexMap_()
 {
-  addTerm(domain, expr, quad, 1);
+  addTerm(region, expr, quad, 1);
 }
 
 
-void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterBase>& domainPtr,
+void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
                              const Expr& expr,
-                             const RefCountPtr<QuadratureFamilyBase>& quadPtr, 
+                             const RefCountPtr<QuadratureFamilyStub>& quadPtr, 
                              int sign)
 {
-  int d = domains_.length();
+  int d = regions_.length();
 
-  OrderedHandle<CellFilterBase> domain(domainPtr);
-  OrderedHandle<QuadratureFamilyBase> quad(quadPtr);
+  OrderedHandle<CellFilterStub> region(regionPtr);
+  OrderedHandle<QuadratureFamilyStub> quad(quadPtr);
 
-  if (cellSetToIndexMap_.containsKey(domain))
+  if (cellSetToIndexMap_.containsKey(region))
     {
-      d = cellSetToIndexMap_.get(domain);
+      d = cellSetToIndexMap_.get(region);
     }
   else
     {
-      domains_.append(domain);
+      regions_.append(region);
       quadToIndexMap_.resize(d+1);
       quad_.resize(d+1);
       expr_.resize(d+1);
-      cellSetToIndexMap_.put(domain, d);
+      cellSetToIndexMap_.put(region, d);
     }
   
   int q = quad_[d].length();
@@ -87,11 +87,11 @@ void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign)
     cerr << tabs << "other: " << other->toXML() << endl;
   }
 
-  for (int d=0; d<other->domains_.size(); d++)
+  for (int d=0; d<other->regions_.size(); d++)
     {
       for (int q=0; q<other->numTerms(d); q++)
         {
-          addTerm(other->domains_[d].ptr(), other->expr_[d][q],
+          addTerm(other->regions_[d].ptr(), other->expr_[d][q],
                   other->quad_[d][q].ptr(), sign);
         }
     }
@@ -108,7 +108,7 @@ void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr)
 {
   double a = expr->value();
 
-  for (int d=0; d<domains_.size(); d++)
+  for (int d=0; d<regions_.size(); d++)
     {
       for (int q=0; q<numTerms(d); q++)
         {
@@ -119,7 +119,7 @@ void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr)
 
 void SumOfIntegrals::changeSign()
 {
-  for (int d=0; d<domains_.size(); d++)
+  for (int d=0; d<regions_.size(); d++)
     {
       for (int q=0; q<numTerms(d); q++)
         {
@@ -128,7 +128,7 @@ void SumOfIntegrals::changeSign()
     }
 }
 
-Set<int> SumOfIntegrals::unksOnDomain(int d) const 
+Set<int> SumOfIntegrals::unksOnRegion(int d) const 
 {
   Set<int> rtn;
   for (int t=0; t<expr_[d].size(); t++)
@@ -138,7 +138,7 @@ Set<int> SumOfIntegrals::unksOnDomain(int d) const
   return rtn;
 }
 
-Set<int> SumOfIntegrals::testsOnDomain(int d) const 
+Set<int> SumOfIntegrals::testsOnRegion(int d) const 
 {
   Set<int> rtn;
   for (int t=0; t<expr_[d].size(); t++)
@@ -150,20 +150,20 @@ Set<int> SumOfIntegrals::testsOnDomain(int d) const
 
 
 
-RefCountPtr<CellFilterBase> SumOfIntegrals::nullDomain() const
+RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
 {
-  for (int d=0; d<domains_.size(); d++)
+  for (int d=0; d<regions_.size(); d++)
     {
-      if (!domains_[d].ptr()->isNullDomain())
+      if (!regions_[d].ptr()->isNullRegion())
         {
-          return domains_[d].ptr()->makeNullDomain();
+          return regions_[d].ptr()->makeNullRegion();
         }
     }
   TEST_FOR_EXCEPTION(true, RuntimeError,
-                     "SumOfIntegrals::nullDomain() called on a sum "
-                     "of integrals with no non-null domains");
+                     "SumOfIntegrals::nullRegion() called on a sum "
+                     "of integrals with no non-null regions");
 
-  return RefCountPtr<CellFilterBase>();
+  return RefCountPtr<CellFilterStub>();
 }
 
 
@@ -171,12 +171,12 @@ RefCountPtr<CellFilterBase> SumOfIntegrals::nullDomain() const
 ostream& SumOfIntegrals::toText(ostream& os, bool paren) const
 {
   os << "Sum of Integrals[" << endl;
-  for (int d=0; d<domains_.size(); d++)
+  for (int d=0; d<regions_.size(); d++)
     {
       for (int t=0; t<quad_[d].size(); t++)
         { 
           os << "Integral[" << endl;
-          os << domains_[d].ptr()->toXML() << endl;
+          os << regions_[d].ptr()->toXML() << endl;
           os << "quad rule: " << quad_[d][t].ptr()->toXML() << endl;
           os << "expr: " << expr_[d][t].toString() << endl;
           os << "]" << endl;
@@ -198,7 +198,7 @@ ostream& SumOfIntegrals::toLatex(ostream& os, bool paren) const
 XMLObject SumOfIntegrals::toXML() const 
 {
   XMLObject rtn("SumOfIntegrals");
-  for (int d=0; d<domains_.size(); d++)
+  for (int d=0; d<regions_.size(); d++)
     {
       XMLObject child("Integral");
       rtn.addChild(child);

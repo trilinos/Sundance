@@ -34,7 +34,7 @@ void SymbolicFunc::substituteZero() const
 }
 
 void SymbolicFunc
-::substituteFunction(const RefCountPtr<DiscreteFunctionBase>& u0) const
+::substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const
 {
   TEST_FOR_EXCEPTION(size() != u0->size(), InternalError,
                      "Mismatch between sizes of symbolic " << toString()

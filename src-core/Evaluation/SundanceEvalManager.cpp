@@ -3,7 +3,7 @@
 
 
 #include "SundanceEvalManager.hpp"
-#include "SundanceEvalMediator.hpp"
+#include "SundanceAbstractEvalMediator.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
@@ -14,10 +14,10 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-EvalManager::EvalManager(const RefCountPtr<EvalMediator>& mediator)
+EvalManager::EvalManager(const RefCountPtr<AbstractEvalMediator>& mediator)
   : numericalEval_(true),
     region_(),
     mediator_(mediator),

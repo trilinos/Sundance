@@ -18,7 +18,7 @@ ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& childr
     childDerivSetIndices_(children.size())
 {}
 
-int ExprWithChildren::setupEval(const EvalRegion& region,
+int ExprWithChildren::setupEval(const RegionQuadCombo& region,
                                 const EvaluatorFactory* factory) const
 {
 

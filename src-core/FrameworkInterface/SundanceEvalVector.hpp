@@ -41,7 +41,7 @@ namespace SundanceCore
      * EvalVector. This is done using the LoadableVector interface,
      * implemented by EvalVector.
      */
-    class EvalVector : public FrameworkInterface::LoadableVector
+    class EvalVector : public Internal::LoadableVector
     {
       friend class TempStack;
 

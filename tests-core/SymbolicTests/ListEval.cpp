@@ -1,8 +1,8 @@
 #include "SundanceExpr.hpp"
 #include "SundanceDerivative.hpp"
-#include "SundanceUnknownFunctionBase.hpp"
-#include "SundanceTestFunctionBase.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestFunctionStub.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
@@ -13,7 +13,7 @@
 #include "Teuchos_MPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceDerivSet.hpp"
-#include "SundanceEvalRegion.hpp"
+#include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceEvalVectorArray.hpp"
@@ -53,10 +53,10 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
 
-			Expr u = new UnknownFunctionBase("u", 2);
-			Expr v = new TestFunctionBase("v", 2);
-			Expr p = new UnknownFunctionBase("p");
-			Expr q = new TestFunctionBase("q");
+			Expr u = new UnknownFunctionStub("u", 2);
+			Expr v = new TestFunctionStub("v", 2);
+			Expr p = new UnknownFunctionStub("p");
+			Expr q = new TestFunctionStub("q");
 
 
       Expr x = new CoordExpr(0);
@@ -65,8 +65,8 @@ int main(int argc, void** argv)
 
       Expr grad = SundanceCore::List(dx, dy);
 
-      Expr u0 = new DiscreteFunctionBase("u0", 2);
-      Expr p0 = new DiscreteFunctionBase("p0");
+      Expr u0 = new DiscreteFunctionStub("u0", 2);
+      Expr p0 = new DiscreteFunctionStub("p0");
 
       Expr navierStokes = v*(u*grad)*u + p*(grad*v)
         + (grad*v[0])*(grad*u[0]) + (grad*v[1])*(grad*u[1]) 
@@ -74,11 +74,11 @@ int main(int argc, void** argv)
 
       Expr bc = v[0]*(u[0]-1.0) + v[1]*(u[1]-2.0);
 
-      EvalRegion internalRegion(rcp(new CellFilterBase()), 
-                                rcp(new QuadratureFamilyBase(0)));
+      RegionQuadCombo internalRegion(rcp(new CellFilterStub()), 
+                                rcp(new QuadratureFamilyStub(0)));
 
-      EvalRegion bcRegion(rcp(new CellFilterBase()), 
-                                rcp(new QuadratureFamilyBase(0)));
+      RegionQuadCombo bcRegion(rcp(new CellFilterStub()), 
+                                rcp(new QuadratureFamilyStub(0)));
 
       EvalManager mgr;
       mgr.setRegion(internalRegion);
@@ -119,8 +119,8 @@ int main(int argc, void** argv)
       cerr << "---- bc -------" << endl;
       results->print(cerr, dBC);
 
-      Expr weak = Integral(new CellFilterBase(), navierStokes);
-      Expr weakBC = EssentialBC(new CellFilterBase(), bc);
+      Expr weak = Integral(new CellFilterStub(), navierStokes);
+      Expr weakBC = EssentialBC(new CellFilterStub(), bc);
       EquationSet eqns(weak, weakBC, List(v,q), List(u,p), List(u0,p0),
                        rcp(new BruteForceEvaluatorFactory()));
       

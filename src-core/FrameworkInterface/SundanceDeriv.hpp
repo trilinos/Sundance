@@ -7,7 +7,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDerivBase.hpp"
 #include "SundanceMultiIndex.hpp"
-
+#include "TSFHandle.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -61,13 +61,11 @@ namespace SundanceCore
        * is done through automatic differentiation in the evaluation
        * of DiffOp expressions.
        */
-      class Deriv
+      class Deriv : public TSFExtended::Handle<DerivBase>
         {
         public:
-          /** */
-          Deriv();
-          /** */
-          Deriv(DerivBase* ptr);
+          /* handle boilerplate */
+          HANDLE_CTORS(Deriv, DerivBase);
 
           /** */
           bool operator<(const Deriv& other) const ;
@@ -92,9 +90,6 @@ namespace SundanceCore
           /** Return internal pointer downcasted to
            * a CoordDeriv pointer */
           const CoordDeriv* coordDeriv() const ;
-
-        private:
-          RefCountPtr<DerivBase> ptr_;
         };
 
     }

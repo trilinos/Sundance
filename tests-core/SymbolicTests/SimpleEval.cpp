@@ -1,8 +1,8 @@
 #include "SundanceExpr.hpp"
 #include "SundanceDerivative.hpp"
-#include "SundanceUnknownFunctionBase.hpp"
-#include "SundanceTestFunctionBase.hpp"
-#include "SundanceDiscreteFunctionBase.hpp"
+#include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestFunctionStub.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
@@ -13,7 +13,7 @@
 #include "Teuchos_MPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceDerivSet.hpp"
-#include "SundanceEvalRegion.hpp"
+#include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceEvalVectorArray.hpp"
@@ -50,7 +50,7 @@ void doit(const Expr& e,
           const Expr& tests,
           const Expr& unks,
           const Expr& u0, 
-          const EvalRegion& region)
+          const RegionQuadCombo& region)
 {
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
@@ -79,7 +79,7 @@ void testExpr(const Expr& e,
               const Expr& tests,
               const Expr& unks,
               const Expr& u0, 
-              const EvalRegion& region)
+              const RegionQuadCombo& region)
 {
   cerr << endl 
        << "-------- testing " << e.toString() << " -------- " << endl;
@@ -120,10 +120,10 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
 
-			Expr u = new UnknownFunctionBase("u");
-			Expr w = new UnknownFunctionBase("w");
-			Expr v = new TestFunctionBase("v");
-			Expr s = new TestFunctionBase("s");
+			Expr u = new UnknownFunctionStub("u");
+			Expr w = new UnknownFunctionStub("w");
+			Expr v = new TestFunctionStub("v");
+			Expr s = new TestFunctionStub("s");
 
       cerr << "u=" << u << endl;
       cerr << "v=" << v << endl;
@@ -131,8 +131,8 @@ int main(int argc, void** argv)
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
 
-      Expr u0 = new DiscreteFunctionBase("u0");
-      Expr w0 = new DiscreteFunctionBase("w0");
+      Expr u0 = new DiscreteFunctionStub("u0");
+      Expr w0 = new DiscreteFunctionStub("w0");
 
       Array<Expr> tests;
 
@@ -185,7 +185,7 @@ int main(int argc, void** argv)
                    SundanceCore::List(v, s),
                    SundanceCore::List(u, w),
                    SundanceCore::List(u0, w0),
-                   EvalRegion(rcp(new CellFilterBase()), rcp(new QuadratureFamilyBase(0))));
+                   RegionQuadCombo(rcp(new CellFilterStub()), rcp(new QuadratureFamilyStub(0))));
         }
 
       

@@ -13,7 +13,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace SundanceCore::FrameworkInterface;
+  using namespace SundanceCore::Internal;
 
   using std::string;
   using std::ostream;

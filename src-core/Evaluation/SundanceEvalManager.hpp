@@ -5,8 +5,8 @@
 #define SUNDANCE_EVALMANAGER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceEvalRegion.hpp"
-#include "SundanceEvalMediator.hpp"
+#include "SundanceRegionQuadCombo.hpp"
+#include "SundanceAbstractEvalMediator.hpp"
 #include "SundanceTempStack.hpp"
 #include "SundanceNoncopyable.hpp"
 
@@ -23,19 +23,19 @@ namespace SundanceCore
       class MultiIndex;
       class DiscreteFuncElement;
 
-      using namespace FrameworkInterface;
+      using namespace Internal;
 
       /**
        * EvalManager provides methods for interfacing to the framework
-       * through an EvalMediator and managing temporary variables
+       * through an AbstractEvalMediator and managing temporary variables
        * through a TempStack.
        */
       class EvalManager : public Noncopyable
         {
         public:
-          /** Construct with an EvalMediator that knows how to create
+          /** Construct with an AbstractEvalMediator that knows how to create
            * vectors and evaluate framework-specific functions. */
-          EvalManager(const RefCountPtr<EvalMediator>& mediator);
+          EvalManager(const RefCountPtr<AbstractEvalMediator>& mediator);
 
           /** Empty ctor, creates a null mediator and does string
            * evaluations */
@@ -53,14 +53,14 @@ namespace SundanceCore
           /** Return a pointer to the mediator. We'll need the
            * mediator for computing framework-specific functions.
            */
-          const EvalMediator* mediator() const {return mediator_.get();}
+          const AbstractEvalMediator* mediator() const {return mediator_.get();}
 
           /** */
-          void setRegion(const EvalRegion& region)
+          void setRegion(const RegionQuadCombo& region)
             {region_ = region;}
 
           /** */
-          const EvalRegion& getRegion() const {return region_;}
+          const RegionQuadCombo& getRegion() const {return region_;}
 
           /** */
           TempStack& stack() const {return stack_;}
@@ -69,9 +69,9 @@ namespace SundanceCore
 
           bool numericalEval_;
 
-          EvalRegion region_;
+          RegionQuadCombo region_;
 
-          RefCountPtr<EvalMediator> mediator_;
+          RefCountPtr<AbstractEvalMediator> mediator_;
 
           mutable TempStack stack_;
       };

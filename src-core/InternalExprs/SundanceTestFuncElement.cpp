@@ -2,16 +2,16 @@
 /* @HEADER@ */
 
 #include "SundanceTestFuncElement.hpp"
-#include "SundanceTestFunctionBase.hpp"
+#include "SundanceTestFunctionStub.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-TestFuncElement::TestFuncElement(const TestFunctionBase* master,
+TestFuncElement::TestFuncElement(const TestFunctionStub* master,
                                  const string& name,
                                  int myIndex)
 	: SymbolicFuncElement(name, myIndex), master_(master)

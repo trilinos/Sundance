@@ -1,8 +1,8 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#ifndef SUNDANCE_CELLFILTERBASE_H
-#define SUNDANCE_CELLFILTERBASE_H
+#ifndef SUNDANCE_CELLFILTERSTUB_H
+#define SUNDANCE_CELLFILTERSTUB_H
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -21,10 +21,10 @@ namespace SundanceCore
   using namespace Teuchos;
   using namespace Internal;
   
-  namespace FrameworkInterface
+  namespace Internal
   {
     /** 
-     * Base class for cell filter objects, i.e., objects that can 
+     * Stub class for cell filter objects, i.e., objects that can 
      * select a subset of mesh cells on which an integral or 
      * BC is to be applied.
      *
@@ -32,24 +32,24 @@ namespace SundanceCore
      *
      *  
      */
-    class CellFilterBase : public TSFExtended::Handleable<CellFilterBase>,
+    class CellFilterStub : public TSFExtended::Handleable<CellFilterStub>,
                            public TSFExtended::Printable,
                            public TSFExtended::Describable,
                            public Noncopyable,
-                           public ObjectWithInstanceID<CellFilterBase>
+                           public ObjectWithInstanceID<CellFilterStub>
     {
     public:
       /** Empty ctor */
-      CellFilterBase();
+      CellFilterStub();
 
       /** virtual dtor */
-      virtual ~CellFilterBase(){;}
+      virtual ~CellFilterStub(){;}
 
       /** Write to XML */
       virtual XMLObject toXML() const ;
 
       /** Ordering for storage in STL maps */
-      virtual bool lessThan(const CellFilterBase* other) const 
+      virtual bool lessThan(const CellFilterStub* other) const 
       {return id() < other->id();}
 
       /** \name Printable interface */
@@ -62,17 +62,17 @@ namespace SundanceCore
       //@{
       /** Print to a stream */
       virtual string describe() const 
-      {return "CellFilterBase[id=" + Teuchos::toString(id()) + "]";}
+      {return "CellFilterStub[id=" + Teuchos::toString(id()) + "]";}
       //@}
 
       /** */
-      virtual RefCountPtr<CellFilterBase> makeNullDomain() const ;
+      virtual RefCountPtr<CellFilterStub> makeNullRegion() const ;
 
       /** */
-      virtual RefCountPtr<CellFilterBase> getRcp() {return rcp(this);}
+      virtual RefCountPtr<CellFilterStub> getRcp() {return rcp(this);}
 
       /** */
-      bool isNullDomain() const ;
+      bool isNullRegion() const ;
 
       
 

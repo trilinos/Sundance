@@ -15,9 +15,9 @@
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace FrameworkInterface
+  namespace Internal
   {
-    class UnknownFunctionBase;
+    class UnknownFunctionStub;
   }
 
   namespace Internal
@@ -35,7 +35,7 @@ namespace SundanceCore
     {
     public:
       /** */
-      UnknownFuncElement(const UnknownFunctionBase* master,
+      UnknownFuncElement(const UnknownFunctionStub* master,
                          const string& name,
                          int myIndex);
 
@@ -44,7 +44,7 @@ namespace SundanceCore
 
       /** Get the master unknown function 
        * of which this object is an element */
-      const UnknownFunctionBase* master() const {return master_;}
+      const UnknownFunctionStub* master() const {return master_;}
 
       /** Append my func ID to the set of unk IDs */
       virtual void accumulateUnkSet(Set<int>& unkIDs) const 
@@ -58,7 +58,7 @@ namespace SundanceCore
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
       
     private:
-      const UnknownFunctionBase* master_;
+      const UnknownFunctionStub* master_;
     };
   }
 }

@@ -8,13 +8,13 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::FrameworkInterface;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterBase>& domain,
+SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterStub>& region,
                    const Expr& expr,
-                   const RefCountPtr<QuadratureFamilyBase>& quad)
-  : SumOfIntegrals(domain, expr, quad)
+                   const RefCountPtr<QuadratureFamilyStub>& quad)
+  : SumOfIntegrals(region, expr, quad)
 {;}
 
 
@@ -24,12 +24,12 @@ SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterBase>& domain,
 ostream& SumOfBCs::toText(ostream& os, bool paren) const
 {
   os << "Sum of BCs[" << endl;
-  for (int d=0; d<numDomains(); d++)
+  for (int d=0; d<numRegions(); d++)
     {
       for (int t=0; t<numTerms(d); t++)
         {
           os << "BC[" << endl;
-          os << domain(d)->toXML() << endl;
+          os << region(d)->toXML() << endl;
           os << "quad rule: " << quad(d,t)->toXML() << endl;
           os << "expr: " << expr(d,t).toString() << endl;
           os << "]" << endl;
@@ -50,9 +50,9 @@ ostream& SumOfBCs::toLatex(ostream& os, bool paren) const
 XMLObject SumOfBCs::toXML() const 
 {
   XMLObject rtn("SumOfBCs");
-  for (int d=0; d<numDomains(); d++)
+  for (int d=0; d<numRegions(); d++)
     {
-      rtn.addChild(domain(d)->toXML());
+      rtn.addChild(region(d)->toXML());
       XMLObject child("BC");
       rtn.addChild(child);
       for (int t=0; t<numTerms(d); t++)

@@ -10,6 +10,7 @@
 #include "SundanceSet.hpp"
 #include "Teuchos_XMLObject.hpp"
 #include "Teuchos_RefCountPtrDecl.hpp"
+#include "TSFHandleable.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -25,7 +26,7 @@ namespace SundanceCore
   namespace Internal
     {
       /** */
-      class ExprBase
+      class ExprBase : public TSFExtended::Handleable<ExprBase>
         {
         public:
           /** empty ctor */
@@ -57,9 +58,6 @@ namespace SundanceCore
 
           /** Return a descriptive name for the expression subtype */
           virtual string typeName() const ;
-
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() = 0 ;
 
         protected:
         };

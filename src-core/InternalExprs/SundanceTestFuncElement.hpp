@@ -14,9 +14,9 @@
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace FrameworkInterface
+  namespace Internal
   {
-    class TestFunctionBase;
+    class TestFunctionStub;
   }
 
   namespace Internal
@@ -34,7 +34,7 @@ namespace SundanceCore
     {
     public:
       /** */
-      TestFuncElement(const TestFunctionBase* master,
+      TestFuncElement(const TestFunctionStub* master,
                       const string& name,
                       int myIndex);
 
@@ -43,7 +43,7 @@ namespace SundanceCore
 
       /** Get the master test function 
        * of which this object is an element */
-      const TestFunctionBase* master() const {return master_;}
+      const TestFunctionStub* master() const {return master_;}
 
       /** Append my func ID to the set of test IDs */
       virtual void accumulateTestSet(Set<int>& testIDs) const 
@@ -56,7 +56,7 @@ namespace SundanceCore
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
       
     private:
-      const TestFunctionBase* master_;
+      const TestFunctionStub* master_;
     };
   }
 }

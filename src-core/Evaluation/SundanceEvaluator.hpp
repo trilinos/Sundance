@@ -15,12 +15,12 @@ namespace SundanceCore
 {
   class CoordExpr;
 
-  namespace FrameworkInterface
+  namespace Internal
   {
-    class EvalRegion;
+    class RegionQuadCombo;
   }
   
-  using namespace FrameworkInterface;
+  using namespace Internal;
 
   namespace Internal 
   {
