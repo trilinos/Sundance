@@ -26,6 +26,7 @@ EvaluatableExpr::EvaluatableExpr()
     evaluators_(),
     sparsity_(),
     orderOfDependency_(MultiIndex::maxDim(), -1),
+    orderOfFunctionalDependency_(),
     nodesHaveBeenCounted_(false)
 {}
 
@@ -65,10 +66,17 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
   return rtn;
 }
 
+int EvaluatableExpr::orderOfFunctionalDependency(int funcID) const
+{
+  if (orderOfFunctionalDependency_.containsKey(funcID))
+    {
+      return orderOfFunctionalDependency_.get(funcID);
+    }
+  return 0;
+}
 
 
-
-const RefCountPtr<Evaluator>&
+ const RefCountPtr<Evaluator>&
 EvaluatableExpr::evaluator(const EvalContext& context) const 
 {
   TEST_FOR_EXCEPTION(!evaluators_.containsKey(context), RuntimeError, 
@@ -96,7 +104,10 @@ void EvaluatableExpr::addKnownNonzero(const EvalContext& context,
   knownNonzeros_.put(spec);
 }
 
-
+bool EvaluatableExpr::isActive(const Set<MultiSet<int> >& activeFuncIDs) const 
+{
+  
+}
 
 void EvaluatableExpr::evaluate(const EvalManager& mgr,
                                Array<double>& constantResults,

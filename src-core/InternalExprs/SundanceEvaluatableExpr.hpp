@@ -163,9 +163,29 @@ namespace SundanceCore
        * By default, any otherwise unspecified expression is assumed 
        * to be non-polynomial. 
        */
-      int orderOfDependency(int spatialDir) const 
+      int orderOfSpatialDependency(int spatialDir) const 
       {return orderOfDependency_[spatialDir];}
+
+      /** 
+       * Return the polynomial order of this expr's dependence on the 
+       * given function. Non-polynomial functions
+       * (e.g., sqrt()) are assigned order=-1. This convention is 
+       * non-standard mathematically but allows us to use integer 
+       * order variables for all functions. 
+       * By default, any otherwise unspecified expression is assumed 
+       * to be non-polynomial. 
+       */
+      int orderOfFunctionalDependency(int funcID) const ;
+
       
+
+      /** Return the set of function IDs that this expression depends
+       * on. */
+      const Set<int>& funcIDSet() const {return funcIDSet_;}
+
+      /** Indicate whether this expression has any nonzero derivs
+       * under the specified active functional derivatives */
+      bool isActive(const Set<MultiSet<int> >& activeFuncIDs) const ;
       //@}
       
       /** \name Error checking */
@@ -208,6 +228,20 @@ namespace SundanceCore
       void setOrderOfDependency(int spatialDir, int order)
       {orderOfDependency_[spatialDir] = order;}
 
+      /** Set the order of dependency of this expression on the
+       * given function. This method exists as a utility
+       * to be called at construction time, and should probably not be
+       * called at other times. */
+      void setOrderOfFunctionalDependency(int funcID, int order)
+      {orderOfFunctionalDependency_.put(funcID, order);}
+
+      /** Set the set of functional dependencies. To be called only at 
+       * ctor time */
+      void setFuncIDSet(const Set<int>& funcIDSet)
+      {funcIDSet_ = funcIDSet;}
+
+      
+
       /** */
       static bool isEvaluatable(const ExprBase* expr);
 
@@ -247,6 +281,12 @@ namespace SundanceCore
 
       /** Polynomial order of the dependency upon each coordinate direction */
       Array<int> orderOfDependency_;
+
+      /** Polynomial order of the dependency upon each function */
+      Map<int, int> orderOfFunctionalDependency_;
+
+      /** List of function IDs upon which this expr depends */
+      Set<int> funcIDSet_;
 
       mutable Set<NonzeroSpecifier> knownNonzeros_;
 

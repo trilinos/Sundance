@@ -42,7 +42,16 @@ void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,
     }
 
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
-  subset->addDeriv(MultipleDeriv(), ConstantDeriv);
+
+  if (!isActive(activeFuncIDs))
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "...expr is inactive under derivs "
+                           << activeFuncIDs);
+    }
+  else
+    {
+      subset->addDeriv(MultipleDeriv(), ConstantDeriv);
+    }
 
   addKnownNonzero(context, multiIndices, activeFuncIDs,
                        allFuncIDs, regardFuncsAsConstant);

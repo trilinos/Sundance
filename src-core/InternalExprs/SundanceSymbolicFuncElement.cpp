@@ -26,7 +26,13 @@ SymbolicFuncElement::SymbolicFuncElement(const string& name,
     evalPt_(),
     evalPtDerivSetIndices_(),
     myIndex_(myIndex)
-{}
+{
+  int fid = funcID();
+  Set<int> fidSet;
+  fidSet.put(fid);
+  setFuncIDSet(fidSet);
+  setOrderOfFunctionalDependency(fid, 1);
+}
 
 
 

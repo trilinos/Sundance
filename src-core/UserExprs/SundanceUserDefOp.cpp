@@ -16,13 +16,17 @@ UserDefOp::UserDefOp(const Expr& arg,
                      const RefCountPtr<UserDefFunctor>& op)
   : ExprWithChildren(getScalarArgs(arg)), op_(op)
 {
+  typedef Set<int>::const_iterator setIter;
+  
+  Set<int> fidSet;
+
   for (int i=0; i<numChildren(); i++)
     {
       if (isEvaluatable(evaluatableChild(i)))
         {
           for (int d=0; d<MultiIndex::maxDim(); d++) 
             {
-              if (evaluatableChild(i)->orderOfDependency(d) != 0) 
+              if (evaluatableChild(i)->orderOfSpatialDependency(d) != 0) 
                 {
                   setOrderOfDependency(d, -1);
                 }
@@ -31,7 +35,14 @@ UserDefOp::UserDefOp(const Expr& arg,
                   setOrderOfDependency(d, 0);
                 }
             }
+          fidSet.merge(evaluatableChild(i)->funcIDSet());
         }
+    }
+
+  setFuncIDSet(fidSet);
+  for (setIter i=funcIDSet().begin(); i != funcIDSet().end(); i++)
+    {
+      setOrderOfFunctionalDependency(*i, -1);
     }
 }
 

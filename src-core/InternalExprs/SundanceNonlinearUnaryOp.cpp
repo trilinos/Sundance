@@ -11,14 +11,16 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
-                                     const RefCountPtr<UnaryFunctor>& op)
+                                   const RefCountPtr<UnaryFunctor>& op)
   : UnaryExpr(arg), op_(op)
 {
+  typedef Set<int>::const_iterator setIter;
+
   if (isEvaluatable(arg.get()))
     {
       for (int d=0; d<MultiIndex::maxDim(); d++) 
         {
-          if (evaluatableArg()->orderOfDependency(d) != 0) 
+          if (evaluatableArg()->orderOfSpatialDependency(d) != 0) 
             {
               setOrderOfDependency(d, -1);
             }
@@ -26,6 +28,13 @@ NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
             {
               setOrderOfDependency(d, 0);
             }
+        }
+
+      setFuncIDSet(evaluatableArg()->funcIDSet());
+
+      for (setIter i=funcIDSet().begin(); i != funcIDSet().end(); i++)
+        {
+          setOrderOfFunctionalDependency(*i, -1);
         }
     }
 }
@@ -47,51 +56,59 @@ void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
-
-  Set<MultiSet<int> > childFuncIDs = findChildFuncIDSet(activeFuncIDs,
-                                                        allFuncIDs);
-
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
-  int maxMiOrder = maxOrder(multiIndices);
-  int maxDiffOrder = context.topLevelDiffOrder() + maxMiOrder;
+  if (!isActive(activeFuncIDs))
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "...expr is inactive under derivs "
+                           << activeFuncIDs);
+    }
+  else
+    {
+      Set<MultiSet<int> > childFuncIDs = findChildFuncIDSet(activeFuncIDs,
+                                                            allFuncIDs);
 
-  evaluatableArg()->findNonzeros(context, multiIndices,
-                                 childFuncIDs,
-                                 allFuncIDs,
-                                 regardFuncsAsConstant);
 
-  RefCountPtr<SparsitySubset> argSparsitySubset 
+
+      int maxMiOrder = maxOrder(multiIndices);
+      int maxDiffOrder = context.topLevelDiffOrder() + maxMiOrder;
+
+      evaluatableArg()->findNonzeros(context, multiIndices,
+                                     childFuncIDs,
+                                     allFuncIDs,
+                                     regardFuncsAsConstant);
+
+      RefCountPtr<SparsitySubset> argSparsitySubset 
         = evaluatableArg()->sparsitySubset(context, multiIndices);
 
-  for (int i=0; i<argSparsitySubset->numDerivs(); i++)
-    {
-      if (argSparsitySubset->deriv(i).order()==0)
+      for (int i=0; i<argSparsitySubset->numDerivs(); i++)
         {
-          subset->addDeriv(argSparsitySubset->deriv(i), 
-                           argSparsitySubset->state(i));
+          if (argSparsitySubset->deriv(i).order()==0)
+            {
+              subset->addDeriv(argSparsitySubset->deriv(i), 
+                               argSparsitySubset->state(i));
+            }
+          else
+            {
+              subset->addDeriv(argSparsitySubset->deriv(i), 
+                               VectorDeriv);
+            }
         }
-      else
+
+      for (int i=0; i<argSparsitySubset->numDerivs(); i++)
         {
-          subset->addDeriv(argSparsitySubset->deriv(i), 
-                           VectorDeriv);
+          for (int j=0; j<argSparsitySubset->numDerivs(); j++)
+            {
+              MultipleDeriv product 
+                = argSparsitySubset->deriv(i).product(argSparsitySubset->deriv(j));
+              if (product.order() > maxDiffOrder) continue;
+              if (product.spatialOrder() > maxMiOrder) continue;
+              subset->addDeriv(product, VectorDeriv);
+            }
         }
     }
-
-  for (int i=0; i<argSparsitySubset->numDerivs(); i++)
-    {
-      for (int j=0; j<argSparsitySubset->numDerivs(); j++)
-        {
-          MultipleDeriv product 
-            = argSparsitySubset->deriv(i).product(argSparsitySubset->deriv(j));
-          if (product.order() > maxDiffOrder) continue;
-          if (product.spatialOrder() > maxMiOrder) continue;
-          subset->addDeriv(product, VectorDeriv);
-        }
-    }
-
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant);
+                  allFuncIDs, regardFuncsAsConstant);
 }
 
 

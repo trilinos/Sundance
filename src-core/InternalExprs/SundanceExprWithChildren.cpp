@@ -81,31 +81,38 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
 
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
-  /* The sparsity pattern is the union of the 
-   * operands' sparsity patterns. If any functional derivatives
-   * appear in multiple operands, the state of that derivative is
-   * the more general of the states */
-  for (unsigned int i=0; i<children_.size(); i++)
+  if (!isActive(activeFuncIDs))
     {
-      Tabs tab1;
-      SUNDANCE_VERB_MEDIUM(tab1 << "finding nonzeros for child " 
-                           << evaluatableChild(i)->toString());
-      evaluatableChild(i)->findNonzeros(context, multiIndices,
-                                        activeFuncIDs, allFuncIDs,
-                                        regardFuncsAsConstant);
-
-      RefCountPtr<SparsitySubset> childSparsitySubset 
-        = evaluatableChild(i)->sparsitySubset(context, multiIndices);
-      
-      for (int j=0; j<childSparsitySubset->numDerivs(); j++)
+      SUNDANCE_VERB_MEDIUM(tabs << "...expr is inactive under derivs "
+                           << activeFuncIDs);
+    }
+  else
+    {
+      /* The sparsity pattern is the union of the 
+       * operands' sparsity patterns. If any functional derivatives
+       * appear in multiple operands, the state of that derivative is
+       * the more general of the states */
+      for (unsigned int i=0; i<children_.size(); i++)
         {
-          subset->addDeriv(childSparsitySubset->deriv(j),
-                           childSparsitySubset->state(j));
+          Tabs tab1;
+          SUNDANCE_VERB_MEDIUM(tab1 << "finding nonzeros for child " 
+                               << evaluatableChild(i)->toString());
+          evaluatableChild(i)->findNonzeros(context, multiIndices,
+                                            activeFuncIDs, allFuncIDs,
+                                            regardFuncsAsConstant);
+
+          RefCountPtr<SparsitySubset> childSparsitySubset 
+            = evaluatableChild(i)->sparsitySubset(context, multiIndices);
+      
+          for (int j=0; j<childSparsitySubset->numDerivs(); j++)
+            {
+              subset->addDeriv(childSparsitySubset->deriv(j),
+                               childSparsitySubset->state(j));
+            }
         }
     }
-
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant);
+                  allFuncIDs, regardFuncsAsConstant);
 }
 
 void ExprWithChildren::setupEval(const EvalContext& context) const

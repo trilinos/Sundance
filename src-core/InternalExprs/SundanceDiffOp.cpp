@@ -20,23 +20,36 @@ DiffOp::DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg)
   : UnaryExpr(arg), mi_(op), myCoordDeriv_(), requiredFunctions_(),
     ignoreFuncTerms_(false)
 {
+  typedef Set<int>::const_iterator setIter;
   myCoordDeriv_ = new CoordDeriv(mi_.firstOrderDirection());
   
-  for (int d=0; d<MultiIndex::maxDim(); d++) 
+  if (isEvaluatable(arg.get()))
     {
-      if (op[d] == 0) continue;
-      /* if the arg is constant wrt the diff op, it remains constant (zero) */ 
-      if (evaluatableArg()->orderOfDependency(d) == 0 ) continue;
-      /* if the arg is nonpolynomial wrt the diff op's direction, it remains
-       * nonpolynomial */
-      if (evaluatableArg()->orderOfDependency(d) < 0 ) 
+      for (int d=0; d<MultiIndex::maxDim(); d++) 
         {
-          setOrderOfDependency(d, -1);
+          if (op[d] == 0) continue;
+          /* if the arg is constant wrt the diff op, 
+           * it remains constant (zero) */ 
+          if (evaluatableArg()->orderOfSpatialDependency(d) == 0 ) continue;
+          /* if the arg is nonpolynomial wrt the diff op's direction, 
+           * it remains
+           * nonpolynomial */
+          if (evaluatableArg()->orderOfSpatialDependency(d) < 0 ) 
+            {
+              setOrderOfDependency(d, -1);
+            }
+          else
+            {
+              /* otherwise adjust the order for differentiation */
+              setOrderOfDependency(d, max(evaluatableArg()->orderOfSpatialDependency(d) - op[d], 0));
+            }
         }
-      else
+
+      setFuncIDSet(evaluatableArg()->funcIDSet());
+      for (setIter i=funcIDSet().begin(); i != funcIDSet().end(); i++)
         {
-          /* otherwise adjust the order for differentiation */
-          setOrderOfDependency(d, max(evaluatableArg()->orderOfDependency(d) - op[d], 0));
+          int argOD = evaluatableArg()->orderOfFunctionalDependency(*i);
+          setOrderOfFunctionalDependency(*i, argOD);
         }
     }
 }
@@ -102,74 +115,82 @@ void DiffOp::findNonzeros(const EvalContext& context,
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
-
-  ignoreFuncTerms_ = regardFuncsAsConstant;
-  SUNDANCE_VERB_MEDIUM(tabs << "evaluating symbolic functions at zero");
-
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
-  /* Figure out the sparsity pattern for the argument.  */
-  Set<MultiIndex> argMI = argMultiIndices(multiIndices);
-  
-  SUNDANCE_VERB_MEDIUM(tabs << "arg multi index set is " << endl << argMI);
-
-  
-
-  evaluatableArg()->findNonzeros(context, argMI,
-                                 argActiveFuncs(activeFuncIDs, allFuncIDs),
-                                 allFuncIDs,
-                                 regardFuncsAsConstant);
-
-  RefCountPtr<SparsitySubset> argSparsity
-    = evaluatableArg()->sparsitySubset(context, argMI);
-
-  SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity is " << endl << *argSparsity);
-
-
-  for (int i=0; i<argSparsity->numDerivs(); i++)
+  if (!isActive(activeFuncIDs))
     {
-      Tabs tab1;
-
-      const MultipleDeriv& md = argSparsity->deriv(i);
-
-      if (md.order()==0) continue;
-      
-      SUNDANCE_VERB_MEDIUM(tab1 << "finding the effect of the argument's "
-                           "nonzero derivative " << md);
-      // cerr << "inverting " << md << endl;
-      
+      SUNDANCE_VERB_MEDIUM(tabs << "...expr is inactive under derivs "
+                           << activeFuncIDs);
+    }
+  else
+    {
+      ignoreFuncTerms_ = regardFuncsAsConstant;
+      SUNDANCE_VERB_MEDIUM(tabs << "evaluating symbolic functions at zero");
 
 
-      Map<MultipleDeriv, DerivState> isolatedTerms;
-      Map<MultipleDeriv, Deriv> funcTerms;
-      getResultDerivs(argSparsity->deriv(i), 
-                      argSparsity->state(i),
-                      isolatedTerms,
-                      funcTerms);
 
-      SUNDANCE_VERB_MEDIUM(tab1 << "monomials = " 
-                           << isolatedTerms);
+      /* Figure out the sparsity pattern for the argument.  */
+      Set<MultiIndex> argMI = argMultiIndices(multiIndices);
+  
+      SUNDANCE_VERB_MEDIUM(tabs << "arg multi index set is " << endl << argMI);
+
+  
+
+      evaluatableArg()->findNonzeros(context, argMI,
+                                     argActiveFuncs(activeFuncIDs, allFuncIDs),
+                                     allFuncIDs,
+                                     regardFuncsAsConstant);
+
+      RefCountPtr<SparsitySubset> argSparsity
+        = evaluatableArg()->sparsitySubset(context, argMI);
+
+      SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity is " << endl << *argSparsity);
 
 
-      for (Map<MultipleDeriv, DerivState>::const_iterator 
-             iter=isolatedTerms.begin(); iter != isolatedTerms.end(); iter++)
+      for (int i=0; i<argSparsity->numDerivs(); i++)
         {
-          subset->addDeriv(iter->first, iter->second);
-        }
+          Tabs tab1;
 
-      if (!ignoreFuncTerms())
-        {
-          SUNDANCE_VERB_MEDIUM(tab1 << "func terms = " << funcTerms);
-          for (Map<MultipleDeriv, Deriv>::const_iterator 
-                 iter=funcTerms.begin(); iter != funcTerms.end(); iter++)
+          const MultipleDeriv& md = argSparsity->deriv(i);
+
+          if (md.order()==0) continue;
+      
+          SUNDANCE_VERB_MEDIUM(tab1 << "finding the effect of the argument's "
+                               "nonzero derivative " << md);
+          // cerr << "inverting " << md << endl;
+      
+
+
+          Map<MultipleDeriv, DerivState> isolatedTerms;
+          Map<MultipleDeriv, Deriv> funcTerms;
+          getResultDerivs(argSparsity->deriv(i), 
+                          argSparsity->state(i),
+                          isolatedTerms,
+                          funcTerms);
+
+          SUNDANCE_VERB_MEDIUM(tab1 << "monomials = " 
+                               << isolatedTerms);
+
+
+          for (Map<MultipleDeriv, DerivState>::const_iterator 
+                 iter=isolatedTerms.begin(); iter != isolatedTerms.end(); iter++)
             {
-              subset->addDeriv(iter->first, VectorDeriv);
+              subset->addDeriv(iter->first, iter->second);
+            }
+
+          if (!ignoreFuncTerms())
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "func terms = " << funcTerms);
+              for (Map<MultipleDeriv, Deriv>::const_iterator 
+                     iter=funcTerms.begin(); iter != funcTerms.end(); iter++)
+                {
+                  subset->addDeriv(iter->first, VectorDeriv);
+                }
             }
         }
     }
-
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant);
+                  allFuncIDs, regardFuncsAsConstant);
   //  cerr << "my sparsity: " << *subset << endl;
 }
 
