@@ -3,6 +3,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceToken.hpp"
+#include "SundanceSet.hpp"
 #include "SundanceExprScanner.hpp"
 #include "Teuchos_XMLObject.hpp"
 
@@ -30,8 +31,45 @@ namespace SundanceXML
     static void primitiveLevel(const ExprScanner& scanner,
                                Teuchos::XMLObject& result);
 
+    static void parseFunction(const string& funcName,
+                              const Teuchos::XMLObject& arg,
+                              Teuchos::XMLObject& result);
 
+    static void parseExpr(const string& funcName,
+                          const Teuchos::XMLObject& arg,
+                          Teuchos::XMLObject& result); 
 
+    static void parseMesh(const string& funcName,
+                          const Teuchos::XMLObject& arg,
+                          Teuchos::XMLObject& result); 
+
+    static void parseBasis(const string& funcName,
+                           const Teuchos::XMLObject& arg,
+                           Teuchos::XMLObject& result);
+
+    static void parseQuad(const string& funcName,
+                          const Teuchos::XMLObject& arg,
+                          Teuchos::XMLObject& result);
+
+    static void parseDiscreteSpace(const string& funcName,
+                                   const Teuchos::XMLObject& arg,
+                                   Teuchos::XMLObject& result); 
+
+    static void parseLinearProblem(const string& funcName,
+                                   const Teuchos::XMLObject& arg,
+                                   Teuchos::XMLObject& result);
+
+    static void parseNonlinearProblem(const string& funcName,
+                                      const Teuchos::XMLObject& arg,
+                                      Teuchos::XMLObject& result);
+
+    static SundanceUtils::Set<string>& exprTypes() ;
+
+    static SundanceUtils::Set<string>& basisTypes() ;
+
+    static SundanceUtils::Set<string>& quadTypes() ;
+
+    static SundanceUtils::Set<string>& meshTypes() ;
   private:
 
   };

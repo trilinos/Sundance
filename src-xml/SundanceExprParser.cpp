@@ -32,12 +32,13 @@ void ExprParser::assignLevel(const ExprScanner& scanner, XMLObject& result)
     {
       Token token = scanner.pop();
       tmp = token.tok();
-      result = XMLObject("Assign");
-      result.addAttribute("target", tmp);
+      //      result = XMLObject("Assign");
+      //      result.addAttribute("target", tmp);
       token = scanner.pop();
       XMLObject lhs;
       addLevel(scanner, lhs);
-      result.addChild(lhs);
+      lhs.addAttribute("name", tmp);
+      result = lhs;
     }
   else
     {
@@ -176,19 +177,8 @@ void ExprParser::unaryLevel(const ExprScanner& scanner,
     }
   else if (isFunction) 
     {
-      result = XMLObject("Function");
-      result.addAttribute("name", start.name());
-      if (tmp.getTag() != "ArgumentList")
-        {
-          result.addChild(tmp);
-        }
-      else
-        {
-          for (int i=0; i<tmp.numChildren(); i++)
-            {
-              result.addChild(tmp.getChild(i));
-            }
-        }
+      parseFunction(start.name(), tmp, result);
+      
     }
   else if (isIndexed) 
     {
@@ -324,9 +314,214 @@ void ExprParser::primitiveLevel(const ExprScanner& scanner,
   // cerr << "leaving primitive level xml=" << result << endl;
 }
 
+void ExprParser::parseFunction(const string& funcName,
+                               const XMLObject& arg,
+                               XMLObject& result)
+{
+  if (meshTypes().contains(funcName))
+    {
+      parseMesh(funcName, arg, result);
+    }
+  else if (basisTypes().contains(funcName))
+    {
+      parseBasis(funcName, arg, result);
+    }
+  else if (exprTypes().contains(funcName))
+    {
+      parseExpr(funcName, arg, result);
+    }
+  else if (quadTypes().contains(funcName))
+    {
+      parseQuad(funcName, arg, result);
+    }
+  else if (funcName=="DiscreteSpace")
+    {
+      parseDiscreteSpace(funcName, arg, result);
+    }
+  else if (funcName=="LinearProblem")
+    {
+      parseLinearProblem(funcName, arg, result);
+    }
+  else if (funcName=="NonlinearProblem")
+    {
+      parseNonlinearProblem(funcName, arg, result);
+    }
+  else
+    {
+      result = XMLObject("Function");
+      result.addAttribute("name", funcName);
+      if (arg.getTag() != "ArgumentList")
+        {
+          result.addChild(arg);
+        }
+      else
+        {
+          for (int i=0; i<arg.numChildren(); i++)
+            {
+              result.addChild(arg.getChild(i));
+            }
+        }
+    }
+}
+
+
+void ExprParser::parseBasis(const string& type,
+                            const Teuchos::XMLObject& arg,
+                            Teuchos::XMLObject& result)
+{
+  result = XMLObject(type);
+  if (type=="Lagrange")
+    {
+      result.addAttribute("order", arg.getRequired("value"));
+    }
+}
+
+
+void ExprParser::parseQuad(const string& type,
+                           const Teuchos::XMLObject& arg,
+                           Teuchos::XMLObject& result)
+{
+  result = XMLObject(type);
+  if (type=="GaussianQuadrature")
+    {
+      result.addAttribute("order", arg.getRequired("value"));
+    }
+}
+
+void ExprParser::parseMesh(const string& type,
+                           const Teuchos::XMLObject& arg,
+                           Teuchos::XMLObject& result)
+{
+  result = XMLObject("Mesh");
+  XMLObject sub(type);
+  result.addChild(sub);
+  if (type=="Exodus" || type=="Triangle")
+    {
+      sub.addAttribute("filename", arg.getRequired("value"));
+    }
+  else if (type=="Line")
+    {
+      sub.addAttribute("ax", arg.getChild(0).getRequired("value"));
+      sub.addAttribute("bx", arg.getChild(1).getRequired("value"));
+      sub.addAttribute("nx", arg.getChild(2).getRequired("value"));
+    }
+  else if (type=="Rectangle")
+    {
+      sub.addAttribute("ax", arg.getChild(0).getRequired("value"));
+      sub.addAttribute("bx", arg.getChild(1).getRequired("value"));
+      sub.addAttribute("nx", arg.getChild(2).getRequired("value"));
+      sub.addAttribute("ay", arg.getChild(3).getRequired("value"));
+      sub.addAttribute("by", arg.getChild(4).getRequired("value"));
+      sub.addAttribute("ny", arg.getChild(5).getRequired("value"));
+    }
+}
+
+void ExprParser::parseExpr(const string& type,
+                           const Teuchos::XMLObject& arg,
+                           Teuchos::XMLObject& result)
+{
+  result = XMLObject(type);
+  if (type=="UnknownFunction" || type=="TestFunction")
+    {
+      result.addChild(arg);
+    }
+  if (type=="CoordExpr")
+    {
+      result.addAttribute("direction", arg.getRequired("value"));
+    }
+}
+
+
+void ExprParser::parseDiscreteSpace(const string& type,
+                                    const Teuchos::XMLObject& arg,
+                                    Teuchos::XMLObject& result)
+{
+  result = XMLObject("DiscreteSpace");
+  if (arg.getTag() != "ArgumentList")
+    {
+      result.addChild(arg);
+    }
+  else
+    {
+      for (int i=0; i<arg.numChildren(); i++)
+        {
+          result.addChild(arg.getChild(i));
+        }
+    }
+}
+
+void ExprParser::parseLinearProblem(const string& type,
+                                    const Teuchos::XMLObject& arg,
+                                    Teuchos::XMLObject& result)
+{
+  result = XMLObject("LinearProblem");
+  if (arg.getTag() != "ArgumentList")
+    {
+      result.addChild(arg);
+    }
+  else
+    {
+      for (int i=0; i<arg.numChildren(); i++)
+        {
+          result.addChild(arg.getChild(i));
+        }
+    }
+}
+
+void ExprParser::parseNonlinearProblem(const string& type,
+                                       const Teuchos::XMLObject& arg,
+                                       Teuchos::XMLObject& result)
+{
+  result = XMLObject("NonlinearProblem");
+  if (arg.getTag() != "ArgumentList")
+    {
+      result.addChild(arg);
+    }
+  else
+    {
+      for (int i=0; i<arg.numChildren(); i++)
+        {
+          result.addChild(arg.getChild(i));
+        }
+    }
+}
+
+
+SundanceUtils::Set<string>& ExprParser::basisTypes()
+{
+  static SundanceUtils::Set<string> rtn;
+  rtn.put("Lagrange");
+  return rtn;
+}
+
+SundanceUtils::Set<string>& ExprParser::quadTypes()
+{
+  static SundanceUtils::Set<string> rtn;
+  rtn.put("GaussianQuadrature");
+  return rtn;
+}
+
+SundanceUtils::Set<string>& ExprParser::meshTypes()
+{
+  static SundanceUtils::Set<string> rtn;
+  rtn.put("Rectangle");
+  rtn.put("Line");
+  rtn.put("Exodus");
+  rtn.put("Triangle");
+  return rtn;
+}
+
+SundanceUtils::Set<string>& ExprParser::exprTypes()
+{
+  static SundanceUtils::Set<string> rtn;
+  rtn.put("UnknownFunction");
+  rtn.put("TestFunction");
+  rtn.put("Integral");
+  rtn.put("CoordExpr");
+  rtn.put("Derivative");
+  return rtn;
+}
 
 
 
-
-
-
+  

@@ -25,19 +25,18 @@ int main(int argc, void** argv)
       
       lines.append("d=a+b*c;");
 
-      lines.append("u = Unknown(Lagrange(1));");
+      lines.append("a+b*c;");
 
-      lines.append("mesh = Mesher('fred bob');");
+      lines.append("u = UnknownFunction(Lagrange(1));");
 
-      lines.append("eqn2=Integral(left, u*(v - 1.0), quad);");
+      lines.append("u = CoordExpr(0);");
 
-      lines.append("z = List(u[i]*i, i, 1, 10)");
+      lines.append("mesh = Exodus('fred');");
 
-      lines.append("a = Sum(u[i]*i, i, 1, n)");
+      lines.append("q4 = GaussianQuadrature(4);");
 
-      lines.append("{u, v}");
+      lines.append("mesh = Line(0.0, 1.0, 10);");
 
-      lines.append("Solve(problem, solver)");
 
       for (int i=0; i<lines.size(); i++)
         {
