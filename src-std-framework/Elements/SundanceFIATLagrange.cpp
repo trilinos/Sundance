@@ -32,9 +32,9 @@ FIATLagrange::FIATLagrange(int order)
     SUNDANCE_ERROR( "Maximal degree exceeded" );
   }
 
-  SundanceStdFwk::Internal::doublesIntoArray( dim,dim,V[order],VDM_ );
+  SundanceStdFwk::Internal::doublesIntoArray( dim,dim,V[order-1],VDM_ );
   for (i=0;i<2;i++) {
-    SundanceStdFwk::Internal::doublesIntoArray(dim,dim,D[order][i],derivMats_[i]);
+    SundanceStdFwk::Internal::doublesIntoArray(dim,dim,D[order-1][i],derivMats_[i]);
   }
 
   static bool first = true;
@@ -115,11 +115,20 @@ void FIATLagrange::refEval(const CellType& cellType,
   Array<Array<double> > tmp1(dim,Array<double>(pts.length()));
   Array<Array<double> > tmp2(dim,Array<double>(pts.length()));
 
+  /* Transform input points from KRL's {{0,0}, {1,0}, {0,1}} frame to
+  * RCK's {{-1,-1}, {1, -1}, {-1, 1}} frame */
+  Array<Point> evalPts(pts.length());
+  for (i=0; i<evalPts.length(); i++) 
+    {
+      evalPts[i] = /* Point(-1.0, -1.0) + 2.0* */pts[i];
+    }
+    
+
   switch(cellType)
     {
     case TriangleCell:
       /* evaluate orthogonal basis on triangles */
-      SundanceStdFwk::Internal::phis(order_,pts,tmp1);
+      SundanceStdFwk::Internal::phis(order_,evalPts,tmp1);
       
       /* convert to nodal basis */
       SundanceStdFwk::Internal::matmul( VDM_ , tmp1 , tmp2 );

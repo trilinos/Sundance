@@ -223,6 +223,33 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
         }
     }
 
+  /* Sanity check: ensure there are no expressions that are nonlinear in a 
+   * test function. */
+  DerivSet badDerivs;
+  for (Set<Deriv>::const_iterator i=testDerivs.begin(); i != testDerivs.end(); i++)
+    {
+      const Deriv& dTest1 = *i;
+      for (Set<Deriv>::const_iterator j=testDerivs.begin(); j != testDerivs.end(); j++)
+        {
+          const Deriv& dTest2 = *j;
+              
+          MultipleDeriv m;
+          m.put(dTest1);
+          m.put(dTest2);
+          if (e->hasNonzeroDeriv(m))
+            {
+              badDerivs.put(m);
+            }
+        }
+    }
+  
+  TEST_FOR_EXCEPTION(badDerivs.size() != 0, RuntimeError,
+                     "The expression " << expr << " is nonlinear in one "
+                     "or more test functions. Nonlinear terms involving "
+                     "the test functions " << endl << badDerivs << endl 
+                     << " have been detected. Test functions must appear "
+                     "only to the first degree");
+
   //  cerr << "max diff order=" << maxDiffOrder << endl;
   // cerr << "found derivs " << endl << nonzeroDerivs << endl;
   return nonzeroDerivs;

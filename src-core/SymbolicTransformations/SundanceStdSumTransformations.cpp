@@ -30,12 +30,12 @@ using namespace SundanceCore::Internal;
 StdSumTransformations::StdSumTransformations()
   : SumTransformationSequence()
 {
-  append(rcp(new SumIntegrals()));
   append(rcp(new RemoveZeroFromSum()));
   append(rcp(new SumConstants()));
   append(rcp(new MoveConstantsToLeftOfSum()));
   append(rcp(new RearrangeRightSumWithConstant()));
   append(rcp(new RearrangeLeftSumWithConstant()));
+  append(rcp(new SumIntegrals()));
 }
 
 bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
@@ -43,8 +43,9 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
 {
   /* Check for the trivial case of operation with zero */
   
-  /* If I'm zero, return other */
-  if (dynamic_cast<const ZeroExpr*>(left.get())) 
+  /* If I'm constant and my value is zero, return other */
+  const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
+  if (cl != 0 && cl->value()==0.0)
     {
       if (verbosity() > 1)
         {
@@ -56,7 +57,8 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
     }
 
   /* If other is zero, return me */
-  if (dynamic_cast<const ZeroExpr*>(right.get())) 
+  const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
+  if (cr != 0 && cr->value()==0.0) 
     {
       if (verbosity() > 1)
         {
@@ -80,7 +82,7 @@ bool MoveConstantsToLeftOfSum::doTransform(const RefCountPtr<ScalarExpr>& left, 
     {
       if (verbosity() > 1)
         {
-          Out::println("RemoveZeroFromSum identified right "
+          Out::println("MoveConstantsToLeftOfSum identified right "
                        "operand as constant.");
         }
       rtn = getScalar(Expr::handle(chooseSign(sign, right)) 

@@ -27,8 +27,9 @@ using namespace Teuchos;
 using namespace SundanceCore::Internal;
 
 Expr::Expr(const double& c)
-	: TSFExtended::Handle<ExprBase>(rcp(new ConstantExpr(c)))
-{;}
+	: TSFExtended::Handle<ExprBase>(new ConstantExpr(c))
+{}
+
 
 
 XMLObject Expr::toXML() const

@@ -44,11 +44,14 @@ int main(int argc, void** argv)
 
       TimeMonitor t(totalTimer());
      
-      verbosity<SymbolicTransformation>() = VerbSilent;
+      SymbolicTransformation::verbosity() = VerbExtreme;
       verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;
       EvalVector::shadowOps() = true;
+
+      Expr zero = 0.0;
+      cerr << zero.toXML() << endl;
 
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
@@ -72,7 +75,7 @@ int main(int argc, void** argv)
       Expr eqn = Integral(interior, (grad*u)*(grad*v), quad8)
         + Integral(interior, y*v, quad8)
         + Integral(interior, u*v, quad8)
-        + Integral(left, v*x*x, quad8) + Integral(interior, 0.0, quad8);
+        + Integral(left, v*x*x, quad8) + 0.0;
 
       Expr bc = EssentialBC(right, v*u, quad8) 
         + EssentialBC(top, v*(u-x), quad8);

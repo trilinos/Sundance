@@ -99,7 +99,9 @@ namespace SundanceStdFwk
        * @param pts array of quadrature points at which the basis function
        * is to be evaluated
        * @param deriv multiindex specifying the derivative to be evaluated
-       * @param result vector of basis function values
+       * @param result vector of basis function values. The inner index
+       * runs over basis elements, the outer index over points, so
+       * that basis values can be read as result[iPoint][iBasis]. 
        */
       virtual void refEval(const CellType& cellType,
                            const Array<Point>& pts,
