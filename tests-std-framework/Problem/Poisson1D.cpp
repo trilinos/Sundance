@@ -52,17 +52,28 @@ int main(int argc, void** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      /* Set up the linear solver  */
-      ParameterList solverParams;
-
-      solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-      solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
-      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-14);
-
-      LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
+       /* Create an Aztec solver for solving the linear subproblems */
+      std::map<int,int> azOptions;
+      std::map<int,double> azParams;
+      
+      azOptions[AZ_solver] = AZ_gmres;
+      azOptions[AZ_precond] = AZ_dom_decomp;
+      azOptions[AZ_subdomain_solve] = AZ_ilu;
+      azOptions[AZ_graph_fill] = 1;
+      azOptions[AZ_max_iter] = 1000;
+      azParams[AZ_tol] = 1.0e-13;
+      
+      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
       Expr soln = prob.solve(solver);
 
+      const DiscreteFunction* df = dynamic_cast<DiscreteFunction*>(soln.ptr().get());
+      TEST_FOR_EXCEPTION(df==0, RuntimeError,
+                         "solution is not a discrete function");
+      Vector<double> solnVec = df->vector();
+      cerr << "solution vector = " << endl;
+      solnVec.print(cerr);
+ 
       Expr exactSoln = -x*x + 2.0*x;
 
       Expr err = exactSoln - soln;

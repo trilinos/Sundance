@@ -26,7 +26,7 @@ int main(int argc, void** argv)
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
       const double pi = 4.0*atan(1.0);
-      MeshSource mesher = new PartitionedLineMesher(0.0, pi, 20*np, meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, pi, 10*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -59,7 +59,7 @@ int main(int argc, void** argv)
       //IntegralGroup::classVerbosity() = VerbExtreme;
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
-      //      F.verbosity() = VerbExtreme;
+      F.verbosity() = VerbExtreme;
       /* Get the initial guess */
       Vector<double> x0 = F.getInitialGuess();
       

@@ -55,11 +55,11 @@ int main(int argc, void** argv)
       Expr x = new CoordExpr(0);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(4);
+      QuadratureFamily quad = new GaussianQuadrature(8);
 
      
       /* Define the weak form */
-      Expr eqn = Integral(interior, u*(dx*v)*(dx*u), quad);
+      Expr eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*(u-(x+1.0)), quad)
         + EssentialBC(rightPoint, v*(u-(x+1.0)), quad); 
@@ -92,11 +92,11 @@ int main(int argc, void** argv)
       
  
      //  /* Set up the linear solver  */
-//       ParameterList solverParams;
+     //  ParameterList solverParams;
 
 //       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
 //       solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
-//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-14);
+//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-12);
 
 //       LinearSolver<double> linSolver = new BICGSTABSolver<double>(solverParams);
 
@@ -105,7 +105,7 @@ int main(int argc, void** argv)
 
       NOX::TSF::Group grp(x0, F, linSolver);
 
-      grp.verbosity() = VerbExtreme;
+      grp.verbosity() = VerbSilent;
 
       // Set up the status tests
       NOX::StatusTest::NormF statusTestA(grp, 1.0e-10);
