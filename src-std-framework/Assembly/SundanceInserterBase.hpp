@@ -9,7 +9,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceEvaluatableExpr.hpp"
 #include "SundanceDOFMapBase.hpp"
-#include "SundanceLocalMatrixBatch.hpp"
+#include "SundanceLocalMatrixContainer.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFLinearOperator.hpp"
@@ -52,7 +52,7 @@ namespace SundanceStdFwk
       /** */
       virtual void insert(int cellDim, const RefCountPtr<Array<int> >& cells,
                           bool isBC,
-                          const LocalMatrixBatch* localMat,
+                          const LocalMatrixContainer* localMat,
                           LinearOperator<double>& A,
                           Vector<double>& b) const = 0 ;
 

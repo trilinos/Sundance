@@ -16,7 +16,7 @@ namespace SundanceStdFwk
     /** 
      * LocalMatrixContainer is a container for local matrix and vector values.
      * Local matrices and vectors are stored in identical ways: as 1D arrays
-     * of doubles. 
+     * of doubles. toi
      *
      * Each integrator gets its own LocalMatrixContainer object, with information on
      * term grouping specific to the terms handled by that integrator. To conserve

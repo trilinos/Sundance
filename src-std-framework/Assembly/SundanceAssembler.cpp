@@ -94,7 +94,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 {
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
-  RefCountPtr<LocalMatrixBatch> localMat = rcp(new LocalMatrixBatch());
+  RefCountPtr<LocalMatrixContainer> localMat ;
 
   for (int r=0; r<rqc_.size(); r++)
     {

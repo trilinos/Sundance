@@ -8,6 +8,7 @@
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 #include "Teuchos_Array.hpp"
 
 namespace SundanceStdMesh
@@ -49,7 +50,8 @@ using namespace SundanceUtils;
        * element.
        *
        */
-      class CellJacobianBatch
+      class CellJacobianBatch 
+        : public TSFExtended::ObjectWithVerbosity<CellJacobianBatch>
         {
         public:
           /** empty ctor */
@@ -71,53 +73,66 @@ using namespace SundanceUtils;
            * (appropriate for affine elements) */
           void resize(int numCells, int dim);
 
-          /** set the Jacobian values at the q-th quadrature 
+          /** Get a pointer to the values at the q-th quadrature 
            * point on the c-th cell.
-           * @param cell the index of the cell in the batch
+           * @param c the index of the cell in the batch
            * @param q the index of the quadrature point
-           * @param jVals jacobian values 
-           * <b> (overwritten during the method call) </b>
            */
-          void setJacobian(int cell, int q, Array<double>& jVals);
+          double* jVals(int c, int q);
 
-          /** set the Jacobian values on the c-th cell,
-           * assuming cell jacobians are constant (appropriate for
-           * affine cells)
-           * @param cell the index of the cell in the batch
-           * @param jVals jacobian values 
-           * <b> (overwritten during the method call) </b>
+          /** 
+           * Get a pointer to the start of the c-th Jacobian in the batch. 
            */
-          void setJacobian(int cell, Array<double>& jVals)
-            {setJacobian(cell, 0, jVals);}
+          double* jVals(int c)
+          {return &(J_[c*jSize_]);}
 
           /** get the vector of determinant values */
           const Array<double>& detJ() const {return detJ_;}
+            
+          /** 
+           * Apply a cell's inverse Jacobian to (possibly) multiple rhs
+           * stored in column-major order.
+           */
+          void applyInvJ(int cell, int q, double* rhs,
+                         int nRhs, bool trans) const ;
+            
+          /** 
+           * Apply an affine cell's inverse Jacobian to (possibly) multiple rhs
+           * stored in column-major order.
+           */
+          void applyInvJ(int cell, double* rhs,
+                         int nRhs, bool trans) const 
+          {applyInvJ(cell, 0, rhs, nRhs, trans);}
+          
+          /** 
+           * Get the explicit inverse of the Jacobian for the given
+           * (cell, quad) combination.
+           */
+          void getInvJ(int cell, int quad, Array<double>& invJ) const ;
 
-          /** get the vector of jacobian values */
-          const double* invJ() const
-            {return &(invJ_[0]);}
-
-          /** get the inverse jacobian elements at the given (cell, quad) pair */
-          const double* invJPtr(int cell, int q) const
-            {return &(invJ_[dim_*dim_*(q + numQuad_*cell)]);}
-
-          /** get the inverse jacobian elements at the given cell */
-          const double* invJPtr(int cell) const
-            {return &(invJ_[dim_*dim_*cell]);}
-
-          /** */
-          static bool& verbose() {static bool rtn = false; return rtn;}
-
+          /** 
+           * Get the explicit inverse of the Jacobian for the given
+           * affine cell.
+           */
+          void getInvJ(int cell, Array<double>& invJ) const 
+          {getInvJ(cell, 0, invJ);}
+          
         private:
-          /** write J, J^T, or J^-T to a stream */
-          void viewMatrix(ostream& os, const string& header, const double* vals) const ;
 
-        private:
+          void factor() const ;
+
+          void computeInverses() const ;
+
           int dim_;
+          int jSize_;
           int numCells_;
           int numQuad_;
-          Array<double> invJ_;
-          Array<double>  detJ_;
+          mutable Array<int> iPiv_;
+          mutable Array<double> J_;
+          mutable Array<double>  detJ_;
+          mutable Array<double>  invJ_;
+          mutable bool isFactored_;
+          mutable bool hasInverses_;
 
         };
 

@@ -57,7 +57,7 @@ BasicIntegrator::createEvalMediator(const Mesh& mesh, const RegionQuadCombo& rqc
 
 void BasicIntegrator
 ::innerIntegrate(const RefCountPtr<Array<int> >& workSet,
-                 RefCountPtr<LocalMatrixBatch>& localMat) const
+                 RefCountPtr<LocalMatrixContainer>& localMat) const
 {
   // CellJacobianBatch J;
 //   getJacobians(workSet, J);

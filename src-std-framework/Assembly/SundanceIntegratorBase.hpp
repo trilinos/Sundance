@@ -8,7 +8,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceEvaluatableExpr.hpp"
-#include "SundanceLocalMatrixBatch.hpp"
+#include "SundanceLocalMatrixContainer.hpp"
 #include "SundanceStdFwkEvalMediator.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
@@ -43,7 +43,7 @@ namespace SundanceStdFwk
       
       /** */
       void integrate(const RefCountPtr<Array<int> >& workSet,
-                     RefCountPtr<LocalMatrixBatch>& localMat) const ;
+                     RefCountPtr<LocalMatrixContainer>& localMat) const ;
 
     protected:
       /** */
@@ -52,7 +52,7 @@ namespace SundanceStdFwk
 
       /** */
       virtual void innerIntegrate(const RefCountPtr<Array<int> >& workSet,
-                                  RefCountPtr<LocalMatrixBatch>& localMat) const = 0 ;
+                                  RefCountPtr<LocalMatrixContainer>& localMat) const = 0 ;
 
       /** */
       virtual void init() = 0 ;

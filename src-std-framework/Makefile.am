@@ -98,7 +98,7 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceInserterBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceInserterFactoryBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorFactoryBase.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixBatch.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.hpp 
 
@@ -108,7 +108,7 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceBasicInserter.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceBasicIntegrator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceInserterBase.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorBase.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixBatch.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp 
 
 

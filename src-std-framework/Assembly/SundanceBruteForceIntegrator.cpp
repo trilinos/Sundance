@@ -2,6 +2,7 @@
 /* @HEADER@ */
 
 #include "SundanceBruteForceIntegrator.hpp"
+#include "SundanceIPow.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceCellFilter.hpp"
@@ -31,6 +32,7 @@ BruteForceIntegrator::BruteForceIntegrator(const Mesh& mesh,
   for (int i=0; i<sparsity()->numDerivs(); i++)
     {
       const MultipleDeriv& deriv = sparsity()->deriv(i);
+      bool isConstant = sparsity()->isConstant(i);
       int testID;
       int unkID;
       MultiIndex miTest;
@@ -40,12 +42,39 @@ BruteForceIntegrator::BruteForceIntegrator(const Mesh& mesh,
       bool isTwoForm = getWeakForm(deriv, testID, unkID, miTest, miUnk,
                                    testBasis, unkBasis);
       isTwoForm_.append(isTwoForm);
+      isConstant_.append(isConstant);
       testID_.append(testID);
       unkID_.append(unkID);      
       miTest_.append(miTest);
       miUnk_.append(miUnk);
       testBasis_.append(testBasis);
       unkBasis_.append(unkBasis);
+      
+      if (isConstant)
+        {
+          if (isTwoForm)
+            {
+              integrateReferenceTwoForm(testBasis, miTest, unkBasis, miUnk, W2[0]);
+            }
+          else
+            {
+              integrateReferenceOneForm(testBasis, miTest, W1[0]);
+            }
+        }
+      else
+        {
+          if (isTwoForm)
+            {
+              getReferenceTwoFormQuad(testBasis, miTest, unkBasis, miUnk, W2);
+            }
+          else
+            {
+              getReferenceOneFormQuad(testBasis, miTest, W1);
+            }
+        }
+      
+      oneFormCache_.append(W1);
+      twoFormCache_.append(W2);
     }
 }
 
@@ -60,16 +89,35 @@ BruteForceIntegrator::createEvalMediator(const Mesh& mesh, const RegionQuadCombo
 
 void BruteForceIntegrator
 ::innerIntegrate(const RefCountPtr<Array<int> >& workSet,
-                 RefCountPtr<LocalMatrixBatch>& localMat) const
+                 RefCountPtr<LocalMatrixContainer>& localMat) const
 {
   CellJacobianBatch J;
   getJacobians(workSet, J);
   RefCountPtr<EvalVectorArray> results;
   evaluate(results);
 
-  
-
-
+  for (int i=0; i<sparsity()->numDerivs(); i++)
+    {
+      if (!isConstant_[i])
+        {
+          if (isTwoForm_[i])
+            {
+              sumTwoForms(twoFormQuad_, (*results)[i], twoFormCache_);
+            }
+          else
+            {
+              sumOneForms(oneFormQuad_, (*results)[i], oneFormCache_);
+            }
+        }
+      if (isTwoForm_[i])
+        {
+          twoFormCache_[i]->transformToPhys(J, A);
+        }
+      else
+        {
+          oneFormCache_[i]->transformToPhys(J, b);
+        }
+    }
   
 }
 

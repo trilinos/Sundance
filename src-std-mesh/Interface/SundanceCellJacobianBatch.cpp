@@ -3,126 +3,193 @@
 
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
 
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace SundanceUtils;
+using namespace TSFExtended;
 
-/* declare dgesv(), the LAPACK linear system solver */
+/* declare LAPACK subroutines */
 extern "C"
 {
-  void dgesv_(int *n, int *nrhs, double *a, int *lda, 
-              int *ipiv, double *b, int *ldb, int *info);
+  /* LAPACK backsolve on a factored system */
+  void dgetrs_(char* trans, int* N, int* NRHS, double* A, int* lda, 
+               int* iPiv, double* B, int* ldb, int* info);
+
+  /* LAPACK factorization */
+  void dgetrf_(int* M, int* N, double* A, int* lda, int* iPiv, int* info);
 };
 
 
 CellJacobianBatch::CellJacobianBatch()
-  : dim_(0), numCells_(0), numQuad_(0), invJ_(), detJ_()
+  : dim_(0), jSize_(0), numCells_(0), numQuad_(0), iPiv_(), J_(), detJ_(), invJ_(),
+    isFactored_(false), hasInverses_(false)
 {;}
 
 void CellJacobianBatch::resize(int numCells, int numQuad, int dim)
 {
   dim_ = dim;
+  jSize_ = dim_*dim_;
   numCells_ = numCells;
   numQuad_ = numQuad;
-  invJ_.resize(dim_*dim_*numCells_*numQuad_);
+  iPiv_.resize(dim_*numCells_*numQuad_);
+  J_.resize(dim_*dim_*numCells_*numQuad_);
   detJ_.resize(numCells_*numQuad_);
+  isFactored_ = false;
+  hasInverses_ = false;
 }
 
 void CellJacobianBatch::resize(int numCells, int dim)
 {
   dim_ = dim;
+  jSize_ = dim_*dim_;
   numCells_ = numCells;
   numQuad_ = 1;
-  invJ_.resize(dim_*dim_*numCells_);
+  iPiv_.resize(dim_*numCells_);
+  J_.resize(dim_*dim_*numCells_);
   detJ_.resize(numCells_);
+  isFactored_ = false;
+  hasInverses_ = false;
 }
 
-void CellJacobianBatch::setJacobian(int cell, int q, Array<double>& jVals)
+void CellJacobianBatch::factor() const 
 {
-  /* We're given the Jacobian, and we want to compute its inverse and determinant 
-   * We can get the inverse by solving the linear system J J^-1 = I using the
-   * LAPACK routine dgesv. In calling dgesv, the input Jacobian is overwritten
+  if (isFactored_) return;
+  /* We're given the Jacobian, and we want to factor it and compute its determinant. 
+   * We factor it using the LAPACK routine dgetrf(), after which J is replaced
    * by its LU factorization. The determinant of J is obtained by taking the
-   * project of the diagonal elements of U */
+   * project of the diagonal elements of U. 
+   */
  
-  if (verbose())
-    {
-      cerr << "setting Jacobian for cell=" << cell 
-           << " quad pt = " << q << endl;
-      viewMatrix(cerr, "J", &(jVals[0]));
-    }
-
-  /* keep around a pivot vector */
-  static Array<int> iPiv(3);
-
-  int jSize = dim_*dim_;
-  int start = (cell*numQuad_ + q)*jSize;
-
-  /* pointer to start of input jacobian. Upon calling dgesv, this 
-   * will be overwritten with the LU factorization of J */
-  double* jPtr  = &(jVals[0]);
-  /* pointer to start of invJ */
-  double* jInvPtr = &(invJ_[start]);
-  double* jp = jInvPtr;
+  Tabs tabs;
+  SUNDANCE_OUT(verbosity() > VerbMedium,
+               tabs << "factoring Jacobians");
   
-  /* initialize J^-1 as the identity, to use as the RHS in the call to dgesv */
-  for (int i=0; i<dim_; i++)
+  for (int cell=0; cell<numCells_; cell++)
     {
-      for (int j=0; j<dim_; j++, jp++)
+      for (int q=0; q<numQuad_; q++)
         {
-          if (i==j) *jp = 1.0;
-          else *jp = 0.0;
+          int start = (cell*numQuad_ + q)*jSize_;
+
+          /* pointer to start of J for this cell */
+          double* jFactPtr = &(J_[start]);
+          int* iPiv = &(iPiv_[(q + cell*numQuad_)*dim_]);
+  
+          /* fortran junk */
+          int lda = dim_; // leading dimension of J
+          
+          int info = 0; // error return flag, will be zero if successful. 
+          
+          /* Factor J */
+          ::dgetrf_((int*) &dim_, (int*) &dim_, jFactPtr, &lda, iPiv, &info);
+          
+          TEST_FOR_EXCEPTION(info != 0, RuntimeError,
+                             "CellJacobianBatch::setJacobian(): factoring failed");
+
+          /* the determinant is the product of the diagonal elements 
+           * the upper triangular factor of the factored Jacobian */
+          double detJ = 1.0;
+          for (int i=0; i<dim_; i++)
+            {
+              detJ *= jFactPtr[i + dim_*i];
+            }
+          detJ_[cell*numQuad_ + q] = detJ;
         }
     }
 
-  /* fortran junk */
-  int lda = dim_; // leading dimension of J
-  int ldb = dim_; // leading dimension of RHS 
+  isFactored_ = true;
+}
+
+void CellJacobianBatch::computeInverses() const 
+{
+  if (hasInverses_) return;
+
+  Tabs tabs;
+  SUNDANCE_OUT(verbosity() > VerbMedium,
+               tabs << "inverting Jacobians");
+
+  invJ_.resize(dim_*dim_*numQuad_*numCells_);
+
+  if (!isFactored_) factor();
+  
+  for (int cell=0; cell<numCells_; cell++)
+    {
+      for (int q=0; q<numQuad_; q++)
+        {
+          int start = (cell*numQuad_ + q)*jSize_;
+
+          /* pointer to start of J for this cell */
+          double* jFactPtr = &(J_[start]);
+          double* invJPtr = &(invJ_[start]);
+          int* iPiv = &(iPiv_[(q + cell*numQuad_)*dim_]);
+  
+          /* fortran junk */
+          int lda = dim_; // leading dimension of J
+          
+          int info = 0; // error return flag, will be zero if successful. 
+          
+          /* fill the inverse of J with the identity */
+          for (int i=0; i<dim_; i++)
+            {
+              for (int j=0; j<dim_; j++)
+                {
+                  if (i==j) invJPtr[i*dim_+j] = 1.0;
+                  else invJPtr[i*dim_+j] = 0.0;
+                }
+            }
+
+          ::dgetrs_("N", (int*) &dim_, (int*) &dim_, jFactPtr, 
+                    (int*) &dim_, iPiv, invJPtr, (int*) &dim_, &info);
+          
+          TEST_FOR_EXCEPTION(info != 0, RuntimeError,
+                             "CellJacobianBatch::setJacobian(): inversion failed");
+        }
+    }
+}
+
+void CellJacobianBatch::applyInvJ(int cell, int q, 
+                                  double* rhs, int nRhs, bool trans) const 
+{
+  if (!isFactored_) factor();
+
+  double* jFactPtr = &(J_[(cell*numQuad_ + q)*dim_*dim_]);
+  int* iPiv = &(iPiv_[(q + cell*numQuad_)*dim_]);
 
   int info = 0; // error return flag, will be zero if successful. 
-
-  /* solve J J^-1 = I for J^-1 */
-  ::dgesv_(&dim_, &dim_, jPtr, &lda, &(iPiv[0]), jInvPtr, &ldb, &info);
-
+  
+  if (trans)
+    {
+      ::dgetrs_("T", (int*) &dim_, &nRhs, jFactPtr, (int*) &dim_, iPiv, rhs, (int*) &dim_, &info);
+    }
+  else
+    {
+      ::dgetrs_("N", (int*) &dim_, &nRhs, jFactPtr, (int*) &dim_, iPiv, rhs, (int*) &dim_, &info);
+    }
+          
   TEST_FOR_EXCEPTION(info != 0, RuntimeError,
-                     "CellJacobianBatch::setJacobian(): dgesv failed");
-
-  /* the determinant is the product of the diagonal elements 
-   * the upper triangular factor of the factored Jacobian */
-  double detJ = 1.0;
-  for (int i=0; i<dim_; i++)
-    {
-      detJ *= jPtr[i + dim_*i];
-    }
-  detJ_[cell*numQuad_ + q] = detJ;
-
-  if (verbose())
-    {
-      viewMatrix(cerr, "J^-1", jInvPtr);
-      cerr << "det J = " << detJ << endl;
-    }
+                     "CellJacobianBatch::applyInvJ(): backsolve failed");
 }
 
-
-void CellJacobianBatch::viewMatrix(ostream& os, 
-                               const string& header, const double* vals) const
+void CellJacobianBatch::getInvJ(int cell, int quad, Array<double>& invJ) const 
 {
-  os << header << " = {";
-  int k = 0;
-  for (int i=0; i<dim_; i++)
+  if (!hasInverses_) computeInverses();
+  
+  int start = (cell*numQuad_ + quad)*jSize_;
+  
+  invJ.resize(dim_*dim_);
+
+  for (int col=0; col<dim_; col++)
     {
-      os << "{";
-      for (int j=0; j<dim_; j++, k++)
+      for (int row=0; row<dim_; row++) 
         {
-          os << vals[k];
-          if (j < dim_-1) os << ", ";
+          invJ[col + dim_*row] = invJ_[start + col + dim_*row];
         }
-      os << "}";
     }
-  os << "}" << endl;
 }
+
 
 
 

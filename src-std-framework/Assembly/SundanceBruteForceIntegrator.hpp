@@ -46,7 +46,7 @@ namespace SundanceStdFwk
 
       /** */
       virtual void innerIntegrate(const RefCountPtr<Array<int> >& workSet,
-                                  RefCountPtr<LocalMatrixBatch>& localMat) const ;
+                                  RefCountPtr<LocalMatrixContainer>& localMat) const ;
 
       /** */
       virtual void init() ;

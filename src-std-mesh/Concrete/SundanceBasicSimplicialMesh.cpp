@@ -78,10 +78,10 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
   for (int i=0; i<cellLID.size(); i++)
     {
       int lid = cellLID[i];
+      double* J = jBatch.jVals(i);
       switch(cellDim)
         {
         case 0:
-          J.resize(1);
           J[0] = 1.0;
           break;
         case 1:
@@ -133,7 +133,6 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
           TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
                              "in BasicSimplicialMesh::getJacobians()");
         }
-      jBatch.setJacobian(i, J);
     }
 }
 

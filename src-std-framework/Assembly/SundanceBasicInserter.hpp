@@ -40,7 +40,7 @@ namespace SundanceStdFwk
       /** */
       virtual void insert(int cellDim, const RefCountPtr<Array<int> >& cells,
                           bool isBC,
-                          const LocalMatrixBatch* localMat,
+                          const LocalMatrixContainer* localMat,
                           LinearOperator<double>& A,
                           Vector<double>& b) const ;
 
