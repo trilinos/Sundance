@@ -72,16 +72,11 @@ int main(int argc, void** argv)
 
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
 
-      //      mesher.ptr()->verbosity() = VerbExtreme;
-
       mesher.serializeLocal();
 
       Mesh mesh = mesher.getMesh();
 
       Array<int> funcs = tuple(0);
-
-      //verbosity<CellFilter>() = VerbExtreme;
-      //verbosity<CellSet>() = VerbExtreme;
 
       CellFilter interior = new MaximalCellFilter();
       CellFilter points = new DimensionalCellFilter(0);
@@ -95,9 +90,6 @@ int main(int argc, void** argv)
       Expr v = new TestFunction(new Lagrange(1), "v");
       Expr dx = new Derivative(0);
       
-
-      verbosity<Assembler>() = VerbExtreme;
-      verbosity<EquationSet>() = VerbExtreme;
 
       QuadratureFamily quad = new GaussianQuadrature(2);
       Expr eqn = Integral(interior, (dx*v)*(dx*u) + v, quad);
@@ -113,23 +105,14 @@ int main(int argc, void** argv)
       //verbosity<Evaluator>() = VerbExtreme;
       //      EvalVector::shadowOps() = true;
 
-      EquationSet::classVerbosity() = VerbHigh;
-      Assembler::classVerbosity() = VerbHigh;
-      IntegralGroup::classVerbosity() = VerbHigh;
-      Expr::showAllParens() = true;
+      // EquationSet::classVerbosity() = VerbHigh;
+//       Assembler::classVerbosity() = VerbExtreme;
+//       IntegralGroup::classVerbosity() = VerbHigh;
+//       Expr::showAllParens() = true;
 
       VectorType<double> vecType = new EpetraVectorType();
 
       Assembler assembler(mesh, eqnSet, vecType); 
-
-      Array<Set<int> > graph;
-      assembler.getGraph(graph);
-
-      cerr << "graph" << endl;
-      for (int i=0; i<graph.size(); i++) 
-        {
-          cerr << "row=" << i << " " << graph[i] << endl;
-        }
 
       LinearOperator<double> A;
       Vector<double> b;

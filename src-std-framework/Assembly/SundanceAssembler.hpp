@@ -86,6 +86,10 @@ namespace SundanceStdFwk
                                    TSFExtended::LoadableVector<double>* vec) const ;
 
       /** */
+      void configureMat(LinearOperator<double>& A,
+                        Vector<double>& b) const ;
+
+      /** */
       bool isBCRow(int dof) const {return isBCRow_[dof-lowestRow_];}
 
       /** */

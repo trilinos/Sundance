@@ -112,7 +112,6 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
           SUNDANCE_OUT(verbosity() > VerbMedium, 
                        tab << "found testBasis=" << testBasis);
           miTest = f->multiIndex();
-          cerr << "blah" << endl;
           SUNDANCE_OUT(verbosity() > VerbMedium, 
                        tab << "found test multi index=" << miTest.toString());
           continue;

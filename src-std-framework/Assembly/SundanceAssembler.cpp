@@ -114,17 +114,11 @@ Assembler
 }
 
 
-
-
-void Assembler::assemble(LinearOperator<double>& A,
-                         Vector<double>& b) const 
+void Assembler::configureMat(LinearOperator<double>& A,
+                             Vector<double>& b) const 
 {
   Tabs tab;
-
-  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
-  workSet->reserve(workSetSize());
-  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
-
+  
   Array<int> localRowIndices(rowMap()->numLocalDOFs());
   for (int i=0; i<localRowIndices.size(); i++) 
     {
@@ -137,24 +131,29 @@ void Assembler::assemble(LinearOperator<double>& A,
       localColIndices[i] = lowestCol+i;
     }
 
+  SUNDANCE_OUT(verbosity() > VerbSilent, 
+               tab << "Assembler: num rows = " << rowMap()->numDOFs());
+  SUNDANCE_OUT(verbosity() > VerbSilent, 
+               tab << "Assembler: num cols = " << colMap()->numDOFs());
+
+  
   SUNDANCE_OUT(verbosity() > VerbLow, 
-               tab << "num rows = " << rowMap()->numDOFs());
-  SUNDANCE_OUT(verbosity() > VerbLow, 
-               tab << "num cols = " << colMap()->numDOFs());
+               tab << "Assembler: creating row and col spaces...");
 
   VectorSpace<double> rowSpace = vecType_.createSpace(rowMap()->numDOFs(),
                                                       rowMap()->numLocalDOFs(),
-                                                      &(localColIndices[0]));
+                                                      &(localRowIndices[0]));
   VectorSpace<double> colSpace = vecType_.createSpace(colMap()->numDOFs(),
                                                       colMap()->numLocalDOFs(),
                                                       &(localColIndices[0]));
 
+  
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "...done");
+
   b = colSpace.createMember();
   A = vecType_.createMatrix(colSpace, rowSpace);
                                                       
-  RefCountPtr<EvalVectorArray> coeffs;
-  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
-
   TSFExtended::LoadableVector<double>* vec 
     = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
 
@@ -167,10 +166,30 @@ void Assembler::assemble(LinearOperator<double>& A,
   TEST_FOR_EXCEPTION(mat==0, RuntimeError,
                      "matrix is not loadable in Assembler::assemble()");
 
+
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "Assembler: creating graph...");
   Array<Set<int> > graph;
   Array<int> colIndices;
   Array<double> zeros;
   getGraph(graph);
+
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "...done");
+  if (verbosity() > VerbHigh)
+    {
+      Tabs tab1;
+      cerr << tab1 << "graph: " << endl;
+      for (int i=0; i<graph.size(); i++) 
+        {
+          Tabs tab2;
+          cerr << tab2 << "row=" << i << " " << graph[i] << endl;
+        }
+    }
+
+  
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "Assembler: initializing matrix and vector...");
   for (int i=0; i<graph.size(); i++)
     {
       colIndices.resize(graph[i].size());
@@ -184,14 +203,47 @@ void Assembler::assemble(LinearOperator<double>& A,
         }
       mat->setRowValues(lowestRow_ + i, colIndices.size(),
                         &(colIndices[0]), &(zeros[0]));
-                        
+      vec->setElement(lowestRow_ + i, 0.0);
     }
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "...done");
 
-  cerr << "matrix before fill = " << endl;
-  A.print(cerr);
+  if (verbosity() > VerbHigh)
+    {
+      Tabs tab1;
+      cerr << tab1 << "Assemble: matrix before fill = ";
+      A.print(cerr);
+      cerr << tab1 << "Assemble: vector before fill = ";
+      A.print(cerr);
+    }
+}
 
-  cerr << "vec before fill" << endl;
-  b.print(cerr);
+
+void Assembler::assemble(LinearOperator<double>& A,
+                         Vector<double>& b) const 
+{
+  Tabs tab;
+
+  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  workSet->reserve(workSetSize());
+  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
+
+  RefCountPtr<EvalVectorArray> coeffs;
+  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+
+  configureMat(A, b);
+
+  TSFExtended::LoadableVector<double>* vec 
+    = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
+
+  TEST_FOR_EXCEPTION(vec==0, RuntimeError,
+                     "vector is not loadable in Assembler::assemble()");
+
+  TSFExtended::LoadableMatrix<double>* mat
+    = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(A.ptr().get());
+
+  TEST_FOR_EXCEPTION(mat==0, RuntimeError,
+                     "matrix is not loadable in Assembler::assemble()");
 
   for (int r=0; r<rqc_.size(); r++)
     {
@@ -210,6 +262,9 @@ void Assembler::assemble(LinearOperator<double>& A,
       CellType cellType = mesh_.cellType(cellDim);
       mediators_[r]->setCellType(cellType);      
 
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   tab0 << "cell type = " << cellType);
+
       /* do the cells in batches of the work set size */
 
       CellIterator iter=cells.begin();
@@ -225,7 +280,8 @@ void Assembler::assemble(LinearOperator<double>& A,
               workSet->append(*iter);
             }
           SUNDANCE_OUT(verbosity() > VerbMedium,
-                       tab1 << "doing work set " << workSetCounter);
+                       tab1 << "doing work set " << workSetCounter
+                       << " consisting of " << workSet->size() << " cells");
           workSetCounter++;
 
           mediators_[r]->setCellBatch(workSet);
@@ -238,7 +294,7 @@ void Assembler::assemble(LinearOperator<double>& A,
             {
               const IntegralGroup& group = groups_[r][g];
               if (!group.evaluate(*J, coeffs, localValues)) continue;
-              cerr << "inserting " << endl;
+              
               if (group.isTwoForm())
                 {
                   insertLocalMatrixValues(cellDim, *workSet, isBCRqc_[r],
@@ -269,27 +325,39 @@ void Assembler::insertLocalMatrixValues(int cellDim,
                                         const Array<double>& localValues, 
                                         LoadableMatrix<double>* mat) const 
 {
-  cerr << "inserting " << localValues << endl;
+  Tabs tab;
+
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "Assembler: inserting local matrix values");
+  SUNDANCE_OUT(verbosity() > VerbHigh, 
+               tab << "Assembler: values are " << localValues);
+
   Array<int> testIndices;
   Array<int> unkIndices;
   int nNodes = nTestNodes*nUnkNodes;
-  cerr << "nNodes = " << nNodes << endl;
-  cerr << "nUnkNodes = " << nUnkNodes << endl;
-  cerr << "nTestNodes = " << nTestNodes << endl;
-  
-  cerr << "cell dim = " << cellDim << endl;
+
+  SUNDANCE_OUT(verbosity() > VerbMedium, 
+               tab << "Assembler: num nodes test=" << nTestNodes
+               << " unk=" << nUnkNodes);
+
   for (int c=0; c<workSet.size(); c++)
     {
+      Tabs tab1;
+      SUNDANCE_OUT(verbosity() > VerbHigh, 
+                   tab1 << "cell=" << c);
       for (int i=0; i<testID.size(); i++)
-        {
-          cerr << "testID = " << testID[i] << endl;
-          cerr << "unkID = " << unkID[i] << endl;
-          cerr << "cell = " << workSet[c] << endl;
-
+        { 
+          Tabs tab2;
+          SUNDANCE_OUT(verbosity() > VerbHigh, 
+                       tab2 << "testID=" << testID[i]);
           rowMap_->getDOFsForCell(cellDim, workSet[c], testID[i], testIndices);
           colMap_->getDOFsForCell(cellDim, workSet[c], unkID[i], unkIndices);
-
-          cerr << "rows = " << testIndices << endl;
+          
+          SUNDANCE_OUT(verbosity() > VerbHigh, 
+                       tab2 << "row indices=" << testIndices);
+          
+          SUNDANCE_OUT(verbosity() > VerbHigh, 
+                       tab2 << "col indices=" << unkIndices);
           Array<double> x(unkIndices.size());
           Array<int> p(unkIndices.size());
           for (int r=0; r<testIndices.size(); r++)
@@ -297,18 +365,14 @@ void Assembler::insertLocalMatrixValues(int cellDim,
               if (rowMap_->isLocalDOF(testIndices[r]) && 
                   isBCRqc==isBCRow_[testIndices[r]])
                 {
-                  cerr << "adding to row " << testIndices[r] << endl;
-                  cerr << "cols " << unkIndices << endl;
                   for (int j=0; j<x.size(); j++)
                     {
                       p[j] = c*nNodes + j*nUnkNodes + r;
                       x[j] = localValues[p[j]];
                     }
-                  cerr << "x=" << x << endl;
-                  cerr << "p=" << p << endl;
                   const double* data = &(localValues[c*nNodes + r*nUnkNodes]);
                   mat->addToRow(testIndices[r], unkIndices.size(), 
-                              &(unkIndices[0]), &(x[0]));
+                                &(unkIndices[0]), &(x[0]));
                 }
             }
         }
@@ -323,22 +387,33 @@ void Assembler::insertLocalVectorValues(int cellDim,
                                         const Array<double>& localValues, 
                                         TSFExtended::LoadableVector<double>* vec) const 
 {
+
+  Tabs tab;
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "Assembler: inserting local matrix values");
+  SUNDANCE_OUT(verbosity() > VerbHigh, 
+               tab << "Assembler: values are " << localValues);
+
   Array<int> testIndices;
   
   for (int c=0; c<workSet.size(); c++)
     {
+      Tabs tab1;
+      SUNDANCE_OUT(verbosity() > VerbHigh, 
+                   tab1 << "cell=" << c);
       for (int i=0; i<testID.size(); i++)
         {
-          cerr << "cell = " << workSet[c] << endl;
+          Tabs tab2;
           rowMap_->getDOFsForCell(cellDim, workSet[c], testID[i], testIndices);
-          cerr << "rows = " << testIndices << endl;
+
+          SUNDANCE_OUT(verbosity() > VerbHigh, 
+                       tab2 << "row indices=" << testIndices);
+
           for (int r=0; r<testIndices.size(); r++)
             {
               if (rowMap_->isLocalDOF(testIndices[r]) && 
                   isBCRqc==isBCRow_[testIndices[r]])
                 {
-                  cerr << "adding r=" << testIndices[r] << ", x="
-                       << localValues[c*nTestNodes+r] << endl;
                   vec->addToElement(testIndices[r], localValues[c*nTestNodes+r]);
                 }
             }
