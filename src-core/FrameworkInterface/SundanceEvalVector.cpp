@@ -465,6 +465,7 @@ void EvalVector::copy(const RefCountPtr<EvalVector>& other)
     {
       resize(other->length());
 
+      cerr << "other->length() = " << other->length() << endl;
       TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
                          "mismatched vector lengths in EvalVector::copy()");
 

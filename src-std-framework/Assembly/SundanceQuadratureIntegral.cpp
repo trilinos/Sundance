@@ -360,6 +360,11 @@ void QuadratureIntegral
   double* aPtr = &((*A)[0]);
   double* coeffPtr = (double*) coeff;
 
+  if (verbosity() > VerbMedium)
+    {
+      cerr << "nCells = " << nCells << endl;
+      cerr << "nNodes = " << nNodes() << endl;
+    }
   int transSize = 0; 
   if (isTwoForm())
     {
@@ -388,7 +393,7 @@ void QuadratureIntegral
             }
         }
       /* transform the sum */
-      double* gCell = &(G()[nNodes()*c]);
+      double* gCell = &(G()[dim()*c]);
       double* aCell = aPtr + nNodes()*c;
       for (int i=0; i<nNodes(); i++)
         {

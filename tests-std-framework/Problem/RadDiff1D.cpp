@@ -1,4 +1,5 @@
 #include "Sundance.hpp"
+#include "SundanceEvaluator.hpp"
 
 #include "NOX.H"
 #include "NOX_Common.H"
@@ -62,6 +63,10 @@ int main(int argc, void** argv)
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*(u-(x+1.0)), quad)
         + EssentialBC(rightPoint, v*(u-(x+1.0)), quad);
+
+      ElementIntegral::classVerbosity()=VerbExtreme;
+      Evaluator::classVerbosity()=VerbExtreme;
+      StdFwkEvalMediator::classVerbosity()=VerbExtreme;
 
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);

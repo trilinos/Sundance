@@ -58,6 +58,7 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
   computePhysQuadPts();
   int nQuad = physQuadPts_.length();
   int d = expr->dir();
+  cerr << "num phys quad=" << nQuad << endl;
   vec->resize(nQuad);
   for (int q=0; q<nQuad; q++) 
     {

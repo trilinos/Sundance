@@ -623,7 +623,8 @@ void BruteForceUnaryMinusEvaluator::eval(const EvalManager& mgr,
   TimeMonitor timer(unaryMinusEvalTimer());
   Tabs tab;
   SUNDANCE_OUT(verbosity() > VerbLow,
-               tab << "------- BruteForceUnaryMinusEvaluator -------")
+               tab << "------- BruteForceUnaryMinusEvaluator -------");
+
   int derivSetIndex = expr()->getDerivSetIndex(mgr.getRegion());
   const SparsityPattern* sparsity = expr()->sparsity(derivSetIndex).get();
 
@@ -631,6 +632,8 @@ void BruteForceUnaryMinusEvaluator::eval(const EvalManager& mgr,
 
   RefCountPtr<EvalVectorArray> argResults; 
 
+  SUNDANCE_OUT(verbosity() > VerbMedium,
+               tab << "eval operand");
   expr()->evaluatableArg()->evaluate(mgr, argResults);
 
   TEST_FOR_EXCEPTION(results->size() != argResults->size(),
