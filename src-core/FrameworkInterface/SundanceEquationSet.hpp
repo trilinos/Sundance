@@ -32,8 +32,9 @@ namespace SundanceCore
      * With this information we can compile lists of which functions
      * are defined on which regions of the domain, which is what is 
      * required for the building of DOF maps. We can't build the
-     * DOF map here because in the Sundance core, we know nothing
-     * of the mesh, so we must provie accessors to that information.
+     * DOF map here because in the Sundance core we know nothing
+     * of the mesh, so we provide accessors to the information collected
+     * by the EquationSet.
      */
     class EquationSet : public TSFExtended::ObjectWithVerbosity<EquationSet>
     {

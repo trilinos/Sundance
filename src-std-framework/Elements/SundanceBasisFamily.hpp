@@ -6,40 +6,26 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceBasisFamilyBase.hpp"
-#include "Teuchos_RefCountPtr.hpp"
+#include "TSFHandle.hpp"
 
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+  using namespace SundanceUtils;
   using namespace SundanceStdFwk::Internal;
+  using namespace TSFExtended;
 
   /** */
-  class BasisFamily 
+  class BasisFamily : public Handle<BasisFamilyBase>
     {
     public:
-      /** */
-      BasisFamily();
-      /** */
-      BasisFamily(BasisFamilyBase* ptr);
+      /* */
+      HANDLE_CTORS(BasisFamily, BasisFamilyBase);
 
       /** */
       XMLObject toXML() const ;
 
       /** */
       int order() const ;
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-      /** */
-      RefCountPtr<BasisFamilyBase> ptr() const {return ptr_;}
-
-    private:
-
-      RefCountPtr<BasisFamilyBase> ptr_;
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
-
     };
 }
 

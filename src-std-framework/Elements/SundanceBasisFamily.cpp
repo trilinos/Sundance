@@ -8,20 +8,14 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-BasisFamily::BasisFamily()
-  : ptr_()
-{;}
 
-BasisFamily::BasisFamily(BasisFamilyBase* ptr)
-  : ptr_(ptr->getRcp())
-{;}
 
 XMLObject BasisFamily::toXML() const 
 {
-  return ptr_->toXML();
+  return ptr()->toXML();
 }
 
 int BasisFamily::order() const 
 {
-  return ptr_->order();
+  return ptr()->order();
 }

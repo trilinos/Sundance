@@ -8,26 +8,27 @@
 #include "SundanceCellType.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceMultiIndex.hpp"
-#include "Teuchos_RefCountPtr.hpp"
+#include "TSFHandleable.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
+  using namespace Teuchos;
+  using namespace TSFExtended;
   using namespace SundanceUtils;
   using namespace SundanceStdMesh;
   using namespace SundanceStdMesh::Internal;
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
+  
   namespace Internal
   {
-    using namespace Teuchos;
-
     /** 
      * 
      */
-    class BasisFamilyBase 
+    class BasisFamilyBase : public Handleable<BasisFamilyBase>
     {
     public:
       /** */
@@ -103,9 +104,6 @@ namespace SundanceStdFwk
 
       /** */
       virtual int order() const = 0 ;
-
-      /** */
-      virtual RefCountPtr<BasisFamilyBase> getRcp() = 0 ;
     };
   }
 }
