@@ -81,7 +81,7 @@ namespace SundanceStdFwk
       {static int rtn = defaultWorkSetSize(); return rtn;}
       
       /** */
-      void getGraph(Array<ColSetType<int> >& graph) const ;
+      void getGraph(Array<ColSetType>& graph) const ;
 
       /** */
       void flushConfiguration() 
