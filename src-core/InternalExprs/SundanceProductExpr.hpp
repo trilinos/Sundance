@@ -7,6 +7,7 @@
 #define SUNDANCE_PRODUCTEXPR_H
 
 #include "SundanceBinaryExpr.hpp"
+#include "SundanceNonlinearExpr.hpp"
 #include "SundanceProductEvaluator.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -25,6 +26,7 @@ namespace SundanceCore
      * ProductExpr represents a product of two scalar-valued expressions
      */
     class ProductExpr : public BinaryExpr,
+                        public NonlinearExpr,
                         public GenericEvaluatorFactory<ProductExpr, ProductEvaluator>
     {
     public:
@@ -43,6 +45,8 @@ namespace SundanceCore
        * derivatives are nonzero */
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
       /** */

@@ -32,6 +32,8 @@ NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
 
 void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
                                     const Set<MultiIndex>& multiIndices,
+                                    const Set<MultiSet<int> >& activeFuncIDs,
+                                    const Set<int>& allFuncIDs,
                                     bool regardFuncsAsConstant) const
 {
   Tabs tabs;
@@ -39,12 +41,15 @@ void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
                        << toString() << " subject to multiindices "
                        << multiIndices);
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
 
+  Set<MultiSet<int> > childFuncIDs = findChildFuncIDSet(activeFuncIDs,
+                                                        allFuncIDs);
 
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
@@ -52,6 +57,8 @@ void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
   int maxDiffOrder = context.topLevelDiffOrder() + maxMiOrder;
 
   evaluatableArg()->findNonzeros(context, multiIndices,
+                                 childFuncIDs,
+                                 allFuncIDs,
                                  regardFuncsAsConstant);
 
   RefCountPtr<SparsitySubset> argSparsitySubset 
@@ -83,7 +90,8 @@ void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
         }
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
 }
 
 

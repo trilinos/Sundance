@@ -28,6 +28,8 @@ XMLObject CellDiameterExpr::toXML() const
 
 void CellDiameterExpr::findNonzeros(const EvalContext& context,
                              const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                              bool regardFuncsAsConstant) const
 {
   Tabs tabs;
@@ -35,7 +37,8 @@ void CellDiameterExpr::findNonzeros(const EvalContext& context,
                        << " subject to multi index set " 
                        << multiIndices.toString());
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -49,7 +52,8 @@ void CellDiameterExpr::findNonzeros(const EvalContext& context,
       subset->addDeriv(MultipleDeriv(), VectorDeriv);
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
 }
 
 ostream& CellDiameterExpr::toText(ostream& os, bool paren) const

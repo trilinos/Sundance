@@ -78,6 +78,8 @@ EvaluatableExpr::evaluator(const EvalContext& context) const
 
 bool EvaluatableExpr::nonzerosAreKnown(const EvalContext& context,
                                        const Set<MultiIndex>& multiIndices,
+                                       const Set<MultiSet<int> >& activeFuncIDs,
+                                       const Set<int>& allFuncIDs,
                                        bool regardFuncsAsConstant) const 
 {
   NonzeroSpecifier spec(context, multiIndices, regardFuncsAsConstant);
@@ -86,6 +88,8 @@ bool EvaluatableExpr::nonzerosAreKnown(const EvalContext& context,
 
 void EvaluatableExpr::addKnownNonzero(const EvalContext& context,
                                       const Set<MultiIndex>& multiIndices,
+                                       const Set<MultiSet<int> >& activeFuncIDs,
+                                       const Set<int>& allFuncIDs,
                                       bool regardFuncsAsConstant) const 
 {
   NonzeroSpecifier spec(context, multiIndices, regardFuncsAsConstant);

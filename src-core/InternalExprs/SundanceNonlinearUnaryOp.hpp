@@ -13,6 +13,7 @@
 #include "SundanceSet.hpp"
 #include "SundanceMultipleDeriv.hpp"
 #include "SundanceNonlinearUnaryOpEvaluator.hpp"
+#include "SundanceNonlinearExpr.hpp"
 
 
 
@@ -32,6 +33,7 @@ namespace SundanceCore
      *
      */
     class NonlinearUnaryOp : public UnaryExpr,
+                             public NonlinearExpr,
                     public GenericEvaluatorFactory<NonlinearUnaryOp, NonlinearUnaryOpEvaluator>
     {
     public:
@@ -46,6 +48,8 @@ namespace SundanceCore
        * derivatives are nonzero */
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
       /** Write a simple text description suitable
@@ -65,6 +69,7 @@ namespace SundanceCore
       /** Access to the operator */
       const UnaryFunctor* op() const {return op_.get();}
     private:
+
       RefCountPtr<UnaryFunctor> op_;
 
     };

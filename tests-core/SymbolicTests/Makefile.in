@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(DepthScalabilityTest_SOURCES) $(ScalabilityTest_SOURCES) $(SimpleEval_SOURCES) $(StdTransformation_SOURCES) $(TestEval_SOURCES) $(VecOpTest_SOURCES) $(VecTimings_SOURCES)
+SOURCES = $(DepthScalabilityTest_SOURCES) $(ScalabilityTest_SOURCES) $(SimpleEval_SOURCES) $(StdTransformation_SOURCES) $(TestEval_SOURCES) $(VariationTest_SOURCES) $(VecOpTest_SOURCES) $(VecTimings_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -83,7 +83,7 @@ host_triplet = @host@
 noinst_PROGRAMS = SimpleEval$(EXEEXT) TestEval$(EXEEXT) \
 	StdTransformation$(EXEEXT) VecOpTest$(EXEEXT) \
 	ScalabilityTest$(EXEEXT) DepthScalabilityTest$(EXEEXT) \
-	VecTimings$(EXEEXT)
+	VecTimings$(EXEEXT) VariationTest$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-core/SymbolicTests
@@ -117,6 +117,8 @@ am_StdTransformation_OBJECTS =  \
 StdTransformation_OBJECTS = $(am_StdTransformation_OBJECTS)
 am_TestEval_OBJECTS = TestEval-TestEval.$(OBJEXT)
 TestEval_OBJECTS = $(am_TestEval_OBJECTS)
+am_VariationTest_OBJECTS = VariationTest-VariationTest.$(OBJEXT)
+VariationTest_OBJECTS = $(am_VariationTest_OBJECTS)
 am_VecOpTest_OBJECTS = VecOpTest-VecOpTest.$(OBJEXT)
 VecOpTest_OBJECTS = $(am_VecOpTest_OBJECTS)
 am_VecTimings_OBJECTS = VecTimings-VecTimings.$(OBJEXT)
@@ -129,6 +131,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SimpleEval-SimpleEval.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/StdTransformation-StdTransformation.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/TestEval-TestEval.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/VariationTest-VariationTest.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/VecOpTest-VecOpTest.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/VecTimings-VecTimings.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -138,11 +141,13 @@ CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(DepthScalabilityTest_SOURCES) $(ScalabilityTest_SOURCES) \
 	$(SimpleEval_SOURCES) $(StdTransformation_SOURCES) \
-	$(TestEval_SOURCES) $(VecOpTest_SOURCES) $(VecTimings_SOURCES)
+	$(TestEval_SOURCES) $(VariationTest_SOURCES) \
+	$(VecOpTest_SOURCES) $(VecTimings_SOURCES)
 DIST_SOURCES = $(DepthScalabilityTest_SOURCES) \
 	$(ScalabilityTest_SOURCES) $(SimpleEval_SOURCES) \
 	$(StdTransformation_SOURCES) $(TestEval_SOURCES) \
-	$(VecOpTest_SOURCES) $(VecTimings_SOURCES)
+	$(VariationTest_SOURCES) $(VecOpTest_SOURCES) \
+	$(VecTimings_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -273,6 +278,12 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 VecOpTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 VecOpTest_LDADD = $(CORE_LIBS) 
+VariationTest_SOURCES = $(srcdir)/VariationTest.cpp 
+VariationTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+VariationTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+VariationTest_LDADD = $(CORE_LIBS) 
 VecTimings_SOURCES = $(srcdir)/VecTimings.cpp 
 VecTimings_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a 
@@ -459,6 +470,9 @@ StdTransformation$(EXEEXT): $(StdTransformation_OBJECTS) $(StdTransformation_DEP
 TestEval$(EXEEXT): $(TestEval_OBJECTS) $(TestEval_DEPENDENCIES) 
 	@rm -f TestEval$(EXEEXT)
 	$(CXXLINK) $(TestEval_LDFLAGS) $(TestEval_OBJECTS) $(TestEval_LDADD) $(LIBS)
+VariationTest$(EXEEXT): $(VariationTest_OBJECTS) $(VariationTest_DEPENDENCIES) 
+	@rm -f VariationTest$(EXEEXT)
+	$(CXXLINK) $(VariationTest_LDFLAGS) $(VariationTest_OBJECTS) $(VariationTest_LDADD) $(LIBS)
 VecOpTest$(EXEEXT): $(VecOpTest_OBJECTS) $(VecOpTest_DEPENDENCIES) 
 	@rm -f VecOpTest$(EXEEXT)
 	$(CXXLINK) $(VecOpTest_LDFLAGS) $(VecOpTest_OBJECTS) $(VecOpTest_LDADD) $(LIBS)
@@ -477,6 +491,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleEval-SimpleEval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StdTransformation-StdTransformation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestEval-TestEval.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VariationTest-VariationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VecOpTest-VecOpTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VecTimings-VecTimings.Po@am__quote@
 
@@ -575,6 +590,22 @@ TestEval-TestEval.obj: $(srcdir)/TestEval.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/TestEval-TestEval.Po' tmpdepfile='$(DEPDIR)/TestEval-TestEval.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(TestEval_CXXFLAGS) $(CXXFLAGS) -c -o TestEval-TestEval.obj `if test -f '$(srcdir)/TestEval.cpp'; then $(CYGPATH_W) '$(srcdir)/TestEval.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/TestEval.cpp'; fi`
+
+VariationTest-VariationTest.o: $(srcdir)/VariationTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VariationTest_CXXFLAGS) $(CXXFLAGS) -MT VariationTest-VariationTest.o -MD -MP -MF "$(DEPDIR)/VariationTest-VariationTest.Tpo" -c -o VariationTest-VariationTest.o `test -f '$(srcdir)/VariationTest.cpp' || echo '$(srcdir)/'`$(srcdir)/VariationTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VariationTest-VariationTest.Tpo" "$(DEPDIR)/VariationTest-VariationTest.Po"; else rm -f "$(DEPDIR)/VariationTest-VariationTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VariationTest.cpp' object='VariationTest-VariationTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/VariationTest-VariationTest.Po' tmpdepfile='$(DEPDIR)/VariationTest-VariationTest.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VariationTest_CXXFLAGS) $(CXXFLAGS) -c -o VariationTest-VariationTest.o `test -f '$(srcdir)/VariationTest.cpp' || echo '$(srcdir)/'`$(srcdir)/VariationTest.cpp
+
+VariationTest-VariationTest.obj: $(srcdir)/VariationTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VariationTest_CXXFLAGS) $(CXXFLAGS) -MT VariationTest-VariationTest.obj -MD -MP -MF "$(DEPDIR)/VariationTest-VariationTest.Tpo" -c -o VariationTest-VariationTest.obj `if test -f '$(srcdir)/VariationTest.cpp'; then $(CYGPATH_W) '$(srcdir)/VariationTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VariationTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VariationTest-VariationTest.Tpo" "$(DEPDIR)/VariationTest-VariationTest.Po"; else rm -f "$(DEPDIR)/VariationTest-VariationTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VariationTest.cpp' object='VariationTest-VariationTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/VariationTest-VariationTest.Po' tmpdepfile='$(DEPDIR)/VariationTest-VariationTest.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VariationTest_CXXFLAGS) $(CXXFLAGS) -c -o VariationTest-VariationTest.obj `if test -f '$(srcdir)/VariationTest.cpp'; then $(CYGPATH_W) '$(srcdir)/VariationTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VariationTest.cpp'; fi`
 
 VecOpTest-VecOpTest.o: $(srcdir)/VecOpTest.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VecOpTest_CXXFLAGS) $(CXXFLAGS) -MT VecOpTest-VecOpTest.o -MD -MP -MF "$(DEPDIR)/VecOpTest-VecOpTest.Tpo" -c -o VecOpTest-VecOpTest.o `test -f '$(srcdir)/VecOpTest.cpp' || echo '$(srcdir)/'`$(srcdir)/VecOpTest.cpp; \

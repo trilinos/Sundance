@@ -75,6 +75,8 @@ namespace SundanceCore
        */
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
       /** */
@@ -100,6 +102,14 @@ namespace SundanceCore
 
 
     protected:
+
+      /** 
+       * Given a set of active function combinations, get the active
+       * funcs for the next higher order of differentiation.
+       */
+      Set<MultiSet<int> > 
+      argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
+                     const Set<int>& allFuncIDs) const ;
 
     private:
 

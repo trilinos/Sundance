@@ -7,6 +7,8 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceScalarExpr.hpp"
+#include "SundanceMultiSet.hpp"
+#include "SundanceSet.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -68,6 +70,10 @@ namespace SundanceCore
           /** Write self in Latex form */
           virtual ostream& toLatex(ostream& os, bool paren) const ;
 
+        protected:
+          /** Determine whether this function is in the given active set */
+          bool isInActiveSet(const Set<MultiSet<int> >& activeFuncIDs) const ;
+          
         private:
 
           string name_;

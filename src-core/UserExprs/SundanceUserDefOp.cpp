@@ -67,6 +67,8 @@ XMLObject UserDefOp::toXML() const
 
 void UserDefOp::findNonzeros(const EvalContext& context,
                              const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                              bool regardFuncsAsConstant) const
 {
   Tabs tabs;
@@ -74,17 +76,25 @@ void UserDefOp::findNonzeros(const EvalContext& context,
                        "nonlinear op" << toString() 
                        << " subject to multiindices " << multiIndices); 
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+
+
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
+
+  Set<MultiSet<int> > childFuncIDs = findChildFuncIDSet(activeFuncIDs,
+                                                        allFuncIDs);
 
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
   for (int i=0; i<numChildren(); i++)
     {
       evaluatableChild(i)->findNonzeros(context, multiIndices,
+                                        childFuncIDs,
+                                        allFuncIDs,
                                         regardFuncsAsConstant);
 
       RefCountPtr<SparsitySubset> argSparsitySubset 
@@ -96,7 +106,8 @@ void UserDefOp::findNonzeros(const EvalContext& context,
         }
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
 }
 
 

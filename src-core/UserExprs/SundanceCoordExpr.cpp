@@ -52,6 +52,8 @@ string CoordExpr::coordName(int dir, const string& name)
 
 void CoordExpr::findNonzeros(const EvalContext& context,
                              const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                              bool regardFuncsAsConstant) const
 {
   Tabs tabs;
@@ -59,7 +61,8 @@ void CoordExpr::findNonzeros(const EvalContext& context,
                        << " subject to multi index set " 
                        << multiIndices.toString());
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -79,7 +82,8 @@ void CoordExpr::findNonzeros(const EvalContext& context,
       subset->addDeriv(MultipleDeriv(), VectorDeriv);
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
 }
 
 

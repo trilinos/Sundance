@@ -96,6 +96,8 @@ void ProductExpr::findChildMultiIndexSets(const Set<MultiIndex>& miSet,
 
 void ProductExpr::findNonzeros(const EvalContext& context,
                                const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                                bool regardFuncsAsConstant) const
 {
 
@@ -104,7 +106,8 @@ void ProductExpr::findNonzeros(const EvalContext& context,
                        << toString() << " subject to multiindices "
                        << multiIndices);
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -114,15 +117,24 @@ void ProductExpr::findNonzeros(const EvalContext& context,
   Set<MultiIndex> miRight;
   findChildMultiIndexSets(multiIndices, miLeft, miRight);
 
+  Set<MultiSet<int> > childFuncIDs = findChildFuncIDSet(activeFuncIDs,
+                                                        allFuncIDs);
+
   int maxSpatialOrder = maxOrder(multiIndices);
   int maxDiffOrder = context.topLevelDiffOrder() + maxSpatialOrder;
 
+
+
   SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting left operand's nonzeros");
   leftEvaluatable()->findNonzeros(context, miLeft,
+                                  childFuncIDs,
+                                  allFuncIDs,
                                   regardFuncsAsConstant);
 
   SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting right operand's nonzeros");
   rightEvaluatable()->findNonzeros(context, miRight,
+                                   childFuncIDs,
+                                   allFuncIDs,
                                    regardFuncsAsConstant);
 
   RefCountPtr<SparsitySubset> leftSparsity 
@@ -165,5 +177,6 @@ void ProductExpr::findNonzeros(const EvalContext& context,
         }
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
 }

@@ -25,6 +25,8 @@ DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionStub* master,
 
 void DiscreteFuncElement::findNonzeros(const EvalContext& context,
                                        const Set<MultiIndex>& multiIndices,
+                                       const Set<MultiSet<int> >& activeFuncIDs,
+                                       const Set<int>& allFuncIDs,
                                        bool regardFuncsAsConstant) const
 {
 
@@ -33,7 +35,8 @@ void DiscreteFuncElement::findNonzeros(const EvalContext& context,
                        << toString() << " subject to multiindices "
                        << multiIndices);
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -57,7 +60,8 @@ void DiscreteFuncElement::findNonzeros(const EvalContext& context,
         }
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                  allFuncIDs, regardFuncsAsConstant);
 }
 
 XMLObject DiscreteFuncElement::toXML() const 

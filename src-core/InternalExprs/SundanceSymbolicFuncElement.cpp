@@ -43,6 +43,8 @@ void SymbolicFuncElement
 
 void SymbolicFuncElement::findNonzeros(const EvalContext& context,
                                        const Set<MultiIndex>& multiIndices,
+                                       const Set<MultiSet<int> >& activeFuncIDs,
+                                       const Set<int>& allFuncIDs,
                                        bool regardFuncsAsConstant) const
 {
 
@@ -50,10 +52,12 @@ void SymbolicFuncElement::findNonzeros(const EvalContext& context,
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for symbolic func " 
                        << toString()
                        << " subject to multi index set " 
-                       << multiIndices.toString());
+                       << multiIndices.toString()
+                       << " and active funcs " << activeFuncIDs);
 
   
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -63,23 +67,34 @@ void SymbolicFuncElement::findNonzeros(const EvalContext& context,
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
   bool isTest = (0 != dynamic_cast<const TestFuncElement*>(this));
+  bool evalPtIsZero = (0 == dynamic_cast<const ZeroExpr*>(evalPt()));
 
-  if (!regardFuncsAsConstant && !isTest)
+  /* Evaluate the function itself, i.e., the zeroth deriv of the function.
+   * If this is a test function, or if we are doing a linear problem,
+   * then we skip this step. */
+  if (!regardFuncsAsConstant && !isTest && !evalPtIsZero)
     {
       subset->addDeriv(MultipleDeriv(), VectorDeriv);
     }
   
-  subset->addDeriv(new FunctionalDeriv(this, MultiIndex()),
-                   ConstantDeriv);
+  /* If this function is one of the active variables, then
+   * add the deriv wrt this func to the sparsity pattern */
+  if (isInActiveSet(activeFuncIDs) && !evalPtIsZero)
+    {
+      subset->addDeriv(new FunctionalDeriv(this, MultiIndex()),
+                       ConstantDeriv);
+    }
 
   const DiscreteFuncElement* df 
     = dynamic_cast<const DiscreteFuncElement*>(evalPt());
   if (df != 0)
     {
-      df->findNonzeros(context, multiIndices, regardFuncsAsConstant);
+      df->findNonzeros(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
     }
-
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                  allFuncIDs, regardFuncsAsConstant);
 }
 
 

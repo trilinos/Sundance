@@ -65,12 +65,15 @@ const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
 
 void ExprWithChildren::findNonzeros(const EvalContext& context,
                                     const Set<MultiIndex>& multiIndices,
+                                    const Set<MultiSet<int> >& activeFuncIDs,
+                                    const Set<int>& allFuncIDs,
                                     bool regardFuncsAsConstant) const
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for " 
                        << toString());
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -88,6 +91,7 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
       SUNDANCE_VERB_MEDIUM(tab1 << "finding nonzeros for child " 
                            << evaluatableChild(i)->toString());
       evaluatableChild(i)->findNonzeros(context, multiIndices,
+                                        activeFuncIDs, allFuncIDs,
                                         regardFuncsAsConstant);
 
       RefCountPtr<SparsitySubset> childSparsitySubset 
@@ -100,7 +104,8 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
         }
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
 }
 
 void ExprWithChildren::setupEval(const EvalContext& context) const

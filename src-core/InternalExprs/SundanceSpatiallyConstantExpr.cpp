@@ -25,6 +25,8 @@ SpatiallyConstantExpr::SpatiallyConstantExpr(const double& value)
 
 void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,
                                          const Set<MultiIndex>& multiIndices,
+                                         const Set<MultiSet<int> >& activeFuncIDs,
+                                         const Set<int>& allFuncIDs,
                                          bool regardFuncsAsConstant) const
 {
   Tabs tabs;
@@ -32,7 +34,8 @@ void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,
                        << toString() << " subject to multiindices "
                        << multiIndices);
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -41,5 +44,6 @@ void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
   subset->addDeriv(MultipleDeriv(), ConstantDeriv);
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
 }

@@ -77,16 +77,27 @@ Set<MultiIndex> DiffOp
   return rtn;
 }
 
+Set<MultiSet<int> > DiffOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
+                                           const Set<int>& allFuncIDs) const
+{
+  return activeFuncIDs;
+}
+
+
 void DiffOp::findNonzeros(const EvalContext& context,
                           const Set<MultiIndex>& multiIndices,
+                          const Set<MultiSet<int> >& activeFuncIDs,
+                          const Set<int>& allFuncIDs,
                           bool regardFuncsAsConstant) const
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for diff op " << toString()
                        << " subject to multi index set " 
                        << multiIndices.toString());
+  SUNDANCE_VERB_MEDIUM(tabs << "active funcs are " << activeFuncIDs);
 
-  if (nonzerosAreKnown(context, multiIndices, regardFuncsAsConstant))
+  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
@@ -102,7 +113,11 @@ void DiffOp::findNonzeros(const EvalContext& context,
   
   SUNDANCE_VERB_MEDIUM(tabs << "arg multi index set is " << endl << argMI);
 
+  
+
   evaluatableArg()->findNonzeros(context, argMI,
+                                 argActiveFuncs(activeFuncIDs, allFuncIDs),
+                                 allFuncIDs,
                                  regardFuncsAsConstant);
 
   RefCountPtr<SparsitySubset> argSparsity
@@ -153,7 +168,8 @@ void DiffOp::findNonzeros(const EvalContext& context,
         }
     }
 
-  addKnownNonzero(context, multiIndices, regardFuncsAsConstant);
+  addKnownNonzero(context, multiIndices, activeFuncIDs,
+                       allFuncIDs, regardFuncsAsConstant);
   //  cerr << "my sparsity: " << *subset << endl;
 }
 

@@ -141,11 +141,15 @@ namespace SundanceCore
        */
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const = 0 ;
 
       /** */
       bool nonzerosAreKnown(const EvalContext& context,
                             const Set<MultiIndex>& multiIndices,
+                            const Set<MultiSet<int> >& activeFuncIDs,
+                            const Set<int>& allFuncIDs,
                             bool regardFuncsAsConstant) const ;
           
 
@@ -218,8 +222,11 @@ namespace SundanceCore
       /** */
       void addKnownNonzero(const EvalContext& context,
                            const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                            bool regardFuncsAsConstant) const ;
 
+      
 
     private:
 

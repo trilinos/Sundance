@@ -9,6 +9,7 @@
 #include "SundanceUserDefOpEvaluator.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceUnaryExpr.hpp"
+#include "SundanceNonlinearExpr.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceMap.hpp"
 #include "SundanceSet.hpp"
@@ -29,6 +30,7 @@ namespace SundanceCore
      * function into the Sundance Expr system.
      */
   class UserDefOp : public ExprWithChildren,
+                    public Internal::NonlinearExpr,
                     public GenericEvaluatorFactory<UserDefOp, UserDefOpEvaluator>
     {
     public:
@@ -59,6 +61,8 @@ namespace SundanceCore
        */
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
 

@@ -5,6 +5,7 @@
 #define SUNDANCE_MULTISET_H
 
 #include "SundanceDefs.hpp"
+#include "Teuchos_Array.hpp"
 #include <set>
 
 #ifndef DOXYGEN_DEVELOPER_ONLY

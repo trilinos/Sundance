@@ -5,7 +5,7 @@
 EXEEXT = .exe
 
 noinst_PROGRAMS = SimpleEval TestEval StdTransformation VecOpTest \
-ScalabilityTest DepthScalabilityTest VecTimings
+ScalabilityTest DepthScalabilityTest VecTimings VariationTest
 
 
 LIBDEPS = $(top_builddir)/src-core/libsundanceCore.a \
@@ -29,6 +29,16 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 VecOpTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 VecOpTest_LDADD = $(CORE_LIBS) 
+
+
+VariationTest_SOURCES = $(srcdir)/VariationTest.cpp 
+
+VariationTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+VariationTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+
+VariationTest_LDADD = $(CORE_LIBS) 
 
 
 

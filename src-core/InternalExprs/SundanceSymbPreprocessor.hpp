@@ -27,6 +27,15 @@ namespace SundanceCore
       class SymbPreprocessor
       {
       public:
+
+        /** */
+        static DerivSet setupVariations(const Expr& expr, 
+                                        const Expr& vars,
+                                        const Expr& varEvalPts,
+                                        const Expr& unks,
+                                        const Expr& unkEvalPts,
+                                        const EvalContext& region);
+
         /** */
         static DerivSet setupExpr(const Expr& expr, 
                                   const Expr& tests,
