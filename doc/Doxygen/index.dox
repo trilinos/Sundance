@@ -87,6 +87,7 @@ a complete rewrite of Sundance. If you have used
 version 1.0, <b> do not unpack this into your old distribution directory.
 </b> You may also want to read about some of the 
 \ref diff_page.
+<li> \ref contrib_page
 </ul>
 
 <H2> User's Guide </H2>
