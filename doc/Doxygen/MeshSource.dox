@@ -1,0 +1,71 @@
+
+namespace SundanceStdMesh
+{
+/*! \page mesh_source Mesh Sources and Transformations
+
+\section mesh_basics Sundance Mesh Basics
+
+Sundance solves PDEs on geometric domains that have been discretized
+to meshes. With a few simple exceptions, Sundance does not create
+meshes itself; usually, one will mesh a domain using an external
+meshing program such as
+<A HREF="http://sass1693.sandia.gov/cubit"> Cubit </A>
+or
+<A HREF="http://www-2.cs.cmu.edu/~quake/triangle.html"> Triangle </A>
+and then read the results into Sundance. 
+
+A mesh is represented in Sundance as a Mesh object. A Mesh is
+injected into a Sundance simulation by means of an 
+object called a MeshSource. MeshSource is an abstract, extensible interface
+for mesh readers and mesh generators. An existing mesh can be transformed
+into another by means of a MeshTransformation object. 
+
+\subsection mesh_type Mesh Types
+
+A simulation developer need not be concerned with mesh types, and can 
+safely skip to the next section. 
+
+The <i> internal </i> mesh representation used by Sundance is designed
+to be flexible and extensible, allowing new mesh technology to be 
+incorporated as it is developed. The choice of mesh representation
+is done by selecting a Mesh sources create meshes through an
+abstract creation interface, so that in principle any mesh type
+can be created by any mesh source.
+Currently, the only mesh representation implemented is
+BasicSimplicialMesh, which can represent meshes comprised of
+lines, triangles, and tetrahedra in 1, 2, and 3 dimensions, respectively.
+
+
+\subsection mesh_par Parallel Meshes
+
+
+\section mesh_reading Mesh Readers
+
+Currently, the following MeshReader subtypes exist
+<ul>
+<li> ExodusNetCDFMeshReader reads Exodus files rendered into NetCDF format.
+<b> Note: </b> not all Exodus features are supported. 
+<li> TriangleMeshReader reads meshes in Shewchuk's 
+<A HREF="http://www-2.cs.cmu.edu/~quake/triangle.html"> Triangle </A> format,
+with extensions for distributed meshes.
+</ul>
+
+\section mesh_gen Mesh Generators
+
+<ul>
+<li> PartitionedLineMesher meshes lines
+<li> PartitionedRectangleMesher meshes rectangles
+</ul>
+
+\section mesh_trans Mesh Transformations
+
+<ul>
+<li> ExtrusionMeshTransformation extrudes a 2D mesh into 3D
+</ul>
+
+
+
+
+
+*/
+}

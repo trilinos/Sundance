@@ -1,0 +1,63 @@
+using SundanceStdFwk::CellFilter;
+using SundanceStdFwk::QuadratureFamily;
+
+/*! \mainpage Sundance 
+
+\section intro Introduction
+
+Sundance is a library of C++ components with which one can quickly develop 
+high-performance parallel PDE simulators. It is built on top of an engine
+for automatic differentiation of symbolic objects, thereby enabling
+differentiable simulations for use in optimization, uncertainty 
+quantification, and adaptive error control.
+
+\section tutorial Tutorial
+
+A <A HREF="../Tutorial/Tutorial.pdf"> tutorial </A>
+on setting up linear and nonlinear PDE simulations is available in 
+<A HREF="../Tutorial/Tutorial.pdf"> PDF </A> format.
+
+\section FAQ
+
+<ul>
+<li> \ref faq_page 
+</ul>
+
+\section components Reference Guide
+
+<b>Warning!</b> Only a small fraction of Sundance classes are needed
+by a user writing a simulation code. 
+Clicking on the banner links (i.e. "Class List", "File
+List" etc.)  points to <b> everything </b> and therefore
+can be a bit overwhelming and is not an efficient way to 
+browse what is in Sundance. Instead, it is
+recommended that one use the outline below as a guide to exploring
+Sundance components. 
+
+\subsection prob_definition Components for Simulation Setup
+<ul> 
+<li> \ref mesh_source are used to create, import, or transform discrete geometry
+<li> \ref cell_filter are used to define subregions (e.g., node sets, side sets)
+<li> \ref exprs are used to define equations and boundary conditions
+</ul>
+
+\subsection solvers Solvers
+
+Sundance does not have its own solvers; rather, it 
+uses the Trilinos family of solvers. These are fully documented at
+the <A HREF="http://software.sandia.gov/Trilinos/"> Trilinos Website </A>
+so only a brief description is given here, concentrating on user input
+parameters.  
+
+<ul>
+<li> \ref linear_solvers 
+<li> \ref nonlinear_solvers 
+</ul>
+
+\subsection output Output and Visualization
+
+
+
+
+
+*/

@@ -1,0 +1,291 @@
+
+/*! \page faq_page Frequently Asked Questions
+<ul>
+<li> \ref faq_gen
+<li> \ref faq_perf
+<li> \ref faq_pde
+<li> \ref faq_mesh
+<li> \ref faq_elem
+<li> \ref faq_solvers
+</ul>
+
+<ul>
+
+<li> \ref faq_gen
+
+<ul> 
+<li> \ref faq_gen1
+<li> \ref faq_gen2
+<li> \ref faq_gen3
+<li> \ref faq_gen4
+<li> \ref faq_gen5
+<li> \ref faq_gen6
+<li> \ref faq_gen7
+<li> \ref faq_gen8
+</ul>
+
+<li> \ref faq_perf
+
+<ul> 
+<li> \ref faq_perf1
+<li> \ref faq_perf2
+<li> \ref faq_perf3
+</ul>
+
+<li> \ref faq_pde
+
+<ul> 
+<li> \ref faq_pde1
+<li> \ref faq_pde2
+<li> \ref faq_pde3
+<li> \ref faq_pde4
+<li> \ref faq_pde5
+<li> \ref faq_pde6
+<li> \ref faq_pde7
+<li> \ref faq_pde8
+<li> \ref faq_pde9
+</ul>
+
+
+<li> \ref faq_mesh
+
+<ul> 
+<li> \ref faq_mesh1
+<li> \ref faq_mesh2
+<li> \ref faq_mesh3
+<li> \ref faq_mesh4
+<li> \ref faq_mesh5
+<li> \ref faq_mesh6
+<li> \ref faq_mesh7
+</ul>
+
+<li> \ref faq_elem
+
+<ul> 
+<li> \ref faq_elem1
+<li> \ref faq_elem2
+<li> \ref faq_elem3
+<li> \ref faq_elem4
+<li> \ref faq_elem5
+</ul>
+
+<li> \ref faq_solvers
+
+<ul> 
+<li> \ref faq_solvers1
+<li> \ref faq_solvers2
+<li> \ref faq_solvers3
+<li> \ref faq_solvers4
+<li> \ref faq_solvers5
+<li> \ref faq_solvers6
+<li> \ref faq_solvers7
+</ul>
+
+
+
+</ul>
+
+
+
+
+
+\section faq_gen General
+
+\subsection faq_gen1 On what platform is Sundance developed?
+
+I do essentially all development work on various versions of SuSe Linux, using the
+GCC and Intel compilers. 
+
+\subsection faq_gen2 To which platforms has Sundance been ported? 
+
+Sundance is known to run on Linux (using GCC and Intel compilers), Mac OSX, and Cygwin.
+
+In general, it should run on any reasonable Unix platform with an ANSI C++ compiler
+and a good implementation of the STL. A general rule is that if you can make
+Trilinos and the STL work on your platform, then Sundance will present no problem.
+
+\subsection faq_gen3 Does it run on Windows?
+
+Yes, under Cygwin. 
+
+\subsection faq_gen4 Will you port Sundance to my favorite platform?
+
+Unless you work at Sandia National Laboratories 
+or are one of my external collaborators on algorithmic research projects, I will
+probably not have time to do so.
+I am happy to advise you on doing your own port, however. A general rule 
+is that if you can make
+Trilinos and the STL work on your platform, then Sundance will present no problem.
+
+\subsection faq_gen5 Where does the name "Sundance" come from?
+
+It has no particular significance. The history of the name is that it is
+the title of a short story I happened to read one evening while taking a break from
+writing some of the initial classes. The tradition at Sandia
+is to give codes names with a flavor of the American Southwest, and while reading
+the story it occurred to me that Sundance was an appropriate choice. 
+
+\subsection faq_gen6 Why did you develop Sundance?
+
+\subsection faq_gen7 I need feature X to do my problem, and it's not there. Would you add it for me?
+
+\subsection faq_gen8 I already have a finite-element code, and would like to use Sundance's symbolic capabilities with it. Is this possible?
+
+
+
+
+
+
+
+
+\section faq_perf Performance
+
+\subsection faq_perf1 Are you crazy? A general-purpose code can't possibly be efficient. 
+
+\subsection faq_perf2 Is Sundance scalable?
+
+\subsection faq_perf3 Does the symbolic processing result in large overhead costs?
+
+
+
+
+\section faq_pde PDEs 
+
+\subsection faq_pde1 What discretization method does Sundance use?
+
+\subsection faq_pde2 What is a weak form?
+
+\subsection faq_pde2 Can I solve problems with more than one unknown field?
+
+\subsection faq_pde3 Is Sundance a thermal code, a structures code, a fluids code, or what? Is it static or transient? Is it linear or nonlinear?
+
+Yes, to all of the above.
+
+Sundance isn't any particular type of simulation code, it is a system of components
+with which one can create a simulation code. It is thus possible to use Sundance
+to write simulators for virtually any kind of PDE for any field of science or
+engineering. It is possible to use Sundance components to write static or dynamic,
+linear or nonlinear, forward or inverse problems.
+
+See the \ref tutorial for examples of different simulators developed in Sundance.
+
+\subsection faq_pde4 Can I use a stabilized method such as SUPG or Galerkin Least Squares in Sundance? 
+
+Yes, easily. 
+
+\subsection faq_pde5 How are essential boundary conditions handled in Sundance?
+
+\subsection faq_pde6 Can I do Robin boundary conditions in Sundance?
+
+\subsection faq_pde7 Can I specify nonlocal boundary conditions in Sundance?
+
+Not at present, and there are no near-term plans to add this capability. 
+
+\subsection faq_pde8 Can I specify nonreflecting boundary conditions in Sundance?
+
+Nonreflecting boundary conditions are, in general, nonlocal and thus cannot
+be implemented exactly. There are, however, local approximations to nonreflecting
+boundary conditions and these can be implemented without difficulty. 
+
+\subsection faq_pde9 Can I do a contact problem in Sundance?
+
+Most of my work involves fluid mechanics rather than structural mechanics, so
+there is at present no capability for identifying regions of contact between two meshes
+(or two parts of the same mesh) in Sundance.
+
+Contact is an important problem, and if someone at Sandia wants to use Sundance for
+optimizing contact simulations, I will be happy to add it given funding to do so.
+
+
+
+
+
+
+
+
+\section faq_mesh Mesh issues
+
+\subsection faq_mesh1 Is Sundance a 1D, 2D, or 3D code?
+
+All of the above.
+
+\subsection faq_mesh2 Can Sundance read my favorite mesh file format?
+
+\subsection faq_mesh3 What mesh generator does Sundance use?
+
+None, other than trivial meshers for lines and rectangles for use in testing.
+
+\subsection faq_mesh4 Does Sundance use simplicial or quad/hex meshes?
+
+\subsection faq_mesh5 Does Sundance do adaptive mesh refinement?
+
+\subsection faq_mesh6 
+
+\subsection faq_mesh7 
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section faq_elem Element Types
+
+\subsection faq_elem1 What cell types are supported?
+
+Simplicial cells only, in 1, 2, and 3 dimensions.
+
+\subsection faq_elem2 What basis functions are supported?
+
+Currently, Lagrange orders 1 and 2 only. Implementation of more general elements
+through Robert Kirby's 
+<A HREF="http://people.cs.uchicago.edu/~kirby/index.cgi?page=fiat"> FIAT </A>
+code is underway.
+
+
+\subsection faq_elem3 What quadrature rules are supported?
+
+\subsection faq_elem4 Can I add my own cell type / basis type / quadrature rule?
+
+\subsection faq_elem5 Do you have plans to add my favorite cell/basis/quadrature rule?
+
+ Implementation of more general elements
+through Robert Kirby's 
+<A HREF="http://people.cs.uchicago.edu/~kirby/index.cgi?page=fiat"> FIAT </A>
+code is underway.
+
+I have no near-term plans to add non-simplicial meshes. 
+
+
+
+
+
+
+
+
+
+
+\section faq_solvers Solvers
+
+
+\subsection faq_solvers1 What solvers does Sundance use?
+
+\subsection faq_solvers2 Does Sundance use direct or iterative solvers?
+
+\subsection faq_solvers3 Does Sundance use multigrid solvers?
+
+\subsection faq_solvers4 Can I use my favorite solver with Sundance?
+
+\subsection faq_solvers5 Can I use Newton-Krylov methods with Sundance?
+
+\subsection faq_solvers6 Can I do eigenvalue problems with Sundance?
+
+\subsection faq_solvers7 Can I get access to the stiffness matrix and load vector?
+
+*/

@@ -361,7 +361,14 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = ../src-utils/Utilities \
+INPUT                  = ../doc/Doxygen/index.dox \
+                         ../doc/Doxygen/Expr.dox \
+                         ../doc/Doxygen/MeshSource.dox \
+                         ../doc/Doxygen/CellFilter.dox \
+                         ../doc/Doxygen/LinearSolvers.dox \
+                         ../doc/Doxygen/NonlinearSolvers.dox \
+                         ../doc/Doxygen/FAQ.dox \
+                         ../src-utils/Utilities \
                          ../src-core/Evaluation \
                          ../src-core/FrameworkInterface \
                          ../src-core/InternalExprs \
