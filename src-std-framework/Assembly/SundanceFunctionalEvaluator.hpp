@@ -33,6 +33,9 @@ namespace SundanceStdFwk
     {
     public:
       /** */
+      FunctionalEvaluator();
+
+      /** */
       FunctionalEvaluator(const Mesh& mesh, 
                           const Expr& integral);
       /** */

@@ -16,6 +16,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
+using namespace std;
 using namespace TSFExtended;
 
 
@@ -82,8 +83,13 @@ TSFExtended::Vector<double> NonlinearProblem::getInitialGuess() const
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
                      "null discrete function pointer in "
                      "NonlinearProblem::getInitialGuess()");
+  
+  Vector<double> u0 = discreteU0_->vector();
+  cerr << "initial guess " << endl;
+  u0.print(cerr);
+  cerr << endl;
 
-  return discreteU0_->vector();
+  return u0;
 }
 
 

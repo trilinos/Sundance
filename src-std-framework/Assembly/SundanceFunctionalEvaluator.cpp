@@ -40,6 +40,13 @@ namespace SundanceStdFwk
   }
 }
 
+FunctionalEvaluator::FunctionalEvaluator()
+  : assembler_(),
+    varValues_(),
+    vecType_(),
+    gradient_()
+{}
+
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
                                          const Expr& integral)
   : assembler_(),
