@@ -47,6 +47,8 @@ void doit(const Expr& e,
           const Expr& varEvalPt,
           const Expr& unks,
           const Expr& unkEvalPt, 
+          const Expr& fixed,
+          const Expr& fixedEvalPt, 
           const EvalContext& region)
 {
   TimeMonitor t0(doitTimer());
@@ -66,6 +68,8 @@ void doit(const Expr& e,
                                                  varEvalPt,
                                                  unks,
                                                  unkEvalPt,
+                                                 fixed,
+                                                 fixedEvalPt,
                                                  region);
 
   Tabs tab;
@@ -92,6 +96,8 @@ void testExpr(const Expr& e,
               const Expr& varEvalPt,
               const Expr& unks,
               const Expr& unkEvalPt, 
+              const Expr& fixed,
+              const Expr& fixedEvalPt,  
               const EvalContext& region)
 {
   cerr << endl 
@@ -102,7 +108,7 @@ void testExpr(const Expr& e,
 
   try
     {
-      doit(e, vars, varEvalPt, unks, unkEvalPt, region);
+      doit(e, vars, varEvalPt, unks, unkEvalPt, fixed, fixedEvalPt, region);
     }
   catch(exception& ex)
     {
@@ -131,9 +137,9 @@ int main(int argc, void** argv)
       int maxDiffOrder = 2;
 
       verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbExtreme;
+      //      verbosity<Evaluator>() = VerbExtreme;
       verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      // verbosity<EvaluatableExpr>() = VerbExtreme;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
@@ -143,6 +149,7 @@ int main(int argc, void** argv)
 
 			Expr u = new UnknownFunctionStub("u");
 			Expr lambda = new UnknownFunctionStub("lambda");
+			Expr alpha = new UnknownFunctionStub("alpha");
 
       cerr << "u=" << u << endl;
       cerr << "lambda=" << lambda << endl;
@@ -152,12 +159,15 @@ int main(int argc, void** argv)
 
       Expr u0 = new DiscreteFunctionStub("u0");
       Expr lambda0 = new DiscreteFunctionStub("lambda0");
+      Expr zero = new ZeroExpr();
+      Expr alpha0 = new DiscreteFunctionStub("alpha0");
 
       Array<Expr> tests;
 
 
 
-      tests.append(/* 0.5*u*u + 0.5*(dx*u)*(dx*u) + (dx*lambda)*(dx*u) + */lambda*exp(u));
+      tests.append(0.5*(u-cos(x))*(u-cos(x)) + 0.5*(dx*alpha)*(dx*alpha) 
+                     + exp(alpha)* (dx*lambda)*(dx*u));
 
       cerr << "STATE EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
@@ -167,9 +177,11 @@ int main(int argc, void** argv)
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
                    lambda,
-                   lambda0,
+                   zero,
                    u,
-                   u0,
+                   zero,
+                   alpha,
+                   alpha0,
                    context);
         }
       
@@ -184,6 +196,8 @@ int main(int argc, void** argv)
                    u0, 
                    lambda,
                    lambda0,
+                   alpha,
+                   alpha0,
                    context);
         }
 

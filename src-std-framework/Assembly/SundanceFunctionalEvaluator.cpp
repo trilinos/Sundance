@@ -84,7 +84,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
       /* make sure we have no test functions */
       OrderedHandle<CellFilterStub> reg = integralSum->region(d);
 
-      TEST_FOR_EXCEPTION(integralSum->testsOnRegion(d).size() != 0,
+      TEST_FOR_EXCEPTION(integralSum->integralHasTestFunctions(d),
                          RuntimeError,
                          "Expr with test function detected in functional "
                          "ctor in region " << reg);

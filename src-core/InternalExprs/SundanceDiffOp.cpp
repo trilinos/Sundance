@@ -257,7 +257,9 @@ void DiffOp::getResultDerivs(const MultipleDeriv& argDeriv,
            * with a coefficient function.  */
           const FuncElementBase* f = argSingleDerivs[0].funcDeriv()->func();
           const TestFuncElement* t = dynamic_cast<const TestFuncElement*>(f);
-          if (t == 0 && !ignoreFuncTerms())
+          const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
+          //          if (t == 0 && !ignoreFuncTerms())
+          if (!s->evalPtIsZero())
             {
               Deriv d = argSingleDerivs[0].funcDeriv()->derivWrtMultiIndex(mi_);
               funcTerms.put(MultipleDeriv(), d);
@@ -307,17 +309,21 @@ void DiffOp::getResultDerivs(const MultipleDeriv& argDeriv,
 
           const FuncElementBase* f0 = argSingleDerivs[0].funcDeriv()->func();
           const TestFuncElement* t0 = dynamic_cast<const TestFuncElement*>(f0);
+          const SymbolicFuncElement* s0 = dynamic_cast<const SymbolicFuncElement*>(f0);
 
           const FuncElementBase* f1 = argSingleDerivs[1].funcDeriv()->func();
           const TestFuncElement* t1 = dynamic_cast<const TestFuncElement*>(f1);
+          const SymbolicFuncElement* s1 = dynamic_cast<const SymbolicFuncElement*>(f1);
 
-          if (t0==0 && !ignoreFuncTerms())
+          //          if (t0==0 && !ignoreFuncTerms())
+          if (!s0->evalPtIsZero())
             {
               Deriv d1 = argSingleDerivs[0].funcDeriv()->derivWrtMultiIndex(mi_);
               funcTerms.put(md2, d1);
             }
 
-          if (t1==0 && !ignoreFuncTerms())
+          //         if (t1==0 && !ignoreFuncTerms())
+          if (!s1->evalPtIsZero())
             {
               Deriv d2 = argSingleDerivs[1].funcDeriv()->derivWrtMultiIndex(mi_);
 

@@ -32,6 +32,11 @@ bool FuncElementBase::isInActiveSet(const Set<MultiSet<int> >& activeFuncIDs) co
   return false;
 }
 
+void FuncElementBase::accumulateFuncSet(Set<int>& funcIDs,
+                                        const Set<int>& activeFuncs) const
+{
+  if (activeFuncs.contains(funcID())) funcIDs.put(funcID());
+}
 
 ostream& FuncElementBase::toText(ostream& os, bool /* paren */) const 
 {

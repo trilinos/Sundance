@@ -20,15 +20,15 @@ using namespace Teuchos;
 
 EquationSet::EquationSet(const Expr& eqns, 
                          const Expr& bcs,
-                         const Expr& tests, 
+                         const Expr& vars, 
                          const Expr& unks,
                          const Expr& unkLinearizationPts)
   : regions_(),
-    testsOnRegions_(),
+    varsOnRegions_(),
     unksOnRegions_(),
-    testUnkPairsOnRegions_(),
-    bcTestUnkPairsOnRegions_(),
-    bcTestsOnRegions_(),
+    varUnkPairsOnRegions_(),
+    bcVarUnkPairsOnRegions_(),
+    bcVarsOnRegions_(),
     bcUnksOnRegions_(),
     regionQuadCombos_(),
     bcRegionQuadCombos_(),
@@ -38,12 +38,68 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadComboNonzeroDerivs_(2),
     rqcToContext_(2),
     bcRqcToContext_(2),
-    testFuncs_(tests),
+    varFuncs_(vars),
     unkFuncs_(unks),
     unkLinearizationPts_(unkLinearizationPts),
-    testIDToReducedIDMap_(),
+    varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
-    isNonlinear_(false)
+    isNonlinear_(false),
+    isVariationalProblem_(false)
+{
+  Expr fixed;
+  init(eqns, bcs, vars, fixed,
+       unks, unkLinearizationPts,
+       fixed, fixed);
+}
+
+
+EquationSet::EquationSet(const Expr& eqns, 
+                         const Expr& bcs,
+                         const Expr& vars,
+                         const Expr& varLinearizationPts, 
+                         const Expr& unks,
+                         const Expr& unkLinearizationPts,
+                         const Expr& fixedFields,
+                         const Expr& fixedFieldValues)
+  : regions_(),
+    varsOnRegions_(),
+    unksOnRegions_(),
+    varUnkPairsOnRegions_(),
+    bcVarUnkPairsOnRegions_(),
+    bcVarsOnRegions_(),
+    bcUnksOnRegions_(),
+    regionQuadCombos_(),
+    bcRegionQuadCombos_(),
+    regionQuadComboExprs_(),
+    bcRegionQuadComboExprs_(),
+    regionQuadComboNonzeroDerivs_(2),
+    bcRegionQuadComboNonzeroDerivs_(2),
+    rqcToContext_(2),
+    bcRqcToContext_(2),
+    varFuncs_(vars),
+    unkFuncs_(unks),
+    unkLinearizationPts_(unkLinearizationPts),
+    varIDToReducedIDMap_(),
+    unkIDToReducedIDMap_(),
+    isNonlinear_(false),
+    isVariationalProblem_(true)
+{
+  init(eqns, bcs, vars, varLinearizationPts, 
+       unks, unkLinearizationPts,
+       fixedFields, fixedFieldValues);
+}
+
+
+
+
+void EquationSet::init(const Expr& eqns, 
+                       const Expr& bcs,
+                       const Expr& vars, 
+                       const Expr& varLinearizationPts,
+                       const Expr& unks,
+                       const Expr& unkLinearizationPts,
+                       const Expr& fixedFields,
+                       const Expr& fixedFieldValues)
 {
   verbosity() = classVerbosity();
 
@@ -66,18 +122,50 @@ EquationSet::EquationSet(const Expr& eqns,
                "...input eqn set is OK");
 
   
-  /* map each test and unknown function's ID numbers to its
-   * position in the input function lists */
-  for (int i=0; i<tests.size(); i++)
+  /* 
+   * See whether the variational functions are TestFunction objects
+   * (as in a problem where we've already taken variations, or in 
+   * a Galerkin-like formulation of a non-variational problem) 
+   * or UnknownFunction objects, as in a variational problem. 
+   */
+  bool varsAreTestFunctions = false;
+  for (int i=0; i<vars.size(); i++)
     {
       const TestFuncElement* t 
-        = dynamic_cast<const TestFuncElement*>(tests[i].ptr().get());
-      TEST_FOR_EXCEPTION(t==0, RuntimeError, 
-                         "EquationSet ctor input test function "
-                         << tests[i] 
-                         << " does not appear to be a test function");
+        = dynamic_cast<const TestFuncElement*>(vars[i].ptr().get());
+      TEST_FOR_EXCEPTION(t == 0 && varsAreTestFunctions==true,
+                         RuntimeError,
+                         "variational function list " << vars
+                         << " contains a mix of test and non-test functions");
+      TEST_FOR_EXCEPTION(t != 0 && i>0 && varsAreTestFunctions==false,
+                         RuntimeError,
+                         "variational function list " << vars
+                         << " contains a mix of test and non-test functions");
+      if (t!=0) varsAreTestFunctions=true;
+    }
+
+  TEST_FOR_EXCEPTION(varsAreTestFunctions == true
+                     && isVariationalProblem_,
+                     RuntimeError,
+                     "test functions given to a variational equation set");
+
+  TEST_FOR_EXCEPTION(varsAreTestFunctions == false
+                     && !isVariationalProblem_,
+                     RuntimeError,
+                     "variational functions are unknowns, but equation "
+                     "set is not variational");
+  
+  /* map each var and unknown function's ID numbers to its
+   * position in the input function lists */
+  Set<int> varFuncSet;
+  Set<int> unkFuncSet;
+  for (int i=0; i<vars.size(); i++)
+    {
+      const FuncElementBase* t 
+        = dynamic_cast<const FuncElementBase*>(vars[i].ptr().get());
       int fid = t->funcID();
-      testIDToReducedIDMap_.put(fid, i);
+      varFuncSet.put(fid);
+      varIDToReducedIDMap_.put(fid, i);
     }
   for (int i=0; i<unks.size(); i++)
     {
@@ -88,6 +176,7 @@ EquationSet::EquationSet(const Expr& eqns,
                          << unks[i] 
                          << " does not appear to be a unk function");
       int fid = u->funcID();
+      unkFuncSet.put(fid);
       unkIDToReducedIDMap_.put(fid, i);
     }
 
@@ -136,15 +225,15 @@ EquationSet::EquationSet(const Expr& eqns,
       if (!regionSet.contains(reg)) 
         {
           regionSet.put(reg);
-          testsOnRegions_.put(reg, integralSum->testsOnRegion(d));
-          unksOnRegions_.put(reg, integralSum->unksOnRegion(d));
+          varsOnRegions_.put(reg, integralSum->funcsOnRegion(d, varFuncSet));
+          unksOnRegions_.put(reg, integralSum->funcsOnRegion(d, unkFuncSet));
         }
       else
         {
-          Set<int>& t = testsOnRegions_.get(reg);
-          t.merge(integralSum->testsOnRegion(d));
+          Set<int>& t = varsOnRegions_.get(reg);
+          t.merge(integralSum->funcsOnRegion(d, varFuncSet));
           Set<int>& u = unksOnRegions_.get(reg);
-          u.merge(integralSum->unksOnRegion(d));
+          u.merge(integralSum->funcsOnRegion(d, unkFuncSet));
         }
       for (int t=0; t<integralSum->numTerms(d); t++)
         {
@@ -155,12 +244,24 @@ EquationSet::EquationSet(const Expr& eqns,
           for (int order=1; order<=2; order++)
             {
               EvalContext context(rqc, order, contextID[order-1]);
-              DerivSet nonzeros 
-                = SymbPreprocessor::setupExpr(term, tests,
-                                              unks, 
-                                              unkLinearizationPts,
-                                              context);
-              if (order==2) addToTestUnkPairs(rqc.domain(), nonzeros, false);
+              DerivSet nonzeros;
+              if (isVariationalProblem_)
+                {
+                  nonzeros = SymbPreprocessor
+                    ::setupVariations(term, 
+                                      vars, varLinearizationPts,
+                                      unks, unkLinearizationPts,
+                                      fixedFields, fixedFieldValues,
+                                      context);
+                }
+              else
+                {
+                  nonzeros = SymbPreprocessor
+                    ::setupExpr(term, vars, unks, 
+                                unkLinearizationPts,
+                                context);
+                }
+              if (order==2) addToVarUnkPairs(rqc.domain(), nonzeros, false);
               rqcToContext_[order-1].put(rqc, context);
               regionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);
             }
@@ -180,40 +281,40 @@ EquationSet::EquationSet(const Expr& eqns,
           if (!regionSet.contains(reg)) 
             {
               regionSet.put(reg);
-              testsOnRegions_.put(reg, bcSum->testsOnRegion(d));
-              unksOnRegions_.put(reg, bcSum->unksOnRegion(d));
-              bcTestsOnRegions_.put(reg, bcSum->testsOnRegion(d));
-              bcUnksOnRegions_.put(reg, bcSum->unksOnRegion(d));
+              varsOnRegions_.put(reg, bcSum->funcsOnRegion(d, varFuncSet));
+              unksOnRegions_.put(reg, bcSum->funcsOnRegion(d, unkFuncSet));
+              bcVarsOnRegions_.put(reg, bcSum->funcsOnRegion(d, varFuncSet));
+              bcUnksOnRegions_.put(reg, bcSum->funcsOnRegion(d, unkFuncSet));
             }
           else
             {
-              if (!bcTestsOnRegions_.containsKey(reg))
+              if (!bcVarsOnRegions_.containsKey(reg))
                 {
-                  bcTestsOnRegions_.put(reg, bcSum->testsOnRegion(d));
+                  bcVarsOnRegions_.put(reg, bcSum->funcsOnRegion(d, varFuncSet));
                 }
               if (!bcUnksOnRegions_.containsKey(reg))
                 {
-                  bcUnksOnRegions_.put(reg, bcSum->unksOnRegion(d));
+                  bcUnksOnRegions_.put(reg, bcSum->funcsOnRegion(d, unkFuncSet));
                 }
-              Set<int>& t = testsOnRegions_.get(reg);
-              t.merge(bcSum->testsOnRegion(d));
+              Set<int>& t = varsOnRegions_.get(reg);
+              t.merge(bcSum->funcsOnRegion(d, varFuncSet));
               Set<int>& u = unksOnRegions_.get(reg);
-              u.merge(bcSum->unksOnRegion(d));
+              u.merge(bcSum->funcsOnRegion(d, unkFuncSet));
             }
 
           cerr << "BC regions are " << endl;
           for (Map<OrderedHandle<CellFilterStub>, Set<int> >::const_iterator 
-                 iter=bcTestsOnRegions_.begin(); iter != bcTestsOnRegions_.end();
+                 iter=bcVarsOnRegions_.begin(); iter != bcVarsOnRegions_.end();
                iter ++)
             {
               cerr << "region=" << iter->first << endl;
               cerr << "id = " << iter->first.ptr()->id() << endl;
             }
           cerr << "checking map integrity " << endl;
-          TEST_FOR_EXCEPTION(!bcTestsOnRegions_.containsKey(reg),
+          TEST_FOR_EXCEPTION(!bcVarsOnRegions_.containsKey(reg),
                              InternalError,
                              "Bug: region " << reg << " should appear in "
-                             "BC list" << bcTestsOnRegions_);
+                             "BC list" << bcVarsOnRegions_);
           for (int t=0; t<bcSum->numTerms(d); t++)
             {
               RegionQuadCombo rqc(reg.ptr(), bcSum->quad(d,t));
@@ -223,12 +324,24 @@ EquationSet::EquationSet(const Expr& eqns,
               for (int order=1; order<=2; order++)
                 {
                   EvalContext context(rqc, order, contextID[order-1]);
-                  DerivSet nonzeros 
-                    = SymbPreprocessor::setupExpr(term, tests,
-                                                  unks, 
-                                                  unkLinearizationPts,
-                                                  context);
-                  if (order==2) addToTestUnkPairs(rqc.domain(), nonzeros, true);
+                  DerivSet nonzeros;
+                  if (isVariationalProblem_)
+                    {
+                      nonzeros = SymbPreprocessor
+                        ::setupVariations(term, 
+                                          vars, varLinearizationPts,
+                                          unks, unkLinearizationPts,
+                                          fixedFields, fixedFieldValues,
+                                          context);
+                    }
+                  else
+                    {
+                      nonzeros = SymbPreprocessor
+                        ::setupExpr(term, vars, unks, 
+                                    unkLinearizationPts,
+                                    context);
+                    }
+                  if (order==2) addToVarUnkPairs(rqc.domain(), nonzeros, true);
                   bcRqcToContext_[order-1].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);
                 }
@@ -239,14 +352,14 @@ EquationSet::EquationSet(const Expr& eqns,
   
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
-               "Tests appearing on each region: " << endl << testsOnRegions_);
+               "Vars appearing on each region: " << endl << varsOnRegions_);
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
                "Unks appearing on each region: " << endl << unksOnRegions_);
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
-               "Tests appearing on each BC region: " 
-               << endl << bcTestsOnRegions_);
+               "Vars appearing on each BC region: " 
+               << endl << bcVarsOnRegions_);
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
                "Unks appearing on each BC region: " 
@@ -270,12 +383,12 @@ EquationSet::EquationSet(const Expr& eqns,
 
 
 void EquationSet
-::addToTestUnkPairs(const OrderedHandle<CellFilterStub>& domain,
+::addToVarUnkPairs(const OrderedHandle<CellFilterStub>& domain,
                     const DerivSet& nonzeros, 
                     bool isBC)
 {
   Tabs tab;
-  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "finding test-unk pairs "
+  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "finding var-unk pairs "
                "for domain " << domain);
   SUNDANCE_OUT(verbosity() > VerbMedium, tab << "isBC=" << isBC);
   
@@ -284,11 +397,11 @@ void EquationSet
 
   if (isBC) 
     {
-      theMap = &(bcTestUnkPairsOnRegions_);
+      theMap = &(bcVarUnkPairsOnRegions_);
     }
   else 
     {
-      theMap = &(testUnkPairsOnRegions_);
+      theMap = &(varUnkPairsOnRegions_);
     } 
   SUNDANCE_OUT(verbosity() > VerbHigh, tab << "map ptr=" << theMap);
   if (theMap->containsKey(domain))
@@ -306,7 +419,7 @@ void EquationSet
       const MultipleDeriv& md = *i;
       if (md.order() != 2) continue;
       
-      int testID = -1;
+      int varID = -1;
       int unkID = -1;
 
       MultipleDeriv::const_iterator j;
@@ -316,7 +429,7 @@ void EquationSet
           const FunctionalDeriv* fd = d.funcDeriv();
           TEST_FOR_EXCEPTION(fd==0, InternalError, "non-functional deriv "
                              << d << " detected in EquationSet::"
-                             "addToTestUnkPairs()");
+                             "addToVarUnkPairs()");
           const UnknownFuncElement* u 
             = dynamic_cast<const UnknownFuncElement*>(fd->func());
           const TestFuncElement* t 
@@ -329,14 +442,14 @@ void EquationSet
             }
           if (t != 0)
             {
-              testID = fd->funcID();
+              varID = fd->funcID();
               continue;
             }
         }
-      TEST_FOR_EXCEPTION(unkID==-1 || testID==-1, InternalError,
+      TEST_FOR_EXCEPTION(unkID==-1 || varID==-1, InternalError,
                          "multiple derivative " << md << " does not "
-                         "appear to have exactly one test and unknown each");
-      funcPairs->put(OrderedPair<int, int>(testID, unkID));
+                         "appear to have exactly one var and unknown each");
+      funcPairs->put(OrderedPair<int, int>(varID, unkID));
     }
 
   SUNDANCE_OUT(verbosity() > VerbMedium, tab << "found " << *funcPairs);
@@ -344,23 +457,23 @@ void EquationSet
 }
 
 const RefCountPtr<Set<OrderedPair<int, int> > >& EquationSet::
-bcTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
 {
-  TEST_FOR_EXCEPTION(!bcTestUnkPairsOnRegions_.containsKey(domain),
+  TEST_FOR_EXCEPTION(!bcVarUnkPairsOnRegions_.containsKey(domain),
                      InternalError,
-                     "equation set does not have a test-unk pair list for "
+                     "equation set does not have a var-unk pair list for "
                      "bc region " << domain);
   const RefCountPtr<Set<OrderedPair<int, int> > >& rtn 
-    = bcTestUnkPairsOnRegions_.get(domain);
+    = bcVarUnkPairsOnRegions_.get(domain);
 
   TEST_FOR_EXCEPTION(rtn.get()==0, InternalError, 
-                     "null test-unk pair list for BC region " << domain);
+                     "null var-unk pair list for BC region " << domain);
   return rtn;
 }
 
 bool EquationSet::isBCRegion(int d) const
 {
-  return bcTestsOnRegions_.containsKey(regions_[d]);
+  return bcVarsOnRegions_.containsKey(regions_[d]);
 }
 
 

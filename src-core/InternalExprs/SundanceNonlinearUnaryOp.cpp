@@ -34,10 +34,13 @@ NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
       for (iter i=argFuncs.begin(); i != argFuncs.end(); i++)
         {
           const MultiSet<int>& f1 = *i;
+          addFuncIDCombo(f1);
           for (iter j=argFuncs.begin(); j != argFuncs.end(); j++)
             {
               const MultiSet<int>& f2 = *j;
               MultiSet<int> f12 = f1.merge(f2);
+              if (f1.size()+f2.size() > maxFuncDiffOrder()) continue;
+              addFuncIDCombo(f12);
               for (iter k=argFuncs.begin(); k != argFuncs.end(); k++)
                 {
                   const MultiSet<int>& f3 = *k;
@@ -55,15 +58,20 @@ Set<MultiSet<int> >
 NonlinearUnaryOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const 
 {
   typedef Set<MultiSet<int> >::const_iterator iter;
-
+  
   Set<MultiSet<int> > rtn;
+  rtn.put(MultiSet<int>());
+
   for (iter i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
     {
       const MultiSet<int>& f1 = *i;
+      rtn.put(f1);
       for (iter j=activeFuncIDs.begin(); j != activeFuncIDs.end(); j++)
         {
           const MultiSet<int>& f2 = *j;
           MultiSet<int> f12 = f1.merge(f2);
+          if (f1.size()+f2.size() > maxFuncDiffOrder()) continue;
+          rtn.put(f12);
           for (iter k=activeFuncIDs.begin(); k != activeFuncIDs.end(); k++)
             {
               const MultiSet<int>& f3 = *k;

@@ -34,21 +34,15 @@ bool ExprWithChildren::isConstant() const
   return true;
 }
 
-void ExprWithChildren::accumulateUnkSet(Set<int>& unkIDs) const
+void ExprWithChildren::accumulateFuncSet(Set<int>& funcIDs,
+                                         const Set<int>& activeFuncs) const
 {
   for (unsigned int i=0; i<children_.size(); i++) 
     {
-      children_[i]->accumulateUnkSet(unkIDs);
+      children_[i]->accumulateFuncSet(funcIDs, activeFuncs);
     }
 }
 
-void ExprWithChildren::accumulateTestSet(Set<int>& testIDs) const
-{
-  for (unsigned int i=0; i<children_.size(); i++) 
-    {
-      children_[i]->accumulateTestSet(testIDs);
-    }
-}
 
 const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
 {
@@ -164,6 +158,16 @@ bool ExprWithChildren::allTermsHaveTestFunctions() const
   for (unsigned int i=0; i<children_.size(); i++)
     {
       if (evaluatableChild(i)->allTermsHaveTestFunctions()) return true;
+    }
+  return false;
+}
+
+
+bool ExprWithChildren::hasTestFunctions() const
+{
+  for (unsigned int i=0; i<children_.size(); i++)
+    {
+      if (evaluatableChild(i)->hasTestFunctions()) return true;
     }
   return false;
 }

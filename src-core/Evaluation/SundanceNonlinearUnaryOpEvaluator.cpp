@@ -53,9 +53,12 @@ NonlinearUnaryOpEvaluator
       
       if (d.order()==0)
         {
-          /* we'll need the index of the argument's deriv in the superset
-       * of results */
+          /* we'll need the index of the argument's value in the superset
+           * of results */
           int argIndexInSuperset = argSparsitySuperset()->getIndex(d);
+          SUNDANCE_VERB_MEDIUM(tabs << "arg value found at index "
+                               << argIndexInSuperset 
+                               << "in arg result superset");
           TEST_FOR_EXCEPTION(argIndexInSuperset==-1, InternalError,
                              "derivative " << d
                              << " found in arg subset but not in "
@@ -64,10 +67,12 @@ NonlinearUnaryOpEvaluator
           if (argSparsitySubset()->state(i)==ConstantDeriv)
             {
               d0ArgDerivIsConstant_ = true;
+              SUNDANCE_VERB_MEDIUM(tabs << "arg value is constant");
             }
           else
             {
               d0ArgDerivIsConstant_ = false;
+              SUNDANCE_VERB_MEDIUM(tabs << "arg value is non-constant");
             }
         }
     }
@@ -117,6 +122,8 @@ NonlinearUnaryOpEvaluator
               d0ResultIndex_ = vecCounter;
               addVectorIndex(i, vecCounter++); /* result is a vector */
             }
+          SUNDANCE_VERB_MEDIUM(tabs << "operator value goes into result index"
+                               << d0ResultIndex_);
         }
       else if (order==1)
         {
@@ -135,6 +142,7 @@ NonlinearUnaryOpEvaluator
            */
 
           /* Record the index at which we will record this derivative */
+          Tabs tab1;
           d1ResultIndex_.append(i);
           addVectorIndex(i, i); /* result is a vector */
           
@@ -150,16 +158,30 @@ NonlinearUnaryOpEvaluator
           /* Record index of g_u in arg results, and also whether it
            * is a constant or a vector */
           int index = argSparsitySuperset()->getIndex(d);
+          SUNDANCE_VERB_MEDIUM(tab1 << "deriv " << d << " found at index "
+                               << index << " in arg results");
 
           if (argSparsitySuperset()->state(index)==ConstantDeriv)
             {
+              Tabs tab2;
+              SUNDANCE_VERB_MEDIUM(tab2 << "arg deriv is constant");
+              TEST_FOR_EXCEPTION(!argEval()->constantIndexMap().containsKey(index),
+                                 InternalError,
+                                 "index " << index 
+                                 << " not found in arg constant index map");
               d1ArgDerivIndex_.append(argEval()->constantIndexMap().get(index));
               d1ArgDerivIsConstant_.append(true);
             }
           else
             {
+              Tabs tab2;
+              SUNDANCE_VERB_MEDIUM(tab2 << "arg deriv is non-constant");
+              TEST_FOR_EXCEPTION(!argEval()->vectorIndexMap().containsKey(index),
+                                 InternalError,
+                                 "index " << index 
+                                 << " not found in arg vector index map");
               d1ArgDerivIndex_.append(argEval()->vectorIndexMap().get(index));
-              d1ArgDerivIsConstant_.append(true);
+              d1ArgDerivIsConstant_.append(false);
             }
           
         }
@@ -292,6 +314,8 @@ void NonlinearUnaryOpEvaluator
       argValue = argVectorResults[d0ArgDerivIndex_];
     }
 
+  SUNDANCE_VERB_HIGH(tabs << "applying operator");
+
   argValue->applyUnaryOperator(expr()->op(), opDerivs);
 
   TEST_FOR_EXCEPTION(errno==EDOM, RuntimeError,
@@ -328,6 +352,7 @@ void NonlinearUnaryOpEvaluator
 
       /* -- Second derivative terms */
 
+      SUNDANCE_VERB_HIGH(tabs << "evaluating second derivs");
 
       for (unsigned int i=0; i<d2ArgDerivIndex_.size(); i++)
         {
@@ -420,7 +445,7 @@ void NonlinearUnaryOpEvaluator
 
 
       /* --- First derivative terms */
-
+      SUNDANCE_VERB_HIGH(tabs << "evaluating first derivs");
 
       for (unsigned int i=0; i<d1ArgDerivIndex_.size(); i++)
         {

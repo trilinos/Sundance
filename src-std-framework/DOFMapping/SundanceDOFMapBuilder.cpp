@@ -53,10 +53,10 @@ void DOFMapBuilder::init()
        * can build a homogeneous DOF map. */
       if (testsAreHomogeneous() && testsAreOmnipresent())
         {
-          Expr test0 = eqn_->testFunc(0);
+          Expr test0 = eqn_->varFunc(0);
           BasisFamily basis0 = BasisFamily::getBasis(test0);
           rowMap_ = rcp(new HomogeneousDOFMap(mesh_, basis0, 
-                                              eqn_->numTests()));
+                                              eqn_->numVars()));
           colMap_ = rowMap_;
         }
       else
@@ -71,10 +71,10 @@ void DOFMapBuilder::init()
        * can build a homogeneous DOF map. */
       if (testsAreHomogeneous() && testsAreOmnipresent())
         {
-          Expr test0 = eqn_->testFunc(0);
+          Expr test0 = eqn_->varFunc(0);
           BasisFamily basis0 = BasisFamily::getBasis(test0);
           rowMap_ = rcp(new HomogeneousDOFMap(mesh_, basis0,  
-                                              eqn_->numTests()));
+                                              eqn_->numVars()));
         }
       else
         {
@@ -102,9 +102,9 @@ void DOFMapBuilder::init()
 Array<BasisFamily> DOFMapBuilder::testBasisArray() const 
 {
   Array<BasisFamily> rtn;
-  for (int i=0; i<eqn_->numTests(); i++) 
+  for (int i=0; i<eqn_->numVars(); i++) 
     {
-      rtn.append(BasisFamily::getBasis(eqn_->testFunc(i)));
+      rtn.append(BasisFamily::getBasis(eqn_->varFunc(i)));
     }
   return rtn;
 }
@@ -135,12 +135,12 @@ bool DOFMapBuilder::unksAreHomogeneous() const
 
 bool DOFMapBuilder::testsAreHomogeneous() const 
 {
-  if (eqn_->numTests() > 1)
+  if (eqn_->numVars() > 1)
     {
-      BasisFamily basis0 = BasisFamily::getBasis(eqn_->testFunc(0));
-      for (int i=1; i<eqn_->numTests(); i++) 
+      BasisFamily basis0 = BasisFamily::getBasis(eqn_->varFunc(0));
+      for (int i=1; i<eqn_->numVars(); i++) 
         {
-          BasisFamily basis = BasisFamily::getBasis(eqn_->testFunc(i));
+          BasisFamily basis = BasisFamily::getBasis(eqn_->varFunc(i));
           if (!(basis == basis0)) return false;
         }
     }
@@ -166,7 +166,7 @@ bool DOFMapBuilder::testsAreOmnipresent() const
     {
       if (regionIsMaximal(r))
         {
-          if (eqn_->testsOnRegion(r).size() == eqn_->numTests()) return true;
+          if (eqn_->varsOnRegion(r).size() == eqn_->numVars()) return true;
           else return false;
         }
     }
@@ -176,11 +176,11 @@ bool DOFMapBuilder::testsAreOmnipresent() const
 
 bool DOFMapBuilder::isSymmetric() const 
 {
-  if (eqn_->numTests() != eqn_->numUnks()) return false;
+  if (eqn_->numVars() != eqn_->numUnks()) return false;
 
-  for (int i=0; i<eqn_->numTests(); i++) 
+  for (int i=0; i<eqn_->numVars(); i++) 
     {
-      BasisFamily basis1 = BasisFamily::getBasis(eqn_->testFunc(i));
+      BasisFamily basis1 = BasisFamily::getBasis(eqn_->varFunc(i));
       BasisFamily basis2 = BasisFamily::getBasis(eqn_->unkFunc(i));
       if (!(basis1 == basis2)) return false;
     }
@@ -218,11 +218,11 @@ void DOFMapBuilder::markBCRows()
         }
       int nTestNodes;
       /* find the functions that appear in BCs on this region */
-      const Set<int>& bcFuncs = eqn_->bcTestsOnRegion(r);
+      const Set<int>& bcFuncs = eqn_->bcVarsOnRegion(r);
       Array<int> bcFuncID = bcFuncs.elements();
       for (unsigned int f=0; f<bcFuncID.size(); f++) 
         {
-          bcFuncID[f] = eqn_->reducedTestID(bcFuncID[f]);
+          bcFuncID[f] = eqn_->reducedVarID(bcFuncID[f]);
         }
 
       rowMap_->getDOFsForCellBatch(dim, cellLID, bcFuncID, dofs, nTestNodes);

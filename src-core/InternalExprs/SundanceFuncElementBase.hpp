@@ -55,6 +55,11 @@ namespace SundanceCore
           /** Return an integer ID which uniquely identifies this function */
           int funcID() const {return id_;}
 
+          /** Append to the set of func IDs present in 
+           * this expression. */
+          virtual void accumulateFuncSet(Set<int>& funcIDs,
+                                         const Set<int>& activeFuncs) const ;
+
           /** Return the name of this function */
           const string& name() const {return name_;}
 

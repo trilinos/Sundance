@@ -34,6 +34,8 @@ namespace SundanceCore
                                         const Expr& varEvalPts,
                                         const Expr& unks,
                                         const Expr& unkEvalPts,
+                                        const Expr& fixedFields,
+                                        const Expr& fixedFieldEvalPts,
                                         const EvalContext& region);
 
         /** */

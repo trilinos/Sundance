@@ -307,6 +307,8 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                                            const Expr& varEvalPts,
                                            const Expr& unks,
                                            const Expr& unkEvalPts, 
+                                           const Expr& fixedFields,
+                                           const Expr& fixedFieldEvalPts, 
                                            const EvalContext& region)
 {
   TimeMonitor t(preprocTimer());
@@ -328,16 +330,17 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                      "Non-evaluatable expr " << expr.toString()
                      << " given to SymbPreprocessor::setupExpr()");
 
-  bool u0IsZero = false;
-
-  /* make flat lists of variations and unknowns */
+  /* make flat lists of variations, unknowns, and fixed fields */
   Expr v = vars.flatten();
   Expr u = unks.flatten();
-  Expr v0 = varEvalPts.flatten();
+  Expr alpha = fixedFields.flatten();
   Expr u0 = unkEvalPts.flatten();
+  Expr v0 = varEvalPts.flatten();
+  Expr alpha0 = fixedFieldEvalPts.flatten();
 
   SundanceUtils::Set<int> varID;
   SundanceUtils::Set<int> unkID;
+  SundanceUtils::Set<int> fixedID;
 
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
@@ -385,7 +388,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
       int fid = uPtr->funcID();
       TEST_FOR_EXCEPTION(unkID.contains(fid), RuntimeError,
                          "duplicate unknown function in list "
-                         << unks.toString());
+                         << u.toString());
       unkID.put(fid);
       RefCountPtr<DiscreteFuncElement> u0Ptr
         = rcp_dynamic_cast<DiscreteFuncElement>(u0[i].ptr());
@@ -397,7 +400,6 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                          << " is neither a discrete function nor a zero expr");
       if (u0Ptr.get()==NULL)
         {
-          u0IsZero = true;
           uPtr->substituteZero();
         }
       else
@@ -406,7 +408,40 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
         }
     }
 
-  /* Make sure there's no overlap between the var and unk sets */
+  /* check the fixed functions for redundancies and non-unk funcs */
+  for (int i=0; i<alpha.size(); i++)
+    {
+      const UnknownFuncElement* aPtr
+        = dynamic_cast<const UnknownFuncElement*>(alpha[i].ptr().get());
+      TEST_FOR_EXCEPTION(aPtr==0, RuntimeError,
+                         "list of purported fixed funcs "
+                         "contains a non-unknown function "
+                         << alpha[i].toString());
+      int fid = aPtr->funcID();
+      TEST_FOR_EXCEPTION(fixedID.contains(fid), RuntimeError,
+                         "duplicate unknown function in list "
+                         << alpha.toString());
+      fixedID.put(fid);
+      RefCountPtr<DiscreteFuncElement> a0Ptr
+        = rcp_dynamic_cast<DiscreteFuncElement>(alpha0[i].ptr());
+      RefCountPtr<ZeroExpr> a0ZeroPtr
+        = rcp_dynamic_cast<ZeroExpr>(alpha0[i].ptr());
+      TEST_FOR_EXCEPTION(a0Ptr.get()==NULL && a0ZeroPtr.get()==NULL,
+                         RuntimeError,
+                         "fixed-field evaluation point " 
+                         << alpha0[i].toString()
+                         << " is neither a discrete function nor a zero expr");
+      if (a0Ptr.get()==NULL)
+        {
+          aPtr->substituteZero();
+        }
+      else
+        {
+          aPtr->substituteFunction(a0Ptr);
+        }
+    }
+
+  /* Make sure there's no overlap between the var, unk, and fixed sets */
   for (Set<int>::const_iterator i=varID.begin(); i != varID.end(); i++)
     {
       TEST_FOR_EXCEPTION(unkID.contains(*i), RuntimeError,
@@ -418,6 +453,18 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
       TEST_FOR_EXCEPTION(varID.contains(*i), RuntimeError,
                          "Function with ID=" << *i << " appears in "
                          "both unknown and variation list");
+    }
+  for (Set<int>::const_iterator i=unkID.begin(); i != unkID.end(); i++)
+    {
+      TEST_FOR_EXCEPTION(fixedID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both unknown and fixed list");
+    }
+  for (Set<int>::const_iterator i=varID.begin(); i != varID.end(); i++)
+    {
+      TEST_FOR_EXCEPTION(fixedID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both variational and fixed list");
     }
 
   /* put together the set of functions that are active differentiation
@@ -455,7 +502,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
-  e->findNonzeros(region, multiIndices, activeFuncIDs, u0IsZero);
+  e->findNonzeros(region, multiIndices, activeFuncIDs, false);
 
    SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 

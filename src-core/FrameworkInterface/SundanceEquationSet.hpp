@@ -35,6 +35,11 @@ namespace SundanceCore
      * DOF map here because in the Sundance core we know nothing
      * of the mesh, so we provide accessors to the information collected
      * by the EquationSet.
+     *
+     * There are several modes in which one might construct an equation set.
+     * The first is where one has written out a weak form in terms
+     * of test functions. The second is where one is taking variations
+     * of some functional.
      */
     class EquationSet : public TSFExtended::ObjectWithVerbosity<EquationSet>
     {
@@ -42,9 +47,18 @@ namespace SundanceCore
       /** */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
-                  const Expr& tests, 
+                  const Expr& vars, 
                   const Expr& unks,
                   const Expr& unkLinearizationPts);
+      /** */
+      EquationSet(const Expr& eqns, 
+                  const Expr& bcs,
+                  const Expr& vars, 
+                  const Expr& varLinearizationPts,
+                  const Expr& unks,
+                  const Expr& unkLinearizationPts,
+                  const Expr& fixedFields,
+                  const Expr& fixedFieldValues);
 
       /** \name Methods to access information required for building DOF maps */
       //@{
@@ -60,32 +74,33 @@ namespace SundanceCore
       /** Indicate whether the given region has an essential BC expression */
       bool isBCRegion(int d) const ;
       
-      /** Returns the number of test functions in this equation set */
-      int numTests() const {return testFuncs_.size();}
+      /** Returns the number of variational functions in this equation set */
+      int numVars() const {return varFuncs_.size();}
 
       /** Returns the number of unk functions in this equation set */
       int numUnks() const {return unkFuncs_.size();}
 
-      /** Returns the i-th test function */
-      const Expr& testFunc(int i) const {return testFuncs_[i];}
+      /** Returns the i-th variational function */
+      const Expr& varFunc(int i) const {return varFuncs_[i];}
 
       /** Returns the i-th unknown function */
       const Expr& unkFunc(int i) const {return unkFuncs_[i];}
 
-      /** Returns the test functions that appear explicitly
+      /** Returns the variational functions that appear explicitly
        * on the d-th region */
-      const Set<int>& testsOnRegion(int d) const 
-      {return testsOnRegions_.get(regions_[d]);}
+      const Set<int>& varsOnRegion(int d) const 
+      {return varsOnRegions_.get(regions_[d]);}
 
       /** Returns the unknown functions that appear explicitly on the
        * d-th region. */
       const Set<int>& unksOnRegion(int d) const 
       {return unksOnRegions_.get(regions_[d]);}
 
-      /** Returns the test functions that appear in BCs on the d-th region.
+      /** Returns the variational functions that 
+       * appear in BCs on the d-th region.
        * We can use this information to tag certain rows as BC rows */
-      const Set<int>& bcTestsOnRegion(int d) const 
-      {return bcTestsOnRegions_.get(regions_[d]);}
+      const Set<int>& bcVarsOnRegion(int d) const 
+      {return bcVarsOnRegions_.get(regions_[d]);}
 
       /** Returns the unknown functions that appear in BCs on the d-th region.
        * We can use this information to tag certain columns as BC
@@ -93,19 +108,19 @@ namespace SundanceCore
       const Set<int>& bcUnksOnRegion(int d) const 
       {return bcUnksOnRegions_.get(regions_[d]);}
 
-      /** Determine whether a given func ID is listed as a test function 
-       * in this equation set */
-      bool hasTestID(int fid) const 
-      {return testIDToReducedIDMap_.containsKey(fid);}
+      /** Determine whether a given func ID is listed as a 
+       * variational function in this equation set */
+      bool hasVarID(int fid) const 
+      {return varIDToReducedIDMap_.containsKey(fid);}
 
       /** Determine whether a given func ID is listed as a unk function 
        * in this equation set */
       bool hasUnkID(int fid) const 
       {return unkIDToReducedIDMap_.containsKey(fid);}
 
-      /** get the reduced ID for the given test ID */
-      int reducedTestID(int testID) const 
-      {return testIDToReducedIDMap_.get(testID);}
+      /** get the reduced ID for the given variational ID */
+      int reducedVarID(int varID) const 
+      {return varIDToReducedIDMap_.get(varID);}
 
       /** get the reduced ID for the given unk ID */
       int reducedUnkID(int unkID) const 
@@ -148,26 +163,26 @@ namespace SundanceCore
       {return bcRqcToContext_[order-1].get(r);}
 
 
-      /** Indicates whether any test-unk pairs appear in the given domain */
-      bool hasTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
-      {return testUnkPairsOnRegions_.containsKey(domain);}
+      /** Indicates whether any var-unk pairs appear in the given domain */
+      bool hasVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+      {return varUnkPairsOnRegions_.containsKey(domain);}
 
 
-      /** Indicates whether any BC test-unk pairs appear in the given domain */
-      bool hasBCTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
-      {return bcTestUnkPairsOnRegions_.containsKey(domain);}
+      /** Indicates whether any BC var-unk pairs appear in the given domain */
+      bool hasBCVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+      {return bcVarUnkPairsOnRegions_.containsKey(domain);}
 
-      /** Returns the (test, unk) pairs appearing on the given domain.
+      /** Returns the (var, unk) pairs appearing on the given domain.
        * This is required for determining the sparsity structure of the
        * matrix */
-      const RefCountPtr<Set<OrderedPair<int, int> > >& testUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
-      {return testUnkPairsOnRegions_.get(domain);}
+      const RefCountPtr<Set<OrderedPair<int, int> > >& varUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+      {return varUnkPairsOnRegions_.get(domain);}
       
 
-       /** Returns the (test, unk) pairs appearing on the given domain.
+       /** Returns the (var, unk) pairs appearing on the given domain.
        * This is required for determining the sparsity structure of the
        * matrix */
-      const RefCountPtr<Set<OrderedPair<int, int> > >& bcTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const ;
+      const RefCountPtr<Set<OrderedPair<int, int> > >& bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const ;
 
 
       /** */
@@ -182,7 +197,17 @@ namespace SundanceCore
     private:
 
       /** */
-      void addToTestUnkPairs(const OrderedHandle<CellFilterStub>& domain,
+      void init(const Expr& eqns, 
+                const Expr& bcs,
+                const Expr& vars, 
+                const Expr& varLinearizationPts,
+                const Expr& unks,
+                const Expr& unkLinearizationPts,
+                const Expr& fixedFields,
+                const Expr& fixedFieldValues);
+
+      /** */
+      void addToVarUnkPairs(const OrderedHandle<CellFilterStub>& domain,
                              const DerivSet& nonzeros, 
                              bool isBC);
 
@@ -190,23 +215,23 @@ namespace SundanceCore
       Array<OrderedHandle<CellFilterStub> > regions_;
 
       /** */
-      Map<OrderedHandle<CellFilterStub>, Set<int> > testsOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, Set<int> > varsOnRegions_;
 
       /** */
       Map<OrderedHandle<CellFilterStub>, Set<int> > unksOnRegions_;
 
-      /** Map from cell filter to pairs of (testID, unkID) appearing
+      /** Map from cell filter to pairs of (varID, unkID) appearing
        * on those cells. This is needed to construct the sparsity pattern
        * of the matrix. */
-      Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > testUnkPairsOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > varUnkPairsOnRegions_;
 
-      /** Map from cell filter to pairs of (testID, unkID) appearing
+      /** Map from cell filter to pairs of (varID, unkID) appearing
        * on those cells. This is needed to construct the sparsity pattern
        * of the matrix. */
-      Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > bcTestUnkPairsOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > bcVarUnkPairsOnRegions_;
 
       /** */
-      Map<OrderedHandle<CellFilterStub>, Set<int> > bcTestsOnRegions_;
+      Map<OrderedHandle<CellFilterStub>, Set<int> > bcVarsOnRegions_;
 
       /** */
       Map<OrderedHandle<CellFilterStub>, Set<int> > bcUnksOnRegions_;
@@ -239,8 +264,8 @@ namespace SundanceCore
        * each BC regionQuadCombo */
       Array<Map<RegionQuadCombo, EvalContext> > bcRqcToContext_;
 
-      /** test functions for this equation set */
-      Expr testFuncs_;
+      /** var functions for this equation set */
+      Expr varFuncs_;
 
       /** unknown functions for this equation set */
       Expr unkFuncs_;
@@ -249,9 +274,9 @@ namespace SundanceCore
        * are linearized */
       Expr unkLinearizationPts_;
 
-      /** map from test function funcID to that function's
-       * position in list of test functions */
-      Map<int, int> testIDToReducedIDMap_;
+      /** map from variational function funcID to that function's
+       * position in list of var functions */
+      Map<int, int> varIDToReducedIDMap_;
 
       /** map from unknown function funcID to that function's
        * position in list of unk functions */
@@ -260,6 +285,10 @@ namespace SundanceCore
       
       /** Flag indicating whether this equation set is nonlinear */
       bool isNonlinear_;
+      
+      /** Flag indicating whether this equation set is 
+       * a variational problem */
+      bool isVariationalProblem_;
     };
   }
 }

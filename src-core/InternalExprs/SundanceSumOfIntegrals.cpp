@@ -112,24 +112,24 @@ void SumOfIntegrals::changeSign()
     }
 }
 
-Set<int> SumOfIntegrals::unksOnRegion(int d) const 
+Set<int> SumOfIntegrals::funcsOnRegion(int d, const Set<int>& funcSet) const 
 {
   Set<int> rtn;
   for (unsigned int t=0; t<expr_[d].size(); t++)
     { 
-      expr_[d][t].ptr()->accumulateUnkSet(rtn);
+      expr_[d][t].ptr()->accumulateFuncSet(rtn, funcSet);
     }
   return rtn;
 }
 
-Set<int> SumOfIntegrals::testsOnRegion(int d) const 
+
+bool SumOfIntegrals::integralHasTestFunctions(int d) const 
 {
-  Set<int> rtn;
   for (unsigned int t=0; t<expr_[d].size(); t++)
     { 
-      expr_[d][t].ptr()->accumulateTestSet(rtn);
+      if (expr_[d][t].ptr()->hasTestFunctions()) return true;
     }
-  return rtn;
+  return false;
 }
 
 

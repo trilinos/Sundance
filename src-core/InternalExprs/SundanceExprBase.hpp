@@ -42,13 +42,15 @@ namespace SundanceCore
           /** Write in a form suitable for LaTeX formatting */
           virtual ostream& toLatex(ostream& os, bool paren) const = 0 ;
 
-          /** Append to the set of unknown func IDs present in this expression.
+          /** Append to the set of func IDs present in this expression.
            * Base class does nothing */
-          virtual void accumulateUnkSet(Set<int>& unkIDs) const {;}
+          virtual void accumulateFuncSet(Set<int>& funcIDs, 
+                                        const Set<int>& activeSet) const {;}
 
-          /** Append to the set of test func IDs present in this expression.
-           * Base class does nothing */
-          virtual void accumulateTestSet(Set<int>& testIDs) const {;}
+          /** Indicate whether this expression contains any test 
+           * functions. Default is to return false. This will be
+           * overridden by TestFuncElement and ExprWithChildren. */
+          virtual bool hasTestFunctions() const {return false;}
 
           /** */
           string toString() const ;

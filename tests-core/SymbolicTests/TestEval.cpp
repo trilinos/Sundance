@@ -76,7 +76,7 @@ int main(int argc, void** argv)
 
       //       verbosity<SymbolicTransformation>() = VerbSilent;
       //       verbosity<EvaluationTester>() = VerbExtreme;
-      //      verbosity<Evaluator>() = VerbExtreme;
+      //   verbosity<Evaluator>() = VerbExtreme;
       verbosity<EvalVector>() = VerbSilent;
       // verbosity<EvaluatableExpr>() = VerbExtreme;
       verbosity<AbstractEvalMediator>() = VerbSilent;
@@ -315,13 +315,15 @@ int main(int argc, void** argv)
       /* Unary operators */
       TESTER(sin(x), sin(X));
 
-      for (int n=1; n<3; n++)
-        {
-          TESTER(sin(n*x), sin(n*X));
-        }
+      TESTER(w*sin(u), W*sin(U));
 
+      TESTER(sin(u*cos(x)), sin(U*cos(X)));
 
-      TESTER(sin(u), sin(U));
+      TESTER(sin(u*x), sin(U*X));
+
+      TESTER(sin(u*x+0.5*w*u), sin(U*X+0.5*W*U));
+
+      TESTER(sin(cos(u*x)+0.5*w*u), sin(cos(U*X)+0.5*W*U));
 
 
       if (isOK)

@@ -92,7 +92,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
         {
           foundTest = true;
           testID = f->funcID();
-          testID = eqn.reducedTestID(testID);
+          testID = eqn.reducedVarID(testID);
           SUNDANCE_OUT(verbosity() > VerbMedium, 
                        tab << "found testID=" << testID);
           

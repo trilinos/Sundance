@@ -86,11 +86,13 @@ namespace SundanceCore
           const Expr& expr(int d, int q) const 
           {return expr_[d][q];}
 
-          /** Return the set of unknown functions defined on the d-th region */
-          Set<int> unksOnRegion(int d) const ;
+          /** Return the set of unknown or variational
+           * functions defined on the d-th region */
+          Set<int> funcsOnRegion(int d, const Set<int>& funcsSet) const ;
 
-          /** Return the set of test functions defined on the d-th region */
-          Set<int> testsOnRegion(int d) const ;
+          /** Indicate whether the integral over the 
+           * d-th region contains any test functions */
+          bool integralHasTestFunctions(int d) const ;
 
           /** Return a null cell filter of a type consistent with the
            * other filters in this integral */

@@ -765,7 +765,7 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
       CellSet cells = domain.getCells(mesh_);
 
       RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
-      if (eqn_->hasTestUnkPairs(domain)) pairs = eqn_->testUnkPairs(domain);
+      if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
       SUNDANCE_OUT(verbosity() > VerbMedium && pairs.get() != 0, 
                    tab0 << "non-BC pairs = "
@@ -774,15 +774,15 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
       RefCountPtr<Set<OrderedPair<int, int> > > bcPairs ;
       if (eqn_->isBCRegion(d))
         {
-          if (eqn_->hasBCTestUnkPairs(domain)) 
+          if (eqn_->hasBCVarUnkPairs(domain)) 
             {
-              bcPairs = eqn_->bcTestUnkPairs(domain);
+              bcPairs = eqn_->bcVarUnkPairs(domain);
               SUNDANCE_OUT(verbosity() > VerbMedium, tab0 << "BC pairs = "
                            << *bcPairs);
             }
         }
-      Array<Set<int> > unksForTestsSet(eqn_->numTests());
-      Array<Set<int> > bcUnksForTestsSet(eqn_->numTests());
+      Array<Set<int> > unksForTestsSet(eqn_->numVars());
+      Array<Set<int> > bcUnksForTestsSet(eqn_->numVars());
 
       Set<OrderedPair<int, int> >::const_iterator i;
       
@@ -794,14 +794,14 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
               int t = p.first();
               int u = p.second();
 
-              TEST_FOR_EXCEPTION(!eqn_->hasTestID(t), InternalError,
+              TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
                                  "Test function ID " << t << " does not appear "
                                  "in equation set");
               TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
                                  "Unk function ID " << u << " does not appear "
                                  "in equation set");
 
-              unksForTestsSet[eqn_->reducedTestID(t)].put(eqn_->reducedUnkID(u));
+              unksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
             }
         }
       if (bcPairs.get() != 0)
@@ -811,13 +811,13 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
               const OrderedPair<int, int>& p = *i;
               int t = p.first();
               int u = p.second();
-              TEST_FOR_EXCEPTION(!eqn_->hasTestID(t), InternalError,
+              TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
                                  "Test function ID " << t << " does not appear "
                                  "in equation set");
               TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
                                  "Unk function ID " << u << " does not appear "
                                  "in equation set");
-              bcUnksForTestsSet[eqn_->reducedTestID(t)].put(eqn_->reducedUnkID(u));
+              bcUnksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
             }
         }
 
@@ -838,7 +838,7 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
       int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
 
       int owner;
-      int nt = eqn_->numTests();
+      int nt = eqn_->numVars();
       CellIterator iter=cells.begin();
       while (iter != cells.end())
         {

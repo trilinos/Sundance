@@ -47,10 +47,6 @@ namespace SundanceCore
        * of which this object is an element */
       const UnknownFunctionStub* master() const {return master_;}
 
-      /** Append my func ID to the set of unk IDs */
-      virtual void accumulateUnkSet(Set<int>& unkIDs) const 
-      {unkIDs.put(funcID());}
-
 
       /** */
       virtual XMLObject toXML() const ;

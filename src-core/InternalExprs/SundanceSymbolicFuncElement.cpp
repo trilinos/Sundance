@@ -37,6 +37,14 @@ SymbolicFuncElement::SymbolicFuncElement(const string& name,
 }
 
 
+bool SymbolicFuncElement::evalPtIsZero() const
+{
+  TEST_FOR_EXCEPTION(evalPt_.get()==0, InternalError,
+                     "null evaluation point in SymbolicFuncElement::evalPtIsZero()");
+  bool isZero = 0 != dynamic_cast<const ZeroExpr*>(evalPt());
+  bool isTest = 0 != dynamic_cast<const TestFuncElement*>(this);
+  return isZero || isTest;
+}
 
 void SymbolicFuncElement::substituteZero() const 
 {
@@ -74,10 +82,7 @@ void SymbolicFuncElement
 
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
 
-  bool isTest = (0 != dynamic_cast<const TestFuncElement*>(this));
-  bool evalPtIsZero = (0 != dynamic_cast<const ZeroExpr*>(evalPt()));
-  
-  if (evalPtIsZero)
+  if (evalPtIsZero())
     {
       SUNDANCE_VERB_MEDIUM(tabs << "eval point is a zero expr");
     }
@@ -89,16 +94,24 @@ void SymbolicFuncElement
   /* Evaluate the function itself, i.e., the zeroth deriv of the function.
    * If this is a test function, or if we are doing a linear problem,
    * then we skip this step. */
-  if (!regardFuncsAsConstant && !isTest && !evalPtIsZero)
+  if (!regardFuncsAsConstant && !evalPtIsZero())
     {
       if (activeFuncIDs.contains(MultiSet<int>()))
         {
+          Tabs tab1;
+          SUNDANCE_VERB_MEDIUM(tab1 << "adding deriv {}");
           subset->addDeriv(MultipleDeriv(), VectorDeriv);
+          SUNDANCE_VERB_HIGH(tab1 << "sparsity subset is now "
+                             << endl << *subset);
         }
       else
         {
           SUNDANCE_VERB_MEDIUM(tabs << "value of " << toString() << " not required");
         }
+    }
+  else
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "value of " << toString() << " not required");
     }
   
   /* If this function is one of the active variables, then

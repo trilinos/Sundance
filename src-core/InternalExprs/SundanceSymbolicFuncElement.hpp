@@ -65,7 +65,10 @@ namespace SundanceCore
        * function is to be evaluated. */
       const EvaluatableExpr* evalPt() const {return evalPt_.get();}
 
-      
+
+      /** */
+      bool evalPtIsZero() const ;
+
 
       /** \name Preprocessing */
       //@{

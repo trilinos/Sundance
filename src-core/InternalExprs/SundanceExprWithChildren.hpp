@@ -44,13 +44,10 @@ namespace SundanceCore
            * be constant if all children are constant. */
           virtual bool isConstant() const ;
 
-          /** Append to the set of unknown func IDs present in 
+          /** Append to the set of func IDs present in 
            * this expression. */
-          virtual void accumulateUnkSet(Set<int>& unkIDs) const ;
-
-          /** Append to the set of test func IDs present in this 
-           * expression. */
-          virtual void accumulateTestSet(Set<int>& testIDs) const ;
+          virtual void accumulateFuncSet(Set<int>& funcIDs,
+                                         const Set<int>& activeFuncs) const ;
 
           /** Return the number of children */
           int numChildren() const {return children_.size();}
@@ -78,6 +75,10 @@ namespace SundanceCore
           /** Return true if any child returns true. The sum expression
            * will override this requiring all children to return true */
           virtual bool allTermsHaveTestFunctions() const ;
+
+          /** Test whether this expr contains a test function. 
+           * If any child contains a test, return true. */
+          virtual bool hasTestFunctions() const ;
 
           /** */
           virtual void showSparsity(ostream& os, 
