@@ -42,7 +42,7 @@ int main(int argc, void** argv)
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad = new GaussianQuadrature(2);
 
-      
+
       /* Define the weak form */
       Expr eqn = Integral(interior, -(dx*v)*(dx*u) - 2.0*v, quad);
       /* Define the Dirichlet BC */

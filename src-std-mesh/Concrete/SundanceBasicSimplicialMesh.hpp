@@ -55,6 +55,20 @@ namespace SundanceStdMesh
       virtual void getJacobians(int cellDim, const Array<int>& cellLID,
                                 CellJacobianBatch& jBatch) const  ;
 
+      /** 
+       * Compute the diameters of a batch of cells,
+       * result via reference argument
+       *
+       * @param cellDim dimension of the cells whose diameters are to
+       * be computed
+       * @param cellLID local indices of the cells for which diameters
+       * are to be computed
+       * @param diameters reference to the array of cell diameters
+       */
+      virtual void getCellDiameters(int cellDim, const Array<int>& cellLID,
+                                    Array<double>& diameters) const ;
+
+
       /**
        * Map reference quadrature points to physical points on the
        * given cells. 

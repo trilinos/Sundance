@@ -1,4 +1,5 @@
 #include "Sundance.hpp"
+#include "SundanceCellDiameterExpr.hpp"
 #include "SundanceEvaluator.hpp"
 
 using SundanceCore::List;
@@ -27,8 +28,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 128;
-      int ny = 128;
+      int nx = 32;
+      int ny = 32;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
                                                          0.0, 1.0, ny, 1,
@@ -38,7 +39,13 @@ int main(int argc, void** argv)
 
 
       Mesh mesh = mesher.getMesh();
-      double h = 2.0/((double) ny);
+      Expr x = new CoordExpr(0);
+      Expr y = new CoordExpr(1);
+      //    Expr h = 2.0/((double) nx); 
+      //Expr h = new CellDiameterExpr();
+      double h0 = 2.0/((double) nx); 
+      // Expr h = h0*pow(1.0+x, 0.0);
+      Expr h = h0;
 
 //       FieldWriter wMesh = new VerboseFieldWriter();
 //       wMesh.addMesh(mesh);
@@ -75,8 +82,6 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
       Expr grad = List(dx, dy);
-      Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad1 = new GaussianQuadrature(1);
@@ -84,15 +89,15 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Stabilization parameters */
-      double beta = 0.02;
+      double beta = 4.0 * 0.02;
 
       /* A parameter expression for the Reynolds number */
       Expr reynolds = new Parameter(20.0);
 
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           + (grad*vy)*(grad*uy)  - p*(dx*vx+dy*vy)
-                          + (h*h*beta)*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
-                          quad1)
+                          + beta*h*h*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
+                          quad4)
         + Integral(interior, reynolds*(vx*(u*grad)*ux)
                    + reynolds*(vy*(u*grad)*uy), quad2);
         

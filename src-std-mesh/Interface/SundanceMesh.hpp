@@ -59,6 +59,20 @@ using namespace SundanceUtils;
                       CellJacobianBatch& jBatch) const 
     {ptr()->getJacobians(cellDim, cellLID, jBatch);}
 
+    /** 
+     * Compute the diameters of a batch of cells,
+     * result via reference argument
+     *
+     * @param cellDim dimension of the cells whose diameters are to
+     * be computed
+     * @param cellLID local indices of the cells for which diameters
+     * are to be computed
+     * @param diameters reference to the array of cell diameters
+     */
+    virtual void getCellDiameters(int cellDim, const Array<int>& cellLID,
+                                  Array<double>& diameters) const 
+    {ptr()->getCellDiameters(cellDim, cellLID, diameters);}
+
 
     /**
      * Map reference quadrature points to physical points on the

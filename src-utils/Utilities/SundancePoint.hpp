@@ -60,6 +60,8 @@ namespace SundanceUtils
       inline Point operator*(const double& a) const ;
       inline Point operator/(const double& a) const ;
 
+      inline double distance(const Point& x) const ;
+
       inline string toString() const ;
 
       static bool unitTest() ;
@@ -262,6 +264,13 @@ namespace SundanceUtils
       rtn += "}";
       return rtn;
     }
+
+
+  inline double Point::distance(const Point& x) const 
+  {
+    Point dx = *this-x;
+    return ::sqrt(dx*dx); 
+  }
 }
 
 namespace Teuchos

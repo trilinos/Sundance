@@ -43,6 +43,10 @@ namespace SundanceCore
                              RefCountPtr<EvalVector>&  result) const ;
 
           /** */
+          void evalCellDiameterExpr(const CellDiameterExpr* expr,
+                                    RefCountPtr<EvalVector>&  result) const ;
+
+          /** */
           void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                        const Array<MultiIndex>& mi,
                                        Array<RefCountPtr<EvalVector> >& result) const ;

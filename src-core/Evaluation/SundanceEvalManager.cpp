@@ -35,6 +35,16 @@ void EvalManager::evalCoordExpr(const CoordExpr* expr,
 }
 
 
+void EvalManager::evalCellDiameterExpr(const CellDiameterExpr* expr,
+                                RefCountPtr<EvalVector>& result) const 
+{
+  TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
+                     "uninitialized mediator in "
+                     "EvalManager::evalCellDiameterExpr");
+  mediator()->evalCellDiameterExpr(expr, result);
+}
+
+
 void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                           const Array<MultiIndex>& mi,
                                           Array<RefCountPtr<EvalVector> >& result) const 

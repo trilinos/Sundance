@@ -20,6 +20,7 @@
 
 
 SUNDANCE_USEREXPRS_H = \
+$(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
@@ -32,6 +33,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.hpp
 
 
 SUNDANCE_USEREXPRS = \
+$(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \
@@ -103,6 +105,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp 
 
 SUNDANCE_EVALUATION_H = \
+$(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.hpp \
@@ -121,6 +124,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.hpp
 
 
 SUNDANCE_EVALUATION = \
+$(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.cpp \

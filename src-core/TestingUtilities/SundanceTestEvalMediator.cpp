@@ -4,6 +4,7 @@
 
 #include "SundanceTestEvalMediator.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceCellDiameterExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceEvalManager.hpp"
@@ -70,6 +71,22 @@ void TestEvalMediator::evalCoordExpr(const CoordExpr* expr,
   double * const xx = vec->start();
 
   xx[0] = x_[direction];
+
+  SUNDANCE_VERB_LOW(tabs << "results: " << *vec);
+}
+
+void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
+                                     RefCountPtr<EvalVector>& vec) const
+{
+  Tabs tabs;
+  SUNDANCE_OUT(verbosity() > VerbSilent,
+               tabs << "evaluating cell diameter expr " << expr->toXML().toString());
+  
+  vec->setString(expr->name());
+
+  double * const xx = vec->start();
+
+  xx[0] = 1.0;
 
   SUNDANCE_VERB_LOW(tabs << "results: " << *vec);
 }

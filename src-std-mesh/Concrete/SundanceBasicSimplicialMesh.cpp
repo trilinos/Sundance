@@ -195,6 +195,115 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
     }
 }
 
+
+
+void BasicSimplicialMesh::getCellDiameters(int cellDim, const Array<int>& cellLID,
+                                           Array<double>& cellDiameters) const
+{
+  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+                     "cellDim=" << cellDim 
+                     << " is not in expected range [0, " << spatialDim()
+                     << "]");
+
+  cellDiameters.resize(cellLID.size());
+
+  if (cellDim < spatialDim())
+    {
+      for (int i=0; i<cellLID.size(); i++)
+        {
+          int lid = cellLID[i];
+          switch(cellDim)
+            {
+            case 0:
+              cellDiameters[i] = 1.0;
+              break;
+            case 1:
+              {
+                int a = edgeVerts_.value(lid, 0);
+                int b = edgeVerts_.value(lid, 1);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                Point dx = pb-pa;
+                cellDiameters[i] = sqrt(dx*dx);
+              }
+              break;
+            case 2:
+              {
+                int a = faceVerts_.value(lid, 0);
+                int b = faceVerts_.value(lid, 1);
+                int c = faceVerts_.value(lid, 2);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                const Point& pc = points_[c];
+                Point directedArea = cross(pc-pa, pb-pa);
+                cellDiameters[i] = sqrt(directedArea*directedArea);
+              }
+              break;
+            default:
+              TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+                                 "cellDim=" << cellDim 
+                                 << " in BasicSimplicialMesh::getCellDiameters()");
+            }
+        }
+    }
+  else
+    {
+      for (int i=0; i<cellLID.size(); i++)
+        {
+          int lid = cellLID[i];
+          switch(cellDim)
+            {
+            case 0:
+              cellDiameters[i] = 1.0;
+              break;
+            case 1:
+              {
+                int a = elemVerts_.value(lid, 0);
+                int b = elemVerts_.value(lid, 1);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                cellDiameters[i] = fabs(pa[0]-pb[0]);
+              }
+              break;
+            case 2:
+              {
+                int a = elemVerts_.value(lid, 0);
+                int b = elemVerts_.value(lid, 1);
+                int c = elemVerts_.value(lid, 2);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                const Point& pc = points_[c];
+                cellDiameters[i] 
+                  = (pa.distance(pb) + pb.distance(pc) + pa.distance(pc))/3.0;
+              }
+              break;
+            case 3:
+              {
+                int a = elemVerts_.value(lid, 0);
+                int b = elemVerts_.value(lid, 1);
+                int c = elemVerts_.value(lid, 2);
+                int d = elemVerts_.value(lid, 3);
+                const Point& pa = points_[a];
+                const Point& pb = points_[b];
+                const Point& pc = points_[c];
+                const Point& pd = points_[d];
+                
+                cellDiameters[i] 
+                  = (pa.distance(pb) + pa.distance(pc) + pa.distance(pd)
+                     + pb.distance(pc) + pb.distance(pd)
+                     + pc.distance(pd))/6.0;
+              }
+              break;
+            default:
+              TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+                                 "cellDim=" << cellDim 
+                                 << " in BasicSimplicialMesh::getCellDiameters()");
+            }
+        }
+    }
+}
+
+
 void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
                                       const Array<Point>& refQuadPts,
                                       Array<Point>& physQuadPts) const

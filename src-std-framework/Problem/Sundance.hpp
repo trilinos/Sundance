@@ -23,6 +23,7 @@
 #include "SundanceIntegral.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceCellDiameterExpr.hpp"
 #include "SundanceStdMathOps.hpp"
 #include "SundanceParameter.hpp"
 #include "SundanceUserDefFunctor.hpp"

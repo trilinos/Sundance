@@ -3,6 +3,7 @@
 
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceCellDiameterExpr.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceCellJacobianBatch.hpp"
@@ -48,6 +49,34 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType)
   refQuadPts_.put(cellType, pts);
   refQuadWeights_.put(cellType, wgts);
   
+}
+
+void QuadratureEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
+                                                  RefCountPtr<EvalVector>& vec) const 
+{
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs 
+                       << "QuadratureEvalMediator evaluating coord expr " 
+                       << expr->toString());
+
+  int nQuad = quadWgts().size();
+  int nCells = cellLID()->size();
+
+  SUNDANCE_VERB_HIGH(tabs << "number of quad pts=" << nQuad);
+  Array<double> diameters;
+  mesh().getCellDiameters(cellDim(), *cellLID(), diameters);
+
+  vec->resize(nQuad*nCells);
+  double * const xx = vec->start();
+  int k=0;
+  for (int c=0; c<nCells; c++)
+    {
+      double h = diameters[c];
+      for (int q=0; q<nQuad; q++, k++) 
+        {
+          xx[k] = h;
+        }
+    }
 }
 
 void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
@@ -314,6 +343,7 @@ void QuadratureEvalMediator::computePhysQuadPts() const
   SUNDANCE_OUT(verbosity() > VerbMedium, 
                "phys quad: " << physQuadPts_);
 }
+
 
 void QuadratureEvalMediator::print(ostream& os) const 
 {

@@ -14,6 +14,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   class CoordExpr;
+  class CellDiameterExpr;
 
   
   namespace Internal 
@@ -48,6 +49,11 @@ namespace SundanceCore
           virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                                const Array<MultiIndex>& mi,
                                                Array<RefCountPtr<EvalVector> >& vec) const ;
+
+          /** Evaluate the given cell diameter expression, putting
+           * its numerical values in the given EvalVector. */
+          virtual void evalCellDiameterExpr(const CellDiameterExpr* expr,
+                                            RefCountPtr<EvalVector>& vec) const ;
             
 
         };

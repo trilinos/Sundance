@@ -54,6 +54,11 @@ namespace SundanceTesting
     virtual void evalCoordExpr(const CoordExpr* expr,
                                RefCountPtr<EvalVector>& vec) const ;
 
+    /** Evaluate the given cell diameter expression, putting
+     * its numerical values in the given EvalVector. */
+    virtual void evalCellDiameterExpr(const CellDiameterExpr* expr,
+                                      RefCountPtr<EvalVector>& vec) const ;
+
     /** Evaluate the given discrete function, putting
      * its numerical values in the given LoadableVector. */
     virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,

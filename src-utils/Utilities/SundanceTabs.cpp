@@ -6,7 +6,8 @@
 using namespace SundanceUtils;
 
 
-Tabs::Tabs()
+Tabs::Tabs(char c)
+  : c_(c)
 {
   tabLevel()++;
 }
@@ -18,9 +19,12 @@ Tabs::~Tabs()
 
 void Tabs::print(ostream& os) const
 {
-  os << "[" << tabLevel() << "]";
-  for (int i=0; i<tabLevel(); i++) os << "==";
-  os << "> ";
+  if (showDepth()) 
+    {
+      os << "[" << tabLevel() << "]";
+    }
+  int n = tabLevel() * tabSize();
+  for (int i=0; i<n; i++) os << c_;
 }
 
 
