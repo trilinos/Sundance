@@ -58,7 +58,10 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
   estimateNumVertices(1000);
   estimateNumElements(1000);
 
+  /* hack */
+  faceVerts_.resize(1);
   base_[0] = &(faceVerts_.value(0,0));
+  faceVerts_.resize(0);
 
   tmpFaceVerts_.resize(3);
   tmpBase_[0] = &(tmpFaceVerts_[0]);
@@ -332,7 +335,9 @@ void BasicSimplicialMesh::estimateNumElements(int nElems)
   GIDToLIDMap_[spatialDim()] = Hashtable<int,int>(nElems, 0.6);
   labels_[spatialDim()].reserve(nElems);
 
+  faceVerts_.resize(1);
   base_[0] = &(faceVerts_.value(0,0));
+  faceVerts_.resize(0);
 }
 
 

@@ -84,11 +84,11 @@ int main(int argc, void** argv)
       std::map<int,double> azParams;
 
       azOptions[AZ_solver] = AZ_gmres;
-      //       azOptions[AZ_precond] = AZ_dom_decomp;
-//       azOptions[AZ_subdomain_solve] = AZ_icc;
-//       azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_ml] = 1;
-      azOptions[AZ_ml_levels] = 4;
+      azOptions[AZ_precond] = AZ_dom_decomp;
+      azOptions[AZ_subdomain_solve] = AZ_ilu;
+      azOptions[AZ_graph_fill] = 1;
+      //azOptions[AZ_ml] = 1;
+      //azOptions[AZ_ml_levels] = 4;
       azParams[AZ_max_iter] = 1000;
       azParams[AZ_tol] = 1.0e-10;
 

@@ -5,8 +5,8 @@
  * Solves the Stokes equation in 2D
  */
 
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
-bool bottomPointTest(const Point& x) {return fabs(x[1]) < 1.0e-10;}
+bool leftPointTest(const Point& x) {return fabs(x[0]+1.0) < 1.0e-10;}
+bool bottomPointTest(const Point& x) {return fabs(x[1]+1.0) < 1.0e-10;}
 bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
 bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-10;}
 
@@ -23,10 +23,10 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nElems = 2;
+      int nElems = 8;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nElems*np, np,
-                                                         0.0, 1.0, nElems, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, nElems*np, np,
+                                                         -1.0, 1.0, nElems, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
       double h = 1.0/((double) nElems);
@@ -81,7 +81,7 @@ int main(int argc, void** argv)
       Assembler::workSetSize() = 1;
       //FunctionalEvaluator::workSetSize() = 1;
 
-      Assembler::classVerbosity() = VerbExtreme;
+      //      Assembler::classVerbosity() = VerbExtreme;
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
                          List(ux, uy, p), vecType);
