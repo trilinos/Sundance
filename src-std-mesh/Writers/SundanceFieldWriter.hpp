@@ -38,6 +38,11 @@ namespace SundanceStdMesh
     /** add a mesh to the list of things to be written */
     void addMesh(const Mesh& mesh) const ;
 
+    /** add a field, tagging it with the given string as a name */
+    virtual void addField(const string& name, 
+                          const Handle<FieldBase>& field) ;
+    
+
     /** write to stream */
     void write() const ;
   };

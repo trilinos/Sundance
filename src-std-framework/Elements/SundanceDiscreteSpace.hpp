@@ -29,6 +29,8 @@ namespace SundanceStdFwk
   {
   public:
     /** */
+    DiscreteSpace(){;}
+    /** */
     DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                   const VectorType<double>& vecType);
     /** */

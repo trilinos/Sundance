@@ -20,3 +20,8 @@ void FieldWriter::write() const
   ptr()->write();
 }
 
+void FieldWriter::addField(const string& name, 
+                           const Handle<FieldBase>& field)
+{
+  ptr()->addField(name, field.ptr());
+}

@@ -9,14 +9,16 @@
 
 
 #include "SundanceDefs.hpp"
+#include "TSFHandleable.hpp"
 
 namespace SundanceStdMesh
 {
   namespace Internal
   {
     /**
+     *
      */
-    class FieldBase 
+    class FieldBase : public TSFExtended::Handleable<FieldBase>
     {
     public:
       /** */
@@ -24,6 +26,13 @@ namespace SundanceStdMesh
 
       /** virtual dtor */
       virtual ~FieldBase(){;}
+
+      /** */
+      virtual int numElems() const {return 1;}
+
+      /** */
+      virtual double getData(int cellDim, int cellID, int elem) const = 0 ;
+
     };
   }
 }

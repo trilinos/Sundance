@@ -264,53 +264,53 @@ void VTKWriter::writeCellData(ostream& os, bool isPHeader) const
 void VTKWriter::writeDataArray(ostream& os, const string& name, 
                                const RefCountPtr<FieldBase>& expr, bool isPHeader, bool isPointData) const 
 {
-//   string PHeader = "";
-//   if (isPHeader) PHeader="P";
+  string PHeader = "";
+  if (isPHeader) PHeader="P";
 
-//   XMLObject xml(PHeader + "DataArray");
-//   xml.addAttribute("type", "float");
-//   xml.addAttribute("Name", name);
-//   xml.addAttribute("format", "ascii");
+  XMLObject xml(PHeader + "DataArray");
+  xml.addAttribute("type", "float");
+  xml.addAttribute("Name", name);
+  xml.addAttribute("format", "ascii");
   
-//   if (expr.length() > 1)
-//     {
-//       xml.addAttribute("NumberOfComponents", Teuchos::toString(expr.length()));
-//     }
+  if (expr->numElems() > 1)
+    {
+      xml.addAttribute("NumberOfComponents", 
+                       Teuchos::toString(expr->numElems()));
+    }
   
-//   os << xml.header() << endl;
+  os << xml.header() << endl;
 
-//   /* write the point|cell data, unless this is a parallel header */
-//   if (!isPHeader)
-//     {
+  /* write the point|cell data, unless this is a parallel header */
+  if (!isPHeader)
+    {
 
-//       if (isPointData)
-//         {
-//           int numNodes = mesh().numPoints();
+      if (isPointData)
+        {
+          int numNodes = mesh().numCells(0);
           
-//           for (int i=0; i<numNodes; i++)
-//             {
-//               for (int j=0; j<expr.length(); j++)
-//                 {
-//                   os << (float) expr[j].probeAtMeshPoint(i) << endl;
-//                 }
-//             }
-//         }
-//       else
-//         {
-//           int dim = mesh().spatialDim();
-//           int nc = mesh().numCells(dim);
+          for (int i=0; i<numNodes; i++)
+            {
+              for (int j=0; j<expr->numElems(); j++)
+                {
+                  os << (float) expr->getData(0, i, j) << endl;
+                }
+            }
+        }
+      else
+        {
+          int dim = mesh().spatialDim();
+          int nc = mesh().numCells(dim);
           
-//           for (int c=0; c<nc; c++)
-//             {
-//               const Cell& cell = mesh().getCell(dim, c);
-//               for (int j=0; j<expr.length(); j++)
-//                 {
-//                   os << (float) expr[j].average(cell).value() << endl;
-//                 }
-//             }
-//         }
-//     }
+          for (int c=0; c<nc; c++)
+            {
+              for (int j=0; j<expr->numElems(); j++)
+                {
+                  os << (float) expr->getData(dim, c, j) << endl;
+                }
+            }
+        }
+    }
 
-//   os << xml.footer() << endl;
+  os << xml.footer() << endl;
 }
 
