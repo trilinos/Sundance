@@ -89,44 +89,23 @@ version 1.0, <b> do not unpack this into your old distribution directory.
 \ref diff_page.
 </ul>
 
-<H2> Online User's Guide </H2>
+<H2> User's Guide </H2>
 
-<H4> The Basics </H4>
+An online \ref users_guide is available.
 
-<ul> 
-<li> \ref fem
-<li> \ref philosophy
-<li> \ref about_code
-<li> \ref memory_mgt
-<li> \ref parallel
-</ul>
+<H2> Sandia Software </H2>
 
-<H4> Components for Simulation Setup </H4>
-<ul> 
-<li> \ref mesh_source are used to create, import, or transform discrete geometry
-<li> \ref cell_filter are used to define subregions (e.g., node sets, side sets)
-<li> \ref exprs are used to define equations and boundary conditions
-<li> \ref discretefuncs are used to represent finite-element spaces and fields
-</ul>
+Other software for computational mathematics 
+is available at the <A HREF="http://software.sandia.gov/">
+Sandia math software server. </A>
 
-<H4> Problem Setup </H4>
+<H2> People </H2>
 
-<ul> 
-<li> Specification of \ref equations
-<li> Specification of \ref bcs
-<li> Setup and use of \ref linear_problems
-<li> Setup and use of \ref nonlinear_problems
-</ul>
-
-<H4> Solvers </H4>
 <ul>
-<li> \ref linear_solvers 
-<li> \ref nonlinear_solvers 
+<li> <A HREF="http://csmr.ca.sandia.gov/~krlong/"> Kevin Long </A>
+-- Sandia National Laboratories, Livermore. Email <A HREF="mailto:krlong@sandia.gov"> krlong@sandia.gov </A>
 </ul>
 
 
-<H4> Examples </H4>
 
-Some example simulators developed in %Sundance
-can be found <A HREF="examples.html"> here </A>
 */
