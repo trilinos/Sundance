@@ -17,11 +17,12 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-#                                                                                 
+#                                                                              
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-# USA                                                                                
+# USA                                                        
+#                
 # Questions? Contact Kevin Long (krlong@sandia.gov), 
 # Sandia National Laboratories, Livermore, California, USA
 # 
@@ -32,6 +33,7 @@
 
 <ul>
 <li> \ref conf_requirements
+<li> \ref conf_doc
 <li> \ref conf_trilinos
 <li> \ref conf_sundance
 <li> \ref conf_app
@@ -49,14 +51,18 @@
 \subsection conf_soft Software requirements 
 <UL>
 <li> LAPACK and BLAS. Reference implementations are available
-from <A HREF="http://www,netlib.org"> Netlib </A>
+from <A HREF="http://www,netlib.org"> Netlib. </A> Platform-optimized
+implementations are available from many vendors.
 <li> The <A HREF="http://software.sandia.gov/Trilinos"> Trilinos </A> 
 high-performance parallel solver
-components available for free download 
-<A HREF="http://software.sandia.gov/Trilinos"> here. </A>
+components available for free download. You will need to get the
+<B>version 5.0 limited release</b> edition of Trilinos, which can be downloaded 
+<A HREF="http://software.sandia.gov/trilinos/downloads/trilinos-5.0-limited.html"> here. </A> Tell them you are a Sundance user.
 Note that many popular solver libraries are available through
 Trilinos interfaces. 
-<li> The Expat XML parser 
+<li> The Expat XML parser. Expat comes standard with most versions of Linux. 
+The source is available from 
+<A HREF="http://expat.sourceforge.net/"> sourceforge. </A>
 </ul>
 
 \subsection conf_optional Optional Software
@@ -66,7 +72,26 @@ of <A HREF="http://www-unix.mcs.anl.gov/mpi/"> MPI. </A> In this
 case, Trilinos should also be built with MPI enabled.
 </ul>
 
+\subsection conf_doc Building the online documentation
+
+To build the online documentation (i.e., the web pages you're currently
+browsing) go to the <tt>doc</tt> directory of the Sundance distribution and 
+run <tt> make.</tt> For example,
+\code
+<kevin@rusalka:Projects/Sundance> cd doc
+<kevin@rusalka:Projects/Sundance/doc> make
+\endcode
+The documentation will be placed in the <tt>html</tt> subdirectory of
+<tt>doc.</tt> 
+
+
+
 \subsection conf_trilinos Configuring and Building Trilinos for Sundance 
+
+You downloaded the version 5.0 <b>limited release</b> of Trilinos
+right? If you got
+the standard release, please go back now and get the 
+<A HREF="http://software.sandia.gov/trilinos/downloads/trilinos-5.0-limited.html"> version 5.0 limited release. </A> 
 
 The installation procedure for Trilinos is well-documented 
 <A HREF="http://software.sandia.gov/Trilinos/installation_manual.html">
@@ -81,6 +106,8 @@ set when building Trilinos for use with Sundance:
 --enable-tsfcore-mpi \
 --enable-tsfcore-aztecoo \
 --enable-teuchos \
+--enable-teuchos-expat \
+--with-libs="-lexpat" \
 --enable-nox \
 --enable-nox-tsf 
 </pre>
@@ -88,8 +115,6 @@ Several other optional flags impact the behavior of Sundance:
 <ul>
 <li> <tt>--enable-ml</tt> turns on support for the ML algebraic 
 multilevel solvers and preconditioners
-<li> <tt>--enable-expat</tt> turns on support for the Expat XML parser,
-allowing parameters to be read from XML files
 <LI> <tt>--enable-teuchos-abc</tt> turns on array bounds checking in Teuchos,
 which will check every access to Teuchos <tt>Array</tt> objects for
 bounds errors. This is very useful for debugging, however, it causes 
