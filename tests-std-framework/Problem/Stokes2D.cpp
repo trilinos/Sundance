@@ -161,6 +161,10 @@ int main(int argc, void** argv)
       w.addField("p", new ExprFieldWrapper(soln[2]));
       w.write();
 
+      
+
+      double tol = 1.0e-4;
+      Sundance::passFailTest(sqrt(errorXSq+errorYSq), tol);
 
     }
 	catch(exception& e)

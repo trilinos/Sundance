@@ -79,7 +79,8 @@ namespace SundanceCore
        * do any other setup required for evaluation. 
        */
       virtual int setupEval(const EvalContext& region,
-                            const EvaluatorFactory* factory) const ;
+                            const EvaluatorFactory* factory,
+                                bool regardFuncsAsConstant) const ;
 
       /** */
       virtual void findDerivSuperset(const DerivSet& derivs) const ;

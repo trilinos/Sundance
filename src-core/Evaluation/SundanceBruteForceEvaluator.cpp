@@ -20,35 +20,42 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-static Time& sumEvalTimer() 
+Time& sumEvalTimer() 
 {
   static RefCountPtr<Time> rtn 
     = TimeMonitor::getNewTimer("sum eval"); 
   return *rtn;
 }
 
-static Time& productEvalTimer() 
+Time& productEvalTimer() 
 {
   static RefCountPtr<Time> rtn 
     = TimeMonitor::getNewTimer("product eval"); 
   return *rtn;
 }
 
-static Time& diffOpEvalTimer() 
+Time& diffOpEvalTimer() 
 {
   static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("discrete func eval"); 
+    = TimeMonitor::getNewTimer("diff op eval"); 
   return *rtn;
 }
 
-static Time& unaryMinusEvalTimer() 
+Time& unaryMinusEvalTimer() 
 {
   static RefCountPtr<Time> rtn 
     = TimeMonitor::getNewTimer("unary minus eval"); 
   return *rtn;
 }
 
-static Time& nonlinearUnaryExprEvalTimer() 
+Time& diffOpCalculationTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("diff op calculations"); 
+  return *rtn;
+}
+
+Time& nonlinearUnaryExprEvalTimer() 
 {
   static RefCountPtr<Time> rtn 
     = TimeMonitor::getNewTimer("nonlinear unary expr eval"); 
@@ -60,10 +67,13 @@ BruteForceEvaluatorFactory::BruteForceEvaluatorFactory()
 {;}
 
 Evaluator* BruteForceEvaluatorFactory
-::createEvaluator(const EvaluatableExpr* expr) const
+::createEvaluator(const EvaluatableExpr* expr,
+                  int derivSetIndex) const
 {
   /* do brute-force double dispatch to create 
    * the appropriate evaluator subtype */
+
+  cerr << "creating brute force evaluator" << endl;
 
   const SumExpr* s = dynamic_cast<const SumExpr*>(expr);
   if (s != 0)
@@ -379,6 +389,8 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
                                      RefCountPtr<EvalVectorArray>& results) const
 {
   TimeMonitor timer(diffOpEvalTimer());
+  static RefCountPtr<Time> t0 
+    = TimeMonitor::getNewTimer("diff op set to zero"); 
   Tabs tabs;
 
   if (verbosity() > 1) 
@@ -420,7 +432,12 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
       cerr << tabs << "evaluating arg " << endl;
     }
 
-  expr()->evaluatableArg()->evaluate(mgr, argResults);
+  {
+    static RefCountPtr<Time> t 
+      = TimeMonitor::getNewTimer("diff op arg eval"); 
+    TimeMonitor timer2(*t);
+    expr()->evaluatableArg()->evaluate(mgr, argResults);
+  }
 
   if (verbosity() > 1)
     {
@@ -469,17 +486,22 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
       const FuncElementBase* func = f.funcDeriv()->func();
       const MultiIndex& beta = f.funcDeriv()->multiIndex();
       const UnknownFuncElement* u = dynamic_cast<const UnknownFuncElement*>(func);
-      RefCountPtr<EvalVector> uResult = mgr.stack().popFullVector();
+      RefCountPtr<EvalVector> uResult;
       if (u != 0)
         {
           const DiscreteFuncElement* u0 
             = dynamic_cast<const DiscreteFuncElement*>(u->evalPt());
           if (u0 != 0)
             {
+              static RefCountPtr<Time> t 
+                = TimeMonitor::getNewTimer("diff op discrete func eval"); 
+              TimeMonitor timer2(*t);
+              uResult = mgr.stack().popFullVector();
               mgr.evalDiscreteFuncElement(u0, beta, uResult);
             }
           else
             {
+              TimeMonitor timer2(*t0);
               uResult = mgr.stack().popTrivialVector();
               uResult->setToZero();
             }
@@ -500,6 +522,7 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
       Tabs tab0;
       if (sparsity->isZero(i))
         {
+          TimeMonitor timer2(*t0);
           (*results)[i]->setToZero();
         }
       else
@@ -522,6 +545,10 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
                   cerr << tab1 << "found nonzero " << dAndMe << endl;
                 }
               int iArg = argSparsity->getIndex(dAndMe);
+
+              static RefCountPtr<Time> t 
+                = TimeMonitor::getNewTimer("diff op arg result copy"); 
+              TimeMonitor timer2(*t);
               (*results)[i]->copy((*argResults)[iArg]);
             }
           else
@@ -531,6 +558,7 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
                 {
                   cerr << tab1 << "deriv " << dAndMe << " is zero" << endl;
                 }
+              TimeMonitor timer2(*t0);
               (*results)[i]->setToZero();
             }
 
@@ -612,6 +640,9 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
                                << ",  " 
                                << funcResults[fieldIndex]->getStringValue() << ") to " << (*results)[i]->getStringValue() << endl;
                         }
+                      static RefCountPtr<Time> t 
+                        = TimeMonitor::getNewTimer("diff op add product"); 
+                      TimeMonitor timer2(*t);
                       (*results)[i]->addProduct((*argResults)[iLeft],
                                                 funcResults[fieldIndex]);
                     }
@@ -624,6 +655,9 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
                                << (*argResults)[iLeft]->getStringValue()
                                << endl;
                         }
+                      static RefCountPtr<Time> t 
+                        = TimeMonitor::getNewTimer("diff op add scaled"); 
+                      TimeMonitor timer2(*t);
                       (*results)[i]->addScaled((*argResults)[iLeft],
                                                1.0);
                     }
@@ -722,13 +756,20 @@ void BruteForceNonlinearUnaryOpEvaluator::eval(const EvalManager& mgr,
                      "no zero-order deriv of argument in unary math op eval");
   
 
-  
+  /* Do the evaluation, checking for errors */  
   Array<RefCountPtr<EvalVector> > funcDerivs(maxOrder+1);
+  errno = 0;
   (*argResults)[zeroDerivIndex]->applyUnaryFunction(expr()->op(),
                                                     funcDerivs);
-
-
-  
+  TEST_FOR_EXCEPTION(errno==EDOM, RuntimeError,
+                     "Domain error in expression " << expr()->toString());
+  TEST_FOR_EXCEPTION(errno==ERANGE, RuntimeError,
+                     "Range error in expression " << expr()->toString());
+  TEST_FOR_EXCEPTION(errno==EOVERFLOW, RuntimeError,
+                     "Overflow in expression " << expr()->toString());
+  TEST_FOR_EXCEPTION(errno != 0, RuntimeError,
+                     "Error " << errno << " in expression " << expr()->toString());
+                     
 
   for (int i=0; i<results->size(); i++)
     {
@@ -743,6 +784,11 @@ void BruteForceNonlinearUnaryOpEvaluator::eval(const EvalManager& mgr,
           (*results)[i]->multiply((*argResults)[i]);
         }
     }
-
+ if (verbosity() > 1)
+    {
+      Tabs tabs;
+      cerr << endl << tabs << "nonlinear op eval results: " << endl;
+      results->print(cerr, expr()->getDerivSet(derivSetIndex));
+    }
 
 }

@@ -14,7 +14,8 @@ LeafExpr::LeafExpr()
 {}
 
 int LeafExpr::setupEval(const EvalContext& region,
-                        const EvaluatorFactory* factory) const
+                        const EvaluatorFactory* factory,
+                        bool regardFuncAsConstant) const
 {
   /* first check to see if rule tables for this set of derivatives 
    * have already been created. If so, we're done here. */
@@ -28,7 +29,8 @@ int LeafExpr::setupEval(const EvalContext& region,
    * for this deriv set. */
   int derivSetIndex = registerRegion(region, derivSetIsKnown,
                                      currentDerivSuperset(), 
-                                     factory);
+                                     factory,
+                                     regardFuncAsConstant);
 
   return derivSetIndex;
 }

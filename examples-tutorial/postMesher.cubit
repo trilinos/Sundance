@@ -2,24 +2,33 @@ cylinder r 0.5 z 0.5
 volume 1 scale y 0.25
 volume 1 rotate 60 about z
 
-brick x 5 y 2 z 1
+brick x 6 y 2 z 1
 volume 2 move z 0.25
-volume 2 move x 1.5
+volume 2 move x 2.0
 
 subtract volume 1 from volume 2
 
+color background white
+
+color volume 2 steelblue
+
+#surface 4 6 7 8 9 visibility off
+
+curve all visibility on
+
+
 volume 2 scheme tetmesh
-volume 2 size 0.1
+volume 2 size 0.05
 mesh volume 2 
 
-sideset 1 surface 4
-sideset 2 surface 6
-sideset 3 surface 7
+sideset 1 surface 7
+sideset 2 surface 9
+sideset 3 surface 6
 sideset 4 surface 8
-sideset 5 surface 9
-sideset 6 surface 10
-sideset 7 surface 11
-sideset 8 surface 12
+sideset 5 surface 12
+sideset 6 surface 4
+sideset 7 surface 10
+sideset 8 surface 11
 
 block 1 volume 2
 

@@ -46,17 +46,43 @@ RefCountPtr<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());\
 }\
 inline void functorName::eval(const double* const x, int nx, double* f) const \
 {\
-  for (int i=0; i<nx; i++) f[i] = funcDefinition;\
+  if (checkResults())\
+    {\
+      for (int i=0; i<nx; i++) \
+       {\
+         f[i] = funcDefinition;\
+         TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL, RuntimeError, "Non-normal floating point result detected in evaluation of unary functor " << name());\
+       }\
+    }\
+  else\
+    {\
+      for (int i=0; i<nx; i++) f[i] = funcDefinition;\
+    }\
 }\
 inline void functorName::eval(const double* const x, \
                   int nx, \
                   double* f, \
                   double* df) const \
 { \
-  for (int i=0; i<nx; i++) \
-    { \
-      f[i] = funcDefinition;\
-      df[i] = derivDefinition;\
+  if (checkResults())\
+    {\
+      for (int i=0; i<nx; i++) \
+       {\
+         f[i] = funcDefinition;\
+         df[i] = derivDefinition;\
+         TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL || fpclassify(df[i]) != FP_NORMAL,\
+                            RuntimeError,\
+                            "Non-normal floating point result detected in "\
+                            "evaluation of unary functor " << name());\
+       }\
+    }\
+  else\
+    {\
+      for (int i=0; i<nx; i++) \
+        { \
+          f[i] = funcDefinition;\
+          df[i] = derivDefinition;\
+        }\
     }\
 } 
 

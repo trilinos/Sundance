@@ -4,11 +4,22 @@
 #include "SundanceDefs.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceEvaluatorFactory.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceCore {
-  namespace Internal {
+Teuchos::Time& sumEvalTimer() ;
+Teuchos::Time& productEvalTimer() ;
+Teuchos::Time& diffOpEvalTimer() ;
+Teuchos::Time& unaryMinusEvalTimer() ;
+Teuchos::Time& nonlinearUnaryExprEvalTimer() ;
+
+namespace SundanceCore 
+{
+  namespace Internal 
+  {
+
+
 
     /**
      * Factory to produce brute-force evaluators.
@@ -23,7 +34,8 @@ namespace SundanceCore {
       virtual ~BruteForceEvaluatorFactory(){;}
       
       /** */
-      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr) const ;
+      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+                                         int derivSetIndex) const ;
       
     private:
     };

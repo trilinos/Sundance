@@ -186,7 +186,8 @@ namespace SundanceCore
        * by the evaluator factory.
        */
       virtual int setupEval(const EvalContext& region,
-                            const EvaluatorFactory* factory) const = 0;
+                            const EvaluatorFactory* factory,
+                            bool regardFuncsAsConstant) const = 0;
 
       /**
        * Evaluate this expression in the given region, putting the results
@@ -242,7 +243,8 @@ namespace SundanceCore
       int registerRegion(const EvalContext& region,
                          bool derivSetIsKnown,
                          const DerivSet& derivs,
-                         const EvaluatorFactory* factory) const ;
+                         const EvaluatorFactory* factory,
+                         bool regardFuncsAsConstant) const ;
 
       /** Indicate whether this region has been set up */
       bool knowsRegion(const EvalContext& region) const

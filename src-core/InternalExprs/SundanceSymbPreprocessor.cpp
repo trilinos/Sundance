@@ -47,7 +47,8 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 
   e->findDerivSuperset(derivs);
 
-  e->setupEval(region, factory);
+  bool regardFuncsAsConstant = false;
+  e->setupEval(region, factory, regardFuncsAsConstant);
 
   return derivs;
 }
@@ -62,6 +63,10 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 {
   TimeMonitor t(preprocTimer());
 
+  cerr << "========== setup expr ===================================== "
+       << endl
+       << "max deriv order=" << maxDiffOrder << endl
+       << "expr = " << expr << endl;
   const EvaluatableExpr* e 
     = dynamic_cast<const EvaluatableExpr*>(expr.ptr().get());
 
@@ -69,16 +74,15 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
                      "Non-evaluatable expr " << expr.toString()
                      << " given to SymbPreprocessor::setupExpr()");
 
-  DerivSet derivs = identifyNonzeroDerivs(expr, tests, unks, u0, maxDiffOrder);
+  bool u0IsZero = false;
+  DerivSet derivs = identifyNonzeroDerivs(expr, tests, unks, u0, maxDiffOrder,
+                                          u0IsZero);
 
   e->resetDerivSuperset();
 
   e->findDerivSuperset(derivs);
 
-  e->setupEval(region, factory);
-
-  //  cerr << "max diff order = " << maxDiffOrder << endl;
-  // cerr << "sparsity pattern = " << endl << *(e->sparsity(e->getDerivSetIndex(region))) << endl;
+  e->setupEval(region, factory, u0IsZero);
 
   return derivs;
 }
@@ -87,7 +91,8 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
                                                  const Expr& tests,
                                                  const Expr& unks,
                                                  const Expr& evalPts,
-                                                 int maxDiffOrder)
+                                                 int maxDiffOrder,
+                                                 bool& u0IsZero)
 {
   TimeMonitor t(preprocTimer());
 
@@ -147,6 +152,7 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
                          << " is neither a discrete function nor a zero expr");
       if (u0Ptr.get()==NULL)
         {
+          u0IsZero = true;
           uPtr->substituteZero();
         }
       else

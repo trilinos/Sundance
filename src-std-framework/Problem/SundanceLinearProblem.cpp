@@ -6,6 +6,7 @@
 #include "SundanceTabs.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
+#include "SundanceEvaluatorFactory.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceZeroExpr.hpp"
@@ -57,7 +58,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0, 
-                          rcp(new BruteForceEvaluatorFactory())));
+                          EvaluatorFactory::defaultEvaluator()));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, vecType));
 }

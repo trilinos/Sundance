@@ -82,6 +82,11 @@ namespace SundanceCore
           /** */
           bool isCoordDeriv() const {return coordDeriv() != 0;}
 
+          /** */
+          bool isTestFunction() const ;
+
+          /** */
+          bool isUnknownFunction() const ;
 
           /** Return internal pointer downcasted
            * to a FunctionalDeriv pointer */

@@ -1,8 +1,8 @@
 #include "Sundance.hpp"
 
 /** 
- * Solves the Laplace equation for potential flow past a dome in 
- * a wind tunnel.
+ * Solves the Laplace equation for potential flow past an elliptical 
+ * post in a wind tunnel.
  */
 
 
@@ -11,8 +11,7 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
+      Sundance::init(&argc, &argv);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -30,8 +29,8 @@ int main(int argc, void** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter boundary = new BoundaryCellFilter();
-      CellFilter in = boundary.labeledSubset(3);
-      CellFilter out = boundary.labeledSubset(5);
+      CellFilter in = boundary.labeledSubset(1);
+      CellFilter out = boundary.labeledSubset(2);
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
@@ -60,20 +59,16 @@ int main(int argc, void** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, phiHat, phi, vecType);
 
-      ParameterList params;
-      ParameterList linSolverParams;
-      linSolverParams.set("Type", "TSF");
-      linSolverParams.set("Method", "BICGSTAB");
-      linSolverParams.set("Max Iterations", 1000);
-      linSolverParams.set("Tolerance", 1.0e-14);
-      linSolverParams.set("Precond", "ILUK");
-      linSolverParams.set("Graph Fill", 1);
-      linSolverParams.set("Verbosity", 4);
-      
-      params.set("Linear Solver", linSolverParams);
-      LinearSolver<double> linSolver 
-        = LinearSolverBuilder::createSolver(params);
 
+      /* Read the parameters for the linear solver from an XML file */
+      ParameterXMLFileReader reader("../../examples-tutorial/bicgstab.xml");
+      ParameterList solverParams = reader.getParameters();
+
+      LinearSolver<double> linSolver 
+        = LinearSolverBuilder::createSolver(solverParams);
+
+
+      /* solve the problem */
       Expr soln = prob.solve(linSolver);
 
 
@@ -100,8 +95,8 @@ int main(int argc, void** argv)
     }
 	catch(exception& e)
 		{
-      cerr << e.what() << endl;
+      Sundance::handleException(e);
 		}
   TimeMonitor::summarize();
-  MPISession::finalize();
+  Sundance::finalize();
 }

@@ -21,7 +21,8 @@ ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& childr
 {}
 
 int ExprWithChildren::setupEval(const EvalContext& region,
-                                const EvaluatorFactory* factory) const
+                                const EvaluatorFactory* factory,
+                                bool regardFuncsAsConstant) const
 {
   Tabs tabs;
 
@@ -51,13 +52,13 @@ int ExprWithChildren::setupEval(const EvalContext& region,
    * evaluators and sparsity patterns if the deriv set is unknown */
   int derivSetIndex = registerRegion(region, derivSetIsKnown,
                                      currentDerivSuperset(), 
-                                     factory);
+                                     factory, regardFuncsAsConstant);
 
   /* set up the children */
   childDerivSetIndices_.append(Array<int>());
   for (int i=0; i<children_.size(); i++)
     {
-      int childDSI = evaluatableChild(i)->setupEval(region, factory);
+      int childDSI = evaluatableChild(i)->setupEval(region, factory, regardFuncsAsConstant);
       childDerivSetIndices_[i].append(childDSI);
     }
 

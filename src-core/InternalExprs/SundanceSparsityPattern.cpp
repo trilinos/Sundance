@@ -10,18 +10,20 @@
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-
+using namespace TSFExtended;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 SparsityPattern::SparsityPattern(const DerivSet& derivs,
-                                 const EvaluatableExpr* expr)
+                                 const EvaluatableExpr* expr,
+                                 bool regardFuncsAsConstant)
   : derivToIndexMap_(),
     derivs_(),
     states_(),
     isFirstOrderSpatialDeriv_(),
     spatialDerivDir_()
 {
+  verbosity() = classVerbosity();
   DerivSet::const_iterator i;
 
   //  cerr << "computing sparsity pattern for " << expr->toString() << endl;
@@ -35,22 +37,31 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
       for (j=d.begin(); j != d.end(); j++)
         {
           const Deriv& sd = *j;
-          singleDerivs.put(sd);
+          if (regardFuncsAsConstant)
+            {
+              if (!sd.isUnknownFunction()) singleDerivs.put(sd);
+            }
+          else
+            {
+              singleDerivs.put(sd);
+            }
         }
     }
 
-  DerivSet secondOrderDerivs = expr->identifyNonzeroDerivs();
-  for (i=secondOrderDerivs.begin(); i != secondOrderDerivs.end(); i++)
+  if (!regardFuncsAsConstant)
     {
-      const MultipleDeriv& d = *i;
-      MultiSet<Deriv>::const_iterator j;
-      for (j=d.begin(); j != d.end(); j++)
+      DerivSet secondOrderDerivs = expr->identifyNonzeroDerivs();
+      for (i=secondOrderDerivs.begin(); i != secondOrderDerivs.end(); i++)
         {
-          const Deriv& sd = *j;
-          singleDerivs.put(sd);
+          const MultipleDeriv& d = *i;
+          MultiSet<Deriv>::const_iterator j;
+          for (j=d.begin(); j != d.end(); j++)
+            {
+              const Deriv& sd = *j;
+              singleDerivs.put(sd);
+            }
         }
     }
-
 
   for (int dir=0; dir<CoordDeriv::maxDim(); dir++)
     {
@@ -59,21 +70,32 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
 
   for (i=derivs.begin(); i != derivs.end(); i++)
     {
-      //  cerr << "============ looking for coeff of " << *i << endl;
+      if (verbosity() > VerbHigh)
+        {
+          cerr << "============ looking for coeff of " << *i 
+               << " in " << expr->toString() << endl;
+        }
       const MultipleDeriv& d = *i;
       int n = derivs_.size();
       derivs_.append(d);
       derivToIndexMap_.put(d, n);
       if (!expr->hasNonzeroDeriv(d)) 
         {
-          //          cerr << "deriv wrt " << d << " is zero" << endl;
+          if (verbosity() > VerbHigh)
+            {
+              cerr << "deriv wrt " << d << " is zero" << endl;
+            }
           states_.append(ZeroDeriv);
         }
       else  
         {
           if (expr->isConstant())
             {
-              //  cerr << "deriv " << d << " has constant coeff" << endl;
+              if (verbosity() > VerbHigh)
+                {
+                  cerr << "deriv " << d 
+                       << " has identically constant coeff" << endl;
+                }
               states_.append(ConstantDeriv);
             }
           else
@@ -83,25 +105,46 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
                * is zero */
               SundanceUtils::Set<Deriv>::const_iterator j;
               bool isConstant = true;
+              MultipleDeriv dTry;
               for (j = singleDerivs.begin(); j != singleDerivs.end(); j++)
                 {
-                  MultipleDeriv dTry = d;
+                  dTry = d;
                   dTry.put(*j);
-                  //  cerr << "testing against " << dTry << endl;
+                  if (verbosity() > VerbHigh)
+                    {
+                      cerr << "testing against " << dTry << endl;
+                    }
                   if (expr->hasNonzeroDeriv(dTry)) 
                     {
-                      //  cerr << "deriv wrt " << d << " is non-const" << endl;
+                      if (verbosity() > VerbHigh)
+                        {
+                          cerr << "has nonzero deriv wrt" << dTry << endl;
+                        }
                       isConstant = false;
+                      break;
+                    }
+                  else
+                    {
+                      if (verbosity() > VerbHigh)
+                        {
+                          cerr << "has zero deriv wrt" << dTry << endl;
+                        }
                     }
                 }
               if (isConstant) 
                 {
-                  //     cerr << "deriv wrt " << d << " is constant" << endl;
+                  if (verbosity() > VerbHigh)
+                    {
+                      cerr << "deriv wrt " << d << " is constant" << endl;
+                    }
                   states_.append(ConstantDeriv);
                 }
               else 
                 {
-                  // cerr << "deriv wrt " << d << " is non-constant" << endl;
+                  if (verbosity() > VerbHigh)
+                    {
+                      cerr << "deriv wrt " << d << " is non-constant" << endl;
+                    }
                   states_.append(VectorDeriv);
                 }
             }

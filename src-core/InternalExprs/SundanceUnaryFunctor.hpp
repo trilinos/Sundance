@@ -39,6 +39,9 @@ namespace SundanceCore
                         int nx, 
                         double* f, 
                         double* df) const = 0 ;
+
+      /** Specify whether we should test for NAN or INFINITE results. */
+      static bool& checkResults() {static bool rtn = false; return rtn;}
     private:
       string name_;
     };

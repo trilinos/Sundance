@@ -70,7 +70,8 @@ void SymbolicFuncElement::getRoughDependencies(Set<Deriv>& funcs) const
 
 
 int SymbolicFuncElement::setupEval(const EvalContext& region,
-                               const EvaluatorFactory* factory) const
+                               const EvaluatorFactory* factory,
+                                bool regardFuncsAsConstant) const
 {
   /* If we've been here already with this deriv set, we're done.
    * If we've been here with this deriv set, but in another region,
@@ -85,13 +86,15 @@ int SymbolicFuncElement::setupEval(const EvalContext& region,
   * a sparsity pattern for the current deriv set. */
   int derivSetIndex = registerRegion(region, derivSetIsKnown,
                                      currentDerivSuperset(), 
-                                     factory);
+                                     factory,
+                                regardFuncsAsConstant);
   
   /* set up the eval point, returning the index by which the eval point
    * refers to this deriv set.  */
   int evalPtDerivSetIndex 
     = evalPt()->setupEval(region, 
-                          factory);
+                          factory,
+                                regardFuncsAsConstant);
   
   /* store the eval point's deriv set index */
   evalPtDerivSetIndices_.append(evalPtDerivSetIndex);

@@ -21,6 +21,19 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& functionalEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("functional evaluation"); 
+  return *rtn;
+}
+
+static Time& functionalEvalSetupTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("functional evaluation setup"); 
+  return *rtn;
+}
 
 namespace SundanceStdFwk
 {
@@ -41,6 +54,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     evalExprs_(),
     evalMgr_(rcp(new EvalManager()))
 {
+  TimeMonitor timer(functionalEvalSetupTimer());
   verbosity() = classVerbosity();;
 
 
@@ -64,7 +78,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   Set<RegionQuadCombo> rqcSet;
 
   RefCountPtr<EvaluatorFactory> evalFactory 
-    = rcp(new BruteForceEvaluatorFactory());
+    = EvaluatorFactory::defaultEvaluator();
 
   int contextID = EvalContext::nextID();
 
@@ -115,6 +129,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
 
 double FunctionalEvaluator::evaluate() const
 {
+  TimeMonitor timer(functionalEvalTimer());
   RefCountPtr<EvalVectorArray> values;
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
@@ -174,7 +189,7 @@ double FunctionalEvaluator::evaluate() const
               double f = (*values)[0]->getConstantValue();
               for (int c=0; c<workSet->size(); c++)
                 {
-                  localSum += detJ[c]*f;
+                  localSum += fabs(detJ[c])*f;
                 }
             }
           else
@@ -183,10 +198,14 @@ double FunctionalEvaluator::evaluate() const
               
               for (int c=0; c<workSet->size(); c++)
                 {
+                  double dJ = fabs(detJ[c]);
+                  double cellSum = 0.0;
+                  const double* const p = &(vals[c*nQuad]);
                   for (int q=0; q<nQuad; q++)
                     {
-                      localSum += detJ[c]*quadWgts[q]*vals[c*nQuad + q];
+                      cellSum += quadWgts[q]*p[q];
                     }
+                  localSum += dJ*cellSum;
                 }
             }
         }

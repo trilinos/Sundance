@@ -33,7 +33,8 @@ namespace SundanceCore
 
           /** */
           virtual Evaluator* 
-          createEvaluator(const EvaluatableExpr* expr) const = 0 ;
+          createEvaluator(const EvaluatableExpr* expr,
+                          int derivSetIndex) const = 0 ;
 
           /** */
           static RefCountPtr<EvaluatorFactory>& defaultEvaluator();

@@ -9,6 +9,7 @@
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceDiscreteSpace.hpp"
+#include "TSFVector.hpp"
 
 namespace SundanceStdFwk
 {

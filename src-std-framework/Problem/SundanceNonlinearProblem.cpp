@@ -8,6 +8,7 @@
 #include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
+#include "SundanceEvaluatorFactory.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -43,7 +44,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
 {
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, test, unk, u0, 
-                          rcp(new BruteForceEvaluatorFactory())));
+                          EvaluatorFactory::defaultEvaluator()));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, vecType));
 

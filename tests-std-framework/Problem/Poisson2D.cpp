@@ -15,11 +15,8 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-
-      VerbositySetting verb = VerbSilent;
-      Assembler::classVerbosity() = verb;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -31,13 +28,6 @@ int main(int argc, void** argv)
                                                          0.0, 2.0, 64, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
-
-      if (verb > VerbHigh)
-        {
-          FieldWriter wMesh = new VerboseFieldWriter();
-          wMesh.addMesh(mesh);
-          wMesh.write();
-        }
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
@@ -72,32 +62,21 @@ int main(int argc, void** argv)
       /* Define the weak form */
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       Expr one = new Parameter(1.0);
-      Expr oneThird = new Parameter(1.0/3.0);
       Expr eqn = Integral(interior, (grad*v)*(grad*u)  + one*v, quad2)
-        + Integral(top, -v*oneThird, quad2) 
+        + Integral(top, -v/3.0, quad2) 
         + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);
       //        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(bottom, v*(u-0.5*x*x), quad4);
 
-      Assembler::workSetSize() = 100;
-      FunctionalEvaluator::workSetSize() = 100;
-
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
-
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-13;
-
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterList solverParams = reader.getParameters();
+      cerr << "params = " << solverParams << endl;
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
 
       Expr soln = prob.solve(solver);
 
@@ -128,11 +107,12 @@ int main(int argc, void** argv)
       double derivErrorSq = derivErrInt.evaluate();
       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
+      Sundance::passFailTest(errorSq + derivErrorSq, 1.0e-11);
+
     }
 	catch(exception& e)
 		{
-      cerr << e.what() << endl;
+      Sundance::handleException(e);
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+  Sundance::finalize();
 }

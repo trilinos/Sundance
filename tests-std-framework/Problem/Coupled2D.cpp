@@ -23,7 +23,7 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
@@ -32,7 +32,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 64;
+      int nx = 128;
 
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
                                                          0.0, 2.0, nx, 1,
@@ -55,10 +55,10 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr v = new UnknownFunction(new Lagrange(1), "v");
-      Expr du = new TestFunction(new Lagrange(1), "du");
-      Expr dv = new TestFunction(new Lagrange(1), "dv");
+      Expr u = new UnknownFunction(new Lagrange(2), "u");
+      Expr v = new UnknownFunction(new Lagrange(2), "v");
+      Expr du = new TestFunction(new Lagrange(2), "du");
+      Expr dv = new TestFunction(new Lagrange(2), "dv");
 
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
@@ -145,10 +145,13 @@ int main(int argc, void** argv)
       w.write();
 
 
+
+      double tol = 1.0e-8;
+      Sundance::passFailTest(sqrt(uErrorSq+vErrorSq), tol);
     }
 	catch(exception& e)
 		{
-      cerr << e.what() << endl;
+      Sundance::handleException(e);
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

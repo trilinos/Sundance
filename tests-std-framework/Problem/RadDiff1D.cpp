@@ -1,10 +1,4 @@
 #include "Sundance.hpp"
-#include "SundanceEvaluator.hpp"
-
-#include "NOX.H"
-#include "NOX_Common.H"
-#include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
 
 
 /** 
@@ -19,7 +13,7 @@ int main(int argc, void** argv)
  
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
@@ -62,84 +56,19 @@ int main(int argc, void** argv)
       /* Define the weak form */
       Expr eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*(u-(x+1.0)), quad)
-        + EssentialBC(rightPoint, v*(u-(x+1.0)), quad); 
-
-  //     ElementIntegral::classVerbosity()=VerbExtreme;
-      //Evaluator::classVerbosity()=VerbExtreme;
-      //Assembler::classVerbosity()=VerbExtreme;
-      //NonlinearOperatorBase<double>::classVerbosity()=VerbExtreme;
-//       StdFwkEvalMediator::classVerbosity()=VerbExtreme;
+      Expr bc = EssentialBC(leftPoint, v*(u-1.0), quad)
+        + EssentialBC(rightPoint, v*(u-2.0), quad); 
 
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
-      //      F.verbosity() = VerbExtreme;
-      /* Get the initial guess */
-      Vector<double> x0 = F.getInitialGuess();
-      
-      
-      /* Create an Aztec solver for solving the linear subproblems */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
-      
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-13;
-      
-      LinearSolver<double> linSolver = new AztecSolver(azOptions,azParams);
-      
- 
-     //  /* Set up the linear solver  */
-     //  ParameterList solverParams;
 
-//       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-//       solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
-//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-12);
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterList noxParams = reader.getParameters();
 
-//       LinearSolver<double> linSolver = new BICGSTABSolver<double>(solverParams);
-
-
-      /* Now let's create a NOX solver */
-      NOX::TSF::Group grp(x0, F, linSolver);
-
-      grp.verbosity() = VerbSilent;
-
-      // Set up the status tests
-      NOX::StatusTest::NormF statusTestA(grp, 1.0e-10);
-      NOX::StatusTest::MaxIters statusTestB(20);
-      NOX::StatusTest::Combo statusTestsCombo(NOX::StatusTest::Combo::OR, statusTestA, statusTestB);
-
-      // Create the list of solver parameters
-      NOX::Parameter::List solverParameters;
-
-      // Set the solver (this is the default)
-      solverParameters.setParameter("Nonlinear Solver", "Line Search Based");
-
-      // Create the line search parameters sublist
-      NOX::Parameter::List& lineSearchParameters = solverParameters.sublist("Line Search");
-
-      // Set the line search method
-      lineSearchParameters.setParameter("Method","More'-Thuente");
-
-      // Create the solver
-      NOX::Solver::Manager solver(grp, statusTestsCombo, solverParameters);
+      NOXSolver solver(noxParams, F);
 
       // Solve the nonlinear system
       NOX::StatusTest::StatusType status = solver.solve();
-
-      // Print the answer
-      cout << "\n" << "-- Parameter List From Solver --" << "\n";
-      solver.getParameterList().print(cout);
-
-      // Get the answer
-      grp = solver.getSolutionGroup();
-
-      // Print the answer
-      cout << "\n" << "-- Final Solution From Solver --" << "\n";
-      grp.print();
 
       /* check solution */
       Expr exactSoln = pow(15.0*x + 1.0, 0.25);
@@ -153,12 +82,13 @@ int main(int argc, void** argv)
 
       
 
-      
+      double tol = 1.0e-4;
+      Sundance::passFailTest(errorSq, tol);
 
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

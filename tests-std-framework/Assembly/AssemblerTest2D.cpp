@@ -124,15 +124,6 @@ int main(int argc, void** argv)
         }
       cerr << "bc rows " << endl << *(assembler.bcRows()) << endl;
       
-      Array<ColSetType> graph;
-      assembler.getGraph(graph);
-
-      cerr << "graph" << endl;
-      for (int i=0; i<graph.size(); i++) 
-        {
-          cerr << "row=" << i << " " << graph[i] << endl;
-        }
-
       LinearOperator<double> A;
       Vector<double> b;
 

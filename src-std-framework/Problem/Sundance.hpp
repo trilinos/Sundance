@@ -95,13 +95,19 @@ namespace SundanceStdFwk
   class Sundance
   {
   public:
-    static void init(int argc, void** argv);
+    static void init(int* argc, void*** argv);
     
     static void finalize();
     
     static void handleException(std::exception& e);
 
+
+    static void passFailTest(double error, double tol);
+
+    
+
   private:
+    static bool checkTest(double error, double tol);
 
     static void setSettings(const string& settingsFile);
 

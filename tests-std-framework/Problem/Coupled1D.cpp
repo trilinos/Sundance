@@ -21,19 +21,16 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
-      Assembler::workSetSize() = 10;
-
-      
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 12;
+      int nx = 128;
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx*np, meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -51,10 +48,10 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr v = new UnknownFunction(new Lagrange(1), "v");
-      Expr du = new TestFunction(new Lagrange(1), "du");
-      Expr dv = new TestFunction(new Lagrange(1), "dv");
+      Expr u = new UnknownFunction(new Lagrange(2), "u");
+      Expr v = new UnknownFunction(new Lagrange(2), "v");
+      Expr du = new TestFunction(new Lagrange(2), "du");
+      Expr dv = new TestFunction(new Lagrange(2), "dv");
 
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
@@ -77,22 +74,14 @@ int main(int argc, void** argv)
 
       LinearProblem prob(mesh, eqn, bc, List(dv,du), List(v,u), vecType);
 
-      
 
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterList solverParams = reader.getParameters();
+      cerr << "params = " << solverParams << endl;
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      //azOptions[AZ_ml] = 1;
-      //azOptions[AZ_ml_levels] = 4;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-10;
 
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
 
 
 
@@ -124,10 +113,13 @@ int main(int argc, void** argv)
       double vErrorSq = vErrInt.evaluate();
       cerr << "v error norm = " << sqrt(vErrorSq) << endl << endl;
 
+      double tol = 1.0e-8;
+      Sundance::passFailTest(sqrt(uErrorSq+vErrorSq), tol);
+
     }
 	catch(exception& e)
 		{
-      cerr << e.what() << endl;
+      Sundance::handleException(e);
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

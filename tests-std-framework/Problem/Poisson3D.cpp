@@ -4,7 +4,7 @@
 #include "SundanceExodusNetCDFMeshReader.hpp"
 
 /** 
- * Solves the Poisson equation in 2D
+ * Solves the Poisson equation in 3D
  */
 
 
@@ -13,29 +13,17 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
-
-      VerbositySetting verb = VerbSilent;
-      Assembler::classVerbosity() = verb;
+      Sundance::init(&argc, &argv);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
+      /* Read the mesh */
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
         = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/cube.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
-
-      if (verb > VerbHigh)
-        {
-          FieldWriter wMesh = new VerboseFieldWriter();
-          wMesh.addMesh(mesh);
-          wMesh.write();
-        }
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
@@ -45,9 +33,6 @@ int main(int argc, void** argv)
       CellPredicate bottomFunc = new LabelCellPredicate(2);
       CellFilter top = faces.subset(topFunc);
       CellFilter bottom = faces.subset(bottomFunc);
-
-      cerr << "top cells = " << top.getCells(mesh) << endl;
-      cerr << "bottom cells = " << bottom.getCells(mesh) << endl;
 
       
       /* Create unknown and test functions, discretized using first-order
@@ -73,27 +58,19 @@ int main(int argc, void** argv)
       Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2);
 
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, v*u, quad2)
+      Expr bc = EssentialBC(bottom, v*(u-z), quad2)
         + EssentialBC(top, v*(u-z), quad2);
-
-      Assembler::workSetSize() = 100;
-      FunctionalEvaluator::workSetSize() = 100;
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterList solverParams = reader.getParameters();
+      cerr << "params = " << solverParams << endl;
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-10;
 
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
 
       Expr soln = prob.solve(solver);
 
@@ -103,12 +80,20 @@ int main(int argc, void** argv)
       w.addField("soln", new ExprFieldWrapper(soln[0]));
       w.write();
 
+      Expr exactSoln = (0.5*x + 1.0)*x - 1.0/8.0;
+      Expr errExpr = Integral(interior, 
+                              pow(soln-exactSoln, 2.0),
+                              new GaussianQuadrature(4));
 
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      double tol = 1.0e-12;
+      Sundance::passFailTest(errorSq, tol);
     }
 	catch(exception& e)
 		{
-      cerr << e.what() << endl;
+      Sundance::handleException(e);
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+  Sundance::finalize();
 }

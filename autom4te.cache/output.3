@@ -841,6 +841,10 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-install=INSTALL_PROGRAM 
+                          Use the installation program INSTALL_PROGRAM rather
+                          the default that is provided. For example
+                          --with-install="/path/install -p"
   --with-mpi-compilers=PATH 
                           use MPI compilers mpicc, mpif77, and mpicxx (or
                           mpiCC) in the specified path or in the default path
@@ -856,6 +860,12 @@ Optional Packages:
                           Chaco libraries @<:@"-lchaco"@:>@
   --with-chaco-libdir=DIR Chaco library directory. Do not use -L
   --with-trilinos         root directory of Trilinos installation
+  --with-libdirs          additional directories containing libraries: will
+                          prepend to search here for libraries, use -Ldir
+                          format
+  --with-incdirs          additional directories containing include files:
+                          will prepend to search here for includes, use -Idir
+                          format
 
 Some influential environment variables:
   CC          C compiler command
@@ -1359,6 +1369,23 @@ ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
           ac_config_headers="$ac_config_headers src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in"
 
 
+
+
+# Allow users to specify their own "install" command.  If none is specified,
+# the default is install-sh found in the config subdirectory.
+                                                                                
+
+# Check whether --with-install or --without-install was given.
+if test "${with_install+set}" = set; then
+  withval="$with_install"
+  
+   INSTALL=$withval
+   INSTALL_PROGRAM=$withval
+   INSTALL_SCRIPT=$withval
+   INSTALL_DATA="$withval -m 644"
+ 
+fi; 
+             
 # AM_MAINTAINER_MODE turns off maintainer-only makefile targets by
 # default, and changes configure to understand a
 # --enable-maintainer-mode option. --enable-maintainer-mode turns the
@@ -1753,8 +1780,8 @@ fi
 
 
 # Define the identity of the package.
- PACKAGE=Sundance
- VERSION=1.1
+ PACKAGE='sundance'
+ VERSION='2.0'
 
 
 cat >>confdefs.h <<_ACEOF
@@ -3568,7 +3595,6 @@ else
 fi
 
 
-BASE_CXX=${CXX}
 ac_ext=f
 ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
 ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -4118,6 +4144,49 @@ else
   BUILD_EXAMPLES_TRUE='#'
   BUILD_EXAMPLES_FALSE=
 fi
+
+
+# ------------------------------------------------------------------------
+# Specify other directories 
+# ------------------------------------------------------------------------
+
+# enable use of --with-libdirs="-Llibdir1 -Llibdir2 ..." to prepend to LDFLAGS
+
+echo "$as_me:$LINENO: checking whether additional library search paths defined" >&5
+echo $ECHO_N "checking whether additional library search paths defined... $ECHO_C" >&6
+
+# Check whether --with-libdirs or --without-libdirs was given.
+if test "${with_libdirs+set}" = set; then
+  withval="$with_libdirs"
+  
+LDFLAGS="${withval} ${LDFLAGS}"
+echo "$as_me:$LINENO: result: ${withval}" >&5
+echo "${ECHO_T}${withval}" >&6
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi; 
+
+# enable use of --with-incdirs="-Lincdir1 -Lincdir2 ..." to prepend to CPPFLAGS
+
+echo "$as_me:$LINENO: checking whether additional include search paths defined" >&5
+echo $ECHO_N "checking whether additional include search paths defined... $ECHO_C" >&6
+
+# Check whether --with-incdirs or --without-incdirs was given.
+if test "${with_incdirs+set}" = set; then
+  withval="$with_incdirs"
+  
+CPPFLAGS="${withval} ${CPPFLAGS}"
+echo "$as_me:$LINENO: result: ${withval}" >&5
+echo "${ECHO_T}${withval}" >&6
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi; 
 
 
 # ------------------------------------------------------------------------
@@ -5653,3 +5722,7 @@ fi
 
 
 
+# Bye World!
+echo "----------------------------------------"
+echo "Finished Running Sundance Configure Script"
+echo "----------------------------------------"

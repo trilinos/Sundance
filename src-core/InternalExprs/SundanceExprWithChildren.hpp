@@ -86,7 +86,8 @@ namespace SundanceCore
            * @return index of the deriv set
            */
           virtual int setupEval(const EvalContext& region,
-                                const EvaluatorFactory* factory) const ;
+                                const EvaluatorFactory* factory,
+                                bool regardFuncsAsConstant) const ;
 
           /** Return the set of derivatives required by the operands
            * of this expression given that this expression

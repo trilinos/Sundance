@@ -173,7 +173,8 @@ bool EvaluatableExpr::checkForKnownRegion(const EvalContext& region,
 int EvaluatableExpr::registerRegion(const EvalContext& region,
                                     bool derivSetIsKnown,
                                     const DerivSet& derivs,
-                                    const EvaluatorFactory* factory) const
+                                    const EvaluatorFactory* factory,
+                                    bool regardFuncsAsConstant) const
 {
   Tabs tabs;
 
@@ -227,7 +228,7 @@ int EvaluatableExpr::registerRegion(const EvalContext& region,
   if (!derivSetIsKnown)
     {
       SUNDANCE_OUT(verbosity() > VerbLow, tabs << "creating sparsity pattern");
-      sparsityPatterns_.append(rcp(new SparsityPattern(derivs, this)));
+      sparsityPatterns_.append(rcp(new SparsityPattern(derivs, this, regardFuncsAsConstant)));
     }
   else
     {
@@ -244,7 +245,7 @@ int EvaluatableExpr::registerRegion(const EvalContext& region,
   if (!derivSetIsKnown)
     {
       SUNDANCE_OUT(verbosity() > VerbLow, tabs << "creating evaluator");
-      evaluators_.append(rcp(factory->createEvaluator(this)));
+      evaluators_.append(rcp(factory->createEvaluator(this, rtn)));
     }
   else
     {

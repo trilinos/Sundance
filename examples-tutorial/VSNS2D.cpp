@@ -1,15 +1,8 @@
 #include "Sundance.hpp"
-#include "SundanceEvaluator.hpp"
 
-#include "TSFNOXSolver.H"
 /** 
- * Solves the Navier-Stokes equations on the lid-driver cavity
+ * Solves the Navier-Stokes equations on the lid-driven cavity
  */
-
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
-bool bottomPointTest(const Point& x) {return fabs(x[1]) < 1.0e-10;}
-bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
-bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-10;}
 
 int main(int argc, void** argv)
 {
@@ -17,35 +10,26 @@ int main(int argc, void** argv)
   try
 		{
       MPISession::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
-
-      //      DOFMapBase::classVerbosity() = VerbExtreme;
-      //      Assembler::classVerbosity() = VerbExtreme;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
+      /* Read the mesh */
       MeshType meshType = new BasicSimplicialMeshType();
-      int n=32;
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n*np, np,
-                                                         0.0, 1.0, n, 1,
-                                                         meshType);
+
+      MeshSource mesher 
+        = new ExodusNetCDFMeshReader("../../examples-tutorial/square128.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
-      CellPredicate leftPointFunc = new PositionalCellPredicate(leftPointTest);
-      CellPredicate rightPointFunc = new PositionalCellPredicate(rightPointTest);
-      CellPredicate topPointFunc = new PositionalCellPredicate(topPointTest);
-      CellPredicate bottomPointFunc = new PositionalCellPredicate(bottomPointTest);
-      CellFilter left = edges.subset(leftPointFunc);
-      CellFilter right = edges.subset(rightPointFunc);
-      CellFilter top = edges.subset(topPointFunc);
-      CellFilter bottom = edges.subset(bottomPointFunc);
+
+      CellFilter bottom = edges.labeledSubset(1);
+      CellFilter right = edges.labeledSubset(2);
+      CellFilter top = edges.labeledSubset(3);
+      CellFilter left = edges.labeledSubset(4);
 
       
       /* Create unknown and test functions, discretized using first-order
@@ -63,7 +47,7 @@ int main(int argc, void** argv)
       Expr y = new CoordExpr(1);
 
       /* A parameter expression for the Reynolds number */
-      Expr reynolds = new Parameter(20.0);
+      Expr reynolds = new Parameter(1.0);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad1 = new GaussianQuadrature(1);
@@ -95,10 +79,8 @@ int main(int argc, void** argv)
         = new NonlinearProblem(mesh, eqn, bc, List(vPsi, vOmega),
                                List(psi, omega), u0, vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterXMLFileReader reader("../../examples-tutorial/nox.xml");
       ParameterList noxParams = reader.getParameters();
-
-      cerr << "solver params = " << noxParams << endl;
 
       NOXSolver solver(noxParams, F);
 

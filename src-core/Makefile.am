@@ -104,6 +104,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceBruteForceEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceInstructionCachingEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.hpp 
 
 SUNDANCE_EVALUATION = \
@@ -111,6 +112,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceBruteForceEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceInstructionCachingEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.cpp 
 
 

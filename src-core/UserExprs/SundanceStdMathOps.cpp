@@ -19,7 +19,21 @@ void PowerFunctor::eval(const double* const x,
                         double* f, 
                         double* df) const
 {
-  if (fabs(p_) > 1.0e-16)
+  if (checkResults())
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          double px = ::pow(x[i], p_-1);
+          df[i] = p_*px;
+          f[i] = x[i]*px;
+          TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+                             || fpclassify(df[i]) != FP_NORMAL,
+                             RuntimeError,
+                             "Non-normal floating point result detected in "
+                             "evaluation of unary functor " << name());
+        }
+    }
+  else
     {
       for (int i=0; i<nx; i++) 
         {
@@ -28,22 +42,28 @@ void PowerFunctor::eval(const double* const x,
           f[i] = x[i]*px;
         }
     }
-  else
-    {
-      for (int i=0; i<nx; i++) 
-        {
-          f[i] = 1.0;
-          df[i] = 0.0;
-        }
-    }
 }
 
 void PowerFunctor::eval(const double* const x, 
                         int nx, 
                         double* f) const
 {
-  for (int i=0; i<nx; i++) 
+  if (checkResults())
     {
-      f[i] = ::pow(x[i], p_);
+      for (int i=0; i<nx; i++) 
+        {
+          f[i] = ::pow(x[i], p_);
+          TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL, 
+                             RuntimeError,
+                             "Non-normal floating point result detected in "
+                             "evaluation of unary functor " << name());
+        }
+    }
+  else
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          f[i] = ::pow(x[i], p_);
+        }
     }
 }

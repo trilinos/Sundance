@@ -32,7 +32,7 @@ namespace SundanceStdFwk
     {
     public:
       /** */
-      GrouperBase() {;}
+      GrouperBase() {verbosity() = classVerbosity();}
 
       /** */
       virtual ~GrouperBase(){;}

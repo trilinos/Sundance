@@ -45,7 +45,8 @@ namespace SundanceCore
                                               const Expr& tests,
                                               const Expr& unks,
                                               const Expr& u0,
-                                              int maxDiffOrder);
+                                              int maxDiffOrder,
+                                              bool& u0IsZero);
 
       /** */
       static Time& preprocTimer() 

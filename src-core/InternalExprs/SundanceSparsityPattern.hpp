@@ -31,7 +31,8 @@ namespace SundanceCore
        * Class SparsityPattern specifies which functional derivatives
        * exist at each node.
        */
-      class SparsityPattern
+      class SparsityPattern 
+        : public TSFExtended::ObjectWithVerbosity<SparsityPattern>
         {
         public:
           /** Given a set of derivatives that should be evaluated at
@@ -39,7 +40,8 @@ namespace SundanceCore
           //          SparsityPattern(const DerivSet& d,
           //                          const EvaluatableExpr* expr);
 
-          SparsityPattern(const DerivSet& d, const EvaluatableExpr* e);
+          SparsityPattern(const DerivSet& d, const EvaluatableExpr* e,
+                          bool regardFuncsAsConstant);
 
           /** Detect whether a given derivative exists in this set */
           bool containsDeriv(const MultipleDeriv& d) const ;

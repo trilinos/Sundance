@@ -7,7 +7,11 @@
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceRefIntegral.hpp"
 #include "SundanceEvaluator.hpp"
+#include "SundanceUnaryFunctor.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
+#include "SundanceInstructionCachingEvaluator.hpp"
+#include "SundanceGrouperBase.hpp"
+#include "SundanceSparsityPattern.hpp"
 
 
 static Time& totalTimer() 
@@ -17,20 +21,26 @@ static Time& totalTimer()
   return *rtn;
 }
 
-void Sundance::init(int argc, void** argv)
+void Sundance::init(int* argc, void*** argv)
 {
   /* start up MPI. In a serial run, this will be a no-op */
-  MPISession::init(&argc, &argv);
+  MPISession::init(argc, argv);
 
   /* read standard command line flags */
   CommandLineProcessor clp;
   string configFilename = "SundanceConfig.xml";
+  bool fpCheck = false;
+  int workSetSize = 100;
   clp.setOption("config", &configFilename, "Configuration file");
+  clp.setOption("fpcheck", "nofpcheck", &fpCheck, 
+                "Check results of math lib calls in expr evals");
+  clp.setOption("workset", &workSetSize, 
+                "Work set size");
 
 
   clp.throwExceptions(false);
 
-  CommandLineProcessor::EParseCommandLineReturn rtn = clp.parse(argc, (char**) argv);
+  CommandLineProcessor::EParseCommandLineReturn rtn = clp.parse(*argc, (char**) *argv);
 
   TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
                      RuntimeError,
@@ -38,8 +48,20 @@ void Sundance::init(int argc, void** argv)
 
   /* process the settings file */
   setSettings(configFilename);
+
+
+  UnaryFunctor::checkResults() = fpCheck;
+  Assembler::workSetSize() = workSetSize;
+  FunctionalEvaluator::workSetSize() = workSetSize;
   
 } 
+
+void Sundance::handleException(std::exception& e)
+{
+  cerr << "Sundance detected exception: " << endl;
+  cerr << e.what() << endl;
+}
+
 
 void Sundance::finalize()
 {
@@ -52,6 +74,7 @@ string Sundance::searchForFile(const string& name)
   string pathSep = "/";
   Array<string> path;
   path.append(".");
+  path.append("../../etc");
   path.append("../../../etc");
 
   for (int i=0; i<path.size(); i++)
@@ -70,8 +93,6 @@ void Sundance::setSettings(const string& settingsFile)
 
   XMLObject xml = fis.getObject();
 
-  int workSetSize = 100;
-
   for (int i=0; i<xml.numChildren(); i++)
     {
       const XMLObject& child = xml.getChild(i);
@@ -80,14 +101,20 @@ void Sundance::setSettings(const string& settingsFile)
           const string& name = child.getRequired("name");
           if (name=="Work Set Size")
             {
-              workSetSize = child.getRequiredInt("value");
+              int workSetSize = child.getRequiredInt("value");
+              Assembler::workSetSize() = workSetSize;
+              FunctionalEvaluator::workSetSize() = workSetSize;
             }
-          Assembler::workSetSize() = workSetSize;
+          else if (name=="Check for Floating Point Errors")
+            {
+              UnaryFunctor::checkResults() = child.getRequiredBool("value");
+            }
         }
       else if (child.getTag()=="Verbosity")
         {
           const string& context = child.getRequired("context");
           const string& value = child.getRequired("value");
+          cerr << context << " verbosity=" << value << endl;
           if (context=="Evaluation")
             {
               SundanceCore::Internal::Evaluator::classVerbosity() = verbosity(value);
@@ -107,6 +134,14 @@ void Sundance::setSettings(const string& settingsFile)
           else if (context=="DOF Mapping")
             {
               Internal::DOFMapBase::classVerbosity() = verbosity(value);
+            }
+          else if (context=="Symbolic Sparsity Determination")
+            {
+              SundanceCore::Internal::SparsityPattern::classVerbosity() = verbosity(value);
+            }
+          else if (context=="Integral Grouping")
+            {
+              Internal::GrouperBase::classVerbosity() = verbosity(value);
             }
         }
       else if (child.getTag()=="DefaultMesh")
@@ -131,9 +166,17 @@ void Sundance::setSettings(const string& settingsFile)
       else if (child.getTag()=="Evaluation")
         {
           string type = child.getRequired("type");
-          if (type=="BruteForce")
+          if (type=="Instruction Caching")
             {
-              EvaluatorFactory::defaultEvaluator() = rcp(new BruteForceEvaluatorFactory());
+              EvaluatorFactory::defaultEvaluator() 
+                = rcp(new InstructionCachingEvaluatorFactory());
+              cerr << "Evaluation method: instruction caching"<< endl;
+            }
+          else
+            {
+              EvaluatorFactory::defaultEvaluator() 
+                = rcp(new BruteForceEvaluatorFactory());
+              cerr << "Evaluation method: brute force"<< endl;
             }
         }
       
@@ -162,3 +205,22 @@ VerbositySetting Sundance::verbosity(const string& str)
   return VerbSilent;
 }
 
+
+bool Sundance::checkTest(double error, double tol)
+{
+  return error < tol;
+}
+
+void Sundance:: passFailTest(double error, double tol)
+{
+  cerr << "error norm = " << error << endl;
+  cerr << "tolerance = " << tol << endl;
+  if (checkTest(error, tol))
+    {
+      cerr << "test PASSED" << endl;
+    }
+  else
+    {
+      cerr << "test FAILED" << endl;
+    }
+}

@@ -25,9 +25,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                 Array<IntegralGroup>& groups) const
 {
   Tabs tab;
-
-  VerbositySetting verb = VerbSilent;
-
+  VerbositySetting verb = GrouperBase::classVerbosity();
   SUNDANCE_OUT(verb > VerbLow, 
                tab << "trivial grouper num derivs = " << sparsity->numDerivs() << endl);
   SUNDANCE_OUT(verb > VerbLow, 
