@@ -64,6 +64,9 @@ using namespace SundanceStdMesh::Internal;
     private:
       
       /** */
+      void buildMaximalDofTable() const ;
+
+      /** */
       bool hasBeenAssigned(int cellDim, int cellLID) const 
       {return dofs_[cellDim][cellLID][0] != uninitializedVal();}
 
@@ -88,6 +91,10 @@ using namespace SundanceStdMesh::Internal;
       int dim_;
 
       Array<Array<Array<int> > > dofs_;
+
+      mutable Array<int> maximalDofs_;
+
+      mutable bool haveMaximalDofs_;
 
       Array<Array<Array<Array<int> > > > localNodePtrs_;
 

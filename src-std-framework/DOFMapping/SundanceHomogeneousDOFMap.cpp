@@ -35,7 +35,9 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
                                      int numFuncs)
   : DOFMapBase(mesh), 
     dim_(mesh.spatialDim()),
-    dofs_(mesh.spatialDim()+1), 
+    dofs_(mesh.spatialDim()+1),
+    maximalDofs_(),
+    haveMaximalDofs_(false),
     localNodePtrs_(mesh.spatialDim()+1),
     nNodesPerCell_(mesh.spatialDim()+1),
     totalNNodesPerCell_(mesh.spatialDim()+1, 0),
@@ -462,18 +464,128 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
 
   SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID);
+
   if (cellLID.size()==0) return;
 
-  int nf = funcIDList().size();
-  int nCells = cellLID.size();
-  dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
+  if (cellDim == dim_)
+    {
+      if (!haveMaximalDofs_) buildMaximalDofTable();
+      cerr << "getting DOFS " << endl;
 
+      nNodes = totalNNodesPerCell_[cellDim];
+      int nCells = cellLID.size();
+      int nf = funcIDList().size();
+      dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
+      cerr << "dofs size = " << dofs.size() << endl;
+      cerr << "max dofs size = " << maximalDofs_.size() << endl;
+
+      for (int c=0; c<cellLID.size(); c++)
+        {
+          for (int fid=0; fid<nf; fid++)
+            {
+              for (int n=0; n<nNodes; n++) 
+                {
+                  dofs[(fid*nCells + c)*nNodes + n] 
+                    = maximalDofs_[(fid*nCells + cellLID[c])*nNodes + n];
+                  cerr << "cellLID=" << cellLID[c] 
+                       << ", f=" << fid << ", n=" << n 
+                       << ", dof=" << dofs[(fid*nCells + c)*nNodes + n]
+                       << endl;
+                    
+                }
+            }
+        }
+    }
+  else
+    {
+      int nf = funcIDList().size();
+      int nCells = cellLID.size();
+      dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
+
+      SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
+                   << " total nNodes=" << totalNNodesPerCell_[cellDim]);
+  
+      static Array<Array<int> > facetLID(3);
+      static Array<int> numFacets(3);
+
+      for (int d=0; d<cellDim; d++) 
+        {
+          numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
+          mesh().getFacetLIDs(cellDim, cellLID, d, facetLID[d]);
+        }
+
+  
+      int nInteriorNodes = localNodePtrs_[cellDim][cellDim][0].size();
+  
+      nNodes = totalNNodesPerCell_[cellDim];
+      for (int c=0; c<cellLID.size(); c++)
+        {
+          /* first get the DOFs for the nodes associated with 
+           * the cell's interior */
+          //      const int* tmpPtr1 = &(localNodePtrs_[cellDim][cellDim][0][0]);
+          //      const int* tmpPtr2 = &(dofs_[cellDim][cellLID[c]][0]);
+          for (int n=0; n<nInteriorNodes; n++)
+            {
+              int ptr = localNodePtrs_[cellDim][cellDim][0][n];
+              for (int f=0; f<nf; f++)
+                {
+                  //              dofs[(c*nf + f)*nNodes+ptr] 
+                  dofs[(f*nCells + c)*nNodes+ptr] 
+                    = dofs_[cellDim][cellLID[c]][f + nf*n];
+                }
+              //          dofs[c*nNodes + ptr] = tmpPtr2[funcID + nf*n];
+            }
+
+          /* now get the DOFs for the nodes on the facets */
+          for (int d=0; d<cellDim; d++)
+            {
+              // mesh().getFacetArray(cellDim, cellLID[c], d, facetLID[d]);
+
+              SUNDANCE_OUT(verbosity() > VerbHigh, 
+                           "d=" << d << " facets are " << facetLID[d]);
+      
+              for (int f=0; f<numFacets[d]; f++)
+                {
+                  int facetID = facetLID[d][c*numFacets[d]+f];
+                  SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
+                               "dofs for all nodes of this facet are: "
+                               << dofs_[d][facetLID[d][f]]);
+                  for (int n=0; n<localNodePtrs_[cellDim][d][f].size(); n++)
+                    {
+                      SUNDANCE_OUT(verbosity() > VerbHigh, "n=" << n);
+                      int ptr = localNodePtrs_[cellDim][d][f][n];
+                      SUNDANCE_OUT(verbosity() > VerbHigh, "local ptr=" << ptr);
+                      for (int funcID=0; funcID<nf; funcID++)
+                        {
+                          SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
+                                       << dofs_[d][facetID][funcID + nf*n]);
+                          dofs[(funcID*nCells + c)*nNodes+ptr] 
+                            = dofs_[d][facetID][funcID + nf*n];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}    
+
+void HomogeneousDOFMap::buildMaximalDofTable() const
+{
+  cerr << "building DOF tables " << endl;
+  int cellDim = dim_;
+  int nf = funcIDList().size();
+  int nCells = mesh().numCells(dim_);
+  
   SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
                << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   
   static Array<Array<int> > facetLID(3);
   static Array<int> numFacets(3);
 
+  Array<int> cellLID(nCells);
+
+  for (int c=0; c<cellLID.size(); c++) cellLID[c]=c;
+  
   for (int d=0; d<cellDim; d++) 
     {
       numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
@@ -483,8 +595,12 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
   
   int nInteriorNodes = localNodePtrs_[cellDim][cellDim][0].size();
   
-  nNodes = totalNNodesPerCell_[cellDim];
-  for (int c=0; c<cellLID.size(); c++)
+
+  int nNodes = totalNNodesPerCell_[cellDim];
+
+  maximalDofs_.resize(nCells*nf*nNodes);
+
+  for (int c=0; c<nCells; c++)
     {
       /* first get the DOFs for the nodes associated with 
        * the cell's interior */
@@ -496,20 +612,20 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
           for (int f=0; f<nf; f++)
             {
               //              dofs[(c*nf + f)*nNodes+ptr] 
-              dofs[(f*nCells + c)*nNodes+ptr] 
-                = dofs_[cellDim][cellLID[c]][f + nf*n];
+              maximalDofs_[(f*nCells + c)*nNodes+ptr] 
+                = dofs_[cellDim][c][f + nf*n];
             }
           //          dofs[c*nNodes + ptr] = tmpPtr2[funcID + nf*n];
         }
-
+      
       /* now get the DOFs for the nodes on the facets */
       for (int d=0; d<cellDim; d++)
         {
           // mesh().getFacetArray(cellDim, cellLID[c], d, facetLID[d]);
-
+          
           SUNDANCE_OUT(verbosity() > VerbHigh, 
                        "d=" << d << " facets are " << facetLID[d]);
-      
+          
           for (int f=0; f<numFacets[d]; f++)
             {
               int facetID = facetLID[d][c*numFacets[d]+f];
@@ -525,15 +641,16 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
                     {
                       SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
                                    << dofs_[d][facetID][funcID + nf*n])
-//                    dofs[(c*nf + funcID)*nNodes+ptr] 
-                      dofs[(funcID*nCells + c)*nNodes+ptr] 
+                        //                    dofs[(c*nf + funcID)*nNodes+ptr] 
+                        maximalDofs_[(funcID*nCells + c)*nNodes+ptr] 
                         = dofs_[d][facetID][funcID + nf*n];
                     }
                 }
             }
         }
     }
-}    
+  haveMaximalDofs_ = true;
+}
 
 void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim, 
                                             const Array<int>& cellLID,
@@ -576,8 +693,8 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
           int ptr = localNodePtrs_[cellDim][cellDim][0][n];
           for (int i=0; i<funcID.size(); i++)
             {
-//              dofs[(c*funcID.size() + funcID[i])*nNodes + ptr] 
-               dofs[(i*nCells+c)*nNodes + ptr] 
+              //              dofs[(c*funcID.size() + funcID[i])*nNodes + ptr] 
+              dofs[(i*nCells+c)*nNodes + ptr] 
                 = dofs_[cellDim][cellLID[c]][funcID[i] + nf*n];
             }
           //          dofs[c*nNodes + ptr] = tmpPtr2[funcID + nf*n];

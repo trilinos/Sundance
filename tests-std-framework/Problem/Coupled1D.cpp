@@ -30,7 +30,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 128;
+      int nx = 10;
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx*np, meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -69,9 +69,9 @@ int main(int argc, void** argv)
       Expr bc = EssentialBC(leftPoint, du*u + dv*v, quad2)
         + EssentialBC(rightPoint, du*u + dv*v, quad2);
 
-      //      Assembler::classVerbosity() = VerbExtreme;
 
       /* We can now set up the linear problem! */
+
       LinearProblem prob(mesh, eqn, bc, List(dv,du), List(v,u), vecType);
 
       
@@ -91,11 +91,6 @@ int main(int argc, void** argv)
 
       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
-
-
-      //      LinearOperator<double> A = prob.getOperator();
-
-      Assembler::workSetSize() = 100;
 
 
       Expr soln = prob.solve(solver);

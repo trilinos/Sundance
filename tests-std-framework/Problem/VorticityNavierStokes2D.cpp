@@ -24,7 +24,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int n=200;
+      int n=32;
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n*np, np,
                                                          0.0, 1.0, n, 1,
                                                          meshType);
@@ -89,6 +89,7 @@ int main(int argc, void** argv)
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
       Assembler::workSetSize() = 1000;
+      Assembler::classVerbosity() = VerbMedium;
       //      Evaluator::classVerbosity() = VerbHigh;
 
       /* Create a TSF NonlinearOperator object */
