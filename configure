@@ -3103,14 +3103,9 @@ else
        grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
-      # or remarks (even with -Werror).  So we grep stderr for any message
-      # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
-      #   icc: Command line warning: ignoring option '-M'; no argument required
-      # The diagnosis changed in icc 8.0:
-      #   icc: Command line remark: option '-MP' not supported
-      if (grep 'ignoring option' conftest.err ||
-          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+      # (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored.
+      if grep 'ignoring option' conftest.err >/dev/null 2>&1; then :; else
         am_cv_CC_dependencies_compiler_type=$depmode
         break
       fi
@@ -3567,14 +3562,9 @@ else
        grep sub/conftest.${OBJEXT-o} sub/conftest.Po > /dev/null 2>&1 &&
        ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
       # icc doesn't choke on unknown options, it will just issue warnings
-      # or remarks (even with -Werror).  So we grep stderr for any message
-      # that says an option was ignored or not supported.
-      # When given -MP, icc 7.0 and 7.1 complain thusly:
-      #   icc: Command line warning: ignoring option '-M'; no argument required
-      # The diagnosis changed in icc 8.0:
-      #   icc: Command line remark: option '-MP' not supported
-      if (grep 'ignoring option' conftest.err ||
-          grep 'not supported' conftest.err) >/dev/null 2>&1; then :; else
+      # (even with -Werror).  So we grep stderr for any message
+      # that says an option was ignored.
+      if grep 'ignoring option' conftest.err >/dev/null 2>&1; then :; else
         am_cv_CXX_dependencies_compiler_type=$depmode
         break
       fi
@@ -3697,7 +3687,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3700:" \
+echo "$as_me:3690:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4225,7 +4215,7 @@ fi;
 # Output files
 # ------------------------------------------------------------------------
 
-                                                                                                                                                                                                                                                          ac_config_files="$ac_config_files Makefile Makefile.export examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile doc/Makefile doc/Doxygen/Makefile doc/Doxygen/Doxyfile.utils doc/Doxygen/Doxyfile.core doc/Doxygen/Doxyfile.trilinos"
+                                                                                                                                                                                                        ac_config_files="$ac_config_files Makefile Makefile.export examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
 
 
 
@@ -4856,11 +4846,6 @@ do
   "tests-std-framework/HomogeneousDOFMap/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/HomogeneousDOFMap/Makefile" ;;
   "tests-std-framework/Assembly/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Assembly/Makefile" ;;
   "tests-std-framework/Problem/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Problem/Makefile" ;;
-  "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-  "doc/Doxygen/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Doxygen/Makefile" ;;
-  "doc/Doxygen/Doxyfile.utils" ) CONFIG_FILES="$CONFIG_FILES doc/Doxygen/Doxyfile.utils" ;;
-  "doc/Doxygen/Doxyfile.core" ) CONFIG_FILES="$CONFIG_FILES doc/Doxygen/Doxyfile.core" ;;
-  "doc/Doxygen/Doxyfile.trilinos" ) CONFIG_FILES="$CONFIG_FILES doc/Doxygen/Doxyfile.trilinos" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "src-utils/SundanceConfig.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
