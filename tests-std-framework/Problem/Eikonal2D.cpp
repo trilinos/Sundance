@@ -22,11 +22,33 @@ bool bdryPointTest(const Point& x)
   if (rtn==true) 
     {
       cerr << "-------------------------------------------------------- got one!"
-                      << endl;
+           << endl;
       nBdryPts++;
       cerr << "num bdry pts = " << nBdryPts << endl;
     }
   return rtn;
+}
+
+extern "C" {double besi0_(double* x);}
+
+class BesselI0Func : public UserDefFunctor
+{
+public: 
+  /** */
+  BesselI0Func() : UserDefFunctor("I0") {;}
+
+  /** */
+  virtual double eval(const Array<double>& vars) const 
+  {
+    double* x = const_cast<double*>(&(vars[0]));
+    return besi0_(x);
+  }
+
+};
+
+Expr BesselI0(const Expr& x)
+{
+  return  new UserDefOp(x, rcp(new BesselI0Func()));
 }
 
 int main(int argc, void** argv)
@@ -37,7 +59,7 @@ int main(int argc, void** argv)
       MPISession::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
       int precision = 3;    // precision when printing vectors
-      Expr epsilon = 0.1;   
+      double epsilon = 1.0;   
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -128,7 +150,7 @@ int main(int argc, void** argv)
       // Set the line search method
       lineSearchParameters.setParameter("Method","More'-Thuente");
 
-       // Create the line printing parameters sublist
+      // Create the line printing parameters sublist
       NOX::Parameter::List& printingParameters = solverParameters.sublist("Printing");
 
       // Set the line search method
@@ -147,17 +169,38 @@ int main(int argc, void** argv)
       // Get the answer
       grp = solver.getSolutionGroup();
 
-      // Print the answer
-      cout << "\n" << "-- Final Solution From Solver --" << "\n";
-      grp.print();
+     
 
+    
+
+
+      /* Check against exact solution */
+      double R0 = 10.0;
+      double z = R0/epsilon;
+      double pi = 4.0*atan(1.0);
+      double I0 = besi0_(&z);
+      Expr r = sqrt(x*x + y*y);
+      Expr exactSoln = epsilon * (log(I0) - log(BesselI0(r/epsilon)));
+      Expr exactDisc = L2Projector(discSpace, exactSoln).project();
+
+      
       /* this code writes the result to a file so we can visualize using paraview */
       /* Write the field in VTK format */
-        FieldWriter w = new VTKWriter("Eikonal2D");
-	w.addMesh(mesh);
-	w.addField("soln", new ExprFieldWrapper(u0[0]));
-	w.write();
+      FieldWriter w = new VTKWriter("Eikonal2D");
+      w.addMesh(mesh);
+      w.addField("numerical soln", new ExprFieldWrapper(u0[0]));
+      w.addField("exact soln", new ExprFieldWrapper(exactDisc));
+      w.write();
 
+      Expr errExpr = Integral(interior, 
+                              pow(u0[0]-exactSoln, 2.0),
+                              new GaussianQuadrature(4) );
+      double errorSq = evaluateIntegral(mesh, errExpr)/pi/R0/R0;
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      double tol = 1.0e-6;
+      Sundance::passFailTest(errorSq, tol);
+      
     }
 	catch(exception& e)
 		{

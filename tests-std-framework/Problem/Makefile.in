@@ -118,7 +118,7 @@ am_Coupled1D_OBJECTS = Coupled1D-Coupled1D.$(OBJEXT)
 Coupled1D_OBJECTS = $(am_Coupled1D_OBJECTS)
 am_Coupled2D_OBJECTS = Coupled2D-Coupled2D.$(OBJEXT)
 Coupled2D_OBJECTS = $(am_Coupled2D_OBJECTS)
-am_Eikonal2D_OBJECTS = Eikonal2D-Eikonal2D.$(OBJEXT)
+am_Eikonal2D_OBJECTS = Eikonal2D-Eikonal2D.$(OBJEXT) bessi0.$(OBJEXT)
 Eikonal2D_OBJECTS = $(am_Eikonal2D_OBJECTS)
 am_Helmholtz1D_OBJECTS = Helmholtz1D-Helmholtz1D.$(OBJEXT)
 Helmholtz1D_OBJECTS = $(am_Helmholtz1D_OBJECTS)
@@ -185,6 +185,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+F77COMPILE = $(F77) $(AM_FFLAGS) $(FFLAGS)
+F77LD = $(F77)
+F77LINK = $(F77LD) $(AM_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
+	$@
 SOURCES = $(BesselTest2D_SOURCES) $(ConstancyBug_SOURCES) \
 	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(Helmholtz1D_SOURCES) $(Kepler_SOURCES) \
@@ -446,7 +450,7 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 PoissonOnDisk_CXXFLAGS = $(STD_FWK_INCLUDES)
 PoissonOnDisk_LDADD = $(STD_FWK_LIBS) 
-Eikonal2D_SOURCES = $(srcdir)/Eikonal2D.cpp
+Eikonal2D_SOURCES = $(srcdir)/Eikonal2D.cpp $(srcdir)/bessi0.f
 Eikonal2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
@@ -500,7 +504,7 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 ConstancyBug_CXXFLAGS = $(STD_FWK_INCLUDES)
 ConstancyBug_LDADD = $(STD_FWK_LIBS) 
-BesselTest2D_SOURCES = $(srcdir)/BesselTest2D.cpp
+BesselTest2D_SOURCES = $(srcdir)/BesselTest2D.cpp 
 BesselTest2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
@@ -602,7 +606,7 @@ LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .cpp .f .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/Makefile.common $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -1078,6 +1082,18 @@ VorticityStokes2D-VorticityStokes2D.obj: $(srcdir)/VorticityStokes2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/VorticityStokes2D-VorticityStokes2D.Po' tmpdepfile='$(DEPDIR)/VorticityStokes2D-VorticityStokes2D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VorticityStokes2D_CXXFLAGS) $(CXXFLAGS) -c -o VorticityStokes2D-VorticityStokes2D.obj `if test -f '$(srcdir)/VorticityStokes2D.cpp'; then $(CYGPATH_W) '$(srcdir)/VorticityStokes2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VorticityStokes2D.cpp'; fi`
+
+.f.o:
+	$(F77COMPILE) -c -o $@ $<
+
+.f.obj:
+	$(F77COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+bessi0.o: $(srcdir)/bessi0.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o bessi0.o `test -f '$(srcdir)/bessi0.f' || echo '$(srcdir)/'`$(srcdir)/bessi0.f
+
+bessi0.obj: $(srcdir)/bessi0.f
+	$(F77) $(AM_FFLAGS) $(FFLAGS) -c -o bessi0.obj `if test -f '$(srcdir)/bessi0.f'; then $(CYGPATH_W) '$(srcdir)/bessi0.f'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/bessi0.f'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

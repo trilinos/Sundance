@@ -219,7 +219,16 @@ PoissonOnDisk_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 PoissonOnDisk_LDADD = $(STD_FWK_LIBS) 
 
-Eikonal2D_SOURCES = $(srcdir)/Eikonal2D.cpp
+
+
+
+
+
+
+
+
+
+Eikonal2D_SOURCES = $(srcdir)/Eikonal2D.cpp $(srcdir)/bessi0.f
 
 Eikonal2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -230,6 +239,14 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 Eikonal2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 Eikonal2D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+
+
+
 
 TCATA1D_SOURCES = $(srcdir)/TCATA1D.cpp
 
@@ -242,6 +259,14 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 TCATA1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 TCATA1D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+
+
+
 
 
 VorticityStokes2D_SOURCES = $(srcdir)/VorticityStokes2D.cpp
@@ -258,6 +283,14 @@ VorticityStokes2D_LDADD = $(STD_FWK_LIBS)
 
 
 
+
+
+
+
+
+
+
+
 Helmholtz1D_SOURCES = $(srcdir)/Helmholtz1D.cpp
 
 Helmholtz1D_DEPENDENCIES = \
@@ -269,6 +302,12 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 Helmholtz1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 Helmholtz1D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+
 
 
 
@@ -302,7 +341,7 @@ ConstancyBug_LDADD = $(STD_FWK_LIBS)
 
 
 
-BesselTest2D_SOURCES = $(srcdir)/BesselTest2D.cpp
+BesselTest2D_SOURCES = $(srcdir)/BesselTest2D.cpp 
 
 BesselTest2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
