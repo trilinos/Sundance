@@ -26,7 +26,7 @@ int main(int argc, void** argv)
       MPISession::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
-      DOFMapBase::classVerbosity() = VerbExtreme;
+      //  DOFMapBase::classVerbosity() = VerbExtreme;
 
       const double density = 1000.0; // kg/m^3
       const double porosity = 0.442; // dimensionless %
@@ -89,9 +89,12 @@ int main(int argc, void** argv)
       Expr rightbc = EssentialBC(rightPoint, v*(q-charvel), quad);
 
       /* Create a discrete space, and discretize the function 1.0 on it */
-      DiscreteSpace discSpace(mesh, new Lagrange(2), vecType);
-      Expr p0 = new DiscreteFunction(discSpace, 1.0, "p0");
-      Expr q0 = new DiscreteFunction(discSpace, 1.0, "q0");
+      BasisFamily L2 = new Lagrange(2);
+      Array<BasisFamily> basis = tuple(L2, L2);
+      DiscreteSpace discSpace(mesh, basis, vecType);
+      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
+      Expr p0 = u0[0];
+      Expr q0 = u0[1];
      
  
 /* Create a TSF NonlinearOperator object */
@@ -99,7 +102,7 @@ int main(int argc, void** argv)
       cerr.flush();
 
       NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, MassEqn+MomEqn, leftbc+rightbc, SundanceCore::List(u,v),SundanceCore::List(p,q) , SundanceCore::List(p0,q0), vecType);
+        = new NonlinearProblem(mesh, MassEqn+MomEqn, leftbc+rightbc, SundanceCore::List(u,v),SundanceCore::List(p,q) , u0, vecType);
     
       //      F.verbosity() = VerbExtreme;
       /* Get the initial guess */

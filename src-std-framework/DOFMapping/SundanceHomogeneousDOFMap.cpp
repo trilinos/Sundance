@@ -570,18 +570,14 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
        * the cell's interior */
       //      const int* tmpPtr1 = &(localNodePtrs_[cellDim][cellDim][0][0]);
       //      const int* tmpPtr2 = &(dofs_[cellDim][cellLID[c]][0]);
+
       for (int n=0; n<nInteriorNodes; n++)
         {
           int ptr = localNodePtrs_[cellDim][cellDim][0][n];
           for (int i=0; i<funcID.size(); i++)
             {
-              // cerr << "c=" << c << endl;
-//               cerr << "nNodes=" << nNodes << endl;
-//               cerr << "nf=" << nf << endl;
-//               cerr << "ptr=" << ptr << endl;
-//               cerr << "funcID=" << funcID[i] << endl;
 //              dofs[(c*funcID.size() + funcID[i])*nNodes + ptr] 
-              dofs[(funcID[i]*nCells+c)*nNodes + ptr] 
+               dofs[(i*nCells+c)*nNodes + ptr] 
                 = dofs_[cellDim][cellLID[c]][funcID[i] + nf*n];
             }
           //          dofs[c*nNodes + ptr] = tmpPtr2[funcID + nf*n];
@@ -610,7 +606,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
                     {
                       SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
                                    << dofs_[d][facetID][funcID[i] + nf*n]);
-                      dofs[(c + funcID[i]*nCells)*nNodes + ptr] 
+                      dofs[(c + i*nCells)*nNodes + ptr] 
                         = dofs_[d][facetID][funcID[i] + nf*n];
                     }
                 }
