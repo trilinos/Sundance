@@ -335,15 +335,20 @@ void QuadratureIntegral
 
   for (int c=0; c<J.numCells(); c++, offset+=nNodes())
     {
-      double* gCell = G()[dim()*dim()*c];
-
-      for (int i=0; i<sumWorkspace().size(); i++) sumWorkspace()[i]=0.0;
+      const double* gCell = G()[transCols*c];
 
       for (int q=0; q<quadPts_.size(); q++, coeffPtr++)
         {
           double f = (*coeffPtr);
-          
-          
+          const double* wCellQuad = W_[
+          for (int i=0; i<transRows; i++)
+            {
+              double* elem = aPtr + nNodes()*c;
+              for (int j=0; j<transCols; j++)
+                {
+                  *elem += wCellQuad[nTransRows*j + i] * gCell[j];
+                }
+            }
           for (int n=0; n<tmpSize; n++) 
             {
               sumWorkspace()[n] += f*W_[n + q*tmpSize];
