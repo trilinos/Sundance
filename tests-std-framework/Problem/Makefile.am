@@ -4,7 +4,7 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Stokes2D
+noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Stokes2D Coupled1D
 
 
 
@@ -72,6 +72,21 @@ Stokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Stokes2D_LDADD = $(STD_FWK_LIBS) 
 
 
+
+
+
+
+Coupled1D_SOURCES = $(srcdir)/Coupled1D.cpp
+
+Coupled1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+Coupled1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+Coupled1D_LDADD = $(STD_FWK_LIBS) 
 
 
 

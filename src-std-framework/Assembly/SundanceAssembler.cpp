@@ -652,6 +652,7 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
   TimeMonitor timer(graphBuildTimer());
   Tabs tab;
 
+  
 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
@@ -762,6 +763,7 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
               workSet->append(*iter);
             }
 
+          int nCells = workSet->size();
 
           rowMap_->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
                                        nTestNodes);
@@ -788,21 +790,17 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
                         {
                           Tabs tab2;
                           int u = unksForTests[t][uit];
-                          const int* rowPtr 
-                            = &((*testLocalDOFs)[testOffset]);
                           for (int n=0; n<nTestNodes; n++)
                             {
-                              int row = rowPtr[t*nTestNodes+n];
-                              // if (!rowMap()->isLocalDOF(row) 
-//                                   || isBCRow(row)) continue;
+                              int row
+                                = (*testLocalDOFs)[nTestNodes*(c+nCells*t)+n];
                               if (row < lowestRow_ || row >= highestRow
                                   || (*isBCRow_)[row]) continue;
                               ColSetType& colSet = graph[row-lowestRow_];
-                              const int* colPtr 
-                                = &((*unkLocalDOFs)[unkOffset]);
                               for (int m=0; m<nUnkNodes; m++)
                                 {
-                                  int col = colPtr[u*nUnkNodes+m];
+                                  int col 
+                                    = (*unkLocalDOFs)[nUnkNodes*(c+nCells*u)+m];
                                   colSet.insert(col);
                                 }
                             }
@@ -824,15 +822,15 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
                           int u = bcUnksForTests[t][uit];
                           for (int n=0; n<nTestNodes; n++)
                             {
-                              int row = (*testLocalDOFs)[testOffset + t*nTestNodes + n];
-                              // if (!rowMap()->isLocalDOF(row) 
-//                                   || !isBCRow(row)) continue;
+                              int row
+                                = (*testLocalDOFs)[nTestNodes*(c+nCells*t)+n];
                               if (row < lowestRow_ || row >= highestRow
                                   || !(*isBCRow_)[row]) continue;
                               ColSetType& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
-                                  int col = (*unkLocalDOFs)[unkOffset + u*nUnkNodes + m];
+                                  int col 
+                                    = (*unkLocalDOFs)[nUnkNodes*(c+nCells*u)+m];
                                   colSet.insert(col);
                                   
                                 }

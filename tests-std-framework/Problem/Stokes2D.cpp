@@ -23,8 +23,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 40;
-      int ny = 40;
+      int nx = 7;
+      int ny = 7;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, nx*np, np,
                                                          -1.0, 1.0, ny, 1,
@@ -75,92 +75,31 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      double beta = 0.2;
+      double beta = 0.025;
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           + (grad*vy)*(grad*uy) - p*(dx*vx+dy*vy)
-                          + h*h*beta*(grad*q)*(grad*p) - q*(dx*ux+dy*uy),
-                          quad2);
+                          + (h*h*beta)*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
+                          quad2)
+        + Integral(left, (-x)*vx, quad2);
         
       /* Define the Dirichlet BC */
       Expr uInflow = 0.5*(1.0-y*y);
-      Expr bc = EssentialBC(left, vx*ux + vy*uy , quad4)
-        + EssentialBC(top, vx*(ux-y) + vy*uy, quad2)
-        + EssentialBC(right, vx*ux + vy*uy, quad2)
+      Expr bc = /* EssentialBC(left, vx*(ux-uInflow) + vy*uy , quad4)
+                   + */ EssentialBC(top, vx*ux + vy*uy, quad2)
+        //        + EssentialBC(right, vx*ux + vy*uy, quad2)
         + EssentialBC(bottom, vx*ux + vy*uy, quad2);
 
 
-    //   Expr poissonEqn = Integral(interior, (grad*vx)*(grad*ux), quad2);
-//       Expr poissonBC = EssentialBC(left, vx*(ux-uInflow), quad2)
-//         + EssentialBC(top, vx*ux, quad2)
-//         + EssentialBC(bottom, vx*ux, quad2);
-
-      
-//       Expr ppEqn = Integral(interior, h*h*beta*(grad*vx)*(grad*ux), quad2);
-//       Expr ppBC;
-
-//       Expr xConstraint = Integral(interior, vx*dx*ux, quad2);
-//       Expr xConstraintBC;
-//       Expr yConstraint = Integral(interior, vx*dy*ux, quad2);
-//       Expr yConstraintBC;
-
-//       Expr xP = Integral(interior, ux*dx*vx, quad2);
-//       Expr xPBC;
-//       Expr yP = Integral(interior, ux*dy*vx, quad2);
-//       Expr yPBC;
-
-//       LinearProblem poissonProb(mesh, poissonEqn, poissonBC, vx, ux, vecType);
-//       LinearProblem ppProb(mesh, ppEqn, ppBC, vx, ux, vecType);
-//       LinearProblem xProb(mesh, xConstraint, xConstraintBC, vx, ux, vecType);
-//       LinearProblem yProb(mesh, yConstraint, yConstraintBC, vx, ux, vecType);
-//       LinearProblem xpProb(mesh, xP, xPBC, vx, ux, vecType);
-//       LinearProblem ypProb(mesh, yP, yPBC, vx, ux, vecType);
+   
 
       Assembler::workSetSize() = 100;
       FunctionalEvaluator::workSetSize() = 100;
       //      Assembler::classVerbosity() = VerbExtreme;
 
- //      cerr << "--------------- Poisson operator " << endl;
-//       LinearOperator<double> A_poisson = poissonProb.getOperator();
-//       A_poisson.print(cerr);
-//       cerr << "--------------- Poisson vector " << endl;
-//       Vector<double> b_poisson = poissonProb.getRHS();
-//       cerr << b_poisson << endl;
-
-      
-
-//       cerr << "---------------- pressure Poisson operator " << endl;
-//       LinearOperator<double> A_pp = ppProb.getOperator();
-//       A_pp.print(cerr);
-
-//       cerr << "--------------- x constraint operator " << endl;
-//       LinearOperator<double> A_x = xProb.getOperator();
-//       A_x.print(cerr);
-
-
-//       cerr << "--------------- y constraint operator " << endl;
-//       LinearOperator<double> A_y = yProb.getOperator();
-//       A_y.print(cerr);
-
-//       cerr << "--------------- x pressure force operator " << endl;
-//       LinearOperator<double> A_px = xpProb.getOperator();
-//       A_px.print(cerr);
-
-
-//       cerr << "--------------- y pressure force operator " << endl;
-//       LinearOperator<double> A_py = ypProb.getOperator();
-//       A_py.print(cerr);
-
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
                          List(ux, uy, p), vecType);
 
-  //     cerr << "------------------ stokes operator " << endl;
-//       LinearOperator<double> A_stokes = prob.getOperator();
-//       A_stokes.print(cerr);
-      
-//       cerr << "--------------- Stokes vector " << endl;
-//       Vector<double> b_stokes = prob.getRHS();
-//       cerr << b_stokes << endl;
 
 
       /* Create an Aztec solver */
@@ -170,7 +109,7 @@ int main(int argc, void** argv)
       azOptions[AZ_solver] = AZ_gmres;
       azOptions[AZ_precond] = AZ_dom_decomp;
       azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 2;
+      azOptions[AZ_graph_fill] = 1;
       azParams[AZ_max_iter] = 1000;
       azParams[AZ_tol] = 1.0e-10;
 
@@ -186,6 +125,15 @@ int main(int argc, void** argv)
       w.addField("p", new ExprFieldWrapper(soln[2]));
       w.write();
 
+      Expr uxErr = soln[0] - uInflow;
+      Expr errExpr = Integral(interior, 
+                              uxErr*uxErr,
+                              new GaussianQuadrature(4));
+
+      FunctionalEvaluator errInt(mesh, errExpr);
+
+      double errorSq = errInt.evaluate();
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
     }
 	catch(exception& e)
 		{
