@@ -53,6 +53,9 @@ namespace SundanceStdFwk
     void setVector(const Vector<double>& vec);
 
     /** */
+    const Vector<double>& getVector() const {return vector_;}
+
+    /** */
     const DiscreteSpace& discreteSpace() const {return space_;}
 
     /** */
