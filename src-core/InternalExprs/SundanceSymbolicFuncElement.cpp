@@ -67,7 +67,9 @@ void SymbolicFuncElement::findNonzeros(const EvalContext& context,
   RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
   bool isTest = (0 != dynamic_cast<const TestFuncElement*>(this));
-  bool evalPtIsZero = (0 == dynamic_cast<const ZeroExpr*>(evalPt()));
+  bool evalPtIsZero = (0 != dynamic_cast<const ZeroExpr*>(evalPt()));
+  
+  SUNDANCE_VERB_MEDIUM(tabs << "eval point is zero = " << evalPtIsZero);
 
   /* Evaluate the function itself, i.e., the zeroth deriv of the function.
    * If this is a test function, or if we are doing a linear problem,
@@ -79,7 +81,7 @@ void SymbolicFuncElement::findNonzeros(const EvalContext& context,
   
   /* If this function is one of the active variables, then
    * add the deriv wrt this func to the sparsity pattern */
-  if (isInActiveSet(activeFuncIDs) && !evalPtIsZero)
+  if (isInActiveSet(activeFuncIDs))
     {
       subset->addDeriv(new FunctionalDeriv(this, MultiIndex()),
                        ConstantDeriv);

@@ -226,6 +226,10 @@ namespace SundanceCore
                                 const Set<int>& allFuncIDs,
                            bool regardFuncsAsConstant) const ;
 
+
+      /** */
+      bool derivIsActive(const MultipleDeriv& deriv,
+                         const Set<MultiSet<int> >& activeFuncIDs) const ;
       
 
     private:

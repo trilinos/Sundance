@@ -312,7 +312,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                << endl << tab << ", solving for unknown functions " << unks
                << endl << tab << "the eval point for the unks is" 
                << unkEvalPts
-               << endl << tab << " and the eval point for the variations is" 
+               << endl << tab << " and the eval point for the variations is " 
                << varEvalPts);
 
   TEST_FOR_EXCEPTION(e==0, InternalError,
