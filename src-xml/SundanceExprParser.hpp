@@ -51,6 +51,14 @@ namespace SundanceXML
                           const Teuchos::XMLObject& arg,
                           Teuchos::XMLObject& result);
 
+    static void parseList(const string& funcName,
+                          const Teuchos::XMLObject& arg,
+                          Teuchos::XMLObject& result);
+
+    static void parseCellFilter(const string& funcName,
+                                const Teuchos::XMLObject& arg,
+                                Teuchos::XMLObject& result);
+
     static void parseDiscreteSpace(const string& funcName,
                                    const Teuchos::XMLObject& arg,
                                    Teuchos::XMLObject& result); 
@@ -70,6 +78,10 @@ namespace SundanceXML
     static SundanceUtils::Set<string>& quadTypes() ;
 
     static SundanceUtils::Set<string>& meshTypes() ;
+
+    static SundanceUtils::Set<string>& cellFilterTypes() ;
+
+    static bool isExprType(const string& tag);
   private:
 
   };

@@ -23,6 +23,12 @@ XMLObject ExprParser::evaluate(const string& line)
 	return result;
 }
 
+bool ExprParser::isExprType(const string& tag)
+{
+  return (tag=="Function" || tag=="Sum" || tag=="Product" || tag=="UnaryMinus"
+          || tag=="Reciprocal" || tag=="Var" || tag=="Constant");
+}
+
 void ExprParser::assignLevel(const ExprScanner& scanner, XMLObject& result)
 {
 	string tmp;
@@ -35,10 +41,20 @@ void ExprParser::assignLevel(const ExprScanner& scanner, XMLObject& result)
       //      result = XMLObject("Assign");
       //      result.addAttribute("target", tmp);
       token = scanner.pop();
-      XMLObject lhs;
-      addLevel(scanner, lhs);
-      lhs.addAttribute("name", tmp);
-      result = lhs;
+      XMLObject rhs;
+      addLevel(scanner, rhs);
+      const string& tag = rhs.getTag();
+      if (isExprType(tag))
+        {
+          result = XMLObject("Expr");
+          result.addAttribute("name", tmp);
+          result.addChild(rhs);
+        }
+      else
+        {
+          rhs.addAttribute("name", tmp);
+          result = rhs;
+        }
     }
   else
     {
@@ -178,7 +194,6 @@ void ExprParser::unaryLevel(const ExprScanner& scanner,
   else if (isFunction) 
     {
       parseFunction(start.name(), tmp, result);
-      
     }
   else if (isIndexed) 
     {
@@ -218,22 +233,25 @@ void ExprParser::parenLevel(const ExprScanner& scanner,
     {
       token = scanner.pop();
       result = XMLObject("ArgumentList");
-      TEST_FOR_EXCEPTION(token.isCloseParen(), RuntimeError,
-                         "empty paren: " << scanner.showError());
-      do
+      if (!scanner.peek().isCloseParen())
         {
-          if (token.isComma()) 
+          do
             {
-              token = scanner.pop();
-            }
-          addLevel(scanner, tmp);
-          token = scanner.peek();
-          result.addChild(tmp);
-        } 
-      while (token.isComma());
-      // expect end paren. 
-      TEST_FOR_EXCEPTION(!token.isCloseParen(), RuntimeError,
-                         "close paren not found: " <<  scanner.showError());
+              if (token.isComma()) 
+                {
+                  token = scanner.pop();
+                }
+              addLevel(scanner, tmp);
+              token = scanner.peek();
+              result.addChild(tmp);
+            } 
+          while (token.isComma());
+          // expect end paren. 
+          TEST_FOR_EXCEPTION(!token.isCloseParen(), RuntimeError,
+                             "close paren not found: " <<  scanner.showError());
+
+        }
+
       token = scanner.pop();
       if (result.numChildren()==1) 
         {
@@ -334,6 +352,10 @@ void ExprParser::parseFunction(const string& funcName,
     {
       parseQuad(funcName, arg, result);
     }
+  else if (cellFilterTypes().contains(funcName))
+    {
+      parseCellFilter(funcName, arg, result);
+    }
   else if (funcName=="DiscreteSpace")
     {
       parseDiscreteSpace(funcName, arg, result);
@@ -345,6 +367,10 @@ void ExprParser::parseFunction(const string& funcName,
   else if (funcName=="NonlinearProblem")
     {
       parseNonlinearProblem(funcName, arg, result);
+    }
+  else if (funcName=="List")
+    {
+      parseList(funcName, arg, result);
     }
   else
     {
@@ -392,29 +418,41 @@ void ExprParser::parseMesh(const string& type,
                            const Teuchos::XMLObject& arg,
                            Teuchos::XMLObject& result)
 {
-  result = XMLObject("Mesh");
-  XMLObject sub(type);
-  result.addChild(sub);
+  result = XMLObject(type);
   if (type=="Exodus" || type=="Triangle")
     {
-      sub.addAttribute("filename", arg.getRequired("value"));
+      result.addAttribute("filename", arg.getRequired("value"));
     }
   else if (type=="Line")
     {
-      sub.addAttribute("ax", arg.getChild(0).getRequired("value"));
-      sub.addAttribute("bx", arg.getChild(1).getRequired("value"));
-      sub.addAttribute("nx", arg.getChild(2).getRequired("value"));
+      result.addAttribute("ax", arg.getChild(0).getRequired("value"));
+      result.addAttribute("bx", arg.getChild(1).getRequired("value"));
+      result.addAttribute("nx", arg.getChild(2).getRequired("value"));
     }
   else if (type=="Rectangle")
     {
-      sub.addAttribute("ax", arg.getChild(0).getRequired("value"));
-      sub.addAttribute("bx", arg.getChild(1).getRequired("value"));
-      sub.addAttribute("nx", arg.getChild(2).getRequired("value"));
-      sub.addAttribute("ay", arg.getChild(3).getRequired("value"));
-      sub.addAttribute("by", arg.getChild(4).getRequired("value"));
-      sub.addAttribute("ny", arg.getChild(5).getRequired("value"));
+      result.addAttribute("ax", arg.getChild(0).getRequired("value"));
+      result.addAttribute("bx", arg.getChild(1).getRequired("value"));
+      result.addAttribute("nx", arg.getChild(2).getRequired("value"));
+      result.addAttribute("ay", arg.getChild(3).getRequired("value"));
+      result.addAttribute("by", arg.getChild(4).getRequired("value"));
+      result.addAttribute("ny", arg.getChild(5).getRequired("value"));
     }
 }
+
+void ExprParser::parseCellFilter(const string& type,
+                                 const Teuchos::XMLObject& arg,
+                                 Teuchos::XMLObject& result)
+{
+  result = XMLObject(type);
+  cerr << "arg = " << arg << endl;
+  if (type=="LabeledCellFilter")
+    {
+      result.addAttribute("super", arg.getChild(0).getRequired("name"));
+      result.addAttribute("label", arg.getChild(1).getRequired("value"));
+    }
+}
+
 
 void ExprParser::parseExpr(const string& type,
                            const Teuchos::XMLObject& arg,
@@ -425,9 +463,35 @@ void ExprParser::parseExpr(const string& type,
     {
       result.addChild(arg);
     }
-  if (type=="CoordExpr")
+  else if (type=="CoordExpr")
     {
       result.addAttribute("direction", arg.getRequired("value"));
+    }
+  else if (type=="Derivative")
+    {
+      result.addAttribute("direction", arg.getRequired("value"));
+    }
+  else if (type=="DiscreteFunction")
+    {
+      result.addAttribute("space", arg.getRequired("value"));
+    }
+  else if (type=="Integral")
+    {
+      result.addAttribute("region", arg.getChild(0).getRequired("name"));
+      result.addChild(arg.getChild(1));
+      if (arg.numChildren() == 3)
+        {
+          result.addAttribute("quad", arg.getChild(2).getRequired("name"));
+        }
+    }
+  else if (type=="EssentialBC")
+    {
+      result.addAttribute("region", arg.getChild(0).getRequired("name"));
+      result.addChild(arg.getChild(1));
+      if (arg.numChildren() == 3)
+        {
+          result.addAttribute("quad", arg.getChild(2).getRequired("name"));
+        }
     }
 }
 
@@ -437,6 +501,24 @@ void ExprParser::parseDiscreteSpace(const string& type,
                                     Teuchos::XMLObject& result)
 {
   result = XMLObject("DiscreteSpace");
+  if (arg.getTag() != "ArgumentList")
+    {
+      result.addChild(arg);
+    }
+  else
+    {
+      for (int i=0; i<arg.numChildren(); i++)
+        {
+          result.addChild(arg.getChild(i));
+        }
+    }
+}
+
+void ExprParser::parseList(const string& type,
+                           const Teuchos::XMLObject& arg,
+                           Teuchos::XMLObject& result)
+{
+  result = XMLObject("List");
   if (arg.getTag() != "ArgumentList")
     {
       result.addChild(arg);
@@ -517,8 +599,18 @@ SundanceUtils::Set<string>& ExprParser::exprTypes()
   rtn.put("UnknownFunction");
   rtn.put("TestFunction");
   rtn.put("Integral");
+  rtn.put("EssentialBC");
   rtn.put("CoordExpr");
   rtn.put("Derivative");
+  return rtn;
+}
+
+SundanceUtils::Set<string>& ExprParser::cellFilterTypes()
+{
+  static SundanceUtils::Set<string> rtn;
+  rtn.put("BoundaryCellFilter");
+  rtn.put("MaximalCellFilter");
+  rtn.put("LabeledCellFilter");
   return rtn;
 }
 

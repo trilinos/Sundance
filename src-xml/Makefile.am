@@ -23,6 +23,7 @@ noinst_PROGRAMS = Sundance
 XML_SOURCES = \
 $(top_srcdir)/src-xml/SundanceExprParser.cpp \
 $(top_srcdir)/src-xml/SundanceExprScanner.cpp \
+$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp \
 $(top_srcdir)/src-xml/SundanceToken.cpp 
 
 EXEEXT = .exe
