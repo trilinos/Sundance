@@ -158,6 +158,10 @@ using namespace SundanceUtils;
     int label(int cellDim, int cellLID) const 
     {return ptr()->label(cellDim, cellLID);}
 
+    /** Set the label for the given cell */
+    void setLabel(int cellDim, int cellLID, int label)
+    {ptr()->setLabel(cellDim, cellLID, label);}
+
     /** Get the MPI communicator over which the mesh is distributed */
     const MPIComm& comm() const {return ptr()->comm();}
 

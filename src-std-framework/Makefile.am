@@ -67,6 +67,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
 
@@ -81,6 +82,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp
 
 SUNDANCE_DOFMAPPING_H = \

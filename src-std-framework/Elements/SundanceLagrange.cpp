@@ -148,6 +148,12 @@ void Lagrange::refEval(const CellType& cellType,
           evalOnTriangle(pts[i], deriv, result[i]);
         }
       return;
+    case TetCell:
+      for (int i=0; i<pts.length(); i++)
+        {
+          evalOnTet(pts[i], deriv, result[i]);
+        }
+      return;
     default:
       SUNDANCE_ERROR("Lagrange::refEval() unimplemented for cell type ");
 
@@ -247,3 +253,54 @@ void Lagrange::evalOnTriangle(const Point& pt,
 		}
 }
 
+
+void Lagrange::evalOnTet(const Point& pt, 
+												 const MultiIndex& deriv,
+												 Array<double>& result) const
+{
+	ADReal x = ADReal(pt[0], 0, 3);
+	ADReal y = ADReal(pt[1], 1, 3);
+	ADReal z = ADReal(pt[2], 2, 3);
+	ADReal one(1.0, 3);
+
+
+	Array<ADReal> tmp(result.length());
+
+	switch(order_)
+		{
+		case 0:
+			tmp[0] = one;
+			break;
+		case 1:
+      result.resize(4);
+      tmp.resize(4);
+			tmp[0] = 1.0 - x - y - z;
+			tmp[1] = x;
+			tmp[2] = y;
+			tmp[3] = z;
+			break;
+		case 2:
+      result.resize(10);
+      tmp.resize(10);
+			tmp[0] = (1.0-x-y-z)*(1.0-2.0*x-2.0*y-2.0*z);
+			tmp[1] = 2.0*x*(x-0.5);
+			tmp[2] = 2.0*y*(y-0.5);
+			tmp[3] = 2.0*z*(z-0.5); 
+			tmp[4] = 4.0*x*(1.0-x-y-z);
+			tmp[5] = 4.0*x*y;
+			tmp[6] = 4.0*y*(1.0-x-y-z);
+			tmp[7] = 4.0*z*(1.0-x-y-z);
+			tmp[8] = 4.0*x*z;
+			tmp[9] = 4.0*y*z;
+			break;
+		default:
+			SUNDANCE_ERROR("Lagrange::evalOnTet poly order > 2");
+		}
+
+	for (int i=0; i<tmp.length(); i++)
+		{
+			if (deriv.order()==0) result[i] = tmp[i].value();
+			else 
+				result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+		}
+}

@@ -156,6 +156,9 @@ using namespace SundanceUtils;
       /** Get the label of the given cell */
       virtual int label(int cellDim, int cellLID) const = 0 ;
 
+      /** Set the label for the given cell */
+      virtual void setLabel(int cellDim, int cellLID, int label) = 0 ;
+
       /** Work out global numberings for the cells of dimension cellDim */
       virtual void assignIntermediateCellOwners(int cellDim) = 0 ;
 

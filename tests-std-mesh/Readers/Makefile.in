@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(ExodusNetCDFTest2D_SOURCES)
+SOURCES = $(ExodusNetCDFTest2D_SOURCES) $(ExodusNetCDFTest3D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -80,7 +80,8 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-noinst_PROGRAMS = ExodusNetCDFTest2D$(EXEEXT)
+noinst_PROGRAMS = ExodusNetCDFTest2D$(EXEEXT) \
+	ExodusNetCDFTest3D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-std-mesh/Readers
@@ -120,17 +121,22 @@ am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+am_ExodusNetCDFTest3D_OBJECTS =  \
+	ExodusNetCDFTest3D-ExodusNetCDFTest3D.$(OBJEXT)
+ExodusNetCDFTest3D_OBJECTS = $(am_ExodusNetCDFTest3D_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ExodusNetCDFTest2D-ExodusNetCDFTest2D.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ExodusNetCDFTest2D-ExodusNetCDFTest2D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(ExodusNetCDFTest2D_SOURCES)
-DIST_SOURCES = $(ExodusNetCDFTest2D_SOURCES)
+SOURCES = $(ExodusNetCDFTest2D_SOURCES) $(ExodusNetCDFTest3D_SOURCES)
+DIST_SOURCES = $(ExodusNetCDFTest2D_SOURCES) \
+	$(ExodusNetCDFTest3D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -263,6 +269,12 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 ExodusNetCDFTest2D_CXXFLAGS = $(STD_MESH_INCLUDES)
 ExodusNetCDFTest2D_LDADD = $(STD_MESH_LIBS) 
+ExodusNetCDFTest3D_SOURCES = $(srcdir)/ExodusNetCDFTest3D.cpp
+ExodusNetCDFTest3D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+ExodusNetCDFTest3D_CXXFLAGS = $(STD_MESH_INCLUDES)
+ExodusNetCDFTest3D_LDADD = $(STD_MESH_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -397,6 +409,9 @@ clean-noinstPROGRAMS:
 ExodusNetCDFTest2D$(EXEEXT): $(ExodusNetCDFTest2D_OBJECTS) $(ExodusNetCDFTest2D_DEPENDENCIES) 
 	@rm -f ExodusNetCDFTest2D$(EXEEXT)
 	$(CXXLINK) $(ExodusNetCDFTest2D_LDFLAGS) $(ExodusNetCDFTest2D_OBJECTS) $(ExodusNetCDFTest2D_LDADD) $(LIBS)
+ExodusNetCDFTest3D$(EXEEXT): $(ExodusNetCDFTest3D_OBJECTS) $(ExodusNetCDFTest3D_DEPENDENCIES) 
+	@rm -f ExodusNetCDFTest3D$(EXEEXT)
+	$(CXXLINK) $(ExodusNetCDFTest3D_LDFLAGS) $(ExodusNetCDFTest3D_OBJECTS) $(ExodusNetCDFTest3D_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -405,6 +420,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExodusNetCDFTest2D-ExodusNetCDFTest2D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -437,6 +453,22 @@ ExodusNetCDFTest2D-ExodusNetCDFTest2D.obj: $(srcdir)/ExodusNetCDFTest2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ExodusNetCDFTest2D-ExodusNetCDFTest2D.Po' tmpdepfile='$(DEPDIR)/ExodusNetCDFTest2D-ExodusNetCDFTest2D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ExodusNetCDFTest2D_CXXFLAGS) $(CXXFLAGS) -c -o ExodusNetCDFTest2D-ExodusNetCDFTest2D.obj `if test -f '$(srcdir)/ExodusNetCDFTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/ExodusNetCDFTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ExodusNetCDFTest2D.cpp'; fi`
+
+ExodusNetCDFTest3D-ExodusNetCDFTest3D.o: $(srcdir)/ExodusNetCDFTest3D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ExodusNetCDFTest3D_CXXFLAGS) $(CXXFLAGS) -MT ExodusNetCDFTest3D-ExodusNetCDFTest3D.o -MD -MP -MF "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Tpo" -c -o ExodusNetCDFTest3D-ExodusNetCDFTest3D.o `test -f '$(srcdir)/ExodusNetCDFTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/ExodusNetCDFTest3D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Tpo" "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Po"; else rm -f "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ExodusNetCDFTest3D.cpp' object='ExodusNetCDFTest3D-ExodusNetCDFTest3D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Po' tmpdepfile='$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ExodusNetCDFTest3D_CXXFLAGS) $(CXXFLAGS) -c -o ExodusNetCDFTest3D-ExodusNetCDFTest3D.o `test -f '$(srcdir)/ExodusNetCDFTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/ExodusNetCDFTest3D.cpp
+
+ExodusNetCDFTest3D-ExodusNetCDFTest3D.obj: $(srcdir)/ExodusNetCDFTest3D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ExodusNetCDFTest3D_CXXFLAGS) $(CXXFLAGS) -MT ExodusNetCDFTest3D-ExodusNetCDFTest3D.obj -MD -MP -MF "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Tpo" -c -o ExodusNetCDFTest3D-ExodusNetCDFTest3D.obj `if test -f '$(srcdir)/ExodusNetCDFTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/ExodusNetCDFTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ExodusNetCDFTest3D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Tpo" "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Po"; else rm -f "$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ExodusNetCDFTest3D.cpp' object='ExodusNetCDFTest3D-ExodusNetCDFTest3D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.Po' tmpdepfile='$(DEPDIR)/ExodusNetCDFTest3D-ExodusNetCDFTest3D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ExodusNetCDFTest3D_CXXFLAGS) $(CXXFLAGS) -c -o ExodusNetCDFTest3D-ExodusNetCDFTest3D.obj `if test -f '$(srcdir)/ExodusNetCDFTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/ExodusNetCDFTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ExodusNetCDFTest3D.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

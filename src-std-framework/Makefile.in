@@ -156,6 +156,7 @@ am__objects_2 = SundanceADReal.$(OBJEXT) \
 	SundanceGaussianQuadrature.$(OBJEXT) \
 	SundanceLagrange.$(OBJEXT) SundanceQuadratureFamily.$(OBJEXT) \
 	SundanceQuadratureFamilyBase.$(OBJEXT) \
+	SundanceTetQuadrature.$(OBJEXT) \
 	SundanceTriangleQuadrature.$(OBJEXT)
 am__objects_3 = SundanceDOFMapBase.$(OBJEXT) \
 	SundanceDOFMapBuilder.$(OBJEXT) \
@@ -218,6 +219,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceQuadratureIntegral.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceRefIntegral.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceSubsetCellFilter.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceTetQuadrature.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceTriangleQuadrature.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceTrivialGrouper.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -406,6 +408,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
 
@@ -420,6 +423,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp
 
 SUNDANCE_DOFMAPPING_H = \
@@ -764,6 +768,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceQuadratureIntegral.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRefIntegral.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSubsetCellFilter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTetQuadrature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTriangleQuadrature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTrivialGrouper.Po@am__quote@
 
@@ -1182,6 +1187,22 @@ SundanceQuadratureFamilyBase.obj: $(top_srcdir)/src-std-framework/Elements/Sunda
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceQuadratureFamilyBase.Po' tmpdepfile='$(DEPDIR)/SundanceQuadratureFamilyBase.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceQuadratureFamilyBase.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp'; fi`
+
+SundanceTetQuadrature.o: $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTetQuadrature.o -MD -MP -MF "$(DEPDIR)/SundanceTetQuadrature.Tpo" -c -o SundanceTetQuadrature.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTetQuadrature.Tpo" "$(DEPDIR)/SundanceTetQuadrature.Po"; else rm -f "$(DEPDIR)/SundanceTetQuadrature.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp' object='SundanceTetQuadrature.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceTetQuadrature.Po' tmpdepfile='$(DEPDIR)/SundanceTetQuadrature.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTetQuadrature.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp
+
+SundanceTetQuadrature.obj: $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTetQuadrature.obj -MD -MP -MF "$(DEPDIR)/SundanceTetQuadrature.Tpo" -c -o SundanceTetQuadrature.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTetQuadrature.Tpo" "$(DEPDIR)/SundanceTetQuadrature.Po"; else rm -f "$(DEPDIR)/SundanceTetQuadrature.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp' object='SundanceTetQuadrature.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceTetQuadrature.Po' tmpdepfile='$(DEPDIR)/SundanceTetQuadrature.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTetQuadrature.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp'; fi`
 
 SundanceTriangleQuadrature.o: $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTriangleQuadrature.o -MD -MP -MF "$(DEPDIR)/SundanceTriangleQuadrature.Tpo" -c -o SundanceTriangleQuadrature.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp; \

@@ -50,7 +50,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   int dimension = 0 ;
   Array<int> blockSizes;
   Array<int> sideSetSizes;
-
+  Array<int> nodesPerElem;
   while (true)
     {
       getNextLine(*is, line, tokens, '#');
@@ -78,16 +78,18 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
       else if (keyword=="num_elem")
         {
           nElem = val;
-        }
+        } 
       else if (keyword=="num_el_blk")
         {
           nElemBlocks = val;
           blockSizes.resize(nElemBlocks);
+          nodesPerElem.resize(nElemBlocks);
         }
       else if (keyword=="num_side_sets")
         {
           nSideSets = val;
           sideSetSizes.resize(nSideSets);
+          cerr << "num side sets = " << nSideSets << endl;
         }
       else
         {
@@ -96,16 +98,21 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
               if (keyword=="num_el_in_blk" + Teuchos::toString(i+1))
                 {
                   blockSizes[i] = val;
+                  break;
                 }
-              break;
+              if (keyword=="num_nod_per_el" + Teuchos::toString(i+1))
+                {
+                  nodesPerElem[i] = val;
+                  break;
+                }
             }
           for (int i=0; i<nSideSets; i++)
             {
-              if (keyword=="num_sides_ss" + Teuchos::toString(i+1))
+              if (keyword=="num_side_ss" + Teuchos::toString(i+1))
                 {
                   sideSetSizes[i] = val;
+                  break;
                 }
-              break;
             }
         }
     }
@@ -147,7 +154,6 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
       
       if (tokens[0]=="coord")
         {
-          cerr << "coord data" << endl;
           bool done = false;
           for (int i=1; i<tokens.size(); i++)
             {
@@ -178,7 +184,6 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                   coords.append(atof(StrUtils::before(tokens[i], ",")));
                 }
             }
-          cerr << "coords = " << coords << endl;
           continue;
         }
       /* see if the line lists connectivity data for a block */
@@ -186,7 +191,6 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         {
           if (tokens[0] == "connect" + Teuchos::toString(b+1))
             {
-              cerr << "conn data" << endl;
               connect[b].reserve(blockSizes[b]);
               bool done = false;
               for (int i=1; i<tokens.size(); i++)
@@ -218,7 +222,6 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                       connect[b].append(atoi(StrUtils::before(tokens[i], ",")));
                     }
                 }
-              cerr << "block " << b << " connect = " << connect[b] << endl;
               continue;
             }
         }
@@ -228,7 +231,6 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         {
           if (tokens[0] == "elem_ss" + Teuchos::toString(s+1))
             {
-              cerr << "ss elem data" << endl;
               sideSetElems[s].reserve(sideSetSizes[s]);
               bool done = false;
               for (int i=1; i<tokens.size(); i++)
@@ -260,7 +262,6 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                       sideSetElems[s].append(atoi(StrUtils::before(tokens[i], ",")));
                     }
                 }
-              cerr << "side set " << s << " elems = " << sideSetElems[s] << endl;
               continue;
             }
         }
@@ -270,7 +271,6 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         {
           if (tokens[0] == "side_ss" + Teuchos::toString(s+1))
             {
-              cerr << "ss facet data" << endl;
               sideSetFacets[s].reserve(sideSetSizes[s]);
               bool done = false;
               for (int i=1; i<tokens.size(); i++)
@@ -301,14 +301,82 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                       sideSetFacets[s].append(atoi(StrUtils::before(tokens[i], ",")));
                     }
                 }
-              cerr << "side set " << s 
-                   << " facets = " << sideSetFacets[s] << endl;
               continue;
             }
         }
     }
 
-  TEST_FOR_EXCEPTION(true, RuntimeError, "mesh generation not done");
+
+
+  /* now we can build the mesh */
+  mesh = createMesh(dimension);
+
+  /* do some consistency checks */
+  TEST_FOR_EXCEPTION(dimension * nNodes != coords.size(), RuntimeError,
+                     "bad coordinate array in exodus reader");
+
+  for (int b=0; b<nElemBlocks; b++)
+    {
+      TEST_FOR_EXCEPTION(blockSizes[b]*nodesPerElem[b] != connect[b].size(), RuntimeError,
+                         "bad connectivity array for block " << b << " in exodus reader");
+    }
+
+  for (int s=0; s<nSideSets; s++)
+    {
+      TEST_FOR_EXCEPTION(sideSetElems[s].size() != sideSetFacets[s].size(), RuntimeError,
+                         "inconsistent side set specification for ss=" << s 
+                         << " in exodus reader ");
+    }
+
+  /* add the points to the mesh */
+  for (int n=0; n<nNodes; n++)
+    {
+      Point x;
+      if (dimension==2)
+        {
+          x = Point(coords[n], coords[nNodes+n]);
+        }
+      else
+        {
+          x = Point(coords[n], coords[nNodes+n], coords[2*nNodes+n]);
+        }
+      mesh.addVertex(n, x, 0, 0);
+    }
+
+
+  /* add the elements */
+  int lid=0;
+  int offset=1;
+  for (int b=0; b<nElemBlocks; b++)
+    {
+      int n = 0;
+      for (int e=0; e<blockSizes[b]; e++, n+=nodesPerElem[b], lid++)
+        {
+          if (dimension==2)
+            {
+              mesh.addElement(lid, tuple(connect[b][n]-1, connect[b][n+1]-1, connect[b][n+2]-1), 0, b+1);
+            }
+          else
+            {
+              mesh.addElement(lid, 
+                              tuple(connect[b][n]-1, connect[b][n+1]-1, connect[b][n+2]-1, connect[b][n+3]-1),
+                              0, b+1);
+            }
+        }
+    }
+  
+  /* label the side sets */
+
+  for (int s=0; s<nSideSets; s++)
+    {
+      for (int n=0; n<sideSetSizes[s]; n++)
+        {
+          int elemID = sideSetElems[s][n];
+          int facetNum = sideSetFacets[s][n];
+          int sideLID = mesh.facetLID(dimension, elemID-1, dimension-1, facetNum-1);
+          mesh.setLabel(dimension-1, sideLID, s+1);
+        }
+    }
 
 	return mesh;
 }

@@ -6,7 +6,7 @@ EXEEXT = .exe
 
 noinst_PROGRAMS = AssemblerTest1D AssemblerTest2D RefIntegral \
                   TransformedIntegral2D Laplacian2D QuadratureIntegral2D \
-                  IntegralTest1D 
+                  IntegralTest1D QuadratureTest
 
 
 AssemblerTest1D_SOURCES = $(srcdir)/AssemblerTest1D.cpp
@@ -110,6 +110,18 @@ IntegralTest1D_LDADD = $(STD_FWK_LIBS)
 
 
 
+
+QuadratureTest_SOURCES = $(srcdir)/QuadratureTest.cpp
+
+QuadratureTest_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+QuadratureTest_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+QuadratureTest_LDADD = $(STD_FWK_LIBS) 
 
 
 

@@ -4,6 +4,7 @@
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceGauss1D.hpp"
 #include "SundanceTriangleQuadrature.hpp"
+#include "SundanceTetQuadrature.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceUtils;
@@ -56,6 +57,24 @@ void GaussianQuadrature::getTriangleRule(Array<Point>& quadPoints,
     {
       quadWeights[i] = 0.5*w[i];
       quadPoints[i] = Point(x[i], y[i]);
+    }  
+}
+
+void GaussianQuadrature::getTetRule(Array<Point>& quadPoints,
+                                    Array<double>& quadWeights) const 
+{
+  Array<double> x;
+  Array<double> y;
+  Array<double> z;
+  Array<double> w;
+			
+  TetQuadrature::getPoints(order(), w, x, y, z);
+  quadPoints.resize(w.length());
+  quadWeights.resize(w.length());
+  for (int i=0; i<w.length(); i++)
+    {
+      quadWeights[i] = 0.5*w[i];
+      quadPoints[i] = Point(x[i], y[i], z[i]);
     }  
 }
 

@@ -258,15 +258,28 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
             const Point& pa = points_[a];
             const Point& pb = points_[b];
             const Point& pc = points_[c];
-            J[0] = pb[0] - pa[0];
-            J[1] = pc[0] - pa[0];
-            J[2] = pb[1] - pa[1];
-            J[3] = pc[1] - pa[1];
-            for (int q=0; q<nQuad; q++)
+
+            if (spatialDim()==2)
               {
-                physQuadPts.append(pa 
-                                   + Point(J[0]*refQuadPts[q][0] +J[1]*refQuadPts[q][1],
-                                           J[2]*refQuadPts[q][0] +J[3]*refQuadPts[q][1]) );
+                J[0] = pb[0] - pa[0];
+                J[1] = pc[0] - pa[0];
+                J[2] = pb[1] - pa[1];
+                J[3] = pc[1] - pa[1];
+                for (int q=0; q<nQuad; q++)
+                  {
+                    physQuadPts.append(pa 
+                                       + Point(J[0]*refQuadPts[q][0] +J[1]*refQuadPts[q][1],
+                                               J[2]*refQuadPts[q][0] +J[3]*refQuadPts[q][1]) );
+                  }
+              }
+            else
+              {
+                for (int q=0; q<nQuad; q++)
+                  {
+                    physQuadPts.append(pa 
+                                       + (pb-pa)*refQuadPts[q][0] 
+                                       + (pc-pa)*refQuadPts[q][1]);
+                  }
               }
             
           }
@@ -281,6 +294,31 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
             const Point& pb = points_[b];
             const Point& pc = points_[c];
             const Point& pd = points_[d];
+            J[0] = pb[0] - pa[0];
+            J[1] = pc[0] - pa[0];
+            J[2] = pd[0] - pa[0];
+            J[3] = pb[1] - pa[1];
+            J[4] = pc[1] - pa[1];
+            J[5] = pd[1] - pa[1];
+            J[6] = pb[2] - pa[2];
+            J[7] = pc[2] - pa[2];
+            J[8] = pd[2] - pa[2];
+            
+            for (int q=0; q<nQuad; q++)
+              {
+                physQuadPts.append(pa 
+                                   + Point(J[0]*refQuadPts[q][0] 
+                                           + J[1]*refQuadPts[q][1]
+                                           + J[2]*refQuadPts[q][2],
+                                           J[3]*refQuadPts[q][0] 
+                                           + J[4]*refQuadPts[q][1]
+                                           + J[5]*refQuadPts[q][2],
+                                           J[6]*refQuadPts[q][0] 
+                                           + J[7]*refQuadPts[q][1]
+                                           + J[8]*refQuadPts[q][2]));
+
+              }
+            
           }
           break;
         default:
@@ -313,13 +351,14 @@ void BasicSimplicialMesh::estimateNumElements(int nElems)
     {
       nFaces = 5*nElems;
       nEdges = 5*nElems;
+      labels_[2].reserve(nFaces);
     }
   else if (spatialDim()==2)
     {
       nEdges = 3*nElems;
     }
   
-
+  labels_[1].reserve(nEdges);
   vertexSetToFaceIndexMap_ = Hashtable<VertexSet, int>(nFaces);
 
   edgeVerts_.reserve(nEdges);
@@ -600,6 +639,9 @@ int BasicSimplicialMesh::addElement(int globalIndex,
 {
   int lid = elemVerts_.length();
 
+  SUNDANCE_OUT(verbosity() > VerbHigh,
+               "adding element " << vertLID);
+
   numCells_[spatialDim()]++;
 
   LIDToGIDMap_[spatialDim()].append(globalIndex);
@@ -700,6 +742,7 @@ int BasicSimplicialMesh::addFace(int v1, int v2, int v3,
   rtn = faceVerts_.length();
 
   faceVerts_.append(&(tmpFaceVerts_[0]), tmpFaceVerts_.length());
+  labels_[2].append(0);
 
   tmpFaceEdges_[0] = e1;
   tmpFaceEdges_[1] = e2;
@@ -768,7 +811,7 @@ int BasicSimplicialMesh::addEdge(int v1, int v2)
   
   rtn = edgeVerts_.length();
   edgeVerts_.append(tuple(v1,v2));
-
+  
   vertEdges_[v1].append(rtn);
   vertEdgePartners_[v1].append(v2);
   vertEdgeSigns_[v1].append(-1);
@@ -778,6 +821,8 @@ int BasicSimplicialMesh::addEdge(int v1, int v2)
   vertEdgeSigns_[v2].append(-1);
 
   edgeCofacets_.resize(rtn+1);
+
+  labels_[1].append(0);
 
   numCells_[1]++;
 

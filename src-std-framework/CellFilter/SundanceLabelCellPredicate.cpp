@@ -21,6 +21,7 @@ bool LabelCellPredicate::lessThan(const CellPredicateBase* other) const
 
 bool LabelCellPredicate::test(int cellLID) const 
 {
+  
   return mesh().label(cellDim(), cellLID) == labelIndex_;
 }
 

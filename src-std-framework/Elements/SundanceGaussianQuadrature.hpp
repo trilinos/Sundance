@@ -44,6 +44,10 @@ namespace SundanceStdFwk
     virtual void getTriangleRule(Array<Point>& quadPoints,
                                  Array<double>& quadWeights) const ;
 
+    /** compute a rule for the reference tet cell */
+    virtual void getTetRule(Array<Point>& quadPoints,
+                            Array<double>& quadWeights) const ;
+
   };
 }
 

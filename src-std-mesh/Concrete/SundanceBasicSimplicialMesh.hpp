@@ -133,6 +133,12 @@ namespace SundanceStdMesh
       /** Get the label of the given cell */
       virtual int label(int cellDim, int cellLID) const ;
 
+      /** Set the label of the given cell */
+      virtual void setLabel(int cellDim, int cellLID, int label)
+      {
+        labels_[cellDim][cellLID] = label;
+      }
+
       /** */
       virtual void estimateNumVertices(int numVertices);
 
