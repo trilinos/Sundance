@@ -9,6 +9,7 @@ bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
 bool bottomPointTest(const Point& x) {return fabs(x[1]) < 1.0e-10;}
 bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
 bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-10;}
+bool cornerPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10 &&fabs(x[1]-0.5) < 1.0e-10  ;}
 
 int main(int argc, void** argv)
 {
@@ -44,14 +45,17 @@ int main(int argc, void** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
+      CellFilter points = new DimensionalCellFilter(0);
       CellPredicate leftPointFunc = new PositionalCellPredicate(leftPointTest);
       CellPredicate rightPointFunc = new PositionalCellPredicate(rightPointTest);
       CellPredicate topPointFunc = new PositionalCellPredicate(topPointTest);
       CellPredicate bottomPointFunc = new PositionalCellPredicate(bottomPointTest);
+      CellPredicate cornerPointFunc = new PositionalCellPredicate(cornerPointTest);
       CellFilter left = edges.subset(leftPointFunc);
       CellFilter right = edges.subset(rightPointFunc);
       CellFilter top = edges.subset(topPointFunc);
       CellFilter bottom = edges.subset(bottomPointFunc);
+      CellFilter corner = points.subset(cornerPointFunc);
 
       
       /* Create unknown and test functions, discretized using first-order
@@ -75,18 +79,18 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      double beta = 0.025;
+      double beta = 1.0;
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           + (grad*vy)*(grad*uy) - p*(dx*vx+dy*vy)
                           - (h*h*beta)*(grad*q)*(grad*p) - q*(dx*ux+dy*uy),
-                          quad2)
-        + Integral(left, -(1.0-x)*vx, quad2);
+                          quad2);
         
       /* Define the Dirichlet BC */
       Expr uInflow = 0.5*(1.0-y*y);
-      Expr bc = /* EssentialBC(left, vx*(ux-uInflow) + vy*uy , quad4)
-                   + */ EssentialBC(top, vx*ux + vy*uy, quad2)
-        + EssentialBC(bottom, vx*ux + vy*uy, quad2);
+      Expr bc =  EssentialBC(left, vx*(ux-uInflow) + vy*uy , quad4)
+                   + EssentialBC(top, vx*ux + vy*uy, quad2)
+        + EssentialBC(bottom, vx*ux + vy*uy, quad2)
+        + EssentialBC(corner, q*(p-x), quad2);
 
 
    
@@ -100,26 +104,26 @@ int main(int argc, void** argv)
                          List(ux, uy, p), vecType);
 
 
-      ParameterList solverParams;
+//       ParameterList solverParams;
 
-      solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-      solverParams.set(IterativeSolver<double>::maxitersParam(), 5000);
-      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-10);
+//       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
+//       solverParams.set(IterativeSolver<double>::maxitersParam(), 5000);
+//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-10);
 
-      LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
+//       LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
 
       /* Create an Aztec solver */
-      // std::map<int,int> azOptions;
-//       std::map<int,double> azParams;
+      std::map<int,int> azOptions;
+      std::map<int,double> azParams;
 
-//       azOptions[AZ_solver] = AZ_gmres;
-//       azOptions[AZ_precond] = AZ_dom_decomp;
-//       azOptions[AZ_subdomain_solve] = AZ_ilu;
-//       azOptions[AZ_graph_fill] = 1;
-//       azOptions[AZ_max_iter] = 1000;
-//       azParams[AZ_tol] = 1.0e-6;
+      azOptions[AZ_solver] = AZ_gmres;
+      azOptions[AZ_precond] = AZ_dom_decomp;
+      azOptions[AZ_subdomain_solve] = AZ_ilu;
+      azOptions[AZ_graph_fill] = 1;
+      azOptions[AZ_max_iter] = 1000;
+      azParams[AZ_tol] = 1.0e-6;
 
-//       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
       Expr soln = prob.solve(solver);
 

@@ -44,6 +44,7 @@
 
 /* Writers */
 #include "SundanceFieldWriter.hpp"
+#include "SundanceMatlabWriter.hpp"
 #include "SundanceVerboseFieldWriter.hpp"
 #include "SundanceTriangleWriter.hpp"
 #include "SundanceVTKWriter.hpp"

@@ -392,19 +392,6 @@ STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
 -lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(UTIL_LIBS)
 
 
-# ------------------------------------------------------------------------
-#
-# Specify Trilinos includes and libraries. Ordinarily, these will be found
-# in the include and lib subdirectories of the Trilinos installation
-# directory. However, during development it is useful to work with
-# the files in the src subdirectories of the Trilinos directory.
-#
-# ------------------------------------------------------------------------
-TRILINOS_INCLUDES = -I$(TRILINOS_DIR)/include
-TRILINOS_LIBS = -L$(TRILINOS_DIR)/lib -lnoxtsf -lnox -lTSFExtended -lTSFCore -lTSFCoreUtils \
-                -lml -laztecoo -lepetra -lteuchos
-
-
 #
 #np#  Files which are included in select builds are typically have
 #np#  names that start with EXTRA
@@ -829,6 +816,17 @@ uninstall-am: uninstall-includeHEADERS uninstall-info-am \
 	uninstall-am uninstall-includeHEADERS uninstall-info-am \
 	uninstall-libLIBRARIES uninstall-nodist_execincludeHEADERS
 
+
+# ------------------------------------------------------------------------
+#
+# Specify Trilinos includes and libraries. Ordinarily, these will be found
+# in the include and lib subdirectories of the Trilinos installation
+# directory. However, during development it is useful to work with
+# the files in the src subdirectories of the Trilinos directory.
+#
+# ------------------------------------------------------------------------
+
+include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

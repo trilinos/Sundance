@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(Kepler_SOURCES) $(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) $(TCATA1D_SOURCES) $(VorticityStokes2D_SOURCES)
+SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(Kepler_SOURCES) $(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(TCATA1D_SOURCES) $(VorticityStokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -85,7 +85,8 @@ noinst_PROGRAMS = NonlinAlgebraic$(EXEEXT) Poisson1D$(EXEEXT) \
 	Coupled1D$(EXEEXT) Coupled2D$(EXEEXT) RadDiff1D$(EXEEXT) \
 	NoxAlgebraic$(EXEEXT) Kepler$(EXEEXT) NoxPoisson1D$(EXEEXT) \
 	PoissonOnDisk$(EXEEXT) OptPoisson1D$(EXEEXT) \
-	Eikonal2D$(EXEEXT) TCATA1D$(EXEEXT) VorticityStokes2D$(EXEEXT)
+	Eikonal2D$(EXEEXT) TCATA1D$(EXEEXT) VorticityStokes2D$(EXEEXT) \
+	Stokes1D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-std-framework/Problem
@@ -122,7 +123,7 @@ Coupled1D_OBJECTS = $(am_Coupled1D_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1)
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
 am_Coupled2D_OBJECTS = Coupled2D-Coupled2D.$(OBJEXT)
@@ -150,6 +151,8 @@ am_PoissonOnDisk_OBJECTS = PoissonOnDisk-PoissonOnDisk.$(OBJEXT)
 PoissonOnDisk_OBJECTS = $(am_PoissonOnDisk_OBJECTS)
 am_RadDiff1D_OBJECTS = RadDiff1D-RadDiff1D.$(OBJEXT)
 RadDiff1D_OBJECTS = $(am_RadDiff1D_OBJECTS)
+am_Stokes1D_OBJECTS = Stokes1D-Stokes1D.$(OBJEXT)
+Stokes1D_OBJECTS = $(am_Stokes1D_OBJECTS)
 am_Stokes2D_OBJECTS = Stokes2D-Stokes2D.$(OBJEXT)
 Stokes2D_OBJECTS = $(am_Stokes2D_OBJECTS)
 am_TCATA1D_OBJECTS = TCATA1D-TCATA1D.$(OBJEXT)
@@ -173,6 +176,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/Poisson3D-Poisson3D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/PoissonOnDisk-PoissonOnDisk.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/RadDiff1D-RadDiff1D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Stokes1D-Stokes1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Stokes2D-Stokes2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/TCATA1D-TCATA1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/VorticityStokes2D-VorticityStokes2D.Po
@@ -187,7 +191,7 @@ SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
-	$(Stokes2D_SOURCES) $(TCATA1D_SOURCES) \
+	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(TCATA1D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 DIST_SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) \
 	$(Eikonal2D_SOURCES) $(Kepler_SOURCES) \
@@ -195,7 +199,7 @@ DIST_SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
-	$(Stokes2D_SOURCES) $(TCATA1D_SOURCES) \
+	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(TCATA1D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -377,6 +381,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 Stokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Stokes2D_LDADD = $(STD_FWK_LIBS) 
+Stokes1D_SOURCES = $(srcdir)/Stokes1D.cpp
+Stokes1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+Stokes1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+Stokes1D_LDADD = $(STD_FWK_LIBS) 
 Coupled1D_SOURCES = $(srcdir)/Coupled1D.cpp
 Coupled1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -549,19 +562,6 @@ $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES)
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
 -lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(UTIL_LIBS)
 
-
-# ------------------------------------------------------------------------
-#
-# Specify Trilinos includes and libraries. Ordinarily, these will be found
-# in the include and lib subdirectories of the Trilinos installation
-# directory. However, during development it is useful to work with
-# the files in the src subdirectories of the Trilinos directory.
-#
-# ------------------------------------------------------------------------
-TRILINOS_INCLUDES = -I$(TRILINOS_DIR)/include
-TRILINOS_LIBS = -L$(TRILINOS_DIR)/lib -lnoxtsf -lnox -lTSFExtended -lTSFCore -lTSFCoreUtils \
-                -lml -laztecoo -lepetra -lteuchos
-
 all: all-am
 
 .SUFFIXES:
@@ -637,6 +637,9 @@ PoissonOnDisk$(EXEEXT): $(PoissonOnDisk_OBJECTS) $(PoissonOnDisk_DEPENDENCIES)
 RadDiff1D$(EXEEXT): $(RadDiff1D_OBJECTS) $(RadDiff1D_DEPENDENCIES) 
 	@rm -f RadDiff1D$(EXEEXT)
 	$(CXXLINK) $(RadDiff1D_LDFLAGS) $(RadDiff1D_OBJECTS) $(RadDiff1D_LDADD) $(LIBS)
+Stokes1D$(EXEEXT): $(Stokes1D_OBJECTS) $(Stokes1D_DEPENDENCIES) 
+	@rm -f Stokes1D$(EXEEXT)
+	$(CXXLINK) $(Stokes1D_LDFLAGS) $(Stokes1D_OBJECTS) $(Stokes1D_LDADD) $(LIBS)
 Stokes2D$(EXEEXT): $(Stokes2D_OBJECTS) $(Stokes2D_DEPENDENCIES) 
 	@rm -f Stokes2D$(EXEEXT)
 	$(CXXLINK) $(Stokes2D_LDFLAGS) $(Stokes2D_OBJECTS) $(Stokes2D_LDADD) $(LIBS)
@@ -666,6 +669,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson3D-Poisson3D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonOnDisk-PoissonOnDisk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadDiff1D-RadDiff1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes1D-Stokes1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes2D-Stokes2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TCATA1D-TCATA1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VorticityStokes2D-VorticityStokes2D.Po@am__quote@
@@ -894,6 +898,22 @@ RadDiff1D-RadDiff1D.obj: $(srcdir)/RadDiff1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -c -o RadDiff1D-RadDiff1D.obj `if test -f '$(srcdir)/RadDiff1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadDiff1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadDiff1D.cpp'; fi`
 
+Stokes1D-Stokes1D.o: $(srcdir)/Stokes1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -MT Stokes1D-Stokes1D.o -MD -MP -MF "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" -c -o Stokes1D-Stokes1D.o `test -f '$(srcdir)/Stokes1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes1D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" "$(DEPDIR)/Stokes1D-Stokes1D.Po"; else rm -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Stokes1D.cpp' object='Stokes1D-Stokes1D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Stokes1D-Stokes1D.Po' tmpdepfile='$(DEPDIR)/Stokes1D-Stokes1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -c -o Stokes1D-Stokes1D.o `test -f '$(srcdir)/Stokes1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes1D.cpp
+
+Stokes1D-Stokes1D.obj: $(srcdir)/Stokes1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -MT Stokes1D-Stokes1D.obj -MD -MP -MF "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" -c -o Stokes1D-Stokes1D.obj `if test -f '$(srcdir)/Stokes1D.cpp'; then $(CYGPATH_W) '$(srcdir)/Stokes1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Stokes1D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" "$(DEPDIR)/Stokes1D-Stokes1D.Po"; else rm -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Stokes1D.cpp' object='Stokes1D-Stokes1D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Stokes1D-Stokes1D.Po' tmpdepfile='$(DEPDIR)/Stokes1D-Stokes1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -c -o Stokes1D-Stokes1D.obj `if test -f '$(srcdir)/Stokes1D.cpp'; then $(CYGPATH_W) '$(srcdir)/Stokes1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Stokes1D.cpp'; fi`
+
 Stokes2D-Stokes2D.o: $(srcdir)/Stokes2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes2D_CXXFLAGS) $(CXXFLAGS) -MT Stokes2D-Stokes2D.o -MD -MP -MF "$(DEPDIR)/Stokes2D-Stokes2D.Tpo" -c -o Stokes2D-Stokes2D.o `test -f '$(srcdir)/Stokes2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes2D.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Stokes2D-Stokes2D.Tpo" "$(DEPDIR)/Stokes2D-Stokes2D.Po"; else rm -f "$(DEPDIR)/Stokes2D-Stokes2D.Tpo"; exit 1; fi
@@ -1105,6 +1125,17 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-info-am
 
+
+# ------------------------------------------------------------------------
+#
+# Specify Trilinos includes and libraries. Ordinarily, these will be found
+# in the include and lib subdirectories of the Trilinos installation
+# directory. However, during development it is useful to work with
+# the files in the src subdirectories of the Trilinos directory.
+#
+# ------------------------------------------------------------------------
+
+include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

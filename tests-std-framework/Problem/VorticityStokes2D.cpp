@@ -27,8 +27,8 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 5*np, np,
-                                                         0.0, 1.0, 5, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 32*np, np,
+                                                         0.0, 1.0, 32, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -72,9 +72,9 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      Expr eqn = Integral(interior, -(grad*vPsi)*(grad*psi) 
-                           - (grad*vOmega)*(grad*omega) - vPsi*omega, quad4)
-        + Integral(top, -1.0*vPsi, quad2);
+      Expr eqn = Integral(interior, (grad*vPsi)*(grad*psi) 
+                          + (grad*vOmega)*(grad*omega) + vPsi*omega, quad4)
+        + Integral(top, 1.0*vPsi, quad2);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(bottom, vOmega*psi, quad4) 
         + EssentialBC(top, vOmega*psi, quad4) 
@@ -97,9 +97,9 @@ int main(int argc, void** argv)
       azOptions[AZ_precond] = AZ_ls;
       azOptions[AZ_poly_ord] = 4;
       //      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      //      azOptions[AZ_graph_fill] = 2;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-6;
+      //azOptions[AZ_graph_fill] = 2;
+      azOptions[AZ_max_iter] = 10000;
+      azParams[AZ_tol] = 1.0e-12;
 
       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 

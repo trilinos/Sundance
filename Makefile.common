@@ -141,9 +141,4 @@ STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
 #
 # ------------------------------------------------------------------------
 
-TRILINOS_INCLUDES = -I$(TRILINOS_DIR)/include
-
-TRILINOS_LIBS = -L$(TRILINOS_DIR)/lib -lnoxtsf -lnox -lTSFExtended -lTSFCore -lTSFCoreUtils \
-                -lml -laztecoo -lepetra -lteuchos
-
-
+include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export

@@ -86,6 +86,7 @@ SUNDANCE_MESHWRITERS_H = \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldBase.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriterBase.hpp \
+$(top_srcdir)/src-std-mesh/Writers/SundanceMatlabWriter.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceTriangleWriter.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceVerboseFieldWriter.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceVTKWriter.hpp 
@@ -93,6 +94,7 @@ $(top_srcdir)/src-std-mesh/Writers/SundanceVTKWriter.hpp
 SUNDANCE_MESHWRITERS = \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriterBase.cpp \
+$(top_srcdir)/src-std-mesh/Writers/SundanceMatlabWriter.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceTriangleWriter.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceVerboseFieldWriter.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceVTKWriter.cpp 
