@@ -119,6 +119,14 @@ namespace SundanceCore
        *  at the given subregion-quadrature combination */
       const DerivSet& nonzeroBCFunctionalDerivs(const RegionQuadCombo& r) const
       {return bcRegionQuadComboNonzeroDerivs_.get(r);}
+
+      /** */
+      const Expr& expr(const RegionQuadCombo& r) const 
+      {return regionQuadComboExprs_.get(r);}
+
+      /** */
+      const Expr& bcExpr(const RegionQuadCombo& r) const 
+      {return bcRegionQuadComboExprs_.get(r);}
       //@}
 
       

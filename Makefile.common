@@ -117,9 +117,11 @@ STD_FWK_INCLUDE_PATH =  \
 -I$(top_srcdir)/src-std-framework/CellFilter \
 -I$(top_srcdir)/src-std-framework/Elements \
 -I$(top_srcdir)/src-std-framework/DOFMapping \
+-I$(top_srcdir)/src-std-framework/Assembly \
 -I$(top_builddir)/src-std-framework/CellFilter \
 -I$(top_builddir)/src-std-framework/Elements \
--I$(top_builddir)/src-std-framework/DOFMapping 
+-I$(top_builddir)/src-std-framework/DOFMapping \
+-I$(top_builddir)/src-std-framework/Assembly 
 
 
 STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(STD_MESH_INCLUDE_PATH) \

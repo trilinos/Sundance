@@ -84,17 +84,26 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.cpp
 
+SUNDANCE_ASSEMBLY_H = \
+$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp
+
+SUNDANCE_ASSEMBLY = \
+$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp
+
+
 
 
 STD_FWK_SOURCES = \
 $(SUNDANCE_CELLFILTERS) \
 $(SUNDANCE_ELEMENTS) \
-$(SUNDANCE_DOFMAPPING) 
+$(SUNDANCE_DOFMAPPING) \
+$(SUNDANCE_ASSEMBLY) 
 
 STD_FWK_SOURCES_H = \
 $(SUNDANCE_CELLFILTERS_H) \
 $(SUNDANCE_ELEMENTS_H) \
-$(SUNDANCE_DOFMAPPING_H) 
+$(SUNDANCE_DOFMAPPING_H)  \
+$(SUNDANCE_ASSEMBLY_H) 
 
 
 include $(top_srcdir)/Makefile.common
