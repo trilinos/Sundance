@@ -10,6 +10,7 @@
 #include "SundanceZeroExpr.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceListExpr.hpp"
+#include "TSFSolverState.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -20,7 +21,7 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
-
+using namespace std;
 
 
 LinearProblem::LinearProblem() 
@@ -43,8 +44,6 @@ LinearProblem::LinearProblem(const Mesh& mesh,
 {
   Expr u = unk.flatten();
   Expr v = test.flatten();
-  cerr << "unk  = " << u << endl;
-  cerr << "unk size = " << u.size() << endl;
   Array<Expr> zero(u.size());
   for (int i=0; i<u.size(); i++) 
     {
@@ -53,7 +52,6 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     }
 
   Expr u0 = new ListExpr(zero);
-  cerr << "zero = " << u0 << endl;
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0));
@@ -70,13 +68,17 @@ LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler)
 
 TSFExtended::Vector<double> LinearProblem::getRHS() const 
 {
-  assembler_->assemble(A_, rhs_);
+  Tabs tab;
+  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building vector");
+  assembler_->assemble(rhs_);
   return rhs_;
 }
 
 
 TSFExtended::LinearOperator<double> LinearProblem::getOperator() const 
 {
+  Tabs tab;
+  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building matrix and vector");
   assembler_->assemble(A_, rhs_);
   return A_;
 }
@@ -90,12 +92,22 @@ SolverState<double> LinearProblem::solveStatus() const
 
 Expr LinearProblem::solve(const LinearSolver<double>& solver) const 
 {
+  Tabs tab;
   Vector<double> solnVec;
+  
+  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building system");
 
   assembler_->assemble(A_, rhs_);
   rhs_.scale(-1.0);
 
+  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() solving system");
+
   status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_, solnVec)));
+
+  const SolverState<double>& state = *status_;
+  SUNDANCE_VERB_LOW(tab << 
+                    "LinearProblem::solve() done solving system: status is " 
+                    << state.stateDescription());
 
   Expr soln = formSolutionExpr(solnVec);
 

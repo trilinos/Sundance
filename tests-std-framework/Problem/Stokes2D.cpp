@@ -95,10 +95,6 @@ int main(int argc, void** argv)
 
    
 
-      Assembler::workSetSize() = 100;
-      FunctionalEvaluator::workSetSize() = 100;
-      //   Assembler::classVerbosity() = VerbExtreme;
-
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
                          List(ux, uy, p), vecType);

@@ -665,3 +665,103 @@ DerivSet SymbPreprocessor::setupGradient(const Expr& expr,
   return derivs;
 }
 
+
+
+DerivSet SymbPreprocessor::setupFunctional(const Expr& expr, 
+                                           const Expr& fixedFields,
+                                           const Expr& fixedFieldEvalPts, 
+                                           const EvalContext& region)
+{
+  TimeMonitor t(preprocTimer());
+  Tabs tab;
+
+  const EvaluatableExpr* e 
+    = dynamic_cast<const EvaluatableExpr*>(expr.ptr().get());
+
+  SUNDANCE_OUT(Evaluator::classVerbosity() > VerbSilent,
+               tab << "************ setting up functional: " << expr);
+
+  SUNDANCE_OUT(Evaluator::classVerbosity() > VerbSilent 
+               && fixedFields.size()>0,
+               "The fields " << fixedFields 
+               << " will be evaluated at " << fixedFieldEvalPts);
+
+  TEST_FOR_EXCEPTION(e==0, InternalError,
+                     "Non-evaluatable expr " << expr.toString()
+                     << " given to SymbPreprocessor::setupExpr()");
+
+  /* make flat lists of fixed fields */
+  Expr alpha = fixedFields.flatten();
+  Expr alpha0 = fixedFieldEvalPts.flatten();
+
+  SundanceUtils::Set<int> fixedID;
+
+  SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
+
+  /* check the fixed functions for redundancies and non-unk funcs */
+  for (int i=0; i<alpha.size(); i++)
+    {
+      const UnknownFuncElement* aPtr
+        = dynamic_cast<const UnknownFuncElement*>(alpha[i].ptr().get());
+      TEST_FOR_EXCEPTION(aPtr==0, RuntimeError,
+                         "list of purported fixed funcs "
+                         "contains a non-unknown function "
+                         << alpha[i].toString());
+      int fid = aPtr->funcID();
+      TEST_FOR_EXCEPTION(fixedID.contains(fid), RuntimeError,
+                         "duplicate unknown function in list "
+                         << alpha.toString());
+      fixedID.put(fid);
+      RefCountPtr<DiscreteFuncElement> a0Ptr
+        = rcp_dynamic_cast<DiscreteFuncElement>(alpha0[i].ptr());
+      RefCountPtr<ZeroExpr> a0ZeroPtr
+        = rcp_dynamic_cast<ZeroExpr>(alpha0[i].ptr());
+      TEST_FOR_EXCEPTION(a0Ptr.get()==NULL && a0ZeroPtr.get()==NULL,
+                         RuntimeError,
+                         "fixed-field evaluation point " 
+                         << alpha0[i].toString()
+                         << " is neither a discrete function nor a zero expr");
+      if (a0Ptr.get()==NULL)
+        {
+          aPtr->substituteZero();
+        }
+      else
+        {
+          aPtr->substituteFunction(a0Ptr);
+        }
+    }
+
+
+  /* put together the set of functions that are active differentiation
+   * variables */
+  MultiSet<int> zeroOrderDeriv;
+  activeFuncIDs.put(zeroOrderDeriv);
+  
+
+  /* ----------------------------------------------------------
+   * set up the expression for evaluation 
+   * ----------------------------------------------------------
+   *
+   * In this step, we work out the sparsity structure of the expression's
+   * functional derivatives, and create evaluator objects. 
+   */
+
+  
+  Set<MultiIndex> multiIndices;
+  multiIndices.put(MultiIndex());
+
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+               << " ************* Finding nonzeros for expr " << endl);
+  e->findNonzeros(region, multiIndices, activeFuncIDs, false);
+
+   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+                << " ************* Setting up evaluators for expr " << endl);
+  e->setupEval(region);
+
+  DerivSet derivs = e->sparsitySuperset(region)->derivSet();
+
+  return derivs;
+}
+

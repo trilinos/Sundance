@@ -39,6 +39,12 @@ namespace SundanceCore
                                         const EvalContext& region);
 
         /** */
+        static DerivSet setupFunctional(const Expr& expr, 
+                                        const Expr& fixedFields,
+                                        const Expr& fixedFieldEvalPts,
+                                        const EvalContext& region);
+
+        /** */
         static DerivSet setupGradient(const Expr& expr, 
                                       const Expr& vars,
                                       const Expr& varEvalPts,

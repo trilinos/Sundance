@@ -608,12 +608,13 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
 
 void HomogeneousDOFMap::buildMaximalDofTable() const
 {
-
+  Tabs tab;
   int cellDim = dim_;
   int nf = funcIDList().size();
   int nCells = mesh().numCells(dim_);
 
-  cerr << "building dofs for maximal cell " << endl;
+  SUNDANCE_VERB_MEDIUM(tab << "building dofs for maximal cells");
+
   SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
                << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   

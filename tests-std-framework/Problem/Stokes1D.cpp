@@ -72,9 +72,6 @@ int main(int argc, void** argv)
       Expr uInflow = cos(x);
       Expr bc =  EssentialBC(left, vx*(ux-uInflow) , quad4);
 
-      Assembler::workSetSize() = 100;
-      FunctionalEvaluator::workSetSize() = 100;
-      //      Assembler::classVerbosity() = VerbExtreme;
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(vx, q), 

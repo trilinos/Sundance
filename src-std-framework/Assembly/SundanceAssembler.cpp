@@ -93,15 +93,60 @@ Assembler
 {
   TimeMonitor timer(assemblerCtorTimer());
   verbosity() = verb;
+  init(mesh, eqn);
+}
 
+Assembler
+::Assembler(const Mesh& mesh, 
+            const RefCountPtr<EquationSet>& eqn,
+            const VerbositySetting& verb)
+  : matNeedsConfiguration_(true),
+    vecNeedsConfiguration_(true),
+    mesh_(mesh),
+    eqn_(eqn),
+    rowMap_(),
+    colMap_(),
+    rowSpace_(),
+    colSpace_(),
+    bcRows_(),
+    rqc_(),
+    contexts_(),
+    isBCRqc_(),
+    groups_(),
+    mediators_(),
+    evalExprs_(),
+    evalMgr_(rcp(new EvalManager())),
+    isBCRow_(),
+    lowestRow_(),
+    vecType_()
+{
+  TimeMonitor timer(assemblerCtorTimer());
+  verbosity() = verb;
+  init(mesh, eqn);
+}
+
+void Assembler::init(const Mesh& mesh, 
+                     const RefCountPtr<EquationSet>& eqn)
+{
   RefCountPtr<GrouperBase> grouper = rcp(new TrivialGrouper());
   grouper->verbosity() = verbosity();
 
-  DOFMapBuilder mapBuilder(mesh, eqn);
+  const Set<ComputationType>& compTypes = eqn->computationTypes();
 
-  rowMap_ = mapBuilder.rowMap();
-  rowSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray(), 
-                                    rowMap_, vecType_));
+
+  DOFMapBuilder mapBuilder;
+
+  if (compTypes.contains(VectorOnly) 
+      || compTypes.contains(FunctionalAndGradient))
+    {
+      mapBuilder = DOFMapBuilder(mesh, eqn);
+
+      rowMap_ = mapBuilder.rowMap();
+      rowSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray(), 
+                                        rowMap_, vecType_));
+      isBCRow_ = mapBuilder.isBCRow();
+      lowestRow_ = mapBuilder.rowMap()->lowestLocalDOF();
+    }
 
   if (!eqn->isFunctionalCalculator())
     {
@@ -124,11 +169,6 @@ Assembler
       contexts_.put(FunctionalOnly, Array<EvalContext>());
       evalExprs_.put(FunctionalOnly, Array<const EvaluatableExpr*>());
     }
-
-
-  isBCRow_ = mapBuilder.isBCRow();
-  lowestRow_ = mapBuilder.rowMap()->lowestLocalDOF();
-
 
   for (int r=0; r<eqn->regionQuadCombos().size(); r++)
     {
@@ -211,9 +251,9 @@ void Assembler::configureVector(Vector<double>& b) const
 {
   Tabs tab;
   TimeMonitor timer(configTimer());
-  VectorSpace<double> colSpace = colSpace_->vecSpace();
+  VectorSpace<double> rowSpace = rowSpace_->vecSpace();
   
-  b = colSpace.createMember();
+  b = rowSpace.createMember();
 
   TSFExtended::LoadableVector<double>* vec 
     = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
@@ -301,7 +341,7 @@ void Assembler::assemble(LinearOperator<double>& A,
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
-  SUNDANCE_VERB_LOW("Assembling matrix and vector"); 
+  SUNDANCE_VERB_LOW(tab << "Assembling matrix and vector"); 
 
   SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
 
@@ -341,14 +381,15 @@ void Assembler::assemble(LinearOperator<double>& A,
 
   /* fill loop */
 
-  if (verbosity() > VerbLow)
+  if (verbosity() > VerbHigh)
     {
-      cerr << "map" << endl;
+      Tabs tab1;
+      cerr << tab1 << "map" << endl;
       rowMap_->print(cerr);
-      cerr << "BC row flags " << endl;
+      cerr << tab1 << "BC row flags " << endl;
       for (int i=0; i<isBCRow_->size(); i++) 
         {
-          cerr << i << " " << (*isBCRow_)[i] << endl;
+          cerr << tab1 << i << " " << (*isBCRow_)[i] << endl;
         }
     }
 
@@ -475,6 +516,8 @@ void Assembler::assemble(LinearOperator<double>& A,
     }
   mat->freezeValues();
 
+  SUNDANCE_VERB_LOW(tab << "Assembler: done assembling matrix & vector");
+
   if (verbosity() > VerbHigh)
     {
       cerr << "matrix = " << endl;
@@ -501,7 +544,7 @@ void Assembler::assemble(Vector<double>& b) const
                      "Assembler::assemble(b) called for an assembler that "
                      "does not support vector-only assembly");
 
-  SUNDANCE_VERB_LOW("Assembling vector"); 
+  SUNDANCE_VERB_LOW(tab << "Assembling vector"); 
 
   SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
 
@@ -633,6 +676,7 @@ void Assembler::assemble(Vector<double>& b) const
         }
     }
 
+  SUNDANCE_VERB_LOW(tab << "Assembler: done assembling vector");
     if (verbosity() > VerbHigh)
     {
       cerr << "vector = " << endl;
@@ -801,6 +845,8 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
   mesh_.comm().allReduce((void*) &localSum, (void*) &value, 1, 
                          MPIComm::DOUBLE, MPIComm::SUM);
+
+  SUNDANCE_VERB_LOW(tab << "Assembler: done computing functional and its gradient");
   if (verbosity() > VerbHigh)
     {
       cerr << "vector = " << endl;
@@ -826,7 +872,7 @@ void Assembler::evaluate(double& value) const
                      "Assembler::evaluate(f) called for an assembler that "
                      "does not support functional evaluation");
 
-  SUNDANCE_VERB_LOW("Computing functional"); 
+  SUNDANCE_VERB_LOW(tab << "Computing functional"); 
 
   SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
 
@@ -835,9 +881,6 @@ void Assembler::evaluate(double& value) const
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
-
-  RefCountPtr<Array<int> > testLocalDOFs 
-    = rcp(new Array<int>());
 
   double localSum = 0.0;
 
@@ -914,11 +957,6 @@ void Assembler::evaluate(double& value) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          int nTestNodes;
-          rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
-                                       nTestNodes);
-
-
           for (int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
@@ -928,16 +966,9 @@ void Assembler::evaluate(double& value) const
                 {
                   continue;
                 }
-
-              if (verbosity() > VerbHigh)
-                {
-                  cerr << endl << endl 
-                       << "--------------- doing integral group " << g << endl;
-                  cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
-                  cerr << "num entries = " << localValues->size() << endl;
-                  cerr << "values = " << *localValues << endl;
-                }
-              
+              SUNDANCE_VERB_HIGH(tab1 << "contribution from work set "
+                                 << workSetCounter << " is " 
+                                 << (*localValues)[0]);
               localSum += (*localValues)[0];
             }
         }
@@ -947,11 +978,7 @@ void Assembler::evaluate(double& value) const
 
   mesh_.comm().allReduce((void*) &localSum, (void*) &value, 1, 
                          MPIComm::DOUBLE, MPIComm::SUM);
-  if (verbosity() > VerbHigh)
-    {
-      cerr << "vector = " << endl;
-      gradient.print(cerr);
-    }
+  SUNDANCE_VERB_LOW(tab << "Assembler: done computing functional");
 }
 
 

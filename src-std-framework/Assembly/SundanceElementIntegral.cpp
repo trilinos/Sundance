@@ -25,7 +25,7 @@ ElementIntegral::ElementIntegral(int dim,
     nRefDerivUnk_(-1),
     nNodesUnk_(-1),
     nNodes_(-1),
-    order_(1),
+    order_(0),
     alpha_(),
     beta_()
 {;}

@@ -41,6 +41,14 @@ DOFMapBuilder::DOFMapBuilder(const Mesh& mesh,
   init();
 }
 
+DOFMapBuilder::DOFMapBuilder()
+  : mesh_(),
+    eqn_(),
+    rowMap_(),
+    colMap_(),
+    isBCRow_()
+{}
+
 void DOFMapBuilder::init()
 {
   /* If the lists of test and unknown functions have the same basis families
@@ -80,20 +88,23 @@ void DOFMapBuilder::init()
         {
           SUNDANCE_ERROR("DOFMapBuilder::init() non-homogeneous test function spaces not yet supported");
         }
-
-      /* if every unk function is defined on the maximal cell set, and if
-       * all unk functions share a common basis, then we 
-       * can build a homogeneous DOF map. */
-      if (unksAreHomogeneous() && unksAreOmnipresent())
+      
+      if (hasUnks())
         {
-          Expr unk0 = eqn_->unkFunc(0);
-          BasisFamily basis0 = BasisFamily::getBasis(unk0);
-          colMap_ = rcp(new HomogeneousDOFMap(mesh_, basis0, 
-                                              eqn_->numUnks()));
-        }
-      else
-        {
-          SUNDANCE_ERROR("DOFMapBuilder::init() non-homogeneous unknown function spaces not yet supported");
+          /* if every unk function is defined on the maximal cell set, and if
+           * all unk functions share a common basis, then we 
+           * can build a homogeneous DOF map. */
+          if (unksAreHomogeneous() && unksAreOmnipresent())
+            {
+              Expr unk0 = eqn_->unkFunc(0);
+              BasisFamily basis0 = BasisFamily::getBasis(unk0);
+              colMap_ = rcp(new HomogeneousDOFMap(mesh_, basis0, 
+                                                  eqn_->numUnks()));
+            }
+          else
+            {
+              SUNDANCE_ERROR("DOFMapBuilder::init() non-homogeneous unknown function spaces not yet supported");
+            }
         }
     }
   markBCRows();
@@ -118,7 +129,12 @@ Array<BasisFamily> DOFMapBuilder::unkBasisArray() const
     }
   return rtn;
 }
-  
+
+bool DOFMapBuilder::hasUnks() const
+{
+  return eqn_->numUnks() > 0;
+}
+
 bool DOFMapBuilder::unksAreHomogeneous() const 
 {
   if (eqn_->numUnks() > 1)

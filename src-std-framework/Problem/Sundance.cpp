@@ -37,7 +37,6 @@ void Sundance::init(int* argc, void*** argv)
   int cmdWorkSetSize = defaultWorkSetSize;
 
   Assembler::workSetSize() = defaultWorkSetSize;
-  FunctionalEvaluator::workSetSize() = defaultWorkSetSize;
 
   clp().setOption("config", &configFilename, "Configuration file");
   clp().setOption("fpcheck", "nofpcheck", &cmdFpCheck, 
@@ -62,7 +61,6 @@ void Sundance::init(int* argc, void*** argv)
   if (cmdWorkSetSize != defaultWorkSetSize)
     {
       Assembler::workSetSize() = cmdWorkSetSize;
-      FunctionalEvaluator::workSetSize() = cmdWorkSetSize;
     }
 } 
 
@@ -109,12 +107,13 @@ void Sundance::handleException(std::exception& e)
 
 void Sundance::finalize()
 {
-  cerr << "eval vector flops: " << EvalVector::totalFlops() << endl;
-  cerr << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
-  cerr << "ref integration flops: " 
+  Tabs tab;
+  cerr << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
+  cerr << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
+  cerr << tab << "ref integration flops: " 
        << RefIntegral::totalFlops() << endl;
-  cerr << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
-  cerr << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
+  cerr << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
+  cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
   TimeMonitor::summarize();
   MPISession::finalize();
 }
@@ -191,7 +190,6 @@ void Sundance::setSettings(const string& settingsFile)
             {
               int workSetSize = child.getRequiredInt("value");
               Assembler::workSetSize() = workSetSize;
-              FunctionalEvaluator::workSetSize() = workSetSize;
               cerr << "setting work set size to " << workSetSize << endl;
               cerr << "confirming work set size = " << 
                 Assembler::workSetSize() << endl;
@@ -217,6 +215,10 @@ void Sundance::setSettings(const string& settingsFile)
           else if (context=="Assembly")
             {
               Internal::Assembler::classVerbosity() = verbosity(value);
+            }
+          else if (context=="Linear Problem")
+            {
+              LinearProblem::classVerbosity() = verbosity(value);
             }
           else if (context=="Integration Management")
             {

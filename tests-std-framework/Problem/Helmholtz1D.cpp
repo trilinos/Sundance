@@ -54,10 +54,6 @@ int main(int argc, void** argv)
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*(u-cos(x)), quad);
 
-      Assembler::classVerbosity() = VerbExtreme;
-      Evaluator::classVerbosity() = VerbExtreme;
-      EvalVector::classVerbosity() = VerbExtreme;
-
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 

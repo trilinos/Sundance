@@ -48,6 +48,10 @@ namespace SundanceStdFwk
                 const RefCountPtr<EquationSet>& eqn,
                 const VectorType<double>& vectorType,
                 const VerbositySetting& verb = classVerbosity());
+      /** */
+      Assembler(const Mesh& mesh, 
+                const RefCountPtr<EquationSet>& eqn,
+                const VerbositySetting& verb = classVerbosity());
       
       /** */
       const RefCountPtr<DOFMapBase>& rowMap() const 
@@ -101,6 +105,10 @@ namespace SundanceStdFwk
       static int& numAssembleCalls() {static int rtn=0; return rtn;}
       
     private:
+
+      /** */
+      void init(const Mesh& mesh, 
+                const RefCountPtr<EquationSet>& eqn);
 
       /** */
       void insertLocalMatrixValues(int cellDim, const Array<int>& workSet,

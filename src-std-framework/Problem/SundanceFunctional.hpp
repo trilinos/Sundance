@@ -7,6 +7,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceLinearProblem.hpp"
 #include "SundanceNonlinearProblem.hpp"
+#include "SundanceFunctionalEvaluator.hpp"
 #include "TSFNonlinearOperator.hpp"
 #include "TSFLinearSolver.hpp"
 #include "TSFVector.hpp"
@@ -54,7 +55,19 @@ namespace SundanceStdFwk
                              const Expr& fixedEvalPts) const ;
 
 
-    double evaluate() const ;
+    /** */
+    FunctionalEvaluator evaluator(const Expr& var,
+                                  const Expr& varEvalPts,
+                                  const Expr& fixed,
+                                  const Expr& fixedEvalPts) const ;
+
+
+    /** */
+    FunctionalEvaluator evaluator(const Expr& var,
+                                  const Expr& varEvalPts) const ;
+    
+    
+                                  
 
   private:
     Mesh mesh_;

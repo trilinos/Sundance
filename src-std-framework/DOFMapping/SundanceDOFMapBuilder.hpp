@@ -31,6 +31,8 @@ namespace SundanceStdFwk
     {
     public:
       /** */
+      DOFMapBuilder();
+      /** */
       DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn);
 
       /** */
@@ -49,6 +51,8 @@ namespace SundanceStdFwk
       const Mesh& mesh() const {return mesh_;}
 
     private:
+
+      bool hasUnks() const ;
 
       bool unksAreHomogeneous() const ;
 

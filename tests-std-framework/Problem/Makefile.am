@@ -8,7 +8,7 @@ noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Poisson3D Stokes2D \
 Coupled1D Coupled2D RadDiff1D NoxAlgebraic Kepler NoxPoisson1D \
 PoissonOnDisk OptPoisson1D Eikonal2D VorticityStokes2D \
 Stokes1D Helmholtz1D VorticityNavierStokes2D ConstancyBug BesselTest2D \
-AdvectionDiffusion2D
+AdvectionDiffusion2D FunctionalTest
 
 
 
@@ -367,6 +367,19 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 AdvectionDiffusion2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 AdvectionDiffusion2D_LDADD = $(STD_FWK_LIBS) 
+
+
+FunctionalTest_SOURCES = $(srcdir)/FunctionalTest.cpp 
+
+FunctionalTest_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+FunctionalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+FunctionalTest_LDADD = $(STD_FWK_LIBS) 
 
 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)

@@ -6,13 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
-#include "SundanceEvalManager.hpp"
-#include "SundanceQuadratureFamily.hpp"
-#include "SundanceCellFilter.hpp"
-#include "SundanceQuadratureEvalMediator.hpp"
-#include "SundanceRegionQuadCombo.hpp"
-#include "SundanceEvalManager.hpp"
-#include "SundanceEvaluatableExpr.hpp"
+#include "SundanceAssembler.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -45,8 +39,9 @@ namespace SundanceStdFwk
       FunctionalEvaluator(const Mesh& mesh, 
                           const Expr& integral,
                           const Expr& bcs,
-                          const Expr& fields,
-                          const Expr& fieldValues);
+                          const Expr& var,
+                          const Expr& varEvalPts,
+                          const VectorType<double>& vectorType);
       /** */
       FunctionalEvaluator(const Mesh& mesh, 
                           const Expr& integral,
@@ -54,16 +49,35 @@ namespace SundanceStdFwk
                           const Expr& vars,
                           const Expr& varEvalPts,
                           const Expr& fields,
-                          const Expr& fieldValues);
+                          const Expr& fieldValues,
+                          const VectorType<double>& vectorType);
 
 
       /** */
       double evaluate() const ;
+
+      /** */
+      Expr evalGradient(double& value) const ;
+
+      /** */
+      double fdGradientCheck(double h) const ;
       
     private:
+
+      /** */
+      Vector<double> evalGradientVector(double& value) const ;
       
-    /** */
-    RefCountPtr<Assembler> assembler_;
+      /** */
+      RefCountPtr<Assembler> assembler_;
+      
+      /** */
+      mutable Expr varValues_;
+
+      /** */
+      VectorType<double> vecType_;
+      
+      /** */
+      mutable Vector<double> gradient_;
       
     };
   }

@@ -87,3 +87,26 @@ NonlinearOperator<double> Functional
   return new NonlinearProblem(assembler, unkEvalPts);
 }
 
+FunctionalEvaluator Functional::evaluator(const Expr& var,
+                                          const Expr& varEvalPts,
+                                          const Expr& fixed,
+                                          const Expr& fixedEvalPts) const 
+{
+  return FunctionalEvaluator(mesh_, integral_, bc_,
+                             var, 
+                             varEvalPts, 
+                             fixed, 
+                             fixedEvalPts,
+                             vecType_);
+}
+
+
+FunctionalEvaluator Functional::evaluator(const Expr& var,
+                                          const Expr& varEvalPts) const 
+{
+  return FunctionalEvaluator(mesh_, integral_, bc_,
+                             var, 
+                             varEvalPts,
+                             vecType_);
+}
+

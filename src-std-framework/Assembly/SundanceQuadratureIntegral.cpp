@@ -304,12 +304,11 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& J,
       double detJ = fabs(J.detJ()[c]);
       for (int q=0; q<nQuad(); q++, coeffPtr++)
         {
-          double f = (*coeffPtr)*detJ;
-          a += f*detJ;
+          a += W_[q]*(*coeffPtr)*detJ;
         }
     }
 
-  addFlops(J.numCells()*(1 + 3*nQuad()));
+  addFlops(J.numCells()*(1 + 2*nQuad()));
 }
 
 

@@ -331,6 +331,7 @@ namespace SundanceCore
       /** Flag indicating whether this equation set is a functional
        * calculator */
       bool isFunctionalCalculator_;
+
     };
   }
 }

@@ -44,7 +44,7 @@ EquationSet::EquationSet(const Expr& eqns,
     unkIDToReducedIDMap_(),
     compTypes_(),
     isNonlinear_(false),
-    isVariationalProblem_(false),
+    isVariationalProblem_(true),
     isFunctionalCalculator_(true)
 {
   Expr unks;
@@ -65,7 +65,7 @@ EquationSet::EquationSet(const Expr& eqns,
 
   init(eqns, bcs, vars, varEvalPt,
        unks, unkEvalPt,
-       fixed, fixed);
+       fields, fieldValues);
 }
 
 EquationSet::EquationSet(const Expr& eqns, 
@@ -452,11 +452,21 @@ void EquationSet::init(const Expr& eqns,
             {
               EvalContext context(rqc, 0, contextID[2]);
               DerivSet nonzeros;
-              nonzeros = SymbPreprocessor
-                ::setupGradient(term, 
-                                vars, varLinearizationPts,
-                                fixedFields, fixedFieldValues,
-                                context);
+              if (compTypes_.contains(FunctionalAndGradient))
+                {
+                  nonzeros = SymbPreprocessor
+                    ::setupGradient(term, 
+                                    vars, varLinearizationPts,
+                                    fixedFields, fixedFieldValues,
+                                    context);
+                }
+              else
+                {
+                  nonzeros = SymbPreprocessor
+                    ::setupFunctional(term, 
+                                      fixedFields, fixedFieldValues,
+                                      context);
+                }
               rqcToContext_[FunctionalOnly].put(rqc, context);
               regionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
             }
@@ -484,8 +494,7 @@ void EquationSet::init(const Expr& eqns,
       for (int d=0; d<bcSum->numRegions(); d++)
         {
           OrderedHandle<CellFilterStub> reg = bcSum->region(d);
-          cerr << "working on region " << reg << endl;
-          cerr << "instance ID= " << reg.ptr()->id() << endl;
+
           if (!regionSet.contains(reg)) 
             {
               regionSet.put(reg);
@@ -510,15 +519,14 @@ void EquationSet::init(const Expr& eqns,
               u.merge(bcSum->funcsOnRegion(d, unkFuncSet));
             }
 
-          cerr << "BC regions are " << endl;
           for (Map<OrderedHandle<CellFilterStub>, Set<int> >::const_iterator 
                  iter=bcVarsOnRegions_.begin(); iter != bcVarsOnRegions_.end();
                iter ++)
             {
-              cerr << "region=" << iter->first << endl;
-              cerr << "id = " << iter->first.ptr()->id() << endl;
+              //              cerr << "region=" << iter->first << endl;
+              //              cerr << "id = " << iter->first.ptr()->id() << endl;
             }
-          cerr << "checking map integrity " << endl;
+          //          cerr << "checking map integrity " << endl;
           TEST_FOR_EXCEPTION(!bcVarsOnRegions_.containsKey(reg),
                              InternalError,
                              "Bug: region " << reg << " should appear in "
@@ -584,11 +592,21 @@ void EquationSet::init(const Expr& eqns,
                 {
                   EvalContext context(rqc, 0, contextID[2]);
                   DerivSet nonzeros;
-                  nonzeros = SymbPreprocessor
-                    ::setupGradient(term, 
-                                    vars, varLinearizationPts,
-                                    fixedFields, fixedFieldValues,
-                                    context);
+                  if (compTypes_.contains(FunctionalAndGradient))
+                    {
+                      nonzeros = SymbPreprocessor
+                        ::setupGradient(term, 
+                                        vars, varLinearizationPts,
+                                        fixedFields, fixedFieldValues,
+                                        context);
+                    }
+                  else
+                    {
+                      nonzeros = SymbPreprocessor
+                        ::setupFunctional(term, 
+                                          fixedFields, fixedFieldValues,
+                                          context);
+                    }
                   bcRqcToContext_[FunctionalOnly].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
                 }
@@ -631,12 +649,6 @@ void EquationSet::init(const Expr& eqns,
   regionQuadCombos_ = rqcSet.elements();
   bcRegionQuadCombos_ = rqcBCSet.elements();
 
-  for (int r=0; r<numRegions(); r++)
-    {
-      cerr << "region " << regions_[r] << endl
-           << "isBCRegion=" << isBCRegion(r)
-           << endl;
-    }
 
 }
 
@@ -670,7 +682,7 @@ void EquationSet
   else
     {
       funcPairs = rcp(new Set<OrderedPair<int, int> >());
-      theMap->put(domain, funcPairs);
+ theMap->put(domain, funcPairs);
     }
 
   for (DerivSet::const_iterator i=nonzeros.begin(); i!=nonzeros.end(); i++)

@@ -17,29 +17,20 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-
-      VerbositySetting verb = VerbSilent;
-      Assembler::classVerbosity() = verb;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
+      int nx = 32;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 64*np, np,
-                                                         0.0, 1.0, 64, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
+                                                         0.0, 1.0, nx, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
-
-      if (verb > VerbHigh)
-        {
-          FieldWriter wMesh = new VerboseFieldWriter();
-          wMesh.addMesh(mesh);
-          wMesh.write();
-        }
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
@@ -75,17 +66,15 @@ int main(int argc, void** argv)
 
       /* Define the weak form */
       Expr eqn = Integral(interior, (grad*vPsi)*(grad*psi) 
-                          + (grad*vOmega)*(grad*omega) + vPsi*omega, quad4)
-        + Integral(top, -1.0*vPsi, quad2);
+                          + (grad*vOmega)*(grad*omega) + vPsi*omega, quad2)
+        + Integral(top, -1.0*vPsi, quad4);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, vOmega*psi, quad4) 
-        + EssentialBC(top, vOmega*psi, quad4) 
-        + EssentialBC(left, vOmega*psi, quad4) 
-        + EssentialBC(right, vOmega*psi, quad4);
+      Expr bc = EssentialBC(bottom, vOmega*psi, quad2) 
+        + EssentialBC(top, vOmega*psi, quad2) 
+        + EssentialBC(left, vOmega*psi, quad2) 
+        + EssentialBC(right, vOmega*psi, quad2);
 
 
-      Assembler::workSetSize() = 100;
-      FunctionalEvaluator::workSetSize() = 100;
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega), 
@@ -95,8 +84,8 @@ int main(int argc, void** argv)
       ParameterList solverParams;
       solverParams.set("Type", "TSF");
       solverParams.set("Method", "BICGSTAB");
-      solverParams.set("Max Iterations", 200);
-      solverParams.set("Tolerance", 1.0e-12);
+      solverParams.set("Max Iterations", 500);
+      solverParams.set("Tolerance", 1.0e-8);
       solverParams.set("Precond", "ILUK");
       solverParams.set("Graph Fill", 1);
       solverParams.set("Verbosity", 4);
@@ -136,6 +125,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+  Sundance::finalize();
 }
