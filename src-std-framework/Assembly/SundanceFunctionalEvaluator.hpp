@@ -41,42 +41,29 @@ namespace SundanceStdFwk
       /** */
       FunctionalEvaluator(const Mesh& mesh, 
                           const Expr& integral);
+      /** */
+      FunctionalEvaluator(const Mesh& mesh, 
+                          const Expr& integral,
+                          const Expr& bcs,
+                          const Expr& fields,
+                          const Expr& fieldValues);
+      /** */
+      FunctionalEvaluator(const Mesh& mesh, 
+                          const Expr& integral,
+                          const Expr& bcs,
+                          const Expr& vars,
+                          const Expr& varEvalPts,
+                          const Expr& fields,
+                          const Expr& fieldValues);
 
 
       /** */
       double evaluate() const ;
       
-      /** */
-      static int& workSetSize() 
-      {static int rtn = defaultWorkSetSize(); return rtn;}
-      
-      
     private:
-
-      /** */
-      static int defaultWorkSetSize() {return 100;}
-
-      /** */
-      Mesh mesh_;
       
-      /** */
-      Array<RegionQuadCombo> rqc_;
-
-      /** */
-      Array<EvalContext> context_;
-
-      /** */
-      Map<RegionQuadCombo, Expr> rqcExprs_;
-
-
-      /** */
-      Array<RefCountPtr<QuadratureEvalMediator> > mediators_;
-
-
-      Array<const EvaluatableExpr*> evalExprs_;
-
-      /** */
-      RefCountPtr<EvalManager> evalMgr_;
+    /** */
+    RefCountPtr<Assembler> assembler_;
       
     };
   }

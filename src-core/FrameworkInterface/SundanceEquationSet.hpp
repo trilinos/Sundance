@@ -26,6 +26,11 @@ namespace SundanceCore
   namespace Internal
   {
     /** 
+     *
+     */
+    enum ComputationType {MatrixAndVector, VectorOnly, 
+                          FunctionalOnly, FunctionalAndGradient};
+    /** 
      * EquationSet is an object in which the symbolic specification 
      * of a problem, its BCs, its test and unknown functions, and the
      * point about which it is to be linearized are all gathered. 
@@ -45,6 +50,13 @@ namespace SundanceCore
     class EquationSet : public TSFExtended::ObjectWithVerbosity<EquationSet>
     {
     public:
+      /** Set up an equation to be integrated with field variables fixed
+       * to specified values */
+      EquationSet(const Expr& eqns, 
+                  const Expr& bcs,
+                  const Expr& fields,
+                  const Expr& fieldValues);
+
       /** Set up equations written in weak form with test functions */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
@@ -142,20 +154,8 @@ namespace SundanceCore
       /** \name Methods needed during setup of integration and evaluation */
       //@{
 
-      /** Returns the maximum order of functional differentiation
-       * computed in this equation set. For gradient calculators, 
-       * this will be 1. For variational problems and weak problems,
-       * this will be 2. */
-      int maxDiffOrder() const ;
-
-      /** Returns the minimum order of functional differentiation
-       * computed in this equation set. For gradient calculators, 
-       * this will be 0. For variational problems and weak problems,
-       * this will be 1. */
-      int minDiffOrder() const ;
-
       /** */
-      bool isGradientCalculator() const {return isGradientCalculator_;}
+      bool isFunctionalCalculator() const {return isFunctionalCalculator_;}
       
 
       /** Returns the list of distinct subregion-quadrature combinations
@@ -168,26 +168,34 @@ namespace SundanceCore
       const Array<RegionQuadCombo>& bcRegionQuadCombos() const 
       {return bcRegionQuadCombos_;}
 
+      /** Indicate whether this equation set will do the
+       * given computation type */
+      bool hasComputationType(ComputationType compType) const 
+      {return compTypes_.contains(compType);}
+
+      /** Return the types of computations this object can perform */
+      const Set<ComputationType>& computationTypes() const 
+      {return compTypes_;}
+
       /** Returns the set of nonzero functional derivatives appearing
        * in the equation set at the given subregion-quadrature combination */
-      const DerivSet& nonzeroFunctionalDerivs(int caseID,
-                                              const RegionQuadCombo& r) const 
-      {return regionQuadComboNonzeroDerivs_[caseID].get(r);}
+      const DerivSet& nonzeroFunctionalDerivs(ComputationType compType,
+                                              const RegionQuadCombo& r) const ;
 
       /** Returns the set of nonzero functional derivatives appearing
        * in the boundary conditions
        *  at the given subregion-quadrature combination */
-      const DerivSet& nonzeroBCFunctionalDerivs(int caseID,
-                                                const RegionQuadCombo& r) const
-      {return bcRegionQuadComboNonzeroDerivs_[caseID].get(r);}
+      const DerivSet& nonzeroBCFunctionalDerivs(ComputationType compType,
+                                                const RegionQuadCombo& r) const;
 
-      /** Map RQC to the context for the derivs of the given caseID */
-      EvalContext rqcToContext(int caseID, const RegionQuadCombo& r) const 
-      {return rqcToContext_[caseID].get(r);}
+      /** Map RQC to the context for the derivs of the given compType */
+      EvalContext rqcToContext(ComputationType compType, 
+                               const RegionQuadCombo& r) const ;
 
-      /** Map BC RQC to the context for the derivs of the given caseID */
-      EvalContext bcRqcToContext(int caseID, const RegionQuadCombo& r) const 
-      {return bcRqcToContext_[caseID].get(r);}
+
+      /** Map BC RQC to the context for the derivs of the given compType */
+      EvalContext bcRqcToContext(ComputationType compType, 
+                                 const RegionQuadCombo& r) const ; 
 
 
       /** Indicates whether any var-unk pairs appear in the given domain */
@@ -277,19 +285,19 @@ namespace SundanceCore
 
       /** List of the sets of nonzero functional derivatives at 
        * each regionQuadCombo */
-      Array<Map<RegionQuadCombo, DerivSet> > regionQuadComboNonzeroDerivs_;
+      Map<ComputationType, Map<RegionQuadCombo, DerivSet> > regionQuadComboNonzeroDerivs_;
 
       /** List of the sets of nonzero functional derivatives at 
        * each regionQuadCombo */
-      Array<Map<RegionQuadCombo, DerivSet> > bcRegionQuadComboNonzeroDerivs_;
+      Map<ComputationType, Map<RegionQuadCombo, DerivSet> > bcRegionQuadComboNonzeroDerivs_;
 
       /** List of the contexts for
        * each regionQuadCombo */
-      Array<Map<RegionQuadCombo, EvalContext> > rqcToContext_;
+      Map<ComputationType, Map<RegionQuadCombo, EvalContext> > rqcToContext_;
 
       /** List of the contexts for
        * each BC regionQuadCombo */
-      Array<Map<RegionQuadCombo, EvalContext> > bcRqcToContext_;
+      Map<ComputationType, Map<RegionQuadCombo, EvalContext> > bcRqcToContext_;
 
       /** var functions for this equation set */
       Expr varFuncs_;
@@ -309,6 +317,9 @@ namespace SundanceCore
        * position in list of unk functions */
       Map<int, int> unkIDToReducedIDMap_;
 
+      /** Set of the computation types supported her */
+      Set<ComputationType> compTypes_;
+
       
       /** Flag indicating whether this equation set is nonlinear */
       bool isNonlinear_;
@@ -317,9 +328,9 @@ namespace SundanceCore
        * a variational problem */
       bool isVariationalProblem_;
 
-      /** Flag indicating whether this equation set is a gradient
+      /** Flag indicating whether this equation set is a functional
        * calculator */
-      bool isGradientCalculator_;
+      bool isFunctionalCalculator_;
     };
   }
 }

@@ -81,11 +81,11 @@ Assembler
     colSpace_(),
     bcRows_(),
     rqc_(),
-    contexts_(2),
+    contexts_(),
     isBCRqc_(),
-    groups_(2),
+    groups_(),
     mediators_(),
-    evalExprs_(2),
+    evalExprs_(),
     evalMgr_(rcp(new EvalManager())),
     isBCRow_(),
     lowestRow_(),
@@ -99,14 +99,34 @@ Assembler
 
   DOFMapBuilder mapBuilder(mesh, eqn);
 
-
-
   rowMap_ = mapBuilder.rowMap();
-  colMap_ = mapBuilder.colMap();
-  rowSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray(), rowMap_, vecType_));
-  colSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray(), colMap_, vecType_));
-  isBCRow_ = mapBuilder.isBCRow();
+  rowSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray(), 
+                                    rowMap_, vecType_));
 
+  if (!eqn->isFunctionalCalculator())
+    {
+      colMap_ = mapBuilder.colMap();
+      colSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray(), 
+                                        colMap_, vecType_));
+      groups_.put(MatrixAndVector, Array<Array<IntegralGroup> >());
+      contexts_.put(MatrixAndVector, Array<EvalContext>());
+      evalExprs_.put(MatrixAndVector, Array<const EvaluatableExpr*>());
+      groups_.put(VectorOnly, Array<Array<IntegralGroup> >());
+      contexts_.put(VectorOnly, Array<EvalContext>());
+      evalExprs_.put(VectorOnly, Array<const EvaluatableExpr*>());
+    }
+  else
+    {
+      groups_.put(FunctionalAndGradient, Array<Array<IntegralGroup> >());
+      contexts_.put(FunctionalAndGradient, Array<EvalContext>());
+      evalExprs_.put(FunctionalAndGradient, Array<const EvaluatableExpr*>());
+      groups_.put(FunctionalOnly, Array<Array<IntegralGroup> >());
+      contexts_.put(FunctionalOnly, Array<EvalContext>());
+      evalExprs_.put(FunctionalOnly, Array<const EvaluatableExpr*>());
+    }
+
+
+  isBCRow_ = mapBuilder.isBCRow();
   lowestRow_ = mapBuilder.rowMap()->lowestLocalDOF();
 
 
@@ -125,20 +145,24 @@ Assembler
       CellType cellType = mesh.cellType(cellDim);
       QuadratureFamily quad(rqc.quad());
 
-      for (int order=1; order<=2; order++)
+      for (Set<ComputationType>::const_iterator 
+             i=eqn->computationTypes().begin(); 
+           i!=eqn->computationTypes().end();
+           i++)
         {
-          const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(order, rqc);
-          EvalContext context = eqn->rqcToContext(order, rqc);
-          contexts_[order-1].append(context);
+          const ComputationType& compType = *i;
+          const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(compType, rqc);
+          EvalContext context = eqn->rqcToContext(compType, rqc);
+          contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
-          evalExprs_[order-1].append(ee);
+          evalExprs_[compType].append(ee);
           const RefCountPtr<SparsitySuperset>& sparsity 
             = ee->sparsitySuperset(context);
           SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
           grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
-          groups_[order-1].append(groups);
+          groups_[compType].append(groups);
         }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
@@ -159,20 +183,24 @@ Assembler
       CellType cellType = mesh.cellType(cellDim);
       QuadratureFamily quad(rqc.quad());
 
-      for (int order=1; order<=2; order++)
+      for (Set<ComputationType>::const_iterator 
+             i=eqn->computationTypes().begin(); 
+           i!=eqn->computationTypes().end();
+           i++)
         {
-          const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(order, rqc);
-          EvalContext context = eqn->bcRqcToContext(order, rqc);
-          contexts_[order-1].append(context);
+          const ComputationType& compType = *i;
+          const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(compType, rqc);
+          EvalContext context = eqn->bcRqcToContext(compType, rqc);
+          contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
-          evalExprs_[order-1].append(ee);
+          evalExprs_[compType].append(ee);
           const RefCountPtr<SparsitySuperset>& sparsity 
             = ee->sparsitySuperset(context);
           SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
           grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
-          groups_[order-1].append(groups);
+          groups_[compType].append(groups);
         }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
@@ -265,6 +293,11 @@ void Assembler::assemble(LinearOperator<double>& A,
   TimeMonitor timer(assemblyTimer());
   numAssembleCalls()++;
 
+  TEST_FOR_EXCEPTION(!contexts_.containsKey(MatrixAndVector),
+                     RuntimeError,
+                     "Assembler::assemble(A, b) called for an assembler that "
+                     "does not support matrix/vector assembly");
+
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
@@ -319,6 +352,11 @@ void Assembler::assemble(LinearOperator<double>& A,
         }
     }
 
+  const Array<EvalContext>& contexts = contexts_.get(MatrixAndVector);
+  const Array<Array<IntegralGroup> >& groups = groups_.get(MatrixAndVector);
+  const Array<const EvaluatableExpr*>& evalExprs 
+    = evalExprs_.get(MatrixAndVector);
+
   for (int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
@@ -326,12 +364,12 @@ void Assembler::assemble(LinearOperator<double>& A,
                            << rqc_[r]);     
 
 
-      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs_[1][r]->toString());
+      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs[r]->toString());
       SUNDANCE_VERB_MEDIUM(tab0 << "isBC= " << isBCRqc_[r]);
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
-      evalMgr_->setRegion(contexts_[1][r]);
+      evalMgr_->setRegion(contexts_.get(MatrixAndVector)[r]);
 
       /* get the cells for the current domain */
       CellFilter filter = rqc_[r].domain();
@@ -343,7 +381,7 @@ void Assembler::assemble(LinearOperator<double>& A,
       SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
 
       const Evaluator* evaluator 
-        = evalExprs_[1][r]->evaluator(contexts_[1][r]).get();
+        = evalExprs[r]->evaluator(contexts[r]).get();
 
       /* do the cells in batches of the work set size */
 
@@ -370,15 +408,15 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           evaluator->resetNumCalls();
           //          mesh_.getJacobians(cellDim, *workSet, *J);
-          evalExprs_[1][r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
+          evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
           if (verbosity() > VerbHigh)
             {
               Tabs tab2;
               cerr << tab2 << "evaluation results: " << endl;
-              const EvalContext& context = contexts_[1][r];
+              const EvalContext& context = contexts[r];
               const RefCountPtr<SparsitySuperset>& sparsity 
-                = evalExprs_[1][r]->sparsitySuperset(context);
+                = evalExprs[r]->sparsitySuperset(context);
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
@@ -399,9 +437,9 @@ void Assembler::assemble(LinearOperator<double>& A,
                                            nUnkNodes);
             }
           
-          for (int g=0; g<groups_[1][r].size(); g++)
+          for (int g=0; g<groups[r].size(); g++)
             {
-              const IntegralGroup& group = groups_[1][r][g];
+              const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(*J, vectorCoeffs,
                                   constantCoeffs, 
                                   localValues)) continue;
@@ -458,6 +496,11 @@ void Assembler::assemble(Vector<double>& b) const
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
+  TEST_FOR_EXCEPTION(!contexts_.containsKey(VectorOnly),
+                     RuntimeError,
+                     "Assembler::assemble(b) called for an assembler that "
+                     "does not support vector-only assembly");
+
   SUNDANCE_VERB_LOW("Assembling vector"); 
 
   SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
@@ -486,6 +529,11 @@ void Assembler::assemble(Vector<double>& b) const
 
   b.zero();
 
+  const Array<EvalContext>& contexts = contexts_.get(VectorOnly);
+  const Array<Array<IntegralGroup> >& groups = groups_.get(VectorOnly);
+  const Array<const EvaluatableExpr*>& evalExprs 
+    = evalExprs_.get(VectorOnly);
+
   for (int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
@@ -495,11 +543,11 @@ void Assembler::assemble(Vector<double>& b) const
 
 
       
-      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs_[1][r]->toString());
+      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs[r]->toString());
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
-      evalMgr_->setRegion(contexts_[0][r]);
+      evalMgr_->setRegion(contexts[r]);
 
       /* get the cells for the current domain */
       CellFilter filter = rqc_[r].domain();
@@ -512,7 +560,7 @@ void Assembler::assemble(Vector<double>& b) const
       SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
 
       const Evaluator* evaluator 
-        = evalExprs_[0][r]->evaluator(contexts_[0][r]).get();
+        = evalExprs[r]->evaluator(contexts[r]).get();
       /* do the cells in batches of the work set size */
 
       CellIterator iter=cells.begin();
@@ -540,16 +588,16 @@ void Assembler::assemble(Vector<double>& b) const
 
           evaluator->resetNumCalls();
           //          mesh_.getJacobians(cellDim, *workSet, *J);
-          evalExprs_[0][r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
+          evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
           if (verbosity() > VerbHigh)
             {
               Tabs tab2;
               cerr << tab2 << " ----------- evaluation results: ------" << endl;
-              cerr << tab2 << "expr=" << evalExprs_[0][r]->toString() << endl;
-              const EvalContext& context = contexts_[0][r];
+              cerr << tab2 << "expr=" << evalExprs[r]->toString() << endl;
+              const EvalContext& context = contexts[r];
               const RefCountPtr<SparsitySuperset>& sparsity 
-                = evalExprs_[0][r]->sparsitySuperset(context);
+                = evalExprs[r]->sparsitySuperset(context);
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
@@ -558,9 +606,9 @@ void Assembler::assemble(Vector<double>& b) const
                                        nTestNodes);
 
 
-          for (int g=0; g<groups_[0][r].size(); g++)
+          for (int g=0; g<groups[r].size(); g++)
             {
-              const IntegralGroup& group = groups_[0][r][g];
+              const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(*J, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
@@ -591,6 +639,327 @@ void Assembler::assemble(Vector<double>& b) const
       b.print(cerr);
     }
 }
+
+
+/* ------------  evaluate a functional and its gradient ---- */
+
+void Assembler::evaluate(double& value, Vector<double>& gradient) const 
+{
+  Tabs tab;
+  TimeMonitor timer(assemblyTimer());
+  numAssembleCalls()++;
+  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  workSet->reserve(workSetSize());
+
+  TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalAndGradient),
+                     RuntimeError,
+                     "Assembler::evaluate(f,df) called for an assembler that "
+                     "does not support value/gradient assembly");
+
+  SUNDANCE_VERB_LOW("Computing functional and gradient"); 
+
+  SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
+
+  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
+
+  Array<RefCountPtr<EvalVector> > vectorCoeffs;
+  Array<double> constantCoeffs;
+  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+
+  RefCountPtr<Array<int> > testLocalDOFs 
+    = rcp(new Array<int>());
+
+  if (vecNeedsConfiguration_)
+    {
+      configureVector(gradient);
+    }
+
+
+
+  TSFExtended::LoadableVector<double>* vec 
+    = dynamic_cast<TSFExtended::LoadableVector<double>* >(gradient.ptr().get());
+
+  TEST_FOR_EXCEPTION(vec==0, RuntimeError,
+                     "vector is not loadable in Assembler::evaluate()");
+
+  gradient.zero();
+  double localSum = 0.0;
+
+  const Array<EvalContext>& contexts = contexts_.get(FunctionalAndGradient);
+  const Array<Array<IntegralGroup> >& groups 
+    = groups_.get(FunctionalAndGradient);
+  const Array<const EvaluatableExpr*>& evalExprs 
+    = evalExprs_.get(FunctionalAndGradient);
+
+  for (int r=0; r<rqc_.size(); r++)
+    {
+      Tabs tab0;
+
+      SUNDANCE_VERB_MEDIUM(tab0 << "doing subregion=" 
+                           << rqc_[r]);     
+
+
+      
+      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs[r]->toString());
+
+      /* specify the mediator for this RQC */
+      evalMgr_->setMediator(mediators_[r]);
+      evalMgr_->setRegion(contexts[r]);
+
+      /* get the cells for the current domain */
+      CellFilter filter = rqc_[r].domain();
+      CellSet cells = filter.getCells(mesh_);
+      int cellDim = filter.dimension(mesh_);
+      CellType cellType = mesh_.cellType(cellDim);
+      mediators_[r]->setCellType(cellType);      
+
+
+      SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
+
+      const Evaluator* evaluator 
+        = evalExprs[r]->evaluator(contexts[r]).get();
+      /* do the cells in batches of the work set size */
+
+      CellIterator iter=cells.begin();
+      int workSetCounter = 0;
+
+      while (iter != cells.end())
+        {
+          Tabs tab1;
+          /* build up the work set */
+          workSet->resize(0);
+          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+            {
+              workSet->append(*iter);
+            }
+
+          SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
+                             << " consisting of " 
+                             << workSet->size() << " cells");
+          SUNDANCE_VERB_EXTREME("cells are " << *workSet);
+
+
+          workSetCounter++;
+
+          mediators_[r]->setCellBatch(workSet, J);
+
+          evaluator->resetNumCalls();
+          //          mesh_.getJacobians(cellDim, *workSet, *J);
+          evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
+
+          if (verbosity() > VerbHigh)
+            {
+              Tabs tab2;
+              cerr << tab2 << " ----------- evaluation results: ------" << endl;
+              cerr << tab2 << "expr=" << evalExprs[r]->toString() << endl;
+              const EvalContext& context = contexts[r];
+              const RefCountPtr<SparsitySuperset>& sparsity 
+                = evalExprs[r]->sparsitySuperset(context);
+              sparsity->print(cerr, vectorCoeffs, constantCoeffs);
+            }
+
+          int nTestNodes;
+          rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
+                                       nTestNodes);
+
+
+          for (int g=0; g<groups[r].size(); g++)
+            {
+              const IntegralGroup& group = groups[r][g];
+              if (!group.evaluate(*J, vectorCoeffs, 
+                                  constantCoeffs, 
+                                  localValues)) 
+                {
+                  continue;
+                }
+
+              if (verbosity() > VerbHigh)
+                {
+                  cerr << endl << endl 
+                       << "--------------- doing integral group " << g << endl;
+                  cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
+                  cerr << "num entries = " << localValues->size() << endl;
+                  cerr << "values = " << *localValues << endl;
+                }
+              
+              if (group.isOneForm())
+                {
+                  insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
+                                         *testLocalDOFs,
+                                         group.nTestNodes(),
+                                         group.testID(), *localValues, vec);
+                }
+              else
+                {
+                  localSum += (*localValues)[0];
+                }
+            }
+        }
+    }
+
+  value = localSum;
+
+  mesh_.comm().allReduce((void*) &localSum, (void*) &value, 1, 
+                         MPIComm::DOUBLE, MPIComm::SUM);
+  if (verbosity() > VerbHigh)
+    {
+      cerr << "vector = " << endl;
+      gradient.print(cerr);
+    }
+}
+
+
+
+
+/* ------------  evaluate a functional ---- */
+
+void Assembler::evaluate(double& value) const 
+{
+  Tabs tab;
+  TimeMonitor timer(assemblyTimer());
+  numAssembleCalls()++;
+  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  workSet->reserve(workSetSize());
+
+  TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalOnly),
+                     RuntimeError,
+                     "Assembler::evaluate(f) called for an assembler that "
+                     "does not support functional evaluation");
+
+  SUNDANCE_VERB_LOW("Computing functional"); 
+
+  SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
+
+  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
+
+  Array<RefCountPtr<EvalVector> > vectorCoeffs;
+  Array<double> constantCoeffs;
+  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+
+  RefCountPtr<Array<int> > testLocalDOFs 
+    = rcp(new Array<int>());
+
+  double localSum = 0.0;
+
+  const Array<EvalContext>& contexts = contexts_.get(FunctionalOnly);
+  const Array<Array<IntegralGroup> >& groups 
+    = groups_.get(FunctionalOnly);
+  const Array<const EvaluatableExpr*>& evalExprs 
+    = evalExprs_.get(FunctionalOnly);
+
+  for (int r=0; r<rqc_.size(); r++)
+    {
+      Tabs tab0;
+
+      SUNDANCE_VERB_MEDIUM(tab0 << "doing subregion=" 
+                           << rqc_[r]);     
+
+
+      
+      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs[r]->toString());
+
+      /* specify the mediator for this RQC */
+      evalMgr_->setMediator(mediators_[r]);
+      evalMgr_->setRegion(contexts[r]);
+
+      /* get the cells for the current domain */
+      CellFilter filter = rqc_[r].domain();
+      CellSet cells = filter.getCells(mesh_);
+      int cellDim = filter.dimension(mesh_);
+      CellType cellType = mesh_.cellType(cellDim);
+      mediators_[r]->setCellType(cellType);      
+
+
+      SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
+
+      const Evaluator* evaluator 
+        = evalExprs[r]->evaluator(contexts[r]).get();
+      /* do the cells in batches of the work set size */
+
+      CellIterator iter=cells.begin();
+      int workSetCounter = 0;
+
+      while (iter != cells.end())
+        {
+          Tabs tab1;
+          /* build up the work set */
+          workSet->resize(0);
+          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+            {
+              workSet->append(*iter);
+            }
+
+          SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
+                             << " consisting of " 
+                             << workSet->size() << " cells");
+          SUNDANCE_VERB_EXTREME("cells are " << *workSet);
+
+
+          workSetCounter++;
+
+          mediators_[r]->setCellBatch(workSet, J);
+
+          evaluator->resetNumCalls();
+          //          mesh_.getJacobians(cellDim, *workSet, *J);
+          evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
+
+          if (verbosity() > VerbHigh)
+            {
+              Tabs tab2;
+              cerr << tab2 << " ----------- evaluation results: ------" << endl;
+              cerr << tab2 << "expr=" << evalExprs[r]->toString() << endl;
+              const EvalContext& context = contexts[r];
+              const RefCountPtr<SparsitySuperset>& sparsity 
+                = evalExprs[r]->sparsitySuperset(context);
+              sparsity->print(cerr, vectorCoeffs, constantCoeffs);
+            }
+
+          int nTestNodes;
+          rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
+                                       nTestNodes);
+
+
+          for (int g=0; g<groups[r].size(); g++)
+            {
+              const IntegralGroup& group = groups[r][g];
+              if (!group.evaluate(*J, vectorCoeffs, 
+                                  constantCoeffs, 
+                                  localValues)) 
+                {
+                  continue;
+                }
+
+              if (verbosity() > VerbHigh)
+                {
+                  cerr << endl << endl 
+                       << "--------------- doing integral group " << g << endl;
+                  cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
+                  cerr << "num entries = " << localValues->size() << endl;
+                  cerr << "values = " << *localValues << endl;
+                }
+              
+              localSum += (*localValues)[0];
+            }
+        }
+    }
+
+  value = localSum;
+
+  mesh_.comm().allReduce((void*) &localSum, (void*) &value, 1, 
+                         MPIComm::DOUBLE, MPIComm::SUM);
+  if (verbosity() > VerbHigh)
+    {
+      cerr << "vector = " << endl;
+      gradient.print(cerr);
+    }
+}
+
+
+
+
+
+
+
 
 /* ------------  insert elements into the matrix  ------------- */
 

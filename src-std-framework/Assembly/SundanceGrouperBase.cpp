@@ -25,10 +25,10 @@ using namespace TSFExtended;
 
 void GrouperBase::extractWeakForm(const EquationSet& eqn,
                                   const MultipleDeriv& functionalDeriv,
-                                  BasisFamily& testBasis, 
+                                  BasisFamily& varBasis, 
                                   BasisFamily& unkBasis,
-                                  MultiIndex& miTest, MultiIndex& miUnk,
-                                  int& testID, int& unkID, 
+                                  MultiIndex& miVar, MultiIndex& miUnk,
+                                  int& varID, int& unkID, 
                                   bool& isOneForm) const
 {
   Tabs tab;
@@ -43,8 +43,8 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
                      "derivative of order > 2: " 
                      << functionalDeriv.toString());
 
-  bool foundTest = false;
   bool foundUnk = false;
+  bool foundVar = false;
 
   for (iter = functionalDeriv.begin(); iter != functionalDeriv.end(); iter++)
     {
@@ -57,64 +57,77 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       
       const FunctionalDeriv* f = d.funcDeriv();
       
-      const UnknownFuncElement* u 
-        = dynamic_cast<const UnknownFuncElement*>(f->func());
-      if (u != 0)
+      const SymbolicFuncElement* s 
+        = dynamic_cast<const SymbolicFuncElement*>(f->func());
+
+      TEST_FOR_EXCEPTION(s==0, InternalError, 
+                         "WeakFormBatch::extractWeakForm failed to cast "
+                         "function to SymbolicFuncElement");
+      
+
+      int funcID = f->funcID();
+      int myIndex = s->myIndex();
+
+      if (eqn.hasUnkID(funcID))
         {
+          const UnknownFuncElement* u
+            = dynamic_cast<const UnknownFuncElement*>(s);
+          TEST_FOR_EXCEPTION(u==0, InternalError, 
+                             "WeakFormBatch::extractWeakForm could not cast "
+                             "unknown function to UnknownFuncElement");
           foundUnk = true;
-          unkID = f->funcID();
-          unkID = eqn.reducedUnkID(unkID);
+          unkID = eqn.reducedUnkID(funcID);
+
           SUNDANCE_OUT(verbosity() > VerbMedium, 
                        tab << "found unkID=" << unkID);
-          const UnknownFunction* uf 
-            = dynamic_cast<const  UnknownFunction*>(u->master());
-          TEST_FOR_EXCEPTION(uf==0, InternalError, 
-                             "WeakFormBatch::extractWeakForm failed to cast "
-                             "UnknownFunctionStub to UnknownFunction");
+
           const FuncWithBasis* fb 
-            = dynamic_cast<const  FuncWithBasis*>(uf);
-          TEST_FOR_EXCEPTION(fb==0, InternalError, 
-                             "WeakFormBatch::extractWeakForm failed to cast "
-                             "UnknownFunction to funcWithBasis");
-          int myIndex = u->myIndex();
+            = dynamic_cast<const  FuncWithBasis*>(u->master());
           unkBasis = fb->basis()[myIndex];
           SUNDANCE_OUT(verbosity() > VerbMedium, 
                        tab << "found unkBasis=" << unkBasis);
+
           miUnk = f->multiIndex();
           SUNDANCE_OUT(verbosity() > VerbMedium, 
                        tab << "found unk multi index=" << miUnk.toString());
-          continue;
         }
-      
-      const TestFuncElement* t 
-        = dynamic_cast<const TestFuncElement*>(f->func());
-      if (t != 0)
+      else
         {
-          foundTest = true;
-          testID = f->funcID();
-          testID = eqn.reducedVarID(testID);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
-                       tab << "found testID=" << testID);
-          
-          const TestFunction* tf 
-            = dynamic_cast<const  TestFunction*>(t->master());
-          TEST_FOR_EXCEPTION(tf==0, InternalError, 
-                             "WeakFormBatch::extractWeakForm failed to cast "
-                             "TestFunctionStub to TestFunction");
-          const FuncWithBasis* fb 
-            = dynamic_cast<const  FuncWithBasis*>(tf);
-          TEST_FOR_EXCEPTION(fb==0, InternalError, 
-                             "WeakFormBatch::extractWeakForm failed to cast "
-                             "TestFunction to funcWithBasis");
+          foundVar = true;
+          varID = eqn.reducedVarID(funcID);
 
-          int myIndex = t->myIndex();
-          testBasis = fb->basis()[myIndex];
           SUNDANCE_OUT(verbosity() > VerbMedium, 
-                       tab << "found testBasis=" << testBasis);
-          miTest = f->multiIndex();
+                       tab << "found varID=" << varID);
+
+          const UnknownFuncElement* u
+            = dynamic_cast<const UnknownFuncElement*>(s);
+
+          const TestFuncElement* t
+            = dynamic_cast<const TestFuncElement*>(s);
+
+          TEST_FOR_EXCEPTION(u==0 && t==0, InternalError, 
+                             "WeakFormBatch::extractWeakForm could not cast "
+                             "variational function to either an "
+                             "UnknownFuncElement or a TestFuncElement");
+
+          if (t != 0) 
+            {
+              const FuncWithBasis* fb 
+                = dynamic_cast<const  FuncWithBasis*>(t->master());
+              varBasis = fb->basis()[myIndex];
+            }
+          else
+            {
+              const FuncWithBasis* fb 
+                = dynamic_cast<const  FuncWithBasis*>(u->master());
+              varBasis = fb->basis()[myIndex];
+            }
           SUNDANCE_OUT(verbosity() > VerbMedium, 
-                       tab << "found test multi index=" << miTest.toString());
-          continue;
+                       tab << "found varBasis=" << varBasis);
+
+          miVar = f->multiIndex();
+          SUNDANCE_OUT(verbosity() > VerbMedium, 
+                       tab << "found var multi index=" << miVar.toString());
         }
     }
 

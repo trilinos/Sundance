@@ -16,7 +16,7 @@
 
 
 
-<Verbosity context="Assembly" value="Low"/>
+<Verbosity context="Assembly" value="Silent"/>
 
 <Verbosity context="Evaluation" value="Silent"/>
 

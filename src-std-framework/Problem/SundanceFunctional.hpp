@@ -53,6 +53,9 @@ namespace SundanceStdFwk
                              const Expr& fixed,
                              const Expr& fixedEvalPts) const ;
 
+
+    double evaluate() const ;
+
   private:
     Mesh mesh_;
 

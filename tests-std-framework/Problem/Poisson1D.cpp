@@ -62,6 +62,9 @@ int main(int argc, void** argv)
         
 
       Expr soln = prob.solve(solver);
+      TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
+                         RuntimeError,
+                         "solve failed");
 
       Expr exactSoln = x*(x-2.0);
 

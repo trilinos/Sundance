@@ -77,6 +77,13 @@ namespace SundanceStdFwk
       void assemble(TSFExtended::Vector<double>& b) const ;
 
       /** */
+      void evaluate(double& value,
+                    TSFExtended::Vector<double>& gradient) const ;
+
+      /** */
+      void evaluate(double& value) const ;
+
+      /** */
       static int& workSetSize() 
       {static int rtn = defaultWorkSetSize(); return rtn;}
       
@@ -165,15 +172,15 @@ namespace SundanceStdFwk
 
       Array<RegionQuadCombo> rqc_;
 
-      Array<Array<EvalContext> > contexts_;
+      Map<ComputationType, Array<EvalContext> > contexts_;
 
       Array<int> isBCRqc_;
 
-      Array<Array<Array<IntegralGroup> > > groups_;
+      Map<ComputationType, Array<Array<IntegralGroup> > > groups_;
 
       Array<RefCountPtr<StdFwkEvalMediator> > mediators_;
 
-      Array<Array<const EvaluatableExpr*> > evalExprs_;
+      Map<ComputationType, Array<const EvaluatableExpr*> > evalExprs_;
 
       RefCountPtr<EvalManager> evalMgr_;
 
