@@ -742,27 +742,31 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
           
           if (pairs.get() != 0)
             {
-              for (int t=0; t<nt; t++)
+              for (int c=0; c<workSet->size(); c++)
                 {
-                  for (int uit=0; uit<unksForTests[t].size(); uit++)
+                  int testOffset = c*nTestNodes*nTestFuncs;
+                  int unkOffset = c*nUnkNodes*nUnkFuncs;
+                  for (int t=0; t<nt; t++)
                     {
-                      Tabs tab2;
-                      int u = unksForTests[t][uit];
-                      for (int c=0; c<workSet->size(); c++)
+                      for (int uit=0; uit<unksForTests[t].size(); uit++)
                         {
-                          int testOffset = c*nTestNodes*nTestFuncs;
-                          int unkOffset = c*nUnkNodes*nUnkFuncs;
+                          Tabs tab2;
+                          int u = unksForTests[t][uit];
+                          const int* rowPtr 
+                            = &((*testLocalDOFs)[testOffset + t]);
                           for (int n=0; n<nTestNodes; n++)
                             {
-                              int row = (*testLocalDOFs)[testOffset + n*nTestFuncs + t];
+                              int row = rowPtr[n*nTestFuncs];
                               // if (!rowMap()->isLocalDOF(row) 
 //                                   || isBCRow(row)) continue;
                               if (row < lowestRow_ || row >= highestRow
                                   || (*isBCRow_)[row]) continue;
-                              std::set<int>& colSet = graph[row-lowestRow_];
+                              ColSetType& colSet = graph[row-lowestRow_];
+                              const int* colPtr 
+                                = &((*unkLocalDOFs)[unkOffset + u]);
                               for (int m=0; m<nUnkNodes; m++)
                                 {
-                                  int col = (*unkLocalDOFs)[unkOffset + m*nUnkFuncs + t];
+                                  int col = colPtr[m*nUnkFuncs];
                                   colSet.insert(col);
                                 }
                             }
@@ -772,16 +776,16 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
             }
           if (bcPairs.get() != 0)
             {
-              for (int t=0; t<nt; t++)
+              for (int c=0; c<workSet->size(); c++)
                 {
-                  for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
+                  int testOffset = c*nTestNodes*nTestFuncs;
+                  int unkOffset = c*nUnkNodes*nUnkFuncs;
+                  for (int t=0; t<nt; t++)
                     {
-                      Tabs tab2;
-                      int u = bcUnksForTests[t][uit];
-                      for (int c=0; c<workSet->size(); c++)
+                      for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
                         {
-                          int testOffset = c*nTestNodes*nTestFuncs;
-                          int unkOffset = c*nUnkNodes*nUnkFuncs;
+                          Tabs tab2;
+                          int u = bcUnksForTests[t][uit];
                           for (int n=0; n<nTestNodes; n++)
                             {
                               int row = (*testLocalDOFs)[testOffset + n*nTestFuncs + t];
@@ -789,10 +793,10 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
 //                                   || !isBCRow(row)) continue;
                               if (row < lowestRow_ || row >= highestRow
                                   || !(*isBCRow_)[row]) continue;
-                              std::set<int>& colSet = graph[row-lowestRow_];
+                              ColSetType& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
-                                  int col = (*unkLocalDOFs)[unkOffset + m*nUnkFuncs + t];
+                                  int col = (*unkLocalDOFs)[unkOffset + m*nUnkFuncs + u];
                                   colSet.insert(col);
                                   
                                 }

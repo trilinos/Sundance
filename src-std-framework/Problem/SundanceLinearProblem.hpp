@@ -39,7 +39,7 @@ namespace SundanceStdFwk
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
                   const Expr& test, const Expr& unk, 
                   const TSFExtended::VectorType<double>& vecType);
-    
+
     /** */
     Expr solve(const LinearSolver<double>& solver) const ;
 

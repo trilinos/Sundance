@@ -5,6 +5,8 @@
 #include "SundanceTempStack.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceSparsityPattern.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -12,6 +14,15 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+
+
+static Time& stackPopTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("vector stack pop"); 
+  return *rtn;
+}
+
 
 TempStack::TempStack(int vecSize)
   : 
@@ -95,6 +106,8 @@ void TempStack::pushVector(const RefCountPtr<EvalVector>& vec)
 RefCountPtr<EvalVectorArray> 
 TempStack::popVectorArray(const SparsityPattern* sparsity) 
 {
+  TimeMonitor timer(stackPopTimer());
+
   RefCountPtr<EvalVectorArray> rtn;
 
   if (vecArrayStack_.empty())
