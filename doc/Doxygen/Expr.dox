@@ -1,6 +1,7 @@
 
 namespace SundanceCore
 {
+using namespace SundanceStdFwk;
 
 /*! \page exprs Symbolic Expressions
 
@@ -96,7 +97,15 @@ Arithmetic operations are implemented using overloaded operators
 The user-level expression subtypes are listed below, along with examples of their use.
 <ul>
 <li> UnknownFunction - Represents an unknown function in a finite-element problem.
-Unknown functions can be scalar-valued or vector valued.
+Unknown function ctors
+have one mandatory and one optional argument: a BasisFamily (mandatory)
+and a string name (optional). The name is used only for making diagnostic output
+more readable and has no effect on calculations.
+If the name argument is not given, an arbitrary
+function name will be picked.
+
+Unknown functions can be scalar-valued or vector valued. To create a vector-valued unknown
+function, construct with a vector-valued BasisFamily.
 
 Example of creation of a scalar-valued unknown function:
 \code
@@ -109,7 +118,8 @@ Expr u = new UnknownFunction(List(new Lagrange(1), new Lagrange(1)));
 \endcode
 
 <li> TestFunction - Represents a test function in a finite-element problem.
-Test functions can be scalar-valued or vector valued.
+Constructor arguments are identical to those for UnknownFunction.
+
  *
 Example of creation of a scalar-valued test function:
 \code
