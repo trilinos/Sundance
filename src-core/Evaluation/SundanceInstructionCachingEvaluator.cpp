@@ -14,6 +14,7 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
+#include "SundanceUserDefOp.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -63,6 +64,12 @@ Evaluator* InstructionCachingEvaluatorFactory
       return new InstructionCachingNonlinearUnaryOpEvaluator(ue, derivSetIndex);
     }
 
+
+  const UserDefOp* ude = dynamic_cast<const UserDefOp*>(expr);
+  if (ude != 0)
+    {
+      return new BruteForceUserDefOpEvaluator(ude);
+    }
   /** The expr seems to be one that can be handled by the
    * base class, so forward to the base class' factory method */
   return commonCreate(expr);

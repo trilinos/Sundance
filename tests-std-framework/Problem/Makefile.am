@@ -7,7 +7,7 @@ EXEEXT = .exe
 noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Poisson3D Stokes2D \
 Coupled1D Coupled2D RadDiff1D NoxAlgebraic Kepler NoxPoisson1D \
 PoissonOnDisk OptPoisson1D Eikonal2D TCATA1D VorticityStokes2D \
-Stokes1D Helmholtz1D VorticityNavierStokes2D ConstancyBug
+Stokes1D Helmholtz1D VorticityNavierStokes2D ConstancyBug BesselTest2D
 
 
 
@@ -298,6 +298,21 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 ConstancyBug_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 ConstancyBug_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+BesselTest2D_SOURCES = $(srcdir)/BesselTest2D.cpp
+
+BesselTest2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+BesselTest2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+BesselTest2D_LDADD = $(STD_FWK_LIBS) 
 
 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)

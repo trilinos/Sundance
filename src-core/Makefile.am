@@ -26,7 +26,9 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp \
-$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp 
+$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.hpp 
 
 
 SUNDANCE_USEREXPRS = \
@@ -36,7 +38,8 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
-$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp 
+$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp 
 
 
 SUNDANCE_INTERNALEXPRS_H = \

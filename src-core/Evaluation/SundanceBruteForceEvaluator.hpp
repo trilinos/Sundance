@@ -159,6 +159,28 @@ namespace SundanceCore
                         RefCountPtr<EvalVectorArray>& results) const ;
 
     private:
+    }; 
+
+
+    /**
+     *
+     */
+    class BruteForceUserDefOpEvaluator 
+      : public UserDefOpEvaluator
+    {
+    public:
+      /** */
+      BruteForceUserDefOpEvaluator(const UserDefOp* expr)
+        : UserDefOpEvaluator(expr) {;}
+
+      /** */
+      virtual ~BruteForceUserDefOpEvaluator(){;}
+
+      /** */
+      virtual void eval(const EvalManager& mgr,
+                        RefCountPtr<EvalVectorArray>& results) const ;
+
+    private:
     };
   }
 }

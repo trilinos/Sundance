@@ -123,7 +123,8 @@ libsundanceCore_a_DEPENDENCIES =
 am__objects_1 = SundanceCoordExpr.$(OBJEXT) \
 	SundanceDerivative.$(OBJEXT) SundanceEssentialBC.$(OBJEXT) \
 	SundanceExpr.$(OBJEXT) SundanceIntegral.$(OBJEXT) \
-	SundanceParameter.$(OBJEXT) SundanceStdMathOps.$(OBJEXT)
+	SundanceParameter.$(OBJEXT) SundanceStdMathOps.$(OBJEXT) \
+	SundanceUserDefOp.$(OBJEXT)
 am__objects_2 = SundanceBinaryExpr.$(OBJEXT) \
 	SundanceConstantExpr.$(OBJEXT) SundanceCoordDeriv.$(OBJEXT) \
 	SundanceDiffOp.$(OBJEXT) SundanceDiscreteFuncElement.$(OBJEXT) \
@@ -241,6 +242,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUnaryMinus.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUnknownFuncElement.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUnknownFunctionStub.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceUserDefOp.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceZeroExpr.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -376,7 +378,9 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp \
-$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp 
+$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.hpp 
 
 SUNDANCE_USEREXPRS = \
 $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.cpp \
@@ -385,7 +389,8 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
-$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp 
+$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp 
 
 SUNDANCE_INTERNALEXPRS_H = \
 $(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.hpp \
@@ -837,6 +842,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnaryMinus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownFuncElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownFunctionStub.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUserDefOp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceZeroExpr.Po@am__quote@
 
 .cpp.o:
@@ -966,6 +972,22 @@ SundanceStdMathOps.obj: $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceStdMathOps.Po' tmpdepfile='$(DEPDIR)/SundanceStdMathOps.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceStdMathOps.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp'; fi`
+
+SundanceUserDefOp.o: $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefOp.o -MD -MP -MF "$(DEPDIR)/SundanceUserDefOp.Tpo" -c -o SundanceUserDefOp.o `test -f '$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefOp.Tpo" "$(DEPDIR)/SundanceUserDefOp.Po"; else rm -f "$(DEPDIR)/SundanceUserDefOp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp' object='SundanceUserDefOp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefOp.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefOp.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefOp.o `test -f '$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp
+
+SundanceUserDefOp.obj: $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefOp.obj -MD -MP -MF "$(DEPDIR)/SundanceUserDefOp.Tpo" -c -o SundanceUserDefOp.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefOp.Tpo" "$(DEPDIR)/SundanceUserDefOp.Po"; else rm -f "$(DEPDIR)/SundanceUserDefOp.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp' object='SundanceUserDefOp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefOp.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefOp.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefOp.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp'; fi`
 
 SundanceBinaryExpr.o: $(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBinaryExpr.o -MD -MP -MF "$(DEPDIR)/SundanceBinaryExpr.Tpo" -c -o SundanceBinaryExpr.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.cpp; \

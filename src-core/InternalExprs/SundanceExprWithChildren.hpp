@@ -40,6 +40,8 @@ namespace SundanceCore
            * expression. */
           virtual void accumulateTestSet(Set<int>& testIDs) const ;
 
+          /** Return the number of children */
+          int numChildren() const {return children_.size();}
           
           /** downcast the i-th to an evaluatable expr */
           const EvaluatableExpr* evaluatableChild(int i) const ;

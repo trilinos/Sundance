@@ -15,6 +15,7 @@
 namespace SundanceCore 
 {
   class CoordExpr;
+  class UserDefOp;
 
   namespace Internal
   {
@@ -91,6 +92,8 @@ namespace SundanceCore
     typedef SubtypeEvaluator<UnaryMinus> UnaryMinusEvaluator;
 
     typedef SubtypeEvaluator<NonlinearUnaryOp> NonlinearUnaryOpEvaluator;
+
+    typedef SubtypeEvaluator<UserDefOp> UserDefOpEvaluator;
 
     /** 
      *
