@@ -1,0 +1,34 @@
+<SundanceConfig>
+
+<!-- Set size of work set, i.e., the number of cells -->
+
+<Parameter name="Work Set Size" value="5"/>
+
+<!-- Whether to check the result of each unary function operation -->
+
+<Parameter name="Check for Floating Point Errors" value="false"/>
+
+
+<!-- Verbosity settings -->
+
+<Verbosity context="Assembly" value="Low"/>
+
+<Verbosity context="Evaluation" value="Silnet"/>
+
+<Verbosity context="Quadrature" value="Silent"/>
+
+<Verbosity context="Reference Integration" value="Silent"/>
+
+<Verbosity context="DOF Mapping" value="Silent"/>
+
+<Verbosity context="Integral Grouping" value="Silent"/>
+
+<Verbosity context="Symbolic Sparsity Determination" value="Silent"/>
+
+<DefaultMesh type="BasicSimplicial"/>
+
+<DefaultQuadrature type="Gaussian" order="4"/>
+
+<Evaluation type="Instruction Caching"/> 
+
+</SundanceConfig>
