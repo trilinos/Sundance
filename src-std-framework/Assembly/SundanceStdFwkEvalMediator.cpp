@@ -19,30 +19,21 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 
-StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
-  : mesh_(mesh),
-    cellDim_(cellDim),
-    cellType_(NullCell),
-    cellLID_(),
-    J_(rcp(new CellJacobianBatch())),
-    cacheIsValid_(false),
-    jCacheIsValid_(false)
-{;}
 
-void StdFwkEvalMediator::getJacobians(RefCountPtr<CellJacobianBatch>& J) const
+
+void StdFwkEvalMediator::setCellBatch(const RefCountPtr<Array<int> >& cellLID) 
 {
-  if (!jCacheIsValid_)
+  cellLID_ = cellLID; 
+  cacheIsValid() = false; 
+  jCacheIsValid_=false;
+  /* mark the function caches as invalid */
+  Map<const DiscreteFunction*, bool>::iterator iter;
+  for (iter = fCacheIsValid_.begin(); iter != fCacheIsValid_.end(); iter++)
     {
-      SUNDANCE_OUT(verbosity() > VerbLow, 
-                   "computing new Jacobians");
-      mesh().getJacobians(cellDim(), *cellLID(), *J_);
-      jCacheIsValid_ = true;
+      iter->second = false;
     }
-  else
+  for (iter = dfCacheIsValid_.begin(); iter != dfCacheIsValid_.end(); iter++)
     {
-      SUNDANCE_OUT(verbosity() > VerbLow, 
-                   "reusing cached Jacobians");
+      iter->second = false;
     }
-  J = J_;
 }
-

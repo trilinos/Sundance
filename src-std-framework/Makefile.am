@@ -118,6 +118,7 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp 
 
 SUNDANCE_PROBLEM_H = \

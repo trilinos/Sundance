@@ -118,82 +118,169 @@ void QuadratureEvalMediator
                      "QuadratureEvalMediator::evalDiscreteFuncElement() called "
                      "with expr that is not a discrete function");
 
-  int myIndex = expr->myIndex();
+  vec->resize(cellLID()->size() * quadWgts().size());
 
+  if (mi.order() == 0)
+    {
+      if (!fCache().containsKey(f) || !fCacheIsValid()[f])
+        {
+          fillFunctionCache(f, mi);
+        }
+      const RefCountPtr<Array<double> >& cacheVals 
+        = fCache()[f];
+      int nFuncs = f->discreteSpace().nFunc();
+      int nPts = cellLID()->size() * quadWgts().size();
+      int myIndex = expr->myIndex();
+      const double* cachePtr = &((*cacheVals)[0]);
+      double* vecPtr = vec->start();
+      for (int i=0; i<nPts; i++) 
+        {
+          vecPtr[i] = cachePtr[i*nFuncs + myIndex];
+        }
+    }
+  else
+    {
+      if (!dfCache().containsKey(f) || !dfCacheIsValid()[f])
+        {
+          fillFunctionCache(f, mi);
+        }
+      const RefCountPtr<Array<double> >& cacheVals 
+        = dfCache()[f];
+      int nFuncs = f->discreteSpace().nFunc();
+      int dim = cellDim();
+      int nPts = cellLID()->size() * quadWgts().size();
+      int pDir = mi.firstOrderDirection();
+      int myIndex = expr->myIndex();
+      /* offset to the first entry of the pDir'th derivative */
+      const double* cachePtr = &((*cacheVals)[pDir*nPts*nFuncs]);
+      double* vecPtr = vec->start();
+      for (int i=0; i<nPts; i++) 
+        {
+          vecPtr[i] = cachePtr[i*nFuncs + myIndex];
+        }
+    }
+}
 
-  const BasisFamily& basis = f->basis()[myIndex];
+void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
+                                               const MultiIndex& mi) const 
+{
+  int nFuncs = f->discreteSpace().nFunc();
+  int diffOrder = mi.order();
+
+  RefCountPtr<Array<double> > cacheVals;
+  if (mi.order()==0)
+    {
+      if (fCache().containsKey(f))
+        {
+          cacheVals = fCache().get(f);
+        }
+      else
+        {
+          cacheVals = rcp(new Array<double>());
+          fCache().put(f, cacheVals);
+        }
+      fCacheIsValid().put(f, true);
+    }
+  else
+    {
+      if (dfCache().containsKey(f))
+        {
+          cacheVals = dfCache().get(f);
+        }
+      else
+        {
+          cacheVals = rcp(new Array<double>());
+          dfCache().put(f, cacheVals);
+        }
+      dfCacheIsValid().put(f, true);
+    }
 
   const Vector<double>& fValues = f->vector();
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
   f->getLocalValues(cellDim(), *cellLID(), *localValues);
 
-  RefCountPtr<Array<Array<Array<double> > > > refBasisValues 
-    = getRefBasisVals(basis, mi.order());
+  Array<RefCountPtr<Array<Array<Array<double> > > > > refBasisValues(nFuncs) ;
+
+  int nTotalNodes = 0;
+  Array<int> nNodes(nFuncs);
+  for (int i=0; i<nFuncs; i++)
+    {
+      const BasisFamily& basis = f->basis()[i];
+      nTotalNodes += basis.nNodes(cellType());
+      nNodes[i] = basis.nNodes(cellType());
+      refBasisValues[i] = getRefBasisVals(basis, mi.order());
+    }
 
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
   if (mi.order() != 0) mesh().getJacobians(cellDim(), *cellLID(), *J);
   
   int nQuad = quadWgts().size();
-  int nNodes = basis.nNodes(cellType());
-  int nFuncs = f->discreteSpace().nFunc();
 
-  vec->resize(cellLID()->size() * nQuad);
+  int nCells = cellLID()->size();
+  int nDir;
 
-  for (int c=0; c<cellLID()->size(); c++)
+  if (mi.order()==1)
     {
-      const double* ptr = &((*localValues)[c*nNodes*nFuncs]);
-      double* vPtr = &(vec->start()[c*nQuad]);
-      /* initialize to zero */
-      for (int q=0; q<nQuad; q++) 
-        {
-          //          vec->start()[c*nQuad + q] = 0.0;
-          vPtr[q] = 0.0;
-        }
-      if (mi.order()==0)
-        {
-          for (int q=0; q<nQuad; q++)
-            {
-              //              double& sum = vec->start()[c*nQuad + q];
-              double& sum = vPtr[q];
-              for (int i=0; i<nNodes; i++)
-                {
-                  //                  double coeff = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
-                  double coeff = ptr[nFuncs*i + myIndex];
-                  double basisVals = (*refBasisValues)[0][q][i];
-                  sum += coeff * basisVals;
-                }
-              //              cerr << "c=" << c << ", q=" << q << ", f=" << sum << endl;
-            }
+      nDir = cellDim();
+      cacheVals->resize(cellLID()->size() * nQuad * cellDim() * nFuncs);
+    }
+  else
+    {
+      nDir = 1;
+      cacheVals->resize(cellLID()->size() * nQuad * nFuncs);
+    }
 
-        }
-      else
+
+  for (int p=0; p<nDir; p++)
+    {
+      for (int c=0; c<nCells; c++)
         {
-          Array<double> invJ;
-          J->getInvJ(c, invJ);
-          const double* invJPtr = &(invJ[0]);
-          int dim = cellDim();
-          int pDir = mi.firstOrderDirection();
-          
+          const double* ptr = &((*localValues)[c*nTotalNodes]);
+          double* vPtr = &((*cacheVals)[p*nCells*nFuncs*nQuad + c*nFuncs*nQuad]);
+          int valsPerCell = nFuncs*nQuad;
           /* initialize to zero */
-          for (int q=0; q<nQuad; q++) 
+          for (int q=0; q<valsPerCell; q++) 
             {
-              //              vec->start()[c*nQuad + q] = 0.0;
               vPtr[q] = 0.0;
             }
-          for (int q=0; q<nQuad; q++)
+          if (mi.order()==0)
             {
-              //              double& sum = vec->start()[c*nQuad + q];
-              double& sum = vPtr[q];
-              for (int i=0; i<nNodes; i++)
+              for (int fid=0; fid<nFuncs; fid++)
                 {
-                  //                  double g = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
-                  double g = ptr[nFuncs*i + myIndex];
-                  for (int r=0; r<dim; r++)
+                  for (int q=0; q<nQuad; q++)
                     {
-                      sum += g*invJPtr[pDir + r*dim]*(*refBasisValues)[r][q][i];
+                      double& sum = vPtr[q*nFuncs + fid];
+                      for (int i=0; i<nNodes[fid]; i++)
+                        {
+                          double coeff = ptr[nFuncs*i + fid];
+                          double basisVals = (*(refBasisValues[fid]))[0][q][i];
+                          sum += coeff * basisVals;
+                        }
                     }
                 }
-              // cerr << "c=" << c << ", q=" << q << ", df=" << sum << endl;
+            }
+          else
+            {
+              Array<double> invJ;
+              J->getInvJ(c, invJ);
+              const double* invJPtr = &(invJ[0]);
+              int dim = cellDim();
+
+              for (int fid=0; fid<nFuncs; fid++)
+                {
+                  for (int q=0; q<nQuad; q++)
+                    {
+                      double& sum = vPtr[q*nFuncs + fid];
+                      for (int i=0; i<nNodes[fid]; i++)
+                        {
+                          double g = ptr[nFuncs*i + fid];
+                          for (int r=0; r<dim; r++)
+                            {
+                              sum += g*invJPtr[p + r*dim]*(*(refBasisValues[fid]))[r][q][i];
+                            }
+                        }
+                    }
+                }
             }
         }
     }

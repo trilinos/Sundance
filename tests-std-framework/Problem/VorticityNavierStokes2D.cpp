@@ -24,7 +24,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int n=64;
+      int n=200;
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n*np, np,
                                                          0.0, 1.0, n, 1,
                                                          meshType);
@@ -79,18 +79,17 @@ int main(int argc, void** argv)
       Expr eqn = omegaEqn + psiEqn;
 
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, vOmega*psi, quad2) 
-        + EssentialBC(top, vOmega*psi, quad2) 
-        + EssentialBC(left, vOmega*psi, quad2) 
-        + EssentialBC(right, vOmega*psi, quad2);
+      CellFilter walls = left + bottom + right;
+      Expr bc = EssentialBC(walls, vOmega*psi, quad2) 
+        + EssentialBC(top, vOmega*psi, quad2) ;
 
       BasisFamily L1 = new Lagrange(1);
       Array<BasisFamily> bases = tuple(L1, L1);
       DiscreteSpace discSpace(mesh, bases, vecType);
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
-      Assembler::workSetSize() = 400;
-      Evaluator::classVerbosity() = VerbHigh;
+      Assembler::workSetSize() = 1000;
+      //      Evaluator::classVerbosity() = VerbHigh;
 
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F 
@@ -99,61 +98,59 @@ int main(int argc, void** argv)
       /* Get the initial guess */
       Vector<double> x0 = F.getInitialGuess();
       F.setEvalPt(x0);
-      //      F.getFunctionValue();
-      F.getJacobian();
 
-     //  ParameterList params;
-//       ParameterList linSolverParams;
-//       linSolverParams.set("Type", "TSF");
-//       linSolverParams.set("Method", "BICGSTAB");
-//       linSolverParams.set("Max Iterations", 200);
-//       linSolverParams.set("Tolerance", 1.0e-14);
-//       linSolverParams.set("Precond", "ILUK");
-//       linSolverParams.set("Graph Fill", 1);
-//       linSolverParams.set("Verbosity", 4);
+      ParameterList params;
+      ParameterList linSolverParams;
+      linSolverParams.set("Type", "TSF");
+      linSolverParams.set("Method", "BICGSTAB");
+      linSolverParams.set("Max Iterations", 200);
+      linSolverParams.set("Tolerance", 1.0e-14);
+      linSolverParams.set("Precond", "ILUK");
+      linSolverParams.set("Graph Fill", 1);
+      linSolverParams.set("Verbosity", 4);
 
-//       params.set("Linear Solver", linSolverParams);
+      params.set("Linear Solver", linSolverParams);
 
 
-//       LinearSolver<double> linSolver 
-//         = LinearSolverBuilder::createSolver(params);
+      LinearSolver<double> linSolver 
+        = LinearSolverBuilder::createSolver(params);
 
-//       NOX::TSF::Group grp(x0, F, linSolver);
+      NOX::TSF::Group grp(x0, F, linSolver);
 
-//       // Set up the status tests
-//       NOX::StatusTest::NormF statusTestA(grp, 1.0e-15);
-//       NOX::StatusTest::MaxIters statusTestB(20);
-//       NOX::StatusTest::Combo statusTestsCombo(NOX::StatusTest::Combo::OR, statusTestA, statusTestB);
+      // Set up the status tests
+      NOX::StatusTest::NormF statusTestA(grp, 1.0e-15);
+      NOX::StatusTest::MaxIters statusTestB(20);
+      NOX::StatusTest::Combo statusTestsCombo(NOX::StatusTest::Combo::OR, statusTestA, statusTestB);
 
-//       // Create the list of solver parameters
-//       NOX::Parameter::List solverParameters;
+      // Create the list of solver parameters
+      NOX::Parameter::List solverParameters;
 
-//       // Set the solver (this is the default)
-//       solverParameters.setParameter("Nonlinear Solver", "Line Search Based");
+      // Set the solver (this is the default)
+      solverParameters.setParameter("Nonlinear Solver", "Line Search Based");
 
-//       // Create the line search parameters sublist
-//       NOX::Parameter::List& lineSearchParameters = solverParameters.sublist("Line Search");
+      // Create the line search parameters sublist
+      NOX::Parameter::List& lineSearchParameters = solverParameters.sublist("Line Search");
 
-//       // Set the line search method
-//       lineSearchParameters.setParameter("Method","More'-Thuente");
+      // Set the line search method
+      lineSearchParameters.setParameter("Method","More'-Thuente");
 
-//       // Create the solver
-//       NOX::Solver::Manager solver(grp, statusTestsCombo, solverParameters);
+      // Create the solver
+      NOX::Solver::Manager solver(grp, statusTestsCombo, solverParameters);
 
-//       // Solve the nonlinear system
-//       NOX::StatusTest::StatusType status = solver.solve();
+      // Solve the nonlinear system
+      NOX::StatusTest::StatusType status = solver.solve();
 
-//       // Print the answer
-//       cout << "\n" << "-- Parameter List From Solver --" << "\n";
-//       solver.getParameterList().print(cout);
+      // Print the answer
+      cout << "\n" << "-- Parameter List From Solver --" << "\n";
+      solver.getParameterList().print(cout);
 
 
-//       /* Write the field in VTK format */
-//       FieldWriter w = new VTKWriter("VorticityNavierStokes2d");
-//       w.addMesh(mesh);
-//       w.addField("streamfunction", new ExprFieldWrapper(u0[0]));
-//       w.addField("vorticity", new ExprFieldWrapper(u0[1]));
-//       w.write();
+      /* Write the field in VTK format */
+      FieldWriter w = new VTKWriter("VorticityNavierStokes2d");
+      w.addMesh(mesh);
+      w.addField("streamfunction", new ExprFieldWrapper(u0[0]));
+      w.addField("vorticity", new ExprFieldWrapper(u0[1]));
+      w.write();
 
 
     }

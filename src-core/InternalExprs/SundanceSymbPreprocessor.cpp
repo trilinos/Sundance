@@ -159,8 +159,8 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
 
   DerivSet nonzeroDerivs;
 
-  /* the zeroth deriv should always be computed, so include it in the set */
-  nonzeroDerivs.put(MultipleDeriv());
+  /* the zeroth deriv should be computed only if the max diff order is zero */
+  if (maxDiffOrder==0) nonzeroDerivs.put(MultipleDeriv());
 
   /* Find any functions that might be in the expr */
   SundanceUtils::Set<Deriv> d;

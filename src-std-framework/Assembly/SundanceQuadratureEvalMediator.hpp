@@ -68,6 +68,12 @@ namespace SundanceStdFwk
       {return *(refQuadWeights_.get(cellType()));}
 
     private:
+
+
+      /** */
+      void fillFunctionCache(const DiscreteFunction* f,
+                             const MultiIndex& mi) const ;
+
      
       /** */
       void computePhysQuadPts() const ;
@@ -86,6 +92,7 @@ namespace SundanceStdFwk
 
       /** */
       mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<Array<double> > > > > > refBasisVals_;
+      
     };
   }
 }

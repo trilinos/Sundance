@@ -8,6 +8,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceAbstractEvalMediator.hpp"
 #include "TSFObjectWithVerbosity.hpp"
+#include "SundanceDiscreteFunction.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -47,15 +48,11 @@ namespace SundanceStdFwk
       virtual ~StdFwkEvalMediator(){;}
 
       /** */
-      void setCellBatch(const RefCountPtr<Array<int> >& cellLID) 
-      {cellLID_ = cellLID; cacheIsValid() = false; jCacheIsValid_=false;}
+      void setCellBatch(const RefCountPtr<Array<int> >& cellLID) ;
 
       /** */
       virtual void setCellType(const CellType& cellType) 
       {cellType_=cellType; cacheIsValid() = false; jCacheIsValid_=false;}
-
-      /** */
-      void getJacobians(RefCountPtr<CellJacobianBatch>& J) const ;
 
 
     protected:
@@ -68,6 +65,17 @@ namespace SundanceStdFwk
       const RefCountPtr<Array<int> >& cellLID() const {return cellLID_;}
 
       bool& cacheIsValid() const {return cacheIsValid_;}
+
+
+      /** */
+      Map<const DiscreteFunction*, RefCountPtr<Array<double> > >& fCache() const {return fCache_;}
+      /** */
+      Map<const DiscreteFunction*, RefCountPtr<Array<double> > >& dfCache() const {return dfCache_;}
+      /** */
+      Map<const DiscreteFunction*, bool>& fCacheIsValid() const {return fCacheIsValid_;}
+      /** */
+      Map<const DiscreteFunction*, bool>& dfCacheIsValid() const {return dfCacheIsValid_;}
+      
     private:
       Mesh mesh_;
 
@@ -82,6 +90,16 @@ namespace SundanceStdFwk
       mutable bool cacheIsValid_;
 
       mutable bool jCacheIsValid_;
+
+      /** */
+      mutable Map<const DiscreteFunction*, RefCountPtr<Array<double> > > fCache_;
+      /** */
+      mutable Map<const DiscreteFunction*, RefCountPtr<Array<double> > > dfCache_;
+
+      /** */
+      mutable Map<const DiscreteFunction*, bool> fCacheIsValid_;
+      /** */
+      mutable Map<const DiscreteFunction*, bool> dfCacheIsValid_;
     };
   }
 }
