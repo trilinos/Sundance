@@ -5,7 +5,7 @@
 EXEEXT = .exe
 
 noinst_PROGRAMS = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
-VSNS2D
+VSNS2D Exo2Triangle
 
 
 
@@ -22,6 +22,19 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 PostPotentialFlow_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 PostPotentialFlow_LDADD = $(STD_FWK_LIBS) 
+
+
+Exo2Triangle_SOURCES = $(srcdir)/Exo2Triangle.cpp
+
+Exo2Triangle_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+Exo2Triangle_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+Exo2Triangle_LDADD = $(STD_FWK_LIBS) 
 
 
 

@@ -28,20 +28,20 @@ void Sundance::init(int* argc, void*** argv)
   MPISession::init(argc, argv);
 
   /* read standard command line flags */
-  CommandLineProcessor clp;
   string configFilename = "SundanceConfig.xml";
   bool fpCheck = false;
   int workSetSize = 100;
-  clp.setOption("config", &configFilename, "Configuration file");
-  clp.setOption("fpcheck", "nofpcheck", &fpCheck, 
-                "Check results of math lib calls in expr evals");
-  clp.setOption("workset", &workSetSize, 
-                "Work set size");
+  clp().setOption("config", &configFilename, "Configuration file");
+  clp().setOption("fpcheck", "nofpcheck", &fpCheck, 
+                  "Check results of math lib calls in expr evals");
+  clp().setOption("workset", &workSetSize, 
+                  "Work set size");
 
 
-  clp.throwExceptions(false);
+  clp().throwExceptions(false);
 
-  CommandLineProcessor::EParseCommandLineReturn rtn = clp.parse(*argc, (char**) *argv);
+  CommandLineProcessor::EParseCommandLineReturn rtn 
+    = clp().parse(*argc, (char**) *argv);
 
   TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
                      RuntimeError,
@@ -54,8 +54,41 @@ void Sundance::init(int* argc, void*** argv)
   UnaryFunctor::checkResults() = fpCheck;
   Assembler::workSetSize() = workSetSize;
   FunctionalEvaluator::workSetSize() = workSetSize;
-  
 } 
+
+void Sundance::setOption(const string& optionName, 
+                         int& value, 
+                         const string& helpMsg)
+{
+  clp().setOption(optionName.c_str(), &value, helpMsg.c_str());
+}
+
+void Sundance::setOption(const string& optionName, 
+                         double& value, 
+                         const string& helpMsg)
+{
+  clp().setOption(optionName.c_str(), &value, helpMsg.c_str());
+}
+
+void Sundance::setOption(const string& optionName, 
+                         string& value, 
+                         const string& helpMsg)
+{
+  clp().setOption(optionName.c_str(), &value, helpMsg.c_str());
+}
+
+void Sundance::setOption(const string& optionTrueName, 
+                         const string& optionFalseName,
+                         bool& value, 
+                         const string& helpMsg)
+{
+  clp().setOption(optionTrueName.c_str(), 
+                  optionFalseName.c_str(),
+                  &value, 
+                  helpMsg.c_str());
+}
+
+
 
 void Sundance::handleException(std::exception& e)
 {

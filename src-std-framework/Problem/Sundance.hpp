@@ -12,6 +12,7 @@
 #include "Teuchos_TimeMonitor.hpp"
 #include "Teuchos_ParameterList.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
+#include "Teuchos_CommandLineProcessor.hpp"
 
 /* Symbolics */
 #include "SundanceTestFunction.hpp"
@@ -95,6 +96,24 @@ namespace SundanceStdFwk
   class Sundance
   {
   public:
+    static void setOption(const string& optionName, 
+                          int& value, 
+                          const string& helpMsg);
+
+    static void setOption(const string& optionName, 
+                          string& value, 
+                          const string& helpMsg);
+
+    static void setOption(const string& optionName, 
+                          double& value, 
+                          const string& helpMsg);
+
+    static void setOption(const string& optionTrueName, 
+                          const string& optionFalseName, 
+                          bool& value, 
+                          const string& helpMsg);
+
+
     static void init(int* argc, void*** argv);
     
     static void finalize();
@@ -107,6 +126,9 @@ namespace SundanceStdFwk
     
 
   private:
+    static CommandLineProcessor& clp()
+    {static CommandLineProcessor rtn; return rtn;}
+
     static bool checkTest(double error, double tol);
 
     static void setSettings(const string& settingsFile);
