@@ -86,7 +86,7 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
   Tabs tab0;
   bool nonzero = false;
 
-  classVerbosity() = VerbSilent;
+
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
                tab0 << "evaluating an integral group of size "

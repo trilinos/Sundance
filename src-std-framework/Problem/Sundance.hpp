@@ -21,6 +21,7 @@
 #include "SundanceIntegral.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceStdMathOps.hpp"
 
 /* Meshes */
 #include "SundanceMesh.hpp"

@@ -9,6 +9,7 @@
 #include "Teuchos_Array.hpp"
 #include "SundanceLoadableVector.hpp"
 #include "TSFObjectWithVerbosity.hpp"
+#include "SundanceUnaryFunctor.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -149,6 +150,11 @@ namespace SundanceCore
        * true, the calculation is done numerically; otherwise, a
        * string computation is performed. */
       void sqrt() ;
+
+      /** Apply the given unary function to this vector, returning
+       * the value and the requested number of derivatives */
+      void applyUnaryFunction(const UnaryFunctor* func,
+                              Array<RefCountPtr<EvalVector> >& funcDerivs) const ;
 
       /** Copy a vector into this vector. If numerical() is true,
        * the calculation is done numerically; otherwise, a string

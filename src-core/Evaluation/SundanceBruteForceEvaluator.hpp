@@ -126,6 +126,28 @@ namespace SundanceCore {
 
     private:
     };
+
+
+    /**
+     *
+     */
+    class BruteForceNonlinearUnaryOpEvaluator 
+      : public NonlinearUnaryOpEvaluator
+    {
+    public:
+      /** */
+      BruteForceNonlinearUnaryOpEvaluator(const NonlinearUnaryOp* expr)
+        : NonlinearUnaryOpEvaluator(expr) {;}
+
+      /** */
+      virtual ~BruteForceNonlinearUnaryOpEvaluator(){;}
+
+      /** */
+      virtual void eval(const EvalManager& mgr,
+                        RefCountPtr<EvalVectorArray>& results) const ;
+
+    private:
+    };
   }
 }
 

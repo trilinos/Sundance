@@ -23,8 +23,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 20;
-      int ny = 20;
+      int nx = 10;
+      int ny = 10;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
                                                          0.0, 1.0, ny, 1,
@@ -103,8 +103,8 @@ int main(int argc, void** argv)
       ParameterList solverParams;
 
       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-      solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
-      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-14);
+      solverParams.set(IterativeSolver<double>::maxitersParam(), 5000);
+      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-10);
 
       LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
 

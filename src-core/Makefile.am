@@ -25,7 +25,8 @@ $(top_srcdir)/src-core/UserExprs/SundanceDerivative.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.hpp \
-$(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp 
+$(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp 
 
 
 SUNDANCE_USEREXPRS = \
@@ -34,7 +35,8 @@ $(top_srcdir)/src-core/UserExprs/SundanceDerivative.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
-$(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp 
+$(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp 
 
 
 SUNDANCE_INTERNALEXPRS_H = \
@@ -49,6 +51,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSparsityPattern.hpp \
@@ -61,6 +64,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFunc.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceTestFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUnaryFunctor.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.hpp 
@@ -77,6 +81,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSparsityPattern.cpp \
@@ -89,6 +94,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSymbolicFunc.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceTestFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUnaryFunctor.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp 

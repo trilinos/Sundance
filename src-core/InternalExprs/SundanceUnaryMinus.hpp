@@ -27,6 +27,14 @@ namespace SundanceCore
           /** virtual dtor */
           virtual ~UnaryMinus() {;}
 
+          /** Indicate whether the given derivative of this expression
+           * is nonzero. The
+           * derivative is nonzero if the operand's derivative is 
+           * nonzero. */
+          virtual bool hasNonzeroDeriv(const MultipleDeriv& f) const
+            {return evaluatableArg()->hasNonzeroDeriv(f);}
+
+
           /** */
           virtual ostream& toText(ostream& os, bool paren) const ;
 

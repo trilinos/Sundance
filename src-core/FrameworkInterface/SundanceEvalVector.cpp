@@ -462,6 +462,65 @@ void EvalVector::unaryMinus()
     }
 }
 
+void EvalVector::applyUnaryFunction(const UnaryFunctor* func,
+                                    Array<RefCountPtr<EvalVector> >& funcDerivs) const 
+{
+  cerr << "applying unary func" << endl;
+  for (int i=0; i<funcDerivs.size(); i++)
+    {
+      funcDerivs[i] = rcp(new EvalVector());
+      funcDerivs[i]->setToVectorValue();
+    }
+  
+  if (isConstant()) 
+    {
+      double x = getConstantValue();
+      Array<double> f(funcDerivs.size());
+      func->eval(x, &(f[0]), f.size()-1);
+      for (int i=0; i<f.size(); i++)
+        {
+          funcDerivs[i]->setToConstantValue(f[i]);
+        }
+    }
+  else
+    {
+      const double* const x = start();
+      Array<double> f(funcDerivs.size());
+
+      for (int i=0; i<funcDerivs.size(); i++) 
+        {
+          funcDerivs[i]->resize(length());
+        }
+
+      for (int i=0; i<length(); i++)
+        {
+          func->eval(x[i], &(f[0]), f.size()-1);
+          for (int j=0; j<funcDerivs.size(); j++) 
+            {
+              funcDerivs[j]->start()[i] = f[j];
+            }
+        }
+    }
+      
+  if (shadowOps())
+    { 
+      for (int i=0; i<funcDerivs.size(); i++)
+        {
+          if (i==0) 
+            {
+              funcDerivs[i]->setStringValue(func->name() 
+                                            + "(" + getStringValue() + ")");
+            }
+          else
+            {
+              string primes;
+              for (int j=1; j<=i; j++) primes += "'";
+              funcDerivs[i]->setStringValue(func->name() + primes
+                                            + "(" + getStringValue() + ")");
+            }
+        }
+    }
+}
 
 void EvalVector::copy(const RefCountPtr<EvalVector>& other)
 {

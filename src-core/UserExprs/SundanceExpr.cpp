@@ -16,6 +16,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceStdSumTransformations.hpp"
 #include "SundanceStdProductTransformations.hpp"
+#include "SundanceNonlinearUnaryOp.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -284,7 +285,9 @@ Expr Expr::operator*(const Expr& other) const
 
 Expr Expr::divide(const Expr& other) const 
 {
-  TEST_FOR_EXCEPTION(true, InternalError, "divide not implemented");
+  RefCountPtr<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
+  Expr recip = new NonlinearUnaryOp(sOther, rcp(new StdReciprocal()));
+  return (*this)[0].multiply(recip);
 }
 
 Expr Expr::multiply(const Expr& other) const 

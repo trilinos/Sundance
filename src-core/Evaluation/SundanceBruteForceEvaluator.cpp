@@ -12,6 +12,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceNonlinearUnaryOp.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -43,7 +44,14 @@ static Time& diffOpEvalTimer()
 static Time& unaryMinusEvalTimer() 
 {
   static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("constant expr eval"); 
+    = TimeMonitor::getNewTimer("unary minus eval"); 
+  return *rtn;
+}
+
+static Time& nonlinearUnaryExprEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("nonlinear unary expr eval"); 
   return *rtn;
 }
 
@@ -79,6 +87,12 @@ Evaluator* BruteForceEvaluatorFactory
   if (um != 0)
     {
       return new BruteForceUnaryMinusEvaluator(um);
+    }
+
+  const NonlinearUnaryOp* ue = dynamic_cast<const NonlinearUnaryOp*>(expr);
+  if (ue != 0)
+    {
+      return new BruteForceNonlinearUnaryOpEvaluator(ue);
     }
 
   /** The expr seems to be one that can be handled by the
@@ -650,4 +664,83 @@ void BruteForceUnaryMinusEvaluator::eval(const EvalManager& mgr,
     {
       (*results)[i]->unaryMinus();
     }
+}
+
+
+void BruteForceNonlinearUnaryOpEvaluator::eval(const EvalManager& mgr,
+                                         RefCountPtr<EvalVectorArray>& results) const
+{
+  TimeMonitor timer(nonlinearUnaryExprEvalTimer());
+  Tabs tab;
+  SUNDANCE_OUT(verbosity() > VerbLow,
+               tab << "------- BruteForceNonlinearUnaryOpEvaluator -------");
+
+  int derivSetIndex = expr()->getDerivSetIndex(mgr.getRegion());
+  const SparsityPattern* sparsity = expr()->sparsity(derivSetIndex).get();
+
+  results = mgr.stack().popVectorArray(sparsity);
+
+  RefCountPtr<EvalVectorArray> argResults; 
+
+  SUNDANCE_OUT(verbosity() > VerbMedium,
+               tab << "eval operand");
+
+  expr()->evaluatableArg()->evaluate(mgr, argResults);
+
+  TEST_FOR_EXCEPTION(results->size() != argResults->size(),
+                     InternalError,
+                     "BruteForceNonlinearUnaryOpEvaluator::eval(): "
+                     "output results size="
+                     << results->size() 
+                     << " is not equal to operand results size="
+                     << argResults->size());
+
+  cerr << "arg results = ";
+  argResults->print(cerr, expr()->getDerivSet(derivSetIndex));
+
+  int maxOrder = 0;
+  int zeroDerivIndex = -1;
+  for (int i=0; i<results->size(); i++)
+    {
+      const MultipleDeriv& d = sparsity->deriv(i);
+      if (d.order() == 0) zeroDerivIndex = i;
+      TEST_FOR_EXCEPTION(d.order() > 1, RuntimeError,
+                         "deriv order > 1 not implemented for unary math ops");
+      int order = d.order();
+      if (maxOrder < order) maxOrder = order;
+    }
+  
+  TEST_FOR_EXCEPTION(zeroDerivIndex < 0, RuntimeError,
+                     "no zero-order deriv of argument in unary math op eval");
+  
+
+  
+  Array<RefCountPtr<EvalVector> > funcDerivs(maxOrder+1);
+  (*argResults)[zeroDerivIndex]->applyUnaryFunction(expr()->op(),
+                                                    funcDerivs);
+
+  cerr << "func derivs = " << endl;
+  for (int i=0; i<funcDerivs.size(); i++)
+    {
+      cerr << "order=" << i << " vals= ";
+      funcDerivs[i]->print(cerr);
+      cerr << endl;
+    }
+
+  for (int i=0; i<results->size(); i++)
+    {
+      const MultipleDeriv& d = sparsity->deriv(i);
+      if (d.order()==0)
+        {
+          (*results)[i]->copy(funcDerivs[0]);
+        }
+      else
+        {
+          (*results)[i]->copy(funcDerivs[1]);
+          (*results)[i]->multiply((*argResults)[i]);
+        }
+    }
+
+  cerr << "results = ";
+  results->print(cerr, expr()->getDerivSet(derivSetIndex));
 }

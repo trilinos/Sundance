@@ -33,7 +33,7 @@ namespace SundanceCore
     class SpatiallyConstantExpr;
     class SymbolicFuncElement;
     class DiscreteFuncElement;
-   
+    class NonlinearUnaryOp;
 
 
     /**
@@ -89,6 +89,8 @@ namespace SundanceCore
     typedef SubtypeEvaluator<DiffOp> DiffOpEvaluator;
 
     typedef SubtypeEvaluator<UnaryMinus> UnaryMinusEvaluator;
+
+    typedef SubtypeEvaluator<NonlinearUnaryOp> NonlinearUnaryOpEvaluator;
 
     /** 
      *

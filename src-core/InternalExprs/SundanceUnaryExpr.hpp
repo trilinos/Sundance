@@ -18,7 +18,10 @@ namespace SundanceCore
 
   namespace Internal
     {
-      /** */
+      /** 
+       * UnaryExpr is a base class for operators that map a single
+       * scalar expr to another scalar expr. 
+       */
       class UnaryExpr : public ExprWithChildren
         {
         public:
@@ -34,14 +37,6 @@ namespace SundanceCore
           /** Downcast the argument to an evaluatable expr */
           const EvaluatableExpr* evaluatableArg() const 
           {return evaluatableChild(0);}
-
-          /** Indicate whether the given derivative of this expression
-           * is nonzero. For all non-DiffOp unary operators, the
-           * derivative is nonzero if the operand's derivative is 
-           * nonzero. DiffOp will have a specialized implementation of 
-           * this method. */
-          virtual bool hasNonzeroDeriv(const MultipleDeriv& f) const
-            {return evaluatableArg()->hasNonzeroDeriv(f);}
 
           
 
