@@ -74,8 +74,12 @@ int main(int argc, void** argv)
 
       Expr bc = v[0]*(u[0]-1.0) + v[1]*(u[1]-2.0);
 
-      EvalRegion internalRegion("internal");
-      EvalRegion bcRegion("bc");
+      EvalRegion internalRegion(rcp(new CellFilterBase()), 
+                                rcp(new QuadratureFamilyBase(0)));
+
+      EvalRegion bcRegion(rcp(new CellFilterBase()), 
+                                rcp(new QuadratureFamilyBase(0)));
+
       EvalManager mgr;
       mgr.setRegion(internalRegion);
 
@@ -117,7 +121,8 @@ int main(int argc, void** argv)
 
       Expr weak = Integral(new CellFilterBase(), navierStokes);
       Expr weakBC = EssentialBC(new CellFilterBase(), bc);
-      EquationSet eqns(weak, weakBC, List(v,q), List(u,p), List(u0,p0));
+      EquationSet eqns(weak, weakBC, List(v,q), List(u,p), List(u0,p0),
+                       rcp(new BruteForceEvaluatorFactory()));
       
     }
 	catch(exception& e)

@@ -185,7 +185,7 @@ int main(int argc, void** argv)
                    SundanceCore::List(v, s),
                    SundanceCore::List(u, w),
                    SundanceCore::List(u0, w0),
-                   EvalRegion(Teuchos::toString(i)));
+                   EvalRegion(rcp(new CellFilterBase()), rcp(new QuadratureFamilyBase(0))));
         }
 
       

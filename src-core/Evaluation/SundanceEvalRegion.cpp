@@ -13,38 +13,36 @@ EvalRegion::EvalRegion()
   : id_(-1)
 {;}
 
-EvalRegion::EvalRegion(const string& name)
-  : id_(getID(name))
+EvalRegion::EvalRegion(const RefCountPtr<CellFilterBase>& domain,
+                       const RefCountPtr<QuadratureFamilyBase>& quad)
+  : id_(getID(domain, quad))
 {;}
 
-int EvalRegion::getID(const string& name)
+int EvalRegion::getID(const RefCountPtr<CellFilterBase>& domain,
+                      const RefCountPtr<QuadratureFamilyBase>& quad)
 {
-  if (!nameToIDMap().containsKey(name))
+  RegPair p(domain, quad);
+
+  if (!domainAndQuadToIDMap().containsKey(p))
     {
       int id = topID();
-      nameToIDMap().put(name, id);
-      idToNameMap().put(id, name);
+      domainAndQuadToIDMap().put(p, id);
     }
-  return nameToIDMap().get(name);
+  return domainAndQuadToIDMap().get(p);
 }
 
 string EvalRegion::toString() const
 {
-  return "EvalRegion[" + idToNameMap().get(id_) + ", id="
+  return "EvalRegion[id="
     + Teuchos::toString(id_) + "]";
 }
 
-Map<string, int>& EvalRegion::nameToIDMap()
+Map<RegPair, int>& EvalRegion::domainAndQuadToIDMap()
 {
-  static Map<string, int> rtn = Map<string, int>();
+  static Map<RegPair, int> rtn = Map<RegPair, int>();
   return rtn;
 }
 
-Map<int, string>& EvalRegion::idToNameMap()
-{
-  static Map<int, string> rtn = Map<int, string>();
-  return rtn;
-}
 
 
 

@@ -8,6 +8,10 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMap.hpp"
 #include "Teuchos_Utils.hpp"
+#include "SundanceCellFilterBase.hpp"
+#include "SundanceQuadratureFamilyBase.hpp"
+#include "SundanceOrderedTuple.hpp"
+#include "SundanceOrderedHandle.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -20,8 +24,13 @@ namespace SundanceCore
   using namespace SundanceUtils;
   using std::string;
 
+
   namespace FrameworkInterface
     {
+
+      /** */
+      typedef OrderedPair<OrderedHandle<CellFilterBase>,
+                          OrderedHandle<QuadratureFamilyBase> > RegPair;
       /** 
        * Expressions may appear in more than one subregions of a problem,
        * for instance in an internal domain and also on a boundary. On
@@ -40,7 +49,8 @@ namespace SundanceCore
           /** */
           EvalRegion();
           /** */
-          EvalRegion(const string& name);
+          EvalRegion(const RefCountPtr<CellFilterBase>& domain,
+                     const RefCountPtr<QuadratureFamilyBase>& quad);
 
           /** */
           inline bool operator==(const EvalRegion& other) const
@@ -54,15 +64,25 @@ namespace SundanceCore
             {return id_ < other.id_;}
 
         private:
-          int id_;
-          
-          static int getID(const string& name);
 
+          /** */
+          int id_;
+
+          /** */
+          RefCountPtr<CellFilterBase> domain_;
+
+          /** */
+          RefCountPtr<QuadratureFamilyBase> quad_;
+          
+          /** */
+          static int getID(const RefCountPtr<CellFilterBase>& domain,
+                           const RefCountPtr<QuadratureFamilyBase>& quad);
+
+          /** */
           static int topID() {static int rtn=0; return rtn++;}
 
-          static Map<string, int>& nameToIDMap() ;
-
-          static Map<int, string>& idToNameMap() ;
+          /** */
+          static Map<RegPair, int>& domainAndQuadToIDMap() ;
         };
 
     }

@@ -2,6 +2,7 @@
 /* @HEADER@ */
 
 #include "SundanceEquationSet.hpp"
+#include "SundanceSymbPreprocessor.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
 
@@ -13,10 +14,28 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 EquationSet::EquationSet(const Expr& eqns, 
-            const Expr& bcs,
-            const Expr& tests, 
-            const Expr& unks,
-            const Expr& unkLinearizationPts)
+                         const Expr& bcs,
+                         const Expr& tests, 
+                         const Expr& unks,
+                         const Expr& unkLinearizationPts,
+                         const RefCountPtr<EvaluatorFactory>& evalFactory)
+  : domains_(),
+    testsOnDomains_(),
+    unksOnDomains_(),
+    bcTestsOnDomains_(),
+    bcUnksOnDomains_(),
+    regions_(),
+    bcRegions_(),
+    regionExprs_(),
+    bcRegionExprs_(),
+    regionNonzeroDerivs_(),
+    bcRegionNonzeroDerivs_(),
+    testFuncs_(tests),
+    unkFuncs_(unks),
+    unkLinearizationPts_(unkLinearizationPts),
+    testIDToReducedIDMap_(),
+    unkIDToReducedIDMap_(),
+    isNonlinear_(false)
 {
   verbosity() = classVerbosity();
 
@@ -76,8 +95,21 @@ EquationSet::EquationSet(const Expr& eqns,
         {
           Set<int>& t = testsOnDomains_.get(dom);
           t.merge(integralSum->testsOnDomain(d));
-            Set<int>& u = unksOnDomains_.get(dom);
+          Set<int>& u = unksOnDomains_.get(dom);
           u.merge(integralSum->unksOnDomain(d));
+        }
+      for (int t=0; t<integralSum->numTerms(d); t++)
+        {
+          EvalRegion reg(dom.ptr(), integralSum->quad(d,t));
+          Expr term = integralSum->expr(d,t);
+          regions_.put(reg);
+          regionExprs_.put(reg, term);
+          DerivSet nonzeros = SymbPreprocessor::setupExpr(term, tests,
+                                                          unks, 
+                                                          unkLinearizationPts,
+                                                          reg,
+                                                          evalFactory.get());
+          regionNonzeroDerivs_.put(reg, nonzeros);
         }
     }
   
@@ -111,8 +143,25 @@ EquationSet::EquationSet(const Expr& eqns,
               Set<int>& u = unksOnDomains_.get(dom);
               u.merge(bcSum->unksOnDomain(d));
             }
+        
+          for (int t=0; t<bcSum->numTerms(d); t++)
+            {
+              EvalRegion reg(dom.ptr(), bcSum->quad(d,t));
+              Expr term = bcSum->expr(d,t);
+              bcRegions_.put(reg);
+              bcRegionExprs_.put(reg, bcSum->expr(d,t));
+              DerivSet nonzeros 
+                = SymbPreprocessor::setupExpr(term, tests,
+                                              unks, 
+                                              unkLinearizationPts,
+                                              reg,
+                                              evalFactory.get());
+              bcRegionNonzeroDerivs_.put(reg, nonzeros);
+            }
         }
     }
+
+  
 
   SUNDANCE_OUT(verbosity() > VerbSilent,
                "Tests appearing on each domain: " << endl << testsOnDomains_);
@@ -127,5 +176,7 @@ EquationSet::EquationSet(const Expr& eqns,
   SUNDANCE_OUT(verbosity() > VerbSilent,
                "Unks appearing on each BC domain: " 
                << endl << bcUnksOnDomains_);
+
+  
 
 }

@@ -23,6 +23,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
+using namespace SundanceCore::FrameworkInterface;
 using namespace Teuchos;
 
 static Time& totalTimer() 
@@ -69,7 +70,8 @@ int main(int argc, void** argv)
 
       
 
-      EvalRegion region("region");
+      EvalRegion region(rcp(new CellFilterBase()),
+                        rcp(new QuadratureFamilyBase(0)));
       EvalManager mgr;
       mgr.setRegion(region);
 
