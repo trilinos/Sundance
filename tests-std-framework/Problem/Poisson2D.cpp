@@ -77,18 +77,24 @@ int main(int argc, void** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      /* Set up the linear solver  */
-      ParameterList solverParams;
+      /* Create an Aztec solver */
+      std::map<int,int> azOptions;
+      std::map<int,double> azParams;
 
-      solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-      solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
-      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-10);
+      azOptions[AZ_solver] = AZ_gmres;
+      azOptions[AZ_precond] = AZ_dom_decomp;
+      azOptions[AZ_subdomain_solve] = AZ_ilu;
+      azOptions[AZ_graph_fill] = 1;
+//       azOptions[AZ_ml] = 1;
+//       azOptions[AZ_ml_levels] = 4;
+      azParams[AZ_max_iter] = 100;
+      azParams[AZ_tol] = 1.0e-10;
 
-      LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
+      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
       Expr soln = prob.solve(solver);
 
-//       /* Write the field in VTK format */
+     //  /* Write the field in VTK format */
 //       FieldWriter w = new VTKWriter("Poisson2d");
 //       w.addMesh(mesh);
 //       w.addField("soln", new ExprFieldWrapper(soln[0]));
@@ -110,9 +116,9 @@ int main(int argc, void** argv)
 //       FunctionalEvaluator errInt(mesh, errExpr);
 //       FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
-      //Evaluator::classVerbosity() = VerbExtreme;
-      // double errorSq = errInt.evaluate();
-//        cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+//       //Evaluator::classVerbosity() = VerbExtreme;
+//       double errorSq = errInt.evaluate();
+//       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
 //       double derivErrorSq = derivErrInt.evaluate();
 //       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;

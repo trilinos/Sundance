@@ -124,7 +124,7 @@ int main(int argc, void** argv)
         }
       cerr << "bc rows " << endl << *(assembler.bcRows()) << endl;
       
-      Array<Set<int> > graph;
+      Array<ColSetType> graph;
       assembler.getGraph(graph);
 
       cerr << "graph" << endl;

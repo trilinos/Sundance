@@ -62,6 +62,7 @@
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "TSFBICGSTABSolver.hpp"
+#include "TSFAztecSolver.hpp"
 #include "TSFLinearSolver.hpp"
 #include "TSFLinearCombination.hpp"
 

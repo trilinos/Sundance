@@ -29,6 +29,13 @@ static Time& assemblyTimer()
   return *rtn;
 }
 
+static Time& assemblerCtorTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("assembler ctor"); 
+  return *rtn;
+}
+
 static Time& matInsertTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -80,6 +87,7 @@ Assembler
     lowestRow_(),
     vecType_(vectorType)
 {
+  TimeMonitor timer(assemblerCtorTimer());
   verbosity() = verb;
 
   RefCountPtr<GrouperBase> grouper = rcp(new TrivialGrouper());
@@ -207,42 +215,36 @@ void Assembler::configureMat(LinearOperator<double>& A,
 
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "Assembler: creating graph...");
-  Array<Set<int> > graph;
+  Array<ColSetType<int> > graph;
   Array<int> colIndices;
   Array<double> zeros;
   getGraph(graph);
 
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "...done");
-  if (verbosity() > VerbHigh)
-    {
-      Tabs tab1;
-      cerr << tab1 << "graph: " << endl;
-      for (int i=0; i<graph.size(); i++) 
-        {
-          Tabs tab2;
-          cerr << tab2 << "row=" << i << " " << graph[i] << endl;
-        }
-    }
+  
 
   
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "Assembler: initializing matrix and vector...");
-  for (int i=0; i<graph.size(); i++)
-    {
-      colIndices.resize(graph[i].size());
-      zeros.resize(graph[i].size());
-      Set<int>::const_iterator iter;
-      int j=0;
-      for (iter=graph[i].begin(); iter != graph[i].end(); iter++, j++)
-        {
-          colIndices[j] = *iter;
-          zeros[j] = 0.0;
-        }
-      mat->setRowValues(lowestRow_ + i, colIndices.size(),
-                        &(colIndices[0]), &(zeros[0]));
-      vec->setElement(lowestRow_ + i, 0.0);
-    }
+
+  mat->configure(lowestRow_, graph);
+
+  // int maxSize = 0;
+//   for (int i=0; i<graph.size(); i++)
+//     {
+//       graph[i].elements(colIndices);
+//       if (colIndices.size() > maxSize) 
+//         {
+//           zeros.resize(colIndices.size());
+//           for (int j=maxSize; j<zeros.size(); j++) zeros[j] = 0.0;
+//           maxSize = zeros.size();
+//         }
+//       mat->setRowValues(lowestRow_ + i, colIndices.size(),
+//                         &(colIndices[0]), &(zeros[0]));
+//     }
+
+  b.zero();
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "...done");
 
@@ -462,39 +464,72 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
   Tabs tab;
   TimeMonitor timer(matInsertTimer());
 
-  SUNDANCE_OUT(verbosity() > VerbLow, 
-               tab << "Assembler: inserting local matrix values");
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
-               tab << "Assembler: values are " << localValues);
+  static Array<int> skipRow;
 
-  Array<double> x(nUnkNodes);
-  Array<int> p(nUnkNodes);
-  Array<int> col(nUnkNodes);
-  int nNodes = nTestNodes*nUnkNodes;
+  skipRow.resize(testIndices.size());
 
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
-               tab << "Assembler: num nodes test=" << nTestNodes
-               << " unk=" << nUnkNodes);
+  int highestIndex = lowestRow_ + rowMap_->numLocalDOFs();
 
-  for (int i=0; i<testID.size(); i++)
+  if (isBCRqc)
     {
-      for (int c=0; c<workSet.size(); c++)
+      for (int r=0; r<testIndices.size(); r++)
         {
-          for (int r=0; r<nTestNodes; r++)
-            {
-              int rowIndex = testIndices[r + nTestNodes*c];
-              if (isBCRqc!=(*isBCRow_)[rowIndex] 
-                  || !(rowMap_->isLocalDOF(rowIndex))) continue;
-              for (int j=0; j<nUnkNodes; j++)
-                {
-                  col[j] = unkIndices[j + nUnkNodes*c];
-                  x[j] = localValues[c*nNodes + j*nUnkNodes + r];
-                }
-              mat->addToRow(rowIndex, nUnkNodes,
-                            &(col[0]), &(x[0]));
-            }
+          int row = testIndices[r];
+          skipRow[r] = row < lowestRow_ || row >= highestIndex
+            || !(*isBCRow_)[row];
         }
     }
+  else
+    {
+      for (int r=0; r<testIndices.size(); r++)
+        {
+          int row = testIndices[r];
+          skipRow[r] = row < lowestRow_ || row >= highestIndex
+            || (*isBCRow_)[row];
+        }
+    }
+
+  mat->addElementBatch(testIndices.size(),
+                       nTestNodes,
+                       &(testIndices[0]),
+                       nUnkNodes,
+                       &(unkIndices[0]),
+                       &(localValues[0]),
+                       &(skipRow[0]));
+
+  // SUNDANCE_OUT(verbosity() > VerbLow, 
+//                tab << "Assembler: inserting local matrix values");
+//   SUNDANCE_OUT(verbosity() > VerbHigh, 
+//                tab << "Assembler: values are " << localValues);
+
+//   Array<double> x(nUnkNodes);
+//   Array<int> p(nUnkNodes);
+//   Array<int> col(nUnkNodes);
+//   int nNodes = nTestNodes*nUnkNodes;
+
+//   SUNDANCE_OUT(verbosity() > VerbMedium, 
+//                tab << "Assembler: num nodes test=" << nTestNodes
+//                << " unk=" << nUnkNodes);
+
+//   for (int i=0; i<testID.size(); i++)
+//     {
+//       for (int c=0; c<workSet.size(); c++)
+//         {
+//           for (int r=0; r<nTestNodes; r++)
+//             {
+//               int rowIndex = testIndices[r + nTestNodes*c];
+//               if (isBCRqc!=(*isBCRow_)[rowIndex] 
+//                   || !(rowMap_->isLocalDOF(rowIndex))) continue;
+//               for (int j=0; j<nUnkNodes; j++)
+//                 {
+//                   col[j] = unkIndices[j + nUnkNodes*c];
+//                   x[j] = localValues[c*nNodes + j*nUnkNodes + r];
+//                 }
+//               mat->addToRow(rowIndex, nUnkNodes,
+//                             &(col[0]), &(x[0]));
+//             }
+//         }
+//     }
 }
 
 
@@ -576,7 +611,7 @@ void Assembler::insertLocalVectorValues(int cellDim,
 
                        
                        
-void Assembler::getGraph(Array<Set<int> >& graph) const 
+void Assembler::getGraph(Array<ColSetType>& graph) const 
 {
   TimeMonitor timer(graphBuildTimer());
   Tabs tab;
@@ -623,8 +658,8 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
                            << *bcPairs);
             }
         }
-      Array<Set<int> > unksForTests(eqn_->numTests());
-      Array<Set<int> > bcUnksForTests(eqn_->numTests());
+      Array<Set<int> > unksForTestsSet(eqn_->numTests());
+      Array<Set<int> > bcUnksForTestsSet(eqn_->numTests());
 
       Set<OrderedPair<int, int> >::const_iterator i;
       
@@ -643,7 +678,7 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
                                  "Unk function ID " << u << " does not appear "
                                  "in equation set");
 
-              unksForTests[eqn_->reducedTestID(t)].put(eqn_->reducedUnkID(u));
+              unksForTestsSet[eqn_->reducedTestID(t)].put(eqn_->reducedUnkID(u));
             }
         }
       if (bcPairs.get() != 0)
@@ -659,14 +694,25 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
               TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
                                  "Unk function ID " << u << " does not appear "
                                  "in equation set");
-              bcUnksForTests[eqn_->reducedTestID(t)].put(eqn_->reducedUnkID(u));
+              bcUnksForTestsSet[eqn_->reducedTestID(t)].put(eqn_->reducedUnkID(u));
             }
+        }
+
+      Array<Array<int> > unksForTests(unksForTestsSet.size());
+      Array<Array<int> > bcUnksForTests(bcUnksForTestsSet.size());
+
+      for (int t=0; t<unksForTests.size(); t++)
+        {
+          unksForTests[t] = unksForTestsSet[t].elements();
+          bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
         }
       
       int nTestFuncs = 1;
       int nUnkFuncs = 1;
       int nTestNodes;
       int nUnkNodes;
+
+      int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
 
       int owner;
       int nt = eqn_->numTests();
@@ -698,12 +744,10 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
             {
               for (int t=0; t<nt; t++)
                 {
-                  if (unksForTests[t].size()==0) continue;
-                  for (Set<int>::const_iterator uit=unksForTests[t].begin();
-                       uit != unksForTests[t].end(); uit++)
+                  for (int uit=0; uit<unksForTests[t].size(); uit++)
                     {
                       Tabs tab2;
-                      int u = *uit;
+                      int u = unksForTests[t][uit];
                       for (int c=0; c<workSet->size(); c++)
                         {
                           int testOffset = c*nTestNodes*nTestFuncs;
@@ -711,13 +755,15 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
                           for (int n=0; n<nTestNodes; n++)
                             {
                               int row = (*testLocalDOFs)[testOffset + n*nTestFuncs + t];
-                              if (!rowMap()->isLocalDOF(row) 
-                                  || isBCRow(row)) continue;
+                              // if (!rowMap()->isLocalDOF(row) 
+//                                   || isBCRow(row)) continue;
+                              if (row < lowestRow_ || row >= highestRow
+                                  || (*isBCRow_)[row]) continue;
+                              std::set<int>& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
                                   int col = (*unkLocalDOFs)[unkOffset + m*nUnkFuncs + t];
-                                  graph[row-lowestRow_].put(col);
-                                  
+                                  colSet.insert(col);
                                 }
                             }
                         }
@@ -728,12 +774,10 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
             {
               for (int t=0; t<nt; t++)
                 {
-                  if (bcUnksForTests[t].size()==0) continue;
-                  for (Set<int>::const_iterator uit=bcUnksForTests[t].begin();
-                       uit != bcUnksForTests[t].end(); uit++)
+                  for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
                     {
                       Tabs tab2;
-                      int u = *uit;
+                      int u = bcUnksForTests[t][uit];
                       for (int c=0; c<workSet->size(); c++)
                         {
                           int testOffset = c*nTestNodes*nTestFuncs;
@@ -741,12 +785,15 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
                           for (int n=0; n<nTestNodes; n++)
                             {
                               int row = (*testLocalDOFs)[testOffset + n*nTestFuncs + t];
-                              if (!rowMap()->isLocalDOF(row) 
-                                  || !isBCRow(row)) continue;
+                              // if (!rowMap()->isLocalDOF(row) 
+//                                   || !isBCRow(row)) continue;
+                              if (row < lowestRow_ || row >= highestRow
+                                  || !(*isBCRow_)[row]) continue;
+                              std::set<int>& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
                                   int col = (*unkLocalDOFs)[unkOffset + m*nUnkFuncs + t];
-                                  graph[row-lowestRow_].put(col);
+                                  colSet.insert(col);
                                   
                                 }
                             }

@@ -9,6 +9,8 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 
 using namespace SundanceStdFwk;
@@ -20,6 +22,12 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
 
+static Time& DOFBuilderCtorTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("DOF map building"); 
+  return *rtn;
+}
 
 DOFMapBuilder::DOFMapBuilder(const Mesh& mesh, 
                              const RefCountPtr<EquationSet>& eqn)
@@ -29,6 +37,7 @@ DOFMapBuilder::DOFMapBuilder(const Mesh& mesh,
     colMap_(),
     isBCRow_(rcp(new Array<int>()))
 {
+  TimeMonitor timer(DOFBuilderCtorTimer());
   init();
 }
 

@@ -7,11 +7,20 @@
 #include "SundanceDebug.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace SundanceUtils;
+
+static Time& batchedFacetGrabTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("batched facet grabbing"); 
+  return *rtn;
+}
 
 
 //#define SKIP_FACES
@@ -362,9 +371,12 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
                                        int facetDim,
                                        Array<int>& facetLID) const 
 {
+  TimeMonitor timer(batchedFacetGrabTimer());
+
   int nf = numFacets(cellDim, cellLID[0], facetDim);
   facetLID.resize(cellLID.size() * nf);
 
+  
   if (facetDim==0)
     {
       if (cellDim == spatialDim())
@@ -372,9 +384,10 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
           int ptr=0;
           for (int c=0; c<cellLID.size(); c++)
             {
+              const int* fPtr = &(elemVerts_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
                 {
-                  facetLID[ptr] = elemVerts_.value(cellLID[c], f);
+                  facetLID[ptr] = fPtr[f];
                 }
             }
         }
@@ -383,10 +396,10 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
           int ptr=0;
           for (int c=0; c<cellLID.size(); c++)
             {
+              const int* fPtr = &(edgeVerts_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
                 {
-                  facetLID[ptr] = edgeVerts_.value(cellLID[c], f);
-                  //             cerr << "facetLID[" << ptr << "] = " << facetLID[ptr] << endl;
+                  facetLID[ptr] = fPtr[f];
                 }
             }
         }
@@ -395,9 +408,10 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
           int ptr=0;
           for (int c=0; c<cellLID.size(); c++)
             {
+              const int* fPtr = &(faceVerts_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
                 {
-                  facetLID[ptr] = faceVerts_.value(cellLID[c], f);
+                  facetLID[ptr] = fPtr[f];
                 }
             }
         }
@@ -409,9 +423,10 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
           int ptr=0;
           for (int c=0; c<cellLID.size(); c++)
             {
+              const int* fPtr = &(elemEdges_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
                 {
-                  facetLID[ptr] = elemEdges_.value(cellLID[c], f);
+                  facetLID[ptr] = fPtr[f];
                 }
             }
         }
@@ -420,9 +435,10 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
           int ptr=0;
           for (int c=0; c<cellLID.size(); c++)
             {
+              const int* fPtr = &(faceEdges_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
                 {
-                  facetLID[ptr] = faceEdges_.value(cellLID[c], f);
+                  facetLID[ptr] = fPtr[f];
                 }
             }
         }
@@ -432,9 +448,10 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
       int ptr=0;
       for (int c=0; c<cellLID.size(); c++)
         {
+          const int* fPtr = &(elemFaces_.value(cellLID[c], 0));
           for (int f=0; f<nf; f++, ptr++)
             {
-              facetLID[ptr] = elemFaces_.value(cellLID[c], f);
+              facetLID[ptr] = fPtr[f];
             }
         }
     }

@@ -23,7 +23,7 @@ MeshBase::MeshBase(int dim, const MPIComm& comm)
 static Time& facetGrabTimer() 
 {
   static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("facet grabbing"); 
+    = TimeMonitor::getNewTimer("unbatched facet grabbing"); 
   return *rtn;
 }
 

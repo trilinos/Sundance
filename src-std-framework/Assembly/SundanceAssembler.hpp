@@ -19,6 +19,7 @@
 #include "TSFLinearOperator.hpp"
 #include "TSFVector.hpp"
 #include "TSFVectorType.hpp"
+#include "Teuchos_HashSet.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -33,6 +34,8 @@ namespace SundanceStdFwk
   namespace Internal
   {
     using namespace Teuchos;
+
+    typedef std::set<int> ColSetType;
 
     /** 
      * 
@@ -74,7 +77,7 @@ namespace SundanceStdFwk
       {static int rtn = defaultWorkSetSize(); return rtn;}
       
       /** */
-      void getGraph(Array<Set<int> >& graph) const ;
+      void getGraph(Array<ColSetType<int> >& graph) const ;
 
       
     private:

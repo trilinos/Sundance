@@ -342,7 +342,7 @@ void HomogeneousDOFMap::getDOFsForCell(int cellDim, int cellLID,
                                        int funcID, Array<int>& dofs) const 
 {
   TimeMonitor timer(dofLookupTimer());
-  TEST_FOR_EXCEPTION(true, InternalError, "cellwise DOF grab is obsolete");
+
   SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID << " funcID=" << funcID);
   dofs.resize(totalNNodesPerCell_[cellDim]);

@@ -94,9 +94,9 @@ namespace SundanceStdFwk
       /** */
       inline double& wValue(int q, int testDerivDir, int testNode,
                            int unkDerivDir, int unkNode)
-      {return W_[testNode
-                  + nNodesTest()
-                  *(unkNode + nNodesUnk()
+      {return W_[unkNode
+                  + nNodesUnk()
+                  *(testNode + nNodesTest()
                     *(unkDerivDir + nRefDerivUnk()
                       *(testDerivDir + nRefDerivTest()*q)))];}
 
@@ -107,9 +107,9 @@ namespace SundanceStdFwk
                                  int testDerivDir, int testNode,
                                  int unkDerivDir, int unkNode) const 
       {
-        return W_[testNode
-                  + nNodesTest()
-                  *(unkNode + nNodesUnk()
+        return W_[unkNode
+                  + nNodesUnk()
+                  *(testNode + nNodesTest()
                     *(unkDerivDir + nRefDerivUnk()
                       *(testDerivDir + nRefDerivTest()*q)))];
       }
