@@ -140,6 +140,16 @@ AC_MSG_RESULT([${TRILINOS_DIR}])
 )
 
 # ------------------------------------------------------------------------
+# Get the absolute path to the build directory.  
+# ------------------------------------------------------------------------
+
+AC_MSG_CHECKING([finding build directory])
+if test "X" = "X"; then
+  SUNDANCE_BUILD_DIRECTORY=`pwd`
+  AC_MSG_RESULT($SUNDANCE_BUILD_DIRECTORY)
+fi
+
+# ------------------------------------------------------------------------
 # Checks if tests and examples should be built
 # ------------------------------------------------------------------------
 
@@ -167,6 +177,7 @@ TAC_ARG_WITH_INCDIRS
 # ------------------------------------------------------------------------
 
 AC_SUBST(ac_aux_dir)
+AC_SUBST(SUNDANCE_BUILD_DIRECTORY)
 
 # ------------------------------------------------------------------------
 # Output files
@@ -174,11 +185,13 @@ AC_SUBST(ac_aux_dir)
 
 AC_CONFIG_FILES([
   Makefile  
+  Makefile.export
   examples-tutorial/Makefile
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile
   src-std-framework/Makefile
+  src-std-framework/SundanceDefaultPath.hpp
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
   tests-std-mesh/Makefile

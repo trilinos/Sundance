@@ -51,7 +51,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSparsityPattern.hpp \
@@ -124,7 +124,7 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContextStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContext.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVectorArray.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.hpp \
@@ -145,7 +145,6 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContextStub.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVectorArray.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.cpp \

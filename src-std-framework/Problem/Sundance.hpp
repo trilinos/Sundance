@@ -114,6 +114,10 @@ namespace SundanceStdFwk
     static string searchForFile(const string& name);
 
     static VerbositySetting verbosity(const string& str);
+
+    static string getPathStr();
+
+    static Array<string> parsePathStr();
   };
 }
 

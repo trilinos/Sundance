@@ -10,7 +10,6 @@ bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
 
 int main(int argc, void** argv)
 {
- 
   try
 		{
       Sundance::init(&argc, &argv);

@@ -274,7 +274,7 @@ PACKAGE_STRING='Sundance 2.0'
 PACKAGE_BUGREPORT='krlong@sandia.gov'
 
 ac_unique_file="/src-core/UserExprs/SundanceExpr.hpp"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_TESTS_TRUE BUILD_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE ac_aux_dir CHACO_LIB TRILINOS_DIR LIB@&t@OBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_TESTS_TRUE BUILD_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE ac_aux_dir SUNDANCE_BUILD_DIRECTORY CHACO_LIB TRILINOS_DIR LIB@&t@OBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -4067,6 +4067,18 @@ echo "${ECHO_T}${TRILINOS_DIR}" >&6
 fi; 
 
 # ------------------------------------------------------------------------
+# Get the absolute path to the build directory.  
+# ------------------------------------------------------------------------
+
+echo "$as_me:$LINENO: checking finding build directory" >&5
+echo $ECHO_N "checking finding build directory... $ECHO_C" >&6
+if test "X" = "X"; then
+  SUNDANCE_BUILD_DIRECTORY=`pwd`
+  echo "$as_me:$LINENO: result: $SUNDANCE_BUILD_DIRECTORY" >&5
+echo "${ECHO_T}$SUNDANCE_BUILD_DIRECTORY" >&6
+fi
+
+# ------------------------------------------------------------------------
 # Checks if tests and examples should be built
 # ------------------------------------------------------------------------
 
@@ -4195,11 +4207,12 @@ fi;
 
 
 
+
 # ------------------------------------------------------------------------
 # Output files
 # ------------------------------------------------------------------------
 
-                                                                                                                                                                                                        ac_config_files="$ac_config_files Makefile examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile doc/Makefile doc/Doxygen/Makefile doc/Doxygen/Doxyfile.utils doc/Doxygen/Doxyfile.core doc/Doxygen/Doxyfile.trilinos"
+                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile Makefile.export examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-std-framework/SundanceDefaultPath.hpp tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile doc/Makefile doc/Doxygen/Makefile doc/Doxygen/Doxyfile.utils doc/Doxygen/Doxyfile.core doc/Doxygen/Doxyfile.trilinos"
 
 
 
@@ -4811,11 +4824,13 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "Makefile.export" ) CONFIG_FILES="$CONFIG_FILES Makefile.export" ;;
   "examples-tutorial/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples-tutorial/Makefile" ;;
   "src-utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-utils/Makefile" ;;
   "src-core/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-core/Makefile" ;;
   "src-std-mesh/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-std-mesh/Makefile" ;;
   "src-std-framework/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-std-framework/Makefile" ;;
+  "src-std-framework/SundanceDefaultPath.hpp" ) CONFIG_FILES="$CONFIG_FILES src-std-framework/SundanceDefaultPath.hpp" ;;
   "tests-core/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-core/Makefile" ;;
   "tests-core/SymbolicTests/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-core/SymbolicTests/Makefile" ;;
   "tests-std-mesh/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-mesh/Makefile" ;;
@@ -4995,6 +5010,7 @@ s,@BUILD_TESTS_FALSE@,$BUILD_TESTS_FALSE,;t t
 s,@BUILD_EXAMPLES_TRUE@,$BUILD_EXAMPLES_TRUE,;t t
 s,@BUILD_EXAMPLES_FALSE@,$BUILD_EXAMPLES_FALSE,;t t
 s,@ac_aux_dir@,$ac_aux_dir,;t t
+s,@SUNDANCE_BUILD_DIRECTORY@,$SUNDANCE_BUILD_DIRECTORY,;t t
 s,@CHACO_LIB@,$CHACO_LIB,;t t
 s,@TRILINOS_DIR@,$TRILINOS_DIR,;t t
 s,@LIB@&t@OBJS@,$LIB@&t@OBJS,;t t

@@ -12,6 +12,7 @@
 #include "SundanceInstructionCachingEvaluator.hpp"
 #include "SundanceGrouperBase.hpp"
 #include "SundanceSparsityPattern.hpp"
+#include "SundanceDefaultPath.hpp"
 
 
 static Time& totalTimer() 
@@ -72,10 +73,7 @@ void Sundance::finalize()
 string Sundance::searchForFile(const string& name)
 {
   string pathSep = "/";
-  Array<string> path;
-  path.append(".");
-  path.append("../../etc");
-  path.append("../../../etc");
+  Array<string> path = parsePathStr();
 
   for (int i=0; i<path.size(); i++)
     {
@@ -83,6 +81,42 @@ string Sundance::searchForFile(const string& name)
       if (!fileToTry) continue;
       return path[i] + pathSep + name;
     }
+}
+
+string Sundance::getPathStr() 
+{
+  char* pathEnvStr = getenv("SUNDANCE_PATH");
+
+  if (pathEnvStr == NULL) 
+    {
+      return defaultSundancePath();
+    }
+  else
+    {
+      return pathEnvStr;
+    }
+}
+
+Array<string> Sundance::parsePathStr() 
+{
+  string pathStr = getPathStr();
+  
+  Array<string> rtn;
+
+  int begin;
+  int end;
+  
+  begin = pathStr.find_first_not_of(":");
+  
+  while (begin < pathStr.length())
+    {
+      end = pathStr.find_first_of(":", begin);
+
+      rtn.append(pathStr.substr(begin, end-begin));
+      begin = pathStr.find_first_not_of(":", end);
+    }
+
+  return rtn;
 }
 
 void Sundance::setSettings(const string& settingsFile)

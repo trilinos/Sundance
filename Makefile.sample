@@ -1,0 +1,101 @@
+# ************************************************************************
+# 
+#                               Sundance
+#                 Copyright (2002) Sandia Corporation
+# 
+#
+# Copyright (2001) Sandia Corportation. Under the terms of Contract 
+# DE-AC04-94AL85000, there is a non-exclusive license for use of this 
+# work by or on behalf of the U.S. Government.  Export of this program
+# may require a license from the United States Government.
+# 
+# NOTICE:  The United States Government is granted for itself and others
+# acting on its behalf a paid-up, nonexclusive, irrevocable worldwide
+# license in ths data to reproduce, prepare derivative works, and
+# perform publicly and display publicly.  Beginning five (5) years from
+# July 25, 2001, the United States Government is granted for itself and
+# others acting on its behalf a paid-up, nonexclusive, irrevocable
+# worldwide license in this data to reproduce, prepare derivative works,
+# distribute copies to the public, perform publicly and display
+# publicly, and to permit others to do so.
+# 
+# NEITHER THE UNITED STATES GOVERNMENT, NOR THE UNITED STATES DEPARTMENT
+# OF ENERGY, NOR SANDIA CORPORATION, NOR ANY OF THEIR EMPLOYEES, MAKES
+# ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR
+# RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY
+# INFORMATION, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS
+# THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+# 
+# ************************************************************************
+
+# ------------------------------------------------------------------------
+#
+# Makefile.sample is an example of a simple makefile that will let
+# a user build a Sundance-based application in an arbitrary directory.
+# 
+# To use this makefile, you need to do three steps:
+# (1) Copy Makefile.sample to the location of your application source.
+# (2) Edit the definition of SUNDANCE_INSTALL_DIR to point to your Sundance
+#     installation directory. 
+# (3) Edit the definition of EXTRA_OBJS to list names of any object files
+#     required by your application other than that corresponding to the 
+#     application name. 
+#
+# Example: Suppose you are building an application "RANS.exe" whose code is in 
+# three source files: RANS.cpp, TurbulenceModel.cpp, and BC.cpp. You have
+# installed Sundance in /home/bob/PDE/Sundance/BUILD. You are building your 
+# application in /home/bob/FlowModels/RANS. You would do the following:
+#
+# (1) copy the file /home/bob/PDE/Sundance/Makefile.sample 
+#     to /home/bob/FlowModels/RANS/Makefile
+# (2) Edit /home/bob/FlowModels/RANS/Makefile to set
+#     SUNDANCE_INSTALL_DIR=/home/bob/PDE/Sundance/BUILD
+# (3) Edit /home/bob/FlowModels/RANS/Makefile to set 
+#     EXTRA_OBJS = TurbulenceModel.o BC.o
+# (4) Do "make RANS.exe" to build the executable.
+# 
+#
+# ------------------------------------------------------------------------
+
+
+
+
+#--------------------------------------------------------------------------
+# Change the value of SUNDANCE_INSTALL_DIR to point to the directory
+# into which you have installed Sundance. For example, if you have
+# installed into /usr/local/sundance, change this line to
+#
+# SUNDANCE_INSTALL_DIR = /usr/local/sundance 
+#
+#--------------------------------------------------------------------------
+
+SUNDANCE_INSTALL_DIR = /home/krlong/Projects/Sundance/LINUX-DEBUG
+
+
+
+
+#--------------------------------------------------------------------------
+# If your application contains more than one source file, list any additional
+# object files in the variable EXTRA_OBJS, e.g.,
+# 
+# EXTRA_OBJS = SomeFile.o SomeOtherFile.o
+# 
+#--------------------------------------------------------------------------
+
+EXTRA_OBJS =
+
+
+#--------------------------------------------------------------------------
+# The remaining lines will not usually need to be changed.  
+#--------------------------------------------------------------------------
+
+
+include $(SUNDANCE_INSTALL_DIR)/Makefile.export
+
+
+%.exe : %.o $(EXTRA_OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(CXXFLAGS) $< $(EXTRA_OBJS) $(SUNDANCE_LIBS)
+
+%.o : %.cpp
+	$(CXX) -c -o $@ -DHAVE_CONFIG_H $(CXXFLAGS) $(SUNDANCE_INCLUDES) $<
+

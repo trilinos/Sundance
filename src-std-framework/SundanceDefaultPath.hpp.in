@@ -1,0 +1,15 @@
+/* @HEADER@ */
+/* @HEADER@ */
+
+#ifndef SUNDANCEDEFAULTPATH_H
+#define SUNDANCEDEFAULTPATH_H
+
+inline string defaultSundancePath()
+{
+  static string rtn = ".:@SUNDANCE_BUILD_DIRECTORY@/../etc";
+  return rtn;
+}
+
+#endif
+
+
