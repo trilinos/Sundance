@@ -1,6 +1,224 @@
 
 /*! \page installation_page Installation
 
+<ul>
+<li> \ref conf_requirements
+<li> \ref conf_trilinos
+<li> \ref conf_sundance
+<li> \ref conf_app
+</ul>
+
+\section conf_requirements Requirements 
+
+\subsection conf_sys System Requirements 
+<UL>
+<li> A Linux, Unix, MacOS, or Cygwin system
+<li> A C++ compiler
+<li> A FORTRAN compiler
+</ul>
+
+\subsection conf_soft Software requirements 
+<UL>
+<li> LAPACK and BLAS. Reference implementations are available
+from <A HREF="http://www,netlib.org"> Netlib </A>
+<li> The <A HREF="http://software.sandia.gov/Trilinos"> Trilinos </A> 
+high-performance parallel solver
+components available for free download 
+<A HREF="http://software.sandia.gov/Trilinos"> here. </A>
+Note that many popular solver libraries are available through
+Trilinos interfaces. 
+<li> The Expat XML parser 
+</ul>
+
+\subsection conf_optional Optional Software
+<UL>
+<li> To enable parallel Sundance you must install an implementation
+of <A HREF="http://www-unix.mcs.anl.gov/mpi/"> MPI. </A> In this
+case, Trilinos should also be built with MPI enabled.
+</ul>
+
+\subsection conf_trilinos Configuring and Building Trilinos for Sundance 
+
+The installation procedure for Trilinos is well-documented 
+<A HREF="http://software.sandia.gov/Trilinos/installation_manual.html">
+here </A>
+so on this page we merely provide a summary of the settings relevant to working
+with Sundance. The following flags <A>must</A> be
+set when building Trilinos for use with Sundance:
+<pre>
+--enable-tsfextended \
+--enable-tsfcore \
+--enable-tsfcore-epetra \
+--enable-tsfcore-mpi \
+--enable-tsfcore-aztecoo \
+--enable-teuchos \
+--enable-nox \
+--enable-nox-tsf 
+</pre>
+Several other optional flags impact the behavior of Sundance:
+<ul>
+<li> <tt>--enable-ml</tt> turns on support for the ML algebraic 
+multilevel solvers and preconditioners
+<li> <tt>--enable-expat</tt> turns on support for the Expat XML parser,
+allowing parameters to be read from XML files
+<LI> <tt>--enable-teuchos-abc</tt> turns on array bounds checking in Teuchos,
+which will check every access to Teuchos <tt>Array</tt> objects for
+bounds errors. This is very useful for debugging, however, it causes 
+a significant performance loss (a slowdown of about a factor of 3 for system
+assembly).
+</ul>
+The Trilinos distribution comes with two sample scripts for configuring
+Trilinos for use with Sundance:
+<ul>
+<li> <tt>Trilinos/sampleScripts/sundance-linux-mpi-debug</tt> configures a
+parallel Trilinos on Linux with no compiler optimization,
+and with debugging information and array bounds checking
+turned on. 
+<li> <tt>Trilinos/sampleScripts/sundance-linux-mpi-opt</tt> configures a
+parallel Trilinos on Linux with aggressive compile-time optimization
+and with debugging information and array bounds checking
+turned off. 
+</ul>
+
+\subsection conf_tri_example Example Trilinos Installation 
+
+Here we show an example of installing Trilinos. We will configure it
+for use with Sundance with settings appropriate to debugging. 
+
+It is assumed that you have installed BLAS, LAPACK, and any optional
+libraries such as MPI.
+It is assumed you have downloaded Trilinos and unpacked the source into
+some directory; in this example, we will work in a Trilinos directory
+<tt>HOME/Projects/Trilinos.</tt> As is explained in the Trilinos
+installation guide, Trilinos should always be configured and built in a 
+build directory, <b>not</b> in the Trilinos source directory. In this
+example, we work in a build directory 
+<tt>HOME/Projects/Trilinos/LINUX-OPT.</tt>
+
+The installation process is listed below. 
+\code
+<kevin@rusalka:Projects/Trilinos> mkdir LINUX-OPT 
+<kevin@rusalka:Projects/Trilinos> cd LINUX-OPT 
+<kevin@rusalka:Projects/Trilinos/LINUX-OPT> ../sampleScripts/sundance-linux-mpi-opt
+<kevin@rusalka:Projects/Trilinos/LINUX-OPT> make
+<kevin@rusalka:Projects/Trilinos/LINUX-OPT> make install
+\endcode
+
+The final step puts libraries and headers into the installation directory 
+specified in the configuration script; the sample script used here
+installs into the build directory. Thus in this example, headers and
+libraries are found in the <tt>include</tt> and <tt>lib</tt> subdirectories
+of <tt>HOME/Projects/Trilinos/LINUX-OPT.</tt> The installation
+directory can be changed with the <tt>--prefix</tt> configure option. 
+
+\subsection conf_tri_sun Note on Concurrent Development of Trilinos and Sundance
+
+The default installation behavior updates timestamps on header files
+so that if any Trilinos header file is changed, many Sundance files
+will have to be rebuilt. This is inconvenient for those people
+who use Sundance while doing Trilinos development, for instance solver
+researchers using Sundance as a testbed, because it forces many unnecessary
+rebuilds of the entire Sundance distribution. On some systems,
+timestamps on unchanged files
+can be preserved through installation, so that only those Sundance files
+dependent on those Trilinos files that have actually changed need be rebuilt.
+On Linux, timestamps can be preserved with the <tt>-p</tt> option
+to <tt>install</tt>, which can be imposed by adding the option
+<tt>--with-install="/usr/bin/install -c -p"</tt> to the configure command line.
+This is done in the sample scripts in the Trilinos distribution.
+
+
+\section conf_sundance Configuring Sundance
+
+Once Trilinos is built and installed, we can configure, build, and install
+Sundance. During the Sundance build process, <tt>configure</tt>
+and <tt>make</tt> must
+find out where to find headers and libraries for Trilinos. This is
+done through the <tt>--with-trilinos</tt> option to <tt>configure.</tt> With the 
+example Trilinos installation above, you would add 
+<tt>--with-trilinos=+\$\verb+HOME/Projects/Trilinos/LINUX-OPT</tt>
+to the <tt>configure</tt>
+command line. If you have installed
+Trilinos somewhere else, you should change your 
+<tt>configure</tt> line accordingly.
+
+There are several sample configuration script in the <tt>build-scripts</tt>
+subdirectory of Sundance. 
+<ul>
+<li> <tt>build-scripts/linux-mpi-debug</tt> configures parallel Sundance
+on Linux with debugging flags set and array bounds checking. This
+script assumes that you have installed Trilinos in
+<tt>HOME/Projects/Trilinos/LINUX-DEBUG.</tt>
+<li> <tt>build-scripts/linux-mpi-opt</tt> configures parallel Sundance
+on Linux with compile-time optimization and no debugging information
+or array bounds checking. This
+script assumes that you have installed Trilinos in
+<tt>HOME/Projects/Trilinos/LINUX-OPT.</tt>
+</ul>
+These scripts can be used as a starting 
+point for other modes of building Sundance. 
+
+An example installation process is listed below. 
+\code
+<kevin@rusalka:Projects/Sundance> mkdir LINUX-OPT 
+<kevin@rusalka:Projects/Sundance> cd LINUX-OPT 
+<kevin@rusalka:Projects/Sundance/LINUX-OPT> ../build-scripts/linux-mpi-opt
+<kevin@rusalka:Projects/Sundance/LINUX-OPT> make
+<kevin@rusalka:Projects/Sundance/LINUX-OPT> make install
+\endcode
+
+
+\section conf_app Setting up makefiles to develop a Sundance application
+
+The previous installation steps have configured and built the Sundance
+libraries, tests, and examples. You are probably interested in using Sundance
+to develop your own application, for which you will need to write
+a Makefile that can access the Sundance libraries. 
+
+\subsection conf_app_example A simple application makefile example
+
+A template for a simple
+application makefile is in <tt>Makefile.sample,</tt> found in the root 
+directory of the Sundance distribution. For many Sundance-based 
+applications it will be 
+sufficient to copy this makefile and set one variable:
+<tt>SUNDANCE_INSTALL_DIR,</tt> which should point to the directory where you
+have installed Sundance.
+
+In the following example, you are building the <tt>PostPotentialFlow</tt>
+simulator (described in detail below) in the directory <tt>MyApps.</tt>
+First put the application source (and any other required files such as meshes)
+in your application directory:
+\code
+<kevin@rusalka:MyApps> cp ~/Projects/Sundance/examples-tutorial/PostPotentialFlow.cpp .
+<kevin@rusalka:MyApps> cp ~/Projects/Sundance/examples-tutorial/post.ncdf .
+<kevin@rusalka:MyApps> cp ~/Projects/Sundance/Makefile.sample Makefile
+\endcode
+Now, edit <tt>Makefile</tt> and set <tt>SUNDANCE_INSTALL_DIR</tt>
+to the location
+of your Sundance build. The next step is to build the application:
+\code
+<kevin@rusalka:MyApps> make PostPotentialFlow.exe
+\endcode
+Your application is now ready to run.
+
+If your application requires more than one source file, additional
+objects to be compiled and linked can be specified in the 
+<tt>EXTRA_OBJS</tt> macro. For more complicated application structures,
+see the next section.
+
+\subsection conf_app_ryo Rolling your own application Makefile
+
+If the sample makefile described above is not sufficient for your application,
+you can access the <tt>make</tt> macros for Sundance directly by including
+in your makefile the file <tt>Makefile.export,</tt> which is written
+into your build subdirectory at configure time. This makefile fragment contains
+definitions of the Sundance and Trilinos header and library search paths, 
+compiler options, and so on. If you are rolling your own Makefile, I assume
+you know enough about makefiles to set it up without further instruction 
+from me.
+
+
 
 
 */

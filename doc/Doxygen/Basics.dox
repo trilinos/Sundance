@@ -8,18 +8,9 @@ namespace SundanceCore
 Sundance solves PDEs using the finite-element method: a general, powerful, and
 quite elegant method for turning a PDE into a discrete system of algebraic equations. 
 To use Sundance, you will need to understand the fundamentals of the 
-finite-element method. Many introductory textbooks are available, such
-as \ref Hughes2000. A nice one-chapter 
-introduction to the finite-element method
-set in the broader context of numerical solution of differential equations can be found
-in \ref iserles1996. 
-Some of the more subtle aspects of the finite element method are described in the 
-books by \ref GreshoSani1998 (with an emphasis on fluid mechanics), 
-\ref Belytscheko (emphasizing nonlinear solid mechanics), 
-and \ref BrennerScott (for the mathematician). \ref GreshoSani1998
-have an excellent literature review with references to books at all levels. 
-
-This is not the place to teach you the finite-element method, but it is worth
+finite-element method. 
+This is not the place to teach you the finite-element method -- many good
+books on the subject are available -- but it is worth
 pointing out some salient features of the finite-element method
 and their impact on how you will use Sundance.
 <ul>

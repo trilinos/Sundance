@@ -1,6 +1,12 @@
 
+namespace SundanceStdFwk
+{
 /*! \page equations Weak Forms of Equations
 
-
+Each term in a weak equation is written using the Integral operator, which
+takes three arguments: a CellFilter to specify the domain, an
+Expr specifying the integrand, and a QuadratureFamily object to
+indicate how the integration is to be done.
 
 */
+}

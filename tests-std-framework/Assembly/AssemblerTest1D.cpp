@@ -31,8 +31,6 @@
 #include "SundanceZeroExpr.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceEvalVector.hpp"
-#include "SundanceBasicInserter.hpp"
-#include "SundanceIntegrator.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
