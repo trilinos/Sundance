@@ -95,6 +95,9 @@ namespace SundanceStdFwk
     /** */
     FunctionalEvaluator evaluator(const Expr& var,
                                   const Expr& varEvalPts) const ;
+
+    /** */
+    const Mesh& mesh() const {return mesh_;}
     
     
                                   

@@ -35,5 +35,6 @@ BUILD_DIR=`pwd`
 
 ../configure CXXFLAGS="-g" --enable-mpi --with-mpi-compilers \
 --with-trilinos=$HOME/Projects/Trilinos/LINUX-DEBUG \
+--with-install="/usr/bin/install -c -p" \
 --prefix=$BUILD_DIR
 

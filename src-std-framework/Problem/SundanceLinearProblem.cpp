@@ -96,7 +96,7 @@ LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler)
 TSFExtended::Vector<double> LinearProblem::getRHS() const 
 {
   Tabs tab;
-  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building vector");
+  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building vector");
   assembler_->assemble(rhs_);
   return rhs_;
 }
@@ -105,7 +105,7 @@ TSFExtended::Vector<double> LinearProblem::getRHS() const
 TSFExtended::LinearOperator<double> LinearProblem::getOperator() const 
 {
   Tabs tab;
-  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building matrix and vector");
+  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building matrix and vector");
   assembler_->assemble(A_, rhs_);
   return A_;
 }
@@ -122,17 +122,17 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
   Tabs tab;
   Vector<double> solnVec;
   
-  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building system");
+  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building system");
 
   assembler_->assemble(A_, rhs_);
   rhs_.scale(-1.0);
 
-  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() solving system");
+  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() solving system");
 
   status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_, solnVec)));
 
   const SolverState<double>& state = *status_;
-  SUNDANCE_VERB_LOW(tab << 
+  SUNDANCE_VERB_MEDIUM(tab << 
                     "LinearProblem::solve() done solving system: status is " 
                     << state.stateDescription());
 
@@ -148,17 +148,17 @@ SolverState<double> LinearProblem
   Tabs tab;
   Vector<double> solnVec;
   
-  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() building system");
+  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building system");
 
   assembler_->assemble(A_, rhs_);
   rhs_.scale(-1.0);
 
-  SUNDANCE_VERB_LOW(tab << "LinearProblem::solve() solving system");
+  SUNDANCE_VERB_LOW(tab << "solving LinearProblem");
 
   status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_, solnVec)));
 
   const SolverState<double>& state = *status_;
-  SUNDANCE_VERB_LOW(tab << 
+  SUNDANCE_VERB_MEDIUM(tab << 
                     "LinearProblem::solve() done solving system: status is " 
                     << state.stateDescription());
 

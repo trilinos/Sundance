@@ -18,7 +18,7 @@
 
 <Verbosity context="Linear Problem" value="Low"/>
 
-<Verbosity context="Assembly" value="Low"/>
+<Verbosity context="Assembly" value="Silent"/>
 
 <Verbosity context="Evaluation" value="Silent"/>
 
@@ -32,7 +32,7 @@
 
 <Verbosity context="Integral Grouping" value="Silent"/>
 
-<Verbosity context="Mesh Creation" value="Low"/>
+<Verbosity context="Mesh Creation" value="Silent"/>
 
 <Verbosity context="Symbolic Sparsity Determination" value="Silent"/>
 
