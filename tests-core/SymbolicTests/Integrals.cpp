@@ -43,11 +43,11 @@ int main(int argc, void** argv)
       MPISession::init(&argc, &argv);
 
       TimeMonitor t(totalTimer());
-      SymbolicTransformation::verbosity() = 0;
-      Evaluator::verbosity() = 0;
+     
+      verbosity<SymbolicTransformation>() = VerbSilent;
+      verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
-      EvaluatableExpr::verbosity() = 0;
-      Expr::showAllParens() = true;
+      verbosity<EvaluatableExpr>() = VerbSilent;
 
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);

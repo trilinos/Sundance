@@ -13,6 +13,7 @@
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalVectorArray.hpp"
 #include "SundanceSparsityPattern.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -143,7 +144,8 @@ namespace SundanceCore
      * for the cached values can be placed back on a stack and
      * later reused.
      */
-    class EvaluatableExpr : public virtual ScalarExpr
+    class EvaluatableExpr : public virtual ScalarExpr,
+                            public TSFExtended::ObjectWithVerbosity<EvaluatableExpr>
     {
     public:
       /** */
@@ -205,9 +207,6 @@ namespace SundanceCore
       /** */
       bool hasWorkspace() const ;
 
-      /** get/set the verbosity level for setup operations */
-      static int& verbosity()
-      {static int rtn = 0; return rtn;}
 
       /** \name Reference counting */
       //@{

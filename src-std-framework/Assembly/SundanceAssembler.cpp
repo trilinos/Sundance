@@ -141,6 +141,8 @@ void Assembler::assemble() const
 
   for (int r=0; r<rqc_.size(); r++)
     {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   "assembling rqc=" << rqc_[r]);
       evalMgr_->setMediator(rqcEval_[r]);
       evalMgr_->setRegion(rqc_[r]);
       CellFilter filter = rqc_[r].domain();
@@ -150,6 +152,7 @@ void Assembler::assemble() const
 
       CellIterator iter=cells.begin();
       rqcEval_[r]->setCellType(cellType);
+      int numWorkSets = 0;
       while (iter != cells.end())
         {
           workSet->resize(0);
@@ -157,6 +160,9 @@ void Assembler::assemble() const
             {
               workSet->append(*iter);
             }
+          SUNDANCE_OUT(verbosity() > VerbMedium,
+                       "doing work set=" << numWorkSets);
+          numWorkSets++;
           rqcEval_[r]->setCellBatch(workSet);
           rqcEvaluatableExpr_[r]->flushResultCache();
           rqcEvaluatableExpr_[r]->evaluate(*evalMgr_, results);

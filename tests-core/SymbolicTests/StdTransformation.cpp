@@ -33,7 +33,9 @@ int main(int argc, void** argv)
       /* initialize MPI */
       MPISession::init(&argc, &argv);
 
-      SymbolicTransformation::verbosity() = 0;
+      
+      verbosity<SymbolicTransformation>() = VerbSilent;
+
       Expr::showAllParens() = true;
 
       Expr dx = new Derivative(0);

@@ -93,19 +93,19 @@ int main(int argc, void** argv)
       
 
       QuadratureFamily quad = new GaussianQuadrature(2);
-      Expr eqn = Integral(interior, (dx*v)*(dx*u) + x*v, quad);
+      //      Expr eqn = Integral(interior, (dx*v)*(dx*u) + x*v, quad);
+      Expr eqn = Integral(interior, (1.0+x*x)*u*v, quad);
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
       RefCountPtr<EquationSet> eqnSet 
         = rcp(new EquationSet(eqn, bc, v, u, u0, 
                               rcp(new BruteForceEvaluatorFactory())));
 
-      verbosity<Assembler>() = VerbExtreme;
+       verbosity<Assembler>() = VerbExtreme;
       verbosity<EvalVector>() = VerbExtreme;
       verbosity<QuadratureEvalMediator>() = VerbExtreme;
-      EvaluatableExpr::verbosity() = 4;
-      SymbolicTransformation::verbosity() = 0;
-      Evaluator::verbosity() = 4;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<Evaluator>() = VerbExtreme;
 
       EquationSet::classVerbosity() = VerbHigh;
       Expr::showAllParens() = true;

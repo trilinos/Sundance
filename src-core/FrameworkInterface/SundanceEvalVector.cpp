@@ -4,6 +4,7 @@
 #include "SundanceEvalVector.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -85,6 +86,7 @@ string EvalVector::getStringValue() const
   if (isZero_) return "0.0";
   else if (isOne_) return "1.0";
   else if (isConstant_) return Teuchos::toString(constantVal_);
+  else if (stringVal_.length()==0) return vectorVal_.toString();
   else return stringVal_;
 }
 
@@ -243,6 +245,7 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
             {
               x[i] += c;
             }
+          setToVectorValue();
         }
       else
         {
@@ -281,6 +284,7 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
                   x[i] += scalar*y[i]; 
                 }
             }
+          setToVectorValue();
         }
       else
         {
@@ -313,6 +317,10 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
 
 void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
 {
+  cerr << "MULTIPLYING ***************************************" << endl;
+  SUNDANCE_OUT(verbosity() > VerbLow, "multiplying " << getStringValue()
+               << " and " << other->getStringValue());
+
   if (isZero() || other->isZero()) 
     {
       setToZero();
@@ -359,6 +367,7 @@ void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
             {
               x[i] *= c;
             }
+          setToVectorValue();
         }
       else
         {
@@ -379,6 +388,7 @@ void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
             {
               x[i] *= y[i]; 
             }
+          setToVectorValue();
         }
       else
         {
@@ -390,6 +400,10 @@ void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
 void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
                             const RefCountPtr<EvalVector>& b)
 {
+  SUNDANCE_OUT(verbosity() > VerbLow, "adding product L=" << 
+               a->getStringValue() << " R=" << b->getStringValue()
+               << " to LHS " << getStringValue());
+
   if (a->isZero() || b->isZero()) return;
 
   if (a->isConstant())

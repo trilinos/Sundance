@@ -5,6 +5,7 @@
 #define SUNDANCE_SYMBOLICTRANSFORMATION_H
 
 #include "SundanceDefs.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY 
@@ -12,6 +13,7 @@
 namespace SundanceCore
 {
   using namespace SundanceUtils;
+  using namespace TSFExtended;
   using std::string;
   
 
@@ -27,7 +29,7 @@ namespace SundanceCore
        * sum. This will be used to effect simplification
        * transformations on sum expressions.
        */
-      class SymbolicTransformation 
+      class SymbolicTransformation : public ObjectWithVerbosity<SymbolicTransformation>
         {
         public:
           /** */

@@ -9,6 +9,7 @@
 #include "SundanceUnaryMinus.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
@@ -16,6 +17,7 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 BruteForceEvaluatorFactory::BruteForceEvaluatorFactory()
   : EvaluatorFactory()
@@ -245,14 +247,16 @@ void BruteForceProductEvaluator::eval(const EvalManager& mgr,
 
           int iLeft = leftSparsity->getIndex(d);
           int iRight = rightSparsity->getIndex(d);
+          SUNDANCE_OUT(verbosity() > VerbHigh, 
+                       "indices of left and right results vectors: L="
+                       << iLeft << " R=" << iRight);
           
-          if (verbosity() > 1)
-            {
-              cerr << tabs << "d=0 left=" << (*leftResults)[iLeft]->getStringValue()
-                   << " right=" << (*rightResults)[iRight]->getStringValue()
-                   << endl;
+          SUNDANCE_OUT(verbosity() > VerbMedium,
+                       tabs << "d=0 left=" 
+                       << (*leftResults)[iLeft]->getStringValue()
+                       << " right=" 
+                       << (*rightResults)[iRight]->getStringValue());
                                                     
-            }
           (*results)[i]->copy((*leftResults)[iLeft]);
           (*results)[i]->multiply((*rightResults)[iRight]);
         }

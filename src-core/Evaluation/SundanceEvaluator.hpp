@@ -7,6 +7,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceEvalVectorArray.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -41,7 +42,7 @@ namespace SundanceCore
      * can be developed and introduced with minimal disruption to the
      * core expression code. 
      */
-    class Evaluator
+    class Evaluator : public TSFExtended::ObjectWithVerbosity<Evaluator>
     {
     public:
       /** */
@@ -54,8 +55,7 @@ namespace SundanceCore
       virtual void eval(const EvalManager& mgr,
                         RefCountPtr<EvalVectorArray>& results) const = 0 ;
 
-      /** */
-      static int& verbosity() {static int rtn = 0; return rtn;}
+
     protected:
     private:
     };
