@@ -11,7 +11,7 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
 
@@ -22,7 +22,6 @@ int main(int argc, void** argv)
       /* Get a mesh */
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource meshReader = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/disk.ncdf", meshType);
-
       Mesh mesh = meshReader.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -48,6 +47,7 @@ int main(int argc, void** argv)
       QuadratureFamily quad2 = new GaussianQuadrature(2);
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
+      const double pi = 4.0*atan(1.0);
       /* Define the weak form */
       Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2);
       /* Define the Dirichlet BC */
@@ -57,18 +57,13 @@ int main(int argc, void** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterList solverParams = reader.getParameters();
+      cerr << "params = " << solverParams << endl;
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-10;
 
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
 
       Expr soln = prob.solve(solver);
 
@@ -101,6 +96,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+  Sundance::finalize();
 }

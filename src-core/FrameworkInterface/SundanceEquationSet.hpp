@@ -58,8 +58,7 @@ namespace SundanceCore
       {return regions_[d].ptr();}
 
       /** Indicate whether the given region has an essential BC expression */
-      bool isBCRegion(int d) const
-      {return bcTestsOnRegions_.containsKey(regions_[d]);}
+      bool isBCRegion(int d) const ;
       
       /** Returns the number of test functions in this equation set */
       int numTests() const {return testFuncs_.size();}
@@ -211,7 +210,6 @@ namespace SundanceCore
 
       /** */
       Map<OrderedHandle<CellFilterStub>, Set<int> > bcUnksOnRegions_;
-
 
       /** */
       Array<RegionQuadCombo> regionQuadCombos_;

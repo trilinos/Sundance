@@ -134,6 +134,7 @@ void CellJacobianBatch::factor() const
         }
     }
 
+  addFlops(numCells_ * spatialDim_ * (1.0 + spatialDim_ * spatialDim_));
   isFactored_ = true;
 }
 
@@ -183,6 +184,7 @@ void CellJacobianBatch::computeInverses() const
                              "CellJacobianBatch::setJacobian(): inversion failed");
         }
     }
+  addFlops(numCells_ * spatialDim_ * spatialDim_);
   hasInverses_ = true;
 }
 
@@ -206,7 +208,8 @@ void CellJacobianBatch::applyInvJ(int cell, int q,
       ::dgetrs_("N",  &spatialDim_, &nRhs, jFactPtr,  &spatialDim_, 
                 iPiv, rhs,  &spatialDim_, &info);
     }
-          
+
+  addFlops(numCells_ * spatialDim_ * spatialDim_ * nRhs);          
   TEST_FOR_EXCEPTION(info != 0, RuntimeError,
                      "CellJacobianBatch::applyInvJ(): backsolve failed");
 }
@@ -228,6 +231,33 @@ void CellJacobianBatch::getInvJ(int cell, int quad, Array<double>& invJ) const
     }
 }
 
+void CellJacobianBatch::print(ostream& os) const
+{
+  if (!hasInverses_) computeInverses();
 
+  for (int c=0; c<numCells_; c++)
+    {
+      os << "cell " << c << endl;
+      for (int q=0; q<numQuad_; q++)
+        {
+          int start = (c*numQuad_ + q)*jSize_;
+          if (numQuad_ > 1) os << "q=" << q << " ";
+          os << "{";
+          for (int i=0; i<spatialDim_; i++)
+            {
+              if (i != 0) os << ", ";
+              os << "{";
+              for (int j=0; j<spatialDim_; j++)
+                {
+                  if (j != 0) os << ", ";
+                  os << invJ_[start + i*spatialDim_ + j];
+                }
+              os << "}";
+            }
+          os << "}" << endl;
+        }
+      
+    }
+}
 
 

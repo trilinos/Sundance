@@ -47,5 +47,14 @@ using namespace SundanceStdMesh::Internal;
 
 }
 
+namespace std
+{
+  inline ostream& operator<<(ostream& os, const SundanceStdFwk::CellPredicate& pred)
+  {
+    os << pred.toXML() << endl;
+    return os;
+  }
+}
+
 
 #endif

@@ -254,7 +254,8 @@ void NonlinearUnaryOpEvaluator
   TimeMonitor timer(evalTimer());
   Tabs tabs;
   SUNDANCE_OUT(verbosity() > VerbLow,
-               tabs << "------- NonlinearUnaryOpEvaluator::eval() -------");
+               tabs << "NonlinearUnaryOpEvaluator::eval() expr="
+               << expr()->toString());
 
   /* evaluate the argument */
   Array<RefCountPtr<EvalVector> > argVectorResults;

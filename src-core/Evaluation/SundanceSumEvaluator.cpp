@@ -177,8 +177,8 @@ void SumEvaluator
   TimeMonitor timer(evalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
-               tabs << "------- SumEvaluator::eval() -------");
+  SUNDANCE_OUT(verbosity() > VerbSilent,
+               tabs << "SumEvaluator::eval() expr=" << expr()->toString());
 
   /* evaluate the children */
   Array<RefCountPtr<EvalVector> > leftVectorResults; 

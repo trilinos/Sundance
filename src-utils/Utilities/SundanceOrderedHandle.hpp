@@ -72,18 +72,51 @@ namespace SundanceUtils
     /** comparison operator */
     bool operator<(const OrderedHandle<PointerType>& other) const 
     {
+      //      cerr << "comparing handles: \nme=" << *this
+      //           << endl << "you=" << other << endl;
       /* first compare types */
       const PointerType* me = ptr().get();
       const PointerType* you = other.ptr().get();
-      if (me==0 && you==0) return false;
-      if (me==0) return true;
-      if (you==0) return false;
-      if (typeid(*me).before(typeid(*you))) return true;
-      if (typeid(*you).before(typeid(*me))) return false;
+      if (me==0 && you==0) 
+        {
+          //          cerr << "both are zero, returning false" << endl;
+          return false;
+        }
+      if (me==0) 
+        {
+          //          cerr << "I am zero, returning true" << endl;
+          return true;
+        }
+      if (you==0) 
+        {
+          //          cerr << "You are zero, returning false" << endl;
+          return false;
+        }
+
+      if (typeid(*me).before(typeid(*you))) 
+        {
+          //          cerr << "My type is before yours, returning true" << endl;
+          return true;
+        }
+
+      if (typeid(*you).before(typeid(*me)))
+        {
+          //          cerr << "Your type is before mine, returning false" << endl;
+          return false;
+        }
       
       /* if the types are equal, compare values of the contents using
        * the lessThan() method. */
-      return ptr()->lessThan(other.ptr().get());
+      bool rtn = ptr()->lessThan(other.ptr().get());
+      if (rtn)
+        {
+          //          cerr << "My value is less than yours, returning true" << endl;
+        }
+      else
+        {
+          //          cerr << "Your value is >= than mine, returning false" << endl;
+        }
+      return rtn;
     }
   };
 }

@@ -24,9 +24,10 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
+      int n = 4;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 2*np, np,
-                                                         0.0, 2.0, 2, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n*np, np,
+                                                         0.0, 2.0, n, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -46,8 +47,9 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(2), "u");
-      Expr v = new TestFunction(new Lagrange(2), "v");
+      int order = 2;
+      Expr u = new UnknownFunction(new Lagrange(order), "u");
+      Expr v = new TestFunction(new Lagrange(order), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);

@@ -38,7 +38,7 @@ using namespace SundanceStdMesh::Internal;
     virtual int dimension(const Mesh& mesh) const ;
 
     /** Write to XML */
-    virtual XMLObject toXML() const {return XMLObject(typeName());}
+    virtual XMLObject toXML() const ;
 
     /** Return the type name */
     virtual string typeName() const {return "SideCellFilter";}

@@ -35,7 +35,10 @@ int main(int argc, void** argv)
 
 
       Mesh mesh = mesher.getMesh();
-      double h = 2.0/((double) ny);
+      double h0 = 2.0/((double) ny);
+      Expr x = new CoordExpr(0);
+      Expr y = new CoordExpr(1);
+      Expr h = new CellDiameterExpr();
 
 //       FieldWriter wMesh = new VerboseFieldWriter();
 //       wMesh.addMesh(mesh);
@@ -71,8 +74,6 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
       Expr grad = List(dx, dy);
-      Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad2 = new GaussianQuadrature(2);
@@ -102,36 +103,18 @@ int main(int argc, void** argv)
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
                          List(ux, uy, p), vecType);
 
-      LinearOperator<double> A = prob.getOperator();
-      ofstream ms("matrix.dat");
-      A.print(ms);
-      ofstream vs("vector.dat");
-      Vector<double> b = prob.getRHS();
-      b.print(vs);
-      ofstream maps("map.dat");
-      prob.rowMap()->print(maps);
+     
 
-      FieldWriter w1 = new VerboseFieldWriter("mesh.dat");
-      w1.addMesh(mesh);
-      w1.write();
-
-      ParameterList params;
-      ParameterList solverParams;
-      solverParams.set("Type", "TSF");
-      solverParams.set("Method", "BICGSTAB");
-      solverParams.set("Max Iterations", 5000);
-      solverParams.set("Tolerance", 1.0e-12);
-      solverParams.set("Precond", "ILUK");
-      solverParams.set("Graph Fill", 2);
-      solverParams.set("Verbosity", 4);
-
-      params.set("Linear Solver", solverParams);
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterList solverParams = reader.getParameters();
+      cerr << "params = " << solverParams << endl;
 
 
       LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(params);
+        = LinearSolverBuilder::createSolver(solverParams);
 
       Expr soln = prob.solve(solver);
+
 
       Expr exactUx = uInflow;
       Expr exactUy = 0.0;

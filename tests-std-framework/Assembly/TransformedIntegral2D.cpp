@@ -33,6 +33,7 @@
 #include "SundanceAssembler.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceRefIntegral.hpp"
+#include "SundanceQuadratureIntegral.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
 
@@ -45,6 +46,7 @@ using namespace SundanceCore::Internal;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
+
 
 static Time& totalTimer() 
 {
@@ -66,23 +68,46 @@ int main(int argc, void** argv)
       int pMax = 2;
       int dim=2;
 
+      Utils::setChopVal(1.0e-14);
+
       verbosity<RefIntegral>() = VerbMedium;
 
       CellType cellType = TriangleCell;
 
+      //       Point a = Point(1.0, 1.0);
+      //       Point b = Point(1.2, 1.6);
+      //       Point c = Point(0.8, 1.3);
+
       Point a = Point(0.0, 0.0);
       Point b = Point(1.0, 0.0);
       Point c = Point(0.0, 1.0);
+
+      Point d = Point(0.0, 0.0);
+      Point e = Point(1.0, 0.0);
+      Point f = Point(0.0, 1.0);
+
+      int nCells = 2;
+
       CellJacobianBatch JBatch;
-      JBatch.resize(1, 2, 2);
+      JBatch.resize(nCells, 2, 2);
       double* J = JBatch.jVals(0);
       J[0] = b[0] - a[0];
       J[1] = c[0] - a[0];
       J[2] = b[1] - a[1];
       J[3] = c[1] - a[1];
+
+      J[4] = e[0] - d[0];
+      J[5] = f[0] - d[0];
+      J[6] = e[1] - d[1];
+      J[7] = f[1] - d[1];
+
+
       
       Array<double> coeff = tuple(1.0);
       RefCountPtr<Array<double> > A = rcp(new Array<double>());
+      RefCountPtr<Array<double> > B = rcp(new Array<double>());
+
+      QuadratureFamily q4 = new GaussianQuadrature(4);
 
 
       cerr << endl << endl 
@@ -103,15 +128,56 @@ int main(int argc, void** argv)
                   Tabs tab;
                   RefIntegral ref(dim, cellType, P, alpha, dp);
                   ref.transformOneForm(JBatch, coeff, A);
-                  cerr << tab << "transformed element" << endl;
-                  cerr << tab << "t=" << t << endl;
-                  cerr << tab << "{";
-                  for (int r=0; r<ref.nNodesTest(); r++)
+                  cerr << tab << "transformed reference element" << endl;
+                  cerr << tab << "test diff direction=" << t << endl;
+                  for (int cell=0; cell<nCells; cell++)
                     {
-                      if (r!=0) cerr << ", ";
-                      cerr << (*A)[r];
+                      cerr << tab << "{";
+                      for (int r=0; r<ref.nNodesTest(); r++)
+                        {
+                          if (r!=0) cerr << ", ";
+                          cerr << Utils::chop((*A)[cell*ref.nNodesTest()+r]);
+                        }
+                      cerr << "}" << endl;
                     }
-                  cerr << "}";
+                  QuadratureIntegral quad(dim, cellType, P, alpha, dp, q4);
+                  Array<double> quadCoeff(2*quad.nQuad(), 1.0);
+                  quad.transformOneForm(JBatch, &(quadCoeff[0]), B);
+                  cerr << tab << "transformed quad element" << endl;
+                  cerr << tab << "test diff direction =" << t << endl;
+                  for (int cell=0; cell<nCells; cell++)
+                    {
+                      cerr << tab << "{";
+                      for (int r=0; r<quad.nNodesTest(); r++)
+                        {
+                          if (r!=0) cerr << ", ";
+                          cerr << Utils::chop((*B)[cell*ref.nNodesTest()+r]);
+                        }
+                      cerr << "}" << endl;
+                    }
+
+                  cerr << tab << "MISFIT quad-ref" << endl;
+                  cerr << tab << "test diff direction =" << t << endl;
+                  bool OK = true;
+                  for (int cell=0; cell<nCells; cell++)
+                    {
+                      cerr << tab << "{";
+                      for (int r=0; r<quad.nNodesTest(); r++)
+                        {
+                          if (r!=0) cerr << ", ";
+                          int i = cell*ref.nNodesTest()+r;
+                          double err = fabs(Utils::chop((*B)[i] - (*A)[i]));
+                          if (err > 1.0e-14) OK = false;
+                          cerr << err;
+                        }
+                      cerr << "}" << endl;
+                    }
+                  
+                  if (!OK) 
+                    {
+                      cerr << "ERROR DETECTED!!! p=" << p
+                           << "  t=" << t  << endl;
+                    }
                 }
             }
         }
@@ -146,25 +212,90 @@ int main(int argc, void** argv)
                           for (int u=0; u<numUnkDir; u++)
                             {
                               Tabs tab;
+                              //                              if (p==0 || q==0 || dp==0 || dq==0 || u==1
+                              //  || t==1) continue;
                               Array<int> beta = tuple(u);
                               RefIntegral ref(dim, cellType, P, alpha,
                                               dp, Q, beta, dq);
                               ref.transformTwoForm(JBatch, coeff, A);
-                              cerr << tab << "transformed element" << endl;
-                              cerr << tab << "t=" << t << ", u=" << u << endl;
-                              cerr << tab << "{";
-                              for (int r=0; r<ref.nNodesTest(); r++)
+                              cerr << tab << "transformed ref element" << endl;
+                              cerr << tab << "t=dx(" << t << "), u=dx(" << u 
+                                   << ")" << endl;
+
+                              for (int cell=0; cell<nCells; cell++)
                                 {
-                                  if (r!=0) cerr << ", ";
-                                  cerr << "{";
-                                  for (int c=0; c<ref.nNodesUnk(); c++)
+                                  cerr << tab << "cell=" << cell << " {";
+                                  for (int r=0; r<ref.nNodesTest(); r++)
                                     {
-                                      if (c!=0) cerr << ", ";
-                                      cerr << (*A)[r + ref.nNodesTest()*c];
+                                      if (r!=0) cerr << ", ";
+                                      cerr << "{";
+                                      for (int c=0; c<ref.nNodesUnk(); c++)
+                                        {
+                                          if (c!=0) cerr << ", ";
+                                          cerr << Utils::chop((*A)[r + ref.nNodesTest()*(c + cell*ref.nNodesUnk())]);
+                                        }
+                                      cerr << "}";
                                     }
-                                  cerr << "}";
+                                  cerr << "}" << endl;
                                 }
-                              cerr << "}" << endl;
+
+
+                              QuadratureIntegral quad(dim, cellType, P, alpha,
+                                                      dp, Q, beta, dq, q4);
+                              Array<double> quadCoeff(2*quad.nQuad(), 1.0);
+                              quad.transformTwoForm(JBatch, &(quadCoeff[0]), B);
+
+                              cerr << tab << "transformed quad element" << endl;
+                              cerr << tab << "t=dx(" << t << "), u=dx(" 
+                                   << u << ")" << endl;
+                              for (int cell=0; cell<nCells; cell++)
+                                {
+                                  cerr << tab << "cell=" << cell << " {";
+                                  for (int r=0; r<ref.nNodesTest(); r++)
+                                    {
+                                      if (r!=0) cerr << ", ";
+                                      cerr << "{";
+                                      for (int c=0; c<ref.nNodesUnk(); c++)
+                                        {
+                                          if (c!=0) cerr << ", ";
+                                          cerr << Utils::chop((*B)[r + ref.nNodesTest()*(c + cell*ref.nNodesUnk())]);
+                                        }
+                                      cerr << "}";
+                                    }
+                                  cerr << "}" << endl;   
+                                }
+
+                              bool OK = true;
+                              cerr << tab << "MISMATCH quad - ref" << endl;
+                              cerr << tab << "t=dx(" << t << "), u=dx(" 
+                                   << u << ")" << endl;
+                              for (int cell=0; cell<nCells; cell++)
+                                {
+                                  cerr << tab << "cell #" << cell << " {";
+                              
+                                  for (int r=0; r<ref.nNodesTest(); r++)
+                                    {
+                                      if (r!=0) cerr << ", ";
+                                      cerr << "{";
+                                      for (int c=0; c<ref.nNodesUnk(); c++)
+                                        {
+                                          if (c!=0) cerr << ", ";
+                                          int i = r + ref.nNodesTest()*(c + cell*ref.nNodesUnk());
+                                          double err = fabs(Utils::chop((*B)[i] - (*A)[i]));
+                                          if (err > 1.0e-14) OK = false;
+                                          cerr << err;
+                                        }
+                                      cerr << "}";
+                                    }
+                                  cerr << "}" << endl;
+                                }
+                              if (!OK) 
+                                {
+                                  cerr << "ERROR DETECTED!!! p=" << p
+                                       << " dp=" << dp << "  t=" << t  
+                                       << " q=" << q << "  dq=" << dq
+                                       << "  u=" << u << endl;
+                                }
                             }
                         }
                     }
@@ -172,6 +303,10 @@ int main(int argc, void** argv)
             }
         }
 
+      cerr << "total quadrature flops: " << QuadratureIntegral::totalFlops() 
+           << endl;
+      cerr << "total ref integration flops: " << RefIntegral::totalFlops() 
+           << endl;
     }
 	catch(exception& e)
 		{

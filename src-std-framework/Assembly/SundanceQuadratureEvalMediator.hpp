@@ -73,6 +73,12 @@ namespace SundanceStdFwk
       const Array<double>& quadWgts() const 
       {return *(refQuadWeights_.get(cellType()));}
 
+      static double& totalFlops() {static double rtn = 0; return rtn;}
+
+      
+
+      static void addFlops(const double& flops) {totalFlops() += flops;}
+
     private:
 
 

@@ -27,11 +27,12 @@ int main(int argc, void** argv)
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx*np,
                                                     meshType);
 
+      
 
 
 
       Mesh mesh = mesher.getMesh();
-      double h = 1.0/((double) nx);
+      Expr h = 1.0/60.0;//new CellDiameterExpr();
 
 //       FieldWriter wMesh = new VerboseFieldWriter();
 //       wMesh.addMesh(mesh);
@@ -64,7 +65,7 @@ int main(int argc, void** argv)
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      double beta = 1.0;
+      double beta = 0.02;
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           - p*(dx*vx)
                           - (h*h*beta)*(grad*q)*(grad*p) - q*(dx*ux),

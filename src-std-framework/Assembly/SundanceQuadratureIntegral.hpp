@@ -70,10 +70,16 @@ namespace SundanceStdFwk
       /** */
       void print(ostream& os) const ;
       
-    private:
+
 
       /** */
       int nQuad() const {return nQuad_;}
+
+      static double& totalFlops() {static double rtn = 0; return rtn;}
+
+    private:
+
+      static void addFlops(const double& flops) {totalFlops() += flops;}
 
       /** Do the integration by summing reference quantities over quadrature
        * points and then transforming the sum to physical quantities.  */

@@ -282,7 +282,11 @@ namespace SundanceCore
 
       
 
+      static double& totalFlops() {static double rtn = 0; return rtn;}
+
     private:
+
+      static void addFlops(const double& flops) {totalFlops() += flops;}
 
       mutable TempStack* s_;
 

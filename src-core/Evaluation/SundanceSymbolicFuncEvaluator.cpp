@@ -132,14 +132,15 @@ void SymbolicFuncElementEvaluator
 {
   TimeMonitor timer(symbolicFuncEvalTimer());
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---SymbolicFuncElementEvaluator---");
   
-  
-  if (verbosity() > 1)
+  if (verbosity() > VerbSilent)
     {
       cerr << tabs << "SymbolicFuncElementEvaluator::eval: expr=" << expr()->toString() 
            << endl;
-      cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
+      if (verbosity() > VerbLow)
+        {
+          cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
+        }
     }
 
   constantResults.resize(ones_.size());

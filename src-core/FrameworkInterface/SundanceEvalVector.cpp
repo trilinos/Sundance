@@ -90,6 +90,8 @@ void EvalVector::add_SV(const double& alpha,
         {
           x[i] += alpha*Bx[i];
         }
+
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -111,6 +113,7 @@ void EvalVector::add_S(const double& alpha)
         {
           x[i] += alpha;
         }
+      addFlops(n);
     }
 
   if (shadowOps())
@@ -134,6 +137,7 @@ void EvalVector::add_V(const EvalVector* A)
         {
           x[i] += Ax[i];
         }
+      addFlops(n);
     }
 
   if (shadowOps())
@@ -158,6 +162,7 @@ void EvalVector::add_SVV(const double& alpha,
         {
           x[i] += alpha*Bx[i]*Cx[i];
         }
+      addFlops(3*n);
     }
 
   if (shadowOps())
@@ -182,6 +187,7 @@ void EvalVector::add_VV(const EvalVector* A,
         {
           x[i] += Ax[i]*Bx[i];
         }
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -207,6 +213,7 @@ void EvalVector::multiply_S_add_SV(const double& alpha,
           x[i] *= alpha;
           x[i] += beta*Cx[i];
         }
+      addFlops(3*n);
     }
 
   if (shadowOps())
@@ -231,6 +238,7 @@ void EvalVector::multiply_S_add_S(const double& alpha,
           x[i] *= alpha;
           x[i] += beta;
         }
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -253,6 +261,7 @@ void EvalVector::multiply_V(const EvalVector* A)
         {
           x[i] *= Ax[i];
         }
+      addFlops(n);
     }
 
   if (shadowOps())
@@ -281,6 +290,7 @@ void EvalVector::multiply_V_add_VVV(const EvalVector* A,
           x[i] *= Ax[i];
           x[i] += Bx[i]*Cx[i]*Dx[i];
         }
+      addFlops(4*n);
     }
 
   if (shadowOps())
@@ -309,6 +319,7 @@ void EvalVector::multiply_V_add_SVV(const EvalVector* A,
           x[i] *= Ax[i];
           x[i] += beta*Cx[i]*Dx[i];
         }
+      addFlops(4*n);
     }
 
   if (shadowOps())
@@ -350,6 +361,7 @@ void EvalVector::multiply_V_add_SV(const EvalVector* A,
           x[i] *= Ax[i];
           x[i] += beta*Cx[i];
         }
+      addFlops(3*n);
     }
 
   if (shadowOps())
@@ -374,6 +386,7 @@ void EvalVector::multiply_VV(const EvalVector* A,
         {
           x[i] *= Ax[i]*Bx[i];
         }
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -398,6 +411,7 @@ void EvalVector::multiply_SV(const double& alpha,
         {
           x[i] *= alpha*Bx[i];
         }
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -418,6 +432,7 @@ void EvalVector::multiply_S(const double& alpha)
         {
           x[i] *= alpha;
         }
+      addFlops(n);
     }
 
   if (shadowOps())
@@ -445,6 +460,7 @@ void EvalVector::setTo_S_add_SVV(const double& alpha,
         {
           x[i] = alpha + beta*Cx[i]*Dx[i];
         }
+      addFlops(3*n);
     }
 
   if (shadowOps())
@@ -472,6 +488,7 @@ void EvalVector::setTo_S_add_VV(const double& alpha,
         {
           x[i] = alpha + Bx[i]*Cx[i];
         }
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -497,6 +514,7 @@ void EvalVector::setTo_S_add_SV(const double& alpha,
         {
           x[i] = alpha + beta*Cx[i];
         }
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -524,6 +542,7 @@ void EvalVector::setTo_S_add_V(const double& alpha,
         {
           x[i] = alpha + Bx[i];
         }
+      addFlops(n);
     }
 
   if (shadowOps())
@@ -576,6 +595,7 @@ void EvalVector::setTo_SVV(const double& alpha,
         {
           x[i] = alpha*Bx[i]*Cx[i];
         }
+      addFlops(2*n);
     }
 
   if (shadowOps())
@@ -602,6 +622,8 @@ void EvalVector::setTo_VV(const EvalVector* A,
         {
           x[i] = Ax[i]*Bx[i];
         }
+
+      addFlops(n);
     }
 
   if (shadowOps())
@@ -626,6 +648,7 @@ void EvalVector::setTo_SV(const double& alpha,
         {
           x[i] = alpha*Bx[i];
         }
+      addFlops(n);
     }
 
   if (shadowOps())

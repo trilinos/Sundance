@@ -14,15 +14,9 @@
 <Parameter name="Shadow Calculations with String Values" value="true"/>
 
 
-<!-- -------------------------------------------------------------- -->
-<!-- -------------------Verbosity settings ------------------------ -->
-<!--                                                                -->
-<!-- Valid verbosity values are Silent, Low, Medium, High, Extreme  -->
-<!--                                                                -->
-<!-- -------------------------------------------------------------- -->
 
 
-<Verbosity context="Assembly" value="Silent"/>
+<Verbosity context="Assembly" value="Medium"/>
 
 <Verbosity context="Evaluation" value="Silent"/>
 

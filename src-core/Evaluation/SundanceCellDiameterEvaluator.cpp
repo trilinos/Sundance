@@ -60,12 +60,10 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
   TimeMonitor timer(cellDiameterEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---CellDiameterExprEvaluator---");
+  SUNDANCE_VERB_LOW(tabs << "CellDiameterExprEvaluator::eval() expr=" << expr()->toString());
 
   if (verbosity() > 1)
     {
-      cerr << tabs << "CellDiameterExprEvaluator::eval: expr=" << expr()->toString() 
-           << endl;
       cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
     }
 

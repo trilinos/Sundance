@@ -5,8 +5,11 @@
 #include "Teuchos_CommandLineProcessor.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceQuadratureIntegral.hpp"
+#include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceRefIntegral.hpp"
 #include "SundanceEvaluator.hpp"
+#include "SundanceEvalVector.hpp"
+#include "SundanceCellJacobianBatch.hpp"
 #include "SundanceUnaryFunctor.hpp"
 #include "SundanceGrouperBase.hpp"
 #include "SundanceSparsitySuperset.hpp"
@@ -27,12 +30,19 @@ void Sundance::init(int* argc, void*** argv)
 
   /* read standard command line flags */
   string configFilename = "SundanceConfig.xml";
-  bool fpCheck = false;
-  int workSetSize = 100;
+
+  bool defaultFpCheck = false;
+  bool cmdFpCheck = defaultFpCheck;
+  int defaultWorkSetSize = 100;
+  int cmdWorkSetSize = defaultWorkSetSize;
+
+  Assembler::workSetSize() = defaultWorkSetSize;
+  FunctionalEvaluator::workSetSize() = defaultWorkSetSize;
+
   clp().setOption("config", &configFilename, "Configuration file");
-  clp().setOption("fpcheck", "nofpcheck", &fpCheck, 
+  clp().setOption("fpcheck", "nofpcheck", &cmdFpCheck, 
                   "Check results of math lib calls in expr evals");
-  clp().setOption("workset", &workSetSize, 
+  clp().setOption("workset", &cmdWorkSetSize, 
                   "Work set size");
 
 
@@ -49,9 +59,11 @@ void Sundance::init(int* argc, void*** argv)
   setSettings(configFilename);
 
 
-  UnaryFunctor::checkResults() = fpCheck;
-  Assembler::workSetSize() = workSetSize;
-  FunctionalEvaluator::workSetSize() = workSetSize;
+  if (cmdWorkSetSize != defaultWorkSetSize)
+    {
+      Assembler::workSetSize() = cmdWorkSetSize;
+      FunctionalEvaluator::workSetSize() = cmdWorkSetSize;
+    }
 } 
 
 void Sundance::setOption(const string& optionName, 
@@ -97,6 +109,12 @@ void Sundance::handleException(std::exception& e)
 
 void Sundance::finalize()
 {
+  cerr << "eval vector flops: " << EvalVector::totalFlops() << endl;
+  cerr << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
+  cerr << "ref integration flops: " 
+       << RefIntegral::totalFlops() << endl;
+  cerr << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
+  cerr << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
   TimeMonitor::summarize();
   MPISession::finalize();
 }
@@ -161,6 +179,8 @@ void Sundance::setSettings(const string& settingsFile)
 
   XMLObject xml = fis.getObject();
 
+  cerr << "settings are: " << xml.toString() << endl;
+
   for (int i=0; i<xml.numChildren(); i++)
     {
       const XMLObject& child = xml.getChild(i);
@@ -172,6 +192,9 @@ void Sundance::setSettings(const string& settingsFile)
               int workSetSize = child.getRequiredInt("value");
               Assembler::workSetSize() = workSetSize;
               FunctionalEvaluator::workSetSize() = workSetSize;
+              cerr << "setting work set size to " << workSetSize << endl;
+              cerr << "confirming work set size = " << 
+                Assembler::workSetSize() << endl;
             }
           else if (name=="Check for Floating Point Errors")
             {

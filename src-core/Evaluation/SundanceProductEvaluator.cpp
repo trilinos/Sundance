@@ -353,8 +353,8 @@ void ProductEvaluator
   TimeMonitor timer(evalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
-               tabs << "------- ProductEvaluator::eval()   -------");
+  SUNDANCE_OUT(verbosity() > VerbSilent,
+               tabs << "ProductEvaluator::eval() expr=" << expr()->toString());
 
   /* evaluate the children */
   Array<RefCountPtr<EvalVector> > leftVectorResults; 

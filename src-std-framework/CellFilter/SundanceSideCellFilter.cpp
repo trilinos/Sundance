@@ -25,6 +25,12 @@ int SideCellFilter::dimension(const Mesh& mesh) const
   return mesh.spatialDim()-1;
 }
 
+XMLObject SideCellFilter::toXML() const 
+{
+  XMLObject rtn(typeName());
+  rtn.addAttribute("id", Teuchos::toString(id()));
+  return rtn;
+}
 
 bool SideCellFilter::lessThan(const CellFilterStub* other) const
 {
@@ -36,6 +42,8 @@ bool SideCellFilter::lessThan(const CellFilterStub* other) const
                      "argument " << other->toXML() 
                      << " to SideCellFilter::lessThan() should be "
                      "a SideCellFilter pointer.");
+
+  return false;
 }
 
 

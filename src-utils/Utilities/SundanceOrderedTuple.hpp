@@ -28,10 +28,17 @@ namespace SundanceUtils
       /** */
       inline bool operator<(const OrderedPair<A, B>& other) const
         {
-          if ( a_ < other.a_ ) return true;
-          if ( other.a_ < a_) return false;
+          if ( a_ < other.a_ ) 
+            {
+              return true;
+            }
+          if ( other.a_ < a_) 
+            {
+              return false;
+            }
 
-          return b_ < other.b_;
+          bool rtn = b_ < other.b_;
+          return rtn;
         }
 
       /** */

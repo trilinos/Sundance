@@ -106,7 +106,7 @@ void DiscreteFuncElementEvaluator
   TimeMonitor timer(discreteFuncEvalTimer());
   Tabs tabs;
 
-  if (verbosity() > VerbLow)
+  if (verbosity() > VerbSilent)
     {
       cerr << tabs << "DiscreteFuncElementEvaluator::eval: expr=" << expr()->toString() 
            << endl;

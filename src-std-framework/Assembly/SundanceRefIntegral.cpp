@@ -110,6 +110,8 @@ RefIntegral::RefIntegral(int dim,
 
   for (int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
 
+  addFlops(3*nQuad*nRefDerivTest()*nNodesTest() + W_.size());
+
   if (verbosity() > VerbMedium)
     {
       print(cerr);
@@ -216,7 +218,8 @@ RefIntegral::RefIntegral(int dim,
             }
         }
     }
-
+  addFlops(4*nQuad*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
+           + W_.size());
   for (int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
 
   if (verbosity() > VerbMedium)
@@ -374,6 +377,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
               aPtr[count] = detJ*W_[n];
             }
         }
+      addFlops(J.numCells() * (nNodes() + 1));
     }
   else
     {
@@ -392,6 +396,8 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
       int nNodes0 = nNodes();
       ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &one, &(W_[0]),
                &nNodes0, &(G()[0]), &nTransRows, &zero, &((*A)[0]), &nNodes0);
+
+      addFlops(2 * nNodes0 * nCells * nTransRows);
        
     }
 }
@@ -418,6 +424,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
               aPtr[count] = detJ*W_[n];
             }
         }
+      addFlops(J.numCells() * (nNodes() + 1));
     }
   else
     {
@@ -428,6 +435,9 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       A->resize(J.numCells() * nNodes()); 
       int info=0;
 
+      cerr << "num cells = " << nCells << endl;
+      cerr << "jacobian batch = " << J << endl;
+
       createTwoFormTransformationMatrix(J, alpha(), beta(), coeff);
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 
@@ -437,6 +447,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &one, &(W_[0]),
                &nNodes0, &(G()[0]), &nTransRows, &zero, &((*A)[0]), &nNodes0);
        
+      addFlops(2 * nNodes0 * nCells * nTransRows);
     }
 }
 
@@ -482,6 +493,7 @@ void RefIntegral
                 }
             }
         }
+      addFlops(J.numCells()*(1 + dim()*dim()*(1 + 3*alpha.size())));
     }
 
   else if (testDerivOrder() == 1 && unkDerivOrder() == 0)
@@ -503,6 +515,7 @@ void RefIntegral
               G()[c*dim() + gamma] = detJ*sum; 
             }
         }
+      addFlops(J.numCells()*(1 + dim()*(1 + 2*alpha.size())));
     }
   else /* if (testDerivOrder() == 0 && unkDerivOrder() == 1) */
     {
@@ -523,6 +536,7 @@ void RefIntegral
               G()[c*dim() + delta] = detJ*sum; 
             }
         }
+      addFlops(J.numCells()*(1 + dim()*(1 + 2*alpha.size())));
     }
 }
 
@@ -555,5 +569,6 @@ void RefIntegral
           G()[c*dim() + gamma] = detJ*sum; 
         }
     }
-  
+
+  addFlops(J.numCells()*(1 + dim()*(1 + 2*alpha.size())));  
 }

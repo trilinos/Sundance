@@ -87,12 +87,10 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
   TimeMonitor timer(coordEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---CoordExprEvaluator---");
+  SUNDANCE_VERB_LOW(tabs << "CoordExprEvaluator::eval() expr=" << expr()->toString());
 
-  if (verbosity() > 1)
+  if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "CoordExprEvaluator::eval: expr=" << expr()->toString() 
-           << endl;
       cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
     }
 

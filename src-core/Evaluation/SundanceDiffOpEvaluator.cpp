@@ -260,7 +260,8 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
                                    Array<RefCountPtr<EvalVector> >& vectorResults)  const
 {
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "------- DiffOpEvaluator::eval() -------");
+  SUNDANCE_VERB_LOW(tabs << "DiffOpEvaluator::eval() expr=" 
+                    << expr()->toString());
 
   /* evaluate the argument */
   Array<RefCountPtr<EvalVector> > argVectorResults;

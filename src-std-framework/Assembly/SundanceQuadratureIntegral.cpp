@@ -34,6 +34,7 @@ static Time& quadratureTimer()
   return *rtn;
 }
 
+
 static Time& quadTransCreationTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -51,7 +52,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
   : ElementIntegral(dim, cellType, testBasis, alpha, testDerivOrder),
     W_(),
     nQuad_(0),
-    useSumFirstMethod_(false)
+    useSumFirstMethod_(true)
 {
   Tabs tab0;
   verbosity() = classVerbosity();
@@ -115,6 +116,8 @@ QuadratureIntegral::QuadratureIntegral(int dim,
             }
         }
     }    
+  
+  addFlops(2*nQuad()*nRefDerivTest()*nNodesTest());
 
   if (verbosity() > VerbMedium)
     {
@@ -232,6 +235,8 @@ QuadratureIntegral::QuadratureIntegral(int dim,
         }
     }
 
+  addFlops(3*nQuad()*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
+           + W_.size());
   for (int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
 
   if (verbosity() > VerbMedium)
@@ -254,6 +259,9 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
   TimeMonitor timer(quadratureTimer());
   TEST_FOR_EXCEPTION(isTwoForm(), InternalError,
                      "QuadratureIntegral::transformOneForm() called for two-form");
+
+  int flops = 0;
+
   /* If the derivative order is zero, the only thing to be done 
    * is to multiply by the cell's Jacobian determinant and sum over the
    * quad points */
@@ -277,6 +285,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
                 }
             }
         }
+      addFlops( J.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
     }
   else
     {
@@ -297,6 +306,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
           transformSummingLast(J.numCells(), coeff, A);
         }
     }
+  addFlops(flops);
 }
 
 void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,  
@@ -307,11 +317,14 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
   TEST_FOR_EXCEPTION(!isTwoForm(), InternalError,
                      "QuadratureIntegral::transformTwoForm() called for one-form");
 
+  int flops = 0 ;
+
   /* If the derivative orders are zero, the only thing to be done 
    * is to multiply by the cell's Jacobian determinant and sum over the
    * quad points */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)
     {
+
       A->resize(J.numCells() * nNodes());
       double* aPtr = &((*A)[0]);
       for (int i=0; i<A->size(); i++) aPtr[i] = 0.0;
@@ -330,6 +343,8 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
                 }
             }
         }
+
+      addFlops( J.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
     }
   else
     {
@@ -350,6 +365,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
           transformSummingLast(J.numCells(), coeff, A);
         }
     }
+  addFlops(flops);
 }
 
 void QuadratureIntegral
@@ -359,13 +375,12 @@ void QuadratureIntegral
 {
   double* aPtr = &((*A)[0]);
   double* coeffPtr = (double*) coeff;
+  
+  int nAdds = 0;
+  int nMults = 0;
 
   //  cerr << "transform summing first " << endl;
-  if (verbosity() > VerbMedium)
-    {
-      cerr << "nCells = " << nCells << endl;
-      cerr << "nNodes = " << nNodes() << endl;
-    }
+
   int transSize = 0; 
   if (isTwoForm())
     {
@@ -376,38 +391,62 @@ void QuadratureIntegral
       transSize = nRefDerivTest();
     }
 
+  if (false)
+    {
+      cerr << "nCells = " << nCells << endl;
+      cerr << "nNodes = " << nNodes() << endl;
+      cerr << "nQuad = " << nQuad() << endl;
+      cerr << "transSize = " << transSize << endl;
+    }
   /* The sum workspace is used to store the sum of untransformed quantities */
   static Array<double> sumWorkspace;
-  sumWorkspace.resize(transSize * nNodes());
 
+  int swSize = transSize * nNodes();
+  sumWorkspace.resize(swSize);
+  
+  
+  /*
+   * The number of operations for the sum-first method is 
+   * 
+   * Adds: (N_c * nNodes * transSize) * (N_q + 1) 
+   * Multiplies: same as number of adds
+   * Total: 2*(N_c * nNodes * transSize) * (N_q + 1) 
+   */
   for (int c=0; c<nCells; c++)
     {
       /* sum untransformed basis combinations over quad points */
-      for (int i=0; i<sumWorkspace.size(); i++) sumWorkspace[i]=0.0;
+      for (int i=0; i<swSize; i++) sumWorkspace[i]=0.0;
 
       for (int q=0; q<nQuad(); q++, coeffPtr++)
         {
           double f = (*coeffPtr);
-          //      cerr << "cell=" << c << " q=" << q << " f=" << f << endl;
-          for (int n=0; n<sumWorkspace.size(); n++) 
+          //          cerr << "cell=" << c << " q=" << q << " f=" << f << endl;
+          for (int n=0; n<swSize; n++, nMults++, nAdds++) 
             {
-              sumWorkspace[n] += f*W_[n + q*sumWorkspace.size()];
+              sumWorkspace[n] += f*W_[n + q*swSize];
             }
         }
-      //cerr << "cell=" << c << " untransformed sum=" << sumWorkspace << endl;
+      //      cerr << "cell=" << c << " untransformed sum=" << sumWorkspace << endl;
       /* transform the sum */
-      double* gCell = &(G()[dim()*c]);
+      double* gCell = &(G()[transSize*c]);
       double* aCell = aPtr + nNodes()*c;
       for (int i=0; i<nNodes(); i++)
         {
           aCell[i] = 0.0;
-          for (int j=0; j<transSize; j++)
+          for (int j=0; j<transSize; j++, nMults++, nAdds++)
             {
               aCell[i] += sumWorkspace[nNodes()*j + i] * gCell[j];
             }
-          //cerr << "cell=" << c << " transformed sum= " << aCell[i] << endl;
+          //          cerr << "cell=" << c << " transformed sum= " << aCell[i] << endl;
         }
     }
+  
+  int flops = 2*(nCells * nNodes() * transSize) * (nQuad() + 1) ;
+//   cerr << "number of multiplies: " << nMults << endl;
+//   cerr << "number of adds: " << nAdds << endl;
+//   cerr << "predicted flops = " << flops << endl;
+//   cerr << "counted flops = " << nMults + nAdds << endl;
+  addFlops(flops);
 }
 
 void QuadratureIntegral
@@ -417,8 +456,11 @@ void QuadratureIntegral
 {
   double* aPtr = &((*A)[0]);
   int transSize = 0; 
+  
+  int nAdds = 0;
+  int nMults = 0;
 
-  //cerr << "transform summing last " << endl;
+  //  cerr << "transform summing last " << endl;
 
   if (isTwoForm())
     {
@@ -429,10 +471,28 @@ void QuadratureIntegral
       transSize = nRefDerivTest();
     }
 
+
+//   if (true)
+//     {
+//       cerr << "nCells = " << nCells << endl;
+//       cerr << "nNodes = " << nNodes() << endl;
+//       cerr << "nQuad = " << nQuad() << endl;
+//       cerr << "transSize = " << transSize << endl;
+//     }
+
   /* This workspace is used to store the jacobian values scaled by the coeff
    * at that quad point */
   static Array<double> jWorkspace;
   jWorkspace.resize(transSize);
+
+
+  /*
+   * The number of operations for the sum-last method is 
+   * 
+   * Adds: N_c * N_q * transSize * nNodes
+   * Multiplies: numAdds + N_c * N_q * transSize
+   * Total: N_c * N_q * transSize * (1 +  2*nNodes)
+   */
 
   for (int c=0; c<nCells; c++)
     {
@@ -444,18 +504,23 @@ void QuadratureIntegral
         {
           double f = coeff[c*nQuad() + q];
           //          cerr << "cell=" << c << " q=" << q << " f=" << f << endl;
-          for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
+          for (int t=0; t<transSize; t++, nMults++) jWorkspace[t]=f*gCell[t];
 
           for (int n=0; n<nNodes(); n++)
             {
-              for (int t=0; t<transSize; t++)
+              for (int t=0; t<transSize; t++, nMults++, nAdds++)
                 {
                   aCell[n] += jWorkspace[t]*W_[n + nNodes()*(t + transSize*q)];
                 }
             }
         }
     }
-  
+  int flops = nCells * nQuad() * transSize * (1 + 2*nNodes()) ;
+//   cerr << "number of multiplies: " << nMults << endl;
+//   cerr << "number of adds: " << nAdds << endl;
+//   cerr << "predicted flops = " << flops << endl;
+//   cerr << "counted flops = " << nMults + nAdds << endl;
+  addFlops(flops);
 }
 
 void QuadratureIntegral
@@ -472,10 +537,14 @@ void QuadratureIntegral
 
   /* If both derivative orders are 1, then we have to transform both
    * basis functions */
+
+  int flops = 0;
   
   if (testDerivOrder() == 1 && unkDerivOrder() == 1)
     {
       G().resize(J.numCells() * J.cellDim() * J.cellDim());
+
+      flops = J.numCells() * dim() * (1 + 2*alpha.size());
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 
                    Tabs() << "both derivs are first order");
@@ -483,6 +552,7 @@ void QuadratureIntegral
         {
           static Array<double> invJ;
           J.getInvJ(c, invJ);
+          //          cerr << "cell=" << c << " invJ=" << invJ << endl;
           double detJ = fabs(J.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++)
             {
@@ -498,12 +568,14 @@ void QuadratureIntegral
                 }
             }
         }
+      //      cerr << "G = " << G() << endl;
     }
 
   else if (testDerivOrder() == 1 && unkDerivOrder() == 0)
     {
       G().resize(J.numCells() * J.cellDim());
 
+      flops = J.numCells() * dim() * (1 + alpha.size());
       for (int c=0; c<J.numCells(); c++)
         {
           static Array<double> invJ;
@@ -524,6 +596,8 @@ void QuadratureIntegral
     {
       G().resize(J.numCells() * J.cellDim());
 
+      flops = J.numCells() * dim() * (1 + alpha.size());
+
       for (int c=0; c<J.numCells(); c++)
         {
           static Array<double> invJ;
@@ -540,6 +614,7 @@ void QuadratureIntegral
             }
         }
     }
+  addFlops(flops);
 }
 
 
@@ -556,8 +631,11 @@ void QuadratureIntegral
                      << " in QuadratureIntegral::createOneFormTransformationMatrix()");
   G().resize(J.numCells() * J.cellDim());
 
+  int flops = J.numCells() * dim() * (1 + alpha.size());
+
   for (int c=0; c<J.numCells(); c++)
     {
+
       Array<double> invJ;
       J.getInvJ(c, invJ);
       double detJ = fabs(J.detJ()[c]);
@@ -572,4 +650,5 @@ void QuadratureIntegral
         }
     }
   
+  addFlops(flops);
 }

@@ -50,8 +50,8 @@ void UnaryMinusEvaluator
 {
   TimeMonitor timer(evalTimer());
   Tabs tab;
-  SUNDANCE_OUT(verbosity() > VerbLow,
-               tab << "------- UnaryMinusEvaluator -------");
+  SUNDANCE_OUT(verbosity() > VerbSilent,
+               tab << "UnaryMinusEvaluator::eval() expr=" << expr()->toString());
 
 
   /* evaluate the argument */

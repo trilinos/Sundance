@@ -128,9 +128,9 @@ int main(int argc, void** argv)
       int maxDiffOrder = 2;
 
       verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbSilent;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
@@ -157,7 +157,7 @@ int main(int argc, void** argv)
 
 
 
-       tests.append(v*(dx*(u - u0)));
+      tests.append(v*(dx*(u - u0)));
 
 
       for (int i=0; i<tests.length(); i++)

@@ -12,6 +12,7 @@
 
  
 
+
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
@@ -44,6 +45,7 @@ EquationSet::EquationSet(const Expr& eqns,
     unkIDToReducedIDMap_(),
     isNonlinear_(false)
 {
+  classVerbosity() = VerbHigh;
   verbosity() = classVerbosity();
 
   /* begin with a sanity check to ensure that the input equation set 
@@ -88,7 +90,6 @@ EquationSet::EquationSet(const Expr& eqns,
       unkIDToReducedIDMap_.put(fid, i);
     }
 
-  
   
 
   /* determine whether or not this problem includes essential BCs */
@@ -173,6 +174,8 @@ EquationSet::EquationSet(const Expr& eqns,
       for (int d=0; d<bcSum->numRegions(); d++)
         {
           OrderedHandle<CellFilterStub> reg = bcSum->region(d);
+          cerr << "working on region " << reg << endl;
+          cerr << "instance ID= " << reg.ptr()->id() << endl;
           if (!regionSet.contains(reg)) 
             {
               regionSet.put(reg);
@@ -196,7 +199,20 @@ EquationSet::EquationSet(const Expr& eqns,
               Set<int>& u = unksOnRegions_.get(reg);
               u.merge(bcSum->unksOnRegion(d));
             }
-        
+
+          cerr << "BC regions are " << endl;
+          for (Map<OrderedHandle<CellFilterStub>, Set<int> >::const_iterator 
+                 iter=bcTestsOnRegions_.begin(); iter != bcTestsOnRegions_.end();
+               iter ++)
+            {
+              cerr << "region=" << iter->first << endl;
+              cerr << "id = " << iter->first.ptr()->id() << endl;
+            }
+          cerr << "checking map integrity " << endl;
+          TEST_FOR_EXCEPTION(!bcTestsOnRegions_.containsKey(reg),
+                             InternalError,
+                             "Bug: region " << reg << " should appear in "
+                             "BC list" << bcTestsOnRegions_);
           for (int t=0; t<bcSum->numTerms(d); t++)
             {
               RegionQuadCombo rqc(reg.ptr(), bcSum->quad(d,t));
@@ -240,7 +256,13 @@ EquationSet::EquationSet(const Expr& eqns,
   regions_ = regionSet.elements();
   regionQuadCombos_ = rqcSet.elements();
   bcRegionQuadCombos_ = rqcBCSet.elements();
-  
+
+  for (int r=0; r<numRegions(); r++)
+    {
+      cerr << "region " << regions_[r] << endl
+           << "isBCRegion=" << isBCRegion(r)
+           << endl;
+    }
 
 }
 
@@ -334,3 +356,11 @@ bcTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const
                      "null test-unk pair list for BC region " << domain);
   return rtn;
 }
+
+bool EquationSet::isBCRegion(int d) const
+{
+  return bcTestsOnRegions_.containsKey(regions_[d]);
+}
+
+
+

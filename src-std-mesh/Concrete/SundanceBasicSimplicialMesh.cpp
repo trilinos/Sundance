@@ -23,6 +23,13 @@ static Time& batchedFacetGrabTimer()
   return *rtn;
 }
 
+static Time& getJacobianTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("cell Jacobian grabbing"); 
+  return *rtn;
+}
+
 
 //#define SKIP_FACES
 
@@ -78,8 +85,11 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
 void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
                                        CellJacobianBatch& jBatch) const
 {
+  TimeMonitor timer(getJacobianTimer());
 
-  
+  int flops = 0 ;
+  int nCells = cellLID.size();
+
   TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
                      "cellDim=" << cellDim 
                      << " is not in expected range [0, " << spatialDim()
@@ -89,7 +99,20 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
 
   if (cellDim < spatialDim())
     {
-      for (int i=0; i<cellLID.size(); i++)
+      switch(cellDim)
+        {
+        case 1:
+          flops += 3*nCells;
+          break;
+        case 2:
+          // 4 flops for two pt subtractions, 10 for a cross product
+          flops += (4 + 10)*nCells;
+          break;
+        default:
+          break;
+        }
+
+      for (int i=0; i<nCells; i++)
         {
           int lid = cellLID[i];
           double* detJ = jBatch.detJ(i);
@@ -131,6 +154,7 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
     {
       Array<double> J(cellDim*cellDim);
   
+      flops += cellDim*cellDim*nCells;
 
       for (int i=0; i<cellLID.size(); i++)
         {
@@ -193,6 +217,7 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
             }
         }
     }
+  CellJacobianBatch::addFlops(flops);
 }
 
 
@@ -312,12 +337,35 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
                      "cellDim=" << cellDim 
                      << " is not in expected range [0, " << spatialDim()
                      << "]");
-
+  int flops = 0;
   int nQuad = refQuadPts.size();
+  int nCells = cellLID.size();
   Array<double> J(cellDim*cellDim);
 
   if (physQuadPts.size() > 0) physQuadPts.resize(0);
   physQuadPts.reserve(cellLID.size() * refQuadPts.size());
+
+  switch(cellDim)
+    {
+    case 1:
+      flops += nCells * (1 + 2*nQuad);
+      break;
+    case 2:
+      if (spatialDim()==2)
+        {
+          flops += nCells*(4 + 8*nQuad);
+        }
+      else
+        {
+          flops += 18*nCells*nQuad;
+        }
+      break;
+    case 3:
+      flops += 27*nCells*nQuad;
+      break;
+    default:
+      break;
+    }
 
 
   for (int i=0; i<cellLID.size(); i++)
@@ -436,6 +484,8 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
                              "in BasicSimplicialMesh::getJacobians()");
         }
     }
+
+  CellJacobianBatch::addFlops(flops);
 }
 
 void BasicSimplicialMesh::estimateNumVertices(int nPts)

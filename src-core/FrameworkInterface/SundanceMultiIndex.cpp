@@ -68,22 +68,6 @@ bool MultiIndex::operator<(const MultiIndex& m) const
 
 
 
-Array<MultiIndex> MultiIndex::getLowerMultiIndices() const
-{
-	Array<MultiIndex> rtn;
-	
-	for (int x=0; x<=m_[0]; x++)
-		{
-			for (int y=0; y<=m_[1]; y++)
-				{
-					for (int z=0; z<=m_[2]; z++)
-						{
-							rtn.append(MultiIndex(x,y,z));
-						}
-				}
-		}
-}
-
 int MultiIndex::order() const 
 {
   int h = 0;

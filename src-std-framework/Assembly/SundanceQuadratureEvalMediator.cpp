@@ -153,6 +153,7 @@ void QuadratureEvalMediator
                      "QuadratureEvalMediator::evalDiscreteFuncElement() called "
                      "with expr that is not a discrete function");
 
+
   for (int i=0; i<multiIndices.size(); i++)
     {
       const MultiIndex& mi = multiIndices[i];
@@ -163,6 +164,9 @@ void QuadratureEvalMediator
           if (!fCache().containsKey(f) || !fCacheIsValid()[f])
             {
               fillFunctionCache(f, mi);
+            }
+          else
+            {
             }
           const RefCountPtr<Array<double> >& cacheVals 
             = fCache()[f];
@@ -181,6 +185,9 @@ void QuadratureEvalMediator
           if (!dfCache().containsKey(f) || !dfCacheIsValid()[f])
             {
               fillFunctionCache(f, mi);
+            }
+          else
+            {
             }
           const RefCountPtr<Array<double> >& cacheVals 
             = dfCache()[f];
@@ -205,6 +212,9 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
 {
   int nFuncs = f->discreteSpace().nFunc();
   int diffOrder = mi.order();
+
+  int flops = 0;
+  double jFlops = CellJacobianBatch::totalFlops();
 
   RefCountPtr<Array<double> > cacheVals;
   if (mi.order()==0)
@@ -234,8 +244,19 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
       dfCacheIsValid().put(f, true);
     }
 
-  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
-  f->getLocalValues(cellDim(), *cellLID(), *localValues);
+  RefCountPtr<Array<double> > localValues;
+  if (!localValueCacheIsValid().containsKey(f) 
+      || !localValueCacheIsValid().get(f))
+    {
+      localValues = rcp(new Array<double>());
+      f->getLocalValues(cellDim(), *cellLID(), *localValues);
+      localValueCache().put(f, localValues);
+      localValueCacheIsValid().put(f, true);
+    }
+  else
+    {
+      localValues = localValueCache().get(f);
+    }
 
   Array<RefCountPtr<Array<Array<Array<double> > > > > refBasisValues(nFuncs) ;
 
@@ -249,8 +270,8 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
       refBasisValues[i] = getRefBasisVals(basis, mi.order());
     }
 
-  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
-  if (mi.order() != 0) mesh().getJacobians(cellDim(), *cellLID(), *J);
+  //  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+  // if (mi.order() != 0) mesh().getJacobians(cellDim(), *cellLID(), *J);
   
   int nQuad = quadWgts().size();
 
@@ -285,6 +306,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
             {
               for (int fid=0; fid<nFuncs; fid++)
                 {
+                  flops += 2*nQuad*nNodes[fid];
                   for (int q=0; q<nQuad; q++)
                     {
                       double& sum = vPtr[q*nFuncs + fid];
@@ -300,12 +322,13 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
           else
             {
               static Array<double> invJ;
-              J->getInvJ(c, invJ);
+              J()->getInvJ(c, invJ);
               const double* invJPtr = &(invJ[0]);
               int dim = cellDim();
 
               for (int fid=0; fid<nFuncs; fid++)
                 {
+                  flops += 3*nQuad*nNodes[fid]*dim;
                   for (int q=0; q<nQuad; q++)
                     {
                       double& sum = vPtr[q*nFuncs + fid];
@@ -322,6 +345,9 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
             }
         }
     }
+
+  jFlops = CellJacobianBatch::totalFlops() - jFlops;
+  addFlops(flops + jFlops);
 }
 
 void QuadratureEvalMediator::computePhysQuadPts() const 
@@ -333,11 +359,14 @@ void QuadratureEvalMediator::computePhysQuadPts() const
     }
   else
     {
+      double jFlops = CellJacobianBatch::totalFlops();
       SUNDANCE_OUT(verbosity() > VerbLow, 
                    "computing phys quad points");
       const Array<Point>& refPts = *(refQuadPts_.get(cellType()));
       mesh().pushForward(cellDim(), *cellLID(), 
                          refPts, physQuadPts_); 
+
+      addFlops(CellJacobianBatch::totalFlops() - jFlops);
       cacheIsValid() = true;
     }
   SUNDANCE_OUT(verbosity() > VerbMedium, 
@@ -364,3 +393,110 @@ void QuadratureEvalMediator::print(ostream& os) const
         }
     }
 }
+
+
+
+
+// void QuadratureEvalMediator::computeFuncs(const DiscreteFunction* f,
+//                                           const Array<MultiIndex>& miSet) const 
+// {
+//   int nFuncs = f->discreteSpace().nFunc();
+
+//   int flops = 0;
+//   double jFlops = CellJacobianBatch::totalFlops();
+
+//   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
+//   f->getLocalValues(cellDim(), *cellLID(), *localValues);
+
+//   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+//   if (mi.order() != 0) mesh().getJacobians(cellDim(), *cellLID(), *J);
+
+//   int nQuad = quadWgts().size();
+
+//   int nCells = cellLID()->size();
+
+//   Array<RefCountPtr<Array<Array<Array<double> > > > > refBasisValues(nFuncs) ;
+
+//   int nTotalNodes = 0;
+//   Array<int> nNodes(nFuncs);
+//   for (int i=0; i<nFuncs; i++)
+//     {
+//       const BasisFamily& basis = f->basis()[i];
+//       nTotalNodes += basis.nNodes(cellType());
+//       nNodes[i] = basis.nNodes(cellType());
+//       refBasisValues[i] = getRefBasisVals(basis, mi.order());
+//     }
+
+
+//   int nDir;
+//   if (mi.order()==1)
+//     {
+//       nDir = cellDim();
+//       cacheVals->resize(cellLID()->size() * nQuad * cellDim() * nFuncs);
+//     }
+//   else
+//     {
+//       nDir = 1;
+//       cacheVals->resize(cellLID()->size() * nQuad * nFuncs);
+//     }
+
+
+//   for (int p=0; p<nDir; p++)
+//     {
+//       for (int c=0; c<nCells; c++)
+//         {
+//           const double* ptr = &((*localValues)[c*nTotalNodes]);
+//           double* vPtr = &((*cacheVals)[p*nCells*nFuncs*nQuad + c*nFuncs*nQuad]);
+//           int valsPerCell = nFuncs*nQuad;
+//           /* initialize to zero */
+//           for (int q=0; q<valsPerCell; q++) 
+//             {
+//               vPtr[q] = 0.0;
+//             }
+//           if (mi.order()==0)
+//             {
+//               for (int fid=0; fid<nFuncs; fid++)
+//                 {
+//                   flops += 2*nQuad*nNodes[fid];
+//                   for (int q=0; q<nQuad; q++)
+//                     {
+//                       double& sum = vPtr[q*nFuncs + fid];
+//                       for (int i=0; i<nNodes[fid]; i++)
+//                         {
+//                           double coeff = ptr[nFuncs*i + fid];
+//                           double basisVals = (*(refBasisValues[fid]))[0][q][i];
+//                           sum += coeff * basisVals;
+//                         }
+//                     }
+//                 }
+//             }
+//           else
+//             {
+//               static Array<double> invJ;
+//               J->getInvJ(c, invJ);
+//               const double* invJPtr = &(invJ[0]);
+//               int dim = cellDim();
+
+//               for (int fid=0; fid<nFuncs; fid++)
+//                 {
+//                   flops += 3*nQuad*nNodes[fid]*dim;
+//                   for (int q=0; q<nQuad; q++)
+//                     {
+//                       double& sum = vPtr[q*nFuncs + fid];
+//                       for (int i=0; i<nNodes[fid]; i++)
+//                         {
+//                           double g = ptr[nFuncs*i + fid];
+//                           for (int r=0; r<dim; r++)
+//                             {
+//                               sum += g*invJPtr[p + r*dim]*(*(refBasisValues[fid]))[r][q][i];
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+
+//   jFlops = CellJacobianBatch::totalFlops() - jFlops;
+//   addFlops(flops + jFlops);
+// }

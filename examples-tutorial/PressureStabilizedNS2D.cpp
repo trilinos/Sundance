@@ -20,7 +20,7 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
@@ -28,8 +28,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 32;
-      int ny = 32;
+      int nx = 64;
+      int ny = 64;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
                                                          0.0, 1.0, ny, 1,
@@ -97,7 +97,7 @@ int main(int argc, void** argv)
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           + (grad*vy)*(grad*uy)  - p*(dx*vx+dy*vy)
                           + beta*h*h*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
-                          quad4)
+                          quad1)
         + Integral(interior, reynolds*(vx*(u*grad)*ux)
                    + reynolds*(vy*(u*grad)*uy), quad2);
         
@@ -153,6 +153,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+  Sundance::finalize();
 }

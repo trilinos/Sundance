@@ -2,7 +2,7 @@
 
 BUILD_DIR=`pwd`
 
-../configure CXXFLAGS="-O3 -finline-functions -funroll-loops" \
+../configure CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops" \
 --enable-mpi --with-mpi-compilers \
 --with-trilinos=$HOME/Projects/Trilinos/LINUX-OPT \
 --prefix=$BUILD_DIR

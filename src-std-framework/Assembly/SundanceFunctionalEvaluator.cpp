@@ -179,12 +179,12 @@ double FunctionalEvaluator::evaluate() const
                        << " consisting of " << workSet->size() << " cells");
           workSetCounter++;
 
-          mediators_[r]->setCellBatch(workSet);
+          mediators_[r]->setCellBatch(workSet, J);
 
           evaluator->resetNumCalls();
           evalExprs_[r]->evaluate(*evalMgr_, constantValues, vectorValues);
           
-          mesh_.getJacobians(cellDim, *workSet, *J);
+          //          mesh_.getJacobians(cellDim, *workSet, *J);
           const Array<double>& detJ = J->detJ();
 
           if (vectorValues.size()==0)

@@ -90,6 +90,10 @@ namespace SundanceUtils
 
     void reciprocate() ;
 
+    static double& totalFlops() {static double rtn = 0; return rtn;}
+
+
+    static void addFlops(const double& flops) {totalFlops() += flops;}
   private:
     double value_;
     Point gradient_;

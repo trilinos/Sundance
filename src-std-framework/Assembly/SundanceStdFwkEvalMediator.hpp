@@ -51,7 +51,8 @@ namespace SundanceStdFwk
       virtual ~StdFwkEvalMediator(){;}
 
       /** */
-      void setCellBatch(const RefCountPtr<Array<int> >& cellLID) ;
+      void setCellBatch(const RefCountPtr<Array<int> >& cellLID,
+                        RefCountPtr<CellJacobianBatch>& J) ;
 
       /** */
 
@@ -70,15 +71,21 @@ namespace SundanceStdFwk
 
       bool& cacheIsValid() const {return cacheIsValid_;}
 
+      const RefCountPtr<CellJacobianBatch>& J() const {return J_;}
+
 
       /** */
       Map<const DiscreteFunction*, RefCountPtr<Array<double> > >& fCache() const {return fCache_;}
       /** */
       Map<const DiscreteFunction*, RefCountPtr<Array<double> > >& dfCache() const {return dfCache_;}
       /** */
+      Map<const DiscreteFunction*, RefCountPtr<Array<double> > >& localValueCache() const {return localValueCache_;}
+      /** */
       Map<const DiscreteFunction*, bool>& fCacheIsValid() const {return fCacheIsValid_;}
       /** */
       Map<const DiscreteFunction*, bool>& dfCacheIsValid() const {return dfCacheIsValid_;}
+      /** */
+      Map<const DiscreteFunction*, bool>& localValueCacheIsValid() const {return localValueCacheIsValid_;}
       
     private:
       Mesh mesh_;
@@ -98,12 +105,16 @@ namespace SundanceStdFwk
       /** */
       mutable Map<const DiscreteFunction*, RefCountPtr<Array<double> > > fCache_;
       /** */
-      mutable Map<const DiscreteFunction*, RefCountPtr<Array<double> > > dfCache_;
+      mutable Map<const DiscreteFunction*, RefCountPtr<Array<double> > > dfCache_; 
+      /** */
+      mutable Map<const DiscreteFunction*, RefCountPtr<Array<double> > > localValueCache_;
 
       /** */
       mutable Map<const DiscreteFunction*, bool> fCacheIsValid_;
       /** */
       mutable Map<const DiscreteFunction*, bool> dfCacheIsValid_;
+      /** */
+      mutable Map<const DiscreteFunction*, bool> localValueCacheIsValid_;
     };
   }
 }

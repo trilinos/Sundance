@@ -49,9 +49,6 @@ namespace SundanceCore
           /** */
           MultiIndex operator+(const MultiIndex& other) const ;
 
-          /** Return a list of all multiindices of lower order than this one. */
-          Array<MultiIndex> getLowerMultiIndices() const ;
-
           /** */
           string toString() const ;
 

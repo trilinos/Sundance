@@ -53,7 +53,8 @@ void ConstantEvaluator::internalEval(const EvalManager& mgr,
 {
   TimeMonitor timer(constantEvalTimer());
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---ConstantEvaluator---");
+  SUNDANCE_OUT(verbosity() > VerbSilent, tabs << "ConstantEvaluator::eval() expr="
+               << expr()->toString());
 
   constantResults.resize(1);
   constantResults[0] = expr()->value();

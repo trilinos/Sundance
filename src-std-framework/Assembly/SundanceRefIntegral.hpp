@@ -121,7 +121,12 @@ namespace SundanceStdFwk
       inline const double& value(int testDerivDir, int testNode) const 
       {return W_[nNodesTest()*testDerivDir + testNode];}
 
+      static double& totalFlops() {static double rtn = 0; return rtn;}
+
     protected:
+
+      static void addFlops(const double& flops) {totalFlops() += flops;}
+
       /** */
       void createTwoFormTransformationMatrix(const CellJacobianBatch& J,  
                                              const Array<int>& alpha,

@@ -30,7 +30,7 @@ namespace SundanceStdMesh
       case PrismCell:
         return "PrismCell";
       }
-
+    return "NullCell"; // -Wall
   }
 
   int dimension(const CellType& cellType)
@@ -51,6 +51,6 @@ namespace SundanceStdMesh
       case PrismCell:
         return 3;
       }
-
+    return -1; // -Wall
   }
 }
