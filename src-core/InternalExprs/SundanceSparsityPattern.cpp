@@ -51,22 +51,29 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
       if (!expr->hasNonzeroDeriv(d)) states_.append(ZeroDeriv);
       else  
         {
-          /* to test whether a derivative is a constant, see
-           * if its derivative wrt all of the single derivatives
-           * is zero */
-          SundanceUtils::Set<Deriv>::const_iterator j;
-          bool isConstant = true;
-          for (j = singleDerivs.begin(); j != singleDerivs.end(); j++)
+          if (expr->isConstant())
             {
-              MultipleDeriv dTry = d;
-              dTry.put(*j);
-              if (expr->hasNonzeroDeriv(dTry)) 
-                {
-                  isConstant = false;
-                }
+              states_.append(ConstantDeriv);
             }
-          if (isConstant) states_.append(ConstantDeriv);
-          else states_.append(VectorDeriv);
+          else
+            {
+              /* to test whether a derivative is a constant, see
+               * if its derivative wrt all of the single derivatives
+               * is zero */
+              SundanceUtils::Set<Deriv>::const_iterator j;
+              bool isConstant = true;
+              for (j = singleDerivs.begin(); j != singleDerivs.end(); j++)
+                {
+                  MultipleDeriv dTry = d;
+                  dTry.put(*j);
+                  if (expr->hasNonzeroDeriv(dTry)) 
+                    {
+                      isConstant = false;
+                    }
+                }
+              if (isConstant) states_.append(ConstantDeriv);
+              else states_.append(VectorDeriv);
+            }
         }
       if (d.order()==1 && d.begin()->isCoordDeriv())
         {

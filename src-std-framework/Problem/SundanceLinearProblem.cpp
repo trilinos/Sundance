@@ -68,7 +68,7 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
   SolverState<double> state = solver.solve(A_, rhs_, solnVec);
   
   Expr soln = new DiscreteFunction(*(assembler_->solutionSpace()),
-                                   solnVec, "u0");
+                                   solnVec, "soln");
 
   return soln;
 }

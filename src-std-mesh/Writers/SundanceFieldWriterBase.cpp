@@ -66,44 +66,24 @@ void FieldWriterBase::addMesh(const Mesh& mesh)
                      "added mesh has meshID=" << mesh.id());
 }
 
-  void FieldWriterBase::addField(const string& /* name */, 
-                               const RefCountPtr<FieldBase>& /* expr */) 
+void FieldWriterBase::addField(const string& name, 
+                               const RefCountPtr<FieldBase>& expr) 
 {
 
-//   string fieldName = name;
-//   if (name.length() == 0) fieldName = expr.name();
+  string fieldName = name;
 
-//   if (expr.length() > 1)
-//     {
-//       /* expr is a list of fields */
-//       for (int i=0; i<expr.length(); i++)
-//         {
-//           string n = name + "_" + TSF::toString(i);
-//           addField(n, expr[i]);
-//         }
-//     }
-//   else 
-//     {
-//       /* expr is a single scalar field */
-
-//       /* get the mesh. Check for consistency with previously obtained meshes */
-//       Mesh m;
-//       expr.getMesh(m);
-//       setMesh(m);
-
-//       /* Now determine whether it is a nodal field or a cell field */
-//       BasisFamily basis = expr.getBasis();
-//       if (basis.order() > 0)
-//         {
-//           pointScalarFields_.append(expr);
-//           pointScalarNames_.append(fieldName);
-//         }
-//       else
-//         {
-//           cellScalarFields_.append(expr);
-//           cellScalarNames_.append(fieldName); 
-//         }
-//     }
+  if (expr->numElems() > 1)
+    {
+      TEST_FOR_EXCEPTION(expr->numElems() > 1, RuntimeError,
+                         "FieldWriterBase::addField not ready for vector fields");
+    }
+  else 
+    {
+      /* expr is a single scalar field */
+      
+      pointScalarFields_.append(expr);
+      pointScalarNames_.append(fieldName);
+    }
   
 }
 

@@ -37,9 +37,6 @@ namespace SundanceStdFwk
       virtual ~ExprFieldWrapper(){;}
 
       /** */
-      virtual int numElems() const ;
-
-      /** */
       virtual double getData(int cellDim, int cellID, int elem) const ;
 
       /* */

@@ -135,6 +135,7 @@ double FunctionalEvaluator::evaluate() const
       while (iter != cells.end())
         {
           Tabs tab1;
+
           /* build up the work set */
           workSet->resize(0);
           for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)

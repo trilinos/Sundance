@@ -71,12 +71,14 @@ Assembler
   for (int r=0; r<eqn->regionQuadCombos().size(); r++)
     {
       const RegionQuadCombo& rqc = eqn->regionQuadCombos()[r];
-      SUNDANCE_OUT(verbosity() > VerbMedium,
-                   "creating integral groups for rqc=" << rqc);
                          
       rqc_.append(rqc);
       isBCRqc_.append(false);
       const Expr& expr = eqn->expr(rqc);
+
+      SUNDANCE_OUT(verbosity() > VerbMedium,
+                   "creating integral groups for rqc=" << rqc << endl
+                   << "expr = " << expr);
       const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(rqc);
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
@@ -85,6 +87,9 @@ Assembler
       evalExprs_.append(ee);
       const RefCountPtr<SparsityPattern>& sparsity 
         = ee->sparsity(ee->getDerivSetIndex(rqc));
+      SUNDANCE_OUT(verbosity() > VerbMedium,
+                   "sparsity pattern " << *sparsity);
+      
       Array<IntegralGroup> groups;
       grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
       groups_.append(groups);
@@ -96,11 +101,13 @@ Assembler
   for (int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
     {
       const RegionQuadCombo& rqc = eqn->bcRegionQuadCombos()[r];
-      SUNDANCE_OUT(verbosity() > VerbMedium,
-                   "creating integral groups for BC rqc=" << rqc);
       rqc_.append(rqc);
       isBCRqc_.append(true);
       const Expr& expr = eqn->bcExpr(rqc);
+
+      SUNDANCE_OUT(verbosity() > VerbMedium,
+                   "creating integral groups for rqc=" << rqc << endl
+                   << "expr = " << expr.toXML().toString());
       const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(rqc);
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
@@ -109,6 +116,8 @@ Assembler
       evalExprs_.append(ee);
       const RefCountPtr<SparsityPattern>& sparsity 
         = ee->sparsity(ee->getDerivSetIndex(rqc));
+      SUNDANCE_OUT(verbosity() > VerbMedium,
+                   "sparsity pattern " << *sparsity);
       Array<IntegralGroup> groups;
       grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
       groups_.append(groups);

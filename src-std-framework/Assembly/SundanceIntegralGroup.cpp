@@ -106,6 +106,11 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
       else 
         {
           if ((*coeffs)[resultIndices_[i][0]]->isZero()) continue;
+          TEST_FOR_EXCEPTION((*coeffs)[resultIndices_[i][0]]->isConstant(),
+                             InternalError,
+                             "Integrating a constant term="
+                             <<(*coeffs)[resultIndices_[i][0]]->getConstantValue()
+                             << " by quadrature");
           SUNDANCE_OUT(verbosity() > VerbSilent,
                        tab << "Integrating term group " << i 
                        << " by quadrature");

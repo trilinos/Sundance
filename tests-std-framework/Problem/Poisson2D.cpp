@@ -1,4 +1,5 @@
 #include "Sundance.hpp"
+#include "SundanceEvaluator.hpp"
 
 /** 
  * Solves the Poisson equation in 2D
@@ -23,7 +24,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 1*np, np,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 2*np, np,
                                                          0.0, 2.0, 2, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
@@ -55,15 +56,23 @@ int main(int argc, void** argv)
       Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(2);
+      QuadratureFamily quad = new GaussianQuadrature(6);
 
+      //EvaluatableExpr::classVerbosity() = VerbExtreme;
+      //GrouperBase::classVerbosity() = VerbExtreme;
+      //Assembler::classVerbosity() = VerbHigh;
+      //Evaluator::classVerbosity() = VerbHigh;
       
       /* Define the weak form */
+      //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad)
         + Integral(top, -v*(1.0/3.0), quad) 
         + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, v*(u - 0.5*x*x), quad);
+      Expr bc = EssentialBC(bottom, v*(u-0.5*x*x), quad);
+
+      //Assembler::workSetSize() = 1;
+      //FunctionalEvaluator::workSetSize() = 1;
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
@@ -79,7 +88,14 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
+      /* Write the field in VTK format */
+      FieldWriter w = new VTKWriter("Poisson2d");
+      w.addMesh(mesh);
+      w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.write();
+
       Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
+      //Expr exactSoln = 0.5*x*x;
 
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
@@ -89,11 +105,12 @@ int main(int argc, void** argv)
       Expr derivErr = dx*(exactSoln-soln);
       Expr derivErrExpr = Integral(interior, 
                                    derivErr*derivErr, 
-                                   new GaussianQuadrature(4));
+                                   new GaussianQuadrature(2));
 
       FunctionalEvaluator errInt(mesh, errExpr);
       FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
+      //Evaluator::classVerbosity() = VerbExtreme;
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 

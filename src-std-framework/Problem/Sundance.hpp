@@ -56,6 +56,7 @@
 #include "SundanceLinearProblem.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
+#include "SundanceExprFieldWrapper.hpp"
 
 /* Solvers & stuff */
 #include "TSFVectorType.hpp"

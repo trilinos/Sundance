@@ -194,6 +194,7 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
   int nQuad = refQuadPts.size();
   Array<double> J(cellDim*cellDim);
 
+  if (physQuadPts.size() > 0) physQuadPts.resize(0);
   physQuadPts.reserve(cellLID.size() * refQuadPts.size());
 
 

@@ -26,10 +26,15 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 {
   Tabs tab;
 
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  VerbositySetting verb = VerbExtreme;
+
+  SUNDANCE_OUT(verb > VerbLow, 
                tab << "trivial grouper num derivs = " << sparsity->numDerivs() << endl);
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
-               tab << "sparsity = " << *sparsity << endl);
+  SUNDANCE_OUT(verb > VerbLow, 
+               tab << "cell type = " << cellType);
+
+  SUNDANCE_OUT(verb > VerbMedium,  
+               tab << "sparsity = " << endl << *sparsity << endl);
 
   for (int i=0; i<sparsity->numDerivs(); i++)
     {
@@ -54,16 +59,16 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, testID, unkID,
                       isOneForm);
 
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(verb > VerbMedium, 
                    tab1 << "test ID: " << testID);
 
-      SUNDANCE_OUT(!isOneForm && verbosity() > VerbMedium,
+      SUNDANCE_OUT(!isOneForm && verb > VerbMedium,
                    tab1 << "unk funcID: " << unkID << endl);
                    
-      SUNDANCE_OUT(verbosity() > VerbMedium, tab1 << "deriv = " << d);
-      SUNDANCE_OUT(verbosity() > VerbMedium && sparsity->isConstant(i), 
+      SUNDANCE_OUT(verb > VerbMedium, tab1 << "deriv = " << d);
+      SUNDANCE_OUT(verb > VerbMedium && sparsity->isConstant(i), 
                    tab1 << "coeff is constant");
-      SUNDANCE_OUT(verbosity() > VerbMedium && !sparsity->isConstant(i), 
+      SUNDANCE_OUT(verb > VerbMedium && !sparsity->isConstant(i), 
                    tab1 << "coeff is non-constant");
 
       RefCountPtr<ElementIntegral> integral;

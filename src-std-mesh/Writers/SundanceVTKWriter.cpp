@@ -100,7 +100,7 @@ void VTKWriter::writePoints(ostream& os, bool isPHeader) const
 
   XMLObject xml(PHeader + "DataArray");
   xml.addAttribute("NumberOfComponents", "3");
-  xml.addAttribute("type", "float");
+  xml.addAttribute("type", "Float32");
   xml.addAttribute("format", "ascii");
 
   os << xml.header() << endl;
@@ -139,7 +139,7 @@ void VTKWriter::writeCells(ostream& os) const
   os << cells.header() << endl;
 
   XMLObject conn("DataArray");
-  conn.addAttribute("type", "vtkIdType");
+  conn.addAttribute("type", "Int32");
   conn.addAttribute("Name", "connectivity");
   conn.addAttribute("format", "ascii");
 
@@ -163,7 +163,7 @@ void VTKWriter::writeCells(ostream& os) const
 
 
   XMLObject offsets("DataArray");
-  offsets.addAttribute("type", "vtkIdType");
+  offsets.addAttribute("type", "Int32");
   offsets.addAttribute("Name", "offsets");
   offsets.addAttribute("format", "ascii");
   
@@ -179,7 +179,7 @@ void VTKWriter::writeCells(ostream& os) const
   os << offsets.footer() << endl;
 
   XMLObject types("DataArray");
-  types.addAttribute("type", "unsigned char");
+  types.addAttribute("type", "UInt8");
   types.addAttribute("Name", "types");
   types.addAttribute("format", "ascii");
 
@@ -268,7 +268,7 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
   if (isPHeader) PHeader="P";
 
   XMLObject xml(PHeader + "DataArray");
-  xml.addAttribute("type", "float");
+  xml.addAttribute("type", "Float32");
   xml.addAttribute("Name", name);
   xml.addAttribute("format", "ascii");
   

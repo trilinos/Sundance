@@ -42,15 +42,16 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
         {
           const DiscreteFunction* f
             = dynamic_cast<const DiscreteFunction*>(dfe->master());
-          TEST_FOR_EXCEPTION(f != 0, RuntimeError,
-                             "ExprFieldWrapper ctor argument is not a discrete function");
+          TEST_FOR_EXCEPTION(f == 0, RuntimeError,
+                             "ExprFieldWrapper ctor argument "
+                             << expr << " is not a discrete function");
           vector_ = f->vector();
           discreteSpace_ = f->discreteSpace();
           map_ = f->map();
           indices_ = tuple(dfe->myIndex());
         }
 
-      TEST_FOR_EXCEPTION(df != 0 && dfe != 0, RuntimeError,
+      TEST_FOR_EXCEPTION(df == 0 && dfe == 0, RuntimeError,
                          "ExprFieldWrapper ctor argument is not a discrete function");
     }
   else
