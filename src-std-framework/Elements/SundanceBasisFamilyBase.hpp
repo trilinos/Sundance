@@ -102,8 +102,16 @@ namespace SundanceStdFwk
                            Array<Array<double> >& result) const = 0 ;
 
 
-      /** */
+      /** Return the polynomial order of the basis */
       virtual int order() const = 0 ;
+
+      /** Return the spatial dimension of the basis */
+      virtual int dim() const = 0 ;
+
+      /** Ordering for storage in STL maps. No need to check type equality 
+       * here, because it's already done at the handle level. */
+      bool lessThan(const BasisFamilyBase* other) const 
+      {return order() < other->order();}
     };
   }
 }

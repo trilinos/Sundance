@@ -26,7 +26,7 @@ int MaximalCellFilter::dimension(const Mesh& mesh) const
 }
 
 
-bool MaximalCellFilter::lessThan(const CellFilterBase* /* other */) const
+bool MaximalCellFilter::lessThan(const CellFilterStub* /* other */) const
 {
   /* Maximal cell sets always win a comparison */
   return false;

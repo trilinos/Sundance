@@ -1,11 +1,11 @@
 /* @HEADER@ */
 /* @HEADER@ */
 
-#ifndef SUNDANCE_UNKNOWNFUNCTION_H
-#define SUNDANCE_UNKNOWNFUNCTION_H
+#ifndef SUNDANCE_TESTFUNCTION_H
+#define SUNDANCE_TESTFUNCTION_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestFunctionStub.hpp"
 #include "SundanceFuncWithBasis.hpp"
 
 namespace SundanceStdFwk
@@ -19,24 +19,24 @@ namespace SundanceStdFwk
   /** 
    *
    */
-  class UnknownFunction : public UnknownFunctionStub,
+  class TestFunction : public TestFunctionStub,
                           public FuncWithBasis
   {
   public:
     /** */
-    UnknownFunction(const BasisFamily& basis, const string& name="")
-      : UnknownFunctionStub(name, basis.dim()), FuncWithBasis(basis)
+    TestFunction(const BasisFamily& basis, const string& name="")
+      : TestFunctionStub(name, basis.dim()), FuncWithBasis(basis)
     {;}
 
     /** */
-    UnknownFunction(const Array<BasisFamily>& basis, const string& name="")
-      : UnknownFunctionStub(name, BasisFamily::size(basis)), 
+    TestFunction(const Array<BasisFamily>& basis, const string& name="")
+      : TestFunctionStub(name, BasisFamily::size(basis)), 
         FuncWithBasis(basis)
     {;}
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */
-    virtual ~UnknownFunction() {;}
+    virtual ~TestFunction() {;}
 
     /* boilerplate */
     GET_RCP(ExprBase);

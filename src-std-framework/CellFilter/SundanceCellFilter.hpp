@@ -6,6 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellFilterBase.hpp"
+#include "SundanceOrderedHandle.hpp"
 #include "TSFHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
@@ -86,10 +87,10 @@ using namespace SundanceStdMesh::Internal;
    *
 
    */
-  class CellFilter : public TSFExtended::Handle<CellFilterBase>
+  class CellFilter : public OrderedHandle<CellFilterStub>
   {
   public:
-    HANDLE_CTORS(CellFilter, CellFilterBase);
+    ORDERED_HANDLE_CTORS(CellFilter, CellFilterStub);
 
     /** Find the cells passing this filter on the given mesh */
     CellSet getCells(const Mesh& mesh) const ;
@@ -124,15 +125,18 @@ using namespace SundanceStdMesh::Internal;
      * the given predicate is true */
     CellFilter subset(const CellPredicate& test) const ;
 
-    
+    /** Indicate whether this is a null cell filter */
+    bool isNullCellFilter() const ;
+
     /** */
     XMLObject toXML() const ;
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
-    
-    /** */
-    bool operator<(const CellFilter& other) const ;
 
+  protected:
+    /** */
+    const CellFilterBase* cfbPtr() const ;
+    
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
 
     };

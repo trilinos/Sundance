@@ -2,6 +2,8 @@
 /* @HEADER@ */
 
 #include "SundanceHomogeneousDOFMap.hpp"
+#include "SundanceCellFilter.hpp"
+#include "SundanceMaximalCellFilter.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
@@ -14,14 +16,13 @@ using namespace Teuchos;
 
 
 HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh, 
-                                     const CellSet& cells,
                                      const BasisFamily& basis,
-                                     const Array<int>& funcID)
+                                     int numFuncs)
   : DOFMapBase(mesh), 
     dim_(mesh.spatialDim()),
-    cells_(cells),
+    cells_(),
     dofs_(mesh.spatialDim()+1), 
-    funcID_(funcID),
+    funcID_(numFuncs),
     localNodePtrs_(mesh.spatialDim()+1),
     nNodesPerCell_(mesh.spatialDim()+1),
     totalNNodesPerCell_(mesh.spatialDim()+1, 0),
@@ -29,7 +30,12 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
     basisIsContinuous_(false)
 {
   verbosity() = DOFMapBase::classVerbosity();
+  
+  CellFilter maximalCells = new MaximalCellFilter();
+  cells_ = maximalCells.getCells(mesh);
 
+  for (int f=0; f<numFuncs; f++) funcID_[f] = f;
+  
   for (int d=0; d<=dim_; d++)
     {
       /* record the number of facets for each cell type so we're

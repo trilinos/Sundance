@@ -44,10 +44,10 @@ using namespace SundanceStdMesh::Internal;
     virtual string typeName() const {return "MaximalCellFilter";}
 
     /** Compare to another object */
-    virtual bool lessThan(const CellFilterBase* other) const ;
+    virtual bool lessThan(const CellFilterStub* other) const ;
 
     /* Handleable boilerplate */
-    GET_RCP(CellFilterBase);
+    GET_RCP(CellFilterStub);
     
 
   protected:

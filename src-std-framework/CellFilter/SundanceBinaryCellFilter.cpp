@@ -78,7 +78,7 @@ XMLObject BinaryCellFilter::toXML() const
   return rtn;
 }
 
-bool BinaryCellFilter::lessThan(const CellFilterBase* other) const
+bool BinaryCellFilter::lessThan(const CellFilterStub* other) const
 {
   const BinaryCellFilter* B 
     = dynamic_cast<const BinaryCellFilter*>(other);

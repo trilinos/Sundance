@@ -58,6 +58,10 @@ namespace SundanceCore
       const RefCountPtr<CellFilterStub>& region(int d) const 
       {return regions_[d].ptr();}
 
+      /** Indicate whether the given region has an essential BC expression */
+      bool isBCRegion(int d) const
+      {return bcTestsOnRegions_.containsKey(regions_[d]);}
+      
       /** Returns the number of test functions in this equation set */
       int numTests() const {return testFuncs_.size();}
 
@@ -115,11 +119,14 @@ namespace SundanceCore
        *  at the given subregion-quadrature combination */
       const DerivSet& nonzeroBCFunctionalDerivs(const RegionQuadCombo& r) const
       {return bcRegionQuadComboNonzeroDerivs_.get(r);}
-      
-      
       //@}
+
+      
           
     private:
+
+      
+
       /** */
       Array<OrderedHandle<CellFilterStub> > regions_;
 

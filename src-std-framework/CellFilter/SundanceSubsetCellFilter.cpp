@@ -25,7 +25,7 @@ XMLObject SubsetCellFilter::toXML() const
   return rtn;
 }
 
-bool SubsetCellFilter::lessThan(const CellFilterBase* other) const
+bool SubsetCellFilter::lessThan(const CellFilterStub* other) const
 {
   const SubsetCellFilter* S 
     = dynamic_cast<const SubsetCellFilter*>(other);

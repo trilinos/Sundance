@@ -11,7 +11,7 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 NullCellFilter::NullCellFilter()
-  : CellFilterBase()
+  : CellFilterStub()
 {;}
 
 CellSet NullCellFilter::internalGetCells(const Mesh& mesh) const

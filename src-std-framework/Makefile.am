@@ -34,7 +34,6 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellSet.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceImplicitCellSet.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceLabelCellPredicate.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceMaximalCellFilter.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceNullCellFilter.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundancePositionalCellPredicate.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.hpp
 
@@ -52,17 +51,20 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellSet.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceImplicitCellSet.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceLabelCellPredicate.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceMaximalCellFilter.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceNullCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundancePositionalCellPredicate.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp
 
 SUNDANCE_ELEMENTS_H = \
-$(top_srcdir)/src-std-framework/Elements/SundanceADReal.hpp\
-$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp\
-$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp\
-$(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp\
-$(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp\
-$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp
+$(top_srcdir)/src-std-framework/Elements/SundanceADReal.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
 
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceADReal.cpp\
@@ -74,10 +76,12 @@ $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp
 
 SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.hpp
 
 SUNDANCE_DOFMAPPING = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp\
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.cpp
 
 

@@ -63,14 +63,14 @@ namespace SundanceUtils
     OrderedHandle() : TSFExtended::Handle<PointerType>() {;}
 
     /** Construct from a raw ptr */
-    OrderedHandle(PointerType* rawPtr) : TSFExtended::Handle<PointerType>(rawPtr) {;}
+    OrderedHandle(TSFExtended::Handleable<PointerType>* rawPtr) : TSFExtended::Handle<PointerType>(rawPtr) {;}
 
     /** Construct from a smart ptr*/
     OrderedHandle(const RefCountPtr<PointerType>& smartPtr) 
       : TSFExtended::Handle<PointerType>(smartPtr) {;}
 
     /** comparison operator */
-    bool operator<(const OrderedHandle& other) const 
+    bool operator<(const OrderedHandle<PointerType>& other) const 
     {
       /* first compare types */
       const PointerType* me = ptr().get();

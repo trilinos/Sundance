@@ -74,9 +74,8 @@ int main(int argc, void** argv)
       DOFMapBase::classVerbosity() = VerbExtreme;
 
       RefCountPtr<DOFMapBase> map = rcp(new HomogeneousDOFMap(mesh3D,
-                                                              interiorCells,
                                                               basis,
-                                                              funcs));
+                                                              1));
 
       map->print(cerr);
 

@@ -2,26 +2,41 @@
 /* @HEADER@ */
 
 #include "SundanceCellFilter.hpp"
+#include "SundanceExplicitCellSet.hpp"
 #include "SundanceBinaryCellFilter.hpp"
 #include "SundanceSubsetCellFilter.hpp"
 #include "SundanceLabelCellPredicate.hpp"
+#include "SundanceNullCellFilterStub.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
+bool CellFilter::isNullCellFilter() const 
+{
+  return dynamic_cast<const NullCellFilterStub*>(ptr().get()) != 0;
+}
 
 CellSet CellFilter::getCells(const Mesh& mesh) const
 {
-  return ptr()->getCells(mesh);
+  if (isNullCellFilter())
+    {
+      return new ExplicitCellSet(mesh, -1, 
+                                 NullCell);
+    }
+  return cfbPtr()->getCells(mesh);
 }
 
 
 
 int CellFilter::dimension(const Mesh& mesh) const
 {
-  return ptr()->dimension(mesh);
+  if (isNullCellFilter())
+    {
+      return -1;
+    }
+  return cfbPtr()->dimension(mesh);
 }
 
 
@@ -66,13 +81,10 @@ XMLObject CellFilter::toXML() const
   return ptr()->toXML();
 }
 
-
-
-bool CellFilter::operator<(const CellFilter& other) const 
+const CellFilterBase* CellFilter::cfbPtr() const
 {
-  string me = ptr()->typeName();
-  string you = other.ptr()->typeName();
-  if (me < you) return true;
-  if (you < me) return false;
-  return ptr()->lessThan(other.ptr().get());
+  const CellFilterBase* rtn = dynamic_cast<CellFilterBase*>(ptr().get());
+  TEST_FOR_EXCEPTION(rtn==0, InternalError, "CellFilter::cfbPtr() cast failed");
+  return rtn;
 }
+

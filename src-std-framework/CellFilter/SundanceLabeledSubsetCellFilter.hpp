@@ -37,7 +37,7 @@ using namespace SundanceStdMesh::Internal;
     virtual string typeName() const {return "LabeledSubsetCellFilter";}
 
     /** */
-    virtual bool lessThan(const CellFilterBase* other) const ;
+    virtual bool lessThan(const CellFilterStub* other) const ;
 
     /** */
     virtual RefCountPtr<CellFilterBase> getRcp() {return rcp(this);}

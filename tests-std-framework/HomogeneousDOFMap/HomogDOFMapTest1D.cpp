@@ -68,9 +68,8 @@ int main(int argc, void** argv)
       
 
       RefCountPtr<DOFMapBase> map = rcp(new HomogeneousDOFMap(mesh,
-                                                              interiorCells,
                                                               basis,
-                                                              funcs));
+                                                              1));
 
       map->print(cerr);
 

@@ -12,6 +12,7 @@
 #include "TSFHandleable.hpp"
 #include "TSFPrintable.hpp"
 #include "TSFDescribable.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 
@@ -36,7 +37,8 @@ namespace SundanceCore
                            public TSFExtended::Printable,
                            public TSFExtended::Describable,
                            public Noncopyable,
-                           public ObjectWithInstanceID<CellFilterStub>
+                           public ObjectWithInstanceID<CellFilterStub>,
+                           public TSFExtended::ObjectWithVerbosity<CellFilterStub>
     {
     public:
       /** Empty ctor */
@@ -68,8 +70,8 @@ namespace SundanceCore
       /** */
       virtual RefCountPtr<CellFilterStub> makeNullRegion() const ;
 
-      /** */
-      virtual RefCountPtr<CellFilterStub> getRcp() {return rcp(this);}
+      /* */
+      GET_RCP(CellFilterStub);
 
       /** */
       bool isNullRegion() const ;

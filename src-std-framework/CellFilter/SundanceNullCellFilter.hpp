@@ -25,7 +25,7 @@ using namespace SundanceStdMesh::Internal;
      * independently of geometry, i.e., equations involving only
      * global parameters.
      **/
-    class NullCellFilter : public CellFilterBase 
+    class NullCellFilter : public NullCellFilterStub
     {
     public:
       /** */
@@ -37,18 +37,12 @@ using namespace SundanceStdMesh::Internal;
       /** */
       virtual XMLObject toXML() const ;
 
-      /** */
-      virtual string typeName() const {return "NullCellFilter";}
-
-      /** */
-      virtual bool lessThan(const CellFilterBase* other) const ;
-
       /** Return the dimension of the cells that will be identified
        * by this filter when acting on the given mesh */
       virtual int dimension(const Mesh& mesh) const ;
 
       /* */
-      GET_RCP(CellFilterBase);
+      GET_RCP(CellFilterStub);
     
     protected:
 

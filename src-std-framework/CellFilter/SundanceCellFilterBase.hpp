@@ -7,6 +7,7 @@
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
+#include "SundanceCellFilterStub.hpp"
 #include "SundanceCellSet.hpp"
 #include "TSFHandleable.hpp"
 #include "TSFPrintable.hpp"
@@ -14,9 +15,11 @@
 
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
   using namespace Teuchos;
   
   namespace Internal
@@ -38,12 +41,7 @@ using namespace SundanceStdMesh::Internal;
      * <li> typeName() -- returns the name of the subclass. Used in ordering.
      * </ul>
      */
-    class CellFilterBase : public TSFExtended::Handleable<CellFilterBase>,
-                           public TSFExtended::Printable,
-                           public TSFExtended::Describable,
-                           public Noncopyable,
-                           public TSFExtended::ObjectWithVerbosity<CellFilterBase>
-                           
+    class CellFilterBase : public CellFilterStub
     {
     public:
       /** Empty ctor */
@@ -60,28 +58,6 @@ using namespace SundanceStdMesh::Internal;
        * by this filter when acting on the given mesh */
       virtual int dimension(const Mesh& mesh) const = 0 ;
 
-      /** Write to XML */
-      virtual XMLObject toXML() const = 0 ;
-
-      /** Defines how this filter is */
-      virtual bool lessThan(const CellFilterBase* other) const = 0 ;
-
-      /** Return the name of the type. Used in ordering. */
-      virtual string typeName() const = 0 ;
-      
-      /** \name Printable interface */
-      //@{
-      /** Print to a stream */
-      virtual void print(ostream& os) const {os << toXML();}
-      //@}
-
-      /** \name Describable interface */
-      //@{
-      /** Print to a stream */
-      virtual string describe() const 
-      {return typeName();}
-      //@}
-    
     protected:
 
       /** */

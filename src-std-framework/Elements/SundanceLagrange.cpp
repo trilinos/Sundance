@@ -11,7 +11,7 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 Lagrange::Lagrange(int order)
-  : BasisFamilyBase(), order_(order)
+  : ScalarBasis(), order_(order)
 {;}
 
 XMLObject Lagrange::toXML() const 

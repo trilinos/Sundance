@@ -42,13 +42,13 @@ namespace SundanceStdFwk
       virtual XMLObject toXML() const ;
 
       /** Ordering */
-      virtual bool lessThan(const CellFilterBase* other) const ;
+      virtual bool lessThan(const CellFilterStub* other) const ;
 
       /** Return the name of the type. Used in ordering. */
       virtual string typeName() const {return "BinaryOpCellFilter";}
 
       /* */
-      GET_RCP(CellFilterBase);
+      GET_RCP(CellFilterStub);
     protected:
 
       /** Get my cells for the given mesh */

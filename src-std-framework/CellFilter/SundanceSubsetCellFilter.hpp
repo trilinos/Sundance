@@ -41,13 +41,10 @@ using namespace SundanceStdMesh::Internal;
       virtual XMLObject toXML() const ;
 
       /** */
-      virtual string typeName() const {return "SubsetCellFilter";}
-
-      /** */
-      virtual bool lessThan(const CellFilterBase* other) const ;
+      virtual bool lessThan(const CellFilterStub* other) const ;
 
       /* */
-      GET_RCP(CellFilterBase);
+      GET_RCP(CellFilterStub);
     
 
     protected:

@@ -7,12 +7,13 @@
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
+using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 CellFilterBase::CellFilterBase()
-  : cellSetCache_()
+  : CellFilterStub(), cellSetCache_()
 {;}
 
 CellSet CellFilterBase::getCells(const Mesh& mesh) const

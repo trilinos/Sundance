@@ -30,9 +30,8 @@ using namespace SundanceStdMesh::Internal;
     public:
       /** */
       HomogeneousDOFMap(const Mesh& mesh, 
-                        const CellSet& cells,
                         const BasisFamily& basis,
-                        const Array<int>& funcID);
+                        int numFuncs);
                         
 
 

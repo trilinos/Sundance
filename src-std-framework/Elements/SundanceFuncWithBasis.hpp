@@ -20,10 +20,14 @@ namespace SundanceStdFwk
     {
     public:
       /** */
-      FuncWithBasis(const BasisFamily& basis) ;
+      FuncWithBasis(const BasisFamily& basis) : basis_(tuple(basis)) {;}
+
+      /** */
+      FuncWithBasis(const Array<BasisFamily>& basis) :basis_(basis) {;}
 
       /** */
       const Array<BasisFamily>& basis() const {return basis_;}
+
     private:
       /** */
       Array<BasisFamily> basis_;

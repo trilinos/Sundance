@@ -6,7 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceBasisFamilyBase.hpp"
+#include "SundanceScalarBasis.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -19,8 +19,10 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
 
-  /** */
-  class Lagrange : public BasisFamilyBase 
+  /** 
+   * Lagrange basis 
+   */
+  class Lagrange : public ScalarBasis
   {
   public:
     /** */
@@ -36,9 +38,6 @@ namespace SundanceStdFwk
     virtual int order() const {return order_;}
 
     /** */
-    virtual RefCountPtr<BasisFamilyBase> getRcp() {return rcp(this);} 
-
-    /** */
     virtual void getLocalDOFs(const CellType& cellType,
                               Array<Array<Array<int> > >& dofs) const ;
 
@@ -47,6 +46,9 @@ namespace SundanceStdFwk
                          const Array<Point>& pts,
                          const MultiIndex& deriv,
                          Array<Array<double> >& result) const ;
+
+    /* Handleable boilerplate */
+    GET_RCP(BasisFamilyBase);
 
   private:
     int order_;
