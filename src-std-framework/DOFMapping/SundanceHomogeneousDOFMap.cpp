@@ -493,7 +493,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
           for (int f=0; f<nf; f++)
             {
               //              dofs[(c*nf + f)*nNodes+ptr] 
-              dofs[(f*nCells + n)*nNodes+ptr] 
+              dofs[(f*nCells + c)*nNodes+ptr] 
                 = dofs_[cellDim][cellLID[c]][f + nf*n];
             }
           //          dofs[c*nNodes + ptr] = tmpPtr2[funcID + nf*n];

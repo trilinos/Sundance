@@ -4,7 +4,8 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Stokes2D Coupled1D
+noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Stokes2D Coupled1D Coupled2D \
+RadDiff1D
 
 
 
@@ -87,6 +88,34 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 Coupled1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 Coupled1D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+Coupled2D_SOURCES = $(srcdir)/Coupled2D.cpp
+
+Coupled2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+Coupled2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+Coupled2D_LDADD = $(STD_FWK_LIBS) 
+
+
+RadDiff1D_SOURCES = $(srcdir)/RadDiff1D.cpp
+
+RadDiff1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+RadDiff1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+RadDiff1D_LDADD = $(STD_FWK_LIBS) 
 
 
 

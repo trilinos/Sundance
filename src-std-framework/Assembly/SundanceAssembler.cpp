@@ -327,6 +327,12 @@ void Assembler::assemble(LinearOperator<double>& A,
       Tabs tab0;
       SUNDANCE_OUT(verbosity() > VerbLow, 
                    tab0 << "doing matrix/vector assembly for rqc=" << rqc_[r]);
+      if (verbosity() > VerbHigh)
+        {
+          cerr << "expr is ";
+          cerr << evalExprs_[1][r]->toString();
+          cerr << endl;
+        }
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
@@ -359,6 +365,10 @@ void Assembler::assemble(LinearOperator<double>& A,
           SUNDANCE_OUT(verbosity() > VerbMedium,
                        tab1 << "doing work set " << workSetCounter
                        << " consisting of " << workSet->size() << " cells");
+          if (verbosity() > VerbHigh)
+            {
+              cerr << "cells are " << *workSet << endl;
+            }
           workSetCounter++;
 
           mediators_[r]->setCellBatch(workSet);
@@ -392,6 +402,8 @@ void Assembler::assemble(LinearOperator<double>& A,
 
               if (verbosity() > VerbHigh)
                 {
+                  cerr << endl << endl 
+                       << "--------------- doing integral group " << g << endl;
                   cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
                   cerr << "num unk DOFs = " << unkLocalDOFs->size() << endl;
                   cerr << "num entries = " << localValues->size() << endl;
@@ -545,6 +557,7 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
 
   static Array<int> skipRow;
 
+  int nCells = workSet.size();
   int rowsPerFunc = nTestNodes*workSet.size();
   int colsPerFunc = nUnkNodes*workSet.size();
 
@@ -554,6 +567,12 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
 
   if (verbosity() > VerbHigh)
     {
+      cerr << "isBC " << isBCRqc << endl;
+      cerr << "num test nodes = " << nTestNodes << endl;
+      cerr << "num unk nodes = " << nUnkNodes << endl;
+      cerr << "num rows per function = " << rowsPerFunc << endl;
+      cerr << "num cols per function = " << colsPerFunc << endl;
+      cerr << "num cells = " << nCells << endl;
       cerr << "testID = " << testID << endl;
       cerr << "unkID = " << unkID << endl;
     }
@@ -584,17 +603,20 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
             {
               cerr << "adding: " << endl;
               int k = 0;
-              for (int r=0; r<nTestNodes; r++)
+              for (int cell=0; cell<nCells; cell++)
                 {
-                  cerr << testIndices[testID[t]*rowsPerFunc+r]
-                       << ": {";
-                  for (int c=0; c<nUnkNodes; c++,k++)
+                  for (int r=0; r<nTestNodes; r++)
                     {
-                      cerr << "(" << unkIndices[unkID[u]*colsPerFunc+c]
-                           << ", " << localValues[k] << ")";
-                      if (c < (nUnkNodes-1)) cerr << ", ";
+                      cerr << testIndices[testID[t]*rowsPerFunc + cell*nTestNodes+r]
+                           << ": {";
+                      for (int c=0; c<nUnkNodes; c++,k++)
+                        {
+                          cerr << "(" << unkIndices[unkID[u]*colsPerFunc+cell*nUnkNodes+c]
+                               << ", " << localValues[k] << ")";
+                          if (c < (nUnkNodes-1)) cerr << ", ";
+                        }
+                      cerr << "}" << endl;
                     }
-                  cerr << "}" << endl;
                 }
             }
           mat->addElementBatch(rowsPerFunc,

@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(Coupled1D_SOURCES) $(NonlinAlgebraic_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Stokes2D_SOURCES)
+SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(NonlinAlgebraic_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -81,7 +81,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
 noinst_PROGRAMS = NonlinAlgebraic$(EXEEXT) Poisson1D$(EXEEXT) \
-	Poisson2D$(EXEEXT) Stokes2D$(EXEEXT) Coupled1D$(EXEEXT)
+	Poisson2D$(EXEEXT) Stokes2D$(EXEEXT) Coupled1D$(EXEEXT) \
+	Coupled2D$(EXEEXT) RadDiff1D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-std-framework/Problem
@@ -121,6 +122,8 @@ am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+am_Coupled2D_OBJECTS = Coupled2D-Coupled2D.$(OBJEXT)
+Coupled2D_OBJECTS = $(am_Coupled2D_OBJECTS)
 am_NonlinAlgebraic_OBJECTS =  \
 	NonlinAlgebraic-NonlinAlgebraic.$(OBJEXT)
 NonlinAlgebraic_OBJECTS = $(am_NonlinAlgebraic_OBJECTS)
@@ -128,25 +131,31 @@ am_Poisson1D_OBJECTS = Poisson1D-Poisson1D.$(OBJEXT)
 Poisson1D_OBJECTS = $(am_Poisson1D_OBJECTS)
 am_Poisson2D_OBJECTS = Poisson2D-Poisson2D.$(OBJEXT)
 Poisson2D_OBJECTS = $(am_Poisson2D_OBJECTS)
+am_RadDiff1D_OBJECTS = RadDiff1D-RadDiff1D.$(OBJEXT)
+RadDiff1D_OBJECTS = $(am_RadDiff1D_OBJECTS)
 am_Stokes2D_OBJECTS = Stokes2D-Stokes2D.$(OBJEXT)
 Stokes2D_OBJECTS = $(am_Stokes2D_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Coupled1D-Coupled1D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/Coupled2D-Coupled2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Poisson1D-Poisson1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Poisson2D-Poisson2D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/RadDiff1D-RadDiff1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Stokes2D-Stokes2D.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(Coupled1D_SOURCES) $(NonlinAlgebraic_SOURCES) \
-	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Stokes2D_SOURCES)
-DIST_SOURCES = $(Coupled1D_SOURCES) $(NonlinAlgebraic_SOURCES) \
-	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Stokes2D_SOURCES)
+SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) \
+	$(NonlinAlgebraic_SOURCES) $(Poisson1D_SOURCES) \
+	$(Poisson2D_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES)
+DIST_SOURCES = $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) \
+	$(NonlinAlgebraic_SOURCES) $(Poisson1D_SOURCES) \
+	$(Poisson2D_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -318,6 +327,24 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 Coupled1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Coupled1D_LDADD = $(STD_FWK_LIBS) 
+Coupled2D_SOURCES = $(srcdir)/Coupled2D.cpp
+Coupled2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+Coupled2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+Coupled2D_LDADD = $(STD_FWK_LIBS) 
+RadDiff1D_SOURCES = $(srcdir)/RadDiff1D.cpp
+RadDiff1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+RadDiff1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+RadDiff1D_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -410,7 +437,7 @@ STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
 #
 # ------------------------------------------------------------------------
 TRILINOS_INCLUDES = -I$(TRILINOS_DIR)/include
-TRILINOS_LIBS = -L$(TRILINOS_DIR)/lib -lTSFExtended -lTSFCore -lTSFCoreUtils \
+TRILINOS_LIBS = -L$(TRILINOS_DIR)/lib -lnoxtsf -lnox -lTSFExtended -lTSFCore -lTSFCoreUtils \
                 -lml -laztecoo -lepetra -lteuchos
 
 all: all-am
@@ -452,6 +479,9 @@ clean-noinstPROGRAMS:
 Coupled1D$(EXEEXT): $(Coupled1D_OBJECTS) $(Coupled1D_DEPENDENCIES) 
 	@rm -f Coupled1D$(EXEEXT)
 	$(CXXLINK) $(Coupled1D_LDFLAGS) $(Coupled1D_OBJECTS) $(Coupled1D_LDADD) $(LIBS)
+Coupled2D$(EXEEXT): $(Coupled2D_OBJECTS) $(Coupled2D_DEPENDENCIES) 
+	@rm -f Coupled2D$(EXEEXT)
+	$(CXXLINK) $(Coupled2D_LDFLAGS) $(Coupled2D_OBJECTS) $(Coupled2D_LDADD) $(LIBS)
 NonlinAlgebraic$(EXEEXT): $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_DEPENDENCIES) 
 	@rm -f NonlinAlgebraic$(EXEEXT)
 	$(CXXLINK) $(NonlinAlgebraic_LDFLAGS) $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_LDADD) $(LIBS)
@@ -461,6 +491,9 @@ Poisson1D$(EXEEXT): $(Poisson1D_OBJECTS) $(Poisson1D_DEPENDENCIES)
 Poisson2D$(EXEEXT): $(Poisson2D_OBJECTS) $(Poisson2D_DEPENDENCIES) 
 	@rm -f Poisson2D$(EXEEXT)
 	$(CXXLINK) $(Poisson2D_LDFLAGS) $(Poisson2D_OBJECTS) $(Poisson2D_LDADD) $(LIBS)
+RadDiff1D$(EXEEXT): $(RadDiff1D_OBJECTS) $(RadDiff1D_DEPENDENCIES) 
+	@rm -f RadDiff1D$(EXEEXT)
+	$(CXXLINK) $(RadDiff1D_LDFLAGS) $(RadDiff1D_OBJECTS) $(RadDiff1D_LDADD) $(LIBS)
 Stokes2D$(EXEEXT): $(Stokes2D_OBJECTS) $(Stokes2D_DEPENDENCIES) 
 	@rm -f Stokes2D$(EXEEXT)
 	$(CXXLINK) $(Stokes2D_LDFLAGS) $(Stokes2D_OBJECTS) $(Stokes2D_LDADD) $(LIBS)
@@ -472,9 +505,11 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Coupled1D-Coupled1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Coupled2D-Coupled2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson1D-Poisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson2D-Poisson2D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadDiff1D-RadDiff1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes2D-Stokes2D.Po@am__quote@
 
 .cpp.o:
@@ -508,6 +543,22 @@ Coupled1D-Coupled1D.obj: $(srcdir)/Coupled1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Coupled1D-Coupled1D.Po' tmpdepfile='$(DEPDIR)/Coupled1D-Coupled1D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Coupled1D_CXXFLAGS) $(CXXFLAGS) -c -o Coupled1D-Coupled1D.obj `if test -f '$(srcdir)/Coupled1D.cpp'; then $(CYGPATH_W) '$(srcdir)/Coupled1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Coupled1D.cpp'; fi`
+
+Coupled2D-Coupled2D.o: $(srcdir)/Coupled2D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Coupled2D_CXXFLAGS) $(CXXFLAGS) -MT Coupled2D-Coupled2D.o -MD -MP -MF "$(DEPDIR)/Coupled2D-Coupled2D.Tpo" -c -o Coupled2D-Coupled2D.o `test -f '$(srcdir)/Coupled2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Coupled2D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Coupled2D-Coupled2D.Tpo" "$(DEPDIR)/Coupled2D-Coupled2D.Po"; else rm -f "$(DEPDIR)/Coupled2D-Coupled2D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Coupled2D.cpp' object='Coupled2D-Coupled2D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Coupled2D-Coupled2D.Po' tmpdepfile='$(DEPDIR)/Coupled2D-Coupled2D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Coupled2D_CXXFLAGS) $(CXXFLAGS) -c -o Coupled2D-Coupled2D.o `test -f '$(srcdir)/Coupled2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Coupled2D.cpp
+
+Coupled2D-Coupled2D.obj: $(srcdir)/Coupled2D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Coupled2D_CXXFLAGS) $(CXXFLAGS) -MT Coupled2D-Coupled2D.obj -MD -MP -MF "$(DEPDIR)/Coupled2D-Coupled2D.Tpo" -c -o Coupled2D-Coupled2D.obj `if test -f '$(srcdir)/Coupled2D.cpp'; then $(CYGPATH_W) '$(srcdir)/Coupled2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Coupled2D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Coupled2D-Coupled2D.Tpo" "$(DEPDIR)/Coupled2D-Coupled2D.Po"; else rm -f "$(DEPDIR)/Coupled2D-Coupled2D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Coupled2D.cpp' object='Coupled2D-Coupled2D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Coupled2D-Coupled2D.Po' tmpdepfile='$(DEPDIR)/Coupled2D-Coupled2D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Coupled2D_CXXFLAGS) $(CXXFLAGS) -c -o Coupled2D-Coupled2D.obj `if test -f '$(srcdir)/Coupled2D.cpp'; then $(CYGPATH_W) '$(srcdir)/Coupled2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Coupled2D.cpp'; fi`
 
 NonlinAlgebraic-NonlinAlgebraic.o: $(srcdir)/NonlinAlgebraic.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NonlinAlgebraic-NonlinAlgebraic.o -MD -MP -MF "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" -c -o NonlinAlgebraic-NonlinAlgebraic.o `test -f '$(srcdir)/NonlinAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinAlgebraic.cpp; \
@@ -556,6 +607,22 @@ Poisson2D-Poisson2D.obj: $(srcdir)/Poisson2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Poisson2D-Poisson2D.Po' tmpdepfile='$(DEPDIR)/Poisson2D-Poisson2D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Poisson2D_CXXFLAGS) $(CXXFLAGS) -c -o Poisson2D-Poisson2D.obj `if test -f '$(srcdir)/Poisson2D.cpp'; then $(CYGPATH_W) '$(srcdir)/Poisson2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Poisson2D.cpp'; fi`
+
+RadDiff1D-RadDiff1D.o: $(srcdir)/RadDiff1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -MT RadDiff1D-RadDiff1D.o -MD -MP -MF "$(DEPDIR)/RadDiff1D-RadDiff1D.Tpo" -c -o RadDiff1D-RadDiff1D.o `test -f '$(srcdir)/RadDiff1D.cpp' || echo '$(srcdir)/'`$(srcdir)/RadDiff1D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/RadDiff1D-RadDiff1D.Tpo" "$(DEPDIR)/RadDiff1D-RadDiff1D.Po"; else rm -f "$(DEPDIR)/RadDiff1D-RadDiff1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RadDiff1D.cpp' object='RadDiff1D-RadDiff1D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/RadDiff1D-RadDiff1D.Po' tmpdepfile='$(DEPDIR)/RadDiff1D-RadDiff1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -c -o RadDiff1D-RadDiff1D.o `test -f '$(srcdir)/RadDiff1D.cpp' || echo '$(srcdir)/'`$(srcdir)/RadDiff1D.cpp
+
+RadDiff1D-RadDiff1D.obj: $(srcdir)/RadDiff1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -MT RadDiff1D-RadDiff1D.obj -MD -MP -MF "$(DEPDIR)/RadDiff1D-RadDiff1D.Tpo" -c -o RadDiff1D-RadDiff1D.obj `if test -f '$(srcdir)/RadDiff1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadDiff1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadDiff1D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/RadDiff1D-RadDiff1D.Tpo" "$(DEPDIR)/RadDiff1D-RadDiff1D.Po"; else rm -f "$(DEPDIR)/RadDiff1D-RadDiff1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RadDiff1D.cpp' object='RadDiff1D-RadDiff1D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/RadDiff1D-RadDiff1D.Po' tmpdepfile='$(DEPDIR)/RadDiff1D-RadDiff1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -c -o RadDiff1D-RadDiff1D.obj `if test -f '$(srcdir)/RadDiff1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadDiff1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadDiff1D.cpp'; fi`
 
 Stokes2D-Stokes2D.o: $(srcdir)/Stokes2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes2D_CXXFLAGS) $(CXXFLAGS) -MT Stokes2D-Stokes2D.o -MD -MP -MF "$(DEPDIR)/Stokes2D-Stokes2D.Tpo" -c -o Stokes2D-Stokes2D.o `test -f '$(srcdir)/Stokes2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes2D.cpp; \

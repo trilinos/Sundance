@@ -1,14 +1,22 @@
 #include "Sundance.hpp"
-#include "SundanceEvaluator.hpp"
 
 /** 
- * Solves the Stokes equation in 2D
+ * Solves the coupled equations
+ *
+ * u_xx = v
+ * v_xx = 1
+ * u(0) = u(1) = 0
+ * v(0) = v(1) = 0
+ *
+ * The solution is
+ * v(x) = -1/2 x (1-x)
+ * u(x) = 1/24 x (x^3 - 2 x^2 + 1)
  */
 
 bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
 bool bottomPointTest(const Point& x) {return fabs(x[1]) < 1.0e-10;}
 bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
-bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-10;}
+bool topPointTest(const Point& x) {return fabs(x[1]-2.0) < 1.0e-10;}
 
 int main(int argc, void** argv)
 {
@@ -22,23 +30,14 @@ int main(int argc, void** argv)
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
-      int nx = 20;
-      int ny = 20;
+       * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
+      int nx = 64;
+
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
-                                                         0.0, 1.0, ny, 1,
+                                                         0.0, 2.0, nx, 1,
                                                          meshType);
-
-
-
-
       Mesh mesh = mesher.getMesh();
-      double h = 1.0/((double) ny);
-
-//       FieldWriter wMesh = new VerboseFieldWriter();
-//       wMesh.addMesh(mesh);
-//       wMesh.write();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
@@ -56,50 +55,36 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr ux = new UnknownFunction(new Lagrange(1), "u_x");
-      Expr vx = new TestFunction(new Lagrange(1), "v_x");
-      Expr uy = new UnknownFunction(new Lagrange(1), "u_y");
-      Expr vy = new TestFunction(new Lagrange(1), "v_y");
-      Expr p = new UnknownFunction(new Lagrange(1), "p");
-      Expr q = new TestFunction(new Lagrange(1), "q");
+      Expr u = new UnknownFunction(new Lagrange(1), "u");
+      Expr v = new UnknownFunction(new Lagrange(1), "v");
+      Expr du = new TestFunction(new Lagrange(1), "du");
+      Expr dv = new TestFunction(new Lagrange(1), "dv");
 
-      /* Create differential operator and coordinate functions */
+      /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
-      Expr dy = new Derivative(1);
-      Expr grad = List(dx, dy);
       Expr x = new CoordExpr(0);
+      Expr dy = new Derivative(1);
       Expr y = new CoordExpr(1);
+      Expr grad = List(dx, dy);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad2 = new GaussianQuadrature(2);
-      QuadratureFamily quad4 = new GaussianQuadrature(4);
 
+      
       /* Define the weak form */
-      double beta = 0.025;
-      Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
-                          + (grad*vy)*(grad*uy) - p*(dx*vx+dy*vy)
-                          - (h*h*beta)*(grad*q)*(grad*p) - q*(dx*ux+dy*uy),
-                          quad2)
-        + Integral(left, -(1.0-x)*vx, quad2);
-        
+      Expr eqn = Integral(interior, 
+                          (grad*du)*(grad*u) + du*v + (grad*dv)*(grad*v) + x*dv, 
+                          quad2);
       /* Define the Dirichlet BC */
-      Expr uInflow = 0.5*(1.0-y*y);
-      Expr bc = /* EssentialBC(left, vx*(ux-uInflow) + vy*uy , quad4)
-                   + */ EssentialBC(top, vx*ux + vy*uy, quad2)
-        + EssentialBC(bottom, vx*ux + vy*uy, quad2);
+      Expr bc = EssentialBC(left, du*u + dv*v, quad2)
+        + EssentialBC(right, du*u + dv*v, quad2);
 
-
-   
-
-      Assembler::workSetSize() = 100;
-      FunctionalEvaluator::workSetSize() = 100;
       //      Assembler::classVerbosity() = VerbExtreme;
 
       /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
-                         List(ux, uy, p), vecType);
+      LinearProblem prob(mesh, eqn, bc, List(dv,du), List(v,u), vecType);
 
-
+      
 
       /* Create an Aztec solver */
       std::map<int,int> azOptions;
@@ -109,35 +94,61 @@ int main(int argc, void** argv)
       azOptions[AZ_precond] = AZ_dom_decomp;
       azOptions[AZ_subdomain_solve] = AZ_ilu;
       azOptions[AZ_graph_fill] = 1;
+      //azOptions[AZ_ml] = 1;
+      //azOptions[AZ_ml_levels] = 4;
       azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-6;
+      azParams[AZ_tol] = 1.0e-10;
 
       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
+
+
+      //      LinearOperator<double> A = prob.getOperator();
+
+      Assembler::workSetSize() = 100;
+
+
       Expr soln = prob.solve(solver);
 
+      Expr x2 = x*x;
+      Expr x3 = x*x2;
+
+      Expr uExact = (1.0/120.0)*x2*x3 - 1.0/36.0 * x3 + 7.0/360.0 * x;
+      Expr vExact = 1.0/6.0 * x * (x2 - 1.0);
+
+      Expr vErr = vExact - soln[0];
+      Expr uErr = uExact - soln[1];
+      
+      Expr vErrExpr = Integral(interior, 
+                              vErr*vErr,
+                              new GaussianQuadrature(6));
+      
+      Expr uErrExpr = Integral(interior, 
+                              uErr*uErr,
+                              new GaussianQuadrature(6));
+
+      FunctionalEvaluator vErrInt(mesh, vErrExpr);
+      FunctionalEvaluator uErrInt(mesh, uErrExpr);
+
+      double uErrorSq = uErrInt.evaluate();
+      cerr << "u error norm = " << sqrt(uErrorSq) << endl << endl;
+
+      double vErrorSq = vErrInt.evaluate();
+      cerr << "v error norm = " << sqrt(vErrorSq) << endl << endl;
+
+      
       /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Stokes2d");
+      FieldWriter w = new VTKWriter("Coupled2d");
       w.addMesh(mesh);
-      w.addField("ux", new ExprFieldWrapper(soln[0]));
-      w.addField("uy", new ExprFieldWrapper(soln[1]));
-      w.addField("p", new ExprFieldWrapper(soln[2]));
+      w.addField("v", new ExprFieldWrapper(soln[0]));
+      w.addField("u", new ExprFieldWrapper(soln[1]));
       w.write();
 
-      Expr uxErr = soln[0] - uInflow;
-      Expr errExpr = Integral(interior, 
-                              uxErr*uxErr,
-                              new GaussianQuadrature(4));
 
-      FunctionalEvaluator errInt(mesh, errExpr);
-
-      double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
   MPISession::finalize();
 }
