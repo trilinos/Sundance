@@ -94,7 +94,7 @@ using namespace SundanceUtils;
           {return &(detJ_[c]);}
 
           /** get the vector of determinant values */
-          const Array<double>& detJ() const {return detJ_;}
+          const Array<double>& detJ() const {if (!isFactored_) factor(); return detJ_;}
             
           /** 
            * Apply a cell's inverse Jacobian to (possibly) multiple rhs

@@ -5,10 +5,7 @@
 #define SUNDANCE_REFINTEGRAL_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceCellJacobianBatch.hpp"
-#include "SundanceQuadratureFamily.hpp"
-#include "SundanceBasisFamily.hpp"
-#include "Teuchos_Array.hpp"
+#include "SundanceElementIntegral.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -58,7 +55,7 @@ namespace SundanceStdFwk
      * 
      * Physical storage is as a 1D vector stored in colum-major order. 
      */
-    class RefIntegral : public TSFExtended::ObjectWithVerbosity<RefIntegral>
+    class RefIntegral : public ElementIntegral
     {
     public:
       /** Construct a reference one-form */
@@ -74,31 +71,21 @@ namespace SundanceStdFwk
                   int testDerivOrder,
                   const BasisFamily& unkBasis,
                   int unkDerivOrder);
-        
-
-      /** */
-      bool isTwoForm() const {return isTwoForm_;}
       
+      /** */
+      void print(ostream& os) const ;
+
       /** */
       void transformTwoForm(const CellJacobianBatch& J, 
                             const Array<int>& alpha,
                             const Array<int>& beta,
                             const Array<double>& coeff,
                             RefCountPtr<Array<double> >& A) const ;
-
-      
-      /** */
-      int nRefDerivTest() const {return nRefDerivTest_;}
-      
-      /** */
-      int nRefDerivUnk() const {return nRefDerivUnk_;}
-
-
       /** */
       inline double& value(int testDerivDir, int testNode,
                            int unkDerivDir, int unkNode)
-      {return W_[testNode + nNodesTest_*unkNode 
-                 + nNodes_*(unkDerivDir + nRefDerivUnk_*testDerivDir)];}
+      {return W_[testNode + nNodesTest()*unkNode 
+                 + nNodes()*(unkDerivDir + nRefDerivUnk()*testDerivDir)];}
 
       
 
@@ -106,66 +93,29 @@ namespace SundanceStdFwk
       inline const double& value(int testDerivDir, int testNode,
                                  int unkDerivDir, int unkNode) const 
       {
-        return W_[testNode + nNodesTest_*unkNode 
-                  + nNodes_*(unkDerivDir + nRefDerivUnk_*testDerivDir)];
+        return W_[testNode + nNodesTest()*unkNode 
+                  + nNodes()*(unkDerivDir + nRefDerivUnk()*testDerivDir)];
       }
       
       /** */
       inline double& value(int testDerivDir, int testNode)
-      {return W_[nNodesTest_*testDerivDir + testNode];}
+      {return W_[nNodesTest()*testDerivDir + testNode];}
 
 
       /** */
       inline const double& value(int testDerivDir, int testNode) const 
-      {return W_[nNodesTest_*testDerivDir + testNode];}
+      {return W_[nNodesTest()*testDerivDir + testNode];}
 
     protected:
-
-      /** */
-      static Array<double>& G() {static Array<double> rtn; return rtn;}
-
-      /** */
-      static Array<double>& T() {static Array<double> rtn; return rtn;}
-
-    private:
       /** */
       void createTwoFormTransformationMatrix(const CellJacobianBatch& J,  
                                              const Array<int>& alpha,
                                              const Array<int>& beta,
                                              const Array<double>& coeff) const;
       
-      /** */
-      static int ipow(int base, int power);
-
-      /** */
-      static double chopVal() {static double rtn=1.0e-14; return rtn;}
-
-      /** */
-      static double chop(const double& x) 
-      {
-        if (::fabs(x) > chopVal()) return x;
-        else return 0.0;
-      }
+    private:
 
       Array<double> W_;
-
-      int dim_;
-
-      int testDerivOrder_;
-
-      int nRefDerivTest_;
-
-      int nNodesTest_;
-
-      int unkDerivOrder_;
-
-      int nRefDerivUnk_;
-
-      int nNodesUnk_;
-
-      int nNodes_;
-
-      bool isTwoForm_;
       
     };
   }

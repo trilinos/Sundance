@@ -70,15 +70,15 @@ int main(int argc, void** argv)
       int pMax = 2;
       int dim=2;
 
-      verbosity<RefIntegral>() = VerbMedium;
+      verbosity<RefIntegral>() = VerbHigh;
 
       CellType cellType = TriangleCell;
 
-      Point a = Point(0.0, 0.0);
-      Point b = Point(1.0, 0.0);
-      Point c = Point(0.0, 1.0);
+      Point a = Point(1.0, 1.0);
+      Point b = Point(1.2, 1.6);
+      Point c = Point(0.8, 1.3);
       CellJacobianBatch JBatch;
-      JBatch.resize(1, 2, 2);
+      JBatch.resize(1, dim, dim);
       double* J = JBatch.jVals(0);
       J[0] = b[0] - a[0];
       J[1] = c[0] - a[0];
@@ -88,50 +88,31 @@ int main(int argc, void** argv)
       Array<double> coeff = tuple(1.0);
       RefCountPtr<Array<double> > A = rcp(new Array<double>());
           
-      for (int p=0; p<=pMax; p++)
+      for (int p=1; p<=pMax; p++)
         {
+          Tabs tab;
           BasisFamily P = new Lagrange(p);
-          for (int q=0; q<=pMax; q++)
+          RefIntegral ref(dim, cellType, P, 1, P, 1);
+          Array<int> alpha = tuple(0, 1);
+          Array<int> beta = tuple(0, 1);
+          Array<double> coeff = tuple(1.0, 1.0);
+          
+          ref.transformTwoForm(JBatch, 
+                               alpha, beta, coeff, A);
+          cerr << tab << "transformed element" << endl;
+          cerr << tab << "{";
+          for (int r=0; r<ref.nNodesTest(); r++)
             {
-              BasisFamily Q = new Lagrange(q);
-              for (int dp=0; dp<=1; dp++)
+              if (r!=0) cerr << ", ";
+              cerr << "{";
+              for (int c=0; c<ref.nNodesUnk(); c++)
                 {
-                  for (int dq=0; dq<=1; dq++)
-                    {
-                      RefIntegral ref(dim, cellType, P, dp, Q, dq);
-                      int numTestDir = 1;
-                      if (dp==1) numTestDir = dim;
-                      for (int t=0; t<numTestDir; t++)
-                        {
-                          Array<int> alpha = tuple(t);
-                          int numUnkDir = 1;
-                          if (dq==1) numUnkDir = dim;
-                          for (int u=0; u<numUnkDir; u++)
-                            {
-                              Tabs tab;
-                              Array<int> beta = tuple(u);
-                              ref.transformTwoForm(JBatch, 
-                                                   alpha, beta, coeff, A);
-                              cerr << tab << "transformed element" << endl;
-                              cerr << tab << "t=" << t << ", u=" << u << endl;
-                              cerr << tab << "{";
-                              for (int r=0; r<ref.nNodesTest(); r++)
-                                {
-                                  if (r!=0) cerr << ", ";
-                                  cerr << "{";
-                                  for (int c=0; c<ref.nNodesUnk(); c++)
-                                    {
-                                      if (c!=0) cerr << ", ";
-                                      cerr << (*A)[r + ref.nNodesTest()*c];
-                                    }
-                                  cerr << "}";
-                                }
-                              cerr << "}" << endl;
-                            }
-                        }
-                    }
+                  if (c!=0) cerr << ", ";
+                  cerr << (*A)[r + ref.nNodesTest()*c];
                 }
+              cerr << "}";
             }
+          cerr << "}" << endl;
         }
 
     }

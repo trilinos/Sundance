@@ -94,6 +94,7 @@ SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceBasicInserter.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceBasicIntegrator.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceInserterBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceInserterFactoryBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorBase.hpp \
@@ -108,6 +109,7 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceBasicInserter.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceBasicIntegrator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceInserterBase.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegratorBase.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp \

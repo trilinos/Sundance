@@ -4,7 +4,8 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = AssemblerTest1D AssemblerTest2D RefIntegral TransformedIntegral2D
+noinst_PROGRAMS = AssemblerTest1D AssemblerTest2D RefIntegral \
+                  TransformedIntegral2D Laplacian2D
 
 
 AssemblerTest1D_SOURCES = $(srcdir)/AssemblerTest1D.cpp
@@ -61,6 +62,20 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 TransformedIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 TransformedIntegral2D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+Laplacian2D_SOURCES = $(srcdir)/Laplacian2D.cpp
+
+Laplacian2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+Laplacian2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+Laplacian2D_LDADD = $(STD_FWK_LIBS) 
 
 
 
