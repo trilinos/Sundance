@@ -83,7 +83,7 @@ EquationSet::EquationSet(const Expr& eqns,
         = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
       TEST_FOR_EXCEPTION(u==0, RuntimeError, 
                          "EquationSet ctor input unk function "
-                         << tests[i] 
+                         << unks[i] 
                          << " does not appear to be a unk function");
       int fid = u->funcID();
       unkIDToReducedIDMap_.put(fid, i);

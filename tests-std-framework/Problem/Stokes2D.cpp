@@ -2,13 +2,13 @@
 #include "SundanceEvaluator.hpp"
 
 /** 
- * Solves the Poisson equation in 2D
+ * Solves the Stokes equation in 2D
  */
 
 bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
 bool bottomPointTest(const Point& x) {return fabs(x[1]) < 1.0e-10;}
 bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
-bool topPointTest(const Point& x) {return fabs(x[1]-2.0) < 1.0e-10;}
+bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-10;}
 
 int main(int argc, void** argv)
 {
@@ -23,11 +23,13 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
+      int nElems = 2;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 2*np, np,
-                                                         0.0, 2.0, 2, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nElems*np, np,
+                                                         0.0, 1.0, nElems, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
+      double h = 1.0/((double) nElems);
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
@@ -45,8 +47,12 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(2), "u");
-      Expr v = new TestFunction(new Lagrange(2), "v");
+      Expr ux = new UnknownFunction(new Lagrange(1), "u_x");
+      Expr vx = new TestFunction(new Lagrange(1), "v_x");
+      Expr uy = new UnknownFunction(new Lagrange(1), "u_y");
+      Expr vy = new TestFunction(new Lagrange(1), "v_y");
+      Expr p = new UnknownFunction(new Lagrange(1), "p");
+      Expr q = new TestFunction(new Lagrange(1), "q");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
@@ -59,36 +65,35 @@ int main(int argc, void** argv)
       QuadratureFamily quad2 = new GaussianQuadrature(2);
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
-      //EvaluatableExpr::classVerbosity() = VerbExtreme;
-      //GrouperBase::classVerbosity() = VerbExtreme;
-      Assembler::classVerbosity() = VerbLow;
-      //Evaluator::classVerbosity() = VerbHigh;
-      
       /* Define the weak form */
-      //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-      Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2)
-        + Integral(top, -v*(1.0/3.0), quad2) 
-        + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);
-      //        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
+      double beta = 0.1;
+      Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
+                          + (grad*vy)*(grad*uy) - p*(dx*vx+dy*vy)
+                          + h*h*beta*(grad*q)*(grad*p) - q*(dx*ux+dy*uy),
+                          quad2);
+        
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, v*(u-0.5*x*x), quad4);
+      Expr uInflow = 0.5*(1.0-y*y);
+      Expr bc = EssentialBC(left, vx*(ux - uInflow) + vy*uy, quad2)
+        + EssentialBC(top, vx*ux + vy*uy, quad2)
+        + EssentialBC(bottom, vx*ux + vy*uy, quad2);
 
-      //Assembler::workSetSize() = 1;
+      Assembler::workSetSize() = 1;
       //FunctionalEvaluator::workSetSize() = 1;
 
+      Assembler::classVerbosity() = VerbExtreme;
       /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+      LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
+                         List(ux, uy, p), vecType);
 
       /* Create an Aztec solver */
       std::map<int,int> azOptions;
       std::map<int,double> azParams;
 
       azOptions[AZ_solver] = AZ_gmres;
-      //       azOptions[AZ_precond] = AZ_dom_decomp;
-//       azOptions[AZ_subdomain_solve] = AZ_icc;
-//       azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_ml] = 1;
-      azOptions[AZ_ml_levels] = 4;
+      azOptions[AZ_precond] = AZ_dom_decomp;
+      azOptions[AZ_subdomain_solve] = AZ_ilu;
+      azOptions[AZ_graph_fill] = 1;
       azParams[AZ_max_iter] = 1000;
       azParams[AZ_tol] = 1.0e-10;
 
@@ -99,30 +104,23 @@ int main(int argc, void** argv)
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Poisson2d");
       w.addMesh(mesh);
-      w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.addField("ux", new ExprFieldWrapper(soln[0]));
+      w.addField("uy", new ExprFieldWrapper(soln[1]));
+      w.addField("p", new ExprFieldWrapper(soln[2]));
       w.write();
 
-      Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
+      Expr exactUx = uInflow;
 
-      Expr err = exactSoln - soln;
+      Expr err = exactUx - soln[0];
       Expr errExpr = Integral(interior, 
                               err*err,
                               quad4);
 
-      Expr derivErr = dx*(exactSoln-soln);
-      Expr derivErrExpr = Integral(interior, 
-                                   derivErr*derivErr, 
-                                   quad2);
 
       FunctionalEvaluator errInt(mesh, errExpr);
-      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
-
-      double derivErrorSq = derivErrInt.evaluate();
-      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
-
     }
 	catch(exception& e)
 		{

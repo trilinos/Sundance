@@ -412,10 +412,19 @@ void Expr::append(const Expr& expr)
     }
   else
     {
-      Array<Expr> e(2);
-      e[0] = *this;
-      e[1] = expr;
-      ptr() = rcp(new ListExpr(e));
+      if (ptr().get()==0)
+        {
+          Array<Expr> e(1);
+          e[0] = expr;
+          ptr() = rcp(new ListExpr(e));
+        }
+      else
+        {
+          Array<Expr> e(2);
+          e[0] = *this;
+          e[1] = expr;
+          ptr() = rcp(new ListExpr(e));
+        }
     }
 }
 

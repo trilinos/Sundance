@@ -215,10 +215,13 @@ void DOFMapBuilder::markBCRows()
       int nTestNodes;
       /* find the functions that appear in BCs on this region */
       const Set<int>& bcFuncs = eqn_->bcTestsOnRegion(r);
+      Array<int> bcFuncID = bcFuncs.elements();
+      for (int f=0; f<bcFuncID.size(); f++) 
+        {
+          bcFuncID[f] = eqn_->reducedTestID(bcFuncID[f]);
+        }
 
-      int ffff = 0 ;  // FIX THIS!!!!!!!!!
-
-      rowMap_->getDOFsForCellBatch(dim, cellLID, ffff, dofs, nTestNodes);
+      rowMap_->getDOFsForCellBatch(dim, cellLID, bcFuncID, dofs, nTestNodes);
       int offset = rowMap_->lowestLocalDOF();
       for (int n=0; n<dofs.size(); n++) (*isBCRow_)[dofs[n]-offset]=true;
     }

@@ -4,7 +4,7 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D
+noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Stokes2D
 
 
 
@@ -52,6 +52,24 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 Poisson2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 Poisson2D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+
+
+Stokes2D_SOURCES = $(srcdir)/Stokes2D.cpp
+
+Stokes2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+Stokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+Stokes2D_LDADD = $(STD_FWK_LIBS) 
 
 
 

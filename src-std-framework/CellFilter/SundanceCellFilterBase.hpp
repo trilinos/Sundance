@@ -65,7 +65,8 @@ namespace SundanceStdFwk
 
     private:
       /** cache of previously computed cell sets */
-      mutable Map<int, CellSet> cellSetCache_;
+      mutable CellSet cellSetCache_;
+      //      mutable Map<int, CellSet> cellSetCache_;
 
     };
   }

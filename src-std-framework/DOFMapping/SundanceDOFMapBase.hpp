@@ -44,8 +44,17 @@ using namespace SundanceStdMesh::Internal;
                                   Array<int>& dofs) const = 0 ;
 
       /** */
+      virtual void getSingleFuncDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
+                                                 int funcID,
+                                                 Array<int>& dofs, int& nNodes) const = 0 ;
+
+      /** */
       virtual void getDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
-                                       int funcID,
+                                       Array<int>& dofs, int& nNodes) const = 0 ;
+
+      /** */
+      virtual void getDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
+                                       const Array<int>& funcID,
                                        Array<int>& dofs, int& nNodes) const = 0 ;
 
       /** */

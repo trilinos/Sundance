@@ -9,6 +9,8 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceZeroExpr.hpp"
+#include "SundanceExpr.hpp"
+#include "SundanceListExpr.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -38,9 +40,22 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     A_(),
     rhs_()
 {
-  Expr u0 = new ZeroExpr();
+  Expr u = unk.flatten();
+  Expr v = test.flatten();
+  cerr << "unk  = " << u << endl;
+  cerr << "unk size = " << u.size() << endl;
+  Array<Expr> zero(u.size());
+  for (int i=0; i<u.size(); i++) 
+    {
+      Expr z = new ZeroExpr();
+      zero[i] = z;
+    }
+
+  Expr u0 = new ListExpr(zero);
+  cerr << "zero = " << u0 << endl;
+  
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, test, unk, u0, 
+    = rcp(new EquationSet(eqn, bc, v, u, u0, 
                           rcp(new BruteForceEvaluatorFactory())));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, vecType));

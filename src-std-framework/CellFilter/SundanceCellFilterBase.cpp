@@ -18,18 +18,28 @@ CellFilterBase::CellFilterBase()
 
 CellSet CellFilterBase::getCells(const Mesh& mesh) const
 {
-  if (!cellSetCache_.containsKey(mesh.id()))
+  if (cellSetCache_.ptr().get()==0)
     {
-      SUNDANCE_OUT(verbosity() > VerbMedium,
-                   "cell set " << toXML() << " is computing cell cache");
-      cellSetCache_.put(mesh.id(), internalGetCells(mesh));
+      cellSetCache_ = internalGetCells(mesh);
     }
-  else
-    {
-      SUNDANCE_OUT(verbosity() > VerbMedium,
-                   "cell set " << toXML() << " is reusing cell cache");
-    }
-  return cellSetCache_.get(mesh.id());
+  return cellSetCache_;
+//   print(cerr);
+
+  // if (!cellSetCache_.containsKey(mesh.id()))
+//     {
+//       SUNDANCE_OUT(verbosity() > VerbMedium,
+//                    "cell set " << toXML() << " is computing cell cache");
+
+//       CellSet cells = internalGetCells(mesh);
+//       cellSetCache_.put(mesh.id(), cells);
+//     }
+//   else
+//     {
+//       SUNDANCE_OUT(verbosity() > VerbMedium,
+//                    "cell set " << toXML() << " is reusing cell cache");
+//     }
+//  return cellSetCache_.get(mesh.id());
+
 }
 
 
