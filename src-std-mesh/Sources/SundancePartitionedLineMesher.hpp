@@ -21,7 +21,10 @@ using namespace SundanceUtils;
   class PartitionedLineMesher : public MeshSourceBase
   {
   public:
-    /** */
+    /** 
+     * Set up a mesher for the interval \f$\left[a_x, b_x\right]\f$
+     * with \f$n_x\f$ elements per processor. 
+     */
     PartitionedLineMesher(double ax, double bx, int nx,
                           const MeshType& meshType,
                           const MPIComm& comm = MPIComm::world())

@@ -94,7 +94,8 @@ Needs to be written.
 \subsection df_create Direct creation of discrete functions
 
 With these methods we explicitly set the values of the vector
-underlying the discrete function.
+underlying the discrete function. There are two direct creation methods,
+\ref df_const and \ref df_vec. 
 
 \subsubsection df_const Initialization to a constant value
 

@@ -10,7 +10,6 @@
 #include "SundanceSideCellFilter.hpp"
 #include "SundanceBoundaryCellPredicate.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
@@ -18,28 +17,28 @@ namespace SundanceStdFwk
   using namespace SundanceStdMesh;
   using namespace SundanceStdMesh::Internal;
   using namespace TSFExtended;
-  namespace Internal 
+  using namespace Teuchos;
+
+  /** 
+   * BoundaryCellFilter identifies all cells of dimension \f$D-1\f$
+   on the boundary. The boundary cells can be identified topologically
+   as those cells of \f$D-1\f$ having only one cofacet.
+  */
+  class BoundaryCellFilter : public SubsetCellFilter
   {
-    using namespace Teuchos;
+  public:
+    /** */
+    BoundaryCellFilter() : SubsetCellFilter(new SideCellFilter(),
+                                            new BoundaryCellPredicate()){;}
 
     /** */
-    class BoundaryCellFilter : public SubsetCellFilter
-    {
-    public:
-      /** */
-      BoundaryCellFilter() : SubsetCellFilter(new SideCellFilter(),
-                                              new BoundaryCellPredicate()){;}
+    virtual ~BoundaryCellFilter(){;}
 
-      /** */
-      virtual ~BoundaryCellFilter(){;}
+    /* */
+    GET_RCP(CellFilterStub);
 
-      /* */
-      GET_RCP(CellFilterStub);
-
-    };
-  }
+  };
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

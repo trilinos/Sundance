@@ -25,7 +25,15 @@ using namespace SundanceUtils;
   class PartitionedRectangleMesher : public MeshSourceBase
   {
   public:
-    /** */
+    /** 
+     * Set up meshing of the rectangle 
+     * \f$ \left[a_x, b_x\right] \otimes \left[a_y, b_y\right] \f$
+     * with \f$ n_x \otimes n_y \f$ elements per processor. The 
+     * rectangle is partitioned among processors, with \f$np_x\f$
+     * equal sized 
+     * subdomains in the \f$x\f$ direction and \f$np_y\f$ in the \f$y\f$
+     * direction.
+     */
     PartitionedRectangleMesher(double ax, double bx, int nx, int npx,
                                double ay, double by, int ny, int npy,
                                const MeshType& meshType,

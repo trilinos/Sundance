@@ -17,13 +17,18 @@ and then read the results into Sundance.
 A mesh is represented in Sundance as a Mesh object. A Mesh is
 injected into a Sundance simulation by means of an 
 object called a MeshSource. MeshSource is an abstract, extensible interface
-for mesh readers and mesh generators. An existing mesh can be transformed
+for mesh readers and mesh generators; several subtypes (listed below)
+have been implemented. Once created, an 
+existing mesh can be transformed
 into another by means of a MeshTransformation object. 
 
+In the following example, we use a MeshSource to read an Exodus file
+and produce a Mesh
+\code
+MeshSource reader = new ExodusNetCDFMeshReader("wing.ncdf");
+Mesh mesh = reader.getMesh();
+\endcode
 
-
-
-\subsection mesh_par Parallel Meshes
 
 
 \section mesh_reading Mesh Readers
@@ -31,7 +36,8 @@ into another by means of a MeshTransformation object.
 Currently, the following MeshReader subtypes exist
 <ul>
 <li> ExodusNetCDFMeshReader reads Exodus files rendered into NetCDF format.
-<b> Note: </b> not all Exodus features are supported. 
+<b> Note: </b> not all Exodus features are supported. Currently, we
+support simplicial meshes only and node and side set definitions. 
 <li> TriangleMeshReader reads meshes in Shewchuk's 
 <A HREF="http://www-2.cs.cmu.edu/~quake/triangle.html"> Triangle </A> format,
 with extensions for distributed meshes.
@@ -39,10 +45,18 @@ with extensions for distributed meshes.
 
 \section mesh_gen Mesh Generators
 
+The internal mesh generation capability of Sundance is used primarily
+for generating test problems and is limited to lines
+and rectangles. 
 <ul>
-<li> PartitionedLineMesher meshes lines
-<li> PartitionedRectangleMesher meshes rectangles
+<li> PartitionedLineMesher meshes lines in 1D problems. 
+<li> PartitionedRectangleMesher meshes rectangular domains in 2D. 
 </ul>
+Both of these MeshSource subtypes produce structured, uniform meshes
+with a number of elements controlled by constructor arguments.
+Both can produce distributed meshes when Sundance is run in parallel.
+
+Simple 3D regions can be generated from these by extrusion.
 
 \section mesh_trans Mesh Transformations
 
@@ -51,20 +65,27 @@ with extensions for distributed meshes.
 </ul>
 
 
-\section mesh_type Mesh Types
+\section mesh_par Distributed Meshes
 
-A simulation developer need not be concerned with mesh types, and can 
-safely skip to the next section. 
+Sundance is a fully parallel code. To do a parallel run, however, one
+must have a distributed mesh. 
+A distributed mesh can be created in one of two ways: by building it
+distributed from the start, or by partitioning an existing mesh. 
 
-The <i> internal </i> mesh representation used by Sundance is designed
-to be flexible and extensible, allowing new mesh technology to be 
-incorporated as it is developed. The choice of mesh representation
-is done by selecting a Mesh sources create meshes through an
-abstract creation interface, so that in principle any mesh type
-can be created by any mesh source.
-Currently, the only mesh representation implemented is
-BasicSimplicialMesh, which can represent meshes comprised of
-lines, triangles, and tetrahedra in 1, 2, and 3 dimensions, respectively.
+\subsection mesh_build_dist Building Distributed Meshes 
+
+As noted above, Sundance's mesh generation capability is limited
+to lines in 1D and rectangular domains in 2D; however, both 
+the PartitionedLineMesher and PartitionedRectangleMesher are able
+to produce distributed meshes. 
+
+\subsection mesh_split Partitioning Meshes
+
+Sundance has no built-in capability for mesh partitioning. As a convenience, 
+we supply several Python scripts for partitioning Triangle and Exodus files,
+and writing the results to a partitioned set of Triangle files. A
+distributed mesh created in this way can then be read in with a
+TriangleMeshReader.
 
 
 

@@ -4,7 +4,9 @@
 
 using SundanceCore::List;
 /** 
- * Solves the Navier-Stokes equation in 2D
+ * \example PressureStabilizedNS2D.cpp
+ * 
+ * Solves the Navier-Stokes equation in 2D using pressure stabilization.
  */
 
 bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}

@@ -252,7 +252,7 @@ HIDE_SCOPE_NAMES       = NO
 # will put a list of the files that are included by a file in the documentation 
 # of that file.
 
-SHOW_INCLUDE_FILES     = YES
+SHOW_INCLUDE_FILES     = NO
 
 # If the INLINE_INFO tag is set to YES (the default) then a tag [inline] 
 # is inserted in the documentation for inline members.
@@ -309,7 +309,7 @@ MAX_INITIALIZER_LINES  = 30
 # at the bottom of the documentation of classes and structs. If set to YES the 
 # list will mention the files that were used to generate the documentation.
 
-SHOW_USED_FILES        = YES
+SHOW_USED_FILES        = NO
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -371,6 +371,10 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../doc/Doxygen/LinearProblem.dox \
                          ../doc/Doxygen/NonlinearProblem.dox \
                          ../doc/Doxygen/FAQ.dox \
+                         ../doc/Doxygen/BC.dox \
+                         ../doc/Doxygen/Basics.dox \
+                         ../doc/Doxygen/References.dox \
+                         ../doc/Doxygen/Equations.dox \
                          ../src-utils/Utilities \
                          ../src-core/Evaluation \
                          ../src-core/FrameworkInterface \
@@ -665,13 +669,13 @@ MAKEINDEX_CMD_NAME     = makeindex
 # LaTeX documents. This may be useful for small projects and may help to 
 # save some trees in general.
 
-COMPACT_LATEX          = NO
+COMPACT_LATEX          = YES
 
 # The PAPER_TYPE tag can be used to set the paper type that is used 
 # by the printer. Possible values are: a4, a4wide, letter, legal and 
 # executive. If left blank a4wide will be used.
 
-PAPER_TYPE             = a4wide
+PAPER_TYPE             = letter
 
 # The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX 
 # packages that should be included in the LaTeX output.
@@ -690,13 +694,13 @@ LATEX_HEADER           =
 # contain links (just like the HTML output) instead of page references 
 # This makes the output suitable for online browsing using a pdf viewer.
 
-PDF_HYPERLINKS         = NO
+PDF_HYPERLINKS         = YES
 
 # If the USE_PDFLATEX tag is set to YES, pdflatex will be used instead of 
 # plain latex in the generated Makefile. Set this option to YES to get a 
 # higher quality PDF documentation.
 
-USE_PDFLATEX           = NO
+USE_PDFLATEX           = YES
 
 # If the LATEX_BATCHMODE tag is set to YES, doxygen will add the \\batchmode. 
 # command to the generated LaTeX files. This will instruct LaTeX to keep 
@@ -709,7 +713,7 @@ LATEX_BATCHMODE        = NO
 # include the index chapters (such as File Index, Compound Index, etc.) 
 # in the output.
 
-LATEX_HIDE_INDICES     = NO
+LATEX_HIDE_INDICES     = YES
 
 #---------------------------------------------------------------------------
 # configuration options related to the RTF output
