@@ -16,6 +16,14 @@ using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
+
+static Time& getLocalValsTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("DF getLocalValues()"); 
+  return *rtn;
+}
+
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, const string& name)
   : DiscreteFunctionStub(name, space.nFunc()), 
     FuncWithBasis(space.basis()),
@@ -48,13 +56,17 @@ void DiscreteFunction::getLocalValues(int cellDim,
                         const Array<int>& cellLID,
                         Array<double>& localValues) const 
 {
+  TimeMonitor timer(getLocalValsTimer());
   const RefCountPtr<DOFMapBase>& map = space_.map();
-  Array<int> dofs;
+  static Array<int> dofs;
+  static Array<int> indices;
   int nNodes;
   map->getDOFsForCellBatch(cellDim, cellLID, dofs, nNodes);
   int nFunc = space_.nFunc();
   int nCells = cellLID.size();
   localValues.resize(nFunc*cellLID.size()*nNodes);
+  indices.resize(dofs.size());
+  
 
   for (int c=0; c<cellLID.size(); c++)
     {
@@ -62,11 +74,12 @@ void DiscreteFunction::getLocalValues(int cellDim,
         {
           for (int n=0; n<nNodes; n++)
             {
-              localValues[c*nFunc*nNodes + nFunc*n + f] 
-                = vector_.getElement(dofs[(f*nCells + c)*nNodes + n]);
+              indices[c*nFunc*nNodes + nFunc*n + f]
+                = dofs[(f*nCells + c)*nNodes + n];
             }
         }
     }
+  vector_.getElements(&(indices[0]), indices.size(), localValues);
 }
 
 // DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 

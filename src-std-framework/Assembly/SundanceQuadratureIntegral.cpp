@@ -464,6 +464,7 @@ void QuadratureIntegral
                                     const Array<int>& beta) const 
 {
   TimeMonitor timer(quadTransCreationTimer());
+
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 
@@ -480,7 +481,7 @@ void QuadratureIntegral
                    Tabs() << "both derivs are first order");
       for (int c=0; c<J.numCells(); c++)
         {
-          Array<double> invJ;
+          static Array<double> invJ;
           J.getInvJ(c, invJ);
           double detJ = fabs(J.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++)
@@ -505,7 +506,7 @@ void QuadratureIntegral
 
       for (int c=0; c<J.numCells(); c++)
         {
-          Array<double> invJ;
+          static Array<double> invJ;
           J.getInvJ(c, invJ);
           double detJ = fabs(J.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++)
@@ -525,7 +526,7 @@ void QuadratureIntegral
 
       for (int c=0; c<J.numCells(); c++)
         {
-          Array<double> invJ;
+          static Array<double> invJ;
           J.getInvJ(c, invJ);
           double detJ = fabs(J.detJ()[c]);
           for (int delta=0; delta<dim(); delta++)
@@ -548,6 +549,7 @@ void QuadratureIntegral
                                     const Array<int>& alpha) const 
 {
   TimeMonitor timer(quadTransCreationTimer());
+
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 

@@ -81,15 +81,14 @@ AM_INIT_AUTOMAKE(Sundance, 1.1)
 
 AC_PREREQ(2.52)
 
-# Specify revision number of configure.ac that was used to generate
-# configure.
+# ------------------------------------------------------------------------
+# Check to see if MPI enabled and if any special configuration done
+# ------------------------------------------------------------------------
 
-dnl Commented out this line for now because it causes headaches in
-dnl committing.
-dnl AC_REVISION($Revision$)
+TAC_ARG_CONFIG_MPI
 
 # ------------------------------------------------------------------------
-# Checks for programs
+# Checks for compilers
 # ------------------------------------------------------------------------
 
 AC_PROG_CC(cc gcc)
@@ -98,42 +97,6 @@ BASE_CXX=${CXX}
 AC_PROG_F77(f77 g77 f90 xlf90)
 AC_PROG_RANLIB
 
-# ------------------------------------------------------------------------
-# Check to see if MPI enabled and if any special configuration done
-# ------------------------------------------------------------------------
-
-TAC_ARG_CONFIG_MPI
-
-# ------------------------------------------------------------------------
-# Check for Chaco
-# ------------------------------------------------------------------------
-
-TAC_ARG_CONFIG_CHACO
-
-# ------------------------------------------------------------------------
-# Check for EXPAT
-# ------------------------------------------------------------------------
-
-TAC_ARG_CONFIG_EXPAT
-
-
-# ------------------------------------------------------------------------
-# Checks for --enable-debug, --enable-optimize, --enable-profile, --enable-purify
-# Changes flags and compiler names accordingly
-# ------------------------------------------------------------------------
-
-TAC_ARG_ENABLE_COMPILER_OPTIONS
-
-# ------------------------------------------------------------------------
-# Checks for extra flags
-# ------------------------------------------------------------------------
-# Check if --with-flags present, prepend any specs to FLAGS
-
-TAC_ARG_WITH_FLAGS(ccflags, CCFLAGS)
-TAC_ARG_WITH_FLAGS(cxxflags, CXXFLAGS)
-TAC_ARG_WITH_FLAGS(cflags, CFLAGS)
-TAC_ARG_WITH_FLAGS(fflags, FFLAGS)
-TAC_ARG_WITH_FLAGS(ldflags, LDFLAGS)
 
 # ------------------------------------------------------------------------
 # Alternate archiver
@@ -142,71 +105,16 @@ TAC_ARG_WITH_FLAGS(ldflags, LDFLAGS)
 TAC_ARG_WITH_AR
 
 # ------------------------------------------------------------------------
-# MPI link check
-# ------------------------------------------------------------------------
-TAC_ARG_CHECK_MPI
-
-# ------------------------------------------------------------------------
-# Special check for case of running on TFLOP
-# ------------------------------------------------------------------------
-AC_MSG_CHECKING([if host is TFLOP (and therefore needs special TFLOP define statement)])
-if test "X${host}" = "Xtflop"; then
-  AC_MSG_RESULT(yes)
-  AC_DEFINE(TFLOP,,[define if compiling for ASCI Red, aka TFLOP])
-else
-  AC_MSG_RESULT(no)
-fi
-
-# ------------------------------------------------------------------------
-# Checks for header files
+# Check for Chaco
 # ------------------------------------------------------------------------
 
-AC_CHECK_HEADERS([cstdlib stdlib.h cstdio stdio.h cassert assert.h],,,)
-AC_CHECK_HEADERS([cmath math.h iostream iostream.h string string.h],,,)
-AC_CHECK_HEADERS([sstream strstream sstream.h strstream.h],,,)
-
-if test "X$ac_cv_header_cstdlib" != "Xyes" && test "X$ac_cv_header_stdlib_h" != "Xyes"; then
-  AC_MSG_ERROR([[Cannot find cstdlib or stdlib.h.  Ifpack requires at least one or the other.]])
-fi
-
-if test "X$ac_cv_header_cstdio" != "Xyes" && test "X$ac_cv_header_stdio_h" != "Xyes"; then
-  AC_MSG_ERROR([[Cannot find cstdio or stdio.h.  Ifpack requires at least one or the other.]])
-fi
-
-if test "X$ac_cv_header_cassert" != "Xyes" && test "X$ac_cv_header_assert_h" != "Xyes"; then
-  AC_MSG_ERROR([[Cannot find cassert or assert.h.  Ifpack requires at least one or the other.]])
-fi
-
-if test "X$ac_cv_header_string" != "Xyes" && test "X$ac_cv_header_string_h" != "Xyes"; then
-  AC_MSG_ERROR([[Cannot find string or string.h.  Ifpack requires at least one or the other.]])
-fi
-
-if test "X$ac_cv_header_iostream" != "Xyes" && test "X$ac_cv_header_iostream_h" != "Xyes"; then
-  AC_MSG_ERROR([[Cannot find iostream or iostream.h.  Ifpack requires at least one or the other.]])
-fi
-
-if test "X$ac_cv_header_cmath" != "Xyes" && test "X$ac_cv_header_math_h" != "Xyes"; then
-  AC_MSG_ERROR([[Cannot find cmath or math.h.  Ifpack requires at least one or the other.]])
-fi
-
-if test "X$ac_cv_header_sstream" != "Xyes" && test "X$ac_cv_header_strstream" != "Xyes" && test "X$ac_cv_header_sstream" != "Xyes" && test "X$ac_cv_header_strstream" != "Xyes"; then
-  AC_MSG_ERROR([[Cannot find sstream, strstream, sstream.h, or strstream.h.  Ifpack requires at least one of these.]])
-fi
+TAC_ARG_CONFIG_CHACO
 
 
 # ------------------------------------------------------------------------
-# Do we want to refer to the Trilinos source directory for Trilinos headers?
+# Check for Trilinos
 # ------------------------------------------------------------------------
 
-AC_ARG_WITH(trilinos-sources,
-AC_HELP_STRING([--with-trilinos-sources],[refer to header files in Trilinos source directory, not Trilinos install directory]),
-[
-USE_TRILINOS_SOURCES=yes
-TRILINOS_DIR=${withval}
-AC_MSG_CHECKING(Trilinos source directory)
-AC_MSG_RESULT([${TRILINOS_DIR}])
-]
-)
 
 AC_ARG_WITH(trilinos,
 AC_HELP_STRING([--with-trilinos],[root directory of Trilinos installation]),
@@ -217,108 +125,19 @@ AC_MSG_RESULT([${TRILINOS_DIR}])
 ]
 )
 
-
-AM_CONDITIONAL(USE_TRILINOS_SOURCES, [test "X${USE_TRILINOS_SOURCES}" = "Xyes"])
-  
-
-  
-# Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
-
 # ------------------------------------------------------------------------
-# Checks for compiler characteristics
-# ------------------------------------------------------------------------
-AC_CXX_NAMESPACES
-AC_CXX_HAVE_STL
-AC_CXX_BOOL
-AC_CXX_MUTABLE
-AC_CXX_NEW_FOR_SCOPING
-#AC_CXX_STD_IOS_BASE_FMTFLAGS
-AC_CXX_STD_SPRINTF
-
-# ------------------------------------------------------------------------
-# Checks for special package flags
+# Checks if tests and examples should be built
 # ------------------------------------------------------------------------
 
-TAC_ARG_ENABLE_FEATURE(oldifpack, [Build old ifpack], OLDIFPACK, no)
-AM_CONDITIONAL(BUILD_OLDIFPACK, test "X$ac_cv_use_oldifpack" != "Xno")
+#  #np# - These options can disable the tests and examples of a package.
+#  #np# - Packages that do not have tests or examples should #-out the 
+#  #np# - option(s) that does (do) not apply.
 
-### fill in ifdefs here - EPETRA_MPI, DEBUG, CRAY, COMPLEX_SUPPORT
+TAC_ARG_ENABLE_FEATURE(tests, [Build tests for Sundance], TESTS, yes)
+AM_CONDITIONAL(BUILD_TESTS, test "X$ac_cv_use_tests" != "Xno")
 
-# ------------------------------------------------------------------------
-# Specify other directories 
-# ------------------------------------------------------------------------
-
-# enable use of --with-libdirs="-Llibdir1 -Llibdir2 ..." to prepend to LDFLAGS
-TAC_ARG_WITH_LIBDIRS
-# enable use of --with-incdirs="-Lincdir1 -Lincdir2 ..." to prepend to CPPFLAGS
-TAC_ARG_WITH_INCDIRS
-
-# Define F77_FUNC that will be used to link with Fortran subroutines, e.g., BLAS/LAPACK
-AC_F77_WRAPPERS
-
-# ------------------------------------------------------------------------
-# Checks for libraries
-# ------------------------------------------------------------------------
-
-# checks for libraries now
-dnl Replace `main' with a function in -lm:
-AC_SEARCH_LIBS(sqrt,[m],,AC_MSG_ERROR(Cannot find math library))
-
-dnl Check for user-specified names for LAPACK and BLAS
-TAC_ARG_WITH_BLASLIB
-TAC_ARG_WITH_LAPACKLIB
-
-## FIX-IT NOTE:: Make sure that using --with-libdirs and --with-blaslib still
-## works with the ACX_BLAS macro
-
-# find or choose to supply valid blas and lapack libraries
-#TAC_ARG_ENABLE_FEATURE(referenceblasandlapack, [Build blas and lapack libs included in the distribution], BLASANDLAPACK, no)
-#AM_CONDITIONAL(BUILD_BLAS, test "X$ac_cv_use_referenceblasandlapack" != "Xno")
-#if test "X$ac_cv_use_referenceblasandlapack" = "Xno"; then
-#  ACX_BLAS([], [AC_MSG_ERROR([[Cannot find blas library, please specify additional locations using --with-libdirs, additional lib names using --with-blaslib or type --with-referenceblasandlapack on the configure line in the Trilinos level directory to use the blas and lapack libraries included in the distribution]])])
-  ACX_BLAS([], [AC_MSG_ERROR([[Cannot find blas library, please specify additional locations using --with-libdirs or additional lib names using --with-blaslib]])])
-#fi
-#TAC_ARG_ENABLE_FEATURE(referencelapack, [Build lapack lib included in the distribution], LAPACK, no)
-#AM_CONDITIONAL(BUILD_LAPACK, test "X$ac_cv_use_referencelapack" != "Xno" || test "X$ac_cv_use_referenceblasandlapack" != "Xno")
-#if test "X$ac_cv_use_referencelapack" = "Xno" && test "X$ac_cv_use_referenceblasandlapack" = "Xno"; then
-#  ACX_LAPACK([], [AC_MSG_ERROR([[Cannot find lapack library, please specify additional locations using --with-libdirs, additional lib names using --with-lapacklib or type --with-referencelapack on the configure line in the Trilinos level directory to use the lapack library included in the distribution]])])
-  ACX_LAPACK([], [AC_MSG_ERROR([[Cannot find lapack library, please specify additional locations using --with-libdirs or additional lib names using --with-lapacklib]])])
-#fi
-
-# ------------------------------------------------------------------------
-# Checks for compiler characteristics
-# ------------------------------------------------------------------------
-
-# ------------------------------------------------------------------------
-# Checks for linker characteristics
-# ------------------------------------------------------------------------
-
-# Determine libraries needed for linking with Fortran
-AC_F77_LIBRARY_LDFLAGS
-
-# -- DEC CXX --
-dnl if test X${target_cpu} = Xalpha && test X${CXX} = Xcxx; then
-dnl    XTRALDADD="cxx_repository/*.o"
-dnl fi
-
-dnl AC_MSG_CHECKING([for extra object files to be linked])
-dnl if test X$XTRALDADD = X; then
-dnl AC_MSG_RESULT(none)
-dnl else
-dnl AC_MSG_RESULT($XTRALDADD)
-dnl fi
-
-AC_SUBST(XTRALDADD)
-# ------------------------------------------------------------------------
-# Checks for library functions
-# ------------------------------------------------------------------------
-
-# ------------------------------------------------------------------------
-# Checks for system services
-# ------------------------------------------------------------------------
-
+TAC_ARG_ENABLE_FEATURE(examples, [Build examples for Sundance], EXAMPLES, yes)
+AM_CONDITIONAL(BUILD_EXAMPLES, test "X$ac_cv_use_examples" != "Xno")
 
 # ------------------------------------------------------------------------
 # Perform substitutions in output files
@@ -332,6 +151,7 @@ AC_SUBST(ac_aux_dir)
 
 AC_CONFIG_FILES([
   Makefile  
+  examples-tutorial/Makefile
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile
@@ -353,14 +173,7 @@ AC_CONFIG_FILES([
 
 ])
 
-AC_SUBST(CXX)
-AC_SUBST(CXXFLAGS)
-AC_SUBST(LDFLAGS)
-AC_SUBST(DEFS)
-AC_SUBST(FLIBS)
-AC_SUBST(BLAS_LIB)
 AC_SUBST(CHACO_LIB)
-AC_SUBST(LAPACK_LIB)
 AC_SUBST(TRILINOS_DIR)
 
 AC_OUTPUT()

@@ -75,6 +75,7 @@ namespace SundanceCore
         private:
           Array<int> m_;
         };
+
     }
 }
 

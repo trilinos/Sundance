@@ -1,7 +1,8 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
+#include "NOX_TSF_StatusTestBuilder.H"
 
-
+#include "TSFNOXSolver.H"
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
@@ -61,69 +62,35 @@ int main(int argc, void** argv)
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
 
-/* Create a TSF NonlinearOperator object */
+      /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F 
         = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
-      //      F.verbosity() = VerbExtreme;
-      /* Get the initial guess */
-      Vector<double> x0 = F.getInitialGuess();
       
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterList noxParams = reader.getParameters();
+
+      cerr << "solver params = " << noxParams << endl;
+
+      NOXSolver solver(noxParams, F);
+
+      solver.solve();
+
+      Expr exactSoln = x*(x-2.0);
+
+      Expr errExpr = Integral(interior, 
+                              pow(u0-exactSoln, 2),
+                              new GaussianQuadrature(4));
+
+      Expr derivErrExpr = Integral(interior, 
+                                   pow(dx*(u0-exactSoln), 2),
+                                   new GaussianQuadrature(2));
+
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
+      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
       
-      /* Create an Aztec solver for solving the linear subproblems */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
-      
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-13;
-      
-      LinearSolver<double> linSolver = new AztecSolver(azOptions,azParams);
-
-      /* Now let's create a NOX solver */
-
-      NOX::TSF::Group grp(x0, F, linSolver);
-
-      grp.verbosity() = VerbExtreme;
-
-      // Set up the status tests
-      NOX::StatusTest::NormF statusTestA(grp, 1.0e-10);
-      NOX::StatusTest::MaxIters statusTestB(20);
-      NOX::StatusTest::Combo statusTestsCombo(NOX::StatusTest::Combo::OR, statusTestA, statusTestB);
-
-      // Create the list of solver parameters
-      NOX::Parameter::List solverParameters;
-
-      // Set the solver (this is the default)
-      solverParameters.setParameter("Nonlinear Solver", "Line Search Based");
-
-      // Create the line search parameters sublist
-      NOX::Parameter::List& lineSearchParameters = solverParameters.sublist("Line Search");
-
-      // Set the line search method
-      lineSearchParameters.setParameter("Method","More'-Thuente");
-
-      // Create the solver
-      NOX::Solver::Manager solver(grp, statusTestsCombo, solverParameters);
-
-      // Solve the nonlinear system
-      NOX::StatusTest::StatusType status = solver.solve();
-
-      // Print the answer
-      cout << "\n" << "-- Parameter List From Solver --" << "\n";
-      solver.getParameterList().print(cout);
-
-      // Get the answer
-      grp = solver.getSolutionGroup();
-
-      // Print the answer
-      cout << "\n" << "-- Final Solution From Solver --" << "\n";
-      grp.print();
-
-      
-
     }
 	catch(exception& e)
 		{
@@ -131,3 +98,4 @@ int main(int argc, void** argv)
 		}
   MPISession::finalize();
 }
+

@@ -102,6 +102,12 @@ void Lagrange::getLocalDOFs(const CellType& cellType,
             dofs[1] = tuple(tuple(4), tuple(5), tuple(6), 
                             tuple(7), tuple(8), tuple(9));
           }
+        else
+          {
+            dofs[1] = tuple(Array<int>(), Array<int>(),
+                            Array<int>(), Array<int>(), 
+                            Array<int>(), Array<int>());
+          }
         dofs[2] = tuple(Array<int>(), Array<int>(), 
                         Array<int>(), Array<int>());
         dofs[3] = tuple(Array<int>());

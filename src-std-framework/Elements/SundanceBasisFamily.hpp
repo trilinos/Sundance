@@ -56,6 +56,19 @@ namespace SundanceStdFwk
       /** Extract the basis from an expression */
       static BasisFamily getBasis(const Expr& expr);
     };
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b)
+  {
+    return tuple(a,b);
+  }
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c)
+  {
+    return tuple(a,b,c);
+  }
 }
 
 #endif

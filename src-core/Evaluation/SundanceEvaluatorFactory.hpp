@@ -5,6 +5,8 @@
 #define SUNDANCE_EVALUATORFACTORY_H
 
 #include "SundanceDefs.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -15,6 +17,7 @@ namespace SundanceCore
     {
       class Evaluator;
       class EvaluatableExpr;
+      using namespace Teuchos;
       
       /**
        *
@@ -31,6 +34,9 @@ namespace SundanceCore
           /** */
           virtual Evaluator* 
           createEvaluator(const EvaluatableExpr* expr) const = 0 ;
+
+          /** */
+          static RefCountPtr<EvaluatorFactory>& defaultEvaluator();
 
         protected:
           /** Method to create those evaluators that can be built by

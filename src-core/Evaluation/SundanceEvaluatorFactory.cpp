@@ -2,6 +2,7 @@
 /* @HEADER@ */
 
 #include "SundanceEvaluatorFactory.hpp"
+#include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
@@ -10,7 +11,7 @@
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-
+using namespace Teuchos;
 using namespace SundanceCore::Internal;
 
 
@@ -51,4 +52,12 @@ Evaluator* EvaluatorFactory::commonCreate(const EvaluatableExpr* expr) const
                      "evaluator for " << expr->toString());
 
   return 0;
+}
+
+
+RefCountPtr<EvaluatorFactory>&  EvaluatorFactory::defaultEvaluator()
+{
+  static RefCountPtr<EvaluatorFactory> rtn 
+    = rcp(new BruteForceEvaluatorFactory());
+  return rtn;
 }

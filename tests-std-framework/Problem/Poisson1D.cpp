@@ -11,7 +11,7 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(argc, argv);
       int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
@@ -50,20 +50,17 @@ int main(int argc, void** argv)
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
       /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+      LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-       /* Create an Aztec solver for solving the linear subproblems */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
-      
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-13;
-      
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterList solverParams = reader.getParameters();
+      cerr << "params = " << solverParams << endl;
+
+
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
+
+        
 
       Expr soln = prob.solve(solver);
 
@@ -96,5 +93,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

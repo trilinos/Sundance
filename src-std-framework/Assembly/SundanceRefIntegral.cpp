@@ -447,6 +447,7 @@ void RefIntegral
                                     const Array<double>& coeff) const 
 {
   TimeMonitor timer(refTransCreationTimer());
+
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 
@@ -532,6 +533,7 @@ void RefIntegral
                                     const Array<double>& coeff) const 
 {
   TimeMonitor timer(refTransCreationTimer());
+
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 

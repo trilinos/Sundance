@@ -59,6 +59,9 @@ namespace SundanceStdFwk
 
     /** */
     const Mesh& mesh() const {return mesh_;}
+
+    /** */
+    const VectorType<double>& vecType() const {return vecType_;}
   private:
     /** */
     RefCountPtr<DOFMapBase> map_;

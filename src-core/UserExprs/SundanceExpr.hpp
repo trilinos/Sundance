@@ -79,6 +79,9 @@ namespace SundanceCore
        */
       void showDerivs() const;
 
+      /** */
+      void setParameterValue(const double& value);
+
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -164,6 +167,14 @@ namespace SundanceCore
   /** \relates Expr */
   Expr List(const Expr& a, const Expr& b, const Expr& c,
             const Expr& d);
+
+  /** \relates Expr */
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e);
+
+  /** \relates Expr */
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f);
 
   
 }

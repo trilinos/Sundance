@@ -18,6 +18,7 @@
 #include "SundanceStdProductTransformations.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
 #include "SundanceStdMathOps.hpp"
+#include "SundanceParameter.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -251,37 +252,30 @@ Expr Expr::operator*(const Expr& other) const
 
   /* if the left operand is a rectangular matrix and the 
    * right operand is a vector */
-  if (other.size() == other.totalSize())
+  int cols = (*this)[0].size();
+  bool rectangular = true;
+  for (int i=0; i<size(); i++)
     {
-      int cols = (*this)[0].size();
-      bool rectangular = true;
-      for (int i=0; i<size(); i++)
-        {
-          if ((*this)[i].size() != cols) rectangular = false;
-        }
-      TEST_FOR_EXCEPTION(!rectangular, BadSymbolicsError,
-                         "Expr::operator* detected list-list multiplication "
-                         "with a non-rectangular left operator " 
-                         << toString());
-
-      TEST_FOR_EXCEPTION(cols != other.size(), BadSymbolicsError,
-                         "Expr::operator* detected mismatched dimensions in "
-                         "list-list multiplication. Left operator is "
-                         << toString() << ", right operator is "
-                         << other.toString());
-
-      Array<Expr> rtn(size());
-      for (int i=0; i<size(); i++)
-        {
-          rtn[i] = (*this)[i] * other;
-        }
+      if ((*this)[i].size() != cols) rectangular = false;
+    }
+  TEST_FOR_EXCEPTION(!rectangular, BadSymbolicsError,
+                     "Expr::operator* detected list-list multiplication "
+                     "with a non-rectangular left operator " 
+                     << toString());
+  
+  TEST_FOR_EXCEPTION(cols != other.size(), BadSymbolicsError,
+                     "Expr::operator* detected mismatched dimensions in "
+                     "list-list multiplication. Left operator is "
+                     << toString() << ", right operator is "
+                     << other.toString());
+  
+  Array<Expr> rtn(size());
+  for (int i=0; i<size(); i++)
+    {
+      rtn[i] = (*this)[i] * other;
     }
 
-  TEST_FOR_EXCEPTION(true, BadSymbolicsError,
-                     "multiplication of " << toString() << " times " 
-                     << other.toString() << " not possible");
-
-  return new ZeroExpr(); // -Wall
+  return new ListExpr(rtn);
 }
 
 Expr Expr::divide(const Expr& other) const 
@@ -465,6 +459,15 @@ int Expr::totalSize() const
   return 1;
 }
 
+void Expr::setParameterValue(const double& value)
+{
+  Parameter* pe = dynamic_cast<Parameter*>(ptr().get());
+  TEST_FOR_EXCEPTION(pe==0, RuntimeError, 
+                     "Expr " << *this << " is not a Parameter expr, and "
+                     "so setParameterValue() should not be called");
+  pe->setValue(value);
+}
+
 namespace SundanceCore
 {
   using namespace SundanceUtils;
@@ -487,6 +490,18 @@ namespace SundanceCore
             const Expr& d)
   {
     return new ListExpr(tuple(a,b,c,d));
+  }
+
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e)
+  {
+    return new ListExpr(tuple(a,b,c,d,e));
+  }
+
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f)
+  {
+    return new ListExpr(tuple(a,b,c,d,e,f));
   }
 }
 

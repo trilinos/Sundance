@@ -261,7 +261,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
             }
           else
             {
-              Array<double> invJ;
+              static Array<double> invJ;
               J->getInvJ(c, invJ);
               const double* invJPtr = &(invJ[0]);
               int dim = cellDim();

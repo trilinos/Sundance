@@ -36,6 +36,7 @@ namespace SundanceCore
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
+
     /**
      * Indicate whether the given functional derivative is nonzero.
      * A constant expression has a nonzero derivative only if the
@@ -50,6 +51,10 @@ namespace SundanceCore
      * so this method does nothing.
      */
     virtual void getRoughDependencies(Set<Deriv>& /* funcs */) const {;}
+
+    /** Write self in text form */
+    virtual ostream& toText(ostream& os, bool paren) const 
+    {os << "Parameter[" << name() << " = " << value() << "]"; return os;}
 
     /** */
     virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}

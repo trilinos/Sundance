@@ -2,6 +2,7 @@
 /* @HEADER@ */
 
 #include "SundanceBasicSimplicialMesh.hpp"
+#include "SundanceMeshType.hpp"
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundanceMeshSource.hpp"
 #include "SundanceDebug.hpp"

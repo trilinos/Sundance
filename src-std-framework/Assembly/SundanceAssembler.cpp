@@ -878,14 +878,16 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
                           for (int n=0; n<nTestNodes; n++)
                             {
                               int row
-                                = (*testLocalDOFs)[nTestNodes*(c+nCells*t)+n];
+                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                                //                                = (*testLocalDOFs)[nTestNodes*(c+nCells*t)+n];
                               if (row < lowestRow_ || row >= highestRow
                                   || (*isBCRow_)[row]) continue;
                               ColSetType& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
                                   int col 
-                                    = (*unkLocalDOFs)[nUnkNodes*(c+nCells*u)+m];
+                                    = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
+                                    //                                    = (*unkLocalDOFs)[nUnkNodes*(c+nCells*u)+m];
                                   colSet.insert(col);
                                 }
                             }
@@ -908,14 +910,14 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
                           for (int n=0; n<nTestNodes; n++)
                             {
                               int row
-                                = (*testLocalDOFs)[nTestNodes*(c+nCells*t)+n];
+                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
                               if (row < lowestRow_ || row >= highestRow
                                   || !(*isBCRow_)[row]) continue;
                               ColSetType& colSet = graph[row-lowestRow_];
                               for (int m=0; m<nUnkNodes; m++)
                                 {
                                   int col 
-                                    = (*unkLocalDOFs)[nUnkNodes*(c+nCells*u)+m];
+                                    = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
                                   colSet.insert(col);
                                   
                                 }

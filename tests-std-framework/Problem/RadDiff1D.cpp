@@ -28,7 +28,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 100*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -46,13 +46,14 @@ int main(int argc, void** argv)
       Expr u = new UnknownFunction(new Lagrange(1), "u");
       Expr v = new TestFunction(new Lagrange(1), "v");
 
-      /* Create a discrete space, and discretize the function 1.0 on it */
-      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
-      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
-
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
       Expr x = new CoordExpr(0);
+
+      /* Create a discrete space, and discretize the function 1.0+x on it */
+      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
+      L2Projector projector(discSpace, 1.0+x);
+      Expr u0 = projector.project();
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad = new GaussianQuadrature(8);
@@ -102,7 +103,6 @@ int main(int argc, void** argv)
 
 
       /* Now let's create a NOX solver */
-
       NOX::TSF::Group grp(x0, F, linSolver);
 
       grp.verbosity() = VerbSilent;
@@ -141,6 +141,17 @@ int main(int argc, void** argv)
       cout << "\n" << "-- Final Solution From Solver --" << "\n";
       grp.print();
 
+      /* check solution */
+      Expr exactSoln = pow(15.0*x + 1.0, 0.25);
+      
+      Expr errExpr = Integral(interior, 
+                              pow(u0-exactSoln, 2),
+                              new GaussianQuadrature(8));
+
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      
 
       
 

@@ -7,7 +7,7 @@ EXEEXT = .exe
 noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Poisson3D Stokes2D \
 Coupled1D Coupled2D RadDiff1D NoxAlgebraic Kepler NoxPoisson1D \
 PoissonOnDisk OptPoisson1D Eikonal2D TCATA1D VorticityStokes2D \
-Stokes1D Helmholtz1D VorticityNavierStokes2D
+Stokes1D Helmholtz1D VorticityNavierStokes2D 
 
 
 
@@ -271,6 +271,7 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 Helmholtz1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 Helmholtz1D_LDADD = $(STD_FWK_LIBS) 
+
 
 
 

@@ -7,6 +7,8 @@
 #include "NOX_TSF_Group.H"
 
 
+#include "TSFNOXSolver.H"
+
 /** 
  * Solves Kepler's equation x = u(x) + e*sin(u(x))
  */
@@ -50,86 +52,39 @@ int main(int argc, void** argv)
 
      
       /* Define the weak form */
-      double e = 0.5;
-      Expr eqn = Integral(interior, v*(u + e*sin(u) - x), quad);
+      Expr ecc = new Parameter(0.5, "e");
+      Expr eqn = Integral(interior, v*(u + ecc*sin(u) - x), quad);
       Expr bc;
 
-      //      Evaluator::classVerbosity() = VerbExtreme;
-      //Assembler::classVerbosity() = VerbExtreme;
-      //IntegralGroup::classVerbosity() = VerbExtreme;
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
       F.verbosity() = VerbExtreme;
-      /* Get the initial guess */
-      Vector<double> x0 = F.getInitialGuess();
-      
-      
-      /* Create an Aztec solver for solving the linear subproblems */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
-      
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-13;
-      
-      LinearSolver<double> linSolver = new AztecSolver(azOptions,azParams);
-      
- 
-     //  /* Set up the linear solver  */
-//       ParameterList solverParams;
 
-//       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-//       solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
-//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-14);
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterList noxParams = reader.getParameters();
 
-//       LinearSolver<double> linSolver = new BICGSTABSolver<double>(solverParams);
+      cerr << "solver params = " << noxParams << endl;
 
+      NOXSolver solver(noxParams, F);
 
-      /* Now let's create a NOX solver */
+      int numEcc = 10;
+      double finalEcc = 0.95;
+      for (int r=1; r<=numEcc; r++)
+        {
+          double e = r*finalEcc/((double) numEcc);
+          ecc.setParameterValue(e);
+          cerr << "--------------------------------------------------------- " << endl;
+          cerr << " solving for eccentricity = " << ecc << endl;
+          cerr << "--------------------------------------------------------- " << endl;
+          // Solve the nonlinear system
+          NOX::StatusTest::StatusType status = solver.solve();
 
-      NOX::TSF::Group grp(x0, F, linSolver);
-
-      grp.verbosity() = VerbExtreme;
-
-      // Set up the status tests
-      NOX::StatusTest::NormF statusTestA(grp, 1.0e-15);
-      NOX::StatusTest::MaxIters statusTestB(20);
-      NOX::StatusTest::Combo statusTestsCombo(NOX::StatusTest::Combo::OR, statusTestA, statusTestB);
-
-      // Create the list of solver parameters
-      NOX::Parameter::List solverParameters;
-
-      // Set the solver (this is the default)
-      solverParameters.setParameter("Nonlinear Solver", "Line Search Based");
-
-      // Create the line search parameters sublist
-      NOX::Parameter::List& lineSearchParameters = solverParameters.sublist("Line Search");
-
-      // Set the line search method
-      lineSearchParameters.setParameter("Method","More'-Thuente");
-
-      // Create the solver
-      NOX::Solver::Manager solver(grp, statusTestsCombo, solverParameters);
-
-      // Solve the nonlinear system
-      NOX::StatusTest::StatusType status = solver.solve();
-
-      // Print the answer
-      cout << "\n" << "-- Parameter List From Solver --" << "\n";
-      solver.getParameterList().print(cout);
-
-      // Get the answer
-      grp = solver.getSolutionGroup();
-
-      // Print the answer
-      cout << "\n" << "-- Final Solution From Solver --" << "\n";
-      grp.print();
-
-
-      
+          /* Write the field in matlab format */
+          FieldWriter w = new MatlabWriter("kepler-e" + Teuchos::toString(e) + ".dat");
+          w.addMesh(mesh);
+          w.addField("true anomaly", new ExprFieldWrapper(u0[0]));
+          w.write();
+        }
 
     }
 	catch(exception& e)

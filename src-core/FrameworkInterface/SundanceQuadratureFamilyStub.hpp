@@ -61,6 +61,10 @@ namespace SundanceCore
 
       /** */
       virtual RefCountPtr<QuadratureFamilyStub> getRcp() {return rcp(this);}
+
+      /** */
+      static RefCountPtr<QuadratureFamilyStub>& defaultQuadrature()
+      {static RefCountPtr<QuadratureFamilyStub> rtn; return rtn;}
       
     private:
       int order_;

@@ -11,6 +11,7 @@
 #include "Teuchos_MPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "Teuchos_ParameterList.hpp"
+#include "Teuchos_ParameterXMLFileReader.hpp"
 
 /* Symbolics */
 #include "SundanceTestFunction.hpp"
@@ -34,11 +35,13 @@
 #include "SundanceExtrusionMeshTransformation.hpp"
 #include "SundancePartitionedRectangleMesher.hpp"
 #include "SundanceTriangleMeshReader.hpp"
+#include "SundanceExodusNetCDFMeshReader.hpp"
 
 
 /* Cell filters */
 #include "SundanceCellFilter.hpp"
 #include "SundanceMaximalCellFilter.hpp"
+#include "SundanceBoundaryCellFilter.hpp"
 #include "SundanceDimensionalCellFilter.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 
@@ -57,6 +60,7 @@
 
 /* Problem level classes */
 #include "SundanceLinearProblem.hpp"
+#include "SundanceL2Projector.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 #include "SundanceExprFieldWrapper.hpp"
@@ -75,6 +79,8 @@
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
 #include "NOX_TSF_Group.H"
+#include "TSFNOXSolver.H"
+
 
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
@@ -83,6 +89,30 @@ using namespace SundanceStdFwk;
 using namespace SundanceCore;
 using namespace SundanceStdMesh;
 using namespace SundanceUtils;
+
+namespace SundanceStdFwk
+{
+  class Sundance
+  {
+  public:
+    static void init(int argc, void** argv);
+    
+    static void finalize();
+    
+    static void handleException(std::exception& e);
+
+  private:
+
+    static void setSettings(const string& settingsFile);
+
+    static string searchForFile(const string& name);
+
+    static VerbositySetting verbosity(const string& str);
+  };
+}
+
+
+
 
 #endif
 

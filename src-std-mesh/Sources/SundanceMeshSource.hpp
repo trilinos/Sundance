@@ -6,6 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshSourceBase.hpp"
+
 #include "TSFHandle.hpp"
 
 namespace SundanceStdMesh
@@ -48,6 +49,9 @@ namespace SundanceStdMesh
                        RefCountPtr<Array<Array<double> > >& elemAttributes) const ;
 
     static bool& serializeLocal() {static bool rtn=false; return rtn;}
+
+    static MeshType& defaultMeshType() ;
+
   private:
     
   };

@@ -469,15 +469,17 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
 
   if (cellDim == dim_)
     {
-      if (!haveMaximalDofs_) buildMaximalDofTable();
-      cerr << "getting DOFS " << endl;
+      if (!haveMaximalDofs_) 
+        {
+          buildMaximalDofTable();
+        }
+
 
       nNodes = totalNNodesPerCell_[cellDim];
       int nCells = cellLID.size();
+      int nTotalCells = mesh().numCells(cellDim);
       int nf = funcIDList().size();
       dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
-      cerr << "dofs size = " << dofs.size() << endl;
-      cerr << "max dofs size = " << maximalDofs_.size() << endl;
 
       for (int c=0; c<cellLID.size(); c++)
         {
@@ -486,12 +488,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
               for (int n=0; n<nNodes; n++) 
                 {
                   dofs[(fid*nCells + c)*nNodes + n] 
-                    = maximalDofs_[(fid*nCells + cellLID[c])*nNodes + n];
-                  cerr << "cellLID=" << cellLID[c] 
-                       << ", f=" << fid << ", n=" << n 
-                       << ", dof=" << dofs[(fid*nCells + c)*nNodes + n]
-                       << endl;
-                    
+                    = maximalDofs_[(fid*nTotalCells + cellLID[c])*nNodes + n];
                 }
             }
         }
@@ -571,11 +568,12 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
 
 void HomogeneousDOFMap::buildMaximalDofTable() const
 {
-  cerr << "building DOF tables " << endl;
+
   int cellDim = dim_;
   int nf = funcIDList().size();
   int nCells = mesh().numCells(dim_);
-  
+
+  cerr << "building dofs for maximal cell " << endl;
   SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
                << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   
@@ -621,14 +619,12 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
       /* now get the DOFs for the nodes on the facets */
       for (int d=0; d<cellDim; d++)
         {
-          // mesh().getFacetArray(cellDim, cellLID[c], d, facetLID[d]);
-          
-          SUNDANCE_OUT(verbosity() > VerbHigh, 
-                       "d=" << d << " facets are " << facetLID[d]);
-          
           for (int f=0; f<numFacets[d]; f++)
             {
               int facetID = facetLID[d][c*numFacets[d]+f];
+              SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0,
+                           "cellLID=" << cellLID[c] << ", facet dim="
+                           << d << ", facetID=" << facetID);
               SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
                            "dofs for all nodes of this facet are: "
                            << dofs_[d][facetLID[d][f]]);

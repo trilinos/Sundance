@@ -28,10 +28,10 @@ bool FunctionalDeriv::lessThan(const Deriv& other) const
 
   const FunctionalDeriv* f = other.funcDeriv();
 
-  OrderedPair<int, MultiIndex> myData(funcID(), multiIndex());
-  OrderedPair<int, MultiIndex> otherData(f->funcID(), f->multiIndex());
-
-  return myData < otherData;
+  if (funcID() < f->funcID()) return true;
+  if (funcID() > f->funcID()) return false;
+  if (multiIndex() < f->multiIndex()) return true;
+  return false;
 }
 
 Deriv FunctionalDeriv::derivWrtMultiIndex(const MultiIndex& mi) const

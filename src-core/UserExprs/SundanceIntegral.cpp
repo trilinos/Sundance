@@ -15,7 +15,8 @@ using namespace SundanceCore::Internal;
 Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
               const Expr& integrand)
 {
-  RefCountPtr<QuadratureFamilyStub> quad = rcp(new QuadratureFamilyStub(0));
+  RefCountPtr<QuadratureFamilyStub> quad 
+    = QuadratureFamilyStub::defaultQuadrature();
   return new SumOfIntegrals(domain.ptr(), integrand, quad);
 }
 

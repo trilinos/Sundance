@@ -60,8 +60,8 @@ bool MultiIndex::operator<(const MultiIndex& m) const
 {
 	for (int i=0; i<maxDim(); i++)
 		{
-			if (m_[i] > m[i]) return false;
-      if (m_[i] < m[i]) return true;
+			if (m_[i] > m.m_[i]) return false;
+      if (m_[i] < m.m_[i]) return true;
 		}
 	return false;
 }

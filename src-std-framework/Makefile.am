@@ -21,6 +21,8 @@
 
 SUNDANCE_CELLFILTERS_H = \
 $(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.hpp\
+$(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellFilter.hpp\
+$(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellPredicate.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilterBase.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilter.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellIterator.hpp\
@@ -35,10 +37,12 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceImplicitCellSet.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceLabelCellPredicate.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceMaximalCellFilter.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundancePositionalCellPredicate.hpp\
+$(top_srcdir)/src-std-framework/CellFilter/SundanceSideCellFilter.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.hpp
 
 SUNDANCE_CELLFILTERS = \
 $(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.cpp\
+$(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellPredicate.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilterBase.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellIterator.cpp\
@@ -52,6 +56,7 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceImplicitCellSet.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceLabelCellPredicate.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceMaximalCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundancePositionalCellPredicate.cpp\
+$(top_srcdir)/src-std-framework/CellFilter/SundanceSideCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp
 
 SUNDANCE_ELEMENTS_H = \
@@ -124,12 +129,15 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp
 SUNDANCE_PROBLEM_H = \
 $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.hpp 
 
 
 SUNDANCE_PROBLEM = \
+$(top_srcdir)/src-std-framework/Problem/Sundance.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp 
 

@@ -24,13 +24,16 @@ int main(int argc, void** argv)
       MPISession::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
+      Assembler::workSetSize() = 10;
+
+      
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 10;
+      int nx = 12;
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx*np, meshType);
       Mesh mesh = mesher.getMesh();
 

@@ -1,5 +1,6 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
+#include "Teuchos_XMLParameterListWriter.hpp"
 
 /** 
  * Solves the Poisson equation in 2D
@@ -100,6 +101,10 @@ int main(int argc, void** argv)
       solverParams.set("Verbosity", 4);
 
       params.set("Linear Solver", solverParams);
+
+      XMLParameterListWriter paramWriter;
+      
+      cerr << "solver = " << paramWriter.toXML(params) << endl;
 
 
       LinearSolver<double> solver 

@@ -1,5 +1,7 @@
 #include "SundanceMeshSource.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceBasicSimplicialMeshType.hpp"
+#include "SundanceMeshType.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
@@ -62,4 +64,11 @@ void MeshSource::getAttributes(RefCountPtr<Array<Array<double> > >& nodeAttribut
 {
   getMesh();
   ptr()->getAttributes(nodeAttributes, elemAttributes);
+}
+
+
+MeshType& MeshSource::defaultMeshType() 
+{
+  static MeshType rtn = new BasicSimplicialMeshType(); 
+  return rtn;
 }

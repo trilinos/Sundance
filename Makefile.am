@@ -83,13 +83,18 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 #  #np# - Most packages should have an example and a full suite 
 #  of tests.  At present, new_package only offers src and example.
 # SUBDIRS = src example test 
-#if BUILD_TESTS
-#TEST_SUBDIR=test
-#endif
 
-#SUBDIRS = src $(TEST_SUBDIR)
+if BUILD_EXAMPLES
+EXAMPLES_SUBDIR=examples-tutorial
+endif
+
+if BUILD_TESTS
 SUBDIRS = src-utils src-core tests-core src-std-mesh tests-std-mesh \
-src-std-framework tests-std-framework
+src-std-framework tests-std-framework $(EXAMPLES_SUBDIR)
+else
+SUBDIRS = src-utils src-core src-std-mesh src-std-framework $(EXAMPLES_SUBDIR)
+endif
+
 
 
 ## #######################################################################
