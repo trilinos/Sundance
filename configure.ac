@@ -335,10 +335,13 @@ AC_CONFIG_FILES([
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile
+  src-std-framework/Makefile
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
   tests-std-mesh/Makefile
   tests-std-mesh/Simple/Makefile
+  tests-std-framework/Makefile
+  tests-std-framework/HomogeneousDOFMap/Makefile
   doc/Makefile
   doc/Doxygen/Makefile
   doc/Doxygen/Doxyfile.utils

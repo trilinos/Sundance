@@ -88,7 +88,8 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 #endif
 
 #SUBDIRS = src $(TEST_SUBDIR)
-SUBDIRS = src-utils src-core tests-core src-std-mesh tests-std-mesh
+SUBDIRS = src-utils src-core tests-core src-std-mesh tests-std-mesh \
+src-std-framework tests-std-framework
 
 
 ## #######################################################################
