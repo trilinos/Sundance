@@ -174,6 +174,11 @@ void ProductExpr::findNonzeros(const EvalContext& context,
 
 
 
+      SUNDANCE_VERB_MEDIUM(tabs << "left sparsity subset is " 
+                           << endl << *leftSparsity);
+      SUNDANCE_VERB_MEDIUM(tabs << "right sparsity subset is " 
+                           << endl << *rightSparsity);
+
       for (int i=0; i<leftSparsity->numDerivs(); i++)
         {
           const MultipleDeriv& dLeft = leftSparsity->deriv(i);
@@ -235,6 +240,13 @@ void ProductExpr::findNonzeros(const EvalContext& context,
             }
         }
     }
+
+  SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() << ": my sparsity subset is " 
+                     << endl << *subset);
+
+  SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() 
+                     << " my sparsity superset is " 
+                     << endl << *sparsitySuperset(context));
 
   addKnownNonzero(context, multiIndices, activeFuncIDs,
                   allFuncIDs, regardFuncsAsConstant);

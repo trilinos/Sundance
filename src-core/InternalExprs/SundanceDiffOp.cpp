@@ -144,7 +144,8 @@ void DiffOp::findNonzeros(const EvalContext& context,
       RefCountPtr<SparsitySubset> argSparsity
         = evaluatableArg()->sparsitySubset(context, argMI);
 
-      SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity is " << endl << *argSparsity);
+      SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity subset is " 
+                           << endl << *argSparsity);
 
 
       for (int i=0; i<argSparsity->numDerivs(); i++)
@@ -189,6 +190,15 @@ void DiffOp::findNonzeros(const EvalContext& context,
             }
         }
     }
+
+  SUNDANCE_VERB_HIGH(tabs << "diff op " + toString()
+                     << ": my sparsity subset is " 
+                     << endl << *subset);
+
+  SUNDANCE_VERB_HIGH(tabs << "diff op " + toString() 
+                     << " my sparsity superset is " 
+                     << endl << *sparsitySuperset(context));
+
   addKnownNonzero(context, multiIndices, activeFuncIDs,
                   allFuncIDs, regardFuncsAsConstant);
   //  cerr << "my sparsity: " << *subset << endl;

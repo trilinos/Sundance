@@ -261,6 +261,13 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   MultiSet<int> emptyDeriv;
   activeFuncIDs.put(emptyDeriv);
 
+  for (Set<int>::const_iterator j=unkID.begin(); j != unkID.end(); j++)
+    {
+      MultiSet<int> unkDeriv;
+      unkDeriv.put(*j);
+      activeFuncIDs.put(unkDeriv);
+    }
+
   /* ----------------------------------------------------------
    * set up the expression for evaluation 
    * ----------------------------------------------------------

@@ -82,6 +82,19 @@ void CoordExpr::findNonzeros(const EvalContext& context,
       subset->addDeriv(MultipleDeriv(), VectorDeriv);
     }
 
+  
+
+  SUNDANCE_VERB_HIGH(tabs << "coord expr: " + toString() 
+                     << ": my sparsity subset is " 
+                       << endl << *subset);
+
+  TEST_FOR_EXCEPTION(sparsitySuperset(context).get()==0, InternalError,
+                     "null sparsity superset detected in CoordExpr::findNonzeros()");
+
+  SUNDANCE_VERB_HIGH(tabs << "coord expr:  " 
+                     + toString() << ": my sparsity superset is " 
+                     << endl << *sparsitySuperset(context));
+
   addKnownNonzero(context, multiIndices, activeFuncIDs,
                        allFuncIDs, regardFuncsAsConstant);
 }

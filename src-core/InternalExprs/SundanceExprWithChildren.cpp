@@ -103,6 +103,11 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
 
           RefCountPtr<SparsitySubset> childSparsitySubset 
             = evaluatableChild(i)->sparsitySubset(context, multiIndices);
+          
+
+          SUNDANCE_VERB_MEDIUM(tabs << "child #" << i 
+                               << " sparsity subset is " 
+                               << endl << *childSparsitySubset);
       
           for (int j=0; j<childSparsitySubset->numDerivs(); j++)
             {
@@ -111,6 +116,14 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
             }
         }
     }
+
+  SUNDANCE_VERB_HIGH(tabs << "expr " + toString() << ": my sparsity subset is " 
+                     << endl << *subset);
+
+  SUNDANCE_VERB_HIGH(tabs << "expr " + toString() 
+                     << " my sparsity superset is " 
+                     << endl << *sparsitySuperset(context));
+
   addKnownNonzero(context, multiIndices, activeFuncIDs,
                   allFuncIDs, regardFuncsAsConstant);
 }
