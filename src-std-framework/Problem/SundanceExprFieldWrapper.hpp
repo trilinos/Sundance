@@ -45,7 +45,7 @@ namespace SundanceStdFwk
     public:
       Expr expr_;
 
-      Vector<double> vector_;
+      const DiscreteFunction* df_;
 
       DiscreteSpace discreteSpace_;
 

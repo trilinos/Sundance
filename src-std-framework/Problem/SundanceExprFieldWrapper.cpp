@@ -20,7 +20,7 @@ using namespace TSFExtended;
 
 ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
   : expr_(expr),
-    vector_(),
+    df_(),
     discreteSpace_(),
     map_(),
     indices_()
@@ -31,10 +31,10 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
         = dynamic_cast<const DiscreteFunction*>(expr[0].ptr().get());
       if (df != 0)
         {
-          vector_ = df->vector();
           discreteSpace_ = df->discreteSpace();
           map_ = df->map();
           indices_ = tuple(0);
+          df_ = df;
         }
       const DiscreteFuncElement* dfe 
         = dynamic_cast<const DiscreteFuncElement*>(expr[0].ptr().get());
@@ -45,10 +45,10 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
           TEST_FOR_EXCEPTION(f == 0, RuntimeError,
                              "ExprFieldWrapper ctor argument "
                              << expr << " is not a discrete function");
-          vector_ = f->vector();
           discreteSpace_ = f->discreteSpace();
           map_ = f->map();
           indices_ = tuple(dfe->myIndex());
+          df_ = df;
         }
 
       TEST_FOR_EXCEPTION(df == 0 && dfe == 0, RuntimeError,
@@ -69,6 +69,6 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
   TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
                      "too many DOFs found in ExprFieldWrapper::getData()");
 
-  return vector_.getElement(dofs[0]);
+  return df_->ghostView()->getElement(dofs[0]);
 }
     

@@ -62,6 +62,10 @@ namespace SundanceStdFwk
 
     /** */
     const VectorType<double>& vecType() const {return vecType_;}
+
+    /** */
+    void importGhosts(const Vector<double>& x,
+                      RefCountPtr<GhostView<double> >& ghostView) const ;
   private:
     /** */
     RefCountPtr<DOFMapBase> map_;
@@ -77,6 +81,9 @@ namespace SundanceStdFwk
 
     /** */
     VectorType<double> vecType_;
+
+    /** */
+    RefCountPtr<GhostImporter<double> > ghostImporter_;
   };
 
 }

@@ -47,10 +47,10 @@ namespace SundanceStdFwk
     GET_RCP(ExprBase);
 
     /** */
-    const Vector<double>& vector() const {return vector_;}
+    void updateGhosts() const ;
 
     /** */
-    void setVector(const Vector<double>& vec) {vector_ = vec;}
+    void setVector(const Vector<double>& vec);
 
     /** */
     const DiscreteSpace& discreteSpace() const {return space_;}
@@ -67,11 +67,22 @@ namespace SundanceStdFwk
                         Array<double>& localValues) const ;
 
 
+    RefCountPtr<GhostView<double> > ghostView() const ;
+
+
   private:
+    friend class NonlinearProblem;
+
+    /** */
+    const Vector<double>& vector() const {return vector_;}
 
     DiscreteSpace space_;
 
     Vector<double> vector_;
+
+    mutable RefCountPtr<GhostView<double> > ghostView_;
+
+    mutable bool ghostsAreValid_;
 
 #endif /* DOXYGEN_DEVELOPER_ONLY */
   };

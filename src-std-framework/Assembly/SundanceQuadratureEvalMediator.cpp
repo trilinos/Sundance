@@ -195,7 +195,6 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
       dfCacheIsValid().put(f, true);
     }
 
-  const Vector<double>& fValues = f->vector();
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
   f->getLocalValues(cellDim(), *cellLID(), *localValues);
 

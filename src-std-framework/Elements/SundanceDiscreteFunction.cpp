@@ -28,7 +28,9 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, const string& nam
   : DiscreteFunctionStub(name, space.nFunc()), 
     FuncWithBasis(space.basis()),
     space_(space),
-    vector_(space_.createVector())
+    vector_(space_.createVector()),
+    ghostView_(),
+    ghostsAreValid_(false)
 {}
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
@@ -37,7 +39,9 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
   : DiscreteFunctionStub(name, space.nFunc()), 
     FuncWithBasis(space.basis()),
     space_(space),
-    vector_(space_.createVector())
+    vector_(space_.createVector()),
+    ghostView_(),
+    ghostsAreValid_(false)
 {
   vector_.setToConstant(constantValue);
 }
@@ -48,8 +52,25 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
   : DiscreteFunctionStub(name, space.nFunc()), 
     FuncWithBasis(space.basis()),
     space_(space),
-    vector_(vector)
+    vector_(vector),
+    ghostView_(),
+    ghostsAreValid_(false)
 {}
+
+void DiscreteFunction::setVector(const Vector<double>& vec) 
+{
+  ghostsAreValid_ = false;
+  vector_ = vec;
+}
+
+void DiscreteFunction::updateGhosts() const
+{
+  if (!ghostsAreValid_)
+    {
+      space_.importGhosts(vector_, ghostView_);
+      ghostsAreValid_ = true;
+    }
+}
 
 
 void DiscreteFunction::getLocalValues(int cellDim, 
@@ -57,6 +78,9 @@ void DiscreteFunction::getLocalValues(int cellDim,
                         Array<double>& localValues) const 
 {
   TimeMonitor timer(getLocalValsTimer());
+
+  updateGhosts();
+
   const RefCountPtr<DOFMapBase>& map = space_.map();
   static Array<int> dofs;
   static Array<int> indices;
@@ -79,60 +103,8 @@ void DiscreteFunction::getLocalValues(int cellDim,
             }
         }
     }
-  vector_.getElements(&(indices[0]), indices.size(), localValues);
+  ghostView_->getElements(&(indices[0]), indices.size(), localValues);
 }
 
-// DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
-//                                    const Expr& expr,
-//                                    const string& name)
-//   : DiscreteFunctionStub(name, space.nFunc()), 
-//     FuncWithBasis(space.basis()),
-//     space_(space),
-//     vector_(space_.createVector())
-// {
-//  //  Tabs tab;
 
-//   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
-//   workSet->reserve(workSetSize());
-//   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
-
-//   TSFExtended::LoadableVector<double>* vec 
-//     = dynamic_cast<TSFExtended::LoadableVector<double>* >(vector_.ptr().get());
-
-//   TEST_FOR_EXCEPTION(vec==0, RuntimeError,
-//                      "vector is not loadable in DiscreteFunction ctor");
-
-
-//   CellFilter filter = new MaximalCellFilter();
-
-//   CellSet cells = filter.getCells(space_.mesh());
-//   int cellDim = filter.dimension(mesh_);
-//   CellType cellType = space_.mesh().cellType(cellDim);
-
-//   CellIterator iter=cells.begin();
-//   int workSetCounter = 0;
-
-//   while (iter != cells.end())
-//     {
-//       Tabs tab1;
-//       /* build up the work set */
-//       workSet->resize(0);
-//       for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
-//         {
-//           workSet->append(*iter);
-//         }
-//       SUNDANCE_OUT(verbosity() > VerbMedium,
-//                    tab1 << "doing work set " << workSetCounter
-//                    << " consisting of " << workSet->size() << " cells");
-//       workSetCounter++;
-
-//       mediator->setCellBatch(workSet);
-
-//       evalExpr->flushResultCache();
-//       evalExpr->evaluate(evalMgr, coeffs);
-
-//     }
-
-  
-// }
 
