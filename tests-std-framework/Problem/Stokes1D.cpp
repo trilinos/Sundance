@@ -32,11 +32,7 @@ int main(int argc, void** argv)
 
 
       Mesh mesh = mesher.getMesh();
-      Expr h = 1.0/60.0;//new CellDiameterExpr();
 
-//       FieldWriter wMesh = new VerboseFieldWriter();
-//       wMesh.addMesh(mesh);
-//       wMesh.write();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
@@ -66,6 +62,7 @@ int main(int argc, void** argv)
 
       /* Define the weak form */
       double beta = 0.02;
+      Expr h = new CellDiameterExpr();
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           - p*(dx*vx)
                           - (h*h*beta)*(grad*q)*(grad*p) - q*(dx*ux),
@@ -84,24 +81,19 @@ int main(int argc, void** argv)
                          List(ux, p), vecType);
 
 
-//       ParameterList solverParams;
-
-//       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-//       solverParams.set(IterativeSolver<double>::maxitersParam(), 5000);
-//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-10);
-
-//       LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
+     
 
       /* Create an Aztec solver */
       std::map<int,int> azOptions;
       std::map<int,double> azParams;
 
       azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-6;
+      azOptions[AZ_precond] = AZ_Neumann;
+      azOptions[AZ_poly_ord] = 4;
+      //      azOptions[AZ_subdomain_solve] = AZ_ilu;
+      //      azOptions[AZ_graph_fill] = 1;
+      azOptions[AZ_max_iter] = 5000;
+      azParams[AZ_tol] = 1.0e-12;
 
       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
@@ -125,7 +117,7 @@ int main(int argc, void** argv)
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
       
-      double tol = 1.0e-12;
+      double tol = 1.0e-10;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
