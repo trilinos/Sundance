@@ -41,12 +41,14 @@
 <ul>
 <li> To unpack Sundance, type
 \code
-tar -zxf sundance-2.0.tar.gz
+tar -zxf sundance-2.0.0.tar.gz
 \endcode
 or
 \code
-gunzip -c sundance-2.0.tar.gz | tar -xf -
+gunzip -c sundance-2.0.0.tar.gz | tar -xf -
 \endcode
+where you should replace <tt>2.0.0</tt> with the version number of the file
+you have downloaded.
 </ul>
 
 
