@@ -1,4 +1,4 @@
 #@HEADER
 #@HEADER
 
-SUBDIRS = HomogeneousDOFMap Assembly
+SUBDIRS = HomogeneousDOFMap Assembly Problem

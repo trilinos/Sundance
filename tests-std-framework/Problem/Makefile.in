@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) $(MeshTest3D_SOURCES)
+SOURCES = $(NonlinAlgebraic_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -80,11 +80,10 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-noinst_PROGRAMS = MeshTest1D$(EXEEXT) MeshTest2D$(EXEEXT) \
-	MeshTest3D$(EXEEXT)
+noinst_PROGRAMS = NonlinAlgebraic$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-subdir = tests-std-mesh/Simple
+subdir = tests-std-framework/Problem
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_cxx_bool.m4 \
 	$(top_srcdir)/config/ac_cxx_have_stl.m4 \
@@ -113,32 +112,27 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_MeshTest1D_OBJECTS = MeshTest1D-MeshTest1D.$(OBJEXT)
-MeshTest1D_OBJECTS = $(am_MeshTest1D_OBJECTS)
+am_NonlinAlgebraic_OBJECTS =  \
+	NonlinAlgebraic-NonlinAlgebraic.$(OBJEXT)
+NonlinAlgebraic_OBJECTS = $(am_NonlinAlgebraic_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
-am_MeshTest2D_OBJECTS = MeshTest2D-MeshTest2D.$(OBJEXT)
-MeshTest2D_OBJECTS = $(am_MeshTest2D_OBJECTS)
-am_MeshTest3D_OBJECTS = MeshTest3D-MeshTest3D.$(OBJEXT)
-MeshTest3D_OBJECTS = $(am_MeshTest3D_OBJECTS)
+am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/MeshTest1D-MeshTest1D.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/MeshTest2D-MeshTest2D.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/MeshTest3D-MeshTest3D.Po
+@AMDEP_TRUE@DEP_FILES =  \
+@AMDEP_TRUE@	./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) \
-	$(MeshTest3D_SOURCES)
-DIST_SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) \
-	$(MeshTest3D_SOURCES)
+SOURCES = $(NonlinAlgebraic_SOURCES)
+DIST_SOURCES = $(NonlinAlgebraic_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -265,24 +259,15 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-MeshTest1D_SOURCES = $(srcdir)/MeshTest1D.cpp
-MeshTest1D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+NonlinAlgebraic_SOURCES = $(srcdir)/NonlinAlgebraic.cpp
+NonlinAlgebraic_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a
 
-MeshTest1D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest1D_LDADD = $(STD_MESH_LIBS) 
-MeshTest2D_SOURCES = $(srcdir)/MeshTest2D.cpp
-MeshTest2D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-MeshTest2D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest2D_LDADD = $(STD_MESH_LIBS) 
-MeshTest3D_SOURCES = $(srcdir)/MeshTest3D.cpp
-MeshTest3D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-MeshTest3D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest3D_LDADD = $(STD_MESH_LIBS) 
+NonlinAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
+NonlinAlgebraic_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -391,9 +376,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  tests-std-mesh/Simple/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  tests-std-framework/Problem/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  tests-std-mesh/Simple/Makefile
+	  $(AUTOMAKE) --foreign  tests-std-framework/Problem/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -414,15 +399,9 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-MeshTest1D$(EXEEXT): $(MeshTest1D_OBJECTS) $(MeshTest1D_DEPENDENCIES) 
-	@rm -f MeshTest1D$(EXEEXT)
-	$(CXXLINK) $(MeshTest1D_LDFLAGS) $(MeshTest1D_OBJECTS) $(MeshTest1D_LDADD) $(LIBS)
-MeshTest2D$(EXEEXT): $(MeshTest2D_OBJECTS) $(MeshTest2D_DEPENDENCIES) 
-	@rm -f MeshTest2D$(EXEEXT)
-	$(CXXLINK) $(MeshTest2D_LDFLAGS) $(MeshTest2D_OBJECTS) $(MeshTest2D_LDADD) $(LIBS)
-MeshTest3D$(EXEEXT): $(MeshTest3D_OBJECTS) $(MeshTest3D_DEPENDENCIES) 
-	@rm -f MeshTest3D$(EXEEXT)
-	$(CXXLINK) $(MeshTest3D_LDFLAGS) $(MeshTest3D_OBJECTS) $(MeshTest3D_LDADD) $(LIBS)
+NonlinAlgebraic$(EXEEXT): $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_DEPENDENCIES) 
+	@rm -f NonlinAlgebraic$(EXEEXT)
+	$(CXXLINK) $(NonlinAlgebraic_LDFLAGS) $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -430,9 +409,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest1D-MeshTest1D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest2D-MeshTest2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest3D-MeshTest3D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -450,53 +427,21 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-MeshTest1D-MeshTest1D.o: $(srcdir)/MeshTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest1D-MeshTest1D.o -MD -MP -MF "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" -c -o MeshTest1D-MeshTest1D.o `test -f '$(srcdir)/MeshTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" "$(DEPDIR)/MeshTest1D-MeshTest1D.Po"; else rm -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest1D.cpp' object='MeshTest1D-MeshTest1D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest1D-MeshTest1D.Po' tmpdepfile='$(DEPDIR)/MeshTest1D-MeshTest1D.TPo' @AMDEPBACKSLASH@
+NonlinAlgebraic-NonlinAlgebraic.o: $(srcdir)/NonlinAlgebraic.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NonlinAlgebraic-NonlinAlgebraic.o -MD -MP -MF "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" -c -o NonlinAlgebraic-NonlinAlgebraic.o `test -f '$(srcdir)/NonlinAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinAlgebraic.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po"; else rm -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NonlinAlgebraic.cpp' object='NonlinAlgebraic-NonlinAlgebraic.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po' tmpdepfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest1D-MeshTest1D.o `test -f '$(srcdir)/MeshTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest1D.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -c -o NonlinAlgebraic-NonlinAlgebraic.o `test -f '$(srcdir)/NonlinAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinAlgebraic.cpp
 
-MeshTest1D-MeshTest1D.obj: $(srcdir)/MeshTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest1D-MeshTest1D.obj -MD -MP -MF "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" -c -o MeshTest1D-MeshTest1D.obj `if test -f '$(srcdir)/MeshTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" "$(DEPDIR)/MeshTest1D-MeshTest1D.Po"; else rm -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest1D.cpp' object='MeshTest1D-MeshTest1D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest1D-MeshTest1D.Po' tmpdepfile='$(DEPDIR)/MeshTest1D-MeshTest1D.TPo' @AMDEPBACKSLASH@
+NonlinAlgebraic-NonlinAlgebraic.obj: $(srcdir)/NonlinAlgebraic.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NonlinAlgebraic-NonlinAlgebraic.obj -MD -MP -MF "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" -c -o NonlinAlgebraic-NonlinAlgebraic.obj `if test -f '$(srcdir)/NonlinAlgebraic.cpp'; then $(CYGPATH_W) '$(srcdir)/NonlinAlgebraic.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NonlinAlgebraic.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po"; else rm -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NonlinAlgebraic.cpp' object='NonlinAlgebraic-NonlinAlgebraic.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po' tmpdepfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest1D-MeshTest1D.obj `if test -f '$(srcdir)/MeshTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest1D.cpp'; fi`
-
-MeshTest2D-MeshTest2D.o: $(srcdir)/MeshTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest2D-MeshTest2D.o -MD -MP -MF "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" -c -o MeshTest2D-MeshTest2D.o `test -f '$(srcdir)/MeshTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest2D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" "$(DEPDIR)/MeshTest2D-MeshTest2D.Po"; else rm -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest2D.cpp' object='MeshTest2D-MeshTest2D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest2D-MeshTest2D.Po' tmpdepfile='$(DEPDIR)/MeshTest2D-MeshTest2D.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest2D-MeshTest2D.o `test -f '$(srcdir)/MeshTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest2D.cpp
-
-MeshTest2D-MeshTest2D.obj: $(srcdir)/MeshTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest2D-MeshTest2D.obj -MD -MP -MF "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" -c -o MeshTest2D-MeshTest2D.obj `if test -f '$(srcdir)/MeshTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest2D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" "$(DEPDIR)/MeshTest2D-MeshTest2D.Po"; else rm -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest2D.cpp' object='MeshTest2D-MeshTest2D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest2D-MeshTest2D.Po' tmpdepfile='$(DEPDIR)/MeshTest2D-MeshTest2D.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest2D-MeshTest2D.obj `if test -f '$(srcdir)/MeshTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest2D.cpp'; fi`
-
-MeshTest3D-MeshTest3D.o: $(srcdir)/MeshTest3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest3D-MeshTest3D.o -MD -MP -MF "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" -c -o MeshTest3D-MeshTest3D.o `test -f '$(srcdir)/MeshTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest3D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" "$(DEPDIR)/MeshTest3D-MeshTest3D.Po"; else rm -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest3D.cpp' object='MeshTest3D-MeshTest3D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest3D-MeshTest3D.Po' tmpdepfile='$(DEPDIR)/MeshTest3D-MeshTest3D.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest3D-MeshTest3D.o `test -f '$(srcdir)/MeshTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest3D.cpp
-
-MeshTest3D-MeshTest3D.obj: $(srcdir)/MeshTest3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest3D-MeshTest3D.obj -MD -MP -MF "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" -c -o MeshTest3D-MeshTest3D.obj `if test -f '$(srcdir)/MeshTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest3D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" "$(DEPDIR)/MeshTest3D-MeshTest3D.Po"; else rm -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest3D.cpp' object='MeshTest3D-MeshTest3D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MeshTest3D-MeshTest3D.Po' tmpdepfile='$(DEPDIR)/MeshTest3D-MeshTest3D.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest3D-MeshTest3D.obj `if test -f '$(srcdir)/MeshTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest3D.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -c -o NonlinAlgebraic-NonlinAlgebraic.obj `if test -f '$(srcdir)/NonlinAlgebraic.cpp'; then $(CYGPATH_W) '$(srcdir)/NonlinAlgebraic.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NonlinAlgebraic.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

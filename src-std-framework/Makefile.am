@@ -118,7 +118,13 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp 
 
+SUNDANCE_PROBLEM_H = \
+$(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.hpp 
 
+
+SUNDANCE_PROBLEM = \
+$(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp 
 
 
 
@@ -126,13 +132,15 @@ STD_FWK_SOURCES = \
 $(SUNDANCE_CELLFILTERS) \
 $(SUNDANCE_ELEMENTS) \
 $(SUNDANCE_DOFMAPPING) \
-$(SUNDANCE_ASSEMBLY) 
+$(SUNDANCE_ASSEMBLY)  \
+$(SUNDANCE_PROBLEM)  
 
 STD_FWK_SOURCES_H = \
 $(SUNDANCE_CELLFILTERS_H) \
 $(SUNDANCE_ELEMENTS_H) \
 $(SUNDANCE_DOFMAPPING_H)  \
-$(SUNDANCE_ASSEMBLY_H) 
+$(SUNDANCE_ASSEMBLY_H) \
+$(SUNDANCE_PROBLEM_H)  
 
 
 include $(top_srcdir)/Makefile.common

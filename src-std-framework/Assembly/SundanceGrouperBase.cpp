@@ -64,7 +64,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
           foundUnk = true;
           unkID = f->funcID();
           unkID = eqn.reducedUnkID(unkID);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          SUNDANCE_OUT(true || verbosity() > VerbMedium, 
                        tab << "found unkID=" << unkID);
           const UnknownFunction* uf 
             = dynamic_cast<const  UnknownFunction*>(u->master());
@@ -92,8 +92,8 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
         {
           foundTest = true;
           testID = f->funcID();
-          testID = eqn.reducedUnkID(testID);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          testID = eqn.reducedTestID(testID);
+          SUNDANCE_OUT(true || verbosity() > VerbMedium, 
                        tab << "found testID=" << testID);
           
           const TestFunction* tf 

@@ -343,6 +343,7 @@ AC_CONFIG_FILES([
   tests-std-framework/Makefile
   tests-std-framework/HomogeneousDOFMap/Makefile
   tests-std-framework/Assembly/Makefile
+  tests-std-framework/Problem/Makefile
   doc/Makefile
   doc/Doxygen/Makefile
   doc/Doxygen/Doxyfile.utils

@@ -59,6 +59,10 @@ namespace SundanceStdFwk
       {return colSpace_;}
 
       /** */
+      const RefCountPtr<DiscreteSpace>& rowSpace() const 
+      {return rowSpace_;}
+
+      /** */
       const RefCountPtr<Set<int> >& bcRows() {return bcRows_;}
 
       /** */

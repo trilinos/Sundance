@@ -26,6 +26,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 {
   Tabs tab;
 
+  cerr << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRGGGGGGGGGGGH!" << endl;
+  classVerbosity() = VerbExtreme;
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "trivial grouper num derivs = " << sparsity->numDerivs() << endl);
   SUNDANCE_OUT(verbosity() > VerbMedium,  
@@ -54,10 +56,10 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, testID, unkID,
                       isOneForm);
 
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(true || verbosity() > VerbMedium, 
                    tab1 << "test ID: " << testID);
 
-      SUNDANCE_OUT(!isOneForm && verbosity() > VerbMedium,
+      SUNDANCE_OUT(!isOneForm && (true ||verbosity() > VerbMedium),
                    tab1 << "unk funcID: " << unkID << endl);
                    
       SUNDANCE_OUT(verbosity() > VerbMedium, tab1 << "deriv = " << d);
