@@ -56,7 +56,8 @@ int main(int argc, void** argv)
       Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(6);
+      QuadratureFamily quad2 = new GaussianQuadrature(2);
+      QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       //EvaluatableExpr::classVerbosity() = VerbExtreme;
       //GrouperBase::classVerbosity() = VerbExtreme;
@@ -65,12 +66,12 @@ int main(int argc, void** argv)
       
       /* Define the weak form */
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-      Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad)
-        + Integral(top, -v*(1.0/3.0), quad) 
-        + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad)
-        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
+      Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2)
+        + Integral(top, -v*(1.0/3.0), quad2) 
+        + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);
+      //        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
       /* Define the Dirichlet BC */
-      Expr bc;// = EssentialBC(bottom, v*(u-0.5*x*x), quad);
+      Expr bc = EssentialBC(bottom, v*(u-0.5*x*x), quad4);
 
       //Assembler::workSetSize() = 1;
       //FunctionalEvaluator::workSetSize() = 1;
@@ -82,8 +83,8 @@ int main(int argc, void** argv)
       std::map<int,int> azOptions;
       std::map<int,double> azParams;
 
-      azOptions[AZ_solver] = AZ_cg;
-//       azOptions[AZ_precond] = AZ_dom_decomp;
+      azOptions[AZ_solver] = AZ_gmres;
+      //       azOptions[AZ_precond] = AZ_dom_decomp;
 //       azOptions[AZ_subdomain_solve] = AZ_icc;
 //       azOptions[AZ_graph_fill] = 1;
       azOptions[AZ_ml] = 1;
@@ -94,36 +95,33 @@ int main(int argc, void** argv)
       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
       Expr soln = prob.solve(solver);
-      //prob.getOperator();
 
-     //  /* Write the field in VTK format */
-//       FieldWriter w = new VTKWriter("Poisson2d");
-//       w.addMesh(mesh);
-//       w.addField("soln", new ExprFieldWrapper(soln[0]));
-//       w.write();
+      /* Write the field in VTK format */
+      FieldWriter w = new VTKWriter("Poisson2d");
+      w.addMesh(mesh);
+      w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.write();
 
-//       Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
-//       //Expr exactSoln = 0.5*x*x;
+      Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
 
-//       Expr err = exactSoln - soln;
-//       Expr errExpr = Integral(interior, 
-//                               err*err,
-//                               new GaussianQuadrature(6));
+      Expr err = exactSoln - soln;
+      Expr errExpr = Integral(interior, 
+                              err*err,
+                              quad4);
 
-//       Expr derivErr = dx*(exactSoln-soln);
-//       Expr derivErrExpr = Integral(interior, 
-//                                    derivErr*derivErr, 
-//                                    new GaussianQuadrature(2));
+      Expr derivErr = dx*(exactSoln-soln);
+      Expr derivErrExpr = Integral(interior, 
+                                   derivErr*derivErr, 
+                                   quad2);
 
-//       FunctionalEvaluator errInt(mesh, errExpr);
-//       FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
+      FunctionalEvaluator errInt(mesh, errExpr);
+      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
-//       //Evaluator::classVerbosity() = VerbExtreme;
-//       double errorSq = errInt.evaluate();
-//       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      double errorSq = errInt.evaluate();
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-//       double derivErrorSq = derivErrInt.evaluate();
-//       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+      double derivErrorSq = derivErrInt.evaluate();
+      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
     }
 	catch(exception& e)

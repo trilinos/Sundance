@@ -72,12 +72,23 @@ namespace SundanceStdFwk
       void assemble(TSFExtended::LinearOperator<double>& A,
                     TSFExtended::Vector<double>& b) const ;
 
+
+      /** */
+      void assemble(TSFExtended::Vector<double>& b) const ;
+
       /** */
       static int& workSetSize() 
       {static int rtn = defaultWorkSetSize(); return rtn;}
       
       /** */
       void getGraph(Array<ColSetType<int> >& graph) const ;
+
+      /** */
+      void flushConfiguration() 
+      {
+        vecNeedsConfiguration_ = true;
+        matNeedsConfiguration_ = true;
+      }
 
       
     private:
@@ -120,8 +131,11 @@ namespace SundanceStdFwk
                                    TSFExtended::LoadableVector<double>* vec) const ;
 
       /** */
-      void configureMat(LinearOperator<double>& A,
-                        Vector<double>& b) const ;
+      void configureMatrix(LinearOperator<double>& A,
+                           Vector<double>& b) const ;
+
+      /** */
+      void configureVector(Vector<double>& b) const ;
 
       /** */
       bool isBCRow(int dof) const {return (*isBCRow_)[dof-lowestRow_];}
@@ -129,6 +143,9 @@ namespace SundanceStdFwk
       /** */
       static int defaultWorkSetSize() {return 100;}
       
+      mutable bool matNeedsConfiguration_;
+
+      mutable bool vecNeedsConfiguration_;
 
       Mesh mesh_;
 
@@ -146,13 +163,15 @@ namespace SundanceStdFwk
 
       Array<RegionQuadCombo> rqc_;
 
+      Array<Array<EvalContext> > contexts_;
+
       Array<int> isBCRqc_;
 
-      Array<Array<IntegralGroup> > groups_;
+      Array<Array<Array<IntegralGroup> > > groups_;
 
       Array<RefCountPtr<StdFwkEvalMediator> > mediators_;
 
-      Array<const EvaluatableExpr*> evalExprs_;
+      Array<Array<const EvaluatableExpr*> > evalExprs_;
 
       RefCountPtr<EvalManager> evalMgr_;
 

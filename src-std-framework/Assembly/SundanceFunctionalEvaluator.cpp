@@ -26,6 +26,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
                                          const Expr& integral)
   : mesh_(mesh), 
     rqc_(),
+    context_(),
     rqcExprs_(),
     mediators_(),
     evalExprs_(),
@@ -56,6 +57,8 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   RefCountPtr<EvaluatorFactory> evalFactory 
     = rcp(new BruteForceEvaluatorFactory());
 
+  int contextID = EvalContext::nextID();
+
   for (int d=0; d<integralSum->numRegions(); d++)
     {
       /* make sure we have no test functions */
@@ -69,11 +72,13 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
       for (int t=0; t<integralSum->numTerms(d); t++)
         {
           RegionQuadCombo rqc(reg.ptr(), integralSum->quad(d,t));
+          EvalContext context(rqc, contextID);
+          context_.append(context);
           Expr term = integralSum->expr(d,t);
           rqcSet.put(rqc);
           rqcExprs_.put(rqc, term);
           DerivSet nonzeros = SymbPreprocessor::setupExpr(term, 
-                                                          rqc,
+                                                          context,
                                                           evalFactory.get());
 
         }
@@ -111,7 +116,7 @@ double FunctionalEvaluator::evaluate() const
     {
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
-      evalMgr_->setRegion(rqc_[r]);
+      evalMgr_->setRegion(context_[r]);
 
 
       /* get the cells for the current domain */

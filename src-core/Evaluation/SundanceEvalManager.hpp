@@ -5,7 +5,7 @@
 #define SUNDANCE_EVALMANAGER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceRegionQuadCombo.hpp"
+#include "SundanceEvalContext.hpp"
 #include "SundanceAbstractEvalMediator.hpp"
 #include "SundanceTempStack.hpp"
 #include "SundanceNoncopyable.hpp"
@@ -56,11 +56,11 @@ namespace SundanceCore
           const AbstractEvalMediator* mediator() const {return mediator_.get();}
 
           /** */
-          void setRegion(const RegionQuadCombo& region)
+          void setRegion(const EvalContext& region)
             {region_ = region;}
 
           /** */
-          const RegionQuadCombo& getRegion() const {return region_;}
+          const EvalContext& getRegion() const {return region_;}
 
           /** */
           TempStack& stack() const {return stack_;}
@@ -69,7 +69,7 @@ namespace SundanceCore
 
           bool numericalEval() const {mediator_.get() != 0;}
 
-          RegionQuadCombo region_;
+          EvalContext region_;
 
           RefCountPtr<AbstractEvalMediator> mediator_;
 

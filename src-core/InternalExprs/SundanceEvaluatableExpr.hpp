@@ -10,7 +10,7 @@
 #include "SundanceScalarExpr.hpp"
 #include "SundanceMap.hpp"
 #include "SundanceDerivSet.hpp"
-#include "SundanceRegionQuadCombo.hpp"
+#include "SundanceEvalContext.hpp"
 #include "SundanceEvalVectorArray.hpp"
 #include "SundanceSparsityPattern.hpp"
 #include "TSFObjectWithVerbosity.hpp"
@@ -185,7 +185,7 @@ namespace SundanceCore
        * then create and install the appropriate evaluator as prescribed
        * by the evaluator factory.
        */
-      virtual int setupEval(const RegionQuadCombo& region,
+      virtual int setupEval(const EvalContext& region,
                             const EvaluatorFactory* factory) const = 0;
 
       /**
@@ -198,7 +198,7 @@ namespace SundanceCore
 
       /** Look up the index at which the sparsity information for this
        * region is stored. */
-      int getDerivSetIndex(const RegionQuadCombo& region) const ;
+      int getDerivSetIndex(const EvalContext& region) const ;
 
 
       /** Return the sparsity pattern for the given deriv set */
@@ -228,7 +228,7 @@ namespace SundanceCore
 
 
       /** See if this region is new */
-      bool checkForKnownRegion(const RegionQuadCombo& region,
+      bool checkForKnownRegion(const EvalContext& region,
                                bool& derivSetIsKnown) const ;
 
       /** Create entries in the results array for the all the
@@ -239,13 +239,13 @@ namespace SundanceCore
        * @return the index of the newly-created list of indices in
        * derivSetIndexToResultIndicesMap_
        */
-      int registerRegion(const RegionQuadCombo& region,
+      int registerRegion(const EvalContext& region,
                          bool derivSetIsKnown,
                          const DerivSet& derivs,
                          const EvaluatorFactory* factory) const ;
 
       /** Indicate whether this region has been set up */
-      bool knowsRegion(const RegionQuadCombo& region) const
+      bool knowsRegion(const EvalContext& region) const
       {return regionToDerivSetIndexMap_.containsKey(region);}
 
 
@@ -318,11 +318,11 @@ namespace SundanceCore
        * many-to-one, because two or more regions may require
        * the same set of derivatives from this node. Rather than replicate
        * identical derivative sets in
-       * a <tt> Map<RegionQuadCombo, DerivSet ></tt> object,
+       * a <tt> Map<EvalContext, DerivSet ></tt> object,
        * create an array of derivative sets and map regions to
        * that array index.
        */
-      mutable Map<RegionQuadCombo, int> regionToDerivSetIndexMap_;
+      mutable Map<EvalContext, int> regionToDerivSetIndexMap_;
 
       /**
        * Derivative sets are usually referred to by index. This map

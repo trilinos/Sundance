@@ -27,8 +27,8 @@ using namespace Internal;
 
 
 DerivSet SymbPreprocessor::setupExpr(const Expr& expr, 
-                                 const RegionQuadCombo& region, 
-                                 const EvaluatorFactory* factory)
+                                     const EvalContext& region, 
+                                     const EvaluatorFactory* factory)
 {
   TimeMonitor t(preprocTimer());
 
@@ -56,8 +56,9 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
                                      const Expr& tests,
                                      const Expr& unks,
                                      const Expr& u0, 
-                                     const RegionQuadCombo& region, 
-                                     const EvaluatorFactory* factory)
+                                     const EvalContext& region, 
+                                     const EvaluatorFactory* factory,
+                                     int maxDiffOrder)
 {
   TimeMonitor t(preprocTimer());
 
@@ -68,7 +69,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
                      "Non-evaluatable expr " << expr.toString()
                      << " given to SymbPreprocessor::setupExpr()");
 
-  DerivSet derivs = identifyNonzeroDerivs(expr, tests, unks, u0);
+  DerivSet derivs = identifyNonzeroDerivs(expr, tests, unks, u0, maxDiffOrder);
 
   e->resetDerivSuperset();
 
@@ -82,7 +83,8 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
                                                  const Expr& tests,
                                                  const Expr& unks,
-                                                 const Expr& evalPts)
+                                                 const Expr& evalPts,
+                                                 int maxDiffOrder)
 {
   TimeMonitor t(preprocTimer());
 
@@ -192,19 +194,22 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
         }
     }
 
-  for (Set<Deriv>::const_iterator i=testDerivs.begin(); i != testDerivs.end(); i++)
+  if (maxDiffOrder==2)
     {
-      const Deriv& dTest = *i;
-      for (Set<Deriv>::const_iterator j=unkDerivs.begin(); j != unkDerivs.end(); j++)
+      for (Set<Deriv>::const_iterator i=testDerivs.begin(); i != testDerivs.end(); i++)
         {
-          const Deriv& dUnk = *j;
-
-          MultipleDeriv m;
-          m.put(dTest);
-          m.put(dUnk);
-          if (e->hasNonzeroDeriv(m))
+          const Deriv& dTest = *i;
+          for (Set<Deriv>::const_iterator j=unkDerivs.begin(); j != unkDerivs.end(); j++)
             {
-              nonzeroDerivs.put(m);
+              const Deriv& dUnk = *j;
+              
+              MultipleDeriv m;
+              m.put(dTest);
+              m.put(dUnk);
+              if (e->hasNonzeroDeriv(m))
+                {
+                  nonzeroDerivs.put(m);
+                }
             }
         }
     }

@@ -96,7 +96,7 @@ DerivSet EvaluatableExpr::identifyNonzeroDerivs() const
   
 }
 
-bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region,
+bool EvaluatableExpr::checkForKnownRegion(const EvalContext& region,
                                           bool& derivSetIsKnown) const
 {
 
@@ -170,7 +170,7 @@ bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region,
 }
 
 
-int EvaluatableExpr::registerRegion(const RegionQuadCombo& region,
+int EvaluatableExpr::registerRegion(const EvalContext& region,
                                     bool derivSetIsKnown,
                                     const DerivSet& derivs,
                                     const EvaluatorFactory* factory) const
@@ -325,7 +325,7 @@ void EvaluatableExpr::findDerivSuperset(const DerivSet& derivs) const
     }
 }
 
-int EvaluatableExpr::getDerivSetIndex(const RegionQuadCombo& region) const
+int EvaluatableExpr::getDerivSetIndex(const EvalContext& region) const
 {
   TimeMonitor timer(derivSetLookupTimer());
   Tabs tabs;

@@ -34,8 +34,10 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
-    regionQuadComboNonzeroDerivs_(),
-    bcRegionQuadComboNonzeroDerivs_(),
+    regionQuadComboNonzeroDerivs_(2),
+    bcRegionQuadComboNonzeroDerivs_(2),
+    rqcToContext_(2),
+    bcRqcToContext_(2),
     testFuncs_(tests),
     unkFuncs_(unks),
     unkLinearizationPts_(unkLinearizationPts),
@@ -120,6 +122,9 @@ EquationSet::EquationSet(const Expr& eqns,
   Set<RegionQuadCombo> rqcSet;
   Set<RegionQuadCombo> rqcBCSet;
 
+  Array<int> contextID = tuple(EvalContext::nextID(),
+                               EvalContext::nextID());
+
   /* Now compile a list of all regions appearing in either the eqns or
    * the BCs */
 
@@ -146,13 +151,20 @@ EquationSet::EquationSet(const Expr& eqns,
           Expr term = integralSum->expr(d,t);
           rqcSet.put(rqc);
           regionQuadComboExprs_.put(rqc, term);
-          DerivSet nonzeros = SymbPreprocessor::setupExpr(term, tests,
-                                                          unks, 
-                                                          unkLinearizationPts,
-                                                          rqc,
-                                                          evalFactory.get());
-          addToTestUnkPairs(rqc.domain(), nonzeros, false);
-          regionQuadComboNonzeroDerivs_.put(rqc, nonzeros);
+          for (int order=1; order<=2; order++)
+            {
+              EvalContext context(rqc, contextID[order-1]);
+              DerivSet nonzeros 
+                = SymbPreprocessor::setupExpr(term, tests,
+                                              unks, 
+                                              unkLinearizationPts,
+                                              context,
+                                              evalFactory.get(),
+                                              order);
+              if (order==2) addToTestUnkPairs(rqc.domain(), nonzeros, false);
+              rqcToContext_[order-1].put(rqc, context);
+              regionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);
+            }
         }
     }
   
@@ -193,15 +205,21 @@ EquationSet::EquationSet(const Expr& eqns,
               RegionQuadCombo rqc(reg.ptr(), bcSum->quad(d,t));
               Expr term = bcSum->expr(d,t);
               rqcBCSet.put(rqc);
-              bcRegionQuadComboExprs_.put(rqc, bcSum->expr(d,t));
-              DerivSet nonzeros 
-                = SymbPreprocessor::setupExpr(term, tests,
-                                              unks, 
-                                              unkLinearizationPts,
-                                              rqc,
-                                              evalFactory.get());
-              addToTestUnkPairs(rqc.domain(), nonzeros, true);
-              bcRegionQuadComboNonzeroDerivs_.put(rqc, nonzeros);
+              bcRegionQuadComboExprs_.put(rqc, bcSum->expr(d,t)); 
+              for (int order=1; order<=2; order++)
+                {
+                  EvalContext context(rqc, contextID[order-1]);
+                  DerivSet nonzeros 
+                    = SymbPreprocessor::setupExpr(term, tests,
+                                                  unks, 
+                                                  unkLinearizationPts,
+                                                  context,
+                                                  evalFactory.get(),
+                                                  order);
+                  if (order==2) addToTestUnkPairs(rqc.domain(), nonzeros, true);
+                  bcRqcToContext_[order-1].put(rqc, context);
+                  bcRegionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);
+                }
             }
         }
     }

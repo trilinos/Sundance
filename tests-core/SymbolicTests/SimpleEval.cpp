@@ -52,7 +52,7 @@ void doit(const Expr& e,
           const Expr& tests,
           const Expr& unks,
           const Expr& u0, 
-          const RegionQuadCombo& region)
+          const EvalContext& region)
 {
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
@@ -68,7 +68,7 @@ void doit(const Expr& e,
                                            tests,
                                            unks,
                                            u0,
-                                           region, factory.get());
+                                           region, factory.get(), 2);
 
   RefCountPtr<EvalVectorArray> results;
 
@@ -81,7 +81,7 @@ void testExpr(const Expr& e,
               const Expr& tests,
               const Expr& unks,
               const Expr& u0, 
-              const RegionQuadCombo& region)
+              const EvalContext& region)
 {
   cerr << endl 
        << "-------- testing " << e.toString() << " -------- " << endl;
@@ -185,11 +185,14 @@ int main(int argc, void** argv)
 
       for (int i=0; i<tests.length(); i++)
         {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(0)));
+          EvalContext context(rqc, EvalContext::nextID());
           testExpr(tests[i], 
                    SundanceCore::List(v, s),
                    SundanceCore::List(u, w),
                    SundanceCore::List(u0, w0),
-                   RegionQuadCombo(rcp(new CellFilterStub()), rcp(new QuadratureFamilyStub(0))));
+                   context);
         }
 
       

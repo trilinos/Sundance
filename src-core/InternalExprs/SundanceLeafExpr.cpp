@@ -13,7 +13,7 @@ LeafExpr::LeafExpr()
   : EvaluatableExpr()
 {}
 
-int LeafExpr::setupEval(const RegionQuadCombo& region,
+int LeafExpr::setupEval(const EvalContext& region,
                         const EvaluatorFactory* factory) const
 {
   /* first check to see if rule tables for this set of derivatives 

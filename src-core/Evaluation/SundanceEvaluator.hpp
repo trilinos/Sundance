@@ -18,7 +18,7 @@ namespace SundanceCore
 
   namespace Internal
   {
-    class RegionQuadCombo;
+    class EvalContext;
   }
   
   using namespace Internal;

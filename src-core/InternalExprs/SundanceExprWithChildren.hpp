@@ -85,7 +85,7 @@ namespace SundanceCore
            * for setting up evaluation of a new deriv set.
            * @return index of the deriv set
            */
-          virtual int setupEval(const RegionQuadCombo& region,
+          virtual int setupEval(const EvalContext& region,
                                 const EvaluatorFactory* factory) const ;
 
           /** Return the set of derivatives required by the operands

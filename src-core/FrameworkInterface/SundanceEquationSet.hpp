@@ -11,6 +11,7 @@
 #include "SundanceSumOfBCs.hpp"
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
+#include "SundanceEvalContext.hpp"
 #include "SundanceEvaluatorFactory.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
@@ -130,14 +131,24 @@ namespace SundanceCore
 
       /** Returns the set of nonzero functional derivatives appearing
        * in the equation set at the given subregion-quadrature combination */
-      const DerivSet& nonzeroFunctionalDerivs(const RegionQuadCombo& r) const 
-      {return regionQuadComboNonzeroDerivs_.get(r);}
+      const DerivSet& nonzeroFunctionalDerivs(int order,
+                                              const RegionQuadCombo& r) const 
+      {return regionQuadComboNonzeroDerivs_[order-1].get(r);}
 
       /** Returns the set of nonzero functional derivatives appearing
        * in the boundary conditions
        *  at the given subregion-quadrature combination */
-      const DerivSet& nonzeroBCFunctionalDerivs(const RegionQuadCombo& r) const
-      {return bcRegionQuadComboNonzeroDerivs_.get(r);}
+      const DerivSet& nonzeroBCFunctionalDerivs(int order,
+                                                const RegionQuadCombo& r) const
+      {return bcRegionQuadComboNonzeroDerivs_[order-1].get(r);}
+
+      /** Map RQC to the context for the derivs of the given order */
+      EvalContext rqcToContext(int order, const RegionQuadCombo& r) const 
+      {return rqcToContext_[order-1].get(r);}
+
+      /** Map BC RQC to the context for the derivs of the given order */
+      EvalContext bcRqcToContext(int order, const RegionQuadCombo& r) const 
+      {return bcRqcToContext_[order-1].get(r);}
 
 
       /** Indicates whether any test-unk pairs appear in the given domain */
@@ -171,8 +182,6 @@ namespace SundanceCore
       {return bcRegionQuadComboExprs_.get(r);}
       //@}
 
-      
-          
     private:
 
       /** */
@@ -220,11 +229,19 @@ namespace SundanceCore
 
       /** List of the sets of nonzero functional derivatives at 
        * each regionQuadCombo */
-      Map<RegionQuadCombo, DerivSet> regionQuadComboNonzeroDerivs_;
+      Array<Map<RegionQuadCombo, DerivSet> > regionQuadComboNonzeroDerivs_;
 
       /** List of the sets of nonzero functional derivatives at 
        * each regionQuadCombo */
-      Map<RegionQuadCombo, DerivSet> bcRegionQuadComboNonzeroDerivs_;
+      Array<Map<RegionQuadCombo, DerivSet> > bcRegionQuadComboNonzeroDerivs_;
+
+      /** List of the contexts for
+       * each regionQuadCombo */
+      Array<Map<RegionQuadCombo, EvalContext> > rqcToContext_;
+
+      /** List of the contexts for
+       * each BC regionQuadCombo */
+      Array<Map<RegionQuadCombo, EvalContext> > bcRqcToContext_;
 
       /** test functions for this equation set */
       Expr testFuncs_;

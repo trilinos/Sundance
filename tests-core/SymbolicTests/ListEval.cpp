@@ -78,12 +78,14 @@ int main(int argc, void** argv)
 
       RegionQuadCombo internalRegion(rcp(new CellFilterStub()), 
                                 rcp(new QuadratureFamilyStub(0)));
+      EvalContext internalContext(internalRegion, 0);
 
       RegionQuadCombo bcRegion(rcp(new CellFilterStub()), 
                                 rcp(new QuadratureFamilyStub(0)));
+      EvalContext bcContext(bcRegion, 0);
 
       EvalManager mgr;
-      mgr.setRegion(internalRegion);
+      mgr.setRegion(internalContext);
 
       RefCountPtr<EvaluatorFactory> factory 
         = rcp(new BruteForceEvaluatorFactory());
@@ -92,15 +94,15 @@ int main(int argc, void** argv)
                                                List(v,q),
                                                List(u,p),
                                                List(u0,p0),
-                                               internalRegion,
-                                               factory.get());
+                                               internalContext,
+                                               factory.get(), 2);
       
       DerivSet dBC = SymbPreprocessor::setupExpr(bc,
                                                  List(v,q),
                                                  List(u,p),
                                                  List(u0,p0),
-                                                 bcRegion,
-                                                 factory.get());
+                                                 bcContext,
+                                                 factory.get(), 2);
       RefCountPtr<EvalVectorArray> results;
 
 
@@ -111,7 +113,7 @@ int main(int argc, void** argv)
       cerr << "---- internal -------" << endl;
       results->print(cerr, dIn);
 
-      mgr.setRegion(bcRegion);
+      mgr.setRegion(bcContext);
 
       const EvaluatableExpr* ev2 
         = dynamic_cast<const EvaluatableExpr*>(bc[0].ptr().get());

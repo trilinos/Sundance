@@ -78,7 +78,7 @@ namespace SundanceCore
        * Create an evaluator for this region and deriv set, and 
        * do any other setup required for evaluation. 
        */
-      virtual int setupEval(const RegionQuadCombo& region,
+      virtual int setupEval(const EvalContext& region,
                             const EvaluatorFactory* factory) const ;
 
       /** */

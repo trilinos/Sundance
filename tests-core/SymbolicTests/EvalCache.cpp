@@ -74,8 +74,9 @@ int main(int argc, void** argv)
 
       RegionQuadCombo region(rcp(new CellFilterStub()),
                         rcp(new QuadratureFamilyStub(0)));
+      EvalContext context(region, 0);
       EvalManager mgr;
-      mgr.setRegion(region);
+      mgr.setRegion(context);
 
       RefCountPtr<EvaluatorFactory> factory 
         = rcp(new BruteForceEvaluatorFactory());
@@ -84,8 +85,8 @@ int main(int argc, void** argv)
                                                 SundanceCore::List(v),
                                                 SundanceCore::List(a,b,c),
                                                 SundanceCore::List(a0,b0,c0),
-                                                region,
-                                                factory.get());
+                                                context,
+                                                factory.get(), 2);
       
       RefCountPtr<EvalVectorArray> results;
 

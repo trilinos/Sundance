@@ -60,6 +60,9 @@ namespace SundanceStdFwk
       Array<RegionQuadCombo> rqc_;
 
       /** */
+      Array<EvalContext> context_;
+
+      /** */
       Map<RegionQuadCombo, Expr> rqcExprs_;
 
 

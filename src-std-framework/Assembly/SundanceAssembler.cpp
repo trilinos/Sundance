@@ -70,7 +70,9 @@ Assembler
             const RefCountPtr<EquationSet>& eqn,
             const VectorType<double>& vectorType,
             const VerbositySetting& verb)
-  : mesh_(mesh),
+  : matNeedsConfiguration_(true),
+    vecNeedsConfiguration_(true),
+    mesh_(mesh),
     eqn_(eqn),
     rowMap_(),
     colMap_(),
@@ -78,10 +80,11 @@ Assembler
     colSpace_(),
     bcRows_(),
     rqc_(),
+    contexts_(2),
     isBCRqc_(),
-    groups_(),
+    groups_(2),
     mediators_(),
-    evalExprs_(),
+    evalExprs_(2),
     evalMgr_(rcp(new EvalManager())),
     isBCRow_(),
     lowestRow_(),
@@ -115,20 +118,27 @@ Assembler
       SUNDANCE_OUT(verbosity() > VerbMedium,
                    "creating integral groups for rqc=" << rqc << endl
                    << "expr = " << expr);
-      const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(rqc);
+
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
       QuadratureFamily quad(rqc.quad());
-      const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
-      evalExprs_.append(ee);
-      const RefCountPtr<SparsityPattern>& sparsity 
-        = ee->sparsity(ee->getDerivSetIndex(rqc));
-      SUNDANCE_OUT(verbosity() > VerbMedium,
-                   "sparsity pattern " << *sparsity);
-      
-      Array<IntegralGroup> groups;
-      grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
-      groups_.append(groups);
+
+      for (int order=1; order<=2; order++)
+        {
+          const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(order, rqc);
+          EvalContext context = eqn->rqcToContext(order, rqc);
+          contexts_[order-1].append(context);
+          const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
+          evalExprs_[order-1].append(ee);
+          const RefCountPtr<SparsityPattern>& sparsity 
+            = ee->sparsity(ee->getDerivSetIndex(context));
+          SUNDANCE_OUT(verbosity() > VerbMedium,
+                       "sparsity pattern " << *sparsity);
+
+          Array<IntegralGroup> groups;
+          grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
+          groups_[order-1].append(groups);
+        }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
     }
@@ -144,43 +154,57 @@ Assembler
       SUNDANCE_OUT(verbosity() > VerbMedium,
                    "creating integral groups for rqc=" << rqc << endl
                    << "expr = " << expr.toXML().toString());
-      const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(rqc);
+      
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
       QuadratureFamily quad(rqc.quad());
-      const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
-      evalExprs_.append(ee);
-      const RefCountPtr<SparsityPattern>& sparsity 
-        = ee->sparsity(ee->getDerivSetIndex(rqc));
-      SUNDANCE_OUT(verbosity() > VerbMedium,
-                   "sparsity pattern " << *sparsity);
-      Array<IntegralGroup> groups;
-      grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
-      groups_.append(groups);
+
+      for (int order=1; order<=2; order++)
+        {
+          const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(order, rqc);
+          EvalContext context = eqn->bcRqcToContext(order, rqc);
+          contexts_[order-1].append(context);
+          const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
+          evalExprs_[order-1].append(ee);
+          const RefCountPtr<SparsityPattern>& sparsity 
+            = ee->sparsity(ee->getDerivSetIndex(context));
+          SUNDANCE_OUT(verbosity() > VerbMedium,
+                       "sparsity pattern " << *sparsity);
+
+          Array<IntegralGroup> groups;
+          grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
+          groups_[order-1].append(groups);
+        }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
     }
 }
 
+void Assembler::configureVector(Vector<double>& b) const 
+{
+  Tabs tab;
+  TimeMonitor timer(configTimer());
+  VectorSpace<double> colSpace = colSpace_->vecSpace();
+  
+  b = colSpace.createMember();
 
-void Assembler::configureMat(LinearOperator<double>& A,
-                             Vector<double>& b) const 
+  TSFExtended::LoadableVector<double>* vec 
+    = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
+
+  TEST_FOR_EXCEPTION(vec==0, RuntimeError,
+                     "vector is not loadable in Assembler::configureVector()");
+
+  vecNeedsConfiguration_ = false;
+}
+
+
+
+void Assembler::configureMatrix(LinearOperator<double>& A,
+                                Vector<double>& b) const 
 {
   Tabs tab;
   TimeMonitor timer(configTimer());
   
-  Array<int> localRowIndices(rowMap()->numLocalDOFs());
-  for (int i=0; i<localRowIndices.size(); i++) 
-    {
-      localRowIndices[i] = lowestRow_+i;
-    }
-  Array<int> localColIndices(colMap()->numLocalDOFs());
-  int lowestCol = colMap()->lowestLocalDOF();
-  for (int i=0; i<localColIndices.size(); i++) 
-    {
-      localColIndices[i] = lowestCol+i;
-    }
-
   SUNDANCE_OUT(verbosity() > VerbSilent, 
                tab << "Assembler: num rows = " << rowMap()->numDOFs());
   SUNDANCE_OUT(verbosity() > VerbSilent, 
@@ -197,15 +221,13 @@ void Assembler::configureMat(LinearOperator<double>& A,
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "...done");
 
-  b = colSpace.createMember();
   A = vecType_.createMatrix(colSpace, rowSpace);
+
+  if (vecNeedsConfiguration_)
+    {
+      configureVector(b);
+    }
                                                       
-  TSFExtended::LoadableVector<double>* vec 
-    = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
-
-  TEST_FOR_EXCEPTION(vec==0, RuntimeError,
-                     "vector is not loadable in Assembler::assemble()");
-
   TSFExtended::LoadableMatrix<double>* mat
     = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(A.ptr().get());
 
@@ -230,20 +252,6 @@ void Assembler::configureMat(LinearOperator<double>& A,
 
   mat->configure(lowestRow_, graph);
 
-  // int maxSize = 0;
-//   for (int i=0; i<graph.size(); i++)
-//     {
-//       graph[i].elements(colIndices);
-//       if (colIndices.size() > maxSize) 
-//         {
-//           zeros.resize(colIndices.size());
-//           for (int j=maxSize; j<zeros.size(); j++) zeros[j] = 0.0;
-//           maxSize = zeros.size();
-//         }
-//       mat->setRowValues(lowestRow_ + i, colIndices.size(),
-//                         &(colIndices[0]), &(zeros[0]));
-//     }
-
   b.zero();
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "...done");
@@ -256,6 +264,8 @@ void Assembler::configureMat(LinearOperator<double>& A,
       cerr << tab1 << "Assemble: vector before fill = ";
       A.print(cerr);
     }
+
+  matNeedsConfiguration_ = false;
 }
 
 
@@ -280,7 +290,11 @@ void Assembler::assemble(LinearOperator<double>& A,
   RefCountPtr<Array<int> > unkLocalDOFs
     = rcp(new Array<int>());
 
-  configureMat(A, b);
+  if (matNeedsConfiguration_)
+    {
+      configureMatrix(A, b);
+    }
+  
 
   TSFExtended::LoadableVector<double>* vec 
     = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
@@ -294,6 +308,12 @@ void Assembler::assemble(LinearOperator<double>& A,
   TEST_FOR_EXCEPTION(mat==0, RuntimeError,
                      "matrix is not loadable in Assembler::assemble()");
 
+  /* zero out the matrix and vector */
+  b.zero();
+  mat->zero();
+
+  /* fill loop */
+
   for (int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
@@ -302,7 +322,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
-      evalMgr_->setRegion(rqc_[r]);
+      evalMgr_->setRegion(contexts_[1][r]);
 
       /* get the cells for the current domain */
       CellFilter filter = rqc_[r].domain();
@@ -335,9 +355,9 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           mediators_[r]->setCellBatch(workSet);
 
-          evalExprs_[r]->flushResultCache();
+          evalExprs_[1][r]->flushResultCache();
           mesh_.getJacobians(cellDim, *workSet, *J);
-          evalExprs_[r]->evaluate(*evalMgr_, coeffs);
+          evalExprs_[1][r]->evaluate(*evalMgr_, coeffs);
 
           int nTestNodes;
           int nUnkNodes;
@@ -355,9 +375,9 @@ void Assembler::assemble(LinearOperator<double>& A,
                                            nUnkNodes);
             }
 
-          for (int g=0; g<groups_[r].size(); g++)
+          for (int g=0; g<groups_[1][r].size(); g++)
             {
-              const IntegralGroup& group = groups_[r][g];
+              const IntegralGroup& group = groups_[1][r][g];
               if (!group.evaluate(*J, coeffs, localValues)) continue;
               
               if (group.isTwoForm())
@@ -383,6 +403,105 @@ void Assembler::assemble(LinearOperator<double>& A,
   mat->freezeValues();
 
 }
+
+
+
+void Assembler::assemble(Vector<double>& b) const 
+{
+  Tabs tab;
+  TimeMonitor timer(assemblyTimer());
+
+  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  workSet->reserve(workSetSize());
+  SUNDANCE_OUT(verbosity() > VerbSilent, 
+               "work set size is " << workSetSize()); 
+  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
+
+  RefCountPtr<EvalVectorArray> coeffs;
+  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+
+  RefCountPtr<Array<int> > testLocalDOFs 
+    = rcp(new Array<int>());
+
+  if (vecNeedsConfiguration_)
+    {
+      configureVector(b);
+    }
+
+
+
+  TSFExtended::LoadableVector<double>* vec 
+    = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
+
+  TEST_FOR_EXCEPTION(vec==0, RuntimeError,
+                     "vector is not loadable in Assembler::assemble()");
+
+  b.zero();
+
+  for (int r=0; r<rqc_.size(); r++)
+    {
+      Tabs tab0;
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   tab0 << "doing matrix/vector assembly for rqc=" << rqc_[r]);
+
+      /* specify the mediator for this RQC */
+      evalMgr_->setMediator(mediators_[r]);
+      evalMgr_->setRegion(contexts_[0][r]);
+
+      /* get the cells for the current domain */
+      CellFilter filter = rqc_[r].domain();
+      CellSet cells = filter.getCells(mesh_);
+      int cellDim = filter.dimension(mesh_);
+      CellType cellType = mesh_.cellType(cellDim);
+      mediators_[r]->setCellType(cellType);      
+
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   tab0 << "cell type = " << cellType);
+
+      /* do the cells in batches of the work set size */
+
+      CellIterator iter=cells.begin();
+      int workSetCounter = 0;
+
+      while (iter != cells.end())
+        {
+          Tabs tab1;
+          /* build up the work set */
+          workSet->resize(0);
+          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+            {
+              workSet->append(*iter);
+            }
+          SUNDANCE_OUT(verbosity() > VerbMedium,
+                       tab1 << "doing work set " << workSetCounter
+                       << " consisting of " << workSet->size() << " cells");
+          workSetCounter++;
+
+          mediators_[r]->setCellBatch(workSet);
+
+          evalExprs_[0][r]->flushResultCache();
+          mesh_.getJacobians(cellDim, *workSet, *J);
+          evalExprs_[0][r]->evaluate(*evalMgr_, coeffs);
+
+          int nTestNodes;
+          rowMap_->getDOFsForCellBatch(cellDim, *workSet, 0, *testLocalDOFs,
+                                       nTestNodes);
+
+
+          for (int g=0; g<groups_[0][r].size(); g++)
+            {
+              const IntegralGroup& group = groups_[0][r][g];
+              if (!group.evaluate(*J, coeffs, localValues)) continue;
+              
+              insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
+                                     *testLocalDOFs,
+                                     group.nTestNodes(),
+                                     group.testID(), *localValues, vec);
+            }
+        }
+    }
+}
+
 
 void Assembler::insertLocalMatrixValues(int cellDim, 
                                         const Array<int>& workSet, 

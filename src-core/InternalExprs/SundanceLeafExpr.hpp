@@ -31,7 +31,7 @@ namespace SundanceCore
           /** Create an evaluator for this expression. Since this is
            * a leaf, this method is non-recursive, i.e., it does
            * not have any operands to call setupEval() on. */
-          virtual int setupEval(const RegionQuadCombo& region,
+          virtual int setupEval(const EvalContext& region,
                                 const EvaluatorFactory* factory) const ;
         protected:
         private:

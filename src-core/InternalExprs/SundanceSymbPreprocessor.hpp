@@ -32,18 +32,20 @@ namespace SundanceCore
                                   const Expr& tests,
                                   const Expr& unks,
                                   const Expr& u0,
-                                  const RegionQuadCombo& region, 
-                                  const EvaluatorFactory* factory);
+                                  const EvalContext& region, 
+                                  const EvaluatorFactory* factory,
+                                  int maxDiffOrder);
         /** */
         static DerivSet setupExpr(const Expr& expr, 
-                                  const RegionQuadCombo& region, 
+                                  const EvalContext& region, 
                                   const EvaluatorFactory* factory);
 
         /** */
         static DerivSet identifyNonzeroDerivs(const Expr& expr,
                                               const Expr& tests,
                                               const Expr& unks,
-                                              const Expr& u0);
+                                              const Expr& u0,
+                                              int maxDiffOrder);
 
       /** */
       static Time& preprocTimer() 
