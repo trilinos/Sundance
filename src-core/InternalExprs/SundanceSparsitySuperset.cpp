@@ -26,32 +26,40 @@ SparsitySuperset::SparsitySuperset()
     multiIndex_(),
     subsets_(),
     allMultiIndices_(),
+    allFuncIDs_(),
     numConstantDerivs_(0),
     numVectorDerivs_(0)
 {}
 
-void SparsitySuperset::addSubset(const Set<MultiIndex>& multiIndices)
+void SparsitySuperset::addSubset(const Set<MultiIndex>& multiIndices,
+                                 const Set<MultiSet<int> >& funcIDs)
 {
-  if (hasSubset(multiIndices)) return;
+  if (hasSubset(multiIndices, funcIDs)) return;
   
   allMultiIndices_.merge(multiIndices);
+  allFuncIDs_.merge(funcIDs);
   RefCountPtr<SparsitySubset> s = rcp(new SparsitySubset(this));
-  subsets_.put(multiIndices, s);
+  subsets_.put(keyPair(multiIndices, funcIDs), s);
 }
 
-bool SparsitySuperset::hasSubset(const Set<MultiIndex>& multiIndices) const 
+bool SparsitySuperset::hasSubset(const Set<MultiIndex>& multiIndices,
+                                 const Set<MultiSet<int> >& funcIDs) const 
 {
-  return subsets_.containsKey(multiIndices);
+  return subsets_.containsKey(keyPair(multiIndices, funcIDs));
 }
 
-const RefCountPtr<SparsitySubset>& SparsitySuperset::subset(const Set<MultiIndex>& multiIndices) const
+const RefCountPtr<SparsitySubset>& 
+SparsitySuperset::subset(const Set<MultiIndex>& multiIndices,
+                         const Set<MultiSet<int> >& funcIDs) const
 {
-  return subsets_.get(multiIndices);
+  return subsets_.get(keyPair(multiIndices, funcIDs));
 }
 
-RefCountPtr<SparsitySubset> SparsitySuperset::subset(const Set<MultiIndex>& multiIndices) 
+RefCountPtr<SparsitySubset> 
+SparsitySuperset::subset(const Set<MultiIndex>& multiIndices,
+                         const Set<MultiSet<int> >& funcIDs) 
 {
-  return subsets_.get(multiIndices);
+  return subsets_.get(keyPair(multiIndices, funcIDs));
 }
 
 
@@ -207,11 +215,11 @@ void SparsitySuperset::displayAll(ostream& os) const
     }
 
   os << tabs << "Subsets" << endl;
-  for (Map<Set<MultiIndex>, RefCountPtr<SparsitySubset> >::const_iterator
+  for (Map<keyPair, RefCountPtr<SparsitySubset> >::const_iterator
          i=subsets_.begin(); i != subsets_.end(); i++)
     {
       Tabs tabs1;
-      os << tabs1 << "Subset: " << i->first.toString() << endl;
+      os << tabs1 << "Subset: " << i->first << endl;
       i->second->print(os);
     }
 }

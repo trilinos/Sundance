@@ -73,12 +73,16 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
       resultIsConstant_[order].append(resultIsConstant);
       if (resultIsConstant)
         {
+          SUNDANCE_VERB_HIGH(tab0 << endl 
+                             << "result will be in constant index " << constResultIndex);
           resultIndex_[order].append(constResultIndex);
           addConstantIndex(i, constResultIndex);
           constResultIndex++;
         }
       else
         {
+          SUNDANCE_VERB_HIGH(tab0 << endl 
+                             << "result will be in constant index " << vecResultIndex);
           resultIndex_[order].append(vecResultIndex);
           addVectorIndex(i, vecResultIndex);
           vecResultIndex++;
@@ -119,6 +123,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           /* We can write onto left vector */
           hasVectorWorkspace = true;
           workspaceIndex = leftEval()->vectorIndexMap().get(dnLeftIndex);       
+          SUNDANCE_VERB_HIGH(tab0 << "using left as workspace");
           workspaceIsLeft = true;
           int d0RightIndex = rightSparsity()->getIndex(MultipleDeriv());
           bool d0RightIsConst = rightSparsity()->state(d0RightIndex)==ConstantDeriv;
@@ -143,6 +148,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           hasVectorWorkspace = true;
           workspaceIndex = rightEval()->vectorIndexMap().get(dnRightIndex); 
           workspaceIsLeft = false;
+          SUNDANCE_VERB_HIGH(tab0 << "using right as workspace");
           int d0LeftIndex = leftSparsity()->getIndex(MultipleDeriv());
           bool d0LeftIsConst = leftSparsity()->state(d0LeftIndex)==ConstantDeriv;
           workspaceCoeffIsConstant = d0LeftIsConst;

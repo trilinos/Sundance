@@ -46,7 +46,6 @@ namespace SundanceCore
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
                                 const Set<MultiSet<int> >& activeFuncIDs,
-                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
       /** */
@@ -62,6 +61,10 @@ namespace SundanceCore
       virtual const string& opChar() const ;
 
     private:
+
+      void findChildActiveFuncs(const Set<MultiSet<int> >& funcIDs,
+                                Set<MultiSet<int> >& leftFuncs,
+                                Set<MultiSet<int> >& rightFuncs) const ;
 
       /** */
       void findChildMultiIndexSets(const Set<MultiIndex>& miSet,

@@ -47,6 +47,8 @@ EquationSet::EquationSet(const Expr& eqns,
 {
   verbosity() = classVerbosity();
 
+
+
   /* begin with a sanity check to ensure that the input equation set 
    * exists and is integral form */
   SUNDANCE_OUT(verbosity() > VerbLow, 

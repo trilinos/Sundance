@@ -16,7 +16,7 @@
 
 
 
-<Verbosity context="Assembly" value="Silent"/>
+<Verbosity context="Assembly" value="Low"/>
 
 <Verbosity context="Evaluation" value="Silent"/>
 
@@ -29,6 +29,8 @@
 <Verbosity context="DOF Mapping" value="Silent"/>
 
 <Verbosity context="Integral Grouping" value="Silent"/>
+
+<Verbosity context="Mesh Creation" value="Low"/>
 
 <Verbosity context="Symbolic Sparsity Determination" value="Silent"/>
 

@@ -62,13 +62,17 @@ namespace SundanceCore
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
                                 const Set<MultiSet<int> >& activeFuncIDs,
-                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
 
       /** Access to the operator */
       const UserDefFunctor* op() const {return op_.get();}
     private:
+      /** */
+      Set<MultiSet<int> > 
+      argActiveFuncs(const Set<MultiSet<int> >& activeFuncID) const ;
+
+      /** */
       RefCountPtr<UserDefFunctor> op_;
 
       /** */

@@ -198,6 +198,7 @@ namespace SundanceCore
           leftEval_(leftExpr_->evaluator(context)),
           rightEval_(rightExpr_->evaluator(context))
       {
+        Tabs tab;
         leftEval_->addClient();
         rightEval_->addClient();
       }
@@ -282,11 +283,30 @@ namespace SundanceCore
                      const EvalContext& context)
         : SubtypeEvaluator<ExprType>(expr, context),
           argExpr_(expr->evaluatableArg()),
-          argSparsitySubset_(argExpr_->sparsitySubset(context, 
-                                                      expr->argMultiIndices(sparsity()->allMultiIndices()))),
+          argSparsitySubset_(),
           argSparsitySuperset_(argExpr_->sparsitySuperset(context)),
           argEval_(argExpr_->evaluator(context))
       {
+        Tabs tab;
+
+        SUNDANCE_VERB_HIGH(tab << "UnaryEvaluator ctor: ");
+
+        const Set<MultiIndex>& miSet = sparsity()->allMultiIndices();
+        const Set<MultiSet<int> >& activeFuncs = expr->getActiveFuncs(context);
+
+        SUNDANCE_VERB_HIGH(tab << "my multiindices: " << miSet);
+        SUNDANCE_VERB_HIGH(tab << "my active funcs: " << activeFuncs);
+
+
+        Set<MultiIndex> argMiSet = expr->argMultiIndices(miSet);
+        Set<MultiSet<int> > argActiveFuncs 
+          = expr->argActiveFuncs(activeFuncs);
+        SUNDANCE_VERB_HIGH(tab << "arg multiindices: " << argMiSet);
+        SUNDANCE_VERB_HIGH(tab << "arg active funcs: " << argActiveFuncs);
+
+        argSparsitySubset_ 
+          = argExpr_->sparsitySubset(context, argMiSet, argActiveFuncs);
+        
         argEval_->addClient();
       }
 

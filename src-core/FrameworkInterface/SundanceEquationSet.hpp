@@ -69,7 +69,7 @@ namespace SundanceCore
       /** Returns the i-th test function */
       const Expr& testFunc(int i) const {return testFuncs_[i];}
 
-      /** Returns the i-th test function */
+      /** Returns the i-th unknown function */
       const Expr& unkFunc(int i) const {return unkFuncs_[i];}
 
       /** Returns the test functions that appear explicitly

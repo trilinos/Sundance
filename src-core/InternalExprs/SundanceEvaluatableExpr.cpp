@@ -5,6 +5,7 @@
 #include "SundanceEvaluatorFactory.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
+#include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
@@ -26,24 +27,28 @@ EvaluatableExpr::EvaluatableExpr()
     evaluators_(),
     sparsity_(),
     orderOfDependency_(MultiIndex::maxDim(), -1),
-    orderOfFunctionalDependency_(),
+    knownNonzeros_(),
+    funcIDSet_(),
     nodesHaveBeenCounted_(false)
-{}
+{
+  addFuncIDCombo(MultiSet<int>());
+}
 
 
 
 
 RefCountPtr<SparsitySubset> 
 EvaluatableExpr::sparsitySubset(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices) const 
+                                const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs) const 
 {
   RefCountPtr<SparsitySuperset> super = sparsitySuperset(context);
 
-  if (!super->hasSubset(multiIndices))
+  if (!super->hasSubset(multiIndices, activeFuncIDs))
     {
-      super->addSubset(multiIndices);
+      super->addSubset(multiIndices, activeFuncIDs);
     }
-  return super->subset(multiIndices);
+  return super->subset(multiIndices, activeFuncIDs);
 }
 
 
@@ -66,14 +71,6 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
   return rtn;
 }
 
-int EvaluatableExpr::orderOfFunctionalDependency(int funcID) const
-{
-  if (orderOfFunctionalDependency_.containsKey(funcID))
-    {
-      return orderOfFunctionalDependency_.get(funcID);
-    }
-  return 0;
-}
 
 
  const RefCountPtr<Evaluator>&
@@ -84,29 +81,25 @@ EvaluatableExpr::evaluator(const EvalContext& context) const
   return evaluators_.get(context);
 }
 
-bool EvaluatableExpr::nonzerosAreKnown(const EvalContext& context,
-                                       const Set<MultiIndex>& multiIndices,
-                                       const Set<MultiSet<int> >& activeFuncIDs,
-                                       const Set<int>& allFuncIDs,
-                                       bool regardFuncsAsConstant) const 
+bool EvaluatableExpr
+::nonzerosAreKnown(const EvalContext& context,
+                   const Set<MultiIndex>& multiIndices,
+                   const Set<MultiSet<int> >& activeFuncIDs,
+                   bool regardFuncsAsConstant) const 
 {
-  NonzeroSpecifier spec(context, multiIndices, regardFuncsAsConstant);
+  NonzeroSpecifier spec(context, multiIndices, 
+                        activeFuncIDs, regardFuncsAsConstant);
   return knownNonzeros_.contains(spec);
 }
 
 void EvaluatableExpr::addKnownNonzero(const EvalContext& context,
                                       const Set<MultiIndex>& multiIndices,
-                                       const Set<MultiSet<int> >& activeFuncIDs,
-                                       const Set<int>& allFuncIDs,
+                                      const Set<MultiSet<int> >& activeFuncIDs,
                                       bool regardFuncsAsConstant) const 
 {
-  NonzeroSpecifier spec(context, multiIndices, regardFuncsAsConstant);
+  NonzeroSpecifier spec(context, multiIndices, 
+                        activeFuncIDs, regardFuncsAsConstant);
   knownNonzeros_.put(spec);
-}
-
-bool EvaluatableExpr::isActive(const Set<MultiSet<int> >& activeFuncIDs) const 
-{
-  return true;
 }
 
 void EvaluatableExpr::evaluate(const EvalManager& mgr,
@@ -145,6 +138,31 @@ int EvaluatableExpr::maxOrder(const Set<MultiIndex>& m) const
   return rtn;
 }
 
+void EvaluatableExpr::addFuncIDCombo(const MultiSet<int>& funcIDSet)
+{
+  funcIDSet_.put(funcIDSet);
+  for (MultiSet<int>::const_iterator 
+         i=funcIDSet.begin(); i != funcIDSet.begin(); i++)
+    {
+      funcDependencies_.put(*i);
+    }
+}
+
+
+void EvaluatableExpr::setFuncIDSet(const Set<MultiSet<int> >& funcIDSet)
+{
+  funcIDSet_ = funcIDSet;
+  for (Set<MultiSet<int> >::const_iterator 
+         i=funcIDSet.begin(); i != funcIDSet.begin(); i++)
+    {
+      const MultiSet<int>& d = *i;
+      for (MultiSet<int>::const_iterator j=d.begin(); j != d.begin(); j++)
+        {
+          funcDependencies_.put(*j);
+        }
+    }
+}
+
 
 const EvaluatableExpr* EvaluatableExpr::getEvalExpr(const Expr& expr)
 {
@@ -172,5 +190,24 @@ int EvaluatableExpr::countNodes() const
   nodesHaveBeenCounted_ = true;
   return 1;
 }
+
+
+RefCountPtr<Set<int> > EvaluatableExpr::getFuncIDSet(const Expr& funcs)
+{
+  RefCountPtr<Set<int> > rtn = rcp(new Set<int>());
+
+  Expr f = funcs.flatten();
+  for (int i=0; i<f.size(); i++)
+    {
+      const SymbolicFuncElement* sfe 
+        = dynamic_cast<const SymbolicFuncElement*>(f[i].ptr().get());
+      TEST_FOR_EXCEPTION(sfe==0, RuntimeError,
+                         "non-symbolic function expr " << f[i]
+                         << " found in getFuncIDSet()");
+      rtn->put(sfe->funcID());
+    }
+  return rtn;
+}
+
 
 

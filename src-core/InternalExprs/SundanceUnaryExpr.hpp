@@ -43,8 +43,19 @@ namespace SundanceCore
           {return multiIndices;}
           
 
-        protected:
+          /** */
+          virtual Set<MultiSet<int> > 
+          argActiveFuncs(const Set<MultiSet<int> >& activeFuncID) const 
+          {return activeFuncID;}
+          
+          /** */
+          void addActiveFuncs(const EvalContext& context,
+                              const Set<MultiSet<int> >& activeFuncIDs) const ;
+          
+          /** */
+          const Set<MultiSet<int> >& getActiveFuncs(const EvalContext& context) const ;
         private:
+          mutable Map<EvalContext, Set<MultiSet<int> > > allActiveFuncs_;
         };
     }
 }

@@ -46,11 +46,6 @@ DiffOp::DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg)
         }
 
       setFuncIDSet(evaluatableArg()->funcIDSet());
-      for (setIter i=funcIDSet().begin(); i != funcIDSet().end(); i++)
-        {
-          int argOD = evaluatableArg()->orderOfFunctionalDependency(*i);
-          setOrderOfFunctionalDependency(*i, argOD);
-        }
     }
 }
 
@@ -90,17 +85,30 @@ Set<MultiIndex> DiffOp
   return rtn;
 }
 
-Set<MultiSet<int> > DiffOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
-                                           const Set<int>& allFuncIDs) const
+Set<MultiSet<int> > DiffOp
+::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const
 {
-  return activeFuncIDs;
+  Set<MultiSet<int> > rtn = activeFuncIDs;
+  for (Set<MultiSet<int> >::const_iterator 
+         i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
+    {
+      const MultiSet<int>& d = *i;
+      if (d.size() >= maxFuncDiffOrder()) continue;
+      for (Set<int>::const_iterator 
+             j=funcDependencies().begin(); j != funcDependencies().end(); j++)
+        {
+          MultiSet<int> newDeriv = d;
+          newDeriv.put(*j);
+          rtn.put(newDeriv);
+        }
+    }
+  return rtn;
 }
 
 
 void DiffOp::findNonzeros(const EvalContext& context,
                           const Set<MultiIndex>& multiIndices,
                           const Set<MultiSet<int> >& activeFuncIDs,
-                          const Set<int>& allFuncIDs,
                           bool regardFuncsAsConstant) const
 {
   Tabs tabs;
@@ -110,86 +118,84 @@ void DiffOp::findNonzeros(const EvalContext& context,
   SUNDANCE_VERB_MEDIUM(tabs << "active funcs are " << activeFuncIDs);
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant))
+                       regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
-  if (!isActive(activeFuncIDs))
+  addActiveFuncs(context, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
+
+  ignoreFuncTerms_ = regardFuncsAsConstant;
+  if (ignoreFuncTerms_)
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "...expr is inactive under derivs "
-                           << activeFuncIDs);
-    }
-  else
-    {
-      ignoreFuncTerms_ = regardFuncsAsConstant;
       SUNDANCE_VERB_MEDIUM(tabs << "evaluating symbolic functions at zero");
+    }
 
 
 
-      /* Figure out the sparsity pattern for the argument.  */
-      Set<MultiIndex> argMI = argMultiIndices(multiIndices);
+  /* Figure out the sparsity pattern for the argument.  */
+  Set<MultiIndex> argMI = argMultiIndices(multiIndices);
   
-      SUNDANCE_VERB_MEDIUM(tabs << "arg multi index set is " << endl << argMI);
+  SUNDANCE_VERB_MEDIUM(tabs << "arg multi index set is " << endl << argMI);
 
   
 
-      evaluatableArg()->findNonzeros(context, argMI,
-                                     argActiveFuncs(activeFuncIDs, allFuncIDs),
-                                     allFuncIDs,
-                                     regardFuncsAsConstant);
+  Set<MultiSet<int> > argFuncs = argActiveFuncs(activeFuncIDs);
+  evaluatableArg()->findNonzeros(context, argMI,
+                                 argFuncs,
+                                 regardFuncsAsConstant);
 
-      RefCountPtr<SparsitySubset> argSparsity
-        = evaluatableArg()->sparsitySubset(context, argMI);
+  RefCountPtr<SparsitySubset> argSparsity
+    = evaluatableArg()->sparsitySubset(context, argMI, argFuncs);
 
-      SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity subset is " 
-                           << endl << *argSparsity);
+  SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity subset is " 
+                       << endl << *argSparsity);
 
 
-      for (int i=0; i<argSparsity->numDerivs(); i++)
+  for (int i=0; i<argSparsity->numDerivs(); i++)
+    {
+      Tabs tab1;
+
+      const MultipleDeriv& md = argSparsity->deriv(i);
+
+      if (md.order()==0) continue;
+      
+      SUNDANCE_VERB_MEDIUM(tab1 << "finding the effect of the argument's "
+                           "nonzero derivative " << md);
+      // cerr << "inverting " << md << endl;
+      
+
+
+      Map<MultipleDeriv, DerivState> isolatedTerms;
+      Map<MultipleDeriv, Deriv> funcTerms;
+      getResultDerivs(argSparsity->deriv(i), 
+                      argSparsity->state(i),
+                      isolatedTerms,
+                      funcTerms);
+
+      SUNDANCE_VERB_MEDIUM(tab1 << "monomials = " 
+                           << isolatedTerms);
+
+
+      for (Map<MultipleDeriv, DerivState>::const_iterator 
+             iter=isolatedTerms.begin(); iter != isolatedTerms.end(); iter++)
         {
-          Tabs tab1;
+          subset->addDeriv(iter->first, iter->second);
+        }
 
-          const MultipleDeriv& md = argSparsity->deriv(i);
-
-          if (md.order()==0) continue;
-      
-          SUNDANCE_VERB_MEDIUM(tab1 << "finding the effect of the argument's "
-                               "nonzero derivative " << md);
-          // cerr << "inverting " << md << endl;
-      
-
-
-          Map<MultipleDeriv, DerivState> isolatedTerms;
-          Map<MultipleDeriv, Deriv> funcTerms;
-          getResultDerivs(argSparsity->deriv(i), 
-                          argSparsity->state(i),
-                          isolatedTerms,
-                          funcTerms);
-
-          SUNDANCE_VERB_MEDIUM(tab1 << "monomials = " 
-                               << isolatedTerms);
-
-
-          for (Map<MultipleDeriv, DerivState>::const_iterator 
-                 iter=isolatedTerms.begin(); iter != isolatedTerms.end(); iter++)
+      if (!ignoreFuncTerms())
+        {
+          SUNDANCE_VERB_MEDIUM(tab1 << "func terms = " << funcTerms);
+          for (Map<MultipleDeriv, Deriv>::const_iterator 
+                 iter=funcTerms.begin(); iter != funcTerms.end(); iter++)
             {
-              subset->addDeriv(iter->first, iter->second);
-            }
-
-          if (!ignoreFuncTerms())
-            {
-              SUNDANCE_VERB_MEDIUM(tab1 << "func terms = " << funcTerms);
-              for (Map<MultipleDeriv, Deriv>::const_iterator 
-                     iter=funcTerms.begin(); iter != funcTerms.end(); iter++)
-                {
-                  subset->addDeriv(iter->first, VectorDeriv);
-                }
+              subset->addDeriv(iter->first, VectorDeriv);
             }
         }
     }
+
 
   SUNDANCE_VERB_HIGH(tabs << "diff op " + toString()
                      << ": my sparsity subset is " 
@@ -200,7 +206,7 @@ void DiffOp::findNonzeros(const EvalContext& context,
                      << endl << *sparsitySuperset(context));
 
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  allFuncIDs, regardFuncsAsConstant);
+                  regardFuncsAsConstant);
   //  cerr << "my sparsity: " << *subset << endl;
 }
 

@@ -1,4 +1,6 @@
 #include "SundanceMeshSourceBase.hpp"
+#include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
@@ -20,10 +22,16 @@ MeshSourceBase::MeshSourceBase(const MeshType& meshType,
 
 Mesh MeshSourceBase::getMesh() const
 {
+  Tabs tabs;
+  
   /* if we don't have a cached mesh, build one */
   if (!hasCachedMesh_)
     {
-      return fillMesh();
+      Mesh rtn =  fillMesh();
+      cerr << tabs << "got a mesh with " << rtn.numCells(0)
+                        << " nodes and " << rtn.numCells(rtn.spatialDim())
+           << " maximal cells" << endl;
+      return rtn;
     }
   return cachedMesh_;
 }

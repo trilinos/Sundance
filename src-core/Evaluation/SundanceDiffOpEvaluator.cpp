@@ -456,8 +456,11 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
           SUNDANCE_VERB_MEDIUM(tab2 << "result is " << result->str());
         }
 
+      TEST_FOR_EXCEPTION(!vecHasBeenAllocated, InternalError,
+                         "created empty vector in DiffOpEvaluator::internalEval");
       vectorResults[resultIndices_[i]] = result;
     }
+  SUNDANCE_VERB_MEDIUM(tabs << "done chain rule");
 }
 
 

@@ -78,6 +78,11 @@ namespace SundanceUtils
       OrderedQuartet(const A& a, const B& b, const C& c, const D& d)
         : OrderedPair<A, OrderedTriple<B, C, D> >(a, OrderedTriple<B,C,D>(b,c,d))
         {;}
+
+      const A& a() const {return first();}
+      const B& b() const {return second().first();}
+      const C& c() const {return second().second().first();}
+      const D& d() const {return second().second().second();}
     };
 
   /** */

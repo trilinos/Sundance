@@ -27,11 +27,13 @@ SymbolicFuncElement::SymbolicFuncElement(const string& name,
     evalPtDerivSetIndices_(),
     myIndex_(myIndex)
 {
+  /* I have nonzero functional deriv of zero order, and of first order wrt 
+   * myself */
   int fid = funcID();
-  Set<int> fidSet;
-  fidSet.put(fid);
-  setFuncIDSet(fidSet);
-  setOrderOfFunctionalDependency(fid, 1);
+  MultiSet<int> derivWrtMe;
+  derivWrtMe.put(fid);
+  addFuncIDCombo(derivWrtMe);
+  addFuncIDCombo(MultiSet<int>());
 }
 
 
@@ -47,11 +49,11 @@ void SymbolicFuncElement
   evalPt_ = u0;
 }
 
-void SymbolicFuncElement::findNonzeros(const EvalContext& context,
-                                       const Set<MultiIndex>& multiIndices,
-                                       const Set<MultiSet<int> >& activeFuncIDs,
-                                       const Set<int>& allFuncIDs,
-                                       bool regardFuncsAsConstant) const
+void SymbolicFuncElement
+::findNonzeros(const EvalContext& context,
+               const Set<MultiIndex>& multiIndices,
+               const Set<MultiSet<int> >& activeFuncIDs,
+               bool regardFuncsAsConstant) const
 {
 
   Tabs tabs;
@@ -63,46 +65,75 @@ void SymbolicFuncElement::findNonzeros(const EvalContext& context,
 
   
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant))
+                       regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
 
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
 
   bool isTest = (0 != dynamic_cast<const TestFuncElement*>(this));
   bool evalPtIsZero = (0 != dynamic_cast<const ZeroExpr*>(evalPt()));
   
-  SUNDANCE_VERB_MEDIUM(tabs << "eval point is zero = " << evalPtIsZero);
+  if (evalPtIsZero)
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "eval point is a zero expr");
+    }
+  else
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "eval point is a nonzero expr");
+    }
 
   /* Evaluate the function itself, i.e., the zeroth deriv of the function.
    * If this is a test function, or if we are doing a linear problem,
    * then we skip this step. */
   if (!regardFuncsAsConstant && !isTest && !evalPtIsZero)
     {
-      subset->addDeriv(MultipleDeriv(), VectorDeriv);
+      if (activeFuncIDs.contains(MultiSet<int>()))
+        {
+          subset->addDeriv(MultipleDeriv(), VectorDeriv);
+        }
+      else
+        {
+          SUNDANCE_VERB_MEDIUM(tabs << "value of " << toString() << " not required");
+        }
     }
   
   /* If this function is one of the active variables, then
    * add the deriv wrt this func to the sparsity pattern */
-  if (isInActiveSet(activeFuncIDs))
+  MultiSet<int> myFuncID;
+  myFuncID.put(funcID());
+  if (activeFuncIDs.contains(myFuncID))
     {
       subset->addDeriv(new FunctionalDeriv(this, MultiIndex()),
                        ConstantDeriv);
     }
-
+  else
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "deriv wrt to " << toString() << " not required");
+    }
+  
   const DiscreteFuncElement* df 
     = dynamic_cast<const DiscreteFuncElement*>(evalPt());
   if (df != 0)
     {
       df->findNonzeros(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant);
+                       regardFuncsAsConstant);
     }
   
+
+  SUNDANCE_VERB_HIGH(tabs << "symbolic func " + toString()
+                     << ": my sparsity subset is " 
+                     << endl << *subset);
+
+  SUNDANCE_VERB_HIGH(tabs << "symbolic func " + toString() 
+                     << " my sparsity superset is " 
+                     << endl << *sparsitySuperset(context));
+
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  allFuncIDs, regardFuncsAsConstant);
+                  regardFuncsAsConstant);
 }
 
 

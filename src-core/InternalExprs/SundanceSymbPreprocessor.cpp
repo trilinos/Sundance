@@ -42,13 +42,13 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   Set<MultiIndex> multiIndices;
   multiIndices.put(MultiIndex());
   Set<MultiSet<int> > activeFuncIDSet;
-  Set<int> allFuncIDs;
+  activeFuncIDSet.put(MultiSet<int>());
 
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
   e->findNonzeros(region, multiIndices, activeFuncIDSet, 
-                  allFuncIDs, false);
+                  false);
 
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
@@ -97,7 +97,6 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   SundanceUtils::Set<int> testID;
   SundanceUtils::Set<int> unkID;
 
-  SundanceUtils::Set<int> allFuncIDs;
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
   /* check the test functions for redundancies and non-test funcs */
@@ -113,7 +112,6 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
                          << tests.toString());
       testID.put(fid);
       vPtr->substituteZero();
-      allFuncIDs.put(fid);
     }
 
   /* check the unk functions for redundancies and non-unk funcs */
@@ -147,7 +145,6 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
         {
           uPtr->substituteFunction(u0Ptr);
         }
-      allFuncIDs.put(fid);
     }
 
   for (Set<int>::const_iterator i=testID.begin(); i != testID.end(); i++)
@@ -183,7 +180,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
-  e->findNonzeros(region, multiIndices, activeFuncIDs, allFuncIDs, u0IsZero);
+  e->findNonzeros(region, multiIndices, activeFuncIDs, u0IsZero);
 
    SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
@@ -219,9 +216,8 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 
   SundanceUtils::Set<int> unkID;
 
-
-  SundanceUtils::Set<int> allFuncIDs;
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
+  activeFuncIDs.put(MultiSet<int>());
 
 
   /* check the unk functions for redundancies and non-unk funcs */
@@ -255,17 +251,23 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
         {
           uPtr->substituteFunction(u0Ptr);
         }
-      allFuncIDs.put(fid);
     }
 
   MultiSet<int> emptyDeriv;
   activeFuncIDs.put(emptyDeriv);
 
-  for (Set<int>::const_iterator j=unkID.begin(); j != unkID.end(); j++)
+  for (Set<int>::const_iterator i=unkID.begin(); i != unkID.end(); i++)
     {
       MultiSet<int> unkDeriv;
-      unkDeriv.put(*j);
+      unkDeriv.put(*i);
       activeFuncIDs.put(unkDeriv);
+      for (Set<int>::const_iterator j=unkID.begin(); j != unkID.end(); j++)
+        {
+          MultiSet<int> unkUnkDeriv;
+          unkUnkDeriv.put(*i);
+          unkUnkDeriv.put(*j);
+          activeFuncIDs.put(unkUnkDeriv);
+        }
     }
 
   /* ----------------------------------------------------------
@@ -285,7 +287,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
   e->findNonzeros(region, multiIndices, activeFuncIDs, 
-                  allFuncIDs, u0IsZero);
+                  u0IsZero);
 
    SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
@@ -337,7 +339,6 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   SundanceUtils::Set<int> varID;
   SundanceUtils::Set<int> unkID;
 
-  SundanceUtils::Set<int> allFuncIDs;
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
   /* check the variations for redundancies and non-unk funcs */
@@ -370,7 +371,6 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
         {
           vPtr->substituteFunction(v0Ptr);
         }
-      allFuncIDs.put(fid);
     }
 
   /* check the unk functions for redundancies and non-unk funcs */
@@ -404,7 +404,6 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
         {
           uPtr->substituteFunction(u0Ptr);
         }
-      allFuncIDs.put(fid);
     }
 
   /* Make sure there's no overlap between the var and unk sets */
@@ -456,7 +455,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
-  e->findNonzeros(region, multiIndices, activeFuncIDs, allFuncIDs, u0IsZero);
+  e->findNonzeros(region, multiIndices, activeFuncIDs, u0IsZero);
 
    SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 

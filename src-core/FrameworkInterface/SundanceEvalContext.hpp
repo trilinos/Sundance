@@ -7,6 +7,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceRegionQuadCombo.hpp"
+#include "SundanceSet.hpp"
 #include "Teuchos_Utils.hpp"
 
 
@@ -49,7 +50,8 @@ namespace SundanceCore
           EvalContext(const RegionQuadCombo& rqc,
                       int topLevelDiffOrder,
                       int contextID)
-            : data_(rcp(new OrderedTriple<int, int, RegionQuadCombo>(topLevelDiffOrder, contextID, rqc))) {;}
+            : data_(rcp(new OrderedTriple<int, int, RegionQuadCombo>(topLevelDiffOrder, contextID, rqc)))
+          {;}
 
           /** Comparison operator for use in maps */
           bool operator<(const EvalContext& other) const 

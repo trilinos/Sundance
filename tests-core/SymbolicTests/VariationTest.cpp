@@ -69,7 +69,7 @@ void doit(const Expr& e,
                                                  region);
 
   Tabs tab;
-  cerr << tab << *ev->sparsitySuperset(region) << endl;
+  //  cerr << tab << *ev->sparsitySuperset(region) << endl;
   //  ev->showSparsity(cerr, region);
 
   // RefCountPtr<EvalVectorArray> results;
@@ -143,26 +143,23 @@ int main(int argc, void** argv)
 
 			Expr u = new UnknownFunctionStub("u");
 			Expr lambda = new UnknownFunctionStub("lambda");
-			Expr alpha = new UnknownFunctionStub("alpha");
 
       cerr << "u=" << u << endl;
       cerr << "lambda=" << lambda << endl;
-      cerr << "alpha=" << alpha << endl;
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
 
       Expr u0 = new DiscreteFunctionStub("u0");
-      Expr alpha0 = new DiscreteFunctionStub("w0");
-      Expr zero = new ZeroExpr();
+      Expr lambda0 = new DiscreteFunctionStub("lambda0");
 
       Array<Expr> tests;
 
 
 
-      tests.append(0.5*u*u + u*lambda);
+      tests.append(/* 0.5*u*u + 0.5*(dx*u)*(dx*u) + (dx*lambda)*(dx*u) + */lambda*exp(u));
 
-
+      cerr << "STATE EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
@@ -170,9 +167,23 @@ int main(int argc, void** argv)
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
                    lambda,
-                   zero,
+                   lambda0,
                    u,
                    u0,
+                   context);
+        }
+      
+      cerr << "ADJOINT EQUATIONS " << endl;
+      for (int i=0; i<tests.length(); i++)
+        {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(0)));
+          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
+          testExpr(tests[i], 
+                   u,
+                   u0, 
+                   lambda,
+                   lambda0,
                    context);
         }
 

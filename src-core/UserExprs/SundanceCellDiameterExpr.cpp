@@ -27,10 +27,9 @@ XMLObject CellDiameterExpr::toXML() const
 
 
 void CellDiameterExpr::findNonzeros(const EvalContext& context,
-                             const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                const Set<int>& allFuncIDs,
-                             bool regardFuncsAsConstant) const
+                                    const Set<MultiIndex>& multiIndices,
+                                    const Set<MultiSet<int> >& activeFuncIDs,
+                                    bool regardFuncsAsConstant) const
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for cell diameter " << toString()
@@ -38,13 +37,13 @@ void CellDiameterExpr::findNonzeros(const EvalContext& context,
                        << multiIndices.toString());
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant))
+                       regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
 
   MultiIndex empty;
   if (multiIndices.contains(empty))
@@ -53,7 +52,7 @@ void CellDiameterExpr::findNonzeros(const EvalContext& context,
     }
 
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant);
+                  regardFuncsAsConstant);
 }
 
 ostream& CellDiameterExpr::toText(ostream& os, bool paren) const

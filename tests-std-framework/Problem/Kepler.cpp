@@ -20,7 +20,7 @@ int main(int argc, void** argv)
  
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
@@ -117,5 +117,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

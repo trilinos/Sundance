@@ -35,6 +35,8 @@ namespace SundanceCore
         : public TSFExtended::ObjectWithVerbosity<SparsitySuperset>
         {
         public:
+          
+          typedef OrderedPair<Set<MultiIndex>, Set<MultiSet<int> > > keyPair;
 
           friend class SparsitySubset;
 
@@ -46,18 +48,22 @@ namespace SundanceCore
           /** Add a new subset of derivatives, defined as those derivatives
            * required for evaluation of the given set of differential
            * operators applied to this expression */
-          void addSubset(const Set<MultiIndex>& multiIndices);
+          void addSubset(const Set<MultiIndex>& multiIndices,
+                         const Set<MultiSet<int> >& funcIDs);
 
           /** Get the subset of derivatives required to evaluate the
            * given set of differential operators */
-          const RefCountPtr<SparsitySubset>& subset(const Set<MultiIndex>& multiIndices) const ;
+          const RefCountPtr<SparsitySubset>& subset(const Set<MultiIndex>& multiIndices,
+                                                    const Set<MultiSet<int> >& funcIDs) const ;
 
           /** Get the subset of derivatives required to evaluate the
            * given set of differential operators*/
-          RefCountPtr<SparsitySubset> subset(const Set<MultiIndex>& multiIndices) ;
+          RefCountPtr<SparsitySubset> subset(const Set<MultiIndex>& multiIndices,
+                                             const Set<MultiSet<int> >& funcIDs) ;
 
           /** Tell whether the specified subset has been defined */
-          bool hasSubset(const Set<MultiIndex>& multiIndices) const ;
+          bool hasSubset(const Set<MultiIndex>& multiIndices,
+                         const Set<MultiSet<int> >& funcIDs) const ;
           //@}
 
           /** \name Access to information about individual derivatives */
@@ -157,10 +163,13 @@ namespace SundanceCore
           Array<MultiIndex> multiIndex_;
 
           /** Table of subsets */
-          Map<Set<MultiIndex>, RefCountPtr<SparsitySubset> > subsets_;
+          Map<keyPair, RefCountPtr<SparsitySubset> > subsets_;
 
           /** */
           Set<MultiIndex> allMultiIndices_;
+
+          /** */
+          Set<MultiSet<int> > allFuncIDs_;
 
           /** */
           int numConstantDerivs_;

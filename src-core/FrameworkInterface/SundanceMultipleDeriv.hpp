@@ -95,7 +95,7 @@ namespace SundanceCore
       MultipleDeriv product(const MultipleDeriv& other) const ;
 
 
-    private:
+
       /** \name Utilities used in computing product rule permutations */
       //@
       /** Compute the n-th power of 2 */
@@ -106,6 +106,7 @@ namespace SundanceCore
        */
       static Array<int> bitsOfAnInteger(int x, int n);
       //@}
+    private:
     };
 
 

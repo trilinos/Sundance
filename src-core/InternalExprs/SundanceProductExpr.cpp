@@ -20,8 +20,6 @@ ProductExpr::ProductExpr(const RefCountPtr<ScalarExpr>& left,
                          const RefCountPtr<ScalarExpr>& right)
 	: BinaryExpr(left, right, 1)
 {
-  typedef Set<int>::const_iterator setIter;
-
   if (isEvaluatable(left.get()) && isEvaluatable(right.get()))
     {
       for (int d=0; d<MultiIndex::maxDim(); d++) 
@@ -31,21 +29,22 @@ ProductExpr::ProductExpr(const RefCountPtr<ScalarExpr>& left,
           if (lod < 0 || rod < 0) setOrderOfDependency(d, -1);
           else setOrderOfDependency(d, lod+rod);
         }
-
-      Set<int> tmp = leftEvaluatable()->funcIDSet();
-      tmp.merge(rightEvaluatable()->funcIDSet());
-      setFuncIDSet(tmp);
       
-      for (setIter i=funcIDSet().begin(); i != funcIDSet().end(); i++)
+      const Set<MultiSet<int> >& leftFuncs = leftEvaluatable()->funcIDSet();
+      const Set<MultiSet<int> >& rightFuncs = rightEvaluatable()->funcIDSet();
+      typedef Set<MultiSet<int> >::const_iterator iter;
+      
+      for (iter i=leftFuncs.begin(); i != leftFuncs.end(); i++)
         {
-          int lod = leftEvaluatable()->orderOfFunctionalDependency(*i);
-          int rod = rightEvaluatable()->orderOfFunctionalDependency(*i);
-          if (lod < 0 || rod < 0) setOrderOfFunctionalDependency(*i, -1);
-          else setOrderOfFunctionalDependency(*i, lod+rod);
+          const MultiSet<int>& fl = *i;
+          for (iter j=rightFuncs.begin(); j != rightFuncs.end(); j++)
+            {
+              const MultiSet<int>& fr = *j;
+              if (fl.size() + fr.size() > maxFuncDiffOrder()) continue;
+              addFuncIDCombo(fr.merge(fl));
+            }
         }
     }
-
-  
 }
 
 
@@ -109,13 +108,88 @@ void ProductExpr::findChildMultiIndexSets(const Set<MultiIndex>& miSet,
 }
 
 
+void ProductExpr
+::findChildActiveFuncs(const Set<MultiSet<int> >& funcIDs,
+                       Set<MultiSet<int> >& leftFuncs,
+                       Set<MultiSet<int> >& rightFuncs) const 
+{
+  Tabs tabs;
+
+  typedef Set<MultiSet<int> >::const_iterator iter;
+  
+  //  SUNDANCE_VERB_HIGH(tabs << "doing product rule");
+
+  for (iter f=funcIDs.begin(); f != funcIDs.end(); f++)
+    {
+      Tabs tab1;
+      //  SUNDANCE_VERB_HIGH(tab1 << "partitioning " << *f);
+      const MultiSet<int>& d = *f;
+      int n = d.size();
+      if (n==0)
+        {
+          Tabs tab2;
+          leftFuncs.put(MultiSet<int>());
+          rightFuncs.put(MultiSet<int>());
+          //  SUNDANCE_VERB_HIGH(tab2 << "found L={}, R={}");
+        }
+      else
+        {
+          Tabs tab2;
+          int p2 = MultipleDeriv::pow2(n);
+          for (int i=0; i<p2; i++)
+            {
+              MultiSet<int> left;
+              MultiSet<int> right;
+              Array<int> bits = MultipleDeriv::bitsOfAnInteger(i, n);
+              int k=0;
+              for (MultiSet<int>::const_iterator 
+                     j=d.begin(); j != d.end(); j++, k++)
+                {
+                  if (bits[k]==true)
+                    {
+                      left.put(*j);
+                    }
+                  else
+                    {
+                      right.put(*j);
+                    }
+                }
+              //  SUNDANCE_VERB_HIGH(tab2 << "found L=" << left.toString()
+              //                   << " R=" << right.toString());
+              if (leftEvaluatable()->funcIDSet().contains(left))
+                {
+                  rightFuncs.put(right);
+                }
+              else
+                {
+                  //  SUNDANCE_VERB_HIGH(tab2 << "skipping R=" << right.toString()
+                  //                 << " since L=" << left.toString()
+                  //                 << " is zero");
+                }
+              if (rightEvaluatable()->funcIDSet().contains(right))
+                {
+                  leftFuncs.put(left);
+                }
+              else
+                {
+                  // SUNDANCE_VERB_HIGH(tab2 << "skipping L=" << left.toString()
+                  //                 << " since R=" << right.toString()
+                  //                 << " is zero");
+                }
+            }
+        }
+    }
+}
+                       
+                                       
+
+
 
 
 
 void ProductExpr::findNonzeros(const EvalContext& context,
                                const Set<MultiIndex>& multiIndices,
                                const Set<MultiSet<int> >& activeFuncIDs,
-                               const Set<int>& allFuncIDs,
                                bool regardFuncsAsConstant) const
 {
 
@@ -126,126 +200,136 @@ void ProductExpr::findNonzeros(const EvalContext& context,
                        << activeFuncIDs);
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant))
+                       regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
 
-  if (!isActive(activeFuncIDs))
+  Set<MultiIndex> miLeft;
+  Set<MultiIndex> miRight;
+  findChildMultiIndexSets(multiIndices, miLeft, miRight);
+
+  Set<MultiSet<int> > leftFuncIDs;
+  Set<MultiSet<int> > rightFuncIDs;
+
+  findChildActiveFuncs(activeFuncIDs,
+                       leftFuncIDs,
+                       rightFuncIDs);
+  SUNDANCE_VERB_HIGH(tabs << "ProdExpr: active funcs for left are: "
+                     << leftFuncIDs.toString());
+
+  SUNDANCE_VERB_HIGH(tabs << "ProdExpr: active funcs for right are: "
+                     << rightFuncIDs.toString());
+
+  int maxSpatialOrder = maxOrder(multiIndices);
+  int maxDiffOrder = context.topLevelDiffOrder() + maxSpatialOrder;
+
+
+
+  SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting left operand's nonzeros");
+  leftEvaluatable()->findNonzeros(context, miLeft,
+                                  leftFuncIDs,
+                                  regardFuncsAsConstant);
+
+  SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting right operand's nonzeros");
+  rightEvaluatable()->findNonzeros(context, miRight,
+                                   rightFuncIDs,
+                                   regardFuncsAsConstant);
+
+  RefCountPtr<SparsitySubset> leftSparsity 
+    = leftEvaluatable()->sparsitySubset(context, miLeft, leftFuncIDs);
+
+  RefCountPtr<SparsitySubset> rightSparsity 
+    = rightEvaluatable()->sparsitySubset(context, miRight, rightFuncIDs);
+
+
+
+  SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: left sparsity subset is " 
+                       << endl << *leftSparsity);
+  SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: right sparsity subset is " 
+                       << endl << *rightSparsity);
+
+  for (int i=0; i<leftSparsity->numDerivs(); i++)
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "...expr is inactive under derivs "
-                           << activeFuncIDs);
-    }
-  else
-    {
-
-      Set<MultiIndex> miLeft;
-      Set<MultiIndex> miRight;
-      findChildMultiIndexSets(multiIndices, miLeft, miRight);
-
-      Set<MultiSet<int> > childFuncIDs = findChildFuncIDSet(activeFuncIDs,
-                                                            allFuncIDs);
-
-      int maxSpatialOrder = maxOrder(multiIndices);
-      int maxDiffOrder = context.topLevelDiffOrder() + maxSpatialOrder;
-
-
-
-      SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting left operand's nonzeros");
-      leftEvaluatable()->findNonzeros(context, miLeft,
-                                      childFuncIDs,
-                                      allFuncIDs,
-                                      regardFuncsAsConstant);
-
-      SUNDANCE_VERB_MEDIUM(tabs << "ProdExpr: getting right operand's nonzeros");
-      rightEvaluatable()->findNonzeros(context, miRight,
-                                       childFuncIDs,
-                                       allFuncIDs,
-                                       regardFuncsAsConstant);
-
-      RefCountPtr<SparsitySubset> leftSparsity 
-        = leftEvaluatable()->sparsitySubset(context, miLeft);
-
-      RefCountPtr<SparsitySubset> rightSparsity 
-        = rightEvaluatable()->sparsitySubset(context, miRight);
-
-
-
-      SUNDANCE_VERB_MEDIUM(tabs << "left sparsity subset is " 
-                           << endl << *leftSparsity);
-      SUNDANCE_VERB_MEDIUM(tabs << "right sparsity subset is " 
-                           << endl << *rightSparsity);
-
-      for (int i=0; i<leftSparsity->numDerivs(); i++)
-        {
-          const MultipleDeriv& dLeft = leftSparsity->deriv(i);
+      const MultipleDeriv& dLeft = leftSparsity->deriv(i);
      
-          for (int j=0; j<rightSparsity->numDerivs(); j++)
-            {
-              const MultipleDeriv& dRight = rightSparsity->deriv(j);
+      for (int j=0; j<rightSparsity->numDerivs(); j++)
+        {
+          const MultipleDeriv& dRight = rightSparsity->deriv(j);
 
-              /* Skip combinations of functional derivatives that contribute
-               * only to derivatives of an order we don't need */
-              if (dRight.order() + dLeft.order() > maxDiffOrder) continue;
+          /* Skip combinations of functional derivatives that contribute
+           * only to derivatives of an order we don't need */
+          if (dRight.order() + dLeft.order() > maxDiffOrder) continue;
 
-              /* Skip combinations of spatial derivs of greater order
-               * than the max order of our multiindices */
-              if (dRight.spatialOrder() + dLeft.spatialOrder() > maxSpatialOrder) continue;
+          /* Skip combinations of spatial derivs of greater order
+           * than the max order of our multiindices */
+          if (dRight.spatialOrder() + dLeft.spatialOrder() > maxSpatialOrder) continue;
 
-              MultiIndex netDeriv = dRight.spatialDeriv() + dLeft.spatialDeriv();
-              if (dRight.spatialOrder()==dRight.order()
-                  && dLeft.spatialOrder()==dLeft.order()
-                  && !multiIndices.contains(netDeriv)) continue;
+          MultiIndex netDeriv = dRight.spatialDeriv() + dLeft.spatialDeriv();
+          if (dRight.spatialOrder()==dRight.order()
+              && dLeft.spatialOrder()==dLeft.order()
+              && !multiIndices.contains(netDeriv)) continue;
 
               
-              // /*
-//                * Skip combinations that do not contribute to the
-//                * variational derivatives required at this point.
-//                */
-//               MultiSet<int> funcs;
-//               for (MultipleDeriv::const_iterator k=dLeft.begin();
-//                    k != dLeft.end(); k++)
-//                 {
-//                   const Deriv& d = *k;
-//                   if (d.isFunctionalDeriv()) 
-//                     {
-//                       int fid = d.funcDeriv()->funcID();
-//                       funcs.put(fid);
-//                     }
-//                 }
-//               for (MultipleDeriv::const_iterator k=dRight.begin();
-//                    k != dRight.end(); k++)
-//                 {
-//                   const Deriv& d = *k;
-//                   if (d.isFunctionalDeriv()) 
-//                     {
-//                       int fid = d.funcDeriv()->funcID();
-//                       funcs.put(fid);
-//                     }
-//                 }
-          
-//               if (!activeFuncIDs.contains(funcs)) continue;
-
-
-              /* The current left and right nonzero functional derivatives
-               * dLeft, dRight will contribute to the dLeft*dRight 
-               * functional derivative */
-              MultipleDeriv productDeriv = dLeft;
-              for (MultipleDeriv::const_iterator k=dRight.begin();
-                   k != dRight.end(); k++)
+          /*
+           * Skip combinations that do not contribute to the
+           * variational derivatives required at this point.
+           */
+          MultiSet<int> funcs;
+          for (MultipleDeriv::const_iterator k=dLeft.begin();
+               k != dLeft.end(); k++)
+            {
+              const Deriv& d = *k;
+              if (d.isFunctionalDeriv()) 
                 {
-                  productDeriv.insert(*k);
+                  int fid = d.funcDeriv()->funcID();
+                  funcs.put(fid);
                 }
-              /* Use the more general of the two operands' states */
-              DerivState newState = max(leftSparsity->state(i), 
-                                        rightSparsity->state(j));
-              subset->addDeriv(productDeriv, newState);
             }
+          for (MultipleDeriv::const_iterator k=dRight.begin();
+               k != dRight.end(); k++)
+            {
+              const Deriv& d = *k;
+              if (d.isFunctionalDeriv()) 
+                {
+                  int fid = d.funcDeriv()->funcID();
+                  funcs.put(fid);
+                }
+            }
+          
+          SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() 
+                             << " L=" << dLeft.toString() 
+                             << " R=" << dRight.toString());
+          SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() 
+                             << ":  " 
+                             << funcs);
+          
+          if (!activeFuncIDs.contains(funcs)) 
+            {
+              SUNDANCE_VERB_HIGH(tabs << "skipping " << funcs);
+              continue;
+            }
+
+
+          /* The current left and right nonzero functional derivatives
+           * dLeft, dRight will contribute to the dLeft*dRight 
+           * functional derivative */
+          MultipleDeriv productDeriv = dLeft;
+          for (MultipleDeriv::const_iterator k=dRight.begin();
+               k != dRight.end(); k++)
+            {
+              productDeriv.insert(*k);
+            }
+          /* Use the more general of the two operands' states */
+          DerivState newState = max(leftSparsity->state(i), 
+                                    rightSparsity->state(j));
+          subset->addDeriv(productDeriv, newState);
         }
     }
+
 
   SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() << ": my sparsity subset is " 
                      << endl << *subset);
@@ -255,5 +339,5 @@ void ProductExpr::findNonzeros(const EvalContext& context,
                      << endl << *sparsitySuperset(context));
 
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  allFuncIDs, regardFuncsAsConstant);
+                  regardFuncsAsConstant);
 }

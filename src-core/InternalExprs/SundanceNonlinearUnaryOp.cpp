@@ -14,8 +14,6 @@ NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
                                    const RefCountPtr<UnaryFunctor>& op)
   : UnaryExpr(arg), op_(op)
 {
-  typedef Set<int>::const_iterator setIter;
-
   if (isEvaluatable(arg.get()))
     {
       for (int d=0; d<MultiIndex::maxDim(); d++) 
@@ -30,85 +28,134 @@ NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
             }
         }
 
-      setFuncIDSet(evaluatableArg()->funcIDSet());
+      const Set<MultiSet<int> >& argFuncs = evaluatableArg()->funcIDSet();
+      typedef Set<MultiSet<int> >::const_iterator iter;
 
-      for (setIter i=funcIDSet().begin(); i != funcIDSet().end(); i++)
+      for (iter i=argFuncs.begin(); i != argFuncs.end(); i++)
         {
-          setOrderOfFunctionalDependency(*i, -1);
+          const MultiSet<int>& f1 = *i;
+          for (iter j=argFuncs.begin(); j != argFuncs.end(); j++)
+            {
+              const MultiSet<int>& f2 = *j;
+              MultiSet<int> f12 = f1.merge(f2);
+              for (iter k=argFuncs.begin(); k != argFuncs.end(); k++)
+                {
+                  const MultiSet<int>& f3 = *k;
+                  
+                  if (f1.size()+f2.size()+f3.size() > maxFuncDiffOrder()) 
+                    continue;
+                  addFuncIDCombo(f12.merge(f3));
+                }
+            }
         }
     }
+}
+
+Set<MultiSet<int> > 
+NonlinearUnaryOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const 
+{
+  typedef Set<MultiSet<int> >::const_iterator iter;
+
+  Set<MultiSet<int> > rtn;
+  for (iter i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
+    {
+      const MultiSet<int>& f1 = *i;
+      for (iter j=activeFuncIDs.begin(); j != activeFuncIDs.end(); j++)
+        {
+          const MultiSet<int>& f2 = *j;
+          MultiSet<int> f12 = f1.merge(f2);
+          for (iter k=activeFuncIDs.begin(); k != activeFuncIDs.end(); k++)
+            {
+              const MultiSet<int>& f3 = *k;
+              
+              if (f1.size()+f2.size()+f3.size() > maxFuncDiffOrder()) 
+                continue;
+              rtn.put(f12.merge(f3));
+            }
+        }
+    }
+  return rtn;
 }
 
 void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
                                     const Set<MultiIndex>& multiIndices,
                                     const Set<MultiSet<int> >& activeFuncIDs,
-                                    const Set<int>& allFuncIDs,
                                     bool regardFuncsAsConstant) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for unary nonlinear op" 
+  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for unary nonlinear op " 
                        << toString() << " subject to multiindices "
                        << multiIndices);
+  SUNDANCE_VERB_MEDIUM(tabs << "active funcs are " << activeFuncIDs);
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant))
+                       regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
 
-  if (!isActive(activeFuncIDs))
+  addActiveFuncs(context, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset 
+    = sparsitySubset(context, multiIndices, activeFuncIDs);
+
+  Set<MultiSet<int> > childFuncIDs = argActiveFuncs(activeFuncIDs);
+
+
+  
+  SUNDANCE_VERB_MEDIUM(tabs << "arg funcID set is " << childFuncIDs);
+
+  int maxMiOrder = maxOrder(multiIndices);
+  int maxDiffOrder = context.topLevelDiffOrder() + maxMiOrder;
+
+  evaluatableArg()->findNonzeros(context, multiIndices,
+                                 childFuncIDs,
+                                 regardFuncsAsConstant);
+
+  RefCountPtr<SparsitySubset> argSparsitySubset 
+    = evaluatableArg()->sparsitySubset(context, multiIndices, childFuncIDs);
+
+  SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity subset is " 
+                       << endl << *argSparsitySubset);
+
+  for (int i=0; i<argSparsitySubset->numDerivs(); i++)
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "...expr is inactive under derivs "
-                           << activeFuncIDs);
-    }
-  else
-    {
-      Set<MultiSet<int> > childFuncIDs = findChildFuncIDSet(activeFuncIDs,
-                                                            allFuncIDs);
-
-
-
-      int maxMiOrder = maxOrder(multiIndices);
-      int maxDiffOrder = context.topLevelDiffOrder() + maxMiOrder;
-
-      evaluatableArg()->findNonzeros(context, multiIndices,
-                                     childFuncIDs,
-                                     allFuncIDs,
-                                     regardFuncsAsConstant);
-
-      RefCountPtr<SparsitySubset> argSparsitySubset 
-        = evaluatableArg()->sparsitySubset(context, multiIndices);
-
-      for (int i=0; i<argSparsitySubset->numDerivs(); i++)
+      if (argSparsitySubset->deriv(i).order()==0)
         {
-          if (argSparsitySubset->deriv(i).order()==0)
-            {
-              subset->addDeriv(argSparsitySubset->deriv(i), 
-                               argSparsitySubset->state(i));
-            }
-          else
-            {
-              subset->addDeriv(argSparsitySubset->deriv(i), 
-                               VectorDeriv);
-            }
+          subset->addDeriv(argSparsitySubset->deriv(i), 
+                           argSparsitySubset->state(i));
         }
-
-      for (int i=0; i<argSparsitySubset->numDerivs(); i++)
+      else
         {
-          for (int j=0; j<argSparsitySubset->numDerivs(); j++)
-            {
-              MultipleDeriv product 
-                = argSparsitySubset->deriv(i).product(argSparsitySubset->deriv(j));
-              if (product.order() > maxDiffOrder) continue;
-              if (product.spatialOrder() > maxMiOrder) continue;
-              subset->addDeriv(product, VectorDeriv);
-            }
+          subset->addDeriv(argSparsitySubset->deriv(i), 
+                           VectorDeriv);
         }
     }
+
+  for (int i=0; i<argSparsitySubset->numDerivs(); i++)
+    {
+      for (int j=0; j<argSparsitySubset->numDerivs(); j++)
+        {
+          MultipleDeriv product 
+            = argSparsitySubset->deriv(i).product(argSparsitySubset->deriv(j));
+          if (product.order() > maxDiffOrder) continue;
+          if (product.spatialOrder() > maxMiOrder) continue;
+          subset->addDeriv(product, VectorDeriv);
+        }
+    }
+
+
+
+  SUNDANCE_VERB_HIGH(tabs << "nonlinear op  " + toString()
+                     << ": my sparsity subset is " 
+                     << endl << *subset);
+
+  SUNDANCE_VERB_HIGH(tabs << "nonlinear op " + toString() 
+                     << " my sparsity superset is " 
+                     << endl << *sparsitySuperset(context));
+
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  allFuncIDs, regardFuncsAsConstant);
+                  regardFuncsAsConstant);
 }
 
 

@@ -243,6 +243,11 @@ void Sundance::setSettings(const string& settingsFile)
             {
               Internal::GrouperBase::classVerbosity() = verbosity(value);
             }
+          else if (context=="Mesh Creation")
+            {
+              SundanceStdMesh::Internal::MeshSourceBase::classVerbosity() 
+                = verbosity(value);
+            }
         }
       else if (child.getTag()=="DefaultMesh")
         {

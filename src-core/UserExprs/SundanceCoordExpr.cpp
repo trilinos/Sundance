@@ -52,8 +52,7 @@ string CoordExpr::coordName(int dir, const string& name)
 
 void CoordExpr::findNonzeros(const EvalContext& context,
                              const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                const Set<int>& allFuncIDs,
+                             const Set<MultiSet<int> >& activeFuncIDs,
                              bool regardFuncsAsConstant) const
 {
   Tabs tabs;
@@ -62,24 +61,30 @@ void CoordExpr::findNonzeros(const EvalContext& context,
                        << multiIndices.toString());
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant))
+                       regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
 
   MultiIndex myDirection;
   myDirection[dir_] = 1;
   if (multiIndices.contains(myDirection)) 
     {
-      subset->addDeriv(new CoordDeriv(dir_), ConstantDeriv);
+      if (activeFuncIDs.contains(MultiSet<int>()))
+        {
+          subset->addDeriv(new CoordDeriv(dir_), ConstantDeriv);
+        }
     }
   MultiIndex empty;
   if (multiIndices.contains(empty))
     {
-      subset->addDeriv(MultipleDeriv(), VectorDeriv);
+      if (activeFuncIDs.contains(MultiSet<int>()))
+        {
+          subset->addDeriv(MultipleDeriv(), VectorDeriv);
+        }
     }
 
   
@@ -96,7 +101,7 @@ void CoordExpr::findNonzeros(const EvalContext& context,
                      << endl << *sparsitySuperset(context));
 
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant);
+                  regardFuncsAsConstant);
 }
 
 

@@ -2,6 +2,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
 #include "SundanceMeshType.hpp"
+#include "SundanceTabs.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
@@ -29,6 +30,7 @@ Mesh MeshSource::getMesh() const
   Mesh rtn;
   try
     {
+      Tabs tabs;
       int nProc = ptr()->comm().getNProc();
       SUNDANCE_OUT(ptr()->verbosity() > VerbSilent, 
                    "MeshSource::getMesh()");

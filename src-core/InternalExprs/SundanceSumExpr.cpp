@@ -33,17 +33,9 @@ SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
           else setOrderOfDependency(d, max(lod, rod));
         }
 
-      Set<int> tmp = leftEvaluatable()->funcIDSet();
+      Set<MultiSet<int> > tmp = leftEvaluatable()->funcIDSet();
       tmp.merge(rightEvaluatable()->funcIDSet());
       setFuncIDSet(tmp);
-      
-      for (setIter i=funcIDSet().begin(); i != funcIDSet().end(); i++)
-        {
-          int lod = leftEvaluatable()->orderOfFunctionalDependency(*i);
-          int rod = rightEvaluatable()->orderOfFunctionalDependency(*i);
-          if (lod < 0 || rod < 0) setOrderOfFunctionalDependency(*i, -1);
-          else setOrderOfFunctionalDependency(*i, max(lod, rod));
-        }
     }
 }
 

@@ -26,7 +26,6 @@ DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionStub* master,
 void DiscreteFuncElement::findNonzeros(const EvalContext& context,
                                        const Set<MultiIndex>& multiIndices,
                                        const Set<MultiSet<int> >& activeFuncIDs,
-                                       const Set<int>& allFuncIDs,
                                        bool regardFuncsAsConstant) const
 {
 
@@ -36,14 +35,14 @@ void DiscreteFuncElement::findNonzeros(const EvalContext& context,
                        << multiIndices);
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       allFuncIDs, regardFuncsAsConstant))
+                       regardFuncsAsConstant))
     {
       SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
       return;
     }
 
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
   
   for (Set<MultiIndex>::const_iterator 
          i=multiIndices.begin(); i != multiIndices.end(); i++)
@@ -59,9 +58,16 @@ void DiscreteFuncElement::findNonzeros(const EvalContext& context,
                            VectorDeriv);
         }
     }
+  
+  SUNDANCE_VERB_HIGH(tabs << "discrete func " + toString()
+                     << ": my sparsity subset is " 
+                     << endl << *subset);
 
+  SUNDANCE_VERB_HIGH(tabs << "discrete func " + toString() 
+                     << " my sparsity superset is " 
+                     << endl << *sparsitySuperset(context));
   addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  allFuncIDs, regardFuncsAsConstant);
+                  regardFuncsAsConstant);
 }
 
 XMLObject DiscreteFuncElement::toXML() const 

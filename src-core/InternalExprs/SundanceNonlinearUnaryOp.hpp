@@ -34,7 +34,7 @@ namespace SundanceCore
      */
     class NonlinearUnaryOp : public UnaryExpr,
                              public NonlinearExpr,
-                    public GenericEvaluatorFactory<NonlinearUnaryOp, NonlinearUnaryOpEvaluator>
+                             public GenericEvaluatorFactory<NonlinearUnaryOp, NonlinearUnaryOpEvaluator>
     {
     public:
       /** construct with an argument and the functor defining the operation */
@@ -49,7 +49,6 @@ namespace SundanceCore
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
                                 const Set<MultiSet<int> >& activeFuncIDs,
-                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
       /** Write a simple text description suitable
@@ -68,6 +67,13 @@ namespace SundanceCore
 
       /** Access to the operator */
       const UnaryFunctor* op() const {return op_.get();}
+
+      /** 
+       * Given a set of active function combinations, get the active
+       * function combinations requested of the argument
+       */
+      virtual Set<MultiSet<int> > 
+      argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const ;
     private:
 
       RefCountPtr<UnaryFunctor> op_;

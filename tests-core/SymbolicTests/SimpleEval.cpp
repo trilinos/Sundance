@@ -25,6 +25,7 @@ using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
+using SundanceCore::List;
 
 static Time& totalTimer() 
 {
@@ -155,7 +156,7 @@ int main(int argc, void** argv)
 
       Array<Expr> tests;
 
-
+      
 
       tests.append(v*(dx*(u - u0)));
 

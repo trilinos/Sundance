@@ -59,7 +59,7 @@ int main(int argc, void** argv)
 
       Time stopwatch("test");
 
-      for (int n=1; n<14; n++)
+      for (int n=1; n<20; n++)
         {
           double t0 = stopwatch.wallTime();
           stopwatch.start();

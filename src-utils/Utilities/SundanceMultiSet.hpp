@@ -36,6 +36,9 @@ namespace SundanceUtils
       ostream& toStream(ostream& os) const ;
 
       /** */
+      MultiSet<Key> merge(const MultiSet<Key>& other) const ;
+
+      /** */
       string toString() const ;
     };
 
@@ -50,6 +53,20 @@ namespace SundanceUtils
       for (iter=begin(); iter != end(); iter++)
         {
           rtn.append(*iter);
+        }
+      return rtn;
+    }
+
+  template<class Key> inline
+  MultiSet<Key> MultiSet<Key>::merge(const MultiSet<Key>& other) const
+    {
+      MultiSet<Key> rtn = *this;
+
+      typename MultiSet<Key>::const_iterator iter;
+
+      for (iter=other.begin(); iter != other.end(); iter++)
+        {
+          rtn.put(*iter);
         }
       return rtn;
     }

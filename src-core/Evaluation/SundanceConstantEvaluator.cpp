@@ -28,19 +28,21 @@ ConstantEvaluator::ConstantEvaluator(const SpatiallyConstantExpr* expr,
    * There's nothing to do in this ctor other than running some sanity checks.
    */
 
-  TEST_FOR_EXCEPTION(sparsity()->numDerivs() != 1, InternalError,
+  TEST_FOR_EXCEPTION(sparsity()->numDerivs() > 1, InternalError,
                      "ConstantEvaluator ctor found a sparsity table "
-                     "without exactly one entry. The bad sparsity table is "
+                     "without more than one entry. The bad sparsity table is "
                      << *sparsity());
 
-  const MultipleDeriv& d = sparsity()->deriv(0);
+  if (sparsity()->numDerivs() > 0)
+    {
+      const MultipleDeriv& d = sparsity()->deriv(0);
 
-  TEST_FOR_EXCEPTION(d.order() != 0, InternalError,
-                     "ConstantEvaluator ctor found a nonzero derivative "
-                     "of order greater than zero. The bad sparsity table is "
-                     << *sparsity());
-
-  addConstantIndex(0,0);
+      TEST_FOR_EXCEPTION(d.order() != 0, InternalError,
+                         "ConstantEvaluator ctor found a nonzero derivative "
+                         "of order greater than zero. The bad sparsity "
+                         "table is " << *sparsity());
+      addConstantIndex(0,0);
+    }
 }
 
 
@@ -56,6 +58,9 @@ void ConstantEvaluator::internalEval(const EvalManager& mgr,
   SUNDANCE_OUT(verbosity() > VerbSilent, tabs << "ConstantEvaluator::eval() expr="
                << expr()->toString());
 
-  constantResults.resize(1);
-  constantResults[0] = expr()->value();
+  if (sparsity()->numDerivs() > 0)
+    {
+      constantResults.resize(1);
+      constantResults[0] = expr()->value();
+    }
 }

@@ -46,7 +46,7 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
       int precision = 3;    // precision when printing vectors
       double epsilon = 1.0;   
@@ -173,6 +173,7 @@ int main(int argc, void** argv)
       Expr exactSoln = epsilon * (log(I0) - log(BesselI0(r/epsilon)));
       Expr exactDisc = L2Projector(discSpace, exactSoln).project();
 
+      //      Evaluator::classVerbosity() = VerbExtreme;
       
       /* this code writes the result to a file so we can visualize using paraview */
       /* Write the field in VTK format */
@@ -196,6 +197,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+  Sundance::finalize();
 }

@@ -74,12 +74,12 @@ int main(int argc, void** argv)
       Tabs tabs;
       TimeMonitor timer(totalTimer());
 
-//       verbosity<SymbolicTransformation>() = VerbSilent;
-//       verbosity<EvaluationTester>() = VerbExtreme;
-//       verbosity<Evaluator>() = VerbExtreme;
-//       verbosity<EvalVector>() = VerbExtreme;
-//       verbosity<EvaluatableExpr>() = VerbExtreme;
-//       verbosity<AbstractEvalMediator>() = VerbExtreme;
+      //       verbosity<SymbolicTransformation>() = VerbSilent;
+      //       verbosity<EvaluationTester>() = VerbExtreme;
+      //      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<EvalVector>() = VerbSilent;
+      // verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<AbstractEvalMediator>() = VerbSilent;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
@@ -111,7 +111,7 @@ int main(int argc, void** argv)
       bool isOK = true;
       Array<string> failures;
 
-      //#ifdef FLOOP
+
       TESTER(u, U);
 
       TESTER(-u, -U);
@@ -147,9 +147,6 @@ int main(int argc, void** argv)
 
       /* tests vec-vec and vec-const subtractions */
       TESTER( x*u - u, X*U - U );
-
-
-
 
       /* ----------- cases of product expressions ------------------- */
 
@@ -201,6 +198,7 @@ int main(int argc, void** argv)
 
       /* */
       TESTER( (x*u)*(y*w), (X*U)*(Y*W) );
+
 
       /* */
       TESTER( (2.0*u)*(y*u), (2.0*U)*(Y*U) );
@@ -262,42 +260,22 @@ int main(int argc, void** argv)
 
 
       TESTER((dx*(w - x*w)), (Dx*(W - X*W)));
-      //#endif
-       verbosity<SymbolicTransformation>() = VerbSilent;
-       verbosity<EvaluationTester>() = VerbExtreme;
-       verbosity<Evaluator>() = VerbExtreme;
-       verbosity<EvalVector>() = VerbExtreme;
-       verbosity<EvaluatableExpr>() = VerbExtreme;
-       verbosity<AbstractEvalMediator>() = VerbExtreme;
+
       TESTER((dx*(x*w)), (Dx*(X*W)));
 
-      //#ifdef FLOOP
       TESTER((dx*(y*w)), (Dx*(Y*W)));
 
       TESTER((dx*(u*w)), (Dx*(U*W)));
 
-//        verbosity<SymbolicTransformation>() = VerbSilent;
-//        verbosity<EvaluationTester>() = VerbExtreme;
-//        verbosity<Evaluator>() = VerbExtreme;
-//        verbosity<EvalVector>() = VerbExtreme;
-//        verbosity<EvaluatableExpr>() = VerbExtreme;
-//        verbosity<AbstractEvalMediator>() = VerbExtreme;
+      Expr g = x*x + y*y;
 
-       Expr g = x*x + y*y;
-
-       TESTER((u*(dx*(g) + dy*(g))), (U*(Dx*(X*X + Y*Y) + Dy*(X*X + Y*Y))));
+      TESTER((u*(dx*(g) + dy*(g))), (U*(Dx*(X*X + Y*Y) + Dy*(X*X + Y*Y))));
        
 
 
-       TESTER((u*g + w*g), (U*(X*X + Y*Y) + W*(X*X + Y*Y)));
+      TESTER((u*g + w*g), (U*(X*X + Y*Y) + W*(X*X + Y*Y)));
 
 
-       verbosity<SymbolicTransformation>() = VerbSilent;
-       verbosity<EvaluationTester>() = VerbSilent;
-       verbosity<Evaluator>() = VerbSilent;
-       verbosity<EvalVector>() = VerbSilent;
-       verbosity<EvaluatableExpr>() = VerbSilent;
-       verbosity<AbstractEvalMediator>() = VerbSilent;
 
       
       TESTER((dx*(2.0*u+4.0*w)), (Dx*(2.0*U+4.0*W)));
@@ -334,14 +312,17 @@ int main(int argc, void** argv)
 
       TESTER((u*(dx*(u*x))), (U*(Dx*(U*X))));
 
-
       /* Unary operators */
       TESTER(sin(x), sin(X));
+
+      for (int n=1; n<3; n++)
+        {
+          TESTER(sin(n*x), sin(n*X));
+        }
 
 
       TESTER(sin(u), sin(U));
 
-      //#endif
 
       if (isOK)
         {

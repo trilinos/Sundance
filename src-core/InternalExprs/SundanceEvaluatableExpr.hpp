@@ -93,9 +93,10 @@ namespace SundanceCore
                             public virtual EvaluatorFactory,
                             public TSFExtended::ObjectWithVerbosity<EvaluatableExpr>
     {
-      typedef OrderedTriple<EvalContext, 
-                            Set<MultiIndex>,
-                            bool> NonzeroSpecifier ;
+      typedef OrderedQuartet<EvalContext, 
+                             Set<MultiIndex>,
+                             Set<MultiSet<int> >,
+                             bool> NonzeroSpecifier ;
     public:
       /** Ctor is empty, but has some internal initialization to do
        * and so must be called by all subclasses */
@@ -126,7 +127,8 @@ namespace SundanceCore
       /** Return the subset of nonzero derivatives required to evaluate
        * the given set of differential operators in the given context. */
       RefCountPtr<SparsitySubset> sparsitySubset(const EvalContext& context,
-                                                 const Set<MultiIndex>& multiIndices) const ;
+                                                 const Set<MultiIndex>& multiIndices,
+                                                 const Set<MultiSet<int> >& activeFuncIDs) const ;
 
 
 
@@ -142,14 +144,12 @@ namespace SundanceCore
       virtual void findNonzeros(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
                                 const Set<MultiSet<int> >& activeFuncIDs,
-                                const Set<int>& allFuncIDs,
                                 bool regardFuncsAsConstant) const = 0 ;
 
       /** */
       bool nonzerosAreKnown(const EvalContext& context,
                             const Set<MultiIndex>& multiIndices,
                             const Set<MultiSet<int> >& activeFuncIDs,
-                            const Set<int>& allFuncIDs,
                             bool regardFuncsAsConstant) const ;
           
 
@@ -167,25 +167,16 @@ namespace SundanceCore
       {return orderOfDependency_[spatialDir];}
 
       /** 
-       * Return the polynomial order of this expr's dependence on the 
-       * given function. Non-polynomial functions
-       * (e.g., sqrt()) are assigned order=-1. This convention is 
-       * non-standard mathematically but allows us to use integer 
-       * order variables for all functions. 
-       * By default, any otherwise unspecified expression is assumed 
-       * to be non-polynomial. 
+       * Return all function combinations for which the mixed
+       * functional derivatives can be nonzero.
        */
-      int orderOfFunctionalDependency(int funcID) const ;
+      const Set<MultiSet<int> >& funcIDSet() const {return funcIDSet_;}
 
-      
+      /**
+       * Return the set of functions that appear in this expression.
+       */
+      const Set<int>& funcDependencies() const {return funcDependencies_;}
 
-      /** Return the set of function IDs that this expression depends
-       * on. */
-      const Set<int>& funcIDSet() const {return funcIDSet_;}
-
-      /** Indicate whether this expression has any nonzero derivs
-       * under the specified active functional derivatives */
-      bool isActive(const Set<MultiSet<int> >& activeFuncIDs) const ;
       //@}
       
       /** \name Error checking */
@@ -214,6 +205,13 @@ namespace SundanceCore
 
       /** */
       virtual bool nodesHaveBeenCounted() const {return nodesHaveBeenCounted_;}
+
+      /** */
+      static int maxFuncDiffOrder() {static int rtn=3; return rtn;}
+
+      /** */
+      static RefCountPtr<Set<int> > getFuncIDSet(const Expr& funcs);
+
     protected:
 
       /** Record the evaluator to be used for the given context */
@@ -227,20 +225,6 @@ namespace SundanceCore
        * called at other times. */
       void setOrderOfDependency(int spatialDir, int order)
       {orderOfDependency_[spatialDir] = order;}
-
-      /** Set the order of dependency of this expression on the
-       * given function. This method exists as a utility
-       * to be called at construction time, and should probably not be
-       * called at other times. */
-      void setOrderOfFunctionalDependency(int funcID, int order)
-      {orderOfFunctionalDependency_.put(funcID, order);}
-
-      /** Set the set of functional dependencies. To be called only at 
-       * ctor time */
-      void setFuncIDSet(const Set<int>& funcIDSet)
-      {funcIDSet_ = funcIDSet;}
-
-      
 
       /** */
       static bool isEvaluatable(const ExprBase* expr);
@@ -256,15 +240,16 @@ namespace SundanceCore
       /** */
       void addKnownNonzero(const EvalContext& context,
                            const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                const Set<int>& allFuncIDs,
+                           const Set<MultiSet<int> >& activeFuncIDs,
                            bool regardFuncsAsConstant) const ;
 
 
       /** */
-      bool derivIsActive(const MultipleDeriv& deriv,
-                         const Set<MultiSet<int> >& activeFuncIDs) const ;
-      
+      void addFuncIDCombo(const MultiSet<int>& funcIDSet);
+
+      /** */
+      void setFuncIDSet(const Set<MultiSet<int> >& funcIDSet);
+
 
     private:
 
@@ -282,16 +267,15 @@ namespace SundanceCore
       /** Polynomial order of the dependency upon each coordinate direction */
       Array<int> orderOfDependency_;
 
-      /** Polynomial order of the dependency upon each function */
-      Map<int, int> orderOfFunctionalDependency_;
+      /** Set of function combinations appearing in nonzero mixed partials */ 
+      Set<MultiSet<int> > funcIDSet_;
 
-      /** List of function IDs upon which this expr depends */
-      Set<int> funcIDSet_;
+      /** */
+      Set<int> funcDependencies_;
 
       mutable Set<NonzeroSpecifier> knownNonzeros_;
 
-      mutable bool nodesHaveBeenCounted_;
-      
+      mutable bool nodesHaveBeenCounted_; 
     };
   }
 }

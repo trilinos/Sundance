@@ -67,10 +67,13 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
       cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
     }
 
-  vectorResults.resize(1);
-  vectorResults[0] = mgr.popVector();
-  mgr.evalCellDiameterExpr(expr(), vectorResults[0]);
-  if (EvalVector::shadowOps()) vectorResults[0]->setString(stringRep_);
+  if (sparsity()->numDerivs() > 0)
+    {
+      vectorResults.resize(1);
+      vectorResults[0] = mgr.popVector();
+      mgr.evalCellDiameterExpr(expr(), vectorResults[0]);
+      if (EvalVector::shadowOps()) vectorResults[0]->setString(stringRep_);
+    }
 
   if (verbosity() > VerbMedium)
     {

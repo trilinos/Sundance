@@ -23,7 +23,7 @@ int main(int argc, void** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/cube.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/cube-coarse.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -61,8 +61,9 @@ int main(int argc, void** argv)
       Expr eqn = Integral(interior, (grad*v)*(grad*u) +2.0*v, quad2);
 
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(side4, v*(u-x), quad2)
-        + EssentialBC(side6, v*(u-x), quad2);
+      Expr exactSoln = (x + 1.0)*x - 1.0/4.0;
+      Expr bc = EssentialBC(side4, v*(u-exactSoln), quad4)
+        + EssentialBC(side6, v*(u-exactSoln), quad4);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
@@ -77,23 +78,26 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
-      Expr exactSoln = (x + 1.0)*x - 1.0/4.0;
-
 
       DiscreteSpace discSpace(mesh, new Lagrange(2), vecType);
       L2Projector proj1(discSpace, exactSoln);
       L2Projector proj2(discSpace, soln-exactSoln);
+      L2Projector proj3(discSpace, pow(soln-exactSoln, 2.0));
       Expr exactDisc = proj1.project();
       Expr errorDisc = proj2.project();
+      Expr errorSqDisc = proj3.project();
 
+      cerr << "writing fields" << endl;
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Poisson3d");
       w.addMesh(mesh);
       w.addField("soln", new ExprFieldWrapper(soln[0]));
       w.addField("exact soln", new ExprFieldWrapper(exactDisc));
       w.addField("error", new ExprFieldWrapper(errorDisc));
+      w.addField("errorSq", new ExprFieldWrapper(errorSqDisc));
       w.write();
 
+      cerr << "computing error" << endl;
 
       Expr errExpr = Integral(interior, 
                               pow(soln-exactSoln, 2.0),
@@ -103,7 +107,7 @@ int main(int argc, void** argv)
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
       double tol = 1.0e-12;
-      Sundance::passFailTest(errorSq, tol);
+      Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
 		{

@@ -41,12 +41,12 @@ EvaluationTester::EvaluationTester(const Expr& e)
   rqc_ = RegionQuadCombo(rcp(new CellFilterStub()), 
                          rcp(new QuadratureFamilyStub(0)));
 
-  context_ = EvalContext(rqc_, maxDiffOrder, EvalContext::nextID());
+
   
-  mgr_.setRegion(context_);
+
 
   Array<Expr> unks;
-  Set<int> unkID;
+  RefCountPtr<Set<int> > unkID = rcp(new Set<int>());
 
   SUNDANCE_VERB_LOW(tabs << "finding unknowns...");
 
@@ -54,14 +54,18 @@ EvaluationTester::EvaluationTester(const Expr& e)
     = dynamic_cast<const UnknownFuncElement*>(e[0].ptr().get());
   if (ue!=0)
     {
-      unkID.put(ue->funcID());
+      unkID->put(ue->funcID());
       unks.append(e[0]);
     }
   else
     {
-      ev_->getUnknowns(unkID, unks);
+      ev_->getUnknowns(*unkID, unks);
     }
-  
+
+  context_ = EvalContext(rqc_, maxDiffOrder, EvalContext::nextID());  
+  mgr_.setRegion(context_);
+
+
   Array<Expr> u0;
 
   for (unsigned int i=0; i<unks.size(); i++)
