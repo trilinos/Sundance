@@ -30,7 +30,8 @@ QuadratureEvalMediator
     quad_(quad),
     refQuadPts_(),
     refQuadWeights_(),
-    physQuadPts_()
+    physQuadPts_(),
+    refBasisVals_(2)
 {}
 
 void QuadratureEvalMediator::setCellType(const CellType& cellType) 
@@ -67,13 +68,16 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
 RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
 ::getRefBasisVals(const BasisFamily& basis, int diffOrder) const
 {
+  Tabs tab;
   RefCountPtr<Array<Array<Array<double> > > > rtn ;
 
   typedef OrderedPair<BasisFamily, CellType> key;
 
   if (!refBasisVals_[diffOrder].containsKey(key(basis, cellType())))
     {
-      RefCountPtr<Array<Array<Array<double> > > > rtn = rcp(new Array<Array<Array<double> > >());
+      SUNDANCE_OUT(verbosity() > VerbMedium,
+                   tab << "computing basis values on quad pts");
+      rtn = rcp(new Array<Array<Array<double> > >());
       if (diffOrder==0)
         {
           rtn->resize(1);
@@ -95,6 +99,8 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
     }
   else
     {
+      SUNDANCE_OUT(verbosity() > VerbMedium,
+                   tab << "reusing basis values on quad pts");
       rtn = refBasisVals_[diffOrder].get(key(basis, cellType()));
     }
   return rtn;
@@ -117,7 +123,7 @@ void QuadratureEvalMediator
   const BasisFamily& basis = f->basis()[myIndex];
 
   const Vector<double>& fValues = f->vector();
-  RefCountPtr<Array<double> > localValues;
+  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
   f->getLocalValues(cellDim(), *cellLID(), *localValues);
 
   RefCountPtr<Array<Array<Array<double> > > > refBasisValues 
@@ -126,7 +132,7 @@ void QuadratureEvalMediator
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
   if (mi.order() != 0) mesh().getJacobians(cellDim(), *cellLID(), *J);
   
-  int nQuad = refQuadPts_.size();
+  int nQuad = quadWgts().size();
   int nNodes = basis.nNodes(cellType());
   int nFuncs = f->discreteSpace().nFunc();
 
@@ -146,8 +152,9 @@ void QuadratureEvalMediator
               double& sum = vec->start()[c*nQuad + q];
               for (int i=0; i<nNodes; i++)
                 {
-                  sum += (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex]
-                    * (*refBasisValues)[q][i][0];
+                  double coeff = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
+                  double basisVals = (*refBasisValues)[0][q][i];
+                  sum += coeff * basisVals;
                 }
             }
         }
@@ -170,7 +177,7 @@ void QuadratureEvalMediator
                   double g = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
                   for (int r=0; r<cellDim(); r++)
                     {
-                      sum += g*invJ[pDir + r*cellDim()]*(*refBasisValues)[q][i][r];
+                      sum += g*invJ[pDir + r*cellDim()]*(*refBasisValues)[r][q][i];
                     }
                 }
             }

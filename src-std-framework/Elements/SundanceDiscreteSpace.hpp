@@ -53,6 +53,9 @@ namespace SundanceStdFwk
     Vector<double> createVector() const {return vecSpace_.createMember();}
 
     /** */
+    VectorSpace<double> vecSpace() const {return vecSpace_;}
+
+    /** */
     const Mesh& mesh() const {return mesh_;}
   private:
     /** */

@@ -14,6 +14,7 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace Teuchos;
+using namespace TSFExtended;
 using namespace Internal;
 using namespace Internal;
 
@@ -89,7 +90,8 @@ DerivSet EvaluatableExpr::identifyNonzeroDerivs() const
   
 }
 
-bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region) const
+bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region,
+                                          bool& derivSetIsKnown) const
 {
 
   Tabs tabs;
@@ -108,6 +110,14 @@ bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region) const
                << " already known "
                << endl;
         }
+      if (derivSetToDerivSetIndexMap_.containsKey(currentDerivSuperset()))
+        {
+          derivSetIsKnown = true;
+        }
+      else
+        {
+          derivSetIsKnown = false;
+        }
       return true;
     }
   else
@@ -121,19 +131,20 @@ bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region) const
              << endl;
       }
       /* if the region is new but the deriv set is already known,
-       * associate the region with the deriv set and return true */
+       * return true */
       if (derivSetToDerivSetIndexMap_.containsKey(currentDerivSuperset()))
         {
           Tabs tabs2;
 
           int i = derivSetToDerivSetIndexMap_.get(currentDerivSuperset());
-          regionToDerivSetIndexMap_.put(region, i);
           if (verbosity() > 1)
             {
-              cerr << tabs2 << "deriv set " << currentDerivSuperset()
+              cerr << tabs2 << "region is unknown, but deriv set " 
+                   << currentDerivSuperset()
                    << " is already known, with index " << i << endl;
             }
-          return true;
+
+          derivSetIsKnown = true;
         }
       else
         {
@@ -146,15 +157,17 @@ bool EvaluatableExpr::checkForKnownRegion(const RegionQuadCombo& region) const
               cerr << tabs2 << "deriv set " << currentDerivSuperset()
                    << " is new " << endl;
             }
-          return false;
+          derivSetIsKnown = false;
         }
+      return false;
     }
 }
 
 
 int EvaluatableExpr::registerRegion(const RegionQuadCombo& region,
-                                     const DerivSet& derivs,
-                                     const EvaluatorFactory* factory) const
+                                    bool derivSetIsKnown,
+                                    const DerivSet& derivs,
+                                    const EvaluatorFactory* factory) const
 {
   Tabs tabs;
 
@@ -167,22 +180,35 @@ int EvaluatableExpr::registerRegion(const RegionQuadCombo& region,
     }
 
   /* paranoid check: make sure this region hasn't already been processed. */
-  TEST_FOR_EXCEPTION(regionToDerivSetIndexMap_.containsKey(region),
+  TEST_FOR_EXCEPTION(derivSetIsKnown 
+                     && regionToDerivSetIndexMap_.containsKey(region),
                      InternalError,
                      "region " << region.toString() << " already registered "
                      "with expr " << toString() << 
-                     " but EvaluatableExpr::createNewDerivSet was called "
+                     " but EvaluatableExpr::registerRegion() was called "
                      "nonetheless");
   
   /* paranoid check: make sure this deriv set hasn't already been added */
-  TEST_FOR_EXCEPTION(derivSetToDerivSetIndexMap_.containsKey(derivs),
+  TEST_FOR_EXCEPTION(!derivSetIsKnown 
+                     && derivSetToDerivSetIndexMap_.containsKey(derivs),
                      InternalError,
                      "derivSet " << derivs << " already registered with expr "
                      << toString() << 
-                     " but EvaluatableExpr::createNewDerivSet was called anyway");
+                     " but EvaluatableExpr::registerRegion() was called anyway");
 
-  /* the index for this deriv set is the next index in the sparsity array */
-  int rtn = sparsityPatterns_.size();
+  int rtn;
+  if (derivSetIsKnown)
+    {
+      /* if the deriv set is known, get its index */
+      rtn = derivSetToDerivSetIndexMap_.get(derivs);
+    }
+  else
+    {
+      /* if this is a new deriv set, then
+       * the index for this deriv set is the next index 
+       * in the sparsity array */
+      rtn = sparsityPatterns_.size();
+    }
 
   if (verbosity() > 1) 
     {
@@ -190,37 +216,46 @@ int EvaluatableExpr::registerRegion(const RegionQuadCombo& region,
       cerr << tabs1 << "deriv set index will be " << rtn << endl;
     }
   
-  /* Create the sparsity pattern for this deriv set */
-  sparsityPatterns_.append(rcp(new SparsityPattern(derivs, this)));
-
-  if (verbosity() > 1) 
+  /* If the deriv set is new, 
+   * create the sparsity pattern for this deriv set */
+  if (!derivSetIsKnown)
     {
-      Tabs tabs1;
-      cerr << tabs1 << "found sparsity pattern:\n"
-           << *(sparsityPatterns_[rtn]) << endl;
-      
+      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "creating sparsity pattern");
+      sparsityPatterns_.append(rcp(new SparsityPattern(derivs, this)));
+    }
+  else
+    {
+      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "reusing sparsity pattern");
     }
 
-  /** create the evaluator for this deriv set */
-  evaluators_.append(rcp(factory->createEvaluator(this)));
+  SUNDANCE_OUT(verbosity() > VerbMedium,
+               tabs << "found sparsity pattern:\n"
+               << *(sparsityPatterns_[rtn]));
 
-  if (verbosity() > 1) 
+
+  /** If the deriv set is new, 
+   * create the evaluator for this deriv set */
+  if (!derivSetIsKnown)
     {
-      Tabs tabs1;
-      cerr << tabs1 << "created evaluator" << endl;
+      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "creating evaluator");
+      evaluators_.append(rcp(factory->createEvaluator(this)));
     }
-  
-  
-  /* set up mapping from deriv set to deriv set index */
-  derivSetToDerivSetIndexMap_.put(derivs, rtn);
-  derivSets_.append(derivs);
+  else
+    {
+      SUNDANCE_OUT(verbosity() > VerbLow, tabs << "reusing evaluator");
+    }
+
+  /* set up mapping from deriv set to deriv set index */  
+  if (!derivSetIsKnown)
+    {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   tabs << "registering deriv set at DSI=" << rtn);
+      derivSetToDerivSetIndexMap_.put(derivs, rtn);
+      derivSets_.append(derivs);
+    }
 
   regionToDerivSetIndexMap_.put(region, rtn);
 
-  if (verbosity() > 1) 
-    {
-      cerr << tabs << "done registering deriv set" << endl;
-    }
   return rtn;
 }
 
@@ -240,17 +275,24 @@ void EvaluatableExpr::evaluate(const EvalManager& mgr,
 {
   TimeMonitor t(evalTimer());
 
-  int derivSetIndex = getDerivSetIndex(mgr.getRegion());
+  Tabs tab;
+
+  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "evaluating " << toString());
+
+
 
   if (!resultCacheIsValid_)
     {
-      if (verbosity() > 2) cerr << "evaluating " << toString() << endl;
+      SUNDANCE_OUT(verbosity() > VerbMedium, 
+                   "computing values for " << toString());
+      int derivSetIndex = getDerivSetIndex(mgr.getRegion());
       evaluator(derivSetIndex)->eval(mgr, resultCache_);
       resultCacheIsValid_ = true;
     }
   else
     {
-      if (verbosity() > 2) cerr << "reusing cached " << toString() << endl;
+      SUNDANCE_OUT(verbosity() > VerbMedium, 
+                   "reusing values for " << toString());
     }
   results = resultCache_;
 }
@@ -260,10 +302,21 @@ void EvaluatableExpr::findDerivSuperset(const DerivSet& derivs) const
   Tabs tabs;
   if (verbosity() > 1)
     {
+      Tabs tabs1;
       cerr << tabs << "finding deriv superset for expr: " << toString()
            << endl;
+      cerr << tabs1 << "required derivs are " << derivs.toString() << endl;
+      cerr << tabs1 << "current derivs superset is " 
+           << currentDerivSuperset().toString() << endl;
     }
   currentDerivSuperset().merge(derivs);
+
+  if (verbosity() > 1)
+    {
+      Tabs tabs1;
+      cerr << tabs1 << "merged superset is " 
+           << currentDerivSuperset().toString() << endl;
+    }
 }
 
 int EvaluatableExpr::getDerivSetIndex(const RegionQuadCombo& region) const

@@ -57,7 +57,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(AssemblerTest1D_SOURCES) $(AssemblerTest2D_SOURCES) $(Laplacian2D_SOURCES) $(QuadratureIntegral2D_SOURCES) $(RefIntegral_SOURCES) $(TransformedIntegral2D_SOURCES)
+SOURCES = $(AssemblerTest1D_SOURCES) $(AssemblerTest2D_SOURCES) $(IntegralTest1D_SOURCES) $(Laplacian2D_SOURCES) $(NonlinAlgebraic_SOURCES) $(QuadratureIntegral2D_SOURCES) $(RefIntegral_SOURCES) $(TransformedIntegral2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -82,7 +82,8 @@ POST_UNINSTALL = :
 host_triplet = @host@
 noinst_PROGRAMS = AssemblerTest1D$(EXEEXT) AssemblerTest2D$(EXEEXT) \
 	RefIntegral$(EXEEXT) TransformedIntegral2D$(EXEEXT) \
-	Laplacian2D$(EXEEXT) QuadratureIntegral2D$(EXEEXT)
+	Laplacian2D$(EXEEXT) QuadratureIntegral2D$(EXEEXT) \
+	IntegralTest1D$(EXEEXT) NonlinAlgebraic$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-std-framework/Assembly
@@ -126,8 +127,13 @@ am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 am_AssemblerTest2D_OBJECTS =  \
 	AssemblerTest2D-AssemblerTest2D.$(OBJEXT)
 AssemblerTest2D_OBJECTS = $(am_AssemblerTest2D_OBJECTS)
+am_IntegralTest1D_OBJECTS = IntegralTest1D-IntegralTest1D.$(OBJEXT)
+IntegralTest1D_OBJECTS = $(am_IntegralTest1D_OBJECTS)
 am_Laplacian2D_OBJECTS = Laplacian2D-Laplacian2D.$(OBJEXT)
 Laplacian2D_OBJECTS = $(am_Laplacian2D_OBJECTS)
+am_NonlinAlgebraic_OBJECTS =  \
+	NonlinAlgebraic-NonlinAlgebraic.$(OBJEXT)
+NonlinAlgebraic_OBJECTS = $(am_NonlinAlgebraic_OBJECTS)
 am_QuadratureIntegral2D_OBJECTS =  \
 	QuadratureIntegral2D-QuadratureIntegral2D.$(OBJEXT)
 QuadratureIntegral2D_OBJECTS = $(am_QuadratureIntegral2D_OBJECTS)
@@ -142,7 +148,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES =  \
 @AMDEP_TRUE@	./$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Laplacian2D-Laplacian2D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/QuadratureIntegral2D-QuadratureIntegral2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/RefIntegral-RefIntegral.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/TransformedIntegral2D-TransformedIntegral2D.Po
@@ -152,10 +160,12 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(AssemblerTest1D_SOURCES) $(AssemblerTest2D_SOURCES) \
-	$(Laplacian2D_SOURCES) $(QuadratureIntegral2D_SOURCES) \
+	$(IntegralTest1D_SOURCES) $(Laplacian2D_SOURCES) \
+	$(NonlinAlgebraic_SOURCES) $(QuadratureIntegral2D_SOURCES) \
 	$(RefIntegral_SOURCES) $(TransformedIntegral2D_SOURCES)
 DIST_SOURCES = $(AssemblerTest1D_SOURCES) $(AssemblerTest2D_SOURCES) \
-	$(Laplacian2D_SOURCES) $(QuadratureIntegral2D_SOURCES) \
+	$(IntegralTest1D_SOURCES) $(Laplacian2D_SOURCES) \
+	$(NonlinAlgebraic_SOURCES) $(QuadratureIntegral2D_SOURCES) \
 	$(RefIntegral_SOURCES) $(TransformedIntegral2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -337,6 +347,24 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 QuadratureIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 QuadratureIntegral2D_LDADD = $(STD_FWK_LIBS) 
+IntegralTest1D_SOURCES = $(srcdir)/IntegralTest1D.cpp
+IntegralTest1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+IntegralTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+IntegralTest1D_LDADD = $(STD_FWK_LIBS) 
+NonlinAlgebraic_SOURCES = $(srcdir)/NonlinAlgebraic.cpp
+NonlinAlgebraic_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+NonlinAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
+NonlinAlgebraic_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -472,9 +500,15 @@ AssemblerTest1D$(EXEEXT): $(AssemblerTest1D_OBJECTS) $(AssemblerTest1D_DEPENDENC
 AssemblerTest2D$(EXEEXT): $(AssemblerTest2D_OBJECTS) $(AssemblerTest2D_DEPENDENCIES) 
 	@rm -f AssemblerTest2D$(EXEEXT)
 	$(CXXLINK) $(AssemblerTest2D_LDFLAGS) $(AssemblerTest2D_OBJECTS) $(AssemblerTest2D_LDADD) $(LIBS)
+IntegralTest1D$(EXEEXT): $(IntegralTest1D_OBJECTS) $(IntegralTest1D_DEPENDENCIES) 
+	@rm -f IntegralTest1D$(EXEEXT)
+	$(CXXLINK) $(IntegralTest1D_LDFLAGS) $(IntegralTest1D_OBJECTS) $(IntegralTest1D_LDADD) $(LIBS)
 Laplacian2D$(EXEEXT): $(Laplacian2D_OBJECTS) $(Laplacian2D_DEPENDENCIES) 
 	@rm -f Laplacian2D$(EXEEXT)
 	$(CXXLINK) $(Laplacian2D_LDFLAGS) $(Laplacian2D_OBJECTS) $(Laplacian2D_LDADD) $(LIBS)
+NonlinAlgebraic$(EXEEXT): $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_DEPENDENCIES) 
+	@rm -f NonlinAlgebraic$(EXEEXT)
+	$(CXXLINK) $(NonlinAlgebraic_LDFLAGS) $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_LDADD) $(LIBS)
 QuadratureIntegral2D$(EXEEXT): $(QuadratureIntegral2D_OBJECTS) $(QuadratureIntegral2D_DEPENDENCIES) 
 	@rm -f QuadratureIntegral2D$(EXEEXT)
 	$(CXXLINK) $(QuadratureIntegral2D_LDFLAGS) $(QuadratureIntegral2D_OBJECTS) $(QuadratureIntegral2D_LDADD) $(LIBS)
@@ -493,7 +527,9 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Laplacian2D-Laplacian2D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QuadratureIntegral2D-QuadratureIntegral2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RefIntegral-RefIntegral.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TransformedIntegral2D-TransformedIntegral2D.Po@am__quote@
@@ -546,6 +582,22 @@ AssemblerTest2D-AssemblerTest2D.obj: $(srcdir)/AssemblerTest2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest2D_CXXFLAGS) $(CXXFLAGS) -c -o AssemblerTest2D-AssemblerTest2D.obj `if test -f '$(srcdir)/AssemblerTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/AssemblerTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/AssemblerTest2D.cpp'; fi`
 
+IntegralTest1D-IntegralTest1D.o: $(srcdir)/IntegralTest1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -MT IntegralTest1D-IntegralTest1D.o -MD -MP -MF "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" -c -o IntegralTest1D-IntegralTest1D.o `test -f '$(srcdir)/IntegralTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/IntegralTest1D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po"; else rm -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/IntegralTest1D.cpp' object='IntegralTest1D-IntegralTest1D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po' tmpdepfile='$(DEPDIR)/IntegralTest1D-IntegralTest1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -c -o IntegralTest1D-IntegralTest1D.o `test -f '$(srcdir)/IntegralTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/IntegralTest1D.cpp
+
+IntegralTest1D-IntegralTest1D.obj: $(srcdir)/IntegralTest1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -MT IntegralTest1D-IntegralTest1D.obj -MD -MP -MF "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" -c -o IntegralTest1D-IntegralTest1D.obj `if test -f '$(srcdir)/IntegralTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/IntegralTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/IntegralTest1D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po"; else rm -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/IntegralTest1D.cpp' object='IntegralTest1D-IntegralTest1D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po' tmpdepfile='$(DEPDIR)/IntegralTest1D-IntegralTest1D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -c -o IntegralTest1D-IntegralTest1D.obj `if test -f '$(srcdir)/IntegralTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/IntegralTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/IntegralTest1D.cpp'; fi`
+
 Laplacian2D-Laplacian2D.o: $(srcdir)/Laplacian2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Laplacian2D_CXXFLAGS) $(CXXFLAGS) -MT Laplacian2D-Laplacian2D.o -MD -MP -MF "$(DEPDIR)/Laplacian2D-Laplacian2D.Tpo" -c -o Laplacian2D-Laplacian2D.o `test -f '$(srcdir)/Laplacian2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Laplacian2D.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Laplacian2D-Laplacian2D.Tpo" "$(DEPDIR)/Laplacian2D-Laplacian2D.Po"; else rm -f "$(DEPDIR)/Laplacian2D-Laplacian2D.Tpo"; exit 1; fi
@@ -561,6 +613,22 @@ Laplacian2D-Laplacian2D.obj: $(srcdir)/Laplacian2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Laplacian2D-Laplacian2D.Po' tmpdepfile='$(DEPDIR)/Laplacian2D-Laplacian2D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Laplacian2D_CXXFLAGS) $(CXXFLAGS) -c -o Laplacian2D-Laplacian2D.obj `if test -f '$(srcdir)/Laplacian2D.cpp'; then $(CYGPATH_W) '$(srcdir)/Laplacian2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Laplacian2D.cpp'; fi`
+
+NonlinAlgebraic-NonlinAlgebraic.o: $(srcdir)/NonlinAlgebraic.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NonlinAlgebraic-NonlinAlgebraic.o -MD -MP -MF "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" -c -o NonlinAlgebraic-NonlinAlgebraic.o `test -f '$(srcdir)/NonlinAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinAlgebraic.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po"; else rm -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NonlinAlgebraic.cpp' object='NonlinAlgebraic-NonlinAlgebraic.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po' tmpdepfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -c -o NonlinAlgebraic-NonlinAlgebraic.o `test -f '$(srcdir)/NonlinAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinAlgebraic.cpp
+
+NonlinAlgebraic-NonlinAlgebraic.obj: $(srcdir)/NonlinAlgebraic.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NonlinAlgebraic-NonlinAlgebraic.obj -MD -MP -MF "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" -c -o NonlinAlgebraic-NonlinAlgebraic.obj `if test -f '$(srcdir)/NonlinAlgebraic.cpp'; then $(CYGPATH_W) '$(srcdir)/NonlinAlgebraic.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NonlinAlgebraic.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po"; else rm -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NonlinAlgebraic.cpp' object='NonlinAlgebraic-NonlinAlgebraic.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po' tmpdepfile='$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -c -o NonlinAlgebraic-NonlinAlgebraic.obj `if test -f '$(srcdir)/NonlinAlgebraic.cpp'; then $(CYGPATH_W) '$(srcdir)/NonlinAlgebraic.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NonlinAlgebraic.cpp'; fi`
 
 QuadratureIntegral2D-QuadratureIntegral2D.o: $(srcdir)/QuadratureIntegral2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(QuadratureIntegral2D_CXXFLAGS) $(CXXFLAGS) -MT QuadratureIntegral2D-QuadratureIntegral2D.o -MD -MP -MF "$(DEPDIR)/QuadratureIntegral2D-QuadratureIntegral2D.Tpo" -c -o QuadratureIntegral2D-QuadratureIntegral2D.o `test -f '$(srcdir)/QuadratureIntegral2D.cpp' || echo '$(srcdir)/'`$(srcdir)/QuadratureIntegral2D.cpp; \

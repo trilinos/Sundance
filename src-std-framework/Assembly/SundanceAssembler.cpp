@@ -144,12 +144,8 @@ void Assembler::configureMat(LinearOperator<double>& A,
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "Assembler: creating row and col spaces...");
 
-  VectorSpace<double> rowSpace = vecType_.createSpace(rowMap()->numDOFs(),
-                                                      rowMap()->numLocalDOFs(),
-                                                      &(localRowIndices[0]));
-  VectorSpace<double> colSpace = vecType_.createSpace(colMap()->numDOFs(),
-                                                      colMap()->numLocalDOFs(),
-                                                      &(localColIndices[0]));
+  VectorSpace<double> rowSpace = rowSpace_->vecSpace();
+  VectorSpace<double> colSpace = colSpace_->vecSpace();
 
   
   SUNDANCE_OUT(verbosity() > VerbLow, 

@@ -61,8 +61,8 @@ namespace SundanceCore
       /**
        * Indicate whether the given functional derivative is nonzero.
        */
-      virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const 
-      {return d.order() == 0;}
+      virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const ;
+
 
       /**
        * Find all functions and their derivatives beneath my level

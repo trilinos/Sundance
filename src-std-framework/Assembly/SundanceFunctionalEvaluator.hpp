@@ -37,10 +37,8 @@ namespace SundanceStdFwk
     public:
       /** */
       FunctionalEvaluator(const Mesh& mesh, 
-                          const CellFilter& filter,
-                          const Expr& expr,
-                          const QuadratureFamily& quad,
-                          const VerbositySetting& verb = classVerbosity());
+                          const Expr& integral);
+
 
       /** */
       double evaluate() const ;
@@ -55,12 +53,21 @@ namespace SundanceStdFwk
       /** */
       static int defaultWorkSetSize() {return 100;}
 
+      /** */
+      Mesh mesh_;
+      
+      /** */
+      Array<RegionQuadCombo> rqc_;
 
       /** */
-      Array<RefCountPtr<QuadratureEvalMediator> > mediator_;
+      Map<RegionQuadCombo, Expr> rqcExprs_;
+
 
       /** */
-      const EvaluatableExpr* evalExpr_;
+      Array<RefCountPtr<QuadratureEvalMediator> > mediators_;
+
+
+      Array<const EvaluatableExpr*> evalExprs_;
 
       /** */
       RefCountPtr<EvalManager> evalMgr_;

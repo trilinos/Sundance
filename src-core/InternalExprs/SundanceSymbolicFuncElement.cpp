@@ -75,15 +75,17 @@ int SymbolicFuncElement::setupEval(const RegionQuadCombo& region,
   /* If we've been here already with this deriv set, we're done.
    * If we've been here with this deriv set, but in another region,
    * map the region to the deriv set. */
-  if (checkForKnownRegion(region))
+  bool derivSetIsKnown;
+  if (checkForKnownRegion(region, derivSetIsKnown))
     {
       return getDerivSetIndex(region);
     }
 
   /* Create a new entry in our tables of deriv sets. This step creates
   * a sparsity pattern for the current deriv set. */
-  int derivSetIndex = registerRegion(region, currentDerivSuperset(), 
-                                      factory);
+  int derivSetIndex = registerRegion(region, derivSetIsKnown,
+                                     currentDerivSuperset(), 
+                                     factory);
   
   /* set up the eval point, returning the index by which the eval point
    * refers to this deriv set.  */

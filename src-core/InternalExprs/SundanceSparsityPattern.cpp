@@ -18,7 +18,9 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
                                  const EvaluatableExpr* expr)
   : derivToIndexMap_(),
     derivs_(),
-    states_()
+    states_(),
+    isFirstOrderSpatialDeriv_(),
+    spatialDerivDir_()
 {
   DerivSet::const_iterator i;
 
@@ -65,6 +67,16 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
             }
           if (isConstant) states_.append(ConstantDeriv);
           else states_.append(VectorDeriv);
+        }
+      if (d.order()==1 && d.begin()->isCoordDeriv())
+        {
+          isFirstOrderSpatialDeriv_.append(true);
+          spatialDerivDir_.append(d.begin()->coordDeriv()->dir());
+        }
+      else
+        {
+          isFirstOrderSpatialDeriv_.append(false);
+          spatialDerivDir_.append(-1);
         }
     }
 }

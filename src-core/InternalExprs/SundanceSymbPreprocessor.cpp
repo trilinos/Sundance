@@ -27,6 +27,32 @@ using namespace Internal;
 
 
 DerivSet SymbPreprocessor::setupExpr(const Expr& expr, 
+                                 const RegionQuadCombo& region, 
+                                 const EvaluatorFactory* factory)
+{
+  TimeMonitor t(preprocTimer());
+
+  const EvaluatableExpr* e 
+    = dynamic_cast<const EvaluatableExpr*>(expr.ptr().get());
+
+  TEST_FOR_EXCEPTION(e==0, InternalError,
+                     "Non-evaluatable expr " << expr.toString()
+                     << " given to SymbPreprocessor::setupExpr()");
+
+  DerivSet derivs;
+
+  derivs.put(MultipleDeriv());
+
+  e->resetDerivSuperset();
+
+  e->findDerivSuperset(derivs);
+
+  e->setupEval(region, factory);
+
+  return derivs;
+}
+
+DerivSet SymbPreprocessor::setupExpr(const Expr& expr, 
                                      const Expr& tests,
                                      const Expr& unks,
                                      const Expr& u0, 

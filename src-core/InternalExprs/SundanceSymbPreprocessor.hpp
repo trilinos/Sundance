@@ -34,6 +34,10 @@ namespace SundanceCore
                                   const Expr& u0,
                                   const RegionQuadCombo& region, 
                                   const EvaluatorFactory* factory);
+        /** */
+        static DerivSet setupExpr(const Expr& expr, 
+                                  const RegionQuadCombo& region, 
+                                  const EvaluatorFactory* factory);
 
         /** */
         static DerivSet identifyNonzeroDerivs(const Expr& expr,

@@ -9,12 +9,14 @@
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 Evaluator::Evaluator()
 {;}
@@ -41,6 +43,8 @@ void CoordExprEvaluator::eval(const EvalManager& mgr,
                               RefCountPtr<EvalVectorArray>& results) const 
 {
   Tabs tabs;
+
+  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---CoordExprEvaluator---");
   int derivSetIndex = expr()->getDerivSetIndex(mgr.getRegion());
   const RefCountPtr<SparsityPattern>& s = expr()->sparsity(derivSetIndex);
 
@@ -71,6 +75,7 @@ void SymbolicFuncElementEvaluator::eval(const EvalManager& mgr,
                                     RefCountPtr<EvalVectorArray>& results) const 
 {
   Tabs tabs;
+  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---SymbolicFuncElementEvaluator---");
 
   int derivSetIndex = expr()->getDerivSetIndex(mgr.getRegion());
   const RefCountPtr<SparsityPattern>& s = expr()->sparsity(derivSetIndex);
@@ -139,6 +144,7 @@ void DiscreteFuncElementEvaluator::eval(const EvalManager& mgr,
                                      RefCountPtr<EvalVectorArray>& results) const 
 {
   Tabs tabs;
+  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---DiscreteFuncElementEvaluator---");
 
   int derivSetIndex = expr()->getDerivSetIndex(mgr.getRegion());
   const RefCountPtr<SparsityPattern>& s = expr()->sparsity(derivSetIndex);
@@ -159,7 +165,12 @@ void DiscreteFuncElementEvaluator::eval(const EvalManager& mgr,
       if (s->isZero(i)) r[i]->setToZero();
       else
         {
-          mgr.evalDiscreteFuncElement(expr(), MultiIndex(), r[i]);
+          MultiIndex mi;
+          if (s->isFirstOrderSpatialDeriv(i))
+            {
+              mi[s->spatialDerivDir(i)] = 1;
+            }
+          mgr.evalDiscreteFuncElement(expr(), mi, r[i]);
         }
       if (verbosity() > 1)
         {
@@ -173,6 +184,7 @@ void ConstantEvaluator::eval(const EvalManager& mgr,
                              RefCountPtr<EvalVectorArray>& results) const 
 {
   Tabs tabs;
+  SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---ConstantEvaluator---");
 
   int derivSetIndex = expr()->getDerivSetIndex(mgr.getRegion());
   const RefCountPtr<SparsityPattern>& s = expr()->sparsity(derivSetIndex);

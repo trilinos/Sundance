@@ -35,10 +35,15 @@
 #include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceBasicInserter.hpp"
 #include "SundanceIntegrator.hpp"
+#include "SundanceFunctionalEvaluator.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
+#include "TSFBICGSTABSolver.hpp"
+#include "TSFLinearSolver.hpp"
+#include "TSFLinearCombination.hpp"
 
 using namespace TSFExtended;
+using namespace TSFExtendedOps;
 using namespace Teuchos;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -84,15 +89,17 @@ int main(int argc, void** argv)
       CellFilter leftPoint = points.subset(leftPointFunc);
       
       Expr x = new CoordExpr(0);
-      Expr u = new UnknownFunction(new Lagrange(1), "u");
+      Expr u = new UnknownFunction(new Lagrange(2), "u");
       //      Expr u0 = new DiscreteFunction(new Lagrange(1), "u0");
       Expr u0 = new ZeroExpr();
-      Expr v = new TestFunction(new Lagrange(1), "v");
+      Expr v = new TestFunction(new Lagrange(2), "v");
       Expr dx = new Derivative(0);
-      
+
+      Expr exactSoln = -x*x + 2.0*x;
 
       QuadratureFamily quad = new GaussianQuadrature(2);
-      Expr eqn = Integral(interior, (dx*v)*(dx*u) + v, quad);
+      
+      Expr eqn = Integral(interior, (dx*v)*(dx*u) - 2.0*v, quad);
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
       RefCountPtr<EquationSet> eqnSet 
@@ -105,7 +112,7 @@ int main(int argc, void** argv)
       //verbosity<Evaluator>() = VerbExtreme;
       //      EvalVector::shadowOps() = true;
 
-      // EquationSet::classVerbosity() = VerbHigh;
+      //Evaluator::classVerbosity() = VerbHigh;
 //       Assembler::classVerbosity() = VerbExtreme;
 //       IntegralGroup::classVerbosity() = VerbHigh;
 //       Expr::showAllParens() = true;
@@ -116,12 +123,71 @@ int main(int argc, void** argv)
 
       LinearOperator<double> A;
       Vector<double> b;
+      Vector<double> solnVec;
 
       assembler.assemble(A, b);
 
-      cerr << "Matrix = " << endl << A << endl;
-      cerr << "RHS = " << endl << b << endl;
+      ParameterList solverParams;
 
+      solverParams.set(LinearSolverBase<double>::verbosityParam(), 2);
+      solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
+      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-12);
+
+      LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
+
+      SolverState<double> state = solver.solve(A, b, solnVec);
+
+      cerr << "solver state = " << endl << state << endl;
+
+      Expr soln = new DiscreteFunction(*(assembler.solutionSpace()),
+                                       solnVec, "u0");
+
+      Expr err = exactSoln - soln;
+      Expr errExpr = Integral(interior, 
+                              err*err,
+                              new GaussianQuadrature(6));
+
+      Expr derivErr = dx*(exactSoln-soln);
+      Expr derivErrExpr = Integral(interior, 
+                                   derivErr*derivErr, 
+                                   new GaussianQuadrature(4));
+
+      Expr junk = dx*exactSoln - soln[0];
+      
+      Expr junkExpr = Integral(interior, 
+                               junk*junk,
+                               new GaussianQuadrature(12));
+
+      FunctionalEvaluator errInt(mesh, errExpr);
+      FunctionalEvaluator junkInt(mesh, junkExpr);
+      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
+      FunctionalEvaluator exactInt(mesh, Integral(interior,exactSoln,quad));
+      FunctionalEvaluator solnInt(mesh, Integral(interior,soln[0], quad));
+
+      //EvaluatableExpr::classVerbosity() = VerbHigh;
+      FunctionalEvaluator dExactInt(mesh, Integral(interior,dx*exactSoln,
+                                                   new GaussianQuadrature(8)));
+
+      cerr << endl << endl;
+      cerr << "###################################################"
+           << endl << endl;
+
+      FunctionalEvaluator dSolnInt(mesh, Integral(interior,dx*soln[0], 
+                                                  new GaussianQuadrature(10)));
+      EvaluatableExpr::classVerbosity() = VerbSilent;
+      double errorSq = errInt.evaluate();
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      double derivErrorSq = derivErrInt.evaluate();
+      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+
+      cerr << "integral(exact soln) = " << exactInt.evaluate() << endl << endl;
+      cerr << "integral(numerical soln) = " << solnInt.evaluate() << endl << endl;
+
+      cerr << "integral(dx*exact soln) = " << dExactInt.evaluate() << endl << endl;
+
+      //Evaluator::classVerbosity() = VerbHigh;
+      cerr << "integral(dx*numerical soln) = " << dSolnInt.evaluate() << endl << endl;
     }
 	catch(exception& e)
 		{

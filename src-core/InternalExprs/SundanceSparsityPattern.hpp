@@ -64,6 +64,23 @@ namespace SundanceCore
            * spatially constant at this node */
           bool isConstant(int i) const {return states_[i]==ConstantDeriv;}
 
+          /**
+           * Indicate whether the specified derivative is 
+           * a first-order spatial deriv.  
+           */
+          bool isFirstOrderSpatialDeriv(int i) const 
+          {
+            return isFirstOrderSpatialDeriv_[i];
+          }
+
+          /**
+           * Return the direction of spatial differentiation.
+           */
+          int spatialDerivDir(int i) const 
+          {
+            return spatialDerivDir_[i];
+          }
+
 
           /** */
           void print(ostream& os) const ;
@@ -97,6 +114,14 @@ namespace SundanceCore
 
           /** The state of each derivative at this node in the expression */
           Array<DerivState> states_;
+
+          /** Flags indicating whether a given derivative is first order wrt 
+           * a spatial coordinate */
+          Array<int> isFirstOrderSpatialDeriv_;
+
+          /** Directions of spatial derivatives */
+          Array<int> spatialDerivDir_;
+
         };
 
       /** \relates SparsityPattern */

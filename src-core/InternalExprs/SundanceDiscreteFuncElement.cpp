@@ -20,6 +20,19 @@ DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionStub* master,
     myIndex_(myIndex)
 {}
 
+bool DiscreteFuncElement::hasNonzeroDeriv(const MultipleDeriv& md) const 
+{
+  if (md.order()==0) return true;
+
+  MultipleDeriv::const_iterator iter;
+  
+  for (iter=md.begin(); iter != md.end(); iter++)
+    {
+      const Deriv& d = *iter;
+      if (!d.isCoordDeriv()) return false;
+    }
+  return true;
+}
 
 XMLObject DiscreteFuncElement::toXML() const 
 {

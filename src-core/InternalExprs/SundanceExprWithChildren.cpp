@@ -3,6 +3,7 @@
 
 #include "SundanceExprWithChildren.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 #include "SundanceExpr.hpp"
 
 using namespace SundanceCore;
@@ -10,6 +11,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 
 ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& children)
@@ -21,22 +23,35 @@ ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& childr
 int ExprWithChildren::setupEval(const RegionQuadCombo& region,
                                 const EvaluatorFactory* factory) const
 {
+  Tabs tabs;
 
-  /* If we've been here already with this region, or if we've
-   * been here in another region having the same set of required
-   * derivatives, we're done. */
-     
-  if (checkForKnownRegion(region))
+  /* If we've been here already with this region, we're done. 
+   * If the deriv set is already known, but on another region, 
+   * we have to go on and bind the deriv set to the the region in the
+   * children */
+  bool derivSetIsKnown;
+  if (checkForKnownRegion(region, derivSetIsKnown))
     {
+      SUNDANCE_OUT(verbosity() > VerbLow,
+                   tabs << "ExprWithChildren::setupEval() knows region "
+                   << region);
       return getDerivSetIndex(region);
     }
 
-  /* If we have reached this line, the region and its required derivatives
-   * are new. Create a new entry in our tables of deriv sets. 
-   * This step also creates
-   * a sparsity pattern for the current deriv set. */
-  int derivSetIndex = registerRegion(region, currentDerivSuperset(), 
-                                       factory);
+  SUNDANCE_OUT(verbosity() > VerbLow,
+               tabs << "ExprWithChildren::setupEval() does not know region "
+               << region);
+  SUNDANCE_OUT(verbosity() > VerbLow && derivSetIsKnown,
+               tabs << "the deriv set is known");
+  SUNDANCE_OUT(verbosity() > VerbLow && !derivSetIsKnown,
+               tabs << "the deriv set is not known");
+
+  /* If we have reached this line, the region is new.
+   * Register it with the deriv set, however, we should only create 
+   * evaluators and sparsity patterns if the deriv set is unknown */
+  int derivSetIndex = registerRegion(region, derivSetIsKnown,
+                                     currentDerivSuperset(), 
+                                     factory);
 
   /* set up the children */
   childDerivSetIndices_.append(Array<int>());

@@ -63,6 +63,10 @@ namespace SundanceStdFwk
       getRefBasisVals(const BasisFamily& basis, 
                       int diffOrder) const ;
 
+      /** */
+      const Array<double>& quadWgts() const 
+      {return *(refQuadWeights_.get(cellType()));}
+
     private:
      
       /** */

@@ -18,15 +18,17 @@ int LeafExpr::setupEval(const RegionQuadCombo& region,
 {
   /* first check to see if rule tables for this set of derivatives 
    * have already been created. If so, we're done here. */
-  if (checkForKnownRegion(region))
+  bool derivSetIsKnown;
+  if (checkForKnownRegion(region, derivSetIsKnown))
     {
       return getDerivSetIndex(region);
     }
   
   /* OK, if we've not returned, we need to create evaluation rules 
    * for this deriv set. */
-  int derivSetIndex = registerRegion(region, currentDerivSuperset(), 
-                                      factory);
+  int derivSetIndex = registerRegion(region, derivSetIsKnown,
+                                     currentDerivSuperset(), 
+                                     factory);
 
   return derivSetIndex;
 }

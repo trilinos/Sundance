@@ -5,7 +5,8 @@
 EXEEXT = .exe
 
 noinst_PROGRAMS = AssemblerTest1D AssemblerTest2D RefIntegral \
-                  TransformedIntegral2D Laplacian2D QuadratureIntegral2D
+                  TransformedIntegral2D Laplacian2D QuadratureIntegral2D \
+                  IntegralTest1D NonlinAlgebraic
 
 
 AssemblerTest1D_SOURCES = $(srcdir)/AssemblerTest1D.cpp
@@ -95,7 +96,31 @@ QuadratureIntegral2D_LDADD = $(STD_FWK_LIBS)
 
 
 
+IntegralTest1D_SOURCES = $(srcdir)/IntegralTest1D.cpp
 
+IntegralTest1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+IntegralTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+IntegralTest1D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+NonlinAlgebraic_SOURCES = $(srcdir)/NonlinAlgebraic.cpp
+
+NonlinAlgebraic_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+NonlinAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+NonlinAlgebraic_LDADD = $(STD_FWK_LIBS) 
 
 
 

@@ -228,7 +228,8 @@ namespace SundanceCore
 
 
       /** See if this region is new */
-      bool checkForKnownRegion(const RegionQuadCombo& region) const ;
+      bool checkForKnownRegion(const RegionQuadCombo& region,
+                               bool& derivSetIsKnown) const ;
 
       /** Create entries in the results array for the all the
        * elements of this set of derivatives, and insert the
@@ -239,8 +240,9 @@ namespace SundanceCore
        * derivSetIndexToResultIndicesMap_
        */
       int registerRegion(const RegionQuadCombo& region,
-                          const DerivSet& derivs,
-                          const EvaluatorFactory* factory) const ;
+                         bool derivSetIsKnown,
+                         const DerivSet& derivs,
+                         const EvaluatorFactory* factory) const ;
 
       /** Indicate whether this region has been set up */
       bool knowsRegion(const RegionQuadCombo& region) const

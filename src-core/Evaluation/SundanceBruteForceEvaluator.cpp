@@ -112,7 +112,12 @@ void BruteForceSumEvaluator::eval(const EvalManager& mgr,
   RefCountPtr<EvalVectorArray> leftResults; 
   RefCountPtr<EvalVectorArray> rightResults; 
 
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tabs << "Evaluating left");
   expr()->leftEvaluatable()->evaluate(mgr, leftResults);
+
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tabs << "Evaluating right");
   expr()->rightEvaluatable()->evaluate(mgr, rightResults);
 
   for (int i=0; i<results->size(); i++)
@@ -585,6 +590,9 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
 void BruteForceUnaryMinusEvaluator::eval(const EvalManager& mgr,
                                          RefCountPtr<EvalVectorArray>& results) const
 {
+  Tabs tab;
+  SUNDANCE_OUT(verbosity() > VerbLow,
+               tab << "------- BruteForceUnaryMinusEvaluator -------")
   int derivSetIndex = expr()->getDerivSetIndex(mgr.getRegion());
   const SparsityPattern* sparsity = expr()->sparsity(derivSetIndex).get();
 

@@ -34,7 +34,8 @@ int RegionQuadCombo::getID(const RefCountPtr<CellFilterStub>& domain,
 string RegionQuadCombo::toString() const
 {
   return "RegionQuadCombo[id="
-    + Teuchos::toString(id_) + "]";
+    + Teuchos::toString(id_) + "cell filter=" + domain_->describe() 
+    + " quad=" + quad_->describe() + "]";
 }
 
 Map<RegPair, int>& RegionQuadCombo::domainAndQuadToIDMap()
