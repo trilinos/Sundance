@@ -6,7 +6,7 @@ EXEEXT = .exe
 
 noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Poisson3D Stokes2D \
 Coupled1D Coupled2D RadDiff1D NoxAlgebraic Kepler NoxPoisson1D \
-PoissonOnDisk OptPoisson1D Eikonal2D TCATA1D
+PoissonOnDisk OptPoisson1D Eikonal2D TCATA1D VorticityStokes2D
 
 
 
@@ -227,6 +227,19 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 TCATA1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 TCATA1D_LDADD = $(STD_FWK_LIBS) 
+
+
+VorticityStokes2D_SOURCES = $(srcdir)/VorticityStokes2D.cpp
+
+VorticityStokes2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+VorticityStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+VorticityStokes2D_LDADD = $(STD_FWK_LIBS) 
 
 
 include $(top_srcdir)/Makefile.common
