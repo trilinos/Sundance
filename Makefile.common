@@ -1,0 +1,113 @@
+# ************************************************************************
+# 
+#                               Sundance
+#                 Copyright (2002) Sandia Corporation
+# 
+#
+# Copyright (2001) Sandia Corportation. Under the terms of Contract 
+# DE-AC04-94AL85000, there is a non-exclusive license for use of this 
+# work by or on behalf of the U.S. Government.  Export of this program
+# may require a license from the United States Government.
+# 
+# NOTICE:  The United States Government is granted for itself and others
+# acting on its behalf a paid-up, nonexclusive, irrevocable worldwide
+# license in ths data to reproduce, prepare derivative works, and
+# perform publicly and display publicly.  Beginning five (5) years from
+# July 25, 2001, the United States Government is granted for itself and
+# others acting on its behalf a paid-up, nonexclusive, irrevocable
+# worldwide license in this data to reproduce, prepare derivative works,
+# distribute copies to the public, perform publicly and display
+# publicly, and to permit others to do so.
+# 
+# NEITHER THE UNITED STATES GOVERNMENT, NOR THE UNITED STATES DEPARTMENT
+# OF ENERGY, NOR SANDIA CORPORATION, NOR ANY OF THEIR EMPLOYEES, MAKES
+# ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR
+# RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY
+# INFORMATION, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS
+# THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+# 
+# ************************************************************************
+
+# ------------------------------------------------------------------------
+#
+# Makefile.common is intended to be included by the subdirectory makefiles.
+# In this file, we define standard macros for include paths, library paths,
+# and library names used by Sundance. 
+#
+# This file is NOT modifed by automake or autoconf. 
+#
+# ------------------------------------------------------------------------
+
+SUNDANCE_DIR = $(top_srcdir)
+
+# ------------------------------------------------------------------------
+#
+# Specify libraries and library search paths. 
+# 
+# - SUNDANCE_LIBS and TRILINOS_LIBS are defined below. 
+# - LAPACK_LIBS, BLAS_LIBS, and FLIBS are defined automatically by autoconf. 
+#
+# ------------------------------------------------------------------------
+
+ALL_LIBS=$(CORE_LIBS) $(EXPAT_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+
+UTIL_LIBS = \
+-L$(top_builddir)/src-utils \
+-L$(top_builddir)/src-utils/Utilities \
+-L$(top_srcdir)/src-utils/Utilities \
+-lsundanceUtils $(TRILINOS_LIBS)
+
+
+UTIL_INCLUDES =  \
+-I$(top_builddir)/src-utils \
+-I$(top_srcdir)/src-utils/Utilities \
+-I$(top_builddir)/src-utils/Utilities \
+	$(TRILINOS_INCLUDES)
+
+
+
+CORE_LIBS = \
+-L$(top_builddir)/src-core \
+-L$(top_builddir)/src-core/UserExprs \
+-L$(top_builddir)/src-core/InternalExprs \
+-L$(top_builddir)/src-core/Evaluation \
+-L$(top_builddir)/src-core/FrameworkInterface \
+-L$(top_builddir)/src-core/SymbolicTransformations \
+-L$(top_srcdir)/src-core/UserExprs \
+-L$(top_srcdir)/src-core/InternalExprs \
+-L$(top_srcdir)/src-core/Evaluation \
+-L$(top_srcdir)/src-core/FrameworkInterface \
+-L$(top_srcdir)/src-core/SymbolicTransformations \
+-lsundanceCore $(UTIL_LIBS)
+
+
+CORE_INCLUDES =  \
+-I$(top_builddir)/src-core \
+-I$(top_srcdir)/src-core/UserExprs \
+-I$(top_srcdir)/src-core/InternalExprs \
+-I$(top_srcdir)/src-core/Evaluation \
+-I$(top_srcdir)/src-core/FrameworkInterface \
+-I$(top_srcdir)/src-core/SymbolicTransformations \
+-I$(top_builddir)/src-core/UserExprs \
+-I$(top_builddir)/src-core/InternalExprs \
+-I$(top_builddir)/src-core/Evaluation \
+-I$(top_builddir)/src-core/FrameworkInterface \
+-I$(top_builddir)/src-core/SymbolicTransformations \
+	$(UTIL_INCLUDES)
+
+# ------------------------------------------------------------------------
+#
+# Specify Trilinos includes and libraries. Ordinarily, these will be found
+# in the include and lib subdirectories of the Trilinos installation
+# directory. However, during development it is useful to work with
+# the files in the src subdirectories of the Trilinos directory.
+#
+# ------------------------------------------------------------------------
+
+TRILINOS_INCLUDES = -I$(TRILINOS_DIR)/include
+
+TRILINOS_LIBS = -L$(TRILINOS_DIR)/lib -lTSFExtended -lTSFCore -lTSFCoreUtils \
+                -lteuchos
+
+

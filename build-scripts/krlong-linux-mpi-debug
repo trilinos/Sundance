@@ -1,0 +1,9 @@
+#!/bin/sh
+
+BUILD_DIR=`pwd`
+
+../configure CXXFLAGS="-g" \
+--enable-mpi --with-mpi-libs="-lmpich -lpmpich" \
+--with-trilinos=$HOME/Projects/Trilinos/LINUX-NEW-TSF \
+--prefix=$BUILD_DIR
+
