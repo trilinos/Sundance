@@ -60,52 +60,40 @@ namespace SundanceStdFwk
     {
     public:
       /** Construct a reference one-form */
-      RefBasisProductIntegral(int testDerivOrder,
-                              int nRefDerivTest, 
-                              int nNodesTest,
-                              const Array<int>& alpha,
-                              const Array<double>& coeff)
-        : W_(nRefDerivTest*nNodesTest),
-          testDerivOrder_(testDerivOrder), 
-          nRefDerivTest_(nRefDerivTest),
-          nNodesTest_(nNodesTest),
-          unkDerivOrder_(-1), 
-          nRefDerivUnk_(-1),
-          nNodesUnk_(-1),
-          alpha_(alpha),
-          beta_(),
-          coeff_(coeff),
-          isTwoForm_(false)
-      {;}
+      RefBasisProductIntegral(int dim, 
+                              const CellType& cellType,
+                              const BasisFamily& testBasis,
+                              int testOrder,
+                              const QuadratureFamily& quad);
 
       /** Construct a reference two-form */
-      RefBasisProductIntegral(int testDerivOrder,
-                              int nRefDerivTest, 
-                              int nNodesTest,
-                              int unkDerivOrder,
-                              int nRefDerivUnk, 
-                              int nNodesUnk,
-                              const Array<int>& alpha,
-                              const Array<int>& beta,
-                              const Array<double>& coeff)
-        : W_(nRefDerivTest*nNodesTest*nRefDerivUnk*nNodesUnk),
-          testDerivOrder_(testDerivOrder), 
-          nRefDerivTest_(nRefDerivTest),
-          nNodesTest_(nNodesTest), 
-          unkDerivOrder_(unkDerivOrder), 
-          nRefDerivUnk_(nRefDerivUnk),
-          nNodesUnk_(nNodesUnk), 
-          alpha_(alpha),
-          beta_(beta),
-          coeff_(coeff),
-          isTwoForm_(true)
-      {;}
+      RefBasisProductIntegral(int dim,
+                              const CellType& cellType,
+                              const BasisFamily& testBasis,
+                              int testOrder,
+                              const BasisFamily& unkBasis,
+                              int unkOrder,
+                              const QuadratureFamily& quad);
+        
+
+      /** */
+      bool isTwoForm() const {return isTwoForm_;}
       
       /** */
       void transformToPhysicalCoords(const CellJacobianBatch& J, 
+                                     const Array<int>& alpha,
+                                     const Array<int>& beta,
+                                     const Array<double>& coeff,
                                      RefCountPtr<Array<double> >& A) const ;
 
-          
+      
+      /** */
+      int nRefDerivTest() const {return nRefDerivTest_;}
+      
+      /** */
+      int nRefDerivUnk() const {return nRefDerivUnk_;}
+
+
       /** */
       inline double& value(int testDerivDir, int testNode,
                            int unkDerivDir, int unkNode)
@@ -140,26 +128,24 @@ namespace SundanceStdFwk
       static Array<int>& T() {static Array<int> rtn; return rtn;}
 
     private:
+
       Array<double> W_;
 
-      int testDerivOrder_;
+      int dim_;
+
+      int testOrder_;
 
       int nRefDerivTest_;
 
       int nNodesTest_;
 
-      int unkDerivOrder_;
+      int unkOrder_;
 
       int nRefDerivUnk_;
 
       int nNodesUnk_;
 
-      Array<int> alpha_;
-
-      Array<int> beta_;
-
-      Array<double> coeff_;
-
+      bool isTwoForm_;
       
     };
   }

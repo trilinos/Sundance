@@ -65,54 +65,5 @@ void IntegratorBase::evaluate(RefCountPtr<EvalVectorArray>& results) const
   expr()->evaluate(*evalMgr_, results);
 }
 
-void IntegratorBase::integrateReferenceTwoForm(const BasisFamily& testBasis,
-                                               const MultiIndex& miTest,
-                                               const BasisFamily& unkBasis,
-                                               const MultiIndex& miUnk,
-                                               ReferenceTwoForm& W) const 
-{
-  int nRefDerivTest = ipow(cellDim(), miTest.order());
-  int nRefDerivUnk = ipow(cellDim(), miUnk.order());
-      
-  int nNodesTest = testBasis.nNodes(cellType());
-  int nNodesUnk = unkBasis.nNodes(cellType());
-  
-  Array<Array<Array<double> > > testBasisVals(nRefDerivTest);
-  Array<Array<Array<double> > > unkBasisVals(nRefDerivUnk);
 
-  W.setSize(nRefDerivTest, nNodesTest, nRefDerivUnk, nNodesUnk);
-  
-  for (int r=0; r<nRefDerivTest; r++)
-    {
-      MultiIndex mi;
-      if (miTest.order()==1) mi[r] = 1;
-      testBasis.ptr()->refEval(cellType(), quadPts, mi, testBasisVals[r]);
-    }
-  for (int r=0; r<nRefDerivUnk; r++)
-    {
-      MultiIndex mi;
-      if (miUnk.order()==1) mi[r] = 1;
-      unkBasis.ptr()->refEval(cellType(), quadPts, mi, unkBasisVals[r]);
-    }
-  
-  for (int i=0; i<W.size(); i++) W[i] = 0.0;
-  for (int q=0; q<nQuad; q++)
-    {
-      for (int t=0; t<nRefDerivTest; t++)
-        {
-          for (int nt=0; nt<nNodesTest; nt++)
-            {
-              for (int u=0; u<nRefDerivTest; u++)
-                {
-                  for (int nu=0; nu<nNodesUnk; nu++)
-                    {
-                      W(t, nt, u, nu) 
-                        += quadWgts[q] * testBasisVals[t][q][nt] 
-                        * unkBasisVals[u][q][nu];
-                    }
-                }
-            }
-        }
-    }
-}
 
