@@ -76,7 +76,17 @@ string EvalVector::getStringValue() const
   if (isZero_) return "0.0";
   else if (isOne_) return "1.0";
   else if (isConstant_) return Teuchos::toString(constantVal_);
-  else if (stringVal_.length()==0) return vectorVal_.toString();
+  else if (stringVal_.length()==0) 
+    {
+      if (verbosity() > VerbHigh)
+        {
+          return vectorVal_.toString();
+        }
+      else
+        {
+          return "{vector}";
+        }
+    }
   else return stringVal_;
 }
 
@@ -570,7 +580,17 @@ void EvalVector::print(ostream& os) const
   else
     {
       if (shadowOps()) os << stringVal_;
-      else os << vectorVal_;
+      else 
+        {
+          if (verbosity() > VerbHigh)
+            {
+              os << vectorVal_;
+            }
+          else
+            {
+              os << "{vector}" << endl;
+            }
+        }
     }
   os << "]";
 }

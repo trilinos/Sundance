@@ -22,6 +22,15 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 
+namespace SundanceStdFwk
+{
+  double evaluateIntegral(const Mesh& mesh, const Expr& expr)
+  {
+    FunctionalEvaluator eval(mesh, expr);
+    return eval.evaluate();
+  }
+}
+
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
                                          const Expr& integral)
   : mesh_(mesh), 
@@ -186,6 +195,6 @@ double FunctionalEvaluator::evaluate() const
   double globalSum = localSum;
 
   mesh_.comm().allReduce((void*) &localSum, (void*) &globalSum, 1, 
-                        MPIComm::DOUBLE, MPIComm::SUM);
+                         MPIComm::DOUBLE, MPIComm::SUM);
   return globalSum ; 
 }

@@ -24,6 +24,9 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
 
+  /** */
+  double evaluateIntegral(const Mesh& mesh, const Expr& expr);
+
   namespace Internal
   {
     using namespace Teuchos;
@@ -77,6 +80,7 @@ namespace SundanceStdFwk
       
     };
   }
+
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

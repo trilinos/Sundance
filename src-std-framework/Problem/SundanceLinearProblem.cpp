@@ -23,6 +23,7 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 
+
 LinearProblem::LinearProblem() 
   : assembler_(),
     A_(),
@@ -80,11 +81,15 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
 
   assembler_->assemble(A_, rhs_);
   rhs_.scale(-1.0);
-  SolverState<double> state = solver.solve(A_, rhs_, solnVec);
 
-  TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
-                     RuntimeError,
-                     "solve failed!");
+  {
+    TimeMonitor timer(solveTimer());  
+    SolverState<double> state = solver.solve(A_, rhs_, solnVec);
+    TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
+                       RuntimeError,
+                       "solve failed!");
+  }
+
   
 
   Expr soln = new DiscreteFunction(*(assembler_->solutionSpace()),

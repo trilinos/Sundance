@@ -141,19 +141,24 @@ void QuadratureEvalMediator
 
   for (int c=0; c<cellLID()->size(); c++)
     {
+      const double* ptr = &((*localValues)[c*nNodes*nFuncs]);
+      double* vPtr = &(vec->start()[c*nQuad]);
       /* initialize to zero */
       for (int q=0; q<nQuad; q++) 
         {
-          vec->start()[c*nQuad + q] = 0.0;
+          //          vec->start()[c*nQuad + q] = 0.0;
+          vPtr[q] = 0.0;
         }
       if (mi.order()==0)
         {
           for (int q=0; q<nQuad; q++)
             {
-              double& sum = vec->start()[c*nQuad + q];
+              //              double& sum = vec->start()[c*nQuad + q];
+              double& sum = vPtr[q];
               for (int i=0; i<nNodes; i++)
                 {
-                  double coeff = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
+                  //                  double coeff = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
+                  double coeff = ptr[nFuncs*i + myIndex];
                   double basisVals = (*refBasisValues)[0][q][i];
                   sum += coeff * basisVals;
                 }
@@ -165,22 +170,27 @@ void QuadratureEvalMediator
         {
           Array<double> invJ;
           J->getInvJ(c, invJ);
+          const double* invJPtr = &(invJ[0]);
+          int dim = cellDim();
           int pDir = mi.firstOrderDirection();
           
           /* initialize to zero */
           for (int q=0; q<nQuad; q++) 
             {
-              vec->start()[c*nQuad + q] = 0.0;
+              //              vec->start()[c*nQuad + q] = 0.0;
+              vPtr[q] = 0.0;
             }
           for (int q=0; q<nQuad; q++)
             {
-              double& sum = vec->start()[c*nQuad + q];
+              //              double& sum = vec->start()[c*nQuad + q];
+              double& sum = vPtr[q];
               for (int i=0; i<nNodes; i++)
                 {
-                  double g = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
-                  for (int r=0; r<cellDim(); r++)
+                  //                  double g = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
+                  double g = ptr[nFuncs*i + myIndex];
+                  for (int r=0; r<dim; r++)
                     {
-                      sum += g*invJ[pDir + r*cellDim()]*(*refBasisValues)[r][q][i];
+                      sum += g*invJPtr[pDir + r*dim]*(*refBasisValues)[r][q][i];
                     }
                 }
               // cerr << "c=" << c << ", q=" << q << ", df=" << sum << endl;

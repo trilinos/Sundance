@@ -61,10 +61,37 @@ inline void functorName::eval(const double* const x, \
 } 
 
 
+
 namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
+
+  /** */
+  class PowerFunctor : public Internal::UnaryFunctor
+  {
+  public:
+    /** */
+    PowerFunctor(const double& p);
+    
+    /** Evaluate power function and deriv at an array of values */ 
+    void eval(const double* const x, 
+                  int nx, 
+                  double* f, 
+                  double* df) const ;
+    /** Evaluate power function at an array of values */ 
+    void eval(const double* const x, int nx, double* f) const ;
+  private:
+    double p_;
+  };
+
+  inline Expr pow(const Expr& expr, const double& p)
+  {
+    RefCountPtr<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());
+    TEST_FOR_EXCEPTION(arg.get()==0, RuntimeError,
+                       "non-scalar argument in pow function");
+    return new NonlinearUnaryOp(arg, rcp(new PowerFunctor(p)));
+  }
 
   using std::string;
   using std::ostream;

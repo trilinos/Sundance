@@ -50,21 +50,20 @@ void DiscreteFunction::getLocalValues(int cellDim,
 {
   const RefCountPtr<DOFMapBase>& map = space_.map();
   Array<int> dofs;
-  map->getDOFsForCell(cellDim, 0, 0, dofs);
-  int nNodes = dofs.size();
+  int nNodes;
+  map->getDOFsForCellBatch(cellDim, cellLID, dofs, nNodes);
   int nFunc = space_.nFunc();
+  int nCells = cellLID.size();
   localValues.resize(nFunc*cellLID.size()*nNodes);
 
   for (int c=0; c<cellLID.size(); c++)
     {
       for (int f=0; f<nFunc; f++)
         {
-          map->getDOFsForCell(cellDim, cellLID[c], f, dofs);
-
           for (int n=0; n<nNodes; n++)
             {
               localValues[c*nFunc*nNodes + nFunc*n + f] 
-                = vector_.getElement(dofs[n]);
+                = vector_.getElement(dofs[(f*nCells + c)*nNodes + n]);
             }
         }
     }

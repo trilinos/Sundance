@@ -76,23 +76,19 @@ int main(int argc, void** argv)
  
       Expr exactSoln = x*(x-2.0);
 
-      Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
-                              err*err,
-                              new GaussianQuadrature(6));
+                              pow(soln-exactSoln, 2),
+                              new GaussianQuadrature(4));
 
       Expr derivErr = dx*(exactSoln-soln);
       Expr derivErrExpr = Integral(interior, 
-                                   derivErr*derivErr, 
-                                   new GaussianQuadrature(4));
+                                   pow(dx*(soln-exactSoln), 2),
+                                   new GaussianQuadrature(2));
 
-      FunctionalEvaluator errInt(mesh, errExpr);
-      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
-
-      double errorSq = errInt.evaluate();
+      double errorSq = evaluateIntegral(mesh, errExpr);
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-      double derivErrorSq = derivErrInt.evaluate();
+      double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
     }

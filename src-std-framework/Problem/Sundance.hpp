@@ -70,6 +70,12 @@
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearSolverBuilder.hpp"
 
+/* Nonlinear solvers */
+#include "NOX.H"
+#include "NOX_Common.H"
+#include "NOX_Utils.H"
+#include "NOX_TSF_Group.H"
+
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
 using namespace Teuchos;
