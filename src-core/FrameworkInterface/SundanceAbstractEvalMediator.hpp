@@ -7,7 +7,7 @@
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
-#include "SundanceLoadableVector.hpp"
+#include "SundanceEvalVector.hpp"
 
 
 namespace SundanceCore
@@ -50,13 +50,13 @@ namespace SundanceCore
           /** Evaluate the given coordinate expression, putting
            * its numerical values in the given LoadableVector. */
           virtual void evalCoordExpr(const CoordExpr* expr,
-                                     LoadableVector* const vec) const {;}
+                                     EvalVector* const vec) const {;}
 
           /** Evaluate the given discrete function, putting
            * its numerical values in the given LoadableVector. */
           virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                                const MultiIndex& mi,
-                                               LoadableVector* const vec) const 
+                                               EvalVector* const vec) const 
           {;}
 
         private:

@@ -7,7 +7,6 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_Array.hpp"
-#include "SundanceLoadableVector.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceUnaryFunctor.hpp"
 
@@ -43,8 +42,7 @@ namespace SundanceCore
      * EvalVector. This is done using the LoadableVector interface,
      * implemented by EvalVector.
      */
-    class EvalVector : public Internal::LoadableVector,
-                       public TSFExtended::ObjectWithVerbosity<EvalVector>
+    class EvalVector : public TSFExtended::ObjectWithVerbosity<EvalVector>
     {
       friend class TempStack;
 
@@ -58,25 +56,23 @@ namespace SundanceCore
       EvalVector(int n);
 
     public:
-      /** */
-      virtual ~EvalVector(){;}
 
-      /** \name LoadableVector interface */
+      /** \name Element loading functions */
       //@{
       /** Change the size of the vector to newSize */
-      virtual void resize(int newSize) {vectorVal_.resize(newSize);}
+      void resize(int newSize) {vectorVal_.resize(newSize);}
           
       /** Return the length of the vector */
-      virtual int length() const {return vectorVal_.length();}
+      int length() const {return vectorVal_.length();}
 
       /** Set the i-th element to x */
-      virtual void setElement(int i, const double& x) {vectorVal_[i] = x;}
+      void setElement(int i, const double& x) {vectorVal_[i] = x;}
 
       /** Return a pointer to the physical start of the vector. */
-      virtual double* const start() {return &(vectorVal_[0]);}
+      double* const start() {return &(vectorVal_[0]);}
 
       /** Return a pointer to the physical start of the vector. */
-      virtual const double* const start() const {return &(vectorVal_[0]);}
+      const double* const start() const {return &(vectorVal_[0]);}
       //@}
 
       /** Return true if we are shadowing numerical operations with

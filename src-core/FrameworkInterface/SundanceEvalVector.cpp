@@ -16,8 +16,7 @@ using namespace TSFExtended;
 
 
 EvalVector::EvalVector()
-  : LoadableVector(), 
-    vectorVal_(),
+  : vectorVal_(),
     stringVal_(),
     constantVal_(0.0), 
     isConstant_(true),
@@ -26,8 +25,7 @@ EvalVector::EvalVector()
 {}
 
 EvalVector::EvalVector(int n)
-  : LoadableVector(), 
-    vectorVal_(n),
+  : vectorVal_(n),
     stringVal_(),
     constantVal_(0.0), 
     isConstant_(false),
