@@ -23,7 +23,6 @@ Assembler
 ::Assembler(const Mesh& mesh, 
             const RefCountPtr<EquationSet>& eqn,
             const RefCountPtr<InserterFactoryBase>& inserterFactory,
-            const RefCountPtr<IntegratorFactoryBase>& integratorFactory,
             const VectorType<double>& vectorType,
             const VerbositySetting& verb)
   : mesh_(mesh),
@@ -65,8 +64,8 @@ Assembler
       isBCRqc_.append(false);
       const Expr& expr = eqn->expr(rqc);
       const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(rqc);
-      RefCountPtr<IntegratorBase> integrator 
-        = integratorFactory->create(mesh, expr, rqc, derivs, evalMgr_);
+      RefCountPtr<Integrator> integrator 
+        = rcp(new Integrator(mesh, expr, derivs, rqc, evalMgr_));
       integrator_.append(integrator);
     }
 
@@ -80,8 +79,8 @@ Assembler
       isBCRqc_.append(true);
       const Expr& expr = eqn->bcExpr(rqc);
       const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(rqc);
-      RefCountPtr<IntegratorBase> integrator 
-        = integratorFactory->create(mesh, expr, rqc, derivs, evalMgr_);
+      RefCountPtr<Integrator> integrator 
+        = rcp(new Integrator(mesh, expr, derivs, rqc, evalMgr_));
       integrator_.append(integrator);
     }
 }

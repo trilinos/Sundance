@@ -81,6 +81,12 @@ namespace SundanceStdFwk
                             const Array<int>& beta,
                             const Array<double>& coeff,
                             RefCountPtr<Array<double> >& A) const ;
+
+      /** */
+      void transformOneForm(const CellJacobianBatch& J, 
+                            const Array<int>& alpha,
+                            const Array<double>& coeff,
+                            RefCountPtr<Array<double> >& A) const ;
       /** */
       inline double& value(int testDerivDir, int testNode,
                            int unkDerivDir, int unkNode)
@@ -111,6 +117,10 @@ namespace SundanceStdFwk
       void createTwoFormTransformationMatrix(const CellJacobianBatch& J,  
                                              const Array<int>& alpha,
                                              const Array<int>& beta,
+                                             const Array<double>& coeff) const;
+      /** */
+      void createOneFormTransformationMatrix(const CellJacobianBatch& J,  
+                                             const Array<int>& alpha,
                                              const Array<double>& coeff) const;
       
     private:

@@ -333,12 +333,60 @@ void RefIntegral::print(ostream& os) const
 }
 
 
+void RefIntegral::transformOneForm(const CellJacobianBatch& J,  
+                                   const Array<int>& alpha,
+                                   const Array<double>& coeff,
+                                   RefCountPtr<Array<double> >& A) const
+{
+  TEST_FOR_EXCEPTION(isTwoForm(), InternalError,
+                     "RefIntegral::transformOneForm() called for two-form");
+
+  /* If the derivative order is zero, the only transformation to be done 
+   * is to multiply by the cell's Jacobian determinant */
+  if (testDerivOrder() == 0)
+    {
+      A->resize(J.numCells() * nNodes());
+      double* aPtr = &((*A)[0]);
+      int count = 0;
+      for (int c=0; c<J.numCells(); c++)
+        {
+          double detJ = coeff[0] * fabs(J.detJ()[c]);
+          for (int n=0; n<nNodes(); n++, count++) 
+            {
+              aPtr[count] = detJ*W_[n];
+            }
+        }
+    }
+  else
+    {
+      int nCells = J.numCells();
+      double one = 1.0;
+      double zero = 0.0;
+      int nTransRows = nRefDerivTest();
+      A->resize(J.numCells() * nNodes()); 
+      int info=0;
+
+      createOneFormTransformationMatrix(J, alpha, coeff);
+
+      SUNDANCE_OUT(verbosity() > VerbMedium, 
+                   Tabs() << "transformation matrix=" << G());
+      
+      int nNodes0 = nNodes();
+      ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &one, &(W_[0]),
+               &nNodes0, &(G()[0]), &nTransRows, &zero, &((*A)[0]), &nNodes0);
+       
+    }
+}
+
 void RefIntegral::transformTwoForm(const CellJacobianBatch& J,  
                                    const Array<int>& alpha,
                                    const Array<int>& beta,
                                    const Array<double>& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
+
+  TEST_FOR_EXCEPTION(!isTwoForm(), InternalError,
+                     "RefIntegral::transformOneForm() called for one-form");
   /* If the derivative orders are zero, the only transformation to be done 
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)
@@ -348,7 +396,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       int count = 0;
       for (int c=0; c<J.numCells(); c++)
         {
-          double detJ = coeff[0] * J.detJ()[c];
+          double detJ = coeff[0] * fabs(J.detJ()[c]);
           for (int n=0; n<nNodes(); n++, count++) 
             {
               aPtr[count] = detJ*W_[n];
@@ -400,7 +448,7 @@ void RefIntegral
         {
           Array<double> invJ;
           J.getInvJ(c, invJ);
-          double detJ = J.detJ()[c];
+          double detJ = fabs(J.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++)
             {
               for (int delta=0; delta<dim(); delta++)
@@ -426,7 +474,7 @@ void RefIntegral
         {
           Array<double> invJ;
           J.getInvJ(c, invJ);
-          double detJ = J.detJ()[c];
+          double detJ = fabs(J.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++)
             {
               double sum = 0.0;
@@ -446,7 +494,7 @@ void RefIntegral
         {
           Array<double> invJ;
           J.getInvJ(c, invJ);
-          double detJ = J.detJ()[c];
+          double detJ = fabs(J.detJ()[c]);
           for (int delta=0; delta<dim(); delta++)
             {
               double sum = 0.0;
@@ -458,4 +506,34 @@ void RefIntegral
             }
         }
     }
+}
+
+
+void RefIntegral
+::createOneFormTransformationMatrix(const CellJacobianBatch& J,  
+                                    const Array<int>& alpha,
+                                    const Array<double>& coeff) const 
+{
+  TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
+                     "Inconsistency between Jacobian dimension " << J.cellDim()
+                     << " and cell dimension " << dim() 
+                     << " in RefIntegral::createOneFormTransformationMatrix()");
+  G().resize(J.numCells() * J.cellDim());
+
+  for (int c=0; c<J.numCells(); c++)
+    {
+      Array<double> invJ;
+      J.getInvJ(c, invJ);
+      double detJ = fabs(J.detJ()[c]);
+      for (int gamma=0; gamma<dim(); gamma++)
+        {
+          double sum = 0.0;
+          for (int t=0; t<alpha.size(); t++)
+            {
+              sum += coeff[t]*invJ[alpha[t] + gamma*dim()];
+            }
+          G()[c*dim() + gamma] = detJ*sum; 
+        }
+    }
+  
 }

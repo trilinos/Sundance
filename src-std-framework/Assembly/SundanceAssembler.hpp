@@ -7,8 +7,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceEquationSet.hpp"
-#include "SundanceIntegratorBase.hpp"
-#include "SundanceIntegratorFactoryBase.hpp"
+#include "SundanceIntegrator.hpp"
 #include "SundanceInserterBase.hpp"
 #include "SundanceInserterFactoryBase.hpp"
 #include "SundanceEvalManager.hpp"
@@ -37,7 +36,6 @@ namespace SundanceStdFwk
       Assembler(const Mesh& mesh, 
                 const RefCountPtr<EquationSet>& eqn,
                 const RefCountPtr<InserterFactoryBase>& inserterFactory,
-                const RefCountPtr<IntegratorFactoryBase>& integratorFactory,
                 const VectorType<double>& vectorType,
                 const VerbositySetting& verb = classVerbosity());
       
@@ -83,7 +81,7 @@ namespace SundanceStdFwk
 
       RefCountPtr<InserterBase> inserter_;
 
-      Array<RefCountPtr<IntegratorBase> > integrator_;
+      Array<RefCountPtr<Integrator> > integrator_;
 
       RefCountPtr<EvalManager> evalMgr_;
 

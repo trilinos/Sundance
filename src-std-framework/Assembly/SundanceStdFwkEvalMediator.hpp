@@ -48,11 +48,14 @@ namespace SundanceStdFwk
 
       /** */
       void setCellBatch(const RefCountPtr<Array<int> >& cellLID) 
-      {cellLID_ = cellLID; cacheIsValid() = false;}
+      {cellLID_ = cellLID; cacheIsValid() = false; jCacheIsValid_=false;}
 
       /** */
       virtual void setCellType(const CellType& cellType) 
-      {cellType_=cellType; cacheIsValid() = false;}
+      {cellType_=cellType; cacheIsValid() = false; jCacheIsValid_=false;}
+
+      /** */
+      void getJacobians(RefCountPtr<CellJacobianBatch>& J) const ;
 
 
     protected:
@@ -74,7 +77,11 @@ namespace SundanceStdFwk
 
       RefCountPtr<Array<int> > cellLID_;
 
+      mutable RefCountPtr<CellJacobianBatch> J_;
+
       mutable bool cacheIsValid_;
+
+      mutable bool jCacheIsValid_;
     };
   }
 }

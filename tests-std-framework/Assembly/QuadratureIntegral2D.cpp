@@ -37,6 +37,7 @@
 #include "SundanceBasicInserter.hpp"
 #include "SundanceBasicIntegrator.hpp"
 #include "SundanceRefIntegral.hpp"
+#include "SundanceQuadratureIntegral.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
 
@@ -58,6 +59,8 @@ static Time& totalTimer()
 }
 
 
+double chop(double x) {if (::fabs(x) < 1.0e-14) return 0.0; return x;}
+
 int main(int argc, void** argv)
 {
   
@@ -67,16 +70,16 @@ int main(int argc, void** argv)
 
       TimeMonitor t(totalTimer());
 
-      int pMax = 2;
+      int pMax = 1;
       int dim=2;
 
       verbosity<RefIntegral>() = VerbMedium;
 
       CellType cellType = TriangleCell;
 
-      Point a = Point(0.0, 0.0);
-      Point b = Point(1.0, 0.0);
-      Point c = Point(0.0, 1.0);
+      Point a = Point(2.0, 0.0);
+      Point b = Point(2.5, 0.2);
+      Point c = Point(1.0, 1.0);
       CellJacobianBatch JBatch;
       JBatch.resize(1, 2, 2);
       double* J = JBatch.jVals(0);
@@ -85,9 +88,24 @@ int main(int argc, void** argv)
       J[2] = b[1] - a[1];
       J[3] = c[1] - a[1];
       
-      Array<double> coeff = tuple(1.0);
       RefCountPtr<Array<double> > A = rcp(new Array<double>());
+          
+      QuadratureFamily quad = new GaussianQuadrature(4);
+      Array<double> quadWeights;
+      Array<Point> quadPts;
+      quad.getPoints(cellType, quadPts, quadWeights);
+      int nQuad = quadPts.size();
 
+      Array<double> coeff(nQuad);
+      for (int i=0; i<nQuad; i++) 
+        {
+          double s = quadPts[i][0];
+          double t = quadPts[i][1];
+          double x = a[0] + J[0]*s + J[1]*t;
+          double y = a[1] + J[2]*s + J[3]*t;
+          coeff[i] = x*y;
+        }
+      const double* const f = &(coeff[0]);
 
       cerr << endl << endl 
            << "---------------- One-forms --------------------" 
@@ -98,14 +116,14 @@ int main(int argc, void** argv)
           for (int dp=0; dp<=1; dp++)
             {
               if (dp > p) continue;
-              RefIntegral ref(dim, cellType, P, dp);
+              QuadratureIntegral ref(dim, cellType, P, dp, quad);
               int numTestDir = 1;
               if (dp==1) numTestDir = dim;
               for (int t=0; t<numTestDir; t++)
                 {
                   Array<int> alpha = tuple(t);
                   Tabs tab;
-                  ref.transformOneForm(JBatch, alpha, coeff, A);
+                  ref.transformOneForm(JBatch, alpha, f, A);
                   cerr << tab << "transformed element" << endl;
                   cerr << tab << "t=" << t << endl;
                   cerr << tab << "{";
@@ -118,30 +136,25 @@ int main(int argc, void** argv)
                 }
             }
         }
-         
-
-
-
 
       cerr << endl << endl 
            << "---------------- Two-forms --------------------" 
            << endl << endl;
-
       for (int p=0; p<=pMax; p++)
         {
           BasisFamily P = new Lagrange(p);
-          for (int dp=0; dp<=1; dp++)
+          for (int q=0; q<=pMax; q++)
             {
-              if (dp > p) continue;
-              int numTestDir = 1;
-              if (dp==1) numTestDir = dim;
-              for (int q=0; q<=pMax; q++)
+              BasisFamily Q = new Lagrange(q);
+              for (int dp=0; dp<=1; dp++)
                 {
-                  BasisFamily Q = new Lagrange(q);
+                  if (dp > p) continue;
                   for (int dq=0; dq<=1; dq++)
                     {
                       if (dq > q) continue;
-                      RefIntegral ref(dim, cellType, P, dp, Q, dq);
+                      QuadratureIntegral ref(dim, cellType, P, dp, Q, dq, quad);
+                      int numTestDir = 1;
+                      if (dp==1) numTestDir = dim;
                       for (int t=0; t<numTestDir; t++)
                         {
                           Array<int> alpha = tuple(t);
@@ -152,7 +165,7 @@ int main(int argc, void** argv)
                               Tabs tab;
                               Array<int> beta = tuple(u);
                               ref.transformTwoForm(JBatch, 
-                                                   alpha, beta, coeff, A);
+                                                   alpha, beta, f, A);
                               cerr << tab << "transformed element" << endl;
                               cerr << tab << "t=" << t << ", u=" << u << endl;
                               cerr << tab << "{";
@@ -163,7 +176,7 @@ int main(int argc, void** argv)
                                   for (int c=0; c<ref.nNodesUnk(); c++)
                                     {
                                       if (c!=0) cerr << ", ";
-                                      cerr << (*A)[r + ref.nNodesTest()*c];
+                                      cerr << chop((*A)[r + ref.nNodesTest()*c]);
                                     }
                                   cerr << "}";
                                 }

@@ -77,6 +77,7 @@ int main(int argc, void** argv)
           if (dim==1) cellType=LineCell;
           if (dim==2) cellType=TriangleCell;
 
+          /* do one-forms */
           for (int p=0; p<=pMax; p++)
             {
               BasisFamily P = new Lagrange(p);
@@ -86,6 +87,7 @@ int main(int argc, void** argv)
                 }
             }
           
+          /* do two-forms */
           for (int p=0; p<=pMax; p++)
             {
               BasisFamily P = new Lagrange(p);

@@ -34,7 +34,7 @@
 #include "SundanceEvalVector.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceBasicInserter.hpp"
-#include "SundanceBasicIntegrator.hpp"
+#include "SundanceIntegrator.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
 
@@ -115,13 +115,9 @@ int main(int argc, void** argv)
       RefCountPtr<InserterFactoryBase> inserterFactory
         = rcp(new GenericInserterFactory<BasicInserter>());
 
-      RefCountPtr<IntegratorFactoryBase> integratorFactory
-        = rcp(new GenericIntegratorFactory<BasicIntegrator>());
-
       VectorType<double> vecType = new EpetraVectorType();
 
-      Assembler assembler(mesh, eqnSet, inserterFactory, 
-                          integratorFactory, vecType); 
+      Assembler assembler(mesh, eqnSet, inserterFactory, vecType); 
 
       RefCountPtr<DOFMapBase> rowMap = assembler.rowMap();
       cerr << "DOF Map" << endl;

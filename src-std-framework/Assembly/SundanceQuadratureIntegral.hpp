@@ -5,10 +5,7 @@
 #define SUNDANCE_QUADRATUREINTEGRAL_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceCellJacobianBatch.hpp"
-#include "SundanceQuadratureFamily.hpp"
-#include "SundanceBasisFamily.hpp"
-#include "Teuchos_Array.hpp"
+#include "SundanceElementIntegral.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -54,8 +51,85 @@ namespace SundanceStdFwk
                             const Array<int>& beta,
                             const double* const coeff,
                             RefCountPtr<Array<double> >& A) const ;
+      
+      /** */
+      void transformOneForm(const CellJacobianBatch& J, 
+                            const Array<int>& alpha,
+                            const double* const coeff,
+                            RefCountPtr<Array<double> >& A) const ;
+
+      /** */
+      void print(ostream& os) const ;
+      
+    private:
+
+      /** */
+      int nQuad() const {return nQuad_;}
+
+      /** Do the integration by summing reference quantities over quadrature
+       * points and then transforming the sum to physical quantities.  */
+      void transformSummingFirst(int nCells,
+                                 const double* const coeff,
+                                 RefCountPtr<Array<double> >& A) const ;
+
+      /** Do the integration by transforming to physical coordinates 
+       * at each quadrature point, and then summing */
+      void transformSummingLast(int nCells,
+                                const double* const coeff,
+                                RefCountPtr<Array<double> >& A) const ;
+
+      /** Determine whether to do this batch of integrals using the
+       * sum-first method or the sum-last method */
+      bool useSumFirstMethod() const {return useSumFirstMethod_;}
+      
+      /** */
+      inline double& wValue(int q, int testDerivDir, int testNode,
+                           int unkDerivDir, int unkNode)
+      {return W_[testNode
+                  + nNodesTest()
+                  *(unkNode + nNodesUnk()
+                    *(unkDerivDir + nRefDerivUnk()
+                      *(testDerivDir + nRefDerivTest()*q)))];}
 
       
+
+      /** */
+      inline const double& wValue(int q, 
+                                 int testDerivDir, int testNode,
+                                 int unkDerivDir, int unkNode) const 
+      {
+        return W_[testNode
+                  + nNodesTest()
+                  *(unkNode + nNodesUnk()
+                    *(unkDerivDir + nRefDerivUnk()
+                      *(testDerivDir + nRefDerivTest()*q)))];
+      }
+      
+      /** */
+      inline double& wValue(int q, int testDerivDir, int testNode)
+      {return W_[testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
+
+
+      /** */
+      inline const double& wValue(int q, int testDerivDir, int testNode) const 
+      {return W_[testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
+
+      /* */
+      void createTwoFormTransformationMatrix(const CellJacobianBatch& J,  
+                                             const Array<int>& alpha,
+                                             const Array<int>& beta) const ;
+
+      /* */
+      void createOneFormTransformationMatrix(const CellJacobianBatch& J,  
+                                             const Array<int>& alpha) const ;
+      /* */
+      Array<double> W_;
+
+      /* */
+      int nQuad_;
+
+      /* */
+      bool useSumFirstMethod_;
       
     };
   }
