@@ -26,6 +26,7 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceDOFMapBuilder.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
+#include "TSFEpetraVectorType.hpp"
 
 using namespace TSFExtended;
 using namespace SundanceStdFwk;
@@ -76,12 +77,14 @@ int main(int argc, void** argv)
       CellPredicate leftPointFunc = new PositionalCellPredicate(leftPointTest);
       CellFilter leftPoint = points.subset(leftPointFunc);
       
+      DiscreteSpace space(mesh, new Lagrange(1), new EpetraVectorType());
+
       Expr x = new CoordExpr(0);
       Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr u0 = new DiscreteFunction(new Lagrange(1), "u0");
       Expr v = new TestFunction(new Lagrange(1), "v");
       Expr dx = new Derivative(0);
-      
+
+      Expr u0 = new DiscreteFunction(space, "u0");      
 
       Expr eqn = Integral(interior, (dx*v)*(dx*u) + x*v);
       Expr bc = EssentialBC(leftPoint, v*u);

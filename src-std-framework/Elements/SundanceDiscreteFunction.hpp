@@ -5,8 +5,10 @@
 #define SUNDANCE_DISCRETEFUNCTION_H
 
 #include "SundanceDefs.hpp"
+#include "SundanceExpr.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceFuncWithBasis.hpp"
+#include "SundanceDiscreteSpace.hpp"
 
 namespace SundanceStdFwk
 {
@@ -16,23 +18,21 @@ namespace SundanceStdFwk
   using namespace SundanceCore::Internal;
   using namespace Internal;
 
+
   /** 
    *
    */
   class DiscreteFunction : public DiscreteFunctionStub,
-                          public FuncWithBasis
+                           public FuncWithBasis
   {
   public:
     /** */
-    DiscreteFunction(const BasisFamily& basis, const string& name="")
-      : DiscreteFunctionStub(name, basis.dim()), FuncWithBasis(basis)
-    {;}
+    DiscreteFunction(const DiscreteSpace& space, const string& name="");
 
     /** */
-    DiscreteFunction(const Array<BasisFamily>& basis, const string& name="")
-      : DiscreteFunctionStub(name, BasisFamily::size(basis)), 
-        FuncWithBasis(basis)
-    {;}
+    DiscreteFunction(const DiscreteSpace& space, const Expr& expr,
+                     const string& name="");
+   
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */
@@ -40,6 +40,29 @@ namespace SundanceStdFwk
 
     /* boilerplate */
     GET_RCP(ExprBase);
+
+    /** */
+    const Vector<double>& vector() const {return vector_;}
+
+    /** */
+    void setVector(const Vector<double>& vec) {vector_ = vec;}
+
+    /** */
+    const DiscreteSpace& discreteSpace() const {return space_;}
+
+    /** */
+    const Mesh& mesh() const {return space_.mesh();}
+
+    /** */
+    const RefCountPtr<DOFMapBase>& map() const {return space_.map();}
+
+
+  private:
+
+    DiscreteSpace space_;
+
+    Vector<double> vector_;
+
 #endif /* DOXYGEN_DEVELOPER_ONLY */
   };
 

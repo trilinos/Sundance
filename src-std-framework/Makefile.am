@@ -59,6 +59,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceADReal.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp \
@@ -73,6 +74,8 @@ SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceADReal.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\

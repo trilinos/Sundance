@@ -8,7 +8,6 @@
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
-#include "SundanceBasisFamily.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
