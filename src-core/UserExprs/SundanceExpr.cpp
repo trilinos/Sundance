@@ -381,6 +381,8 @@ Expr Expr::flatten() const
 
 int Expr::size() const
 {
+  if (ptr().get()==0) return 0;
+
   const ListExpr* le = dynamic_cast<const ListExpr*>(ptr().get());
 
   if (le != 0)
@@ -392,6 +394,8 @@ int Expr::size() const
 
 int Expr::totalSize() const
 {
+  if (ptr().get()==0) return 0;
+
   const ListExpr* le = dynamic_cast<const ListExpr*>(ptr().get());
 
   if (le != 0)

@@ -29,6 +29,10 @@ namespace SundanceStdFwk
       : public ElementIntegral
     {
     public:
+      /** Construct a zero-form to be computed by quadrature */
+      QuadratureIntegral(int dim, 
+                         const CellType& cellType,
+                         const QuadratureFamily& quad);
       /** Construct a one form to be computed by quadrature */
       QuadratureIntegral(int dim, 
                          const CellType& cellType,
@@ -53,9 +57,15 @@ namespace SundanceStdFwk
                      const double* const coeff,
                      RefCountPtr<Array<double> >& A) const 
       {
-        if (isTwoForm()) transformTwoForm(J, coeff, A);
-        else transformOneForm(J, coeff, A);
+        if (order()==2) transformTwoForm(J, coeff, A);
+        else if (order()==1) transformOneForm(J, coeff, A);
+        else transformZeroForm(J, coeff, A);
       }
+      
+      /** */
+      void transformZeroForm(const CellJacobianBatch& J, 
+                            const double* const coeff,
+                            RefCountPtr<Array<double> >& A) const ;
       
       /** */
       void transformTwoForm(const CellJacobianBatch& J, 

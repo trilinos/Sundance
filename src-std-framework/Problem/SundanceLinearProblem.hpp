@@ -41,6 +41,11 @@ namespace SundanceStdFwk
                   const Expr& test, const Expr& unk, 
                   const TSFExtended::VectorType<double>& vecType);
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+    /** */
+    LinearProblem(const RefCountPtr<Assembler>& assembler);
+#endif
+
     /** Solve the problem using the specified solver algorithm */
     Expr solve(const LinearSolver<double>& solver) const ;
 

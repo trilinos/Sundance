@@ -89,6 +89,49 @@ void doit(const Expr& e,
   // results->print(cerr, ev->sparsitySuperset(region).get());
 }
 
+void doit(const Expr& e, 
+          const Expr& vars,
+          const Expr& varEvalPt,
+          const Expr& fixed,
+          const Expr& fixedEvalPt, 
+          const EvalContext& region)
+{
+  TimeMonitor t0(doitTimer());
+  EvalManager mgr;
+  mgr.setRegion(region);
+
+  static RefCountPtr<AbstractEvalMediator> mediator 
+    = rcp(new StringEvalMediator());
+
+  mgr.setMediator(mediator);
+
+  const EvaluatableExpr* ev 
+    = dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get());
+
+  DerivSet d = SymbPreprocessor::setupGradient(e[0], 
+                                               vars,
+                                               varEvalPt,
+                                               fixed,
+                                               fixedEvalPt,
+                                               region);
+
+  Tabs tab;
+  //  cerr << tab << *ev->sparsitySuperset(region) << endl;
+  //  ev->showSparsity(cerr, region);
+
+  // RefCountPtr<EvalVectorArray> results;
+
+  Array<double> constantResults;
+  Array<RefCountPtr<EvalVector> > vectorResults;
+
+  ev->evaluate(mgr, constantResults, vectorResults);
+
+  ev->sparsitySuperset(region)->print(cerr, vectorResults, constantResults);
+
+  
+  // results->print(cerr, ev->sparsitySuperset(region).get());
+}
+
 
 
 void testExpr(const Expr& e,  
@@ -109,6 +152,38 @@ void testExpr(const Expr& e,
   try
     {
       doit(e, vars, varEvalPt, unks, unkEvalPt, fixed, fixedEvalPt, region);
+    }
+  catch(exception& ex)
+    {
+      cerr << "EXCEPTION DETECTED!" << endl;
+      cerr << ex.what() << endl;
+      // cerr << "repeating with increased verbosity..." << endl;
+      //       cerr << "-------- testing " << e.toString() << " -------- " << endl;
+      //       Evaluator::verbosity() = 2;
+      //       EvalVector::verbosity() = 2;
+      //       EvaluatableExpr::verbosity() = 2;
+      //       Expr::showAllParens() = true;
+      //       doit(e, region);
+      exit(1);
+    }
+}
+
+void testExpr(const Expr& e,  
+              const Expr& vars,
+              const Expr& varEvalPt,
+              const Expr& fixed,
+              const Expr& fixedEvalPt,  
+              const EvalContext& region)
+{
+  cerr << endl 
+       << "------------------------------------------------------------- " << endl;
+  cerr  << "-------- testing " << e.toString() << " -------- " << endl;
+  cerr << endl 
+       << "------------------------------------------------------------- " << endl;
+
+  try
+    {
+      doit(e, vars, varEvalPt, fixed, fixedEvalPt, region);
     }
   catch(exception& ex)
     {
@@ -198,6 +273,22 @@ int main(int argc, void** argv)
                    lambda0,
                    alpha,
                    alpha0,
+                   context);
+        }
+
+      //   verbosity<Evaluator>() = VerbExtreme;
+      //      verbosity<EvaluatableExpr>() = VerbExtreme;
+      cerr << "REDUCED GRADIENT " << endl;
+      for (int i=0; i<tests.length(); i++)
+        {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(0)));
+          EvalContext context(rqc, 1, EvalContext::nextID());
+          testExpr(tests[i], 
+                   alpha, 
+                   alpha0,
+                   List(u, lambda),
+                   List(u0, lambda0),
                    context);
         }
 

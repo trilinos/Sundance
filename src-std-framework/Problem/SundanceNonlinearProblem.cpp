@@ -57,6 +57,26 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
   setDomainAndRange(domain, range);
 }
 
+
+NonlinearProblem::NonlinearProblem(const RefCountPtr<Assembler>& assembler, 
+                                   const Expr& u0)
+  : NonlinearOperatorBase<double>(),
+    assembler_(assembler),
+    u0_(u0),
+    discreteU0_(0)
+{
+  discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
+
+  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+                     "null discrete function pointer in "
+                     "NonlinearProblem ctor");
+
+  VectorSpace<double> domain = assembler_->solutionSpace()->vecSpace();
+  VectorSpace<double> range = assembler_->rowSpace()->vecSpace();
+
+  setDomainAndRange(domain, range);
+}
+
 TSFExtended::Vector<double> NonlinearProblem::getInitialGuess() const 
 {
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,

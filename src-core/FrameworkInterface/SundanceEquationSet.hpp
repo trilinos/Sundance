@@ -39,18 +39,28 @@ namespace SundanceCore
      * There are several modes in which one might construct an equation set.
      * The first is where one has written out a weak form in terms
      * of test functions. The second is where one is taking variations
-     * of some functional.
+     * of some functional. 
+     *
      */
     class EquationSet : public TSFExtended::ObjectWithVerbosity<EquationSet>
     {
     public:
-      /** */
+      /** Set up equations written in weak form with test functions */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
                   const Expr& vars, 
                   const Expr& unks,
                   const Expr& unkLinearizationPts);
-      /** */
+
+      /* Set up calculation of a functional and its derivative wrt a 
+       * set of variational functions */
+      EquationSet(const Expr& eqns, 
+                  const Expr& bcs,
+                  const Expr& vars,
+                  const Expr& varLinearizationPts, 
+                  const Expr& fixedFields,
+                  const Expr& fixedFieldValues);
+      /** Derive a variational problem from a functional */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
                   const Expr& vars, 
@@ -131,6 +141,23 @@ namespace SundanceCore
 
       /** \name Methods needed during setup of integration and evaluation */
       //@{
+
+      /** Returns the maximum order of functional differentiation
+       * computed in this equation set. For gradient calculators, 
+       * this will be 1. For variational problems and weak problems,
+       * this will be 2. */
+      int maxDiffOrder() const ;
+
+      /** Returns the minimum order of functional differentiation
+       * computed in this equation set. For gradient calculators, 
+       * this will be 0. For variational problems and weak problems,
+       * this will be 1. */
+      int minDiffOrder() const ;
+
+      /** */
+      bool isGradientCalculator() const {return isGradientCalculator_;}
+      
+
       /** Returns the list of distinct subregion-quadrature combinations
        * appearing in the equation set. */
       const Array<RegionQuadCombo>& regionQuadCombos() const 
@@ -143,24 +170,24 @@ namespace SundanceCore
 
       /** Returns the set of nonzero functional derivatives appearing
        * in the equation set at the given subregion-quadrature combination */
-      const DerivSet& nonzeroFunctionalDerivs(int order,
+      const DerivSet& nonzeroFunctionalDerivs(int caseID,
                                               const RegionQuadCombo& r) const 
-      {return regionQuadComboNonzeroDerivs_[order-1].get(r);}
+      {return regionQuadComboNonzeroDerivs_[caseID].get(r);}
 
       /** Returns the set of nonzero functional derivatives appearing
        * in the boundary conditions
        *  at the given subregion-quadrature combination */
-      const DerivSet& nonzeroBCFunctionalDerivs(int order,
+      const DerivSet& nonzeroBCFunctionalDerivs(int caseID,
                                                 const RegionQuadCombo& r) const
-      {return bcRegionQuadComboNonzeroDerivs_[order-1].get(r);}
+      {return bcRegionQuadComboNonzeroDerivs_[caseID].get(r);}
 
-      /** Map RQC to the context for the derivs of the given order */
-      EvalContext rqcToContext(int order, const RegionQuadCombo& r) const 
-      {return rqcToContext_[order-1].get(r);}
+      /** Map RQC to the context for the derivs of the given caseID */
+      EvalContext rqcToContext(int caseID, const RegionQuadCombo& r) const 
+      {return rqcToContext_[caseID].get(r);}
 
-      /** Map BC RQC to the context for the derivs of the given order */
-      EvalContext bcRqcToContext(int order, const RegionQuadCombo& r) const 
-      {return bcRqcToContext_[order-1].get(r);}
+      /** Map BC RQC to the context for the derivs of the given caseID */
+      EvalContext bcRqcToContext(int caseID, const RegionQuadCombo& r) const 
+      {return bcRqcToContext_[caseID].get(r);}
 
 
       /** Indicates whether any var-unk pairs appear in the given domain */
@@ -289,6 +316,10 @@ namespace SundanceCore
       /** Flag indicating whether this equation set is 
        * a variational problem */
       bool isVariationalProblem_;
+
+      /** Flag indicating whether this equation set is a gradient
+       * calculator */
+      bool isGradientCalculator_;
     };
   }
 }

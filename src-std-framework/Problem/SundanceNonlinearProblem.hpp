@@ -42,6 +42,13 @@ namespace SundanceStdFwk
                        const Expr& test, const Expr& unk, const Expr& u0, 
                        const TSFExtended::VectorType<double>& vecType);
 
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+      /** */
+      NonlinearProblem(const RefCountPtr<Assembler>& assembler, 
+                       const Expr& u0);
+#endif
+
       /** Compute the residual and Jacobian at the current evaluation point */
       LinearOperator<double> computeJacobianAndFunction(Vector<double>& functionValue) const ;
 

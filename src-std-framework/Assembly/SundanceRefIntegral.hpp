@@ -58,6 +58,10 @@ namespace SundanceStdFwk
     class RefIntegral : public ElementIntegral
     {
     public:
+      /** Construct a reference zero-form */
+      RefIntegral(int dim, 
+                  const CellType& cellType);
+
       /** Construct a reference one-form */
       RefIntegral(int dim, 
                   const CellType& cellType,
@@ -83,8 +87,9 @@ namespace SundanceStdFwk
                      const Array<double>& coeff,
                      RefCountPtr<Array<double> >& A) const 
       {
-        if (isTwoForm()) transformTwoForm(J, coeff, A);
-        else transformOneForm(J, coeff, A);
+        if (order()==2) transformTwoForm(J, coeff, A);
+        else if (order()==1) transformOneForm(J, coeff, A);
+        else transformZeroForm(J, coeff, A);
       }
 
       /** */
@@ -94,6 +99,11 @@ namespace SundanceStdFwk
 
       /** */
       void transformOneForm(const CellJacobianBatch& J, 
+                            const Array<double>& coeff,
+                            RefCountPtr<Array<double> >& A) const ;
+
+      /** */
+      void transformZeroForm(const CellJacobianBatch& J, 
                             const Array<double>& coeff,
                             RefCountPtr<Array<double> >& A) const ;
       /** */

@@ -43,6 +43,17 @@ static Time& refTransCreationTimer()
 
 
 RefIntegral::RefIntegral(int dim, 
+                         const CellType& cellType)
+  : ElementIntegral(dim, cellType), W_()
+{
+  Tabs tab0;
+  verbosity() = classVerbosity();
+  SUNDANCE_OUT(verbosity() > VerbSilent, 
+               tab0 << "************* computing reference 0-form integrals ********" 
+               << endl << tab0 << "cell type=" << cellType);
+}
+
+RefIntegral::RefIntegral(int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
                          const Array<int>& alpha,
@@ -232,7 +243,7 @@ RefIntegral::RefIntegral(int dim,
 
 void RefIntegral::print(ostream& os) const 
 {
-  if (!isTwoForm())
+  if (order()==1)
     {
       Tabs tab1;
       os << tab1 << "reference one-form values" << endl;
@@ -257,7 +268,7 @@ void RefIntegral::print(ostream& os) const
         }
       os << tab1 << endl << tab1 << endl;
     }
-  else
+  else if (order()==2)
     {
       Tabs tab1;
       os << tab1 << "reference two-form values" << endl;
@@ -354,14 +365,36 @@ void RefIntegral::print(ostream& os) const
 }
 
 
+void RefIntegral::transformZeroForm(const CellJacobianBatch& J,  
+                                    const Array<double>& coeff,
+                                    RefCountPtr<Array<double> >& A) const
+{
+  TimeMonitor timer(refIntegrationTimer());
+  TEST_FOR_EXCEPTION(order() != 0, InternalError,
+                     "RefIntegral::transformZeroForm() called "
+                     "for form of order " << order());
+  
+
+  /* The result for each cell is the cell's Jacobian determinant */
+  A->resize(1);
+  double& a = (*A)[0];
+  a = 0.0;
+  for (int c=0; c<J.numCells(); c++)
+    {
+      a += coeff[0] * fabs(J.detJ()[c]);
+    }
+  addFlops(2*J.numCells());
+}
+
 void RefIntegral::transformOneForm(const CellJacobianBatch& J,  
                                    const Array<double>& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
-  TEST_FOR_EXCEPTION(isTwoForm(), InternalError,
-                     "RefIntegral::transformOneForm() called for two-form");
-
+  TEST_FOR_EXCEPTION(order() != 1, InternalError,
+                     "RefIntegral::transformOneForm() called for form "
+                     "of order " << order());
+  
   /* If the derivative order is zero, the only transformation to be done 
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0)
@@ -407,8 +440,10 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
                                    RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
-  TEST_FOR_EXCEPTION(!isTwoForm(), InternalError,
-                     "RefIntegral::transformOneForm() called for one-form");
+  TEST_FOR_EXCEPTION(order() != 2, InternalError,
+                     "RefIntegral::transformTwoForm() called for form "
+                     "of order " << order());
+  
   /* If the derivative orders are zero, the only transformation to be done 
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)

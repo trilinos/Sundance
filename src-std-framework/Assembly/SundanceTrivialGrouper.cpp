@@ -42,111 +42,130 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       Tabs tab1;
 
       const MultipleDeriv& d = sparsity->deriv(i);
-      if (d.order()==0) continue;
+      if (d.order()==0) 
+        {
+          RefCountPtr<ElementIntegral> integral ;
+          int resultIndex;
+          if (sparsity->isConstant(i))
+            {
+              integral = rcp(new RefIntegral(cellDim, cellType));
+              resultIndex = constCount++;
+            }
+          else
+            {
+              integral = rcp(new QuadratureIntegral(cellDim, cellType, quad));
+              resultIndex = vecCount++;
+            }
+          groups.append(IntegralGroup(tuple(integral),
+                                      tuple(tuple(resultIndex))));
+        }
+      else
+        {
 
-      BasisFamily testBasis;
-      BasisFamily unkBasis;
-      MultiIndex miTest;
-      MultiIndex miUnk;
-      int testID;
-      int unkID;
-      bool isOneForm;
-      Array<int> alpha;
-      Array<int> beta;
-      extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, testID, unkID,
-                      isOneForm);
+          BasisFamily testBasis;
+          BasisFamily unkBasis;
+          MultiIndex miTest;
+          MultiIndex miUnk;
+          int testID;
+          int unkID;
+          bool isOneForm;
+          Array<int> alpha;
+          Array<int> beta;
+          extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, testID, unkID,
+                          isOneForm);
 
-      SUNDANCE_OUT(verb > VerbMedium, 
-                   tab1 << "test ID: " << testID);
+          SUNDANCE_OUT(verb > VerbMedium, 
+                       tab1 << "test ID: " << testID);
 
-      SUNDANCE_OUT(!isOneForm && verb > VerbMedium,
-                   tab1 << "unk funcID: " << unkID << endl);
+          SUNDANCE_OUT(!isOneForm && verb > VerbMedium,
+                       tab1 << "unk funcID: " << unkID << endl);
                    
-      SUNDANCE_OUT(verb > VerbMedium, tab1 << "deriv = " << d);
-      SUNDANCE_OUT(verb > VerbMedium && sparsity->isConstant(i), 
-                   tab1 << "coeff is constant");
-      SUNDANCE_OUT(verb > VerbMedium && !sparsity->isConstant(i), 
-                   tab1 << "coeff is non-constant");
+          SUNDANCE_OUT(verb > VerbMedium, tab1 << "deriv = " << d);
+          SUNDANCE_OUT(verb > VerbMedium && sparsity->isConstant(i), 
+                       tab1 << "coeff is constant");
+          SUNDANCE_OUT(verb > VerbMedium && !sparsity->isConstant(i), 
+                       tab1 << "coeff is non-constant");
 
-      RefCountPtr<ElementIntegral> integral;
-      int resultIndex;
-      if (sparsity->isConstant(i))
-        {
-          if (isOneForm)
+          RefCountPtr<ElementIntegral> integral;
+          int resultIndex;
+          if (sparsity->isConstant(i))
             {
-              if (miTest.order()==1)
+              if (isOneForm)
                 {
-                  alpha = tuple(miTest.firstOrderDirection());
+                  if (miTest.order()==1)
+                    {
+                      alpha = tuple(miTest.firstOrderDirection());
+                    }
+                  SUNDANCE_OUT(verb > VerbMedium,
+                               tab1 << "creating reference integral for one-form");
+                  integral = rcp(new RefIntegral(cellDim, cellType,
+                                                 testBasis, alpha, 
+                                                 miTest.order()));
                 }
-              SUNDANCE_OUT(verb > VerbMedium,
-                   tab1 << "creating reference integral for one-form");
-              integral = rcp(new RefIntegral(cellDim, cellType,
-                                             testBasis, alpha, 
-                                             miTest.order()));
+              else
+                {
+                  if (miTest.order()==1)
+                    {
+                      alpha = tuple(miTest.firstOrderDirection());
+                    }
+                  if (miUnk.order()==1)
+                    {
+                      beta = tuple(miUnk.firstOrderDirection());
+                    }
+                  SUNDANCE_OUT(verb > VerbMedium,
+                               tab1 << "creating reference integral for two-form");
+                  integral = rcp(new RefIntegral(cellDim, cellType,
+                                                 testBasis, alpha, miTest.order(),
+                                                 unkBasis, beta, miUnk.order()));
+                }
+              resultIndex = constCount++;
             }
           else
             {
-              if (miTest.order()==1)
+              if (isOneForm)
                 {
-                  alpha = tuple(miTest.firstOrderDirection());
+                  if (miTest.order()==1)
+                    {
+                      alpha = tuple(miTest.firstOrderDirection());
+                    }
+                  SUNDANCE_OUT(verb > VerbMedium,
+                               tab1 << "creating quadrature integral for two-form");
+                  integral = rcp(new QuadratureIntegral(cellDim, cellType,
+                                                        testBasis, alpha, 
+                                                        miTest.order(), quad));
                 }
-              if (miUnk.order()==1)
+              else
                 {
-                  beta = tuple(miUnk.firstOrderDirection());
+                  if (miTest.order()==1)
+                    {
+                      alpha = tuple(miTest.firstOrderDirection());
+                    }
+                  if (miUnk.order()==1)
+                    {
+                      beta = tuple(miUnk.firstOrderDirection());
+                    }
+                  SUNDANCE_OUT(verb > VerbMedium,
+                               tab1 << "creating quadrature integral for two-form");
+                  integral = rcp(new QuadratureIntegral(cellDim, cellType,
+                                                        testBasis, alpha, 
+                                                        miTest.order(),
+                                                        unkBasis, beta, 
+                                                        miUnk.order(), quad));
                 }
-              SUNDANCE_OUT(verb > VerbMedium,
-                   tab1 << "creating reference integral for two-form");
-              integral = rcp(new RefIntegral(cellDim, cellType,
-                                             testBasis, alpha, miTest.order(),
-                                             unkBasis, beta, miUnk.order()));
+              resultIndex = vecCount++;
             }
-          resultIndex = constCount++;
-        }
-      else
-        {
+
           if (isOneForm)
             {
-              if (miTest.order()==1)
-                {
-                  alpha = tuple(miTest.firstOrderDirection());
-                }
-              SUNDANCE_OUT(verb > VerbMedium,
-                   tab1 << "creating quadrature integral for two-form");
-              integral = rcp(new QuadratureIntegral(cellDim, cellType,
-                                                    testBasis, alpha, 
-                                                    miTest.order(), quad));
+              groups.append(IntegralGroup(tuple(testID), tuple(integral),
+                                          tuple(tuple(resultIndex))));
             }
           else
             {
-              if (miTest.order()==1)
-                {
-                  alpha = tuple(miTest.firstOrderDirection());
-                }
-              if (miUnk.order()==1)
-                {
-                  beta = tuple(miUnk.firstOrderDirection());
-                }
-              SUNDANCE_OUT(verb > VerbMedium,
-                   tab1 << "creating quadrature integral for two-form");
-              integral = rcp(new QuadratureIntegral(cellDim, cellType,
-                                                    testBasis, alpha, 
-                                                    miTest.order(),
-                                                    unkBasis, beta, 
-                                                    miUnk.order(), quad));
+              groups.append(IntegralGroup(tuple(testID), tuple(unkID),
+                                          tuple(integral),
+                                          tuple(tuple(resultIndex))));
             }
-          resultIndex = vecCount++;
-        }
-
-      if (isOneForm)
-        {
-          groups.append(IntegralGroup(tuple(testID), tuple(integral),
-                                      tuple(tuple(resultIndex))));
-        }
-      else
-        {
-          groups.append(IntegralGroup(tuple(testID), tuple(unkID),
-                                      tuple(integral),
-                                      tuple(tuple(resultIndex))));
         }
     }
 }

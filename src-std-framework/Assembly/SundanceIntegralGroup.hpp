@@ -27,6 +27,9 @@ namespace SundanceStdFwk
     {
     public:
       /** */
+      IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
+                    const Array<Array<int> >& resultIndices);
+      /** */
       IntegralGroup(const Array<int>& testID,
                     const Array<RefCountPtr<ElementIntegral> >& integrals,
                     const Array<Array<int> >& resultIndices);
@@ -38,7 +41,13 @@ namespace SundanceStdFwk
 
 
       /** Indicate whether this is a group of two-forms */
-      bool isTwoForm() const {return isTwoForm_;}
+      bool isTwoForm() const {return order_==2;}
+
+      /** Indicate whether this is a group of one-forms */
+      bool isOneForm() const {return order_==1;}
+
+      /** Indicate whether this is a group of zero-forms */
+      bool isZeroForm() const {return order_==0;}
 
       /** Return the number of rows in the local matrices or vectors
        * computed by this integral group */
@@ -64,7 +73,7 @@ namespace SundanceStdFwk
     private:
       
       /** */
-      bool isTwoForm_;
+      int order_;
 
       /** */
       int nTestNodes_;

@@ -26,10 +26,24 @@ static Time& integrationTimer()
 
 
 IntegralGroup
+::IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
+                const Array<Array<int> >& resultIndices)
+  : order_(0),
+    nTestNodes_(0),
+    nUnkNodes_(0),
+    testID_(),
+    unkID_(),
+    integrals_(integrals),
+    resultIndices_(resultIndices)
+{
+  verbosity() = classVerbosity();
+}
+
+IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
                 const Array<RefCountPtr<ElementIntegral> >& integrals,
                 const Array<Array<int> >& resultIndices)
-  : isTwoForm_(false),
+  : order_(1),
     nTestNodes_(0),
     nUnkNodes_(0),
     testID_(testID),
@@ -56,7 +70,7 @@ IntegralGroup
                 const Array<int>& unkID,
                 const Array<RefCountPtr<ElementIntegral> >& integrals,
                 const Array<Array<int> >& resultIndices)
-  : isTwoForm_(true),
+  : order_(2),
     nTestNodes_(0),
     nUnkNodes_(0),
     testID_(testID),

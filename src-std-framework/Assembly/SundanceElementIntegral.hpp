@@ -26,13 +26,17 @@ namespace SundanceStdFwk
 
     /** 
      * ElementIntegral encapsulates the common data needed for the
-     * integration of groups of related one-forms and two-forms.
+     * integration of groups of related zero-forms, one-forms, and two-forms.
      */
     class ElementIntegral 
       : public TSFExtended::ObjectWithVerbosity<ElementIntegral>,
         public TSFExtended::Printable
     {
     public:
+      /** Construct a zero-form */
+      ElementIntegral(int dim, 
+                      const CellType& cellType);
+
       /** Construct a one-form */
       ElementIntegral(int dim, 
                       const CellType& cellType,
@@ -50,8 +54,9 @@ namespace SundanceStdFwk
                       const Array<int>& beta,
                       int unkDerivOrder);
 
-      /** Indicate whether this element integral is a two form */
-      bool isTwoForm() const {return isTwoForm_;}
+      /** Indicate whether this element integral is a 
+       *  zero, one, or two form */
+      int order() const {return order_;}
       
       /** Return the number of nodes associated with the test function */
       int nNodesTest() const {return nNodesTest_;}
@@ -128,7 +133,7 @@ namespace SundanceStdFwk
 
       int nNodes_;
 
-      bool isTwoForm_;
+      int order_;
 
       Array<int> alpha_;
 

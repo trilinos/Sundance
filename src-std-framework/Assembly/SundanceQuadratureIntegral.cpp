@@ -45,6 +45,38 @@ static Time& quadTransCreationTimer()
 
 QuadratureIntegral::QuadratureIntegral(int dim, 
                                        const CellType& cellType,
+                                       const QuadratureFamily& quad)
+  : ElementIntegral(dim, cellType),
+    W_(),
+    nQuad_(0),
+    useSumFirstMethod_(true)
+{
+  Tabs tab0;
+  verbosity() = classVerbosity();
+
+  /* create the quad points and weights */
+  Array<double> quadWeights;
+  Array<Point> quadPts;
+  quad.getPoints(cellType, quadPts, quadWeights);
+  nQuad_ = quadPts.size();
+  
+  W_.resize(nQuad());
+
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab0 << "num quad pts" << nQuad());
+
+  SUNDANCE_OUT(verbosity() > VerbHigh, 
+               tab0 << "quad weights" << quadWeights);
+
+  for (int q=0; q<nQuad(); q++)
+    {
+      W_[q] = quadWeights[q];
+    }    
+}
+
+
+QuadratureIntegral::QuadratureIntegral(int dim, 
+                                       const CellType& cellType,
                                        const BasisFamily& testBasis,
                                        const Array<int>& alpha,
                                        int testDerivOrder,
@@ -252,13 +284,44 @@ void QuadratureIntegral::print(ostream& os) const
   
 }
 
+void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& J,  
+                                           const double* const coeff,
+                                           RefCountPtr<Array<double> >& A) const
+{
+  TimeMonitor timer(quadratureTimer());
+  TEST_FOR_EXCEPTION(order() != 0, InternalError,
+                     "QuadratureIntegral::transformZeroForm() called "
+                     "for form of order " << order());
+
+  int flops = 0;
+
+  A->resize(1);
+  double& a = (*A)[0];
+  a = 0.0;
+  double* coeffPtr = (double*) coeff;
+  for (int c=0; c<J.numCells(); c++)
+    {
+      double detJ = fabs(J.detJ()[c]);
+      for (int q=0; q<nQuad(); q++, coeffPtr++)
+        {
+          double f = (*coeffPtr)*detJ;
+          a += f*detJ;
+        }
+    }
+
+  addFlops(J.numCells()*(1 + 3*nQuad()));
+}
+
+
+
 void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,  
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
-  TEST_FOR_EXCEPTION(isTwoForm(), InternalError,
-                     "QuadratureIntegral::transformOneForm() called for two-form");
+  TEST_FOR_EXCEPTION(order() != 1, InternalError,
+                     "QuadratureIntegral::transformOneForm() called for form "
+                     "of order " << order());
 
   int flops = 0;
 
@@ -309,13 +372,15 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
   addFlops(flops);
 }
 
+
 void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,  
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
-  TEST_FOR_EXCEPTION(!isTwoForm(), InternalError,
-                     "QuadratureIntegral::transformTwoForm() called for one-form");
+  TEST_FOR_EXCEPTION(order() != 2, InternalError,
+                     "QuadratureIntegral::transformTwoForm() called for form "
+                     "of order " << order());
 
   int flops = 0 ;
 
@@ -382,7 +447,7 @@ void QuadratureIntegral
   //  cerr << "transform summing first " << endl;
 
   int transSize = 0; 
-  if (isTwoForm())
+  if (order()==2)
     {
       transSize = nRefDerivTest() * nRefDerivUnk();
     }
@@ -462,7 +527,7 @@ void QuadratureIntegral
 
   //  cerr << "transform summing last " << endl;
 
-  if (isTwoForm())
+  if (order()==2)
     {
       transSize = nRefDerivTest() * nRefDerivUnk();
     }

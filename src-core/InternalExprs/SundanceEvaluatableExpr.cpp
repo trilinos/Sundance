@@ -142,7 +142,7 @@ void EvaluatableExpr::addFuncIDCombo(const MultiSet<int>& funcIDSet)
 {
   funcIDSet_.put(funcIDSet);
   for (MultiSet<int>::const_iterator 
-         i=funcIDSet.begin(); i != funcIDSet.begin(); i++)
+         i=funcIDSet.begin(); i != funcIDSet.end(); i++)
     {
       funcDependencies_.put(*i);
     }

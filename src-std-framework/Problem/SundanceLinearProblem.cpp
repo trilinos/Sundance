@@ -61,6 +61,13 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   assembler_ = rcp(new Assembler(mesh, eqnSet, vecType));
 }
 
+LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler) 
+  : assembler_(assembler),
+    A_(),
+    rhs_()
+{}
+
+
 TSFExtended::Vector<double> LinearProblem::getRHS() const 
 {
   assembler_->assemble(A_, rhs_);

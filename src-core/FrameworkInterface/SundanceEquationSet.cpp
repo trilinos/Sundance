@@ -34,17 +34,18 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
-    regionQuadComboNonzeroDerivs_(2),
-    bcRegionQuadComboNonzeroDerivs_(2),
-    rqcToContext_(2),
-    bcRqcToContext_(2),
+    regionQuadComboNonzeroDerivs_(3),
+    bcRegionQuadComboNonzeroDerivs_(3),
+    rqcToContext_(3),
+    bcRqcToContext_(3),
     varFuncs_(vars),
     unkFuncs_(unks),
     unkLinearizationPts_(unkLinearizationPts),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
     isNonlinear_(false),
-    isVariationalProblem_(false)
+    isVariationalProblem_(false),
+    isGradientCalculator_(false)
 {
   Expr fixed;
   init(eqns, bcs, vars, fixed,
@@ -72,20 +73,56 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
-    regionQuadComboNonzeroDerivs_(2),
-    bcRegionQuadComboNonzeroDerivs_(2),
-    rqcToContext_(2),
-    bcRqcToContext_(2),
+    regionQuadComboNonzeroDerivs_(3),
+    bcRegionQuadComboNonzeroDerivs_(3),
+    rqcToContext_(3),
+    bcRqcToContext_(3),
     varFuncs_(vars),
     unkFuncs_(unks),
     unkLinearizationPts_(unkLinearizationPts),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
     isNonlinear_(false),
-    isVariationalProblem_(true)
+    isVariationalProblem_(true),
+    isGradientCalculator_(false)
 {
   init(eqns, bcs, vars, varLinearizationPts, 
        unks, unkLinearizationPts,
+       fixedFields, fixedFieldValues);
+}
+
+EquationSet::EquationSet(const Expr& eqns, 
+                         const Expr& bcs,
+                         const Expr& vars,
+                         const Expr& varLinearizationPts, 
+                         const Expr& fixedFields,
+                         const Expr& fixedFieldValues)
+  : regions_(),
+    varsOnRegions_(),
+    unksOnRegions_(),
+    varUnkPairsOnRegions_(),
+    bcVarUnkPairsOnRegions_(),
+    bcVarsOnRegions_(),
+    bcUnksOnRegions_(),
+    regionQuadCombos_(),
+    bcRegionQuadCombos_(),
+    regionQuadComboExprs_(),
+    bcRegionQuadComboExprs_(),
+    regionQuadComboNonzeroDerivs_(3),
+    bcRegionQuadComboNonzeroDerivs_(3),
+    rqcToContext_(3),
+    bcRqcToContext_(3),
+    varFuncs_(vars),
+    unkFuncs_(),
+    unkLinearizationPts_(),
+    varIDToReducedIDMap_(),
+    unkIDToReducedIDMap_(),
+    isNonlinear_(false),
+    isVariationalProblem_(true),
+    isGradientCalculator_(true)
+{
+  init(eqns, bcs, vars, varLinearizationPts, 
+       unkFuncs_, unkLinearizationPts_,
        fixedFields, fixedFieldValues);
 }
 
@@ -167,6 +204,13 @@ void EquationSet::init(const Expr& eqns,
       varFuncSet.put(fid);
       varIDToReducedIDMap_.put(fid, i);
     }
+
+  TEST_FOR_EXCEPTION(unks.size() == 0 && !isGradientCalculator_,
+                     InternalError,
+                     "no unks passed to an equation set that is not "
+                     "a gradient calculator");
+
+  
   for (int i=0; i<unks.size(); i++)
     {
       const UnknownFuncElement* u 
@@ -180,7 +224,6 @@ void EquationSet::init(const Expr& eqns,
       unkIDToReducedIDMap_.put(fid, i);
     }
 
-  
 
   /* determine whether or not this problem includes essential BCs */
   SUNDANCE_OUT(verbosity() > VerbLow, 
@@ -213,6 +256,7 @@ void EquationSet::init(const Expr& eqns,
   Set<RegionQuadCombo> rqcBCSet;
 
   Array<int> contextID = tuple(EvalContext::nextID(),
+                               EvalContext::nextID(),
                                EvalContext::nextID());
 
   /* Now compile a list of all regions appearing in either the eqns or
@@ -241,18 +285,32 @@ void EquationSet::init(const Expr& eqns,
           Expr term = integralSum->expr(d,t);
           rqcSet.put(rqc);
           regionQuadComboExprs_.put(rqc, term);
-          for (int order=1; order<=2; order++)
+          for (int order=0; order<=2; order++)
             {
-              EvalContext context(rqc, order, contextID[order-1]);
+              if (order==0 && !isGradientCalculator_) continue;
+              if (order==2 && isGradientCalculator_) continue;
+
+              EvalContext context(rqc, order, contextID[order]);
               DerivSet nonzeros;
               if (isVariationalProblem_)
                 {
-                  nonzeros = SymbPreprocessor
-                    ::setupVariations(term, 
-                                      vars, varLinearizationPts,
-                                      unks, unkLinearizationPts,
-                                      fixedFields, fixedFieldValues,
-                                      context);
+                  if (isGradientCalculator_)
+                    {
+                      nonzeros = SymbPreprocessor
+                        ::setupGradient(term, 
+                                        vars, varLinearizationPts,
+                                        fixedFields, fixedFieldValues,
+                                        context);
+                    }
+                  else
+                    {
+                      nonzeros = SymbPreprocessor
+                        ::setupVariations(term, 
+                                          vars, varLinearizationPts,
+                                          unks, unkLinearizationPts,
+                                          fixedFields, fixedFieldValues,
+                                          context);
+                    }
                 }
               else
                 {
@@ -262,8 +320,8 @@ void EquationSet::init(const Expr& eqns,
                                 context);
                 }
               if (order==2) addToVarUnkPairs(rqc.domain(), nonzeros, false);
-              rqcToContext_[order-1].put(rqc, context);
-              regionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);
+              rqcToContext_[order].put(rqc, context);
+              regionQuadComboNonzeroDerivs_[order].put(rqc, nonzeros);
             }
         }
     }
@@ -321,20 +379,33 @@ void EquationSet::init(const Expr& eqns,
               Expr term = bcSum->expr(d,t);
               rqcBCSet.put(rqc);
               bcRegionQuadComboExprs_.put(rqc, bcSum->expr(d,t)); 
-              for (int order=1; order<=2; order++)
+              for (int order=0; order<=2; order++)
                 {
-                  EvalContext context(rqc, order, contextID[order-1]);
+                  if (order==0 && !isGradientCalculator_) continue;
+                  if (order==2 && isGradientCalculator_) continue;
+                  EvalContext context(rqc, order, contextID[order]);
                   DerivSet nonzeros;
                   if (isVariationalProblem_)
                     {
-                      nonzeros = SymbPreprocessor
-                        ::setupVariations(term, 
-                                          vars, varLinearizationPts,
-                                          unks, unkLinearizationPts,
-                                          fixedFields, fixedFieldValues,
-                                          context);
+                      if (isGradientCalculator_)
+                        {
+                          nonzeros = SymbPreprocessor
+                            ::setupGradient(term, 
+                                            vars, varLinearizationPts,
+                                            fixedFields, fixedFieldValues,
+                                            context);
+                        }
+                      else
+                        {
+                          nonzeros = SymbPreprocessor
+                            ::setupVariations(term, 
+                                              vars, varLinearizationPts,
+                                              unks, unkLinearizationPts,
+                                              fixedFields, fixedFieldValues,
+                                              context);
+                        }
                     }
-                  else
+                  else 
                     {
                       nonzeros = SymbPreprocessor
                         ::setupExpr(term, vars, unks, 
@@ -342,8 +413,8 @@ void EquationSet::init(const Expr& eqns,
                                     context);
                     }
                   if (order==2) addToVarUnkPairs(rqc.domain(), nonzeros, true);
-                  bcRqcToContext_[order-1].put(rqc, context);
-                  bcRegionQuadComboNonzeroDerivs_[order-1].put(rqc, nonzeros);
+                  bcRqcToContext_[order].put(rqc, context);
+                  bcRegionQuadComboNonzeroDerivs_[order].put(rqc, nonzeros);
                 }
             }
         }
@@ -378,6 +449,18 @@ void EquationSet::init(const Expr& eqns,
            << endl;
     }
 
+}
+
+int EquationSet::maxDiffOrder() const
+{
+  if (isGradientCalculator_) return 1;
+  return 2;
+}
+
+int EquationSet::minDiffOrder() const
+{
+  if (isGradientCalculator_) return 0;
+  return 1;
 }
 
 

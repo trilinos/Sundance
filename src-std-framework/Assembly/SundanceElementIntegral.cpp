@@ -16,6 +16,21 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 ElementIntegral::ElementIntegral(int dim, 
+                                 const CellType& cellType)
+  : dim_(dim),
+    testDerivOrder_(-1), 
+    nRefDerivTest_(-1),
+    nNodesTest_(-1),
+    unkDerivOrder_(-1), 
+    nRefDerivUnk_(-1),
+    nNodesUnk_(-1),
+    nNodes_(-1),
+    order_(1),
+    alpha_(),
+    beta_()
+{;}
+
+ElementIntegral::ElementIntegral(int dim, 
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
                                  const Array<int>& alpha,
@@ -28,7 +43,7 @@ ElementIntegral::ElementIntegral(int dim,
     nRefDerivUnk_(-1),
     nNodesUnk_(-1),
     nNodes_(nNodesTest_),
-    isTwoForm_(false),
+    order_(1),
     alpha_(alpha),
     beta_()
 {;}
@@ -51,7 +66,7 @@ ElementIntegral::ElementIntegral(int dim,
     nRefDerivUnk_(ipow(dim, unkDerivOrder)),
     nNodesUnk_(unkBasis.nNodes(cellType)), 
     nNodes_(nNodesTest_*nNodesUnk_),
-    isTwoForm_(true),
+    order_(2),
     alpha_(alpha),
     beta_(beta)
 {;}

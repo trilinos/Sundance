@@ -88,17 +88,27 @@ Set<MultiIndex> DiffOp
 Set<MultiSet<int> > DiffOp
 ::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const
 {
+  Tabs tabs;
   Set<MultiSet<int> > rtn = activeFuncIDs;
+
+  SUNDANCE_VERB_MEDIUM(tabs << "arg dependencies are " 
+                       << evaluatableArg()->funcDependencies().toString());
+
   for (Set<MultiSet<int> >::const_iterator 
          i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
     {
       const MultiSet<int>& d = *i;
+      SUNDANCE_VERB_MEDIUM(tabs << "deriv from outside is " << d.toString());
       if (d.size() >= maxFuncDiffOrder()) continue;
       for (Set<int>::const_iterator 
-             j=funcDependencies().begin(); j != funcDependencies().end(); j++)
+             j=evaluatableArg()->funcDependencies().begin(); 
+           j != evaluatableArg()->funcDependencies().end(); j++)
         {
+          Tabs tab1;
           MultiSet<int> newDeriv = d;
+          SUNDANCE_VERB_MEDIUM(tab1 << "internal dependency is " << *j);
           newDeriv.put(*j);
+          SUNDANCE_VERB_MEDIUM(tab1 << "created new arg deriv " << newDeriv.toString());
           rtn.put(newDeriv);
         }
     }
@@ -143,6 +153,9 @@ void DiffOp::findNonzeros(const EvalContext& context,
   
 
   Set<MultiSet<int> > argFuncs = argActiveFuncs(activeFuncIDs);
+
+  SUNDANCE_VERB_MEDIUM(tabs << "arg active func set is " << endl << argFuncs);
+
   evaluatableArg()->findNonzeros(context, argMI,
                                  argFuncs,
                                  regardFuncsAsConstant);
