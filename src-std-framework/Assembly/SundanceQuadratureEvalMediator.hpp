@@ -8,6 +8,8 @@
 #include "SundanceMap.hpp"
 #include "SundanceStdFwkEvalMediator.hpp"
 #include "SundanceQuadratureFamily.hpp"
+#include "SundanceBasisFamily.hpp"
+#include "SundanceOrderedTuple.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -55,7 +57,12 @@ namespace SundanceStdFwk
 
       /** */
       virtual void print(ostream& os) const ;
-     
+
+      /** */
+      RefCountPtr<Array<Array<Array<double> > > > 
+      getRefBasisVals(const BasisFamily& basis, 
+                      int diffOrder) const ;
+
     private:
      
       /** */
@@ -72,6 +79,9 @@ namespace SundanceStdFwk
 
       /** */
       mutable Array<Point> physQuadPts_;
+
+      /** */
+      mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<Array<double> > > > > > refBasisVals_;
     };
   }
 }

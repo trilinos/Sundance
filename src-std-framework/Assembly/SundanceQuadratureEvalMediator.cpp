@@ -3,6 +3,9 @@
 
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceDiscreteFunction.hpp"
+#include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceCellJacobianBatch.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceExceptions.hpp"
@@ -47,7 +50,7 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType)
 }
 
 void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
-                                           LoadableVector* const vec) const
+                                           SundanceCore::Internal::LoadableVector* const vec) const
 {
   SUNDANCE_OUT(verbosity() > VerbSilent, "evaluating coord expr " << expr->toXML().toString());
   
@@ -61,12 +64,119 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
     }
 }
 
+RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
+::getRefBasisVals(const BasisFamily& basis, int diffOrder) const
+{
+  RefCountPtr<Array<Array<Array<double> > > > rtn ;
+
+  typedef OrderedPair<BasisFamily, CellType> key;
+
+  if (!refBasisVals_[diffOrder].containsKey(key(basis, cellType())))
+    {
+      RefCountPtr<Array<Array<Array<double> > > > rtn = rcp(new Array<Array<Array<double> > >());
+      if (diffOrder==0)
+        {
+          rtn->resize(1);
+          basis.ptr()->refEval(cellType(), *(refQuadPts_.get(cellType())), 
+                               MultiIndex(), (*rtn)[0]);
+        }
+      else
+        {
+          rtn->resize(cellDim());
+          for (int r=0; r<cellDim(); r++)
+            {
+              MultiIndex mi;
+              mi[r]=1;
+              basis.ptr()->refEval(cellType(), *(refQuadPts_.get(cellType())), 
+                                   mi, (*rtn)[r]);
+            }
+        }
+      refBasisVals_[diffOrder].put(key(basis, cellType()), rtn);
+    }
+  else
+    {
+      rtn = refBasisVals_[diffOrder].get(key(basis, cellType()));
+    }
+  return rtn;
+}
+
+
 void QuadratureEvalMediator
 ::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                           const MultiIndex& mi,
-                          LoadableVector* const vec) const
+                          SundanceCore::Internal::LoadableVector* const vec) const
 {
-  SUNDANCE_ERROR("QuadratureEvalMediator::evalDiscreteFuncElement() unimplemented");
+  const DiscreteFunction* f = dynamic_cast<const DiscreteFunction*>(expr->master());
+  TEST_FOR_EXCEPTION(f==0, InternalError,
+                     "QuadratureEvalMediator::evalDiscreteFuncElement() called "
+                     "with expr that is not a discrete function");
+
+  int myIndex = expr->myIndex();
+
+
+  const BasisFamily& basis = f->basis()[myIndex];
+
+  const Vector<double>& fValues = f->vector();
+  RefCountPtr<Array<double> > localValues;
+  f->getLocalValues(cellDim(), *cellLID(), *localValues);
+
+  RefCountPtr<Array<Array<Array<double> > > > refBasisValues 
+    = getRefBasisVals(basis, mi.order());
+
+  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+  if (mi.order() != 0) mesh().getJacobians(cellDim(), *cellLID(), *J);
+  
+  int nQuad = refQuadPts_.size();
+  int nNodes = basis.nNodes(cellType());
+  int nFuncs = f->discreteSpace().nFunc();
+
+  vec->resize(cellLID()->size() * nQuad);
+
+  for (int c=0; c<cellLID()->size(); c++)
+    {
+      /* initialize to zero */
+      for (int q=0; q<nQuad; q++) 
+        {
+          vec->start()[c*nQuad + q] = 0.0;
+        }
+      if (mi.order()==0)
+        {
+          for (int q=0; q<nQuad; q++)
+            {
+              double& sum = vec->start()[c*nQuad + q];
+              for (int i=0; i<nNodes; i++)
+                {
+                  sum += (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex]
+                    * (*refBasisValues)[q][i][0];
+                }
+            }
+        }
+      else
+        {
+          Array<double> invJ;
+          J->getInvJ(c, invJ);
+          int pDir = mi.firstOrderDirection();
+          
+          /* initialize to zero */
+          for (int q=0; q<nQuad; q++) 
+            {
+              vec->start()[c*nQuad + q] = 0.0;
+            }
+          for (int q=0; q<nQuad; q++)
+            {
+              double& sum = vec->start()[c*nQuad + q];
+              for (int i=0; i<nNodes; i++)
+                {
+                  double g = (*localValues)[c*nNodes*nFuncs + nFuncs*i + myIndex];
+                  for (int r=0; r<cellDim(); r++)
+                    {
+                      sum += g*invJ[pDir + r*cellDim()]*(*refBasisValues)[q][i][r];
+                    }
+                }
+            }
+        }
+    }
+  
 }
 
 void QuadratureEvalMediator::computePhysQuadPts() const 

@@ -7,6 +7,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceEquationSet.hpp"
+#include "SundanceBasisFamily.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -41,8 +42,14 @@ namespace SundanceStdFwk
       /** */
       const RefCountPtr<Set<int> >& bcRows() const {return bcRows_;}
 
+      Array<BasisFamily> testBasisArray() const ;
+
+      Array<BasisFamily> unkBasisArray() const ;
+
+      const Mesh& mesh() const {return mesh_;}
+
     private:
-      
+
       bool unksAreHomogeneous() const ;
 
       bool testsAreHomogeneous() const ;
@@ -56,8 +63,6 @@ namespace SundanceStdFwk
       bool isSymmetric() const ;
 
       void markBCRows() ;
-
-      const Mesh& mesh() const {return mesh_;}
 
       const MPIComm& comm() const {return mesh().comm();}
 

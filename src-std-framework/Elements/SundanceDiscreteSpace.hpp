@@ -36,6 +36,11 @@ namespace SundanceStdFwk
                   const VectorType<double>& vecType);
 
     /** */
+    DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
+                  const RefCountPtr<DOFMapBase>& map,
+                  const VectorType<double>& vecType);
+
+    /** */
     const RefCountPtr<DOFMapBase>& map() const {return map_;}
 
     /** return the number of functions */

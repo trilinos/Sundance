@@ -30,6 +30,8 @@ Assembler
     eqn_(eqn),
     rowMap_(),
     colMap_(),
+    rowSpace_(),
+    colSpace_(),
     bcRows_(),
     rqc_(),
     isBCRqc_(),
@@ -50,6 +52,8 @@ Assembler
 
   rowMap_ = mapBuilder.rowMap();
   colMap_ = mapBuilder.colMap();
+  rowSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray(), rowMap_, vecType_));
+  colSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray(), colMap_, vecType_));
   bcRows_ = mapBuilder.bcRows();
 
   lowestRow_ = mapBuilder.rowMap()->lowestLocalDOF();

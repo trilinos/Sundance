@@ -7,6 +7,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceEquationSet.hpp"
+#include "SundanceDiscreteSpace.hpp"
+#include "SundanceDiscreteFunction.hpp"
 #include "SundanceIntegralGroup.hpp"
 #include "SundanceGrouperBase.hpp"
 #include "SundanceEvalManager.hpp"
@@ -53,6 +55,10 @@ namespace SundanceStdFwk
       {return colMap_;}
 
       /** */
+      const RefCountPtr<DiscreteSpace>& solutionSpace() const 
+      {return colSpace_;}
+
+      /** */
       const RefCountPtr<Set<int> >& bcRows() {return bcRows_;}
 
       /** */
@@ -65,6 +71,7 @@ namespace SundanceStdFwk
       
       /** */
       void getGraph(Array<Set<int> >& graph) const ;
+
       
     private:
 
@@ -103,6 +110,10 @@ namespace SundanceStdFwk
       RefCountPtr<DOFMapBase> rowMap_;
 
       RefCountPtr<DOFMapBase> colMap_;
+
+      RefCountPtr<DiscreteSpace> rowSpace_;
+
+      RefCountPtr<DiscreteSpace> colSpace_;
 
       RefCountPtr<Set<int> > bcRows_;
 

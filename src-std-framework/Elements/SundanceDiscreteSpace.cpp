@@ -44,3 +44,20 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
                                    map_->numLocalDOFs(),
                                    &(dofs[0]));
 }
+
+
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
+                             const RefCountPtr<DOFMapBase>& map,
+                             const VectorType<double>& vecType)
+  : map_(map), mesh_(mesh), basis_(basis), vecSpace_(), vecType_(vecType)
+{
+  int nDof = map_->numLocalDOFs();
+  int lowDof = map_->lowestLocalDOF();
+
+  Array<int> dofs(nDof);
+  for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
+
+  vecSpace_ = vecType_.createSpace(map_->numDOFs(),
+                                   map_->numLocalDOFs(),
+                                   &(dofs[0]));
+}

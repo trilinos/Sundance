@@ -43,6 +43,10 @@ namespace SundanceStdFwk
       /** return the number of nodes for this basis on the given cell type */
       int nNodes(const CellType& cellType) const ;
 
+     //  /** */
+//       void getNodalPoints(const CellType& cellType,
+//                           Array<Point>& x) const ;
+
       /** */
       bool operator==(const BasisFamily& other) const ;
 

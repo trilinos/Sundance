@@ -30,7 +30,11 @@ namespace SundanceStdFwk
     DiscreteFunction(const DiscreteSpace& space, const string& name="");
 
     /** */
-    DiscreteFunction(const DiscreteSpace& space, const Expr& expr,
+    DiscreteFunction(const DiscreteSpace& space, const Vector<double>& vec, 
+                     const string& name="");
+
+    /** */
+    DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
                      const string& name="");
    
 
@@ -55,6 +59,11 @@ namespace SundanceStdFwk
 
     /** */
     const RefCountPtr<DOFMapBase>& map() const {return space_.map();}
+
+    /** */
+    void getLocalValues(int cellDim, 
+                        const Array<int>& cellLID,
+                        Array<double>& localValues) const ;
 
 
   private:

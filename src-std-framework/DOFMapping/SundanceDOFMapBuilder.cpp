@@ -89,6 +89,26 @@ void DOFMapBuilder::init()
     }
   markBCRows();
 }
+
+Array<BasisFamily> DOFMapBuilder::testBasisArray() const 
+{
+  Array<BasisFamily> rtn;
+  for (int i=0; i<eqn_->numTests(); i++) 
+    {
+      rtn.append(BasisFamily::getBasis(eqn_->testFunc(i)));
+    }
+  return rtn;
+}
+
+Array<BasisFamily> DOFMapBuilder::unkBasisArray() const 
+{
+  Array<BasisFamily> rtn;
+  for (int i=0; i<eqn_->numUnks(); i++) 
+    {
+      rtn.append(BasisFamily::getBasis(eqn_->unkFunc(i)));
+    }
+  return rtn;
+}
   
 bool DOFMapBuilder::unksAreHomogeneous() const 
 {
