@@ -25,7 +25,8 @@ namespace SundanceStdFwk
     using namespace Teuchos;
 
     /** 
-     * 
+     * WeakFormBatch is a collection of terms having the same combination
+     * of basis functions and spatial derivatives.
      */
     class WeakFormBatch : public TSFExtended::ObjectWithVerbosity<WeakFormBatch>,
                           public TSFExtended::Printable
@@ -58,7 +59,9 @@ namespace SundanceStdFwk
       /** */
       const Array<int>& unkID() const {return unkID_;}
 
-      /** */
+      /** An array of the indices of each term in the batch into the the
+       * DerivSet from which this batch was created. This will be used to
+       * identify the value of the coefficient of each term */
       const Array<int>& derivIndex() const {return derivIndex_;}
 
       /** */

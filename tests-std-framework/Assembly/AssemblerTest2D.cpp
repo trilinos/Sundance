@@ -102,21 +102,21 @@ int main(int argc, void** argv)
         = rcp(new EquationSet(eqn, bc, v, u, u0, 
                               rcp(new BruteForceEvaluatorFactory())));
 
-      verbosity<Assembler>() = VerbExtreme;
-      //      verbosity<EvalVector>() = VerbExtreme;
-      // verbosity<QuadratureEvalMediator>() = VerbExtreme;
-      //verbosity<EvaluatableExpr>() = VerbExtreme;
-      //verbosity<Evaluator>() = VerbExtreme;
-      //      EvalVector::shadowOps() = true;
+     //  verbosity<Assembler>() = VerbExtreme;
+//       //      verbosity<EvalVector>() = VerbExtreme;
+//       // verbosity<QuadratureEvalMediator>() = VerbExtreme;
+//       //verbosity<EvaluatableExpr>() = VerbExtreme;
+//       //verbosity<Evaluator>() = VerbExtreme;
+//       //      EvalVector::shadowOps() = true;
 
-      EquationSet::classVerbosity() = VerbHigh;
-      Expr::showAllParens() = true;
-      Assembler assembler(mesh, eqnSet); 
+//       EquationSet::classVerbosity() = VerbHigh;
+//       Expr::showAllParens() = true;
+//       Assembler assembler(mesh, eqnSet); 
 
-      assembler.print(cerr);
+//       assembler.print(cerr);
       
 
-      assembler.assemble();
+//       assembler.assemble();
 
     }
 	catch(exception& e)

@@ -34,6 +34,12 @@ namespace SundanceUtils
           return b_ < other.b_;
         }
 
+      /** */
+      const A& first() const {return a_;}
+
+      /** */
+      const B& second() const {return b_;}
+
     private:
       const A a_;
       const B b_;
@@ -60,6 +66,14 @@ namespace SundanceUtils
         : OrderedPair<A, OrderedTriple<B, C, D> >(a, OrderedTriple<B,C,D>(b,c,d))
         {;}
     };
+
+  /** */
+  template <class A, class B>
+  inline ostream& operator<<(ostream& os, const OrderedPair<A,B>& p)
+  {
+    os << "{" << p.first() << ", " << p.second() << "}";
+    return os;
+  }
 
 }
 

@@ -66,15 +66,14 @@ using namespace SundanceStdMesh::Internal;
       /** */
       void computeOffsets(int dim, int localCount);
 
+      /** */
+      const Array<int>& funcIDList() const {return funcIDOnCellSet(0);}
+
       static int uninitializedVal() {return -1;}
 
       int dim_;
 
-      CellSet cells_;
-
       Array<Array<Array<int> > > dofs_;
-
-      Array<int> funcID_;
 
       Array<Array<Array<Array<int> > > > localNodePtrs_;
 
@@ -85,6 +84,8 @@ using namespace SundanceStdMesh::Internal;
       Array<Array<int> > numFacets_;
 
       bool basisIsContinuous_;
+
+      
     };
   }
 }

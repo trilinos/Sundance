@@ -6,6 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
+#include "SundanceCellSet.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -42,17 +43,57 @@ using namespace SundanceStdMesh::Internal;
                                   int funcID,
                                   Array<int>& dofs) const = 0 ;
 
+      /** */
+      const CellSet& cellSet(int i) const {return cellSets_[i];}
+
+      /** */
+      const Array<int>& funcIDOnCellSet(int i) const 
+      {return funcIDOnCellSets_[i];}
+
+      /** */
+      int cellDimOnCellSet(int i) const 
+      {return cellDimOnCellSets_[i];}
+
+      /** */
+      int lowestLocalDOF() const {return lowestLocalDOF_;}
+
+      /** */
+      bool isLocalDOF(int dof) const 
+      {return (dof >= lowestLocalDOF_ && dof < lowestLocalDOF_+numLocalDOFs_);}
+
+      /** */
+      int numLocalDOFs() const {return numLocalDOFs_;}
+
     protected:
+
+      void setLowestLocalDOF(int low) {lowestLocalDOF_ = low;}
+
+      void setNumLocalDOFs(int numDOFs) {numLocalDOFs_ = numDOFs;}
 
       const Mesh& mesh() const {return mesh_;}
 
       const MPIComm& comm() const {return mesh().comm();}
+
+      Array<CellSet>& cellSets() {return cellSets_;}
+
+      Array<Array<int> >& funcIDOnCellSets() {return funcIDOnCellSets_;}
+
+      Array<int>& cellDimOnCellSets() {return cellDimOnCellSets_;}
 
     private:
       int localProcID_;
 
       Mesh mesh_;
 
+      Array<CellSet> cellSets_;
+
+      Array<Array<int> > funcIDOnCellSets_;
+
+      Array<int> cellDimOnCellSets_;
+
+      int lowestLocalDOF_;
+
+      int numLocalDOFs_;
       
     };
   }

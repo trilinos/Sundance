@@ -94,6 +94,25 @@ namespace SundanceCore
        * columns in the event we're doing symmetrized BC application */
       const Set<int>& bcUnksOnRegion(int d) const 
       {return bcUnksOnRegions_.get(regions_[d]);}
+
+      /** Determine whether a given func ID is listed as a test function 
+       * in this equation set */
+      bool hasTestID(int fid) const 
+      {return testIDToReducedIDMap_.containsKey(fid);}
+
+      /** Determine whether a given func ID is listed as a unk function 
+       * in this equation set */
+      bool hasUnkID(int fid) const 
+      {return unkIDToReducedIDMap_.containsKey(fid);}
+
+      /** get the reduced ID for the given test ID */
+      int reducedTestID(int testID) const 
+      {return testIDToReducedIDMap_.get(testID);}
+
+      /** get the reduced ID for the given unk ID */
+      int reducedUnkID(int unkID) const 
+      {return unkIDToReducedIDMap_.get(unkID);}
+      
       //@}
 
 
@@ -120,6 +139,19 @@ namespace SundanceCore
       const DerivSet& nonzeroBCFunctionalDerivs(const RegionQuadCombo& r) const
       {return bcRegionQuadComboNonzeroDerivs_.get(r);}
 
+      /** Returns the (test, unk) pairs appearing on the given domain.
+       * This is required for determining the sparsity structure of the
+       * matrix */
+      const RefCountPtr<Set<OrderedPair<int, int> > >& testUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+      {return testUnkPairsOnRegions_.get(domain);}
+      
+
+       /** Returns the (test, unk) pairs appearing on the given domain.
+       * This is required for determining the sparsity structure of the
+       * matrix */
+      const RefCountPtr<Set<OrderedPair<int, int> > >& bcTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const ;
+
+
       /** */
       const Expr& expr(const RegionQuadCombo& r) const 
       {return regionQuadComboExprs_.get(r);}
@@ -133,7 +165,10 @@ namespace SundanceCore
           
     private:
 
-      
+      /** */
+      void addToTestUnkPairs(const OrderedHandle<CellFilterStub>& domain,
+                             const DerivSet& nonzeros, 
+                             bool isBC);
 
       /** */
       Array<OrderedHandle<CellFilterStub> > regions_;
@@ -143,6 +178,16 @@ namespace SundanceCore
 
       /** */
       Map<OrderedHandle<CellFilterStub>, Set<int> > unksOnRegions_;
+
+      /** Map from cell filter to pairs of (testID, unkID) appearing
+       * on those cells. This is needed to construct the sparsity pattern
+       * of the matrix. */
+      Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > testUnkPairsOnRegions_;
+
+      /** Map from cell filter to pairs of (testID, unkID) appearing
+       * on those cells. This is needed to construct the sparsity pattern
+       * of the matrix. */
+      Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > bcTestUnkPairsOnRegions_;
 
       /** */
       Map<OrderedHandle<CellFilterStub>, Set<int> > bcTestsOnRegions_;
@@ -189,6 +234,7 @@ namespace SundanceCore
        * position in list of unk functions */
       Map<int, int> unkIDToReducedIDMap_;
 
+      
       /** Flag indicating whether this equation set is nonlinear */
       bool isNonlinear_;
     };

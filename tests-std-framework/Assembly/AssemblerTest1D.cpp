@@ -33,6 +33,10 @@
 #include "SundanceAssembler.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
+#include "SundanceBasicInserter.hpp"
+#include "SundanceBasicIntegrator.hpp"
+#include "TSFVectorType.hpp"
+#include "TSFEpetraVectorType.hpp"
 
 using namespace TSFExtended;
 using namespace Teuchos;
@@ -92,6 +96,9 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       
 
+      verbosity<Assembler>() = VerbExtreme;
+      verbosity<EquationSet>() = VerbExtreme;
+
       QuadratureFamily quad = new GaussianQuadrature(2);
       Expr eqn = Integral(interior, (dx*v)*(dx*u) + (1.0+x*x)*v, quad);
       Expr bc = EssentialBC(leftPoint, v*u, quad);
@@ -100,7 +107,6 @@ int main(int argc, void** argv)
         = rcp(new EquationSet(eqn, bc, v, u, u0, 
                               rcp(new BruteForceEvaluatorFactory())));
 
-      verbosity<Assembler>() = VerbExtreme;
       //      verbosity<EvalVector>() = VerbExtreme;
       // verbosity<QuadratureEvalMediator>() = VerbExtreme;
       //verbosity<EvaluatableExpr>() = VerbExtreme;
@@ -109,12 +115,31 @@ int main(int argc, void** argv)
 
       EquationSet::classVerbosity() = VerbHigh;
       Expr::showAllParens() = true;
-      Assembler assembler(mesh, eqnSet); 
 
-      assembler.print(cerr);
-      
+      RefCountPtr<InserterFactoryBase> inserterFactory
+        = rcp(new GenericInserterFactory<BasicInserter>());
 
-      assembler.assemble();
+      RefCountPtr<IntegratorFactoryBase> integratorFactory
+        = rcp(new GenericIntegratorFactory<BasicIntegrator>());
+
+      VectorType<double> vecType = new EpetraVectorType();
+
+      Assembler assembler(mesh, eqnSet, inserterFactory, 
+                          integratorFactory, vecType); 
+
+      Array<Set<int> > graph;
+      assembler.getGraph(graph);
+
+      cerr << "graph" << endl;
+      for (int i=0; i<graph.size(); i++) 
+        {
+          cerr << "row=" << i << " " << graph[i] << endl;
+        }
+
+      LinearOperator<double> A;
+      Vector<double> b;
+
+      // assembler.assemble(A, b);
 
     }
 	catch(exception& e)

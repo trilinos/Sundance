@@ -293,3 +293,17 @@ int EvaluatableExpr::getDerivSetIndex(const RegionQuadCombo& region) const
   return rtn;
   
 }
+
+const EvaluatableExpr* EvaluatableExpr::getEvalExpr(const Expr& expr)
+{
+  const EvaluatableExpr* rtn 
+    = dynamic_cast<const EvaluatableExpr*>(expr[0].ptr().get());
+  TEST_FOR_EXCEPTION(rtn==0, InternalError,
+                     "cast of " << expr 
+                     << " failed in EvaluatableExpr::getEvalExpr()");
+  TEST_FOR_EXCEPTION(expr.size() != 1, InternalError,
+                     "non-scalar expression " << expr
+                     << " in EvaluatableExpr::getEvalExpr()");
+
+  return rtn;
+}

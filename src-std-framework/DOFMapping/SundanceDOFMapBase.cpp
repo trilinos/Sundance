@@ -13,6 +13,9 @@ using namespace Teuchos;
 
 DOFMapBase::DOFMapBase(const Mesh& mesh)
   : localProcID_(mesh.comm().getRank()),
-    mesh_(mesh)
+    mesh_(mesh),
+    cellSets_(),
+    funcIDOnCellSets_(),
+    cellDimOnCellSets_()
 {;}
 

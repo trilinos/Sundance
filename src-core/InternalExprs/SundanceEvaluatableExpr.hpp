@@ -26,6 +26,7 @@ namespace SundanceCore
 
   using std::string;
   using std::ostream;
+  class Expr;
 
   namespace Internal
   {
@@ -272,6 +273,9 @@ namespace SundanceCore
           = TimeMonitor::getNewTimer("Expr derivID"); 
         return *rtn;
       }
+
+      /** */
+      static const EvaluatableExpr* getEvalExpr(const Expr& expr);
 
     protected:
 

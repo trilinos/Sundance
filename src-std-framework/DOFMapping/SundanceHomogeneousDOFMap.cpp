@@ -20,9 +20,7 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
                                      int numFuncs)
   : DOFMapBase(mesh), 
     dim_(mesh.spatialDim()),
-    cells_(),
     dofs_(mesh.spatialDim()+1), 
-    funcID_(numFuncs),
     localNodePtrs_(mesh.spatialDim()+1),
     nNodesPerCell_(mesh.spatialDim()+1),
     totalNNodesPerCell_(mesh.spatialDim()+1, 0),
@@ -32,9 +30,12 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
   verbosity() = DOFMapBase::classVerbosity();
   
   CellFilter maximalCells = new MaximalCellFilter();
-  cells_ = maximalCells.getCells(mesh);
+  cellSets().append(maximalCells.getCells(mesh));
+  cellDimOnCellSets().append(mesh.spatialDim());
 
-  for (int f=0; f<numFuncs; f++) funcID_[f] = f;
+  Array<int> fid(numFuncs);
+  for (int f=0; f<numFuncs; f++) fid[f] = f;
+  funcIDOnCellSets().append(fid);
   
   for (int d=0; d<=dim_; d++)
     {
@@ -94,7 +95,7 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
       int numCells = dofs_[d].size();
       for (int c=0; c<numCells; c++)
         {
-          dofs_[d][c].resize(funcID_.size() * nNodesPerCell_[d]);
+          dofs_[d][c].resize(funcIDList().size() * nNodesPerCell_[d]);
           /* set everything to uninitializedVal() */
           for (int i=0; i<dofs_[d][c].size(); i++) 
             {
@@ -127,8 +128,9 @@ void HomogeneousDOFMap::initMap()
    * better cache locality for the matrix because all the DOFs for
    * each maximal element and its facets are grouped together. */
 
+  CellSet cells = cellSet(0);
   CellIterator iter;
-  for (iter=cells_.begin(); iter != cells_.end(); iter++)
+  for (iter=cells.begin(); iter != cells.end(); iter++)
     {
       /* first assign any DOFs associated with the maximal cell */
       int cellLID = *iter;
@@ -207,16 +209,18 @@ void HomogeneousDOFMap::initMap()
             }
         }
     }
+  else
+    {
+      setLowestLocalDOF(0);
+      setNumLocalDOFs(nextDOF);
+    }
   
 }
 
 void HomogeneousDOFMap::shareDOFs(int cellDim,
                                   const Array<Array<int> >& outgoingCellRequests)
 {
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
+  
   Array<Array<int> > incomingCellRequests;
   Array<Array<int> > outgoingDOFs(outgoingCellRequests.size());
   Array<Array<int> > incomingDOFs;
@@ -233,10 +237,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
                                   incomingCellRequests,
                                   mesh().comm());
 
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
+  
 
   SUNDANCE_OUT(verbosity() > VerbMedium,  
                "p=" << mesh().comm().getRank()
@@ -271,10 +272,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
         }
     }
  
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize(); 
+  
 
   SUNDANCE_OUT(verbosity() > VerbMedium,  
                "p=" << mesh().comm().getRank()
@@ -289,10 +287,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
                "p=" << mesh().comm().getRank()
                << "communicated DOF answers for cells of dimension " << cellDim);
 
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
+  
   /* now assign the DOFs from the other procs */
   for (int p=0; p<mesh().comm().getNProc(); p++)
     {
@@ -306,10 +301,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
           setDOFs(cellDim, cellLID, dof);
         }
     }
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
+  
 }
 
 
@@ -319,13 +311,13 @@ void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID, int& nextDOF)
   Array<int>& cellDOFs = dofs_[cellDim][cellLID];
   
   int nn = nNodesPerCell_[cellDim];
-  int nf = funcID_.size();
+  int nf = funcIDList().size();
 
   for (int i=0; i<nn; i++)
     {
       for (int f=0; f<nf; f++)
         {
-          cellDOFs[funcID_[f] + nf*i] = nextDOF++;
+          cellDOFs[funcIDList()[f] + nf*i] = nextDOF++;
         }
     }
 }
@@ -334,7 +326,7 @@ void HomogeneousDOFMap::getDOFsForCell(int cellDim, int cellLID,
                                        int funcID, Array<int>& dofs) const 
 {
   dofs.resize(totalNNodesPerCell_[cellDim]);
-  int nf = funcID_.size();
+  int nf = funcIDList().size();
   
   /* first get the DOFs for the nodes associated with the cell's interior */
   for (int n=0; n<localNodePtrs_[cellDim][cellDim][0].size(); n++)
@@ -365,10 +357,13 @@ void HomogeneousDOFMap::getDOFsForCell(int cellDim, int cellLID,
 
 void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
 {
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
+  if (verbosity() > VerbMedium)
+    {
+      comm().synchronize();
+      comm().synchronize();
+      comm().synchronize();
+      comm().synchronize();
+    }
   SUNDANCE_OUT(verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank()
                << " sharing offsets for DOF numbering for dim=" << dim);
@@ -384,14 +379,14 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
   SUNDANCE_OUT(verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank()
                << " back from MPI accumulate");
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
+
+  if (verbosity() > VerbMedium)
+    {
+      comm().synchronize();
+      comm().synchronize();
+      comm().synchronize();
+      comm().synchronize();
+    }
 
   for (int c=0; c<dofs_[dim].size(); c++)
     {
@@ -404,13 +399,20 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
         }
     }
 
+  setLowestLocalDOF(myOffset);
+  setNumLocalDOFs(localCount);
+
   SUNDANCE_OUT(verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank() 
                << " done sharing offsets for DOF numbering for dim=" << dim);
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
-  comm().synchronize();
+  if (verbosity() > VerbMedium)
+    {
+      comm().synchronize();
+      comm().synchronize();
+      comm().synchronize();
+      comm().synchronize();
+    }
+
 }                           
 
 
@@ -438,12 +440,12 @@ void HomogeneousDOFMap::print(ostream& os) const
                   Tabs tabs2;
                   os << tabs2 << "Cell LID=" << c << " GID=" 
                      << mesh().mapLIDToGID(d, c) << endl;
-                  for (int f=0; f<funcID_.size(); f++)
+                  for (int f=0; f<funcIDList().size(); f++)
                     {
                       Tabs tabs3;
                       Array<int> dofs;
-                      getDOFsForCell(d, c, funcID_[f], dofs);
-                      os << tabs3 << "f=" << funcID_[f] << " " 
+                      getDOFsForCell(d, c, funcIDList()[f], dofs);
+                      os << tabs3 << "f=" << funcIDList()[f] << " " 
                          << dofs << endl;
                     }
                 }

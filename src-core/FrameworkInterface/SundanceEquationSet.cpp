@@ -3,8 +3,12 @@
 
 #include "SundanceEquationSet.hpp"
 #include "SundanceSymbPreprocessor.hpp"
+#include "SundanceUnknownFuncElement.hpp"
+#include "SundanceTestFuncElement.hpp"
+#include "SundanceFunctionalDeriv.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
 
  
 
@@ -22,6 +26,8 @@ EquationSet::EquationSet(const Expr& eqns,
   : regions_(),
     testsOnRegions_(),
     unksOnRegions_(),
+    testUnkPairsOnRegions_(),
+    bcTestUnkPairsOnRegions_(),
     bcTestsOnRegions_(),
     bcUnksOnRegions_(),
     regionQuadCombos_(),
@@ -54,6 +60,35 @@ EquationSet::EquationSet(const Expr& eqns,
                      "is not in integral form");
   SUNDANCE_OUT(verbosity() > VerbLow, 
                "...input eqn set is OK");
+
+  
+  /* map each test and unknown function's ID numbers to its
+   * position in the input function lists */
+  for (int i=0; i<tests.size(); i++)
+    {
+      const TestFuncElement* t 
+        = dynamic_cast<const TestFuncElement*>(tests[i].ptr().get());
+      TEST_FOR_EXCEPTION(t==0, RuntimeError, 
+                         "EquationSet ctor input test function "
+                         << tests[i] 
+                         << " does not appear to be a test function");
+      int fid = t->funcID();
+      testIDToReducedIDMap_.put(fid, i);
+    }
+  for (int i=0; i<unks.size(); i++)
+    {
+      const UnknownFuncElement* u 
+        = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
+      TEST_FOR_EXCEPTION(u==0, RuntimeError, 
+                         "EquationSet ctor input unk function "
+                         << tests[i] 
+                         << " does not appear to be a unk function");
+      int fid = u->funcID();
+      unkIDToReducedIDMap_.put(fid, i);
+    }
+
+  
+  
 
   /* determine whether or not this problem includes essential BCs */
   SUNDANCE_OUT(verbosity() > VerbLow, 
@@ -116,6 +151,7 @@ EquationSet::EquationSet(const Expr& eqns,
                                                           unkLinearizationPts,
                                                           rqc,
                                                           evalFactory.get());
+          addToTestUnkPairs(rqc.domain(), nonzeros, false);
           regionQuadComboNonzeroDerivs_.put(rqc, nonzeros);
         }
     }
@@ -164,6 +200,7 @@ EquationSet::EquationSet(const Expr& eqns,
                                               unkLinearizationPts,
                                               rqc,
                                               evalFactory.get());
+              addToTestUnkPairs(rqc.domain(), nonzeros, true);
               bcRegionQuadComboNonzeroDerivs_.put(rqc, nonzeros);
             }
         }
@@ -192,4 +229,95 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadCombos_ = rqcBCSet.elements();
   
 
+}
+
+
+
+void EquationSet
+::addToTestUnkPairs(const OrderedHandle<CellFilterStub>& domain,
+                    const DerivSet& nonzeros, 
+                    bool isBC)
+{
+  Tabs tab;
+  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "finding test-unk pairs "
+               "for domain " << domain);
+  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "isBC=" << isBC);
+  
+  RefCountPtr<Set<OrderedPair<int, int> > > funcPairs;
+  Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > >* theMap;
+
+  if (isBC) 
+    {
+      theMap = &(bcTestUnkPairsOnRegions_);
+    }
+  else 
+    {
+      theMap = &(testUnkPairsOnRegions_);
+    } 
+  SUNDANCE_OUT(verbosity() > VerbHigh, tab << "map ptr=" << theMap);
+  if (theMap->containsKey(domain))
+    {
+      funcPairs = theMap->get(domain);
+    }
+  else
+    {
+      funcPairs = rcp(new Set<OrderedPair<int, int> >());
+      theMap->put(domain, funcPairs);
+    }
+
+  for (DerivSet::const_iterator i=nonzeros.begin(); i!=nonzeros.end(); i++)
+    {
+      const MultipleDeriv& md = *i;
+      if (md.order() != 2) continue;
+      
+      int testID = -1;
+      int unkID = -1;
+
+      MultipleDeriv::const_iterator j;
+      for (j=md.begin(); j != md.end(); j++)
+        {
+          const Deriv& d = *j;
+          const FunctionalDeriv* fd = d.funcDeriv();
+          TEST_FOR_EXCEPTION(fd==0, InternalError, "non-functional deriv "
+                             << d << " detected in EquationSet::"
+                             "addToTestUnkPairs()");
+          const UnknownFuncElement* u 
+            = dynamic_cast<const UnknownFuncElement*>(fd->func());
+          const TestFuncElement* t 
+            = dynamic_cast<const TestFuncElement*>(fd->func());
+
+          if (u != 0)
+            {
+              unkID = fd->funcID();
+              continue;
+            }
+          if (t != 0)
+            {
+              testID = fd->funcID();
+              continue;
+            }
+        }
+      TEST_FOR_EXCEPTION(unkID==-1 || testID==-1, InternalError,
+                         "multiple derivative " << md << " does not "
+                         "appear to have exactly one test and unknown each");
+      funcPairs->put(OrderedPair<int, int>(testID, unkID));
+    }
+
+  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "found " << *funcPairs);
+  
+}
+
+const RefCountPtr<Set<OrderedPair<int, int> > >& EquationSet::
+bcTestUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+{
+  TEST_FOR_EXCEPTION(!bcTestUnkPairsOnRegions_.containsKey(domain),
+                     InternalError,
+                     "equation set does not have a test-unk pair list for "
+                     "bc region " << domain);
+  const RefCountPtr<Set<OrderedPair<int, int> > >& rtn 
+    = bcTestUnkPairsOnRegions_.get(domain);
+
+  TEST_FOR_EXCEPTION(rtn.get()==0, InternalError, 
+                     "null test-unk pair list for BC region " << domain);
+  return rtn;
 }
