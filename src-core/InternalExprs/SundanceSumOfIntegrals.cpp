@@ -78,15 +78,6 @@ void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
 
 void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign) 
 {
-  cerr << "before merge" << endl;
-
-  {
-    Tabs tabs;
-    
-    cerr << tabs << "me: " << toXML() << endl;
-    cerr << tabs << "other: " << other->toXML() << endl;
-  }
-
   for (int d=0; d<other->regions_.size(); d++)
     {
       for (int q=0; q<other->numTerms(d); q++)
@@ -95,13 +86,6 @@ void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign)
                   other->quad_[d][q].ptr(), sign);
         }
     }
-  
-  cerr << "after merge " << endl;
-  {
-    Tabs tabs;
-    
-    cerr << tabs << "me: " << toXML() << endl;
-  }
 }
 
 void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr) 
