@@ -2,6 +2,7 @@
 /* @HEADER@ */
 
 #include "SundanceBasicSimplicialMesh.hpp"
+#include "SundanceCellJacobianBatch.hpp"
 #include "SundanceMeshSource.hpp"
 #include "SundanceDebug.hpp"
 #include "SundanceOut.hpp"
@@ -60,6 +61,144 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
   if (spatialDim()==3) elemEdges_.setTupleSize(6);
 }
 
+
+void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
+                                       CellJacobianBatch& jBatch) const
+{
+  jBatch.resize(cellLID.size(), cellDim);
+  
+  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+                     "cellDim=" << cellDim 
+                     << " is not in expected range [0, " << spatialDim()
+                     << "]");
+
+  Array<double> J(cellDim*cellDim);
+  
+
+  for (int i=0; i<cellLID.size(); i++)
+    {
+      int lid = cellLID[i];
+      switch(cellDim)
+        {
+        case 0:
+          J.resize(1);
+          J[0] = 1.0;
+          break;
+        case 1:
+          {
+            int a = elemVerts_.value(lid, 0);
+            int b = elemVerts_.value(lid, 1);
+            const Point& pa = points_[a];
+            const Point& pb = points_[b];
+            J[0] = fabs(pa[0]-pb[0]);
+          }
+          break;
+        case 2:
+          {
+            int a = elemVerts_.value(lid, 0);
+            int b = elemVerts_.value(lid, 1);
+            int c = elemVerts_.value(lid, 2);
+            const Point& pa = points_[a];
+            const Point& pb = points_[b];
+            const Point& pc = points_[c];
+            J[0] = pb[0] - pa[0];
+            J[1] = pc[0] - pa[0];
+            J[2] = pb[1] - pa[1];
+            J[3] = pc[1] - pa[1];
+            
+          }
+          break;
+        case 3:
+          {
+            int a = elemVerts_.value(lid, 0);
+            int b = elemVerts_.value(lid, 1);
+            int c = elemVerts_.value(lid, 2);
+            int d = elemVerts_.value(lid, 3);
+            const Point& pa = points_[a];
+            const Point& pb = points_[b];
+            const Point& pc = points_[c];
+            const Point& pd = points_[d];
+            J[0] = pb[0] - pa[0];
+            J[1] = pc[0] - pa[0];
+            J[2] = pd[0] - pa[0];
+            J[3] = pb[1] - pa[1];
+            J[4] = pc[1] - pa[1];
+            J[5] = pd[1] - pa[1];
+            J[6] = pb[2] - pa[2];
+            J[7] = pc[2] - pa[2];
+            J[8] = pd[2] - pa[2];
+          }
+          break;
+        default:
+          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+                             "in BasicSimplicialMesh::getJacobians()");
+        }
+      jBatch.setJacobian(i, J);
+    }
+}
+
+void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
+                               const Array<Point>& refQuadPts,
+                               Array<Point>& physQuadPts) const
+{
+  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
+                     "cellDim=" << cellDim 
+                     << " is not in expected range [0, " << spatialDim()
+                     << "]");
+
+  int nQuad = refQuadPts.size();
+
+  physQuadPts.reserve(cellLID.size() * refQuadPts.size());
+
+
+  for (int i=0; i<cellLID.size(); i++)
+    {
+      int lid = cellLID[i];
+      switch(cellDim)
+        {
+        case 0:
+          break;
+        case 1:
+          {
+            int a = elemVerts_.value(lid, 0);
+            int b = elemVerts_.value(lid, 1);
+            const Point& pa = points_[a];
+            const Point& pb = points_[b];
+            Point dx = pb-pa;
+            for (int q=0; q<nQuad; q++)
+              {
+                physQuadPts.append(pa + refQuadPts[q]*dx);
+              }
+          }
+          break;
+        case 2:
+          {
+            int a = elemVerts_.value(lid, 0);
+            int b = elemVerts_.value(lid, 1);
+            int c = elemVerts_.value(lid, 2);
+            const Point& pa = points_[a];
+            const Point& pb = points_[b];
+            const Point& pc = points_[c];
+          }
+          break;
+        case 3:
+          {
+            int a = elemVerts_.value(lid, 0);
+            int b = elemVerts_.value(lid, 1);
+            int c = elemVerts_.value(lid, 2);
+            int d = elemVerts_.value(lid, 3);
+            const Point& pa = points_[a];
+            const Point& pb = points_[b];
+            const Point& pc = points_[c];
+            const Point& pd = points_[d];
+          }
+          break;
+        default:
+          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
+                             "in BasicSimplicialMesh::getJacobians()");
+        }
+    }
+}
 
 void BasicSimplicialMesh::estimateNumVertices(int nPts)
 {

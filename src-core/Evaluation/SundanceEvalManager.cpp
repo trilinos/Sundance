@@ -3,6 +3,7 @@
 
 
 #include "SundanceEvalManager.hpp"
+#include "SundanceOut.hpp"
 #include "SundanceAbstractEvalMediator.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceCoordExpr.hpp"
@@ -17,16 +18,8 @@ using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-EvalManager::EvalManager(const RefCountPtr<AbstractEvalMediator>& mediator)
-  : numericalEval_(true),
-    region_(),
-    mediator_(mediator),
-    stack_(mediator->vecSize())
-{}
-
 EvalManager::EvalManager()
-  : numericalEval_(false),
-    region_(),
+  : region_(),
     mediator_(),
     stack_()
 {}
@@ -36,12 +29,17 @@ EvalManager::EvalManager()
 void EvalManager::evalCoordExpr(const CoordExpr* expr,
                                 RefCountPtr<EvalVector> const & result) const 
 {
-  if (numericalEval_)
+  if (numericalEval())
     {
-      TEST_FOR_EXCEPTION(!result->numerical(), InternalError,
-                         "EvalManager::evalCoordExpr expecting a "
-                         "numerical-valued vector");
+      //TEST_FOR_EXCEPTION(!result->numerical(), InternalError,
+      //                   "EvalManager::evalCoordExpr expecting a "
+      //                   "numerical-valued vector");
+      result->setToVectorValue();
       mediator()->evalCoordExpr(expr, result.get());
+      cerr << "result of coord expr evaluation = " ;
+      result->print(cerr);
+      cerr << endl;
+        
     }
   else
     {
@@ -57,11 +55,11 @@ void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                        const MultiIndex& mi,
                                        RefCountPtr<EvalVector> const & result) const 
 {
-  if (numericalEval_)
+  if (numericalEval())
     {
-      TEST_FOR_EXCEPTION(!result->numerical(), InternalError,
-                         "EvalManager::evalDiscreteFuncElement expecting a "
-                         "numerical-valued vector");
+      //TEST_FOR_EXCEPTION(!result->numerical(), InternalError,
+      //                   "EvalManager::evalDiscreteFuncElement expecting a "
+      //                   "numerical-valued vector");
       mediator()->evalDiscreteFuncElement(expr, mi, result.get());
     }
   else

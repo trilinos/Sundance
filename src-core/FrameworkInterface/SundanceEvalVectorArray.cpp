@@ -61,8 +61,9 @@ ostream& EvalVectorArray::print(ostream& os, const DerivSet& derivs) const
       os << tab;
       os.width(maxlen);
       os.setf(ios_base::left, ios_base::adjustfield);
-      os << (*iter).toString() ;
-      os << "\t\t" << (*this)[i]->getStringValue() << endl;
+      os << (*iter).toString() << "\t\t";
+      (*this)[i]->print(os);
+      os << endl;
     }
   return os;
 }

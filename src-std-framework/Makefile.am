@@ -59,20 +59,26 @@ $(top_srcdir)/src-std-framework/Elements/SundanceADReal.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
 
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceADReal.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
-$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp
+$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp
 
 SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
@@ -86,10 +92,13 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.cpp
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceWeakFormBatch.hpp
 
 SUNDANCE_ASSEMBLY = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceWeakFormBatch.cpp
 
 

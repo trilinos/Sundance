@@ -5,7 +5,7 @@
 #define SUNDANCE_QUADRATUREFAMILY_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceQuadratureFamilyStub.hpp"
+#include "SundanceQuadratureFamilyBase.hpp"
 #include "TSFHandle.hpp"
 
 namespace SundanceStdFwk
@@ -26,6 +26,11 @@ namespace SundanceStdFwk
 
     /** */
     int order() const ;
+
+    /** Get the quadrature points and weights for the given cell type */
+    void getPoints(const CellType& cellType, 
+                   Array<Point>& quadPoints,
+                   Array<double>& quadWeights) const ;
   private:
   };
 }

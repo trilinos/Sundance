@@ -7,6 +7,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceZeroExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceTestFuncElement.hpp"
@@ -107,10 +108,20 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
       unkID.put(fid);
       RefCountPtr<DiscreteFuncElement> u0Ptr 
         = rcp_dynamic_cast<DiscreteFuncElement>(u0[i].ptr());
-      TEST_FOR_EXCEPTION(u0Ptr.get()==NULL, RuntimeError,
+      RefCountPtr<ZeroExpr> u0ZeroPtr 
+        = rcp_dynamic_cast<ZeroExpr>(u0[i].ptr());
+      TEST_FOR_EXCEPTION(u0Ptr.get()==NULL && u0ZeroPtr.get()==NULL, 
+                         RuntimeError,
                          "evaluation point " << u0[i].toString() 
-                         << " is not a discrete function");
-      uPtr->substituteFunction(u0Ptr);
+                         << " is neither a discrete function nor a zero expr");
+      if (u0Ptr.get()==NULL)
+        {
+          uPtr->substituteZero();
+        }
+      else
+        {
+          uPtr->substituteFunction(u0Ptr);
+        }
     }
 
   

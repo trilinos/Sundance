@@ -29,16 +29,13 @@ namespace SundanceCore
        * EvalManager provides methods for interfacing to the framework
        * through an AbstractEvalMediator and managing temporary variables
        * through a TempStack.
+       *
+       * If no mediator is set, string evaluations will be done 
        */
       class EvalManager : public Noncopyable
         {
         public:
-          /** Construct with an AbstractEvalMediator that knows how to create
-           * vectors and evaluate framework-specific functions. */
-          EvalManager(const RefCountPtr<AbstractEvalMediator>& mediator);
-
-          /** Empty ctor, creates a null mediator and does string
-           * evaluations */
+          /** Empty ctor */
           EvalManager();
 
           /** */
@@ -49,6 +46,9 @@ namespace SundanceCore
           void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                        const MultiIndex& mi,
                                        RefCountPtr<EvalVector> const & result) const ;
+
+          void setMediator(const RefCountPtr<AbstractEvalMediator>& med) 
+          {mediator_ = med;}
 
           /** Return a pointer to the mediator. We'll need the
            * mediator for computing framework-specific functions.
@@ -67,7 +67,7 @@ namespace SundanceCore
 
         private:
 
-          bool numericalEval_;
+          bool numericalEval() const {mediator_.get() != 0;}
 
           RegionQuadCombo region_;
 

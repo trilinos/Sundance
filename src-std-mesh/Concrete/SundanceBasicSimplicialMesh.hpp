@@ -53,7 +53,7 @@ namespace SundanceStdMesh
        * @param jBatch reference to the resulting Jacobian batch
        */
       virtual void getJacobians(int cellDim, const Array<int>& cellLID,
-                                CellJacobianBatch& jBatch) const  {;}
+                                CellJacobianBatch& jBatch) const  ;
 
       /**
        * Map reference quadrature points to physical points on the
@@ -61,7 +61,7 @@ namespace SundanceStdMesh
        */
       virtual void pushForward(int cellDim, const Array<int>& cellLID,
                                const Array<Point>& refQuadPts,
-                               Array<Point>& physQuadPts) const {;}
+                               Array<Point>& physQuadPts) const ;
 
       
 

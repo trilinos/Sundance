@@ -14,20 +14,28 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceDimensionalCellFilter.hpp"
 #include "SundancePositionalCellPredicate.hpp"
+#include "SundanceSymbolicTransformation.hpp"
+#include "SundanceBruteForceEvaluator.hpp"
 #include "SundanceTestFunction.hpp"
 #include "SundanceUnknownFunction.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
+#include "SundanceGaussianQuadrature.hpp"
+#include "SundanceQuadratureEvalMediator.hpp"
+#include "SundanceSymbPreprocessor.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceEssentialBC.hpp"
 #include "SundanceIntegral.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceZeroExpr.hpp"
 #include "SundanceAssembler.hpp"
+#include "SundanceEvalVector.hpp"
 #include "SundanceBruteForceEvaluator.hpp"
 
 using namespace TSFExtended;
+using namespace Teuchos;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
@@ -78,21 +86,35 @@ int main(int argc, void** argv)
       
       Expr x = new CoordExpr(0);
       Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr u0 = new DiscreteFunction(new Lagrange(1), "u0");
+      //      Expr u0 = new DiscreteFunction(new Lagrange(1), "u0");
+      Expr u0 = new ZeroExpr();
       Expr v = new TestFunction(new Lagrange(1), "v");
       Expr dx = new Derivative(0);
       
 
-      Expr eqn = Integral(interior, (dx*v)*(dx*u) + x*v);
-      Expr bc = EssentialBC(leftPoint, v*u);
+      QuadratureFamily quad = new GaussianQuadrature(2);
+      Expr eqn = Integral(interior, (dx*v)*(dx*u) + x*v, quad);
+      Expr bc = EssentialBC(leftPoint, v*u, quad);
 
       RefCountPtr<EquationSet> eqnSet 
         = rcp(new EquationSet(eqn, bc, v, u, u0, 
                               rcp(new BruteForceEvaluatorFactory())));
-                                                            
+
+      verbosity<Assembler>() = VerbExtreme;
+      verbosity<EvalVector>() = VerbExtreme;
+      verbosity<QuadratureEvalMediator>() = VerbExtreme;
+      EvaluatableExpr::verbosity() = 4;
+      SymbolicTransformation::verbosity() = 0;
+      Evaluator::verbosity() = 4;
+
+      EquationSet::classVerbosity() = VerbHigh;
+      Expr::showAllParens() = true;
       Assembler assembler(mesh, eqnSet); 
 
       assembler.print(cerr);
+      
+
+      assembler.assemble();
 
     }
 	catch(exception& e)

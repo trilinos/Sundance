@@ -8,7 +8,11 @@
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceWeakFormBatch.hpp"
+#include "SundanceQuadratureFamily.hpp"
+#include "SundanceStdFwkEvalMediator.hpp"
 #include "TSFObjectWithVerbosity.hpp"
+#include "SundanceEvalVectorArray.hpp"
+#include "SundanceEvalManager.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -46,7 +50,20 @@ namespace SundanceStdFwk
       /** */
       void print(ostream& os) const ;
 
+      /** */
+      void assemble() const ;
+
+      /** */
+      static int& workSetSize() 
+      {static int rtn = defaultWorkSetSize(); return rtn;}
+      
     private:
+
+      static int defaultWorkSetSize() {return 100;}
+      
+      void dumpResults(const RefCountPtr<StdFwkEvalMediator>& eval,
+                       const RefCountPtr<EvalVectorArray>& results,
+                       const DerivSet& derivs) const ;
       
       void addToWeakFormBatch(const DerivSet& derivs);
 
@@ -70,7 +87,13 @@ namespace SundanceStdFwk
 
       Array<DerivSet> rqcDerivSet_;
 
+      Array<RefCountPtr<StdFwkEvalMediator> > rqcEval_;
+
       Array<Array<RefCountPtr<WeakFormBatch> > > weakForms_;
+
+      RefCountPtr<EvalManager> evalMgr_;
+
+      Array<const EvaluatableExpr*> rqcEvaluatableExpr_;
       
     };
   }

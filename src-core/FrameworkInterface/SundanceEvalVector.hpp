@@ -8,6 +8,7 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_Array.hpp"
 #include "SundanceLoadableVector.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -41,7 +42,8 @@ namespace SundanceCore
      * EvalVector. This is done using the LoadableVector interface,
      * implemented by EvalVector.
      */
-    class EvalVector : public Internal::LoadableVector
+    class EvalVector : public Internal::LoadableVector,
+                       public TSFExtended::ObjectWithVerbosity<EvalVector>
     {
       friend class TempStack;
 
@@ -162,7 +164,7 @@ namespace SundanceCore
       //@}
 
       /** */
-      static int& verbosity() {static int rtn = 0 ; return rtn;}
+      void print(ostream& os) const ;
 
     private:
       /** The elements of this vector, used if isConstant() is false and

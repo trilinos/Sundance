@@ -10,7 +10,8 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
-
+#include "SundanceQuadratureEvalMediator.hpp"
+#include "SundanceEvaluatableExpr.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -34,8 +35,13 @@ Assembler::Assembler(const Mesh& mesh,
     isBCRqc_(),
     rqcExprs_(),
     rqcDerivSet_(),
-    weakForms_()
+    rqcEval_(),
+    weakForms_(),
+    evalMgr_(rcp(new EvalManager())),
+    rqcEvaluatableExpr_()
 {
+  verbosity() = Assembler::classVerbosity();
+
   DOFMapBuilder mapBuilder(mesh, eqn);
   rowMap_ = mapBuilder.rowMap();
   colMap_ = mapBuilder.colMap();
@@ -56,6 +62,20 @@ Assembler::Assembler(const Mesh& mesh,
       rqcExprs_.append(eqn_->bcExpr(eqn_->bcRegionQuadCombos()[r]));
       rqcDerivSet_.append(eqn_->nonzeroBCFunctionalDerivs(eqn_->bcRegionQuadCombos()[r]));
       addToWeakFormBatch(eqn_->nonzeroBCFunctionalDerivs(eqn_->bcRegionQuadCombos()[r]));
+    }
+
+  for (int r=0; r<rqc_.size(); r++)
+    {
+      SUNDANCE_OUT(verbosity() > VerbLow, "rqc[" << r << "] = " << rqc_[r]);
+      CellFilter filter = rqc_[r].domain();
+      QuadratureFamily quad = rqc_[r].quad();
+      int cellDim = filter.dimension(mesh);
+      rqcEval_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, quad)));
+      const EvaluatableExpr* ee 
+        = dynamic_cast<const EvaluatableExpr*>(rqcExprs_[r][0].ptr().get());
+      TEST_FOR_EXCEPTION(ee==0, RuntimeError, "expression " << rqcExprs_[r]
+                         << " could not be cast to evaluatable expr");
+      rqcEvaluatableExpr_.append(ee);
     }
 }
 
@@ -89,6 +109,9 @@ void Assembler::addToWeakFormBatch(const DerivSet& derivs)
   weakForms_.append(w);
 }
 
+                                 
+
+
 void Assembler::print(ostream& os) const 
 {
   for (int r=0; r<rqc_.size(); r++)
@@ -110,4 +133,44 @@ void Assembler::print(ostream& os) const
     }
 }
 
+void Assembler::assemble() const 
+{
+  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  workSet->reserve(workSetSize());
+  RefCountPtr<EvalVectorArray> results = rcp(new EvalVectorArray());
 
+  for (int r=0; r<rqc_.size(); r++)
+    {
+      evalMgr_->setMediator(rqcEval_[r]);
+      evalMgr_->setRegion(rqc_[r]);
+      CellFilter filter = rqc_[r].domain();
+      CellSet cells = filter.getCells(mesh_);
+      int cellDim = filter.dimension(mesh_);
+      CellType cellType = mesh_.cellType(cellDim);
+
+      CellIterator iter=cells.begin();
+      rqcEval_[r]->setCellType(cellType);
+      while (iter != cells.end())
+        {
+          workSet->resize(0);
+          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+            {
+              workSet->append(*iter);
+            }
+          rqcEval_[r]->setCellBatch(workSet);
+          rqcEvaluatableExpr_[r]->flushResultCache();
+          rqcEvaluatableExpr_[r]->evaluate(*evalMgr_, results);
+          if (verbosity() > VerbHigh) dumpResults(rqcEval_[r], results,
+                                                  rqcDerivSet_[r]);
+        }
+      
+    }
+}
+
+void Assembler::dumpResults(const RefCountPtr<StdFwkEvalMediator>& eval,
+                            const RefCountPtr<EvalVectorArray>& results,
+                            const DerivSet& derivs) const
+{
+  eval->print(cerr);
+  results->print(cerr, derivs);
+}

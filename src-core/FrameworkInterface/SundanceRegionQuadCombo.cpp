@@ -10,12 +10,12 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 RegionQuadCombo::RegionQuadCombo()
-  : id_(-1)
+  : id_(-1), domain_(), quad_()
 {;}
 
 RegionQuadCombo::RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
                        const RefCountPtr<QuadratureFamilyStub>& quad)
-  : id_(getID(domain, quad))
+  : id_(getID(domain, quad)), domain_(domain), quad_(quad)
 {;}
 
 int RegionQuadCombo::getID(const RefCountPtr<CellFilterStub>& domain,

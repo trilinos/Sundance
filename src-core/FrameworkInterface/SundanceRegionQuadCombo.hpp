@@ -63,6 +63,13 @@ namespace SundanceCore
           bool operator<(const RegionQuadCombo& other) const
             {return id_ < other.id_;}
 
+          /** */
+          const RefCountPtr<CellFilterStub>& domain() const {return domain_;}
+
+          /** */
+          const RefCountPtr<QuadratureFamilyStub>& quad() const 
+          {return quad_;}
+
         private:
 
           /** */

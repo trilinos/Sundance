@@ -11,6 +11,7 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 
 EvalVector::EvalVector()
@@ -41,6 +42,7 @@ void EvalVector::setToZero()
   isOne_ = false;
   isConstant_ = true;
   isZero_ = true;
+  numerical_ = true;
 }
 
 void EvalVector::setToOne() 
@@ -49,6 +51,7 @@ void EvalVector::setToOne()
   isOne_ = true;
   isConstant_ = true;
   isZero_ = false;
+  numerical_ = true;
 }
 
 void EvalVector::setToConstantValue(const double& constantVal)
@@ -57,6 +60,7 @@ void EvalVector::setToConstantValue(const double& constantVal)
   isOne_ = false;
   isConstant_ = true;
   isZero_ = false;
+  numerical_ = true;
 }
 
 void EvalVector::setToVectorValue()
@@ -64,6 +68,7 @@ void EvalVector::setToVectorValue()
   isOne_ = false;
   isConstant_ = false;
   isZero_ = false;
+  numerical_ = true;
 }
 
 void EvalVector::setToStringValue(const string& stringVal)
@@ -72,6 +77,7 @@ void EvalVector::setToStringValue(const string& stringVal)
   isConstant_ = false;
   isZero_ = false;
   stringVal_ = stringVal;
+  numerical_ = false;
 }
 
 string EvalVector::getStringValue() const 
@@ -90,7 +96,7 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
                            const double& scalar)
 {
   Tabs tabs;
-  if (verbosity() > 1) 
+  if (verbosity() > VerbLow) 
     {
       cerr << tabs << "adding vectors " 
            << getStringValue() 
@@ -99,7 +105,7 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
     }
   if (other->isZero() || scalar==0.0) 
     {
-      if (verbosity() > 1) cerr << tabs << "right=0" << endl;
+      if (verbosity() > VerbLow) cerr << tabs << "right=0" << endl;
       return;
     }
 
@@ -107,7 +113,7 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
 
   if (isZero()) 
     {
-      if (verbosity() > 1) cerr << tabs << "left=0" << endl;
+      if (verbosity() > VerbLow) cerr << tabs << "left=0" << endl;
       if (other->isConstant())
         {
           setToConstantValue(other->getConstantValue() * scalar);
@@ -117,8 +123,9 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
           if (numerical())
             {
               resize(other->length());
-              TEST_FOR_EXCEPTION(length()==other->length(), InternalError,
-                                 "mismatched vector lengths");
+              TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                                 "mismatched vector lengths: me="
+                                 << length() << ", you=" << other->length());
               double* const x = start();
               const double* const y = other->start();
               if (scalar==1.0)
@@ -165,18 +172,19 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
     }
   else if (isConstant() && other->isConstant())
     {
-      if (verbosity() > 1) cerr << tabs << "both are constant" << endl;
+      if (verbosity() > VerbLow) cerr << tabs << "both are constant" << endl;
       setToConstantValue(getConstantValue() 
                          + scalar*other->getConstantValue());
     }
   else if (isConstant())
     {
-      if (verbosity() > 1) cerr << tabs << "left is constant" << endl;
+      if (verbosity() > VerbLow) cerr << tabs << "left is constant" << endl;
       if (numerical())
         {
           resize(other->length());
-          TEST_FOR_EXCEPTION(length()==other->length(), InternalError,
-                             "mismatched vector lengths");
+          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                             "mismatched vector lengths: me="
+                             << length() << ", you=" << other->length());
           double c = getConstantValue();
           double* const x = start();
           const double* const y = other->start();
@@ -225,7 +233,7 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
     }
   else if (other->isConstant())
     {
-      if (verbosity() > 1) cerr << tabs << "right is constant" << endl;
+      if (verbosity() > VerbLow) cerr << tabs << "right is constant" << endl;
       double c = scalar*other->getConstantValue();
 
       if (numerical())
@@ -244,11 +252,12 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
     }
   else
     {
-      if (verbosity() > 1) cerr << tabs << "both are non-constant" << endl;
+      if (verbosity() > VerbLow) cerr << tabs << "both are non-constant" << endl;
       if (numerical())
         {
-          TEST_FOR_EXCEPTION(length()==other->length(), InternalError,
-                             "mismatched vector lengths");
+          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                             "mismatched vector lengths: me="
+                             << length() << ", you=" << other->length());
           double* const x = start();
           const double* const y = other->start();
           if (scalar==1.0)
@@ -294,7 +303,7 @@ void EvalVector::addScaled(const RefCountPtr<EvalVector>& other,
         }
     }
 
-  if (verbosity() > 1) 
+  if (verbosity() > VerbLow) 
     {
       cerr << tabs << "result = " << getStringValue() << endl;
     }
@@ -321,8 +330,10 @@ void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
       if (numerical())
         {
           resize(other->length());
-          TEST_FOR_EXCEPTION(length()==other->length(), InternalError,
-                             "mismatched vector lengths");
+          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                             "mismatched vector lengths: me="
+                             << length() << ", you=" << other->length());
+          
           double c = getConstantValue();
           double* const x = start();
           const double* const y = other->start();
@@ -359,8 +370,9 @@ void EvalVector::multiply(const RefCountPtr<EvalVector>& other)
     {
       if (numerical())
         {
-          TEST_FOR_EXCEPTION(length()==other->length(), InternalError,
-                             "mismatched vector lengths");
+          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
+                             "mismatched vector lengths: me="
+                             << length() << ", you=" << other->length());                 
           double* const x = start();
           const double* const y = other->start();\
           for (int i=0; i<length(); i++)
@@ -396,10 +408,13 @@ void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
     {
       resize(a->length());
 
-      TEST_FOR_EXCEPTION(length()==a->length(), InternalError,
-                         "mismatched vector lengths");
-      TEST_FOR_EXCEPTION(length()==b->length(), InternalError,
-                         "mismatched vector lengths");
+      TEST_FOR_EXCEPTION(length()!=a->length(), InternalError,
+                         "mismatched vector lengths: me="
+                         << length() << ", a=" << a->length());
+      TEST_FOR_EXCEPTION(length()!=b->length(), InternalError,
+                         "mismatched vector lengths: me="
+                         << length() << ", b=" << b->length());
+
       double* const x = start();
       const double* const y = a->start();
       const double* const z = b->start();
@@ -522,7 +537,7 @@ void EvalVector::copy(const RefCountPtr<EvalVector>& other)
         {
           resize(other->length());
 
-          TEST_FOR_EXCEPTION(length()==other->length(), InternalError,
+          TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
                              "mismatched vector lengths");
 
           double* const x = start();
@@ -541,4 +556,17 @@ void EvalVector::copy(const RefCountPtr<EvalVector>& other)
     }
 }
 
-
+void EvalVector::print(ostream& os) const 
+{
+  if (numerical()) 
+    {
+      os << "numerical[";
+      if (isConstant_) os << constantVal_;
+      else os << vectorVal_;
+      os << "]";
+    }
+  else
+    {
+      os << "string[" << stringVal_ << "]" << endl;
+    }
+}

@@ -25,6 +25,7 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 static Time& totalTimer() 
 {
@@ -45,7 +46,7 @@ int main(int argc, void** argv)
       TimeMonitor t(totalTimer());
       SymbolicTransformation::verbosity() = 0;
       Evaluator::verbosity() = 0;
-      EvalVector::verbosity() = 0;
+      verbosity<EvalVector>() = VerbSilent;
       EvaluatableExpr::verbosity() = 0;
       Expr::showAllParens() = true;
 

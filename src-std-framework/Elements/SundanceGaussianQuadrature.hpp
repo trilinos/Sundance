@@ -6,7 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceQuadratureFamilyStub.hpp"
+#include "SundanceQuadratureFamilyBase.hpp"
 
 namespace SundanceStdFwk
 {
@@ -14,9 +14,13 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
   using namespace Teuchos;
+  using namespace Internal;
 
-  /** */
-  class GaussianQuadrature : public QuadratureFamilyStub 
+  /** 
+   * Family of optimal Gaussian integration rules, e.g., Gauss-Legendre on 
+   * lines, Dunavant on triangles. 
+   */
+  class GaussianQuadrature : public QuadratureFamilyBase
   {
   public:
     /** */
@@ -30,10 +34,16 @@ namespace SundanceStdFwk
 
     /* handleable boilerplate */
     GET_RCP(QuadratureFamilyStub);
-      
-  private:
-    int order_;
-      
+
+  protected:
+    /** compute a rule for the reference line cell */
+    virtual void getLineRule(Array<Point>& quadPoints,
+                             Array<double>& quadWeights) const ;
+
+    /** compute a rule for the reference triangle cell */
+    virtual void getTriangleRule(Array<Point>& quadPoints,
+                                 Array<double>& quadWeights) const ;
+
   };
 }
 
