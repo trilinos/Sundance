@@ -58,7 +58,7 @@ namespace SundanceUtils
     {
       typename MultiSet<Key>::const_iterator iter;
 
-      int k = 0;
+      unsigned int k = 0;
       os << "{";
       for (iter=begin(); iter != end(); iter++, k++)
         {

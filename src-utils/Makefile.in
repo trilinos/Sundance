@@ -113,15 +113,23 @@ libLIBRARIES_INSTALL = $(INSTALL_DATA)
 LIBRARIES = $(lib_LIBRARIES)
 libsundanceUtils_a_AR = $(AR) $(ARFLAGS)
 libsundanceUtils_a_DEPENDENCIES =
-am__objects_1 = SundanceExceptions.$(OBJEXT) SundanceTabs.$(OBJEXT)
+am__objects_1 = SundanceADReal.$(OBJEXT) SundanceExceptions.$(OBJEXT) \
+	SundanceFunctorDomain.$(OBJEXT) SundancePoint.$(OBJEXT) \
+	SundanceStdMathFunctors.$(OBJEXT) SundanceTabs.$(OBJEXT) \
+	SundanceUnaryFunctor.$(OBJEXT)
 am__objects_2 = $(am__objects_1)
 am_libsundanceUtils_a_OBJECTS = $(am__objects_2)
 libsundanceUtils_a_OBJECTS = $(am_libsundanceUtils_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/SundanceExceptions.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/SundanceTabs.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/SundanceADReal.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceExceptions.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceFunctorDomain.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundancePoint.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceStdMathFunctors.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceTabs.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceUnaryFunctor.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -259,10 +267,12 @@ target_vendor = @target_vendor@
 #
 #np# Make sure to list all source files in one of the following categories.
 SUNDANCE_UTILITIES_H = \
+$(top_srcdir)/src-utils/Utilities/SundanceADReal.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceArrayOfTuples.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDebug.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDefs.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceMap.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceMultiSet.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceNoncopyable.hpp \
@@ -270,12 +280,20 @@ $(top_srcdir)/src-utils/Utilities/SundanceObjectWithInstanceID.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceOrderedHandle.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceOrderedTuple.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceOut.hpp \
+$(top_srcdir)/src-utils/Utilities/SundancePoint.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceSet.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceTabs.hpp 
+$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceTabs.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.hpp 
 
 SUNDANCE_UTILITIES = \
+$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp \
-$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp 
+$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp \
+$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp 
 
 UTIL_SOURCES = \
 $(SUNDANCE_UTILITIES) 
@@ -318,10 +336,12 @@ CORE_INCLUDE_PATH = \
 -I$(top_srcdir)/src-core/Evaluation \
 -I$(top_srcdir)/src-core/FrameworkInterface \
 -I$(top_srcdir)/src-core/SymbolicTransformations \
+-I$(top_srcdir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/UserExprs \
 -I$(top_builddir)/src-core/InternalExprs \
 -I$(top_builddir)/src-core/Evaluation \
 -I$(top_builddir)/src-core/FrameworkInterface \
+-I$(top_builddir)/src-core/TestingUtilities \
 -I$(top_builddir)/src-core/SymbolicTransformations 
 
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) 
@@ -390,7 +410,7 @@ EXTRA_MPI =
 @HAVE_MPI_TRUE@MPI = \
 @HAVE_MPI_TRUE@	$(EXTRA_MPI)
 
-AM_CPPFLAGS = $(UTIL_INCLUDES)
+AM_CPPFLAGS = $(UTIL_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 # ------------------------------------------------------------------------
 # Sundance library specifications
@@ -540,8 +560,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceADReal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExceptions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctorDomain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePoint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceStdMathFunctors.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTabs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnaryFunctor.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -559,6 +584,22 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
+SundanceADReal.o: $(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceADReal.o -MD -MP -MF "$(DEPDIR)/SundanceADReal.Tpo" -c -o SundanceADReal.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceADReal.Tpo" "$(DEPDIR)/SundanceADReal.Po"; else rm -f "$(DEPDIR)/SundanceADReal.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp' object='SundanceADReal.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceADReal.Po' tmpdepfile='$(DEPDIR)/SundanceADReal.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceADReal.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp
+
+SundanceADReal.obj: $(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceADReal.obj -MD -MP -MF "$(DEPDIR)/SundanceADReal.Tpo" -c -o SundanceADReal.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceADReal.Tpo" "$(DEPDIR)/SundanceADReal.Po"; else rm -f "$(DEPDIR)/SundanceADReal.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp' object='SundanceADReal.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceADReal.Po' tmpdepfile='$(DEPDIR)/SundanceADReal.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceADReal.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp'; fi`
+
 SundanceExceptions.o: $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExceptions.o -MD -MP -MF "$(DEPDIR)/SundanceExceptions.Tpo" -c -o SundanceExceptions.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceExceptions.Tpo" "$(DEPDIR)/SundanceExceptions.Po"; else rm -f "$(DEPDIR)/SundanceExceptions.Tpo"; exit 1; fi
@@ -575,6 +616,54 @@ SundanceExceptions.obj: $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceExceptions.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp'; fi`
 
+SundanceFunctorDomain.o: $(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFunctorDomain.o -MD -MP -MF "$(DEPDIR)/SundanceFunctorDomain.Tpo" -c -o SundanceFunctorDomain.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceFunctorDomain.Tpo" "$(DEPDIR)/SundanceFunctorDomain.Po"; else rm -f "$(DEPDIR)/SundanceFunctorDomain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp' object='SundanceFunctorDomain.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceFunctorDomain.Po' tmpdepfile='$(DEPDIR)/SundanceFunctorDomain.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFunctorDomain.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp
+
+SundanceFunctorDomain.obj: $(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFunctorDomain.obj -MD -MP -MF "$(DEPDIR)/SundanceFunctorDomain.Tpo" -c -o SundanceFunctorDomain.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceFunctorDomain.Tpo" "$(DEPDIR)/SundanceFunctorDomain.Po"; else rm -f "$(DEPDIR)/SundanceFunctorDomain.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp' object='SundanceFunctorDomain.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceFunctorDomain.Po' tmpdepfile='$(DEPDIR)/SundanceFunctorDomain.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFunctorDomain.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp'; fi`
+
+SundancePoint.o: $(top_srcdir)/src-utils/Utilities/SundancePoint.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundancePoint.o -MD -MP -MF "$(DEPDIR)/SundancePoint.Tpo" -c -o SundancePoint.o `test -f '$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundancePoint.Tpo" "$(DEPDIR)/SundancePoint.Po"; else rm -f "$(DEPDIR)/SundancePoint.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp' object='SundancePoint.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundancePoint.Po' tmpdepfile='$(DEPDIR)/SundancePoint.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundancePoint.o `test -f '$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp
+
+SundancePoint.obj: $(top_srcdir)/src-utils/Utilities/SundancePoint.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundancePoint.obj -MD -MP -MF "$(DEPDIR)/SundancePoint.Tpo" -c -o SundancePoint.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundancePoint.Tpo" "$(DEPDIR)/SundancePoint.Po"; else rm -f "$(DEPDIR)/SundancePoint.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp' object='SundancePoint.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundancePoint.Po' tmpdepfile='$(DEPDIR)/SundancePoint.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundancePoint.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp'; fi`
+
+SundanceStdMathFunctors.o: $(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceStdMathFunctors.o -MD -MP -MF "$(DEPDIR)/SundanceStdMathFunctors.Tpo" -c -o SundanceStdMathFunctors.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceStdMathFunctors.Tpo" "$(DEPDIR)/SundanceStdMathFunctors.Po"; else rm -f "$(DEPDIR)/SundanceStdMathFunctors.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp' object='SundanceStdMathFunctors.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceStdMathFunctors.Po' tmpdepfile='$(DEPDIR)/SundanceStdMathFunctors.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceStdMathFunctors.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp
+
+SundanceStdMathFunctors.obj: $(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceStdMathFunctors.obj -MD -MP -MF "$(DEPDIR)/SundanceStdMathFunctors.Tpo" -c -o SundanceStdMathFunctors.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceStdMathFunctors.Tpo" "$(DEPDIR)/SundanceStdMathFunctors.Po"; else rm -f "$(DEPDIR)/SundanceStdMathFunctors.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp' object='SundanceStdMathFunctors.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceStdMathFunctors.Po' tmpdepfile='$(DEPDIR)/SundanceStdMathFunctors.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceStdMathFunctors.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp'; fi`
+
 SundanceTabs.o: $(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTabs.o -MD -MP -MF "$(DEPDIR)/SundanceTabs.Tpo" -c -o SundanceTabs.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTabs.Tpo" "$(DEPDIR)/SundanceTabs.Po"; else rm -f "$(DEPDIR)/SundanceTabs.Tpo"; exit 1; fi
@@ -590,6 +679,22 @@ SundanceTabs.obj: $(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceTabs.Po' tmpdepfile='$(DEPDIR)/SundanceTabs.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTabs.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp'; fi`
+
+SundanceUnaryFunctor.o: $(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUnaryFunctor.o -MD -MP -MF "$(DEPDIR)/SundanceUnaryFunctor.Tpo" -c -o SundanceUnaryFunctor.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUnaryFunctor.Tpo" "$(DEPDIR)/SundanceUnaryFunctor.Po"; else rm -f "$(DEPDIR)/SundanceUnaryFunctor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp' object='SundanceUnaryFunctor.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUnaryFunctor.Po' tmpdepfile='$(DEPDIR)/SundanceUnaryFunctor.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnaryFunctor.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp
+
+SundanceUnaryFunctor.obj: $(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUnaryFunctor.obj -MD -MP -MF "$(DEPDIR)/SundanceUnaryFunctor.Tpo" -c -o SundanceUnaryFunctor.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUnaryFunctor.Tpo" "$(DEPDIR)/SundanceUnaryFunctor.Po"; else rm -f "$(DEPDIR)/SundanceUnaryFunctor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp' object='SundanceUnaryFunctor.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUnaryFunctor.Po' tmpdepfile='$(DEPDIR)/SundanceUnaryFunctor.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnaryFunctor.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp'; fi`
 uninstall-info-am:
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)

@@ -48,7 +48,7 @@ namespace std
       typename SundanceUtils::Map<Key, Value, Compare>::const_iterator iter;
 
       os << "Map[";
-      int k = 0 ;
+      unsigned int k = 0 ;
       for (iter=m.begin(); iter != m.end(); iter++, k++)
         {
           os << "{" << (*iter).first << ", " << (*iter).second << "}";

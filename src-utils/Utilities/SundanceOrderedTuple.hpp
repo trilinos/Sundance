@@ -54,6 +54,12 @@ namespace SundanceUtils
       OrderedTriple(const A& a, const B& b, const C& c)
         : OrderedPair<A, OrderedPair<B, C> >(a, OrderedPair<B,C>(b,c))
         {;}
+
+      const A& a() const {return first();}
+
+      const B& b() const {return second().first();}
+
+      const C& c() const {return second().second();}
     };
 
   /** Lexigraphically-comparable quartet of objects. */

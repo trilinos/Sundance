@@ -6,6 +6,7 @@
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_TestForException.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -34,6 +35,13 @@ namespace SundanceUtils
       SundanceUtils::Out::println(string(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg))); \
     } \
 }
+
+
+#define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_OUT(verbosity() > VerbHigh, msg)
+#define SUNDANCE_VERB_HIGH(msg) SUNDANCE_OUT(verbosity() > VerbMedium, msg)
+#define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_OUT(verbosity() > VerbLow, msg)
+#define SUNDANCE_VERB_LOW(msg) SUNDANCE_OUT(verbosity() > VerbSilent, msg)
+
 
 
 

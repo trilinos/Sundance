@@ -18,10 +18,12 @@
 #
 #np# Make sure to list all source files in one of the following categories.
 SUNDANCE_UTILITIES_H = \
+$(top_srcdir)/src-utils/Utilities/SundanceADReal.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceArrayOfTuples.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDebug.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDefs.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceMap.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceMultiSet.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceNoncopyable.hpp \
@@ -29,12 +31,20 @@ $(top_srcdir)/src-utils/Utilities/SundanceObjectWithInstanceID.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceOrderedHandle.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceOrderedTuple.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceOut.hpp \
+$(top_srcdir)/src-utils/Utilities/SundancePoint.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceSet.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceTabs.hpp 
+$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceTabs.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.hpp 
 
 SUNDANCE_UTILITIES = \
+$(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp \
-$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp 
+$(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp \
+$(top_srcdir)/src-utils/Utilities/SundancePoint.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp 
 
 
 
@@ -72,7 +82,7 @@ MPI =
 
 endif
 
-AM_CPPFLAGS = $(UTIL_INCLUDES)
+AM_CPPFLAGS = $(UTIL_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 # ------------------------------------------------------------------------
 # Sundance library specifications
