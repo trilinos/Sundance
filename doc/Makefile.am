@@ -1,5 +1,0 @@
-#@HEADER
-
-#@HEADER
-
-SUBDIRS = Doxygen

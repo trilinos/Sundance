@@ -1,3 +1,6 @@
+/* @HEADER@ */
+/* @HEADER@ */
+
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPISession.hpp"

@@ -1,6 +1,8 @@
+/* @HEADER@ */
+/* @HEADER@ */
+
 #include "Sundance.hpp"
 
-using SundanceCore::List;
 /** 
  * \example PostPotentialFlow.cpp
  * Solves the Laplace equation for potential flow past an elliptical 

@@ -1,7 +1,5 @@
 #include "Sundance.hpp"
-#include "SundanceEvaluator.hpp"
 
-using SundanceCore::List;
 /** 
  * Solves the advection-diffusion equation in 2D, with a velocity
  * field computed from a potential flow model.

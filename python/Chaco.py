@@ -1,3 +1,6 @@
+#@HEADER@
+#@HEADER@
+
 ############################################################################
 #
 # Python wrapper for Chaco partitioning 

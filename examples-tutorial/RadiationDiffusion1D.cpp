@@ -1,10 +1,7 @@
-#include "Sundance.hpp"
-#include "SundanceEvaluator.hpp"
+/* @HEADER@ */
+/* @HEADER@ */
 
-#include "NOX.H"
-#include "NOX_Common.H"
-#include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
+#include "Sundance.hpp"
 
 
 /** 

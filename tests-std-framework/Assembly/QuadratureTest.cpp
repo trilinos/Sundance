@@ -1,3 +1,6 @@
+/* @HEADER@ */
+/* @HEADER@ */
+
 #include "Sundance.hpp"
 #include "SundanceTriangleQuadrature.hpp"
 #include "SundanceTetQuadrature.hpp"
