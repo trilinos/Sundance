@@ -340,6 +340,7 @@ AC_CONFIG_FILES([
   tests-core/SymbolicTests/Makefile
   tests-std-mesh/Makefile
   tests-std-mesh/Simple/Makefile
+  tests-std-mesh/Readers/Makefile
   tests-std-framework/Makefile
   tests-std-framework/HomogeneousDOFMap/Makefile
   tests-std-framework/Assembly/Makefile

@@ -1,4 +1,4 @@
 #@HEADER
 #@HEADER
 
-SUBDIRS = Simple
+SUBDIRS = Simple Readers

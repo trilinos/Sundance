@@ -147,7 +147,8 @@ am__objects_2 = SundanceBasicSimplicialMesh.$(OBJEXT) \
 am__objects_3 = SundanceExtrusionMeshTransformation.$(OBJEXT) \
 	SundanceMeshTransformationBase.$(OBJEXT) \
 	SundanceMeshTransformation.$(OBJEXT)
-am__objects_4 = SundanceMeshReaderBase.$(OBJEXT) \
+am__objects_4 = SundanceExodusNetCDFMeshReader.$(OBJEXT) \
+	SundanceMeshReaderBase.$(OBJEXT) \
 	SundanceMeshSourceBase.$(OBJEXT) SundanceMeshSource.$(OBJEXT) \
 	SundancePartitionedLineMesher.$(OBJEXT) \
 	SundancePartitionedRectangleMesher.$(OBJEXT) \
@@ -170,6 +171,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceCellReorderer.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceCellReordererImplemBase.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceCellType.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceExodusNetCDFMeshReader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceExtrusionMeshTransformation.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceFieldWriter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceFieldWriterBase.Po \
@@ -362,6 +364,7 @@ $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp 
 
 SUNDANCE_MESHSOURCES_H = \
+$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.hpp \
@@ -370,6 +373,7 @@ $(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.hpp 
 
 SUNDANCE_MESHSOURCES = \
+$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.cpp \
@@ -664,6 +668,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellReorderer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellReordererImplemBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellType.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExodusNetCDFMeshReader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExtrusionMeshTransformation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFieldWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFieldWriterBase.Po@am__quote@
@@ -923,6 +928,22 @@ SundanceMeshTransformation.obj: $(top_srcdir)/src-std-mesh/Transformations/Sunda
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceMeshTransformation.Po' tmpdepfile='$(DEPDIR)/SundanceMeshTransformation.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMeshTransformation.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp'; fi`
+
+SundanceExodusNetCDFMeshReader.o: $(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExodusNetCDFMeshReader.o -MD -MP -MF "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Tpo" -c -o SundanceExodusNetCDFMeshReader.o `test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Tpo" "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Po"; else rm -f "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp' object='SundanceExodusNetCDFMeshReader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceExodusNetCDFMeshReader.Po' tmpdepfile='$(DEPDIR)/SundanceExodusNetCDFMeshReader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceExodusNetCDFMeshReader.o `test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp
+
+SundanceExodusNetCDFMeshReader.obj: $(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExodusNetCDFMeshReader.obj -MD -MP -MF "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Tpo" -c -o SundanceExodusNetCDFMeshReader.obj `if test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Tpo" "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Po"; else rm -f "$(DEPDIR)/SundanceExodusNetCDFMeshReader.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp' object='SundanceExodusNetCDFMeshReader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceExodusNetCDFMeshReader.Po' tmpdepfile='$(DEPDIR)/SundanceExodusNetCDFMeshReader.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceExodusNetCDFMeshReader.obj `if test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp'; fi`
 
 SundanceMeshReaderBase.o: $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceMeshReaderBase.o -MD -MP -MF "$(DEPDIR)/SundanceMeshReaderBase.Tpo" -c -o SundanceMeshReaderBase.o `test -f '$(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp; \

@@ -63,7 +63,7 @@ namespace SundanceStdMesh
        * @param comment a character indicating that everything after it
        * is a comment
        */
-      void getNextLine(istream& is, string& line,
+      bool getNextLine(istream& is, string& line,
                        Array<string>& tokens,
                        char comment) const ;
     private:

@@ -31,11 +31,12 @@ bool MeshReaderBase::isEmptyLine(const std::string& x) const
   return x.length()==0 || StrUtils::isWhite(x);
 }
 
-void MeshReaderBase::getNextLine(istream& is, string& line,
+bool MeshReaderBase::getNextLine(istream& is, string& line,
                                          Array<string>& tokens,
                                          char comment) const 
 {
-  while (StrUtils::readLine(is, line))
+  bool rtn = false;
+  while (rtn=StrUtils::readLine(is, line))
     {
       SUNDANCE_OUT(verbosity() == VerbHigh,
                    "read line [" << line << "]");
@@ -45,6 +46,7 @@ void MeshReaderBase::getNextLine(istream& is, string& line,
       if (line.length() > 0) break;
     }
   tokens = StrUtils::stringTokenizer(line);
+  return rtn;
 }
 
 RefCountPtr<ifstream> MeshReaderBase::openFile(const string& fname, 

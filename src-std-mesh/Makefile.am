@@ -55,6 +55,7 @@ $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp 
 
 SUNDANCE_MESHSOURCES_H = \
+$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.hpp \
@@ -63,6 +64,7 @@ $(top_srcdir)/src-std-mesh/Sources/SundancePartitionedRectangleMesher.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.hpp 
 
 SUNDANCE_MESHSOURCES = \
+$(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSourceBase.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshSource.cpp \
