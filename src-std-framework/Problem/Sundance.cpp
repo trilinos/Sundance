@@ -81,6 +81,9 @@ string Sundance::searchForFile(const string& name)
       if (!fileToTry) continue;
       return path[i] + pathSep + name;
     }
+
+  TEST_FOR_EXCEPTION(true, RuntimeError, "could not find file "
+                     << name << " in path " << path);
 }
 
 string Sundance::getPathStr() 
