@@ -27,6 +27,21 @@ extern "C"
              double* C, const int* ldC);
 }
 
+static Time& quadratureTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("quadrature"); 
+  return *rtn;
+}
+
+static Time& quadTransCreationTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("building transformation matrices for quad"); 
+  return *rtn;
+}
+
+
 QuadratureIntegral::QuadratureIntegral(int dim, 
                                        const CellType& cellType,
                                        const BasisFamily& testBasis,
@@ -236,6 +251,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
+  TimeMonitor timer(quadratureTimer());
   TEST_FOR_EXCEPTION(isTwoForm(), InternalError,
                      "QuadratureIntegral::transformOneForm() called for two-form");
   /* If the derivative order is zero, the only thing to be done 
@@ -287,6 +303,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
+  TimeMonitor timer(quadratureTimer());
   TEST_FOR_EXCEPTION(!isTwoForm(), InternalError,
                      "QuadratureIntegral::transformTwoForm() called for one-form");
 
@@ -432,6 +449,7 @@ void QuadratureIntegral
                                     const Array<int>& alpha,
                                     const Array<int>& beta) const 
 {
+  TimeMonitor timer(quadTransCreationTimer());
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 
@@ -515,6 +533,7 @@ void QuadratureIntegral
 ::createOneFormTransformationMatrix(const CellJacobianBatch& J,  
                                     const Array<int>& alpha) const 
 {
+  TimeMonitor timer(quadTransCreationTimer());
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 

@@ -357,6 +357,89 @@ int BasicSimplicialMesh::numFacets(int cellDim, int cellLID,
     }
 }
 
+void BasicSimplicialMesh::getFacetLIDs(int cellDim, 
+                                       const Array<int>& cellLID,
+                                       int facetDim,
+                                       Array<int>& facetLID) const 
+{
+  int nf = numFacets(cellDim, cellLID[0], facetDim);
+  facetLID.resize(cellLID.size() * nf);
+
+  if (facetDim==0)
+    {
+      if (cellDim == spatialDim())
+        {
+          int ptr=0;
+          for (int c=0; c<cellLID.size(); c++)
+            {
+              for (int f=0; f<nf; f++, ptr++)
+                {
+                  facetLID[ptr] = elemVerts_.value(cellLID[c], f);
+                }
+            }
+        }
+      else if (cellDim==1) 
+        {
+          int ptr=0;
+          for (int c=0; c<cellLID.size(); c++)
+            {
+              for (int f=0; f<nf; f++, ptr++)
+                {
+                  facetLID[ptr] = edgeVerts_.value(cellLID[c], f);
+                  //             cerr << "facetLID[" << ptr << "] = " << facetLID[ptr] << endl;
+                }
+            }
+        }
+      else if (cellDim==2) 
+        {
+          int ptr=0;
+          for (int c=0; c<cellLID.size(); c++)
+            {
+              for (int f=0; f<nf; f++, ptr++)
+                {
+                  facetLID[ptr] = faceVerts_.value(cellLID[c], f);
+                }
+            }
+        }
+    }
+  else if (facetDim==1)
+    {
+      if (cellDim == spatialDim())
+        {
+          int ptr=0;
+          for (int c=0; c<cellLID.size(); c++)
+            {
+              for (int f=0; f<nf; f++, ptr++)
+                {
+                  facetLID[ptr] = elemEdges_.value(cellLID[c], f);
+                }
+            }
+        }
+      else
+        {
+          int ptr=0;
+          for (int c=0; c<cellLID.size(); c++)
+            {
+              for (int f=0; f<nf; f++, ptr++)
+                {
+                  facetLID[ptr] = faceEdges_.value(cellLID[c], f);
+                }
+            }
+        }
+    }
+  else
+    {
+      int ptr=0;
+      for (int c=0; c<cellLID.size(); c++)
+        {
+          for (int f=0; f<nf; f++, ptr++)
+            {
+              facetLID[ptr] = elemFaces_.value(cellLID[c], f);
+            }
+        }
+    }
+}
+
 int BasicSimplicialMesh::facetLID(int cellDim, int cellLID,
                                   int facetDim, int facetIndex) const 
 {

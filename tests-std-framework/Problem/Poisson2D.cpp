@@ -24,8 +24,8 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 2*np, np,
-                                                         0.0, 2.0, 2, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 40*np, np,
+                                                         0.0, 2.0, 40, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -60,7 +60,7 @@ int main(int argc, void** argv)
 
       //EvaluatableExpr::classVerbosity() = VerbExtreme;
       //GrouperBase::classVerbosity() = VerbExtreme;
-      //Assembler::classVerbosity() = VerbHigh;
+      Assembler::classVerbosity() = VerbLow;
       //Evaluator::classVerbosity() = VerbHigh;
       
       /* Define the weak form */
@@ -81,46 +81,47 @@ int main(int argc, void** argv)
       ParameterList solverParams;
 
       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
-      solverParams.set(IterativeSolver<double>::maxitersParam(), 1000);
+      solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-10);
 
       LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
 
       Expr soln = prob.solve(solver);
 
-      /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Poisson2d");
-      w.addMesh(mesh);
-      w.addField("soln", new ExprFieldWrapper(soln[0]));
-      w.write();
+//       /* Write the field in VTK format */
+//       FieldWriter w = new VTKWriter("Poisson2d");
+//       w.addMesh(mesh);
+//       w.addField("soln", new ExprFieldWrapper(soln[0]));
+//       w.write();
 
-      Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
-      //Expr exactSoln = 0.5*x*x;
+//       Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
+//       //Expr exactSoln = 0.5*x*x;
 
-      Expr err = exactSoln - soln;
-      Expr errExpr = Integral(interior, 
-                              err*err,
-                              new GaussianQuadrature(6));
+//       Expr err = exactSoln - soln;
+//       Expr errExpr = Integral(interior, 
+//                               err*err,
+//                               new GaussianQuadrature(6));
 
-      Expr derivErr = dx*(exactSoln-soln);
-      Expr derivErrExpr = Integral(interior, 
-                                   derivErr*derivErr, 
-                                   new GaussianQuadrature(2));
+//       Expr derivErr = dx*(exactSoln-soln);
+//       Expr derivErrExpr = Integral(interior, 
+//                                    derivErr*derivErr, 
+//                                    new GaussianQuadrature(2));
 
-      FunctionalEvaluator errInt(mesh, errExpr);
-      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
+//       FunctionalEvaluator errInt(mesh, errExpr);
+//       FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
       //Evaluator::classVerbosity() = VerbExtreme;
-      double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      // double errorSq = errInt.evaluate();
+//        cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-      double derivErrorSq = derivErrInt.evaluate();
-      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+//       double derivErrorSq = derivErrInt.evaluate();
+//       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
 		}
+  TimeMonitor::summarize();
   MPISession::finalize();
 }

@@ -18,6 +18,12 @@ using namespace TSFExtended;
 using namespace Internal;
 using namespace Internal;
 
+static Time& derivSetLookupTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("deriv set lookup"); 
+  return *rtn;
+}
 
 EvaluatableExpr::EvaluatableExpr()
 	: ScalarExpr(), 
@@ -321,6 +327,7 @@ void EvaluatableExpr::findDerivSuperset(const DerivSet& derivs) const
 
 int EvaluatableExpr::getDerivSetIndex(const RegionQuadCombo& region) const
 {
+  TimeMonitor timer(derivSetLookupTimer());
   Tabs tabs;
   if (verbosity() > 1)
     {

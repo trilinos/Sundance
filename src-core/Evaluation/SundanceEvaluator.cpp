@@ -18,6 +18,34 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& coordEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("coord func eval"); 
+  return *rtn;
+}
+
+static Time& symbolicFuncEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("symbolic func eval"); 
+  return *rtn;
+}
+
+static Time& discreteFuncEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("discrete func eval"); 
+  return *rtn;
+}
+
+static Time& constantEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("constant expr eval"); 
+  return *rtn;
+}
+
 Evaluator::Evaluator()
 {;}
 
@@ -42,6 +70,7 @@ DiscreteFuncElementEvaluator
 void CoordExprEvaluator::eval(const EvalManager& mgr,
                               RefCountPtr<EvalVectorArray>& results) const 
 {
+  TimeMonitor timer(coordEvalTimer());
   Tabs tabs;
 
   SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---CoordExprEvaluator---");
@@ -74,6 +103,7 @@ void CoordExprEvaluator::eval(const EvalManager& mgr,
 void SymbolicFuncElementEvaluator::eval(const EvalManager& mgr,
                                     RefCountPtr<EvalVectorArray>& results) const 
 {
+  TimeMonitor timer(symbolicFuncEvalTimer());
   Tabs tabs;
   SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---SymbolicFuncElementEvaluator---");
 
@@ -143,6 +173,7 @@ void SymbolicFuncElementEvaluator::eval(const EvalManager& mgr,
 void DiscreteFuncElementEvaluator::eval(const EvalManager& mgr,
                                      RefCountPtr<EvalVectorArray>& results) const 
 {
+  TimeMonitor timer(discreteFuncEvalTimer());
   Tabs tabs;
   SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---DiscreteFuncElementEvaluator---");
 
@@ -183,6 +214,7 @@ void DiscreteFuncElementEvaluator::eval(const EvalManager& mgr,
 void ConstantEvaluator::eval(const EvalManager& mgr,
                              RefCountPtr<EvalVectorArray>& results) const 
 {
+  TimeMonitor timer(constantEvalTimer());
   Tabs tabs;
   SUNDANCE_OUT(verbosity() > VerbLow, tabs << "---ConstantEvaluator---");
 

@@ -19,6 +19,34 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& sumEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("sum eval"); 
+  return *rtn;
+}
+
+static Time& productEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("product eval"); 
+  return *rtn;
+}
+
+static Time& diffOpEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("discrete func eval"); 
+  return *rtn;
+}
+
+static Time& unaryMinusEvalTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("constant expr eval"); 
+  return *rtn;
+}
+
 BruteForceEvaluatorFactory::BruteForceEvaluatorFactory()
   : EvaluatorFactory()
 {;}
@@ -68,7 +96,7 @@ Evaluator* BruteForceEvaluatorFactory
 void BruteForceSumEvaluator::eval(const EvalManager& mgr,
                                   RefCountPtr<EvalVectorArray>& results) const
 { 
-
+  TimeMonitor timer(sumEvalTimer());
   Tabs tabs;
 
   if (verbosity() > 1) 
@@ -173,6 +201,7 @@ void BruteForceSumEvaluator::eval(const EvalManager& mgr,
 void BruteForceProductEvaluator::eval(const EvalManager& mgr,
                                       RefCountPtr<EvalVectorArray>& results) const
 {
+  TimeMonitor timer(productEvalTimer());
   Tabs tabs;
 
   if (verbosity() > 1) 
@@ -326,6 +355,7 @@ void BruteForceProductEvaluator::eval(const EvalManager& mgr,
 void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
                                      RefCountPtr<EvalVectorArray>& results) const
 {
+  TimeMonitor timer(diffOpEvalTimer());
   Tabs tabs;
 
   if (verbosity() > 1) 
@@ -590,6 +620,7 @@ void BruteForceDiffOpEvaluator::eval(const EvalManager& mgr,
 void BruteForceUnaryMinusEvaluator::eval(const EvalManager& mgr,
                                          RefCountPtr<EvalVectorArray>& results) const
 {
+  TimeMonitor timer(unaryMinusEvalTimer());
   Tabs tab;
   SUNDANCE_OUT(verbosity() > VerbLow,
                tab << "------- BruteForceUnaryMinusEvaluator -------")

@@ -38,7 +38,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
   isOneForm = false;  
 
   if (functionalDeriv.size()==0) return;
-  TEST_FOR_EXCEPTION(functionalDeriv.size()>2, InternalError,
+  TEST_FOR_EXCEPTION(functionalDeriv.size() > 2, InternalError,
                      "WeakFormBatch::extractWeakForm detected a functional "
                      "derivative of order > 2: " 
                      << functionalDeriv.toString());

@@ -17,6 +17,14 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& integrationTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("integration"); 
+  return *rtn;
+}
+
+
 IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
                 const Array<RefCountPtr<ElementIntegral> >& integrals,
@@ -74,6 +82,7 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
                              const RefCountPtr<EvalVectorArray>& coeffs,
                              RefCountPtr<Array<double> >& A) const
 {
+  TimeMonitor timer(integrationTimer());
   Tabs tab0;
   bool nonzero = false;
 

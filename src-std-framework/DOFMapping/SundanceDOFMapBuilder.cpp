@@ -27,7 +27,7 @@ DOFMapBuilder::DOFMapBuilder(const Mesh& mesh,
     eqn_(eqn),
     rowMap_(),
     colMap_(),
-    bcRows_(rcp(new Set<int>()))
+    isBCRow_(rcp(new Array<int>()))
 {
   init();
 }
@@ -186,6 +186,10 @@ bool DOFMapBuilder::regionIsMaximal(int r) const
 
 void DOFMapBuilder::markBCRows()
 {
+  isBCRow_->resize(rowMap_->numLocalDOFs());
+  Array<int> dofs;
+  Array<int> cellLID;
+
   for (int r=0; r<eqn_->numRegions(); r++)
     {
       if (!eqn_->isBCRegion(r)) continue;
@@ -194,21 +198,19 @@ void DOFMapBuilder::markBCRows()
       CellFilter region = eqn_->region(r);
       int dim = region.dimension(mesh_);
       CellSet cells = region.getCells(mesh_);
-      
+      cellLID.resize(0);
+      for (CellIterator c=cells.begin(); c != cells.end(); c++)
+        {
+          cellLID.append(*c);
+        }
+      int nTestNodes;
       /* find the functions that appear in BCs on this region */
       const Set<int>& bcFuncs = eqn_->bcTestsOnRegion(r);
 
-      for (CellIterator c = cells.begin(); c != cells.end(); c++)
-        {
-          int cellLID = *c;
-          for (Set<int>::const_iterator f = bcFuncs.begin(); 
-               f != bcFuncs.end(); f++)
-            {
-              Array<int> dofs;
-              int fid = eqn_->reducedTestID(*f);
-              rowMap_->getDOFsForCell(dim, cellLID, fid, dofs);
-              for (int i=0; i<dofs.size(); i++) bcRows_->put(dofs[i]);
-            }
-        }
+      int ffff = 0 ;  // FIX THIS!!!!!!!!!
+
+      rowMap_->getDOFsForCellBatch(dim, cellLID, ffff, dofs, nTestNodes);
+      int offset = rowMap_->lowestLocalDOF();
+      for (int n=0; n<dofs.size(); n++) (*isBCRow_)[dofs[n]-offset]=true;
     }
 }

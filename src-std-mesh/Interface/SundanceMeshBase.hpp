@@ -99,6 +99,16 @@ using namespace SundanceUtils;
       virtual int facetLID(int cellDim, int cellLID,
                            int facetDim, int facetIndex) const = 0 ;
 
+      /** 
+       * Return by reference argument an array containing
+       * the LIDs of the facetDim-dimensional facets of the
+       * given batch of cells 
+       */
+      virtual void getFacetLIDs(int cellDim, 
+                                const Array<int>& cellLID,
+                                int facetDim,
+                                Array<int>& facetLID) const = 0 ;
+
       /**
        * Return by reference argument an
        * array containing the LIDs of the facetDim-dimensional 

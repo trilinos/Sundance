@@ -97,7 +97,7 @@ int main(int argc, void** argv)
 
       builder.rowMap()->print(cerr);
 
-      cerr << "BC rows: " << *(builder.bcRows()) << endl;
+
 
     }
 	catch(exception& e)

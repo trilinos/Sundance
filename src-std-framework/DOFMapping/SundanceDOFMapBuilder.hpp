@@ -40,7 +40,7 @@ namespace SundanceStdFwk
       const RefCountPtr<DOFMapBase>& colMap() const {return colMap_;}
 
       /** */
-      const RefCountPtr<Set<int> >& bcRows() const {return bcRows_;}
+      const RefCountPtr<Array<int> >& isBCRow() const {return isBCRow_;}
 
       Array<BasisFamily> testBasisArray() const ;
 
@@ -76,7 +76,7 @@ namespace SundanceStdFwk
 
       RefCountPtr<DOFMapBase> colMap_;
 
-      RefCountPtr<Set<int> > bcRows_;
+      RefCountPtr<Array<int> > isBCRow_;
       
     };
   }

@@ -27,6 +27,21 @@ extern "C"
              double* C, const int* ldC);
 }
 
+static Time& refIntegrationTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("ref integration"); 
+  return *rtn;
+}
+
+static Time& refTransCreationTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("building transformation matrices for ref"); 
+  return *rtn;
+}
+
+
 RefIntegral::RefIntegral(int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
@@ -340,6 +355,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
                                    const Array<double>& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
+  TimeMonitor timer(refIntegrationTimer());
   TEST_FOR_EXCEPTION(isTwoForm(), InternalError,
                      "RefIntegral::transformOneForm() called for two-form");
 
@@ -384,7 +400,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
                                    const Array<double>& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
-
+  TimeMonitor timer(refIntegrationTimer());
   TEST_FOR_EXCEPTION(!isTwoForm(), InternalError,
                      "RefIntegral::transformOneForm() called for one-form");
   /* If the derivative orders are zero, the only transformation to be done 
@@ -430,6 +446,7 @@ void RefIntegral
                                     const Array<int>& beta,
                                     const Array<double>& coeff) const 
 {
+  TimeMonitor timer(refTransCreationTimer());
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 
@@ -437,7 +454,7 @@ void RefIntegral
 
   /* If both derivative orders are 1, then we have to transform both
    * basis functions */
-  
+  Array<double> invJ;  
   if (testDerivOrder() == 1 && unkDerivOrder() == 1)
     {
       G().resize(J.numCells() * J.cellDim() * J.cellDim());
@@ -446,7 +463,7 @@ void RefIntegral
                    Tabs() << "both derivs are first order");
       for (int c=0; c<J.numCells(); c++)
         {
-          Array<double> invJ;
+
           J.getInvJ(c, invJ);
           double detJ = fabs(J.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++)
@@ -514,15 +531,16 @@ void RefIntegral
                                     const Array<int>& alpha,
                                     const Array<double>& coeff) const 
 {
+  TimeMonitor timer(refTransCreationTimer());
   TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
                      "Inconsistency between Jacobian dimension " << J.cellDim()
                      << " and cell dimension " << dim() 
                      << " in RefIntegral::createOneFormTransformationMatrix()");
   G().resize(J.numCells() * J.cellDim());
-
+  Array<double> invJ;
   for (int c=0; c<J.numCells(); c++)
     {
-      Array<double> invJ;
+
       J.getInvJ(c, invJ);
       double detJ = fabs(J.detJ()[c]);
       for (int gamma=0; gamma<dim(); gamma++)

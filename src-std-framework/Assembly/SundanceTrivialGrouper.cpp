@@ -26,7 +26,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 {
   Tabs tab;
 
-  VerbositySetting verb = VerbExtreme;
+  VerbositySetting verb = VerbSilent;
 
   SUNDANCE_OUT(verb > VerbLow, 
                tab << "trivial grouper num derivs = " << sparsity->numDerivs() << endl);

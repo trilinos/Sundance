@@ -89,6 +89,26 @@ namespace SundanceStdFwk
                                    TSFExtended::LoadableMatrix<double>* mat) const ;
 
       /** */
+      void insertLocalMatrixBatch(int cellDim, const Array<int>& workSet,
+                                  bool isBCRqc, 
+                                  const Array<int>& testIndices,
+                                  const Array<int>& unkIndices,
+                                  int nTestNodes, int nUnkNodes,
+                                  const Array<int>& testID,
+                                  const Array<int>& unkID, 
+                                  const Array<double>& localValues,
+                                  TSFExtended::LoadableMatrix<double>* mat) const ;
+
+      /** */
+      void insertLocalVectorBatch(int cellDim, const Array<int>& workSet,
+                                  bool isBCRqc, 
+                                  const Array<int>& testIndices,
+                                  int nTestNodes, 
+                                  const Array<int>& testID,
+                                  const Array<double>& localValues,
+                                  TSFExtended::LoadableVector<double>* vec) const ;
+
+      /** */
       void insertLocalVectorValues(int cellDim, const Array<int>& workSet,
                                    bool isBCRqc, 
                                    int nTestNodes, 
@@ -101,7 +121,7 @@ namespace SundanceStdFwk
                         Vector<double>& b) const ;
 
       /** */
-      bool isBCRow(int dof) const {return isBCRow_[dof-lowestRow_];}
+      bool isBCRow(int dof) const {return (*isBCRow_)[dof-lowestRow_];}
 
       /** */
       static int defaultWorkSetSize() {return 100;}
@@ -133,7 +153,7 @@ namespace SundanceStdFwk
 
       RefCountPtr<EvalManager> evalMgr_;
 
-      Array<int> isBCRow_;
+      RefCountPtr<Array<int> > isBCRow_;
 
       int lowestRow_;
 

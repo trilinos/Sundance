@@ -106,6 +106,18 @@ using namespace SundanceUtils;
     {ptr()->getFacetArray(cellDim, cellLID, facetDim, facetLIDs);}
 
     /** 
+     * Return by reference argument an array containing
+     * the LIDs of the facetDim-dimensional facets of the
+     * given batch of cells 
+     */
+    void getFacetLIDs(int cellDim, 
+                      const Array<int>& cellLID,
+                      int facetDim,
+                      Array<int>& facetLID) const 
+    {ptr()->getFacetLIDs(cellDim, cellLID, facetDim, facetLID);}
+
+
+    /** 
      * Return the number of maximal cofacets of the given cell
      */
     int numCofacets(int cellDim, int cellLID) const 

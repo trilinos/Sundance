@@ -5,6 +5,8 @@
 #include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceStdMesh;
@@ -24,6 +26,20 @@ extern "C"
   void dgetrf_(const int* M, const int* N, double* A, const int* lda, 
                const int* iPiv, int* info);
 };
+
+static Time& jacobianInversionTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("jacobian inversion"); 
+  return *rtn;
+}
+
+static Time& jacobianFactoringTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("jacobian factoring"); 
+  return *rtn;
+}
 
 
 CellJacobianBatch::CellJacobianBatch()
@@ -71,6 +87,7 @@ void CellJacobianBatch::resize(int numCells, int spatialDim, int cellDim)
 
 void CellJacobianBatch::factor() const 
 {
+  TimeMonitor timer(jacobianFactoringTimer());
   if (isFactored_) return;
   /* We're given the Jacobian, and we want to factor it and compute its determinant. 
    * We factor it using the LAPACK routine dgetrf(), after which J is replaced
@@ -122,6 +139,7 @@ void CellJacobianBatch::factor() const
 
 void CellJacobianBatch::computeInverses() const 
 {
+  TimeMonitor timer(jacobianInversionTimer());
   if (hasInverses_) return;
 
   Tabs tabs;
@@ -165,6 +183,7 @@ void CellJacobianBatch::computeInverses() const
                              "CellJacobianBatch::setJacobian(): inversion failed");
         }
     }
+  hasInverses_ = true;
 }
 
 void CellJacobianBatch::applyInvJ(int cell, int q, 

@@ -88,6 +88,16 @@ namespace SundanceStdMesh
                            int facetDim, int facetIndex) const  ;
 
       /** 
+       * Return by reference argument an array containing
+       * the LIDs of the facetDim-dimensional facets of the
+       * given batch of cells 
+       */
+      virtual void getFacetLIDs(int cellDim, 
+                                const Array<int>& cellLID,
+                                int facetDim,
+                                Array<int>& facetLID) const ;
+
+      /** 
        * Return the number of maximal cofacets of the given cell
        */
       virtual int numCofacets(int cellDim, int cellLID) const  ;

@@ -9,6 +9,8 @@
 #include "SundanceCellSet.hpp"
 #include "SundanceTrivialGrouper.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -19,6 +21,41 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
+
+static Time& assemblyTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("assembly"); 
+  return *rtn;
+}
+
+static Time& matInsertTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("matrix insertion"); 
+  return *rtn;
+}
+
+static Time& vecInsertTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("vector insertion"); 
+  return *rtn;
+}
+
+static Time& configTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("matrix config"); 
+  return *rtn;
+}
+
+static Time& graphBuildTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("matrix graph determination"); 
+  return *rtn;
+}
 
 
 Assembler
@@ -54,19 +91,10 @@ Assembler
   colMap_ = mapBuilder.colMap();
   rowSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray(), rowMap_, vecType_));
   colSpace_ = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray(), colMap_, vecType_));
-  bcRows_ = mapBuilder.bcRows();
+  isBCRow_ = mapBuilder.isBCRow();
 
   lowestRow_ = mapBuilder.rowMap()->lowestLocalDOF();
 
-  isBCRow_.resize(colMap()->numLocalDOFs());
-  for (int i=0; i<isBCRow_.size(); i++) isBCRow_[i] = false;
-  for (Set<int>::const_iterator i=bcRows()->begin(); i != bcRows()->end(); i++)
-    {
-      int row = *i;
-      if (rowMap_->isLocalDOF(row)) isBCRow_[row-lowestRow_] = true;
-    } 
-
-  
 
   for (int r=0; r<eqn->regionQuadCombos().size(); r++)
     {
@@ -131,6 +159,7 @@ void Assembler::configureMat(LinearOperator<double>& A,
                              Vector<double>& b) const 
 {
   Tabs tab;
+  TimeMonitor timer(configTimer());
   
   Array<int> localRowIndices(rowMap()->numLocalDOFs());
   for (int i=0; i<localRowIndices.size(); i++) 
@@ -232,13 +261,22 @@ void Assembler::assemble(LinearOperator<double>& A,
                          Vector<double>& b) const 
 {
   Tabs tab;
+  TimeMonitor timer(assemblyTimer());
 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
+  SUNDANCE_OUT(verbosity() > VerbSilent, 
+               "work set size is " << workSetSize()); 
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
 
   RefCountPtr<EvalVectorArray> coeffs;
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+
+  RefCountPtr<Array<int> > testLocalDOFs 
+    = rcp(new Array<int>());
+
+  RefCountPtr<Array<int> > unkLocalDOFs
+    = rcp(new Array<int>());
 
   configureMat(A, b);
 
@@ -299,6 +337,22 @@ void Assembler::assemble(LinearOperator<double>& A,
           mesh_.getJacobians(cellDim, *workSet, *J);
           evalExprs_[r]->evaluate(*evalMgr_, coeffs);
 
+          int nTestNodes;
+          int nUnkNodes;
+          rowMap_->getDOFsForCellBatch(cellDim, *workSet, 0, *testLocalDOFs,
+                                       nTestNodes);
+          if (rowMap_.get()==colMap_.get())
+            {
+              unkLocalDOFs = testLocalDOFs;
+              nUnkNodes = nTestNodes;
+            }
+          else
+            {
+              colMap_->getDOFsForCellBatch(cellDim, *workSet, 0, 
+                                           *unkLocalDOFs,
+                                           nUnkNodes);
+            }
+
           for (int g=0; g<groups_[r].size(); g++)
             {
               const IntegralGroup& group = groups_[r][g];
@@ -306,17 +360,20 @@ void Assembler::assemble(LinearOperator<double>& A,
               
               if (group.isTwoForm())
                 {
-                  insertLocalMatrixValues(cellDim, *workSet, isBCRqc_[r],
-                                          group.nTestNodes(),
-                                          group.nUnkNodes(),
-                                          group.testID(), group.unkID(), 
-                                          *localValues, mat);
+                  insertLocalMatrixBatch(cellDim, *workSet, isBCRqc_[r],
+                                         *testLocalDOFs,
+                                         *unkLocalDOFs,
+                                         group.nTestNodes(),
+                                         group.nUnkNodes(),
+                                         group.testID(), group.unkID(), 
+                                         *localValues, mat);
                 }
               else
                 {
-                  insertLocalVectorValues(cellDim, *workSet, isBCRqc_[r], 
-                                          group.nTestNodes(),
-                                          group.testID(), *localValues, vec);
+                  insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
+                                         *testLocalDOFs,
+                                         group.nTestNodes(),
+                                         group.testID(), *localValues, vec);
                 }
             }
         }
@@ -335,6 +392,7 @@ void Assembler::insertLocalMatrixValues(int cellDim,
                                         LoadableMatrix<double>* mat) const 
 {
   Tabs tab;
+  TimeMonitor timer(matInsertTimer());
 
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "Assembler: inserting local matrix values");
@@ -343,6 +401,8 @@ void Assembler::insertLocalMatrixValues(int cellDim,
 
   Array<int> testIndices;
   Array<int> unkIndices;
+  Array<double> x(nUnkNodes);
+  Array<int> p(nUnkNodes);
   int nNodes = nTestNodes*nUnkNodes;
 
   SUNDANCE_OUT(verbosity() > VerbMedium, 
@@ -367,12 +427,12 @@ void Assembler::insertLocalMatrixValues(int cellDim,
           
           SUNDANCE_OUT(verbosity() > VerbHigh, 
                        tab2 << "col indices=" << unkIndices);
-          Array<double> x(unkIndices.size());
-          Array<int> p(unkIndices.size());
+          //          Array<double> x(unkIndices.size());
+          //          Array<int> p(unkIndices.size());
           for (int r=0; r<testIndices.size(); r++)
             {
               if (rowMap_->isLocalDOF(testIndices[r]) && 
-                  isBCRqc==isBCRow_[testIndices[r]])
+                  isBCRqc==(*isBCRow_)[testIndices[r]])
                 {
                   for (int j=0; j<x.size(); j++)
                     {
@@ -388,6 +448,90 @@ void Assembler::insertLocalMatrixValues(int cellDim,
     }
 }
 
+void Assembler::insertLocalMatrixBatch(int cellDim, 
+                                       const Array<int>& workSet, 
+                                       bool isBCRqc,
+                                       const Array<int>& testIndices,
+                                       const Array<int>& unkIndices,
+                                       int nTestNodes, int nUnkNodes,
+                                       const Array<int>& testID, 
+                                       const Array<int>& unkID,
+                                       const Array<double>& localValues, 
+                                       LoadableMatrix<double>* mat) const 
+{
+  Tabs tab;
+  TimeMonitor timer(matInsertTimer());
+
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "Assembler: inserting local matrix values");
+  SUNDANCE_OUT(verbosity() > VerbHigh, 
+               tab << "Assembler: values are " << localValues);
+
+  Array<double> x(nUnkNodes);
+  Array<int> p(nUnkNodes);
+  Array<int> col(nUnkNodes);
+  int nNodes = nTestNodes*nUnkNodes;
+
+  SUNDANCE_OUT(verbosity() > VerbMedium, 
+               tab << "Assembler: num nodes test=" << nTestNodes
+               << " unk=" << nUnkNodes);
+
+  for (int i=0; i<testID.size(); i++)
+    {
+      for (int c=0; c<workSet.size(); c++)
+        {
+          for (int r=0; r<nTestNodes; r++)
+            {
+              int rowIndex = testIndices[r + nTestNodes*c];
+              if (isBCRqc!=(*isBCRow_)[rowIndex] 
+                  || !(rowMap_->isLocalDOF(rowIndex))) continue;
+              for (int j=0; j<nUnkNodes; j++)
+                {
+                  col[j] = unkIndices[j + nUnkNodes*c];
+                  x[j] = localValues[c*nNodes + j*nUnkNodes + r];
+                }
+              mat->addToRow(rowIndex, nUnkNodes,
+                            &(col[0]), &(x[0]));
+            }
+        }
+    }
+}
+
+
+void Assembler::insertLocalVectorBatch(int cellDim, 
+                                       const Array<int>& workSet, 
+                                       bool isBCRqc,
+                                       const Array<int>& testIndices,
+                                       int nTestNodes, 
+                                       const Array<int>& testID, 
+                                       const Array<double>& localValues, 
+                                       TSFExtended::LoadableVector<double>* vec) const 
+{
+  TimeMonitor timer(vecInsertTimer());
+  Tabs tab;
+  SUNDANCE_OUT(verbosity() > VerbLow, 
+               tab << "Assembler: inserting local matrix values");
+  SUNDANCE_OUT(verbosity() > VerbHigh, 
+               tab << "Assembler: values are " << localValues);
+
+  for (int i=0; i<testID.size(); i++)
+    {
+      for (int c=0; c<workSet.size(); c++)
+        {
+          for (int r=0; r<nTestNodes; r++)
+            {
+              int rowIndex = testIndices[r + nTestNodes*c];
+              if (isBCRqc!=(*isBCRow_)[rowIndex] 
+                  || !(rowMap_->isLocalDOF(rowIndex))) continue;
+              {
+                vec->addToElement(rowIndex, localValues[c*nTestNodes+r]);
+              }
+            }
+        }
+    }
+}
+
+
 void Assembler::insertLocalVectorValues(int cellDim, 
                                         const Array<int>& workSet, 
                                         bool isBCRqc,
@@ -396,7 +540,7 @@ void Assembler::insertLocalVectorValues(int cellDim,
                                         const Array<double>& localValues, 
                                         TSFExtended::LoadableVector<double>* vec) const 
 {
-
+  TimeMonitor timer(vecInsertTimer());
   Tabs tab;
   SUNDANCE_OUT(verbosity() > VerbLow, 
                tab << "Assembler: inserting local matrix values");
@@ -421,7 +565,7 @@ void Assembler::insertLocalVectorValues(int cellDim,
           for (int r=0; r<testIndices.size(); r++)
             {
               if (rowMap_->isLocalDOF(testIndices[r]) && 
-                  isBCRqc==isBCRow_[testIndices[r]])
+                  isBCRqc==(*isBCRow_)[testIndices[r]])
                 {
                   vec->addToElement(testIndices[r], localValues[c*nTestNodes+r]);
                 }
@@ -434,7 +578,18 @@ void Assembler::insertLocalVectorValues(int cellDim,
                        
 void Assembler::getGraph(Array<Set<int> >& graph) const 
 {
+  TimeMonitor timer(graphBuildTimer());
   Tabs tab;
+
+
+  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  workSet->reserve(workSetSize());
+
+  RefCountPtr<Array<int> > testLocalDOFs 
+    = rcp(new Array<int>());
+
+  RefCountPtr<Array<int> > unkLocalDOFs
+    = rcp(new Array<int>());
 
   SUNDANCE_OUT(verbosity() > VerbLow, tab << "Creating graph: there are " << rowMap()->numLocalDOFs()
                << " local equations");
@@ -508,40 +663,62 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
             }
         }
       
-      Array<int> testDOFs;
-      Array<int> unkDOFs;
+      int nTestFuncs = 1;
+      int nUnkFuncs = 1;
+      int nTestNodes;
+      int nUnkNodes;
+
       int owner;
       int nt = eqn_->numTests();
-      for (CellIterator cell=cells.begin(); cell != cells.end(); cell++)
+      CellIterator iter=cells.begin();
+      while (iter != cells.end())
         {
-          int cellLID = *cell;
-          Tabs tab1;
-          SUNDANCE_OUT(verbosity() > VerbMedium, tab1 
-                       << "cell dim=" << dim << " cell=" << cellLID);
+          /* build a work set */
+          workSet->resize(0);
+          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+            {
+              workSet->append(*iter);
+            }
+
+
+          rowMap_->getDOFsForCellBatch(dim, *workSet, 0, *testLocalDOFs,
+                                       nTestNodes);
+          if (rowMap_.get()==colMap_.get())
+            {
+              unkLocalDOFs = testLocalDOFs;
+              nUnkNodes = nTestNodes;
+            }
+          else
+            {
+              colMap_->getDOFsForCellBatch(dim, *workSet, 0, 
+                                           *unkLocalDOFs, nUnkNodes);
+            }
+          
           if (pairs.get() != 0)
             {
               for (int t=0; t<nt; t++)
                 {
                   if (unksForTests[t].size()==0) continue;
-                  rowMap()->getDOFsForCell(dim, cellLID, t, testDOFs);
                   for (Set<int>::const_iterator uit=unksForTests[t].begin();
                        uit != unksForTests[t].end(); uit++)
                     {
                       Tabs tab2;
                       int u = *uit;
-                      colMap()->getDOFsForCell(dim, cellLID, u, unkDOFs);
-                      for (int r=0; r<testDOFs.length(); r++)
+                      for (int c=0; c<workSet->size(); c++)
                         {
-                          int row = testDOFs[r];
-                          SUNDANCE_OUT(verbosity() > VerbMedium,
-                                       tab2 << "row " << row 
-                                       << " isBC=" << isBCRow(row)
-                                       << " isLocal=" 
-                                       << colMap()->isLocalDOF(row));
-                          if (!colMap()->isLocalDOF(row) || isBCRow(row)) continue;
-                          for (int c=0; c<unkDOFs.length(); c++)
+                          int testOffset = c*nTestNodes*nTestFuncs;
+                          int unkOffset = c*nUnkNodes*nUnkFuncs;
+                          for (int n=0; n<nTestNodes; n++)
                             {
-                              graph[row-lowestRow_].put(unkDOFs[c]);
+                              int row = (*testLocalDOFs)[testOffset + n*nTestFuncs + t];
+                              if (!rowMap()->isLocalDOF(row) 
+                                  || isBCRow(row)) continue;
+                              for (int m=0; m<nUnkNodes; m++)
+                                {
+                                  int col = (*unkLocalDOFs)[unkOffset + m*nUnkFuncs + t];
+                                  graph[row-lowestRow_].put(col);
+                                  
+                                }
                             }
                         }
                     }
@@ -552,25 +729,26 @@ void Assembler::getGraph(Array<Set<int> >& graph) const
               for (int t=0; t<nt; t++)
                 {
                   if (bcUnksForTests[t].size()==0) continue;
-                  rowMap()->getDOFsForCell(dim, cellLID, t, testDOFs);
                   for (Set<int>::const_iterator uit=bcUnksForTests[t].begin();
                        uit != bcUnksForTests[t].end(); uit++)
                     {
                       Tabs tab2;
                       int u = *uit;
-                      colMap()->getDOFsForCell(dim, cellLID, u, unkDOFs);
-                      for (int r=0; r<testDOFs.length(); r++)
+                      for (int c=0; c<workSet->size(); c++)
                         {
-                          int row = testDOFs[r];
-                          SUNDANCE_OUT(verbosity() > VerbMedium,
-                                       tab2 << "row " << row 
-                                       << " isBC=" << isBCRow(row)
-                                       << " isLocal=" 
-                                       << colMap()->isLocalDOF(row));
-                          if (!colMap()->isLocalDOF(row) || !isBCRow(row)) continue;
-                          for (int c=0; c<unkDOFs.length(); c++)
+                          int testOffset = c*nTestNodes*nTestFuncs;
+                          int unkOffset = c*nUnkNodes*nUnkFuncs;
+                          for (int n=0; n<nTestNodes; n++)
                             {
-                              graph[row-lowestRow_].put(unkDOFs[c]);
+                              int row = (*testLocalDOFs)[testOffset + n*nTestFuncs + t];
+                              if (!rowMap()->isLocalDOF(row) 
+                                  || !isBCRow(row)) continue;
+                              for (int m=0; m<nUnkNodes; m++)
+                                {
+                                  int col = (*unkLocalDOFs)[unkOffset + m*nUnkFuncs + t];
+                                  graph[row-lowestRow_].put(col);
+                                  
+                                }
                             }
                         }
                     }
