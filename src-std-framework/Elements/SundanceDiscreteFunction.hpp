@@ -69,6 +69,13 @@ namespace SundanceStdFwk
                         const Array<int>& cellLID,
                         Array<double>& localValues) const ;
 
+    /** */
+    static const DiscreteFunction* discFunc(const Expr& expr);
+
+
+    /** */
+    static DiscreteFunction* discFunc(Expr& expr);
+
 
     RefCountPtr<GhostView<double> > ghostView() const 
     {updateGhosts(); return ghostView_;}

@@ -435,9 +435,6 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       A->resize(J.numCells() * nNodes()); 
       int info=0;
 
-      cerr << "num cells = " << nCells << endl;
-      cerr << "jacobian batch = " << J << endl;
-
       createTwoFormTransformationMatrix(J, alpha(), beta(), coeff);
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 

@@ -45,7 +45,6 @@ EquationSet::EquationSet(const Expr& eqns,
     unkIDToReducedIDMap_(),
     isNonlinear_(false)
 {
-  classVerbosity() = VerbHigh;
   verbosity() = classVerbosity();
 
   /* begin with a sanity check to ensure that the input equation set 

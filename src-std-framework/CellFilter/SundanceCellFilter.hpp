@@ -12,9 +12,9 @@
 
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
   using namespace SundanceCore::Internal;
   using namespace Teuchos;
   using namespace TSFExtended;
@@ -86,7 +86,7 @@ using namespace SundanceStdMesh::Internal;
    * \endcode
    *
 
-   */
+  */
   class CellFilter : public OrderedHandle<CellFilterStub>
   {
   public:
@@ -111,9 +111,9 @@ using namespace SundanceStdMesh::Internal;
     CellFilter intersection(const CellFilter& other) const ;
 
     // /** Return a filter that returns the
-//      *  subset of cells for which the logical expression 
-//      * is true */
-//     CellFilter subset(const LogicalExpr& expr) const ;
+    //      *  subset of cells for which the logical expression 
+    //      * is true */
+    //     CellFilter subset(const LogicalExpr& expr) const ;
 
     
     /** Return a filter that will return the subset of cells having
@@ -139,7 +139,168 @@ using namespace SundanceStdMesh::Internal;
     
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
 
-    };
+  };
+
+  /** \relates CellFilter 
+      \brief Create an array with one entry 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a)
+  {
+    Array<CellFilter> rtn(1, a);
+    return rtn;
+  }
+
+  /** \relates CellFilter 
+      \brief Create an array with two entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b)
+  {
+    Array<CellFilter> rtn(2);
+    rtn[0] = a;
+    rtn[1] = b;
+    return rtn;
+  }
+
+  /** \relates CellFilter 
+      \brief Create an array with three entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c)
+  {
+    Array<CellFilter> rtn(3);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    return rtn;
+  }
+
+  /** \relates CellFilter 
+      \brief Create an array with four entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c, const CellFilter& d)
+  {
+    Array<CellFilter> rtn(4);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    rtn[3] = d;
+    return rtn;
+  }
+
+  /** \relates CellFilter 
+      \brief Create an array with five entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c, const CellFilter& d, const CellFilter& e)
+  {
+    Array<CellFilter> rtn(5);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    rtn[3] = d;
+    rtn[4] = e;
+    return rtn;
+  }
+
+
+  /** \relates CellFilter 
+      \brief Create an array with six entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c, const CellFilter& d, const CellFilter& e,
+                         const CellFilter& f)
+  {
+    Array<CellFilter> rtn(6);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    rtn[3] = d;
+    rtn[4] = e;
+    rtn[5] = f;
+    return rtn;
+  }
+
+  /** \relates CellFilter 
+      \brief Create an array with seven entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c, const CellFilter& d, const CellFilter& e,
+                         const CellFilter& f, const CellFilter& g)
+  {
+    Array<CellFilter> rtn(7);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    rtn[3] = d;
+    rtn[4] = e;
+    rtn[5] = f;
+    rtn[6] = g;
+    return rtn;
+  }
+
+  /** \relates CellFilter 
+      \brief Create an array with eight entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c, const CellFilter& d, const CellFilter& e,
+                         const CellFilter& f, const CellFilter& g, const CellFilter& h)
+  {
+    Array<CellFilter> rtn(8);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    rtn[3] = d;
+    rtn[4] = e;
+    rtn[5] = f;
+    rtn[6] = g;
+    rtn[7] = h;
+    return rtn;
+  }
+
+  /** \relates CellFilter 
+      \brief Create an array with nine entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c, const CellFilter& d, const CellFilter& e,
+                         const CellFilter& f, const CellFilter& g, const CellFilter& h, const CellFilter& i)
+  {
+    Array<CellFilter> rtn(9);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    rtn[3] = d;
+    rtn[4] = e;
+    rtn[5] = f;
+    rtn[6] = g;
+    rtn[7] = h;
+    rtn[8] = i;
+    return rtn;
+  }
+
+
+  /** \relates CellFilter 
+      \brief Create an array with ten entries 
+  */
+  inline
+  Array<CellFilter> List(const CellFilter& a, const CellFilter& b, const CellFilter& c, const CellFilter& d, const CellFilter& e,
+                         const CellFilter& f, const CellFilter& g, const CellFilter& h, const CellFilter& i, const CellFilter& j)
+  {
+    Array<CellFilter> rtn(10);
+    rtn[0] = a;
+    rtn[1] = b;
+    rtn[2] = c;
+    rtn[3] = d;
+    rtn[4] = e;
+    rtn[5] = f;
+    rtn[6] = g;
+    rtn[7] = h;
+    rtn[8] = i;
+    rtn[9] = j;
+    return rtn;
+  }
 }
 
 #endif

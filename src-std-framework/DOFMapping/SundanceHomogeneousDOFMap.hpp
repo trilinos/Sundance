@@ -9,6 +9,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceCellSet.hpp"
+#include "SundanceCellFilter.hpp"
 #include "SundanceDOFMapBase.hpp"
 
 namespace SundanceStdFwk
@@ -33,7 +34,11 @@ using namespace SundanceStdMesh::Internal;
                         const BasisFamily& basis,
                         int numFuncs);
                         
-
+      /** */
+      HomogeneousDOFMap(const Mesh& mesh, 
+                        const BasisFamily& basis,
+                        const Array<CellFilter>& subregions,
+                        int numFuncs);
 
       /** */
       virtual ~HomogeneousDOFMap(){;}
@@ -62,6 +67,11 @@ using namespace SundanceStdMesh::Internal;
       virtual void print(ostream& os) const ;
 
     private:
+
+      /** */
+      void allocate(const Mesh& mesh, 
+                    const BasisFamily& basis,
+                    int numFuncs);
       
       /** */
       void buildMaximalDofTable() const ;

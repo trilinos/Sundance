@@ -61,6 +61,9 @@ using namespace SundanceStdMesh::Internal;
       const CellSet& cellSet(int i) const {return cellSets_[i];}
 
       /** */
+      int numCellSets() const {return cellSets_.size();}
+
+      /** */
       const Array<int>& funcIDOnCellSet(int i) const 
       {return funcIDOnCellSets_[i];}
 

@@ -44,6 +44,12 @@ namespace SundanceUtils
   SUNDANCE_UNARY_FUNCTOR(reciprocal, StdReciprocal, "reciprocal function", 
                          NonzeroDomain(), 1.0/x[i], -f[i]*f[i], -2.0*df[i]/x[i]);
 
+  SUNDANCE_UNARY_FUNCTOR(fabs, StdFabs, "absolute value", UnboundedDomain(), ::fabs(x[i]), ((x[i]>=0.0) ? x[i] : -x[i]), 0.0);
+
+  SUNDANCE_UNARY_FUNCTOR(sign, StdSign, "sign function", UnboundedDomain(), 
+                         ((x[i]>0.0) ? 1.0 : ( (x[i]<0.0) ? -1.0 : 0.0)), 
+                         0.0, 0.0);
+
   SUNDANCE_UNARY_FUNCTOR(exp, StdExp, "exponential function", UnboundedDomain(), ::exp(x[i]), f[i], f[i]);
 
   SUNDANCE_UNARY_FUNCTOR(log, StdLog, "logarithm", PositiveDomain(), ::log(x[i]), 1.0/x[i], -df[i]*df[i]);

@@ -43,6 +43,10 @@ namespace SundanceCore
 
   SUNDANCE_UNARY_OP(reciprocal, StdReciprocal, "reciprocal function");
 
+  SUNDANCE_UNARY_OP(fabs, StdFabs, "absolute value");
+
+  SUNDANCE_UNARY_OP(sign, StdSign, "sign function");
+
   SUNDANCE_UNARY_OP(exp, StdExp, "exponential function");
 
   SUNDANCE_UNARY_OP(log, StdLog, "logarithm");

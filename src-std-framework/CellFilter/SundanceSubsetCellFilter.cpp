@@ -37,10 +37,6 @@ bool SubsetCellFilter::lessThan(const CellFilterStub* other) const
                      << " to SubsetCellFilter::lessThan() should be "
                      "a SubsetCellFilter pointer.");
 
-  cerr << "comparing subset cell filter\n me=" 
-       << toXML() << endl
-       << "you=" << other->toXML() << endl;
-
   return OrderedPair<CellFilter, CellPredicate>(superset_, predicate_)
     < OrderedPair<CellFilter, CellPredicate>(S->superset_, S->predicate_);
 }

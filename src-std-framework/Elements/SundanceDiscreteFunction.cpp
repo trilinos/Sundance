@@ -107,4 +107,29 @@ void DiscreteFunction::getLocalValues(int cellDim,
 }
 
 
+const DiscreteFunction* DiscreteFunction::discFunc(const Expr& expr)
+{
+  const DiscreteFunction* df 
+    = dynamic_cast<const DiscreteFunction*>(expr.ptr().get());
+
+  TEST_FOR_EXCEPTION(df==0, RuntimeError,
+                     "failed to cast " << expr << " to a discrete function");
+
+  return df;
+}
+
+
+
+DiscreteFunction* DiscreteFunction::discFunc(Expr& expr)
+{
+  DiscreteFunction* df 
+    = dynamic_cast<DiscreteFunction*>(expr.ptr().get());
+
+  TEST_FOR_EXCEPTION(df==0, RuntimeError,
+                     "failed to cast " << expr << " to a discrete function");
+
+  return df;
+}
+
+
 

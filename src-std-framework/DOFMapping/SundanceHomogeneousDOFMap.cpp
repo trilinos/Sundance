@@ -50,6 +50,43 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
   cellSets().append(maximalCells.getCells(mesh));
   cellDimOnCellSets().append(mesh.spatialDim());
 
+  allocate(mesh, basis, numFuncs);
+  initMap();
+}
+
+
+HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh, 
+                                     const BasisFamily& basis,
+                                     const Array<CellFilter>& subregions,
+                                     int numFuncs)
+  : DOFMapBase(mesh), 
+    dim_(mesh.spatialDim()),
+    dofs_(mesh.spatialDim()+1),
+    maximalDofs_(),
+    haveMaximalDofs_(false),
+    localNodePtrs_(mesh.spatialDim()+1),
+    nNodesPerCell_(mesh.spatialDim()+1),
+    totalNNodesPerCell_(mesh.spatialDim()+1, 0),
+    numFacets_(mesh.spatialDim()+1),
+    basisIsContinuous_(false)
+{
+  verbosity() = DOFMapBase::classVerbosity();
+  
+  for (int r=0; r<subregions.size(); r++)
+    {
+      cellSets().append(subregions[r].getCells(mesh));
+      cellDimOnCellSets().append(subregions[r].dimension(mesh));
+    }
+
+  allocate(mesh, basis, numFuncs);
+  initMap();
+}
+
+
+void HomogeneousDOFMap::allocate(const Mesh& mesh, 
+                                 const BasisFamily& basis,
+                                 int numFuncs)
+{
   Array<int> fid(numFuncs);
   for (int f=0; f<numFuncs; f++) fid[f] = f;
   funcIDOnCellSets().append(fid);
@@ -120,8 +157,6 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
             }
         }
     }
-
-  initMap();
 }
 
 void HomogeneousDOFMap::initMap()
@@ -137,72 +172,75 @@ void HomogeneousDOFMap::initMap()
   Array<Array<Array<int> > > remoteCells(mesh().spatialDim()+1,
                                          mesh().comm().getNProc());
   
-  /* Loop over maximal cells in the order specified by the cell iterator.
-   * This might be reordered relative to the mesh. 
-   *
-   * At each maximal cell, we'll run through the facets and 
-   * assign DOFs. That will take somewhat more work, but gives much 
-   * better cache locality for the matrix because all the DOFs for
-   * each maximal element and its facets are grouped together. */
-
-  CellSet cells = cellSet(0);
-  CellIterator iter;
-  for (iter=cells.begin(); iter != cells.end(); iter++)
+  for (int r=0; r<numCellSets(); r++)
     {
-      /* first assign any DOFs associated with the maximal cell */
-      int cellLID = *iter;
-      int owner;
-      
-      if (nNodesPerCell_[dim_] > 0)
-        {
-          /* if the maximal cell is owned by another processor,
-           * put it in the list of cells for which we need to request 
-           * DOF information from another processor */
-          if (isRemote(dim_, cellLID, owner))
-            {
-              int dummy=0;
-              int cellGID = mesh().mapLIDToGID(dim_, cellLID);
-              remoteCells[dim_][owner].append(cellGID); 
-              setDOFs(dim_, cellLID, dummy);
-            }
-          else /* the cell is locally owned, so we can 
-                * set its DOF numbers now */
-            {
-              setDOFs(dim_, cellLID, nextDOF);
-            }
-        }
+      /* Loop over maximal cells in the order specified by the cell iterator.
+       * This might be reordered relative to the mesh. 
+       *
+       * At each maximal cell, we'll run through the facets and 
+       * assign DOFs. That will take somewhat more work, but gives much 
+       * better cache locality for the matrix because all the DOFs for
+       * each maximal element and its facets are grouped together. */
 
-      /* Now assign any DOFs associated with the facets. */
-      /* We can skip this step if the basis is discontinuous at element
-       * boundaries, because the facets will own no nodes */
-      if (basisIsContinuous_)
+      CellSet cells = cellSet(r);
+      CellIterator iter;
+      for (iter=cells.begin(); iter != cells.end(); iter++)
         {
-          for (int d=0; d<dim_; d++)
+          /* first assign any DOFs associated with the maximal cell */
+          int cellLID = *iter;
+          int owner;
+      
+          if (nNodesPerCell_[dim_] > 0)
             {
-              if (nNodesPerCell_[d] > 0)
+              /* if the maximal cell is owned by another processor,
+               * put it in the list of cells for which we need to request 
+               * DOF information from another processor */
+              if (isRemote(dim_, cellLID, owner))
                 {
-                  int nf = numFacets_[dim_][d];
-                  Array<int> facetLID(nf);
-                  /* look up the LIDs of the facets */
-                  mesh().getFacetArray(dim_, cellLID, d, facetLID);
-                  /* for each facet, process its DOFs */
-                  for (int f=0; f<nf; f++)
+                  int dummy=0;
+                  int cellGID = mesh().mapLIDToGID(dim_, cellLID);
+                  remoteCells[dim_][owner].append(cellGID); 
+                  setDOFs(dim_, cellLID, dummy);
+                }
+              else /* the cell is locally owned, so we can 
+                    * set its DOF numbers now */
+                {
+                  setDOFs(dim_, cellLID, nextDOF);
+                }
+            }
+
+          /* Now assign any DOFs associated with the facets. */
+          /* We can skip this step if the basis is discontinuous at element
+           * boundaries, because the facets will own no nodes */
+          if (basisIsContinuous_)
+            {
+              for (int d=0; d<dim_; d++)
+                {
+                  if (nNodesPerCell_[d] > 0)
                     {
-                      /* if the facet's DOFs have been assigned already,
-                       * we're done */
-                      if (!hasBeenAssigned(d, facetLID[f]))
+                      int nf = numFacets_[dim_][d];
+                      Array<int> facetLID(nf);
+                      /* look up the LIDs of the facets */
+                      mesh().getFacetArray(dim_, cellLID, d, facetLID);
+                      /* for each facet, process its DOFs */
+                      for (int f=0; f<nf; f++)
                         {
-                          /* the facet may be owned by another processor */
-                          if (isRemote(d, facetLID[f], owner))
+                          /* if the facet's DOFs have been assigned already,
+                           * we're done */
+                          if (!hasBeenAssigned(d, facetLID[f]))
                             {
-                              int dummy=0;
-                              int facetGID = mesh().mapLIDToGID(d, facetLID[f]);
-                              remoteCells[d][owner].append(facetGID);
-                              setDOFs(d, facetLID[f], dummy);
-                            }
-                          else /* we can assign a DOF locally */
-                            {
-                              setDOFs(d, facetLID[f], nextDOF);
+                              /* the facet may be owned by another processor */
+                              if (isRemote(d, facetLID[f], owner))
+                                {
+                                  int dummy=0;
+                                  int facetGID = mesh().mapLIDToGID(d, facetLID[f]);
+                                  remoteCells[d][owner].append(facetGID);
+                                  setDOFs(d, facetLID[f], dummy);
+                                }
+                              else /* we can assign a DOF locally */
+                                {
+                                  setDOFs(d, facetLID[f], nextDOF);
+                                }
                             }
                         }
                     }
@@ -210,7 +248,6 @@ void HomogeneousDOFMap::initMap()
             }
         }
     }
-
   /* Done with first pass, in which we have assigned DOFs for all
    * local processors. We now have to share DOF information between
    * processors */

@@ -62,6 +62,7 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp
 SUNDANCE_ELEMENTS_H = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.hpp \
@@ -81,6 +82,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.cpp \
