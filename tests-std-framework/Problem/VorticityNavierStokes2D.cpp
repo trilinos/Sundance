@@ -2,6 +2,8 @@
 #include "SundanceEvaluator.hpp"
 
 #include "TSFNOXSolver.H"
+
+using SundanceCore::List;
 /** 
  * Solves the Navier-Stokes equations on the lid-driver cavity
  */
@@ -87,7 +89,7 @@ int main(int argc, void** argv)
         + EssentialBC(top, vOmega*psi, quad2) ;
 
       BasisFamily L1 = new Lagrange(1);
-      DiscreteSpace discSpace(mesh, List(L1, L1), vecType);
+      DiscreteSpace discSpace(mesh, SundanceStdFwk::List(L1, L1), vecType);
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
       /* Create a TSF NonlinearOperator object */

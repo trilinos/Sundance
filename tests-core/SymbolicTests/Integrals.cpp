@@ -21,6 +21,7 @@
 #include "SundanceIntegral.hpp"
 #include "SundanceEssentialBC.hpp"
 
+using SundanceCore::List;
 using namespace SundanceUtils;
 using namespace SundanceCore;
 using namespace SundanceCore::Internal;

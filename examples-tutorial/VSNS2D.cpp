@@ -1,5 +1,6 @@
 #include "Sundance.hpp"
 
+using SundanceCore::List;
 /** 
  * Solves the Navier-Stokes equations on the lid-driven cavity
  */

@@ -2,6 +2,7 @@
 #include "SundanceEvaluator.hpp"
 #include "Teuchos_XMLParameterListWriter.hpp"
 
+using SundanceCore::List;
 /** 
  * Solves the Poisson equation in 2D
  */

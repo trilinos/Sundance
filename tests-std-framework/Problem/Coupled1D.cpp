@@ -1,5 +1,6 @@
 #include "Sundance.hpp"
 
+using SundanceCore::List;
 /** 
  * Solves the coupled equations
  *

@@ -12,7 +12,9 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
+using SundanceUtils::Map;
 namespace SundanceStdFwk
+
 {
   using namespace SundanceUtils;
   using namespace SundanceStdMesh;
@@ -26,8 +28,33 @@ namespace SundanceStdFwk
     using namespace Teuchos;
 
     /**
+
      * StdFwkEvalMediator evaluates mesh-dependent functions in the
+
      * standard framework. A number of subtypes are supported: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
      * QuadratureEvalMediator, which does evaluation on quadrature points,
      * and NodalEvalMediator, which does evaluation at nodal points. 
      */
@@ -52,6 +79,7 @@ namespace SundanceStdFwk
       void setCellBatch(const RefCountPtr<Array<int> >& cellLID) ;
 
       /** */
+
       virtual void setCellType(const CellType& cellType) 
       {cellType_=cellType; cacheIsValid() = false; jCacheIsValid_=false;}
 

@@ -3,6 +3,7 @@
 #include "SundanceLabelCellPredicate.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
 
+using SundanceCore::List;
 /** 
  * Solves the Poisson equation in 3D
  */

@@ -2,6 +2,7 @@
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
 
+using SundanceCore::List;
 /** 
  * 
  */

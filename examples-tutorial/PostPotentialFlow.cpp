@@ -1,5 +1,6 @@
 #include "Sundance.hpp"
 
+using SundanceCore::List;
 /** 
  * Solves the Laplace equation for potential flow past an elliptical 
  * post in a wind tunnel.

@@ -1,6 +1,7 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
 
+using SundanceCore::List;
 /** 
  * Solves the Poisson equation in 2D
  */

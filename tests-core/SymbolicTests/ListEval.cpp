@@ -20,7 +20,7 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceEquationSet.hpp"
 
-
+using SundanceCore::List;
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceCore::Internal;

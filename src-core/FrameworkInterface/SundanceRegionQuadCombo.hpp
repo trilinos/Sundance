@@ -17,7 +17,7 @@
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 
-
+using SundanceUtils::Map;
 namespace SundanceCore
 {
   using namespace Teuchos;

@@ -14,7 +14,7 @@
 #include "SundanceMap.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
-
+using SundanceUtils::Map;
 namespace SundanceCore
 {
   using namespace SundanceUtils;
