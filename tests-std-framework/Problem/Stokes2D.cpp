@@ -100,19 +100,26 @@ int main(int argc, void** argv)
                          List(ux, uy, p), vecType);
 
 
+      ParameterList solverParams;
+
+      solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
+      solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
+      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-14);
+
+      LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
 
       /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
+      // std::map<int,int> azOptions;
+//       std::map<int,double> azParams;
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-6;
+//       azOptions[AZ_solver] = AZ_gmres;
+//       azOptions[AZ_precond] = AZ_dom_decomp;
+//       azOptions[AZ_subdomain_solve] = AZ_ilu;
+//       azOptions[AZ_graph_fill] = 1;
+//       azOptions[AZ_max_iter] = 1000;
+//       azParams[AZ_tol] = 1.0e-6;
 
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+//       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
       Expr soln = prob.solve(solver);
 

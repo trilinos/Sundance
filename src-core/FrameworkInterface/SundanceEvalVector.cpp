@@ -345,16 +345,25 @@ void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
                a->getStringValue() << " R=" << b->getStringValue()
                << " to LHS " << getStringValue());
 
-  if (a->isZero() || b->isZero()) return;
+  if (a->isZero() || b->isZero()) 
+    {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   "one or both of the operands is zero, doing nothing");
+      return;
+    }
 
   if (a->isConstant())
     {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   "first operand is constant, delegating to addScaled()");
       addScaled(b, a->getConstantValue());
       return;
     }
   
   if (b->isConstant())
     {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   "first operand is constant, delegating to addScaled()");
       addScaled(a, b->getConstantValue());
       return;
     }
@@ -374,6 +383,8 @@ void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
       
   if (isZero())
     {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   "initial value is zero, adding vector dot-slash product");
       for (int i=0; i<length(); i++)
         {
           x[i] = y[i]*z[i];
@@ -384,6 +395,8 @@ void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
     }
   else if (isConstant())
     {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   "initial value is constant, adding to vector dot-slash product");
       double c = getConstantValue();
       for (int i=0; i<length(); i++)
         {
@@ -396,6 +409,8 @@ void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
     }
   else
     {
+      SUNDANCE_OUT(verbosity() > VerbLow, 
+                   "initial value is a vector, adding to vector dot-slash product");
       for (int i=0; i<length(); i++)
         {
           x[i] += y[i]*z[i];
@@ -405,6 +420,7 @@ void EvalVector::addProduct(const RefCountPtr<EvalVector>& a,
                                       + "*" + b->getStringValue() 
                                       + "))");
     }
+  setToVectorValue();
 }
 
 void EvalVector::sqrt()
@@ -465,7 +481,7 @@ void EvalVector::copy(const RefCountPtr<EvalVector>& other)
     {
       resize(other->length());
 
-      cerr << "other->length() = " << other->length() << endl;
+
       TEST_FOR_EXCEPTION(length()!=other->length(), InternalError,
                          "mismatched vector lengths in EvalVector::copy()");
 

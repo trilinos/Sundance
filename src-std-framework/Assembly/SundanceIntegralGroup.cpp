@@ -86,6 +86,8 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
   Tabs tab0;
   bool nonzero = false;
 
+  classVerbosity() = VerbSilent;
+
   SUNDANCE_OUT(verbosity() > VerbSilent,
                tab0 << "evaluating an integral group of size "
                << integrals_.size());
@@ -114,7 +116,11 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
         }
       else 
         {
-          if ((*coeffs)[resultIndices_[i][0]]->isZero()) continue;
+          if ((*coeffs)[resultIndices_[i][0]]->isZero()) 
+            {
+              // cerr << "coefficient is zero" << endl;
+              continue;
+            }
           TEST_FOR_EXCEPTION((*coeffs)[resultIndices_[i][0]]->isConstant(),
                              InternalError,
                              "Integrating a constant term="
@@ -123,6 +129,7 @@ bool IntegralGroup::evaluate(const CellJacobianBatch& J,
           SUNDANCE_OUT(verbosity() > VerbSilent,
                        tab << "Integrating term group " << i 
                        << " by quadrature");
+          //    cerr << "number of coeff terms = " << coeffs->size() << endl;
           const double* const f = (*coeffs)[resultIndices_[i][0]]->start();
           quad->transform(J, f, A);
         }

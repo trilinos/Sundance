@@ -24,6 +24,8 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
 {
   DerivSet::const_iterator i;
 
+  //  cerr << "computing sparsity pattern for " << expr->toString() << endl;
+
   SundanceUtils::Set<Deriv> singleDerivs;
 
   for (i=derivs.begin(); i != derivs.end(); i++)
@@ -37,6 +39,19 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
         }
     }
 
+  DerivSet secondOrderDerivs = expr->identifyNonzeroDerivs();
+  for (i=secondOrderDerivs.begin(); i != secondOrderDerivs.end(); i++)
+    {
+      const MultipleDeriv& d = *i;
+      MultiSet<Deriv>::const_iterator j;
+      for (j=d.begin(); j != d.end(); j++)
+        {
+          const Deriv& sd = *j;
+          singleDerivs.put(sd);
+        }
+    }
+
+
   for (int dir=0; dir<CoordDeriv::maxDim(); dir++)
     {
       singleDerivs.put(new CoordDeriv(dir));
@@ -44,15 +59,21 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
 
   for (i=derivs.begin(); i != derivs.end(); i++)
     {
+      //  cerr << "============ looking for coeff of " << *i << endl;
       const MultipleDeriv& d = *i;
       int n = derivs_.size();
       derivs_.append(d);
       derivToIndexMap_.put(d, n);
-      if (!expr->hasNonzeroDeriv(d)) states_.append(ZeroDeriv);
+      if (!expr->hasNonzeroDeriv(d)) 
+        {
+          //          cerr << "deriv wrt " << d << " is zero" << endl;
+          states_.append(ZeroDeriv);
+        }
       else  
         {
           if (expr->isConstant())
             {
+              //  cerr << "deriv " << d << " has constant coeff" << endl;
               states_.append(ConstantDeriv);
             }
           else
@@ -66,13 +87,23 @@ SparsityPattern::SparsityPattern(const DerivSet& derivs,
                 {
                   MultipleDeriv dTry = d;
                   dTry.put(*j);
+                  //  cerr << "testing against " << dTry << endl;
                   if (expr->hasNonzeroDeriv(dTry)) 
                     {
+                      //  cerr << "deriv wrt " << d << " is non-const" << endl;
                       isConstant = false;
                     }
                 }
-              if (isConstant) states_.append(ConstantDeriv);
-              else states_.append(VectorDeriv);
+              if (isConstant) 
+                {
+                  //     cerr << "deriv wrt " << d << " is constant" << endl;
+                  states_.append(ConstantDeriv);
+                }
+              else 
+                {
+                  // cerr << "deriv wrt " << d << " is non-constant" << endl;
+                  states_.append(VectorDeriv);
+                }
             }
         }
       if (d.order()==1 && d.begin()->isCoordDeriv())

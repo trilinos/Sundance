@@ -16,7 +16,7 @@ bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
 
 int main(int argc, void** argv)
 {
-  
+ 
   try
 		{
       MPISession::init(&argc, &argv);
@@ -57,7 +57,7 @@ int main(int argc, void** argv)
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad = new GaussianQuadrature(4);
 
-      
+     
       /* Define the weak form */
       Expr eqn = Integral(interior, u*(dx*v)*(dx*u), quad);
       /* Define the Dirichlet BC */
@@ -66,35 +66,46 @@ int main(int argc, void** argv)
 
   //     ElementIntegral::classVerbosity()=VerbExtreme;
       //Evaluator::classVerbosity()=VerbExtreme;
-      //      Assembler::classVerbosity()=VerbExtreme;
-      NonlinearOperatorBase<double>::classVerbosity()=VerbExtreme;
+      //Assembler::classVerbosity()=VerbExtreme;
+      //NonlinearOperatorBase<double>::classVerbosity()=VerbExtreme;
 //       StdFwkEvalMediator::classVerbosity()=VerbExtreme;
 
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
-      F.verbosity() = VerbExtreme;
+      //      F.verbosity() = VerbExtreme;
       /* Get the initial guess */
       Vector<double> x0 = F.getInitialGuess();
-
-
+      
+      
       /* Create an Aztec solver for solving the linear subproblems */
       std::map<int,int> azOptions;
       std::map<int,double> azParams;
-
+      
       azOptions[AZ_solver] = AZ_gmres;
       azOptions[AZ_precond] = AZ_dom_decomp;
       azOptions[AZ_subdomain_solve] = AZ_ilu;
       azOptions[AZ_graph_fill] = 1;
-      azParams[AZ_max_iter] = 1000;
+      azOptions[AZ_max_iter] = 1000;
       azParams[AZ_tol] = 1.0e-13;
-
+      
       LinearSolver<double> linSolver = new AztecSolver(azOptions,azParams);
+      
+ 
+     //  /* Set up the linear solver  */
+//       ParameterList solverParams;
 
+//       solverParams.set(LinearSolverBase<double>::verbosityParam(), 4);
+//       solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
+//       solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-14);
+
+//       LinearSolver<double> linSolver = new BICGSTABSolver<double>(solverParams);
 
 
       /* Now let's create a NOX solver */
 
       NOX::TSF::Group grp(x0, F, linSolver);
+
+      grp.verbosity() = VerbExtreme;
 
       // Set up the status tests
       NOX::StatusTest::NormF statusTestA(grp, 1.0e-10);

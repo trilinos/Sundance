@@ -86,9 +86,6 @@ computeJacobianAndFunction(Vector<double>& functionValue) const
 
   discreteU0_->setVector(currentEvalPt());
 
-  cerr << "computing J and F at eval point " << endl;
-  currentEvalPt().print(cerr);
-
   assembler_->assemble(J_, functionValue);
 
   return J_;
@@ -110,8 +107,6 @@ Vector<double> NonlinearProblem::computeFunctionValue() const
 
   discreteU0_->setVector(currentEvalPt());
 
-  cerr << "computing J and F at eval point " << endl;
-  currentEvalPt().print(cerr);
 
   Vector<double> rtn = range()->createMember();
   assembler_->assemble(rtn);

@@ -449,7 +449,7 @@ void Assembler::assemble(LinearOperator<double>& A,
     }
   mat->freezeValues();
 
-  //  if (verbosity() > VerbHigh)
+  if (verbosity() > VerbHigh)
     {
       cerr << "matrix = " << endl;
       A.print(cerr);
@@ -498,7 +498,9 @@ void Assembler::assemble(Vector<double>& b) const
     {
       Tabs tab0;
       SUNDANCE_OUT(verbosity() > VerbLow, 
-                   tab0 << "doing matrix/vector assembly for rqc=" << rqc_[r]);
+                   tab0 << " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+                   << endl << tab0 
+                   << "doing vector assembly for rqc=" << rqc_[r]);
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
@@ -537,13 +539,13 @@ void Assembler::assemble(Vector<double>& b) const
 
           evalExprs_[0][r]->flushResultCache();
           mesh_.getJacobians(cellDim, *workSet, *J);
-          Evaluator::classVerbosity() = VerbExtreme;
           evalExprs_[0][r]->evaluate(*evalMgr_, coeffs);
-          Evaluator::classVerbosity() = VerbSilent;
-          //          if (verbosity() > VerbMedium)
+
+          if (verbosity() > VerbMedium)
             {
               Tabs tab2;
-              cerr << tab2 << "evaluation results: " << endl;
+              cerr << tab2 << " ----------- evaluation results: ------" << endl;
+              cerr << tab2 << "expr=" << evalExprs_[0][r]->toString() << endl;
               const EvalContext& context = contexts_[0][r];
               const RefCountPtr<SparsityPattern>& sparsity 
                 = evalExprs_[0][r]->sparsity(evalExprs_[0][r]->getDerivSetIndex(context));
@@ -565,8 +567,25 @@ void Assembler::assemble(Vector<double>& b) const
           for (int g=0; g<groups_[0][r].size(); g++)
             {
               const IntegralGroup& group = groups_[0][r][g];
-              if (!group.evaluate(*J, coeffs, localValues)) continue;
-              
+              if (!group.evaluate(*J, coeffs, localValues)) 
+                {
+                  if (verbosity() > VerbMedium)
+                    {
+                      cerr << "integral group " << g << " was identically zero"
+                           << endl;
+                    }
+                  continue;
+                }
+
+              if (verbosity() > VerbHigh)
+                {
+                  cerr << endl << endl 
+                       << "--------------- doing integral group " << g << endl;
+                  cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
+                  cerr << "num entries = " << localValues->size() << endl;
+                  cerr << "values = " << *localValues << endl;
+                }
+
               insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
                                      *testLocalDOFs,
                                      group.nTestNodes(),
@@ -575,7 +594,7 @@ void Assembler::assemble(Vector<double>& b) const
         }
     }
 
-  //  if (verbosity() > VerbHigh)
+    if (verbosity() > VerbHigh)
     {
       cerr << "vector = " << endl;
       b.print(cerr);

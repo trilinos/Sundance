@@ -58,7 +58,7 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
   computePhysQuadPts();
   int nQuad = physQuadPts_.length();
   int d = expr->dir();
-  cerr << "num phys quad=" << nQuad << endl;
+  //  cerr << "num phys quad=" << nQuad << endl;
   vec->resize(nQuad);
   for (int q=0; q<nQuad; q++) 
     {
@@ -157,7 +157,7 @@ void QuadratureEvalMediator
                   double basisVals = (*refBasisValues)[0][q][i];
                   sum += coeff * basisVals;
                 }
-              cerr << "c=" << c << ", q=" << q << ", f=" << sum << endl;
+              //              cerr << "c=" << c << ", q=" << q << ", f=" << sum << endl;
             }
 
         }
@@ -183,7 +183,7 @@ void QuadratureEvalMediator
                       sum += g*invJ[pDir + r*cellDim()]*(*refBasisValues)[r][q][i];
                     }
                 }
-              cerr << "c=" << c << ", q=" << q << ", df=" << sum << endl;
+              // cerr << "c=" << c << ", q=" << q << ", df=" << sum << endl;
             }
         }
     }

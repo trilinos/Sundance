@@ -80,6 +80,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   alpha = tuple(miTest.firstOrderDirection());
                 }
+              SUNDANCE_OUT(verb > VerbMedium,
+                   tab1 << "creating reference integral for one-form");
               integral = rcp(new RefIntegral(cellDim, cellType,
                                              testBasis, alpha, 
                                              miTest.order()));
@@ -94,6 +96,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   beta = tuple(miUnk.firstOrderDirection());
                 }
+              SUNDANCE_OUT(verb > VerbMedium,
+                   tab1 << "creating reference integral for two-form");
               integral = rcp(new RefIntegral(cellDim, cellType,
                                              testBasis, alpha, miTest.order(),
                                              unkBasis, beta, miUnk.order()));
@@ -107,6 +111,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   alpha = tuple(miTest.firstOrderDirection());
                 }
+              SUNDANCE_OUT(verb > VerbMedium,
+                   tab1 << "creating quadrature integral for two-form");
               integral = rcp(new QuadratureIntegral(cellDim, cellType,
                                                     testBasis, alpha, 
                                                     miTest.order(), quad));
@@ -121,6 +127,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   beta = tuple(miUnk.firstOrderDirection());
                 }
+              SUNDANCE_OUT(verb > VerbMedium,
+                   tab1 << "creating quadrature integral for two-form");
               integral = rcp(new QuadratureIntegral(cellDim, cellType,
                                                     testBasis, alpha, 
                                                     miTest.order(),

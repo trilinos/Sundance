@@ -342,9 +342,9 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
                    Tabs() << "transformation matrix=" << G());
       
       if (useSumFirstMethod())
-        {
-          transformSummingFirst(J.numCells(), coeff, A);
-        }
+       {
+         transformSummingFirst(J.numCells(), coeff, A);
+       }
       else
         {
           transformSummingLast(J.numCells(), coeff, A);
@@ -360,6 +360,7 @@ void QuadratureIntegral
   double* aPtr = &((*A)[0]);
   double* coeffPtr = (double*) coeff;
 
+  //  cerr << "transform summing first " << endl;
   if (verbosity() > VerbMedium)
     {
       cerr << "nCells = " << nCells << endl;
@@ -387,11 +388,13 @@ void QuadratureIntegral
       for (int q=0; q<nQuad(); q++, coeffPtr++)
         {
           double f = (*coeffPtr);
+          //      cerr << "cell=" << c << " q=" << q << " f=" << f << endl;
           for (int n=0; n<sumWorkspace.size(); n++) 
             {
               sumWorkspace[n] += f*W_[n + q*sumWorkspace.size()];
             }
         }
+      //cerr << "cell=" << c << " untransformed sum=" << sumWorkspace << endl;
       /* transform the sum */
       double* gCell = &(G()[dim()*c]);
       double* aCell = aPtr + nNodes()*c;
@@ -402,6 +405,7 @@ void QuadratureIntegral
             {
               aCell[i] += sumWorkspace[nNodes()*j + i] * gCell[j];
             }
+          //cerr << "cell=" << c << " transformed sum= " << aCell[i] << endl;
         }
     }
 }
@@ -413,6 +417,9 @@ void QuadratureIntegral
 {
   double* aPtr = &((*A)[0]);
   int transSize = 0; 
+
+  //cerr << "transform summing last " << endl;
+
   if (isTwoForm())
     {
       transSize = nRefDerivTest() * nRefDerivUnk();
@@ -430,18 +437,20 @@ void QuadratureIntegral
   for (int c=0; c<nCells; c++)
     {
       double* gCell = &(G()[transSize*c]);
+      double* aCell = aPtr + nNodes()*c;
+      for (int n=0; n<nNodes(); n++) aCell[n] = 0.0;
+
       for (int q=0; q<nQuad(); q++)
         {
           double f = coeff[c*nQuad() + q];
+          //          cerr << "cell=" << c << " q=" << q << " f=" << f << endl;
           for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
 
-          double* aCell = aPtr + nNodes()*c;
           for (int n=0; n<nNodes(); n++)
             {
-              aCell[n] = 0.0;
               for (int t=0; t<transSize; t++)
                 {
-                  aCell[n] += W_[n + nNodes()*(t + transSize*q)];
+                  aCell[n] += jWorkspace[t]*W_[n + nNodes()*(t + transSize*q)];
                 }
             }
         }

@@ -77,6 +77,9 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 
   e->setupEval(region, factory);
 
+  //  cerr << "max diff order = " << maxDiffOrder << endl;
+  // cerr << "sparsity pattern = " << endl << *(e->sparsity(e->getDerivSetIndex(region))) << endl;
+
   return derivs;
 }
 
@@ -214,6 +217,8 @@ DerivSet SymbPreprocessor::identifyNonzeroDerivs(const Expr& expr,
         }
     }
 
+  //  cerr << "max diff order=" << maxDiffOrder << endl;
+  // cerr << "found derivs " << endl << nonzeroDerivs << endl;
   return nonzeroDerivs;
   
   
