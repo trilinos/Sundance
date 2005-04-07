@@ -34,7 +34,8 @@
  * Solves the Poisson equation in 1D
  */
 
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
+
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
 
 int main(int argc, void** argv)
 {
@@ -56,8 +57,7 @@ int main(int argc, void** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter points = new DimensionalCellFilter(0);
-      CellPredicate leftPointFunc = new PositionalCellPredicate(leftPointTest);
-      CellFilter leftPoint = points.subset(leftPointFunc);
+      CellFilter leftPoint = points.subset(new LeftPointTest());
 
       
       /* Create unknown and test functions, discretized using first-order

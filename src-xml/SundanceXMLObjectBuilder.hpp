@@ -28,46 +28,62 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundancePositionalCellPredicate.hpp"
+#ifndef SUNDANCE_XMLOBJECTBUILDER_H
+#define SUNDANCE_XMLOBJECTBUILDER_H
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+#include "Sundance.hpp"
 
-bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
+
+namespace SundanceXML
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
-                     InternalError,
-                     "argument " << other->toXML() 
-                     << " to PositionalCellPredicate::lessThan() should be "
-                     "a PositionalCellPredicate pointer.");
-
-  return func_.get() < dynamic_cast<const PositionalCellPredicate*>(other)->func_.get();
-}
-
-bool PositionalCellPredicate::test(int cellLID) const 
-{
-  if (cellDim()==0)
+  template <class T>
+  class XMLObjectBuilder
+  {
+  public:
+    /** */
+    XMLObjectBuilder() : varMap_() {;}
+    
+    /** */
+    bool hasName(const string& name) const
     {
-      return (*func_)(mesh().nodePosition(cellLID));
+      return varMap_.containsKey(name);
     }
-  else
+
+    /** */
+    const T& get(const string& name) const 
     {
-      Array<int> facets;
-      mesh().getFacetArray(cellDim(), cellLID, 0, facets);
-
-      for (int i=0; i<facets.size(); i++)
-        {
-          if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
-        }
-      return true;
+      return varMap_.get(name);
     }
-}
 
-XMLObject PositionalCellPredicate::toXML() const 
-{
-  XMLObject rtn("PositionalCellPredicate");
-  return rtn;
-}
+    /** */
+    void checkOptionValidity(const string& option, 
+                             const Set<string>& validChoices) const 
+    {
+      TEST_FOR_EXCEPTION(!valid.contains(key), RuntimeError,
+                         "option [" << option << "] not found among valid "
+                         "choices " << validChoices);
+    }
 
+    /** */
+    void checkTag(const XMLObject& xml, const string& expectedTag) const 
+    {
+      TEST_FOR_EXCEPTION(xml.getTag() != expectedTag, RuntimeError,
+                         "found tag [" << xml.getTag() << "] where ["
+                         << expectedTag << "] was expected");
+    }
+
+  protected:
+    
+    /** */
+    void addToMap(const string& name, const T& value) const
+    {
+      varMap_.put(name, value);
+    }
+  private:
+    
+    mutable Map<string, T> varMap_;
+
+  };
+
+}
+#endif

@@ -28,46 +28,62 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundancePositionalCellPredicate.hpp"
+#include "SundanceXMLFunctionBuilder.hpp"
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace SundanceXML;
 
-bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
+
+XMLFunctionBuilder
+::XMLFunctionBuilder(const RefCountPtr<XMLBasisBuilder>& basis,
+                     const RefCountPtr<XMLDiscreteSpaceBuilder>& space)
+  : XMLObjectBuilder<Expr>(),
+    basis_(basis),
+    space_(space)
+{;}
+
+
+
+
+
+Expr XMLFunctionBuilder::create(const XMLObject& xml) const 
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
-                     InternalError,
-                     "argument " << other->toXML() 
-                     << " to PositionalCellPredicate::lessThan() should be "
-                     "a PositionalCellPredicate pointer.");
+  static Set<string> valid = makeSet("UnknownFunction",
+                                     "TestFunction",
+                                     "DiscreteFunction");
 
-  return func_.get() < dynamic_cast<const PositionalCellPredicate*>(other)->func_.get();
-}
+  checkOptionValidity(xml.getTag(), valid);
 
-bool PositionalCellPredicate::test(int cellLID) const 
-{
-  if (cellDim()==0)
+  string name = xml.getRequired("name");
+
+  Expr rtn;
+
+  if (xml.getTag()=="DiscreteFunction")
     {
-      return (*func_)(mesh().nodePosition(cellLID));
+      string spaceName = xml.getRequired("space");
+      double value = xml.getRequiredDouble("value");
+      DiscreteSpace space = space_->get(spaceName);
+      rtn = new DiscreteFunction(space, value, name);
     }
   else
     {
-      Array<int> facets;
-      mesh().getFacetArray(cellDim(), cellLID, 0, facets);
-
-      for (int i=0; i<facets.size(); i++)
+      string basisName = xml.getRequired("basis");
+      BasisFamily basis = basis_->get(basisName);
+      if (xml.getTag()=="UnknownFunction")
         {
-          if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
+          rtn = new UnknownFunction(basis, name);
         }
-      return true;
+      else
+        {
+          rtn = new TestFunction(basis, name);
+        }
     }
-}
+  
 
-XMLObject PositionalCellPredicate::toXML() const 
-{
-  XMLObject rtn("PositionalCellPredicate");
+  addToMap(name, rtn);
+
   return rtn;
 }
+
 

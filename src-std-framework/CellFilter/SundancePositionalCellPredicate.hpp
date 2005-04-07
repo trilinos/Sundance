@@ -38,46 +38,68 @@
 
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+#define CELL_PREDICATE(name, code) \
+class name : public CellPredicateFunctorBase, \
+  public Handleable<CellPredicateFunctorBase> \
+{ \
+public:\
+  name() : CellPredicateFunctorBase(){;}            \
+  virtual ~name(){;}\
+  virtual bool operator()(const Point& x) const code \
+  GET_RCP(CellPredicateFunctorBase);\
+};
+
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
   using namespace Teuchos;
 
-  /** Prototype for predicates used to filter points. */
-  typedef bool positionalPredicate(const Point& x);
-  
-  namespace Internal
+
+  /** */
+  class CellPredicateFunctorBase
   {
-    /** 
-     * PositionalCellPredicate tests whether the cell's nodes satisfy
-     * a condition on their positions.
-     */
-    class PositionalCellPredicate : public CellPredicateBase 
-    {
-    public:
-      /** Construct with a function of positions */
-      PositionalCellPredicate(positionalPredicate* func) 
-        : CellPredicateBase(), func_(func) {;}
+  public:
+    /** */
+    CellPredicateFunctorBase(){;}
+    /** */
+    virtual ~CellPredicateFunctorBase(){;}
 
-      /** virtual dtor */
-      virtual ~PositionalCellPredicate(){;}
+    /** */
+    virtual bool operator()(const Point& x) const = 0 ;
+  };
+
+  
+  /** 
+   * PositionalCellPredicate tests whether the cell's nodes satisfy
+   * a condition on their positions.
+   */
+  class PositionalCellPredicate : public Internal::CellPredicateBase 
+  {
+  public:
       
-      /** Test whether the cell with the given LID satisfies the condition */
-      virtual bool test(int cellLID) const ;
+    /** Construct with a function of positions */
+    PositionalCellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func) 
+      : CellPredicateBase(), func_(func) {;}
 
-      /** Write to XML */
-      virtual XMLObject toXML() const ;
+    /** virtual dtor */
+    virtual ~PositionalCellPredicate(){;}
+      
+    /** Test whether the cell with the given LID satisfies the condition */
+    virtual bool test(int cellLID) const ;
 
-      /** comparison */
-      virtual bool lessThan(const CellPredicateBase* other) const ;
+    /** Write to XML */
+    virtual XMLObject toXML() const ;
 
-      /* */
-      GET_RCP(CellPredicateBase);
+    /** comparison */
+    virtual bool lessThan(const CellPredicateBase* other) const ;
 
-    private:
-      positionalPredicate* func_;
-    };
-  }
+    /* */
+    GET_RCP(CellPredicateBase);
+
+  private:
+    RefCountPtr<CellPredicateFunctorBase> func_;
+  };
+
 }
 
 

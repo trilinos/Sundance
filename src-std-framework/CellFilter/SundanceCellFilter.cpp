@@ -102,6 +102,12 @@ CellFilter CellFilter::subset(const CellPredicate& pred) const
 }
 
 
+CellFilter CellFilter::subset(const RefCountPtr<CellPredicateFunctorBase>& test) const
+{
+  return new SubsetCellFilter(*this, CellPredicate(test));
+}
+
+
 
 XMLObject CellFilter::toXML() const 
 {

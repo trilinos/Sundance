@@ -59,6 +59,8 @@ using namespace SundanceUtils;
       MeshSourceBase(meshType, comm),
       ax_(ax), bx_(bx), nx_(nx) {;}
 
+    /** Create a line mesher from a ParameterList */
+    PartitionedLineMesher(const ParameterList& params);
     
     /** */
     virtual ~PartitionedLineMesher() {;}

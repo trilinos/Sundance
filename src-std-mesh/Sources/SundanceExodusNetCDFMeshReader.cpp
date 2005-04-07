@@ -18,6 +18,15 @@ ExodusNetCDFMeshReader::ExodusNetCDFMeshReader(const string& fname,
                      "ExodusNetCDFMeshReader not useable with parallel meshes");
 }
 
+ExodusNetCDFMeshReader::ExodusNetCDFMeshReader(const ParameterList& params)
+  : MeshReaderBase(params)
+{
+  TEST_FOR_EXCEPTION(nProc() > 1, RuntimeError,
+                     "ExodusNetCDFMeshReader not useable with parallel meshes");
+}
+
+
+
 
 Mesh ExodusNetCDFMeshReader::fillMesh() const 
 {

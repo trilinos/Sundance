@@ -71,6 +71,9 @@ using namespace SundanceUtils;
       ay_(ay), by_(by), ny_(ny), npy_(npy) {;}
 
     
+    /** Create a rectangle mesher from a ParameterList */
+    PartitionedRectangleMesher(const ParameterList& params);
+    
     /** */
     virtual ~PartitionedRectangleMesher() {;}
 

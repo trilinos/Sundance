@@ -28,46 +28,31 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundancePositionalCellPredicate.hpp"
+#ifndef SUNDANCE_XMLQUADRATUREBUILDER_H
+#define SUNDANCE_XMLQUADRATUREBUILDER_H
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+#include "SundanceQuadratureFamily.hpp"
+#include "SundanceXMLObjectBuilder.hpp"
+#include "Teuchos_XMLObject.hpp"
 
-bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
+namespace SundanceXML
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
-                     InternalError,
-                     "argument " << other->toXML() 
-                     << " to PositionalCellPredicate::lessThan() should be "
-                     "a PositionalCellPredicate pointer.");
+  using namespace SundanceUtils;
+  using namespace SundanceStdFwk;
 
-  return func_.get() < dynamic_cast<const PositionalCellPredicate*>(other)->func_.get();
+  /** 
+   * Creates a QuadratureFamily from an XML specification
+   */
+  class XMLQuadratureBuilder : public XMLObjectBuilder<QuadratureFamily>
+  {
+  public:
+    /** */
+    XMLQuadratureBuilder();
+
+    /** */
+    QuadratureFamily create(const XMLObject& xml) const ;
+  private:
+  };
 }
 
-bool PositionalCellPredicate::test(int cellLID) const 
-{
-  if (cellDim()==0)
-    {
-      return (*func_)(mesh().nodePosition(cellLID));
-    }
-  else
-    {
-      Array<int> facets;
-      mesh().getFacetArray(cellDim(), cellLID, 0, facets);
-
-      for (int i=0; i<facets.size(); i++)
-        {
-          if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
-        }
-      return true;
-    }
-}
-
-XMLObject PositionalCellPredicate::toXML() const 
-{
-  XMLObject rtn("PositionalCellPredicate");
-  return rtn;
-}
-
+#endif

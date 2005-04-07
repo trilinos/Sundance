@@ -58,6 +58,8 @@ namespace SundanceStdMesh
     ExodusNetCDFMeshReader(const string& filename, 
                            const MeshType& meshType,
                            const MPIComm& comm = MPIComm::world());
+    /** */
+    ExodusNetCDFMeshReader(const ParameterList& params);
 
     /** virtual dtor */
     virtual ~ExodusNetCDFMeshReader(){;}
@@ -69,7 +71,7 @@ namespace SundanceStdMesh
     /** Print a short descriptive string */
     virtual string describe() const 
     {return "ExodusNetCDFMeshReader[file=" + filename() + "]";}
-      
+
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */

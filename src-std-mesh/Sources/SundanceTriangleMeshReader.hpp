@@ -96,6 +96,9 @@ namespace SundanceStdMesh
                        const MeshType& meshType,
                        const MPIComm& comm = MPIComm::world());
 
+    /** Construct from a ParameterList */
+    TriangleMeshReader(const ParameterList& params);
+
     /** virtual dtor */
     virtual ~TriangleMeshReader(){;}
 

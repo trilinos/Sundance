@@ -9,12 +9,10 @@ using SundanceCore::List;
  * Solves the Navier-Stokes equation in 2D using pressure stabilization.
  */
 
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
-bool bottomPointTest(const Point& x) {return fabs(x[1]) < 1.0e-10;}
-bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
-bool topPointTest(const Point& x) {return fabs(x[1]-1.0) < 1.0e-10;}
-
-
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
+CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;});
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;});
 
 
 int main(int argc, void** argv)
@@ -57,16 +55,12 @@ int main(int argc, void** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
-      CellFilter points = new DimensionalCellFilter(0);
-      CellPredicate leftPointFunc = new PositionalCellPredicate(leftPointTest);
-      CellPredicate rightPointFunc = new PositionalCellPredicate(rightPointTest);
-      CellPredicate topPointFunc = new PositionalCellPredicate(topPointTest);
-      CellPredicate bottomPointFunc = new PositionalCellPredicate(bottomPointTest);
 
-      CellFilter left = edges.subset(leftPointFunc);
-      CellFilter right = edges.subset(rightPointFunc);
-      CellFilter top = edges.subset(topPointFunc);
-      CellFilter bottom = edges.subset(bottomPointFunc);
+      CellFilter left = edges.subset(new LeftPointTest());
+      CellFilter right = edges.subset(new RightPointTest());
+      CellFilter top = edges.subset(new TopPointTest());
+      CellFilter bottom = edges.subset(new BottomPointTest());
+
 
 
       

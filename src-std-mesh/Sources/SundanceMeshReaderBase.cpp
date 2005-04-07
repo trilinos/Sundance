@@ -8,6 +8,16 @@ using namespace TSFExtended;
 using namespace Teuchos;
 using namespace SundanceUtils;
 
+
+MeshReaderBase::MeshReaderBase(const ParameterList& params)
+  : MeshSourceBase(params), 
+    filename_()
+{
+  filename_ = params.get<string>("Filename");
+}
+
+
+
 int MeshReaderBase::atoi(const std::string& x) const 
 {
 #ifndef TFLOP

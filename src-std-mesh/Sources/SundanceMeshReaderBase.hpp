@@ -58,6 +58,9 @@ namespace SundanceStdMesh
         : MeshSourceBase(meshType, comm), filename_(filename)
       {}
 
+      /** Construct from a parameter list */
+      MeshReaderBase(const ParameterList& params);
+
       /** */
       virtual ~MeshReaderBase(){;}
 

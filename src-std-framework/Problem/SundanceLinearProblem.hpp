@@ -106,8 +106,27 @@ namespace SundanceStdFwk
      * solver */
     Expr formSolutionExpr(const Vector<double>& solnVector) const ;
 
+    /** Flag indicating whether to stop on a solve failure */
+    static bool& stopOnSolveFailure() {static bool rtn = false; return rtn;}
+
+    /** Flag indicating whether to write out the matrix and vector
+     * after a solve failure */
+    static bool& dumpBadMatrix() {static bool rtn = true; return rtn;}
+
+    /** Filename for dump of bad matrix */
+    static string& badMatrixFilename() 
+    {static string rtn = "badMatrix.dat"; return rtn;}
+
+    /** Filename for dump of bad vector */
+    static string& badVectorFilename() 
+    {static string rtn = "badVector.dat"; return rtn;}
+
 
   private:
+
+    /** Do error reporting and matrix dumping after a solve failure */
+    void handleSolveFailure() const ;
+    
       
     /** */
     RefCountPtr<Assembler> assembler_;

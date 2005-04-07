@@ -7,6 +7,28 @@ using namespace TSFExtended;
 using namespace Teuchos;
 using namespace SundanceUtils;
 
+PartitionedRectangleMesher::PartitionedRectangleMesher(const ParameterList& params)
+  : MeshSourceBase(params),
+    ax_(params.get<double>("ax")),
+    bx_(params.get<double>("bx")),
+    nx_(params.get<int>("nx")),
+    npx_(1),
+    ay_(params.get<double>("ay")),
+    by_(params.get<double>("by")),
+    ny_(params.get<int>("ny")),
+    npy_(1)
+{
+  if (params.isParameter("npx"))
+    {
+      npx_ = params.get<int>("npx");
+    }
+  if (params.isParameter("npy"))
+    {
+      npy_ = params.get<int>("npy");
+    }
+}
+
+
 Mesh PartitionedRectangleMesher::fillMesh() const
 {
   SUNDANCE_OUT(verbosity() > VerbSilent,

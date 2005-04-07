@@ -35,6 +35,7 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
+#include "SundanceEvaluator.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
@@ -105,7 +106,12 @@ void DiscreteFunction::getLocalValues(int cellDim,
                         Array<double>& localValues) const 
 {
   TimeMonitor timer(getLocalValsTimer());
+  Tabs tab;
 
+  if (Evaluator::classVerbosity() > VerbHigh)
+    {
+      cerr << tab << "getting DF local values" << endl;
+    }
   updateGhosts();
 
   const RefCountPtr<DOFMapBase>& map = space_.map();
@@ -131,6 +137,11 @@ void DiscreteFunction::getLocalValues(int cellDim,
         }
     }
   ghostView_->getElements(&(indices[0]), indices.size(), localValues);
+
+  if (Evaluator::classVerbosity() > VerbHigh)
+    {
+      cerr << tab << "local values are " << localValues << endl;
+    }
 }
 
 

@@ -59,11 +59,11 @@ LinearProblem::LinearProblem()
 
 
 LinearProblem::LinearProblem(const Mesh& mesh, 
-                                   const Expr& eqn, 
-                                   const Expr& bc,
-                                   const Expr& test, 
-                                   const Expr& unk, 
-                                   const VectorType<double>& vecType)
+                             const Expr& eqn, 
+                             const Expr& bc,
+                             const Expr& test, 
+                             const Expr& unk, 
+                             const VectorType<double>& vecType)
   : assembler_(),
     A_(),
     rhs_(),
@@ -133,10 +133,18 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
 
   const SolverState<double>& state = *status_;
   SUNDANCE_VERB_MEDIUM(tab << 
-                    "LinearProblem::solve() done solving system: status is " 
-                    << state.stateDescription());
+                       "LinearProblem::solve() done solving system: status is " 
+                       << state.stateDescription());
 
-  Expr soln = formSolutionExpr(solnVec);
+  Expr soln;
+  if (state.finalState() != SolveConverged) 
+    {
+      handleSolveFailure();
+    }
+  else
+    {
+      soln = formSolutionExpr(solnVec);
+    }
 
   return soln;
 }
@@ -159,16 +167,23 @@ SolverState<double> LinearProblem
 
   const SolverState<double>& state = *status_;
   SUNDANCE_VERB_MEDIUM(tab << 
-                    "LinearProblem::solve() done solving system: status is " 
-                    << state.stateDescription());
+                       "LinearProblem::solve() done solving system: status is " 
+                       << state.stateDescription());
 
-  if (soln.ptr().get()==0)
+  if (state.finalState() != SolveConverged) 
     {
-      soln = formSolutionExpr(solnVec);
+      handleSolveFailure();
     }
   else
     {
-      DiscreteFunction::discFunc(soln)->setVector(solnVec);
+      if (soln.ptr().get()==0)
+        {
+          soln = formSolutionExpr(solnVec);
+        }
+      else
+        {
+          DiscreteFunction::discFunc(soln)->setVector(solnVec);
+        }
     }
 
   return state;
@@ -180,3 +195,43 @@ Expr LinearProblem::formSolutionExpr(const Vector<double>& solnVector) const
                               solnVector, "soln");
 }
 
+void LinearProblem::handleSolveFailure() const 
+{
+  const SolverState<double>& state = *status_;
+
+  TeuchosOStringStream ss;
+  ss << "Solve failed! state = "
+     << state.stateDescription()
+     << "\nmessage=" << state.finalMsg()
+     << "\niters taken = " << state.finalIters()
+     << "\nfinal residual = " << state.finalResid();
+  
+  if (dumpBadMatrix())
+    {
+      if (A_.ptr().get() != 0)
+        {
+          ofstream osA(badMatrixFilename().c_str());
+          A_.print(osA);
+          ss << "\nmatrix written to " << badMatrixFilename();
+        }
+      else
+        {
+          ss << "\nthe matrix is null! Evil is afoot in your code...";
+        }
+      if (rhs_.ptr().get() != 0)
+        {
+          ofstream osb(badVectorFilename().c_str());
+          rhs_.print(osb);
+          ss << "\nRHS vector written to " << badVectorFilename();
+        }
+      else
+        {
+          ss << "\nthe RHS vector is null! Evil is afoot in your code...";
+        }
+    }
+
+  TEST_FOR_EXCEPTION((state.finalState() != SolveConverged) && stopOnSolveFailure(),
+                     RuntimeError, TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss));
+
+  cerr << TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss) << endl;
+}

@@ -28,46 +28,43 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundancePositionalCellPredicate.hpp"
+#include "SundanceXMLBasisBuilder.hpp"
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+using namespace SundanceUtils;
 
-bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
+
+XMLBasisBuilder::XMLBasisBuilder()
+  : Repository<BasisFamily>()
+{;}
+
+
+
+BasisFamily XMLBasisBuilder::createBasis(const XMLObject& xml) const 
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
-                     InternalError,
-                     "argument " << other->toXML() 
-                     << " to PositionalCellPredicate::lessThan() should be "
-                     "a PositionalCellPredicate pointer.");
+  static Set<string> valid = makeSet("Lagrange");
 
-  return func_.get() < dynamic_cast<const PositionalCellPredicate*>(other)->func_.get();
-}
+  checkTag(xml, "Basis");
 
-bool PositionalCellPredicate::test(int cellLID) const 
-{
-  if (cellDim()==0)
+  string name = xml.getRequired("name");
+  string type = xml.getRequired("type");
+
+  checkOptionValidity(type, valid);
+
+  BasisFamily rtn;
+
+  if (type == "Lagrange")
     {
-      return (*func_)(mesh().nodePosition(cellLID));
+      int order = xml.getRequiredInt("order");
+      rtn = new Lagrange(order);
     }
-  else
-    {
-      Array<int> facets;
-      mesh().getFacetArray(cellDim(), cellLID, 0, facets);
 
-      for (int i=0; i<facets.size(); i++)
-        {
-          if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
-        }
-      return true;
-    }
-}
+  TEST_FOR_EXCEPTION(rtn.ptr().get() == 0, InternalError,
+                     "null return in XMLBasisBuilder::createBasis()");
 
-XMLObject PositionalCellPredicate::toXML() const 
-{
-  XMLObject rtn("PositionalCellPredicate");
+  addToMap(name, rtn);
+
   return rtn;
 }
+
 

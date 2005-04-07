@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellFilterBase.hpp"
+#include "SundancePositionalCellPredicate.hpp"
 #include "SundanceOrderedHandle.hpp"
 #include "TSFHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
@@ -151,7 +152,12 @@ namespace SundanceStdFwk
     /** Return a filter that will return the subset of cells for which
      * the given predicate is true */
     CellFilter subset(const CellPredicate& test) const ;
+    
+    /** Return a filter that will return the subset of cells for which
+     * the given predicate is true */
+    CellFilter subset(const RefCountPtr<CellPredicateFunctorBase>& test) const ;
 
+    
     /** Indicate whether this is a null cell filter */
     bool isNullCellFilter() const ;
 

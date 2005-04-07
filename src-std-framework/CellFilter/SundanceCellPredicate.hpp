@@ -36,6 +36,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceCellPredicateBase.hpp"
+#include "SundancePositionalCellPredicate.hpp"
 #include "TSFHandle.hpp"
 
 namespace SundanceStdFwk
@@ -57,6 +58,12 @@ using namespace SundanceStdMesh::Internal;
     
     /* handle boilerplate */
     HANDLE_CTORS(CellPredicate, CellPredicateBase);
+
+    /** construct from a positional cell predicate functor */
+    CellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func);
+
+    /** construct from a positional cell predicate functor */
+    CellPredicate(Handleable<CellPredicateFunctorBase>* func);
 
     /** write to XML */
     XMLObject toXML() const {return ptr()->toXML();}

@@ -28,46 +28,22 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundancePositionalCellPredicate.hpp"
+#ifndef SUNDANCE_MESHBUILDER_H
+#define SUNDANCE_MESHBUILDER_H
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+#include "SundanceDefs.hpp"
+#include "SundanceMesh.hpp"
+#include "SundanceMeshType.hpp"
+#include "SundanceMeshSource.hpp"
+#include "Teuchos_ParameterList.hpp"
 
-bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
+namespace SundanceStdMesh
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
-                     InternalError,
-                     "argument " << other->toXML() 
-                     << " to PositionalCellPredicate::lessThan() should be "
-                     "a PositionalCellPredicate pointer.");
-
-  return func_.get() < dynamic_cast<const PositionalCellPredicate*>(other)->func_.get();
+  class MeshBuilder 
+  {
+  public:
+    static Mesh createMesh(const ParameterList& params);
+  };
 }
 
-bool PositionalCellPredicate::test(int cellLID) const 
-{
-  if (cellDim()==0)
-    {
-      return (*func_)(mesh().nodePosition(cellLID));
-    }
-  else
-    {
-      Array<int> facets;
-      mesh().getFacetArray(cellDim(), cellLID, 0, facets);
-
-      for (int i=0; i<facets.size(); i++)
-        {
-          if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
-        }
-      return true;
-    }
-}
-
-XMLObject PositionalCellPredicate::toXML() const 
-{
-  XMLObject rtn("PositionalCellPredicate");
-  return rtn;
-}
-
+#endif

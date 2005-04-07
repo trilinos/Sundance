@@ -37,6 +37,32 @@ TriangleMeshReader::TriangleMeshReader(const string& fname,
                "elem filename = " << elemFilename_);
   
 }
+TriangleMeshReader::TriangleMeshReader(const ParameterList& params)
+  : MeshReaderBase(params),
+    nodeFilename_(filename()),
+    elemFilename_(filename()),
+    parFilename_(filename())
+{
+  
+
+  if (nProc() > 1)
+    {
+      nodeFilename_ = nodeFilename_ + Teuchos::toString(myRank());
+      parFilename_ = parFilename_ + Teuchos::toString(myRank());
+      elemFilename_ = elemFilename_ + Teuchos::toString(myRank());
+    }
+  nodeFilename_ = nodeFilename_ + ".node";
+  elemFilename_ = elemFilename_ + ".ele";
+  parFilename_ = parFilename_ + ".par";
+  
+  verbosity() = classVerbosity();
+  SUNDANCE_OUT(verbosity() > VerbLow,
+               "node filename = " << nodeFilename_);
+  
+  SUNDANCE_OUT(verbosity() > VerbLow,
+               "elem filename = " << elemFilename_);
+  
+}
 
 
 Mesh TriangleMeshReader::fillMesh() const 

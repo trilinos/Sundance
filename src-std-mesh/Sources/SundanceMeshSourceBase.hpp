@@ -42,6 +42,7 @@
 #include "SundanceNoncopyable.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceCreatableMesh.hpp"
+#include "Teuchos_ParameterList.hpp"
 
 namespace SundanceStdMesh
 {
@@ -88,6 +89,9 @@ namespace SundanceStdMesh
       /** Construct with a mesh type and MPI communicator */
       MeshSourceBase(const MeshType& meshType,
                      const MPIComm& comm);
+
+      /** Construct from a parameter list */
+      MeshSourceBase(const ParameterList& params);
 
       /** virtual dtor */
       virtual ~MeshSourceBase(){;}

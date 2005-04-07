@@ -67,6 +67,7 @@
 #include "SundancePartitionedRectangleMesher.hpp"
 #include "SundanceTriangleMeshReader.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
+#include "SundanceMeshBuilder.hpp"
 
 
 /* Cell filters */
@@ -184,6 +185,8 @@ namespace SundanceStdFwk
     /** */
     static string searchForFile(const string& name);    
 
+    static VerbositySetting verbosity(const string& str);
+
   private:
     static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}
@@ -194,7 +197,6 @@ namespace SundanceStdFwk
 
 
 
-    static VerbositySetting verbosity(const string& str);
 
     static string getPathStr();
 

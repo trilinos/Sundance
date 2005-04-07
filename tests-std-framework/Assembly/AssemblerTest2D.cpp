@@ -81,7 +81,7 @@ static Time& totalTimer()
   return *rtn;
 }
 
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
 
 int main(int argc, void** argv)
 {
@@ -113,8 +113,7 @@ int main(int argc, void** argv)
 
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
-      CellPredicate leftEdgeFunc = new PositionalCellPredicate(leftPointTest);
-      CellFilter leftEdge = edges.subset(leftEdgeFunc);
+      CellFilter leftEdge = edges.subset(new LeftPointTest());
       
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);

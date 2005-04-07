@@ -7,6 +7,14 @@ using namespace TSFExtended;
 using namespace Teuchos;
 using namespace SundanceUtils;
 
+
+PartitionedLineMesher::PartitionedLineMesher(const ParameterList& params)
+  : MeshSourceBase(params),
+    ax_(params.get<double>("ax")),
+    bx_(params.get<double>("bx")),
+    nx_(params.get<int>("nx"))
+{;}
+
 Mesh PartitionedLineMesher::fillMesh() const
 {
   SUNDANCE_OUT(verbosity() > VerbSilent,

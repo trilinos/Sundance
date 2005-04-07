@@ -83,7 +83,7 @@ void QuadratureEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs 
-                       << "QuadratureEvalMediator evaluating coord expr " 
+                       << "QuadratureEvalMediator evaluating cell diameter expr " 
                        << expr->toString());
 
   int nQuad = quadWgts().size();
@@ -179,11 +179,24 @@ void QuadratureEvalMediator
   TEST_FOR_EXCEPTION(f==0, InternalError,
                      "QuadratureEvalMediator::evalDiscreteFuncElement() called "
                      "with expr that is not a discrete function");
-
+  Tabs tab;
+   if (Evaluator::classVerbosity() > VerbHigh)
+     {
+       cerr << tab << "evaluting DF " << expr->name() << endl;
+     }
 
   for (int i=0; i<multiIndices.size(); i++)
     {
+      Tabs tab1;
       const MultiIndex& mi = multiIndices[i];
+      if (Evaluator::classVerbosity() > VerbHigh)
+        {
+          cerr << tab1 << "evaluting DF for multiindex " << mi << endl;
+          cerr << tab1 << "num cells = " << cellLID()->size() << endl;
+          cerr << tab1 << "num quad points = " << quadWgts().size() << endl;
+          cerr << tab1 << "my index = " << expr->myIndex() << endl;
+          cerr << tab1 << "num funcs = " << f->discreteSpace().nFunc() << endl;
+        }
       vec[i]->resize(cellLID()->size() * quadWgts().size());
   
       if (mi.order() == 0)
@@ -204,6 +217,11 @@ void QuadratureEvalMediator
           double* vecPtr = vec[i]->start();
           for (int i=0; i<nPts; i++) 
             {
+              if (Evaluator::classVerbosity() > VerbHigh)
+                {
+                  cerr << tab1 << "i=" << i << " func value=" 
+                       << cachePtr[i*nFuncs + myIndex] << endl;
+                }
               vecPtr[i] = cachePtr[i*nFuncs + myIndex];
             }
         }
@@ -228,6 +246,11 @@ void QuadratureEvalMediator
           double* vecPtr = vec[i]->start();
           for (int i=0; i<nPts; i++) 
             {
+              if (Evaluator::classVerbosity() > VerbHigh)
+                {
+                  cerr << tab1 << "i=" << i << " func value=" 
+                       << cachePtr[i*nFuncs + myIndex] << endl;
+                }
               vecPtr[i] = cachePtr[i*nFuncs + myIndex];
             }
         }
@@ -315,7 +338,6 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
       nDir = 1;
       cacheVals->resize(cellLID()->size() * nQuad * nFuncs);
     }
-
 
   for (int p=0; p<nDir; p++)
     {

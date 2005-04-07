@@ -40,14 +40,13 @@
  * | \nabla u |^2 = 1 + \epsilon \nabla^2 u
  */
 
-bool bdryPointTest(const Point& x) 
-{
-  static int nBdryPts = 0;
 
-  double r2 = x[0]*x[0]+x[1]*x[1];
-  bool rtn = ::fabs(r2 - 100.0) < 1.0e-6;
-  return rtn;
-}
+CELL_PREDICATE(BdryPointTest,
+               {
+                 double r2 = x[0]*x[0]+x[1]*x[1];
+                 bool rtn = ::fabs(r2 - 100.0) < 1.0e-6;
+                 return rtn;
+               })
 
 extern "C" {double besi0_(double* x);}
 
@@ -96,8 +95,7 @@ int main(int argc, void** argv)
        * in the interior of the domain.  also define edges and boundaries.*/
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
-      CellPredicate bdryPointFunc = new PositionalCellPredicate(bdryPointTest);
-      CellFilter bdry = edges.subset(bdryPointFunc);
+      CellFilter bdry = edges.subset(new BdryPointTest);
 
       
       /* Create unknown and test functions, discretized using first-order

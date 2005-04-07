@@ -1,6 +1,7 @@
 #include "SundanceMeshSourceBase.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceBasicSimplicialMeshType.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
@@ -18,6 +19,17 @@ MeshSourceBase::MeshSourceBase(const MeshType& meshType,
     nodeAttributes_(rcp(new Array<Array<double> >())),
     elemAttributes_(rcp(new Array<Array<double> >()))
 {
+}
+
+MeshSourceBase::MeshSourceBase(const ParameterList& params)
+  : cachedMesh_(),
+    hasCachedMesh_(),
+    meshType_(new BasicSimplicialMeshType()),
+    comm_(MPIComm::world()),
+    nodeAttributes_(rcp(new Array<Array<double> >())),
+    elemAttributes_(rcp(new Array<Array<double> >()))
+{
+  
 }
 
 Mesh MeshSourceBase::getMesh() const

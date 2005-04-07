@@ -29,11 +29,23 @@
 /* @HEADER@ */
 
 #include "SundanceCellPredicate.hpp"
+#include "SundancePositionalCellPredicate.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+
+
+CellPredicate::CellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func)
+  : Handle<CellPredicateBase>(new PositionalCellPredicate(func))
+{;}
+
+CellPredicate::CellPredicate(Handleable<CellPredicateFunctorBase>* func)
+  : Handle<CellPredicateBase>(new PositionalCellPredicate(func->getRcp()))
+{;}
+
+
 
 bool CellPredicate::operator<(const CellPredicate& other) const
 {

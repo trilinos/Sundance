@@ -44,8 +44,8 @@ using SundanceCore::List;
  * u(x) = \frac{1}{120} x^5 - \frac{1}{36} x^3 + \frac{7}{360} x
  */
 
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
-bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 
 int main(int argc, void** argv)
 {
@@ -69,12 +69,8 @@ int main(int argc, void** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter points = new DimensionalCellFilter(0);
-      CellPredicate rightPointFunc 
-        = new PositionalCellPredicate(rightPointTest);
-      CellFilter rightPoint = points.subset(rightPointFunc);
-      CellPredicate leftPointFunc 
-        = new PositionalCellPredicate(leftPointTest);
-      CellFilter leftPoint = points.subset(leftPointFunc);
+      CellFilter rightPoint = points.subset(new RightPointTest());
+      CellFilter leftPoint = points.subset(new LeftPointTest());
 
       
       /* Create unknown and test functions, discretized using first-order

@@ -35,8 +35,9 @@
  * Solves the radiation diffusion equation in 1D
  */
 
-bool leftPointTest(const Point& x) {return fabs(x[0]) < 1.0e-10;}
-bool rightPointTest(const Point& x) {return fabs(x[0]-1.0) < 1.0e-10;}
+
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 
 int main(int argc, void** argv)
 {
@@ -58,11 +59,10 @@ int main(int argc, void** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter points = new DimensionalCellFilter(0);
-      CellPredicate leftPointFunc = new PositionalCellPredicate(leftPointTest);
-      CellPredicate rightPointFunc = new PositionalCellPredicate(rightPointTest);
-      CellFilter leftPoint = points.subset(leftPointFunc);
-      CellFilter rightPoint = points.subset(rightPointFunc);
+      CellFilter rightPoint = points.subset(new RightPointTest());
+      CellFilter leftPoint = points.subset(new LeftPointTest());
 
+      
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */

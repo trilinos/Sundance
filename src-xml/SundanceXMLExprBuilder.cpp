@@ -28,46 +28,60 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundancePositionalCellPredicate.hpp"
+#include "SundanceXMLExprBuilder.hpp"
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+using namespace SundanceUtils;
 
-bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
+
+XMLExprBuilder::XMLExprBuilder()
+  : Repository<ExprFamily>()
+{;}
+
+
+
+Expr XMLExprBuilder::assembleFromXML(const XMLObject& xml)
 {
-  TEST_FOR_EXCEPTION(dynamic_cast<const PositionalCellPredicate*>(other) == 0,
-                     InternalError,
-                     "argument " << other->toXML() 
-                     << " to PositionalCellPredicate::lessThan() should be "
-                     "a PositionalCellPredicate pointer.");
+  const string& tag = xml.getTag();
 
-  return func_.get() < dynamic_cast<const PositionalCellPredicate*>(other)->func_.get();
-}
-
-bool PositionalCellPredicate::test(int cellLID) const 
-{
-  if (cellDim()==0)
+  if (binaryOps.contains(tag))
     {
-      return (*func_)(mesh().nodePosition(cellLID));
-    }
-  else
-    {
-      Array<int> facets;
-      mesh().getFacetArray(cellDim(), cellLID, 0, facets);
-
-      for (int i=0; i<facets.size(); i++)
+      checkNumChildren(xml, 2);
+      const XMLObject& left = xml.getChild(0);
+      const XMLObject& right = xml.getChild(1);
+      Expr leftExpr = assembleFromXML(left);
+      Expr rightExpr = assembleFromXML(right);
+      if (tag=="Sum")
         {
-          if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
+          return leftExpr + rightExpr;
         }
-      return true;
+      else if (tag=="Product")
+        {
+          return leftExpr * rightExpr; 
+        }
     }
-}
+  else if (unaryOps.contains(tag))
+    {
+      checkNumChildren(xml, 1);
+      const XMLObject& arg = xml.getChild(0);
+      Expr argExpr = assembleFromXML(arg);
+      if (tag=="UnaryMinus")
+        {
+          return -argExpr;
+        }
+    }
+  else if (tag=="Var")
+    {
+      const string& name = xml.getRequired("name");
+      if (contains(name))
+        {
+          return get(name);
+        }
+      if (functions_->contains(name))
+        {
+          return functions_->get(name);
+        }
+    }
 
-XMLObject PositionalCellPredicate::toXML() const 
-{
-  XMLObject rtn("PositionalCellPredicate");
-  return rtn;
 }
 
