@@ -52,7 +52,7 @@ namespace SundanceCore
      *
      */
     class EvalVector : public Noncopyable,
-      public TSFExtended::ObjectWithVerbosity<EvalVector>
+                       public TSFExtended::ObjectWithVerbosity<EvalVector>
     {
       friend class EvalManager;
       friend class TempStack;
@@ -234,8 +234,8 @@ namespace SundanceCore
        *
        */
       void setTo_S_add_SV(const double& alpha,
-                           const double& beta,
-                           const EvalVector* C);
+                          const double& beta,
+                          const EvalVector* C);
 
       /** 
        *
@@ -305,18 +305,18 @@ namespace SundanceCore
 
       void setString(const string& str) {str_ = str;}
 
-      static bool& shadowOps() {static bool rtn = false; return rtn;}
+      inline static bool& shadowOps() {static bool rtn = false; return rtn;}
 
       bool isValid() const {return data_.get() != 0 && s_ != 0;}
       //@}
 
       
 
-      static double& totalFlops() {static double rtn = 0; return rtn;}
+      inline static double& totalFlops() {static double rtn = 0; return rtn;}
 
     private:
 
-      static void addFlops(const double& flops) {totalFlops() += flops;}
+      inline static void addFlops(const double& flops) {totalFlops() += flops;}
 
       mutable TempStack* s_;
 
@@ -325,7 +325,609 @@ namespace SundanceCore
       string str_;
 
     };
+
+
+
+
+    inline void EvalVector::setToConstant(const double& alpha) 
+    {
+      int n = data_->size();
+      if (n > 0)
+        {
+          double* x = &((*data_)[0]);
+          for (int i=0; i<n; i++)
+            {
+              x[i] = alpha;
+            }
+        }
+      if (shadowOps()) str_ = Teuchos::toString(alpha);
+    }
+
+
+    inline void EvalVector::add_SV(const double& alpha,
+                            const EvalVector* B)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Bx = B->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] += alpha*Bx[i];
+            }
+
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + str_ + "+" 
+            + Teuchos::toString(alpha) + "*" + B->str_ + ")";
+        }
+    }
+
+    inline void EvalVector::add_S(const double& alpha)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] += alpha;
+            }
+          addFlops(n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + str_ + "+" 
+            + Teuchos::toString(alpha) + ")";
+        }
+    }
+
+
+    inline void EvalVector::add_V(const EvalVector* A)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] += Ax[i];
+            }
+          addFlops(n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + str_ + " + " +  A->str_ + ")";
+        }
+    }
+
+    inline void EvalVector::add_SVV(const double& alpha,
+                             const EvalVector* B,
+                             const EvalVector* C)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Bx = B->start();
+          const double* const Cx = C->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] += alpha*Bx[i]*Cx[i];
+            }
+          addFlops(3*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + str_ + " + " + Teuchos::toString(alpha) + "*"
+            + B->str() + "*" + C->str() + ")";
+        }
+    }
+
+    inline void EvalVector::add_VV(const EvalVector* A,
+                            const EvalVector* B)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+          const double* const Bx = B->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] += Ax[i]*Bx[i];
+            }
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + str_ + " + " + A->str() + "*" + B->str() + ")";
+        }
+    }
+
+
+    inline void EvalVector::multiply_S_add_SV(const double& alpha, 
+                                       const double& beta,
+                                       const EvalVector* C)
+    {
+      int n = data_->size();
+  
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Cx = C->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= alpha;
+              x[i] += beta*Cx[i];
+            }
+          addFlops(3*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + Teuchos::toString(alpha) + "*" + str_ + "+"
+            + Teuchos::toString(beta) + "*" + C->str_ + ")";
+        }
+    }
+
+
+    inline void EvalVector::multiply_S_add_S(const double& alpha, 
+                                      const double& beta)
+    {
+      int n = data_->size();
+  
+      if (n > 0)
+        {
+          double* const x = start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= alpha;
+              x[i] += beta;
+            }
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + Teuchos::toString(alpha) + "*" + str_
+            + " + " + Teuchos::toString(beta) + ")";
+        }
+    }
+
+    inline void EvalVector::multiply_V(const EvalVector* A)
+    {
+      int n = data_->size();
+  
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= Ax[i];
+            }
+          addFlops(n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = str() + "*" + A->str();
+        }
+    }
+
+    inline void EvalVector::multiply_V_add_VVV(const EvalVector* A,
+                                        const EvalVector* B,
+                                        const EvalVector* C,
+                                        const EvalVector* D)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+          const double* const Bx = B->start();
+          const double* const Cx = C->start();
+          const double* const Dx = D->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= Ax[i];
+              x[i] += Bx[i]*Cx[i]*Dx[i];
+            }
+          addFlops(4*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + str() + "*" + A->str() + " + " 
+            + B->str() + "*" + C->str() + "*" + D->str() + ")";
+        }
+    }
+
+    inline void EvalVector::multiply_V_add_SVV(const EvalVector* A,
+                                        const double& beta,
+                                        const EvalVector* C,
+                                        const EvalVector* D)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+          const double* const Cx = C->start();
+          const double* const Dx = D->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= Ax[i];
+              x[i] += beta*Cx[i]*Dx[i];
+            }
+          addFlops(4*n);
+        }
+
+      if (shadowOps())
+        {
+          if (beta != 0.0)
+            {
+              str_ = "(" + str() + "*" + A->str();
+            }
+          else
+            {
+              str_ = str() + "*" + A->str();
+            }
+          if (beta != 0.0)
+            {
+              str_ += " + ";
+              if (beta != 1.0)
+                {
+                  str_ += Teuchos::toString(beta) + "*";
+                }
+              str_ += C->str() + "*" + D->str();
+            }
+        }
+    }
+
+    inline void EvalVector::multiply_V_add_SV(const EvalVector* A,
+                                       const double& beta,
+                                       const EvalVector* C)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+          const double* const Cx = C->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= Ax[i];
+              x[i] += beta*Cx[i];
+            }
+          addFlops(3*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + str() + "*" + A->str() + " + " + Teuchos::toString(beta)
+            + "*" + C->str() + ")";
+        }
+    }
+
+    inline void EvalVector::multiply_VV(const EvalVector* A,
+                                 const EvalVector* B)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+          const double* const Bx = B->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= Ax[i]*Bx[i];
+            }
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = str() + "*" + A->str() + "*" + B->str();
+        }
+    }
+
+
+    inline void EvalVector::multiply_SV(const double& alpha,
+                                 const EvalVector* B)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+      
+          const double* const Bx = B->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= alpha*Bx[i];
+            }
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = Teuchos::toString(alpha) + "*" + str_ + "*" + B->str();
+        }
+    }
+
+    inline void EvalVector::multiply_S(const double& alpha)
+    {
+      int n = data_->size();
+
+      if (n > 0)
+        {
+          double* const x = start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] *= alpha;
+            }
+          addFlops(n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = Teuchos::toString(alpha) + "*" + str_;
+        }
+    }
+
+
+    inline void EvalVector::setTo_S_add_SVV(const double& alpha,
+                                     const double& beta,
+                                     const EvalVector* C,
+                                     const EvalVector* D)
+    {
+      int n = C->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Cx = C->start();
+          const double* const Dx = D->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = alpha + beta*Cx[i]*Dx[i];
+            }
+          addFlops(3*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + Teuchos::toString(alpha) + " + " 
+            + Teuchos::toString(beta) + "*" 
+            + C->str() + "*" + D->str() + ")";
+        }
+    }
+
+    inline void EvalVector::setTo_S_add_VV(const double& alpha,
+                                    const EvalVector* B,
+                                    const EvalVector* C)
+    {
+      int n = B->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Bx = B->start();
+          const double* const Cx = C->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = alpha + Bx[i]*Cx[i];
+            }
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + Teuchos::toString(alpha) + " + " 
+            + B->str() + "*" + C->str() + ")";
+        }
+    }
+
+    inline void EvalVector::setTo_S_add_SV(const double& alpha,
+                                    const double& beta,
+                                    const EvalVector* C)
+    {
+      int n = C->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Cx = C->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = alpha + beta*Cx[i];
+            }
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + Teuchos::toString(alpha) + " + " 
+            + Teuchos::toString(beta) + "*" 
+            + C->str() + ")";
+        }
+    }
+
+
+
+    inline void EvalVector::setTo_S_add_V(const double& alpha,
+                                   const EvalVector* B)
+    {
+      int n = B->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Bx = B->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = alpha + Bx[i];
+            }
+          addFlops(n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = "(" + Teuchos::toString(alpha) + " + " 
+            + B->str() + ")";
+        }
+    }
+
+
+    inline void EvalVector::setTo_V(const EvalVector* A)
+    {
+      int n = A->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = Ax[i];
+            }
+        }
+
+      if (shadowOps())
+        {
+          str_ = A->str();
+        }
+    }
+
+
+
+    inline void EvalVector::setTo_SVV(const double& alpha,
+                               const EvalVector* B,
+                               const EvalVector* C)
+    {
+      int n = B->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Bx = B->start();
+          const double* const Cx = C->start();
+
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = alpha*Bx[i]*Cx[i];
+            }
+          addFlops(2*n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = Teuchos::toString(alpha) + "*" 
+            + B->str() + "*" + C->str();
+        }
+    }
+
+    inline void EvalVector::setTo_VV(const EvalVector* A,
+                              const EvalVector* B)
+    {
+      int n = A->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Ax = A->start();
+          const double* const Bx = B->start();
+
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = Ax[i]*Bx[i];
+            }
+
+          addFlops(n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = A->str() + "*" + B->str();
+        }
+    }
+
+    inline void EvalVector::setTo_SV(const double& alpha,
+                              const EvalVector* B)
+    {
+      int n = B->data_->size();
+      resize(n);
+
+      if (n > 0)
+        {
+          double* const x = start();
+          const double* const Bx = B->start();
+
+      
+          for (int i=0; i<n; i++)
+            {
+              x[i] = alpha*Bx[i];
+            }
+          addFlops(n);
+        }
+
+      if (shadowOps())
+        {
+          str_ = Teuchos::toString(alpha) + "*" 
+            + B->str();
+        }
+    }
   }
+
+
 }
 
 namespace std

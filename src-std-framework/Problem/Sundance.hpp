@@ -187,6 +187,9 @@ namespace SundanceStdFwk
 
     static VerbositySetting verbosity(const string& str);
 
+    /** */
+    static void setSettings(const XMLObject& xml);
+
   private:
     static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}

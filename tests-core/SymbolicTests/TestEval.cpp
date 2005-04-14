@@ -321,6 +321,8 @@ int main(int argc, void** argv)
 
       TESTER(sin(u*x), sin(U*X));
 
+      TESTER(dx*sin(u), Dx*sin(U));
+
       TESTER(sin(u*x+0.5*w*u), sin(U*X+0.5*W*U));
 
       TESTER(sin(cos(u*x)+0.5*w*u), sin(cos(U*X)+0.5*W*U));

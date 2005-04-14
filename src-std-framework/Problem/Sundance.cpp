@@ -209,16 +209,9 @@ Array<string> Sundance::parsePathStr()
   return rtn;
 }
 
-void Sundance::setSettings(const string& settingsFile)
+
+void Sundance::setSettings(const XMLObject& xml)
 {
-  string fqFile = searchForFile(settingsFile);
-  
-  FileInputSource fis(fqFile);
-
-  XMLObject xml = fis.getObject();
-
-  cerr << "settings are: " << xml.toString() << endl;
-
   for (int i=0; i<xml.numChildren(); i++)
     {
       const XMLObject& child = xml.getChild(i);
@@ -229,9 +222,6 @@ void Sundance::setSettings(const string& settingsFile)
             {
               int workSetSize = child.getRequiredInt("value");
               Assembler::workSetSize() = workSetSize;
-              cerr << "setting work set size to " << workSetSize << endl;
-              cerr << "confirming work set size = " << 
-                Assembler::workSetSize() << endl;
             }
           else if (name=="Check for Floating Point Errors")
             {
@@ -246,7 +236,6 @@ void Sundance::setSettings(const string& settingsFile)
         {
           const string& context = child.getRequired("context");
           const string& value = child.getRequired("value");
-          cerr << context << " verbosity=" << value << endl;
           if (context=="Evaluation")
             {
               SundanceCore::Internal::Evaluator::classVerbosity() = verbosity(value);
@@ -310,6 +299,20 @@ void Sundance::setSettings(const string& settingsFile)
             }
         }
     }
+}
+
+void Sundance::setSettings(const string& settingsFile)
+{
+  string fqFile = searchForFile(settingsFile);
+  
+  FileInputSource fis(fqFile);
+
+  XMLObject xml = fis.getObject();
+
+  cerr << "settings are: " << xml.toString() << endl;
+
+  setSettings(xml);
+
 }
 
 VerbositySetting Sundance::verbosity(const string& str)

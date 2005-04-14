@@ -201,9 +201,9 @@ int main(int argc, void** argv)
       EvalVector::shadowOps() = false;
       Array<string> failures;
       
-      int nSamples = 50;
+      int nSamples = 50000;
 
-      for (int n=8; n<32768*1024; n*=2)
+      for (int n=1; n<32768; n*=2)
         {
           TempStack s(n);
           int nTests = 2;
@@ -226,43 +226,30 @@ int main(int argc, void** argv)
 
           double tRawMean = 0.0;
           double tFuncMean = 0.0;
-          double rMean = 0.0;
 
           for (int i=0; i<nSamples; i++)
             {
               tRaw[i] = rawOps(vecs, nTests, alpha, beta, gamma);
               tFunc[i] = funcOps(vecs, nTests, alpha, beta, gamma);
-              r[i] = tFunc[i]/tRaw[i];
-              rMean += r[i];
               tRawMean += tRaw[i];
               tFuncMean += tFunc[i];
             }
 
           tRawMean /= ((double) nSamples);
           tFuncMean /= ((double) nSamples);
-          rMean /= ((double) nSamples);
 
-          double tRawVar = 0.0;
-          double tFuncVar = 0.0;
-          double rVar = 0.0;
-
+          double varRaw = 0.0;
+          double varFunc = 0.0;
           for (int i=0; i<nSamples; i++)
             {
-              tRawVar += pow(tRaw[i] - tRawMean, 2.0);
-              tFuncVar += pow(tFunc[i] - tFuncMean, 2.0);
-              rVar += pow(r[i] - rMean, 2.0);
+              varRaw += pow(tRaw[i] - tRawMean, 2.0);
+              varFunc += pow(tFunc[i] - tFuncMean, 2.0);
             }
 
-          tRawVar /= ((double) nSamples);
-          tFuncVar /= ((double) nSamples);
-          rVar /= ((double) nSamples);
+          double rms = sqrt((varRaw + varFunc)/((double) nSamples))/tRawMean;
+          double ratio = tFuncMean/tRawMean;
 
-          double tRawRMS = sqrt(tRawVar);
-          double tFuncRMS = sqrt(tFuncVar);
-          double rRMS = sqrt(rVar);
-
-          cerr << n << "  " << rMean 
-               << " " << rRMS << endl;
+          cerr << n << "    " << ratio << "       " << rms << endl;
         }
     }
 	catch(exception& e)

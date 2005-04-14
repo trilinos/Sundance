@@ -88,602 +88,602 @@ RefCountPtr<EvalVector> EvalVector::clone() const
   return rcp(new EvalVector(s_, data_, str_));
 }
 
-void EvalVector::setToConstant(const double& alpha) 
-{
-  int n = data_->size();
-  if (n > 0)
-    {
-      double* x = &((*data_)[0]);
-      for (int i=0; i<n; i++)
-        {
-          x[i] = alpha;
-        }
-    }
-  if (shadowOps()) str_ = Teuchos::toString(alpha);
-}
+// void EvalVector::setToConstant(const double& alpha) 
+// {
+//   int n = data_->size();
+//   if (n > 0)
+//     {
+//       double* x = &((*data_)[0]);
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = alpha;
+//         }
+//     }
+//   if (shadowOps()) str_ = Teuchos::toString(alpha);
+// }
 
 
-void EvalVector::add_SV(const double& alpha,
-                        const EvalVector* B)
-{
-  int n = data_->size();
+// void EvalVector::add_SV(const double& alpha,
+//                         const EvalVector* B)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Bx = B->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Bx = B->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] += alpha*Bx[i];
-        }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] += alpha*Bx[i];
+//         }
 
-      addFlops(2*n);
-    }
+//       addFlops(2*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + str_ + "+" 
-        + Teuchos::toString(alpha) + "*" + B->str_ + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + str_ + "+" 
+//         + Teuchos::toString(alpha) + "*" + B->str_ + ")";
+//     }
+// }
 
-void EvalVector::add_S(const double& alpha)
-{
-  int n = data_->size();
+// void EvalVector::add_S(const double& alpha)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] += alpha;
-        }
-      addFlops(n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] += alpha;
+//         }
+//       addFlops(n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + str_ + "+" 
-        + Teuchos::toString(alpha) + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + str_ + "+" 
+//         + Teuchos::toString(alpha) + ")";
+//     }
+// }
 
 
-void EvalVector::add_V(const EvalVector* A)
-{
-  int n = data_->size();
+// void EvalVector::add_V(const EvalVector* A)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] += Ax[i];
-        }
-      addFlops(n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] += Ax[i];
+//         }
+//       addFlops(n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + str_ + " + " +  A->str_ + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + str_ + " + " +  A->str_ + ")";
+//     }
+// }
 
-void EvalVector::add_SVV(const double& alpha,
-                         const EvalVector* B,
-                         const EvalVector* C)
-{
-  int n = data_->size();
+// void EvalVector::add_SVV(const double& alpha,
+//                          const EvalVector* B,
+//                          const EvalVector* C)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Bx = B->start();
-      const double* const Cx = C->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Bx = B->start();
+//       const double* const Cx = C->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] += alpha*Bx[i]*Cx[i];
-        }
-      addFlops(3*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] += alpha*Bx[i]*Cx[i];
+//         }
+//       addFlops(3*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + str_ + " + " + Teuchos::toString(alpha) + "*"
-        + B->str() + "*" + C->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + str_ + " + " + Teuchos::toString(alpha) + "*"
+//         + B->str() + "*" + C->str() + ")";
+//     }
+// }
 
-void EvalVector::add_VV(const EvalVector* A,
-                        const EvalVector* B)
-{
-  int n = data_->size();
+// void EvalVector::add_VV(const EvalVector* A,
+//                         const EvalVector* B)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
-      const double* const Bx = B->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
+//       const double* const Bx = B->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] += Ax[i]*Bx[i];
-        }
-      addFlops(2*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] += Ax[i]*Bx[i];
+//         }
+//       addFlops(2*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + str_ + " + " + A->str() + "*" + B->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + str_ + " + " + A->str() + "*" + B->str() + ")";
+//     }
+// }
 
 
-void EvalVector::multiply_S_add_SV(const double& alpha, 
-                                   const double& beta,
-                                   const EvalVector* C)
-{
-  int n = data_->size();
+// void EvalVector::multiply_S_add_SV(const double& alpha, 
+//                                    const double& beta,
+//                                    const EvalVector* C)
+// {
+//   int n = data_->size();
   
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Cx = C->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Cx = C->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= alpha;
-          x[i] += beta*Cx[i];
-        }
-      addFlops(3*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= alpha;
+//           x[i] += beta*Cx[i];
+//         }
+//       addFlops(3*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + Teuchos::toString(alpha) + "*" + str_ + "+"
-        + Teuchos::toString(beta) + "*" + C->str_ + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + Teuchos::toString(alpha) + "*" + str_ + "+"
+//         + Teuchos::toString(beta) + "*" + C->str_ + ")";
+//     }
+// }
 
 
-void EvalVector::multiply_S_add_S(const double& alpha, 
-                                  const double& beta)
-{
-  int n = data_->size();
+// void EvalVector::multiply_S_add_S(const double& alpha, 
+//                                   const double& beta)
+// {
+//   int n = data_->size();
   
-  if (n > 0)
-    {
-      double* const x = start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= alpha;
-          x[i] += beta;
-        }
-      addFlops(2*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= alpha;
+//           x[i] += beta;
+//         }
+//       addFlops(2*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + Teuchos::toString(alpha) + "*" + str_
-        + " + " + Teuchos::toString(beta) + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + Teuchos::toString(alpha) + "*" + str_
+//         + " + " + Teuchos::toString(beta) + ")";
+//     }
+// }
 
-void EvalVector::multiply_V(const EvalVector* A)
-{
-  int n = data_->size();
+// void EvalVector::multiply_V(const EvalVector* A)
+// {
+//   int n = data_->size();
   
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= Ax[i];
-        }
-      addFlops(n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= Ax[i];
+//         }
+//       addFlops(n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = str() + "*" + A->str();
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = str() + "*" + A->str();
+//     }
+// }
 
-void EvalVector::multiply_V_add_VVV(const EvalVector* A,
-                                    const EvalVector* B,
-                                    const EvalVector* C,
-                                    const EvalVector* D)
-{
-  int n = data_->size();
+// void EvalVector::multiply_V_add_VVV(const EvalVector* A,
+//                                     const EvalVector* B,
+//                                     const EvalVector* C,
+//                                     const EvalVector* D)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
-      const double* const Bx = B->start();
-      const double* const Cx = C->start();
-      const double* const Dx = D->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
+//       const double* const Bx = B->start();
+//       const double* const Cx = C->start();
+//       const double* const Dx = D->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= Ax[i];
-          x[i] += Bx[i]*Cx[i]*Dx[i];
-        }
-      addFlops(4*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= Ax[i];
+//           x[i] += Bx[i]*Cx[i]*Dx[i];
+//         }
+//       addFlops(4*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + str() + "*" + A->str() + " + " 
-        + B->str() + "*" + C->str() + "*" + D->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + str() + "*" + A->str() + " + " 
+//         + B->str() + "*" + C->str() + "*" + D->str() + ")";
+//     }
+// }
 
-void EvalVector::multiply_V_add_SVV(const EvalVector* A,
-                                    const double& beta,
-                                    const EvalVector* C,
-                                    const EvalVector* D)
-{
-  int n = data_->size();
+// void EvalVector::multiply_V_add_SVV(const EvalVector* A,
+//                                     const double& beta,
+//                                     const EvalVector* C,
+//                                     const EvalVector* D)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
-      const double* const Cx = C->start();
-      const double* const Dx = D->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
+//       const double* const Cx = C->start();
+//       const double* const Dx = D->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= Ax[i];
-          x[i] += beta*Cx[i]*Dx[i];
-        }
-      addFlops(4*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= Ax[i];
+//           x[i] += beta*Cx[i]*Dx[i];
+//         }
+//       addFlops(4*n);
+//     }
 
-  if (shadowOps())
-    {
-      if (beta != 0.0)
-        {
-          str_ = "(" + str() + "*" + A->str();
-        }
-      else
-        {
-          str_ = str() + "*" + A->str();
-        }
-      if (beta != 0.0)
-        {
-          str_ += " + ";
-          if (beta != 1.0)
-            {
-              str_ += Teuchos::toString(beta) + "*";
-            }
-          str_ += C->str() + "*" + D->str();
-        }
-    }
-}
+//   if (shadowOps())
+//     {
+//       if (beta != 0.0)
+//         {
+//           str_ = "(" + str() + "*" + A->str();
+//         }
+//       else
+//         {
+//           str_ = str() + "*" + A->str();
+//         }
+//       if (beta != 0.0)
+//         {
+//           str_ += " + ";
+//           if (beta != 1.0)
+//             {
+//               str_ += Teuchos::toString(beta) + "*";
+//             }
+//           str_ += C->str() + "*" + D->str();
+//         }
+//     }
+// }
 
-void EvalVector::multiply_V_add_SV(const EvalVector* A,
-                                   const double& beta,
-                                   const EvalVector* C)
-{
-  int n = data_->size();
+// void EvalVector::multiply_V_add_SV(const EvalVector* A,
+//                                    const double& beta,
+//                                    const EvalVector* C)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
-      const double* const Cx = C->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
+//       const double* const Cx = C->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= Ax[i];
-          x[i] += beta*Cx[i];
-        }
-      addFlops(3*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= Ax[i];
+//           x[i] += beta*Cx[i];
+//         }
+//       addFlops(3*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + str() + "*" + A->str() + " + " + Teuchos::toString(beta)
-        + "*" + C->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + str() + "*" + A->str() + " + " + Teuchos::toString(beta)
+//         + "*" + C->str() + ")";
+//     }
+// }
 
-void EvalVector::multiply_VV(const EvalVector* A,
-                             const EvalVector* B)
-{
-  int n = data_->size();
+// void EvalVector::multiply_VV(const EvalVector* A,
+//                              const EvalVector* B)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
-      const double* const Bx = B->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
+//       const double* const Bx = B->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= Ax[i]*Bx[i];
-        }
-      addFlops(2*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= Ax[i]*Bx[i];
+//         }
+//       addFlops(2*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = str() + "*" + A->str() + "*" + B->str();
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = str() + "*" + A->str() + "*" + B->str();
+//     }
+// }
 
 
-void EvalVector::multiply_SV(const double& alpha,
-                             const EvalVector* B)
-{
-  int n = data_->size();
+// void EvalVector::multiply_SV(const double& alpha,
+//                              const EvalVector* B)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
       
-      const double* const Bx = B->start();
+//       const double* const Bx = B->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= alpha*Bx[i];
-        }
-      addFlops(2*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= alpha*Bx[i];
+//         }
+//       addFlops(2*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = Teuchos::toString(alpha) + "*" + str_ + "*" + B->str();
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = Teuchos::toString(alpha) + "*" + str_ + "*" + B->str();
+//     }
+// }
 
-void EvalVector::multiply_S(const double& alpha)
-{
-  int n = data_->size();
+// void EvalVector::multiply_S(const double& alpha)
+// {
+//   int n = data_->size();
 
-  if (n > 0)
-    {
-      double* const x = start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] *= alpha;
-        }
-      addFlops(n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] *= alpha;
+//         }
+//       addFlops(n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = Teuchos::toString(alpha) + "*" + str_;
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = Teuchos::toString(alpha) + "*" + str_;
+//     }
+// }
 
 
-void EvalVector::setTo_S_add_SVV(const double& alpha,
-                                 const double& beta,
-                                 const EvalVector* C,
-                                 const EvalVector* D)
-{
-  int n = C->data_->size();
-  resize(n);
+// void EvalVector::setTo_S_add_SVV(const double& alpha,
+//                                  const double& beta,
+//                                  const EvalVector* C,
+//                                  const EvalVector* D)
+// {
+//   int n = C->data_->size();
+//   resize(n);
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Cx = C->start();
-      const double* const Dx = D->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Cx = C->start();
+//       const double* const Dx = D->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] = alpha + beta*Cx[i]*Dx[i];
-        }
-      addFlops(3*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = alpha + beta*Cx[i]*Dx[i];
+//         }
+//       addFlops(3*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + Teuchos::toString(alpha) + " + " 
-        + Teuchos::toString(beta) + "*" 
-        + C->str() + "*" + D->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + Teuchos::toString(alpha) + " + " 
+//         + Teuchos::toString(beta) + "*" 
+//         + C->str() + "*" + D->str() + ")";
+//     }
+// }
 
-void EvalVector::setTo_S_add_VV(const double& alpha,
-                                const EvalVector* B,
-                                const EvalVector* C)
-{
-  int n = B->data_->size();
-  resize(n);
+// void EvalVector::setTo_S_add_VV(const double& alpha,
+//                                 const EvalVector* B,
+//                                 const EvalVector* C)
+// {
+//   int n = B->data_->size();
+//   resize(n);
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Bx = B->start();
-      const double* const Cx = C->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Bx = B->start();
+//       const double* const Cx = C->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] = alpha + Bx[i]*Cx[i];
-        }
-      addFlops(2*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = alpha + Bx[i]*Cx[i];
+//         }
+//       addFlops(2*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + Teuchos::toString(alpha) + " + " 
-        + B->str() + "*" + C->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + Teuchos::toString(alpha) + " + " 
+//         + B->str() + "*" + C->str() + ")";
+//     }
+// }
 
-void EvalVector::setTo_S_add_SV(const double& alpha,
-                                const double& beta,
-                                const EvalVector* C)
-{
-  int n = C->data_->size();
-  resize(n);
+// void EvalVector::setTo_S_add_SV(const double& alpha,
+//                                 const double& beta,
+//                                 const EvalVector* C)
+// {
+//   int n = C->data_->size();
+//   resize(n);
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Cx = C->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Cx = C->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] = alpha + beta*Cx[i];
-        }
-      addFlops(2*n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = alpha + beta*Cx[i];
+//         }
+//       addFlops(2*n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + Teuchos::toString(alpha) + " + " 
-        + Teuchos::toString(beta) + "*" 
-        + C->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + Teuchos::toString(alpha) + " + " 
+//         + Teuchos::toString(beta) + "*" 
+//         + C->str() + ")";
+//     }
+// }
 
 
 
-void EvalVector::setTo_S_add_V(const double& alpha,
-                               const EvalVector* B)
-{
-  int n = B->data_->size();
-  resize(n);
+// void EvalVector::setTo_S_add_V(const double& alpha,
+//                                const EvalVector* B)
+// {
+//   int n = B->data_->size();
+//   resize(n);
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Bx = B->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Bx = B->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] = alpha + Bx[i];
-        }
-      addFlops(n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = alpha + Bx[i];
+//         }
+//       addFlops(n);
+//     }
 
-  if (shadowOps())
-    {
-      str_ = "(" + Teuchos::toString(alpha) + " + " 
-        + B->str() + ")";
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = "(" + Teuchos::toString(alpha) + " + " 
+//         + B->str() + ")";
+//     }
+// }
 
 
-void EvalVector::setTo_V(const EvalVector* A)
-{
-  int n = A->data_->size();
-  resize(n);
+// void EvalVector::setTo_V(const EvalVector* A)
+// {
+//   int n = A->data_->size();
+//   resize(n);
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] = Ax[i];
-        }
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = Ax[i];
+//         }
+//     }
 
-  if (shadowOps())
-    {
-      str_ = A->str();
-    }
-}
+//   if (shadowOps())
+//     {
+//       str_ = A->str();
+//     }
+// }
 
 
 
-void EvalVector::setTo_SVV(const double& alpha,
-                           const EvalVector* B,
-                           const EvalVector* C)
-{
-  int n = B->data_->size();
-  resize(n);
+// void EvalVector::setTo_SVV(const double& alpha,
+//                            const EvalVector* B,
+//                            const EvalVector* C)
+// {
+//   int n = B->data_->size();
+//   resize(n);
 
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Bx = B->start();
-      const double* const Cx = C->start();
-
-      
-      for (int i=0; i<n; i++)
-        {
-          x[i] = alpha*Bx[i]*Cx[i];
-        }
-      addFlops(2*n);
-    }
-
-  if (shadowOps())
-    {
-      str_ = Teuchos::toString(alpha) + "*" 
-        + B->str() + "*" + C->str();
-    }
-}
-
-void EvalVector::setTo_VV(const EvalVector* A,
-                          const EvalVector* B)
-{
-  int n = A->data_->size();
-  resize(n);
-
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Ax = A->start();
-      const double* const Bx = B->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Bx = B->start();
+//       const double* const Cx = C->start();
 
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] = Ax[i]*Bx[i];
-        }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = alpha*Bx[i]*Cx[i];
+//         }
+//       addFlops(2*n);
+//     }
 
-      addFlops(n);
-    }
+//   if (shadowOps())
+//     {
+//       str_ = Teuchos::toString(alpha) + "*" 
+//         + B->str() + "*" + C->str();
+//     }
+// }
 
-  if (shadowOps())
-    {
-      str_ = A->str() + "*" + B->str();
-    }
-}
+// void EvalVector::setTo_VV(const EvalVector* A,
+//                           const EvalVector* B)
+// {
+//   int n = A->data_->size();
+//   resize(n);
 
-void EvalVector::setTo_SV(const double& alpha,
-                          const EvalVector* B)
-{
-  int n = B->data_->size();
-  resize(n);
-
-  if (n > 0)
-    {
-      double* const x = start();
-      const double* const Bx = B->start();
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Ax = A->start();
+//       const double* const Bx = B->start();
 
       
-      for (int i=0; i<n; i++)
-        {
-          x[i] = alpha*Bx[i];
-        }
-      addFlops(n);
-    }
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = Ax[i]*Bx[i];
+//         }
 
-  if (shadowOps())
-    {
-      str_ = Teuchos::toString(alpha) + "*" 
-        + B->str();
-    }
-}
+//       addFlops(n);
+//     }
+
+//   if (shadowOps())
+//     {
+//       str_ = A->str() + "*" + B->str();
+//     }
+// }
+
+// void EvalVector::setTo_SV(const double& alpha,
+//                           const EvalVector* B)
+// {
+//   int n = B->data_->size();
+//   resize(n);
+
+//   if (n > 0)
+//     {
+//       double* const x = start();
+//       const double* const Bx = B->start();
+
+      
+//       for (int i=0; i<n; i++)
+//         {
+//           x[i] = alpha*Bx[i];
+//         }
+//       addFlops(n);
+//     }
+
+//   if (shadowOps())
+//     {
+//       str_ = Teuchos::toString(alpha) + "*" 
+//         + B->str();
+//     }
+// }
 
 void EvalVector::applyUnaryOperator(const UnaryFunctor* func, 
                                     Array<RefCountPtr<EvalVector> >& opDerivs)

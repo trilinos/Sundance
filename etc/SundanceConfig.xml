@@ -11,7 +11,7 @@
 
 <!-- Whether to compute a string representation of calculations  -->
 
-<Parameter name="Shadow Calculations with String Values" value="true"/>
+<Parameter name="Shadow Calculations with String Values" value="false"/>
 
 
 
