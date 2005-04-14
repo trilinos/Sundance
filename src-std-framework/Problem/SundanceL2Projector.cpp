@@ -87,6 +87,7 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   azOptions[AZ_subdomain_solve] = AZ_icc;
   azOptions[AZ_graph_fill] = 1;
   azOptions[AZ_max_iter] = 1000;
+  azOptions[AZ_output] = AZ_none;
   azParams[AZ_tol] = 1.0e-13;
   
   solver_ = new AztecSolver(azOptions,azParams);
