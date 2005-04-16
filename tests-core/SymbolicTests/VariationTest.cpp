@@ -212,9 +212,9 @@ int main(int argc, void** argv)
       int maxDiffOrder = 2;
 
       verbosity<SymbolicTransformation>() = VerbSilent;
-      //      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<Evaluator>() = VerbExtreme;
       verbosity<EvalVector>() = VerbSilent;
-      // verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
@@ -236,30 +236,14 @@ int main(int argc, void** argv)
       Expr lambda0 = new DiscreteFunctionStub("lambda0");
       Expr zero = new ZeroExpr();
       Expr alpha0 = new DiscreteFunctionStub("alpha0");
+      Expr uAvg = new Parameter(1.0, "uAvg");
 
       Array<Expr> tests;
 
 
+      //   tests.append(u/uAvg/uAvg);
+      tests.append(/*0.5*(u-cos(x))*(u-cos(x))/uAvg/uAvg) + */(dx*sin(u))/**(dx*sin(u)) + 0.5*(dx*alpha)*(dx*alpha) + exp(alpha)* (dx*lambda)*(dx*u)*/);
 
-      tests.append(0.5*(u-cos(x))*(u-cos(x)) + 0.5*(dx*alpha)*(dx*alpha) 
-                     + exp(alpha)* (dx*lambda)*(dx*u));
-
-      cerr << "STATE EQUATIONS " << endl;
-      for (int i=0; i<tests.length(); i++)
-        {
-          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(0)));
-          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
-          testExpr(tests[i], 
-                   lambda,
-                   zero,
-                   u,
-                   zero,
-                   alpha,
-                   alpha0,
-                   context);
-        }
-      
       cerr << "ADJOINT EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
         {
@@ -271,6 +255,23 @@ int main(int argc, void** argv)
                    u0, 
                    lambda,
                    lambda0,
+                   alpha,
+                   alpha0,
+                   context);
+        }
+
+
+      cerr << "STATE EQUATIONS " << endl;
+      for (int i=0; i<tests.length(); i++)
+        {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(0)));
+          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
+          testExpr(tests[i], 
+                   lambda,
+                   zero,
+                   u,
+                   u0,
                    alpha,
                    alpha0,
                    context);

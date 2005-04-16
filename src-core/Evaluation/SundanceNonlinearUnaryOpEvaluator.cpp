@@ -142,7 +142,7 @@ NonlinearUnaryOpEvaluator
           if (d0ArgDerivIsConstant_)
             {
               d0ResultIndex_ = constCounter;;
-              addConstantIndex(i, constCounter++); /* result is a vector */
+              addConstantIndex(i, constCounter++); /* result is a constant */
             }
           else
             {
@@ -171,7 +171,7 @@ NonlinearUnaryOpEvaluator
           /* Record the index at which we will record this derivative */
           Tabs tab1;
           d1ResultIndex_.append(i);
-          addVectorIndex(i, i); /* result is a vector */
+          addVectorIndex(i, vecCounter++); /* result is a vector */
           
           TEST_FOR_EXCEPTION(!argSparsitySubset()->containsDeriv(d),
                              InternalError,
@@ -234,7 +234,7 @@ NonlinearUnaryOpEvaluator
            * overwritten as well.
            */
           d2ResultIndex_.append(i);
-          addVectorIndex(i, i); /* result is a vector */
+          addVectorIndex(i, vecCounter++); /* result is a vector */
           
 
           /* 

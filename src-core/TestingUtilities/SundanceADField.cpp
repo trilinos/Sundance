@@ -83,6 +83,12 @@ ADReal ADField::operator*(const ADField& x) const
 }
 
 
+ADReal ADField::operator/(const ADField& x) const
+{
+  return evaluate() / x.evaluate();
+}
+
+
 ADReal ADField::operator-(const ADReal& x) const
 {
   return evaluate() - x;
@@ -115,3 +121,21 @@ ADReal ADField::operator*(const double& x) const
   return evaluate() * x;
 }
 
+
+
+ADReal ADField::operator/(const ADReal& x) const
+{
+  return evaluate() / x;
+}
+
+
+ADReal ADField::operator/(const double& x) const
+{
+  return evaluate() / x;
+}
+
+
+ADReal ADField::reciprocal() const
+{
+  return 1.0/evaluate();
+}

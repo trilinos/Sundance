@@ -175,7 +175,15 @@ void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
             = argSparsitySubset->deriv(i).product(argSparsitySubset->deriv(j));
           if (product.order() > maxDiffOrder) continue;
           if (product.spatialOrder() > maxMiOrder) continue;
-          subset->addDeriv(product, VectorDeriv);
+          if (argSparsitySubset->state(i)==VectorDeriv
+              || argSparsitySubset->state(j)==VectorDeriv)
+            {
+              subset->addDeriv(product, VectorDeriv);
+            }
+          else
+            {
+              subset->addDeriv(product, ConstantDeriv);
+            }
         }
     }
 

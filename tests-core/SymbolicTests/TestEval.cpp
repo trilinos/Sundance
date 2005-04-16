@@ -111,6 +111,8 @@ int main(int argc, void** argv)
       bool isOK = true;
       Array<string> failures;
 
+#ifdef FLOOP
+
 
       TESTER(u, U);
 
@@ -321,11 +323,17 @@ int main(int argc, void** argv)
 
       TESTER(sin(u*x), sin(U*X));
 
-      TESTER(dx*sin(u), Dx*sin(U));
+
 
       TESTER(sin(u*x+0.5*w*u), sin(U*X+0.5*W*U));
 
       TESTER(sin(cos(u*x)+0.5*w*u), sin(cos(U*X)+0.5*W*U));
+
+#endif
+      TESTER(dx*sin(u), Dx*sin(U));
+
+      TESTER(sin(u)/u, sin(U)/U);
+
 
 
       if (isOK)

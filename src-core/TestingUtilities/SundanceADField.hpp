@@ -93,8 +93,19 @@ namespace SundanceTesting
 
     ADReal operator*(const ADField& x) const ;
 
+
+
+    ADReal operator/(const ADReal& x) const ;
+
+    ADReal operator/(const double& x) const ;
+
+    ADReal operator/(const ADField& x) const ;
+
+
+
     ADReal operator-() const ;
 
+    ADReal reciprocal() const ;
     
 
     
@@ -132,6 +143,16 @@ namespace SundanceTesting
   inline ADReal operator*(const double& x, const ADField& y)
   {
     return y * x;
+  } 
+
+  inline ADReal operator/(const ADReal& x, const ADField& y)
+  {
+    return x * y.reciprocal();
+  }
+
+  inline ADReal operator/(const double& x, const ADField& y)
+  {
+    return x * y.reciprocal();
   } 
   
   inline ADReal sin(const ADField& x)
