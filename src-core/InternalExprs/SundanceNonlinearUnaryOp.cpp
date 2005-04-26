@@ -81,6 +81,15 @@ NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
     }
 }
 
+Set<MultiIndex> NonlinearUnaryOp
+::argMultiIndices(const Set<MultiIndex>& miSet) const 
+{
+  Set<MultiIndex> rtn = miSet;
+  rtn.put(MultiIndex());
+  return rtn;
+}
+
+
 Set<MultiSet<int> > 
 NonlinearUnaryOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const 
 {
@@ -143,28 +152,33 @@ void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
   int maxMiOrder = maxOrder(multiIndices);
   int maxDiffOrder = context.topLevelDiffOrder() + maxMiOrder;
 
-  evaluatableArg()->findNonzeros(context, multiIndices,
+  Set<MultiIndex> argMI = argMultiIndices(multiIndices);
+
+  evaluatableArg()->findNonzeros(context, argMI,
                                  childFuncIDs,
                                  regardFuncsAsConstant);
 
   RefCountPtr<SparsitySubset> argSparsitySubset 
-    = evaluatableArg()->sparsitySubset(context, multiIndices, childFuncIDs);
+    = evaluatableArg()->sparsitySubset(context, argMI, childFuncIDs);
 
   SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity subset is " 
                        << endl << *argSparsitySubset);
 
+  /* Determine whether the argument is a constant or a vector */
+  DerivState argState = VectorDeriv;
   for (int i=0; i<argSparsitySubset->numDerivs(); i++)
     {
       if (argSparsitySubset->deriv(i).order()==0)
         {
-          subset->addDeriv(argSparsitySubset->deriv(i), 
-                           argSparsitySubset->state(i));
+          argState = argSparsitySubset->state(i);
+          break;
         }
-      else
-        {
-          subset->addDeriv(argSparsitySubset->deriv(i), 
-                           VectorDeriv);
-        }
+    }
+
+  for (int i=0; i<argSparsitySubset->numDerivs(); i++)
+    {
+      subset->addDeriv(argSparsitySubset->deriv(i), 
+                       argState);
     }
 
   for (int i=0; i<argSparsitySubset->numDerivs(); i++)
@@ -175,15 +189,7 @@ void NonlinearUnaryOp::findNonzeros(const EvalContext& context,
             = argSparsitySubset->deriv(i).product(argSparsitySubset->deriv(j));
           if (product.order() > maxDiffOrder) continue;
           if (product.spatialOrder() > maxMiOrder) continue;
-          if (argSparsitySubset->state(i)==VectorDeriv
-              || argSparsitySubset->state(j)==VectorDeriv)
-            {
-              subset->addDeriv(product, VectorDeriv);
-            }
-          else
-            {
-              subset->addDeriv(product, ConstantDeriv);
-            }
+          subset->addDeriv(product, argState);
         }
     }
 

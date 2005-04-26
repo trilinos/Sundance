@@ -332,7 +332,7 @@ namespace SundanceCore
         SUNDANCE_VERB_HIGH(tab << "arg active funcs: " << argActiveFuncs);
 
         argSparsitySubset_ 
-          = argExpr_->sparsitySubset(context, argMiSet, argActiveFuncs);
+          = argSparsitySuperset_->findSubset(argMiSet, argActiveFuncs);
         
         argEval_->addClient();
       }

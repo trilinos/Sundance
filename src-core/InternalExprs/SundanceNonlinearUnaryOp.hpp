@@ -101,6 +101,10 @@ namespace SundanceCore
        */
       virtual Set<MultiSet<int> > 
       argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const ;
+
+      /** Given a set of required multiindices, find the set of multiindices
+       * required of the argument */
+      Set<MultiIndex> argMultiIndices(const Set<MultiIndex>& miSet) const ;
     private:
 
       RefCountPtr<UnaryFunctor> op_;

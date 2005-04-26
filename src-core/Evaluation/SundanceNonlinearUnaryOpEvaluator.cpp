@@ -70,7 +70,8 @@ NonlinearUnaryOpEvaluator
                        << *(argSparsitySubset()));
 
   /* Find the index of the argument's value (zeroth-order deriv).
-   * If this does not exist, we have an error.  
+   * If this does not exist and the number of derivs to evaluate
+   * is nonzero, we have an error.  
    */
   
   d0ArgDerivIndex_ = -1;
@@ -104,7 +105,8 @@ NonlinearUnaryOpEvaluator
         }
     }
 
-  TEST_FOR_EXCEPTION(d0ArgDerivIndex_ == -1, InternalError,
+  TEST_FOR_EXCEPTION(d0ArgDerivIndex_ == -1 
+                     && argSparsitySubset()->numDerivs() > 0, InternalError,
                      "Inconsistency in sparsity patterns of nonlin "
                      "operator " + expr->toString() + " and its "
                      "argument. "
@@ -179,7 +181,8 @@ NonlinearUnaryOpEvaluator
                              "operator " + expr->toString() + " and its "
                              "argument." 
                              "Operator's derivative " + d.toString() 
-                             + " was not found in arg's sparsity pattern ");
+                             + " was not found in arg's sparsity pattern "
+                             << *argSparsitySubset());
 
 
           /* Record index of g_u in arg results, and also whether it
@@ -319,7 +322,9 @@ void NonlinearUnaryOpEvaluator
 
   evalOperand(mgr, argConstantResults, argVectorResults);
 
-
+  /* If the arg deriv index is -1, nothing needs to be computed by this 
+   * evaluator in this context. Return now if we have no work to do here */
+  if (d0ArgDerivIndex_==-1) return;
 
 
   /* Do the application of the nonlinear operator, checking for errors */  

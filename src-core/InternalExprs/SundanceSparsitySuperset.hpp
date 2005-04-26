@@ -88,6 +88,11 @@ namespace SundanceCore
           RefCountPtr<SparsitySubset> subset(const Set<MultiIndex>& multiIndices,
                                              const Set<MultiSet<int> >& funcIDs) ;
 
+          /** Get the subset of derivatives required to evaluate the
+           * given set of differential operators*/
+          RefCountPtr<SparsitySubset> findSubset(const Set<MultiIndex>& multiIndices,
+                                                 const Set<MultiSet<int> >& funcIDs) const ;
+
           /** Tell whether the specified subset has been defined */
           bool hasSubset(const Set<MultiIndex>& multiIndices,
                          const Set<MultiSet<int> >& funcIDs) const ;
@@ -173,35 +178,38 @@ namespace SundanceCore
                         const DerivState& state);
 
           /** */
-          int maxOrder_;
+          void assembleSubsetUnions() const ;
+
+          /** */
+          mutable int maxOrder_;
 
           /** Map from deriv to position of the derivative's
            * value in the results array */
-          Map<MultipleDeriv, int> derivToIndexMap_;
+          mutable Map<MultipleDeriv, int> derivToIndexMap_;
 
           /** The list of functional derivatives whose values are
            * stored in this results set */
-          Array<MultipleDeriv> derivs_;
+          mutable Array<MultipleDeriv> derivs_;
 
           /** The state of each derivative at this node in the expression */
-          Array<DerivState> states_;
+          mutable Array<DerivState> states_;
 
           /** Multiindices */
-          Array<MultiIndex> multiIndex_;
+          mutable Array<MultiIndex> multiIndex_;
 
           /** Table of subsets */
-          Map<keyPair, RefCountPtr<SparsitySubset> > subsets_;
+          mutable Map<keyPair, RefCountPtr<SparsitySubset> > subsets_;
 
           /** */
-          Set<MultiIndex> allMultiIndices_;
+          mutable Set<MultiIndex> allMultiIndices_;
 
           /** */
-          Set<MultiSet<int> > allFuncIDs_;
+          mutable Set<MultiSet<int> > allFuncIDs_;
 
           /** */
-          int numConstantDerivs_;
+          mutable int numConstantDerivs_;
 
-          int numVectorDerivs_;
+          mutable int numVectorDerivs_;
 
           
 

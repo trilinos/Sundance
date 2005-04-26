@@ -286,19 +286,38 @@ void ProductExpr::findNonzeros(const EvalContext& context,
       for (int j=0; j<rightSparsity->numDerivs(); j++)
         {
           const MultipleDeriv& dRight = rightSparsity->deriv(j);
+        
+          SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() 
+                             << " considering L=" << dLeft.toString() 
+                             << " R=" << dRight.toString());
 
           /* Skip combinations of functional derivatives that contribute
            * only to derivatives of an order we don't need */
-          if (dRight.order() + dLeft.order() > maxDiffOrder) continue;
+          if (dRight.order() + dLeft.order() > maxDiffOrder) 
+            {
+              SUNDANCE_VERB_HIGH(tabs << "rejected because order is higher "
+                                 "than needed here");
+              continue;
+            }
 
           /* Skip combinations of spatial derivs of greater order
            * than the max order of our multiindices */
-          if (dRight.spatialOrder() + dLeft.spatialOrder() > maxSpatialOrder) continue;
+          if (dRight.spatialOrder() + dLeft.spatialOrder() > maxSpatialOrder) 
+            {
+              SUNDANCE_VERB_HIGH(tabs << "rejected because spatial "
+                                 "order is higher than needed here");
+              continue;
+            }
 
           MultiIndex netDeriv = dRight.spatialDeriv() + dLeft.spatialDeriv();
           if (dRight.spatialOrder()==dRight.order()
               && dLeft.spatialOrder()==dLeft.order()
-              && !multiIndices.contains(netDeriv)) continue;
+              && !multiIndices.contains(netDeriv))
+            {
+              SUNDANCE_VERB_HIGH(tabs << "rejected because spatial "
+                                 "deriv combination is not needed");
+              continue;
+            }
 
               
           /*
@@ -328,7 +347,7 @@ void ProductExpr::findNonzeros(const EvalContext& context,
             }
           
           SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() 
-                             << " L=" << dLeft.toString() 
+                             << "accepting L=" << dLeft.toString() 
                              << " R=" << dRight.toString());
           SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() 
                              << ":  " 

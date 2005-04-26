@@ -164,6 +164,11 @@ namespace SundanceTesting
   {
     return cos(x.evaluate());
   }
+  
+  inline ADReal exp(const ADField& x)
+  {
+    return exp(x.evaluate());
+  }
 }
 
 

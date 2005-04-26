@@ -212,15 +212,16 @@ int main(int argc, void** argv)
       int maxDiffOrder = 2;
 
       verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbSilent;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
 
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
+      Expr grad = List(dx, dy);
 
 			Expr u = new UnknownFunctionStub("u");
 			Expr lambda = new UnknownFunctionStub("lambda");
@@ -239,10 +240,12 @@ int main(int argc, void** argv)
       Expr uAvg = new Parameter(1.0, "uAvg");
 
       Array<Expr> tests;
-
+      double h = 0.01;
+      Expr rho = 0.5*(1.0 + tanh(alpha/h));
 
       //   tests.append(u/uAvg/uAvg);
-      tests.append(/*0.5*(u-cos(x))*(u-cos(x))/uAvg/uAvg) + */(dx*sin(u))/**(dx*sin(u)) + 0.5*(dx*alpha)*(dx*alpha) + exp(alpha)* (dx*lambda)*(dx*u)*/);
+      tests.append(/*0.5*(u-cos(x))*(u-cos(x))/uAvg/uAvg) + lambda*(dx*sin(u/h) - alpha)
+                     + */dx*rho + dy*rho/**(dx*sin(u)) + 0.5*(dx*alpha)*(dx*alpha) + exp(alpha)* (dx*lambda)*(dx*u)*/);
 
       cerr << "ADJOINT EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
@@ -277,8 +280,8 @@ int main(int argc, void** argv)
                    context);
         }
 
-      //   verbosity<Evaluator>() = VerbExtreme;
-      //      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
       cerr << "REDUCED GRADIENT " << endl;
       for (int i=0; i<tests.length(); i++)
         {
