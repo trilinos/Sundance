@@ -112,9 +112,7 @@ TSFExtended::Vector<double> NonlinearProblem::getInitialGuess() const
                      "NonlinearProblem::getInitialGuess()");
   
   Vector<double> u0 = discreteU0_->vector();
-  cerr << "initial guess " << endl;
-  u0.print(cerr);
-  cerr << endl;
+
 
   return u0;
 }

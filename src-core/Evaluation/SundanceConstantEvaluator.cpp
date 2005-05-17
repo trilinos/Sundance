@@ -80,7 +80,7 @@ void ConstantEvaluator::internalEval(const EvalManager& mgr,
                                      Array<double>& constantResults,
                                      Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  TimeMonitor timer(constantEvalTimer());
+  // TimeMonitor timer(constantEvalTimer());
   Tabs tabs;
   SUNDANCE_OUT(verbosity() > VerbSilent, tabs << "ConstantEvaluator::eval() expr="
                << expr()->toString());

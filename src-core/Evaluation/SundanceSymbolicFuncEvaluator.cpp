@@ -157,7 +157,7 @@ void SymbolicFuncElementEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  TimeMonitor timer(symbolicFuncEvalTimer());
+  ///  TimeMonitor timer(symbolicFuncEvalTimer());
   Tabs tabs;
   
   if (verbosity() > VerbSilent)

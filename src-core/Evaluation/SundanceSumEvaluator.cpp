@@ -201,7 +201,7 @@ void SumEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const 
 { 
-  TimeMonitor timer(evalTimer());
+  //  TimeMonitor timer(evalTimer());
   Tabs tabs;
 
   SUNDANCE_OUT(verbosity() > VerbSilent,

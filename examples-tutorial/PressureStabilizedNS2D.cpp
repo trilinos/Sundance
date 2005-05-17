@@ -28,8 +28,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 64;
-      int ny = 64;
+      int nx = 127;
+      int ny = 127;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx*np, np,
                                                          0.0, 1.0, ny, 1,
@@ -122,8 +122,8 @@ int main(int argc, void** argv)
 
 
 
-      int numReynolds = 10;
-      double finalReynolds = 500.0;
+      int numReynolds = 1;
+      double finalReynolds = 10.0;
       for (int r=1; r<=numReynolds; r++)
         {
           double Re = r*finalReynolds/((double) numReynolds);

@@ -111,7 +111,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
                                       Array<double>& constantResults,
                                       Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  TimeMonitor timer(coordEvalTimer());
+  //  TimeMonitor timer(coordEvalTimer());
   Tabs tabs;
 
   SUNDANCE_VERB_LOW(tabs << "CoordExprEvaluator::eval() expr=" << expr()->toString());

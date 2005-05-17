@@ -310,7 +310,7 @@ void NonlinearUnaryOpEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const
 {
-  TimeMonitor timer(evalTimer());
+  //  TimeMonitor timer(evalTimer());
   Tabs tabs;
   SUNDANCE_OUT(verbosity() > VerbLow,
                tabs << "NonlinearUnaryOpEvaluator::eval() expr="
@@ -331,7 +331,6 @@ void NonlinearUnaryOpEvaluator
 
 
   Array<RefCountPtr<EvalVector> > opDerivs(maxOrder_+1);
-  errno = 0;
   
   /* If the argument is a constant, copy it into a vector. */
   RefCountPtr<EvalVector> argValue;
@@ -350,14 +349,6 @@ void NonlinearUnaryOpEvaluator
 
   argValue->applyUnaryOperator(expr()->op(), opDerivs);
 
-  TEST_FOR_EXCEPTION(errno==EDOM, RuntimeError,
-                     "Domain error in expression " << expr()->toString());
-  TEST_FOR_EXCEPTION(errno==ERANGE, RuntimeError,
-                     "Range error in expression " << expr()->toString());
-  TEST_FOR_EXCEPTION(errno==EOVERFLOW, RuntimeError,
-                     "Overflow in expression " << expr()->toString());
-  TEST_FOR_EXCEPTION(errno != 0, RuntimeError,
-                     "Error " << errno << " in expression " << expr()->toString());
 
   if (d0ArgDerivIsConstant_)
     {

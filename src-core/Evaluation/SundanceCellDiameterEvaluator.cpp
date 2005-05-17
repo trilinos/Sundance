@@ -84,7 +84,7 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
                                              Array<double>& constantResults,
                                              Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  TimeMonitor timer(cellDiameterEvalTimer());
+  //  TimeMonitor timer(cellDiameterEvalTimer());
   Tabs tabs;
 
   SUNDANCE_VERB_LOW(tabs << "CellDiameterExprEvaluator::eval() expr=" << expr()->toString());

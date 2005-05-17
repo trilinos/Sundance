@@ -75,7 +75,7 @@ void UnaryMinusEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const
 {
-  TimeMonitor timer(evalTimer());
+  //  TimeMonitor timer(evalTimer());
   Tabs tab;
   SUNDANCE_OUT(verbosity() > VerbSilent,
                tab << "UnaryMinusEvaluator::eval() expr=" << expr()->toString());

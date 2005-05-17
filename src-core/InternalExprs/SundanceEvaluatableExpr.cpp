@@ -46,6 +46,8 @@ using namespace TSFExtended;
 using namespace Internal;
 using namespace Internal;
 
+TEUCHOS_TIMER(evalTimer, "Symbolic Evaluation");
+
 
 
 
@@ -140,6 +142,7 @@ void EvaluatableExpr::evaluate(const EvalManager& mgr,
                                Array<double>& constantResults,
                                Array<RefCountPtr<EvalVector> >& vectorResults) const
 {
+  TimeMonitor timer(evalTimer());
   evaluator(mgr.getRegion())->eval(mgr, constantResults, vectorResults);
 }
 
