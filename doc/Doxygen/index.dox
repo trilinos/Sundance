@@ -76,7 +76,7 @@ other packages installed, simply doing <tt>configure; make</tt> won't work.
 Please read the \ref installation_page page for information on what
 software must be installed first, and on how to choose <tt> configure</tt>
 options for Sundance.
-<li> There is a short <b><A HREF="../Tutorial/Tutorial.pdf"> tutorial </A></b>
+<li> There is a short <b><A HREF="Tutorial.pdf"> tutorial </A></b>
 on setting up linear and nonlinear PDE simulations.
 <li> Sundance is powerful, but can't do everything. Even
 among those things it can do in principle there are some things 

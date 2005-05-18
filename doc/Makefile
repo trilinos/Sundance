@@ -36,3 +36,4 @@ dox:
 	doxygen Doxygen/Doxyfile
 	mkdir -p html/images
 	cp images/*.* html/images
+	cp Tutorial/Tutorial.pdf html

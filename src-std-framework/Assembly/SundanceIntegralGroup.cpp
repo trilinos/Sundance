@@ -137,6 +137,14 @@ bool IntegralGroup
                tab0 << "evaluating an integral group of size "
                << integrals_.size());
 
+  /* initialize the return vector */
+  if (integrals_[0]->nNodes() == -1) A->resize(1);
+  else A->resize(J.numCells() * integrals_[0]->nNodes());
+  double* aPtr = &((*A)[0]);
+  int n = A->size();
+  for (int i=0; i<n; i++) aPtr[i] = 0.0;
+
+  /* do the integrals */
   for (int i=0; i<integrals_.size(); i++)
     {
       Tabs tab;

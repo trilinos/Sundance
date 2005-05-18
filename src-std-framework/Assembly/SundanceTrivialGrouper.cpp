@@ -31,6 +31,7 @@
 #include "SundanceTrivialGrouper.hpp"
 #include "SundanceRefIntegral.hpp"
 #include "SundanceQuadratureIntegral.hpp"
+#include "SundanceMap.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
@@ -63,6 +64,15 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 
   int vecCount=0;
   int constCount=0;
+
+  bool doGroups = false;
+
+  typedef SundanceUtils::Map<OrderedPair<int, int>, Array<RefCountPtr<ElementIntegral> > > twoFormMap;
+  typedef SundanceUtils::Map<int, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
+  SundanceUtils::Map<OrderedPair<int, int>, Array<RefCountPtr<ElementIntegral> > > twoForms;
+  SundanceUtils::Map<OrderedPair<int, int>, Array<Array<int> > > twoFormResultIndices;
+  SundanceUtils::Map<int, Array<RefCountPtr<ElementIntegral> > > oneForms;
+  SundanceUtils::Map<int, Array<Array<int> > > oneFormResultIndices;
 
   for (int i=0; i<sparsity->numDerivs(); i++)
     {
@@ -181,19 +191,98 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 }
               resultIndex = vecCount++;
             }
-
+          
           if (isOneForm)
             {
-              groups.append(IntegralGroup(tuple(testID), tuple(integral),
-                                          tuple(tuple(resultIndex))));
+              if (doGroups)
+                {
+                  if (!oneForms.containsKey(testID))
+                    {
+                      oneForms.put(testID, tuple(integral));
+                      oneFormResultIndices.put(testID, tuple(tuple(resultIndex)));
+                    }
+                  else
+                    {
+                      oneForms[testID].append(integral);
+                      oneFormResultIndices[testID].append(tuple(resultIndex));
+                    }
+                }
+              else
+                {
+                  groups.append(IntegralGroup(tuple(testID), tuple(integral),
+                                              tuple(tuple(resultIndex))));
+                }
             }
           else
             {
-              groups.append(IntegralGroup(tuple(testID), tuple(unkID),
-                                          tuple(integral),
-                                          tuple(tuple(resultIndex))));
+              if (!doGroups)
+                {
+                  groups.append(IntegralGroup(tuple(testID), tuple(unkID),
+                                              tuple(integral),
+                                              tuple(tuple(resultIndex))));
+                }
+              else
+                {
+                  OrderedPair<int, int> testUnk(testID, unkID);
+                  if (!twoForms.containsKey(testUnk))
+                    {
+                      twoForms.put(testUnk, tuple(integral));
+                      twoFormResultIndices.put(testUnk, tuple(tuple(resultIndex)));
+                    }
+                  else
+                    {
+                      twoForms[testUnk].append(integral);
+                      twoFormResultIndices[testUnk].append(tuple(resultIndex));
+                    }
+                }
             }
         }
     }
+
+  if (doGroups)
+    {
+      for (twoFormMap::const_iterator i=twoForms.begin(); i!=twoForms.end(); i++)
+        {
+          int testID = i->first.first();
+          int unkID = i->first.second();
+          const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
+          const Array<Array<int> >& resultIndices 
+            = twoFormResultIndices.get(i->first);
+          Array<int> testIDVec(integrals.size(), testID);
+          Array<int> unkIDVec(integrals.size(), unkID);
+          SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
+                               << tab << "testID=" << testIDVec << endl
+                               << tab << "unkID=" << unkIDVec << endl
+                               << tab << "resultIndices=" << resultIndices);
+          for (int j=0; j<resultIndices.size(); j++)
+            {
+              SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
+                           << sparsity->deriv(resultIndices[j][0]));
+            }
+          groups.append(IntegralGroup(testIDVec, unkIDVec, 
+                                      integrals, resultIndices));
+        }
+
+      for (oneFormMap::const_iterator i=oneForms.begin(); i!=oneForms.end(); i++)
+        {
+          int testID = i->first;
+          const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
+          const Array<Array<int> >& resultIndices 
+            = oneFormResultIndices.get(i->first);
+          Array<int> testIDVec(integrals.size(), testID);
+          SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
+                               << tab << "testID=" << testIDVec << endl
+                               << tab << "resultIndices=" << resultIndices);
+          for (int j=0; j<resultIndices.size(); j++)
+            {
+              SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
+                           << sparsity->deriv(resultIndices[j][0]));
+            }
+          groups.append(IntegralGroup(testIDVec,
+                                      integrals, resultIndices));
+        }
+    }
+  
+  
 }
 

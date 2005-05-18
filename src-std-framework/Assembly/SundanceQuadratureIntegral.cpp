@@ -322,9 +322,9 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& J,
 
   int flops = 0;
 
-  A->resize(1);
+  //  A->resize(1);
   double& a = (*A)[0];
-  a = 0.0;
+  //  a = 0.0;
   double* coeffPtr = (double*) coeff;
   for (int c=0; c<J.numCells(); c++)
     {
@@ -356,9 +356,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
    * quad points */
   if (testDerivOrder() == 0)
     {
-      A->resize(J.numCells() * nNodes());
       double* aPtr = &((*A)[0]);
-      for (int i=0; i<A->size(); i++) aPtr[i] = 0.0;
       double* coeffPtr = (double*) coeff;
       int offset = 0 ;
 
@@ -379,7 +377,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
   else
     {
       int nCells = J.numCells();
-      A->resize(nCells * nNodes()); 
+      //      A->resize(nCells * nNodes()); 
 
       createOneFormTransformationMatrix(J, alpha());
 
@@ -415,10 +413,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
    * quad points */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)
     {
-
-      A->resize(J.numCells() * nNodes());
       double* aPtr = &((*A)[0]);
-      for (int i=0; i<A->size(); i++) aPtr[i] = 0.0;
       double* coeffPtr = (double*) coeff;
       int offset = 0 ;
 
@@ -440,7 +435,6 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
   else
     {
       int nCells = J.numCells();
-      A->resize(nCells * nNodes()); 
 
       createTwoFormTransformationMatrix(J, alpha(), beta());
 
@@ -467,11 +461,6 @@ void QuadratureIntegral
   double* aPtr = &((*A)[0]);
   double* coeffPtr = (double*) coeff;
   
-  int nAdds = 0;
-  int nMults = 0;
-
-  //  cerr << "transform summing first " << endl;
-
   int transSize = 0; 
   if (order()==2)
     {
@@ -512,7 +501,7 @@ void QuadratureIntegral
         {
           double f = (*coeffPtr);
           //          cerr << "cell=" << c << " q=" << q << " f=" << f << endl;
-          for (int n=0; n<swSize; n++, nMults++, nAdds++) 
+          for (int n=0; n<swSize; n++) 
             {
               sumWorkspace[n] += f*W_[n + q*swSize];
             }
@@ -523,8 +512,7 @@ void QuadratureIntegral
       double* aCell = aPtr + nNodes()*c;
       for (int i=0; i<nNodes(); i++)
         {
-          aCell[i] = 0.0;
-          for (int j=0; j<transSize; j++, nMults++, nAdds++)
+          for (int j=0; j<transSize; j++)
             {
               aCell[i] += sumWorkspace[nNodes()*j + i] * gCell[j];
             }
@@ -589,7 +577,6 @@ void QuadratureIntegral
     {
       double* gCell = &(G()[transSize*c]);
       double* aCell = aPtr + nNodes()*c;
-      for (int n=0; n<nNodes(); n++) aCell[n] = 0.0;
 
       for (int q=0; q<nQuad(); q++)
         {
@@ -599,7 +586,7 @@ void QuadratureIntegral
 
           for (int n=0; n<nNodes(); n++)
             {
-              for (int t=0; t<transSize; t++, nMults++, nAdds++)
+              for (int t=0; t<transSize; t++)
                 {
                   aCell[n] += jWorkspace[t]*W_[n + nNodes()*(t + transSize*q)];
                 }

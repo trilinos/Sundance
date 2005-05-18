@@ -403,9 +403,9 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& J,
   
 
   /* The result for each cell is the cell's Jacobian determinant */
-  A->resize(1);
+  //  A->resize(1);
   double& a = (*A)[0];
-  a = 0.0;
+  //  a = 0.0;
   for (int c=0; c<J.numCells(); c++)
     {
       a += coeff[0] * fabs(J.detJ()[c]);
@@ -426,7 +426,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0)
     {
-      A->resize(J.numCells() * nNodes());
+      //      A->resize(J.numCells() * nNodes());
       double* aPtr = &((*A)[0]);
       int count = 0;
       for (int c=0; c<J.numCells(); c++)
@@ -434,7 +434,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
           double detJ = coeff[0] * fabs(J.detJ()[c]);
           for (int n=0; n<nNodes(); n++, count++) 
             {
-              aPtr[count] = detJ*W_[n];
+              aPtr[count] += detJ*W_[n];
             }
         }
       addFlops(J.numCells() * (nNodes() + 1));
@@ -445,7 +445,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
       double one = 1.0;
       double zero = 0.0;
       int nTransRows = nRefDerivTest();
-      A->resize(J.numCells() * nNodes()); 
+      //      A->resize(J.numCells() * nNodes()); 
       int info=0;
 
       createOneFormTransformationMatrix(J, alpha(), coeff);
@@ -455,7 +455,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
       
       int nNodes0 = nNodes();
       ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &one, &(W_[0]),
-               &nNodes0, &(G()[0]), &nTransRows, &zero, &((*A)[0]), &nNodes0);
+               &nNodes0, &(G()[0]), &nTransRows, &one, &((*A)[0]), &nNodes0);
 
       addFlops(2 * nNodes0 * nCells * nTransRows);
        
@@ -475,7 +475,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)
     {
-      A->resize(J.numCells() * nNodes());
+      //      A->resize(J.numCells() * nNodes());
       double* aPtr = &((*A)[0]);
       int count = 0;
       for (int c=0; c<J.numCells(); c++)
@@ -483,7 +483,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
           double detJ = coeff[0] * fabs(J.detJ()[c]);
           for (int n=0; n<nNodes(); n++, count++) 
             {
-              aPtr[count] = detJ*W_[n];
+              aPtr[count] += detJ*W_[n];
             }
         }
       addFlops(J.numCells() * (nNodes() + 1));
@@ -494,7 +494,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       double one = 1.0;
       double zero = 0.0;
       int nTransRows = nRefDerivUnk()*nRefDerivTest();
-      A->resize(J.numCells() * nNodes()); 
+      //      A->resize(J.numCells() * nNodes()); 
       int info=0;
 
       createTwoFormTransformationMatrix(J, alpha(), beta(), coeff);
@@ -504,7 +504,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       
       int nNodes0 = nNodes();
       ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &one, &(W_[0]),
-               &nNodes0, &(G()[0]), &nTransRows, &zero, &((*A)[0]), &nNodes0);
+               &nNodes0, &(G()[0]), &nTransRows, &one, &((*A)[0]), &nNodes0);
        
       addFlops(2 * nNodes0 * nCells * nTransRows);
     }

@@ -103,7 +103,7 @@ int main(int argc, void** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
       LinearSolver<double> solver 
@@ -111,13 +111,19 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
+      cerr << "matrix = " << endl << prob.getOperator() << endl;
+      cerr << "vector = " << endl << prob.getRHS() << endl;
+
+      Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
+      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
+      Expr exactDisc = L2Projector(discSpace, exactSoln).project();
+
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Poisson2d");
       w.addMesh(mesh);
       w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.addField("exact", new ExprFieldWrapper(exactDisc[0]));
       w.write();
-
-      Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
 
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 

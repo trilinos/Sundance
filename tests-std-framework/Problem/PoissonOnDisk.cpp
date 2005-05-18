@@ -87,7 +87,7 @@ int main(int argc, void** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 

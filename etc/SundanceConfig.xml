@@ -30,7 +30,7 @@
 
 <Verbosity context="DOF Mapping" value="Silent"/>
 
-<Verbosity context="Integral Grouping" value="Silent"/>
+<Verbosity context="Integral Grouping" value="High"/>
 
 <Verbosity context="Mesh Creation" value="Silent"/>
 
