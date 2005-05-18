@@ -144,6 +144,8 @@ bool IntegralGroup
   int n = A->size();
   for (int i=0; i<n; i++) aPtr[i] = 0.0;
 
+  SUNDANCE_OUT(verbosity() > VerbHigh, tab0 << "begin A=" << *A);
+
   /* do the integrals */
   for (int i=0; i<integrals_.size(); i++)
     {
@@ -182,6 +184,7 @@ bool IntegralGroup
           const double* const f = vectorCoeffs[resultIndices_[i][0]]->start();
           quad->transform(J, f, A);
         }
+      SUNDANCE_OUT(verbosity() > VerbHigh, tab << "i=" << i << " A=" << *A);
     }
   SUNDANCE_OUT(verbosity() > VerbSilent, tab0 << "done");
 

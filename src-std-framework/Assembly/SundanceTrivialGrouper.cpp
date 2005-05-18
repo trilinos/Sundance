@@ -65,7 +65,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   int vecCount=0;
   int constCount=0;
 
-  bool doGroups = false;
+  bool doGroups = true;
 
   typedef SundanceUtils::Map<OrderedPair<int, int>, Array<RefCountPtr<ElementIntegral> > > twoFormMap;
   typedef SundanceUtils::Map<int, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
@@ -248,18 +248,16 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<Array<int> >& resultIndices 
             = twoFormResultIndices.get(i->first);
-          Array<int> testIDVec(integrals.size(), testID);
-          Array<int> unkIDVec(integrals.size(), unkID);
           SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
-                               << tab << "testID=" << testIDVec << endl
-                               << tab << "unkID=" << unkIDVec << endl
+                               << tab << "testID=" << testID << endl
+                               << tab << "unkID=" << unkID << endl
                                << tab << "resultIndices=" << resultIndices);
           for (int j=0; j<resultIndices.size(); j++)
             {
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j][0]));
             }
-          groups.append(IntegralGroup(testIDVec, unkIDVec, 
+          groups.append(IntegralGroup(tuple(testID), tuple(unkID), 
                                       integrals, resultIndices));
         }
 
@@ -269,16 +267,15 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<Array<int> >& resultIndices 
             = oneFormResultIndices.get(i->first);
-          Array<int> testIDVec(integrals.size(), testID);
           SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
-                               << tab << "testID=" << testIDVec << endl
+                               << tab << "testID=" << testID << endl
                                << tab << "resultIndices=" << resultIndices);
           for (int j=0; j<resultIndices.size(); j++)
             {
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j][0]));
             }
-          groups.append(IntegralGroup(testIDVec,
+          groups.append(IntegralGroup(tuple(testID),
                                       integrals, resultIndices));
         }
     }

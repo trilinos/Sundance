@@ -55,7 +55,7 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int n = 4;
+      int n = 1;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n*np, np,
                                                          0.0, 2.0, n, 1,
@@ -111,18 +111,12 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
-      cerr << "matrix = " << endl << prob.getOperator() << endl;
-      cerr << "vector = " << endl << prob.getRHS() << endl;
-
       Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
-      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
-      Expr exactDisc = L2Projector(discSpace, exactSoln).project();
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Poisson2d");
       w.addMesh(mesh);
       w.addField("soln", new ExprFieldWrapper(soln[0]));
-      w.addField("exact", new ExprFieldWrapper(exactDisc[0]));
       w.write();
 
       Expr err = exactSoln - soln;
