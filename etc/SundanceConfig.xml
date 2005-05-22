@@ -13,6 +13,10 @@
 
 <Parameter name="Shadow Calculations with String Values" value="false"/>
 
+<!-- Whether to use the optimized representation of diff ops on funcs  -->
+
+<Parameter name="Optimized DiffOps on Functions" value="false"/>
+
 
 
 

@@ -7,6 +7,7 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
+#include "SundanceProductTransformation.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceParameter.hpp"
 #include "SundanceOut.hpp"
@@ -83,6 +84,7 @@ int main(int argc, void** argv)
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
+      ProductTransformation::optimizeFunctionDiffOps() = true;
 
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
@@ -111,7 +113,7 @@ int main(int argc, void** argv)
       bool isOK = true;
       Array<string> failures;
 
-
+      //#ifdef BLARF
       TESTER(u, U);
 
       TESTER(-u, -U);
@@ -294,7 +296,17 @@ int main(int argc, void** argv)
 
       TESTER((dx*(x*w+u*y)), (Dx*(X*W+U*Y))); 
 
-      TESTER(((dx*u)*(dx*w)), ((Dx*U)*(Dx*W)));
+      //#endif
+
+      //      verbosity<Evaluator>() = VerbExtreme;
+      //      verbosity<EvaluatableExpr>() = VerbExtreme;
+      TESTER(((dx*u)+(dx*w) + w), ((Dx*U)+(Dx*W) + W));
+
+      //#ifdef BLARF
+      TESTER(((dx*u)*(dx*w) + 2.0*w), ((Dx*U)*(Dx*W) + 2.0*W));
+
+      TESTER(((dx*u)*(dx*w) + (dy*u)*(dy*w)), ((Dx*U)*(Dx*W) + (Dy*U)*(Dy*W)));
+
 
       TESTER((x*(dx*u)*(dx*w)), (X*(Dx*U)*(Dx*W))); 
 
@@ -329,7 +341,7 @@ int main(int argc, void** argv)
 
 
       TESTER(sin(u)/u, sin(U)/U);
-
+      //#endif
 
 
       if (isOK)

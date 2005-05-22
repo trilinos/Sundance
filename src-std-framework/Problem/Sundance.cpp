@@ -33,6 +33,7 @@
 #include "SundanceAssembler.hpp"
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
+#include "SundanceDiscreteFuncEvaluator.hpp"
 #include "SundanceRefIntegral.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceEvalVector.hpp"
@@ -42,6 +43,7 @@
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceDefaultPath.hpp"
 #include "SundanceVersionString.hpp"
+#include "SundanceProductTransformation.hpp"
 
 
 static Time& totalTimer() 
@@ -230,6 +232,10 @@ void Sundance::setSettings(const XMLObject& xml)
           else if (name=="Shadow Calculations with String Values")
             {
               EvalVector::shadowOps() = child.getRequiredBool("value");
+            }
+          else if (name=="Optimized DiffOps on Functions")
+            {
+              ProductTransformation::optimizeFunctionDiffOps() = child.getRequiredBool("value");
             }
         }
       else if (child.getTag()=="Verbosity")

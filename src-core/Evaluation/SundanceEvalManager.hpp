@@ -36,6 +36,7 @@
 #include "SundanceAbstractEvalMediator.hpp"
 #include "SundanceTempStack.hpp"
 #include "SundanceNoncopyable.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -107,6 +108,12 @@ namespace SundanceCore
 
           /** */
           RefCountPtr<EvalVector> popVector() const ;
+
+          /** */
+          TEUCHOS_TIMER(coordEvalTimer, "coord function evaluation");
+
+          /** */
+          TEUCHOS_TIMER(discFuncEvalTimer, "discrete function evaluation");
 
         private:
 

@@ -55,6 +55,8 @@ EvalManager::EvalManager()
 void EvalManager::evalCoordExpr(const CoordExpr* expr,
                                 RefCountPtr<EvalVector>& result) const 
 {
+
+  TimeMonitor timer(coordEvalTimer());
   TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
                      "uninitialized mediator in "
                      "EvalManager::evalCoordExpr");
@@ -76,6 +78,8 @@ void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                           const Array<MultiIndex>& mi,
                                           Array<RefCountPtr<EvalVector> >& result) const 
 {
+  TimeMonitor timer(discFuncEvalTimer());
+
   TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
                      "uninitialized mediator in "
                      "EvalManager::evalDiscreteFuncElement");

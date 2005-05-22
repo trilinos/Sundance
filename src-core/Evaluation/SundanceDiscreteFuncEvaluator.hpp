@@ -73,6 +73,7 @@ namespace SundanceCore
       bool hasMultiIndex(const MultiIndex& mi) const ;
 
     private:
+
       Array<MultiIndex> mi_;
 
       Map<MultiIndex, int> miToIndexMap_;

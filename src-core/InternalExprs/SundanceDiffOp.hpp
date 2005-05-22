@@ -56,8 +56,7 @@ namespace SundanceCore
     /**
      *
      */
-    class DiffOp : public UnaryExpr,
-                   public GenericEvaluatorFactory<DiffOp, DiffOpEvaluator>
+    class DiffOp : public UnaryExpr
     {
     public:
       /** ctor */
@@ -125,7 +124,9 @@ namespace SundanceCore
       /** */
       bool ignoreFuncTerms() const {return ignoreFuncTerms_;}
 
-
+      /** */
+      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+                                         const EvalContext& context) const ;
 
       /** 
        * Given a set of active function combinations, get the active

@@ -181,11 +181,12 @@ namespace SundanceCore
       /** */
       virtual ~SubtypeEvaluator(){;}
 
-    protected:
+
       
       /** */
       const RefCountPtr<SparsitySuperset>& sparsity() const {return sparsity_;}
 
+    protected:
       /** */
       const ExprType* expr() const {return expr_;}
 

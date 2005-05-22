@@ -75,6 +75,7 @@ SUNDANCE_INTERNALEXPRS_H = \
 $(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceConstantExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceCoordDeriv.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceDerivOfSymbFunc.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiffOp.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiscreteFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceEvaluatableExpr.hpp \
@@ -106,6 +107,7 @@ SUNDANCE_INTERNALEXPRS = \
 $(top_srcdir)/src-core/InternalExprs/SundanceBinaryExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceConstantExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceCoordDeriv.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceDerivOfSymbFunc.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiffOp.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiscreteFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceEvaluatableExpr.cpp \
@@ -137,6 +139,7 @@ SUNDANCE_EVALUATION_H = \
 $(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceDerivOfSymbFuncEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiffOpEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.hpp \
@@ -156,6 +159,7 @@ SUNDANCE_EVALUATION = \
 $(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceDerivOfSymbFuncEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiffOpEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.cpp \

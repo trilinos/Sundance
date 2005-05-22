@@ -43,6 +43,8 @@
 #include "SundanceUnaryMinus.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSumOfIntegrals.hpp"
+#include "SundanceSymbolicFuncElement.hpp"
+#include "SundanceDerivOfSymbFunc.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceCore;
@@ -266,7 +268,16 @@ bool ApplySimpleDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left,
         = dynamic_cast<const Derivative*>(left.get());
       if (dLeft != 0)
         {
-          rtn = rcp(new DiffOp(dLeft->multiIndex(), right));
+          const SymbolicFuncElement* sf 
+            = dynamic_cast<const SymbolicFuncElement*>(right.get());
+          if (sf != 0 && optimizeFunctionDiffOps())
+            {
+              rtn = rcp(new DerivOfSymbFunc(dLeft->multiIndex(), right));
+            }
+          else
+            {
+              rtn = rcp(new DiffOp(dLeft->multiIndex(), right));
+            }
           return true;
         }
     }

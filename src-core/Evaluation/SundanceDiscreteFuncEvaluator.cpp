@@ -130,7 +130,6 @@ void DiscreteFuncElementEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  TimeMonitor timer(discreteFuncEvalTimer());
   Tabs tabs;
 
   if (verbosity() > VerbSilent)

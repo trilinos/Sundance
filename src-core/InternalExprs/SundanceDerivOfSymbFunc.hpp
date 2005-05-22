@@ -28,13 +28,15 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_PRODUCTTRANSFORMATION_H
-#define SUNDANCE_PRODUCTTRANSFORMATION_H
+#ifndef SUNDANCE_DERIVOFSYMBFUNC_H
+#define SUNDANCE_DERIVOFSYMBFUNC_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSymbolicTransformation.hpp"
+#include "SundanceDiffOp.hpp"
+#include "SundanceDerivOfSymbFuncEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY 
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
@@ -45,38 +47,43 @@ namespace SundanceCore
   using std::ostream;
 
   namespace Internal
+  {
+    /**
+     * Specialization of DiffOp to the case where the argument is a 
+     * symbolic function, allowing optimized evaluation.
+     */
+    class DerivOfSymbFunc : public DiffOp
     {
+    public:
+      /** ctor */
+      DerivOfSymbFunc(const MultiIndex& op, 
+                      const RefCountPtr<ScalarExpr>& arg);
+
+      /** virtual destructor */
+      virtual ~DerivOfSymbFunc() {;}
+
       /** 
-       * ProductTransformation is a base class for any transformation
-       * which takes the two operands of a product (left, right) and produces
-       * a new expression mathematically equivalent to the original
-       * product. This will be used to effect simplification
-       * transformations on product expressions.
+       * Determine which functional and spatial derivatives are nonzero in the
+       * given context. We also keep track of which derivatives
+       * are known to be constant, which can simplify evaluation. 
        */
-      class ProductTransformation : public SymbolicTransformation
-        {
-        public:
-          /** */
-          ProductTransformation();
+      virtual void findNonzeros(const EvalContext& context,
+                                const Set<MultiIndex>& multiIndices,
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                bool regardFuncsAsConstant) const ;
 
-          /** */
-          virtual ~ProductTransformation(){;}
+      /** */
+      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-          /** */
-          static bool& optimizeFunctionDiffOps() 
-          {static bool rtn=false; return rtn;}
+      /** */
+      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+                                         const EvalContext& context) const ;
 
-          /** 
-           * Test whether the transform is applicable in this case,
-           * and if it is, apply it. The return value is true is the
-           * transformation was applied, otherwise false. 
-           * Returns by non-const reference
-           * the transformed expression. 
-           * 
-           */
-          virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                                   RefCountPtr<ScalarExpr>& rtn) const = 0 ;
-        };
+      /** */
+      virtual Set<MultiSet<int> > argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const ;
+
+    private:
+    };
   }
 }
 

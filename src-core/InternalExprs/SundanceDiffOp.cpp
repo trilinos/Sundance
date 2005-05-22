@@ -99,6 +99,12 @@ XMLObject DiffOp::toXML() const
 }
 
 
+Evaluator* DiffOp::createEvaluator(const EvaluatableExpr* expr,
+                                   const EvalContext& context) const
+{
+  return new DiffOpEvaluator(dynamic_cast<const DiffOp*>(expr), context);
+}
+
 Set<MultiIndex> DiffOp
 ::argMultiIndices(const Set<MultiIndex>& multiIndices) const
 {
