@@ -20,7 +20,7 @@
 
 
 
-<Verbosity context="Linear Problem" value="Low"/>
+<Verbosity context="Linear Problem" value="Silent"/>
 
 <Verbosity context="Assembly" value="Silent"/>
 

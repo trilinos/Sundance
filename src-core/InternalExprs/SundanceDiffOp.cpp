@@ -127,6 +127,17 @@ Set<MultiSet<int> > DiffOp
   SUNDANCE_VERB_MEDIUM(tabs << "arg dependencies are " 
                        << evaluatableArg()->funcDependencies().toString());
 
+  Set<int> allActiveFuncs;
+  for (Set<MultiSet<int> >::const_iterator 
+         i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
+    {
+      const MultiSet<int>& d = *i;
+      for (MultiSet<int>::const_iterator j=d.begin(); j != d.end(); j++)
+        {
+          allActiveFuncs.put(*j);
+        }
+    }
+
   for (Set<MultiSet<int> >::const_iterator 
          i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
     {
@@ -139,6 +150,7 @@ Set<MultiSet<int> > DiffOp
         {
           Tabs tab1;
           MultiSet<int> newDeriv = d;
+          if (!allActiveFuncs.contains(*j)) continue;
           SUNDANCE_VERB_MEDIUM(tab1 << "internal dependency is " << *j);
           newDeriv.put(*j);
           SUNDANCE_VERB_MEDIUM(tab1 << "created new arg deriv " << newDeriv.toString());

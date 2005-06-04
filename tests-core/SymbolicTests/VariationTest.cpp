@@ -221,31 +221,55 @@ int main(int argc, void** argv)
 
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
-      Expr grad = List(dx, dy);
+      Expr grad = List(dx/*, dy*/);
 
 			Expr u = new UnknownFunctionStub("u");
-			Expr lambda = new UnknownFunctionStub("lambda");
+			Expr T = new UnknownFunctionStub("T");
+			Expr lambda_u = new UnknownFunctionStub("lambda_u");
+			Expr lambda_T = new UnknownFunctionStub("lambda_T");
 			Expr alpha = new UnknownFunctionStub("alpha");
-
-      cerr << "u=" << u << endl;
-      cerr << "lambda=" << lambda << endl;
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
 
       Expr u0 = new DiscreteFunctionStub("u0");
-      Expr lambda0 = new DiscreteFunctionStub("lambda0");
+      Expr T0 = new DiscreteFunctionStub("T0");
+      Expr lambda_u0 = new DiscreteFunctionStub("lambda_u0");
+      Expr lambda_T0 = new DiscreteFunctionStub("lambda_T0");
       Expr zero = new ZeroExpr();
       Expr alpha0 = new DiscreteFunctionStub("alpha0");
-      Expr uAvg = new Parameter(1.0, "uAvg");
 
       Array<Expr> tests;
-      double h = 0.01;
-      Expr rho = 0.5*(1.0 + tanh(alpha/h));
+      double h = 1.0;
+      Expr rho = /*0.5*(1.0 + */tanh(alpha/*/h*/)/*)*/;
 
-      //   tests.append(u/uAvg/uAvg);
-      tests.append(/*0.5*(u-cos(x))*(u-cos(x))/uAvg/uAvg) + lambda*(dx*sin(u/h) - alpha)
-                     + */dx*rho + dy*rho/**(dx*sin(u)) + 0.5*(dx*alpha)*(dx*alpha) + exp(alpha)* (dx*lambda)*(dx*u)*/);
+
+      tests.append(/*0.5*(u-x)*(u-x)
+                     + 0.5*(grad*u)*(grad*u)
+                     + */rho*(lambda_u*u)
+                         + sqrt(dx*rho)
+                         /*     + 0.5*(grad*alpha)*(grad*alpha) */);
+
+
+      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
+
+
+      cerr << "STATE EQUATIONS " << endl;
+      for (int i=0; i<tests.length(); i++)
+        {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(0)));
+          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
+          testExpr(tests[i], 
+                   lambda_u,
+                   zero,
+                   u,
+                   u0,
+                   List(alpha),
+                   List(alpha0),
+                   context);
+        }
 
       cerr << "ADJOINT EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
@@ -256,27 +280,10 @@ int main(int argc, void** argv)
           testExpr(tests[i], 
                    u,
                    u0, 
-                   lambda,
-                   lambda0,
-                   alpha,
-                   alpha0,
-                   context);
-        }
-
-
-      cerr << "STATE EQUATIONS " << endl;
-      for (int i=0; i<tests.length(); i++)
-        {
-          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(0)));
-          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
-          testExpr(tests[i], 
-                   lambda,
-                   zero,
-                   u,
-                   u0,
-                   alpha,
-                   alpha0,
+                   lambda_u,
+                   lambda_u0,
+                   List(alpha),
+                   List(alpha0),
                    context);
         }
 
@@ -291,8 +298,8 @@ int main(int argc, void** argv)
           testExpr(tests[i], 
                    alpha, 
                    alpha0,
-                   List(u, lambda),
-                   List(u0, lambda0),
+                   List(u, lambda_u),
+                   List(u0, lambda_u0),
                    context);
         }
 
