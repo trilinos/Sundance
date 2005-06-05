@@ -150,7 +150,7 @@ Set<MultiSet<int> > DiffOp
         {
           Tabs tab1;
           MultiSet<int> newDeriv = d;
-          if (!allActiveFuncs.contains(*j)) continue;
+          if (d.size() > 0 && !allActiveFuncs.contains(*j)) continue;
           SUNDANCE_VERB_MEDIUM(tab1 << "internal dependency is " << *j);
           newDeriv.put(*j);
           SUNDANCE_VERB_MEDIUM(tab1 << "created new arg deriv " << newDeriv.toString());
