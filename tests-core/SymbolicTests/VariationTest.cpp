@@ -7,6 +7,7 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
+#include "SundanceProductTransformation.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceParameter.hpp"
 #include "SundanceOut.hpp"
@@ -134,6 +135,47 @@ void doit(const Expr& e,
 
 
 
+void doit(const Expr& e, 
+          const Expr& fixed,
+          const Expr& fixedEvalPt, 
+          const EvalContext& region)
+{
+  TimeMonitor t0(doitTimer());
+  EvalManager mgr;
+  mgr.setRegion(region);
+
+  static RefCountPtr<AbstractEvalMediator> mediator 
+    = rcp(new StringEvalMediator());
+
+  mgr.setMediator(mediator);
+
+  const EvaluatableExpr* ev 
+    = dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get());
+
+  DerivSet d = SymbPreprocessor::setupFunctional(e[0], 
+                                                 fixed,
+                                                 fixedEvalPt,
+                                                 region);
+
+  Tabs tab;
+  //  cerr << tab << *ev->sparsitySuperset(region) << endl;
+  //  ev->showSparsity(cerr, region);
+
+  // RefCountPtr<EvalVectorArray> results;
+
+  Array<double> constantResults;
+  Array<RefCountPtr<EvalVector> > vectorResults;
+
+  ev->evaluate(mgr, constantResults, vectorResults);
+
+  ev->sparsitySuperset(region)->print(cerr, vectorResults, constantResults);
+
+  
+  // results->print(cerr, ev->sparsitySuperset(region).get());
+}
+
+
+
 void testExpr(const Expr& e,  
               const Expr& vars,
               const Expr& varEvalPt,
@@ -200,6 +242,37 @@ void testExpr(const Expr& e,
     }
 }
 
+
+void testExpr(const Expr& e,  
+              const Expr& fixed,
+              const Expr& fixedEvalPt,  
+              const EvalContext& region)
+{
+  cerr << endl 
+       << "------------------------------------------------------------- " << endl;
+  cerr  << "-------- testing " << e.toString() << " -------- " << endl;
+  cerr << endl 
+       << "------------------------------------------------------------- " << endl;
+
+  try
+    {
+      doit(e, fixed, fixedEvalPt, region);
+    }
+  catch(exception& ex)
+    {
+      cerr << "EXCEPTION DETECTED!" << endl;
+      cerr << ex.what() << endl;
+      // cerr << "repeating with increased verbosity..." << endl;
+      //       cerr << "-------- testing " << e.toString() << " -------- " << endl;
+      //       Evaluator::verbosity() = 2;
+      //       EvalVector::verbosity() = 2;
+      //       EvaluatableExpr::verbosity() = 2;
+      //       Expr::showAllParens() = true;
+      //       doit(e, region);
+      exit(1);
+    }
+}
+
 int main(int argc, void** argv)
 {
   
@@ -216,6 +289,7 @@ int main(int argc, void** argv)
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;
       Expr::showAllParens() = true;
+      ProductTransformation::optimizeFunctionDiffOps() = false;
 
       EvalVector::shadowOps() = true;
 
@@ -244,15 +318,18 @@ int main(int argc, void** argv)
       Expr rho = /*0.5*(1.0 + */tanh(alpha/*/h*/)/*)*/;
 
 
-      tests.append(/*0.5*(u-x)*(u-x)
-                     + 0.5*(grad*u)*(grad*u)
-                     + */rho*(lambda_u*u)
-                         + sqrt(dx*rho)
-                         /*     + 0.5*(grad*alpha)*(grad*alpha) */);
+//       tests.append(/*0.5*(u-x)*(u-x)
+//                      + 0.5*(grad*u)*(grad*u)
+//                      + */rho*(lambda_u*u)
+//                          + sqrt(dx*rho)
+//                          /*     + 0.5*(grad*alpha)*(grad*alpha) */);
+
+      tests.append(0.5*(u-x)*(u-x) + 0.5*alpha*alpha 
+                   + (grad*lambda_u)*(grad*u) + alpha*lambda_u);
 
 
-      verbosity<Evaluator>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      //      verbosity<Evaluator>() = VerbExtreme;
+      //      verbosity<EvaluatableExpr>() = VerbExtreme;
 
 
       cerr << "STATE EQUATIONS " << endl;
@@ -287,8 +364,8 @@ int main(int argc, void** argv)
                    context);
         }
 
-      verbosity<Evaluator>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      //      verbosity<Evaluator>() = VerbExtreme;
+      //      verbosity<EvaluatableExpr>() = VerbExtreme;
       cerr << "REDUCED GRADIENT " << endl;
       for (int i=0; i<tests.length(); i++)
         {
@@ -303,7 +380,18 @@ int main(int argc, void** argv)
                    context);
         }
 
-      
+      cerr << "FUNCTIONAL " << endl;
+      for (int i=0; i<tests.length(); i++)
+        {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(0)));
+          EvalContext context(rqc, 0, EvalContext::nextID());
+          testExpr(tests[i], 
+                   List(u, lambda_u, alpha),
+                   List(u0, zero, alpha0),
+                   context);
+        }
+
 
     }
 	catch(exception& e)
