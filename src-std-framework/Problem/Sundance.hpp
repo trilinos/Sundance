@@ -68,6 +68,7 @@
 #include "SundanceTriangleMeshReader.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
 #include "SundanceMeshBuilder.hpp"
+#include "SundanceBamgMeshReader.hpp"
 
 
 /* Cell filters */
