@@ -44,8 +44,14 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg)
-  : DiffOp(op, arg)
-{}
+  : DiffOp(op, arg), funcID_(-1)
+{
+  const SymbolicFuncElement* f 
+    = dynamic_cast<const SymbolicFuncElement*>(evaluatableArg());
+  TEST_FOR_EXCEPTION(f==0, InternalError, "argument to DerivOfSymbFunc ctor "
+                     "is not a symbolic function");
+  funcID_ = f->funcID();
+}
 
 
 Evaluator* DerivOfSymbFunc::createEvaluator(const EvaluatableExpr* expr,

@@ -57,6 +57,23 @@ namespace SundanceCore
 
       virtual ~StdSumTransformations(){;}
     };
+
+    /** 
+     * Rewrite a sum as a polynomial object, if possible.
+     */
+    class IdentifyPolynomialSum : public SumTransformation
+    {
+    public:
+      /** */
+      IdentifyPolynomialSum() : SumTransformation() {;}
+
+      /** */
+      virtual ~IdentifyPolynomialSum(){;}
+
+      /** */
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
+                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+    };
     
     /** 
      * Transform a sum by removing a zero term: 

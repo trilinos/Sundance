@@ -42,6 +42,7 @@
 #include "SundanceCoordDeriv.hpp"
 #include "SundanceUnaryMinus.hpp"
 #include "SundanceZeroExpr.hpp"
+#include "SundanceFunctionalPolynomial.hpp"
 #include "SundanceSumOfIntegrals.hpp"
 #include "SundanceSumOfBCs.hpp"
 #include "SundanceNullCellFilterStub.hpp"
@@ -62,8 +63,34 @@ StdSumTransformations::StdSumTransformations()
   append(rcp(new MoveConstantsToLeftOfSum()));
   append(rcp(new RearrangeRightSumWithConstant()));
   append(rcp(new RearrangeLeftSumWithConstant()));
+  append(rcp(new IdentifyPolynomialSum()));
   append(rcp(new SumIntegrals()));
 }
+
+
+bool IdentifyPolynomialSum::doTransform(const RefCountPtr<ScalarExpr>& left, 
+                                        const RefCountPtr<ScalarExpr>& right,
+                                        int sign, 
+                                        RefCountPtr<ScalarExpr>& rtn) const
+{
+  if (useOptimizedPolynomials())
+    {
+      /* see if this sum can be written as a polynomial in 
+       * symbolic functions */
+      if (FunctionalPolynomial::isConvertibleToPoly(left.get())
+          && FunctionalPolynomial::isConvertibleToPoly(right.get()))
+        {
+          RefCountPtr<FunctionalPolynomial> lp = FunctionalPolynomial::toPoly(left);
+          RefCountPtr<FunctionalPolynomial> rp = FunctionalPolynomial::toPoly(right);
+          rtn = lp->addPoly(rp.get(), sign);
+          return true;
+        }
+    }
+  /* otherwise, do no transformation */
+  return false;
+}
+
+
 
 bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                     int sign, RefCountPtr<ScalarExpr>& rtn) const

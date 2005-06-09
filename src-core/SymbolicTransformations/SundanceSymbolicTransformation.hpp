@@ -65,6 +65,10 @@ namespace SundanceCore
           /** */
           virtual ~SymbolicTransformation(){;}
 
+          /** Whether to build optimized polynomial objects */
+          static bool& useOptimizedPolynomials() 
+          {static bool rtn=false; return rtn;}
+
           /** Returns -expr if sign == -1, otherwise returns expr */
           static RefCountPtr<ScalarExpr> chooseSign(int sign, 
                                                     const RefCountPtr<ScalarExpr>& expr);

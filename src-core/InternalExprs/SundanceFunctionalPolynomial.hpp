@@ -28,12 +28,11 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_DERIVOFSYMBFUNC_H
-#define SUNDANCE_DERIVOFSYMBFUNC_H
+#ifndef SUNDANCE_FUNCTIONALPOLYNOMIAL_H
+#define SUNDANCE_FUNCTIONALPOLYNOMIAL_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceDiffOp.hpp"
-#include "SundanceDerivOfSymbFuncEvaluator.hpp"
+#include "SundanceEvaluatableExpr.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -49,21 +48,21 @@ namespace SundanceCore
   namespace Internal
   {
     /**
-     * Specialization of DiffOp to the case where the argument is a 
-     * symbolic function, allowing optimized evaluation.
+     * Specialized class for representing polynomials in symbolic
+     * functions and their derivatives. 
      */
-    class DerivOfSymbFunc : public DiffOp
+    class FunctionalPolynomial : public EvaluatableExpr
     {
     public:
       /** ctor */
-      DerivOfSymbFunc(const MultiIndex& op, 
-                      const RefCountPtr<ScalarExpr>& arg);
+      FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr);
+      /** ctor */
+      FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr> >& funcs,
+                           const Map<MultiSet<OrderedPair<int, MultiIndex> >, 
+                           RefCountPtr<ScalarExpr> >& coeffs);
 
       /** virtual destructor */
-      virtual ~DerivOfSymbFunc() {;}
-
-      /** */
-      int funcID() const {return funcID_;}
+      virtual ~FunctionalPolynomial() {;}
 
       /** 
        * Determine which functional and spatial derivatives are nonzero in the
@@ -83,10 +82,33 @@ namespace SundanceCore
                                          const EvalContext& context) const ;
 
       /** */
-      virtual Set<MultiSet<int> > argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const ;
+      RefCountPtr<ScalarExpr> addPoly(const FunctionalPolynomial* other,
+                                      int sign) const ;
 
+      /** */
+      static bool isConvertibleToPoly(const ScalarExpr* expr) ;
+
+      /** */
+      static RefCountPtr<FunctionalPolynomial> toPoly(const RefCountPtr<ScalarExpr>& expr);
+
+
+      /** Write a simple text description suitable 
+       * for output to a terminal */
+      virtual ostream& toText(ostream& os, bool paren) const ;
+      
+      /** Write in a form suitable for LaTeX formatting */
+      virtual ostream& toLatex(ostream& os, bool paren) const ;
+
+      /** Write in XML */
+      virtual XMLObject toXML() const ;
     private:
-      int funcID_;
+
+      /** */
+      Map<int, RefCountPtr<ScalarExpr> > funcs_;
+
+      /** */
+      Map<MultiSet<OrderedPair<int, MultiIndex> >, 
+          RefCountPtr<ScalarExpr> > coeffs_;
     };
   }
 }
