@@ -32,7 +32,7 @@
 EXEEXT = .exe
 
 noinst_PROGRAMS = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
-VSNS2D Exo2Triangle PressureStabilizedNS2D
+VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D
 
 
 
@@ -122,6 +122,22 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 PressureStabilizedNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 PressureStabilizedNS2D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+PressureStabilizedNS3D_SOURCES = $(srcdir)/PressureStabilizedNS3D.cpp
+
+PressureStabilizedNS3D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+PressureStabilizedNS3D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+PressureStabilizedNS3D_LDADD = $(STD_FWK_LIBS) 
 
 
 

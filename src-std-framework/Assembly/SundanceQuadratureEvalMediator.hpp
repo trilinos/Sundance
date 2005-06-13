@@ -92,9 +92,8 @@ namespace SundanceStdFwk
       virtual void print(ostream& os) const ;
 
       /** */
-      RefCountPtr<Array<Array<Array<double> > > > 
-      getRefBasisVals(const BasisFamily& basis, 
-                      int diffOrder) const ;
+      RefCountPtr<Array<double> >  getRefBasisVals(const BasisFamily& basis, 
+                                                   int diffOrder) const ;
 
       /** */
       const Array<double>& quadWgts() const 
@@ -130,7 +129,7 @@ namespace SundanceStdFwk
       mutable Array<Point> physQuadPts_;
 
       /** */
-      mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<Array<double> > > > > > refBasisVals_;
+      mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<double> > > > refBasisVals_;
       
     };
   }

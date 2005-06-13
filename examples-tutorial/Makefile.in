@@ -84,7 +84,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(VSNS2D_SOURCES)
+SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(VSNS2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -110,7 +110,8 @@ host_triplet = @host@
 noinst_PROGRAMS = PostPotentialFlow$(EXEEXT) \
 	RadiationDiffusion1D$(EXEEXT) PressureVessel2D$(EXEEXT) \
 	VSNS2D$(EXEEXT) Exo2Triangle$(EXEEXT) \
-	PressureStabilizedNS2D$(EXEEXT)
+	PressureStabilizedNS2D$(EXEEXT) \
+	PressureStabilizedNS3D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = examples-tutorial
@@ -140,6 +141,9 @@ PostPotentialFlow_OBJECTS = $(am_PostPotentialFlow_OBJECTS)
 am_PressureStabilizedNS2D_OBJECTS =  \
 	PressureStabilizedNS2D-PressureStabilizedNS2D.$(OBJEXT)
 PressureStabilizedNS2D_OBJECTS = $(am_PressureStabilizedNS2D_OBJECTS)
+am_PressureStabilizedNS3D_OBJECTS =  \
+	PressureStabilizedNS3D-PressureStabilizedNS3D.$(OBJEXT)
+PressureStabilizedNS3D_OBJECTS = $(am_PressureStabilizedNS3D_OBJECTS)
 am_PressureVessel2D_OBJECTS =  \
 	PressureVessel2D-PressureVessel2D.$(OBJEXT)
 PressureVessel2D_OBJECTS = $(am_PressureVessel2D_OBJECTS)
@@ -154,6 +158,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/PressureVessel2D-PressureVessel2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/VSNS2D-VSNS2D.Po
@@ -163,10 +168,12 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) $(PressureVessel2D_SOURCES) \
+	$(PressureStabilizedNS2D_SOURCES) \
+	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(VSNS2D_SOURCES)
 DIST_SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) $(PressureVessel2D_SOURCES) \
+	$(PressureStabilizedNS2D_SOURCES) \
+	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(VSNS2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -337,6 +344,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 PressureStabilizedNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 PressureStabilizedNS2D_LDADD = $(STD_FWK_LIBS) 
+PressureStabilizedNS3D_SOURCES = $(srcdir)/PressureStabilizedNS3D.cpp
+PressureStabilizedNS3D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+PressureStabilizedNS3D_CXXFLAGS = $(STD_FWK_INCLUDES)
+PressureStabilizedNS3D_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -487,6 +503,9 @@ PostPotentialFlow$(EXEEXT): $(PostPotentialFlow_OBJECTS) $(PostPotentialFlow_DEP
 PressureStabilizedNS2D$(EXEEXT): $(PressureStabilizedNS2D_OBJECTS) $(PressureStabilizedNS2D_DEPENDENCIES) 
 	@rm -f PressureStabilizedNS2D$(EXEEXT)
 	$(CXXLINK) $(PressureStabilizedNS2D_LDFLAGS) $(PressureStabilizedNS2D_OBJECTS) $(PressureStabilizedNS2D_LDADD) $(LIBS)
+PressureStabilizedNS3D$(EXEEXT): $(PressureStabilizedNS3D_OBJECTS) $(PressureStabilizedNS3D_DEPENDENCIES) 
+	@rm -f PressureStabilizedNS3D$(EXEEXT)
+	$(CXXLINK) $(PressureStabilizedNS3D_LDFLAGS) $(PressureStabilizedNS3D_OBJECTS) $(PressureStabilizedNS3D_LDADD) $(LIBS)
 PressureVessel2D$(EXEEXT): $(PressureVessel2D_OBJECTS) $(PressureVessel2D_DEPENDENCIES) 
 	@rm -f PressureVessel2D$(EXEEXT)
 	$(CXXLINK) $(PressureVessel2D_LDFLAGS) $(PressureVessel2D_OBJECTS) $(PressureVessel2D_LDADD) $(LIBS)
@@ -506,6 +525,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureVessel2D-PressureVessel2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VSNS2D-VSNS2D.Po@am__quote@
@@ -573,6 +593,22 @@ PressureStabilizedNS2D-PressureStabilizedNS2D.obj: $(srcdir)/PressureStabilizedN
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po' tmpdepfile='$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS2D_CXXFLAGS) $(CXXFLAGS) -c -o PressureStabilizedNS2D-PressureStabilizedNS2D.obj `if test -f '$(srcdir)/PressureStabilizedNS2D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureStabilizedNS2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureStabilizedNS2D.cpp'; fi`
+
+PressureStabilizedNS3D-PressureStabilizedNS3D.o: $(srcdir)/PressureStabilizedNS3D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -MT PressureStabilizedNS3D-PressureStabilizedNS3D.o -MD -MP -MF "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.o `test -f '$(srcdir)/PressureStabilizedNS3D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureStabilizedNS3D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po"; else rm -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureStabilizedNS3D.cpp' object='PressureStabilizedNS3D-PressureStabilizedNS3D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po' tmpdepfile='$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.o `test -f '$(srcdir)/PressureStabilizedNS3D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureStabilizedNS3D.cpp
+
+PressureStabilizedNS3D-PressureStabilizedNS3D.obj: $(srcdir)/PressureStabilizedNS3D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -MT PressureStabilizedNS3D-PressureStabilizedNS3D.obj -MD -MP -MF "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.obj `if test -f '$(srcdir)/PressureStabilizedNS3D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureStabilizedNS3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureStabilizedNS3D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po"; else rm -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureStabilizedNS3D.cpp' object='PressureStabilizedNS3D-PressureStabilizedNS3D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po' tmpdepfile='$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.obj `if test -f '$(srcdir)/PressureStabilizedNS3D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureStabilizedNS3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureStabilizedNS3D.cpp'; fi`
 
 PressureVessel2D-PressureVessel2D.o: $(srcdir)/PressureVessel2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureVessel2D_CXXFLAGS) $(CXXFLAGS) -MT PressureVessel2D-PressureVessel2D.o -MD -MP -MF "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Tpo" -c -o PressureVessel2D-PressureVessel2D.o `test -f '$(srcdir)/PressureVessel2D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureVessel2D.cpp; \

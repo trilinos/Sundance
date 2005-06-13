@@ -39,6 +39,8 @@
 #include "SundanceEvaluator.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
+#include "Epetra_HashTable.h"
+#include "SundanceIntHashSet.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -89,6 +91,27 @@ static Time& graphBuildTimer()
 {
   static RefCountPtr<Time> rtn 
     = TimeMonitor::getNewTimer("matrix graph determination"); 
+  return *rtn;
+}
+
+static Time& colSearchTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("graph column processing"); 
+  return *rtn;
+}
+
+static Time& tmpGraphBuildTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("tmp graph creation"); 
+  return *rtn;
+}
+
+static Time& graphFlatteningTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("tmp graph flattening"); 
   return *rtn;
 }
 
@@ -312,13 +335,25 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
   
   SUNDANCE_VERB_MEDIUM(tab << "...done");
 
-  A = vecType_.createMatrix(colSpace, rowSpace);
 
-  if (vecNeedsConfiguration_)
-    {
-      configureVector(b);
-    }
-                                                      
+
+
+  SUNDANCE_VERB_MEDIUM(tab << "Assembler: creating graph...");
+
+  Array<int> graphData;
+  Array<int> nnzPerRow;
+  Array<int> rowPtrs;
+  getGraph(graphData, rowPtrs, nnzPerRow);
+
+  SUNDANCE_VERB_MEDIUM(tab << "...done");
+
+  SUNDANCE_VERB_MEDIUM(tab << "Assembler: constructing matrix object...");
+
+  A = vecType_.createMatrix(colSpace, rowSpace, &(nnzPerRow[0]));
+  //  A = vecType_.createMatrix(colSpace, rowSpace);
+
+  SUNDANCE_VERB_MEDIUM(tab << "...done");
+             
   TSFExtended::LoadableMatrix<double>* mat
     = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(A.ptr().get());
 
@@ -326,20 +361,15 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
                      "matrix is not loadable in Assembler::assemble()");
 
 
-  SUNDANCE_VERB_MEDIUM(tab << "Assembler: creating graph...");
-
-  Array<ColSetType> graph;
-  Array<int> colIndices;
-  Array<double> zeros;
-  getGraph(graph);
-
-  SUNDANCE_VERB_MEDIUM(tab << "...done");
-  
-
-  
   SUNDANCE_VERB_MEDIUM(tab << "Assembler: initializing matrix and vector...");
 
-  mat->configure(lowestRow_, graph);
+
+  if (vecNeedsConfiguration_)
+    {
+      configureVector(b);
+    }
+
+  mat->configure(lowestRow_, rowPtrs, nnzPerRow, graphData);
 
   b.zero();
 
@@ -466,8 +496,8 @@ void Assembler::assemble(LinearOperator<double>& A,
               workSet->append(*iter);
             }
           SUNDANCE_VERB_MEDIUM(
-                       tab1 << "doing work set " << workSetCounter
-                       << " consisting of " << workSet->size() << " cells");
+                               tab1 << "doing work set " << workSetCounter
+                               << " consisting of " << workSet->size() << " cells");
           SUNDANCE_VERB_EXTREME("cells are " << *workSet);
 
           workSetCounter++;
@@ -647,8 +677,8 @@ void Assembler::assemble(Vector<double>& b) const
             }
 
           SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
-                             << " consisting of " 
-                             << workSet->size() << " cells");
+                               << " consisting of " 
+                               << workSet->size() << " cells");
           SUNDANCE_VERB_EXTREME("cells are " << *workSet);
 
 
@@ -704,7 +734,7 @@ void Assembler::assemble(Vector<double>& b) const
     }
 
   SUNDANCE_VERB_LOW(tab << "Assembler: done assembling vector");
-    if (verbosity() > VerbHigh)
+  if (verbosity() > VerbHigh)
     {
       cerr << "vector = " << endl;
       b.print(cerr);
@@ -805,8 +835,8 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
             }
 
           SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
-                             << " consisting of " 
-                             << workSet->size() << " cells");
+                               << " consisting of " 
+                               << workSet->size() << " cells");
           SUNDANCE_VERB_EXTREME("cells are " << *workSet);
 
 
@@ -960,8 +990,8 @@ void Assembler::evaluate(double& value) const
             }
 
           SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
-                             << " consisting of " 
-                             << workSet->size() << " cells");
+                               << " consisting of " 
+                               << workSet->size() << " cells");
           SUNDANCE_VERB_EXTREME("cells are " << *workSet);
 
 
@@ -1154,12 +1184,15 @@ void Assembler::insertLocalVectorBatch(int cellDim,
 /* ------------  get the nonzero pattern for the matrix ------------- */
                        
                        
-void Assembler::getGraph(Array<ColSetType>& graph) const 
+void Assembler::getGraph(Array<int>& graphData,
+                         Array<int>& rowPtrs,
+                         Array<int>& nnzPerRow) const 
 {
   TimeMonitor timer(graphBuildTimer());
   Tabs tab;
 
-  
+
+
 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
@@ -1175,181 +1208,228 @@ void Assembler::getGraph(Array<ColSetType>& graph) const
 
 
   int lowestLocalRow = rowMap_->lowestLocalDOF();
-  graph.resize(rowMap()->numLocalDOFs());
 
-  for (int d=0; d<eqn_->numRegions(); d++)
-    {
-      Tabs tab0;
-      CellFilter domain = eqn_->region(d);
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
-                   tab0 << "cell set " << domain
-                   << " isBCRegion=" << eqn_->isBCRegion(d));
-      int dim = domain.dimension(mesh_);
-      CellSet cells = domain.getCells(mesh_);
 
-      RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
-      if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
+  Array<Set<int> > tmpGraph;
+  tmpGraph.resize(rowMap()->numLocalDOFs());
+  //  int cap = eqn_->numUnks() * (int) round(pow(3.0, mesh_.spatialDim()));
+  //  cerr << "capacity = " << cap << endl;
+  // {
+//     TimeMonitor timer2(tmpGraphBuildTimer());
+//     for (int i=0; i<tmpGraph.size(); i++)
+//       {
+//         tmpGraph[i].setCapacity(cap);
+//       }
+//   }
 
-      SUNDANCE_OUT(verbosity() > VerbMedium && pairs.get() != 0, 
-                   tab0 << "non-BC pairs = "
-                   << *pairs);
+
+  {
+    TimeMonitor timer2(colSearchTimer());
+    for (int d=0; d<eqn_->numRegions(); d++)
+      {
+        Tabs tab0;
+        CellFilter domain = eqn_->region(d);
+        SUNDANCE_OUT(verbosity() > VerbMedium, 
+                     tab0 << "cell set " << domain
+                     << " isBCRegion=" << eqn_->isBCRegion(d));
+        int dim = domain.dimension(mesh_);
+        CellSet cells = domain.getCells(mesh_);
+
+        RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
+        if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
+
+        SUNDANCE_OUT(verbosity() > VerbMedium && pairs.get() != 0, 
+                     tab0 << "non-BC pairs = "
+                     << *pairs);
        
-      RefCountPtr<Set<OrderedPair<int, int> > > bcPairs ;
-      if (eqn_->isBCRegion(d))
-        {
-          if (eqn_->hasBCVarUnkPairs(domain)) 
-            {
-              bcPairs = eqn_->bcVarUnkPairs(domain);
-              SUNDANCE_OUT(verbosity() > VerbMedium, tab0 << "BC pairs = "
-                           << *bcPairs);
-            }
-        }
-      Array<Set<int> > unksForTestsSet(eqn_->numVars());
-      Array<Set<int> > bcUnksForTestsSet(eqn_->numVars());
+        RefCountPtr<Set<OrderedPair<int, int> > > bcPairs ;
+        if (eqn_->isBCRegion(d))
+          {
+            if (eqn_->hasBCVarUnkPairs(domain)) 
+              {
+                bcPairs = eqn_->bcVarUnkPairs(domain);
+                SUNDANCE_OUT(verbosity() > VerbMedium, tab0 << "BC pairs = "
+                             << *bcPairs);
+              }
+          }
+        Array<Set<int> > unksForTestsSet(eqn_->numVars());
+        Array<Set<int> > bcUnksForTestsSet(eqn_->numVars());
 
-      Set<OrderedPair<int, int> >::const_iterator i;
+        Set<OrderedPair<int, int> >::const_iterator i;
       
-      if (pairs.get() != 0)
-        {
-          for (i=pairs->begin(); i!=pairs->end(); i++)
-            {
-              const OrderedPair<int, int>& p = *i;
-              int t = p.first();
-              int u = p.second();
+        if (pairs.get() != 0)
+          {
+            for (i=pairs->begin(); i!=pairs->end(); i++)
+              {
+                const OrderedPair<int, int>& p = *i;
+                int t = p.first();
+                int u = p.second();
 
-              TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
-                                 "Test function ID " << t << " does not appear "
-                                 "in equation set");
-              TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
-                                 "Unk function ID " << u << " does not appear "
-                                 "in equation set");
+                TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+                                   "Test function ID " << t << " does not appear "
+                                   "in equation set");
+                TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+                                   "Unk function ID " << u << " does not appear "
+                                   "in equation set");
 
-              unksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
-            }
-        }
-      if (bcPairs.get() != 0)
-        {
-          for (i=bcPairs->begin(); i!=bcPairs->end(); i++)
-            {
-              const OrderedPair<int, int>& p = *i;
-              int t = p.first();
-              int u = p.second();
-              TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
-                                 "Test function ID " << t << " does not appear "
-                                 "in equation set");
-              TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
-                                 "Unk function ID " << u << " does not appear "
-                                 "in equation set");
-              bcUnksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
-            }
-        }
+                unksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
+              }
+          }
+        if (bcPairs.get() != 0)
+          {
+            for (i=bcPairs->begin(); i!=bcPairs->end(); i++)
+              {
+                const OrderedPair<int, int>& p = *i;
+                int t = p.first();
+                int u = p.second();
+                TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+                                   "Test function ID " << t << " does not appear "
+                                   "in equation set");
+                TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+                                   "Unk function ID " << u << " does not appear "
+                                   "in equation set");
+                bcUnksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
+              }
+          }
 
-      Array<Array<int> > unksForTests(unksForTestsSet.size());
-      Array<Array<int> > bcUnksForTests(bcUnksForTestsSet.size());
+        Array<Array<int> > unksForTests(unksForTestsSet.size());
+        Array<Array<int> > bcUnksForTests(bcUnksForTestsSet.size());
 
-      for (int t=0; t<unksForTests.size(); t++)
-        {
-          unksForTests[t] = unksForTestsSet[t].elements();
-          bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
-        }
+        for (int t=0; t<unksForTests.size(); t++)
+          {
+            unksForTests[t] = unksForTestsSet[t].elements();
+            bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
+          }
       
-      int nTestFuncs = 1;
-      int nUnkFuncs = 1;
-      int nTestNodes;
-      int nUnkNodes;
+        int nTestFuncs = 1;
+        int nUnkFuncs = 1;
+        int nTestNodes;
+        int nUnkNodes;
 
-      int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
+      
 
-      int owner;
-      int nt = eqn_->numVars();
-      CellIterator iter=cells.begin();
-      while (iter != cells.end())
-        {
-          /* build a work set */
-          workSet->resize(0);
-          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
-            {
-              workSet->append(*iter);
-            }
+        int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
 
-          int nCells = workSet->size();
+        int owner;
+        int nt = eqn_->numVars();
+        CellIterator iter=cells.begin();
+        while (iter != cells.end())
+          {
+            /* build a work set */
+            workSet->resize(0);
+            for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+              {
+                workSet->append(*iter);
+              }
 
-          rowMap_->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
-                                       nTestNodes);
-          if (rowMap_.get()==colMap_.get())
-            {
-              unkLocalDOFs = testLocalDOFs;
-              nUnkNodes = nTestNodes;
-            }
-          else
-            {
-              colMap_->getDOFsForCellBatch(dim, *workSet, 
-                                           *unkLocalDOFs, nUnkNodes);
-            }
+            int nCells = workSet->size();
+
+            rowMap_->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
+                                         nTestNodes);
+            if (rowMap_.get()==colMap_.get())
+              {
+                unkLocalDOFs = testLocalDOFs;
+                nUnkNodes = nTestNodes;
+              }
+            else
+              {
+                colMap_->getDOFsForCellBatch(dim, *workSet, 
+                                             *unkLocalDOFs, nUnkNodes);
+              }
           
-          if (pairs.get() != 0)
-            {
-              for (int c=0; c<workSet->size(); c++)
-                {
-                  int testOffset = c*nTestNodes*nTestFuncs;
-                  int unkOffset = c*nUnkNodes*nUnkFuncs;
-                  for (int t=0; t<nt; t++)
-                    {
-                      for (int uit=0; uit<unksForTests[t].size(); uit++)
-                        {
-                          Tabs tab2;
-                          int u = unksForTests[t][uit];
-                          for (int n=0; n<nTestNodes; n++)
-                            {
-                              int row
-                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
-                                //                                = (*testLocalDOFs)[nTestNodes*(c+nCells*t)+n];
-                              if (row < lowestRow_ || row >= highestRow
-                                  || (*isBCRow_)[row-lowestRow_]) continue;
-                              ColSetType& colSet = graph[row-lowestRow_];
-                              for (int m=0; m<nUnkNodes; m++)
-                                {
-                                  int col 
-                                    = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
-                                    //                                    = (*unkLocalDOFs)[nUnkNodes*(c+nCells*u)+m];
-                                  colSet.insert(col);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-          if (bcPairs.get() != 0)
-            {
-              for (int c=0; c<workSet->size(); c++)
-                {
-                  int testOffset = c*nTestNodes*nTestFuncs;
-                  int unkOffset = c*nUnkNodes*nUnkFuncs;
-                  for (int t=0; t<nt; t++)
-                    {
-                      for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
-                        {
-                          Tabs tab2;
-                          int u = bcUnksForTests[t][uit];
-                          for (int n=0; n<nTestNodes; n++)
-                            {
-                              int row
-                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
-                              if (row < lowestRow_ || row >= highestRow
-                                  || !(*isBCRow_)[row-lowestRow_]) continue;
-                              ColSetType& colSet = graph[row-lowestRow_];
-                              for (int m=0; m<nUnkNodes; m++)
-                                {
-                                  int col 
-                                    = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
-                                  colSet.insert(col);
-                                  
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+            if (pairs.get() != 0)
+              {
+                for (int c=0; c<workSet->size(); c++)
+                  {
+                    int testOffset = c*nTestNodes*nTestFuncs;
+                    int unkOffset = c*nUnkNodes*nUnkFuncs;
+                    for (int t=0; t<nt; t++)
+                      {
+                        for (int uit=0; uit<unksForTests[t].size(); uit++)
+                          {
+                            Tabs tab2;
+                            int u = unksForTests[t][uit];
+                            for (int n=0; n<nTestNodes; n++)
+                              {
+                                int row
+                                  = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                                if (row < lowestRow_ || row >= highestRow
+                                    || (*isBCRow_)[row-lowestRow_]) continue;
+                                Set<int>& colSet = tmpGraph[row-lowestRow_];
+                                for (int m=0; m<nUnkNodes; m++)
+                                  {
+                                    int col 
+                                      = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
+                                    colSet.put(col);
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+            if (bcPairs.get() != 0)
+              {
+                for (int c=0; c<workSet->size(); c++)
+                  {
+                    int testOffset = c*nTestNodes*nTestFuncs;
+                    int unkOffset = c*nUnkNodes*nUnkFuncs;
+                    for (int t=0; t<nt; t++)
+                      {
+                        for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
+                          {
+                            Tabs tab2;
+                            int u = bcUnksForTests[t][uit];
+                            for (int n=0; n<nTestNodes; n++)
+                              {
+                                int row
+                                  = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                                if (row < lowestRow_ || row >= highestRow
+                                    || !(*isBCRow_)[row-lowestRow_]) continue;
+                                Set<int>& colSet = tmpGraph[row-lowestRow_];
+                                for (int m=0; m<nUnkNodes; m++)
+                                  {
+                                    int col 
+                                      = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
+                                    colSet.put(col);
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+  
+  {
+    TimeMonitor t2(graphFlatteningTimer());
+    int nLocalRows = rowMap()->numLocalDOFs();
+
+    int nnz = 0;
+    rowPtrs.resize(nLocalRows);
+    nnzPerRow.resize(rowMap()->numLocalDOFs());
+    for (int i=0; i<nLocalRows; i++) 
+      {
+        rowPtrs[i] = nnz;
+        nnzPerRow[i] = tmpGraph[i].size();
+        nnz += nnzPerRow[i];
+      }
+
+    graphData.resize(nnz);
+    int* base = &(graphData[0]);
+    for (int i=0; i<nLocalRows; i++)
+      {
+        //        tmpGraph[i].fillArray(base + rowPtrs[i]);
+        int* rowBase = base + rowPtrs[i];
+        const Set<int>& rowSet = tmpGraph[i];
+        int k = 0;
+        for (Set<int>::const_iterator 
+               j=rowSet.begin(); j != rowSet.end(); j++, k++)
+          {
+            rowBase[k] = *j;
+          }
+      }
+  }
+
 }

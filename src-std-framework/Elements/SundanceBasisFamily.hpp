@@ -96,6 +96,21 @@ namespace SundanceStdFwk
   {
     return tuple(a,b,c);
   }
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c, const BasisFamily& d)
+  {
+    return tuple(a,b,c,d);
+  }
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c, const BasisFamily& d, 
+                                 const BasisFamily& e)
+  {
+    return tuple(a,b,c,d,e);
+  }
 }
 
 #endif

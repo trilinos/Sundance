@@ -51,6 +51,7 @@ $(top_srcdir)/src-utils/Utilities/SundanceDebug.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDefs.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceIntHashSet.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceMap.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceMultiSet.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceNoncopyable.hpp \
@@ -69,6 +70,7 @@ SUNDANCE_UTILITIES = \
 $(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceIntHashSet.cpp \
 $(top_srcdir)/src-utils/Utilities/SundancePoint.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp \

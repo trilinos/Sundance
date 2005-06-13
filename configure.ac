@@ -196,6 +196,7 @@ AC_CONFIG_FILES([
   src-xml/Makefile
   tests-utils/Makefile
   tests-utils/Functors/Makefile
+  tests-utils/Maps/Makefile
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
   tests-std-mesh/Makefile

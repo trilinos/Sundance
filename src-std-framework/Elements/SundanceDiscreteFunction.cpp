@@ -124,14 +124,15 @@ void DiscreteFunction::getLocalValues(int cellDim,
   localValues.resize(nFunc*cellLID.size()*nNodes);
   indices.resize(dofs.size());
   
-
+  /* store the values in fortran order with node number running fastest,
+   * then function ID, then cell ID */
   for (int c=0; c<cellLID.size(); c++)
     {
       for (int f=0; f<nFunc; f++)
         {
           for (int n=0; n<nNodes; n++)
             {
-              indices[c*nFunc*nNodes + nFunc*n + f]
+              indices[(c*nFunc + f)*nNodes + n]
                 = dofs[(f*nCells + c)*nNodes + n];
             }
         }
