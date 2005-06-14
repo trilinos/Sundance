@@ -54,7 +54,7 @@ static Time& integrationTimer()
 
 IntegralGroup
 ::IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
-                const Array<Array<int> >& resultIndices)
+                const Array<int>& resultIndices)
   : order_(0),
     nTestNodes_(0),
     nUnkNodes_(0),
@@ -69,7 +69,7 @@ IntegralGroup
 IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
                 const Array<RefCountPtr<ElementIntegral> >& integrals,
-                const Array<Array<int> >& resultIndices)
+                const Array<int>& resultIndices)
   : order_(1),
     nTestNodes_(0),
     nUnkNodes_(0),
@@ -96,7 +96,7 @@ IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
                 const Array<int>& unkID,
                 const Array<RefCountPtr<ElementIntegral> >& integrals,
-                const Array<Array<int> >& resultIndices)
+                const Array<int>& resultIndices)
   : order_(2),
     nTestNodes_(0),
     nUnkNodes_(0),
@@ -160,13 +160,9 @@ bool IntegralGroup
           SUNDANCE_OUT(verbosity() > VerbMedium,
                        tab << "Integrating term group " << i 
                        << " by transformed reference integral");
-          Array<double> f(resultIndices_[i].size());
-          for (int j=0; j<f.size(); j++)
-            {
-              f[j] = constantCoeffs[resultIndices_[i][j]];
-            }
+          double f = constantCoeffs[resultIndices_[i]];
           SUNDANCE_OUT(verbosity() > VerbSilent,
-                       tab << "Coefficients are " << f);
+                       tab << "Coefficient is " << f);
           ref->transform(J, f, A);
         }
       else 
@@ -174,14 +170,14 @@ bool IntegralGroup
           SUNDANCE_OUT(verbosity() > VerbMedium,
                        tab << "Integrating term group " << i 
                        << " by quadrature");
-          TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i][0]]->length()==0,
+          TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
                              InternalError,
                              "zero-length coeff vector detected in "
                              "quadrature integration branch of "
                              "IntegralGroup::evaluate(). String value is ["
-                             << vectorCoeffs[resultIndices_[i][0]]->str()
+                             << vectorCoeffs[resultIndices_[i]]->str()
                              << "]");
-          const double* const f = vectorCoeffs[resultIndices_[i][0]]->start();
+          const double* const f = vectorCoeffs[resultIndices_[i]]->start();
           quad->transform(J, f, A);
         }
       SUNDANCE_OUT(verbosity() > VerbHigh, tab << "i=" << i << " A=" << *A);

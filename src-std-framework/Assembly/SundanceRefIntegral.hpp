@@ -93,17 +93,17 @@ namespace SundanceStdFwk
       RefIntegral(int dim, 
                   const CellType& cellType,
                   const BasisFamily& testBasis,
-                  const Array<int>& alpha,
+                  int alpha,
                   int testDerivOrder);
 
       /** Construct a reference two-form */
       RefIntegral(int dim,
                   const CellType& cellType,
                   const BasisFamily& testBasis,
-                  const Array<int>& alpha,
+                  int alpha,
                   int testDerivOrder,
                   const BasisFamily& unkBasis,
-                  const Array<int>& beta,
+                  int beta,
                   int unkDerivOrder);
       
       /** */
@@ -111,7 +111,7 @@ namespace SundanceStdFwk
 
       /** */
       void transform(const CellJacobianBatch& J, 
-                     const Array<double>& coeff,
+                     const double& coeff,
                      RefCountPtr<Array<double> >& A) const 
       {
         if (order()==2) transformTwoForm(J, coeff, A);
@@ -121,17 +121,17 @@ namespace SundanceStdFwk
 
       /** */
       void transformTwoForm(const CellJacobianBatch& J, 
-                            const Array<double>& coeff,
+                            const double& coeff,
                             RefCountPtr<Array<double> >& A) const ;
 
       /** */
       void transformOneForm(const CellJacobianBatch& J, 
-                            const Array<double>& coeff,
+                            const double& coeff,
                             RefCountPtr<Array<double> >& A) const ;
 
       /** */
       void transformZeroForm(const CellJacobianBatch& J, 
-                            const Array<double>& coeff,
+                            const double& coeff,
                             RefCountPtr<Array<double> >& A) const ;
       /** */
       inline double& value(int testDerivDir, int testNode,
@@ -163,16 +163,6 @@ namespace SundanceStdFwk
     protected:
 
       static void addFlops(const double& flops) {totalFlops() += flops;}
-
-      /** */
-      void createTwoFormTransformationMatrix(const CellJacobianBatch& J,  
-                                             const Array<int>& alpha,
-                                             const Array<int>& beta,
-                                             const Array<double>& coeff) const;
-      /** */
-      void createOneFormTransformationMatrix(const CellJacobianBatch& J,  
-                                             const Array<int>& alpha,
-                                             const Array<double>& coeff) const;
       
     private:
 

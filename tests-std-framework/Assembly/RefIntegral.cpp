@@ -94,8 +94,8 @@ int main(int argc, void** argv)
 
       int pMax = 1;
       int maxDim=2;
-      Array<int> alpha(1);
-      Array<int> beta(1);
+      int alpha=0;
+      int beta=0;
 
       verbosity<RefIntegral>() = VerbMedium;
 

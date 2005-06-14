@@ -61,12 +61,6 @@ static Time& refIntegrationTimer()
   return *rtn;
 }
 
-static Time& refTransCreationTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("building transformation matrices for ref"); 
-  return *rtn;
-}
 
 
 RefIntegral::RefIntegral(int dim, 
@@ -83,7 +77,7 @@ RefIntegral::RefIntegral(int dim,
 RefIntegral::RefIntegral(int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
-                         const Array<int>& alpha,
+                         int alpha,
                          int testDerivOrder)
   : ElementIntegral(dim, cellType, testBasis, alpha, testDerivOrder), W_()
 {
@@ -162,10 +156,10 @@ RefIntegral::RefIntegral(int dim,
 RefIntegral::RefIntegral(int dim,
                          const CellType& cellType,
                          const BasisFamily& testBasis,
-                         const Array<int>& alpha,
+                         int alpha,
                          int testDerivOrder,
                          const BasisFamily& unkBasis,
-                         const Array<int>& beta,
+                         int beta,
                          int unkDerivOrder)
   : ElementIntegral(dim, cellType, 
                     testBasis, alpha, testDerivOrder, 
@@ -393,7 +387,7 @@ void RefIntegral::print(ostream& os) const
 
 
 void RefIntegral::transformZeroForm(const CellJacobianBatch& J,  
-                                    const Array<double>& coeff,
+                                    const double& coeff,
                                     RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
@@ -403,18 +397,16 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& J,
   
 
   /* The result for each cell is the cell's Jacobian determinant */
-  //  A->resize(1);
   double& a = (*A)[0];
-  //  a = 0.0;
   for (int c=0; c<J.numCells(); c++)
     {
-      a += coeff[0] * fabs(J.detJ()[c]);
+      a += coeff * fabs(J.detJ()[c]);
     }
   addFlops(2*J.numCells());
 }
 
 void RefIntegral::transformOneForm(const CellJacobianBatch& J,  
-                                   const Array<double>& coeff,
+                                   const double& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
@@ -426,12 +418,11 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0)
     {
-      //      A->resize(J.numCells() * nNodes());
       double* aPtr = &((*A)[0]);
       int count = 0;
       for (int c=0; c<J.numCells(); c++)
         {
-          double detJ = coeff[0] * fabs(J.detJ()[c]);
+          double detJ = coeff * fabs(J.detJ()[c]);
           for (int n=0; n<nNodes(); n++, count++) 
             {
               aPtr[count] += detJ*W_[n];
@@ -445,25 +436,24 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
       double one = 1.0;
       double zero = 0.0;
       int nTransRows = nRefDerivTest();
-      //      A->resize(J.numCells() * nNodes()); 
       int info=0;
 
-      createOneFormTransformationMatrix(J, alpha(), coeff);
+      createOneFormTransformationMatrix(J);
 
       SUNDANCE_OUT(verbosity() > VerbMedium, 
-                   Tabs() << "transformation matrix=" << G());
+                   Tabs() << "transformation matrix=" << G(alpha()));
       
       int nNodes0 = nNodes();
-      ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &one, &(W_[0]),
-               &nNodes0, &(G()[0]), &nTransRows, &one, &((*A)[0]), &nNodes0);
+      ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0]),
+               &nNodes0, &(G(alpha())[0]), &nTransRows, &one, 
+               &((*A)[0]), &nNodes0);
 
       addFlops(2 * nNodes0 * nCells * nTransRows);
-       
     }
 }
 
 void RefIntegral::transformTwoForm(const CellJacobianBatch& J,  
-                                   const Array<double>& coeff,
+                                   const double& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
@@ -480,7 +470,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       int count = 0;
       for (int c=0; c<J.numCells(); c++)
         {
-          double detJ = coeff[0] * fabs(J.detJ()[c]);
+          double detJ = coeff * fabs(J.detJ()[c]);
           for (int n=0; n<nNodes(); n++, count++) 
             {
               aPtr[count] += detJ*W_[n];
@@ -497,137 +487,35 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       //      A->resize(J.numCells() * nNodes()); 
       int info=0;
 
-      createTwoFormTransformationMatrix(J, alpha(), beta(), coeff);
-
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
-                   Tabs() << "transformation matrix=" << G());
+      createTwoFormTransformationMatrix(J);
+      
+      double* GPtr;
+      if (testDerivOrder() == 0)
+        {
+          GPtr = &(G(beta())[0]);
+          SUNDANCE_OUT(verbosity() > VerbMedium, 
+                       Tabs() << "transformation matrix=" << G(beta()));
+        }
+      else if (unkDerivOrder() == 0)
+        {
+          GPtr = &(G(alpha())[0]);
+          SUNDANCE_OUT(verbosity() > VerbMedium, 
+                       Tabs() << "transformation matrix=" << G(alpha()));
+        }
+      else
+        {
+          GPtr = &(G(alpha(), beta())[0]);
+          SUNDANCE_OUT(verbosity() > VerbMedium, 
+                       Tabs() << "transformation matrix=" 
+                       << G(alpha(),beta()));
+        }
       
       int nNodes0 = nNodes();
-      ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &one, &(W_[0]),
-               &nNodes0, &(G()[0]), &nTransRows, &one, &((*A)[0]), &nNodes0);
+      ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0]),
+               &nNodes0, GPtr, 
+               &nTransRows, &one, &((*A)[0]), &nNodes0);
        
       addFlops(2 * nNodes0 * nCells * nTransRows);
     }
 }
 
-void RefIntegral
-::createTwoFormTransformationMatrix(const CellJacobianBatch& J,  
-                                    const Array<int>& alpha,
-                                    const Array<int>& beta,
-                                    const Array<double>& coeff) const 
-{
-  TimeMonitor timer(refTransCreationTimer());
-
-  TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
-                     "Inconsistency between Jacobian dimension " << J.cellDim()
-                     << " and cell dimension " << dim() 
-                     << " in RefIntegral::createTwoFormTransformationMatrix()");
-
-  /* If both derivative orders are 1, then we have to transform both
-   * basis functions */
-  Array<double> invJ;  
-  if (testDerivOrder() == 1 && unkDerivOrder() == 1)
-    {
-      G().resize(J.numCells() * J.cellDim() * J.cellDim());
-
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
-                   Tabs() << "both derivs are first order");
-      for (int c=0; c<J.numCells(); c++)
-        {
-
-          J.getInvJ(c, invJ);
-          double detJ = fabs(J.detJ()[c]);
-          for (int gamma=0; gamma<dim(); gamma++)
-            {
-              for (int delta=0; delta<dim(); delta++)
-                {
-                  double sum = 0.0;
-                  for (int t=0; t<alpha.size(); t++)
-                    {
-                      sum += invJ[alpha[t] + gamma*dim()]
-                        * invJ[beta[t]+ dim()*delta]
-                        * coeff[t];
-                    }
-                  G()[dim()*(c*dim() + gamma) + delta ] = detJ*sum; 
-                }
-            }
-        }
-      addFlops(J.numCells()*(1 + dim()*dim()*(1 + 3*alpha.size())));
-    }
-
-  else if (testDerivOrder() == 1 && unkDerivOrder() == 0)
-    {
-      G().resize(J.numCells() * J.cellDim());
-
-      for (int c=0; c<J.numCells(); c++)
-        {
-          Array<double> invJ;
-          J.getInvJ(c, invJ);
-          double detJ = fabs(J.detJ()[c]);
-          for (int gamma=0; gamma<dim(); gamma++)
-            {
-              double sum = 0.0;
-              for (int t=0; t<alpha.size(); t++)
-                {
-                  sum += invJ[alpha[t] + dim() * gamma] * coeff[t];
-                }
-              G()[c*dim() + gamma] = detJ*sum; 
-            }
-        }
-      addFlops(J.numCells()*(1 + dim()*(1 + 2*alpha.size())));
-    }
-  else /* if (testDerivOrder() == 0 && unkDerivOrder() == 1) */
-    {
-      G().resize(J.numCells() * J.cellDim());
-
-      for (int c=0; c<J.numCells(); c++)
-        {
-          Array<double> invJ;
-          J.getInvJ(c, invJ);
-          double detJ = fabs(J.detJ()[c]);
-          for (int delta=0; delta<dim(); delta++)
-            {
-              double sum = 0.0;
-              for (int t=0; t<beta.size(); t++)
-                {
-                  sum += invJ[beta[t] + dim() * delta] * coeff[t];
-                }
-              G()[c*dim() + delta] = detJ*sum; 
-            }
-        }
-      addFlops(J.numCells()*(1 + dim()*(1 + 2*alpha.size())));
-    }
-}
-
-
-void RefIntegral
-::createOneFormTransformationMatrix(const CellJacobianBatch& J,  
-                                    const Array<int>& alpha,
-                                    const Array<double>& coeff) const 
-{
-  TimeMonitor timer(refTransCreationTimer());
-
-  TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
-                     "Inconsistency between Jacobian dimension " << J.cellDim()
-                     << " and cell dimension " << dim() 
-                     << " in RefIntegral::createOneFormTransformationMatrix()");
-  G().resize(J.numCells() * J.cellDim());
-  Array<double> invJ;
-  for (int c=0; c<J.numCells(); c++)
-    {
-
-      J.getInvJ(c, invJ);
-      double detJ = fabs(J.detJ()[c]);
-      for (int gamma=0; gamma<dim(); gamma++)
-        {
-          double sum = 0.0;
-          for (int t=0; t<alpha.size(); t++)
-            {
-              sum += coeff[t]*invJ[alpha[t] + gamma*dim()];
-            }
-          G()[c*dim() + gamma] = detJ*sum; 
-        }
-    }
-
-  addFlops(J.numCells()*(1 + dim()*(1 + 2*alpha.size())));  
-}

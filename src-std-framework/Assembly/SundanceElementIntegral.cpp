@@ -42,6 +42,13 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& transCreationTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("building integral transformation matrices"); 
+  return *rtn;
+}
+
 ElementIntegral::ElementIntegral(int dim, 
                                  const CellType& cellType)
   : dim_(dim),
@@ -60,7 +67,7 @@ ElementIntegral::ElementIntegral(int dim,
 ElementIntegral::ElementIntegral(int dim, 
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
-                                 const Array<int>& alpha,
+                                 int alpha,
                                  int testDerivOrder)
   : dim_(dim),
     testDerivOrder_(testDerivOrder), 
@@ -72,7 +79,7 @@ ElementIntegral::ElementIntegral(int dim,
     nNodes_(nNodesTest_),
     order_(1),
     alpha_(alpha),
-    beta_()
+    beta_(-1)
 {;}
 
 
@@ -80,10 +87,10 @@ ElementIntegral::ElementIntegral(int dim,
 ElementIntegral::ElementIntegral(int dim,
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
-                                 const Array<int>& alpha,
+                                 int alpha,
                                  int testDerivOrder,
                                  const BasisFamily& unkBasis,
-                                 const Array<int>& beta,
+                                 int beta,
                                  int unkDerivOrder)
   : dim_(dim),
     testDerivOrder_(testDerivOrder), 
@@ -98,10 +105,177 @@ ElementIntegral::ElementIntegral(int dim,
     beta_(beta)
 {;}
 
+
+Array<double>& ElementIntegral::G(int alpha)
+{
+  static Array<Array<double> > rtn(3);
+
+  return rtn[alpha];
+}
+
+Array<double>& ElementIntegral::G(int alpha, int beta)
+{
+  static Array<Array<double> > rtn(9);
+
+  return rtn[3*alpha + beta];
+}
+
+int& ElementIntegral::transformationMatrixIsValid(int alpha, int beta)
+{
+  static Array<int> rtn(9, false);
+  return rtn[3*alpha + beta];
+}
+
+int& ElementIntegral::transformationMatrixIsValid(int alpha)
+{
+  static Array<int> rtn(3, false);
+  return rtn[alpha];
+}
+
+void ElementIntegral::invalidateTransformationMatrices()
+{
+  for (int i=0; i<3; i++)
+    {
+      transformationMatrixIsValid(i) = false;
+      for (int j=0; j<3; j++)
+        {
+          transformationMatrixIsValid(i, j) = false;
+        }
+    }
+}
+
+
+
+
 int ElementIntegral::ipow(int base, int power) 
 {
   int rtn = 1;
   for (int i=0; i<power; i++) rtn *= base;
   return rtn;
+}
+
+void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch& J) const
+{
+  TimeMonitor timer(transCreationTimer());
+
+  TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
+                     "Inconsistency between Jacobian dimension " << J.cellDim()
+                     << " and cell dimension " << dim() 
+                     << " in ElementIntegral::createTwoFormTransformationMatrix()");
+
+  int flops = 0;
+
+  if (testDerivOrder() == 1 && unkDerivOrder() == 1)
+    {
+      if (transformationMatrixIsValid(alpha(), beta())) return;
+      transformationMatrixIsValid(alpha(), beta()) = true;
+
+      G(alpha(), beta()).resize(J.numCells() * J.cellDim() * J.cellDim());
+
+      SUNDANCE_OUT(verbosity() > VerbMedium, 
+                   Tabs() << "both derivs are first order");
+
+      double* GPtr = &(G(alpha(),beta())[0]);
+      int k = 0;
+
+      for (int c=0; c<J.numCells(); c++)
+        {
+          static Array<double> invJ;
+          J.getInvJ(c, invJ);
+          double detJ = fabs(J.detJ()[c]);
+          for (int gamma=0; gamma<dim(); gamma++)
+            {
+              for (int delta=0; delta<dim(); delta++, k++)
+                {
+                  GPtr[k] =  detJ*invJ[alpha() + gamma*dim()]
+                    * invJ[beta() + dim()*delta];
+                }
+            }
+        }
+      flops = 2 * J.numCells() * dim() * dim() + J.numCells();
+    }
+
+  else if (testDerivOrder() == 1 && unkDerivOrder() == 0)
+    {
+      if (transformationMatrixIsValid(alpha())) return;
+      transformationMatrixIsValid(alpha()) = true;
+
+      G(alpha()).resize(J.numCells() * J.cellDim());
+
+      int k = 0;
+      double* GPtr = &(G(alpha())[0]);
+
+      for (int c=0; c<J.numCells(); c++)
+        {
+          static Array<double> invJ;
+          J.getInvJ(c, invJ);
+          double detJ = fabs(J.detJ()[c]);
+          for (int gamma=0; gamma<dim(); gamma++,k++)
+            {
+              GPtr[k] = detJ*invJ[alpha() + dim() * gamma];
+            }
+        }
+      flops = J.numCells() * dim() + J.numCells();
+    }
+
+  else 
+    {
+      if (transformationMatrixIsValid(beta())) return;
+      transformationMatrixIsValid(beta()) = true;
+
+      G(beta()).resize(J.numCells() * J.cellDim());
+
+      int k = 0;
+      double* GPtr = &(G(beta())[0]);
+
+      for (int c=0; c<J.numCells(); c++)
+        {
+          static Array<double> invJ;
+          J.getInvJ(c, invJ);
+          double detJ = fabs(J.detJ()[c]);
+          for (int gamma=0; gamma<dim(); gamma++,k++)
+            {
+              GPtr[k] = detJ*invJ[beta() + dim() * gamma];
+            }
+        }
+      flops = J.numCells() * dim() + J.numCells();
+    }
+
+  addFlops(flops);
+}
+
+
+void ElementIntegral
+::createOneFormTransformationMatrix(const CellJacobianBatch& J) const 
+{
+  TimeMonitor timer(transCreationTimer());
+
+  if (transformationMatrixIsValid(alpha())) return;
+  transformationMatrixIsValid(alpha()) = true;
+
+  TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
+                     "Inconsistency between Jacobian dimension " << J.cellDim()
+                     << " and cell dimension " << dim() 
+                     << " in ElementIntegral::createOneFormTransformationMatrix()");
+
+  int flops = J.numCells() * dim() + J.numCells();
+
+  G(alpha()).resize(J.numCells() * J.cellDim());
+
+  int k = 0;
+  double* GPtr = &(G(alpha())[0]);
+
+  for (int c=0; c<J.numCells(); c++)
+    {
+      Array<double> invJ;
+      J.getInvJ(c, invJ);
+      double detJ = fabs(J.detJ()[c]);
+      for (int gamma=0; gamma<dim(); gamma++, k++)
+        {
+          GPtr[k] = detJ*invJ[alpha() + dim() * gamma]; 
+        }
+    }
+  
+  addFlops(flops);
 }
 

@@ -64,7 +64,7 @@ namespace SundanceStdFwk
       QuadratureIntegral(int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
-                         const Array<int>& alpha,
+                         int alpha,
                          int testDerivOrder,
                          const QuadratureFamily& quad);
 
@@ -72,10 +72,10 @@ namespace SundanceStdFwk
       QuadratureIntegral(int dim,
                          const CellType& cellType,
                          const BasisFamily& testBasis,
-                         const Array<int>& alpha,
+                         int alpha,
                          int testDerivOrder,
                          const BasisFamily& unkBasis,
-                         const Array<int>& beta,
+                         int beta,
                          int unkDerivOrder,
                          const QuadratureFamily& quad);
 
@@ -121,12 +121,14 @@ namespace SundanceStdFwk
       /** Do the integration by summing reference quantities over quadrature
        * points and then transforming the sum to physical quantities.  */
       void transformSummingFirst(int nCells,
+                                 const double* const GPtr,
                                  const double* const coeff,
                                  RefCountPtr<Array<double> >& A) const ;
 
       /** Do the integration by transforming to physical coordinates 
        * at each quadrature point, and then summing */
       void transformSummingLast(int nCells,
+                                const double* const GPtr,
                                 const double* const coeff,
                                 RefCountPtr<Array<double> >& A) const ;
 
@@ -166,14 +168,6 @@ namespace SundanceStdFwk
       inline const double& wValue(int q, int testDerivDir, int testNode) const 
       {return W_[testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
 
-      /* */
-      void createTwoFormTransformationMatrix(const CellJacobianBatch& J,  
-                                             const Array<int>& alpha,
-                                             const Array<int>& beta) const ;
-
-      /* */
-      void createOneFormTransformationMatrix(const CellJacobianBatch& J,  
-                                             const Array<int>& alpha) const ;
       /* */
       Array<double> W_;
 

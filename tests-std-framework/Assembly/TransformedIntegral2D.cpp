@@ -133,7 +133,7 @@ int main(int argc, void** argv)
 
 
       
-      Array<double> coeff = tuple(1.0);
+      double coeff = 1.0;
       RefCountPtr<Array<double> > A = rcp(new Array<double>());
       RefCountPtr<Array<double> > B = rcp(new Array<double>());
 
@@ -154,9 +154,10 @@ int main(int argc, void** argv)
               if (dp==1) numTestDir = dim;
               for (int t=0; t<numTestDir; t++)
                 {
-                  Array<int> alpha = tuple(t);
+                  int alpha = t;
                   Tabs tab;
                   RefIntegral ref(dim, cellType, P, alpha, dp);
+                  A->resize(JBatch.numCells() * ref.nNodes());
                   ref.transformOneForm(JBatch, coeff, A);
                   cerr << tab << "transformed reference element" << endl;
                   cerr << tab << "test diff direction=" << t << endl;
@@ -172,6 +173,7 @@ int main(int argc, void** argv)
                     }
                   QuadratureIntegral quad(dim, cellType, P, alpha, dp, q4);
                   Array<double> quadCoeff(2*quad.nQuad(), 1.0);
+                  B->resize(JBatch.numCells() * quad.nNodes());
                   quad.transformOneForm(JBatch, &(quadCoeff[0]), B);
                   cerr << tab << "transformed quad element" << endl;
                   cerr << tab << "test diff direction =" << t << endl;
@@ -236,7 +238,7 @@ int main(int argc, void** argv)
                       if (dq > q) continue;
                       for (int t=0; t<numTestDir; t++)
                         {
-                          Array<int> alpha = tuple(t);
+                          int alpha = t;
                           int numUnkDir = 1;
                           if (dq==1) numUnkDir = dim;
                           for (int u=0; u<numUnkDir; u++)
@@ -244,9 +246,10 @@ int main(int argc, void** argv)
                               Tabs tab;
                               //                              if (p==0 || q==0 || dp==0 || dq==0 || u==1
                               //  || t==1) continue;
-                              Array<int> beta = tuple(u);
+                              int beta = u;
                               RefIntegral ref(dim, cellType, P, alpha,
                                               dp, Q, beta, dq);
+                              A->resize(JBatch.numCells() * ref.nNodes());
                               ref.transformTwoForm(JBatch, coeff, A);
                               cerr << tab << "transformed ref element" << endl;
                               cerr << tab << "t=dx(" << t << "), u=dx(" << u 
@@ -273,6 +276,7 @@ int main(int argc, void** argv)
                               QuadratureIntegral quad(dim, cellType, P, alpha,
                                                       dp, Q, beta, dq, q4);
                               Array<double> quadCoeff(2*quad.nQuad(), 1.0);
+                              B->resize(JBatch.numCells() * quad.nNodes());
                               quad.transformTwoForm(JBatch, &(quadCoeff[0]), B);
 
                               cerr << tab << "transformed quad element" << endl;

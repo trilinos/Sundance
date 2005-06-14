@@ -5,7 +5,7 @@
       <Parameter name="Method" type="string" value="More'-Thuente"/>
     </ParameterList>
     <ParameterList name="Status Test">
-      <Parameter name="Max Iterations" type="int" value="1"/>
+      <Parameter name="Max Iterations" type="int" value="6"/>
       <Parameter name="Tolerance" type="double" value="1e-8"/>
     </ParameterList>
 

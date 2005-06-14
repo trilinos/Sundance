@@ -2,7 +2,7 @@
 
 <!-- Set size of work set, i.e., the number of cells -->
 
-<Parameter name="Work Set Size" value="500"/>
+<Parameter name="Work Set Size" value="100"/>
 
 <!-- Whether to check the result of each unary function operation -->
 

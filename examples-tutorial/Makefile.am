@@ -126,7 +126,6 @@ PressureStabilizedNS2D_LDADD = $(STD_FWK_LIBS)
 
 
 
-
 PressureStabilizedNS3D_SOURCES = $(srcdir)/PressureStabilizedNS3D.cpp
 
 PressureStabilizedNS3D_DEPENDENCIES = \
@@ -138,6 +137,9 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 PressureStabilizedNS3D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 PressureStabilizedNS3D_LDADD = $(STD_FWK_LIBS) 
+
+
+
 
 
 

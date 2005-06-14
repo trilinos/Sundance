@@ -535,6 +535,8 @@ void Assembler::assemble(LinearOperator<double>& A,
                                            nUnkNodes);
             }
           
+          ElementIntegral::invalidateTransformationMatrices();
+
           for (int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
@@ -705,7 +707,7 @@ void Assembler::assemble(Vector<double>& b) const
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
                                        nTestNodes);
 
-
+          ElementIntegral::invalidateTransformationMatrices();
           for (int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
@@ -864,6 +866,8 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
                                        nTestNodes);
 
 
+          ElementIntegral::invalidateTransformationMatrices();
+
           for (int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
@@ -1014,6 +1018,7 @@ void Assembler::evaluate(double& value) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
+          ElementIntegral::invalidateTransformationMatrices();
           for (int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];

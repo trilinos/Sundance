@@ -70,9 +70,9 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   typedef SundanceUtils::Map<OrderedPair<int, int>, Array<RefCountPtr<ElementIntegral> > > twoFormMap;
   typedef SundanceUtils::Map<int, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
   SundanceUtils::Map<OrderedPair<int, int>, Array<RefCountPtr<ElementIntegral> > > twoForms;
-  SundanceUtils::Map<OrderedPair<int, int>, Array<Array<int> > > twoFormResultIndices;
+  SundanceUtils::Map<OrderedPair<int, int>, Array<int> > twoFormResultIndices;
   SundanceUtils::Map<int, Array<RefCountPtr<ElementIntegral> > > oneForms;
-  SundanceUtils::Map<int, Array<Array<int> > > oneFormResultIndices;
+  SundanceUtils::Map<int, Array<int> > oneFormResultIndices;
 
   for (int i=0; i<sparsity->numDerivs(); i++)
     {
@@ -94,7 +94,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
               resultIndex = vecCount++;
             }
           groups.append(IntegralGroup(tuple(integral),
-                                      tuple(tuple(resultIndex))));
+                                      tuple(resultIndex)));
         }
       else
         {
@@ -106,8 +106,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           int testID;
           int unkID;
           bool isOneForm;
-          Array<int> alpha;
-          Array<int> beta;
+          int alpha;
+          int beta;
           extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, testID, unkID,
                           isOneForm);
 
@@ -131,7 +131,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   if (miTest.order()==1)
                     {
-                      alpha = tuple(miTest.firstOrderDirection());
+                      alpha = miTest.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating reference integral for one-form");
@@ -143,11 +143,11 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   if (miTest.order()==1)
                     {
-                      alpha = tuple(miTest.firstOrderDirection());
+                      alpha = miTest.firstOrderDirection();
                     }
                   if (miUnk.order()==1)
                     {
-                      beta = tuple(miUnk.firstOrderDirection());
+                      beta = miUnk.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating reference integral for two-form");
@@ -163,7 +163,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   if (miTest.order()==1)
                     {
-                      alpha = tuple(miTest.firstOrderDirection());
+                      alpha = miTest.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating quadrature integral for two-form");
@@ -175,11 +175,11 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   if (miTest.order()==1)
                     {
-                      alpha = tuple(miTest.firstOrderDirection());
+                      alpha = miTest.firstOrderDirection();
                     }
                   if (miUnk.order()==1)
                     {
-                      beta = tuple(miUnk.firstOrderDirection());
+                      beta = miUnk.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating quadrature integral for two-form");
@@ -199,18 +199,18 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                   if (!oneForms.containsKey(testID))
                     {
                       oneForms.put(testID, tuple(integral));
-                      oneFormResultIndices.put(testID, tuple(tuple(resultIndex)));
+                      oneFormResultIndices.put(testID, tuple(resultIndex));
                     }
                   else
                     {
                       oneForms[testID].append(integral);
-                      oneFormResultIndices[testID].append(tuple(resultIndex));
+                      oneFormResultIndices[testID].append(resultIndex);
                     }
                 }
               else
                 {
                   groups.append(IntegralGroup(tuple(testID), tuple(integral),
-                                              tuple(tuple(resultIndex))));
+                                              tuple(resultIndex)));
                 }
             }
           else
@@ -219,7 +219,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   groups.append(IntegralGroup(tuple(testID), tuple(unkID),
                                               tuple(integral),
-                                              tuple(tuple(resultIndex))));
+                                              tuple(resultIndex)));
                 }
               else
                 {
@@ -227,12 +227,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                   if (!twoForms.containsKey(testUnk))
                     {
                       twoForms.put(testUnk, tuple(integral));
-                      twoFormResultIndices.put(testUnk, tuple(tuple(resultIndex)));
+                      twoFormResultIndices.put(testUnk, tuple(resultIndex));
                     }
                   else
                     {
                       twoForms[testUnk].append(integral);
-                      twoFormResultIndices[testUnk].append(tuple(resultIndex));
+                      twoFormResultIndices[testUnk].append(resultIndex);
                     }
                 }
             }
@@ -246,7 +246,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           int testID = i->first.first();
           int unkID = i->first.second();
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
-          const Array<Array<int> >& resultIndices 
+          const Array<int>& resultIndices 
             = twoFormResultIndices.get(i->first);
           SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
                                << tab << "testID=" << testID << endl
@@ -255,7 +255,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           for (int j=0; j<resultIndices.size(); j++)
             {
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
-                           << sparsity->deriv(resultIndices[j][0]));
+                           << sparsity->deriv(resultIndices[j]));
             }
           groups.append(IntegralGroup(tuple(testID), tuple(unkID), 
                                       integrals, resultIndices));
@@ -265,7 +265,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         {
           int testID = i->first;
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
-          const Array<Array<int> >& resultIndices 
+          const Array<int>& resultIndices 
             = oneFormResultIndices.get(i->first);
           SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
                                << tab << "testID=" << testID << endl
@@ -273,7 +273,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           for (int j=0; j<resultIndices.size(); j++)
             {
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
-                           << sparsity->deriv(resultIndices[j][0]));
+                           << sparsity->deriv(resultIndices[j]));
             }
           groups.append(IntegralGroup(tuple(testID),
                                       integrals, resultIndices));

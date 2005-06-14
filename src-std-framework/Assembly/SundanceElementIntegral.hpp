@@ -68,17 +68,17 @@ namespace SundanceStdFwk
       ElementIntegral(int dim, 
                       const CellType& cellType,
                       const BasisFamily& testBasis,
-                      const Array<int>& alpha,
+                      int alpha,
                       int testDerivOrder);
 
       /** Construct a two-form */
       ElementIntegral(int dim,
                       const CellType& cellType,
                       const BasisFamily& testBasis,
-                      const Array<int>& alpha,
+                      int alpha,
                       int testDerivOrder,
                       const BasisFamily& unkBasis,
-                      const Array<int>& beta,
+                      int beta,
                       int unkDerivOrder);
 
       /** Indicate whether this element integral is a 
@@ -96,7 +96,23 @@ namespace SundanceStdFwk
       int nNodes() const {return nNodes_;}
 
 
+      /** */
+      static int& transformationMatrixIsValid(int alpha);
+
+
+      /** */
+      static int& transformationMatrixIsValid(int alpha, int beta);
+
+      /** */
+      static void invalidateTransformationMatrices();
+
+      /** */
+      static double& totalFlops() {static double rtn = 0; return rtn;}
+
+
     protected:
+      /** */
+      static void addFlops(const double& flops) {totalFlops() += flops;}
 
       /** The dimension of the cell being integrated */
       int dim() const {return dim_;}
@@ -120,13 +136,16 @@ namespace SundanceStdFwk
       int unkDerivOrder() const {return unkDerivOrder_;}
 
       /** */
-      const Array<int>& alpha() const {return alpha_;}
+      int alpha() const {return alpha_;}
 
       /** */
-      const Array<int>& beta() const {return beta_;}
+      int beta() const {return beta_;}
 
-      /** Workspace for element transformations */
-      static Array<double>& G() {static Array<double> rtn; return rtn;}
+      /** Workspace for element transformations involving one derivative*/
+      static Array<double>& G(int gamma) ;
+
+      /** Workspace for element transformations involving two derivatives */
+      static Array<double>& G(int gamma, int delta) ;
 
       /** return base to the given power */
       static int ipow(int base, int power);
@@ -141,6 +160,12 @@ namespace SundanceStdFwk
         if (::fabs(x) > chopVal()) return x;
         else return 0.0;
       }
+
+
+      /** */
+      void createTwoFormTransformationMatrix(const CellJacobianBatch& J) const;
+      /** */
+      void createOneFormTransformationMatrix(const CellJacobianBatch& J) const;
 
     private:
 
@@ -162,9 +187,9 @@ namespace SundanceStdFwk
 
       int order_;
 
-      Array<int> alpha_;
+      int alpha_;
 
-      Array<int> beta_;
+      int beta_;
       
     };
   }

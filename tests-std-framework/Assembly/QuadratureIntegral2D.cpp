@@ -194,7 +194,7 @@ int main(int argc, void** argv)
               if (dp==1) numTestDir = dim;
               for (int t=0; t<numTestDir; t++)
                 {
-                  Array<int> alpha = tuple(t);
+                  int alpha = t;
                   Tabs tab;
                   QuadratureIntegral ref(dim, cellType, P, alpha, dp, quad);
                   ref.transformOneForm(JBatch, f, A);
@@ -235,13 +235,13 @@ int main(int argc, void** argv)
                       if (dp==1) numTestDir = dim;
                       for (int t=0; t<numTestDir; t++)
                         {
-                          Array<int> alpha = tuple(t);
+                          int alpha = t;
                           int numUnkDir = 1;
                           if (dq==1) numUnkDir = dim;
                           for (int u=0; u<numUnkDir; u++)
                             {
                               Tabs tab;
-                              Array<int> beta = tuple(u);
+                              int beta = u;
                               QuadratureIntegral ref(dim, cellType, P, alpha, 
                                                      dp, Q, beta, dq, quad);
                               ref.transformTwoForm(JBatch, f, A);

@@ -55,16 +55,16 @@ namespace SundanceStdFwk
     public:
       /** */
       IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
-                    const Array<Array<int> >& resultIndices);
+                    const Array<int>& resultIndices);
       /** */
       IntegralGroup(const Array<int>& testID,
                     const Array<RefCountPtr<ElementIntegral> >& integrals,
-                    const Array<Array<int> >& resultIndices);
+                    const Array<int>& resultIndices);
       /** */
       IntegralGroup(const Array<int>& testID,
                     const Array<int>& unkID,
                     const Array<RefCountPtr<ElementIntegral> >& integrals,
-                    const Array<Array<int> >& resultIndices);
+                    const Array<int>& resultIndices);
 
 
       /** Indicate whether this is a group of two-forms */
@@ -118,7 +118,7 @@ namespace SundanceStdFwk
       Array<RefCountPtr<ElementIntegral> > integrals_;
 
       /** */
-      Array<Array<int> > resultIndices_;
+      Array<int> resultIndices_;
     };
   }
 }
