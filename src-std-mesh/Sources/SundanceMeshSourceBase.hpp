@@ -147,7 +147,7 @@ namespace SundanceStdMesh
 
       /** internal access to the element attributes */
       RefCountPtr<Array<Array<double> > >& elemAttributes() const 
-      {return nodeAttributes_;}
+      {return elemAttributes_;}
 
 
 
