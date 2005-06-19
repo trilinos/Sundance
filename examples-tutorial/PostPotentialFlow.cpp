@@ -92,7 +92,7 @@ int main(int argc, void** argv)
 
 
       /* Read the parameters for the linear solver from an XML file */
-      ParameterXMLFileReader reader("../../examples-tutorial/ml.xml");
+      ParameterXMLFileReader reader("../../examples-tutorial/aztec.xml");
       ParameterList solverParams = reader.getParameters();
 
       LinearSolver<double> linSolver 

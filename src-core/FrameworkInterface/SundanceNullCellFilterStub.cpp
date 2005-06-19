@@ -48,7 +48,7 @@ bool NullCellFilterStub::lessThan(const CellFilterStub* other) const
 {
   const NullCellFilterStub* ncf = dynamic_cast<const NullCellFilterStub*>(other);
   TEST_FOR_EXCEPTION(ncf==0, RuntimeError,
-                     "argument " << other->describe() 
+                     "argument " << other->description() 
                      << " to NullCellFilter::lessThan() could not be cast "
                      "to a NullCellFilter*");
   /* All null cell filters are equivalent */

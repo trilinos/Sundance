@@ -284,8 +284,8 @@ int main(int argc, void** argv)
 
       int maxDiffOrder = 2;
 
-      verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbSilent;
+      verbosity<SymbolicTransformation>() = VerbExtreme;
+      verbosity<Evaluator>() = VerbExtreme;
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;
       Expr::showAllParens() = true;
@@ -318,18 +318,8 @@ int main(int argc, void** argv)
       Expr rho = /*0.5*(1.0 + */tanh(alpha/*/h*/)/*)*/;
 
 
-//       tests.append(/*0.5*(u-x)*(u-x)
-//                      + 0.5*(grad*u)*(grad*u)
-//                      + */rho*(lambda_u*u)
-//                          + sqrt(dx*rho)
-//                          /*     + 0.5*(grad*alpha)*(grad*alpha) */);
-
       tests.append(0.5*(u-x)*(u-x) + 0.5*alpha*alpha 
                    + (grad*lambda_u)*(grad*u) + alpha*lambda_u);
-
-
-      //      verbosity<Evaluator>() = VerbExtreme;
-      //      verbosity<EvaluatableExpr>() = VerbExtreme;
 
 
       cerr << "STATE EQUATIONS " << endl;

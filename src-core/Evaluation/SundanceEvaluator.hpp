@@ -55,6 +55,7 @@ namespace SundanceCore
   }
   
   using namespace Internal;
+  using namespace TSFExtended;
 
   namespace Internal 
   {

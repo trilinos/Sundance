@@ -61,7 +61,7 @@ using namespace SundanceUtils;
     virtual Mesh apply(const Mesh& inputMesh) const ;
 
     /** Print a short descriptive string */
-    virtual string describe() const 
+    virtual string description() const 
     {return "ExtrusionMeshTransformation[z0=" + Teuchos::toString(z0_)
        + ", z1=" + Teuchos::toString(z1_)
        + ", nz=" + Teuchos::toString(nzLevels_) + "]";}

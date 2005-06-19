@@ -73,10 +73,12 @@ EvaluatableExpr::sparsitySubset(const EvalContext& context,
 {
   Tabs tab;
   RefCountPtr<SparsitySuperset> super = sparsitySuperset(context);
+
 //   SUNDANCE_VERB_HIGH(tab << "getting subset for miSet=" 
 //                      << multiIndices.toString() << " and active funcs="
 //                      << activeFuncIDs << ". Superset is "
 //                      << *super);
+
   if (!super->hasSubset(multiIndices, activeFuncIDs))
     {
 //       SUNDANCE_VERB_HIGH(tab << "miSet, func combination not found");

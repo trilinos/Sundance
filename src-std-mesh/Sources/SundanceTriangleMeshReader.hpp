@@ -107,7 +107,7 @@ namespace SundanceStdMesh
     virtual Mesh fillMesh() const ;
 
     /** Print a short descriptive string */
-    virtual string describe() const 
+    virtual string description() const 
     {return "TriangleMeshReader[file=" + filename() + "]";}
       
 

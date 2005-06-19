@@ -66,7 +66,7 @@ using namespace SundanceUtils;
     virtual ~PartitionedLineMesher() {;}
 
     /** Print a short descriptive string */
-    virtual string describe() const 
+    virtual string description() const 
     {return "PartitionedLineMesher[ax=" + Teuchos::toString(ax_)
        + ", bx=" + Teuchos::toString(bx_)
        + ", nx=" + Teuchos::toString(nx_) + "]";}

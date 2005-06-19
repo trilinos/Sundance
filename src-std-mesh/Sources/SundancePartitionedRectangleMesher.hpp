@@ -78,7 +78,7 @@ using namespace SundanceUtils;
     virtual ~PartitionedRectangleMesher() {;}
 
     /** Print a short descriptive string */
-    virtual string describe() const 
+    virtual string description() const 
     {return "PartitionedRectangleMesher[ax=" + Teuchos::toString(ax_)
        + ", bx=" + Teuchos::toString(bx_)
        + ", nx=" + Teuchos::toString(nx_) +

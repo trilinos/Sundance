@@ -60,7 +60,7 @@ using namespace SundanceUtils;
     {return rcp(new BasicSimplicialMesh(dim, comm));}
 
     /** */
-    string describe() const {return "BasicSimplicialMeshType";}
+    string description() const {return "BasicSimplicialMeshType";}
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */

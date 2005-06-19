@@ -114,7 +114,7 @@ namespace SundanceStdMesh
     virtual Mesh fillMesh() const ;
 
     /** Print a short descriptive string */
-    virtual string describe() const 
+    virtual string description() const 
     {return "BamgMeshReader[file=" + filename() + "]";}
 
     /** Method for reading a .bb file */

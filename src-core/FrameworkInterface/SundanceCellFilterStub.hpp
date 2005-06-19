@@ -90,7 +90,7 @@ namespace SundanceCore
       /** \name Describable interface */
       //@{
       /** Print to a stream */
-      virtual string describe() const 
+      virtual string description() const 
       {return "CellFilterStub[id=" + Teuchos::toString(id()) + "]";}
       //@}
 

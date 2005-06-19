@@ -75,7 +75,7 @@ namespace SundanceStdMesh
      * See the PartitionedLineMesher source code for a very simple
      * example of how to write a mesh source subtype. 
      *
-     * Optionally, you can override the describe() method to 
+     * Optionally, you can override the description() method to 
      * provide more informative descriptive output than the string
      * <tt>"MeshSourceBase[unknown subtype]".</tt>
      */
@@ -111,13 +111,13 @@ namespace SundanceStdMesh
       /** \name Printable interface */
       //@{
       /** Print to a stream */
-      virtual void print(ostream& os) const {os << describe();}
+      virtual void print(ostream& os) const {os << description();}
       //@}
 
       /** \name Describable interface */
       //@{
       /** Print to a stream */
-      virtual string describe() const 
+      virtual string description() const 
       {return "MeshSourceBase[unknown subtype]";}
 
       /** access to the MPI communicator */

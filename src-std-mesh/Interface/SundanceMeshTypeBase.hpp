@@ -69,7 +69,7 @@ using namespace SundanceUtils;
                                                     const MPIComm& comm) const = 0 ;
 
       /** */
-      virtual void print(ostream& os) const {os << describe();}
+      virtual void print(ostream& os) const {os << description();}
     };
   }
 }
