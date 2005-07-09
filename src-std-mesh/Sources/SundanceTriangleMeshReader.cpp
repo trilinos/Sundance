@@ -30,10 +30,10 @@ TriangleMeshReader::TriangleMeshReader(const string& fname,
   parFilename_ = parFilename_ + ".par";
   
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "node filename = " << nodeFilename_);
   
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "elem filename = " << elemFilename_);
   
 }
@@ -56,10 +56,10 @@ TriangleMeshReader::TriangleMeshReader(const ParameterList& params)
   parFilename_ = parFilename_ + ".par";
   
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "node filename = " << nodeFilename_);
   
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "elem filename = " << elemFilename_);
   
 }
@@ -177,7 +177,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
 
           nElems = StrUtils::atoi(tokens[0]);
 
-          SUNDANCE_OUT(verbosity() > VerbLow,
+          SUNDANCE_OUT(this->verbosity() > VerbLow,
                        "read nElems = " << nElems);
 
 
@@ -229,7 +229,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
                      "the .node file. Found line \n[" << line
                      << "]\n in file " << nodeFilename_);
 	string headerLine = line;
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "read point header " << line);
   
   
@@ -256,7 +256,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
                          << parFilename_ << " had nPoints=" << nPoints);
     }
 
-  SUNDANCE_OUT(verbosity() > VerbHigh,
+  SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "expecting to read " << nPoints << " points");
   
 	int dimension = atoi(tokens[1]);

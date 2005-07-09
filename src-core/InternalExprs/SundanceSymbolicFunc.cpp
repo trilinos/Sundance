@@ -48,7 +48,7 @@ SymbolicFunc::SymbolicFunc()
 
 void SymbolicFunc::substituteZero() const 
 {
-  for (int i=0; i<size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());
@@ -63,12 +63,12 @@ void SymbolicFunc::substituteZero() const
 void SymbolicFunc
 ::substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const
 {
-  TEST_FOR_EXCEPTION(size() != u0->size(), InternalError,
+  TEST_FOR_EXCEPTION(this->size() != u0->size(), InternalError,
                      "Mismatch between sizes of symbolic " << toString()
                      << " and discrete func " << u0->toString()
                      << " in substituteFunction()");
 
-  for (int i=0; i<size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());

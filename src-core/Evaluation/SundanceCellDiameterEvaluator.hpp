@@ -32,7 +32,7 @@
 #define SUNDANCE_CELLDIAMETEREXPREVALUATOR_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceEvaluator.hpp"
+#include "SundanceSubtypeEvaluator.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 

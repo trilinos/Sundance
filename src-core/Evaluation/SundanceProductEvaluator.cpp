@@ -47,7 +47,7 @@ using namespace TSFExtended;
 ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
                                    const EvalContext& context)
   : BinaryEvaluator<ProductExpr>(expr, context),
-    maxOrder_(sparsity()->maxOrder()),
+    maxOrder_(this->sparsity()->maxOrder()),
     resultIndex_(maxOrder_+1),
     resultIsConstant_(maxOrder_+1),
     hasWorkspace_(maxOrder_+1),
@@ -67,7 +67,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
   SUNDANCE_VERB_LOW(tabs << "initializing product evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << *(this->sparsity)());
 
   SUNDANCE_VERB_MEDIUM(tabs << "left sparsity " << endl 
                        << *(leftSparsity()) << endl
@@ -86,17 +86,17 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
   int vecResultIndex = 0;
   int constResultIndex = 0;
 
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
       Tabs tab0;
-      const MultipleDeriv& d = sparsity()->deriv(i);
+      const MultipleDeriv& d = this->sparsity()->deriv(i);
 
       SUNDANCE_VERB_MEDIUM(tabs << endl << "finding rules for deriv " << d);
 
       int order = d.order();
 
       /* Determine the index into which the result will be written */
-      bool resultIsConstant = sparsity()->state(i)==ConstantDeriv; 
+      bool resultIsConstant = this->sparsity()->state(i)==ConstantDeriv; 
       resultIsConstant_[order].append(resultIsConstant);
       if (resultIsConstant)
         {
@@ -386,7 +386,7 @@ void ProductEvaluator
   //  TimeMonitor timer(evalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                tabs << "ProductEvaluator::eval() expr=" << expr()->toString());
 
   /* evaluate the children */
@@ -407,8 +407,8 @@ void ProductEvaluator
                              rightConstantResults);
     }
   
-  constantResults.resize(sparsity()->numConstantDerivs());
-  vectorResults.resize(sparsity()->numVectorDerivs());
+  constantResults.resize(this->sparsity()->numConstantDerivs());
+  vectorResults.resize(this->sparsity()->numVectorDerivs());
 
   /* Evaluate from high to low differentiation order. This is necessary
    * so that we can do in-place evaluation of derivatives, overwriting
@@ -660,7 +660,7 @@ void ProductEvaluator
   if (verbosity() > VerbMedium)
     {
       cerr << tabs << "product result " << endl;
-      sparsity()->print(cerr, vectorResults,
+      this->sparsity()->print(cerr, vectorResults,
                         constantResults);
     }
 }

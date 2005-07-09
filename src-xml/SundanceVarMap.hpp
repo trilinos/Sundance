@@ -14,7 +14,7 @@ namespace SundanceXML
     /** */
     const T& lookup(const string& varName) const 
       {
-        TEST_FOR_EXCEPTION(!containsKey(varName), InternalError,
+        TEST_FOR_EXCEPTION(!this->containsKey(varName), InternalError,
                            "var name " << varName 
                            << " not found in map ");
       }

@@ -50,7 +50,7 @@ CellSet CellSet::setUnion(const CellSet& other) const
   
   Set<int>& cells = rtn->cells();
 
-  std::set_union(begin(), end(), other.begin(), other.end(), 
+  std::set_union(this->begin(), this->end(), other.begin(), other.end(), 
                  std::insert_iterator<Set<int> >(cells, cells.begin()));
   
   return rtn;
@@ -64,7 +64,7 @@ CellSet CellSet::setIntersection(const CellSet& other) const
   
   Set<int>& cells = rtn->cells();
 
-  std::set_intersection(begin(), end(), other.begin(), other.end(), 
+  std::set_intersection(this->begin(), this->end(), other.begin(), other.end(), 
                         std::insert_iterator<Set<int> >(cells, cells.begin()));
   
   return rtn;
@@ -78,7 +78,7 @@ CellSet CellSet::setDifference(const CellSet& other) const
   
   Set<int>& cells = rtn->cells();
 
-  std::set_difference(begin(), end(), other.begin(), other.end(), 
+  std::set_difference(this->begin(), this->end(), other.begin(), other.end(), 
                       std::insert_iterator<Set<int> >(cells, cells.begin()));
   
   return rtn;
@@ -104,7 +104,7 @@ void CellSet::checkCompatibility(const string& op, const CellSet& other) const
                      "cellType=" << cellType() << " but RHS has cellType="
                      << other.cellType());
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "Set operation: " << op << endl
                << "LHS cells: " << *this << endl
                << "RHS cells: " << other);

@@ -138,7 +138,7 @@ RefCountPtr<Array<double> > QuadratureEvalMediator
 
   if (!refBasisVals_[diffOrder].containsKey(key(basis, cellType())))
     {
-      SUNDANCE_OUT(verbosity() > VerbMedium,
+      SUNDANCE_OUT(this->verbosity() > VerbMedium,
                    tab << "computing basis values on quad pts");
       rtn = rcp(new Array<double>());
 
@@ -197,7 +197,7 @@ RefCountPtr<Array<double> > QuadratureEvalMediator
     }
   else
     {
-      SUNDANCE_OUT(verbosity() > VerbMedium,
+      SUNDANCE_OUT(this->verbosity() > VerbMedium,
                    tab << "reusing basis values on quad pts");
       rtn = refBasisVals_[diffOrder].get(key(basis, cellType()));
     }
@@ -414,13 +414,13 @@ void QuadratureEvalMediator::computePhysQuadPts() const
 {
   if (cacheIsValid()) 
     {
-      SUNDANCE_OUT(verbosity() > VerbLow, 
+      SUNDANCE_OUT(this->verbosity() > VerbLow, 
                    "reusing cached phys quad points");
     }
   else
     {
       double jFlops = CellJacobianBatch::totalFlops();
-      SUNDANCE_OUT(verbosity() > VerbLow, 
+      SUNDANCE_OUT(this->verbosity() > VerbLow, 
                    "computing phys quad points");
       const Array<Point>& refPts = *(refQuadPts_.get(cellType()));
       mesh().pushForward(cellDim(), *cellLID(), 
@@ -429,7 +429,7 @@ void QuadratureEvalMediator::computePhysQuadPts() const
       addFlops(CellJacobianBatch::totalFlops() - jFlops);
       cacheIsValid() = true;
     }
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "phys quad: " << physQuadPts_);
 }
 

@@ -63,7 +63,7 @@ DerivOfSymbFuncEvaluator
   SUNDANCE_VERB_LOW(tabs << "initializing DerivOfSymbFunc evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
   SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity subset " << endl 
                        << *(argSparsitySubset()));
@@ -111,9 +111,9 @@ DerivOfSymbFuncEvaluator
     }
   
   int vecResultIndex = 0;
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
-      if (sparsity()->state(i)==ConstantDeriv) 
+      if (this->sparsity()->state(i)==ConstantDeriv) 
         {
           constResultIndex_ = 0;
           addConstantIndex(i, constResultIndex_);

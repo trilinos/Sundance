@@ -64,10 +64,10 @@ namespace SundanceUtils
 }
 
 
-#define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_OUT(verbosity() > VerbHigh, msg)
-#define SUNDANCE_VERB_HIGH(msg) SUNDANCE_OUT(verbosity() > VerbMedium, msg)
-#define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_OUT(verbosity() > VerbLow, msg)
-#define SUNDANCE_VERB_LOW(msg) SUNDANCE_OUT(verbosity() > VerbSilent, msg)
+#define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_OUT(this->verbosity() > VerbHigh, msg)
+#define SUNDANCE_VERB_HIGH(msg) SUNDANCE_OUT(this->verbosity() > VerbMedium, msg)
+#define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_OUT(this->verbosity() > VerbLow, msg)
+#define SUNDANCE_VERB_LOW(msg) SUNDANCE_OUT(this->verbosity() > VerbSilent, msg)
 
 
 

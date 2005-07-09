@@ -48,7 +48,7 @@ bool MeshReaderBase::getNextLine(istream& is, string& line,
   bool rtn = false;
   while (rtn=StrUtils::readLine(is, line))
     {
-      SUNDANCE_OUT(verbosity() == VerbHigh,
+      SUNDANCE_OUT(this->verbosity() == VerbHigh,
                    "read line [" << line << "]");
 
       if (line.length() > 0) line = StrUtils::before(line,comment);
@@ -64,14 +64,14 @@ RefCountPtr<ifstream> MeshReaderBase::openFile(const string& fname,
 {
   RefCountPtr<ifstream> rtn = rcp(new ifstream(fname.c_str()));
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "trying to open " << description << " file " << fname);
 
   TEST_FOR_EXCEPTION(rtn.get()==0 || *rtn==0, RuntimeError, 
                      "MeshReaderBase::openFile() unable to open "
                      << description << " file " << fname);
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                "reading " << description << " from " << fname);
 
   return rtn;

@@ -1208,7 +1208,7 @@ void Assembler::getGraph(Array<int>& graphData,
   RefCountPtr<Array<int> > unkLocalDOFs
     = rcp(new Array<int>());
 
-  SUNDANCE_OUT(verbosity() > VerbLow, tab << "Creating graph: there are " << rowMap()->numLocalDOFs()
+  SUNDANCE_OUT(this->verbosity() > VerbLow, tab << "Creating graph: there are " << rowMap()->numLocalDOFs()
                << " local equations");
 
 
@@ -1234,7 +1234,7 @@ void Assembler::getGraph(Array<int>& graphData,
       {
         Tabs tab0;
         CellFilter domain = eqn_->region(d);
-        SUNDANCE_OUT(verbosity() > VerbMedium, 
+        SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                      tab0 << "cell set " << domain
                      << " isBCRegion=" << eqn_->isBCRegion(d));
         int dim = domain.dimension(mesh_);
@@ -1243,7 +1243,7 @@ void Assembler::getGraph(Array<int>& graphData,
         RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
         if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
-        SUNDANCE_OUT(verbosity() > VerbMedium && pairs.get() != 0, 
+        SUNDANCE_OUT(this->verbosity() > VerbMedium && pairs.get() != 0, 
                      tab0 << "non-BC pairs = "
                      << *pairs);
        
@@ -1253,7 +1253,7 @@ void Assembler::getGraph(Array<int>& graphData,
             if (eqn_->hasBCVarUnkPairs(domain)) 
               {
                 bcPairs = eqn_->bcVarUnkPairs(domain);
-                SUNDANCE_OUT(verbosity() > VerbMedium, tab0 << "BC pairs = "
+                SUNDANCE_OUT(this->verbosity() > VerbMedium, tab0 << "BC pairs = "
                              << *bcPairs);
               }
           }

@@ -28,7 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceEvaluator.hpp"
+#include "SundanceSubtypeEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceExceptions.hpp"
@@ -54,12 +54,12 @@ CoordExprEvaluator::CoordExprEvaluator(const CoordExpr* expr,
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "initializing coord expr evaluator for " 
                     << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
-  TEST_FOR_EXCEPTION(sparsity()->numDerivs() > 2, InternalError,
+  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 2, InternalError,
                      "CoordExprEvaluator ctor found a sparsity table "
                      "with more than two entries. The bad sparsity table is "
-                     << *sparsity());
+                     << *(this->sparsity)());
 
   /* 
    * There are only two possible entries in the nozeros table for a
@@ -67,9 +67,9 @@ CoordExprEvaluator::CoordExprEvaluator(const CoordExpr* expr,
    * spatial derivative in the same direction as the expr's coordinate. 
    */
   
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
-      const MultipleDeriv& d = sparsity()->deriv(i);
+      const MultipleDeriv& d = this->sparsity()->deriv(i);
 
       /* for a zeroth-order derivative, evaluate the coord expr */
       if (d.order()==0) 
@@ -80,14 +80,14 @@ CoordExprEvaluator::CoordExprEvaluator(const CoordExpr* expr,
       else /* for a first-order deriv, make sure it's in the proper direction,
             * then evaluate the spatial derivative. */
         {
-          TEST_FOR_EXCEPTION(!sparsity()->isSpatialDeriv(i), InternalError,
+          TEST_FOR_EXCEPTION(!this->sparsity()->isSpatialDeriv(i), InternalError,
                              "CoordExprEvaluator ctor found an entry in the "
                              "sparsity superset that is not a spatial derivative. "
-                             "The bad entry is " << sparsity()->deriv(i) 
+                             "The bad entry is " << this->sparsity()->deriv(i) 
                              << ". The superset is " 
-                             << *sparsity());
+                             << *(this->sparsity)());
 
-          const MultiIndex& mi = sparsity()->multiIndex(i);
+          const MultiIndex& mi = this->sparsity()->multiIndex(i);
           
           TEST_FOR_EXCEPTION(mi.order() != 1, InternalError,
                              "CoordExprEvaluator ctor found a multiindex of "
@@ -118,7 +118,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
+      cerr << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
     }
 
   if (doValue_)
@@ -138,7 +138,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
     {
       cerr << tabs << "results " << endl;
-      sparsity()->print(cerr, vectorResults,
+      this->sparsity()->print(cerr, vectorResults,
                             constantResults);
     }
 

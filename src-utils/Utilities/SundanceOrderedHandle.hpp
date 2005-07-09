@@ -77,7 +77,7 @@ namespace SundanceUtils
       //      cerr << "comparing handles: \nme=" << *this
       //           << endl << "you=" << other << endl;
       /* first compare types */
-      const PointerType* me = ptr().get();
+      const PointerType* me = this->ptr().get();
       const PointerType* you = other.ptr().get();
       if (me==0 && you==0) 
         {
@@ -109,7 +109,7 @@ namespace SundanceUtils
       
       /* if the types are equal, compare values of the contents using
        * the lessThan() method. */
-      bool rtn = ptr()->lessThan(other.ptr().get());
+      bool rtn = this->ptr()->lessThan(other.ptr().get());
       if (rtn)
         {
           //          cerr << "My value is less than yours, returning true" << endl;

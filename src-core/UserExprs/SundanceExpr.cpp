@@ -97,16 +97,16 @@ Expr Expr::operator+(const Expr& other) const
   TimeMonitor t(opTimer());
 
   /* if both operands are simple scalars, add them */
-  if (size() == 1 && other.size()==1)
+  if (this->size() == 1 && other.size()==1)
     {
       return (*this)[0].sum(other[0], 1);
     }
 
   /* otherwise, create a list of the sums */
-  Array<Expr> rtn(size());
-  if (size() == other.size())
+  Array<Expr> rtn(this->size());
+  if (this->size() == other.size())
     {
-      for (int i=0; i<size(); i++)
+      for (int i=0; i<this->size(); i++)
         {
           rtn[i] = (*this)[i] + other[i];
         }
@@ -119,16 +119,16 @@ Expr Expr::operator-(const Expr& other) const
   TimeMonitor t(opTimer());
 
   /* if both operands are simple scalars, subtract them */
-  if (size() == 1 && other.size()==1)
+  if (this->size() == 1 && other.size()==1)
     {
       return (*this)[0].sum(other[0], -1);
     }
 
   /* otherwise, create a list of the sums */
-  Array<Expr> rtn(size());
-  if (size() == other.size())
+  Array<Expr> rtn(this->size());
+  if (this->size() == other.size())
     {
-      for (int i=0; i<size(); i++)
+      for (int i=0; i<this->size(); i++)
         {
           rtn[i] = (*this)[i] - other[i];
         }
@@ -179,13 +179,13 @@ Expr Expr::operator*(const Expr& other) const
   TimeMonitor t(opTimer());
 
   /* if both operands are simple scalars, multiply them */
-  if (size() == 1 && other.size()==1)
+  if (this->size() == 1 && other.size()==1)
     {
       return (*this)[0].multiply(other[0]);
     }
 
   /* if the left operand is a scalar, multiply it through */
-  if (size()==1)
+  if (this->size()==1)
     {
       Array<Expr> rtn(other.size());
       for (int i=0; i<other.size(); i++)
@@ -198,8 +198,8 @@ Expr Expr::operator*(const Expr& other) const
   /* if the right operand is a scalar, multiply it through */
   if (other.size()==1)
     {
-      Array<Expr> rtn(size());
-      for (int i=0; i<size(); i++)
+      Array<Expr> rtn(this->size());
+      for (int i=0; i<this->size(); i++)
         {
           rtn[i] = (*this)[i] * other[0];
         }
@@ -207,12 +207,12 @@ Expr Expr::operator*(const Expr& other) const
     }
 
   /* if both operands are flat vectors, take their dot product */
-  if (size() == totalSize() && other.size()==other.totalSize() 
-      && size() == other.size())
+  if (this->size() == totalSize() && other.size()==other.totalSize() 
+      && this->size() == other.size())
     {
       Expr rtn = new ZeroExpr();
 
-      for (int i=0; i<size(); i++)
+      for (int i=0; i<this->size(); i++)
         {
           rtn = rtn + (*this)[i]*other[i];
         }
@@ -223,7 +223,7 @@ Expr Expr::operator*(const Expr& other) const
    * right operand is a vector */
   int cols = (*this)[0].size();
   bool rectangular = true;
-  for (int i=0; i<size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       if ((*this)[i].size() != cols) rectangular = false;
     }
@@ -238,8 +238,8 @@ Expr Expr::operator*(const Expr& other) const
                      << toString() << ", right operator is "
                      << other.toString());
   
-  Array<Expr> rtn(size());
-  for (int i=0; i<size(); i++)
+  Array<Expr> rtn(this->size());
+  for (int i=0; i<this->size(); i++)
     {
       rtn[i] = (*this)[i] * other;
     }
@@ -292,7 +292,7 @@ Expr Expr::operator-() const
   TimeMonitor t(opTimer());
 
   /* if we are a scalar, form a unary minus */
-  if (size()==1)
+  if (this->size()==1)
     {
       RefCountPtr<ScalarExpr> sThis 
         = rcp_dynamic_cast<ScalarExpr>((*this)[0].ptr());
@@ -304,8 +304,8 @@ Expr Expr::operator-() const
     }
 
   /* otherwise, distribute the sign change over the list */
-  Array<Expr> rtn(size());
-  for (int i=0; i<size(); i++)
+  Array<Expr> rtn(this->size());
+  for (int i=0; i<this->size(); i++)
     {
       rtn[i] = -((*this)[i]);
     }
@@ -325,14 +325,14 @@ Expr Expr::operator/(const Expr& other) const
                      "expression " << toString());
 
   /* if we are a scalar, do simple scalar division */
-  if (size()==1)
+  if (this->size()==1)
     {
       return (*this)[0].divide(other[0]);
     }
 
   /* otherwise, divide each element of the left by the right operand */
-  Array<Expr> rtn(size());
-  for (int i=0; i<size(); i++)
+  Array<Expr> rtn(this->size());
+  for (int i=0; i<this->size(); i++)
     {
       rtn[i] = (*this)[i] / other;
     }
@@ -344,9 +344,9 @@ const Expr& Expr::operator[](int i) const
   TEST_FOR_EXCEPTION(ptr().get()==NULL, InternalError,
                      "null this detected in Expr::operator[].");
 
-  TEST_FOR_EXCEPTION(i<0 || i>=size(), RuntimeError,
+  TEST_FOR_EXCEPTION(i<0 || i>=this->size(), RuntimeError,
                      "Expr::operator[]() index i=" << i << " out of range [0, "
-                     << size() << " in expr " << toString());
+                     << this->size() << " in expr " << toString());
 
   const ListExpr* le = dynamic_cast<const ListExpr*>(ptr().get());
 

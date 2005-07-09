@@ -44,7 +44,7 @@ MultipleDeriv::MultipleDeriv()
 int MultipleDeriv::spatialOrder() const 
 {
   int rtn = 0;
-  for (MultipleDeriv::const_iterator i=begin(); i!=end(); i++)
+  for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
     {
       if (i->isCoordDeriv())
         {
@@ -57,7 +57,7 @@ int MultipleDeriv::spatialOrder() const
 MultiIndex MultipleDeriv::spatialDeriv() const
 {
   MultiIndex rtn;
-  for (MultipleDeriv::const_iterator i=begin(); i!=end(); i++)
+  for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
     {
       if (i->isCoordDeriv())
         {
@@ -72,7 +72,7 @@ MultipleDeriv MultipleDeriv::product(const MultipleDeriv& other) const
 {
   MultipleDeriv rtn;
   
-  for (MultipleDeriv::const_iterator i=begin(); i!=end(); i++)
+  for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
     {
       rtn.put(*i);
     }
@@ -105,7 +105,7 @@ void MultipleDeriv
       Array<int> bits = bitsOfAnInteger(i, N);
       int j=0; 
       MultipleDeriv::const_iterator iter;
-      for (iter=begin(); iter != end(); iter++, j++)
+      for (iter=this->begin(); iter != this->end(); iter++, j++)
         {
           if (bits[j]==true)
             {

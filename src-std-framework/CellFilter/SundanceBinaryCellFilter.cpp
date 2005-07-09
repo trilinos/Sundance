@@ -62,7 +62,7 @@ CellSet BinaryCellFilter::internalGetCells(const Mesh& mesh) const
 {
   Tabs tab;
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "cell filter " << toXML().toString() << " is getting its cells for mesh " 
                << mesh.id());
 
@@ -70,7 +70,7 @@ CellSet BinaryCellFilter::internalGetCells(const Mesh& mesh) const
   CellSet R = right_.getCells(mesh);
 
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "cell filter " << toXML().toString() << " is performing its operation");
   
   switch(op_)

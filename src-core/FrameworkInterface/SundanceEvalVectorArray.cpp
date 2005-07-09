@@ -68,10 +68,10 @@ ostream& EvalVectorArray::print(ostream& os,
                                 const SparsitySuperset* derivs) const
 {
   Tabs tab;
-  TEST_FOR_EXCEPTION(derivs->numDerivs() != size(),
+  TEST_FOR_EXCEPTION(derivs->numDerivs() != this->size(),
                      InternalError,
                      "mismatch between deriv set size=" << derivs->numDerivs()
-                     << "and result vector size " << size()
+                     << "and result vector size " << this->size()
                      << "in EvalVectorArray::print");
 
   int maxlen = 25;

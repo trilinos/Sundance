@@ -54,7 +54,7 @@ StringEvalMediator::StringEvalMediator()
 void StringEvalMediator::evalCoordExpr(const CoordExpr* expr,
                                        RefCountPtr<EvalVector>& vec) const
 {
-  SUNDANCE_OUT(verbosity() > VerbSilent, "evaluating coord expr " << expr->toXML().toString());
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, "evaluating coord expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
 }
@@ -62,7 +62,7 @@ void StringEvalMediator::evalCoordExpr(const CoordExpr* expr,
 void StringEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
                                               RefCountPtr<EvalVector>& vec) const
 {
-  SUNDANCE_OUT(verbosity() > VerbSilent, "evaluating cell diameter expr " << expr->toXML().toString());
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, "evaluating cell diameter expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
 }

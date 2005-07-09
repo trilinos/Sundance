@@ -53,23 +53,23 @@ DiffOpEvaluator
 ::DiffOpEvaluator(const DiffOp* expr,
                   const EvalContext& context)
   : UnaryEvaluator<DiffOp>(expr, context),
-    isConstant_(sparsity()->numDerivs()),
-    resultIndices_(sparsity()->numDerivs()),
-    constantMonomials_(sparsity()->numDerivs()),
-    vectorMonomials_(sparsity()->numDerivs()),
-    constantFuncCoeffs_(sparsity()->numDerivs()),
-    vectorFuncCoeffs_(sparsity()->numDerivs()),
+    isConstant_(this->sparsity()->numDerivs()),
+    resultIndices_(this->sparsity()->numDerivs()),
+    constantMonomials_(this->sparsity()->numDerivs()),
+    vectorMonomials_(this->sparsity()->numDerivs()),
+    constantFuncCoeffs_(this->sparsity()->numDerivs()),
+    vectorFuncCoeffs_(this->sparsity()->numDerivs()),
     funcEvaluators_(),
-    constantCoeffFuncIndices_(sparsity()->numDerivs()),
-    constantCoeffFuncMi_(sparsity()->numDerivs()),
-    vectorCoeffFuncIndices_(sparsity()->numDerivs()),
-    vectorCoeffFuncMi_(sparsity()->numDerivs())
+    constantCoeffFuncIndices_(this->sparsity()->numDerivs()),
+    constantCoeffFuncMi_(this->sparsity()->numDerivs()),
+    vectorCoeffFuncIndices_(this->sparsity()->numDerivs()),
+    vectorCoeffFuncMi_(this->sparsity()->numDerivs())
 {
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "initializing diff op evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
   SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity subset " << endl 
                        << *(argSparsitySubset()));
@@ -79,9 +79,9 @@ DiffOpEvaluator
   int vecResultIndex = 0;
   int constResultIndex = 0;
   
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
-      if (sparsity()->state(i)==ConstantDeriv)
+      if (this->sparsity()->state(i)==ConstantDeriv)
         {
           addConstantIndex(i, constResultIndex);
           resultIndices_[i] = constResultIndex++;
@@ -199,7 +199,7 @@ DiffOpEvaluator
               funcToIndexMap.put(dfEval, fIndex);
             }
 
-          int resultIndex = sparsity()->getIndex(target);
+          int resultIndex = this->sparsity()->getIndex(target);
 
           if (coeffIsConstant)
             {
@@ -234,7 +234,7 @@ DiffOpEvaluator
            iter++)
         {
           Tabs tab2;
-          int resultIndex = sparsity()->getIndex(iter->first);
+          int resultIndex = this->sparsity()->getIndex(iter->first);
           SUNDANCE_VERB_MEDIUM(tab2 << "monomial " << iter->first
                                << " contributes to result index " 
                                << resultIndex);
@@ -259,7 +259,7 @@ DiffOpEvaluator
   if (verbosity() > VerbMedium)
     {
       cerr << tabs << "instruction tables for summing chain rule" << endl;
-      for (int i=0; i<sparsity()->numDerivs(); i++)
+      for (int i=0; i<this->sparsity()->numDerivs(); i++)
         {
           Tabs tab1;
           cerr << tab1 << "deriv " << i << endl;
@@ -326,16 +326,16 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       funcEvaluators_[i]->eval(mgr, funcConstantResults, funcVectorResults[i]);
     }
   
-  constantResults.resize(sparsity()->numConstantDerivs());
-  vectorResults.resize(sparsity()->numVectorDerivs());
+  constantResults.resize(this->sparsity()->numConstantDerivs());
+  vectorResults.resize(this->sparsity()->numVectorDerivs());
   
   SUNDANCE_VERB_MEDIUM(tabs << "summing spatial/functional chain rule");
 
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
       Tabs tab1;
       SUNDANCE_VERB_MEDIUM(tab1 << "working on deriv " 
-                           << sparsity()->deriv(i));
+                           << this->sparsity()->deriv(i));
 
       double constantVal = 0.0;
       for (unsigned int j=0; j<constantMonomials_[i].size(); j++)

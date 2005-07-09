@@ -107,6 +107,7 @@ namespace Teuchos
   /** \relates SundanceCore::Internal::MultiIndex */
   inline string toString(const SundanceCore::Internal::MultiIndex& h)
     {return h.toString();}
+
 }
 
 namespace std

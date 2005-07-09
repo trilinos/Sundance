@@ -51,7 +51,7 @@ namespace SundanceUtils
     Set() : std::set<Key, Compare>() {;}
 
     /** */
-    bool contains(const Key& key) const {return find(key) != end();}
+    bool contains(const Key& key) const {return this->find(key) != this->end();}
 
     /** */
     void put(const Key& key) {insert(key);}
@@ -80,7 +80,7 @@ namespace SundanceUtils
 
     typename Set<Key, Compare>::const_iterator iter;
 
-    for (iter=begin(); iter != end(); iter++)
+    for (iter=this->begin(); iter != this->end(); iter++)
       {
         rtn.append(*iter);
       }
@@ -94,7 +94,7 @@ namespace SundanceUtils
     rtn.resize(0);
     typename Set<Key, Compare>::const_iterator iter;
 
-    for (iter=begin(); iter != end(); iter++)
+    for (iter=this->begin(); iter != this->end(); iter++)
       {
         rtn.append(*iter);
       }
@@ -118,10 +118,10 @@ namespace SundanceUtils
 
     unsigned int k = 0;
     os << "{";
-    for (iter=begin(); iter != end(); iter++, k++)
+    for (iter=this->begin(); iter != this->end(); iter++, k++)
       {
         os << *iter;
-        if (k<(size()-1)) os << ", ";
+        if (k<(this->size()-1)) os << ", ";
       }
     os << "}";
 

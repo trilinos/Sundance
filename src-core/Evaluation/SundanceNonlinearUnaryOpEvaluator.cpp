@@ -64,7 +64,7 @@ NonlinearUnaryOpEvaluator
   SUNDANCE_VERB_LOW(tabs << "initializing nonlinear unary op evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
   SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity subset" << endl 
                        << *(argSparsitySubset()));
@@ -122,9 +122,9 @@ NonlinearUnaryOpEvaluator
   
   int constCounter = 0;
   int vecCounter = 0;
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
-      const MultipleDeriv& d = sparsity()->deriv(i);
+      const MultipleDeriv& d = this->sparsity()->deriv(i);
       TEST_FOR_EXCEPTION(d.order() > 2, RuntimeError,
                          "deriv order > 2 not implemented for unary math ops");
 
@@ -312,7 +312,7 @@ void NonlinearUnaryOpEvaluator
 {
   //  TimeMonitor timer(evalTimer());
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                tabs << "NonlinearUnaryOpEvaluator::eval() expr="
                << expr()->toString());
 
@@ -361,7 +361,7 @@ void NonlinearUnaryOpEvaluator
       /*
        * Allocate the results array
        */
-      vectorResults.resize(sparsity()->numDerivs());
+      vectorResults.resize(this->sparsity()->numDerivs());
   
 
       /* 

@@ -54,7 +54,7 @@ Expr ListExpr::flatten() const
 {
   Expr rtn = new ListExpr();
 
-  for (int i=0; i<size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       Expr e = element(i).flatten();
       for (int j=0; j<e.size(); j++)
@@ -87,7 +87,7 @@ int ListExpr::totalSize() const
 {
   int rtn = 0;
 
-  for (int i=0; i<size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       rtn += elements_[i].totalSize();
     }

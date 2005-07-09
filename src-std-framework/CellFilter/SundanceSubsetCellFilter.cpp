@@ -70,7 +70,7 @@ bool SubsetCellFilter::lessThan(const CellFilterStub* other) const
 
 CellSet SubsetCellFilter::internalGetCells(const Mesh& mesh) const
 {
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                    "SubsetCellFilter::internalGetCells()");
   CellSet super = superset_.getCells(mesh);
 
@@ -90,17 +90,17 @@ CellSet SubsetCellFilter::internalGetCells(const Mesh& mesh) const
   for (CellIterator i=super.begin(); i != super.end(); i++)
     {
       int LID = *i;
-      SUNDANCE_OUT(verbosity() > VerbMedium,
+      SUNDANCE_OUT(this->verbosity() > VerbMedium,
                    "SubsetCellFilter is testing " << LID);
       if (pred->test(LID)) 
         {
-          SUNDANCE_OUT(verbosity() > VerbMedium,
+          SUNDANCE_OUT(this->verbosity() > VerbMedium,
                        "accepted " << LID);
           cells.insert(LID);
         }
       else
         {
-          SUNDANCE_OUT(verbosity() > VerbMedium,
+          SUNDANCE_OUT(this->verbosity() > VerbMedium,
                        "rejected " << LID);
         }
     }

@@ -2,7 +2,8 @@
 #define SUNDANCE_PRODUCTEVALUATOR_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceEvaluator.hpp"
+#include "SundanceBinaryEvaluator.hpp"
+#include "SundanceProductExpr.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 

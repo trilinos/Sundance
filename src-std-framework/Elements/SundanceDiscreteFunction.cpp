@@ -35,7 +35,7 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
-#include "SundanceEvaluator.hpp"
+#include "SundanceSubtypeEvaluator.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;

@@ -89,11 +89,11 @@ namespace SundanceUtils
         : OrderedPair<A, OrderedPair<B, C> >(a, OrderedPair<B,C>(b,c))
         {;}
 
-      const A& a() const {return first();}
+      const A& a() const {return this->first();}
 
-      const B& b() const {return second().first();}
+      const B& b() const {return this->second().first();}
 
-      const C& c() const {return second().second();}
+      const C& c() const {return this->second().second();}
     };
 
   /** Lexigraphically-comparable quartet of objects. */
@@ -106,10 +106,10 @@ namespace SundanceUtils
         : OrderedPair<A, OrderedTriple<B, C, D> >(a, OrderedTriple<B,C,D>(b,c,d))
         {;}
 
-      const A& a() const {return first();}
-      const B& b() const {return second().first();}
-      const C& c() const {return second().second().first();}
-      const D& d() const {return second().second().second();}
+      const A& a() const {return this->first();}
+      const B& b() const {return this->second().first();}
+      const C& c() const {return this->second().second().first();}
+      const D& d() const {return this->second().second().second();}
     };
 
   /** */

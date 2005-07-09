@@ -124,7 +124,7 @@ void HomogeneousDOFMap::allocate(const Mesh& mesh,
        * not making a bunch of mesh calls */
       numFacets_[d].resize(d);
       for (int fd=0; fd<d; fd++) numFacets_[d][fd]=mesh.numFacets(d, 0, fd);
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    "num facets for dimension " << d << " is " 
                    << numFacets_[d]);
           
@@ -132,7 +132,7 @@ void HomogeneousDOFMap::allocate(const Mesh& mesh,
        * facets */
       basis.ptr()->getLocalDOFs(mesh.cellType(d), localNodePtrs_[d]);
 
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    "node ptrs for dimension " << d << " are " 
                    << localNodePtrs_[d]);
 
@@ -146,7 +146,7 @@ void HomogeneousDOFMap::allocate(const Mesh& mesh,
         {
           nNodesPerCell_[d] = 0;
         }
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    "num nodes for dimension " << d << " is " 
                    << nNodesPerCell_[d]);
 
@@ -307,10 +307,10 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
   Array<Array<int> > outgoingDOFs(outgoingCellRequests.size());
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "p=" << mesh().comm().getRank()
                << "synchronizing DOFs for cells of dimension " << cellDim);
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "p=" << mesh().comm().getRank()
                << " sending cell reqs d=" << cellDim << " GID=" << outgoingCellRequests);
 
@@ -321,7 +321,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
 
   
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "p=" << mesh().comm().getRank()
                << "recvd DOF requests for cells of dimension " << cellDim
                << " GID=" << incomingCellRequests);
@@ -333,22 +333,22 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
       if (p==mesh().comm().getRank()) continue;
       const Array<int>& requestsFromProc = incomingCellRequests[p];
       outgoingDOFs[p].resize(requestsFromProc.size());
-      SUNDANCE_OUT(verbosity() > VerbHigh,  
+      SUNDANCE_OUT(this->verbosity() > VerbHigh,  
                    "p=" << mesh().comm().getRank() << " recv'd from proc=" << p
                    << " reqs for DOFs for cells " << requestsFromProc);
       for (int c=0; c<requestsFromProc.size(); c++)
         {
           int GID = requestsFromProc[c];
-          SUNDANCE_OUT(verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
                        "p=" << mesh().comm().getRank() 
                        << " processing cell with d=" << cellDim 
                        << " GID=" << GID);
           int LID = mesh().mapGIDToLID(cellDim, GID);
-          SUNDANCE_OUT(verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
                        "p=" << mesh().comm().getRank() 
                        << " LID=" << LID << " dofs=" << dofs_[cellDim]);
           outgoingDOFs[p][c] = dofs_[cellDim][LID][0];
-          SUNDANCE_OUT(verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
                        "p=" << mesh().comm().getRank() 
                        << " done processing cell with GID=" << GID);
         }
@@ -356,7 +356,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
  
   
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "p=" << mesh().comm().getRank()
                << "answering DOF requests for cells of dimension " << cellDim);
 
@@ -365,7 +365,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
                                   incomingDOFs,
                                   mesh().comm());
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "p=" << mesh().comm().getRank()
                << "communicated DOF answers for cells of dimension " << cellDim);
 
@@ -412,11 +412,11 @@ void HomogeneousDOFMap::getDOFsForCell(int cellDim, int cellLID,
 {
   TimeMonitor timer(dofLookupTimer());
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID << " funcID=" << funcID);
   dofs.resize(totalNNodesPerCell_[cellDim]);
   int nf = funcIDList().size();
-  SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "nf=" << nf
                << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   
   
@@ -433,20 +433,20 @@ void HomogeneousDOFMap::getDOFsForCell(int cellDim, int cellLID,
       Array<int> facetLID(numFacets_[cellDim][d]);
       mesh().getFacetArray(cellDim, cellLID, d, facetLID);
 
-      SUNDANCE_OUT(verbosity() > VerbHigh, 
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                    "d=" << d << " facets are " << facetLID);
       
       for (int f=0; f<facetLID.size(); f++)
         {
-          SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
+          SUNDANCE_OUT(this->verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
                        "dofs for all nodes of this facet are: "
                        << dofs_[d][facetLID[f]]);
           for (int n=0; n<localNodePtrs_[cellDim][d][f].size(); n++)
             {
-              SUNDANCE_OUT(verbosity() > VerbHigh, "n=" << n);
+              SUNDANCE_OUT(this->verbosity() > VerbHigh, "n=" << n);
               int ptr = localNodePtrs_[cellDim][d][f][n];
-              SUNDANCE_OUT(verbosity() > VerbHigh, "local ptr=" << ptr);
-              SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
+              SUNDANCE_OUT(this->verbosity() > VerbHigh, "local ptr=" << ptr);
+              SUNDANCE_OUT(this->verbosity() > VerbHigh, "found dof=" 
                            << dofs_[d][facetLID[f]][funcID + nf*n]);
               dofs[ptr] = dofs_[d][facetLID[f]][funcID + nf*n];
             }
@@ -461,12 +461,12 @@ void HomogeneousDOFMap::getSingleFuncDOFsForCellBatch(int cellDim,
                                                       int& nNodes) const 
 {
   TimeMonitor timer(dofBatchLookupTimer());
-  SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID << " funcID=" << funcID);
   if (cellLID.size()==0) return;
   dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() );
   int nf = funcIDList().size();
-  SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "nf=" << nf
                << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   
   static Array<Array<int> > facetLID(3);
@@ -499,21 +499,21 @@ void HomogeneousDOFMap::getSingleFuncDOFsForCellBatch(int cellDim,
         {
           // mesh().getFacetArray(cellDim, cellLID[c], d, facetLID[d]);
 
-          SUNDANCE_OUT(verbosity() > VerbHigh, 
+          SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                        "d=" << d << " facets are " << facetLID[d]);
       
           for (int f=0; f<numFacets[d]; f++)
             {
               int facetID = facetLID[d][c*numFacets[d]+f];
-              SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
+              SUNDANCE_OUT(this->verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
                            "dofs for all nodes of this facet are: "
                            << dofs_[d][facetLID[d][f]]);
               for (int n=0; n<localNodePtrs_[cellDim][d][f].size(); n++)
                 {
-                  SUNDANCE_OUT(verbosity() > VerbHigh, "n=" << n);
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh, "n=" << n);
                   int ptr = localNodePtrs_[cellDim][d][f][n];
-                  SUNDANCE_OUT(verbosity() > VerbHigh, "local ptr=" << ptr);
-                  SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh, "local ptr=" << ptr);
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh, "found dof=" 
                                << dofs_[d][facetID][funcID + nf*n]);
                   dofs[ptr + c*nNodes] = dofs_[d][facetID][funcID + nf*n];
                 }
@@ -529,7 +529,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
 {
   TimeMonitor timer(dofBatchLookupTimer());
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID);
 
   if (cellLID.size()==0) return;
@@ -566,7 +566,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
       int nCells = cellLID.size();
       dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
 
-      SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, "nf=" << nf
                    << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   
       static Array<Array<int> > facetLID(3);
@@ -605,23 +605,23 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
             {
               // mesh().getFacetArray(cellDim, cellLID[c], d, facetLID[d]);
 
-              SUNDANCE_OUT(verbosity() > VerbHigh, 
+              SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                            "d=" << d << " facets are " << facetLID[d]);
       
               for (int f=0; f<numFacets[d]; f++)
                 {
                   int facetID = facetLID[d][c*numFacets[d]+f];
-                  SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
                                "dofs for all nodes of this facet are: "
                                << dofs_[d][facetLID[d][f]]);
                   for (int n=0; n<localNodePtrs_[cellDim][d][f].size(); n++)
                     {
-                      SUNDANCE_OUT(verbosity() > VerbHigh, "n=" << n);
+                      SUNDANCE_OUT(this->verbosity() > VerbHigh, "n=" << n);
                       int ptr = localNodePtrs_[cellDim][d][f][n];
-                      SUNDANCE_OUT(verbosity() > VerbHigh, "local ptr=" << ptr);
+                      SUNDANCE_OUT(this->verbosity() > VerbHigh, "local ptr=" << ptr);
                       for (int funcID=0; funcID<nf; funcID++)
                         {
-                          SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
+                          SUNDANCE_OUT(this->verbosity() > VerbHigh, "found dof=" 
                                        << dofs_[d][facetID][funcID + nf*n]);
                           dofs[(funcID*nCells + c)*nNodes+ptr] 
                             = dofs_[d][facetID][funcID + nf*n];
@@ -642,7 +642,7 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
 
   SUNDANCE_VERB_MEDIUM(tab << "building dofs for maximal cells");
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "nf=" << nf
                << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   
   static Array<Array<int> > facetLID(3);
@@ -690,20 +690,20 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
           for (int f=0; f<numFacets[d]; f++)
             {
               int facetID = facetLID[d][c*numFacets[d]+f];
-              SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0,
+              SUNDANCE_OUT(this->verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0,
                            "cellLID=" << cellLID[c] << ", facet dim="
                            << d << ", facetID=" << facetID);
-              SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
+              SUNDANCE_OUT(this->verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
                            "dofs for all nodes of this facet are: "
                            << dofs_[d][facetLID[d][f]]);
               for (int n=0; n<localNodePtrs_[cellDim][d][f].size(); n++)
                 {
-                  SUNDANCE_OUT(verbosity() > VerbHigh, "n=" << n);
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh, "n=" << n);
                   int ptr = localNodePtrs_[cellDim][d][f][n];
-                  SUNDANCE_OUT(verbosity() > VerbHigh, "local ptr=" << ptr);
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh, "local ptr=" << ptr);
                   for (int funcID=0; funcID<nf; funcID++)
                     {
-                      SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
+                      SUNDANCE_OUT(this->verbosity() > VerbHigh, "found dof=" 
                                    << dofs_[d][facetID][funcID + nf*n])
                         //                    dofs[(c*nf + funcID)*nNodes+ptr] 
                         maximalDofs_[(funcID*nCells + c)*nNodes+ptr] 
@@ -723,13 +723,13 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
                                             int& nNodes) const 
 {
   TimeMonitor timer(dofBatchLookupTimer());
-  SUNDANCE_OUT(verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "getting DOFs for cellDim=" << cellDim
                << " cellLID=" << cellLID << ", funcs=" << funcID);
   if (cellLID.size()==0) return;
   dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * funcID.size() );
   int nf = funcIDList().size();
   int nCells = cellLID.size();
-  SUNDANCE_OUT(verbosity() > VerbHigh, "nf=" << nf
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "nf=" << nf
                << " total nNodes=" << totalNNodesPerCell_[cellDim]);
   
   static Array<Array<int> > facetLID(3);
@@ -769,23 +769,23 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
         {
           // mesh().getFacetArray(cellDim, cellLID[c], d, facetLID[d]);
 
-          SUNDANCE_OUT(verbosity() > VerbHigh, 
+          SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                        "d=" << d << " facets are " << facetLID[d]);
       
           for (int f=0; f<numFacets[d]; f++)
             {
               int facetID = facetLID[d][c*numFacets[d]+f];
-              SUNDANCE_OUT(verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
+              SUNDANCE_OUT(this->verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
                            "dofs for all nodes of this facet are: "
                            << dofs_[d][facetLID[d][f]]);
               for (int n=0; n<localNodePtrs_[cellDim][d][f].size(); n++)
                 {
-                  SUNDANCE_OUT(verbosity() > VerbHigh, "n=" << n);
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh, "n=" << n);
                   int ptr = localNodePtrs_[cellDim][d][f][n];
-                  SUNDANCE_OUT(verbosity() > VerbHigh, "local ptr=" << ptr);
+                  SUNDANCE_OUT(this->verbosity() > VerbHigh, "local ptr=" << ptr);
                   for (int i=0; i<funcID.size(); i++)
                     {
-                      SUNDANCE_OUT(verbosity() > VerbHigh, "found dof=" 
+                      SUNDANCE_OUT(this->verbosity() > VerbHigh, "found dof=" 
                                    << dofs_[d][facetID][funcID[i] + nf*n]);
                       dofs[(c + i*nCells)*nNodes + ptr] 
                         = dofs_[d][facetID][funcID[i] + nf*n];
@@ -807,11 +807,11 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
       comm().synchronize();
       comm().synchronize();
     }
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank()
                << " sharing offsets for DOF numbering for dim=" << dim);
 
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank()
                << " I have " << localCount << " cells");
 
@@ -821,7 +821,7 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
                                     mesh().comm());
   int myOffset = dofOffsets[mesh().comm().getRank()];
 
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank()
                << " back from MPI accumulate");
 
@@ -848,7 +848,7 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
   setNumLocalDOFs(localCount);
   setTotalNumDOFs(totalDOFCount);
 
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "p=" << mesh().comm().getRank() 
                << " done sharing offsets for DOF numbering for dim=" << dim);
   if (verbosity() > VerbMedium)

@@ -28,7 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceEvaluator.hpp"
+#include "SundanceSubtypeEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceCellDiameterExpr.hpp"
 #include "SundanceExceptions.hpp"
@@ -52,28 +52,28 @@ CellDiameterExprEvaluator::CellDiameterExprEvaluator(const CellDiameterExpr* exp
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "initializing cell diameter expr evaluator for " 
                     << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
-  TEST_FOR_EXCEPTION(sparsity()->numDerivs() > 1, InternalError,
+  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, InternalError,
                      "CellDiameterExprEvaluator ctor found a sparsity table "
                      "with more than one entry. The bad sparsity table is "
-                     << *sparsity());
+                     << *(this->sparsity)());
 
   /* 
    * There is only one possible entry in the nozeros table for a
    * cell diameter expression: a zeroth derivative.
    */
   
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
-      const MultipleDeriv& d = sparsity()->deriv(i);
+      const MultipleDeriv& d = this->sparsity()->deriv(i);
 
       TEST_FOR_EXCEPTION(d.order()!=0, InternalError,
                          "CellDiameterExprEvaluator ctor found an entry in the "
                          "sparsity superset that is not a zeroth-order derivative. "
-                         "The bad entry is " << sparsity()->deriv(i) 
+                         "The bad entry is " << this->sparsity()->deriv(i) 
                          << ". The superset is " 
-                         << *sparsity());
+                         << *(this->sparsity)());
       addVectorIndex(i, 0);
     }
 }
@@ -91,10 +91,10 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > 1)
     {
-      cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
+      cerr << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
     }
 
-  if (sparsity()->numDerivs() > 0)
+  if (this->sparsity()->numDerivs() > 0)
     {
       vectorResults.resize(1);
       vectorResults[0] = mgr.popVector();
@@ -105,7 +105,7 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
     {
       cerr << tabs << "results " << endl;
-      sparsity()->print(cerr, vectorResults,
+      this->sparsity()->print(cerr, vectorResults,
                             constantResults);
     }
 }

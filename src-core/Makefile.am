@@ -138,6 +138,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp 
 
 SUNDANCE_EVALUATION_H = \
+$(top_srcdir)/src-core/Evaluation/SundanceBinaryEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.hpp \
@@ -150,9 +151,11 @@ $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceNonlinearUnaryOpEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceProductEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceStringEvalMediator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceSubtypeEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceSumEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceSymbolicFuncEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUnaryEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.hpp 
 

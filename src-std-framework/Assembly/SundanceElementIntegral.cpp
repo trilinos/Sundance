@@ -172,7 +172,7 @@ void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch&
 
       G(alpha(), beta()).resize(J.numCells() * J.cellDim() * J.cellDim());
 
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    Tabs() << "both derivs are first order");
 
       double* GPtr = &(G(alpha(),beta())[0]);

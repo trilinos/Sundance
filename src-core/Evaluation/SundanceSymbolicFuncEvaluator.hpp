@@ -32,7 +32,7 @@
 #define SUNDANCE_SYMBOLICFUNCEVALUATOR_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceEvaluator.hpp"
+#include "SundanceSubtypeEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY

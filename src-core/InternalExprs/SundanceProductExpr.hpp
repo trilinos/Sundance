@@ -35,7 +35,6 @@
 
 #include "SundanceBinaryExpr.hpp"
 #include "SundanceNonlinearExpr.hpp"
-#include "SundanceProductEvaluator.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -53,8 +52,7 @@ namespace SundanceCore
      * ProductExpr represents a product of two scalar-valued expressions
      */
     class ProductExpr : public BinaryExpr,
-                        public NonlinearExpr,
-                        public GenericEvaluatorFactory<ProductExpr, ProductEvaluator>
+                        public NonlinearExpr
     {
     public:
       /** */
@@ -74,6 +72,10 @@ namespace SundanceCore
                                 const Set<MultiIndex>& multiIndices,
                                 const Set<MultiSet<int> >& activeFuncIDs,
                                 bool regardFuncsAsConstant) const ;
+
+      /** */
+      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+					 const EvalContext& context) const ;
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}

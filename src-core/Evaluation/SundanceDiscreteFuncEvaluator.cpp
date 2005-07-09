@@ -51,7 +51,7 @@ DiscreteFuncElementEvaluator
 ::DiscreteFuncElementEvaluator(const DiscreteFuncElement* expr, 
                                const EvalContext& context)
   : SubtypeEvaluator<DiscreteFuncElement>(expr, context), 
-    mi_(sparsity()->numDerivs()),
+    mi_(this->sparsity()->numDerivs()),
     miToIndexMap_(),
     stringReps_()
 {
@@ -59,7 +59,7 @@ DiscreteFuncElementEvaluator
   SUNDANCE_VERB_MEDIUM(tabs << "initializing discrete func evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
   static Array<string> coordNames;
   if (coordNames.size() != 3)
@@ -71,26 +71,26 @@ DiscreteFuncElementEvaluator
     }
   string funcName = expr->name();
 
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
       /* Make sure that every derivative we're to evaluate is either
       * zero-order or a spatial derivative */
-      if (sparsity()->deriv(i).order()==0) 
+      if (this->sparsity()->deriv(i).order()==0) 
         {
           mi_[i] = MultiIndex();
         }
       else 
         {
       
-          TEST_FOR_EXCEPTION(!sparsity()->isSpatialDeriv(i), InternalError,
+          TEST_FOR_EXCEPTION(!this->sparsity()->isSpatialDeriv(i), InternalError,
                              "DiscreteFuncElementEvaluator ctor found "
                              "an entry in the sparsity superset that is not "
                              "a spatial derivative. "
-                             "The bad entry is " << sparsity()->deriv(i) 
+                             "The bad entry is " << this->sparsity()->deriv(i) 
                              << ". The superset is " 
-                             << *sparsity());
+                             << *(this->sparsity)());
 
-          mi_[i] = sparsity()->multiIndex(i);
+          mi_[i] = this->sparsity()->multiIndex(i);
         }
       addVectorIndex(i,i);
       TEST_FOR_EXCEPTION(miToIndexMap_.containsKey(mi_[i]), InternalError,
@@ -153,7 +153,7 @@ void DiscreteFuncElementEvaluator
   if (verbosity() > VerbMedium)
     {
       cerr << tabs << "results " << endl;
-      sparsity()->print(cerr, vectorResults,
+      this->sparsity()->print(cerr, vectorResults,
                             constantResults);
     }
 }

@@ -36,6 +36,7 @@
 #include "SundanceExceptions.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceUnknownFuncElement.hpp"
+#include "SundanceMultiIndex.hpp"
 
 using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
@@ -212,7 +213,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
         }
 
       SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
-                           << ", multiindices are=" << mi);
+                           << ", multiindices are=" <<mi.toString() );
 
 
       int resultIndex;

@@ -28,7 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceEvaluator.hpp"
+#include "SundanceSubtypeEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
 #include "SundanceSet.hpp"
@@ -55,19 +55,19 @@ ConstantEvaluator::ConstantEvaluator(const SpatiallyConstantExpr* expr,
    * There's nothing to do in this ctor other than running some sanity checks.
    */
 
-  TEST_FOR_EXCEPTION(sparsity()->numDerivs() > 1, InternalError,
+  TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, InternalError,
                      "ConstantEvaluator ctor found a sparsity table "
                      "without more than one entry. The bad sparsity table is "
-                     << *sparsity());
+                     << *(this->sparsity)());
 
-  if (sparsity()->numDerivs() > 0)
+  if (this->sparsity()->numDerivs() > 0)
     {
-      const MultipleDeriv& d = sparsity()->deriv(0);
+      const MultipleDeriv& d = this->sparsity()->deriv(0);
 
       TEST_FOR_EXCEPTION(d.order() != 0, InternalError,
                          "ConstantEvaluator ctor found a nonzero derivative "
                          "of order greater than zero. The bad sparsity "
-                         "table is " << *sparsity());
+                         "table is " << *(this->sparsity)());
       addConstantIndex(0,0);
     }
 }
@@ -82,10 +82,10 @@ void ConstantEvaluator::internalEval(const EvalManager& mgr,
 {
   // TimeMonitor timer(constantEvalTimer());
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbSilent, tabs << "ConstantEvaluator::eval() expr="
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, tabs << "ConstantEvaluator::eval() expr="
                << expr()->toString());
 
-  if (sparsity()->numDerivs() > 0)
+  if (this->sparsity()->numDerivs() > 0)
     {
       constantResults.resize(1);
       constantResults[0] = expr()->value();

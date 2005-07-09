@@ -188,7 +188,7 @@ void InstructionCachingSumEvaluator
   Tabs tabs;
 
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                tabs << "------- InstructionCachingSumEvaluator -------");
 
   if (needsInit_) 
@@ -203,11 +203,11 @@ void InstructionCachingSumEvaluator
   RefCountPtr<EvalVectorArray> leftResults; 
   RefCountPtr<EvalVectorArray> rightResults; 
 
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                tabs << "Evaluating left");
   leftExpr_->evaluate(mgr, leftResults);
 
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                tabs << "Evaluating right");
   rightExpr_->evaluate(mgr, rightResults);
 
@@ -318,7 +318,7 @@ void InstructionCachingProductEvaluator::init()
           
           int iLeft = leftSparsity->getIndex(d);
           int iRight = rightSparsity->getIndex(d);
-          SUNDANCE_OUT(verbosity() > VerbLow, 
+          SUNDANCE_OUT(this->verbosity() > VerbLow, 
                        "indices of left and right results vectors: L="
                        << iLeft << " R=" << iRight);
           leftIndex_.append(tuple(iLeft));
@@ -373,7 +373,7 @@ void InstructionCachingProductEvaluator
   TimeMonitor timer(productEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                tabs << "------- InstructionCachingProductEvaluator -------");
 
 
@@ -456,14 +456,14 @@ void InstructionCachingUnaryMinusEvaluator::eval(const EvalManager& mgr,
 {
   TimeMonitor timer(unaryMinusEvalTimer());
   Tabs tab;
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                tab << "------- InstructionCachingUnaryMinusEvaluator -------");
 
   results = mgr.stack().popVectorArray(sparsity_);
 
   RefCountPtr<EvalVectorArray> argResults; 
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                tab << "eval operand");
   expr()->evaluatableArg()->evaluate(mgr, argResults);
 
@@ -509,14 +509,14 @@ void InstructionCachingNonlinearUnaryOpEvaluator::eval(const EvalManager& mgr,
 {
   TimeMonitor timer(nonlinearUnaryExprEvalTimer());
   Tabs tab;
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                tab << "------- InstructionCachingNonlinearUnaryOpEvaluator -------");
 
   results = mgr.stack().popVectorArray(sparsity_);
 
   RefCountPtr<EvalVectorArray> argResults; 
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                tab << "eval operand");
 
   expr()->evaluatableArg()->evaluate(mgr, argResults);

@@ -48,12 +48,12 @@ bool ProductTransformationSequence::doTransform(const RefCountPtr<ScalarExpr>& l
                                                 const RefCountPtr<ScalarExpr>& right,
                                                 RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "testing whether to transform product: " << endl
                << "left = " << left->toString() << endl
                << "right = " << right->toString());
   
-  for (unsigned int i=0; i<size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       if ((*this)[i]->doTransform(left, right, rtn)) return true;
     }

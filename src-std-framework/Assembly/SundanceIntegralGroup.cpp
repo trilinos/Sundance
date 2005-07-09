@@ -133,7 +133,7 @@ bool IntegralGroup
   Tabs tab0;
 
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                tab0 << "evaluating an integral group of size "
                << integrals_.size());
 
@@ -144,7 +144,7 @@ bool IntegralGroup
   int n = A->size();
   for (int i=0; i<n; i++) aPtr[i] = 0.0;
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, tab0 << "begin A=" << *A);
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, tab0 << "begin A=" << *A);
 
   /* do the integrals */
   for (int i=0; i<integrals_.size(); i++)
@@ -157,17 +157,17 @@ bool IntegralGroup
 
       if (ref!=0)
         {
-          SUNDANCE_OUT(verbosity() > VerbMedium,
+          SUNDANCE_OUT(this->verbosity() > VerbMedium,
                        tab << "Integrating term group " << i 
                        << " by transformed reference integral");
           double f = constantCoeffs[resultIndices_[i]];
-          SUNDANCE_OUT(verbosity() > VerbSilent,
+          SUNDANCE_OUT(this->verbosity() > VerbSilent,
                        tab << "Coefficient is " << f);
           ref->transform(J, f, A);
         }
       else 
         {
-          SUNDANCE_OUT(verbosity() > VerbMedium,
+          SUNDANCE_OUT(this->verbosity() > VerbMedium,
                        tab << "Integrating term group " << i 
                        << " by quadrature");
           TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
@@ -180,9 +180,9 @@ bool IntegralGroup
           const double* const f = vectorCoeffs[resultIndices_[i]]->start();
           quad->transform(J, f, A);
         }
-      SUNDANCE_OUT(verbosity() > VerbHigh, tab << "i=" << i << " A=" << *A);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "i=" << i << " A=" << *A);
     }
-  SUNDANCE_OUT(verbosity() > VerbSilent, tab0 << "done");
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, tab0 << "done");
 
   return true;
 }

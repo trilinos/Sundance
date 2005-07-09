@@ -795,13 +795,13 @@ int BasicSimplicialMesh::addVertex(int globalIndex, const Point& x,
                                    int ownerProcID, int label)
 {
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "BSM points are " << points_.toString());
 
   int lid = points_.length();
   points_.append(x);
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "BSM added point " << x << " lid = " << lid);
 
   numCells_[0]++;
@@ -826,7 +826,7 @@ int BasicSimplicialMesh::addElement(int globalIndex,
 {
   int lid = elemVerts_.length();
 
-  SUNDANCE_OUT(verbosity() > VerbHigh,
+  SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "adding element " << vertLID);
 
   numCells_[spatialDim()]++;
@@ -951,23 +951,23 @@ int BasicSimplicialMesh::addFace(int v1, int v2, int v3,
 
 int BasicSimplicialMesh::getEdgeLIDFromVertLIDs(int v1, int v2) 
 {
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                "p=" << comm().getRank() << " finding edge for verts="
                << v1 << ", " << v2);
   const Array<int>& edgePartners = vertEdgePartners_[v1];
   for (int i=0; i<edgePartners.length(); i++)
     {
-      SUNDANCE_OUT(verbosity() > VerbHigh, 
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                    "p=" << comm().getRank() << " checking partner="
                    << edgePartners[i]);
       if (edgePartners[i] == v2)
         {
-          SUNDANCE_OUT(verbosity() > VerbHigh, "p=" << comm().getRank() 
+          SUNDANCE_OUT(this->verbosity() > VerbHigh, "p=" << comm().getRank() 
                        << " found match!");
           return vertEdges_[v1][i];
         }
     }
-  SUNDANCE_OUT(verbosity() > VerbHigh, "p=" << comm().getRank() 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, "p=" << comm().getRank() 
                << " no match!");
   return -1;
 }
@@ -1023,9 +1023,9 @@ void BasicSimplicialMesh::synchronizeGIDNumbering(int dim, int localCount)
   comm().synchronize();
   comm().synchronize();
   comm().synchronize();
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "sharing offsets for GID numbering for dim=" << dim);
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "I have " << localCount << " cells");
   comm().synchronize();
   comm().synchronize();
@@ -1036,7 +1036,7 @@ void BasicSimplicialMesh::synchronizeGIDNumbering(int dim, int localCount)
   MPIContainerComm<int>::accumulate(localCount, gidOffsets, total, comm());
   int myOffset = gidOffsets[comm().getRank()];
 
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "back from MPI accumulate");
 
   for (int i=0; i<numCells(dim); i++)
@@ -1045,7 +1045,7 @@ void BasicSimplicialMesh::synchronizeGIDNumbering(int dim, int localCount)
       LIDToGIDMap_[dim][i] += myOffset;
       GIDToLIDMap_[dim].put(LIDToGIDMap_[dim][i], i);
     }
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                "done sharing offsets for GID numbering for dim=" << dim);
 }
 
@@ -1056,7 +1056,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
   comm().synchronize();
   comm().synchronize();
   comm().synchronize();
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "synchronizing cells of dimension " << cellDim);
 
   int myRank = comm().getRank();
@@ -1090,12 +1090,12 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
 
   LIDToGIDMap_[cellDim].resize(numCells(cellDim));
   
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "starting loop over cells");
 
   for (int i=0; i<numCells(cellDim); i++)
     {  
-      SUNDANCE_OUT(verbosity() > VerbHigh, 
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                    "p=" << myRank 
                    <<" cell " << i);
       /* We'll define the owner of an intermediate cell as
@@ -1107,7 +1107,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
           verts[v] = cellVerts->value(i, v);
           if (ptOwners[verts[v]] > owner) owner = ptOwners[verts[v]];
         }
-      SUNDANCE_OUT(verbosity() > VerbHigh, 
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                    "p=" << myRank 
                    << " verts of cell " << i << " are " << verts 
                    << " and its owner is " << owner);
@@ -1132,14 +1132,14 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
             * identify the cell on the other processor. */
         {
           LIDToGIDMap_[cellDim][i] = -1;
-          SUNDANCE_OUT(verbosity() > VerbHigh, 
+          SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                        "p=" << myRank << " adding LID=" << i 
                        << " to req list");
           outgoingRequestLIDs[owner].append(i);
           for (int v=0; v<=cellDim; v++)
             {
               int ptGID = LIDToGIDMap_[0][verts[v]];
-              SUNDANCE_OUT(verbosity() > VerbHigh, 
+              SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                            "p=" << myRank << " adding pt GID=" << ptGID
                            << " to req list");
               outgoingRequests[owner].append(ptGID);
@@ -1154,12 +1154,12 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
 
   
   /* We now share requests for cells for which remote GIDs are needed */
-  SUNDANCE_OUT(verbosity() > VerbHigh,
+  SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "p=" << myRank << "sending requests: " << outgoingRequests);
   MPIContainerComm<int>::allToAll(outgoingRequests,
                                   incomingRequests,
                                   comm());
-  SUNDANCE_OUT(verbosity() > VerbHigh,
+  SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "p=" << myRank << "recv'd requests: " << incomingRequests);
 
   /* Answer the requests incoming to this processor */
@@ -1170,7 +1170,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
       
       for (int c=0; c<requestsFromProc.size(); c+=(cellDim+1))
         {
-          SUNDANCE_OUT(verbosity() > VerbHigh,
+          SUNDANCE_OUT(this->verbosity() > VerbHigh,
                        "p=" << myRank << "processing request c=" << c/(cellDim+1));
           /* The request for each cell is a tuple of vertex GIDs. 
            * We convert these to LIDs and pack in our verts[] helper array */
@@ -1178,7 +1178,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
             {
               verts[v] = mapGIDToLID(0, requestsFromProc[c+v]);
             }
-          SUNDANCE_OUT(verbosity() > VerbHigh, 
+          SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                        "p=" << myRank << "point LIDs are " << verts);
           /* Now we can identify the LID of the cell as known on 
            * this processor */
@@ -1192,7 +1192,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
               cellLID = getFaceLIDFromVertLIDs(verts[0], verts[1], verts[2],
                                                dummyRotation);
             }
-          SUNDANCE_OUT(verbosity() > VerbHigh, 
+          SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                        "p=" << myRank << "cell LID is " << cellLID);
           /* Finally, we get the cell's GID and append to the list 
            * of GIDs to send back as answers. */
@@ -1202,12 +1202,12 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
 
 
   /* We now share the GIDs for the requested cells */
-  SUNDANCE_OUT(verbosity() > VerbHigh,
+  SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "p=" << myRank << "sending GIDs: " << outgoingGIDs);
   MPIContainerComm<int>::allToAll(outgoingGIDs,
                                   incomingGIDs,
                                   comm());
-  SUNDANCE_OUT(verbosity() > VerbHigh,
+  SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "p=" << myRank << "recv'ing GIDs: " << incomingGIDs);
 
   /* Now assign the cell GIDs we've recv'd from from the other procs */
@@ -1218,7 +1218,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
         {
           int cellLID = outgoingRequestLIDs[p][c];
           int cellGID = incomingGIDs[p][c];
-          SUNDANCE_OUT(verbosity() > VerbHigh,
+          SUNDANCE_OUT(this->verbosity() > VerbHigh,
                        "p=" << myRank << 
                        " assigning GID=" << cellGID << " to LID=" 
                        << cellLID);
@@ -1227,7 +1227,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
         }
     }
 
-  SUNDANCE_OUT(verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
                "p=" << myRank << "done synchronizing cells of dimension " << cellDim);
 
   if (cellDim==1) hasEdgeGIDs_ = true;

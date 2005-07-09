@@ -284,7 +284,7 @@ void EquationSet::init(const Expr& eqns,
 
   /* begin with a sanity check to ensure that the input equation set 
    * exists and is integral form */
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "checking existence of input eqn set...");
   const SumOfIntegrals* integralSum
     = dynamic_cast<const SumOfIntegrals*>(eqns.ptr().get());
@@ -295,7 +295,7 @@ void EquationSet::init(const Expr& eqns,
   TEST_FOR_EXCEPTION(integralSum==0, RuntimeError,
                      "EquationSet ctor detected an input equation set that "
                      "is not in integral form");
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "...input eqn set is OK");
 
   
@@ -366,7 +366,7 @@ void EquationSet::init(const Expr& eqns,
 
 
   /* determine whether or not this problem includes essential BCs */
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "checking whether the eqn set includes essential BCs...");
   bool hasBCs = false;
   const SumOfBCs* bcSum = 0 ;
@@ -381,12 +381,12 @@ void EquationSet::init(const Expr& eqns,
     }
   if (hasBCs)
     {
-      SUNDANCE_OUT(verbosity() > VerbLow, 
+      SUNDANCE_OUT(this->verbosity() > VerbLow, 
                    "...problem has EssentialBCs");
     }
   else
     {
-      SUNDANCE_OUT(verbosity() > VerbLow, 
+      SUNDANCE_OUT(this->verbosity() > VerbLow, 
                    "...problem has no EssentialBCs");
     }
 
@@ -658,17 +658,17 @@ void EquationSet::init(const Expr& eqns,
 
   
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                "Vars appearing on each region: " << endl << varsOnRegions_);
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                "Unks appearing on each region: " << endl << unksOnRegions_);
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                "Vars appearing on each BC region: " 
                << endl << bcVarsOnRegions_);
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                "Unks appearing on each BC region: " 
                << endl << bcUnksOnRegions_);
 
@@ -690,9 +690,9 @@ void EquationSet
                    bool isBC)
 {
   Tabs tab;
-  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "finding var-unk pairs "
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, tab << "finding var-unk pairs "
                "for domain " << domain);
-  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "isBC=" << isBC);
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, tab << "isBC=" << isBC);
   
   RefCountPtr<Set<OrderedPair<int, int> > > funcPairs;
   Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > >* theMap;
@@ -705,7 +705,7 @@ void EquationSet
     {
       theMap = &(varUnkPairsOnRegions_);
     } 
-  SUNDANCE_OUT(verbosity() > VerbHigh, tab << "map ptr=" << theMap);
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "map ptr=" << theMap);
   if (theMap->containsKey(domain))
     {
       funcPairs = theMap->get(domain);
@@ -749,7 +749,7 @@ void EquationSet
       funcPairs->put(OrderedPair<int, int>(varID, unkID));
     }
 
-  SUNDANCE_OUT(verbosity() > VerbMedium, tab << "found " << *funcPairs);
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, tab << "found " << *funcPairs);
   
 }
 

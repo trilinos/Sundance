@@ -30,6 +30,7 @@
 
 
 #include "SundanceProductExpr.hpp"
+#include "SundanceProductEvaluator.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceOut.hpp"
@@ -74,6 +75,12 @@ ProductExpr::ProductExpr(const RefCountPtr<ScalarExpr>& left,
     }
 }
 
+
+Evaluator* ProductExpr::createEvaluator(const EvaluatableExpr* expr,
+					const EvalContext& context) const
+{
+  return new ProductEvaluator(dynamic_cast<const ProductExpr*>(expr), context);
+}
 
 bool ProductExpr::isHungryDiffOp() const
 {

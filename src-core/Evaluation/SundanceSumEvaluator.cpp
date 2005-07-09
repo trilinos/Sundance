@@ -71,7 +71,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
   if (verbosity() > VerbMedium)
     {
       cerr << endl << tabs << "return sparsity ";
-      sparsity()->print(cerr);
+      this->sparsity()->print(cerr);
       cerr << endl << "left sparsity ";
       leftSparsity()->print(cerr);
       cerr << endl << "right sparsity " ;
@@ -85,9 +85,9 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
       cerr << "right constant index map " << rightEval()->constantIndexMap() << endl;
     }
 
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
-      const MultipleDeriv& d = sparsity()->deriv(i);
+      const MultipleDeriv& d = this->sparsity()->deriv(i);
       TEST_FOR_EXCEPTION(!leftSparsity()->containsDeriv(d) 
                          && !rightSparsity()->containsDeriv(d),
                          InternalError,
@@ -204,7 +204,7 @@ void SumEvaluator
   //  TimeMonitor timer(evalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                tabs << "SumEvaluator::eval() expr=" << expr()->toString());
 
   /* evaluate the children */
@@ -225,8 +225,8 @@ void SumEvaluator
                              rightConstResults);
     }
   
-  constantResults.resize(sparsity()->numConstantDerivs());
-  vectorResults.resize(sparsity()->numVectorDerivs());
+  constantResults.resize(this->sparsity()->numConstantDerivs());
+  vectorResults.resize(this->sparsity()->numVectorDerivs());
 
   /* Do constant terms with left=0 */
   for (unsigned int i=0; i<singleRightConstant_.size(); i++)
@@ -353,7 +353,7 @@ void SumEvaluator
   if (verbosity() > VerbMedium)
     {
       cerr << tabs << "sum result " << endl;
-      sparsity()->print(cerr, vectorResults,
+      this->sparsity()->print(cerr, vectorResults,
                         constantResults);
     }
 }

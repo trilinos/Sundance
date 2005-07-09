@@ -126,7 +126,7 @@ void CellJacobianBatch::factor() const
                      "Attempting to factor the Jacobian of a cell "
                      "that is not of maximal dimension");
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                tabs << "factoring Jacobians");
   
   for (int cell=0; cell<numCells_; cell++)
@@ -171,7 +171,7 @@ void CellJacobianBatch::computeInverses() const
   if (hasInverses_) return;
 
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                tabs << "inverting Jacobians");
 
   invJ_.resize(spatialDim_*spatialDim_*numQuad_*numCells_);

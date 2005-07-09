@@ -88,7 +88,7 @@ void TestEvalMediator::evalCoordExpr(const CoordExpr* expr,
                                      RefCountPtr<EvalVector>& vec) const
 {
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                tabs << "evaluating coord expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
@@ -106,7 +106,7 @@ void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
                                      RefCountPtr<EvalVector>& vec) const
 {
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                tabs << "evaluating cell diameter expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
@@ -126,7 +126,7 @@ void TestEvalMediator
   static Array<string> coordNames;
 
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                tabs << "evaluating discrete func " << expr->toString() 
                << " with multiindices " << mi);
 

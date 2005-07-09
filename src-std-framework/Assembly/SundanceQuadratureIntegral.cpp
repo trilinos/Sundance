@@ -81,10 +81,10 @@ QuadratureIntegral::QuadratureIntegral(int dim,
   
   W_.resize(nQuad());
 
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                tab0 << "num quad pts" << nQuad());
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad weights" << quadWeights);
 
   for (int q=0; q<nQuad(); q++)
@@ -107,7 +107,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
 {
   Tabs tab0;
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbSilent, 
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 
                << "******** computing basis functions on quad pts *******"
                << endl << tab0 << "test basis=" 
@@ -115,7 +115,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
                << endl << tab0 << "cell type=" << cellType
                << endl << tab0 << "differentiation order="
                << testDerivOrder);
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
                << nRefDerivTest());
 
@@ -133,13 +133,13 @@ QuadratureIntegral::QuadratureIntegral(int dim,
   
   W_.resize(nQuad() * nRefDerivTest() * nNodesTest());
 
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                tab0 << "num quad pts" << nQuad());
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad pts" << quadPts);
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad weights" << quadWeights);
 
   Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
@@ -152,7 +152,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
                                testBasisVals[r]);
     }
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "basis values" << testBasisVals);
 
 
@@ -197,7 +197,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
 {
   Tabs tab0;
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbSilent, 
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << " ************* computing basis func products on quad pts ***************" 
                << endl << tab0 << "test basis=" 
                << testBasis 
@@ -205,7 +205,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
                << endl << tab0 << "cell type=" << cellType
                << endl << tab0 <<"differentiation order t=" 
                << testDerivOrder << ", u=" << unkDerivOrder);
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
                << nRefDerivTest());
 
@@ -228,13 +228,13 @@ QuadratureIntegral::QuadratureIntegral(int dim,
   W_.resize(nQuad() * nRefDerivTest() * nNodesTest()  
             * nRefDerivUnk() * nNodesUnk());
 
-  SUNDANCE_OUT(verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
                tab0 << "num quad pts" << nQuad());
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad pts" << quadPts);
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad weights" << quadWeights);
 
 
@@ -251,7 +251,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
                                testBasisVals[r]);
     }
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "test basis values" << testBasisVals);
 
   for (int r=0; r<nRefDerivUnk(); r++)
@@ -262,7 +262,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
     }
 
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "unk basis values" << unkBasisVals);
 
 
@@ -373,7 +373,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
 
       createOneFormTransformationMatrix(J);
 
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G(alpha()));
 
       double* GPtr = &(G(alpha())[0]);      
@@ -434,19 +434,19 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
       if (testDerivOrder() == 0)
         {
           GPtr = &(G(beta())[0]);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        Tabs() << "transformation matrix=" << G(beta()));
         }
       else if (unkDerivOrder() == 0)
         {
           GPtr = &(G(alpha())[0]);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        Tabs() << "transformation matrix=" << G(alpha()));
         }
       else
         {
           GPtr = &(G(alpha(), beta())[0]);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        Tabs() << "transformation matrix=" 
                        << G(alpha(),beta()));
         }

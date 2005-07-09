@@ -52,10 +52,10 @@ UnaryMinusEvaluator
   int vecResultIndex = 0;
   int constResultIndex = 0;
   
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
       /* Determine the index into which the result will be written */
-      bool resultIsConstant = sparsity()->state(i)==ConstantDeriv; 
+      bool resultIsConstant = this->sparsity()->state(i)==ConstantDeriv; 
 
       if (!resultIsConstant)
         {
@@ -77,7 +77,7 @@ void UnaryMinusEvaluator
 {
   //  TimeMonitor timer(evalTimer());
   Tabs tab;
-  SUNDANCE_OUT(verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
                tab << "UnaryMinusEvaluator::eval() expr=" << expr()->toString());
 
 

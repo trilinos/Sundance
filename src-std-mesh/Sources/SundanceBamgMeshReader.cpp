@@ -39,16 +39,16 @@ BamgMeshReader::BamgMeshReader(const string& fname,
   bbFilename_ = bbFilename_ + ".bb"; //new
   
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "node filename = " << nodeFilename_);
   
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "elem filename = " << elemFilename_);
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "mesh filename = " << meshFilename_); //new
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "bb filename = " << bbFilename_); //new
   
 }
@@ -75,16 +75,16 @@ BamgMeshReader::BamgMeshReader(const ParameterList& params)
   meshFilename_ = meshFilename_ + ".mesh"; //new
   
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "node filename = " << nodeFilename_);
   
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "elem filename = " << elemFilename_);
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "mesh filename = " << meshFilename_); //new
 
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                "bb filename = " << bbFilename_); //new
   
 }
@@ -205,7 +205,7 @@ void BamgMeshReader::readParallelInfo(Array<int>& ptGID,
 
           nElems = StrUtils::atoi(tokens[0]);
 
-          SUNDANCE_OUT(verbosity() > VerbLow,
+          SUNDANCE_OUT(this->verbosity() > VerbLow,
                        "read nElems = " << nElems);
 
 
@@ -266,7 +266,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                      "the .node file. Found line \n[" << line
                      << "]\n in file " << nodeFilename_);
   string headerLine = line;
-  SUNDANCE_OUT(verbosity() > VerbMedium,
+  SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "read point header " << line);
   
   
@@ -293,7 +293,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                          << parFilename_ << " had nPoints=" << nPoints);
     }
 
-  SUNDANCE_OUT(verbosity() > VerbHigh,
+  SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "expecting to read " << nPoints << " points");
   
 	int dimension = atoi(tokens[1]);
@@ -351,7 +351,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
     cerr << "defined liners" << endl;
     //nodeStream.close(); //old
 
-    SUNDANCE_OUT(verbosity() > VerbHigh, 
+    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
 		 "reading nodes from " + meshFilename_);
 
     // extract dimension, nodes, elements (triangles) from lines
@@ -736,7 +736,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
    //////// here's the Bamg code for reading triangles (elements) ////////
    cerr << "# of triangles = " << nCells 
 	<< "; starting to read triangle data" << endl;
-   SUNDANCE_OUT(verbosity() > VerbHigh, 
+   SUNDANCE_OUT(this->verbosity() > VerbHigh, 
 	  "done reading nodes, ready to read elements from " + meshFilename_);
 
    int nElems = nCells;

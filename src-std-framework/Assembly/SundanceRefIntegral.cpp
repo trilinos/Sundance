@@ -69,7 +69,7 @@ RefIntegral::RefIntegral(int dim,
 {
   Tabs tab0;
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbSilent, 
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << "************* computing reference 0-form integrals ********" 
                << endl << tab0 << "cell type=" << cellType);
 }
@@ -83,14 +83,14 @@ RefIntegral::RefIntegral(int dim,
 {
   Tabs tab0;
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbSilent, 
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << "************* computing reference 1-form integrals ********" 
                << endl << tab0 << "test basis=" 
                << testBasis 
                << endl << tab0 << "cell type=" << cellType
                << endl << tab0 <<"differentiation order="
                << testDerivOrder);
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
                << nRefDerivTest());
 
@@ -110,10 +110,10 @@ RefIntegral::RefIntegral(int dim,
   quad.getPoints(cellType, quadPts, quadWeights);
   int nQuad = quadPts.size();
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad pts" << quadPts);
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad weights" << quadWeights);
 
   for (int r=0; r<nRefDerivTest(); r++)
@@ -124,7 +124,7 @@ RefIntegral::RefIntegral(int dim,
                                testBasisVals[r]);
     }
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "basis values" << testBasisVals);
 
 
@@ -168,7 +168,7 @@ RefIntegral::RefIntegral(int dim,
 {
   Tabs tab0;
   verbosity() = classVerbosity();
-  SUNDANCE_OUT(verbosity() > VerbSilent, 
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << " ************* computing reference 2-form integrals ***************" 
                << endl << tab0 << "test basis=" 
                << testBasis 
@@ -176,7 +176,7 @@ RefIntegral::RefIntegral(int dim,
                << endl << tab0 << "cell type=" << cellType
                << endl << tab0 <<"differentiation order t=" 
                << testDerivOrder << ", u=" << unkDerivOrder);
-  SUNDANCE_OUT(verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
                << nRefDerivTest());
 
@@ -204,10 +204,10 @@ RefIntegral::RefIntegral(int dim,
   quad.getPoints(cellType, quadPts, quadWeights);
   int nQuad = quadPts.size();
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad pts" << quadPts);
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "quad weights" << quadWeights);
 
   for (int r=0; r<nRefDerivTest(); r++)
@@ -218,7 +218,7 @@ RefIntegral::RefIntegral(int dim,
                                testBasisVals[r]);
     }
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "test basis values" << testBasisVals);
 
   for (int r=0; r<nRefDerivUnk(); r++)
@@ -229,7 +229,7 @@ RefIntegral::RefIntegral(int dim,
     }
 
 
-  SUNDANCE_OUT(verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                tab0 << "unk basis values" << unkBasisVals);
 
   for (int q=0; q<nQuad; q++)
@@ -440,7 +440,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
 
       createOneFormTransformationMatrix(J);
 
-      SUNDANCE_OUT(verbosity() > VerbMedium, 
+      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G(alpha()));
       
       int nNodes0 = nNodes();
@@ -493,19 +493,19 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
       if (testDerivOrder() == 0)
         {
           GPtr = &(G(beta())[0]);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        Tabs() << "transformation matrix=" << G(beta()));
         }
       else if (unkDerivOrder() == 0)
         {
           GPtr = &(G(alpha())[0]);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        Tabs() << "transformation matrix=" << G(alpha()));
         }
       else
         {
           GPtr = &(G(alpha(), beta())[0]);
-          SUNDANCE_OUT(verbosity() > VerbMedium, 
+          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        Tabs() << "transformation matrix=" 
                        << G(alpha(),beta()));
         }

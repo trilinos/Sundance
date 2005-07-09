@@ -101,7 +101,7 @@ namespace SundanceCore
        * multiple derivative is a multiset of first-order
        * derivatives, the order of the multiple derivative is the
        * size of the set. */
-      int order() const {return size();}
+      int order() const {return this->size();}
 
       /** Return the order of spatial differentiation in this
        * derivative */

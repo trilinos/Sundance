@@ -63,7 +63,7 @@ UserDefOpEvaluator
   SUNDANCE_VERB_LOW(tabs << "initializing user defined op evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
   for (int i=0; i<expr->numChildren(); i++)
     {
@@ -118,9 +118,9 @@ UserDefOpEvaluator
    * various derivatives.
    */
   
-  for (int i=0; i<sparsity()->numDerivs(); i++)
+  for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
-      const MultipleDeriv& d = sparsity()->deriv(i);
+      const MultipleDeriv& d = this->sparsity()->deriv(i);
       TEST_FOR_EXCEPTION(d.order() > 0, RuntimeError,
                          "deriv order > 0 not implemented for "
                          "user-defined ops");
@@ -158,7 +158,7 @@ void UserDefOpEvaluator
 {
   //  TimeMonitor timer(evalTimer());
   Tabs tabs;
-  SUNDANCE_OUT(verbosity() > VerbLow,
+  SUNDANCE_OUT(this->verbosity() > VerbLow,
                tabs << "------- UserDefOpEvaluator::eval() -------");
 
   /* evaluate the arguments */
@@ -193,7 +193,7 @@ void UserDefOpEvaluator
   /*
    * Allocate the results array
    */
-  vectorResults.resize(sparsity()->numDerivs());
+  vectorResults.resize(this->sparsity()->numDerivs());
   
 
   /* --- Zeroth derivative term */

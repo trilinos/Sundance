@@ -28,7 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceEvaluator.hpp"
+#include "SundanceSubtypeEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceSymbolicFuncEvaluator.hpp"
 #include "SundanceDiscreteFuncEvaluator.hpp"
@@ -62,7 +62,7 @@ SymbolicFuncElementEvaluator
   SUNDANCE_VERB_LOW(tabs << "initializing symbolic func evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *sparsity());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
   const ZeroExpr* z 
     = dynamic_cast<const ZeroExpr*>(expr->evalPt());
@@ -87,9 +87,9 @@ SymbolicFuncElementEvaluator
 
   Set<MultiIndex> miSet;
   
-  for (int i=0; i<sparsity()->numDerivs(); i++) 
+  for (int i=0; i<this->sparsity()->numDerivs(); i++) 
     {
-      if (sparsity()->isSpatialDeriv(i))
+      if (this->sparsity()->isSpatialDeriv(i))
         {
           /* evaluate the spatial deriv applied to the evaluation point */
           TEST_FOR_EXCEPTION(z != 0, InternalError,
@@ -98,27 +98,27 @@ SymbolicFuncElementEvaluator
                              "such expressions should have been "
                              "automatically eliminated by this point.");
 
-          mi_.append(sparsity()->multiIndex(i));
-          miSet.put(sparsity()->multiIndex(i));
+          mi_.append(this->sparsity()->multiIndex(i));
+          miSet.put(this->sparsity()->multiIndex(i));
           addVectorIndex(i, vectorCounter);
           spatialDerivs_.append(vectorCounter++);
-          int dir = sparsity()->multiIndex(i).firstOrderDirection();
+          int dir = this->sparsity()->multiIndex(i).firstOrderDirection();
           string deriv = "D[" + df_->name() + ", " + coordNames[dir] + "]";
           stringReps_.append(deriv);
         }
       else
         {
-          TEST_FOR_EXCEPTION(sparsity()->deriv(i).order() > 1,
+          TEST_FOR_EXCEPTION(this->sparsity()->deriv(i).order() > 1,
                              InternalError,
                              "SymbolicFuncElementEvaluator ctor detected a "
                              "nonzero functional derivative of order greater "
                              "than one. All such derivs should have been "
                              "identified as zero by this point. The bad "
-                             "derivative is " << sparsity()->deriv(i)
+                             "derivative is " << this->sparsity()->deriv(i)
                              << ", and the bad sparsity table is "
-                             << *sparsity());
+                             << *(this->sparsity)());
 
-          if (sparsity()->deriv(i).order()==0)
+          if (this->sparsity()->deriv(i).order()==0)
             {
               TEST_FOR_EXCEPTION(z != 0, InternalError,
                              "SymbolicFuncElementEvaluator ctor detected a "
@@ -166,7 +166,7 @@ void SymbolicFuncElementEvaluator
            << endl;
       if (verbosity() > VerbLow)
         {
-          cerr << tabs << "sparsity = " << endl << *sparsity() << endl;
+          cerr << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
         }
     }
 

@@ -2,7 +2,7 @@
 #define SUNDANCE_UNARYMINUSEVALUATOR_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceEvaluator.hpp"
+#include "SundanceUnaryEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY

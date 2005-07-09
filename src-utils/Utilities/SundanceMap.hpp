@@ -49,7 +49,7 @@ namespace SundanceUtils
       Map() : std::map<Key,Value,Compare>() {;}
 
       /** */
-      inline bool containsKey(const Key& key) const {return find(key) != end();}
+      inline bool containsKey(const Key& key) const {return this->find(key) != this->end();}
 
       /** */
       inline void put(const Key& key, const Value& value)
@@ -57,11 +57,11 @@ namespace SundanceUtils
 
       /** */
       inline const Value& get(const Key& key) const
-        {return (*find(key)).second;}
+        {return (*(this->find)(key)).second;}
 
       /** */
       inline Value& get(const Key& key) 
-        {return (*find(key)).second;}
+        {return (*(this->find)(key)).second;}
     };
 
 }
