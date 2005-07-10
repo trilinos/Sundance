@@ -56,9 +56,11 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   int nNodes = 0;
   int nElemBlocks = 0;
   int nSideSets = 0;
+  int nNodeSets = 0;
   int dimension = 0 ;
   Array<int> blockSizes;
   Array<int> sideSetSizes;
+  Array<int> nodeSetSizes;
   Array<int> nodesPerElem;
   while (true)
     {
@@ -100,6 +102,12 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
           sideSetSizes.resize(nSideSets);
           cerr << "num side sets = " << nSideSets << endl;
         }
+      else if (keyword=="num_node_sets")
+        {
+          nNodeSets = val;
+          nodeSetSizes.resize(nNodeSets);
+          cerr << "num node sets = " << nNodeSets << endl;
+        }
       else
         {
           for (int i=0; i<nElemBlocks; i++)
@@ -120,6 +128,14 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
               if (keyword=="num_side_ss" + Teuchos::toString(i+1))
                 {
                   sideSetSizes[i] = val;
+                  break;
+                }
+            }
+          for (int i=0; i<nNodeSets; i++)
+            {
+              if (keyword=="num_nod_ns" + Teuchos::toString(i+1))
+                {
+                  nodeSetSizes[i] = val;
                   break;
                 }
             }
@@ -144,6 +160,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   Array<Array<int> > connect(nElemBlocks);
   Array<Array<int> > sideSetElems(nSideSets);
   Array<Array<int> > sideSetFacets(nSideSets);
+  Array<Array<int> > nodeSetNodes(nNodeSets);
 
   bool doneWithData = false;
   while(!doneWithData)
@@ -313,6 +330,45 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
               continue;
             }
         }
+
+      /* see if the line lists node set node numbers */
+      for (int s=0; s<nNodeSets; s++)
+        {
+          if (tokens[0] == "node_ns" + Teuchos::toString(s+1))
+            {
+              nodeSetNodes[s].reserve(nodeSetSizes[s]);
+              bool done = false;
+              for (int i=1; i<tokens.size(); i++)
+                {
+                  if (tokens[i] == "=") continue;
+                  if (tokens[i] == ";") 
+                    {
+                      done = true;
+                      break;
+                    }
+                  nodeSetNodes[s].append(atoi(StrUtils::before(tokens[i], ",")));
+                }
+              while (!done)
+                {
+                  if (!getNextLine(*is, line, tokens, '#'))
+                    {
+                      doneWithData = true;
+                      break;
+                    }
+                  for (int i=0; i<tokens.size(); i++)
+                    {
+                      if (tokens[i] == "=") continue;
+                      if (tokens[i] == ";") 
+                        {
+                          done = true;
+                          break;
+                        }
+                      nodeSetNodes[s].append(atoi(StrUtils::before(tokens[i], ",")));
+                    }
+                }
+              continue;
+            }
+        }
     }
 
 
@@ -384,6 +440,16 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
           int facetNum = sideSetFacets[s][n];
           int sideLID = mesh.facetLID(dimension, elemID-1, dimension-1, facetNum-1);
           mesh.setLabel(dimension-1, sideLID, s+1);
+        }
+    }
+
+  /* label the node sets */
+  for (int s=0; s<nNodeSets; s++)
+    {
+      for (int n=0; n<nodeSetSizes[s]; n++)
+        {
+          int nodeNum = nodeSetNodes[s][n];
+          mesh.setLabel(0, nodeNum, s+1);
         }
     }
 

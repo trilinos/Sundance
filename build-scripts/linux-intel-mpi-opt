@@ -39,6 +39,6 @@ CC="/usr/local/intel/bin/icc" \
 CXXFLAGS="-O3 -cxxlib-gcc -I/usr/local/include" \
 --with-libs="-lexpat" \
 --enable-mpi --with-mpi-libs="-lmpich -lpmpich" \
---with-trilinos=$HOME/Projects/Trilinos/ICC-OPT \
+--with-trilinos=$HOME/Projects/Trilinos/INTEL-OPT \
 --prefix=$BUILD_DIR
 
