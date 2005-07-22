@@ -32,7 +32,8 @@
 EXEEXT = .exe
 
 noinst_PROGRAMS = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
-VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D
+VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D \
+ReadField
 
 
 
@@ -140,6 +141,17 @@ PressureStabilizedNS3D_LDADD = $(STD_FWK_LIBS)
 
 
 
+ReadField_SOURCES = $(srcdir)/ReadField.cpp
+
+ReadField_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+ReadField_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+ReadField_LDADD = $(STD_FWK_LIBS) 
 
 
 

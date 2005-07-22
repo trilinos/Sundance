@@ -65,9 +65,14 @@ namespace SundanceCore
 
     /**
      * Class EvaluatableExpr provides common functionality for
-     * management of caching evaluation results, preprocessing
-     * to determine the sparsity pattern of the matrix of functional
-     * derivatives, and part of the interface for evaluation of expressions.
+     * determination of the sparsity pattern of the matrix of functional
+     * derivatives, and managing Evaluator objects. Because we will 
+     * need to evaluate expressions in different ways depending
+     * on context, we shouldn't do evaluation in a method
+     * of EvaluatableExpr, but rather delegate evaluation to a
+     * separate class, Evaluator. EvaluatableExpr stores a suite of
+     * Evaluator objects, indexed by EvalCOntext.
+
      *
      * Evaluation is a logically const operation, and preprocessing
      * is an implementation detail, so most evaluation and preprocessing

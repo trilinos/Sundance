@@ -28,52 +28,16 @@
 # ************************************************************************
 /* @HEADER@ */
 
+namespace SundanceStdFwk
+{
+/*! \page field_reading Creating a DiscreteFunction from values stored in a file
 
+blah blah
 
-/*! \page users_guide Sundance User's Guide
-
-<H2> The Basics </H2>
-
-<ul> 
-<li> \ref fem
-<li> \ref philosophy
-<li> \ref about_code
-<li> \ref memory_mgt
-<li> \ref parallel
-</ul>
-
-<H2> Components for Simulation Setup </H2>
-<ul> 
-<li> \ref mesh_source are used to create, import, or transform discrete geometry
-<li> \ref cell_filter are used to define subregions (e.g., node sets, side sets)
-<li> \ref exprs are used to define equations and boundary conditions
-<li> \ref discretefuncs are used to represent finite-element spaces and fields
-</ul>
-
-<H2> Problem Setup </H2>
-
-<ul> 
-<li> Specification of \ref equations
-<li> Specification of \ref bcs
-<li> Setup and use of \ref linear_problems
-<li> Setup and use of \ref nonlinear_problems
-</ul>
-
-<H2> Solvers </H2>
-<ul>
-<li> \ref linear_solvers 
-<li> \ref nonlinear_solvers 
-</ul>
-
-
-<H2> Examples </H2>
-
-Some example simulators developed in %Sundance
-can be found <A HREF="examples.html"> here </A>
-
-<H2> FAQ </H2>
-<ul>
-<li> \ref field_reading
-</ul>
+\code
+/* this is my code */
+for (i=0; i>0; i++) blah();
+\endcode
 
 */
+}
