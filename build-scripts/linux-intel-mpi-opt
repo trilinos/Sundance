@@ -36,7 +36,7 @@ BUILD_DIR=`pwd`
 ../configure  \
 CXX="/usr/local/intel/bin/icc" \
 CC="/usr/local/intel/bin/icc" \
-CXXFLAGS="-O3 -cxxlib-gcc -I/usr/local/include" \
+CXXFLAGS="-O3 -cxxlib-gcc -I/usr/local/include -wd1476,1572,1505" \
 --with-libs="-lexpat" \
 --enable-mpi --with-mpi-libs="-lmpich -lpmpich" \
 --with-trilinos=$HOME/Projects/Trilinos/INTEL-OPT \

@@ -123,6 +123,8 @@ BasisFamily BasisFamily::getBasis(const Expr& expr)
       return disc->basis()[d->myIndex()];
     }
 
-  
+  TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, RuntimeError,
+                     "BasisFamily::getBasis() argument is not a function");
+  return BasisFamily();
   
 }

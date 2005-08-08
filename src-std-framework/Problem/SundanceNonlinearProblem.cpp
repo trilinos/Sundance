@@ -157,7 +157,7 @@ Vector<double> NonlinearProblem::computeFunctionValue() const
   discreteU0_->setVector(currentEvalPt());
 
 
-  Vector<double> rtn = range()->createMember();
+  Vector<double> rtn = createMember(range());
   assembler_->assemble(rtn);
 
   return rtn;

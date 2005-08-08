@@ -50,6 +50,7 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
   using namespace Teuchos;
+  using namespace Thyra;
 
   /**
    * L2Projector projects an expression onto a DiscreteSpace. 

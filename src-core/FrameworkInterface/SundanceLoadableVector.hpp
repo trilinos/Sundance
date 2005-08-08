@@ -65,7 +65,7 @@ namespace SundanceCore
           virtual void setElement(int i, const double& x) = 0 ;
 
           /** Return a pointer to the physical start of the vector. */
-          virtual double* const start() = 0 ;
+          virtual double* start() = 0 ;
         };
     }
 }

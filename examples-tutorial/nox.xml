@@ -5,14 +5,14 @@
       <Parameter name="Method" type="string" value="More'-Thuente"/>
     </ParameterList>
     <ParameterList name="Status Test">
-      <Parameter name="Max Iterations" type="int" value="6"/>
+      <Parameter name="Max Iterations" type="int" value="20"/>
       <Parameter name="Tolerance" type="double" value="1e-8"/>
     </ParameterList>
 
 
     <ParameterList name="Linear Solver">
-      <Parameter name="Graph Fill" type="int" value="0"/>
-      <Parameter name="Max Iterations" type="int" value="10"/>
+      <Parameter name="Graph Fill" type="int" value="1"/>
+      <Parameter name="Max Iterations" type="int" value="500"/>
       <Parameter name="Method" type="string" value="GMRES"/>
       <Parameter name="Precond" type="string" value="Domain Decomposition"/>
       <Parameter name="Subdomain Solver" type="string" value="ILU"/>

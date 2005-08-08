@@ -124,7 +124,7 @@ int main(int argc, void** argv)
 
 
       int numReynolds = 1;
-      double finalReynolds = 10.0;
+      double finalReynolds = 100.0;
       for (int r=1; r<=numReynolds; r++)
         {
           double Re = r*finalReynolds/((double) numReynolds);

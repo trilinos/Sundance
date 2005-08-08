@@ -48,6 +48,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
+using namespace Thyra;
 
 L2Projector::L2Projector(const DiscreteSpace& space, 
                          const Expr& expr)

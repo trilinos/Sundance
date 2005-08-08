@@ -296,10 +296,10 @@ namespace SundanceCore
       void print(ostream& os) const ;
 
       /** */
-      const double * const start() const {return &((*data_)[0]);}
+      const double * start() const {return &((*data_)[0]);}
 
       /** */
-      double * const start() {return &((*data_)[0]);}
+      double * start() {return &((*data_)[0]);}
 
       const string& str() const {return str_;}
 

@@ -41,6 +41,6 @@ CXXFLAGS="-g -cxxlib-gcc -I/usr/local/include" \
 --with-ldflags="-L/usr/local/intel/lib" \
 FLIBS="-lfrtbegin -lg2c -lm -lgcc_s -lstdc++ -lgcc" \
 --enable-mpi --with-mpi-libs="-lmpich -lpmpich" \
---with-trilinos=$HOME/Projects/Trilinos/LINUX-INTEL-DEBUG \
+--with-trilinos=$HOME/Projects/Trilinos/INTEL-DEBUG \
 --prefix=$BUILD_DIR
 
