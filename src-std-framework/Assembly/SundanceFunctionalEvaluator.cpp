@@ -176,13 +176,18 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   LoadableVector<double>* loadableX 
     = dynamic_cast<LoadableVector<double>*>(x.ptr().get());
 
+
+  RefCountPtr<GhostView<double> > xView;
+  RefCountPtr<GhostView<double> > gradF0View;
+
   RefCountPtr<GhostImporter<double> > importer 
     = vecType_.createGhostImporter(x.space(), 0, 0);
 
-  
-  RefCountPtr<GhostView<double> > xView;
-  RefCountPtr<GhostView<double> > gradF0View;
+
+  TEST_FOR_EXCEPTION(xView.get() != 0, RuntimeError, "bad pointer in FunctionalEvaluator::fdGradientCheck");
+  //  cerr << "importing x" << endl;
   importer->importView(x, xView);
+  //  cerr << "importing grad f" << endl;
   importer->importView(gradF0, gradF0View);
 
   int n = x.space().dim();

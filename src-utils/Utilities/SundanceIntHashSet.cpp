@@ -34,7 +34,7 @@ bool IntHashSet::contains(int x) const
 void IntHashSet::fillArray(int* a) const
 {
   int k = 0;
-  for (int i=0; i<data_.size(); i++)
+  for (unsigned int i=0; i<data_.size(); i++)
     {
       for (std::list<int>::const_iterator 
              j=data_[i].begin(); j!=data_[i].end(); j++, k++)

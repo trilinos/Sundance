@@ -80,7 +80,7 @@ IntegralGroup
 {
   verbosity() = classVerbosity();
 
-  for (int i=0; i<integrals.size(); i++)
+  for (unsigned int i=0; i<integrals.size(); i++)
     {
       int nt = integrals[i]->nNodesTest();
       if (i > 0) 
@@ -107,7 +107,7 @@ IntegralGroup
 {
   verbosity() = classVerbosity();
 
-  for (int i=0; i<integrals.size(); i++)
+  for (unsigned int i=0; i<integrals.size(); i++)
     {
       int nt = integrals[i]->nNodesTest();
       int nu = integrals[i]->nNodesUnk();
@@ -147,7 +147,7 @@ bool IntegralGroup
   SUNDANCE_OUT(this->verbosity() > VerbHigh, tab0 << "begin A=" << *A);
 
   /* do the integrals */
-  for (int i=0; i<integrals_.size(); i++)
+  for (unsigned int i=0; i<integrals_.size(); i++)
     {
       Tabs tab;
       const RefIntegral* ref 

@@ -114,7 +114,7 @@ namespace SundanceCore
 
       /** Returns the number of regions on which pieces of the equation
        * or BCs are defined. */
-      int numRegions() const {return regions_.size();}
+      unsigned int numRegions() const {return regions_.size();}
       
       /** Returns the d-th region for this equation set */
       const RefCountPtr<CellFilterStub>& region(int d) const 
@@ -124,10 +124,10 @@ namespace SundanceCore
       bool isBCRegion(int d) const ;
       
       /** Returns the number of variational functions in this equation set */
-      int numVars() const {return varFuncs_.size();}
+      unsigned int numVars() const {return varFuncs_.size();}
 
       /** Returns the number of unk functions in this equation set */
-      int numUnks() const {return unkFuncs_.size();}
+      unsigned int numUnks() const {return unkFuncs_.size();}
 
       /** Returns the i-th variational function */
       const Expr& varFunc(int i) const {return varFuncs_[i];}

@@ -237,7 +237,7 @@ bool UnaryFunctor::testInvalidValue(const double& badValue) const
 
 bool UnaryFunctor::test(int nx, const double& tol) const
 {
-  bool isOK;
+  bool isOK = true;
 
   double a = -sqrt(1.5);
   double b = sqrt(2.0);

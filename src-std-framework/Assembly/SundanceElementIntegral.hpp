@@ -81,6 +81,9 @@ namespace SundanceStdFwk
                       int beta,
                       int unkDerivOrder);
 
+      /** virtual dtor */
+      virtual ~ElementIntegral(){;}
+
       /** Indicate whether this element integral is a 
        *  zero, one, or two form */
       int order() const {return order_;}

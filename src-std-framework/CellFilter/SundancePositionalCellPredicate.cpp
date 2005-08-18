@@ -57,7 +57,7 @@ bool PositionalCellPredicate::test(int cellLID) const
       Array<int> facets;
       mesh().getFacetArray(cellDim(), cellLID, 0, facets);
 
-      for (int i=0; i<facets.size(); i++)
+      for (unsigned int i=0; i<facets.size(); i++)
         {
           if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
         }

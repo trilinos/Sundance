@@ -47,7 +47,7 @@ LocalMatrixContainer::LocalMatrixContainer(const Array<int>& isTwoForm,
     unkID_(unkID),
     coeffs_(coeffs)
 {
-  for (int i=workspace().size(); i<isTwoForm.size(); i++)
+  for (unsigned int i=workspace().size(); i<isTwoForm.size(); i++)
     {
       workspace().append(rcp(new Array<double>()));
       workspace()[i]->reserve(1000);

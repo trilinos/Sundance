@@ -72,7 +72,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr u = unk.flatten();
   Expr v = test.flatten();
   Array<Expr> zero(u.size());
-  for (int i=0; i<u.size(); i++) 
+  for (unsigned int i=0; i<u.size(); i++) 
     {
       Expr z = new ZeroExpr();
       zero[i] = z;

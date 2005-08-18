@@ -42,7 +42,7 @@ using namespace Teuchos;
 BinaryCellFilter::BinaryCellFilter(const CellFilter& left,
                                    const CellFilter& right,
                                    const CellFilterOpType& op)
-  : CellFilterBase(), left_(left), right_(right), op_(op)
+  : CellFilterBase(), op_(), left_(left), right_(right)
 {;}
 
 int BinaryCellFilter::dimension(const Mesh& mesh) const
@@ -82,6 +82,9 @@ CellSet BinaryCellFilter::internalGetCells(const Mesh& mesh) const
     case Difference:
       return L.setDifference(R);
     }
+  TEST_FOR_EXCEPTION(true, RuntimeError, "unknown cell filter op type" << op_ 
+                     << " in BinaryCellFilter::internalGetCells()");
+  return L; // -Wall
 }
 
 string BinaryCellFilter::opName() const 
@@ -95,6 +98,9 @@ string BinaryCellFilter::opName() const
     case Difference:
       return "DifferenceCellFilter";
     }
+  TEST_FOR_EXCEPTION(true, RuntimeError, "unknown cell filter op type" << op_ 
+                     << " in BinaryCellFilter::opName()");
+  return "UnionCellFilter";//-Wall
 }
 
 XMLObject BinaryCellFilter::toXML() const 

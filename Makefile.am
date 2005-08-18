@@ -95,7 +95,15 @@ endif
 
 
 
+## #######################################################################
+## make libraries w/o making tests
+## #######################################################################
 
+libonly:
+	(cd src-utils; make install)
+	(cd src-core; make install)
+	(cd src-std-mesh; make install)
+	(cd src-std-framework; make install)
 
 ## #######################################################################
 ## emacs tags

@@ -79,6 +79,9 @@ namespace SundanceStdFwk
                          int unkDerivOrder,
                          const QuadratureFamily& quad);
 
+      /** virtual dtor */
+      virtual ~QuadratureIntegral(){;}
+
       /** */
       void transform(const CellJacobianBatch& J, 
                      const double* const coeff,

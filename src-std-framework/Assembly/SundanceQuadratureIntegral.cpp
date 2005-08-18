@@ -288,7 +288,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
 
   addFlops(3*nQuad()*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
            + W_.size());
-  for (int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
+  for (unsigned int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
 
   if (verbosity() > VerbMedium)
     {
@@ -311,8 +311,6 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& J,
   TEST_FOR_EXCEPTION(order() != 0, InternalError,
                      "QuadratureIntegral::transformZeroForm() called "
                      "for form of order " << order());
-
-  int flops = 0;
 
   //  A->resize(1);
   double& a = (*A)[0];
@@ -368,9 +366,6 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
     }
   else
     {
-      int nCells = J.numCells();
-      //      A->resize(nCells * nNodes()); 
-
       createOneFormTransformationMatrix(J);
 
       SUNDANCE_OUT(this->verbosity() > VerbMedium, 
@@ -426,8 +421,6 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
     }
   else
     {
-      int nCells = J.numCells();
-
       createTwoFormTransformationMatrix(J);
       double* GPtr;
 
@@ -542,9 +535,6 @@ void QuadratureIntegral
   double* aPtr = &((*A)[0]);
   int transSize = 0; 
   
-  int nAdds = 0;
-  int nMults = 0;
-
   if (order()==2)
     {
       transSize = nRefDerivTest() * nRefDerivUnk();
@@ -576,7 +566,7 @@ void QuadratureIntegral
       for (int q=0; q<nQuad(); q++)
         {
           double f = coeff[c*nQuad() + q];
-          for (int t=0; t<transSize; t++, nMults++) jWorkspace[t]=f*gCell[t];
+          for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
 
           for (int n=0; n<nNodes(); n++)
             {

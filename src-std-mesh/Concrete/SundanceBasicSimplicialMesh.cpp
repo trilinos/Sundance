@@ -82,8 +82,8 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
     tmpFaceEdges_(),
     LIDToGIDMap_(dim+1),
     GIDToLIDMap_(dim+1),
-    ownerProcID_(dim+1),
     labels_(dim+1),
+    ownerProcID_(dim+1),
     base_(1),
     tmpBase_(1),
     hasEdgeGIDs_(false),
@@ -183,7 +183,7 @@ void BasicSimplicialMesh::getJacobians(int cellDim, const Array<int>& cellLID,
   
       flops += cellDim*cellDim*nCells;
 
-      for (int i=0; i<cellLID.size(); i++)
+      for (unsigned int i=0; i<cellLID.size(); i++)
         {
           int lid = cellLID[i];
           double* J = jBatch.jVals(i);
@@ -261,7 +261,7 @@ void BasicSimplicialMesh::getCellDiameters(int cellDim, const Array<int>& cellLI
 
   if (cellDim < spatialDim())
     {
-      for (int i=0; i<cellLID.size(); i++)
+      for (unsigned int i=0; i<cellLID.size(); i++)
         {
           int lid = cellLID[i];
           switch(cellDim)
@@ -300,7 +300,7 @@ void BasicSimplicialMesh::getCellDiameters(int cellDim, const Array<int>& cellLI
     }
   else
     {
-      for (int i=0; i<cellLID.size(); i++)
+      for (unsigned int i=0; i<cellLID.size(); i++)
         {
           int lid = cellLID[i];
           switch(cellDim)
@@ -395,7 +395,7 @@ void BasicSimplicialMesh::pushForward(int cellDim, const Array<int>& cellLID,
     }
 
 
-  for (int i=0; i<cellLID.size(); i++)
+  for (unsigned int i=0; i<cellLID.size(); i++)
     {
       int lid = cellLID[i];
       switch(cellDim)
@@ -614,7 +614,7 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
       if (cellDim == spatialDim())
         {
           int ptr=0;
-          for (int c=0; c<cellLID.size(); c++)
+          for (unsigned int c=0; c<cellLID.size(); c++)
             {
               const int* fPtr = &(elemVerts_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
@@ -626,7 +626,7 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
       else if (cellDim==1) 
         {
           int ptr=0;
-          for (int c=0; c<cellLID.size(); c++)
+          for (unsigned int c=0; c<cellLID.size(); c++)
             {
               const int* fPtr = &(edgeVerts_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
@@ -638,7 +638,7 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
       else if (cellDim==2) 
         {
           int ptr=0;
-          for (int c=0; c<cellLID.size(); c++)
+          for (unsigned int c=0; c<cellLID.size(); c++)
             {
               const int* fPtr = &(faceVerts_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
@@ -653,7 +653,7 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
       if (cellDim == spatialDim())
         {
           int ptr=0;
-          for (int c=0; c<cellLID.size(); c++)
+          for (unsigned int c=0; c<cellLID.size(); c++)
             {
               const int* fPtr = &(elemEdges_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
@@ -665,7 +665,7 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
       else
         {
           int ptr=0;
-          for (int c=0; c<cellLID.size(); c++)
+          for (unsigned int c=0; c<cellLID.size(); c++)
             {
               const int* fPtr = &(faceEdges_.value(cellLID[c], 0));
               for (int f=0; f<nf; f++, ptr++)
@@ -678,7 +678,7 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
   else
     {
       int ptr=0;
-      for (int c=0; c<cellLID.size(); c++)
+      for (unsigned int c=0; c<cellLID.size(); c++)
         {
           const int* fPtr = &(elemFaces_.value(cellLID[c], 0));
           for (int f=0; f<nf; f++, ptr++)
@@ -1168,7 +1168,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
     {
       const Array<int>& requestsFromProc = incomingRequests[p];
       
-      for (int c=0; c<requestsFromProc.size(); c+=(cellDim+1))
+      for (unsigned int c=0; c<requestsFromProc.size(); c+=(cellDim+1))
         {
           SUNDANCE_OUT(this->verbosity() > VerbHigh,
                        "p=" << myRank << "processing request c=" << c/(cellDim+1));
@@ -1214,7 +1214,7 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
   for (int p=0; p<comm().getNProc(); p++)
     {
       const Array<int>& gidsFromProc = incomingGIDs[p];
-      for (int c=0; c<gidsFromProc.size(); c++)
+      for (unsigned int c=0; c<gidsFromProc.size(); c++)
         {
           int cellLID = outgoingRequestLIDs[p][c];
           int cellGID = incomingGIDs[p][c];

@@ -106,7 +106,7 @@ Expr Expr::operator+(const Expr& other) const
   Array<Expr> rtn(this->size());
   if (this->size() == other.size())
     {
-      for (int i=0; i<this->size(); i++)
+      for (unsigned int i=0; i<this->size(); i++)
         {
           rtn[i] = (*this)[i] + other[i];
         }
@@ -128,7 +128,7 @@ Expr Expr::operator-(const Expr& other) const
   Array<Expr> rtn(this->size());
   if (this->size() == other.size())
     {
-      for (int i=0; i<this->size(); i++)
+      for (unsigned int i=0; i<this->size(); i++)
         {
           rtn[i] = (*this)[i] - other[i];
         }
@@ -188,7 +188,7 @@ Expr Expr::operator*(const Expr& other) const
   if (this->size()==1)
     {
       Array<Expr> rtn(other.size());
-      for (int i=0; i<other.size(); i++)
+      for (unsigned int i=0; i<other.size(); i++)
         {
           rtn[i] = (*this)[0] * other[i];
         }
@@ -199,7 +199,7 @@ Expr Expr::operator*(const Expr& other) const
   if (other.size()==1)
     {
       Array<Expr> rtn(this->size());
-      for (int i=0; i<this->size(); i++)
+      for (unsigned int i=0; i<this->size(); i++)
         {
           rtn[i] = (*this)[i] * other[0];
         }
@@ -212,7 +212,7 @@ Expr Expr::operator*(const Expr& other) const
     {
       Expr rtn = new ZeroExpr();
 
-      for (int i=0; i<this->size(); i++)
+      for (unsigned int i=0; i<this->size(); i++)
         {
           rtn = rtn + (*this)[i]*other[i];
         }
@@ -221,9 +221,9 @@ Expr Expr::operator*(const Expr& other) const
 
   /* if the left operand is a rectangular matrix and the 
    * right operand is a vector */
-  int cols = (*this)[0].size();
+  unsigned int cols = (*this)[0].size();
   bool rectangular = true;
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       if ((*this)[i].size() != cols) rectangular = false;
     }
@@ -239,7 +239,7 @@ Expr Expr::operator*(const Expr& other) const
                      << other.toString());
   
   Array<Expr> rtn(this->size());
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       rtn[i] = (*this)[i] * other;
     }
@@ -305,7 +305,7 @@ Expr Expr::operator-() const
 
   /* otherwise, distribute the sign change over the list */
   Array<Expr> rtn(this->size());
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       rtn[i] = -((*this)[i]);
     }
@@ -332,7 +332,7 @@ Expr Expr::operator/(const Expr& other) const
 
   /* otherwise, divide each element of the left by the right operand */
   Array<Expr> rtn(this->size());
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       rtn[i] = (*this)[i] / other;
     }
@@ -344,7 +344,7 @@ const Expr& Expr::operator[](int i) const
   TEST_FOR_EXCEPTION(ptr().get()==NULL, InternalError,
                      "null this detected in Expr::operator[].");
 
-  TEST_FOR_EXCEPTION(i<0 || i>=this->size(), RuntimeError,
+  TEST_FOR_EXCEPTION(i<0 || i>=(int) this->size(), RuntimeError,
                      "Expr::operator[]() index i=" << i << " out of range [0, "
                      << this->size() << " in expr " << toString());
 
@@ -406,7 +406,7 @@ Expr Expr::flatten() const
   return *this;
 }
 
-int Expr::size() const
+unsigned int Expr::size() const
 {
   if (ptr().get()==0) return 0;
 
@@ -419,7 +419,7 @@ int Expr::size() const
   return 1;
 }
 
-int Expr::totalSize() const
+unsigned int Expr::totalSize() const
 {
   if (ptr().get()==0) return 0;
 

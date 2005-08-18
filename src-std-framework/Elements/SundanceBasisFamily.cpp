@@ -61,10 +61,10 @@ bool BasisFamily::operator==(const BasisFamily& other) const
   return !(*this < other || other < *this);
 }
 
-int BasisFamily::size(const Array<BasisFamily>& b)
+unsigned int BasisFamily::size(const Array<BasisFamily>& b)
 {
-  int rtn = 0;
-  for (int i=0; i<b.size(); i++) rtn += b[i].dim();
+  unsigned int rtn = 0;
+  for (unsigned int i=0; i<b.size(); i++) rtn += b[i].dim();
   return rtn;
 }
 

@@ -215,7 +215,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
   Mesh mesh;
   string line;
   Array<string> tokens;
-  int nPoints;
+  int nPoints = -1;
 
   /* Open the node file so we can read in the nodes */
 	

@@ -228,6 +228,10 @@ void VTKWriter::writeCells(ostream& os) const
 				case TetCell:
 					vtkCode = 10;
 					break;
+        default:
+          TEST_FOR_EXCEPTION(true, RuntimeError,
+                             "call type " << cellType << " not handled "
+                             "in VTKWriter::writeCells()");
 				}
 			os << vtkCode << endl;
     }

@@ -164,7 +164,7 @@ string Sundance::searchForFile(const string& name)
   string pathSep = "/";
   Array<string> path = parsePathStr();
 
-  for (int i=0; i<path.size(); i++)
+  for (unsigned int i=0; i<path.size(); i++)
     {
       ifstream fileToTry((path[i] + pathSep + name).c_str());
       if (!fileToTry) continue;
@@ -195,8 +195,8 @@ Array<string> Sundance::parsePathStr()
   
   Array<string> rtn;
 
-  int begin;
-  int end;
+  unsigned int begin;
+  unsigned int end;
   
   begin = pathStr.find_first_not_of(":");
   
@@ -311,13 +311,13 @@ void Sundance::setSettings(const string& settingsFile)
 {
   string fqFile = searchForFile(settingsFile);
   
-  FileInputSource fis(fqFile);
+//   FileInputSource fis(fqFile);
 
-  XMLObject xml = fis.getObject();
+//   XMLObject xml = fis.getObject();
 
-  cerr << "settings are: " << xml.toString() << endl;
+//   cerr << "settings are: " << xml.toString() << endl;
 
-  setSettings(xml);
+//   setSettings(xml);
 
 }
 

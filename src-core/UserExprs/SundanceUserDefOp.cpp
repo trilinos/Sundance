@@ -202,7 +202,7 @@ Array<RefCountPtr<ScalarExpr> > UserDefOp::getScalarArgs(const Expr& args)
   Expr fargs = args.flatten();
   Array<RefCountPtr<ScalarExpr> > sargs(fargs.size());
   
-  for (int i=0; i<fargs.size(); i++)
+  for (unsigned int i=0; i<fargs.size(); i++)
     {
       sargs[i] = rcp_dynamic_cast<ScalarExpr>(args[i].ptr());
     }

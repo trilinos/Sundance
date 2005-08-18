@@ -106,8 +106,6 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           int testID;
           int unkID;
           bool isOneForm;
-          int alpha;
-          int beta;
           extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, testID, unkID,
                           isOneForm);
 
@@ -129,6 +127,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
             {
               if (isOneForm)
                 {
+                  int alpha=0;
                   if (miTest.order()==1)
                     {
                       alpha = miTest.firstOrderDirection();
@@ -141,6 +140,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 }
               else
                 {
+                  int alpha=0;
+                  int beta=0;
                   if (miTest.order()==1)
                     {
                       alpha = miTest.firstOrderDirection();
@@ -161,6 +162,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
             {
               if (isOneForm)
                 {
+                  int alpha=0;
                   if (miTest.order()==1)
                     {
                       alpha = miTest.firstOrderDirection();
@@ -173,6 +175,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 }
               else
                 {
+                  int alpha=0;
+                  int beta=0;
                   if (miTest.order()==1)
                     {
                       alpha = miTest.firstOrderDirection();
@@ -252,7 +256,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                << tab << "testID=" << testID << endl
                                << tab << "unkID=" << unkID << endl
                                << tab << "resultIndices=" << resultIndices);
-          for (int j=0; j<resultIndices.size(); j++)
+          for (unsigned int j=0; j<resultIndices.size(); j++)
             {
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j]));
@@ -270,7 +274,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
                                << tab << "testID=" << testID << endl
                                << tab << "resultIndices=" << resultIndices);
-          for (int j=0; j<resultIndices.size(); j++)
+          for (unsigned int j=0; j<resultIndices.size(); j++)
             {
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j]));

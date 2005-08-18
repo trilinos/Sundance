@@ -42,17 +42,17 @@ using namespace TSFExtended;
 
 FieldWriterBase::FieldWriterBase(const string& filename) 
   : filename_(filename),
+    mesh_(),
     nProc_(0), 
     myRank_(-1),
     meshID_(-1),
-    mesh_(),
     comments_(),
     pointScalarFields_(),
     cellScalarFields_(),
-    pointScalarNames_(),
-    cellScalarNames_(),
     pointVectorFields_(),
     cellVectorFields_(),
+    pointScalarNames_(),
+    cellScalarNames_(),
     pointVectorNames_(),
     cellVectorNames_()
 {;}

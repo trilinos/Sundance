@@ -56,8 +56,9 @@ EvaluatableExpr::EvaluatableExpr()
     evaluators_(),
     sparsity_(),
     orderOfDependency_(MultiIndex::maxDim(), -1),
-    knownNonzeros_(),
     funcIDSet_(),
+    funcDependencies_(),
+    knownNonzeros_(),
     nodesHaveBeenCounted_(false)
 {
   addFuncIDCombo(MultiSet<int>());
@@ -236,7 +237,7 @@ RefCountPtr<Set<int> > EvaluatableExpr::getFuncIDSet(const Expr& funcs)
   RefCountPtr<Set<int> > rtn = rcp(new Set<int>());
 
   Expr f = funcs.flatten();
-  for (int i=0; i<f.size(); i++)
+  for (unsigned int i=0; i<f.size(); i++)
     {
       const SymbolicFuncElement* sfe 
         = dynamic_cast<const SymbolicFuncElement*>(f[i].ptr().get());

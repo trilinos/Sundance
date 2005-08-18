@@ -78,7 +78,7 @@ LinearProblem Functional::linearVariationalProb(const Expr& var,
 {
 
   Array<Expr> zero(unk.size());
-  for (int i=0; i<unk.size(); i++) 
+  for (unsigned int i=0; i<unk.size(); i++) 
     {
       Expr z = new ZeroExpr();
       zero[i] = z;

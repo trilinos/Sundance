@@ -65,7 +65,7 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   Expr v = new TestFunction(space.basis()[0]);
   Expr u = new UnknownFunction(space.basis()[0]);
   
-  for (int i=1; i<space.basis().size(); i++)
+  for (unsigned int i=1; i<space.basis().size(); i++)
     {
       v.append(new TestFunction(space.basis()[i]));
       u.append(new UnknownFunction(space.basis()[i]));

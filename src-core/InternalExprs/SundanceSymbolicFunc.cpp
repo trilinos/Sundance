@@ -48,7 +48,7 @@ SymbolicFunc::SymbolicFunc()
 
 void SymbolicFunc::substituteZero() const 
 {
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());
@@ -68,7 +68,7 @@ void SymbolicFunc
                      << " and discrete func " << u0->toString()
                      << " in substituteFunction()");
 
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());

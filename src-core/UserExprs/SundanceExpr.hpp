@@ -224,10 +224,10 @@ namespace SundanceCore
       const Expr& operator[](int i) const ;
       
       /** Number of elements in top level of list */
-      int size() const ;
+      unsigned int size() const ;
 
       /** Total number of elements in list. */
-      int totalSize() const ;
+      unsigned int totalSize() const ;
 
       /** Append a new element to this list */
       void append(const Expr& expr);

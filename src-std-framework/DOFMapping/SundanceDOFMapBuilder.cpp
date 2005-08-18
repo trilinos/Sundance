@@ -140,7 +140,7 @@ void DOFMapBuilder::init()
 Array<BasisFamily> DOFMapBuilder::testBasisArray() const 
 {
   Array<BasisFamily> rtn;
-  for (int i=0; i<eqn_->numVars(); i++) 
+  for (unsigned int i=0; i<eqn_->numVars(); i++) 
     {
       rtn.append(BasisFamily::getBasis(eqn_->varFunc(i)));
     }
@@ -150,7 +150,7 @@ Array<BasisFamily> DOFMapBuilder::testBasisArray() const
 Array<BasisFamily> DOFMapBuilder::unkBasisArray() const 
 {
   Array<BasisFamily> rtn;
-  for (int i=0; i<eqn_->numUnks(); i++) 
+  for (unsigned int i=0; i<eqn_->numUnks(); i++) 
     {
       rtn.append(BasisFamily::getBasis(eqn_->unkFunc(i)));
     }
@@ -167,7 +167,7 @@ bool DOFMapBuilder::unksAreHomogeneous() const
   if (eqn_->numUnks() > 1)
     {
       BasisFamily basis0 = BasisFamily::getBasis(eqn_->unkFunc(0));
-      for (int i=1; i<eqn_->numUnks(); i++) 
+      for (unsigned int i=1; i<eqn_->numUnks(); i++) 
         {
           BasisFamily basis = BasisFamily::getBasis(eqn_->unkFunc(i));
           if (!(basis == basis0)) return false;
@@ -181,7 +181,7 @@ bool DOFMapBuilder::testsAreHomogeneous() const
   if (eqn_->numVars() > 1)
     {
       BasisFamily basis0 = BasisFamily::getBasis(eqn_->varFunc(0));
-      for (int i=1; i<eqn_->numVars(); i++) 
+      for (unsigned int i=1; i<eqn_->numVars(); i++) 
         {
           BasisFamily basis = BasisFamily::getBasis(eqn_->varFunc(i));
           if (!(basis == basis0)) return false;
@@ -192,7 +192,7 @@ bool DOFMapBuilder::testsAreHomogeneous() const
 
 bool DOFMapBuilder::unksAreOmnipresent() const
 {
-  for (int r=0; r<eqn_->numRegions(); r++)
+  for (unsigned int r=0; r<eqn_->numRegions(); r++)
     {
       if (regionIsMaximal(r))
         {
@@ -205,7 +205,7 @@ bool DOFMapBuilder::unksAreOmnipresent() const
 
 bool DOFMapBuilder::testsAreOmnipresent() const
 {
-  for (int r=0; r<eqn_->numRegions(); r++)
+  for (unsigned int r=0; r<eqn_->numRegions(); r++)
     {
       if (regionIsMaximal(r))
         {
@@ -221,7 +221,7 @@ bool DOFMapBuilder::isSymmetric() const
 {
   if (eqn_->numVars() != eqn_->numUnks()) return false;
 
-  for (int i=0; i<eqn_->numVars(); i++) 
+  for (unsigned int i=0; i<eqn_->numVars(); i++) 
     {
       BasisFamily basis1 = BasisFamily::getBasis(eqn_->varFunc(i));
       BasisFamily basis2 = BasisFamily::getBasis(eqn_->unkFunc(i));
@@ -245,7 +245,7 @@ void DOFMapBuilder::markBCRows()
   Array<int> dofs;
   Array<int> cellLID;
 
-  for (int r=0; r<eqn_->numRegions(); r++)
+  for (unsigned int r=0; r<eqn_->numRegions(); r++)
     {
       /* find the cells in this region */
       CellFilter region = eqn_->region(r);
@@ -259,7 +259,7 @@ void DOFMapBuilder::markBCRows()
         {
           cellLID.append(*c);
         }
-      int nTestNodes;
+      unsigned int nTestNodes;
       /* find the functions that appear in BCs on this region */
       const Set<int>& bcFuncs = eqn_->bcVarsOnRegion(r);
       Array<int> bcFuncID = bcFuncs.elements();

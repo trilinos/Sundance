@@ -71,10 +71,10 @@ namespace SundanceCore
           Expr join(const Expr& other) const ;
 
           /** */
-          int size() const ;
+          unsigned int size() const ;
 
           /** */
-          int totalSize() const ;
+          unsigned int totalSize() const ;
 
           /** Write a simple text description suitable 
            * for output to a terminal */

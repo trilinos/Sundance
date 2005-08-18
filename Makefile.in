@@ -661,6 +661,12 @@ uninstall-info: uninstall-info-recursive
 	uninstall uninstall-am uninstall-info-am
 
 
+libonly:
+	(cd src-utils; make install)
+	(cd src-core; make install)
+	(cd src-std-mesh; make install)
+	(cd src-std-framework; make install)
+
 tags:
 	etags */*/*.hpp */*/*.cpp
 

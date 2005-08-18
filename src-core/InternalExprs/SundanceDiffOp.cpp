@@ -314,7 +314,6 @@ void DiffOp::getResultDerivs(const MultipleDeriv& argDeriv,
            * maps back to a zeroth order functional deriv of the diff op,
            * with a coefficient function.  */
           const FuncElementBase* f = argSingleDerivs[0].funcDeriv()->func();
-          const TestFuncElement* t = dynamic_cast<const TestFuncElement*>(f);
           const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
           //          if (t == 0 && !ignoreFuncTerms())
           if (!s->evalPtIsZero())
@@ -366,11 +365,9 @@ void DiffOp::getResultDerivs(const MultipleDeriv& argDeriv,
           md2.put(argSingleDerivs[1]);
 
           const FuncElementBase* f0 = argSingleDerivs[0].funcDeriv()->func();
-          const TestFuncElement* t0 = dynamic_cast<const TestFuncElement*>(f0);
           const SymbolicFuncElement* s0 = dynamic_cast<const SymbolicFuncElement*>(f0);
 
           const FuncElementBase* f1 = argSingleDerivs[1].funcDeriv()->func();
-          const TestFuncElement* t1 = dynamic_cast<const TestFuncElement*>(f1);
           const SymbolicFuncElement* s1 = dynamic_cast<const SymbolicFuncElement*>(f1);
 
           //          if (t0==0 && !ignoreFuncTerms())

@@ -15,8 +15,6 @@ void TetQuadrature::getPoints(int order, Array<double>& wgt,
                               Array<double>& y,
                               Array<double>& z)
 {
-
-	int np;
 	Array<double> w;
 	Array<int> multiplicity;
 	Array<Array<double> > q;

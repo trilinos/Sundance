@@ -220,7 +220,7 @@ void QuadratureEvalMediator
        cerr << tab << "evaluting DF " << expr->name() << endl;
      }
 
-  for (int i=0; i<multiIndices.size(); i++)
+  for (unsigned int i=0; i<multiIndices.size(); i++)
     {
       Tabs tab1;
       const MultiIndex& mi = multiIndices[i];
@@ -253,7 +253,7 @@ void QuadratureEvalMediator
           int k = 0;
           int cellSize = nQuad*nFuncs;
           int offset = myIndex * nQuad;
-          for (int c=0; c<cellLID()->size(); c++)
+          for (unsigned int c=0; c<cellLID()->size(); c++)
             {
               for (int q=0; q<nQuad; q++, k++)
                 {
@@ -282,7 +282,7 @@ void QuadratureEvalMediator
           int k = 0;
           int cellSize = nQuad*nFuncs*dim;
           int offset = myIndex * nQuad * dim;
-          for (int c=0; c<cellLID()->size(); c++)
+          for (unsigned int c=0; c<cellLID()->size(); c++)
             {
               for (int q=0; q<nQuad; q++, k++)
                 {
@@ -398,7 +398,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
   if (mi.order()==1)
     {
       int nRhs = nQuad * nFuncs;
-      for (int c=0; c<cellLID()->size(); c++)
+      for (unsigned int c=0; c<cellLID()->size(); c++)
         {
           double* rhsPtr = &(C[(nRhs * nDir)*c]);
           J()->applyInvJ(c, 0, rhsPtr, nRhs, false);
@@ -441,11 +441,11 @@ void QuadratureEvalMediator::print(ostream& os) const
       Tabs tab0;
       os << tab0 << "Physical quadrature points" << endl;
       int i=0;
-      for (int c=0; c<cellLID()->size(); c++)
+      for (unsigned int c=0; c<cellLID()->size(); c++)
         {
           Tabs tab1;
           os << tab1 << "cell " << c << endl;
-          for (int q=0; q<physQuadPts_.size()/cellLID()->size(); q++, i++)
+          for (unsigned int q=0; q<physQuadPts_.size()/cellLID()->size(); q++, i++)
             {
               Tabs tab2;
               os << tab2 << "q=" << q << " " << physQuadPts_[i] << endl;

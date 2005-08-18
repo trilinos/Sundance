@@ -52,7 +52,7 @@ void MatlabWriter::write() const
   for (int i=0; i<numNodes; i++)
     {
       os << mesh().nodePosition(i);
-      for (int j=0; j<pointScalarFields().size(); j++)
+      for (unsigned int j=0; j<pointScalarFields().size(); j++)
         {
           const RefCountPtr<FieldBase>& expr = pointScalarFields()[j];
           os << " " << expr->getData(0, i, 0);

@@ -117,7 +117,7 @@ void DiscreteFunction::getLocalValues(int cellDim,
   const RefCountPtr<DOFMapBase>& map = space_.map();
   static Array<int> dofs;
   static Array<int> indices;
-  int nNodes;
+  unsigned int nNodes;
   map->getDOFsForCellBatch(cellDim, cellLID, dofs, nNodes);
   int nFunc = space_.nFunc();
   int nCells = cellLID.size();
@@ -126,11 +126,11 @@ void DiscreteFunction::getLocalValues(int cellDim,
   
   /* store the values in fortran order with node number running fastest,
    * then function ID, then cell ID */
-  for (int c=0; c<cellLID.size(); c++)
+  for (unsigned int c=0; c<cellLID.size(); c++)
     {
       for (int f=0; f<nFunc; f++)
         {
-          for (int n=0; n<nNodes; n++)
+          for (unsigned int n=0; n<nNodes; n++)
             {
               indices[(c*nFunc + f)*nNodes + n]
                 = dofs[(f*nCells + c)*nNodes + n];

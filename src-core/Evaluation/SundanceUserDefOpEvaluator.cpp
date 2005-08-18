@@ -171,7 +171,7 @@ void UserDefOpEvaluator
   Array<double> funcConstantArgs;
   
   int numPoints = 1;
-  for (int c=0; c<d0ArgDerivIndex_.size(); c++)
+  for (unsigned int c=0; c<d0ArgDerivIndex_.size(); c++)
     {
       int valPtr = d0ArgDerivIndex_[c];
       if (d0ArgDerivIsConstant_[c])

@@ -100,7 +100,7 @@ RefIntegral::RefIntegral(int dim,
                      << " must be 0 or 1");
   
   W_.resize(nRefDerivTest() * nNodesTest());
-  for (int i=0; i<W_.size(); i++) W_[i]=0.0;
+  for (unsigned int i=0; i<W_.size(); i++) W_[i]=0.0;
 
   Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
   
@@ -140,7 +140,7 @@ RefIntegral::RefIntegral(int dim,
         }
     }    
 
-  for (int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
+  for (unsigned int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
 
   addFlops(3*nQuad*nRefDerivTest()*nNodesTest() + W_.size());
 
@@ -192,7 +192,7 @@ RefIntegral::RefIntegral(int dim,
 
   
   W_.resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
-  for (int i=0; i<W_.size(); i++) W_[i]=0.0;
+  for (unsigned int i=0; i<W_.size(); i++) W_[i]=0.0;
 
   Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
   Array<Array<Array<double> > > unkBasisVals(nRefDerivUnk());
@@ -252,7 +252,7 @@ RefIntegral::RefIntegral(int dim,
     }
   addFlops(4*nQuad*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
            + W_.size());
-  for (int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
+  for (unsigned int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
 
   if (verbosity() > VerbMedium)
     {
@@ -434,9 +434,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
     {
       int nCells = J.numCells();
       double one = 1.0;
-      double zero = 0.0;
       int nTransRows = nRefDerivTest();
-      int info=0;
 
       createOneFormTransformationMatrix(J);
 
@@ -482,10 +480,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
     {
       int nCells = J.numCells();
       double one = 1.0;
-      double zero = 0.0;
       int nTransRows = nRefDerivUnk()*nRefDerivTest();
-      //      A->resize(J.numCells() * nNodes()); 
-      int info=0;
 
       createTwoFormTransformationMatrix(J);
       

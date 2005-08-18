@@ -137,7 +137,6 @@ namespace SundanceStdMesh
     {
       int rtn = 0;
       int* p = *base_ + offset_*length_;
-      int prod = 1;
 
       for (int i=0; i<length_; i++)
         {

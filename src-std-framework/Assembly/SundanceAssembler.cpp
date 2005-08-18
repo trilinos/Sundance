@@ -220,7 +220,7 @@ void Assembler::init(const Mesh& mesh,
       evalExprs_.put(FunctionalOnly, Array<const EvaluatableExpr*>());
     }
 
-  for (int r=0; r<eqn->regionQuadCombos().size(); r++)
+  for (unsigned int r=0; r<eqn->regionQuadCombos().size(); r++)
     {
       const RegionQuadCombo& rqc = eqn->regionQuadCombos()[r];
                          
@@ -241,7 +241,7 @@ void Assembler::init(const Mesh& mesh,
            i++)
         {
           const ComputationType& compType = *i;
-          const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(compType, rqc);
+          //          const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(compType, rqc);
           EvalContext context = eqn->rqcToContext(compType, rqc);
           contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
@@ -259,7 +259,7 @@ void Assembler::init(const Mesh& mesh,
     }
 
   
-  for (int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
+  for (unsigned int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
     {
       const RegionQuadCombo& rqc = eqn->bcRegionQuadCombos()[r];
       rqc_.append(rqc);
@@ -279,7 +279,7 @@ void Assembler::init(const Mesh& mesh,
            i++)
         {
           const ComputationType& compType = *i;
-          const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(compType, rqc);
+          //        const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(compType, rqc);
           EvalContext context = eqn->bcRqcToContext(compType, rqc);
           contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
@@ -444,7 +444,7 @@ void Assembler::assemble(LinearOperator<double>& A,
       cerr << tab1 << "map" << endl;
       rowMap_->print(cerr);
       cerr << tab1 << "BC row flags " << endl;
-      for (int i=0; i<isBCRow_->size(); i++) 
+      for (unsigned int i=0; i<isBCRow_->size(); i++) 
         {
           cerr << tab1 << i << " " << (*isBCRow_)[i] << endl;
         }
@@ -455,7 +455,7 @@ void Assembler::assemble(LinearOperator<double>& A,
   const Array<const EvaluatableExpr*>& evalExprs 
     = evalExprs_.get(MatrixAndVector);
 
-  for (int r=0; r<rqc_.size(); r++)
+  for (unsigned int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
       SUNDANCE_VERB_MEDIUM(tab0 << "doing subregion=" 
@@ -491,7 +491,7 @@ void Assembler::assemble(LinearOperator<double>& A,
           Tabs tab1;
           /* build up the work set */
           workSet->resize(0);
-          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+          for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
             {
               workSet->append(*iter);
             }
@@ -518,8 +518,8 @@ void Assembler::assemble(LinearOperator<double>& A,
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          int nTestNodes;
-          int nUnkNodes;
+          unsigned int nTestNodes;
+          unsigned int nUnkNodes;
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
                                        nTestNodes);
           SUNDANCE_VERB_EXTREME(tab1 << "local DOF values " << *testLocalDOFs);
@@ -537,7 +537,7 @@ void Assembler::assemble(LinearOperator<double>& A,
           
           ElementIntegral::invalidateTransformationMatrices();
 
-          for (int g=0; g<groups[r].size(); g++)
+          for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(*J, vectorCoeffs,
@@ -636,7 +636,7 @@ void Assembler::assemble(Vector<double>& b) const
   const Array<const EvaluatableExpr*>& evalExprs 
     = evalExprs_.get(VectorOnly);
 
-  for (int r=0; r<rqc_.size(); r++)
+  for (unsigned int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
 
@@ -673,7 +673,7 @@ void Assembler::assemble(Vector<double>& b) const
           Tabs tab1;
           /* build up the work set */
           workSet->resize(0);
-          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+          for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
             {
               workSet->append(*iter);
             }
@@ -703,12 +703,12 @@ void Assembler::assemble(Vector<double>& b) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          int nTestNodes;
+          unsigned int nTestNodes;
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
                                        nTestNodes);
 
           ElementIntegral::invalidateTransformationMatrices();
-          for (int g=0; g<groups[r].size(); g++)
+          for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(*J, vectorCoeffs, 
@@ -794,7 +794,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
   const Array<const EvaluatableExpr*>& evalExprs 
     = evalExprs_.get(FunctionalAndGradient);
 
-  for (int r=0; r<rqc_.size(); r++)
+  for (unsigned int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
 
@@ -831,7 +831,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
           Tabs tab1;
           /* build up the work set */
           workSet->resize(0);
-          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+          for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
             {
               workSet->append(*iter);
             }
@@ -861,14 +861,14 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          int nTestNodes;
+          unsigned int nTestNodes;
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
                                        nTestNodes);
 
 
           ElementIntegral::invalidateTransformationMatrices();
 
-          for (int g=0; g<groups[r].size(); g++)
+          for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(*J, vectorCoeffs, 
@@ -951,7 +951,7 @@ void Assembler::evaluate(double& value) const
   const Array<const EvaluatableExpr*>& evalExprs 
     = evalExprs_.get(FunctionalOnly);
 
-  for (int r=0; r<rqc_.size(); r++)
+  for (unsigned int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
 
@@ -988,7 +988,7 @@ void Assembler::evaluate(double& value) const
           Tabs tab1;
           /* build up the work set */
           workSet->resize(0);
-          for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+          for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
             {
               workSet->append(*iter);
             }
@@ -1019,7 +1019,7 @@ void Assembler::evaluate(double& value) const
             }
 
           ElementIntegral::invalidateTransformationMatrices();
-          for (int g=0; g<groups[r].size(); g++)
+          for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(*J, vectorCoeffs, 
@@ -1058,7 +1058,8 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
                                        bool isBCRqc,
                                        const Array<int>& testIndices,
                                        const Array<int>& unkIndices,
-                                       int nTestNodes, int nUnkNodes,
+                                       unsigned int nTestNodes, 
+                                       unsigned int nUnkNodes,
                                        const Array<int>& testID, 
                                        const Array<int>& unkID,
                                        const Array<double>& localValues, 
@@ -1071,15 +1072,15 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
 
   static Array<int> skipRow;
 
-  int nCells = workSet.size();
-  int rowsPerFunc = nTestNodes*workSet.size();
-  int colsPerFunc = nUnkNodes*workSet.size();
+  unsigned int nCells = workSet.size();
+  unsigned int rowsPerFunc = nTestNodes*workSet.size();
+  unsigned int colsPerFunc = nUnkNodes*workSet.size();
 
   skipRow.resize(rowsPerFunc);
 
-  int highestIndex = lowestRow_ + rowMap_->numLocalDOFs();
+  unsigned int highestIndex = lowestRow_ + rowMap_->numLocalDOFs();
 
-  int lowestLocalRow = rowMap_->lowestLocalDOF();
+  unsigned int lowestLocalRow = rowMap_->lowestLocalDOF();
 
   if (verbosity() > VerbHigh)
     {
@@ -1092,26 +1093,26 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
       cerr << "testID = " << testID << endl;
       cerr << "unkID = " << unkID << endl;
     }
-  for (int t=0; t<testID.size(); t++)
+  for (unsigned int t=0; t<testID.size(); t++)
     {
-      for (int u=0; u<unkID.size(); u++)
+      for (unsigned int u=0; u<unkID.size(); u++)
         {
           if (isBCRqc)
             {
-              for (int r=0; r<rowsPerFunc; r++)
+              for (unsigned int r=0; r<rowsPerFunc; r++)
                 {
-                  int row = testIndices[r+testID[t]*rowsPerFunc];
-                  int localRowIndex = row - lowestLocalRow;
+                  unsigned int row = testIndices[r+testID[t]*rowsPerFunc];
+                  unsigned int localRowIndex = row - lowestLocalRow;
                   skipRow[r] = row < lowestRow_ || row >= highestIndex
                     || !(*isBCRow_)[localRowIndex];
                 }
             }
           else
             {
-              for (int r=0; r<rowsPerFunc; r++)
+              for (unsigned int r=0; r<rowsPerFunc; r++)
                 {
-                  int row = testIndices[r+testID[t]*rowsPerFunc];
-                  int localRowIndex = row - lowestLocalRow;
+                  unsigned int row = testIndices[r+testID[t]*rowsPerFunc];
+                  unsigned int localRowIndex = row - lowestLocalRow;
                   skipRow[r] = row < lowestRow_ || row >= highestIndex
                     || (*isBCRow_)[localRowIndex];
                 }
@@ -1121,13 +1122,13 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
             {
               cerr << "adding: " << endl;
               int k = 0;
-              for (int cell=0; cell<nCells; cell++)
+              for (unsigned int cell=0; cell<nCells; cell++)
                 {
-                  for (int r=0; r<nTestNodes; r++)
+                  for (unsigned int r=0; r<nTestNodes; r++)
                     {
                       cerr << testIndices[testID[t]*rowsPerFunc + cell*nTestNodes+r]
                            << ": {";
-                      for (int c=0; c<nUnkNodes; c++,k++)
+                      for (unsigned int c=0; c<nUnkNodes; c++,k++)
                         {
                           cerr << "(" << unkIndices[unkID[u]*colsPerFunc+cell*nUnkNodes+c]
                                << ", " << localValues[k] << ")";
@@ -1155,7 +1156,7 @@ void Assembler::insertLocalVectorBatch(int cellDim,
                                        const Array<int>& workSet, 
                                        bool isBCRqc,
                                        const Array<int>& testIndices,
-                                       int nTestNodes, 
+                                       unsigned int nTestNodes, 
                                        const Array<int>& testID, 
                                        const Array<double>& localValues, 
                                        TSFExtended::LoadableVector<double>* vec) const 
@@ -1164,13 +1165,13 @@ void Assembler::insertLocalVectorBatch(int cellDim,
   Tabs tab;
   SUNDANCE_VERB_HIGH(tab << "inserting local vector values...");
   SUNDANCE_VERB_EXTREME(tab << "values are " << localValues);
-  int rowsPerFunc = nTestNodes*workSet.size();
+  unsigned int rowsPerFunc = nTestNodes*workSet.size();
 
-  int lowestLocalRow = rowMap_->lowestLocalDOF();
+  unsigned int lowestLocalRow = rowMap_->lowestLocalDOF();
 
-  for (int i=0; i<testID.size(); i++)
+  for (unsigned int i=0; i<testID.size(); i++)
     {
-      for (int r=0; r<rowsPerFunc; r++)
+      for (unsigned int r=0; r<rowsPerFunc; r++)
         {
           int rowIndex = testIndices[r + testID[i]*rowsPerFunc];
           int localRowIndex = rowIndex - lowestLocalRow;
@@ -1212,16 +1213,13 @@ void Assembler::getGraph(Array<int>& graphData,
                << " local equations");
 
 
-  int lowestLocalRow = rowMap_->lowestLocalDOF();
-
-
   Array<Set<int> > tmpGraph;
   tmpGraph.resize(rowMap()->numLocalDOFs());
   //  int cap = eqn_->numUnks() * (int) round(pow(3.0, mesh_.spatialDim()));
   //  cerr << "capacity = " << cap << endl;
   // {
 //     TimeMonitor timer2(tmpGraphBuildTimer());
-//     for (int i=0; i<tmpGraph.size(); i++)
+//     for (unsigned int i=0; i<tmpGraph.size(); i++)
 //       {
 //         tmpGraph[i].setCapacity(cap);
 //       }
@@ -1230,14 +1228,14 @@ void Assembler::getGraph(Array<int>& graphData,
 
   {
     TimeMonitor timer2(colSearchTimer());
-    for (int d=0; d<eqn_->numRegions(); d++)
+    for (unsigned int d=0; d<eqn_->numRegions(); d++)
       {
         Tabs tab0;
         CellFilter domain = eqn_->region(d);
         SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                      tab0 << "cell set " << domain
                      << " isBCRegion=" << eqn_->isBCRegion(d));
-        int dim = domain.dimension(mesh_);
+        unsigned int dim = domain.dimension(mesh_);
         CellSet cells = domain.getCells(mesh_);
 
         RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
@@ -1300,29 +1298,26 @@ void Assembler::getGraph(Array<int>& graphData,
         Array<Array<int> > unksForTests(unksForTestsSet.size());
         Array<Array<int> > bcUnksForTests(bcUnksForTestsSet.size());
 
-        for (int t=0; t<unksForTests.size(); t++)
+        for (unsigned int t=0; t<unksForTests.size(); t++)
           {
             unksForTests[t] = unksForTestsSet[t].elements();
             bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
           }
       
-        int nTestFuncs = 1;
-        int nUnkFuncs = 1;
-        int nTestNodes;
-        int nUnkNodes;
+        unsigned int nTestNodes;
+        unsigned int nUnkNodes;
 
       
 
-        int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
+        unsigned int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
 
-        int owner;
-        int nt = eqn_->numVars();
+        unsigned int nt = eqn_->numVars();
         CellIterator iter=cells.begin();
         while (iter != cells.end())
           {
             /* build a work set */
             workSet->resize(0);
-            for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+            for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
               {
                 workSet->append(*iter);
               }
@@ -1344,24 +1339,22 @@ void Assembler::getGraph(Array<int>& graphData,
           
             if (pairs.get() != 0)
               {
-                for (int c=0; c<workSet->size(); c++)
+                for (unsigned int c=0; c<workSet->size(); c++)
                   {
-                    int testOffset = c*nTestNodes*nTestFuncs;
-                    int unkOffset = c*nUnkNodes*nUnkFuncs;
-                    for (int t=0; t<nt; t++)
+                    for (unsigned int t=0; t<nt; t++)
                       {
-                        for (int uit=0; uit<unksForTests[t].size(); uit++)
+                        for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = unksForTests[t][uit];
-                            for (int n=0; n<nTestNodes; n++)
+                            for (unsigned int n=0; n<nTestNodes; n++)
                               {
-                                int row
+                                unsigned int row
                                   = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
                                 if (row < lowestRow_ || row >= highestRow
                                     || (*isBCRow_)[row-lowestRow_]) continue;
                                 Set<int>& colSet = tmpGraph[row-lowestRow_];
-                                for (int m=0; m<nUnkNodes; m++)
+                                for (unsigned int m=0; m<nUnkNodes; m++)
                                   {
                                     int col 
                                       = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
@@ -1374,24 +1367,22 @@ void Assembler::getGraph(Array<int>& graphData,
               }
             if (bcPairs.get() != 0)
               {
-                for (int c=0; c<workSet->size(); c++)
+                for (unsigned int c=0; c<workSet->size(); c++)
                   {
-                    int testOffset = c*nTestNodes*nTestFuncs;
-                    int unkOffset = c*nUnkNodes*nUnkFuncs;
-                    for (int t=0; t<nt; t++)
+                    for (unsigned int t=0; t<nt; t++)
                       {
-                        for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
+                        for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = bcUnksForTests[t][uit];
-                            for (int n=0; n<nTestNodes; n++)
+                            for (unsigned int n=0; n<nTestNodes; n++)
                               {
-                                int row
+                                unsigned int row
                                   = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
                                 if (row < lowestRow_ || row >= highestRow
                                     || !(*isBCRow_)[row-lowestRow_]) continue;
                                 Set<int>& colSet = tmpGraph[row-lowestRow_];
-                                for (int m=0; m<nUnkNodes; m++)
+                                for (unsigned int m=0; m<nUnkNodes; m++)
                                   {
                                     int col 
                                       = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
@@ -1409,12 +1400,12 @@ void Assembler::getGraph(Array<int>& graphData,
   
   {
     TimeMonitor t2(graphFlatteningTimer());
-    int nLocalRows = rowMap()->numLocalDOFs();
+    unsigned int nLocalRows = rowMap()->numLocalDOFs();
 
-    int nnz = 0;
+    unsigned int nnz = 0;
     rowPtrs.resize(nLocalRows);
     nnzPerRow.resize(rowMap()->numLocalDOFs());
-    for (int i=0; i<nLocalRows; i++) 
+    for (unsigned int i=0; i<nLocalRows; i++) 
       {
         rowPtrs[i] = nnz;
         nnzPerRow[i] = tmpGraph[i].size();
@@ -1423,7 +1414,7 @@ void Assembler::getGraph(Array<int>& graphData,
 
     graphData.resize(nnz);
     int* base = &(graphData[0]);
-    for (int i=0; i<nLocalRows; i++)
+    for (unsigned int i=0; i<nLocalRows; i++)
       {
         //        tmpGraph[i].fillArray(base + rowPtrs[i]);
         int* rowBase = base + rowPtrs[i];

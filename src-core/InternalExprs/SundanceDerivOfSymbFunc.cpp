@@ -150,7 +150,6 @@ void DerivOfSymbFunc::findNonzeros(const EvalContext& context,
       TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError, 
                          "CoordDeriv detected in DerivOfSymbFunc");
       const FuncElementBase* f = d.funcDeriv()->func();
-      const TestFuncElement* t = dynamic_cast<const TestFuncElement*>(f);
       const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
       TEST_FOR_EXCEPTION(s==0, InternalError, "argument of DerivOfSymbFunc "
                          "is not a symbolic func");

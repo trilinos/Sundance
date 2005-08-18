@@ -115,8 +115,8 @@ namespace SundanceStdFwk
       void evaluate(double& value) const ;
 
       /** */
-      static int& workSetSize() 
-      {static int rtn = defaultWorkSetSize(); return rtn;}
+      static unsigned int& workSetSize() 
+      {static unsigned int rtn = defaultWorkSetSize(); return rtn;}
       
       /** */
       void getGraph(Array<int>& graphData,
@@ -140,20 +140,12 @@ namespace SundanceStdFwk
                 const RefCountPtr<EquationSet>& eqn);
 
       /** */
-      void insertLocalMatrixValues(int cellDim, const Array<int>& workSet,
-                                   bool isBCRqc, 
-                                   int nTestNodes, int nUnkNodes,
-                                   const Array<int>& testID,
-                                   const Array<int>& unkID, 
-                                   const Array<double>& localValues,
-                                   TSFExtended::LoadableMatrix<double>* mat) const ;
-
-      /** */
       void insertLocalMatrixBatch(int cellDim, const Array<int>& workSet,
                                   bool isBCRqc, 
                                   const Array<int>& testIndices,
                                   const Array<int>& unkIndices,
-                                  int nTestNodes, int nUnkNodes,
+                                  unsigned int nTestNodes, 
+                                  unsigned int nUnkNodes,
                                   const Array<int>& testID,
                                   const Array<int>& unkID, 
                                   const Array<double>& localValues,
@@ -163,18 +155,10 @@ namespace SundanceStdFwk
       void insertLocalVectorBatch(int cellDim, const Array<int>& workSet,
                                   bool isBCRqc, 
                                   const Array<int>& testIndices,
-                                  int nTestNodes, 
+                                  unsigned int nTestNodes, 
                                   const Array<int>& testID,
                                   const Array<double>& localValues,
                                   TSFExtended::LoadableVector<double>* vec) const ;
-
-      /** */
-      void insertLocalVectorValues(int cellDim, const Array<int>& workSet,
-                                   bool isBCRqc, 
-                                   int nTestNodes, 
-                                   const Array<int>& testID,
-                                   const Array<double>& localValues,
-                                   TSFExtended::LoadableVector<double>* vec) const ;
 
       /** */
       void configureMatrix(LinearOperator<double>& A,
@@ -223,7 +207,7 @@ namespace SundanceStdFwk
 
       RefCountPtr<Array<int> > isBCRow_;
 
-      int lowestRow_;
+      unsigned int lowestRow_;
 
       VectorType<double> vecType_;
 

@@ -239,7 +239,7 @@ namespace SundanceCore
       virtual bool nodesHaveBeenCounted() const {return nodesHaveBeenCounted_;}
 
       /** */
-      static int maxFuncDiffOrder() {static int rtn=3; return rtn;}
+      static unsigned int maxFuncDiffOrder() {static int rtn=3; return rtn;}
 
       /** */
       static RefCountPtr<Set<int> > getFuncIDSet(const Expr& funcs);

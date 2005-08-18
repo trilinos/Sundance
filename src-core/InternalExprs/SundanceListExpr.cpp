@@ -54,10 +54,10 @@ Expr ListExpr::flatten() const
 {
   Expr rtn = new ListExpr();
 
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       Expr e = element(i).flatten();
-      for (int j=0; j<e.size(); j++)
+      for (unsigned int j=0; j<e.size(); j++)
         {
           rtn.append(e[j]);
         }
@@ -70,7 +70,7 @@ Expr ListExpr::join(const Expr& other) const
 {
   Expr rtn = new ListExpr(elements_);
   
-  for (int i=0; i<other.size(); i++)
+  for (unsigned int i=0; i<other.size(); i++)
     {
       rtn.append(other[i]);
     }
@@ -78,16 +78,16 @@ Expr ListExpr::join(const Expr& other) const
   return rtn;
 }
 
-int ListExpr::size() const
+unsigned int ListExpr::size() const
 {
   return elements_.size();
 }
 
-int ListExpr::totalSize() const 
+unsigned int ListExpr::totalSize() const 
 {
-  int rtn = 0;
+  unsigned int rtn = 0;
 
-  for (int i=0; i<this->size(); i++)
+  for (unsigned int i=0; i<this->size(); i++)
     {
       rtn += elements_[i].totalSize();
     }
@@ -98,7 +98,7 @@ int ListExpr::totalSize() const
 ostream& ListExpr::toText(ostream& os, bool paren) const
 {
   os << "{";
-  for (int i=0; i<elements_.size(); i++)
+  for (unsigned int i=0; i<elements_.size(); i++)
     {
       elements_[i].ptr()->toText(os, paren);
       if (i < elements_.size()-1) os << ", ";
@@ -110,7 +110,7 @@ ostream& ListExpr::toText(ostream& os, bool paren) const
 ostream& ListExpr::toLatex(ostream& os, bool paren) const
 {
   os << "\\{";
-  for (int i=0; i<elements_.size(); i++)
+  for (unsigned int i=0; i<elements_.size(); i++)
     {
       elements_[i].ptr()->toLatex(os, paren);
       if (i < elements_.size()-1) os << ", ";

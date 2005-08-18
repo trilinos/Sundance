@@ -119,7 +119,7 @@ void SparsitySuperset::assembleSubsetUnions() const
   SUNDANCE_VERB_HIGH(tab << "assembling subset unions");
   typedef Map<keyPair, RefCountPtr<SparsitySubset> >::const_iterator iter;
 
-  int oldSize = subsets_.size();
+  unsigned int oldSize = subsets_.size();
 
   for (iter i=subsets_.begin(); i != subsets_.end(); i++)
     {

@@ -105,6 +105,9 @@ namespace SundanceStdFwk
                   const BasisFamily& unkBasis,
                   int beta,
                   int unkDerivOrder);
+
+      /** virtual dtor */
+      virtual ~RefIntegral(){;}
       
       /** */
       void print(ostream& os) const ;

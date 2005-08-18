@@ -306,7 +306,7 @@ void EquationSet::init(const Expr& eqns,
    * or UnknownFunction objects, as in a variational problem. 
    */
   bool varsAreTestFunctions = false;
-  for (int i=0; i<vars.size(); i++)
+  for (unsigned int i=0; i<vars.size(); i++)
     {
       const TestFuncElement* t 
         = dynamic_cast<const TestFuncElement*>(vars[i].ptr().get());
@@ -336,7 +336,7 @@ void EquationSet::init(const Expr& eqns,
    * position in the input function lists */
   Set<int> varFuncSet;
   Set<int> unkFuncSet;
-  for (int i=0; i<vars.size(); i++)
+  for (unsigned int i=0; i<vars.size(); i++)
     {
       const FuncElementBase* t 
         = dynamic_cast<const FuncElementBase*>(vars[i].ptr().get());
@@ -351,7 +351,7 @@ void EquationSet::init(const Expr& eqns,
                      "a gradient calculator");
 
   
-  for (int i=0; i<unks.size(); i++)
+  for (unsigned int i=0; i<unks.size(); i++)
     {
       const UnknownFuncElement* u 
         = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());

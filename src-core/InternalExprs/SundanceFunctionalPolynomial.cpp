@@ -218,6 +218,6 @@ XMLObject FunctionalPolynomial::toXML() const
         }
       rtn.addChild(term);
     }
-  
+  return rtn;
 }
 

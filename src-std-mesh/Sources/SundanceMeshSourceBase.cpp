@@ -16,8 +16,8 @@ MeshSourceBase::MeshSourceBase(const MeshType& meshType,
     hasCachedMesh_(),
     meshType_(meshType),
     comm_(comm),
-    nodeAttributes_(rcp(new Array<Array<double> >())),
-    elemAttributes_(rcp(new Array<Array<double> >()))
+    elemAttributes_(rcp(new Array<Array<double> >())),
+    nodeAttributes_(rcp(new Array<Array<double> >()))
 {
 }
 
@@ -26,8 +26,8 @@ MeshSourceBase::MeshSourceBase(const ParameterList& params)
     hasCachedMesh_(),
     meshType_(new BasicSimplicialMeshType()),
     comm_(MPIComm::world()),
-    nodeAttributes_(rcp(new Array<Array<double> >())),
-    elemAttributes_(rcp(new Array<Array<double> >()))
+    elemAttributes_(rcp(new Array<Array<double> >())),
+    nodeAttributes_(rcp(new Array<Array<double> >()))
 {
   
 }

@@ -73,7 +73,7 @@ void ClosedNewtonCotes::getTriangleRule(Array<Point>& quadPoints,
                       8.0/60.0, 3.0/60.0, 8.0/60.0,
                       27.0/60.0);
 
-	for (int i=0; i<quadWeights.size(); i++)
+	for (unsigned int i=0; i<quadWeights.size(); i++)
 		{
 			quadWeights[i] *=  0.5;
 		}

@@ -189,9 +189,6 @@ void CellJacobianBatch::computeInverses() const
           double* invJPtr = &(invJ_[start]);
           int* iPiv = &(iPiv_[(q + cell*numQuad_)*spatialDim_]);
   
-          /* fortran junk */
-          int lda = spatialDim_; // leading dimension of J
-          
           int info = 0; // error return flag, will be zero if successful. 
           
           /* fill the inverse of J with the identity */

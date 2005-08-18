@@ -127,7 +127,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
   /* check the test functions for redundancies and non-test funcs */
-  for (int i=0; i<v.size(); i++)
+  for (unsigned int i=0; i<v.size(); i++)
     {
       const TestFuncElement* vPtr
         = dynamic_cast<const TestFuncElement*>(v[i].ptr().get());
@@ -142,7 +142,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
     }
 
   /* check the unk functions for redundancies and non-unk funcs */
-  for (int i=0; i<u.size(); i++)
+  for (unsigned int i=0; i<u.size(); i++)
     {
       const UnknownFuncElement* uPtr
         = dynamic_cast<const UnknownFuncElement*>(u[i].ptr().get());
@@ -248,7 +248,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 
 
   /* check the unk functions for redundancies and non-unk funcs */
-  for (int i=0; i<u.size(); i++)
+  for (unsigned int i=0; i<u.size(); i++)
     {
       const UnknownFuncElement* uPtr
         = dynamic_cast<const UnknownFuncElement*>(u[i].ptr().get());
@@ -372,7 +372,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
   /* check the variations for redundancies and non-unk funcs */
-  for (int i=0; i<v.size(); i++)
+  for (unsigned int i=0; i<v.size(); i++)
     {
       const UnknownFuncElement* vPtr
         = dynamic_cast<const UnknownFuncElement*>(v[i].ptr().get());
@@ -404,7 +404,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
     }
 
   /* check the unk functions for redundancies and non-unk funcs */
-  for (int i=0; i<u.size(); i++)
+  for (unsigned int i=0; i<u.size(); i++)
     {
       const UnknownFuncElement* uPtr
         = dynamic_cast<const UnknownFuncElement*>(u[i].ptr().get());
@@ -436,7 +436,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
     }
 
   /* check the fixed functions for redundancies and non-unk funcs */
-  for (int i=0; i<alpha.size(); i++)
+  for (unsigned int i=0; i<alpha.size(); i++)
     {
       const UnknownFuncElement* aPtr
         = dynamic_cast<const UnknownFuncElement*>(alpha[i].ptr().get());
@@ -583,7 +583,7 @@ DerivSet SymbPreprocessor::setupGradient(const Expr& expr,
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
   /* check the variations for redundancies and non-unk funcs */
-  for (int i=0; i<v.size(); i++)
+  for (unsigned int i=0; i<v.size(); i++)
     {
       const UnknownFuncElement* vPtr
         = dynamic_cast<const UnknownFuncElement*>(v[i].ptr().get());
@@ -615,7 +615,7 @@ DerivSet SymbPreprocessor::setupGradient(const Expr& expr,
     }
 
   /* check the fixed functions for redundancies and non-unk funcs */
-  for (int i=0; i<alpha.size(); i++)
+  for (unsigned int i=0; i<alpha.size(); i++)
     {
       const UnknownFuncElement* aPtr
         = dynamic_cast<const UnknownFuncElement*>(alpha[i].ptr().get());
@@ -730,7 +730,7 @@ DerivSet SymbPreprocessor::setupFunctional(const Expr& expr,
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
   /* check the fixed functions for redundancies and non-unk funcs */
-  for (int i=0; i<alpha.size(); i++)
+  for (unsigned int i=0; i<alpha.size(); i++)
     {
       const UnknownFuncElement* aPtr
         = dynamic_cast<const UnknownFuncElement*>(alpha[i].ptr().get());

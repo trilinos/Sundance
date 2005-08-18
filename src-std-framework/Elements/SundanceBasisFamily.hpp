@@ -78,7 +78,7 @@ namespace SundanceStdFwk
       bool operator==(const BasisFamily& other) const ;
 
       /** Sum up the dim() values for array of bases. */
-      static int size(const Array<BasisFamily>& b) ;
+      static unsigned int size(const Array<BasisFamily>& b) ;
 
       /** Extract the basis from an expression */
       static BasisFamily getBasis(const Expr& expr);
