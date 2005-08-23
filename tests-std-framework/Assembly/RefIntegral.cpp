@@ -111,7 +111,7 @@ int main(int argc, void** argv)
               BasisFamily P = new Lagrange(p);
               for (int d=0; d<=1; d++)
                 {
-                  RefIntegral ref(dim, cellType, P, alpha, d);
+                  RefIntegral ref(dim, dim, cellType, P, alpha, d);
                 }
             }
           
@@ -126,7 +126,7 @@ int main(int argc, void** argv)
                     {
                       for (int dq=0; dq<=1; dq++)
                         {
-                          RefIntegral ref(dim, cellType, P, alpha, dp, 
+                          RefIntegral ref(dim, dim, cellType, P, alpha, dp, 
                                           Q, beta, dq);
                         }
                     }

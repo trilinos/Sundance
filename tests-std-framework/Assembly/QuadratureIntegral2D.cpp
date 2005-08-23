@@ -129,31 +129,31 @@ int main(int argc, void** argv)
            << endl;
 
       cerr << "Evaluating phi(vert) with FIAT-Lagrange" << endl;
-      fiatLagrange.ptr()->refEval(cellType, verts, d0, result);
+      fiatLagrange.ptr()->refEval(dim, cellType, verts, d0, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << "Evaluating phi(vert) with Lagrange" << endl;
-      lagrange.ptr()->refEval(cellType, verts, d0, result);
+      lagrange.ptr()->refEval(dim, cellType, verts, d0, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << endl ;
 
       cerr << "Evaluating Dx*phi(vert) with FIAT-Lagrange" << endl;
-      fiatLagrange.ptr()->refEval(cellType, verts, dx, result);
+      fiatLagrange.ptr()->refEval(dim, cellType, verts, dx, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << "Evaluating Dx*phi(vert) with Lagrange" << endl;
-      lagrange.ptr()->refEval(cellType, verts, dx, result);
+      lagrange.ptr()->refEval(dim, cellType, verts, dx, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << endl ;
       
       cerr << "Evaluating Dy*phi(vert) with FIAT-Lagrange" << endl;
-      fiatLagrange.ptr()->refEval(cellType, verts, dy, result);
+      fiatLagrange.ptr()->refEval(dim, cellType, verts, dy, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << "Evaluating Dy*phi(vert) with Lagrange" << endl;
-      lagrange.ptr()->refEval(cellType, verts, dy, result);
+      lagrange.ptr()->refEval(dim, cellType, verts, dy, result);
       cerr << "results = " << result << endl << endl;
 
       
@@ -196,7 +196,7 @@ int main(int argc, void** argv)
                 {
                   int alpha = t;
                   Tabs tab;
-                  QuadratureIntegral ref(dim, cellType, P, alpha, dp, quad);
+                  QuadratureIntegral ref(dim, dim, cellType, P, alpha, dp, quad);
                   ref.transformOneForm(JBatch, f, A);
                   cerr << tab << "test deriv direction =" << t << endl;
                   cerr << tab << "transformed local vector: " << endl;
@@ -242,7 +242,7 @@ int main(int argc, void** argv)
                             {
                               Tabs tab;
                               int beta = u;
-                              QuadratureIntegral ref(dim, cellType, P, alpha, 
+                              QuadratureIntegral ref(dim, dim, cellType, P, alpha, 
                                                      dp, Q, beta, dq, quad);
                               ref.transformTwoForm(JBatch, f, A);
 

@@ -81,7 +81,8 @@ void FIATLagrange::print(ostream& os) const
   os << "FIATLagrange(" << order_ << ")";
 }
 
-int FIATLagrange::nNodes(const CellType& cellType) const
+int FIATLagrange::nNodes(int /*spatialDim*/,
+                         const CellType& cellType) const
 {
   switch(cellType)
     {
@@ -130,10 +131,11 @@ Array<int> FIATLagrange::makeRange(int low, int high)
 }
 
 /* result: rows are points, columns are bf */
-void FIATLagrange::refEval(const CellType& cellType,
-                       const Array<Point>& pts,
-                       const MultiIndex& deriv,
-                       Array<Array<double> >& result) const
+void FIATLagrange::refEval(int /*spatialDim*/,
+                           const CellType& cellType,
+                           const Array<Point>& pts,
+                           const MultiIndex& deriv,
+                           Array<Array<double> >& result) const
 {
   result.resize(pts.length());
   int i,j;

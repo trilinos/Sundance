@@ -132,10 +132,10 @@ int main(int argc, void** argv)
 
           Array<int> alpha = tuple(0,1);
           Array<int> beta = tuple(0,1);
-          RefIntegral ref(dim, cellType, P, alpha, 1, P, beta, 1);          
-          QuadratureIntegral qxx(dim, cellType, P, tuple(0), 1, 
+          RefIntegral ref(dim, dim, cellType, P, alpha, 1, P, beta, 1);          
+          QuadratureIntegral qxx(dim, dim, cellType, P, tuple(0), 1, 
                                  P, tuple(0), 1, q4);                    
-          QuadratureIntegral qyy(dim, cellType, P, tuple(1), 1, 
+          QuadratureIntegral qyy(dim, dim, cellType, P, tuple(1), 1, 
                                  P, tuple(1), 1, q4);          
 
           int nq = qxx.nQuad();

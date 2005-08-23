@@ -156,7 +156,7 @@ int main(int argc, void** argv)
                 {
                   int alpha = t;
                   Tabs tab;
-                  RefIntegral ref(dim, cellType, P, alpha, dp);
+                  RefIntegral ref(dim, dim, cellType, P, alpha, dp);
                   A->resize(JBatch.numCells() * ref.nNodes());
                   ref.transformOneForm(JBatch, coeff, A);
                   cerr << tab << "transformed reference element" << endl;
@@ -171,7 +171,7 @@ int main(int argc, void** argv)
                         }
                       cerr << "}" << endl;
                     }
-                  QuadratureIntegral quad(dim, cellType, P, alpha, dp, q4);
+                  QuadratureIntegral quad(dim, dim, cellType, P, alpha, dp, q4);
                   Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                   B->resize(JBatch.numCells() * quad.nNodes());
                   quad.transformOneForm(JBatch, &(quadCoeff[0]), B);
@@ -247,7 +247,7 @@ int main(int argc, void** argv)
                               //                              if (p==0 || q==0 || dp==0 || dq==0 || u==1
                               //  || t==1) continue;
                               int beta = u;
-                              RefIntegral ref(dim, cellType, P, alpha,
+                              RefIntegral ref(dim, dim, cellType, P, alpha,
                                               dp, Q, beta, dq);
                               A->resize(JBatch.numCells() * ref.nNodes());
                               ref.transformTwoForm(JBatch, coeff, A);
@@ -273,7 +273,7 @@ int main(int argc, void** argv)
                                 }
 
 
-                              QuadratureIntegral quad(dim, cellType, P, alpha,
+                              QuadratureIntegral quad(dim, dim, cellType, P, alpha,
                                                       dp, Q, beta, dq, q4);
                               Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                               B->resize(JBatch.numCells() * quad.nNodes());
