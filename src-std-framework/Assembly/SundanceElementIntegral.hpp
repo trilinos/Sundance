@@ -61,18 +61,21 @@ namespace SundanceStdFwk
     {
     public:
       /** Construct a zero-form */
-      ElementIntegral(int dim, 
+      ElementIntegral(int spatialDim,
+                      int dim, 
                       const CellType& cellType);
 
       /** Construct a one-form */
-      ElementIntegral(int dim, 
+      ElementIntegral(int spatialDim,
+                      int dim, 
                       const CellType& cellType,
                       const BasisFamily& testBasis,
                       int alpha,
                       int testDerivOrder);
 
       /** Construct a two-form */
-      ElementIntegral(int dim,
+      ElementIntegral(int spatialDim,
+                      int dim,
                       const CellType& cellType,
                       const BasisFamily& testBasis,
                       int alpha,
@@ -119,6 +122,9 @@ namespace SundanceStdFwk
 
       /** The dimension of the cell being integrated */
       int dim() const {return dim_;}
+
+      /** The dimension of the space in which the cell is embedded */
+      int spatialDim() const {return spatialDim_;}
       
       /** Number of test function derivatives wrt reference coordinates that
        * are needed to evaluate this integral. Will always be equal to 
@@ -171,6 +177,8 @@ namespace SundanceStdFwk
       void createOneFormTransformationMatrix(const CellJacobianBatch& J) const;
 
     private:
+
+      int spatialDim_;
 
       int dim_;
 

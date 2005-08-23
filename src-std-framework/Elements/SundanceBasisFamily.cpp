@@ -68,9 +68,9 @@ unsigned int BasisFamily::size(const Array<BasisFamily>& b)
   return rtn;
 }
 
-int BasisFamily::nNodes(const CellType& cellType) const 
+int BasisFamily::nNodes(int spatialDim, const CellType& cellType) const 
 {
-  return ptr()->nNodes(cellType);
+  return ptr()->nNodes(spatialDim, cellType);
 }
 
 BasisFamily BasisFamily::getBasis(const Expr& expr)

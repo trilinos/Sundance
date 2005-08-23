@@ -68,7 +68,7 @@ namespace SundanceStdFwk
       int dim() const ;
 
       /** return the number of nodes for this basis on the given cell type */
-      int nNodes(const CellType& cellType) const ;
+      int nNodes(int spatialDim, const CellType& cellType) const ;
 
      //  /** */
 //       void getNodalPoints(const CellType& cellType,

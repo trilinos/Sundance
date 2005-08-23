@@ -63,9 +63,10 @@ static Time& refIntegrationTimer()
 
 
 
-RefIntegral::RefIntegral(int dim, 
+RefIntegral::RefIntegral(int spatialDim,
+                                 int dim, 
                          const CellType& cellType)
-  : ElementIntegral(dim, cellType), W_()
+  : ElementIntegral(spatialDim, dim, cellType), W_()
 {
   Tabs tab0;
   verbosity() = classVerbosity();
@@ -74,12 +75,13 @@ RefIntegral::RefIntegral(int dim,
                << endl << tab0 << "cell type=" << cellType);
 }
 
-RefIntegral::RefIntegral(int dim, 
+RefIntegral::RefIntegral(int spatialDim,
+                                 int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
                          int alpha,
                          int testDerivOrder)
-  : ElementIntegral(dim, cellType, testBasis, alpha, testDerivOrder), W_()
+  : ElementIntegral(spatialDim, dim, cellType, testBasis, alpha, testDerivOrder), W_()
 {
   Tabs tab0;
   verbosity() = classVerbosity();
@@ -120,7 +122,7 @@ RefIntegral::RefIntegral(int dim,
     {
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(cellType, quadPts, mi, 
+      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
                                testBasisVals[r]);
     }
 
@@ -153,7 +155,8 @@ RefIntegral::RefIntegral(int dim,
 
 
 
-RefIntegral::RefIntegral(int dim,
+RefIntegral::RefIntegral(int spatialDim,
+                                 int dim,
                          const CellType& cellType,
                          const BasisFamily& testBasis,
                          int alpha,
@@ -161,7 +164,7 @@ RefIntegral::RefIntegral(int dim,
                          const BasisFamily& unkBasis,
                          int beta,
                          int unkDerivOrder)
-  : ElementIntegral(dim, cellType, 
+  : ElementIntegral(spatialDim, dim, cellType, 
                     testBasis, alpha, testDerivOrder, 
                     unkBasis, beta, unkDerivOrder), W_()
 
@@ -214,7 +217,7 @@ RefIntegral::RefIntegral(int dim,
     {
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(cellType, quadPts, mi, 
+      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
                                testBasisVals[r]);
     }
 
@@ -225,7 +228,7 @@ RefIntegral::RefIntegral(int dim,
     {
       MultiIndex mi;
       if (unkDerivOrder==1) mi[r] = 1;
-      unkBasis.ptr()->refEval(cellType, quadPts, mi, unkBasisVals[r]);
+      unkBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, unkBasisVals[r]);
     }
 
 

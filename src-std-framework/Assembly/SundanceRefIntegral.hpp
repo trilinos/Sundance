@@ -86,18 +86,21 @@ namespace SundanceStdFwk
     {
     public:
       /** Construct a reference zero-form */
-      RefIntegral(int dim, 
+      RefIntegral(int spatialDim,
+                  int dim, 
                   const CellType& cellType);
 
       /** Construct a reference one-form */
-      RefIntegral(int dim, 
+      RefIntegral(int spatialDim,
+                  int dim, 
                   const CellType& cellType,
                   const BasisFamily& testBasis,
                   int alpha,
                   int testDerivOrder);
 
       /** Construct a reference two-form */
-      RefIntegral(int dim,
+      RefIntegral(int spatialDim,
+                  int dim,
                   const CellType& cellType,
                   const BasisFamily& testBasis,
                   int alpha,

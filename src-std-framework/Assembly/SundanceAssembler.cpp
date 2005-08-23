@@ -183,7 +183,6 @@ void Assembler::init(const Mesh& mesh,
 
   const Set<ComputationType>& compTypes = eqn->computationTypes();
 
-
   DOFMapBuilder mapBuilder;
 
   if (compTypes.contains(VectorOnly) 
@@ -251,7 +250,8 @@ void Assembler::init(const Mesh& mesh,
           SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
-          grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
+          grouper->findGroups(*eqn, mesh.spatialDim(),
+                              cellType, cellDim, quad, sparsity, groups);
           groups_[compType].append(groups);
         }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
@@ -289,7 +289,8 @@ void Assembler::init(const Mesh& mesh,
           SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
-          grouper->findGroups(*eqn, cellType, cellDim, quad, sparsity, groups);
+          grouper->findGroups(*eqn, mesh.spatialDim(),
+                              cellType, cellDim, quad, sparsity, groups);
           groups_[compType].append(groups);
         }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 

@@ -62,6 +62,7 @@ namespace SundanceStdFwk
 
       /** */
       virtual void findGroups(const EquationSet& eqn,
+                              int spatialDim,
                               const CellType& cellType,
                               int cellDim,
                               const QuadratureFamily& quad,

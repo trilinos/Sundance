@@ -57,11 +57,13 @@ namespace SundanceStdFwk
     {
     public:
       /** Construct a zero-form to be computed by quadrature */
-      QuadratureIntegral(int dim, 
+      QuadratureIntegral(int spatialDim,
+                         int dim, 
                          const CellType& cellType,
                          const QuadratureFamily& quad);
       /** Construct a one form to be computed by quadrature */
-      QuadratureIntegral(int dim, 
+      QuadratureIntegral(int spatialDim,
+                         int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
                          int alpha,
@@ -69,7 +71,8 @@ namespace SundanceStdFwk
                          const QuadratureFamily& quad);
 
       /** Construct a two-form to be computed by quadrature */
-      QuadratureIntegral(int dim,
+      QuadratureIntegral(int spatialDim,
+                         int dim,
                          const CellType& cellType,
                          const BasisFamily& testBasis,
                          int alpha,
@@ -94,8 +97,8 @@ namespace SundanceStdFwk
       
       /** */
       void transformZeroForm(const CellJacobianBatch& J, 
-                            const double* const coeff,
-                            RefCountPtr<Array<double> >& A) const ;
+                             const double* const coeff,
+                             RefCountPtr<Array<double> >& A) const ;
       
       /** */
       void transformTwoForm(const CellJacobianBatch& J, 
@@ -141,19 +144,19 @@ namespace SundanceStdFwk
       
       /** */
       inline double& wValue(int q, int testDerivDir, int testNode,
-                           int unkDerivDir, int unkNode)
+                            int unkDerivDir, int unkNode)
       {return W_[unkNode
-                  + nNodesUnk()
-                  *(testNode + nNodesTest()
-                    *(unkDerivDir + nRefDerivUnk()
-                      *(testDerivDir + nRefDerivTest()*q)))];}
+                 + nNodesUnk()
+                 *(testNode + nNodesTest()
+                   *(unkDerivDir + nRefDerivUnk()
+                     *(testDerivDir + nRefDerivTest()*q)))];}
 
       
 
       /** */
       inline const double& wValue(int q, 
-                                 int testDerivDir, int testNode,
-                                 int unkDerivDir, int unkNode) const 
+                                  int testDerivDir, int testNode,
+                                  int unkDerivDir, int unkNode) const 
       {
         return W_[unkNode
                   + nNodesUnk()

@@ -65,14 +65,16 @@ namespace SundanceStdFwk
     virtual int order() const {return order_;}
 
     /** return the number of nodes for this basis on the given cell type */
-    virtual int nNodes(const CellType& cellType) const ;
+    virtual int nNodes(int spatialDim, 
+                       const CellType& cellType) const ;
 
     /** */
     virtual void getLocalDOFs(const CellType& cellType,
                               Array<Array<Array<int> > >& dofs) const ;
 
     /** */
-    virtual void refEval(const CellType& cellType,
+    virtual void refEval(int spatialDim, 
+                         const CellType& cellType,
                          const Array<Point>& pts,
                          const MultiIndex& deriv,
                          Array<Array<double> >& result) const ;

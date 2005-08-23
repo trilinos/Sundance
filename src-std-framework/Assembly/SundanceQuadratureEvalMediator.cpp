@@ -145,7 +145,8 @@ RefCountPtr<Array<double> > QuadratureEvalMediator
       if (diffOrder==0)
         {
           Array<Array<double> > tmp;
-          basis.ptr()->refEval(cellType(), *(refQuadPts_.get(cellType())), 
+          basis.ptr()->refEval(mesh().spatialDim(), cellType(), 
+                               *(refQuadPts_.get(cellType())), 
                                MultiIndex(), tmp);
           /* the tmp array contains values indexed as [quad][node]. 
            * We need to put this into fortran order with quad index running
@@ -170,7 +171,8 @@ RefCountPtr<Array<double> > QuadratureEvalMediator
             {
               MultiIndex mi;
               mi[r]=1;
-              basis.ptr()->refEval(cellType(), *(refQuadPts_.get(cellType())), 
+              basis.ptr()->refEval(mesh().spatialDim(), cellType(), 
+                                   *(refQuadPts_.get(cellType())), 
                                    mi, tmp[r]);
             }
           /* the tmp array contains values indexed as [quad][node]. 
@@ -359,7 +361,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
 
   int nQuad = quadWgts().size();
   int nCells = cellLID()->size();
-  int nNodes = basis.nNodes(cellType());
+  int nNodes = basis.nNodes(mesh().spatialDim(), cellType());
   int nDir;
 
 

@@ -47,7 +47,8 @@ void Lagrange::print(ostream& os) const
   os << "Lagrange(" << order_ << ")";
 }
 
-int Lagrange::nNodes(const CellType& cellType) const
+int Lagrange::nNodes(int /* spatialDim */, 
+                     const CellType& cellType) const
 {
   switch(cellType)
     {
@@ -157,7 +158,8 @@ Array<int> Lagrange::makeRange(int low, int high)
   return rtn;
 }
 
-void Lagrange::refEval(const CellType& cellType,
+void Lagrange::refEval(int /* spatialDim */, 
+                       const CellType& cellType,
                        const Array<Point>& pts,
                        const MultiIndex& deriv,
                        Array<Array<double> >& result) const

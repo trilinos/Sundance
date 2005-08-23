@@ -49,9 +49,11 @@ static Time& transCreationTimer()
   return *rtn;
 }
 
-ElementIntegral::ElementIntegral(int dim, 
+ElementIntegral::ElementIntegral(int spatialDim,
+                                 int dim, 
                                  const CellType& cellType)
-  : dim_(dim),
+  : spatialDim_(spatialDim),
+    dim_(dim),
     testDerivOrder_(-1), 
     nRefDerivTest_(-1),
     nNodesTest_(-1),
@@ -64,15 +66,17 @@ ElementIntegral::ElementIntegral(int dim,
     beta_()
 {;}
 
-ElementIntegral::ElementIntegral(int dim, 
+ElementIntegral::ElementIntegral(int spatialDim,
+                                 int dim, 
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
                                  int alpha,
                                  int testDerivOrder)
-  : dim_(dim),
+  : spatialDim_(spatialDim),
+    dim_(dim),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(dim, testDerivOrder)),
-    nNodesTest_(testBasis.nNodes(cellType)),
+    nNodesTest_(testBasis.nNodes(spatialDim, cellType)),
     unkDerivOrder_(-1), 
     nRefDerivUnk_(-1),
     nNodesUnk_(-1),
@@ -84,7 +88,8 @@ ElementIntegral::ElementIntegral(int dim,
 
 
 
-ElementIntegral::ElementIntegral(int dim,
+ElementIntegral::ElementIntegral(int spatialDim,
+                                 int dim,
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
                                  int alpha,
@@ -92,13 +97,14 @@ ElementIntegral::ElementIntegral(int dim,
                                  const BasisFamily& unkBasis,
                                  int beta,
                                  int unkDerivOrder)
-  : dim_(dim),
+  : spatialDim_(spatialDim),
+    dim_(dim),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(dim, testDerivOrder)),
-    nNodesTest_(testBasis.nNodes(cellType)), 
+    nNodesTest_(testBasis.nNodes(spatialDim, cellType)), 
     unkDerivOrder_(unkDerivOrder), 
     nRefDerivUnk_(ipow(dim, unkDerivOrder)),
-    nNodesUnk_(unkBasis.nNodes(cellType)), 
+    nNodesUnk_(unkBasis.nNodes(spatialDim, cellType)), 
     nNodes_(nNodesTest_*nNodesUnk_),
     order_(2),
     alpha_(alpha),

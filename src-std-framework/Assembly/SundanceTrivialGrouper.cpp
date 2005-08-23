@@ -46,6 +46,7 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 void TrivialGrouper::findGroups(const EquationSet& eqn,
+                                int spatialDim,
                                 const CellType& cellType,
                                 int cellDim,
                                 const QuadratureFamily& quad,
@@ -85,12 +86,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           int resultIndex;
           if (sparsity->isConstant(i))
             {
-              integral = rcp(new RefIntegral(cellDim, cellType));
+              integral = rcp(new RefIntegral(spatialDim, cellDim, cellType));
               resultIndex = constCount++;
             }
           else
             {
-              integral = rcp(new QuadratureIntegral(cellDim, cellType, quad));
+              integral = rcp(new QuadratureIntegral(spatialDim, cellDim, cellType, quad));
               resultIndex = vecCount++;
             }
           groups.append(IntegralGroup(tuple(integral),
@@ -134,7 +135,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating reference integral for one-form");
-                  integral = rcp(new RefIntegral(cellDim, cellType,
+                  integral = rcp(new RefIntegral(spatialDim, cellDim, cellType,
                                                  testBasis, alpha, 
                                                  miTest.order()));
                 }
@@ -152,7 +153,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating reference integral for two-form");
-                  integral = rcp(new RefIntegral(cellDim, cellType,
+                  integral = rcp(new RefIntegral(spatialDim, cellDim, cellType,
                                                  testBasis, alpha, miTest.order(),
                                                  unkBasis, beta, miUnk.order()));
                 }
@@ -169,7 +170,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating quadrature integral for two-form");
-                  integral = rcp(new QuadratureIntegral(cellDim, cellType,
+                  integral = rcp(new QuadratureIntegral(spatialDim, cellDim, cellType,
                                                         testBasis, alpha, 
                                                         miTest.order(), quad));
                 }
@@ -187,7 +188,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
                                tab1 << "creating quadrature integral for two-form");
-                  integral = rcp(new QuadratureIntegral(cellDim, cellType,
+                  integral = rcp(new QuadratureIntegral(spatialDim, cellDim, cellType,
                                                         testBasis, alpha, 
                                                         miTest.order(),
                                                         unkBasis, beta, 

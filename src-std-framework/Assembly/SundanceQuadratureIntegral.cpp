@@ -62,10 +62,11 @@ static Time& quadratureTimer()
 }
 
 
-QuadratureIntegral::QuadratureIntegral(int dim, 
+QuadratureIntegral::QuadratureIntegral(int spatialDim,
+                         int dim, 
                                        const CellType& cellType,
                                        const QuadratureFamily& quad)
-  : ElementIntegral(dim, cellType),
+  : ElementIntegral(spatialDim, dim, cellType),
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)
@@ -94,13 +95,14 @@ QuadratureIntegral::QuadratureIntegral(int dim,
 }
 
 
-QuadratureIntegral::QuadratureIntegral(int dim, 
+QuadratureIntegral::QuadratureIntegral(int spatialDim,
+                                       int dim, 
                                        const CellType& cellType,
                                        const BasisFamily& testBasis,
                                        int alpha,
                                        int testDerivOrder,
                                        const QuadratureFamily& quad)
-  : ElementIntegral(dim, cellType, testBasis, alpha, testDerivOrder),
+  : ElementIntegral(spatialDim, dim, cellType, testBasis, alpha, testDerivOrder),
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)
@@ -148,7 +150,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
     {
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(cellType, quadPts, mi, 
+      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
                                testBasisVals[r]);
     }
 
@@ -179,7 +181,8 @@ QuadratureIntegral::QuadratureIntegral(int dim,
 
 
 
-QuadratureIntegral::QuadratureIntegral(int dim,
+QuadratureIntegral::QuadratureIntegral(int spatialDim,
+                         int dim,
                                        const CellType& cellType,
                                        const BasisFamily& testBasis,
                                        int alpha,
@@ -188,7 +191,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
                                        int beta,
                                        int unkDerivOrder,
                                        const QuadratureFamily& quad)
-  : ElementIntegral(dim, cellType, 
+  : ElementIntegral(spatialDim, dim, cellType, 
                     testBasis, alpha, testDerivOrder, 
                     unkBasis, beta, unkDerivOrder), 
     W_(),
@@ -247,7 +250,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
     {
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(cellType, quadPts, mi, 
+      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
                                testBasisVals[r]);
     }
 
@@ -258,7 +261,7 @@ QuadratureIntegral::QuadratureIntegral(int dim,
     {
       MultiIndex mi;
       if (unkDerivOrder==1) mi[r] = 1;
-      unkBasis.ptr()->refEval(cellType, quadPts, mi, unkBasisVals[r]);
+      unkBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, unkBasisVals[r]);
     }
 
 

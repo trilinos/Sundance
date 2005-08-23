@@ -115,12 +115,14 @@ namespace SundanceStdFwk
 
       /** Return the number of nodes associated with this basis on 
        * the given cell type */
-      virtual int nNodes(const CellType& cellType) const = 0 ;
+      virtual int nNodes(int spatialDim, 
+                         const CellType& cellType) const = 0 ;
 
       /** 
        * Evaluate the basis function on an array of points on the 
        * reference element for the given cell type.
        *
+       * @param spatialDim dimension of the embedding space
        * @param cellType specification of the type of cell on which
        * to evaluate the basis function in this call
        * @param pts array of quadrature points at which the basis function
@@ -130,7 +132,8 @@ namespace SundanceStdFwk
        * runs over basis elements, the outer index over points, so
        * that basis values can be read as result[iPoint][iBasis]. 
        */
-      virtual void refEval(const CellType& cellType,
+      virtual void refEval(int spatialDim, 
+                           const CellType& cellType,
                            const Array<Point>& pts,
                            const MultiIndex& deriv,
                            Array<Array<double> >& result) const = 0 ;
