@@ -51,7 +51,7 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
-#include "SundanceFIATLagrange.hpp"
+//#include "SundanceFIATLagrange.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceSymbPreprocessor.hpp"
@@ -117,7 +117,7 @@ int main(int argc, void** argv)
       /* ------ evaluate Lagrange and FIAT-Lagrange at the vertices */
       Array<Point> verts = tuple(a,b,c);
       BasisFamily lagrange = new Lagrange(1);
-      BasisFamily fiatLagrange = new FIATLagrange(1);
+      BasisFamily fiatLagrange = new Lagrange(1);
       
       MultiIndex d0(0,0,0);
       MultiIndex dx(1,0,0);
@@ -184,7 +184,7 @@ int main(int argc, void** argv)
            << endl << endl;
       for (int p=1; p<=pMax; p++)
         {
-          BasisFamily P = new FIATLagrange(p);
+          BasisFamily P = new Lagrange(p);
           for (int dp=0; dp<=1; dp++)
             {
               if (dp > p) continue;
@@ -216,10 +216,10 @@ int main(int argc, void** argv)
            << endl << endl;
       for (int p=1; p<=pMax; p++)
         {
-          BasisFamily P = new FIATLagrange(p);
+          BasisFamily P = new Lagrange(p);
           for (int q=1; q<=pMax; q++)
             {
-              BasisFamily Q = new FIATLagrange(q);
+              BasisFamily Q = new Lagrange(q);
               for (int dp=0; dp<=1; dp++)
                 {
                   if (dp > p) continue;

@@ -38,6 +38,7 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
+#ifdef IFDEF_OUT_OLD_CODE
 
 // <------------ Added array bounds
 
@@ -185,4 +186,6 @@ void FIATLagrange::refEval(int /*spatialDim*/,
 
     }
 }
+
+#endif
 

@@ -139,6 +139,27 @@ AC_MSG_RESULT([${TRILINOS_DIR}])
 )
 
 # ------------------------------------------------------------------------
+# Check for FIAT
+# ------------------------------------------------------------------------
+
+AC_ARG_WITH(fiat,
+[AC_HELP_STRING([--with-fiat=FIAT_BUILD_DIR],[use FIAT build directory (enables FIAT)])],
+[
+  FIAT_STR=""
+  FIAT_BUILD_DIR=${withval}
+  AC_DEFINE(HAVE_FIAT,,[define if we want to use FIAT])
+  AC_MSG_CHECKING(FIAT directory)
+  AC_MSG_RESULT([${FIAT_BUILD_DIR}])
+],
+[
+  FIAT_STR="#"
+  AC_MSG_CHECKING(FIAT directory)
+  AC_MSG_RESULT([no])
+]
+)
+
+
+# ------------------------------------------------------------------------
 # Get the absolute path to the build directory.  
 # ------------------------------------------------------------------------
 
@@ -177,7 +198,8 @@ TAC_ARG_WITH_INCDIRS
 
 AC_SUBST(ac_aux_dir)
 AC_SUBST(SUNDANCE_BUILD_DIRECTORY)
-
+AC_SUBST(FIAT_STR)
+AC_SUBST(FIAT_BUILD_DIR)
 
 
 # ------------------------------------------------------------------------
@@ -187,6 +209,7 @@ AC_SUBST(SUNDANCE_BUILD_DIRECTORY)
 AC_CONFIG_FILES([
   Makefile  
   Makefile.export
+  Makefile.site.sundance
   examples-tutorial/Makefile
   src-utils/Makefile
   src-core/Makefile

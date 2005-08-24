@@ -198,6 +198,8 @@ ECHO_T = @ECHO_T@
 EXEEXT = .exe
 F77 = @F77@
 FFLAGS = $(TEUCHOS_FFLAGS)
+FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
+FIAT_STR = @FIAT_STR@
 HAVE_CHACO_FALSE = @HAVE_CHACO_FALSE@
 HAVE_CHACO_TRUE = @HAVE_CHACO_TRUE@
 HAVE_MPI_FALSE = @HAVE_MPI_FALSE@
@@ -376,10 +378,10 @@ STD_FWK_INCLUDE_PATH = \
 -I$(top_builddir)/src-std-framework/Problem
 
 STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(STD_MESH_INCLUDE_PATH) \
-$(CORE_INCLUDE_PATH) $(UTIL_INCLUDES)
+$(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) $(FIAT_INCLUDE)
 
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
--lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(UTIL_LIBS) 
+-lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIB) $(FIAT_BLITZ_LIBS) $(UTIL_LIBS) 
 
 XML_LIB_PATH = \
 -L$(top_builddir)/src-std-framework 
@@ -703,6 +705,12 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-info-am
 
+
+# ------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------
+
+include $(top_builddir)/Makefile.site.sundance
 
 # ------------------------------------------------------------------------
 #

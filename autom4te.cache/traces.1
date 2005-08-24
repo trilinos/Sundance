@@ -238,39 +238,49 @@ m4trace:configure.ac:124: -1- AC_SUBST([HAVE_CHACO_FALSE])
 m4trace:configure.ac:133: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 configure.ac:133: the top level])
-m4trace:configure.ac:159: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:159: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-config/tac_arg_enable_feature.m4:39: TAC_ARG_ENABLE_FEATURE is expanded from...
+autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 configure.ac:159: the top level])
-m4trace:configure.ac:159: -1- AC_DEFINE_TRACE_LITERAL([HAVE_TESTS])
-m4trace:configure.ac:159: -1- AH_OUTPUT([HAVE_TESTS], [/* Define if want to build tests */
-#undef HAVE_TESTS])
-m4trace:configure.ac:160: -1- AM_CONDITIONAL([BUILD_TESTS], [test "X$ac_cv_use_tests" != "Xno"])
-m4trace:configure.ac:160: -1- AC_SUBST([BUILD_TESTS_TRUE])
-m4trace:configure.ac:160: -1- AC_SUBST([BUILD_TESTS_FALSE])
-m4trace:configure.ac:162: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:159: -1- AC_DEFINE_TRACE_LITERAL([HAVE_FIAT])
+m4trace:configure.ac:159: -1- AH_OUTPUT([HAVE_FIAT], [/* define if we want to use FIAT */
+#undef HAVE_FIAT])
+m4trace:configure.ac:180: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_enable_feature.m4:39: TAC_ARG_ENABLE_FEATURE is expanded from...
-configure.ac:162: the top level])
-m4trace:configure.ac:162: -1- AC_DEFINE_TRACE_LITERAL([HAVE_EXAMPLES])
-m4trace:configure.ac:162: -1- AH_OUTPUT([HAVE_EXAMPLES], [/* Define if want to build examples */
+configure.ac:180: the top level])
+m4trace:configure.ac:180: -1- AC_DEFINE_TRACE_LITERAL([HAVE_TESTS])
+m4trace:configure.ac:180: -1- AH_OUTPUT([HAVE_TESTS], [/* Define if want to build tests */
+#undef HAVE_TESTS])
+m4trace:configure.ac:181: -1- AM_CONDITIONAL([BUILD_TESTS], [test "X$ac_cv_use_tests" != "Xno"])
+m4trace:configure.ac:181: -1- AC_SUBST([BUILD_TESTS_TRUE])
+m4trace:configure.ac:181: -1- AC_SUBST([BUILD_TESTS_FALSE])
+m4trace:configure.ac:183: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+config/tac_arg_enable_feature.m4:39: TAC_ARG_ENABLE_FEATURE is expanded from...
+configure.ac:183: the top level])
+m4trace:configure.ac:183: -1- AC_DEFINE_TRACE_LITERAL([HAVE_EXAMPLES])
+m4trace:configure.ac:183: -1- AH_OUTPUT([HAVE_EXAMPLES], [/* Define if want to build examples */
 #undef HAVE_EXAMPLES])
-m4trace:configure.ac:163: -1- AM_CONDITIONAL([BUILD_EXAMPLES], [test "X$ac_cv_use_examples" != "Xno"])
-m4trace:configure.ac:163: -1- AC_SUBST([BUILD_EXAMPLES_TRUE])
-m4trace:configure.ac:163: -1- AC_SUBST([BUILD_EXAMPLES_FALSE])
-m4trace:configure.ac:170: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:184: -1- AM_CONDITIONAL([BUILD_EXAMPLES], [test "X$ac_cv_use_examples" != "Xno"])
+m4trace:configure.ac:184: -1- AC_SUBST([BUILD_EXAMPLES_TRUE])
+m4trace:configure.ac:184: -1- AC_SUBST([BUILD_EXAMPLES_FALSE])
+m4trace:configure.ac:191: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_libdirs.m4:23: TAC_ARG_WITH_LIBDIRS is expanded from...
-configure.ac:170: the top level])
-m4trace:configure.ac:172: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:191: the top level])
+m4trace:configure.ac:193: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_incdirs.m4:23: TAC_ARG_WITH_INCDIRS is expanded from...
-configure.ac:172: the top level])
-m4trace:configure.ac:178: -1- AC_SUBST([ac_aux_dir])
-m4trace:configure.ac:179: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
-m4trace:configure.ac:209: -1- AC_CONFIG_FILES([
+configure.ac:193: the top level])
+m4trace:configure.ac:199: -1- AC_SUBST([ac_aux_dir])
+m4trace:configure.ac:200: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
+m4trace:configure.ac:201: -1- AC_SUBST([FIAT_STR])
+m4trace:configure.ac:202: -1- AC_SUBST([FIAT_BUILD_DIR])
+m4trace:configure.ac:232: -1- AC_CONFIG_FILES([
   Makefile  
   Makefile.export
+  Makefile.site.sundance
   examples-tutorial/Makefile
   src-utils/Makefile
   src-core/Makefile
@@ -291,7 +301,7 @@ m4trace:configure.ac:209: -1- AC_CONFIG_FILES([
   tests-std-framework/Assembly/Makefile
   tests-std-framework/Problem/Makefile
 ])
-m4trace:configure.ac:211: -1- AC_SUBST([CHACO_LIB])
-m4trace:configure.ac:212: -1- AC_SUBST([TRILINOS_DIR])
-m4trace:configure.ac:214: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:214: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:234: -1- AC_SUBST([CHACO_LIB])
+m4trace:configure.ac:235: -1- AC_SUBST([TRILINOS_DIR])
+m4trace:configure.ac:237: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:237: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])

@@ -123,6 +123,10 @@ namespace SundanceStdFwk
        * reference element for the given cell type.
        *
        * @param spatialDim dimension of the embedding space
+       * @param myDim - dimension of the cell (possibly a facet)
+       * on which the basis is being evaluated.
+       * @param myFacetID - facet number of the evaluation cell,
+       * referred back to its maximal embedding cell.
        * @param cellType specification of the type of cell on which
        * to evaluate the basis function in this call
        * @param pts array of quadrature points at which the basis function
@@ -132,7 +136,7 @@ namespace SundanceStdFwk
        * runs over basis elements, the outer index over points, so
        * that basis values can be read as result[iPoint][iBasis]. 
        */
-      virtual void refEval(int spatialDim, 
+      virtual void refEval(int spatialDim,
                            const CellType& cellType,
                            const Array<Point>& pts,
                            const MultiIndex& deriv,

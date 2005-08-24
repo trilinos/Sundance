@@ -73,9 +73,10 @@ host_triplet = @host@
 target_triplet = @target@
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.export.in $(srcdir)/Makefile.in \
-	$(top_srcdir)/configure config/config.guess config/config.sub \
-	config/depcomp config/install-sh config/missing \
-	config/mkinstalldirs install-sh missing mkinstalldirs
+	$(srcdir)/Makefile.site.sundance.in $(top_srcdir)/configure \
+	config/config.guess config/config.sub config/depcomp \
+	config/install-sh config/missing config/mkinstalldirs \
+	install-sh missing mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/tac_arg_config_chaco.m4 \
@@ -91,7 +92,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h
-CONFIG_CLEAN_FILES = Makefile.export
+CONFIG_CLEAN_FILES = Makefile.export Makefile.site.sundance
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -146,6 +147,8 @@ ECHO_T = @ECHO_T@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
+FIAT_STR = @FIAT_STR@
 HAVE_CHACO_FALSE = @HAVE_CHACO_FALSE@
 HAVE_CHACO_TRUE = @HAVE_CHACO_TRUE@
 HAVE_MPI_FALSE = @HAVE_MPI_FALSE@
@@ -301,6 +304,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 Makefile.export: $(top_builddir)/config.status $(srcdir)/Makefile.export.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+Makefile.site.sundance: $(top_builddir)/config.status $(srcdir)/Makefile.site.sundance.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 uninstall-info-am:
 

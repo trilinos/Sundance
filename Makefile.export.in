@@ -48,6 +48,8 @@ SUNDANCE_BUILD_DIRECTORY = @SUNDANCE_BUILD_DIRECTORY@
 
 TRILINOS_DIR = @TRILINOS_DIR@
 
+FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
+
 
 #-------------------------------------------------------------------------
 # Linker command flags

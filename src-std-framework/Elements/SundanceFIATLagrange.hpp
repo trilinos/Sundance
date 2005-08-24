@@ -36,6 +36,11 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceScalarBasis.hpp"
+#include "SundanceMap.hpp"
+
+#ifdef HAVE_FIAT
+#include "FIAT.hpp"
+#endif
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -68,7 +73,8 @@ namespace SundanceStdFwk
     virtual int order() const {return order_;}
 
     /** return the number of nodes for this basis on the given cell type */
-    virtual int nNodes(int dim, const CellType& cellType) const ;
+    virtual int nNodes(int spatialDim,
+                       const CellType& cellType) const ;
 
     /** */
     virtual void getLocalDOFs(const CellType& cellType,
@@ -81,26 +87,20 @@ namespace SundanceStdFwk
                          const MultiIndex& deriv,
                          Array<Array<double> >& result) const ;
 
+
+
+
     /* Handleable boilerplate */
     GET_RCP(BasisFamilyBase);
 
   private:
     int order_;
-
-    static const int MAXDEGREE_ = 8;
-
-    static Array<int> makeRange(int low, int high);
-
-    /** evaluate on a triangle cell  */
-    void evalOnTriangle(const Point& pt,
-                        const MultiIndex& deriv,
-                        Array<double>& result) const ;
-    
-    static const int MAX_DEGREE_ = 1;
-    Array<Array<double> > VDM_;
-    Array<Array<Array<double> > > derivMats_;
-
+#ifdef HAVE_FIAT
+    Map<CellType,RefCountPtr<FIAT::LagrangeElement> > fiatElems_;
+#endif
   };
+
+
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

@@ -6,6 +6,9 @@
 /* Define if want to build examples */
 #undef HAVE_EXAMPLES
 
+/* define if we want to use FIAT */
+#undef HAVE_FIAT
+
 /* define if we want to use MPI */
 #undef HAVE_MPI
 
