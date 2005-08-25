@@ -50,3 +50,18 @@ DOFMapBase::DOFMapBase(const Mesh& mesh)
     dofsHaveBeenAssigned_()
 {;}
 
+void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
+                                int funcID,
+                                Array<int>& dofs) const
+{
+  Array<int> allDofs;
+  unsigned int nNodes;
+  getDOFsForCellBatch(cellDim, tuple(cellLID), allDofs, nNodes);
+
+  dofs.resize(nNodes);
+  unsigned int nFuncs = allDofs.size()/nNodes;
+  for (unsigned int i=0; i<nNodes; i++)
+    {
+      dofs[i] = allDofs[funcID + nFuncs*i];
+    }
+}

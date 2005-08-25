@@ -268,13 +268,28 @@ void DOFMapBuilder::markBCRows()
           bcFuncID[f] = eqn_->reducedVarID(bcFuncID[f]);
         }
 
-      rowMap_->getDOFsForCellBatch(dim, cellLID, bcFuncID, dofs, nTestNodes);
+      rowMap_->getDOFsForCellBatch(dim, cellLID, dofs, nTestNodes);
       int offset = rowMap_->lowestLocalDOF();
       int high = offset + rowMap_->numLocalDOFs();
-      for (unsigned int n=0; n<dofs.size(); n++) 
+      if (cellLID.size()==0) continue;
+      int nFuncs = dofs.size()/(cellLID.size()*nTestNodes); 
+      int nCells = cellLID.size();
+      for (unsigned int c=0; c<cellLID.size(); c++)
         {
-          if (dofs[n] < offset || dofs[n] >= high) continue;
-          (*isBCRow_)[dofs[n]-offset]=true;
+          for (unsigned int n=0; n<nTestNodes; n++)
+            {
+              for (unsigned int f=0; f<bcFuncID.size(); f++)
+                {
+                  int dof = dofs[(bcFuncID[f]*nCells +c)*nTestNodes + n];
+                  if (dof < offset || dof >= high) continue;
+                  (*isBCRow_)[dof-offset]=true;
+                }
+            }
         }
+      // for (unsigned int n=0; n<dofs.size(); n++) 
+//         {
+//           if (dofs[n] < offset || dofs[n] >= high) continue;
+//           (*isBCRow_)[dofs[n]-offset]=true;
+//         }
     }
 }

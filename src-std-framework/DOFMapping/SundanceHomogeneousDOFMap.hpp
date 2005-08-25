@@ -73,24 +73,12 @@ using namespace SundanceStdMesh::Internal;
       virtual ~HomogeneousDOFMap(){;}
 
 
-      /** */
-      virtual void getDOFsForCell(int cellDim, int cellLID,
-                                  int funcID,
-                                  Array<int>& dofs) const ;
+     
 
-      /** */
-      virtual void getSingleFuncDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
-                                                 int funcID,
-                                                 Array<int>& dofs, 
-                                                 unsigned int& nNodes) const ;
+      
 
       /** */
       virtual void getDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
-                                       Array<int>& dofs, 
-                                                 unsigned int& nNodes) const ;
-      /** */
-      virtual void getDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
-                                       const Array<int>& funcID,
                                        Array<int>& dofs, 
                                        unsigned int& nNodes) const ;
 
