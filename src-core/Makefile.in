@@ -665,10 +665,10 @@ STD_FWK_INCLUDE_PATH = \
 -I$(top_builddir)/src-std-framework/Problem
 
 STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(STD_MESH_INCLUDE_PATH) \
-$(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) $(FIAT_INCLUDE)
+$(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
 
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
--lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIB) $(FIAT_BLITZ_LIBS) $(UTIL_LIBS) 
+-lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(UTIL_LIBS) 
 
 XML_LIB_PATH = \
 -L$(top_builddir)/src-std-framework 
