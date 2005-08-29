@@ -29,8 +29,6 @@
 /* @HEADER@ */
 
 #include "SundanceFIATLagrange.hpp"
-#include "SundanceFIATExpansion.hpp"
-#include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
@@ -38,154 +36,140 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-#ifdef IFDEF_OUT_OLD_CODE
-
-// <------------ Added array bounds
-
-static double V[][9] = { {0.333333333333 , -0.5 , -0.166666666667 , 0.333333333333 , 0.5 , -0.166666666667 , 0.333333333333 , 0.0 , 0.333333333333} };
-static double D[][2][9] = { { {-0.5 , -0.5 , -0.5 , 0.5 , 0.5 , 0.5 , 0.0 , 0.0 , 0.0} } , { {-0.5 , -0.5 , -0.5 , 1.38777878078e-17 , 1.38777878078e-17 , 1.38777878078e-17 , 0.5 , 0.5 , 0.5} } };
+#ifdef BLARF
 
 
-// <------- CHANGED V_ and D_ to VDM_ and derivMats_
+static CellType sdim_to_cellType[] = { PointCell ,
+				       LineCell ,
+				       TriangleCell ,
+				       TetCell };
 
-FIATLagrange::FIATLagrange(int order)
-  : ScalarBasis(), order_(order), 
-    VDM_((order+1)*(order+2)/2,Array<double>((order+1)*(order+2)/2)), 
-    derivMats_(2,Array<Array<double> >((order+1)*(order+2)/2,
-                                       Array<double>((order+1)*(order+2)/2)))
+static int dim_to_facet_id[] = {0,0,2,0};
+
+// spatialDim is the topological dimension of the mesh
+// cellType is the kind of facet on which we're counting the
+// degrees of freedom.  We count the degrees of freedom
+// associated with that facet and the lower-dimensional facets
+// covering it.  For Lagrange elements, this happens to be
+// the same number of nodes as belong to the Lagrange element
+// of the lower topological dimension.
+
+FIATLagrange::FIATLagrange( int order ) :
+  order_( order )
 {
-  int i;
-  int dim = (order+1)*(order+2)/2;
-  if (order > MAXDEGREE_) {
-    SUNDANCE_ERROR( "Maximal degree exceeded" );
-  }
-
-  SundanceStdFwk::Internal::doublesIntoArray( dim,dim,V[order-1],VDM_ );
-  for (i=0;i<2;i++) {
-    SundanceStdFwk::Internal::doublesIntoArray(dim,dim,D[order-1][i],derivMats_[i]);
-  }
-
-  static bool first = true;
-  if (first)
-    {
-      cerr << endl 
-           << " ----------------- FIAT internal tables ----------------------" 
-           << endl;
-      cerr << "VDM_ = " << VDM_ << endl << endl;
-      cerr << "derivMats_ = " << derivMats_ << endl << endl << endl;
-      first = false;
-    }
+  fiatElems_[ LineCell ] = new FIAT::LagrangeElement( 1 , order );
+  fiatElems_[ TriangleCell ] = new FIAT::LagrangeElement( 2 , order );
+  fiatElems_[ TetCell ] = new FIAT::LagrangeElement( 3 , order );
 }
 
-void FIATLagrange::print(ostream& os) const 
+int FIATLagrange::nNodes( int spatialDim ,
+			  const CellType& cellType )
 {
-  os << "FIATLagrange(" << order_ << ")";
+  if (PointCell == cellType) return 1;
+  else return fiatElems_[ cellType ]->getPolynomialSet()->size();
 }
 
-int FIATLagrange::nNodes(int /*spatialDim*/,
-                         const CellType& cellType) const
+void FIATLagrange::getLocalDOFs( const CellType &cellType ,
+				 Array<Array<Array<int> > > &dofs ) const
 {
-  switch(cellType)
-    {
-    case TriangleCell:
-      {
-	return (order_+1)*(order_+2)/2;
-    default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in FIATLagrange basis");
-      return -1; // -Wall
+  if (PointCell == cellType) {
+    dofs.resize(1);
+    dofs[0] = tuple(tuple(0));
+  }
+  else {
+    vector<vector<int> > > eids = 
+      fiatElems_[ cellType ]->getDualBasis()->getEntityIds();
+    dofs.resize(eids.size());
+    for (int d=0;d<eids.size();d++) {
+      dofs[d].resize(eids[d].size());
+      for (int e=0;e<eids[d].size();e++) {
+	dofs[d][e].resize( eids[d][e].size() );
+	for (int n=0;n<eids[d][e].size();n++) {
+	  dofs[d][e][n] = eids[d][e][n];
+	}
       }
     }
-}  // <--------------------- ADDED A BRACE
+  }
 
-void FIATLagrange::getLocalDOFs(const CellType& cellType,
-                                Array<Array<Array<int> > >& dofs) const 
-{
-  switch(cellType)
-    {
-    case TriangleCell:
-      {
-        int n = order()-1;
-        dofs.resize(3);
-        dofs[0] = tuple(tuple(0), tuple(1), tuple(2));
-        dofs[1] = tuple(makeRange(3,2+n), 
-                        makeRange(3+n, 2+2*n),
-                        makeRange(3+2*n, 2+3*n));
-                                
-        dofs[2] = tuple(makeRange(3, order()));
-        return;
-      }
-    default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in FIATLagrange basis");
-    }
+  return;
 }
 
-
-Array<int> FIATLagrange::makeRange(int low, int high)
+void FIATLagrange::refEval( int spatialDim ,
+			    const CellType& cellType ,
+			    const Array<Point>& pts ,
+			    const MultiIndex& deriv ,
+			    Array<Array<double> >& result ) const
 {
-  if (high < low) return Array<int>();
-
-  Array<int> rtn(high-low+1);
-  for (int i=0; i<rtn.length(); i++) rtn[i] = low+i;
-  return rtn;
-}
-
-/* result: rows are points, columns are bf */
-void FIATLagrange::refEval(int /*spatialDim*/,
-                           const CellType& cellType,
-                           const Array<Point>& pts,
-                           const MultiIndex& deriv,
-                           Array<Array<double> >& result) const
-{
+  int nbf = nNodes( spatialDim , cellType );
   result.resize(pts.length());
-  int i,j;
-  int dim = (order_+1)*(order_+2)/2;
-  // <----------- CHANGE FROM REF TO VALUE 
-  Array<Array<double> > tmp1(dim,Array<double>(pts.length()));
-  Array<Array<double> > tmp2(dim,Array<double>(pts.length()));
+  for (int i=0;i<pts.length();i++) {
+    result[i].resize(nbf);
+  }
 
-  /* Transform input points from KRL's {{0,0}, {1,0}, {0,1}} frame to
-  * RCK's {{-1,-1}, {1, -1}, {-1, 1}} frame */
-  Array<Point> evalPts(pts.length());
-  for (i=0; i<evalPts.length(); i++) 
-    {
-      evalPts[i] = /* Point(-1.0, -1.0) + 2.0* */pts[i];
-    }
-    
-
-  switch(cellType)
-    {
-    case TriangleCell:
-      /* evaluate orthogonal basis on triangles */
-      SundanceStdFwk::Internal::phis(order_,evalPts,tmp1);
-      
-      /* convert to nodal basis */
-      SundanceStdFwk::Internal::matmul( VDM_ , tmp1 , tmp2 );
-
-      /* apply derivatives */
-      for (i=0;i<2*deriv.order();i++) 
-        {
-          for (j=0;j<2;j++) 
-            {
-              SundanceStdFwk::Internal::matmul( derivMats_[i] , tmp2 , tmp1 );
-              SundanceStdFwk::Internal::matcopy( tmp1 , tmp2 );
-            }
+  if (PointCell == cellType) {
+    result = tuple(tuple(1.0));
+    return;
+  }
+  else {
+    // convert points into array for fiat
+    // this involves:
+    // i) conversion from (0,1) --> (-1,1) reference domains
+    // ii) embedding points on cellType into spatialDim (this
+    //   is just appending enough -1's to the point after I transform
+    // iii) getting it into the right data structure.
+    FIAT::Array<double,2> fiat_pts( pts.length() , spatialDim );
+    int pd = dimension( cellType );
+    for (int i=0;i<pts.length();i++) {
+      for (int j=0;j<pd;j++) {
+	fiat_pts(i,j) = 2.0 * ( pts[i][j] - 0.5 );
       }
-      
-      /* copy result, transposing */
-      for (int k=0; k<pts.length(); k++) result[k].resize(dim);
-      for (i=0;i<dim;i++) {
-        for (j=0;j<pts.length();j++) {
-          result[j][i] = tmp2[i][j];
-        }
+      for (int j=pd;j<spatialDim;j++) {
+	fiat_pts(i,j) = -1.0;
       }
-      return;
-    default:
-      SUNDANCE_ERROR("FIATLagrange::refEval() unimplemented for cell type ");
-
     }
+
+    // convert deriv multi index into array for fiat.
+    FIAT::Array<int,1> alpha;
+    for (int i=0;i<deriv.length();i++) {
+      alpha(i) = deriv[i];
+    }
+
+    CellType ct = sdim_to_cellType[spatialDim];
+
+    FIAT::RCP<FIAT::PolynomialSet> phis
+      = fiatElems_[ct]->getPolynomialSet()->multi_deriv_all( alpha );
+
+    FIAT::Array<double,2> fiat_results 
+      = phis->tabulate( fiat_pts );
+
+
+    const vector<vector<vector<int> > >&eids 
+      = fiatElems_[ct]->getDualBasis()->getEntityIds();
+
+    // extract pertinent basis functions.
+    // ones from vertex 0 and 1 go in, plus from edge 2
+    // and maybe triangle 0 and tet 0.
+
+    int cur = 0;
+    for (int v=0;v<2;v++) {  // vertex points
+      for (int p=0;p<pts.length();p++) {
+	for (int n=0;n<eids[0][v].size();n++) {
+	  result[p][cur++] = fiat_results( eids[0][v][n] , p );
+	}
+      }
+    }
+    for (int i=1;i<=dimension( cellType );i++) {
+      int facet_id = dim_to_facet_id[i];
+      for (int p=0;p<pts.length();p++) {
+	for (int n=0;n<eids[i][facet_id].size();n++) {
+	  result[p][cur++] = fiat_results( eids[i][facet_id][n] , p );
+	}
+      }
+    }
+  }
+
+  return;
 }
+
 
 #endif
-

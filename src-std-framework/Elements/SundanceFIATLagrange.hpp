@@ -96,7 +96,7 @@ namespace SundanceStdFwk
   private:
     int order_;
 #ifdef HAVE_FIAT
-    Map<CellType,RefCountPtr<FIAT::LagrangeElement> > fiatElems_;
+    Map<CellType,FIAT::RCP<FIAT::LagrangeElement> > fiatElems_;
 #endif
   };
 
