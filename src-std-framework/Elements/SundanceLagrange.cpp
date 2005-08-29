@@ -304,6 +304,8 @@ void Lagrange::evalOnTet(const Point& pt,
 	switch(order_)
 		{
 		case 0:
+      tmp.resize(1);
+      result.resize(1);
 			tmp[0] = one;
 			break;
 		case 1:

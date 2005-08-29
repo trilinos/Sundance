@@ -40,11 +40,11 @@ using namespace Teuchos;
 
 
 static CellType sdim_to_cellType[] = { PointCell ,
-				       LineCell ,
-				       TriangleCell ,
-				       TetCell };
+                                       LineCell ,
+                                       TriangleCell ,
+                                       TetCell };
 
-static int dim_to_facet_id[] = {0,0,2,0};
+static int dim_to_facet_id[] = {0,2,0,0};
 
 // spatialDim is the topological dimension of the mesh
 // cellType is the kind of facet on which we're counting the
@@ -63,14 +63,14 @@ FIATLagrange::FIATLagrange( int order ) :
 }
 
 int FIATLagrange::nNodes( int spatialDim ,
-			  const CellType& cellType ) const
+                          const CellType& cellType ) const
 {
   if (PointCell == cellType) return 1;
   else return fiatElems_[ cellType ]->getPolynomialSet()->size();
 }
 
 void FIATLagrange::getLocalDOFs( const CellType &cellType ,
-				 Array<Array<Array<int> > > &dofs ) const
+                                 Array<Array<Array<int> > > &dofs ) const
 {
   if (PointCell == cellType) {
     dofs.resize(1);
@@ -83,10 +83,10 @@ void FIATLagrange::getLocalDOFs( const CellType &cellType ,
     for (int d=0;d<eids.size();d++) {
       dofs[d].resize(eids[d].size());
       for (int e=0;e<eids[d].size();e++) {
-	dofs[d][e].resize( eids[d][e].size() );
-	for (int n=0;n<eids[d][e].size();n++) {
-	  dofs[d][e][n] = eids[d][e][n];
-	}
+        dofs[d][e].resize( eids[d][e].size() );
+        for (int n=0;n<eids[d][e].size();n++) {
+          dofs[d][e][n] = eids[d][e][n];
+        }
       }
     }
   }
@@ -95,10 +95,10 @@ void FIATLagrange::getLocalDOFs( const CellType &cellType ,
 }
 
 void FIATLagrange::refEval( int spatialDim ,
-			    const CellType& cellType ,
-			    const Array<Point>& pts ,
-			    const MultiIndex& deriv ,
-			    Array<Array<double> >& result ) const
+                            const CellType& cellType ,
+                            const Array<Point>& pts ,
+                            const MultiIndex& deriv ,
+                            Array<Array<double> >& result ) const
 {
   int nbf = nNodes( spatialDim , cellType );
   result.resize(pts.length());
@@ -117,31 +117,40 @@ void FIATLagrange::refEval( int spatialDim ,
     // ii) embedding points on cellType into spatialDim (this
     //   is just appending enough -1's to the point after I transform
     // iii) getting it into the right data structure.
-    FIAT::Array<double,2> fiat_pts( pts.length() , spatialDim );
+    blitz::Array<double,2> fiat_pts( pts.length() , spatialDim );
     int pd = dimension( cellType );
     for (int i=0;i<pts.length();i++) {
       for (int j=0;j<pd;j++) {
-	fiat_pts(i,j) = 2.0 * ( pts[i][j] - 0.5 );
+        fiat_pts(i,j) = 2.0 * ( pts[i][j] - 0.5 );
       }
       for (int j=pd;j<spatialDim;j++) {
-	fiat_pts(i,j) = -1.0;
+        fiat_pts(i,j) = -1.0;
       }
     }
 
+    
+    std::cout << "points in fiat" << endl << fiat_pts << endl;
+
     // convert deriv multi index into array for fiat.
-    FIAT::Array<int,1> alpha;
+    blitz::Array<int,1> alpha(spatialDim);
     for (int i=0;i<spatialDim;i++) {
       alpha(i) = deriv[i];
     }
+
+    // chain rule for coordinate change;
+    double factor = pow( 0.5 , deriv.order() );
+
+    std::cout << "derivative multiindex in FIAT:" << alpha << endl;
 
     CellType ct = sdim_to_cellType[spatialDim];
 
     FIAT::RCP<FIAT::ScalarPolynomialSet> phis
       = fiatElems_[ct]->getPolynomialSet()->multi_deriv_all( alpha );
 
-    FIAT::Array<double,2> fiat_results 
+    blitz::Array<double,2> fiat_results 
       = phis->tabulate( fiat_pts );
-
+    
+    std::cout << "tabulated FIAT results" << endl << fiat_results << endl;
 
     const vector<vector<vector<int> > >&eids 
       = fiatElems_[ct]->getDualBasis()->getEntityIds();
@@ -150,26 +159,147 @@ void FIATLagrange::refEval( int spatialDim ,
     // ones from vertex 0 and 1 go in, plus from edge 2
     // and maybe triangle 0 and tet 0.
 
-    int cur = 0;
-    for (int v=0;v<2;v++) {  // vertex points
-      for (int p=0;p<pts.length();p++) {
-	for (int n=0;n<eids[0][v].size();n++) {
-	  result[p][cur++] = fiat_results( eids[0][v][n] , p );
-	}
-      }
-    }
-    for (int i=1;i<=dimension( cellType );i++) {
-      int facet_id = dim_to_facet_id[i];
-      for (int p=0;p<pts.length();p++) {
-	for (int n=0;n<eids[i][facet_id].size();n++) {
-	  result[p][cur++] = fiat_results( eids[i][facet_id][n] , p );
-	}
-      }
-    }
-  }
 
-  return;
+    if (spatialDim == 1) {
+      int cur = 0;
+
+      // get vertex dof
+
+      for (int v=0;v<2;v++) {
+        for (int n=0;n<eids[0][v].size();n++) {
+          for (int p=0;p<pts.length();p++) {
+            result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
+          }
+          cur++;
+        }
+      }
+      // get internal dof
+      for (int e=0;e<1;e++) {
+        for (int n=0;n<eids[1][e].size();n++) {
+          for (int p=0;p<pts.length();p++) {
+            result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
+          }
+          cur++;
+        }
+      }
+    }
+    else if (spatialDim == 2) {
+      if (LineCell==cellType) {   // line of a triangle
+        int cur = 0;
+        for (int v=0;v<2;v++) {  // grab two vertices
+          for (int n=0;n<eids[0][v].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
+            }
+            cur++;
+          }
+        }
+        // grab line 2
+        for (int e=2;e<3;e++) {
+          for (int n=0;n<eids[1][e].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
+            }
+            cur++;
+          }
+        } 
+      }
+      else { // triangle
+        int cur = 0;
+        for (int v=0;v<3;v++) {  // grab vertices
+          for (int n=0;n<eids[0][v].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
+            }
+            cur++;
+          }
+        }
+        for (int e=0;e<3;e++) { // Lines swizzled to match Sundance
+          for (int n=0;n<eids[1][e].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[1][(e+2)%3][n] , p );
+            }
+            cur++;
+          }
+        }
+        for (int f=0;f<1;f++) { // interior
+          for (int n=0;n<eids[2][f].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[2][f][n] , p );
+            }
+            cur++;
+          }
+        }
+      }
+    }
+    else if (spatialDim == 3) {
+      if (LineCell==cellType) {   // line of a tet
+        int cur = 0;
+        for (int v=0;v<2;v++) {  // grab two vertices
+          for (int n=0;n<eids[0][v].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
+            }
+            cur++;
+          }
+        }
+        // grab line 2
+        for (int e=2;e<3;e++) {
+          for (int n=0;n<eids[1][e].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
+            }
+            cur++;
+          }
+        } 
+      }
+      else if (TriangleCell==cellType) {
+        int cur = 0;
+        for (int v=0;v<2;v++) {  // grab two vertices
+          for (int n=0;n<eids[0][v].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
+            }
+            cur++;
+          }
+        }
+        // grab line 2
+        for (int e=2;e<3;e++) {
+          for (int n=0;n<eids[1][e].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
+            }
+            cur++;
+          }
+        }
+        // grab face 0
+        for (int f=0;f<1;f++) {
+          for (int n=0;n<eids[2][0].size();n++) {
+            for (int p=0;p<pts.length();p++) {
+              result[p][cur] = factor * fiat_results( eids[2][f][n] , p );
+            }
+            cur++;
+          }
+        }
+
+      }
+      else {
+        for (int i=0;i<pts.length();i++) {
+          for (int j=0;j<nbf;j++) { 
+            result[i][j] = factor * fiat_results( j , i );
+          }
+        }
+      }
+      
+    }
+    return;
+  }
 }
 
+
+void FIATLagrange::print(ostream& os) const
+{
+  os << "FIATLagrange(" << order() << ")";
+}
 
 //#endif

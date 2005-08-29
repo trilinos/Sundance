@@ -31,9 +31,25 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = AssemblerTest1D AssemblerTest2D \
+noinst_PROGRAMS = BasisCheck AssemblerTest1D AssemblerTest2D \
                   TransformedIntegral2D  QuadratureIntegral2D \
                   IntegralTest1D QuadratureTest
+
+
+BasisCheck_SOURCES = $(srcdir)/BasisCheck.cpp
+
+BasisCheck_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+BasisCheck_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+BasisCheck_LDADD = $(STD_FWK_LIBS) 
+
+
+
 
 
 AssemblerTest1D_SOURCES = $(srcdir)/AssemblerTest1D.cpp

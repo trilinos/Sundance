@@ -100,7 +100,7 @@ namespace SundanceStdFwk
     // this has to be mutable because lookups on maps
     // are non-const :/ and otherwise seemingly const methods
     // like tabulation and nNodes die at compile-time
-    mutable Map<CellType,FIAT::RCP<FIAT::LagrangeElement> > fiatElems_;
+    mutable SundanceUtils::Map<CellType,FIAT::RCP<FIAT::LagrangeElement> > fiatElems_;
 #endif
   };
 
