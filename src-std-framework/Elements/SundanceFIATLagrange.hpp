@@ -96,7 +96,11 @@ namespace SundanceStdFwk
   private:
     int order_;
 #ifdef HAVE_FIAT
-    Map<CellType,FIAT::RCP<FIAT::LagrangeElement> > fiatElems_;
+    // RCK
+    // this has to be mutable because lookups on maps
+    // are non-const :/ and otherwise seemingly const methods
+    // like tabulation and nNodes die at compile-time
+    mutable Map<CellType,FIAT::RCP<FIAT::LagrangeElement> > fiatElems_;
 #endif
   };
 

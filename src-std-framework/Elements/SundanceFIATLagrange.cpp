@@ -36,7 +36,7 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-#ifdef BLARF
+//#ifdef BLARF
 
 
 static CellType sdim_to_cellType[] = { PointCell ,
@@ -63,7 +63,7 @@ FIATLagrange::FIATLagrange( int order ) :
 }
 
 int FIATLagrange::nNodes( int spatialDim ,
-			  const CellType& cellType )
+			  const CellType& cellType ) const
 {
   if (PointCell == cellType) return 1;
   else return fiatElems_[ cellType ]->getPolynomialSet()->size();
@@ -77,7 +77,7 @@ void FIATLagrange::getLocalDOFs( const CellType &cellType ,
     dofs[0] = tuple(tuple(0));
   }
   else {
-    vector<vector<int> > > eids = 
+    vector<vector<vector<int> > > eids = 
       fiatElems_[ cellType ]->getDualBasis()->getEntityIds();
     dofs.resize(eids.size());
     for (int d=0;d<eids.size();d++) {
@@ -130,13 +130,13 @@ void FIATLagrange::refEval( int spatialDim ,
 
     // convert deriv multi index into array for fiat.
     FIAT::Array<int,1> alpha;
-    for (int i=0;i<deriv.length();i++) {
+    for (int i=0;i<spatialDim;i++) {
       alpha(i) = deriv[i];
     }
 
     CellType ct = sdim_to_cellType[spatialDim];
 
-    FIAT::RCP<FIAT::PolynomialSet> phis
+    FIAT::RCP<FIAT::ScalarPolynomialSet> phis
       = fiatElems_[ct]->getPolynomialSet()->multi_deriv_all( alpha );
 
     FIAT::Array<double,2> fiat_results 
@@ -172,4 +172,4 @@ void FIATLagrange::refEval( int spatialDim ,
 }
 
 
-#endif
+//#endif
