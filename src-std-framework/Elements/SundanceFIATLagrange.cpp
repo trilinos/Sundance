@@ -36,7 +36,7 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-//#ifdef BLARF
+#ifdef HAVE_FIAT
 
 
 static CellType sdim_to_cellType[] = { PointCell ,
@@ -302,4 +302,4 @@ void FIATLagrange::print(ostream& os) const
   os << "FIATLagrange(" << order() << ")";
 }
 
-//#endif
+#endif

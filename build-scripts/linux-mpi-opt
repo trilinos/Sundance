@@ -30,12 +30,12 @@
 # ************************************************************************
 # @HEADER
 
+###--with-fiat=$HOME/Projects/FIAT/BUILD \
 
 BUILD_DIR=`pwd`
 
 ../configure CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops" \
 --enable-mpi --with-mpi-compilers \
---with-fiat=$HOME/Projects/FIAT/BUILD \
 --with-trilinos=$HOME/Projects/Trilinos/LINUX-OPT \
 --with-install="/usr/bin/install -c -p" \
 --prefix=$BUILD_DIR

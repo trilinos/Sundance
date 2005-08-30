@@ -134,8 +134,11 @@ int main(int argc, void** argv)
                   quad.getPoints(cellType, qPts, qWts);
 
                   BasisFamily b1 = new Lagrange(p);
+#ifdef HAVE_FIAT
                   BasisFamily b2 = new FIATLagrange(p);
-
+#else
+                  BasisFamily b2 = new Lagrange(p);
+#endif
                   for (unsigned int d=0; d<=maxDiffOrder; d++)
                     {
                       if (cellDim==0 && d>0) continue;
