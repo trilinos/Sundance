@@ -36,7 +36,34 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-#ifdef HAVE_FIAT
+//#ifdef BLARF
+
+static int line_sdvert_to_fvert[] = {0,1};
+static int line_sdline_to_fline[] = {0};
+static int *line_sd_to_fiat[] = {line_sdvert_to_fvert,line_sdline_to_fline};
+
+static int tri_sdvert_to_fvert[] = {0,1,2};
+static int tri_sdline_to_fline[] = {2,0,1};
+static int tri_sdtri_to_ftri[] = {0};
+
+static int *tri_sd_to_fiat[] = {tri_sdvert_to_fvert,
+				tri_sdline_to_fline,
+				tri_sdtri_to_ftri};
+
+static int tet_sdvert_to_fvert[] = {0,1,2,3};
+static int tet_sdline_to_fline[] = {2,0,1,3,4,5};
+static int tet_sdtri_to_ftri[] = {0,1,2,3};
+static int tet_sdtet_to_ftet[] = {0};
+
+static int *tet_sd_to_fiat[] = {tet_sdvert_to_fvert,
+				tet_sdline_to_fline,
+				tet_sdtri_to_ftri,
+				tet_sdtet_to_ftet};
+
+static int **sd_to_fiat[] = {NULL,
+			     line_sd_to_fiat,
+			     tri_sd_to_fiat,
+			     tet_sd_to_fiat};
 
 
 static CellType sdim_to_cellType[] = { PointCell ,
@@ -44,7 +71,6 @@ static CellType sdim_to_cellType[] = { PointCell ,
                                        TriangleCell ,
                                        TetCell };
 
-static int dim_to_facet_id[] = {0,2,0,0};
 
 // spatialDim is the topological dimension of the mesh
 // cellType is the kind of facet on which we're counting the
@@ -77,15 +103,18 @@ void FIATLagrange::getLocalDOFs( const CellType &cellType ,
     dofs[0] = tuple(tuple(0));
   }
   else {
+    int sdim = dimension( cellType );
+    int **transfer = sd_to_fiat[sdim];
     vector<vector<vector<int> > > eids = 
       fiatElems_[ cellType ]->getDualBasis()->getEntityIds();
     dofs.resize(eids.size());
-    for (int d=0;d<eids.size();d++) {
+    for (int d=0;d<(int)eids.size();d++) {
       dofs[d].resize(eids[d].size());
-      for (int e=0;e<eids[d].size();e++) {
+      int *transfer_cur = transfer[d];
+      for (int e=0;e<(int)eids[d].size();e++) {
         dofs[d][e].resize( eids[d][e].size() );
-        for (int n=0;n<eids[d][e].size();n++) {
-          dofs[d][e][n] = eids[d][e][n];
+        for (int n=0;n<(int)eids[d][e].size();n++) {
+          dofs[d][e][n] = eids[d][transfer_cur[e]][n];
         }
       }
     }
@@ -128,9 +157,6 @@ void FIATLagrange::refEval( int spatialDim ,
       }
     }
 
-    
-    std::cout << "points in fiat" << endl << fiat_pts << endl;
-
     // convert deriv multi index into array for fiat.
     blitz::Array<int,1> alpha(spatialDim);
     for (int i=0;i<spatialDim;i++) {
@@ -138,159 +164,35 @@ void FIATLagrange::refEval( int spatialDim ,
     }
 
     // chain rule for coordinate change;
-    double factor = pow( 0.5 , deriv.order() );
-
-    std::cout << "derivative multiindex in FIAT:" << alpha << endl;
+    double factor = pow( 2.0 , deriv.order() );
 
     CellType ct = sdim_to_cellType[spatialDim];
 
     FIAT::RCP<FIAT::ScalarPolynomialSet> phis
       = fiatElems_[ct]->getPolynomialSet()->multi_deriv_all( alpha );
 
-    blitz::Array<double,2> fiat_results 
-      = phis->tabulate( fiat_pts );
+    blitz::Array<double,2> fiat_results1 = phis->tabulate( fiat_pts );
+    blitz::Array<double,2> fiat_results(fiat_results1.rows(),fiat_results1.columns());
+    fiat_results = factor * fiat_results1;
     
     std::cout << "tabulated FIAT results" << endl << fiat_results << endl;
 
     const vector<vector<vector<int> > >&eids 
       = fiatElems_[ct]->getDualBasis()->getEntityIds();
 
-    // extract pertinent basis functions.
-    // ones from vertex 0 and 1 go in, plus from edge 2
-    // and maybe triangle 0 and tet 0.
-
-
-    if (spatialDim == 1) {
-      int cur = 0;
-
-      // get vertex dof
-
-      for (int v=0;v<2;v++) {
-        for (int n=0;n<eids[0][v].size();n++) {
-          for (int p=0;p<pts.length();p++) {
-            result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
-          }
-          cur++;
-        }
+    int cur=0;
+    int **sd_to_fiat_spd = sd_to_fiat[spatialDim];
+    for (int d=0;d<=pd;d++) {
+      int *sd_to_fiat_spd_d = sd_to_fiat_spd[d];
+      for (int e=0;e<FIAT::Shapes::num_entities(pd,d);e++) {
+	int fiat_e = sd_to_fiat_spd_d[e];
+	for (int n=0;n<(int)eids[d][e].size();n++) {
+	  for (int p=0;p<(int)pts.length();p++) {
+	    result[p][cur] = fiat_results( eids[d][fiat_e][n] , p );
+	  }
+	  cur++;
+	}
       }
-      // get internal dof
-      for (int e=0;e<1;e++) {
-        for (int n=0;n<eids[1][e].size();n++) {
-          for (int p=0;p<pts.length();p++) {
-            result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
-          }
-          cur++;
-        }
-      }
-    }
-    else if (spatialDim == 2) {
-      if (LineCell==cellType) {   // line of a triangle
-        int cur = 0;
-        for (int v=0;v<2;v++) {  // grab two vertices
-          for (int n=0;n<eids[0][v].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
-            }
-            cur++;
-          }
-        }
-        // grab line 2
-        for (int e=2;e<3;e++) {
-          for (int n=0;n<eids[1][e].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
-            }
-            cur++;
-          }
-        } 
-      }
-      else { // triangle
-        int cur = 0;
-        for (int v=0;v<3;v++) {  // grab vertices
-          for (int n=0;n<eids[0][v].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
-            }
-            cur++;
-          }
-        }
-        for (int e=0;e<3;e++) { // Lines swizzled to match Sundance
-          for (int n=0;n<eids[1][e].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[1][(e+2)%3][n] , p );
-            }
-            cur++;
-          }
-        }
-        for (int f=0;f<1;f++) { // interior
-          for (int n=0;n<eids[2][f].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[2][f][n] , p );
-            }
-            cur++;
-          }
-        }
-      }
-    }
-    else if (spatialDim == 3) {
-      if (LineCell==cellType) {   // line of a tet
-        int cur = 0;
-        for (int v=0;v<2;v++) {  // grab two vertices
-          for (int n=0;n<eids[0][v].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
-            }
-            cur++;
-          }
-        }
-        // grab line 2
-        for (int e=2;e<3;e++) {
-          for (int n=0;n<eids[1][e].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
-            }
-            cur++;
-          }
-        } 
-      }
-      else if (TriangleCell==cellType) {
-        int cur = 0;
-        for (int v=0;v<2;v++) {  // grab two vertices
-          for (int n=0;n<eids[0][v].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[0][v][n] , p );
-            }
-            cur++;
-          }
-        }
-        // grab line 2
-        for (int e=2;e<3;e++) {
-          for (int n=0;n<eids[1][e].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[1][e][n] , p );
-            }
-            cur++;
-          }
-        }
-        // grab face 0
-        for (int f=0;f<1;f++) {
-          for (int n=0;n<eids[2][0].size();n++) {
-            for (int p=0;p<pts.length();p++) {
-              result[p][cur] = factor * fiat_results( eids[2][f][n] , p );
-            }
-            cur++;
-          }
-        }
-
-      }
-      else {
-        for (int i=0;i<pts.length();i++) {
-          for (int j=0;j<nbf;j++) { 
-            result[i][j] = factor * fiat_results( j , i );
-          }
-        }
-      }
-      
     }
     return;
   }
@@ -302,4 +204,4 @@ void FIATLagrange::print(ostream& os) const
   os << "FIATLagrange(" << order() << ")";
 }
 
-#endif
+//#endif
