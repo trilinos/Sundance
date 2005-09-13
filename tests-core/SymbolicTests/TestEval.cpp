@@ -68,7 +68,7 @@ failures.append(#expr);\
 
 int main(int argc, void** argv)
 {
-  
+#ifdef BLARF
   try
 		{
       MPISession::init(&argc, &argv);
@@ -367,4 +367,5 @@ int main(int argc, void** argv)
   TimeMonitor::summarize();
 
   MPISession::finalize();
+#endif
 }

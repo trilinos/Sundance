@@ -36,7 +36,7 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-//#ifdef BLARF
+#ifdef HAVE_FIAT
 
 static int line_sdvert_to_fvert[] = {0,1};
 static int line_sdline_to_fline[] = {0};
@@ -204,4 +204,4 @@ void FIATLagrange::print(ostream& os) const
   os << "FIATLagrange(" << order() << ")";
 }
 
-//#endif
+#endif
