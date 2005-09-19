@@ -80,68 +80,27 @@ int main(int argc, void** argv)
       /* We can now set up the nonlinear problem! */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
 
-      /* Get the initial guess */
-      Vector<double> x0 = F.getInitialGuess();
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterList noxParams = reader.getParameters();
 
+      cerr << "solver params = " << noxParams << endl;
 
-      /* Create an Aztec solver for solving the linear subproblems */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
+      NOXSolver solver(noxParams, F);
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-13;
+      solver.solve();
 
-      LinearSolver<double> linSolver = new AztecSolver(azOptions,azParams);
+      Expr exactSoln = sqrt(2.0);
+      
 
+      Expr errExpr = Integral(interior, 
+                              pow(u0-exactSoln, 2),
+                              new GaussianQuadrature(2));
 
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-      /* Now let's create a NOX solver */
-
-      NOX::TSF::Group grp(x0, F, linSolver);
-
-      // Set up the status tests
-      NOX::StatusTest::NormF statusTestA(grp, 1.0e-10);
-      NOX::StatusTest::MaxIters statusTestB(20);
-      NOX::StatusTest::Combo statusTestsCombo(NOX::StatusTest::Combo::OR, statusTestA, statusTestB);
-
-      // Create the list of solver parameters
-      NOX::Parameter::List solverParameters;
-
-      // Set the solver (this is the default)
-      solverParameters.setParameter("Nonlinear Solver", "Line Search Based");
-
-      // Create the line search parameters sublist
-      NOX::Parameter::List& lineSearchParameters = solverParameters.sublist("Line Search");
-
-      // Set the line search method
-      lineSearchParameters.setParameter("Method","More'-Thuente");
-
-      // Create the solver
-      NOX::Solver::Manager solver(grp, statusTestsCombo, solverParameters);
-
-      // Solve the nonlinear system
-      NOX::StatusTest::StatusType status = solver.solve();
-
-      // Print the answer
-      cout << "\n" << "-- Parameter List From Solver --" << "\n";
-      solver.getParameterList().print(cout);
-
-      // Get the answer
-      grp = solver.getSolutionGroup();
-
-      // Print the answer
-      cout << "\n" << "-- Final Solution From Solver --" << "\n";
-      grp.print();
-
-
-      cerr << "|F| is " << endl << grp.getNormF() << endl;
-      double tol = 1.0e-10;
-      Sundance::passFailTest(grp.getNormF(), tol);
-
+      double tol = 1.0e-12;
+      Sundance::passFailTest(errorSq, tol);
     }
 	catch(exception& e)
 		{
