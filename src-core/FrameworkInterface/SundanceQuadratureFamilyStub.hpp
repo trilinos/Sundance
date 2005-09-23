@@ -81,7 +81,7 @@ namespace SundanceCore
       /** \name Describable interface */
       //@{
       /** Print to a stream */
-      virtual string description() const 
+      virtual string describe() const 
       {return "QuadratureFamilyStub[order=" + Teuchos::toString(order()) 
          +  "]";}
       //@}
