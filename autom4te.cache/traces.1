@@ -1,9 +1,9 @@
-m4trace:aclocal.m4:1085: -1- m4_include([config/tac_arg_config_chaco.m4])
-m4trace:aclocal.m4:1086: -1- m4_include([config/tac_arg_config_mpi.m4])
-m4trace:aclocal.m4:1087: -1- m4_include([config/tac_arg_enable_feature.m4])
-m4trace:aclocal.m4:1088: -1- m4_include([config/tac_arg_with_ar.m4])
-m4trace:aclocal.m4:1089: -1- m4_include([config/tac_arg_with_incdirs.m4])
-m4trace:aclocal.m4:1090: -1- m4_include([config/tac_arg_with_libdirs.m4])
+m4trace:aclocal.m4:892: -1- m4_include([config/tac_arg_config_chaco.m4])
+m4trace:aclocal.m4:893: -1- m4_include([config/tac_arg_config_mpi.m4])
+m4trace:aclocal.m4:894: -1- m4_include([config/tac_arg_enable_feature.m4])
+m4trace:aclocal.m4:895: -1- m4_include([config/tac_arg_with_ar.m4])
+m4trace:aclocal.m4:896: -1- m4_include([config/tac_arg_with_incdirs.m4])
+m4trace:aclocal.m4:897: -1- m4_include([config/tac_arg_with_libdirs.m4])
 m4trace:configure.ac:42: -1- AC_INIT([Sundance], [2.0], [krlong@sandia.gov])
 m4trace:configure.ac:42: -1- m4_pattern_forbid([^_?A[CHUM]_])
 m4trace:configure.ac:42: -1- m4_pattern_forbid([_AC_])
@@ -59,233 +59,239 @@ m4trace:configure.ac:42: -1- AC_SUBST([ECHO_T])
 m4trace:configure.ac:42: -1- AC_SUBST([LIBS])
 m4trace:configure.ac:52: -1- AC_CONFIG_AUX_DIR([config])
 m4trace:configure.ac:57: -1- _m4_warn([obsolete], [The macro `AM_CONFIG_HEADER' is obsolete.
-You should run autoupdate.], [aclocal.m4:421: AM_CONFIG_HEADER is expanded from...
+You should run autoupdate.], [aclocal.m4:353: AM_CONFIG_HEADER is expanded from...
 configure.ac:57: the top level])
 m4trace:configure.ac:57: -1- AC_CONFIG_HEADERS([src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in])
-m4trace:configure.ac:72: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:58: -1- _m4_warn([obsolete], [The macro `AM_CONFIG_HEADER' is obsolete.
+You should run autoupdate.], [aclocal.m4:353: AM_CONFIG_HEADER is expanded from...
+configure.ac:58: the top level])
+m4trace:configure.ac:58: -1- AC_CONFIG_HEADERS([src-solvers/TSF_config.h:src-solvers/TSF_config.h.in])
+m4trace:configure.ac:73: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-configure.ac:72: the top level])
-m4trace:configure.ac:83: -1- AM_MAINTAINER_MODE
-m4trace:configure.ac:83: -1- AM_CONDITIONAL([MAINTAINER_MODE], [test $USE_MAINTAINER_MODE = yes])
-m4trace:configure.ac:83: -1- AC_SUBST([MAINTAINER_MODE_TRUE])
-m4trace:configure.ac:83: -1- AC_SUBST([MAINTAINER_MODE_FALSE])
-m4trace:configure.ac:83: -1- AC_SUBST([MAINT])
-m4trace:configure.ac:87: -1- AC_CANONICAL_TARGET
-m4trace:configure.ac:87: -1- AC_CANONICAL_HOST
-m4trace:configure.ac:87: -1- AC_CANONICAL_BUILD
-m4trace:configure.ac:87: -1- AC_SUBST([build], [$ac_cv_build])
-m4trace:configure.ac:87: -1- AC_SUBST([build_cpu], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([build_vendor], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([build_os], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([host], [$ac_cv_host])
-m4trace:configure.ac:87: -1- AC_SUBST([host_cpu], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([host_vendor], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([host_os], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([target], [$ac_cv_target])
-m4trace:configure.ac:87: -1- AC_SUBST([target_cpu], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
-m4trace:configure.ac:87: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
-m4trace:configure.ac:91: -1- AM_INIT_AUTOMAKE([1.8.2])
-m4trace:configure.ac:91: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
-m4trace:configure.ac:91: -1- AM_AUTOMAKE_VERSION([1.9.1])
-m4trace:configure.ac:91: -1- AC_PROG_INSTALL
-m4trace:configure.ac:91: -1- AC_SUBST([INSTALL_PROGRAM])
-m4trace:configure.ac:91: -1- AC_SUBST([INSTALL_SCRIPT])
-m4trace:configure.ac:91: -1- AC_SUBST([INSTALL_DATA])
-m4trace:configure.ac:91: -1- AC_SUBST([CYGPATH_W])
-m4trace:configure.ac:91: -1- AC_SUBST([PACKAGE], ['AC_PACKAGE_TARNAME'])
-m4trace:configure.ac:91: -1- AC_SUBST([VERSION], ['AC_PACKAGE_VERSION'])
-m4trace:configure.ac:91: -1- AC_DEFINE_TRACE_LITERAL([PACKAGE])
-m4trace:configure.ac:91: -1- AH_OUTPUT([PACKAGE], [/* Name of package */
+configure.ac:73: the top level])
+m4trace:configure.ac:84: -1- AM_MAINTAINER_MODE
+m4trace:configure.ac:84: -1- AM_CONDITIONAL([MAINTAINER_MODE], [test $USE_MAINTAINER_MODE = yes])
+m4trace:configure.ac:84: -1- AC_SUBST([MAINTAINER_MODE_TRUE])
+m4trace:configure.ac:84: -1- AC_SUBST([MAINTAINER_MODE_FALSE])
+m4trace:configure.ac:84: -1- AC_SUBST([MAINT])
+m4trace:configure.ac:88: -1- AC_CANONICAL_TARGET
+m4trace:configure.ac:88: -1- AC_CANONICAL_HOST
+m4trace:configure.ac:88: -1- AC_CANONICAL_BUILD
+m4trace:configure.ac:88: -1- AC_SUBST([build], [$ac_cv_build])
+m4trace:configure.ac:88: -1- AC_SUBST([build_cpu], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([build_vendor], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([build_os], [`echo $ac_cv_build | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([host], [$ac_cv_host])
+m4trace:configure.ac:88: -1- AC_SUBST([host_cpu], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([host_vendor], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([host_os], [`echo $ac_cv_host | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([target], [$ac_cv_target])
+m4trace:configure.ac:88: -1- AC_SUBST([target_cpu], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\1/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\2/'`])
+m4trace:configure.ac:88: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
+m4trace:configure.ac:92: -1- AM_INIT_AUTOMAKE([1.8.2])
+m4trace:configure.ac:92: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
+m4trace:configure.ac:92: -1- AM_AUTOMAKE_VERSION([1.9.5])
+m4trace:configure.ac:92: -1- AC_PROG_INSTALL
+m4trace:configure.ac:92: -1- AC_SUBST([INSTALL_PROGRAM])
+m4trace:configure.ac:92: -1- AC_SUBST([INSTALL_SCRIPT])
+m4trace:configure.ac:92: -1- AC_SUBST([INSTALL_DATA])
+m4trace:configure.ac:92: -1- AC_SUBST([CYGPATH_W])
+m4trace:configure.ac:92: -1- AC_SUBST([PACKAGE], ['AC_PACKAGE_TARNAME'])
+m4trace:configure.ac:92: -1- AC_SUBST([VERSION], ['AC_PACKAGE_VERSION'])
+m4trace:configure.ac:92: -1- AC_DEFINE_TRACE_LITERAL([PACKAGE])
+m4trace:configure.ac:92: -1- AH_OUTPUT([PACKAGE], [/* Name of package */
 #undef PACKAGE])
-m4trace:configure.ac:91: -1- AC_DEFINE_TRACE_LITERAL([VERSION])
-m4trace:configure.ac:91: -1- AH_OUTPUT([VERSION], [/* Version number of package */
+m4trace:configure.ac:92: -1- AC_DEFINE_TRACE_LITERAL([VERSION])
+m4trace:configure.ac:92: -1- AH_OUTPUT([VERSION], [/* Version number of package */
 #undef VERSION])
-m4trace:configure.ac:91: -1- AC_SUBST([ACLOCAL])
-m4trace:configure.ac:91: -1- AC_SUBST([AUTOCONF])
-m4trace:configure.ac:91: -1- AC_SUBST([AUTOMAKE])
-m4trace:configure.ac:91: -1- AC_SUBST([AUTOHEADER])
-m4trace:configure.ac:91: -1- AC_SUBST([MAKEINFO])
-m4trace:configure.ac:91: -1- AC_SUBST([install_sh])
-m4trace:configure.ac:91: -1- AC_SUBST([STRIP])
-m4trace:configure.ac:91: -1- AC_SUBST([ac_ct_STRIP])
-m4trace:configure.ac:91: -1- AC_SUBST([INSTALL_STRIP_PROGRAM])
-m4trace:configure.ac:91: -1- AC_SUBST([mkdir_p])
-m4trace:configure.ac:91: -1- AC_PROG_AWK
-m4trace:configure.ac:91: -1- AC_SUBST([AWK])
-m4trace:configure.ac:91: -1- AC_PROG_MAKE_SET
-m4trace:configure.ac:91: -1- AC_SUBST([SET_MAKE])
-m4trace:configure.ac:91: -1- AC_SUBST([am__leading_dot])
-m4trace:configure.ac:91: -1- AC_SUBST([AMTAR])
-m4trace:configure.ac:91: -1- AC_SUBST([am__tar])
-m4trace:configure.ac:91: -1- AC_SUBST([am__untar])
-m4trace:configure.ac:101: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:92: -1- AC_SUBST([ACLOCAL])
+m4trace:configure.ac:92: -1- AC_SUBST([AUTOCONF])
+m4trace:configure.ac:92: -1- AC_SUBST([AUTOMAKE])
+m4trace:configure.ac:92: -1- AC_SUBST([AUTOHEADER])
+m4trace:configure.ac:92: -1- AC_SUBST([MAKEINFO])
+m4trace:configure.ac:92: -1- AC_SUBST([install_sh])
+m4trace:configure.ac:92: -1- AC_SUBST([STRIP])
+m4trace:configure.ac:92: -1- AC_SUBST([ac_ct_STRIP])
+m4trace:configure.ac:92: -1- AC_SUBST([INSTALL_STRIP_PROGRAM])
+m4trace:configure.ac:92: -1- AC_SUBST([mkdir_p])
+m4trace:configure.ac:92: -1- AC_PROG_AWK
+m4trace:configure.ac:92: -1- AC_SUBST([AWK])
+m4trace:configure.ac:92: -1- AC_PROG_MAKE_SET
+m4trace:configure.ac:92: -1- AC_SUBST([SET_MAKE])
+m4trace:configure.ac:92: -1- AC_SUBST([am__leading_dot])
+m4trace:configure.ac:92: -1- AC_SUBST([AMTAR])
+m4trace:configure.ac:92: -1- AC_SUBST([am__tar])
+m4trace:configure.ac:92: -1- AC_SUBST([am__untar])
+m4trace:configure.ac:102: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1303: AC_ARG_ENABLE is expanded from...
 config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:101: the top level])
-m4trace:configure.ac:101: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:102: the top level])
+m4trace:configure.ac:102: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:101: the top level])
-m4trace:configure.ac:101: -1- AC_SUBST([MPI_CXX])
-m4trace:configure.ac:101: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:102: the top level])
+m4trace:configure.ac:102: -1- AC_SUBST([MPI_CXX])
+m4trace:configure.ac:102: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:101: the top level])
-m4trace:configure.ac:101: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:102: the top level])
+m4trace:configure.ac:102: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:101: the top level])
-m4trace:configure.ac:101: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:102: the top level])
+m4trace:configure.ac:102: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:101: the top level])
-m4trace:configure.ac:101: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:102: the top level])
+m4trace:configure.ac:102: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 config/tac_arg_config_mpi.m4:175: TAC_ARG_CONFIG_MPI is expanded from...
-configure.ac:101: the top level])
-m4trace:configure.ac:101: -1- AC_DEFINE_TRACE_LITERAL([HAVE_MPI])
-m4trace:configure.ac:101: -1- AH_OUTPUT([HAVE_MPI], [/* define if we want to use MPI */
+configure.ac:102: the top level])
+m4trace:configure.ac:102: -1- AC_DEFINE_TRACE_LITERAL([HAVE_MPI])
+m4trace:configure.ac:102: -1- AH_OUTPUT([HAVE_MPI], [/* define if we want to use MPI */
 #undef HAVE_MPI])
-m4trace:configure.ac:101: -1- AM_CONDITIONAL([HAVE_MPI], [test "X${HAVE_PKG_MPI}" = "Xyes"])
-m4trace:configure.ac:101: -1- AC_SUBST([HAVE_MPI_TRUE])
-m4trace:configure.ac:101: -1- AC_SUBST([HAVE_MPI_FALSE])
-m4trace:configure.ac:101: -1- AC_SUBST([MPI_CXX_EXISTS])
-m4trace:configure.ac:101: -1- AC_SUBST([MPI_CC_EXISTS])
-m4trace:configure.ac:101: -1- AC_SUBST([MPI_F77_EXISTS])
-m4trace:configure.ac:107: -1- AC_PROG_CC([cc gcc])
-m4trace:configure.ac:107: -1- AC_SUBST([CC])
-m4trace:configure.ac:107: -1- AC_SUBST([CFLAGS])
-m4trace:configure.ac:107: -1- AC_SUBST([LDFLAGS])
-m4trace:configure.ac:107: -1- AC_SUBST([CPPFLAGS])
-m4trace:configure.ac:107: -1- AC_SUBST([CC])
-m4trace:configure.ac:107: -1- AC_SUBST([ac_ct_CC])
-m4trace:configure.ac:107: -1- AC_SUBST([EXEEXT], [$ac_cv_exeext])
-m4trace:configure.ac:107: -1- AC_SUBST([OBJEXT], [$ac_cv_objext])
-m4trace:configure.ac:107: -1- AC_SUBST([DEPDIR], ["${am__leading_dot}deps"])
-m4trace:configure.ac:107: -1- AC_SUBST([am__include])
-m4trace:configure.ac:107: -1- AC_SUBST([am__quote])
-m4trace:configure.ac:107: -1- AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
-m4trace:configure.ac:107: -1- AC_SUBST([AMDEP_TRUE])
-m4trace:configure.ac:107: -1- AC_SUBST([AMDEP_FALSE])
-m4trace:configure.ac:107: -1- AC_SUBST([AMDEPBACKSLASH])
-m4trace:configure.ac:107: -1- AC_SUBST([CCDEPMODE], [depmode=$am_cv_CC_dependencies_compiler_type])
-m4trace:configure.ac:107: -1- AM_CONDITIONAL([am__fastdepCC], [
-  test "x$enable_dependency_tracking" != xno \
-  && test "$am_cv_CC_dependencies_compiler_type" = gcc3])
-m4trace:configure.ac:107: -1- AC_SUBST([am__fastdepCC_TRUE])
-m4trace:configure.ac:107: -1- AC_SUBST([am__fastdepCC_FALSE])
-m4trace:configure.ac:108: -1- AC_PROG_CXX([CC g++ gcc c++ cxx])
-m4trace:configure.ac:108: -1- AC_SUBST([CXX])
-m4trace:configure.ac:108: -1- AC_SUBST([CXXFLAGS])
+m4trace:configure.ac:102: -1- AM_CONDITIONAL([HAVE_MPI], [test "X${HAVE_PKG_MPI}" = "Xyes"])
+m4trace:configure.ac:102: -1- AC_SUBST([HAVE_MPI_TRUE])
+m4trace:configure.ac:102: -1- AC_SUBST([HAVE_MPI_FALSE])
+m4trace:configure.ac:102: -1- AC_SUBST([MPI_CXX_EXISTS])
+m4trace:configure.ac:102: -1- AC_SUBST([MPI_CC_EXISTS])
+m4trace:configure.ac:102: -1- AC_SUBST([MPI_F77_EXISTS])
+m4trace:configure.ac:108: -1- AC_PROG_CC([cc gcc])
+m4trace:configure.ac:108: -1- AC_SUBST([CC])
+m4trace:configure.ac:108: -1- AC_SUBST([CFLAGS])
 m4trace:configure.ac:108: -1- AC_SUBST([LDFLAGS])
 m4trace:configure.ac:108: -1- AC_SUBST([CPPFLAGS])
-m4trace:configure.ac:108: -1- AC_SUBST([CXX])
-m4trace:configure.ac:108: -1- AC_SUBST([ac_ct_CXX])
-m4trace:configure.ac:108: -1- AC_SUBST([CXXDEPMODE], [depmode=$am_cv_CXX_dependencies_compiler_type])
-m4trace:configure.ac:108: -1- AM_CONDITIONAL([am__fastdepCXX], [
+m4trace:configure.ac:108: -1- AC_SUBST([CC])
+m4trace:configure.ac:108: -1- AC_SUBST([ac_ct_CC])
+m4trace:configure.ac:108: -1- AC_SUBST([EXEEXT], [$ac_cv_exeext])
+m4trace:configure.ac:108: -1- AC_SUBST([OBJEXT], [$ac_cv_objext])
+m4trace:configure.ac:108: -1- AC_SUBST([DEPDIR], ["${am__leading_dot}deps"])
+m4trace:configure.ac:108: -1- AC_SUBST([am__include])
+m4trace:configure.ac:108: -1- AC_SUBST([am__quote])
+m4trace:configure.ac:108: -1- AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
+m4trace:configure.ac:108: -1- AC_SUBST([AMDEP_TRUE])
+m4trace:configure.ac:108: -1- AC_SUBST([AMDEP_FALSE])
+m4trace:configure.ac:108: -1- AC_SUBST([AMDEPBACKSLASH])
+m4trace:configure.ac:108: -1- AC_SUBST([CCDEPMODE], [depmode=$am_cv_CC_dependencies_compiler_type])
+m4trace:configure.ac:108: -1- AM_CONDITIONAL([am__fastdepCC], [
+  test "x$enable_dependency_tracking" != xno \
+  && test "$am_cv_CC_dependencies_compiler_type" = gcc3])
+m4trace:configure.ac:108: -1- AC_SUBST([am__fastdepCC_TRUE])
+m4trace:configure.ac:108: -1- AC_SUBST([am__fastdepCC_FALSE])
+m4trace:configure.ac:109: -1- AC_PROG_CXX([CC g++ gcc c++ cxx])
+m4trace:configure.ac:109: -1- AC_SUBST([CXX])
+m4trace:configure.ac:109: -1- AC_SUBST([CXXFLAGS])
+m4trace:configure.ac:109: -1- AC_SUBST([LDFLAGS])
+m4trace:configure.ac:109: -1- AC_SUBST([CPPFLAGS])
+m4trace:configure.ac:109: -1- AC_SUBST([CXX])
+m4trace:configure.ac:109: -1- AC_SUBST([ac_ct_CXX])
+m4trace:configure.ac:109: -1- AC_SUBST([CXXDEPMODE], [depmode=$am_cv_CXX_dependencies_compiler_type])
+m4trace:configure.ac:109: -1- AM_CONDITIONAL([am__fastdepCXX], [
   test "x$enable_dependency_tracking" != xno \
   && test "$am_cv_CXX_dependencies_compiler_type" = gcc3])
-m4trace:configure.ac:108: -1- AC_SUBST([am__fastdepCXX_TRUE])
-m4trace:configure.ac:108: -1- AC_SUBST([am__fastdepCXX_FALSE])
-m4trace:configure.ac:109: -1- AC_SUBST([F77])
-m4trace:configure.ac:109: -1- AC_SUBST([FFLAGS])
-m4trace:configure.ac:109: -1- AC_SUBST([LDFLAGS])
-m4trace:configure.ac:109: -1- AC_SUBST([F77])
-m4trace:configure.ac:109: -1- AC_SUBST([ac_ct_F77])
-m4trace:configure.ac:110: -1- AC_PROG_RANLIB
-m4trace:configure.ac:110: -1- AC_SUBST([RANLIB])
-m4trace:configure.ac:110: -1- AC_SUBST([ac_ct_RANLIB])
-m4trace:configure.ac:118: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:109: -1- AC_SUBST([am__fastdepCXX_TRUE])
+m4trace:configure.ac:109: -1- AC_SUBST([am__fastdepCXX_FALSE])
+m4trace:configure.ac:110: -1- AC_SUBST([F77])
+m4trace:configure.ac:110: -1- AC_SUBST([FFLAGS])
+m4trace:configure.ac:110: -1- AC_SUBST([LDFLAGS])
+m4trace:configure.ac:110: -1- AC_SUBST([F77])
+m4trace:configure.ac:110: -1- AC_SUBST([ac_ct_F77])
+m4trace:configure.ac:111: -1- AC_PROG_RANLIB
+m4trace:configure.ac:111: -1- AC_SUBST([RANLIB])
+m4trace:configure.ac:111: -1- AC_SUBST([ac_ct_RANLIB])
+m4trace:configure.ac:119: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_ar.m4:38: TAC_ARG_WITH_AR is expanded from...
-configure.ac:118: the top level])
-m4trace:configure.ac:118: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [true])
-m4trace:configure.ac:118: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
-m4trace:configure.ac:118: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
-m4trace:configure.ac:118: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [false])
-m4trace:configure.ac:118: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
-m4trace:configure.ac:118: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
-m4trace:configure.ac:118: -1- AC_SUBST([ALTERNATE_AR])
-m4trace:configure.ac:124: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:119: the top level])
+m4trace:configure.ac:119: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [true])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
+m4trace:configure.ac:119: -1- AM_CONDITIONAL([USE_ALTERNATE_AR], [false])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_TRUE])
+m4trace:configure.ac:119: -1- AC_SUBST([USE_ALTERNATE_AR_FALSE])
+m4trace:configure.ac:119: -1- AC_SUBST([ALTERNATE_AR])
+m4trace:configure.ac:125: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1303: AC_ARG_ENABLE is expanded from...
 config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
-configure.ac:124: the top level])
-m4trace:configure.ac:124: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:125: the top level])
+m4trace:configure.ac:125: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
-configure.ac:124: the top level])
-m4trace:configure.ac:124: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:125: the top level])
+m4trace:configure.ac:125: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
 config/tac_arg_config_chaco.m4:58: TAC_ARG_CONFIG_CHACO is expanded from...
-configure.ac:124: the top level])
-m4trace:configure.ac:124: -1- AC_DEFINE_TRACE_LITERAL([HAVE_CHACO])
-m4trace:configure.ac:124: -1- AH_OUTPUT([HAVE_CHACO], [/* define if we want to use Chaco */
+configure.ac:125: the top level])
+m4trace:configure.ac:125: -1- AC_DEFINE_TRACE_LITERAL([HAVE_CHACO])
+m4trace:configure.ac:125: -1- AH_OUTPUT([HAVE_CHACO], [/* define if we want to use Chaco */
 #undef HAVE_CHACO])
-m4trace:configure.ac:124: -1- AM_CONDITIONAL([HAVE_CHACO], [test "X${HAVE_PKG_CHACO}" = "Xyes"])
-m4trace:configure.ac:124: -1- AC_SUBST([HAVE_CHACO_TRUE])
-m4trace:configure.ac:124: -1- AC_SUBST([HAVE_CHACO_FALSE])
-m4trace:configure.ac:133: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:125: -1- AM_CONDITIONAL([HAVE_CHACO], [test "X${HAVE_PKG_CHACO}" = "Xyes"])
+m4trace:configure.ac:125: -1- AC_SUBST([HAVE_CHACO_TRUE])
+m4trace:configure.ac:125: -1- AC_SUBST([HAVE_CHACO_FALSE])
+m4trace:configure.ac:134: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
-configure.ac:133: the top level])
-m4trace:configure.ac:159: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:134: the top level])
+m4trace:configure.ac:160: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
-configure.ac:159: the top level])
-m4trace:configure.ac:159: -1- AC_DEFINE_TRACE_LITERAL([HAVE_FIAT])
-m4trace:configure.ac:159: -1- AH_OUTPUT([HAVE_FIAT], [/* define if we want to use FIAT */
+configure.ac:160: the top level])
+m4trace:configure.ac:160: -1- AC_DEFINE_TRACE_LITERAL([HAVE_FIAT])
+m4trace:configure.ac:160: -1- AH_OUTPUT([HAVE_FIAT], [/* define if we want to use FIAT */
 #undef HAVE_FIAT])
-m4trace:configure.ac:180: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:181: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_enable_feature.m4:39: TAC_ARG_ENABLE_FEATURE is expanded from...
-configure.ac:180: the top level])
-m4trace:configure.ac:180: -1- AC_DEFINE_TRACE_LITERAL([HAVE_TESTS])
-m4trace:configure.ac:180: -1- AH_OUTPUT([HAVE_TESTS], [/* Define if want to build tests */
+configure.ac:181: the top level])
+m4trace:configure.ac:181: -1- AC_DEFINE_TRACE_LITERAL([HAVE_TESTS])
+m4trace:configure.ac:181: -1- AH_OUTPUT([HAVE_TESTS], [/* Define if want to build tests */
 #undef HAVE_TESTS])
-m4trace:configure.ac:181: -1- AM_CONDITIONAL([BUILD_TESTS], [test "X$ac_cv_use_tests" != "Xno"])
-m4trace:configure.ac:181: -1- AC_SUBST([BUILD_TESTS_TRUE])
-m4trace:configure.ac:181: -1- AC_SUBST([BUILD_TESTS_FALSE])
-m4trace:configure.ac:183: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:182: -1- AM_CONDITIONAL([BUILD_TESTS], [test "X$ac_cv_use_tests" != "Xno"])
+m4trace:configure.ac:182: -1- AC_SUBST([BUILD_TESTS_TRUE])
+m4trace:configure.ac:182: -1- AC_SUBST([BUILD_TESTS_FALSE])
+m4trace:configure.ac:184: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_enable_feature.m4:39: TAC_ARG_ENABLE_FEATURE is expanded from...
-configure.ac:183: the top level])
-m4trace:configure.ac:183: -1- AC_DEFINE_TRACE_LITERAL([HAVE_EXAMPLES])
-m4trace:configure.ac:183: -1- AH_OUTPUT([HAVE_EXAMPLES], [/* Define if want to build examples */
+configure.ac:184: the top level])
+m4trace:configure.ac:184: -1- AC_DEFINE_TRACE_LITERAL([HAVE_EXAMPLES])
+m4trace:configure.ac:184: -1- AH_OUTPUT([HAVE_EXAMPLES], [/* Define if want to build examples */
 #undef HAVE_EXAMPLES])
-m4trace:configure.ac:184: -1- AM_CONDITIONAL([BUILD_EXAMPLES], [test "X$ac_cv_use_examples" != "Xno"])
-m4trace:configure.ac:184: -1- AC_SUBST([BUILD_EXAMPLES_TRUE])
-m4trace:configure.ac:184: -1- AC_SUBST([BUILD_EXAMPLES_FALSE])
-m4trace:configure.ac:191: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:185: -1- AM_CONDITIONAL([BUILD_EXAMPLES], [test "X$ac_cv_use_examples" != "Xno"])
+m4trace:configure.ac:185: -1- AC_SUBST([BUILD_EXAMPLES_TRUE])
+m4trace:configure.ac:185: -1- AC_SUBST([BUILD_EXAMPLES_FALSE])
+m4trace:configure.ac:192: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_libdirs.m4:23: TAC_ARG_WITH_LIBDIRS is expanded from...
-configure.ac:191: the top level])
-m4trace:configure.ac:193: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:192: the top level])
+m4trace:configure.ac:194: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_incdirs.m4:23: TAC_ARG_WITH_INCDIRS is expanded from...
-configure.ac:193: the top level])
-m4trace:configure.ac:199: -1- AC_SUBST([ac_aux_dir])
-m4trace:configure.ac:200: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
-m4trace:configure.ac:201: -1- AC_SUBST([FIAT_STR])
-m4trace:configure.ac:202: -1- AC_SUBST([FIAT_BUILD_DIR])
-m4trace:configure.ac:232: -1- AC_CONFIG_FILES([
+configure.ac:194: the top level])
+m4trace:configure.ac:200: -1- AC_SUBST([ac_aux_dir])
+m4trace:configure.ac:201: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
+m4trace:configure.ac:202: -1- AC_SUBST([FIAT_STR])
+m4trace:configure.ac:203: -1- AC_SUBST([FIAT_BUILD_DIR])
+m4trace:configure.ac:235: -1- AC_CONFIG_FILES([
   Makefile  
   Makefile.export
+  Makefile.export.TSFExtended
   Makefile.site.sundance
   examples-tutorial/Makefile
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile
   src-std-framework/Makefile
+  src-solvers/Makefile
   src-std-framework/SundanceDefaultPath.hpp
   src-xml/Makefile
   tests-utils/Makefile
@@ -301,7 +307,7 @@ m4trace:configure.ac:232: -1- AC_CONFIG_FILES([
   tests-std-framework/Assembly/Makefile
   tests-std-framework/Problem/Makefile
 ])
-m4trace:configure.ac:234: -1- AC_SUBST([CHACO_LIB])
-m4trace:configure.ac:235: -1- AC_SUBST([TRILINOS_DIR])
-m4trace:configure.ac:237: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:237: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:237: -1- AC_SUBST([CHACO_LIB])
+m4trace:configure.ac:238: -1- AC_SUBST([TRILINOS_DIR])
+m4trace:configure.ac:240: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:240: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])

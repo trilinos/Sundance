@@ -112,7 +112,6 @@
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
-#include "NOX_TSF_Group.H"
 #include "TSFNOXSolver.H"
 
 

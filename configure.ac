@@ -55,6 +55,7 @@ AC_CONFIG_AUX_DIR(config)
 # from src/Support/SundanceConfig.h.in
 
 AM_CONFIG_HEADER(src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in)
+AM_CONFIG_HEADER(src-solvers/TSF_config.h:src-solvers/TSF_config.h.in)
 
 
 
@@ -209,12 +210,14 @@ AC_SUBST(FIAT_BUILD_DIR)
 AC_CONFIG_FILES([
   Makefile  
   Makefile.export
+  Makefile.export.TSFExtended
   Makefile.site.sundance
   examples-tutorial/Makefile
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile
   src-std-framework/Makefile
+  src-solvers/Makefile
   src-std-framework/SundanceDefaultPath.hpp
   src-xml/Makefile
   tests-utils/Makefile

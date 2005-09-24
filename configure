@@ -1370,6 +1370,8 @@ ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 
           ac_config_headers="$ac_config_headers src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in"
 
+          ac_config_headers="$ac_config_headers src-solvers/TSF_config.h:src-solvers/TSF_config.h.in"
+
 
 
 
@@ -3711,7 +3713,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3714:" \
+echo "$as_me:3716:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4273,7 +4275,7 @@ fi;
 # Output files
 # ------------------------------------------------------------------------
 
-                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile Makefile.export Makefile.site.sundance examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
+                                                                                                                                                                                                                                                ac_config_files="$ac_config_files Makefile Makefile.export Makefile.export.TSFExtended Makefile.site.sundance examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-solvers/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
 
 
 
@@ -4886,12 +4888,14 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "Makefile.export" ) CONFIG_FILES="$CONFIG_FILES Makefile.export" ;;
+  "Makefile.export.TSFExtended" ) CONFIG_FILES="$CONFIG_FILES Makefile.export.TSFExtended" ;;
   "Makefile.site.sundance" ) CONFIG_FILES="$CONFIG_FILES Makefile.site.sundance" ;;
   "examples-tutorial/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples-tutorial/Makefile" ;;
   "src-utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-utils/Makefile" ;;
   "src-core/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-core/Makefile" ;;
   "src-std-mesh/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-std-mesh/Makefile" ;;
   "src-std-framework/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-std-framework/Makefile" ;;
+  "src-solvers/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-solvers/Makefile" ;;
   "src-std-framework/SundanceDefaultPath.hpp" ) CONFIG_FILES="$CONFIG_FILES src-std-framework/SundanceDefaultPath.hpp" ;;
   "src-xml/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-xml/Makefile" ;;
   "tests-utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-utils/Makefile" ;;
@@ -4908,6 +4912,7 @@ do
   "tests-std-framework/Problem/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Problem/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "src-utils/SundanceConfig.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in" ;;
+  "src-solvers/TSF_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src-solvers/TSF_config.h:src-solvers/TSF_config.h.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;

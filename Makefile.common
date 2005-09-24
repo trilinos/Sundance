@@ -49,22 +49,42 @@ SUNDANCE_DIR = $(top_srcdir)
 #
 # ------------------------------------------------------------------------
 
+SOLVERS_LIB_PATH =  \
+-L$(top_builddir)/src-solvers
+
+SOLVERS_INCLUDE_PATH =  \
+-I$(top_builddir)/src-solvers \
+-I$(top_srcdir)/src-solvers/Vectors \
+-I$(top_srcdir)/src-solvers/Utils \
+-I$(top_srcdir)/src-solvers/Concrete \
+-I$(top_srcdir)/src-solvers/Operators \
+-I$(top_srcdir)/src-solvers/LinearSolvers \
+-I$(top_srcdir)/src-solvers/NonlinearSolvers \
+-I$(top_srcdir)/src-solvers/Preconditioners \
+-I$(top_builddir)/src-solvers/Vectors \
+-I$(top_builddir)/src-solvers/Utils \
+-I$(top_builddir)/src-solvers/Concrete \
+-I$(top_builddir)/src-solvers/Operators \
+-I$(top_builddir)/src-solvers/LinearSolvers \
+-I$(top_builddir)/src-solvers/NonlinearSolvers \
+-I$(top_builddir)/src-solvers/Preconditioners 
+
+SOLVERS_LIBS = $(SOLVERS_LIB_PATH) -lTSFExtended $(TRILINOS_LIBS)
+
+SOLVERS_INCLUDES = $(SOLVERS_INCLUDE_PATH) $(TRILINOS_INCLUDES)
 
 
-UTIL_LIB_PATH = \
--L$(top_builddir)/src-utils 
+UTIL_LIB_PATH = -L$(top_builddir)/src-utils $(SOLVERS_LIB_PATH) 
 
-UTIL_LIBS = \
-$(UTIL_LIB_PATH) \
--lsundanceUtils \
-$(TRILINOS_LIBS)
+UTIL_LIBS = $(UTIL_LIB_PATH) -lsundanceUtils $(SOLVERS_LIBS)
+
 
 
 UTIL_INCLUDES =  \
 -I$(top_builddir)/src-utils \
 -I$(top_srcdir)/src-utils/Utilities \
 -I$(top_builddir)/src-utils/Utilities \
-	$(TRILINOS_INCLUDES)
+$(SOLVERS_INCLUDES)
 
 CORE_LIBS = $(CORE_LIB_PATH) -lsundanceCore $(UTIL_LIBS)
 
@@ -136,8 +156,11 @@ STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
 
 
 
+
+
+
 XML_LIB_PATH =  \
--L$(top_builddir)/src-std-framework 
+-L$(top_builddir)/src-xml 
 
 XML_INCLUDE_PATH =  \
 -I$(top_srcdir)/src-xml \
@@ -155,6 +178,9 @@ $(CORE_LIB_PATH) -lsundanceXML -lsundanceStdFwk \
 # ------------------------------------------------------------------------
 
 include $(top_builddir)/Makefile.site.sundance
+include $(top_builddir)/Makefile.export.TSFExtended
+include $(TRILINOS_DIR)/packages/teuchos/Makefile.export
+
 
 
 
@@ -164,8 +190,6 @@ include $(top_builddir)/Makefile.site.sundance
 # include macros specified by Trilinos
 #
 # ------------------------------------------------------------------------
-
-include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export.TSFExtended
 
 
 RANLIB = $(TEUCHOS_RANLIB)

@@ -87,10 +87,14 @@ EXAMPLES_SUBDIR=examples-tutorial
 endif
 
 if BUILD_TESTS
-SUBDIRS = src-utils tests-utils src-core tests-core src-std-mesh tests-std-mesh \
-src-std-framework tests-std-framework src-xml  $(EXAMPLES_SUBDIR)
+SUBDIRS = src-solvers \
+src-utils tests-utils \
+src-core tests-core \
+src-std-mesh tests-std-mesh \
+src-std-framework tests-std-framework \
+src-xml  $(EXAMPLES_SUBDIR)
 else
-SUBDIRS = src-utils src-core src-std-mesh src-std-framework src-xml  $(EXAMPLES_SUBDIR)
+SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework src-xml  $(EXAMPLES_SUBDIR)
 endif
 
 
@@ -100,6 +104,7 @@ endif
 ## #######################################################################
 
 libonly:
+	(cd src-solvers; make install)
 	(cd src-utils; make install)
 	(cd src-core; make install)
 	(cd src-std-mesh; make install)
