@@ -362,14 +362,15 @@ void Sundance:: passFailTest(double error, double tol)
     {
       cerr << "error norm = " << error << endl;
       cerr << "tolerance = " << tol << endl;
-      if (checkTest(error, tol))
-        {
-          cerr << "test PASSED" << endl;
-        }
-      else
-        {
-          cerr << "test FAILED" << endl;
-        }
     }
+  if (checkTest(error, tol))
+    {
+      cerr << "test PASSED" << endl;
+    }
+  else
+    {
+      cerr << "test FAILED" << endl;
+    }
+
 }
 

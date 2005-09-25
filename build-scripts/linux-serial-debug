@@ -1,4 +1,6 @@
-#@HEADER
+#!/bin/sh
+
+# @HEADER
 # ************************************************************************
 # 
 #                              Sundance
@@ -26,25 +28,14 @@
 # Sandia National Laboratories, Livermore, California, USA
 # 
 # ************************************************************************
-#@HEADER
+# @HEADER
 
+###--with-fiat=$HOME/Projects/FIAT/BUILD \
 
-EXEEXT = .exe
+BUILD_DIR=`pwd`
 
-noinst_PROGRAMS = mapPerfTest
+../configure CXXFLAGS="-g"  \
+--with-trilinos=$HOME/Software/Math/trilinos-6.0.2/LINUX-SERIAL-DEBUG \
+--with-install="/usr/bin/install -c -p" \
+--prefix=$BUILD_DIR
 
-LIBDEPS = $(top_builddir)/src-utils/libsundanceUtils.la 
-
-mapPerfTest_SOURCES = $(srcdir)/mapPerfTest.cpp 
-
-mapPerfTest_DEPENDENCIES = $(top_builddir)/src-utils/libsundanceUtils.la 
-
-mapPerfTest_CXXFLAGS = $(UTIL_INCLUDES)
-
-mapPerfTest_LDADD = $(UTIL_LIBS) 
-
-
-
-
-
-include $(top_srcdir)/Makefile.common

@@ -61,7 +61,7 @@ int main(int argc, void** argv)
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
       int n=64;
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n*np, np,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
                                                          0.0, 1.0, n, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();

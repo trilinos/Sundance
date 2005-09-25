@@ -175,14 +175,14 @@ AM_CPPFLAGS = $(STD_MESH_INCLUDES) $(TRILINOS_CXXFLAGS)
 # Sundance library specifications
 # ------------------------------------------------------------------------
 
-STD_MESH_LIB = libsundanceStdMesh.a
+STD_MESH_LIB = libsundanceStdMesh.la
 
 
 #np# replace new_package with the name of the package being autotool'ed here
-libsundanceStdMesh_a_SOURCES = $(STD_MESH_SOURCES)
+libsundanceStdMesh_la_SOURCES = $(STD_MESH_SOURCES)
 
 #np# replace new_package with the name of the package being autotool'ed here
-EXTRA_libsundanceStdMesh_a_SOURCES = \
+EXTRA_libsundanceStdMesh_la_SOURCES = \
 $(EXTRA_MPI) \
 $(EXTRA_MPI_H) 
 
@@ -198,10 +198,10 @@ $(EXTRA_MPI_H)
 
 if USE_ALTERNATE_AR
 
-libsundanceStdMesh_a_AR = $(ALTERNATE_AR)
+libsundanceStdMesh_la_AR = $(ALTERNATE_AR)
 else
 
-libsundanceStdMesh_a_AR = $(AR) cru
+libsundanceStdMesh_la_AR = $(AR) cru
 
 endif
 
@@ -210,13 +210,13 @@ endif
 # be sure to include these, and this is the hack to do it.
 # ------------------------------------------------------------------------
 
-libsundanceStdMesh_a_LIBADD = $(SUNDANCE_TEMPLATE_OBJS) $(XTRALDADD) 
+libsundanceStdMesh_la_LIBADD = $(SUNDANCE_TEMPLATE_OBJS) $(XTRALDADD) 
 
 # ------------------------------------------------------------------------
 # List of all libraries to install in $(libexecdir)
 # ------------------------------------------------------------------------
 
-lib_LIBRARIES = $(STD_MESH_LIB)
+lib_LTLIBRARIES = $(STD_MESH_LIB)
 
 # ------------------------------------------------------------------------
 # List of all headers to install in $(includedir)

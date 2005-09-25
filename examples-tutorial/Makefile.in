@@ -163,9 +163,12 @@ depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
 	$(PressureStabilizedNS2D_SOURCES) \
 	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
@@ -184,6 +187,7 @@ ALTERNATE_AR = @ALTERNATE_AR@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
+AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -196,16 +200,20 @@ CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = $(TEUCHOS_CFLAGS)
 CHACO_LIB = @CHACO_LIB@
+CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
+CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = $(TEUCHOS_CXXFLAGS)
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
+EGREP = @EGREP@
 EXEEXT = .exe
 F77 = @F77@
 FFLAGS = $(TEUCHOS_FFLAGS)
@@ -222,6 +230,8 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = $(TEUCHOS_LDFLAGS)
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -255,6 +265,7 @@ USE_ALTERNATE_AR_FALSE = @USE_ALTERNATE_AR_FALSE@
 USE_ALTERNATE_AR_TRUE = @USE_ALTERNATE_AR_TRUE@
 VERSION = @VERSION@
 ac_aux_dir = @ac_aux_dir@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
@@ -303,73 +314,73 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 PostPotentialFlow_SOURCES = $(srcdir)/PostPotentialFlow.cpp
 PostPotentialFlow_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 PostPotentialFlow_CXXFLAGS = $(STD_FWK_INCLUDES)
 PostPotentialFlow_LDADD = $(STD_FWK_LIBS) 
 Exo2Triangle_SOURCES = $(srcdir)/Exo2Triangle.cpp
 Exo2Triangle_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 Exo2Triangle_CXXFLAGS = $(STD_FWK_INCLUDES)
 Exo2Triangle_LDADD = $(STD_FWK_LIBS) 
 RadiationDiffusion1D_SOURCES = $(srcdir)/RadiationDiffusion1D.cpp
 RadiationDiffusion1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 RadiationDiffusion1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 RadiationDiffusion1D_LDADD = $(STD_FWK_LIBS) 
 PressureVessel2D_SOURCES = $(srcdir)/PressureVessel2D.cpp
 PressureVessel2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 PressureVessel2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 PressureVessel2D_LDADD = $(STD_FWK_LIBS) 
 VSNS2D_SOURCES = $(srcdir)/VSNS2D.cpp
 VSNS2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 VSNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 VSNS2D_LDADD = $(STD_FWK_LIBS) 
 PressureStabilizedNS2D_SOURCES = $(srcdir)/PressureStabilizedNS2D.cpp
 PressureStabilizedNS2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 PressureStabilizedNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 PressureStabilizedNS2D_LDADD = $(STD_FWK_LIBS) 
 PressureStabilizedNS3D_SOURCES = $(srcdir)/PressureStabilizedNS3D.cpp
 PressureStabilizedNS3D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 PressureStabilizedNS3D_CXXFLAGS = $(STD_FWK_INCLUDES)
 PressureStabilizedNS3D_LDADD = $(STD_FWK_LIBS) 
 ReadField_SOURCES = $(srcdir)/ReadField.cpp
 ReadField_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+$(top_builddir)/src-std-framework/libsundanceStdFwk.la \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.la \
+$(top_builddir)/src-core/libsundanceCore.la \
+$(top_builddir)/src-utils/libsundanceUtils.la $(top_builddir)/src-solvers/libTSFExtended.la
 
 ReadField_CXXFLAGS = $(STD_FWK_INCLUDES)
 ReadField_LDADD = $(STD_FWK_LIBS) 
@@ -497,7 +508,7 @@ LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .cpp .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/Makefile.common $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -529,7 +540,11 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
 clean-noinstPROGRAMS:
-	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  echo " rm -f $$p $$f"; \
+	  rm -f $$p $$f ; \
+	done
 Exo2Triangle$(EXEEXT): $(Exo2Triangle_OBJECTS) $(Exo2Triangle_DEPENDENCIES) 
 	@rm -f Exo2Triangle$(EXEEXT)
 	$(CXXLINK) $(Exo2Triangle_LDFLAGS) $(Exo2Triangle_OBJECTS) $(Exo2Triangle_LDADD) $(LIBS)
@@ -583,6 +598,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.cpp.lo:
+@am__fastdepCXX_TRUE@	if $(LTCXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
 Exo2Triangle-Exo2Triangle.o: $(srcdir)/Exo2Triangle.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Exo2Triangle_CXXFLAGS) $(CXXFLAGS) -MT Exo2Triangle-Exo2Triangle.o -MD -MP -MF "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo" -c -o Exo2Triangle-Exo2Triangle.o `test -f '$(srcdir)/Exo2Triangle.cpp' || echo '$(srcdir)/'`$(srcdir)/Exo2Triangle.cpp; \
@@ -695,6 +717,15 @@ VSNS2D-VSNS2D.obj: $(srcdir)/VSNS2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VSNS2D.cpp' object='VSNS2D-VSNS2D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VSNS2D_CXXFLAGS) $(CXXFLAGS) -c -o VSNS2D-VSNS2D.obj `if test -f '$(srcdir)/VSNS2D.cpp'; then $(CYGPATH_W) '$(srcdir)/VSNS2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VSNS2D.cpp'; fi`
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+	-rm -f libtool
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -803,13 +834,14 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
+clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+	distclean-libtool distclean-tags
 
 dvi: dvi-am
 
@@ -838,7 +870,8 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
 pdf: pdf-am
 
@@ -851,15 +884,16 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-info-am
+	clean-libtool clean-noinstPROGRAMS ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
 
 # ------------------------------------------------------------------------

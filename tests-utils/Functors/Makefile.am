@@ -33,11 +33,11 @@ EXEEXT = .exe
 
 noinst_PROGRAMS = FunctorTest
 
-LIBDEPS = $(top_builddir)/src-utils/libsundanceUtils.a 
+LIBDEPS = $(top_builddir)/src-utils/libsundanceUtils.la 
 
 FunctorTest_SOURCES = $(srcdir)/FunctorTest.cpp 
 
-FunctorTest_DEPENDENCIES = $(top_builddir)/src-utils/libsundanceUtils.a 
+FunctorTest_DEPENDENCIES = $(top_builddir)/src-utils/libsundanceUtils.la 
 
 FunctorTest_CXXFLAGS = $(UTIL_INCLUDES)
 

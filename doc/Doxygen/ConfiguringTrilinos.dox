@@ -1,0 +1,273 @@
+/* @HEADER@ */
+# ************************************************************************
+# 
+#                              Sundance
+#                 Copyright (2005) Sandia Corporation
+# 
+# Copyright (year first published) Sandia Corporation.  Under the terms 
+# of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government 
+# retains certain rights in this software.
+# 
+# This library is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation; either version 2.1 of the
+# License, or (at your option) any later version.
+#  
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#                                                                              
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA                                                        
+#                
+# Questions? Contact Kevin Long (krlong@sandia.gov), 
+# Sandia National Laboratories, Livermore, California, USA
+# 
+# ************************************************************************
+/* @HEADER@ */
+
+/*! \page conf_trilinos_page Configuring Trilinos for Sundance
+
+
+Here we explain how to configure Trilinos for Sundance (in both "optimized"
+and "debug" modes)
+<ul>
+<li> \ref conf_packages 
+<li> \ref opt_v_debug
+<li> \ref conf_mpi_opt 
+<li> \ref conf_mpi_debug
+<li> \ref conf_serial_opt
+<li> \ref conf_serial_debug
+</ul>
+
+\section conf_packages Trilinos packages to enable
+
+You should always enable the following packages:
+
+<ul>
+<li> Teuchos (utilities)
+<pre>
+--enable-teuchos 
+--enable-teuchos-extended 
+--enable-teuchos-complex 
+--enable-teuchos-expat
+</pre>
+<li> Epetra (core distributed sparse linear algebra objects)
+<pre>
+--enable-epetra
+</pre>
+<li> IFPack (incomplete factorization preconditioners)
+<pre>
+</pre>
+<li> ML (algebraic multilevel preconditioners)
+<pre>
+--enable-ml
+</pre>
+<li> AztecOO (iterative solvers)
+<pre>
+--enable-aztecoo
+</pre>
+<li> NOX (nonlinear solvers)
+<pre>
+--enable-nox
+</pre>
+<li> Thyra (abstract interfaces)
+<pre>
+--enable-thyra
+</pre>
+
+</ul>
+
+
+\section opt_v_debug Optimized vs Debug Configurations
+
+Most compilers let you control the level of compile-time optimization used
+and whether to produce annotations required by debuggers. Other compilation
+options you might want to set control the level of warning and diagnostic
+output to be produced during compile time. Such options can be passed to
+the compiler by using the CXXFLAGS argument to configure.
+
+One other optional Trilinos configuration 
+flag significantly impacts the behavior of Sundance:
+<ul>
+<LI> <tt>--enable-teuchos-abc</tt> turns on array bounds checking in Teuchos,
+which will check every access to Teuchos <tt>Array</tt> objects for
+bounds errors. This is nice for debugging, but results
+in a <i>serious</i> slowdown of the resulting code and so should probably
+be disabled in production builds.
+</ul>
+
+Typically, I find that Sundance simulators compiled with optimization
+are about 3-5 times faster in matrix assembly than those compiled
+with debugging and array bounds checking. 
+
+It is possible to turn on debugging and optimization simultaneously, but
+(a) compilation will be very slow and very memory-intensive, and 
+(b) the resulting debugging information might be useless because optimizations
+can change sometimes the effective ordering of source lines.
+
+<hr>
+\section conf_mpi_opt Sample script: Optimized parallel
+
+
+\code
+#!/bin/sh
+
+##################################################################
+#
+# Configuration of Trilinos for use with Sundance
+#
+##################################################################
+
+
+BUILD_DIR=`pwd`
+
+../configure --enable-mpi --with-mpi-compilers \
+CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
+--with-libs="-lexpat" \
+--disable-default-packages \
+--enable-teuchos --enable-teuchos-extended \
+--enable-teuchos-complex --enable-teuchos-expat \
+--enable-thyra \
+--disable-thyra-tests \
+--disable-thyra-examples \
+--disable-aztecoo-thyra \
+--disable-epetra-thyra \
+--enable-epetra \
+--enable-epetraext \
+--enable-ml \
+--disable-ml-examples \
+--enable-aztecoo \
+--enable-ifpack \
+--enable-nox \
+--disable-loca \
+--with-gnumake \
+--with-install="/usr/bin/install -c -p" \
+--prefix=$BUILD_DIR
+\endcode
+
+
+<hr>
+\section conf_mpi_debug Sample script: Debuggable parallel
+
+\code
+#!/bin/sh
+
+##################################################################
+#
+# Configuration of Trilinos for use with Sundance
+#
+##################################################################
+
+
+BUILD_DIR=`pwd`
+
+../configure --enable-mpi --with-mpi-compilers \
+CXXFLAGS="-g -O0 -Wreturn-type" \
+--with-libs="-lexpat" \
+--disable-default-packages \
+--enable-teuchos --enable-teuchos-extended \
+--enable-teuchos-complex --enable-teuchos-abc --enable-teuchos-expat \
+--enable-thyra \
+--disable-thyra-tests \
+--disable-thyra-examples \
+--disable-aztecoo-thyra \
+--disable-epetra-thyra \
+--enable-epetra \
+--enable-epetraext \
+--enable-ml \
+--disable-ml-examples \
+--enable-aztecoo \
+--enable-ifpack \
+--enable-nox \
+--disable-loca \
+--with-gnumake \
+--with-install="/usr/bin/install -c -p" \
+--prefix=$BUILD_DIR
+\endcode
+
+
+
+<hr>
+\section conf_serial_opt Sample script: Optimized serial
+
+\code
+#!/bin/sh
+
+##################################################################
+#
+# Configuration of Trilinos for use with Sundance
+#
+##################################################################
+
+
+BUILD_DIR=`pwd`
+
+../configure CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
+--with-libs="-lexpat" \
+--disable-default-packages \
+--enable-teuchos --enable-teuchos-extended \
+--enable-teuchos-complex --enable-teuchos-expat \
+--enable-thyra \
+--disable-thyra-tests \
+--disable-thyra-examples \
+--disable-aztecoo-thyra \
+--disable-epetra-thyra \
+--enable-epetra \
+--enable-epetraext \
+--enable-ml \
+--disable-ml-examples \
+--enable-aztecoo \
+--enable-ifpack \
+--enable-nox \
+--disable-loca \
+--with-gnumake \
+--with-install="/usr/bin/install -c -p" \
+--prefix=$BUILD_DIR
+\endcode
+
+
+
+<hr>
+\section conf_serial_debug Sample script: Debuggable serial
+
+\code
+#!/bin/sh
+
+##################################################################
+#
+# Configuration of Trilinos for use with Sundance
+#
+##################################################################
+
+
+BUILD_DIR=`pwd`
+
+../configure CXXFLAGS="-g -O0 -Wreturn-type" \
+--with-libs="-lexpat" \
+--disable-default-packages \
+--enable-teuchos --enable-teuchos-extended \
+--enable-teuchos-complex --enable-teuchos-abc --enable-teuchos-expat \
+--enable-thyra \
+--disable-thyra-tests \
+--disable-thyra-examples \
+--disable-aztecoo-thyra \
+--disable-epetra-thyra \
+--enable-epetra \
+--enable-epetraext \
+--enable-ml \
+--disable-ml-examples \
+--enable-aztecoo \
+--enable-ifpack \
+--enable-nox \
+--disable-loca \
+--with-gnumake \
+--with-install="/usr/bin/install -c -p" \
+--prefix=$BUILD_DIR
+\endcode
+
+*/
+

@@ -33,13 +33,14 @@
 
 using SundanceCore::List;
 /** 
- * Solves the Stokes equation in 2D
+ * Solves the Poisson-Boltzmann equation in 2D
  */
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]+1.0) < 1.0e-10;});
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]+1.0) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
+CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;});
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;});
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-2.0) < 1.0e-10;});
+
 
 int main(int argc, void** argv)
 {
@@ -54,125 +55,86 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 64;
-      int ny = 64;
+      int n = 10;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, nx, np,
-                                                         -1.0, 1.0, ny, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
+                                                         0.0, 2.0, n, 1,
                                                          meshType);
-
-
-
-
       Mesh mesh = mesher.getMesh();
-      double h0 = 2.0/((double) ny);
-      Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
-      Expr h = new CellDiameterExpr();
-
-//       FieldWriter wMesh = new VerboseFieldWriter();
-//       wMesh.addMesh(mesh);
-//       wMesh.write();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
-      CellFilter points = new DimensionalCellFilter(0);
 
       CellFilter left = edges.subset(new LeftPointTest());
       CellFilter right = edges.subset(new RightPointTest());
       CellFilter top = edges.subset(new TopPointTest());
       CellFilter bottom = edges.subset(new BottomPointTest());
 
-
-
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr ux = new UnknownFunction(new Lagrange(1), "u_x");
-      Expr vx = new TestFunction(new Lagrange(1), "v_x");
-      Expr uy = new UnknownFunction(new Lagrange(1), "u_y");
-      Expr vy = new TestFunction(new Lagrange(1), "v_y");
-      Expr p = new UnknownFunction(new Lagrange(1), "p");
-      Expr q = new TestFunction(new Lagrange(1), "q");
+      int order = 1;
+      Expr u = new UnknownFunction(new Lagrange(order), "u");
+      Expr v = new TestFunction(new Lagrange(order), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
       Expr grad = List(dx, dy);
+      Expr x = new CoordExpr(0);
+      Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad2 = new GaussianQuadrature(2);
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      double beta = 0.02;
-      Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
-                          + (grad*vy)*(grad*uy)  - p*(dx*vx+dy*vy)
-                          + (h*h*beta)*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
-                          quad2);
-        
+      double B = 0.25;
+      double C = sqrt(0.5 - B*B);
+      Expr exactSoln = 2.0*log(cosh(B*x + C*y));
+      Expr eqn = Integral(interior, (grad*u)*(grad*v) + v*exp(-u), quad2);
+
       /* Define the Dirichlet BC */
-      Expr uInflow = 0.5*(1.0-y*y);
-      Expr bc = EssentialBC(left, vx*(ux-uInflow) + vy*uy, quad2)
-        + EssentialBC(top, vx*ux + vy*uy, quad2)
-        + EssentialBC(bottom, vx*ux + vy*uy, quad2);
+      Expr bc = EssentialBC(left+right+bottom+top, v*(u-exactSoln), quad4);
+
+      /* Create a discrete space, and discretize the function 1.0 on it */
+      DiscreteSpace discSpace(mesh, new Lagrange(order), vecType);
+      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
 
-   
+      /* Create a TSF NonlinearOperator object */
+      NonlinearOperator<double> F 
+        = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+      
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterList noxParams = reader.getParameters();
 
-      /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
-                         List(ux, uy, p), vecType);
+      cerr << "solver params = " << noxParams << endl;
 
-     
+      NOXSolver solver(noxParams, F);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
-      ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      solver.solve();
 
+      Expr errExpr = Integral(interior, 
+                              pow(u0-exactSoln, 2),
+                              new GaussianQuadrature(4));
 
-      LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(solverParams);
+      Expr derivErrExpr = Integral(interior, 
+                                   pow(dx*(u0-exactSoln), 2),
+                                   new GaussianQuadrature(4));
 
-      Expr soln = prob.solve(solver);
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
+      double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
+      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
-      Expr exactUx = uInflow;
-      Expr exactUy = 0.0;
-      Expr errX = exactUx - soln[0];
-      Expr errY = exactUy - soln[1];
-
-      Expr errXExpr = Integral(interior, 
-                              errX*errX,
-                              new GaussianQuadrature(6));
-
-      Expr errYExpr = Integral(interior, 
-                              errY*errY,
-                              new GaussianQuadrature(6));
-
-      FunctionalEvaluator errXInt(mesh, errXExpr);
-      FunctionalEvaluator errYInt(mesh, errYExpr);
-
-      double errorXSq = errXInt.evaluate();
-      double errorYSq = errYInt.evaluate();
-      cerr << "error norm |u_x - u_x(0)| = " << sqrt(errorXSq) << endl << endl;
-      cerr << "error norm |u_y - u_y(0)| = " << sqrt(errorYSq) << endl << endl;
-
-      /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Stokes2d");
-      w.addMesh(mesh);
-      w.addField("ux", new ExprFieldWrapper(soln[0]));
-      w.addField("uy", new ExprFieldWrapper(soln[1]));
-      w.addField("p", new ExprFieldWrapper(soln[2]));
-      w.write();
+      double tol = 1.0e-12;
+      Sundance::passFailTest(errorSq, tol);
 
       
-
-      double tol = 1.0e-4;
-      Sundance::passFailTest(sqrt(errorXSq+errorYSq), tol);
-
     }
 	catch(exception& e)
 		{
