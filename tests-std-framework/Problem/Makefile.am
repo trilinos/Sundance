@@ -31,25 +31,17 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = NonlinAlgebraic Poisson1D Poisson2D Poisson3D Stokes2D \
-Coupled1D Coupled2D RadDiff1D NoxAlgebraic Kepler NoxPoisson1D \
-PoissonOnDisk OptPoisson1D Eikonal2D VorticityStokes2D \
-Stokes1D Helmholtz1D VorticityNavierStokes2D ConstancyBug BesselTest2D \
-AdvectionDiffusion2D FunctionalTest LinearVariationalTest
+noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
 
+SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
+Kepler Stokes2D
 
+PARALLEL_SRC = Poisson1D Poisson2D NoxPoisson1D RadDiff1D NoxAlgebraic \
+Coupled1D Coupled2D Helmholtz1D VorticityNavierStokes2D \
+VorticityStokes2D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D
 
-NonlinAlgebraic_SOURCES = $(srcdir)/NonlinAlgebraic.cpp
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 
-NonlinAlgebraic_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-NonlinAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
-
-NonlinAlgebraic_LDADD = $(STD_FWK_LIBS) 
 
 
 
@@ -133,18 +125,6 @@ Stokes2D_LDADD = $(STD_FWK_LIBS)
 
 
 
-
-Stokes1D_SOURCES = $(srcdir)/Stokes1D.cpp
-
-Stokes1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-Stokes1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-
-Stokes1D_LDADD = $(STD_FWK_LIBS) 
 
 
 
@@ -354,18 +334,6 @@ VorticityNavierStokes2D_LDADD = $(STD_FWK_LIBS)
 
 
 
-ConstancyBug_SOURCES = $(srcdir)/ConstancyBug.cpp
-
-ConstancyBug_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-ConstancyBug_CXXFLAGS = $(STD_FWK_INCLUDES)
-
-ConstancyBug_LDADD = $(STD_FWK_LIBS) 
-
 
 
 
@@ -427,12 +395,29 @@ LinearVariationalTest_LDADD = $(STD_FWK_LIBS)
 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 
+PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
+
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+
+
+NPROC = 2
+
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
+
 %.tst : %.exe
 	./$< > $@ 2>&1 
 	echo "done" $@
 
+%.ptst : %.exe
+	$(MPI_COMMAND) ./$< > $@ 2>&1 
+	echo "done" $@
+
 tests:
 	$(MAKE) $(TESTS)
-	$(top_srcdir)/etc/checkTests.pl $(TESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
 
 include $(top_srcdir)/Makefile.common

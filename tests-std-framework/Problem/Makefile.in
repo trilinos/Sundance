@@ -84,7 +84,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(ConstancyBug_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes1D_SOURCES) $(Stokes2D_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
+SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -109,16 +109,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = NonlinAlgebraic$(EXEEXT) Poisson1D$(EXEEXT) \
-	Poisson2D$(EXEEXT) Poisson3D$(EXEEXT) Stokes2D$(EXEEXT) \
-	Coupled1D$(EXEEXT) Coupled2D$(EXEEXT) RadDiff1D$(EXEEXT) \
-	NoxAlgebraic$(EXEEXT) Kepler$(EXEEXT) NoxPoisson1D$(EXEEXT) \
-	PoissonOnDisk$(EXEEXT) OptPoisson1D$(EXEEXT) \
-	Eikonal2D$(EXEEXT) VorticityStokes2D$(EXEEXT) \
-	Stokes1D$(EXEEXT) Helmholtz1D$(EXEEXT) \
-	VorticityNavierStokes2D$(EXEEXT) ConstancyBug$(EXEEXT) \
-	BesselTest2D$(EXEEXT) AdvectionDiffusion2D$(EXEEXT) \
-	FunctionalTest$(EXEEXT) LinearVariationalTest$(EXEEXT)
+noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-std-framework/Problem
@@ -136,6 +127,15 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h \
 	$(top_builddir)/src-solvers/TSF_config.h
 CONFIG_CLEAN_FILES =
+am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
+	NoxPoisson1D$(EXEEXT) RadDiff1D$(EXEEXT) NoxAlgebraic$(EXEEXT) \
+	Coupled1D$(EXEEXT) Coupled2D$(EXEEXT) Helmholtz1D$(EXEEXT) \
+	VorticityNavierStokes2D$(EXEEXT) VorticityStokes2D$(EXEEXT) \
+	AdvectionDiffusion2D$(EXEEXT) LinearVariationalTest$(EXEEXT) \
+	OptPoisson1D$(EXEEXT)
+am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
+	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) \
+	FunctionalTest$(EXEEXT) Kepler$(EXEEXT) Stokes2D$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_AdvectionDiffusion2D_OBJECTS =  \
 	AdvectionDiffusion2D-AdvectionDiffusion2D.$(OBJEXT)
@@ -147,8 +147,6 @@ am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_3)
 am_BesselTest2D_OBJECTS = BesselTest2D-BesselTest2D.$(OBJEXT)
 BesselTest2D_OBJECTS = $(am_BesselTest2D_OBJECTS)
-am_ConstancyBug_OBJECTS = ConstancyBug-ConstancyBug.$(OBJEXT)
-ConstancyBug_OBJECTS = $(am_ConstancyBug_OBJECTS)
 am_Coupled1D_OBJECTS = Coupled1D-Coupled1D.$(OBJEXT)
 Coupled1D_OBJECTS = $(am_Coupled1D_OBJECTS)
 am_Coupled2D_OBJECTS = Coupled2D-Coupled2D.$(OBJEXT)
@@ -164,9 +162,6 @@ Kepler_OBJECTS = $(am_Kepler_OBJECTS)
 am_LinearVariationalTest_OBJECTS =  \
 	LinearVariationalTest-LinearVariationalTest.$(OBJEXT)
 LinearVariationalTest_OBJECTS = $(am_LinearVariationalTest_OBJECTS)
-am_NonlinAlgebraic_OBJECTS =  \
-	NonlinAlgebraic-NonlinAlgebraic.$(OBJEXT)
-NonlinAlgebraic_OBJECTS = $(am_NonlinAlgebraic_OBJECTS)
 am_NoxAlgebraic_OBJECTS = NoxAlgebraic-NoxAlgebraic.$(OBJEXT)
 NoxAlgebraic_OBJECTS = $(am_NoxAlgebraic_OBJECTS)
 am_NoxPoisson1D_OBJECTS = NoxPoisson1D-NoxPoisson1D.$(OBJEXT)
@@ -183,8 +178,6 @@ am_PoissonOnDisk_OBJECTS = PoissonOnDisk-PoissonOnDisk.$(OBJEXT)
 PoissonOnDisk_OBJECTS = $(am_PoissonOnDisk_OBJECTS)
 am_RadDiff1D_OBJECTS = RadDiff1D-RadDiff1D.$(OBJEXT)
 RadDiff1D_OBJECTS = $(am_RadDiff1D_OBJECTS)
-am_Stokes1D_OBJECTS = Stokes1D-Stokes1D.$(OBJEXT)
-Stokes1D_OBJECTS = $(am_Stokes1D_OBJECTS)
 am_Stokes2D_OBJECTS = Stokes2D-Stokes2D.$(OBJEXT)
 Stokes2D_OBJECTS = $(am_Stokes2D_OBJECTS)
 am_VorticityNavierStokes2D_OBJECTS =  \
@@ -207,28 +200,24 @@ F77LD = $(F77)
 F77LINK = $(F77LD) $(AM_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
 	$@
 SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
-	$(ConstancyBug_SOURCES) $(Coupled1D_SOURCES) \
-	$(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
+	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) \
 	$(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) \
-	$(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) \
-	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
-	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) \
+	$(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
+	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
-	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) \
-	$(VorticityNavierStokes2D_SOURCES) \
+	$(Stokes2D_SOURCES) $(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 DIST_SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
-	$(ConstancyBug_SOURCES) $(Coupled1D_SOURCES) \
-	$(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
+	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) \
 	$(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) \
-	$(NonlinAlgebraic_SOURCES) $(NoxAlgebraic_SOURCES) \
-	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
-	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) \
+	$(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
+	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) \
-	$(Stokes1D_SOURCES) $(Stokes2D_SOURCES) \
-	$(VorticityNavierStokes2D_SOURCES) \
+	$(Stokes2D_SOURCES) $(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -253,7 +242,7 @@ CHACO_LIB = @CHACO_LIB@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = $(TRILINOS_CXXFLAGS)
+CXXFLAGS = $(TEUCHOS_CXXFLAGS)
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -355,15 +344,14 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-NonlinAlgebraic_SOURCES = $(srcdir)/NonlinAlgebraic.cpp
-NonlinAlgebraic_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
+Kepler Stokes2D
 
-NonlinAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
-NonlinAlgebraic_LDADD = $(STD_FWK_LIBS) 
+PARALLEL_SRC = Poisson1D Poisson2D NoxPoisson1D RadDiff1D NoxAlgebraic \
+Coupled1D Coupled2D Helmholtz1D VorticityNavierStokes2D \
+VorticityStokes2D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 Poisson1D_SOURCES = $(srcdir)/Poisson1D.cpp
 Poisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -409,15 +397,6 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 Stokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Stokes2D_LDADD = $(STD_FWK_LIBS) 
-Stokes1D_SOURCES = $(srcdir)/Stokes1D.cpp
-Stokes1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-Stokes1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-Stokes1D_LDADD = $(STD_FWK_LIBS) 
 Coupled1D_SOURCES = $(srcdir)/Coupled1D.cpp
 Coupled1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -529,15 +508,6 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 VorticityNavierStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 VorticityNavierStokes2D_LDADD = $(STD_FWK_LIBS) 
-ConstancyBug_SOURCES = $(srcdir)/ConstancyBug.cpp
-ConstancyBug_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-ConstancyBug_CXXFLAGS = $(STD_FWK_INCLUDES)
-ConstancyBug_LDADD = $(STD_FWK_LIBS) 
 BesselTest2D_SOURCES = $(srcdir)/BesselTest2D.cpp 
 BesselTest2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -575,6 +545,12 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 LinearVariationalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 LinearVariationalTest_LDADD = $(STD_FWK_LIBS) 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
+PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+NPROC = 2
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -738,9 +714,6 @@ AdvectionDiffusion2D$(EXEEXT): $(AdvectionDiffusion2D_OBJECTS) $(AdvectionDiffus
 BesselTest2D$(EXEEXT): $(BesselTest2D_OBJECTS) $(BesselTest2D_DEPENDENCIES) 
 	@rm -f BesselTest2D$(EXEEXT)
 	$(CXXLINK) $(BesselTest2D_LDFLAGS) $(BesselTest2D_OBJECTS) $(BesselTest2D_LDADD) $(LIBS)
-ConstancyBug$(EXEEXT): $(ConstancyBug_OBJECTS) $(ConstancyBug_DEPENDENCIES) 
-	@rm -f ConstancyBug$(EXEEXT)
-	$(CXXLINK) $(ConstancyBug_LDFLAGS) $(ConstancyBug_OBJECTS) $(ConstancyBug_LDADD) $(LIBS)
 Coupled1D$(EXEEXT): $(Coupled1D_OBJECTS) $(Coupled1D_DEPENDENCIES) 
 	@rm -f Coupled1D$(EXEEXT)
 	$(CXXLINK) $(Coupled1D_LDFLAGS) $(Coupled1D_OBJECTS) $(Coupled1D_LDADD) $(LIBS)
@@ -762,9 +735,6 @@ Kepler$(EXEEXT): $(Kepler_OBJECTS) $(Kepler_DEPENDENCIES)
 LinearVariationalTest$(EXEEXT): $(LinearVariationalTest_OBJECTS) $(LinearVariationalTest_DEPENDENCIES) 
 	@rm -f LinearVariationalTest$(EXEEXT)
 	$(CXXLINK) $(LinearVariationalTest_LDFLAGS) $(LinearVariationalTest_OBJECTS) $(LinearVariationalTest_LDADD) $(LIBS)
-NonlinAlgebraic$(EXEEXT): $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_DEPENDENCIES) 
-	@rm -f NonlinAlgebraic$(EXEEXT)
-	$(CXXLINK) $(NonlinAlgebraic_LDFLAGS) $(NonlinAlgebraic_OBJECTS) $(NonlinAlgebraic_LDADD) $(LIBS)
 NoxAlgebraic$(EXEEXT): $(NoxAlgebraic_OBJECTS) $(NoxAlgebraic_DEPENDENCIES) 
 	@rm -f NoxAlgebraic$(EXEEXT)
 	$(CXXLINK) $(NoxAlgebraic_LDFLAGS) $(NoxAlgebraic_OBJECTS) $(NoxAlgebraic_LDADD) $(LIBS)
@@ -789,9 +759,6 @@ PoissonOnDisk$(EXEEXT): $(PoissonOnDisk_OBJECTS) $(PoissonOnDisk_DEPENDENCIES)
 RadDiff1D$(EXEEXT): $(RadDiff1D_OBJECTS) $(RadDiff1D_DEPENDENCIES) 
 	@rm -f RadDiff1D$(EXEEXT)
 	$(CXXLINK) $(RadDiff1D_LDFLAGS) $(RadDiff1D_OBJECTS) $(RadDiff1D_LDADD) $(LIBS)
-Stokes1D$(EXEEXT): $(Stokes1D_OBJECTS) $(Stokes1D_DEPENDENCIES) 
-	@rm -f Stokes1D$(EXEEXT)
-	$(CXXLINK) $(Stokes1D_LDFLAGS) $(Stokes1D_OBJECTS) $(Stokes1D_LDADD) $(LIBS)
 Stokes2D$(EXEEXT): $(Stokes2D_OBJECTS) $(Stokes2D_DEPENDENCIES) 
 	@rm -f Stokes2D$(EXEEXT)
 	$(CXXLINK) $(Stokes2D_LDFLAGS) $(Stokes2D_OBJECTS) $(Stokes2D_LDADD) $(LIBS)
@@ -810,7 +777,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AdvectionDiffusion2D-AdvectionDiffusion2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BesselTest2D-BesselTest2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ConstancyBug-ConstancyBug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Coupled1D-Coupled1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Coupled2D-Coupled2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eikonal2D-Eikonal2D.Po@am__quote@
@@ -818,7 +784,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Helmholtz1D-Helmholtz1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Kepler-Kepler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinearVariationalTest-LinearVariationalTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxAlgebraic-NoxAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxPoisson1D-NoxPoisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po@am__quote@
@@ -827,7 +792,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson3D-Poisson3D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonOnDisk-PoissonOnDisk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadDiff1D-RadDiff1D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes1D-Stokes1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes2D-Stokes2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VorticityNavierStokes2D-VorticityNavierStokes2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VorticityStokes2D-VorticityStokes2D.Po@am__quote@
@@ -873,20 +837,6 @@ BesselTest2D-BesselTest2D.obj: $(srcdir)/BesselTest2D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/BesselTest2D.cpp' object='BesselTest2D-BesselTest2D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BesselTest2D_CXXFLAGS) $(CXXFLAGS) -c -o BesselTest2D-BesselTest2D.obj `if test -f '$(srcdir)/BesselTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/BesselTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/BesselTest2D.cpp'; fi`
-
-ConstancyBug-ConstancyBug.o: $(srcdir)/ConstancyBug.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ConstancyBug_CXXFLAGS) $(CXXFLAGS) -MT ConstancyBug-ConstancyBug.o -MD -MP -MF "$(DEPDIR)/ConstancyBug-ConstancyBug.Tpo" -c -o ConstancyBug-ConstancyBug.o `test -f '$(srcdir)/ConstancyBug.cpp' || echo '$(srcdir)/'`$(srcdir)/ConstancyBug.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ConstancyBug-ConstancyBug.Tpo" "$(DEPDIR)/ConstancyBug-ConstancyBug.Po"; else rm -f "$(DEPDIR)/ConstancyBug-ConstancyBug.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ConstancyBug.cpp' object='ConstancyBug-ConstancyBug.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ConstancyBug_CXXFLAGS) $(CXXFLAGS) -c -o ConstancyBug-ConstancyBug.o `test -f '$(srcdir)/ConstancyBug.cpp' || echo '$(srcdir)/'`$(srcdir)/ConstancyBug.cpp
-
-ConstancyBug-ConstancyBug.obj: $(srcdir)/ConstancyBug.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ConstancyBug_CXXFLAGS) $(CXXFLAGS) -MT ConstancyBug-ConstancyBug.obj -MD -MP -MF "$(DEPDIR)/ConstancyBug-ConstancyBug.Tpo" -c -o ConstancyBug-ConstancyBug.obj `if test -f '$(srcdir)/ConstancyBug.cpp'; then $(CYGPATH_W) '$(srcdir)/ConstancyBug.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ConstancyBug.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ConstancyBug-ConstancyBug.Tpo" "$(DEPDIR)/ConstancyBug-ConstancyBug.Po"; else rm -f "$(DEPDIR)/ConstancyBug-ConstancyBug.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ConstancyBug.cpp' object='ConstancyBug-ConstancyBug.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ConstancyBug_CXXFLAGS) $(CXXFLAGS) -c -o ConstancyBug-ConstancyBug.obj `if test -f '$(srcdir)/ConstancyBug.cpp'; then $(CYGPATH_W) '$(srcdir)/ConstancyBug.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ConstancyBug.cpp'; fi`
 
 Coupled1D-Coupled1D.o: $(srcdir)/Coupled1D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Coupled1D_CXXFLAGS) $(CXXFLAGS) -MT Coupled1D-Coupled1D.o -MD -MP -MF "$(DEPDIR)/Coupled1D-Coupled1D.Tpo" -c -o Coupled1D-Coupled1D.o `test -f '$(srcdir)/Coupled1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Coupled1D.cpp; \
@@ -985,20 +935,6 @@ LinearVariationalTest-LinearVariationalTest.obj: $(srcdir)/LinearVariationalTest
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/LinearVariationalTest.cpp' object='LinearVariationalTest-LinearVariationalTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(LinearVariationalTest_CXXFLAGS) $(CXXFLAGS) -c -o LinearVariationalTest-LinearVariationalTest.obj `if test -f '$(srcdir)/LinearVariationalTest.cpp'; then $(CYGPATH_W) '$(srcdir)/LinearVariationalTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/LinearVariationalTest.cpp'; fi`
-
-NonlinAlgebraic-NonlinAlgebraic.o: $(srcdir)/NonlinAlgebraic.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NonlinAlgebraic-NonlinAlgebraic.o -MD -MP -MF "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" -c -o NonlinAlgebraic-NonlinAlgebraic.o `test -f '$(srcdir)/NonlinAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinAlgebraic.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po"; else rm -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NonlinAlgebraic.cpp' object='NonlinAlgebraic-NonlinAlgebraic.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -c -o NonlinAlgebraic-NonlinAlgebraic.o `test -f '$(srcdir)/NonlinAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinAlgebraic.cpp
-
-NonlinAlgebraic-NonlinAlgebraic.obj: $(srcdir)/NonlinAlgebraic.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NonlinAlgebraic-NonlinAlgebraic.obj -MD -MP -MF "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" -c -o NonlinAlgebraic-NonlinAlgebraic.obj `if test -f '$(srcdir)/NonlinAlgebraic.cpp'; then $(CYGPATH_W) '$(srcdir)/NonlinAlgebraic.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NonlinAlgebraic.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo" "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Po"; else rm -f "$(DEPDIR)/NonlinAlgebraic-NonlinAlgebraic.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NonlinAlgebraic.cpp' object='NonlinAlgebraic-NonlinAlgebraic.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinAlgebraic_CXXFLAGS) $(CXXFLAGS) -c -o NonlinAlgebraic-NonlinAlgebraic.obj `if test -f '$(srcdir)/NonlinAlgebraic.cpp'; then $(CYGPATH_W) '$(srcdir)/NonlinAlgebraic.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NonlinAlgebraic.cpp'; fi`
 
 NoxAlgebraic-NoxAlgebraic.o: $(srcdir)/NoxAlgebraic.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NoxAlgebraic_CXXFLAGS) $(CXXFLAGS) -MT NoxAlgebraic-NoxAlgebraic.o -MD -MP -MF "$(DEPDIR)/NoxAlgebraic-NoxAlgebraic.Tpo" -c -o NoxAlgebraic-NoxAlgebraic.o `test -f '$(srcdir)/NoxAlgebraic.cpp' || echo '$(srcdir)/'`$(srcdir)/NoxAlgebraic.cpp; \
@@ -1111,20 +1047,6 @@ RadDiff1D-RadDiff1D.obj: $(srcdir)/RadDiff1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RadDiff1D.cpp' object='RadDiff1D-RadDiff1D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -c -o RadDiff1D-RadDiff1D.obj `if test -f '$(srcdir)/RadDiff1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadDiff1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadDiff1D.cpp'; fi`
-
-Stokes1D-Stokes1D.o: $(srcdir)/Stokes1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -MT Stokes1D-Stokes1D.o -MD -MP -MF "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" -c -o Stokes1D-Stokes1D.o `test -f '$(srcdir)/Stokes1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" "$(DEPDIR)/Stokes1D-Stokes1D.Po"; else rm -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Stokes1D.cpp' object='Stokes1D-Stokes1D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -c -o Stokes1D-Stokes1D.o `test -f '$(srcdir)/Stokes1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes1D.cpp
-
-Stokes1D-Stokes1D.obj: $(srcdir)/Stokes1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -MT Stokes1D-Stokes1D.obj -MD -MP -MF "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" -c -o Stokes1D-Stokes1D.obj `if test -f '$(srcdir)/Stokes1D.cpp'; then $(CYGPATH_W) '$(srcdir)/Stokes1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Stokes1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo" "$(DEPDIR)/Stokes1D-Stokes1D.Po"; else rm -f "$(DEPDIR)/Stokes1D-Stokes1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Stokes1D.cpp' object='Stokes1D-Stokes1D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes1D_CXXFLAGS) $(CXXFLAGS) -c -o Stokes1D-Stokes1D.obj `if test -f '$(srcdir)/Stokes1D.cpp'; then $(CYGPATH_W) '$(srcdir)/Stokes1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Stokes1D.cpp'; fi`
 
 Stokes2D-Stokes2D.o: $(srcdir)/Stokes2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes2D_CXXFLAGS) $(CXXFLAGS) -MT Stokes2D-Stokes2D.o -MD -MP -MF "$(DEPDIR)/Stokes2D-Stokes2D.Tpo" -c -o Stokes2D-Stokes2D.o `test -f '$(srcdir)/Stokes2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes2D.cpp; \
@@ -1424,9 +1346,14 @@ uninstall-am: uninstall-info-am
 	./$< > $@ 2>&1 
 	echo "done" $@
 
+%.ptst : %.exe
+	$(MPI_COMMAND) ./$< > $@ 2>&1 
+	echo "done" $@
+
 tests:
 	$(MAKE) $(TESTS)
-	$(top_srcdir)/etc/checkTests.pl $(TESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 # ------------------------------------------------------------------------
 #

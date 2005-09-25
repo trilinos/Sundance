@@ -81,7 +81,8 @@ SUNDANCE_INCLUDES = -I$(SUNDANCE_BUILD_DIRECTORY)/include \
 #
 # ------------------------------------------------------------------------
 
-include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export.TSFExtended
+#include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export.TSFExtended
+include $(SUNDANCE_BUILD_DIRECTORY)/Makefile.export.TSFExtended
 
 
 RANLIB = $(TEUCHOS_RANLIB)

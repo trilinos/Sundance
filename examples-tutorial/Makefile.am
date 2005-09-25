@@ -45,7 +45,7 @@ PostPotentialFlow_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 PostPotentialFlow_CXXFLAGS = $(STD_FWK_INCLUDES)
 
@@ -58,7 +58,7 @@ Exo2Triangle_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Exo2Triangle_CXXFLAGS = $(STD_FWK_INCLUDES)
 
@@ -73,7 +73,7 @@ RadiationDiffusion1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 RadiationDiffusion1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
@@ -87,7 +87,7 @@ PressureVessel2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 PressureVessel2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
@@ -102,7 +102,7 @@ VSNS2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 VSNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
@@ -118,7 +118,7 @@ PressureStabilizedNS2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 PressureStabilizedNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
@@ -133,7 +133,7 @@ PressureStabilizedNS3D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 PressureStabilizedNS3D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
@@ -147,7 +147,7 @@ ReadField_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 ReadField_CXXFLAGS = $(STD_FWK_INCLUDES)
 

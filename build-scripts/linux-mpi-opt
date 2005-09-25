@@ -34,9 +34,9 @@
 
 BUILD_DIR=`pwd`
 
-../configure CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops" \
---enable-mpi --with-mpi-compilers \
---with-trilinos=$HOME/Projects/Trilinos/LINUX-OPT \
+../configure --enable-mpi --with-mpi-compilers \
+CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops" \
+--with-trilinos=$HOME/Software/Math/trilinos-6.0.2/LINUX-OPT \
 --with-install="/usr/bin/install -c -p" \
 --prefix=$BUILD_DIR
 

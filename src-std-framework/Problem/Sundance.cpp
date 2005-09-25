@@ -30,6 +30,7 @@
 
 #include "Sundance.hpp"
 #include "Teuchos_CommandLineProcessor.hpp"
+#include "Teuchos_MPIComm.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
@@ -60,13 +61,17 @@ void Sundance::init(int* argc, void*** argv)
 
   Tabs tab;
 
-  cerr << "Simulation built using Sundance version " << VersionString::number() 
-       << " (" << VersionString::date() << ")" << endl;
-
-  cerr << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
-       << endl;
-  cerr << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
-  cerr << tab << endl;
+  if (MPIComm::world().getRank()==0)
+    {
+      cerr << "Simulation built using Sundance version " 
+           << VersionString::number() 
+           << " (" << VersionString::date() << ")" << endl;
+      
+      cerr << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
+           << endl;
+      cerr << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
+      cerr << tab << endl;
+    }
   
 
   /* read standard command line flags */
@@ -149,12 +154,15 @@ void Sundance::handleException(std::exception& e)
 void Sundance::finalize()
 {
   Tabs tab;
-  cerr << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
-  cerr << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
-  cerr << tab << "ref integration flops: " 
-       << RefIntegral::totalFlops() << endl;
-  cerr << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
-  cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
+  if (MPIComm::world().getRank()==0)
+    {
+      cerr << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
+      cerr << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
+      cerr << tab << "ref integration flops: " 
+           << RefIntegral::totalFlops() << endl;
+      cerr << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
+      cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
+    }
   TimeMonitor::summarize();
   MPISession::finalize();
 }
@@ -350,14 +358,18 @@ bool Sundance::checkTest(double error, double tol)
 
 void Sundance:: passFailTest(double error, double tol)
 {
-  cerr << "error norm = " << error << endl;
-  cerr << "tolerance = " << tol << endl;
-  if (checkTest(error, tol))
+  if (MPIComm::world().getRank()==0)
     {
-      cerr << "test PASSED" << endl;
-    }
-  else
-    {
-      cerr << "test FAILED" << endl;
+      cerr << "error norm = " << error << endl;
+      cerr << "tolerance = " << tol << endl;
+      if (checkTest(error, tol))
+        {
+          cerr << "test PASSED" << endl;
+        }
+      else
+        {
+          cerr << "test FAILED" << endl;
+        }
     }
 }
+
