@@ -309,14 +309,14 @@ AM_CPPFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 # Sundance library specifications
 # ------------------------------------------------------------------------
 
-CORE_LIB = libsundanceCore.la
+CORE_LIB = libsundanceCore.a
 
 
 #np# replace new_package with the name of the package being autotool'ed here
-libsundanceCore_la_SOURCES = $(CORE_SOURCES)
+libsundanceCore_a_SOURCES = $(CORE_SOURCES)
 
 #np# replace new_package with the name of the package being autotool'ed here
-EXTRA_libsundanceCore_la_SOURCES = \
+EXTRA_libsundanceCore_a_SOURCES = \
 $(EXTRA_MPI) \
 $(EXTRA_MPI_H) 
 
@@ -332,10 +332,10 @@ $(EXTRA_MPI_H)
 
 if USE_ALTERNATE_AR
 
-libsundanceCore_la_AR = $(ALTERNATE_AR)
+libsundanceCore_a_AR = $(ALTERNATE_AR)
 else
 
-libsundanceCore_la_AR = $(AR) cru
+libsundanceCore_a_AR = $(AR) cru
 
 endif
 
@@ -344,13 +344,13 @@ endif
 # be sure to include these, and this is the hack to do it.
 # ------------------------------------------------------------------------
 
-libsundanceCore_la_LIBADD = $(SUNDANCE_TEMPLATE_OBJS) $(XTRALDADD) 
+libsundanceCore_a_LIBADD = $(SUNDANCE_TEMPLATE_OBJS) $(XTRALDADD) 
 
 # ------------------------------------------------------------------------
 # List of all libraries to install in $(libexecdir)
 # ------------------------------------------------------------------------
 
-lib_LTLIBRARIES = $(CORE_LIB)
+lib_LIBRARIES = $(CORE_LIB)
 
 # ------------------------------------------------------------------------
 # List of all headers to install in $(includedir)

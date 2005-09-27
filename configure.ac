@@ -58,8 +58,8 @@ AM_CONFIG_HEADER(src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in)
 AM_CONFIG_HEADER(src-solvers/TSF_config.h:src-solvers/TSF_config.h.in)
 
 # 
-AC_DISABLE_SHARED
-AC_PROG_LIBTOOL
+#AC_DISABLE_SHARED
+#AC_PROG_LIBTOOL
 
 
 # Allow users to specify their own "install" command.  If none is specified,

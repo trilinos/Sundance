@@ -33,11 +33,11 @@ EXEEXT = .exe
 
 noinst_PROGRAMS = mapPerfTest
 
-LIBDEPS = $(top_builddir)/src-utils/libsundanceUtils.la 
+LIBDEPS = $(top_builddir)/src-utils/libsundanceUtils.a 
 
 mapPerfTest_SOURCES = $(srcdir)/mapPerfTest.cpp 
 
-mapPerfTest_DEPENDENCIES = $(top_builddir)/src-utils/libsundanceUtils.la 
+mapPerfTest_DEPENDENCIES = $(top_builddir)/src-utils/libsundanceUtils.a 
 
 mapPerfTest_CXXFLAGS = $(UTIL_INCLUDES)
 

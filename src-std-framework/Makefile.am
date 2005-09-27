@@ -224,14 +224,14 @@ AM_CPPFLAGS = $(STD_FWK_INCLUDES) $(TRILINOS_CXXFLAGS)
 # Sundance library specifications
 # ------------------------------------------------------------------------
 
-STD_FWK_LIB = libsundanceStdFwk.la
+STD_FWK_LIB = libsundanceStdFwk.a
 
 
 #np# replace new_package with the name of the package being autotool'ed here
-libsundanceStdFwk_la_SOURCES = $(STD_FWK_SOURCES)
+libsundanceStdFwk_a_SOURCES = $(STD_FWK_SOURCES)
 
 #np# replace new_package with the name of the package being autotool'ed here
-EXTRA_libsundanceStdFwk_la_SOURCES = \
+EXTRA_libsundanceStdFwk_a_SOURCES = \
 $(EXTRA_MPI) \
 $(EXTRA_MPI_H) 
 
@@ -247,10 +247,10 @@ $(EXTRA_MPI_H)
 
 if USE_ALTERNATE_AR
 
-libsundanceStdFwk_la_AR = $(ALTERNATE_AR)
+libsundanceStdFwk_a_AR = $(ALTERNATE_AR)
 else
 
-libsundanceStdFwk_la_AR = $(AR) cru
+libsundanceStdFwk_a_AR = $(AR) cru
 
 endif
 
@@ -259,13 +259,13 @@ endif
 # be sure to include these, and this is the hack to do it.
 # ------------------------------------------------------------------------
 
-libsundanceStdFwk_la_LIBADD = $(SUNDANCE_TEMPLATE_OBJS) $(XTRALDADD) 
+libsundanceStdFwk_a_LIBADD = $(SUNDANCE_TEMPLATE_OBJS) $(XTRALDADD) 
 
 # ------------------------------------------------------------------------
 # List of all libraries to install in $(libexecdir)
 # ------------------------------------------------------------------------
 
-lib_LTLIBRARIES = $(STD_FWK_LIB)
+lib_LIBRARIES = $(STD_FWK_LIB)
 
 # ------------------------------------------------------------------------
 # List of all headers to install in $(includedir)

@@ -183,8 +183,6 @@ include $(TRILINOS_DIR)/packages/teuchos/Makefile.export
 
 
 
-
-
 # ------------------------------------------------------------------------
 #
 # include macros specified by Trilinos
