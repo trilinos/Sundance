@@ -55,15 +55,15 @@ FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 # Linker command flags
 #-------------------------------------------------------------------------
 
-SUNDANCE_LIBS = $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(UTIL_LIBS) 
+SUNDANCE_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/lib $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(UTIL_LIBS) 
 
-UTIL_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/src-utils -lsundanceUtils $(TRILINOS_LIBS)
+UTIL_LIBS = -lsundanceUtils $(TRILINOS_LIBS)
 
-CORE_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/src-core -lsundanceCore
+CORE_LIBS = -lsundanceCore
 
-STD_MESH_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/src-std-mesh -lsundanceStdMesh
+STD_MESH_LIBS = -lsundanceStdMesh
 
-STD_FWK_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/src-std-framework -lsundanceStdFwk
+STD_FWK_LIBS = -lsundanceStdFwk
 
 
 #-------------------------------------------------------------------------
@@ -71,7 +71,7 @@ STD_FWK_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/src-std-framework -lsundanceStdFwk
 #-------------------------------------------------------------------------
  
 SUNDANCE_INCLUDES = -I$(SUNDANCE_BUILD_DIRECTORY)/include \
-  -I$(TRILINOS_DIR)/include 
+-I$(TRILINOS_DIR)/include 
 
 
 
@@ -81,7 +81,7 @@ SUNDANCE_INCLUDES = -I$(SUNDANCE_BUILD_DIRECTORY)/include \
 #
 # ------------------------------------------------------------------------
 
-#include $(TRILINOS_DIR)/packages/TSFExtended/Makefile.export.TSFExtended
+
 include $(SUNDANCE_BUILD_DIRECTORY)/Makefile.export.TSFExtended
 
 
