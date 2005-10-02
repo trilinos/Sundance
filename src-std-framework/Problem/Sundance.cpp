@@ -237,6 +237,11 @@ void Sundance::setSettings(const XMLObject& xml)
             {
               UnaryFunctor::checkResults() = child.getRequiredBool("value");
             }
+          else if (name=="Matrix Library Eliminates Repeated Graph Entries")
+            {
+              Assembler::matrixEliminatesRepeatedCols() 
+                = child.getRequiredBool("value");
+            }
           else if (name=="Shadow Calculations with String Values")
             {
               EvalVector::shadowOps() = child.getRequiredBool("value");
@@ -319,13 +324,11 @@ void Sundance::setSettings(const string& settingsFile)
 {
   string fqFile = searchForFile(settingsFile);
   
-//   FileInputSource fis(fqFile);
-
-//   XMLObject xml = fis.getObject();
-
-//   cerr << "settings are: " << xml.toString() << endl;
-
-//   setSettings(xml);
+  FileInputSource fis(fqFile);
+  
+  XMLObject xml = fis.getObject();
+  
+  setSettings(xml);
 
 }
 

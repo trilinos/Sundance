@@ -9,13 +9,30 @@
 <Parameter name="Check for Floating Point Errors" value="false"/>
 
 
-<!-- Whether to compute a string representation of calculations  -->
+<!-- Whether to compute a string representation of calculations.        -->
+<!-- Should normally be set to false unless you are debugging symbolic  -->
+<!-- evaluations.                                                       -->
 
 <Parameter name="Shadow Calculations with String Values" value="false"/>
 
-<!-- Whether to use the optimized representation of diff ops on funcs  -->
+
+
+<!-- Whether to use the optimized representation of diff ops on funcs.  -->
+<!-- Should normally be set to true.                                    -->
 
 <Parameter name="Optimized DiffOps on Functions" value="true"/>
+
+
+
+
+<!-- Whether the matrix library can efficiently eliminate duplicate      -->
+<!-- entries in a sparsity graph. If false, Sundance can do this, though -->
+<!-- probably not as efficiently as would be possible at the linear      -->
+<!-- algebra library level. This should usually be set to true, unless   -->
+<!-- your matrix library has unusually bad incremental insertion         -->
+<!-- performance.                                                        -->
+
+<Parameter name="Matrix Library Eliminates Repeated Graph Entries" value="true"/>
 
 
 

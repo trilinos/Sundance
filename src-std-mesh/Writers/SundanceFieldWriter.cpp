@@ -30,6 +30,8 @@
 
 #include "SundanceFieldWriter.hpp"
 #include "SundanceExceptions.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
@@ -37,18 +39,29 @@ using namespace SundanceStdMesh::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+
+static Time& vizoutTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("viz output"); 
+  return *rtn;
+}
+
 void FieldWriter::addMesh(const Mesh& mesh) const
 {
+  TimeMonitor timer(vizoutTimer());
   ptr()->addMesh(mesh);
 }
 
 void FieldWriter::write() const
 {
+  TimeMonitor timer(vizoutTimer());
   ptr()->write();
 }
 
 void FieldWriter::addField(const string& name, 
                            const Handle<FieldBase>& field)
 {
+  TimeMonitor timer(vizoutTimer());
   ptr()->addField(name, field.ptr());
 }

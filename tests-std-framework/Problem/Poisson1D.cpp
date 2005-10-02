@@ -89,7 +89,6 @@ int main(int argc, void** argv)
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-        
 
       Expr soln = prob.solve(solver);
       TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),

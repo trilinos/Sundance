@@ -47,6 +47,8 @@
 #include "TSFVector.hpp"
 #include "TSFVectorType.hpp"
 #include "Teuchos_HashSet.hpp"
+#include "TSFIncrementallyConfigurableMatrixFactory.hpp"
+#include "TSFCollectivelyConfigurableMatrixFactory.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -103,6 +105,9 @@ namespace SundanceStdFwk
       void assemble(TSFExtended::LinearOperator<double>& A,
                     TSFExtended::Vector<double>& b) const ;
 
+      /** */
+      void dryAssemble(TSFExtended::LinearOperator<double>& A) const ;
+
 
       /** */
       void assemble(TSFExtended::Vector<double>& b) const ;
@@ -122,6 +127,9 @@ namespace SundanceStdFwk
       void getGraph(Array<int>& graphData,
                     Array<int>& rowPtrs,
                     Array<int>& nnzPerRow) const ;
+      
+      /** */
+      void incrementalGetGraph(IncrementallyConfigurableMatrixFactory* mf) const ;
 
       /** */
       void flushConfiguration() 
@@ -132,6 +140,9 @@ namespace SundanceStdFwk
 
       /** */
       static int& numAssembleCalls() {static int rtn=0; return rtn;}
+
+      /** */
+      static bool& matrixEliminatesRepeatedCols() {static bool x = false; return x;}
       
     private:
 
@@ -174,6 +185,8 @@ namespace SundanceStdFwk
       static int defaultWorkSetSize() {return 100;}
       
       mutable bool matNeedsConfiguration_;
+      
+      mutable bool matNeedsFinalization_;
 
       mutable bool vecNeedsConfiguration_;
 

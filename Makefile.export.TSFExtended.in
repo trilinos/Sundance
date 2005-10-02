@@ -53,7 +53,7 @@ include $(TRILINOS_DIR)/packages/ml/Makefile.export.ml
 TSFEXTENDED_INCLUDES = -I$(TRILINOS_DIR)/include
 
 TMP_TSFEXTENDED_LIBS = @LDFLAGS@ \
--L@abs_top_builddir@/src \
+-L@abs_top_builddir@/src-solvers \
 -lTSFExtended $(NOX_LIBS) $(ML_LIBS) $(AZTECOO_LIBS) $(IFPACK_LIBS) \
 $(THYRA_LIBS) \
 $(EPETRAEXT_LIBS) \

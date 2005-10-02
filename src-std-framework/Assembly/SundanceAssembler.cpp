@@ -108,6 +108,20 @@ static Time& tmpGraphBuildTimer()
   return *rtn;
 }
 
+static Time& matAllocTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("matrix allocation"); 
+  return *rtn;
+}
+
+static Time& matFinalizeTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("matrix graph packing"); 
+  return *rtn;
+}
+
 static Time& graphFlatteningTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -122,6 +136,7 @@ Assembler
             const VectorType<double>& vectorType,
             const VerbositySetting& verb)
   : matNeedsConfiguration_(true),
+    matNeedsFinalization_(true),
     vecNeedsConfiguration_(true),
     mesh_(mesh),
     eqn_(eqn),
@@ -151,6 +166,7 @@ Assembler
             const RefCountPtr<EquationSet>& eqn,
             const VerbositySetting& verb)
   : matNeedsConfiguration_(true),
+    matNeedsFinalization_(true),
     vecNeedsConfiguration_(true),
     mesh_(mesh),
     eqn_(eqn),
@@ -327,56 +343,61 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
   
   SUNDANCE_VERB_LOW(tab << "Assembler: num cols = " << colMap()->numDOFs());
 
-  
-  SUNDANCE_VERB_MEDIUM(tab << "Assembler: creating row and col spaces...");
-
   VectorSpace<double> rowSpace = rowSpace_->vecSpace();
   VectorSpace<double> colSpace = colSpace_->vecSpace();
 
+  RefCountPtr<MatrixFactory<double> > matFactory 
+    = vecType_.createMatrixFactory(colSpace, rowSpace);
+
+  IncrementallyConfigurableMatrixFactory* icmf 
+    = dynamic_cast<IncrementallyConfigurableMatrixFactory*>(matFactory.get());
+
+  CollectivelyConfigurableMatrixFactory* ccmf 
+    = dynamic_cast<CollectivelyConfigurableMatrixFactory*>(matFactory.get());
+
+  TEST_FOR_EXCEPTION(ccmf==0 && icmf==0, RuntimeError,
+                     "Neither incremental nor collective matrix structuring "
+                     "appears to be available");
+
+  /* If collective structuring is the user preference, or if incremental
+   * structuring is not supported, do collective structuring */
+  if ((icmf==0 || !matrixEliminatesRepeatedCols()) && ccmf != 0)
+    {
+      SUNDANCE_VERB_MEDIUM(tab << "Assembler: doing collective matrix structuring...");
+      Array<int> graphData;
+      Array<int> nnzPerRow;
+      Array<int> rowPtrs;
+
+      getGraph(graphData, rowPtrs, nnzPerRow);
+      ccmf->configure(lowestRow_, rowPtrs, nnzPerRow, graphData);
+    }
+  else
+    {
+      SUNDANCE_VERB_MEDIUM(tab << "Assembler: doing incremental matrix structuring...");
+      incrementalGetGraph(icmf);
+      {
+        TimeMonitor timer1(matFinalizeTimer());
+        icmf->finalize();
+      }
+    }
   
-  SUNDANCE_VERB_MEDIUM(tab << "...done");
+  SUNDANCE_VERB_MEDIUM(tab << "Assembler: done");
 
+  SUNDANCE_VERB_MEDIUM(tab << "Assembler: constructing matrix...");
+  {
+    TimeMonitor timer1(matAllocTimer());
+    A = matFactory->createMatrix();
+  }
 
-
-
-  SUNDANCE_VERB_MEDIUM(tab << "Assembler: creating graph...");
-
-  Array<int> graphData;
-  Array<int> nnzPerRow;
-  Array<int> rowPtrs;
-  getGraph(graphData, rowPtrs, nnzPerRow);
-
-  SUNDANCE_VERB_MEDIUM(tab << "...done");
-
-  SUNDANCE_VERB_MEDIUM(tab << "Assembler: constructing matrix object...");
-
-  A = vecType_.createMatrix(colSpace, rowSpace, &(nnzPerRow[0]));
-  //  A = vecType_.createMatrix(colSpace, rowSpace);
-
-  SUNDANCE_VERB_MEDIUM(tab << "...done");
-             
-  TSFExtended::LoadableMatrix<double>* mat
-    = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(A.ptr().get());
-
-  TEST_FOR_EXCEPTION(mat==0, RuntimeError,
-                     "matrix is not loadable in Assembler::assemble()");
-
-
-  SUNDANCE_VERB_MEDIUM(tab << "Assembler: initializing matrix and vector...");
-
-
+  SUNDANCE_VERB_MEDIUM(tab << "Assembler: initializing vector...");
+  
   if (vecNeedsConfiguration_)
     {
       configureVector(b);
+      vecNeedsConfiguration_ = false;
     }
 
-  mat->configure(lowestRow_, rowPtrs, nnzPerRow, graphData);
-
-  b.zero();
-
   SUNDANCE_VERB_MEDIUM(tab << "...done");
-
-  
 
   matNeedsConfiguration_ = false;
 }
@@ -574,7 +595,6 @@ void Assembler::assemble(LinearOperator<double>& A,
             }
         }
     }
-  mat->freezeValues();
 
   SUNDANCE_VERB_LOW(tab << "Assembler: done assembling matrix & vector");
 
@@ -587,6 +607,7 @@ void Assembler::assemble(LinearOperator<double>& A,
     }
 
 }
+
 
 
 /* ------------  assemble the vector alone  ------------- */
@@ -1139,16 +1160,21 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
                     }
                 }
             }
-          mat->addElementBatch(rowsPerFunc,
-                               nTestNodes,
-                               &(testIndices[testID[t]*rowsPerFunc]),
-                               nUnkNodes,
-                               &(unkIndices[unkID[u]*colsPerFunc]),
-                               &(localValues[0]),
-                               &(skipRow[0]));
+          mat->addToElementBatch(rowsPerFunc,
+                                 nTestNodes,
+                                 &(testIndices[testID[t]*rowsPerFunc]),
+                                 nUnkNodes,
+                                 &(unkIndices[unkID[u]*colsPerFunc]),
+                                 &(localValues[0]),
+                                 &(skipRow[0]));
         }
     }
 }
+
+
+
+
+
 
 
 /* ------------  insert elements into the vector  ------------- */
@@ -1219,12 +1245,12 @@ void Assembler::getGraph(Array<int>& graphData,
   //  int cap = eqn_->numUnks() * (int) round(pow(3.0, mesh_.spatialDim()));
   //  cerr << "capacity = " << cap << endl;
   // {
-//     TimeMonitor timer2(tmpGraphBuildTimer());
-//     for (unsigned int i=0; i<tmpGraph.size(); i++)
-//       {
-//         tmpGraph[i].setCapacity(cap);
-//       }
-//   }
+  //     TimeMonitor timer2(tmpGraphBuildTimer());
+  //     for (unsigned int i=0; i<tmpGraph.size(); i++)
+  //       {
+  //         tmpGraph[i].setCapacity(cap);
+  //       }
+  //   }
 
 
   {
@@ -1428,5 +1454,188 @@ void Assembler::getGraph(Array<int>& graphData,
           }
       }
   }
+
+}
+/* ------------  get the nonzero pattern for the matrix ------------- */
+                       
+                       
+void Assembler
+::incrementalGetGraph(IncrementallyConfigurableMatrixFactory* icmf) const 
+{
+  TimeMonitor timer(graphBuildTimer());
+  Tabs tab;
+
+
+  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  workSet->reserve(workSetSize());
+
+  RefCountPtr<Array<int> > testLocalDOFs 
+    = rcp(new Array<int>());
+
+  RefCountPtr<Array<int> > unkLocalDOFs
+    = rcp(new Array<int>());
+
+  SUNDANCE_OUT(this->verbosity() > VerbLow, tab << "Creating graph: there are " << rowMap()->numLocalDOFs()
+               << " local equations");
+
+
+  for (unsigned int d=0; d<eqn_->numRegions(); d++)
+    {
+      Tabs tab0;
+      CellFilter domain = eqn_->region(d);
+      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+                   tab0 << "cell set " << domain
+                   << " isBCRegion=" << eqn_->isBCRegion(d));
+      unsigned int dim = domain.dimension(mesh_);
+      CellSet cells = domain.getCells(mesh_);
+
+      RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
+      if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
+
+      SUNDANCE_OUT(this->verbosity() > VerbMedium && pairs.get() != 0, 
+                   tab0 << "non-BC pairs = "
+                   << *pairs);
+       
+      RefCountPtr<Set<OrderedPair<int, int> > > bcPairs ;
+      if (eqn_->isBCRegion(d))
+        {
+          if (eqn_->hasBCVarUnkPairs(domain)) 
+            {
+              bcPairs = eqn_->bcVarUnkPairs(domain);
+              SUNDANCE_OUT(this->verbosity() > VerbMedium, tab0 << "BC pairs = "
+                           << *bcPairs);
+            }
+        }
+      Array<Set<int> > unksForTestsSet(eqn_->numVars());
+      Array<Set<int> > bcUnksForTestsSet(eqn_->numVars());
+
+      Set<OrderedPair<int, int> >::const_iterator i;
+      
+      if (pairs.get() != 0)
+        {
+          for (i=pairs->begin(); i!=pairs->end(); i++)
+            {
+              const OrderedPair<int, int>& p = *i;
+              int t = p.first();
+              int u = p.second();
+
+              TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+                                 "Test function ID " << t << " does not appear "
+                                 "in equation set");
+              TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+                                 "Unk function ID " << u << " does not appear "
+                                 "in equation set");
+
+              unksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
+            }
+        }
+      if (bcPairs.get() != 0)
+        {
+          for (i=bcPairs->begin(); i!=bcPairs->end(); i++)
+            {
+              const OrderedPair<int, int>& p = *i;
+              int t = p.first();
+              int u = p.second();
+              TEST_FOR_EXCEPTION(!eqn_->hasVarID(t), InternalError,
+                                 "Test function ID " << t << " does not appear "
+                                 "in equation set");
+              TEST_FOR_EXCEPTION(!eqn_->hasUnkID(u), InternalError,
+                                 "Unk function ID " << u << " does not appear "
+                                 "in equation set");
+              bcUnksForTestsSet[eqn_->reducedVarID(t)].put(eqn_->reducedUnkID(u));
+            }
+        }
+
+      Array<Array<int> > unksForTests(unksForTestsSet.size());
+      Array<Array<int> > bcUnksForTests(bcUnksForTestsSet.size());
+
+      for (unsigned int t=0; t<unksForTests.size(); t++)
+        {
+          unksForTests[t] = unksForTestsSet[t].elements();
+          bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
+        }
+      
+      unsigned int nTestNodes;
+      unsigned int nUnkNodes;
+
+      
+
+      unsigned int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
+
+      unsigned int nt = eqn_->numVars();
+      CellIterator iter=cells.begin();
+      while (iter != cells.end())
+        {
+          /* build a work set */
+          workSet->resize(0);
+          for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+            {
+              workSet->append(*iter);
+            }
+
+          int nCells = workSet->size();
+
+          rowMap_->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
+                                       nTestNodes);
+          if (rowMap_.get()==colMap_.get())
+            {
+              unkLocalDOFs = testLocalDOFs;
+              nUnkNodes = nTestNodes;
+            }
+          else
+            {
+              colMap_->getDOFsForCellBatch(dim, *workSet, 
+                                           *unkLocalDOFs, nUnkNodes);
+            }
+          
+          if (pairs.get() != 0)
+            {
+              for (unsigned int c=0; c<workSet->size(); c++)
+                {
+                  for (unsigned int t=0; t<nt; t++)
+                    {
+                      for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
+                        {
+                          Tabs tab2;
+                          int u = unksForTests[t][uit];
+                          for (unsigned int n=0; n<nTestNodes; n++)
+                            {
+                              unsigned int row
+                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                              if (row < lowestRow_ || row >= highestRow
+                                  || (*isBCRow_)[row-lowestRow_]) continue;
+                              const int* colPtr = &((*unkLocalDOFs)[(u*nCells+c)*nUnkNodes]);
+                              icmf->initializeNonzerosInRow(row, nUnkNodes, colPtr);
+                            }
+                        }
+                    }
+                }
+            }
+          if (bcPairs.get() != 0)
+            {
+              for (unsigned int c=0; c<workSet->size(); c++)
+                {
+                  for (unsigned int t=0; t<nt; t++)
+                    {
+                      for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
+                        {
+                          Tabs tab2;
+                          int u = bcUnksForTests[t][uit];
+                          for (unsigned int n=0; n<nTestNodes; n++)
+                            {
+                              unsigned int row
+                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                              if (row < lowestRow_ || row >= highestRow
+                                  || !(*isBCRow_)[row-lowestRow_]) continue;
+
+                              const int* colPtr = &((*unkLocalDOFs)[(u*nCells+c)*nUnkNodes]);
+                              icmf->initializeNonzerosInRow(row, nUnkNodes, colPtr);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

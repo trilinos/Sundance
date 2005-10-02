@@ -3,6 +3,8 @@
 #include "SundanceBasicSimplicialMeshType.hpp"
 #include "SundanceMeshType.hpp"
 #include "SundanceTabs.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
@@ -11,6 +13,13 @@ using namespace Teuchos;
 using namespace SundanceUtils;
 
 
+
+static Time& getMeshTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("get mesh"); 
+  return *rtn;
+}
 
 MeshSource::MeshSource()
   : Handle<MeshSourceBase>()
@@ -27,6 +36,8 @@ MeshSource::MeshSource(const RefCountPtr<MeshSourceBase>& smartPtr)
 
 Mesh MeshSource::getMesh() const
 {
+  TimeMonitor timer(getMeshTimer());
+
   Mesh rtn;
   try
     {

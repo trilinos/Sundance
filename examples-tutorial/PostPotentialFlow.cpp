@@ -92,7 +92,7 @@ int main(int argc, void** argv)
 
 
       /* Read the parameters for the linear solver from an XML file */
-      ParameterXMLFileReader reader("../../examples-tutorial/aztec.xml");
+      ParameterXMLFileReader reader("../../examples-tutorial/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
 
       LinearSolver<double> linSolver 
@@ -104,7 +104,7 @@ int main(int argc, void** argv)
 
 
       
-      /* Project the velocity onto a discrete space so we can visualize it */
+      // /* Project the velocity onto a discrete space so we can visualize it */
       DiscreteSpace discreteSpace(mesh, 
                                   List(new Lagrange(1), 
                                        new Lagrange(1), 
