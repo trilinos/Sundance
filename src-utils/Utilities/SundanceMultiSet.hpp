@@ -66,6 +66,9 @@ namespace SundanceUtils
       MultiSet<Key> merge(const MultiSet<Key>& other) const ;
 
       /** */
+      void mergeFrom(const MultiSet<Key>& other) ;
+
+      /** */
       string toString() const ;
     };
 
@@ -96,6 +99,17 @@ namespace SundanceUtils
           rtn.put(*iter);
         }
       return rtn;
+    }
+
+  template<class Key> inline
+  void MultiSet<Key>::mergeFrom(const MultiSet<Key>& other) 
+    {
+      typename MultiSet<Key>::const_iterator iter;
+
+      for (iter=other.begin(); iter != other.end(); iter++)
+        {
+          put(*iter);
+        }
     }
 
   template<class Key> inline

@@ -31,7 +31,8 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = SimpleEval TestEval StdTransformation VecOpTest \
+noinst_PROGRAMS = SimpleEval PolynomialTest \
+TestEval StdTransformation VecOpTest \
 ScalabilityTest DepthScalabilityTest VecTimings VariationTest
 
 
@@ -46,6 +47,17 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 SimpleEval_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 SimpleEval_LDADD = $(CORE_LIBS) 
+
+
+PolynomialTest_SOURCES = $(srcdir)/PolynomialTest.cpp 
+
+PolynomialTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+PolynomialTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+
+PolynomialTest_LDADD = $(CORE_LIBS) 
+
 
 
 VecOpTest_SOURCES = $(srcdir)/VecOpTest.cpp 

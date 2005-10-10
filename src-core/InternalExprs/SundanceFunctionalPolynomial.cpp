@@ -37,6 +37,7 @@
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceDerivOfSymbFunc.hpp"
 #include "SundanceUnaryExpr.hpp"
+#include "SundanceFunctionalDeriv.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -48,14 +49,16 @@ using namespace TSFExtended;
 
 FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
   : funcs_(),
-    coeffs_()
+    funcMultiIndices_(),
+    coeffs_(),
+    keys_()
 {
   TEST_FOR_EXCEPTION(!isConvertibleToPoly(expr.get()), InternalError, 
                      "FunctionalPolynomial ctor called with an argument that "
                      "cannot be converted to a polynomial");
-
   int funcID;
   MultiIndex mi;
+  Deriv deriv;
 
   const SymbolicFuncElement* s 
     = dynamic_cast<const SymbolicFuncElement*>(expr.get());
@@ -63,6 +66,9 @@ FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
     {
       funcID = s->funcID();
       mi = MultiIndex();
+      const FuncElementBase* f 
+        = dynamic_cast<const SymbolicFuncElement*>(s);
+      deriv = new FunctionalDeriv(f, mi);
     }
   
   const DerivOfSymbFunc* d
@@ -71,70 +77,229 @@ FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
     {
       funcID = d->funcID();
       mi = d->mi();
+      deriv = d->representMeAsFunctionalDeriv();
     }
+
+  MultipleDeriv mu;
+  mu.put(deriv);
+
 
   if (d != 0 || s != 0)
     {
-      MultiSet<OrderedPair<int, MultiIndex> > key;
-      key.put(OrderedPair<int, MultiIndex>(funcID, mi));
       funcs_.put(funcID, expr);
+      Set<MultiIndex> miSet;
+      miSet.put(mi);
+      funcMultiIndices_.put(funcID, miSet);
+
       Expr coeff = 1.0;
       RefCountPtr<ScalarExpr> cPtr = rcp_dynamic_cast<ScalarExpr>(coeff.ptr());
-      coeffs_.put(key, cPtr);
+
+      coeffs_.resize(2);
+      keys_.resize(2);
+      coeffs_[1].put(mu, cPtr);
+      keys_[1].put(mu);
+    }
+  else
+    {
+      TEST_FOR_EXCEPTION(true, InternalError, 
+                         "impossible case in FunctionalPolynomial ctor");
     }
 }
 
 
 FunctionalPolynomial::FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr> >& funcs,
-                                           const Map<MultiSet<OrderedPair<int, MultiIndex> >, 
-                                           RefCountPtr<ScalarExpr> >& coeffs)
+                                           const Map<int, Set<MultiIndex> >& funcMultiIndices,
+                                           const Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > & coeffs)
   : funcs_(funcs),
-    coeffs_(coeffs)
-{}
+    funcMultiIndices_(funcMultiIndices),
+    coeffs_(coeffs),
+    keys_(coeffs.size())
+{
+  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
 
-RefCountPtr<ScalarExpr> FunctionalPolynomial::
+  for (unsigned int i=0; i < coeffs_.size(); i++)
+    {
+      for (termMap::const_iterator 
+             j = coeffs_[i].begin(); j != coeffs_[i].end(); j++)
+        {
+          const MultipleDeriv& key = j->first;
+          keys_[i].put(key);
+        }
+    }
+}
+
+RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
 addPoly(const FunctionalPolynomial* other, int sign) const 
 {
-  Map<int, RefCountPtr<ScalarExpr> > funcs = funcs_;
-  Map<MultiSet<OrderedPair<int, MultiIndex> >, RefCountPtr<ScalarExpr> > coeffs
-    = coeffs_;
+  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
+  Map<int, RefCountPtr<ScalarExpr> > newFuncs = funcs_;
+  Map<int, Set<MultiIndex> > newFuncMultiIndices = funcMultiIndices_;
+  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > newCoeffs = coeffs_;
 
-  
-  for (Map<MultiSet<OrderedPair<int, MultiIndex> >, 
-         RefCountPtr<ScalarExpr> >::const_iterator 
-         i = other->coeffs_.begin(); i != other->coeffs_.end(); i++)
+  if (other->coeffs_.size() > coeffs_.size()) 
+    newCoeffs.resize(other->coeffs_.size());
+
+
+  for (unsigned int i=0; i < other->coeffs_.size(); i++)
     {
-      const MultiSet<OrderedPair<int, MultiIndex> >& key = i->first;
-      Expr right = Expr::handle(i->second);
-      Expr sum;
       
-      if (coeffs.containsKey(key))
+      for (termMap::const_iterator 
+             j = other->coeffs_[i].begin(); j != other->coeffs_[i].end(); j++)
         {
-          Expr left = Expr::handle(coeffs.get(key));
+          const MultipleDeriv& key = j->first;
+          Expr right = Expr::handle(j->second);
+          Expr sum;
+      
+          if (newCoeffs[i].containsKey(key))
+            {
+              Expr left = Expr::handle(newCoeffs[i].get(key));
 
-          if (sign > 0) sum = left + right;
-          else sum = left - right;
-        }
-      else
-        {
-          if (sign > 0) sum = right;
-          else sum = -right;
-        }
+              if (sign > 0) sum = left + right;
+              else sum = left - right;
+            }
+          else
+            {
+              if (sign > 0) sum = right;
+              else sum = -right;
+            }
       
-      const ScalarExpr* se = dynamic_cast<const ScalarExpr*>(sum.ptr().get());
-      TEST_FOR_EXCEPTION(se==0, InternalError,
-                         "Sum could not be cast to scalar expression");
-      coeffs.put(key, rcp_dynamic_cast<ScalarExpr>(sum.ptr()));
+          const ScalarExpr* se = dynamic_cast<const ScalarExpr*>(sum.ptr().get());
+          TEST_FOR_EXCEPTION(se==0, InternalError,
+                             "Sum could not be cast to scalar expression");
+          newCoeffs[i].put(key, rcp_dynamic_cast<ScalarExpr>(sum.ptr()));
+        }
     }
   
   for (Map<int, RefCountPtr<ScalarExpr> >::const_iterator 
          i = other->funcs_.begin(); i != other->funcs_.end(); i++)
     {
-      funcs.put(i->first, i->second);
+      newFuncs.put(i->first, i->second);
     }
 
-  Expr rtn = new FunctionalPolynomial(funcs, coeffs);
-  return rcp_dynamic_cast<ScalarExpr>(rtn.ptr());
+  for (Map<int, Set<MultiIndex> >::const_iterator 
+         i = other->funcMultiIndices_.begin(); 
+       i != other->funcMultiIndices_.end(); i++)
+    {
+      newFuncMultiIndices.put(i->first, i->second);
+    }
+
+  
+
+  return rcp(new FunctionalPolynomial(newFuncs, newFuncMultiIndices, newCoeffs));
+}
+
+RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
+multiplyPoly(const FunctionalPolynomial* other) const 
+{
+  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
+  Map<int, RefCountPtr<ScalarExpr> > newFuncs;
+  Map<int, Set<MultiIndex> > newFuncMultiIndices;
+  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > newCoeffs;
+
+  newCoeffs.resize(coeffs_.size() + other->coeffs_.size() - 1);
+
+  for (unsigned int i=0; i < coeffs_.size(); i++)
+    {
+      for (unsigned int j = 0; j<other->coeffs_.size(); j++)
+        {
+          for (termMap::const_iterator 
+                 me = coeffs_[i].begin(); me != coeffs_[i].end(); me++)
+            {
+              const MultipleDeriv& myKey = me->first;
+              Expr myExpr = Expr::handle(me->second);
+              for (termMap::const_iterator 
+                     you = other->coeffs_[j].begin(); 
+                   you != other->coeffs_[j].end(); you++)
+                {
+                  const MultipleDeriv& yourKey = you->first;
+                  Expr yourExpr = Expr::handle(you->second);
+                  MultipleDeriv newKey = myKey.product(yourKey);
+                  int order = i+j;
+                  Expr newTerm = myExpr*yourExpr;
+                  if (newCoeffs[order].containsKey(newKey))
+                    {
+                      Expr old = Expr::handle(newCoeffs[i].get(newKey));
+                      newTerm = newTerm + old;
+                    }
+                  const ScalarExpr* se 
+                    = dynamic_cast<const ScalarExpr*>(newTerm.ptr().get());
+                  TEST_FOR_EXCEPTION(se==0, InternalError,
+                                     "New coeff could not be cast to scalar expression");
+                  newCoeffs[order].put(newKey, 
+                                       rcp_dynamic_cast<ScalarExpr>(newTerm.ptr()));
+                }
+            }
+        }
+    }
+  
+  for (Map<int, RefCountPtr<ScalarExpr> >::const_iterator 
+         i = funcs_.begin(); i != funcs_.end(); i++)
+    {
+      newFuncs.put(i->first, i->second);
+    }
+  for (Map<int, RefCountPtr<ScalarExpr> >::const_iterator 
+         i = other->funcs_.begin(); i != other->funcs_.end(); i++)
+    {
+      newFuncs.put(i->first, i->second);
+    }
+
+  for (Map<int, Set<MultiIndex> >::const_iterator 
+         i = funcMultiIndices_.begin(); 
+       i != funcMultiIndices_.end(); i++)
+    {
+      newFuncMultiIndices.put(i->first, i->second);
+    }
+  for (Map<int, Set<MultiIndex> >::const_iterator 
+         i = other->funcMultiIndices_.begin(); 
+       i != other->funcMultiIndices_.end(); i++)
+    {
+      Set<MultiIndex> miSet = i->second;
+      if (newFuncMultiIndices.containsKey(i->first))
+        {
+          miSet.merge(newFuncMultiIndices.get(i->first));
+        }
+      newFuncMultiIndices.put(i->first, miSet);
+    }
+
+  return rcp(new FunctionalPolynomial(newFuncs, newFuncMultiIndices, newCoeffs));
+}
+
+RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
+addFunction(const RefCountPtr<ScalarExpr>& u, int sign) const 
+{
+  RefCountPtr<FunctionalPolynomial> other = rcp(new FunctionalPolynomial(u));
+  return addPoly(other.get(), sign);
+}
+
+RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
+multiplyScalar(const RefCountPtr<ScalarExpr>& alpha) const 
+{
+  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
+
+  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > newCoeffs = coeffs_;
+
+  Expr alphaExpr = Expr::handle(alpha);
+
+  for (unsigned int i=0; i < coeffs_.size(); i++)
+    {
+      for (termMap::const_iterator 
+             j = coeffs_[i].begin(); j != coeffs_[i].end(); j++)
+        {
+          const MultipleDeriv& key = j->first;
+          Expr oldCoeff = Expr::handle(j->second);
+          Expr newCoeff = alphaExpr*oldCoeff;
+
+          const ScalarExpr* se 
+            = dynamic_cast<const ScalarExpr*>(newCoeff.ptr().get());
+          TEST_FOR_EXCEPTION(se==0, InternalError,
+                             "Coefficient could not be cast to "
+                             "scalar expression");
+      
+          newCoeffs[i].put(key, rcp_dynamic_cast<ScalarExpr>(newCoeff.ptr()));
+        }
+    }
+  
+  return rcp(new FunctionalPolynomial(funcs_, funcMultiIndices_, newCoeffs));
 }
 
 
@@ -183,7 +348,7 @@ RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::toPoly(const RefCountPtr
 
 ostream& FunctionalPolynomial::toText(ostream& os, bool paren) const
 {
-  os << toXML();
+  os << evalString();
   return os;
 }
 
@@ -196,28 +361,166 @@ ostream& FunctionalPolynomial::toLatex(ostream& os, bool paren) const
 XMLObject FunctionalPolynomial::toXML() const
 {
   XMLObject rtn("Polynomial");
-  for (Map<MultiSet<OrderedPair<int, MultiIndex> >, 
-         RefCountPtr<ScalarExpr> >::const_iterator 
-         i = coeffs_.begin(); i != coeffs_.end(); i++)
+  for (unsigned int order=0; order<coeffs_.size(); order++)
     {
-      const MultiSet<OrderedPair<int, MultiIndex> >& key = i->first;
-      Expr e = Expr::handle(i->second);
-      XMLObject term("Term");
-      XMLObject coeff("Coeff");
-      coeff.addChild(e.toXML());
-      term.addChild(coeff);
-      for (MultiSet<OrderedPair<int, MultiIndex> >::const_iterator
-             j = key.begin(); j != key.end(); j++)
+      for (Map<MultipleDeriv, RefCountPtr<ScalarExpr> >::const_iterator
+             i = coeffs_[order].begin(); i != coeffs_[order].end(); i++)
         {
-          int funcID = j->first();
-          const MultiIndex& mi = j->second();
-          XMLObject f("Function");
-          f.addInt("funcID", funcID);
-          f.addAttribute("mi", mi.toString());
-          term.addChild(f);
+          const MultipleDeriv& key = i->first;
+          Expr e = Expr::handle(i->second);
+          XMLObject term("Term");
+          XMLObject coeff("Coeff");
+          coeff.addChild(e.toXML());
+          term.addChild(coeff);
+          for (MultipleDeriv::const_iterator
+                 j = key.begin(); j != key.end(); j++)
+            {
+              XMLObject f("FunctionalDeriv");
+              f.addAttribute("mu", j->toString());
+              term.addChild(f);
+            }
+          rtn.addChild(term);
         }
-      rtn.addChild(term);
     }
   return rtn;
+}
+
+Set<Deriv> FunctionalPolynomial
+::findFuncsForSummation(const Set<MultipleDeriv>& prevSet,
+                        const MultipleDeriv& currentDeriv) const
+{
+  Set<Deriv> rtn;
+
+  for (Set<MultipleDeriv>::const_iterator
+         i = prevSet.begin(); i != prevSet.end(); i++)
+    {
+      const MultipleDeriv& mdPrev = *i;
+      TEST_FOR_EXCEPTION(currentDeriv.size()+1 != mdPrev.size(),
+                         InternalError,
+                         "deriv orders must differ by 1. Found "
+                         "currentDeriv.size()=" << currentDeriv.size()
+                         << " while mdPrev.size()=" << mdPrev.size());
+
+      /* We are looking for cases where the previous multiple derivative
+       * is equal to the current plus one *greater* element. In such cases, the
+       * set difference will contain exactly one element, and that element
+       * will be greater than or equal to the the upper bound of the current 
+       * set */
+      Set<Deriv> tmp;
+      set_difference(mdPrev.begin(), mdPrev.end(),
+                     currentDeriv.begin(), currentDeriv.end(),
+                     inserter(tmp, tmp.begin()));
+      if (tmp.size()==1)
+        {
+          const Deriv& d = *(tmp.begin());
+          if (currentDeriv.upper_bound(d) == currentDeriv.end()) rtn.put(d);
+        }
+    }
+  return rtn;
+}
+
+
+MultipleDeriv FunctionalPolynomial::successorTerm(const MultipleDeriv& md) const
+{
+  MultipleDeriv rtn;
+
+  int k = 0;
+  for (MultipleDeriv::const_iterator i=md.begin(); i!=md.end(); i++, k++)
+    {
+      if (k < md.size()-1) rtn.put(*i);
+    }
+  return rtn;
+}
+
+void FunctionalPolynomial
+::stepRecurrence(int level, const Map<MultipleDeriv, string>& sPrev,
+                 Map<MultipleDeriv, string>& sCurr) const 
+{
+  Set<MultipleDeriv> allKeys;
+  Set<MultipleDeriv> inducedKeys;
+  Set<MultipleDeriv> prevKeys;
+  for (Map<MultipleDeriv, string>::const_iterator 
+         i = sPrev.begin(); i != sPrev.end(); i++)
+    {
+      inducedKeys.put(successorTerm(i->first));
+    }
+  for (Map<MultipleDeriv, string>::const_iterator 
+         i = sPrev.begin(); i != sPrev.end(); i++)
+    {
+      prevKeys.put(i->first);
+    }
+
+  cerr << "keys from prev level are " << prevKeys << endl;
+  cerr << "induced keys are " << inducedKeys << endl;
+  cerr << "natural keys are " << keys_[level] << endl;
+
+  allKeys.merge(inducedKeys);
+  allKeys.merge(keys_[level]);
+
+  cerr << "keys active at this level are " << allKeys << endl;
+
+  for (Set<MultipleDeriv>::const_iterator 
+         i = allKeys.begin(); i != allKeys.end(); i++)
+    {
+      const MultipleDeriv& key = *i;
+      cerr << "working on key " << key << endl;
+      string str;
+      if (coeffs_[level].containsKey(key))
+        {
+          str = coeffs_[level].get(key)->toString();
+        }
+
+      Set<Deriv> funcs = findFuncsForSummation(prevKeys, key);
+      cerr << "funcs to sum are " << funcs << endl;
+      for (Set<Deriv>::const_iterator 
+             j = funcs.begin(); j != funcs.end(); j++)
+        {
+          MultipleDeriv prevKey = key;
+          cerr << "prev key = " << prevKey << endl;
+          cerr << "func = " << *j << endl;
+          // if (key.size() > 0 && key.upper_bound(*j) == key.end()) 
+          //  {
+          //    cerr << "skipping" << endl;
+          //    continue;
+          // }
+          prevKey.put(*j);
+          TEST_FOR_EXCEPTION(!sPrev.containsKey(prevKey), InternalError,
+                             "inconsisent key lookup");
+          const string& prevStr = sPrev.get(prevKey);
+          string funcStr = (*j).toString();
+          if (str.length() > 0) str += " + ";
+          str += funcStr + "*(" + prevStr + ")";
+        }
+      if (str.length() > 0) sCurr.put(key, str);
+    }
+}
+
+string FunctionalPolynomial::evalString() const
+{
+  int maxLevel = coeffs_.size()-1;
+
+  Map<MultipleDeriv, string> sPrev;
+  Map<MultipleDeriv, string> sCurr;
+
+  for (int level=maxLevel; level>=0; level--)
+    {
+      cerr << "********* Recurrence level = " << level << " ***************"
+           << endl;      
+      sCurr = Map<MultipleDeriv, string>();
+      stepRecurrence(level, sPrev, sCurr);
+      sPrev = sCurr;
+
+      for (Map<MultipleDeriv, string>::const_iterator 
+             j = sCurr.begin(); j != sCurr.end(); j++)
+        {
+          cerr << "key=" << j->first << endl;
+          cerr << "value=" << j->second << endl;
+        }
+    }
+
+  //  TEST_FOR_EXCEPTION(sCurr.size() != 1, InternalError,
+  //                     "final value should have only one element");
+
+  return sCurr.begin()->second;
 }
 

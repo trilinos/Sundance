@@ -85,6 +85,9 @@ namespace SundanceCore
       /** */
       virtual Set<MultiSet<int> > argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const ;
 
+      /** */
+      FunctionalDeriv* representMeAsFunctionalDeriv() const ;
+
     private:
       int funcID_;
     };

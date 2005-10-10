@@ -58,8 +58,8 @@ namespace SundanceCore
       FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr);
       /** ctor */
       FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr> >& funcs,
-                           const Map<MultiSet<OrderedPair<int, MultiIndex> >, 
-                           RefCountPtr<ScalarExpr> >& coeffs);
+                           const Map<int, Set<MultiIndex> >& funcMultiIndices,
+                           const Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > & coeffs);
 
       /** virtual destructor */
       virtual ~FunctionalPolynomial() {;}
@@ -82,8 +82,18 @@ namespace SundanceCore
                                          const EvalContext& context) const ;
 
       /** */
-      RefCountPtr<ScalarExpr> addPoly(const FunctionalPolynomial* other,
+      RefCountPtr<FunctionalPolynomial> addPoly(const FunctionalPolynomial* other,
                                       int sign) const ;
+
+      /** */
+      RefCountPtr<FunctionalPolynomial> multiplyPoly(const FunctionalPolynomial* other) const ;
+
+      /** */
+      RefCountPtr<FunctionalPolynomial> multiplyScalar(const RefCountPtr<ScalarExpr>& alpha) const ;
+
+      /** */
+      RefCountPtr<FunctionalPolynomial> addFunction(const RefCountPtr<ScalarExpr>& u,
+                                          int sign) const ;
 
       /** */
       static bool isConvertibleToPoly(const ScalarExpr* expr) ;
@@ -101,14 +111,37 @@ namespace SundanceCore
 
       /** Write in XML */
       virtual XMLObject toXML() const ;
+
     private:
 
       /** */
       Map<int, RefCountPtr<ScalarExpr> > funcs_;
 
       /** */
-      Map<MultiSet<OrderedPair<int, MultiIndex> >, 
-          RefCountPtr<ScalarExpr> > coeffs_;
+      Map<int, Set<MultiIndex> > funcMultiIndices_;
+
+      /** */
+      Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > coeffs_;
+
+      /** */
+      Array<Set<MultipleDeriv> > keys_;
+
+      /** */
+      Set<Deriv> findFuncsForSummation(const Set<MultipleDeriv>& prevSet,
+                                            const MultipleDeriv& thisSet) const ;
+      
+      /**    
+       * Given a term's key, find the term that will appear as
+       * its successor in the evaluation recurrence.
+       */
+      MultipleDeriv successorTerm(const MultipleDeriv& md) const ;
+
+      /** */
+      void stepRecurrence(int level, const Map<MultipleDeriv, string>& sPrev,
+                          Map<MultipleDeriv, string>& sCurr) const ;
+
+      /** */
+      string evalString() const ;
     };
   }
 }

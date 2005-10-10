@@ -128,6 +128,5 @@ int main(int argc, void** argv)
 		{
       Sundance::handleException(e);
 		}
-  TimeMonitor::summarize();
   Sundance::finalize();
 }

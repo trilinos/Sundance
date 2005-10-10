@@ -40,6 +40,11 @@ namespace SundanceCore
   using namespace SundanceUtils;
   namespace Internal
     {
+      /**
+       * ConstantExpr contains an immutable constant, to be distinguished
+       * from a parameter that is constant in space but can change
+       * during the course of a simulation.
+       */
       class ConstantExpr : public SpatiallyConstantExpr
         {
         public:
@@ -55,7 +60,8 @@ namespace SundanceCore
           /** */
           virtual XMLObject toXML() const ;
 
-
+          /** */
+          virtual bool isImmutable() const {return true;}
 
           /**
            * Indicate whether the given functional derivative is nonzero.

@@ -64,6 +64,10 @@ namespace SundanceCore
           /** Indicate whether this expression is constant in space */
           virtual bool isConstant() const {return false;}
 
+
+          /** Indicate whether this expression is an immutable constant */
+          virtual bool isImmutable() const {return false;}
+
           /** Indicate whether this expression is a "hungry"
            * differential operator that is awaiting an argument. */
           virtual bool isHungryDiffOp() const {return false;}

@@ -54,6 +54,16 @@ DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op, const RefCountPtr<ScalarE
 }
 
 
+FunctionalDeriv* DerivOfSymbFunc::representMeAsFunctionalDeriv() const 
+{
+  const FuncElementBase* f 
+    = dynamic_cast<const FuncElementBase*>(evaluatableArg());
+  TEST_FOR_EXCEPTION(f==0, InternalError, "DerivOfSymbFunc::"
+                     "representMeAsFunctionalDeriv(), 'this' pointer "
+                     "is not a symbolic function");
+  return new FunctionalDeriv(f, mi());
+}
+
 Evaluator* DerivOfSymbFunc::createEvaluator(const EvaluatableExpr* expr,
                                    const EvalContext& context) const
 {

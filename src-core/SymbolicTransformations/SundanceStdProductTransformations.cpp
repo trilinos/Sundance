@@ -118,6 +118,17 @@ bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const R
   /* If both operands are constant, just multiply them */
   if (left->isConstant() && right->isConstant())
     {
+      if (left->isImmutable() && right->isImmutable())
+        {
+          const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
+          const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
+          TEST_FOR_EXCEPTION(cl==0 || cr==0, InternalError,
+                             "MultiplyConstants::doTransform() logic error: "
+                             "L and R identified as immutable, but could "
+                             "not be cast to ConstantExprs");
+          rtn = rcp(new ConstantExpr(cl->value() * cr->value()));
+          return true;
+        }
       if (verbosity() > 1)
         {
           Out::println("MultiplyConstants::doTransform "
