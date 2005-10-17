@@ -80,10 +80,10 @@ can change sometimes the effective ordering of source lines.
 Here are several scripts for configuring Trilinos for Sundance on Linux using
 the Gnu compilers. 
 <ul>
-<li> <A href="../Doxygen/sundance-linux-mpi-debug"> sundance-linux-mpi-debug </A>
-<li> <A href="../Doxygen/sundance-linux-mpi-opt"> sundance-linux-mpi-opt </A>
-<li> <A href="../Doxygen/sundance-linux-serial-debug"> sundance-linux-serial-debug </A>
-<li> <A href="../Doxygen/sundance-linux-serial-opt"> sundance-linux-serial-opt </A>
+<li> <A href="sundance-linux-mpi-debug"> sundance-linux-mpi-debug </A>
+<li> <A href="sundance-linux-mpi-opt"> sundance-linux-mpi-opt </A>
+<li> <A href="sundance-linux-serial-debug"> sundance-linux-serial-debug </A>
+<li> <A href="sundance-linux-serial-opt"> sundance-linux-serial-opt </A>
 </ul>
 You should be able to use these as a starting point for configuring on
 other platforms.

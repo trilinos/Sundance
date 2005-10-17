@@ -36,4 +36,5 @@ dox:
 	doxygen Doxygen/Doxyfile
 	mkdir -p html/images
 	cp images/*.* html/images
+	cp Doxygen/sundance-linux-* html
 	cp Tutorial/Tutorial.pdf html
