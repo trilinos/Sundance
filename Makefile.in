@@ -687,6 +687,9 @@ tags:
 
 tests:
 	(cd tests-std-framework/Problem; make tests) 
+
+serialtests:
+	(cd tests-std-framework/Problem; make serialtests) 	
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
