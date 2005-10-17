@@ -120,3 +120,6 @@ tags:
 
 tests:
 	(cd tests-std-framework/Problem; make tests) 
+
+serialtests:
+	(cd tests-std-framework/Problem; make serialtests) 	

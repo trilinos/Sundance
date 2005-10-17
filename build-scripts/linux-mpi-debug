@@ -35,7 +35,7 @@
 BUILD_DIR=`pwd`
 
 ../configure CXXFLAGS="-g" --enable-mpi --with-mpi-compilers \
---with-trilinos=$HOME/Software/Math/trilinos-6.0.2/LINUX-DEBUG \
+--with-trilinos=$HOME/Software/Math/trilinos-6.0.4/LINUX-DEBUG \
 --with-install="/usr/bin/install -c -p" \
 --prefix=$BUILD_DIR
 

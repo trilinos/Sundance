@@ -31,21 +31,67 @@
 
 /*! \page conf_trilinos_page Configuring Trilinos for Sundance
 
+Here we explain how to configure Trilinos for Sundance. The hard part is
+knowing the appropriate arguments for <tt>configure.</tt> If you are
+running on Linux, the easiest
+solution is to copy one of my \ref canned_scripts that call configure.
 
-Here we explain how to configure Trilinos for Sundance (in both "optimized"
-and "debug" modes)
 <ul>
-<li> \ref conf_packages 
+<li> \ref comp_flags
 <li> \ref opt_v_debug
-<li> \ref conf_mpi_opt 
-<li> \ref conf_mpi_debug
-<li> \ref conf_serial_opt
-<li> \ref conf_serial_debug
+<li> \ref canned_scripts
+<li> \ref conf_packages 
 </ul>
+
+\section comp_flags Reuse of Compiler Flags
+
+Whichever compiler flags you specify for Trilinos will be automatically
+reused for Sundance.
+
+\section opt_v_debug Optimized vs Debug Configurations
+
+Most compilers let you control the level of compile-time optimization used
+and whether to produce annotations required by debuggers. Other compilation
+options you might want to set control the level of warning and diagnostic
+output to be produced during compile time. Such options can be passed to
+the compiler by using the CXXFLAGS argument to configure.
+
+One optional Trilinos configuration 
+flag significantly impacts the behavior of Sundance:
+<ul>
+<LI> <tt>--enable-teuchos-abc</tt> turns on array bounds checking in Teuchos,
+which will check every access to Teuchos <tt>Array</tt> objects for
+bounds errors. This is nice for debugging, but results
+in a <i>serious</i> slowdown of the resulting code and so should probably
+be disabled in production builds.
+</ul>
+
+Typically, I find that Sundance simulators compiled with optimization
+are about 3-5 times faster in matrix assembly than those compiled
+with debugging and array bounds checking. 
+
+It is possible to turn on debugging and optimization simultaneously, but
+(a) compilation will be very slow and very memory-intensive, and 
+(b) the resulting debugging information might be useless because optimizations
+can change sometimes the effective ordering of source lines.
+
+\section canned_scripts Canned Scripts
+
+Here are several scripts for configuring Trilinos for Sundance on Linux using
+the Gnu compilers. 
+<ul>
+<li> <A href="../Doxygen/sundance-linux-mpi-debug"> sundance-linux-mpi-debug </A>
+<li> <A href="../Doxygen/sundance-linux-mpi-opt"> sundance-linux-mpi-opt </A>
+<li> <A href="../Doxygen/sundance-linux-serial-debug"> sundance-linux-serial-debug </A>
+<li> <A href="../Doxygen/sundance-linux-serial-opt"> sundance-linux-serial-opt </A>
+</ul>
+You should be able to use these as a starting point for configuring on
+other platforms.
 
 \section conf_packages Trilinos packages to enable
 
-You should always enable the following packages:
+If you are writing your own configuration script for Trilinos,
+you should always enable the following packages:
 
 <ul>
 <li> Teuchos (utilities)
@@ -82,192 +128,4 @@ You should always enable the following packages:
 </ul>
 
 
-\section opt_v_debug Optimized vs Debug Configurations
-
-Most compilers let you control the level of compile-time optimization used
-and whether to produce annotations required by debuggers. Other compilation
-options you might want to set control the level of warning and diagnostic
-output to be produced during compile time. Such options can be passed to
-the compiler by using the CXXFLAGS argument to configure.
-
-One other optional Trilinos configuration 
-flag significantly impacts the behavior of Sundance:
-<ul>
-<LI> <tt>--enable-teuchos-abc</tt> turns on array bounds checking in Teuchos,
-which will check every access to Teuchos <tt>Array</tt> objects for
-bounds errors. This is nice for debugging, but results
-in a <i>serious</i> slowdown of the resulting code and so should probably
-be disabled in production builds.
-</ul>
-
-Typically, I find that Sundance simulators compiled with optimization
-are about 3-5 times faster in matrix assembly than those compiled
-with debugging and array bounds checking. 
-
-It is possible to turn on debugging and optimization simultaneously, but
-(a) compilation will be very slow and very memory-intensive, and 
-(b) the resulting debugging information might be useless because optimizations
-can change sometimes the effective ordering of source lines.
-
-<hr>
-\section conf_mpi_opt Sample script: Optimized parallel
-
-
-\code
-#!/bin/sh
-
-##################################################################
-#
-# Configuration of Trilinos for use with Sundance
-#
-##################################################################
-
-
-BUILD_DIR=`pwd`
-
-../configure --enable-mpi --with-mpi-compilers \
-CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
---with-libs="-lexpat" \
---disable-default-packages \
---enable-teuchos --enable-teuchos-extended \
---enable-teuchos-complex --enable-teuchos-expat \
---enable-thyra \
---disable-thyra-tests \
---disable-thyra-examples \
---disable-aztecoo-thyra \
---disable-epetra-thyra \
---enable-epetra \
---enable-epetraext \
---enable-ml \
---disable-ml-examples \
---enable-aztecoo \
---enable-ifpack \
---enable-nox \
---disable-loca \
---with-gnumake \
---with-install="/usr/bin/install -c -p" \
---prefix=$BUILD_DIR
-\endcode
-
-
-<hr>
-\section conf_mpi_debug Sample script: Debuggable parallel
-
-\code
-#!/bin/sh
-
-##################################################################
-#
-# Configuration of Trilinos for use with Sundance
-#
-##################################################################
-
-
-BUILD_DIR=`pwd`
-
-../configure --enable-mpi --with-mpi-compilers \
-CXXFLAGS="-g -O0 -Wreturn-type" \
---with-libs="-lexpat" \
---disable-default-packages \
---enable-teuchos --enable-teuchos-extended \
---enable-teuchos-complex --enable-teuchos-abc --enable-teuchos-expat \
---enable-thyra \
---disable-thyra-tests \
---disable-thyra-examples \
---disable-aztecoo-thyra \
---disable-epetra-thyra \
---enable-epetra \
---enable-epetraext \
---enable-ml \
---disable-ml-examples \
---enable-aztecoo \
---enable-ifpack \
---enable-nox \
---disable-loca \
---with-gnumake \
---with-install="/usr/bin/install -c -p" \
---prefix=$BUILD_DIR
-\endcode
-
-
-
-<hr>
-\section conf_serial_opt Sample script: Optimized serial
-
-\code
-#!/bin/sh
-
-##################################################################
-#
-# Configuration of Trilinos for use with Sundance
-#
-##################################################################
-
-
-BUILD_DIR=`pwd`
-
-../configure CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
---with-libs="-lexpat" \
---disable-default-packages \
---enable-teuchos --enable-teuchos-extended \
---enable-teuchos-complex --enable-teuchos-expat \
---enable-thyra \
---disable-thyra-tests \
---disable-thyra-examples \
---disable-aztecoo-thyra \
---disable-epetra-thyra \
---enable-epetra \
---enable-epetraext \
---enable-ml \
---disable-ml-examples \
---enable-aztecoo \
---enable-ifpack \
---enable-nox \
---disable-loca \
---with-gnumake \
---with-install="/usr/bin/install -c -p" \
---prefix=$BUILD_DIR
-\endcode
-
-
-
-<hr>
-\section conf_serial_debug Sample script: Debuggable serial
-
-\code
-#!/bin/sh
-
-##################################################################
-#
-# Configuration of Trilinos for use with Sundance
-#
-##################################################################
-
-
-BUILD_DIR=`pwd`
-
-../configure CXXFLAGS="-g -O0 -Wreturn-type" \
---with-libs="-lexpat" \
---disable-default-packages \
---enable-teuchos --enable-teuchos-extended \
---enable-teuchos-complex --enable-teuchos-abc --enable-teuchos-expat \
---enable-thyra \
---disable-thyra-tests \
---disable-thyra-examples \
---disable-aztecoo-thyra \
---disable-epetra-thyra \
---enable-epetra \
---enable-epetraext \
---enable-ml \
---disable-ml-examples \
---enable-aztecoo \
---enable-ifpack \
---enable-nox \
---disable-loca \
---with-gnumake \
---with-install="/usr/bin/install -c -p" \
---prefix=$BUILD_DIR
-\endcode
-
 */
-

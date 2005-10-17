@@ -899,8 +899,7 @@ INCLUDE_FILE_PATTERNS  =
 # or name=definition (no spaces). If the definition and the = are 
 # omitted =1 is assumed.
 
-#PREDEFINED             = DOXYGEN_DEVELOPER_ONLY \
-PREDEFINED             = \
+PREDEFINED             = DOXYGEN_DEVELOPER_ONLY \
 "HANDLE_CTORS(handle, contents)=/** Empty ctor */ handle() : Handle<contents >() {;} /** Construct a handle with a raw pointer to a contents */ handle(Handleable<contents >* rawPtr) : Handle<contents >(rawPtr) {;} /** Construct a handle with a smart pointer to a contents */ handle(const RefCountPtr<contents >& smartPtr) : Handle<contents >(smartPtr){;}" \
 "GET_RCP(base)=/** \name Handleable interface */ //@{ /** Return a RCP to self */ virtual RefCountPtr<base> getRcp() ; //@}" \
 "SUNDANCE_UNARY_OP(funcName, dummy, description)=/** \relates Expr description */ Expr funcName(const Expr& arg);"

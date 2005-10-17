@@ -50,14 +50,12 @@ of what kinds of errors people make, which will take some time and pain.
 
 <H4> Performance </h4>
 <ul>
-<li> I've planned, but not yet implemented, a system for grouping
-similar integrals in a complex equation set. In multi-field problems
-this slows down assembly time by a factor of 2 or so. 
-<li> I've not yet fully optimized the evaluation of discrete functions. 
-<li> Reference integrations are very fast, but not optimally so. 
 <li> Meshes always identify intermediate cells regardless of 
 whether they are needed for a particular discretization. This causes
 an increase in mesh construction time in 3D.
+<li> The system for determining matrix graphs is suboptimal. This won't be 
+important in problems where a single matrix structure is used many times
+(such as a nonlinear problem). 
 </ul>
 
 <H4> Equation and discretization types </h4>
