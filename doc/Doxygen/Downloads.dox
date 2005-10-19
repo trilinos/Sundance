@@ -45,7 +45,14 @@ to obtain the limited release.
 <ul>
 <li> <A HREF="http://software.sandia.gov/sundance/sundance-2.1.0.tar.gz"> Sundance 2.1.0 </a> (16 October 2005)
 </ul>
-Version 2.1 should be built against
+Version 2.1.0 should be built against
+<A HREF="http://software.sandia.gov/trilinos/downloads/trilinos-6.0.html">
+Release 6.0 </A> of Trilinos, minor version 6.0.4 or later.
+
+<ul>
+<li> <A HREF="http://software.sandia.gov/sundance/sundance-2.1.1.tar.gz"> Sundance 2.1.0 </a> (19 October 2005)
+</ul>
+Version 2.1.1 should be built against
 <A HREF="http://software.sandia.gov/trilinos/downloads/trilinos-6.0.html">
 Release 6.0 </A> of Trilinos, minor version 6.0.4 or later.
 
