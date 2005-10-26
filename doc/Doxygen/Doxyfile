@@ -382,6 +382,13 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../src-std-framework/DOFMapping \
                          ../src-std-framework/Problem \
                          ../src-std-framework/Elements \
+                         ../src-solvers/Concrete \
+                         ../src-solvers/LinearSolvers \
+                         ../src-solvers/NonlinearSolvers \
+                         ../src-solvers/Operators \
+                         ../src-solvers/Preconditioners \
+                         ../src-solvers/Utils \
+                         ../src-solvers/Vectors \
                          ../examples-tutorial
 
 
