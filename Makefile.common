@@ -61,13 +61,15 @@ SOLVERS_INCLUDE_PATH =  \
 -I$(top_srcdir)/src-solvers/LinearSolvers \
 -I$(top_srcdir)/src-solvers/NonlinearSolvers \
 -I$(top_srcdir)/src-solvers/Preconditioners \
+-I$(top_srcdir)/src-solvers/Testing \
 -I$(top_builddir)/src-solvers/Vectors \
 -I$(top_builddir)/src-solvers/Utils \
 -I$(top_builddir)/src-solvers/Concrete \
 -I$(top_builddir)/src-solvers/Operators \
 -I$(top_builddir)/src-solvers/LinearSolvers \
 -I$(top_builddir)/src-solvers/NonlinearSolvers \
--I$(top_builddir)/src-solvers/Preconditioners 
+-I$(top_builddir)/src-solvers/Preconditioners \
+-I$(top_builddir)/src-solvers/Testing 
 
 SOLVERS_LIBS = $(SOLVERS_LIB_PATH) -lTSFExtended $(TRILINOS_LIBS)
 

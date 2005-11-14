@@ -87,7 +87,7 @@ EXAMPLES_SUBDIR=examples-tutorial
 endif
 
 if BUILD_TESTS
-SUBDIRS = src-solvers \
+SUBDIRS = src-solvers tests-solvers \
 src-utils tests-utils \
 src-core tests-core \
 src-std-mesh tests-std-mesh \

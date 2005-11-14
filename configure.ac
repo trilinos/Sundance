@@ -228,6 +228,8 @@ AC_CONFIG_FILES([
   tests-utils/Maps/Makefile
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
+  tests-solvers/Makefile
+  tests-solvers/OperatorTests/Makefile
   tests-std-mesh/Makefile
   tests-std-mesh/Simple/Makefile
   tests-std-mesh/Readers/Makefile

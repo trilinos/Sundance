@@ -17,12 +17,11 @@
 #@HEADER
 # ************************************************************************
 # 
-#                              Sundance
-#                 Copyright (2005) Sandia Corporation
+#           TSFExtended: Trilinos Solver Framework Extended
+#                 Copyright (2004) Sandia Corporation
 # 
-# Copyright (year first published) Sandia Corporation.  Under the terms 
-# of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government 
-# retains certain rights in this software.
+# Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+# license for use of this work by or on behalf of the U.S. Government.
 # 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -33,13 +32,12 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-#                                                                                 
+#  
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-# USA                                                                                
-# Questions? Contact Kevin Long (krlong@sandia.gov), 
-# Sandia National Laboratories, Livermore, California, USA
+# USA
+# Questions? Contact Michael A. Heroux (maherou@sandia.gov) 
 # 
 # ************************************************************************
 #@HEADER
@@ -84,7 +82,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) $(MeshTest3D_SOURCES)
+SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -109,11 +107,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = MeshTest1D$(EXEEXT) MeshTest2D$(EXEEXT) \
-	MeshTest3D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-subdir = tests-std-mesh/Simple
+noinst_PROGRAMS = CompoundOpTest$(EXEEXT) BlockOpTest$(EXEEXT)
+subdir = tests-solvers/OperatorTests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
@@ -129,16 +126,12 @@ CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h \
 	$(top_builddir)/src-solvers/TSF_config.h
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am_MeshTest1D_OBJECTS = MeshTest1D-MeshTest1D.$(OBJEXT)
-MeshTest1D_OBJECTS = $(am_MeshTest1D_OBJECTS)
+am_BlockOpTest_OBJECTS = BlockOpTest-BlockOpTest.$(OBJEXT)
+BlockOpTest_OBJECTS = $(am_BlockOpTest_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_2)
-am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_3)
-am_MeshTest2D_OBJECTS = MeshTest2D-MeshTest2D.$(OBJEXT)
-MeshTest2D_OBJECTS = $(am_MeshTest2D_OBJECTS)
-am_MeshTest3D_OBJECTS = MeshTest3D-MeshTest3D.$(OBJEXT)
-MeshTest3D_OBJECTS = $(am_MeshTest3D_OBJECTS)
+am_CompoundOpTest_OBJECTS = CompoundOpTest-CompoundOpTest.$(OBJEXT)
+CompoundOpTest_OBJECTS = $(am_CompoundOpTest_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils -I$(top_builddir)/src-solvers
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -147,10 +140,8 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) \
-	$(MeshTest3D_SOURCES)
-DIST_SOURCES = $(MeshTest1D_SOURCES) $(MeshTest2D_SOURCES) \
-	$(MeshTest3D_SOURCES)
+SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES)
+DIST_SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -276,24 +267,6 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-MeshTest1D_SOURCES = $(srcdir)/MeshTest1D.cpp
-MeshTest1D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-MeshTest1D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest1D_LDADD = $(STD_MESH_LIBS) 
-MeshTest2D_SOURCES = $(srcdir)/MeshTest2D.cpp
-MeshTest2D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-MeshTest2D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest2D_LDADD = $(STD_MESH_LIBS) 
-MeshTest3D_SOURCES = $(srcdir)/MeshTest3D.cpp
-MeshTest3D_DEPENDENCIES = $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-MeshTest3D_CXXFLAGS = $(STD_MESH_INCLUDES)
-MeshTest3D_LDADD = $(STD_MESH_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -417,6 +390,14 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
+CompoundOpTest_SOURCES = $(srcdir)/CompoundOpTest.cpp 
+CompoundOpTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+CompoundOpTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+CompoundOpTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+BlockOpTest_SOURCES = $(srcdir)/BlockOpTest.cpp 
+BlockOpTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+BlockOpTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+BlockOpTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
 all: all-am
 
 .SUFFIXES:
@@ -430,9 +411,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  tests-std-mesh/Simple/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  tests-solvers/OperatorTests/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  tests-std-mesh/Simple/Makefile
+	  $(AUTOMAKE) --foreign  tests-solvers/OperatorTests/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -453,15 +434,12 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-MeshTest1D$(EXEEXT): $(MeshTest1D_OBJECTS) $(MeshTest1D_DEPENDENCIES) 
-	@rm -f MeshTest1D$(EXEEXT)
-	$(CXXLINK) $(MeshTest1D_LDFLAGS) $(MeshTest1D_OBJECTS) $(MeshTest1D_LDADD) $(LIBS)
-MeshTest2D$(EXEEXT): $(MeshTest2D_OBJECTS) $(MeshTest2D_DEPENDENCIES) 
-	@rm -f MeshTest2D$(EXEEXT)
-	$(CXXLINK) $(MeshTest2D_LDFLAGS) $(MeshTest2D_OBJECTS) $(MeshTest2D_LDADD) $(LIBS)
-MeshTest3D$(EXEEXT): $(MeshTest3D_OBJECTS) $(MeshTest3D_DEPENDENCIES) 
-	@rm -f MeshTest3D$(EXEEXT)
-	$(CXXLINK) $(MeshTest3D_LDFLAGS) $(MeshTest3D_OBJECTS) $(MeshTest3D_LDADD) $(LIBS)
+BlockOpTest$(EXEEXT): $(BlockOpTest_OBJECTS) $(BlockOpTest_DEPENDENCIES) 
+	@rm -f BlockOpTest$(EXEEXT)
+	$(CXXLINK) $(BlockOpTest_LDFLAGS) $(BlockOpTest_OBJECTS) $(BlockOpTest_LDADD) $(LIBS)
+CompoundOpTest$(EXEEXT): $(CompoundOpTest_OBJECTS) $(CompoundOpTest_DEPENDENCIES) 
+	@rm -f CompoundOpTest$(EXEEXT)
+	$(CXXLINK) $(CompoundOpTest_LDFLAGS) $(CompoundOpTest_OBJECTS) $(CompoundOpTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -469,9 +447,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest1D-MeshTest1D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest2D-MeshTest2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MeshTest3D-MeshTest3D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlockOpTest-BlockOpTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CompoundOpTest-CompoundOpTest.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -487,47 +464,33 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-MeshTest1D-MeshTest1D.o: $(srcdir)/MeshTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest1D-MeshTest1D.o -MD -MP -MF "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" -c -o MeshTest1D-MeshTest1D.o `test -f '$(srcdir)/MeshTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" "$(DEPDIR)/MeshTest1D-MeshTest1D.Po"; else rm -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest1D.cpp' object='MeshTest1D-MeshTest1D.o' libtool=no @AMDEPBACKSLASH@
+BlockOpTest-BlockOpTest.o: $(srcdir)/BlockOpTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockOpTest_CXXFLAGS) $(CXXFLAGS) -MT BlockOpTest-BlockOpTest.o -MD -MP -MF "$(DEPDIR)/BlockOpTest-BlockOpTest.Tpo" -c -o BlockOpTest-BlockOpTest.o `test -f '$(srcdir)/BlockOpTest.cpp' || echo '$(srcdir)/'`$(srcdir)/BlockOpTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BlockOpTest-BlockOpTest.Tpo" "$(DEPDIR)/BlockOpTest-BlockOpTest.Po"; else rm -f "$(DEPDIR)/BlockOpTest-BlockOpTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/BlockOpTest.cpp' object='BlockOpTest-BlockOpTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest1D-MeshTest1D.o `test -f '$(srcdir)/MeshTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest1D.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockOpTest_CXXFLAGS) $(CXXFLAGS) -c -o BlockOpTest-BlockOpTest.o `test -f '$(srcdir)/BlockOpTest.cpp' || echo '$(srcdir)/'`$(srcdir)/BlockOpTest.cpp
 
-MeshTest1D-MeshTest1D.obj: $(srcdir)/MeshTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest1D-MeshTest1D.obj -MD -MP -MF "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" -c -o MeshTest1D-MeshTest1D.obj `if test -f '$(srcdir)/MeshTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo" "$(DEPDIR)/MeshTest1D-MeshTest1D.Po"; else rm -f "$(DEPDIR)/MeshTest1D-MeshTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest1D.cpp' object='MeshTest1D-MeshTest1D.obj' libtool=no @AMDEPBACKSLASH@
+BlockOpTest-BlockOpTest.obj: $(srcdir)/BlockOpTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockOpTest_CXXFLAGS) $(CXXFLAGS) -MT BlockOpTest-BlockOpTest.obj -MD -MP -MF "$(DEPDIR)/BlockOpTest-BlockOpTest.Tpo" -c -o BlockOpTest-BlockOpTest.obj `if test -f '$(srcdir)/BlockOpTest.cpp'; then $(CYGPATH_W) '$(srcdir)/BlockOpTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/BlockOpTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BlockOpTest-BlockOpTest.Tpo" "$(DEPDIR)/BlockOpTest-BlockOpTest.Po"; else rm -f "$(DEPDIR)/BlockOpTest-BlockOpTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/BlockOpTest.cpp' object='BlockOpTest-BlockOpTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest1D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest1D-MeshTest1D.obj `if test -f '$(srcdir)/MeshTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest1D.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockOpTest_CXXFLAGS) $(CXXFLAGS) -c -o BlockOpTest-BlockOpTest.obj `if test -f '$(srcdir)/BlockOpTest.cpp'; then $(CYGPATH_W) '$(srcdir)/BlockOpTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/BlockOpTest.cpp'; fi`
 
-MeshTest2D-MeshTest2D.o: $(srcdir)/MeshTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest2D-MeshTest2D.o -MD -MP -MF "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" -c -o MeshTest2D-MeshTest2D.o `test -f '$(srcdir)/MeshTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest2D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" "$(DEPDIR)/MeshTest2D-MeshTest2D.Po"; else rm -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest2D.cpp' object='MeshTest2D-MeshTest2D.o' libtool=no @AMDEPBACKSLASH@
+CompoundOpTest-CompoundOpTest.o: $(srcdir)/CompoundOpTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CompoundOpTest_CXXFLAGS) $(CXXFLAGS) -MT CompoundOpTest-CompoundOpTest.o -MD -MP -MF "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Tpo" -c -o CompoundOpTest-CompoundOpTest.o `test -f '$(srcdir)/CompoundOpTest.cpp' || echo '$(srcdir)/'`$(srcdir)/CompoundOpTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Tpo" "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Po"; else rm -f "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/CompoundOpTest.cpp' object='CompoundOpTest-CompoundOpTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest2D-MeshTest2D.o `test -f '$(srcdir)/MeshTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest2D.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CompoundOpTest_CXXFLAGS) $(CXXFLAGS) -c -o CompoundOpTest-CompoundOpTest.o `test -f '$(srcdir)/CompoundOpTest.cpp' || echo '$(srcdir)/'`$(srcdir)/CompoundOpTest.cpp
 
-MeshTest2D-MeshTest2D.obj: $(srcdir)/MeshTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest2D-MeshTest2D.obj -MD -MP -MF "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" -c -o MeshTest2D-MeshTest2D.obj `if test -f '$(srcdir)/MeshTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest2D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo" "$(DEPDIR)/MeshTest2D-MeshTest2D.Po"; else rm -f "$(DEPDIR)/MeshTest2D-MeshTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest2D.cpp' object='MeshTest2D-MeshTest2D.obj' libtool=no @AMDEPBACKSLASH@
+CompoundOpTest-CompoundOpTest.obj: $(srcdir)/CompoundOpTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CompoundOpTest_CXXFLAGS) $(CXXFLAGS) -MT CompoundOpTest-CompoundOpTest.obj -MD -MP -MF "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Tpo" -c -o CompoundOpTest-CompoundOpTest.obj `if test -f '$(srcdir)/CompoundOpTest.cpp'; then $(CYGPATH_W) '$(srcdir)/CompoundOpTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/CompoundOpTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Tpo" "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Po"; else rm -f "$(DEPDIR)/CompoundOpTest-CompoundOpTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/CompoundOpTest.cpp' object='CompoundOpTest-CompoundOpTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest2D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest2D-MeshTest2D.obj `if test -f '$(srcdir)/MeshTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest2D.cpp'; fi`
-
-MeshTest3D-MeshTest3D.o: $(srcdir)/MeshTest3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest3D-MeshTest3D.o -MD -MP -MF "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" -c -o MeshTest3D-MeshTest3D.o `test -f '$(srcdir)/MeshTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest3D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" "$(DEPDIR)/MeshTest3D-MeshTest3D.Po"; else rm -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest3D.cpp' object='MeshTest3D-MeshTest3D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest3D-MeshTest3D.o `test -f '$(srcdir)/MeshTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/MeshTest3D.cpp
-
-MeshTest3D-MeshTest3D.obj: $(srcdir)/MeshTest3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -MT MeshTest3D-MeshTest3D.obj -MD -MP -MF "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" -c -o MeshTest3D-MeshTest3D.obj `if test -f '$(srcdir)/MeshTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest3D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo" "$(DEPDIR)/MeshTest3D-MeshTest3D.Po"; else rm -f "$(DEPDIR)/MeshTest3D-MeshTest3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MeshTest3D.cpp' object='MeshTest3D-MeshTest3D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MeshTest3D_CXXFLAGS) $(CXXFLAGS) -c -o MeshTest3D-MeshTest3D.obj `if test -f '$(srcdir)/MeshTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/MeshTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MeshTest3D.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CompoundOpTest_CXXFLAGS) $(CXXFLAGS) -c -o CompoundOpTest-CompoundOpTest.obj `if test -f '$(srcdir)/CompoundOpTest.cpp'; then $(CYGPATH_W) '$(srcdir)/CompoundOpTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/CompoundOpTest.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

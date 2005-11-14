@@ -50,7 +50,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -91,6 +91,21 @@ int main(int argc, void** argv)
 
 
       Expr soln = prob.solve(solver);
+
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      cerr << "rhs = " << endl << prob.getRHS() << endl;
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      cerr << "matrix = " << endl << prob.getOperator() << endl;
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      Vector<double> x0 = DiscreteFunction::discFunc(soln)->getVector();
+      cerr << "soln = " << endl << x0 << endl;
+
       TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
                          RuntimeError,
                          "solve failed");
