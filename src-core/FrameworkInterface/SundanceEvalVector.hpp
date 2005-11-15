@@ -47,7 +47,7 @@ namespace SundanceCore
   namespace Internal
   {
     using namespace Teuchos;
-
+    class TempStack;
     /**
      *
      */

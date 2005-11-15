@@ -41,8 +41,8 @@ int main(int argc, void** argv)
 
       MeshType meshType = new BasicSimplicialMeshType();
 
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 2, 2,
-                                                         0.0, 1.0, 2, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 4, 1,
+                                                         0.0, 1.0, 4, 1,
                                                          meshType);
 
       mesher.ptr()->verbosity() = VerbExtreme;
