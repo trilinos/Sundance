@@ -96,7 +96,7 @@ int main(int argc, void** argv)
 
       BasisFamily L1 = new Lagrange(1);
       DiscreteSpace discSpace(mesh, SundanceStdFwk::List(L1, L1, L1), vecType);
-      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
+      Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
       
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F 

@@ -62,7 +62,7 @@ namespace SundanceStdFwk
     L2Projector(){;}
     /** */
     L2Projector(const DiscreteSpace& space, 
-                const Expr& expr);
+                const Expr& expr, const double& smoothing = 0.0);
 
     /** */
     Expr project() const {return prob_.solve(solver_);}

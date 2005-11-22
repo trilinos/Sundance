@@ -1,0 +1,5 @@
+<ParameterList>
+  <ParameterList name="Linear Solver">
+    <Parameter name="Type" type="string" value="Amesos"/>
+  </ParameterList>
+</ParameterList>

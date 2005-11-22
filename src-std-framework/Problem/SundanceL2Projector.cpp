@@ -33,6 +33,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
+#include "SundanceDerivative.hpp"
 #include "SundanceTestFunction.hpp"
 #include "SundanceUnknownFunction.hpp"
 #include "SundanceEssentialBC.hpp"
@@ -50,8 +51,10 @@ using namespace Teuchos;
 using namespace TSFExtended;
 using namespace Thyra;
 
+
 L2Projector::L2Projector(const DiscreteSpace& space, 
-                         const Expr& expr)
+                         const Expr& expr, 
+                         const double& smoothing)
   : prob_(), solver_()
 {
   TEST_FOR_EXCEPTION(space.basis().size() != expr.size(),
@@ -73,7 +76,23 @@ L2Projector::L2Projector(const DiscreteSpace& space,
 
   CellFilter interior = new MaximalCellFilter();
 
-  Expr eqn = Integral(interior, v*(u-expr), new GaussianQuadrature(4));
+  int dim = space.mesh().spatialDim();
+  Expr smoothingTerm = 0.0;
+  if (smoothing > 0.0)
+    {
+      for (int i=0; i<dim; i++)
+        {
+          Expr dx_i = new Derivative(i);
+          for (int j=0; j<v.size(); j++)
+            {
+              smoothingTerm = smoothingTerm 
+                + smoothing*(dx_i*v[j])*(dx_i*u[j]);
+            }
+        }
+    }
+
+  Expr eqn = Integral(interior, smoothingTerm + v*(u-expr), 
+                      new GaussianQuadrature(4));
   Expr bc;
 
   prob_ = LinearProblem(space.mesh(), eqn, bc, v, u, space.vecType());

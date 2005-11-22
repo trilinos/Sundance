@@ -48,13 +48,15 @@ include $(TRILINOS_DIR)/packages/aztecoo/Makefile.export.aztecoo
 include $(TRILINOS_DIR)/packages/ifpack/Makefile.export.ifpack
 include $(TRILINOS_DIR)/packages/nox/Makefile.export.nox
 include $(TRILINOS_DIR)/packages/ml/Makefile.export.ml
+include $(TRILINOS_DIR)/packages/amesos/Makefile.export.amesos
 
 
 TSFEXTENDED_INCLUDES = -I$(TRILINOS_DIR)/include
 
 TMP_TSFEXTENDED_LIBS = @LDFLAGS@ \
 -L@abs_top_builddir@/src-solvers \
--lTSFExtended $(NOX_LIBS) $(ML_LIBS) $(AZTECOO_LIBS) $(IFPACK_LIBS) \
+-lTSFExtended $(NOX_LIBS) $(ML_LIBS) $(AMESOS_LIBS) \
+$(AZTECOO_LIBS) $(IFPACK_LIBS) \
 $(THYRA_LIBS) \
 $(EPETRAEXT_LIBS) \
 $(EPETRA_LIBS) \
