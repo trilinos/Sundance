@@ -14,15 +14,14 @@
 
 @SET_MAKE@
 
-# @HEADER
+#@HEADER
 # ************************************************************************
 # 
-#                              Sundance
-#                 Copyright (2005) Sandia Corporation
+#           TSFExtended: Trilinos Solver Framework Extended
+#                 Copyright (2004) Sandia Corporation
 # 
-# Copyright (year first published) Sandia Corporation.  Under the terms 
-# of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government 
-# retains certain rights in this software.
+# Under terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+# license for use of this work by or on behalf of the U.S. Government.
 # 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -33,33 +32,15 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-#                                                                                 
+#  
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-# USA                                                                                
-# Questions? Contact Kevin Long (krlong@sandia.gov), 
-# Sandia National Laboratories, Livermore, California, USA
+# USA
+# Questions? Contact Michael A. Heroux (maherou@sandia.gov) 
 # 
 # ************************************************************************
-# @HEADER
-
-#np# Note the following paragraph.
-# ------------------------------------------------------------------------
-# For each category, create two variables - NAME and NAME_H. The
-# second is the list of headers to be installed, i.e., any header that
-# might someday be needed by some other code outside New_Package. The first is
-# the list of all source and any other header files.
-# ------------------------------------------------------------------------
-
-#
-#np# There is, at present, no distinction between most of the categories, 
-#np# other than those which start with EXTRA_.  All categories which do not
-#np# start with EXTRA_ are included in all builds.  Categories which start
-#np# with EXTRA_ are included in some builds (typically controlled by 
-#np# --with-xyz or --without-xyz)
-#
-#np# Make sure to list all source files in one of the following categories.
+#@HEADER
 
 # ************************************************************************
 # 
@@ -101,7 +82,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(Sundance_SOURCES)
+SOURCES = $(VectorTest_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -109,7 +90,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ..
+top_builddir = ../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -126,10 +107,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = Sundance$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-subdir = src-xml
+noinst_PROGRAMS = VectorTest$(EXEEXT)
+subdir = tests-solvers/VectorTests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
@@ -145,18 +126,10 @@ CONFIG_HEADER = $(top_builddir)/src-utils/SundanceConfig.h \
 	$(top_builddir)/src-solvers/TSF_config.h
 CONFIG_CLEAN_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
-am__objects_1 = Sundance-SundanceExprParser.$(OBJEXT) \
-	Sundance-SundanceExprScanner.$(OBJEXT) \
-	Sundance-SundanceObjectBuilder.$(OBJEXT) \
-	Sundance-SundanceToken.$(OBJEXT)
-am_Sundance_OBJECTS = Sundance-SundanceInterpreter.$(OBJEXT) \
-	$(am__objects_1)
-Sundance_OBJECTS = $(am_Sundance_OBJECTS)
+am_VectorTest_OBJECTS = VectorTest-VectorTest.$(OBJEXT)
+VectorTest_OBJECTS = $(am_VectorTest_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_2)
-am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_3)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils -I$(top_builddir)/src-solvers
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -165,8 +138,8 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(Sundance_SOURCES)
-DIST_SOURCES = $(Sundance_SOURCES)
+SOURCES = $(VectorTest_SOURCES)
+DIST_SOURCES = $(VectorTest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -292,21 +265,6 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-XML_SOURCES = \
-$(top_srcdir)/src-xml/SundanceExprParser.cpp \
-$(top_srcdir)/src-xml/SundanceExprScanner.cpp \
-$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp \
-$(top_srcdir)/src-xml/SundanceToken.cpp 
-
-Sundance_SOURCES = $(srcdir)/SundanceInterpreter.cpp $(XML_SOURCES)
-Sundance_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-Sundance_CXXFLAGS = $(STD_FWK_INCLUDES)
-Sundance_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -430,6 +388,10 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
+VectorTest_SOURCES = $(srcdir)/VectorTest.cpp 
+VectorTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+VectorTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+VectorTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
 all: all-am
 
 .SUFFIXES:
@@ -443,9 +405,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src-xml/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  tests-solvers/VectorTests/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src-xml/Makefile
+	  $(AUTOMAKE) --foreign  tests-solvers/VectorTests/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -466,9 +428,9 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-Sundance$(EXEEXT): $(Sundance_OBJECTS) $(Sundance_DEPENDENCIES) 
-	@rm -f Sundance$(EXEEXT)
-	$(CXXLINK) $(Sundance_LDFLAGS) $(Sundance_OBJECTS) $(Sundance_LDADD) $(LIBS)
+VectorTest$(EXEEXT): $(VectorTest_OBJECTS) $(VectorTest_DEPENDENCIES) 
+	@rm -f VectorTest$(EXEEXT)
+	$(CXXLINK) $(VectorTest_LDFLAGS) $(VectorTest_OBJECTS) $(VectorTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -476,11 +438,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceExprParser.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceExprScanner.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceInterpreter.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceObjectBuilder.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sundance-SundanceToken.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VectorTest-VectorTest.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -496,75 +454,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-Sundance-SundanceInterpreter.o: $(srcdir)/SundanceInterpreter.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceInterpreter.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" -c -o Sundance-SundanceInterpreter.o `test -f '$(srcdir)/SundanceInterpreter.cpp' || echo '$(srcdir)/'`$(srcdir)/SundanceInterpreter.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" "$(DEPDIR)/Sundance-SundanceInterpreter.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SundanceInterpreter.cpp' object='Sundance-SundanceInterpreter.o' libtool=no @AMDEPBACKSLASH@
+VectorTest-VectorTest.o: $(srcdir)/VectorTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VectorTest_CXXFLAGS) $(CXXFLAGS) -MT VectorTest-VectorTest.o -MD -MP -MF "$(DEPDIR)/VectorTest-VectorTest.Tpo" -c -o VectorTest-VectorTest.o `test -f '$(srcdir)/VectorTest.cpp' || echo '$(srcdir)/'`$(srcdir)/VectorTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VectorTest-VectorTest.Tpo" "$(DEPDIR)/VectorTest-VectorTest.Po"; else rm -f "$(DEPDIR)/VectorTest-VectorTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VectorTest.cpp' object='VectorTest-VectorTest.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceInterpreter.o `test -f '$(srcdir)/SundanceInterpreter.cpp' || echo '$(srcdir)/'`$(srcdir)/SundanceInterpreter.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VectorTest_CXXFLAGS) $(CXXFLAGS) -c -o VectorTest-VectorTest.o `test -f '$(srcdir)/VectorTest.cpp' || echo '$(srcdir)/'`$(srcdir)/VectorTest.cpp
 
-Sundance-SundanceInterpreter.obj: $(srcdir)/SundanceInterpreter.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceInterpreter.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" -c -o Sundance-SundanceInterpreter.obj `if test -f '$(srcdir)/SundanceInterpreter.cpp'; then $(CYGPATH_W) '$(srcdir)/SundanceInterpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SundanceInterpreter.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo" "$(DEPDIR)/Sundance-SundanceInterpreter.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceInterpreter.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SundanceInterpreter.cpp' object='Sundance-SundanceInterpreter.obj' libtool=no @AMDEPBACKSLASH@
+VectorTest-VectorTest.obj: $(srcdir)/VectorTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VectorTest_CXXFLAGS) $(CXXFLAGS) -MT VectorTest-VectorTest.obj -MD -MP -MF "$(DEPDIR)/VectorTest-VectorTest.Tpo" -c -o VectorTest-VectorTest.obj `if test -f '$(srcdir)/VectorTest.cpp'; then $(CYGPATH_W) '$(srcdir)/VectorTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VectorTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VectorTest-VectorTest.Tpo" "$(DEPDIR)/VectorTest-VectorTest.Po"; else rm -f "$(DEPDIR)/VectorTest-VectorTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VectorTest.cpp' object='VectorTest-VectorTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceInterpreter.obj `if test -f '$(srcdir)/SundanceInterpreter.cpp'; then $(CYGPATH_W) '$(srcdir)/SundanceInterpreter.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SundanceInterpreter.cpp'; fi`
-
-Sundance-SundanceExprParser.o: $(top_srcdir)/src-xml/SundanceExprParser.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprParser.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" -c -o Sundance-SundanceExprParser.o `test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprParser.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" "$(DEPDIR)/Sundance-SundanceExprParser.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprParser.cpp' object='Sundance-SundanceExprParser.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprParser.o `test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprParser.cpp
-
-Sundance-SundanceExprParser.obj: $(top_srcdir)/src-xml/SundanceExprParser.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprParser.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" -c -o Sundance-SundanceExprParser.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprParser.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo" "$(DEPDIR)/Sundance-SundanceExprParser.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprParser.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprParser.cpp' object='Sundance-SundanceExprParser.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprParser.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprParser.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprParser.cpp'; fi`
-
-Sundance-SundanceExprScanner.o: $(top_srcdir)/src-xml/SundanceExprScanner.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprScanner.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" -c -o Sundance-SundanceExprScanner.o `test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprScanner.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" "$(DEPDIR)/Sundance-SundanceExprScanner.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprScanner.cpp' object='Sundance-SundanceExprScanner.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprScanner.o `test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceExprScanner.cpp
-
-Sundance-SundanceExprScanner.obj: $(top_srcdir)/src-xml/SundanceExprScanner.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceExprScanner.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" -c -o Sundance-SundanceExprScanner.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo" "$(DEPDIR)/Sundance-SundanceExprScanner.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceExprScanner.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceExprScanner.cpp' object='Sundance-SundanceExprScanner.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceExprScanner.obj `if test -f '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceExprScanner.cpp'; fi`
-
-Sundance-SundanceObjectBuilder.o: $(top_srcdir)/src-xml/SundanceObjectBuilder.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceObjectBuilder.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceObjectBuilder.Tpo" -c -o Sundance-SundanceObjectBuilder.o `test -f '$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceObjectBuilder.Tpo" "$(DEPDIR)/Sundance-SundanceObjectBuilder.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceObjectBuilder.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp' object='Sundance-SundanceObjectBuilder.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceObjectBuilder.o `test -f '$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp
-
-Sundance-SundanceObjectBuilder.obj: $(top_srcdir)/src-xml/SundanceObjectBuilder.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceObjectBuilder.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceObjectBuilder.Tpo" -c -o Sundance-SundanceObjectBuilder.obj `if test -f '$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceObjectBuilder.Tpo" "$(DEPDIR)/Sundance-SundanceObjectBuilder.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceObjectBuilder.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp' object='Sundance-SundanceObjectBuilder.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceObjectBuilder.obj `if test -f '$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceObjectBuilder.cpp'; fi`
-
-Sundance-SundanceToken.o: $(top_srcdir)/src-xml/SundanceToken.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceToken.o -MD -MP -MF "$(DEPDIR)/Sundance-SundanceToken.Tpo" -c -o Sundance-SundanceToken.o `test -f '$(top_srcdir)/src-xml/SundanceToken.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceToken.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceToken.Tpo" "$(DEPDIR)/Sundance-SundanceToken.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceToken.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceToken.cpp' object='Sundance-SundanceToken.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceToken.o `test -f '$(top_srcdir)/src-xml/SundanceToken.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-xml/SundanceToken.cpp
-
-Sundance-SundanceToken.obj: $(top_srcdir)/src-xml/SundanceToken.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -MT Sundance-SundanceToken.obj -MD -MP -MF "$(DEPDIR)/Sundance-SundanceToken.Tpo" -c -o Sundance-SundanceToken.obj `if test -f '$(top_srcdir)/src-xml/SundanceToken.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceToken.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceToken.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Sundance-SundanceToken.Tpo" "$(DEPDIR)/Sundance-SundanceToken.Po"; else rm -f "$(DEPDIR)/Sundance-SundanceToken.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-xml/SundanceToken.cpp' object='Sundance-SundanceToken.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Sundance_CXXFLAGS) $(CXXFLAGS) -c -o Sundance-SundanceToken.obj `if test -f '$(top_srcdir)/src-xml/SundanceToken.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-xml/SundanceToken.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-xml/SundanceToken.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VectorTest_CXXFLAGS) $(CXXFLAGS) -c -o VectorTest-VectorTest.obj `if test -f '$(srcdir)/VectorTest.cpp'; then $(CYGPATH_W) '$(srcdir)/VectorTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VectorTest.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -616,7 +518,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/..
+	$(mkdir_p) $(distdir)/../..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

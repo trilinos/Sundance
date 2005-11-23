@@ -26,5 +26,19 @@
 # ************************************************************************
 #@HEADER
 
-SUBDIRS = VectorTests OperatorTests 
+include $(top_srcdir)/Makefile.common
+
+EXEEXT = .exe
+
+noinst_PROGRAMS = VectorTest
+
+VectorTest_SOURCES = $(srcdir)/VectorTest.cpp 
+
+
+
+VectorTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+
+VectorTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+
+VectorTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS) 
 

@@ -92,7 +92,7 @@ m4trace:configure.ac:91: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | se
 m4trace:configure.ac:91: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
 m4trace:configure.ac:95: -1- AM_INIT_AUTOMAKE([1.8.2])
 m4trace:configure.ac:95: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
-m4trace:configure.ac:95: -1- AM_AUTOMAKE_VERSION([1.9.1])
+m4trace:configure.ac:95: -1- AM_AUTOMAKE_VERSION([1.9.2])
 m4trace:configure.ac:95: -1- AC_PROG_INSTALL
 m4trace:configure.ac:95: -1- AC_SUBST([INSTALL_PROGRAM])
 m4trace:configure.ac:95: -1- AC_SUBST([INSTALL_SCRIPT])
@@ -281,7 +281,7 @@ m4trace:configure.ac:203: -1- AC_SUBST([ac_aux_dir])
 m4trace:configure.ac:204: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
 m4trace:configure.ac:205: -1- AC_SUBST([FIAT_STR])
 m4trace:configure.ac:206: -1- AC_SUBST([FIAT_BUILD_DIR])
-m4trace:configure.ac:240: -1- AC_CONFIG_FILES([
+m4trace:configure.ac:241: -1- AC_CONFIG_FILES([
   Makefile  
   Makefile.export
   Makefile.export.TSFExtended
@@ -300,6 +300,7 @@ m4trace:configure.ac:240: -1- AC_CONFIG_FILES([
   tests-core/Makefile
   tests-core/SymbolicTests/Makefile
   tests-solvers/Makefile
+  tests-solvers/VectorTests/Makefile
   tests-solvers/OperatorTests/Makefile
   tests-std-mesh/Makefile
   tests-std-mesh/Simple/Makefile
@@ -309,7 +310,7 @@ m4trace:configure.ac:240: -1- AC_CONFIG_FILES([
   tests-std-framework/Assembly/Makefile
   tests-std-framework/Problem/Makefile
 ])
-m4trace:configure.ac:242: -1- AC_SUBST([CHACO_LIB])
-m4trace:configure.ac:243: -1- AC_SUBST([TRILINOS_DIR])
-m4trace:configure.ac:245: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:245: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:243: -1- AC_SUBST([CHACO_LIB])
+m4trace:configure.ac:244: -1- AC_SUBST([TRILINOS_DIR])
+m4trace:configure.ac:246: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:246: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
