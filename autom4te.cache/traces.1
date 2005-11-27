@@ -1,9 +1,13 @@
-m4trace:aclocal.m4:1085: -1- m4_include([config/tac_arg_config_chaco.m4])
-m4trace:aclocal.m4:1086: -1- m4_include([config/tac_arg_config_mpi.m4])
-m4trace:aclocal.m4:1087: -1- m4_include([config/tac_arg_enable_feature.m4])
-m4trace:aclocal.m4:1088: -1- m4_include([config/tac_arg_with_ar.m4])
-m4trace:aclocal.m4:1089: -1- m4_include([config/tac_arg_with_incdirs.m4])
-m4trace:aclocal.m4:1090: -1- m4_include([config/tac_arg_with_libdirs.m4])
+m4trace:aclocal.m4:1085: -1- m4_include([config/ac_pkg_swig.m4])
+m4trace:aclocal.m4:1086: -1- m4_include([config/ac_python_module.m4])
+m4trace:aclocal.m4:1087: -1- m4_include([config/az_python.m4])
+m4trace:aclocal.m4:1088: -1- m4_include([config/tac_arg_config_chaco.m4])
+m4trace:aclocal.m4:1089: -1- m4_include([config/tac_arg_config_mpi.m4])
+m4trace:aclocal.m4:1090: -1- m4_include([config/tac_arg_enable_feature.m4])
+m4trace:aclocal.m4:1091: -1- m4_include([config/tac_arg_with_ar.m4])
+m4trace:aclocal.m4:1092: -1- m4_include([config/tac_arg_with_incdirs.m4])
+m4trace:aclocal.m4:1093: -1- m4_include([config/tac_arg_with_libdirs.m4])
+m4trace:aclocal.m4:1094: -1- m4_include([config/tac_enable_python.m4])
 m4trace:configure.ac:42: -1- AC_INIT([Sundance], [2.0], [krlong@sandia.gov])
 m4trace:configure.ac:42: -1- m4_pattern_forbid([^_?A[CHUM]_])
 m4trace:configure.ac:42: -1- m4_pattern_forbid([_AC_])
@@ -92,7 +96,7 @@ m4trace:configure.ac:91: -1- AC_SUBST([target_vendor], [`echo $ac_cv_target | se
 m4trace:configure.ac:91: -1- AC_SUBST([target_os], [`echo $ac_cv_target | sed 's/^\([[^-]]*\)-\([[^-]]*\)-\(.*\)$/\3/'`])
 m4trace:configure.ac:95: -1- AM_INIT_AUTOMAKE([1.8.2])
 m4trace:configure.ac:95: -1- m4_pattern_allow([^AM_[A-Z]+FLAGS$])
-m4trace:configure.ac:95: -1- AM_AUTOMAKE_VERSION([1.9.2])
+m4trace:configure.ac:95: -1- AM_AUTOMAKE_VERSION([1.9.1])
 m4trace:configure.ac:95: -1- AC_PROG_INSTALL
 m4trace:configure.ac:95: -1- AC_SUBST([INSTALL_PROGRAM])
 m4trace:configure.ac:95: -1- AC_SUBST([INSTALL_SCRIPT])
@@ -269,19 +273,125 @@ m4trace:configure.ac:187: -1- AH_OUTPUT([HAVE_EXAMPLES], [/* Define if want to b
 m4trace:configure.ac:188: -1- AM_CONDITIONAL([BUILD_EXAMPLES], [test "X$ac_cv_use_examples" != "Xno"])
 m4trace:configure.ac:188: -1- AC_SUBST([BUILD_EXAMPLES_TRUE])
 m4trace:configure.ac:188: -1- AC_SUBST([BUILD_EXAMPLES_FALSE])
-m4trace:configure.ac:195: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON])
+m4trace:configure.ac:194: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+config/az_python.m4:202: AZ_PYTHON_ENABLE is expanded from...
+config/tac_enable_python.m4:83: TAC_ENABLE_PYTHON is expanded from...
+configure.ac:194: the top level])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON], [$ac_cv_path_PYTHON])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_PREFIX], ["${ax_python_prefix}"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_EXECPREFIX], ["${ax_python_execprefix}"])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON], ["${enableval}"])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_PREFIX], ["${ax_python_prefix}"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_EXECPREFIX], ["${ax_python_execprefix}"])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON])
+m4trace:configure.ac:194: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+config/az_python.m4:506: AZ_PYTHON_WITH is expanded from...
+config/tac_enable_python.m4:83: TAC_ENABLE_PYTHON is expanded from...
+configure.ac:194: the top level])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON], [$ac_cv_path_PYTHON])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_PREFIX], ["${ax_python_prefix}"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_EXECPREFIX], ["${ax_python_execprefix}"])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON], ["${withval}"])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_PREFIX], ["${ax_python_prefix}"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_EXECPREFIX], ["${ax_python_execprefix}"])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([PYTHON_USE], [test x"$az_python_use" = x"true"])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_USE_FALSE])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([BUILD_PYTHON], [true])
+m4trace:configure.ac:194: -1- AC_SUBST([BUILD_PYTHON_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([BUILD_PYTHON_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_CSPEC], [${az_python_cspec}])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON])
+m4trace:configure.ac:194: -1- AC_SUBST([PYTHON_LSPEC], [${az_python_output}])
+m4trace:configure.ac:194: -1- AC_HEADER_STDC
+m4trace:configure.ac:194: -1- AC_SUBST([CXXCPP])
+m4trace:configure.ac:194: -1- AC_SUBST([CPPFLAGS])
+m4trace:configure.ac:194: -1- AC_SUBST([CXXCPP])
+m4trace:configure.ac:194: -1- AC_SUBST([EGREP])
+m4trace:configure.ac:194: -1- AC_DEFINE_TRACE_LITERAL([STDC_HEADERS])
+m4trace:configure.ac:194: -1- AH_OUTPUT([STDC_HEADERS], [/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS])
+m4trace:configure.ac:194: -1- AC_CHECK_HEADERS([sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
+		  inttypes.h stdint.h unistd.h], [], [], [$ac_includes_default])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_SYS_TYPES_H], [/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_SYS_STAT_H], [/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_STDLIB_H], [/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_STRING_H], [/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_MEMORY_H], [/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_STRINGS_H], [/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_INTTYPES_H], [/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_STDINT_H], [/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H])
+m4trace:configure.ac:194: -1- AH_OUTPUT([HAVE_UNISTD_H], [/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([BUILD_PYTHON], [false])
+m4trace:configure.ac:194: -1- AC_SUBST([BUILD_PYTHON_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([BUILD_PYTHON_FALSE])
+m4trace:configure.ac:194: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
+autoconf/general.m4:1331: AC_ARG_WITH is expanded from...
+config/tac_enable_python.m4:83: TAC_ENABLE_PYTHON is expanded from...
+configure.ac:194: the top level])
+m4trace:configure.ac:194: -1- AC_SUBST([WITH_SWIG])
+m4trace:configure.ac:194: -1- AC_SUBST([SWIG], [$ac_cv_path_SWIG])
+m4trace:configure.ac:194: -1- AC_SUBST([SWIG_LIB])
+m4trace:configure.ac:194: -1- AC_SUBST([SWIG_PYTHON_OPT], [-python])
+m4trace:configure.ac:194: -1- AC_SUBST([SWIG_PYTHON_CPPFLAGS], [$PYTHON_CPPFLAGS])
+m4trace:configure.ac:194: -1- AM_CONDITIONAL([HAVE_SWIG], [test X${WITH_SWIG} = Xyes])
+m4trace:configure.ac:194: -1- AC_SUBST([HAVE_SWIG_TRUE])
+m4trace:configure.ac:194: -1- AC_SUBST([HAVE_SWIG_FALSE])
+m4trace:configure.ac:194: -1- AC_SUBST([GNU_HAVE_SWIG], [${WITH_SWIG}])
+m4trace:configure.ac:201: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_libdirs.m4:23: TAC_ARG_WITH_LIBDIRS is expanded from...
-configure.ac:195: the top level])
-m4trace:configure.ac:197: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
+configure.ac:201: the top level])
+m4trace:configure.ac:203: -2- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
 You should run autoupdate.], [autoconf/general.m4:219: AC_HELP_STRING is expanded from...
 config/tac_arg_with_incdirs.m4:23: TAC_ARG_WITH_INCDIRS is expanded from...
-configure.ac:197: the top level])
-m4trace:configure.ac:203: -1- AC_SUBST([ac_aux_dir])
-m4trace:configure.ac:204: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
-m4trace:configure.ac:205: -1- AC_SUBST([FIAT_STR])
-m4trace:configure.ac:206: -1- AC_SUBST([FIAT_BUILD_DIR])
-m4trace:configure.ac:241: -1- AC_CONFIG_FILES([
+configure.ac:203: the top level])
+m4trace:configure.ac:209: -1- AC_SUBST([ac_aux_dir])
+m4trace:configure.ac:210: -1- AC_SUBST([SUNDANCE_BUILD_DIRECTORY])
+m4trace:configure.ac:211: -1- AC_SUBST([FIAT_STR])
+m4trace:configure.ac:212: -1- AC_SUBST([FIAT_BUILD_DIR])
+m4trace:configure.ac:253: -1- AC_CONFIG_FILES([
   Makefile  
   Makefile.export
   Makefile.export.TSFExtended
@@ -294,6 +404,12 @@ m4trace:configure.ac:241: -1- AC_CONFIG_FILES([
   src-solvers/Makefile
   src-std-framework/SundanceDefaultPath.hpp
   src-xml/Makefile
+  python/Makefile
+  python/src/Makefile
+  python/src/SUNDANCE_HOME_DIR
+  python/src/__init__.py
+	python/src/.deps/dummy
+  python/example/Makefile
   tests-utils/Makefile
   tests-utils/Functors/Makefile
   tests-utils/Maps/Makefile
@@ -310,7 +426,7 @@ m4trace:configure.ac:241: -1- AC_CONFIG_FILES([
   tests-std-framework/Assembly/Makefile
   tests-std-framework/Problem/Makefile
 ])
-m4trace:configure.ac:243: -1- AC_SUBST([CHACO_LIB])
-m4trace:configure.ac:244: -1- AC_SUBST([TRILINOS_DIR])
-m4trace:configure.ac:246: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
-m4trace:configure.ac:246: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])
+m4trace:configure.ac:255: -1- AC_SUBST([CHACO_LIB])
+m4trace:configure.ac:256: -1- AC_SUBST([TRILINOS_DIR])
+m4trace:configure.ac:258: -1- AC_SUBST([LIB@&t@OBJS], [$ac_libobjs])
+m4trace:configure.ac:258: -1- AC_SUBST([LTLIBOBJS], [$ac_ltlibobjs])

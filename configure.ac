@@ -187,6 +187,12 @@ AM_CONDITIONAL(BUILD_TESTS, test "X$ac_cv_use_tests" != "Xno")
 TAC_ARG_ENABLE_FEATURE(examples, [Build examples for Sundance], EXAMPLES, yes)
 AM_CONDITIONAL(BUILD_EXAMPLES, test "X$ac_cv_use_examples" != "Xno")
 
+
+# ------------------------------------------------------------------------
+# Enable optional python wrappers
+# ------------------------------------------------------------------------
+TAC_ENABLE_PYTHON
+
 # ------------------------------------------------------------------------
 # Specify other directories 
 # ------------------------------------------------------------------------
@@ -223,6 +229,12 @@ AC_CONFIG_FILES([
   src-solvers/Makefile
   src-std-framework/SundanceDefaultPath.hpp
   src-xml/Makefile
+  python/Makefile
+  python/src/Makefile
+  python/src/SUNDANCE_HOME_DIR
+  python/src/__init__.py
+	python/src/.deps/dummy
+  python/example/Makefile
   tests-utils/Makefile
   tests-utils/Functors/Makefile
   tests-utils/Maps/Makefile
