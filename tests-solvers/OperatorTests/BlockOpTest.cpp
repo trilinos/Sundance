@@ -82,12 +82,12 @@ int main(int argc, void *argv[])
       Array<VectorSpace<double> > domainBlocks(domainBlockSizes.size());
       Array<VectorSpace<double> > rangeBlocks(rangeBlockSizes.size());
 
-      for (int i=0; i<domainBlocks.size(); i++)
+      for (unsigned int i=0; i<domainBlocks.size(); i++)
         {
           domainBlocks[i] = type.createEvenlyPartitionedSpace(domainBlockSizes[i]);
         }
 
-      for (int i=0; i<rangeBlocks.size(); i++)
+      for (unsigned int i=0; i<rangeBlocks.size(); i++)
         {
           rangeBlocks[i] = type.createEvenlyPartitionedSpace(rangeBlockSizes[i]);
         }
@@ -112,7 +112,7 @@ int main(int argc, void *argv[])
       Thyra::randomize(-1.0, 1.0, x.ptr().get());
 
       Array<Vector<double> > xBlock(domain.numBlocks());
-      for (int i=0; i<xBlock.size(); i++)
+      for (unsigned int i=0; i<xBlock.size(); i++)
         {
           xBlock[i] = x.getBlock(i);
         }
@@ -130,11 +130,11 @@ int main(int argc, void *argv[])
       cerr << "------------------------------------------------------------" << endl;
       cerr << "computing A*x block-by-block..." << endl;
       Array<Vector<double> > yBlock(range.numBlocks());
-      for (int i=0; i<yBlock.size(); i++)
+      for (unsigned int i=0; i<yBlock.size(); i++)
         {
           yBlock[i] = range.getBlock(i).createMember();
           yBlock[i].zero();
-          for (int j=0; j<xBlock.size(); j++)
+          for (unsigned int j=0; j<xBlock.size(); j++)
             {
               LinearOperator<double> Aij = A.getBlock(i,j);
               if (Aij.ptr().get() != 0)

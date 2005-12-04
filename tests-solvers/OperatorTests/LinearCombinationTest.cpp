@@ -56,10 +56,10 @@
 #include "TSFComposedOperator.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFRandomSparseMatrix.hpp"
-#include "TSFCompoundTester.hpp"
+#include "TSFLinearCombinationTester.hpp"
 
-STREAM_OUT(Vector<double>);
-//using namespace Teuchos;
+using namespace Teuchos;
+using namespace std;
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
 using Thyra::TestSpecifier;
@@ -72,26 +72,17 @@ int main(int argc, void *argv[])
 
       VectorType<double> type = new EpetraVectorType();
 
-      int nLocalRows = 4;
+      int nLocalRows = 1;
       
       double onProcDensity = 0.5;
       double offProcDensity = 0.1;
 
-      RandomSparseMatrix<double> ABuilder(nLocalRows, nLocalRows, 
-                                          onProcDensity, offProcDensity, type);
-      RandomSparseMatrix<double> BBuilder(nLocalRows, nLocalRows, 
-                                          onProcDensity, offProcDensity, type);
+      LinearCombinationTester<double> tester(nLocalRows,
+                                             onProcDensity,
+                                             offProcDensity,
+                                             type,
+                                             TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 
-      LinearOperator<double> A = ABuilder.getOp();
-      LinearOperator<double> B = BBuilder.getOp();
-
-      cerr << "A = " << endl << A << endl;
-      cerr << "B = " << endl << B << endl;
-      
-      CompoundTester<double> tester(A, B, 
-                                    TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
-                                    TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
-                                    TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 
       tester.runAllTests();
     }

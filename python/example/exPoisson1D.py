@@ -49,6 +49,8 @@ def main():
 
   print "error = " , math.sqrt(diff.integral(interior, mesh, quad))
   print "deriv error = " , math.sqrt(diffDeriv.integral(interior, mesh, quad))
+
+  print "basis = ", type(basis)
   
   
 # This is a standard Python construct.  Put the code to be executed in a

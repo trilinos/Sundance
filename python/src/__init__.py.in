@@ -27,34 +27,3 @@
 # @HEADER
 
 __all__ = ["SundanceStdMesh", "SundanceCore", "SundanceStdFwk"]
-
-print "in __init__"
-
-from math import *
-
-from PySundance import Mesh
-from PySundance import MeshSource
-from PySundance import LinearProblem
-from PySundance import plm as PartitionedLineMesher
-from PySundance import makeLagrange as Lagrange
-from PySundance import makeIntegral as Integral
-from PySundance import makeEssentialBC as EssentialBC
-#  from PySundance import Integral
-#  from PySundance import EssentialBC
-from PySundance import makeGaussianQuadrature as GaussianQuadrature
-from PySundance import makeUnknownFunction as UnknownFunction
-from PySundance import makeTestFunction as TestFunction
-from PySundance import makeCoordExpr as CoordExpr
-from PySundance import makeDerivative as Derivative
-from PySundance import makeEpetraVectorType as EpetraVectorType
-from PySundance import VecType as VectorType
-from PySundance import VecSpace as VectorSpace
-from PySundance import Vec as Vector
-from PySundance import LinOp as LinearOperator
-from PySundance import makePyFunctorCellPredicate as PositionalCellPredicate
-from PySundance import CellFilter
-from PySundance import makeMaximalCellFilter as MaximalCellFilter
-from PySundance import makeBoundaryCellFilter as BoundaryCellFilter
-from PySundance import makeDimensionalCellFilter as DimensionalCellFilter
-from PySundance import LinSol as LinearSolver
-from PySundance import readSolver

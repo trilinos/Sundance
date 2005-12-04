@@ -19,6 +19,8 @@
 
 %rename(NonlinearProblem) makeNonlinearProblem;
 
+
+
 %inline %{
   /* create a nonlinear operator */
     TSFExtended::
@@ -30,7 +32,7 @@
                                                      const SundanceCore::Expr& u0,
                                                      const TSFExtended::VectorType<double>& vecType)
       {
-        return new SundanceStdFwk::NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+        return  new SundanceStdFwk::NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
       }
 
 %}

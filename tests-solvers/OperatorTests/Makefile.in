@@ -82,7 +82,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES)
+SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES) $(LinearCombinationTest_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -109,7 +109,8 @@ host_triplet = @host@
 target_triplet = @target@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-noinst_PROGRAMS = CompoundOpTest$(EXEEXT) BlockOpTest$(EXEEXT)
+noinst_PROGRAMS = CompoundOpTest$(EXEEXT) BlockOpTest$(EXEEXT) \
+	LinearCombinationTest$(EXEEXT)
 subdir = tests-solvers/OperatorTests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
@@ -136,6 +137,9 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 am_CompoundOpTest_OBJECTS = CompoundOpTest-CompoundOpTest.$(OBJEXT)
 CompoundOpTest_OBJECTS = $(am_CompoundOpTest_OBJECTS)
+am_LinearCombinationTest_OBJECTS =  \
+	LinearCombinationTest-LinearCombinationTest.$(OBJEXT)
+LinearCombinationTest_OBJECTS = $(am_LinearCombinationTest_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-utils -I$(top_builddir)/src-solvers
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -144,8 +148,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES)
-DIST_SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES)
+SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES) \
+	$(LinearCombinationTest_SOURCES)
+DIST_SOURCES = $(BlockOpTest_SOURCES) $(CompoundOpTest_SOURCES) \
+	$(LinearCombinationTest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -421,6 +427,10 @@ BlockOpTest_SOURCES = $(srcdir)/BlockOpTest.cpp
 BlockOpTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 BlockOpTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
 BlockOpTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+LinearCombinationTest_SOURCES = $(srcdir)/LinearCombinationTest.cpp 
+LinearCombinationTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+LinearCombinationTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+LinearCombinationTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
 all: all-am
 
 .SUFFIXES:
@@ -463,6 +473,9 @@ BlockOpTest$(EXEEXT): $(BlockOpTest_OBJECTS) $(BlockOpTest_DEPENDENCIES)
 CompoundOpTest$(EXEEXT): $(CompoundOpTest_OBJECTS) $(CompoundOpTest_DEPENDENCIES) 
 	@rm -f CompoundOpTest$(EXEEXT)
 	$(CXXLINK) $(CompoundOpTest_LDFLAGS) $(CompoundOpTest_OBJECTS) $(CompoundOpTest_LDADD) $(LIBS)
+LinearCombinationTest$(EXEEXT): $(LinearCombinationTest_OBJECTS) $(LinearCombinationTest_DEPENDENCIES) 
+	@rm -f LinearCombinationTest$(EXEEXT)
+	$(CXXLINK) $(LinearCombinationTest_LDFLAGS) $(LinearCombinationTest_OBJECTS) $(LinearCombinationTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -472,6 +485,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlockOpTest-BlockOpTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CompoundOpTest-CompoundOpTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -514,6 +528,20 @@ CompoundOpTest-CompoundOpTest.obj: $(srcdir)/CompoundOpTest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/CompoundOpTest.cpp' object='CompoundOpTest-CompoundOpTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CompoundOpTest_CXXFLAGS) $(CXXFLAGS) -c -o CompoundOpTest-CompoundOpTest.obj `if test -f '$(srcdir)/CompoundOpTest.cpp'; then $(CYGPATH_W) '$(srcdir)/CompoundOpTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/CompoundOpTest.cpp'; fi`
+
+LinearCombinationTest-LinearCombinationTest.o: $(srcdir)/LinearCombinationTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(LinearCombinationTest_CXXFLAGS) $(CXXFLAGS) -MT LinearCombinationTest-LinearCombinationTest.o -MD -MP -MF "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Tpo" -c -o LinearCombinationTest-LinearCombinationTest.o `test -f '$(srcdir)/LinearCombinationTest.cpp' || echo '$(srcdir)/'`$(srcdir)/LinearCombinationTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Tpo" "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Po"; else rm -f "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/LinearCombinationTest.cpp' object='LinearCombinationTest-LinearCombinationTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(LinearCombinationTest_CXXFLAGS) $(CXXFLAGS) -c -o LinearCombinationTest-LinearCombinationTest.o `test -f '$(srcdir)/LinearCombinationTest.cpp' || echo '$(srcdir)/'`$(srcdir)/LinearCombinationTest.cpp
+
+LinearCombinationTest-LinearCombinationTest.obj: $(srcdir)/LinearCombinationTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(LinearCombinationTest_CXXFLAGS) $(CXXFLAGS) -MT LinearCombinationTest-LinearCombinationTest.obj -MD -MP -MF "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Tpo" -c -o LinearCombinationTest-LinearCombinationTest.obj `if test -f '$(srcdir)/LinearCombinationTest.cpp'; then $(CYGPATH_W) '$(srcdir)/LinearCombinationTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/LinearCombinationTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Tpo" "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Po"; else rm -f "$(DEPDIR)/LinearCombinationTest-LinearCombinationTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/LinearCombinationTest.cpp' object='LinearCombinationTest-LinearCombinationTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(LinearCombinationTest_CXXFLAGS) $(CXXFLAGS) -c -o LinearCombinationTest-LinearCombinationTest.obj `if test -f '$(srcdir)/LinearCombinationTest.cpp'; then $(CYGPATH_W) '$(srcdir)/LinearCombinationTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/LinearCombinationTest.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

@@ -30,7 +30,7 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = CompoundOpTest BlockOpTest
+noinst_PROGRAMS = CompoundOpTest BlockOpTest LinearCombinationTest
 
 CompoundOpTest_SOURCES = $(srcdir)/CompoundOpTest.cpp 
 
@@ -50,3 +50,13 @@ BlockOpTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 BlockOpTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
 
 BlockOpTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+
+
+
+LinearCombinationTest_SOURCES = $(srcdir)/LinearCombinationTest.cpp 
+
+LinearCombinationTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+
+LinearCombinationTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+
+LinearCombinationTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 

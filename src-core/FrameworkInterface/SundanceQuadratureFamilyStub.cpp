@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceQuadratureFamilyStub.hpp"
+#include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
 
 
@@ -42,7 +43,11 @@ using namespace TSFExtended;
 
 QuadratureFamilyStub::QuadratureFamilyStub(int order)
 : order_(order)
-{;}
+{
+  TEST_FOR_EXCEPTION(order <= 0, RuntimeError,
+                     "invalid quadrature order=" << order
+                     << " in QuadratureFamilyStub ctor");
+}
 
 XMLObject QuadratureFamilyStub::toXML() const
 {

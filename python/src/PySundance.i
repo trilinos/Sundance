@@ -2,6 +2,18 @@
 
 %module PySundance
 
+%exception 
+{
+  try
+    {
+      $action
+    }
+  catch (std::exception& e)
+    {
+      PyErr_SetString(PyExc_RuntimeError, const_cast<char*>(e.what()));
+      return NULL;
+    }
+}
 
 %include Mesh.i
 

@@ -42,7 +42,9 @@ using namespace Teuchos;
 
 GaussianQuadrature::GaussianQuadrature(int order)
   : QuadratureFamilyBase(order)
-{;}
+{
+  
+}
 
 XMLObject GaussianQuadrature::toXML() const 
 {

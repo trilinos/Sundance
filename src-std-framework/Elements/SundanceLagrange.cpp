@@ -40,7 +40,11 @@ using namespace Teuchos;
 
 Lagrange::Lagrange(int order)
   : ScalarBasis(), order_(order)
-{;}
+{
+TEST_FOR_EXCEPTION(order < 0, RuntimeError,
+                     "invalid polynomial order=" << order
+                     << " in Lagrange ctor");
+}
 
 void Lagrange::print(ostream& os) const 
 {

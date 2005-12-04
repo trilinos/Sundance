@@ -24,7 +24,7 @@ from noxSolver import solverParams
 def main():
 
   vecType = EpetraVectorType()
-  mesher  = PartitionedLineMesher(0.0, 1.0, 100);
+  mesher  = PartitionedLineMesher(0.0, 1.0, 50);
   mesh = mesher.getMesh();
   basis = Lagrange(1)
 
@@ -48,24 +48,16 @@ def main():
   bc = EssentialBC(leftPt, v*(u-1.0), quad) \
        + EssentialBC(rightPt, v*(u-2.0), quad)
   eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad)
-  
+
   prob = NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType)
-
-  print "defining solver"
-
-  try:
-      solver = NOXSolver(solverParams, prob)
-  except Exception, details:
-      print details
+  solver = NOXSolver(solverParams, prob)
 
   solver.solve()
-  print "defining exact soln"
 
   exactSoln = pow(15.0*x + 1.0, 0.25)
 
-  diff = (u0 - exactSoln)**2.0
+  diff = (u0 - exactSoln)**2
 
-  print "computing error"
   print "error = " , math.sqrt(diff.integral(interior, mesh, quad))
   
   
