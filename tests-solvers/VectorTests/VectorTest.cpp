@@ -44,8 +44,6 @@ int main(int argc, void *argv[])
 {
   try
     {
-      int verbosity = 2;
-
       MPISession::init(&argc, &argv);
 
       VectorType<double> type = new EpetraVectorType();
@@ -57,7 +55,6 @@ int main(int argc, void *argv[])
 
       int dimension = nProc*n;
       int low = n*rank;
-      int high = n*(rank+1);
       std::vector<int> localRows(n);
       for (int i=0; i<n; i++)
         {
