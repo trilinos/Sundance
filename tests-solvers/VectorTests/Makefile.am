@@ -42,3 +42,38 @@ VectorTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES)
 
 VectorTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS) 
 
+
+
+
+TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
+
+PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
+
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+
+
+NPROC = 2
+
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
+
+%.tst : %.exe
+	./$< > $@ 2>&1 
+	echo "done" $@
+
+%.ptst : %.exe
+	$(MPI_COMMAND) ./$< > $@ 2>&1 
+	echo "done" $@
+
+tests:
+	$(MAKE) $(TESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+serialtests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+
+

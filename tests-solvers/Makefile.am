@@ -26,5 +26,14 @@
 # ************************************************************************
 #@HEADER
 
-SUBDIRS = VectorTests OperatorTests 
+SUBDIRS = VectorTests OperatorTests SolverTests
 
+tests:
+	(cd VectorTests; $(MAKE) tests)
+	(cd OperatorTests; $(MAKE) tests)
+	(cd SolverTests; $(MAKE) tests)
+
+serialtests:
+	(cd VectorTests; $(MAKE) serialtests)
+	(cd OperatorTests; $(MAKE) serialtests)
+	(cd SolverTests; $(MAKE) serialtests)

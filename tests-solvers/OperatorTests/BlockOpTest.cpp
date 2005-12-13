@@ -160,6 +160,15 @@ int main(int argc, void *argv[])
       double err = (y1 - y0).norm2();
       cerr << "error = " << err << endl;
 
+      double tol = 1.0e-13;
+      if (err < tol)
+        {
+          cerr << "block op test PASSED" << endl;
+        }
+      else
+        {
+          cerr << "block op test FAILED" << endl;
+        }
     }
   catch(std::exception& e)
     {

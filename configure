@@ -311,7 +311,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_TESTS_TRUE BUILD_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE PYTHON_USE_TRUE PYTHON_USE_FALSE PYTHON PYTHON_PREFIX PYTHON_EXECPREFIX BUILD_PYTHON_TRUE BUILD_PYTHON_FALSE PYTHON_CSPEC PYTHON_LSPEC CXXCPP EGREP WITH_SWIG SWIG SWIG_LIB SWIG_PYTHON_OPT SWIG_PYTHON_CPPFLAGS HAVE_SWIG_TRUE HAVE_SWIG_FALSE GNU_HAVE_SWIG ac_aux_dir SUNDANCE_BUILD_DIRECTORY FIAT_STR FIAT_BUILD_DIR CHACO_LIB TRILINOS_DIR LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_TESTS_TRUE BUILD_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE PYTHON_USE_TRUE PYTHON_USE_FALSE PYTHON PYTHON_PREFIX PYTHON_EXECPREFIX BUILD_PYTHON_TRUE BUILD_PYTHON_FALSE PYTHON_CSPEC PYTHON_LSPEC CXXCPP EGREP WITH_SWIG SWIG SWIG_LIB SWIG_PYTHON_OPT SWIG_PYTHON_CPPFLAGS HAVE_SWIG_TRUE HAVE_SWIG_FALSE GNU_HAVE_SWIG ac_aux_dir SUNDANCE_BUILD_DIRECTORY FIAT_STR FIAT_BUILD_DIR SUNDIALS_STR SUNDIALS_BUILD_DIR CHACO_LIB TRILINOS_DIR LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -909,6 +909,8 @@ Optional Packages:
   --with-trilinos         root directory of Trilinos installation
   --with-fiat=FIAT_BUILD_DIR
                           use FIAT build directory (enables FIAT)
+  --with-sundials=SUNDIALS_BUILD_DIR
+                          use SUNDIALS build directory (enables SUNDIALS)
   --with-python[=PYTHON]
                           absolute path name of Python executable
   --with-swig[=SWIG]
@@ -1421,9 +1423,10 @@ ac_configure="$SHELL $ac_aux_dir/configure" # This should be Cygnus configure.
 # Configure should create src/Support/SundanceConfig.h
 # from src/Support/SundanceConfig.h.in
 
+          ac_config_headers="$ac_config_headers src-solvers/TSF_config.h:src-solvers/TSF_config.h.in"
+
           ac_config_headers="$ac_config_headers src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in"
 
-          ac_config_headers="$ac_config_headers src-solvers/TSF_config.h:src-solvers/TSF_config.h.in"
 
 
 #
@@ -3769,7 +3772,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3772:" \
+echo "$as_me:3775:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4175,6 +4178,38 @@ else
   FIAT_STR="#"
   echo "$as_me:$LINENO: checking FIAT directory" >&5
 echo $ECHO_N "checking FIAT directory... $ECHO_C" >&6
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+
+fi;
+
+# ---------------0--------------------------------------------------------
+# Check for SUNDIALS
+# ------------------------------------------------------------------------
+
+
+# Check whether --with-sundials or --without-sundials was given.
+if test "${with_sundials+set}" = set; then
+  withval="$with_sundials"
+
+  SUNDIALS_STR=""
+  SUNDIALS_BUILD_DIR=${withval}
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_SUNDIALS
+_ACEOF
+
+  echo "$as_me:$LINENO: checking SUNDIALS directory" >&5
+echo $ECHO_N "checking SUNDIALS directory... $ECHO_C" >&6
+  echo "$as_me:$LINENO: result: ${SUNDIALS_BUILD_DIR}" >&5
+echo "${ECHO_T}${SUNDIALS_BUILD_DIR}" >&6
+
+else
+
+  SUNDIALS_STR="#"
+  echo "$as_me:$LINENO: checking SUNDIALS directory" >&5
+echo $ECHO_N "checking SUNDIALS directory... $ECHO_C" >&6
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 
@@ -5740,11 +5775,13 @@ fi;
 
 
 
+
+
 # ------------------------------------------------------------------------
 # Output files
 # ------------------------------------------------------------------------
 
-                                                                                                                                                                                                                                                                                                                                          ac_config_files="$ac_config_files Makefile Makefile.export Makefile.export.TSFExtended Makefile.site.sundance examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-solvers/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile python/Makefile python/src/Makefile python/src/SUNDANCE_HOME_DIR python/src/__init__.py python/src/.deps/dummy python/example/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-solvers/Makefile tests-solvers/VectorTests/Makefile tests-solvers/OperatorTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
+                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile Makefile.export Makefile.export.TSFExtended Makefile.site.sundance examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-solvers/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile python/Makefile python/src/Makefile python/src/SUNDANCE_HOME_DIR python/src/__init__.py python/src/.deps/dummy python/example/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-solvers/Makefile tests-solvers/VectorTests/Makefile tests-solvers/OperatorTests/Makefile tests-solvers/SolverTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
 
 
 
@@ -6465,6 +6502,7 @@ do
   "tests-solvers/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-solvers/Makefile" ;;
   "tests-solvers/VectorTests/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-solvers/VectorTests/Makefile" ;;
   "tests-solvers/OperatorTests/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-solvers/OperatorTests/Makefile" ;;
+  "tests-solvers/SolverTests/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-solvers/SolverTests/Makefile" ;;
   "tests-std-mesh/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-mesh/Makefile" ;;
   "tests-std-mesh/Simple/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-mesh/Simple/Makefile" ;;
   "tests-std-mesh/Readers/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-mesh/Readers/Makefile" ;;
@@ -6473,8 +6511,8 @@ do
   "tests-std-framework/Assembly/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Assembly/Makefile" ;;
   "tests-std-framework/Problem/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Problem/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-  "src-utils/SundanceConfig.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in" ;;
   "src-solvers/TSF_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src-solvers/TSF_config.h:src-solvers/TSF_config.h.in" ;;
+  "src-utils/SundanceConfig.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
@@ -6662,6 +6700,8 @@ s,@ac_aux_dir@,$ac_aux_dir,;t t
 s,@SUNDANCE_BUILD_DIRECTORY@,$SUNDANCE_BUILD_DIRECTORY,;t t
 s,@FIAT_STR@,$FIAT_STR,;t t
 s,@FIAT_BUILD_DIR@,$FIAT_BUILD_DIR,;t t
+s,@SUNDIALS_STR@,$SUNDIALS_STR,;t t
+s,@SUNDIALS_BUILD_DIR@,$SUNDIALS_BUILD_DIR,;t t
 s,@CHACO_LIB@,$CHACO_LIB,;t t
 s,@TRILINOS_DIR@,$TRILINOS_DIR,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t

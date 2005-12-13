@@ -54,8 +54,9 @@ AC_CONFIG_AUX_DIR(config)
 # Configure should create src/Support/SundanceConfig.h 
 # from src/Support/SundanceConfig.h.in
 
-AM_CONFIG_HEADER(src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in)
 AM_CONFIG_HEADER(src-solvers/TSF_config.h:src-solvers/TSF_config.h.in)
+AM_CONFIG_HEADER(src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in)
+
 
 # 
 #AC_DISABLE_SHARED
@@ -162,6 +163,26 @@ AC_ARG_WITH(fiat,
 ]
 )
 
+# ---------------0--------------------------------------------------------
+# Check for SUNDIALS
+# ------------------------------------------------------------------------
+
+AC_ARG_WITH(sundials,
+[AC_HELP_STRING([--with-sundials=SUNDIALS_BUILD_DIR],[use SUNDIALS build directory (enables SUNDIALS)])],
+[
+  SUNDIALS_STR=""
+  SUNDIALS_BUILD_DIR=${withval}
+  AC_DEFINE(HAVE_SUNDIALS,,[define if we want to use SUNDIALS])
+  AC_MSG_CHECKING(SUNDIALS directory)
+  AC_MSG_RESULT([${SUNDIALS_BUILD_DIR}])
+],
+[
+  SUNDIALS_STR="#"
+  AC_MSG_CHECKING(SUNDIALS directory)
+  AC_MSG_RESULT([no])
+]
+)
+
 
 # ------------------------------------------------------------------------
 # Get the absolute path to the build directory.  
@@ -210,6 +231,8 @@ AC_SUBST(ac_aux_dir)
 AC_SUBST(SUNDANCE_BUILD_DIRECTORY)
 AC_SUBST(FIAT_STR)
 AC_SUBST(FIAT_BUILD_DIR)
+AC_SUBST(SUNDIALS_STR)
+AC_SUBST(SUNDIALS_BUILD_DIR)
 
 
 # ------------------------------------------------------------------------
@@ -243,6 +266,7 @@ AC_CONFIG_FILES([
   tests-solvers/Makefile
   tests-solvers/VectorTests/Makefile
   tests-solvers/OperatorTests/Makefile
+  tests-solvers/SolverTests/Makefile
   tests-std-mesh/Makefile
   tests-std-mesh/Simple/Makefile
   tests-std-mesh/Readers/Makefile

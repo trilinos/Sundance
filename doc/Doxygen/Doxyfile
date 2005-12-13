@@ -389,6 +389,8 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../src-solvers/Preconditioners \
                          ../src-solvers/Utils \
                          ../src-solvers/Vectors \
+                         ../src-solvers/Testing \
+                         ../src-solvers/Adapters \
                          ../examples-tutorial
 
 

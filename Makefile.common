@@ -1,3 +1,4 @@
+#@HEADER
 # ************************************************************************
 # 
 #                               Sundance
@@ -27,6 +28,7 @@
 # THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
 # 
 # ************************************************************************
+#@HEADER
 
 # ------------------------------------------------------------------------
 #
@@ -61,6 +63,7 @@ SOLVERS_INCLUDE_PATH =  \
 -I$(top_srcdir)/src-solvers/LinearSolvers \
 -I$(top_srcdir)/src-solvers/NonlinearSolvers \
 -I$(top_srcdir)/src-solvers/Preconditioners \
+-I$(top_srcdir)/src-solvers/Adapters \
 -I$(top_srcdir)/src-solvers/Testing \
 -I$(top_builddir)/src-solvers/Vectors \
 -I$(top_builddir)/src-solvers/Utils \
@@ -69,11 +72,14 @@ SOLVERS_INCLUDE_PATH =  \
 -I$(top_builddir)/src-solvers/LinearSolvers \
 -I$(top_builddir)/src-solvers/NonlinearSolvers \
 -I$(top_builddir)/src-solvers/Preconditioners \
--I$(top_builddir)/src-solvers/Testing 
+-I$(top_builddir)/src-solvers/Testing \
+-I$(top_builddir)/src-solvers/Adapters
 
-SOLVERS_LIBS = $(SOLVERS_LIB_PATH) -lTSFExtended $(TRILINOS_LIBS)
 
-SOLVERS_INCLUDES = $(SOLVERS_INCLUDE_PATH) $(TRILINOS_INCLUDES)
+
+SOLVERS_LIBS = $(SOLVERS_LIB_PATH) -lTSFExtended $(TRILINOS_LIBS) $(SUNDIALS_LIBS)
+
+SOLVERS_INCLUDES = $(SOLVERS_INCLUDE_PATH) $(TRILINOS_INCLUDES) $(SUNDIALS_INCLUDES)
 
 
 UTIL_LIB_PATH = -L$(top_builddir)/src-utils $(SOLVERS_LIB_PATH) 
@@ -207,7 +213,6 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
-
 
 
 
