@@ -67,7 +67,7 @@ EvaluationTester::EvaluationTester(const Expr& e)
   SUNDANCE_VERB_LOW(tabs << "creating tester for expression " << e.toString());
 
   rqc_ = RegionQuadCombo(rcp(new CellFilterStub()), 
-                         rcp(new QuadratureFamilyStub(0)));
+                         rcp(new QuadratureFamilyStub(1)));
 
 
   

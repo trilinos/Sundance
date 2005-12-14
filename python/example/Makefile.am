@@ -26,6 +26,11 @@
 # ************************************************************************
 # @HEADER
 
+
+all: $(ALL_SRC)
+	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$(SETPATH_PY) $(PARAM_FILES) . ; fi
+
+
 ## #######################################################################
 ## Options to automake (rarely used - don't worry about it)
 ## #######################################################################
@@ -47,8 +52,7 @@ ACLOCAL	= aclocal -I config
 PARAM_FILES = $(srcdir)/aztecSolver.py $(srcdir)/bicgstabSolver.py \
 $(srcdir)/noxSolver.py
 
-EXTRA_DIST = $(PARAM_FILES) setpath.py exPoisson1D.py exPoisson2D.py \
-	exPoisson3D.py exHelmholtz1D.py exRadDiff1D.py
+EXTRA_DIST = $(PARAM_FILES) setpath.py $(ALL_PROGS)
 
 ## #######################################################################
 ## Files to be deleted by 'make maintainer-clean'
@@ -56,18 +60,58 @@ EXTRA_DIST = $(PARAM_FILES) setpath.py exPoisson1D.py exPoisson2D.py \
 MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
-EXAMPLE_SUITE = exPoisson1D exPoisson2D \
-	exPoisson3D exHelmholtz1D exRadDiff1D
+PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D
+
+SERIAL_SRC = exPoisson3D
+
+ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
+
+
 
 SETPATH_PY = setpath.py 
 
-all: $(EXAMPLE_SUITE)
-	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$(SETPATH_PY) $(PARAM_FILES) . ; fi
 
-# Run the example script
+TESTS = $(ALL_PROGS:%.py=%.tst) 
+
+PTESTS = $(PARALLEL_PROGS:%.py=%.ptst)
+
+ALL_PROGS = $(PARALLEL_PROGS) $(SERIAL_PROGS)
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.py)
+SERIAL_PROGS = $(SERIAL_SRC:%=%.py)
+
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+
+
+NPROC = 2
+
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
+   
+
+%.tst: %.py
+	./$< > $@ 2>&1
+	echo "done" $@
+
+%.ptst: %.py
+	$(MPI_COMMAND) ./$< > $@ 2>&1
+	echo "done" $@
+
+tests:
+	$(MAKE) $(TESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+serialtests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
 ex%: $(srcdir)/ex%.py
 	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$@.py . ; fi
 
 clean:
 	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/rm -f *.py ; fi
 	/bin/rm -f *.pyc
+
+

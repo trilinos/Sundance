@@ -54,60 +54,69 @@ static Time& totalTimer()
   return *rtn;
 }
 
-void Sundance::init(int* argc, void*** argv)
+int Sundance::init(int* argc, void*** argv)
 {
-  /* start up MPI. In a serial run, this will be a no-op */
-  MPISession::init(argc, argv);
-
-  Tabs tab;
-
-  if (MPIComm::world().getRank()==0)
+  try
     {
-      cerr << "Simulation built using Sundance version " 
-           << VersionString::number() 
-           << " (" << VersionString::date() << ")" << endl;
+      /* start up MPI. In a serial run, this will be a no-op */
+      MPISession::init(argc, argv);
+
+      Tabs tab;
+
+      if (MPIComm::world().getRank()==0)
+        {
+          cerr << "Simulation built using Sundance version " 
+               << VersionString::number() 
+               << " (" << VersionString::date() << ")" << endl;
       
-      cerr << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
-           << endl;
-      cerr << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
-      cerr << tab << endl;
-    }
+          cerr << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
+               << endl;
+          cerr << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
+          cerr << tab << endl;
+        }
   
 
-  /* read standard command line flags */
-  string configFilename = "SundanceConfig.xml";
+      /* read standard command line flags */
+      string configFilename = "SundanceConfig.xml";
 
-  bool defaultFpCheck = false;
-  bool cmdFpCheck = defaultFpCheck;
-  int defaultWorkSetSize = 100;
-  int cmdWorkSetSize = defaultWorkSetSize;
+      bool defaultFpCheck = false;
+      bool cmdFpCheck = defaultFpCheck;
+      int defaultWorkSetSize = 100;
+      int cmdWorkSetSize = defaultWorkSetSize;
 
-  Assembler::workSetSize() = defaultWorkSetSize;
+      Assembler::workSetSize() = defaultWorkSetSize;
 
-  clp().setOption("config", &configFilename, "Configuration file");
-  clp().setOption("fpcheck", "nofpcheck", &cmdFpCheck, 
-                  "Check results of math lib calls in expr evals");
-  clp().setOption("workset", &cmdWorkSetSize, 
-                  "Work set size");
-
-
-  clp().throwExceptions(false);
-
-  CommandLineProcessor::EParseCommandLineReturn rtn 
-    = clp().parse(*argc, (char**) *argv);
-
-  TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
-                     RuntimeError,
-                     "Command-line parsing failed");
-
-  /* process the settings file */
-  setSettings(configFilename);
+      clp().setOption("config", &configFilename, "Configuration file");
+      clp().setOption("fpcheck", "nofpcheck", &cmdFpCheck, 
+                      "Check results of math lib calls in expr evals");
+      clp().setOption("workset", &cmdWorkSetSize, 
+                      "Work set size");
 
 
-  if (cmdWorkSetSize != defaultWorkSetSize)
-    {
-      Assembler::workSetSize() = cmdWorkSetSize;
+      clp().throwExceptions(false);
+
+      CommandLineProcessor::EParseCommandLineReturn rtn 
+        = clp().parse(*argc, (char**) *argv);
+
+      TEST_FOR_EXCEPTION(rtn != CommandLineProcessor::PARSE_SUCCESSFUL,
+                         RuntimeError,
+                         "Command-line parsing failed");
+
+      /* process the settings file */
+      setSettings(configFilename);
+
+
+      if (cmdWorkSetSize != defaultWorkSetSize)
+        {
+          Assembler::workSetSize() = cmdWorkSetSize;
+        }
     }
+  catch(std::exception& e)
+    {
+      handleException(e);
+      return 1;
+    }
+  return 0;
 } 
 
 void Sundance::setOption(const string& optionName, 
@@ -151,20 +160,31 @@ void Sundance::handleException(std::exception& e)
 }
 
 
-void Sundance::finalize()
+int Sundance::finalize()
 {
-  Tabs tab;
-  if (MPIComm::world().getRank()==0)
+  try
     {
-      cerr << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
-      cerr << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
-      cerr << tab << "ref integration flops: " 
-           << RefIntegral::totalFlops() << endl;
-      cerr << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
-      cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
+      Tabs tab;
+      if (MPIComm::world().getRank()==0)
+        {
+          cerr << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
+          cerr << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
+          cerr << tab << "ref integration flops: " 
+               << RefIntegral::totalFlops() << endl;
+          cerr << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
+          cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
+        }
+
+      if (MPIComm::world().getNProc()==1) TimeMonitor::summarize();
+
+      MPISession::finalize();
     }
-  TimeMonitor::summarize();
-  MPISession::finalize();
+  catch(std::exception& e)
+    {
+      handleException(e);
+      return 1;
+    }
+  return 0;
 }
 
 string Sundance::searchForFile(const string& name)
@@ -359,14 +379,16 @@ bool Sundance::checkTest(double error, double tol)
   return error < tol;
 }
 
-void Sundance:: passFailTest(double error, double tol)
+bool Sundance:: passFailTest(double error, double tol)
 {
+  bool pass;
   if (MPIComm::world().getRank()==0)
     {
       cerr << "error norm = " << error << endl;
       cerr << "tolerance = " << tol << endl;
     }
-  if (checkTest(error, tol))
+  pass = checkTest(error, tol);
+  if (pass)
     {
       cerr << "test PASSED" << endl;
     }
@@ -374,6 +396,6 @@ void Sundance:: passFailTest(double error, double tol)
     {
       cerr << "test FAILED" << endl;
     }
-
+  return pass;
 }
 

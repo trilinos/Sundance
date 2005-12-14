@@ -139,6 +139,7 @@ int main(int argc, void** argv)
 
       QuadratureFamily q4 = new GaussianQuadrature(4);
 
+      int nErrors = 0;
 
       cerr << endl << endl 
            << "---------------- One-forms --------------------" 
@@ -207,6 +208,7 @@ int main(int argc, void** argv)
                   
                   if (!OK) 
                     {
+                      nErrors ++;
                       cerr << "ERROR DETECTED!!! p=" << p
                            << "  t=" << t  << endl;
                     }
@@ -325,6 +327,7 @@ int main(int argc, void** argv)
                                 }
                               if (!OK) 
                                 {
+                                  nErrors ++;
                                   cerr << "ERROR DETECTED!!! p=" << p
                                        << " dp=" << dp << "  t=" << t  
                                        << " q=" << q << "  dq=" << dq
@@ -341,9 +344,19 @@ int main(int argc, void** argv)
            << endl;
       cerr << "total ref integration flops: " << RefIntegral::totalFlops() 
            << endl;
+
+      if (nErrors == 0)
+        {
+          cerr << "Transformed integral test PASSED" << endl;
+        }
+      else
+        {
+          cerr << "Transformed integral test FAILED" << endl;
+        }
     }
 	catch(exception& e)
 		{
+      cerr << "Transformed integral test FAILED" << endl;
       cerr << e.what() << endl;
 		}
   TimeMonitor::summarize();

@@ -68,7 +68,6 @@ failures.append(#expr);\
 
 int main(int argc, void** argv)
 {
-#ifdef BLARF
   try
 		{
       MPISession::init(&argc, &argv);
@@ -296,13 +295,8 @@ int main(int argc, void** argv)
 
       TESTER((dx*(x*w+u*y)), (Dx*(X*W+U*Y))); 
 
-      //#endif
-
-      //      verbosity<Evaluator>() = VerbExtreme;
-      //      verbosity<EvaluatableExpr>() = VerbExtreme;
       TESTER(((dx*u)+(dx*w) + w), ((Dx*U)+(Dx*W) + W));
 
-      //#ifdef BLARF
       TESTER(((dx*u)*(dx*w) + 2.0*w), ((Dx*U)*(Dx*W) + 2.0*W));
 
       TESTER(((dx*u)*(dx*w) + (dy*u)*(dy*w)), ((Dx*U)*(Dx*W) + (Dy*U)*(Dy*W)));
@@ -362,10 +356,9 @@ int main(int argc, void** argv)
     }
 	catch(exception& e)
 		{
-			Out::println(e.what());
+      cerr << "test FAILED!" << endl;
+      cerr << "detected exception: " << e.what() << endl;
 		}
   TimeMonitor::summarize();
-
   MPISession::finalize();
-#endif
 }

@@ -31,9 +31,9 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = BasisCheck AssemblerTest1D AssemblerTest2D \
-                  TransformedIntegral2D  QuadratureIntegral2D \
-                  IntegralTest1D QuadratureTest
+TEST_SRC = BasisCheck TransformedIntegral2D  QuadratureTest
+
+noinst_PROGRAMS = $(TEST_SRC) QuadratureIntegral2D
 
 
 BasisCheck_SOURCES = $(srcdir)/BasisCheck.cpp
@@ -47,40 +47,6 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 BasisCheck_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 BasisCheck_LDADD = $(STD_FWK_LIBS) 
-
-
-
-
-
-AssemblerTest1D_SOURCES = $(srcdir)/AssemblerTest1D.cpp
-
-AssemblerTest1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-AssemblerTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-
-AssemblerTest1D_LDADD = $(STD_FWK_LIBS) 
-
-
-
-
-
-
-AssemblerTest2D_SOURCES = $(srcdir)/AssemblerTest2D.cpp
-
-AssemblerTest2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-AssemblerTest2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-
-AssemblerTest2D_LDADD = $(STD_FWK_LIBS) 
-
 
 
 
@@ -99,10 +65,6 @@ TransformedIntegral2D_LDADD = $(STD_FWK_LIBS)
 
 
 
-
-
-
-
 QuadratureIntegral2D_SOURCES = $(srcdir)/QuadratureIntegral2D.cpp
 
 QuadratureIntegral2D_DEPENDENCIES = \
@@ -114,20 +76,6 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 QuadratureIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 QuadratureIntegral2D_LDADD = $(STD_FWK_LIBS) 
-
-
-
-IntegralTest1D_SOURCES = $(srcdir)/IntegralTest1D.cpp
-
-IntegralTest1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-IntegralTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-
-IntegralTest1D_LDADD = $(STD_FWK_LIBS) 
 
 
 
@@ -145,7 +93,21 @@ QuadratureTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 QuadratureTest_LDADD = $(STD_FWK_LIBS) 
 
 
+TEST_EXE = $(TEST_SRC:%=%.exe)
+CHECKTEST_ARGS = $(TESTS)
+TESTS = $(TEST_EXE:%.exe=%.tst)
 
+%.tst : %.exe
+	./$< > $@ 2>&1 
+	echo "done" $@
+
+tests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+serialtests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 
 

@@ -211,13 +211,20 @@ int main(int argc, void** argv)
 
       cerr << endl << endl << "Summary: detected " << numErrors << " errors " << endl;
       
-
+      if (numErrors == 0)
+        {
+          cerr << "BasisCheck PASSED" << endl;
+        }
+      else
+        {
+          cerr << "BasisCheck FAILED" << endl;
+        }
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
+      cerr << "BasisCheck FAILED" << endl;
 		}
   TimeMonitor::summarize();
-
   MPISession::finalize();
 }

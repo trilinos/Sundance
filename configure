@@ -311,7 +311,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_TESTS_TRUE BUILD_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE PYTHON_USE_TRUE PYTHON_USE_FALSE PYTHON PYTHON_PREFIX PYTHON_EXECPREFIX BUILD_PYTHON_TRUE BUILD_PYTHON_FALSE PYTHON_CSPEC PYTHON_LSPEC CXXCPP EGREP WITH_SWIG SWIG SWIG_LIB SWIG_PYTHON_OPT SWIG_PYTHON_CPPFLAGS HAVE_SWIG_TRUE HAVE_SWIG_FALSE GNU_HAVE_SWIG ac_aux_dir SUNDANCE_BUILD_DIRECTORY FIAT_STR FIAT_BUILD_DIR SUNDIALS_STR SUNDIALS_BUILD_DIR CHACO_LIB TRILINOS_DIR LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_CXXTESTS_TRUE BUILD_CXXTESTS_FALSE BUILD_LOW_LEVEL_TESTS_TRUE BUILD_LOW_LEVEL_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE PYTHON_USE_TRUE PYTHON_USE_FALSE PYTHON PYTHON_PREFIX PYTHON_EXECPREFIX BUILD_PYTHON_TRUE BUILD_PYTHON_FALSE PYTHON_CSPEC PYTHON_LSPEC CXXCPP EGREP WITH_SWIG SWIG SWIG_LIB SWIG_PYTHON_OPT SWIG_PYTHON_CPPFLAGS HAVE_SWIG_TRUE HAVE_SWIG_FALSE GNU_HAVE_SWIG ac_aux_dir SUNDANCE_BUILD_DIRECTORY FIAT_STR FIAT_BUILD_DIR SUNDIALS_STR SUNDIALS_BUILD_DIR CHACO_LIB TRILINOS_DIR LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -880,7 +880,9 @@ Optional Features:
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
   --enable-chaco          Chaco mesh partitioning
-  --enable-tests          Build tests for Sundance (default is yes)
+  --enable-cxxtests       Build C++ tests for Sundance (default is yes)
+  --enable-lowleveltests  Build low level C++ tests for Sundance (default is
+                          yes)
   --enable-examples       Build examples for Sundance (default is yes)
   --enable-python[=PYTHON]
                           absolute path name of Python executable
@@ -3772,7 +3774,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3775:" \
+echo "$as_me:3777:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4238,23 +4240,23 @@ fi
 #  #np# - option(s) that does (do) not apply.
 
 
-# Check whether --enable-tests or --disable-tests was given.
-if test "${enable_tests+set}" = set; then
-  enableval="$enable_tests"
-  ac_cv_use_tests=$enableval
+# Check whether --enable-cxxtests or --disable-cxxtests was given.
+if test "${enable_cxxtests+set}" = set; then
+  enableval="$enable_cxxtests"
+  ac_cv_use_cxxtests=$enableval
 else
-  ac_cv_use_tests=yes
+  ac_cv_use_cxxtests=yes
 fi;
 
-echo "$as_me:$LINENO: checking whether to use tests" >&5
-echo $ECHO_N "checking whether to use tests... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking whether to use cxxtests" >&5
+echo $ECHO_N "checking whether to use cxxtests... $ECHO_C" >&6
 
-if test "X$ac_cv_use_tests" != "Xno"; then
+if test "X$ac_cv_use_cxxtests" != "Xno"; then
   echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
 
 cat >>confdefs.h <<\_ACEOF
-#define HAVE_TESTS
+#define HAVE_CXXTESTS
 _ACEOF
 
 else
@@ -4264,12 +4266,48 @@ fi
 
 
 
-if test "X$ac_cv_use_tests" != "Xno"; then
-  BUILD_TESTS_TRUE=
-  BUILD_TESTS_FALSE='#'
+if test "X$ac_cv_use_cxxtests" != "Xno"; then
+  BUILD_CXXTESTS_TRUE=
+  BUILD_CXXTESTS_FALSE='#'
 else
-  BUILD_TESTS_TRUE='#'
-  BUILD_TESTS_FALSE=
+  BUILD_CXXTESTS_TRUE='#'
+  BUILD_CXXTESTS_FALSE=
+fi
+
+
+
+# Check whether --enable-lowleveltests or --disable-lowleveltests was given.
+if test "${enable_lowleveltests+set}" = set; then
+  enableval="$enable_lowleveltests"
+  ac_cv_use_lowleveltests=$enableval
+else
+  ac_cv_use_lowleveltests=yes
+fi;
+
+echo "$as_me:$LINENO: checking whether to use lowleveltests" >&5
+echo $ECHO_N "checking whether to use lowleveltests... $ECHO_C" >&6
+
+if test "X$ac_cv_use_lowleveltests" != "Xno"; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_LOW_LEVEL_TESTS
+_ACEOF
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+
+if test "X$ac_cv_use_lowleveltests" != "Xno"; then
+  BUILD_LOW_LEVEL_TESTS_TRUE=
+  BUILD_LOW_LEVEL_TESTS_FALSE='#'
+else
+  BUILD_LOW_LEVEL_TESTS_TRUE='#'
+  BUILD_LOW_LEVEL_TESTS_FALSE=
 fi
 
 
@@ -5781,7 +5819,7 @@ fi;
 # Output files
 # ------------------------------------------------------------------------
 
-                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile Makefile.export Makefile.export.TSFExtended Makefile.site.sundance examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-solvers/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile python/Makefile python/src/Makefile python/src/SUNDANCE_HOME_DIR python/src/__init__.py python/src/.deps/dummy python/example/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-solvers/Makefile tests-solvers/VectorTests/Makefile tests-solvers/OperatorTests/Makefile tests-solvers/SolverTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/HomogeneousDOFMap/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
+                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile Makefile.internal Makefile.export Makefile.export.TSFExtended Makefile.site.sundance examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-solvers/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile python/Makefile python/src/Makefile python/src/SUNDANCE_HOME_DIR python/src/__init__.py python/src/.deps/dummy python/example/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-solvers/Makefile tests-solvers/VectorTests/Makefile tests-solvers/OperatorTests/Makefile tests-solvers/SolverTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
 
 
 
@@ -5934,10 +5972,17 @@ echo "$as_me: error: conditional \"HAVE_CHACO\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${BUILD_TESTS_TRUE}" && test -z "${BUILD_TESTS_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"BUILD_TESTS\" was never defined.
+if test -z "${BUILD_CXXTESTS_TRUE}" && test -z "${BUILD_CXXTESTS_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"BUILD_CXXTESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"BUILD_TESTS\" was never defined.
+echo "$as_me: error: conditional \"BUILD_CXXTESTS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${BUILD_LOW_LEVEL_TESTS_TRUE}" && test -z "${BUILD_LOW_LEVEL_TESTS_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"BUILD_LOW_LEVEL_TESTS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"BUILD_LOW_LEVEL_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -6477,6 +6522,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "Makefile.internal" ) CONFIG_FILES="$CONFIG_FILES Makefile.internal" ;;
   "Makefile.export" ) CONFIG_FILES="$CONFIG_FILES Makefile.export" ;;
   "Makefile.export.TSFExtended" ) CONFIG_FILES="$CONFIG_FILES Makefile.export.TSFExtended" ;;
   "Makefile.site.sundance" ) CONFIG_FILES="$CONFIG_FILES Makefile.site.sundance" ;;
@@ -6507,7 +6553,6 @@ do
   "tests-std-mesh/Simple/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-mesh/Simple/Makefile" ;;
   "tests-std-mesh/Readers/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-mesh/Readers/Makefile" ;;
   "tests-std-framework/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Makefile" ;;
-  "tests-std-framework/HomogeneousDOFMap/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/HomogeneousDOFMap/Makefile" ;;
   "tests-std-framework/Assembly/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Assembly/Makefile" ;;
   "tests-std-framework/Problem/Makefile" ) CONFIG_FILES="$CONFIG_FILES tests-std-framework/Problem/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
@@ -6673,8 +6718,10 @@ s,@USE_ALTERNATE_AR_FALSE@,$USE_ALTERNATE_AR_FALSE,;t t
 s,@ALTERNATE_AR@,$ALTERNATE_AR,;t t
 s,@HAVE_CHACO_TRUE@,$HAVE_CHACO_TRUE,;t t
 s,@HAVE_CHACO_FALSE@,$HAVE_CHACO_FALSE,;t t
-s,@BUILD_TESTS_TRUE@,$BUILD_TESTS_TRUE,;t t
-s,@BUILD_TESTS_FALSE@,$BUILD_TESTS_FALSE,;t t
+s,@BUILD_CXXTESTS_TRUE@,$BUILD_CXXTESTS_TRUE,;t t
+s,@BUILD_CXXTESTS_FALSE@,$BUILD_CXXTESTS_FALSE,;t t
+s,@BUILD_LOW_LEVEL_TESTS_TRUE@,$BUILD_LOW_LEVEL_TESTS_TRUE,;t t
+s,@BUILD_LOW_LEVEL_TESTS_FALSE@,$BUILD_LOW_LEVEL_TESTS_FALSE,;t t
 s,@BUILD_EXAMPLES_TRUE@,$BUILD_EXAMPLES_TRUE,;t t
 s,@BUILD_EXAMPLES_FALSE@,$BUILD_EXAMPLES_FALSE,;t t
 s,@PYTHON_USE_TRUE@,$PYTHON_USE_TRUE,;t t

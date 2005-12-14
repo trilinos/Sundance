@@ -72,6 +72,7 @@ int main(int argc, void** argv)
 	catch(exception& e)
 		{
       cerr << "Detected exception: " << e.what() << endl;
+      cerr << "Quadrature test FAILED" << endl;
 		}
 
 

@@ -28,4 +28,15 @@
 # ************************************************************************
 #@HEADER
 
-SUBDIRS = SymbolicTests
+if BUILD_LOW_LEVEL_TESTS
+SUBDIRS=SymbolicTests
+LL_TESTS = (cd SymbolicTests; $(MAKE) tests)
+LL_SERIALTESTS = (cd SymbolicTests; $(MAKE) serialtests)
+endif
+
+
+tests:
+	$(LL_TESTS)
+
+serialtests:
+	$(LL_SERIALTESTS)

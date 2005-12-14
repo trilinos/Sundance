@@ -168,19 +168,19 @@ namespace SundanceStdFwk
      * its own MPI initialization system, it is thus perfectly safe to
      * call Sundance::init() as well.
      */
-    static void init(int* argc, void*** argv);
+    static int init(int* argc, void*** argv);
     
     /** 
      * Do finalization steps such as calling MPI_finalize() (if necessary),
      * and collecting and printing timing information.
      */
-    static void finalize();
+    static int finalize();
     
     /** */
     static void handleException(std::exception& e);
 
     /** */
-    static void passFailTest(double error, double tol);
+    static bool passFailTest(double error, double tol);
 
     /** */
     static string searchForFile(const string& name);    

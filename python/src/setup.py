@@ -41,8 +41,7 @@ from MakefileVariables import *
 
 # Build the makeVars dictionary by processing relevant Makefiles
 makeVars = { }
-makeVars.update(processMakefile(os.path.join("..","..","Makefile.export")))
-makeVars.update(processMakefile(os.path.join("..","..","Makefile.export.TSFExtended")))
+makeVars.update(processMakefile(os.path.join("..","..","Makefile.internal")))
 makeVars.update(processMakefile("Makefile"))
 
 # Import the variable names and values into the global namespace.  This is
@@ -70,8 +69,8 @@ uniquifyList(extra_compile_args)
 
 options = SUNDANCE_INCLUDES.split()     + \
           SUNDANCE_LIBS.split()  + \
-          TSFEXTENDED_INCLUDES.split()     + \
-          TSFEXTENDED_LIBS.split() 
+          TRILINOS_INCLUDES.split()     + \
+          TRILINOS_LIBS.split() 
 uniquifyList(options)
 
 # Distribute the individual options to the appropriate Extension class arguments

@@ -91,7 +91,8 @@ namespace SundanceCore
 
       /** */
       static RefCountPtr<QuadratureFamilyStub>& defaultQuadrature()
-      {static RefCountPtr<QuadratureFamilyStub> rtn; return rtn;}
+      {static RefCountPtr<QuadratureFamilyStub> rtn
+          = rcp(new QuadratureFamilyStub(1)); return rtn;}
       
     private:
       int order_;

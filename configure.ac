@@ -202,8 +202,11 @@ fi
 #  #np# - Packages that do not have tests or examples should #-out the 
 #  #np# - option(s) that does (do) not apply.
 
-TAC_ARG_ENABLE_FEATURE(tests, [Build tests for Sundance], TESTS, yes)
-AM_CONDITIONAL(BUILD_TESTS, test "X$ac_cv_use_tests" != "Xno")
+TAC_ARG_ENABLE_FEATURE(cxxtests, [Build C++ tests for Sundance], CXXTESTS, yes)
+AM_CONDITIONAL(BUILD_CXXTESTS, test "X$ac_cv_use_cxxtests" != "Xno")
+
+TAC_ARG_ENABLE_FEATURE(lowleveltests, [Build low level C++ tests for Sundance], LOW_LEVEL_TESTS, yes)
+AM_CONDITIONAL(BUILD_LOW_LEVEL_TESTS, test "X$ac_cv_use_lowleveltests" != "Xno")
 
 TAC_ARG_ENABLE_FEATURE(examples, [Build examples for Sundance], EXAMPLES, yes)
 AM_CONDITIONAL(BUILD_EXAMPLES, test "X$ac_cv_use_examples" != "Xno")
@@ -241,6 +244,7 @@ AC_SUBST(SUNDIALS_BUILD_DIR)
 
 AC_CONFIG_FILES([
   Makefile  
+  Makefile.internal
   Makefile.export
   Makefile.export.TSFExtended
   Makefile.site.sundance
@@ -271,7 +275,6 @@ AC_CONFIG_FILES([
   tests-std-mesh/Simple/Makefile
   tests-std-mesh/Readers/Makefile
   tests-std-framework/Makefile
-  tests-std-framework/HomogeneousDOFMap/Makefile
   tests-std-framework/Assembly/Makefile
   tests-std-framework/Problem/Makefile
 ])

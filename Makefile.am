@@ -86,29 +86,47 @@ if BUILD_EXAMPLES
 EXAMPLES_SUBDIR=examples-tutorial
 endif
 
-if BUILD_TESTS
+if PYTHON_USE
+PYTHON_SUBDIRS=python
+PYTESTS=(cd python/example; $(MAKE) tests)
+PYSERIALTESTS=(cd python/example; $(MAKE) serialtests)
+endif
+
+if BUILD_CXXTESTS
+
 SUBDIRS = src-solvers tests-solvers \
 src-utils tests-utils \
 src-core tests-core \
 src-std-mesh tests-std-mesh \
 src-std-framework tests-std-framework \
-src-xml  $(EXAMPLES_SUBDIR)
+$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
+
+CXX_SOLVER_TESTS = (cd tests-solvers; $(MAKE) tests) 
+CXX_SOLVER_SERIALTESTS = (cd tests-solvers; $(MAKE) serialtests) 
+
+CXX_SYMBOLIC_TESTS = (cd tests-core; $(MAKE) tests) 
+CXX_SYMBOLIC_SERIALTESTS = (cd tests-core; $(MAKE) serialtests) 
+
+CXX_FWK_TESTS = (cd tests-std-framework; $(MAKE) tests) 
+CXX_FWK_SERIALTESTS = (cd tests-std-framework; $(MAKE) serialtests) 
+
 else
-SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework src-xml  $(EXAMPLES_SUBDIR)
+SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework \
+$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
 endif
 
 
 
 ## #######################################################################
-## make libraries w/o making tests
+## Make libraries w/o making tests
 ## #######################################################################
 
 libonly:
-	(cd src-solvers; make install)
-	(cd src-utils; make install)
-	(cd src-core; make install)
-	(cd src-std-mesh; make install)
-	(cd src-std-framework; make install)
+	(cd src-solvers; $(MAKE) install)
+	(cd src-utils; $(MAKE) install)
+	(cd src-core; $(MAKE) install)
+	(cd src-std-mesh; $(MAKE) install)
+	(cd src-std-framework; $(MAKE) install)
 
 ## #######################################################################
 ## emacs tags
@@ -117,11 +135,29 @@ libonly:
 tags:
 	etags */*/*.hpp */*/*.cpp
 
-
 tests:
-	(cd tests-solvers; make tests) 
-	(cd tests-std-framework/Problem; make tests) 
+	@echo "--------------------------------------------------------------------"
+	@echo "running all tests"
+	@echo "--------------------------------------------------------------------"
+	$(CXX_SOLVER_TESTS)
+	$(CXX_SYMBOLIC_TESTS)
+	$(CXX_FWK_TESTS)
+	$(PYTESTS)
+	@echo "====================================================================="
+	@echo "Summary of serial tests:"
+	@echo "====================================================================="
+	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.tst python/example/*.tst
+	@echo "====================================================================="
+	@echo "Summary of parallel tests:"
+	@echo "====================================================================="
+	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.ptst python/example/*.ptst
 
 serialtests:
-	(cd tests-solvers; make serialtests) 	
-	(cd tests-std-framework/Problem; make serialtests) 	
+	$(CXX_SOLVER_SERIALTESTS)
+	$(CXX_SYMBOLIC_SERIALTESTS)
+	$(CXX_FWK_SERIALTESTS)
+	$(PYSERIALTESTS)
+	@echo "====================================================================="
+	@echo "Summary of serial tests:"
+	@echo "====================================================================="
+	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.tst python/example/*.tst

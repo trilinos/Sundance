@@ -1,4 +1,4 @@
-"""Solve the Poisson equation in one dimension."""
+#!/usr/bin/env python
 
 import setpath
 import PySundance
@@ -15,7 +15,8 @@ class LeftPointPredicate :
 def main():
   """Poisson example code"""
   vecType = EpetraVectorType()
-  mesher  = PartitionedLineMesher(0.0, 1.0, 10);
+  nProc = getNProc()
+  mesher  = PartitionedLineMesher(0.0, 1.0, 20*nProc);
   mesh = mesher.getMesh();
   basis = Lagrange(2)
 
@@ -47,11 +48,17 @@ def main():
   diff = (soln - exactSoln)**2.0
   diffDeriv = (dx*(soln - exactSoln))**2.0
 
-  print "error = " , math.sqrt(diff.integral(interior, mesh, quad))
-  print "deriv error = " , math.sqrt(diffDeriv.integral(interior, mesh, quad))
+  error = math.sqrt(diff.integral(interior, mesh, quad))
+  derivError = math.sqrt(diffDeriv.integral(interior, mesh, quad))
+  print "error = " , error
+  print "deriv error = " , derivError
 
-  print "basis = ", type(basis)
-  
+  error = max(error, derivError)
+
+  print "max err = ", error
+
+  tol = 1.0e-11
+  passFailTest(error, tol)
   
 # This is a standard Python construct.  Put the code to be executed in a
 # function [typically main()] and then use the following logic to call the

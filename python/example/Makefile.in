@@ -96,12 +96,14 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_CXXTESTS_FALSE = @BUILD_CXXTESTS_FALSE@
+BUILD_CXXTESTS_TRUE = @BUILD_CXXTESTS_TRUE@
 BUILD_EXAMPLES_FALSE = @BUILD_EXAMPLES_FALSE@
 BUILD_EXAMPLES_TRUE = @BUILD_EXAMPLES_TRUE@
+BUILD_LOW_LEVEL_TESTS_FALSE = @BUILD_LOW_LEVEL_TESTS_FALSE@
+BUILD_LOW_LEVEL_TESTS_TRUE = @BUILD_LOW_LEVEL_TESTS_TRUE@
 BUILD_PYTHON_FALSE = @BUILD_PYTHON_FALSE@
 BUILD_PYTHON_TRUE = @BUILD_PYTHON_TRUE@
-BUILD_TESTS_FALSE = @BUILD_TESTS_FALSE@
-BUILD_TESTS_TRUE = @BUILD_TESTS_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -233,16 +235,24 @@ AUTOMAKE_OPTIONS = foreign
 PARAM_FILES = $(srcdir)/aztecSolver.py $(srcdir)/bicgstabSolver.py \
 $(srcdir)/noxSolver.py
 
-EXTRA_DIST = $(PARAM_FILES) setpath.py exPoisson1D.py exPoisson2D.py \
-	exPoisson3D.py exHelmholtz1D.py exRadDiff1D.py
-
+EXTRA_DIST = $(PARAM_FILES) setpath.py $(ALL_PROGS)
 MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
-EXAMPLE_SUITE = exPoisson1D exPoisson2D \
-	exPoisson3D exHelmholtz1D exRadDiff1D
-
+PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D
+SERIAL_SRC = exPoisson3D
+ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
 SETPATH_PY = setpath.py 
+TESTS = $(ALL_PROGS:%.py=%.tst) 
+PTESTS = $(PARALLEL_PROGS:%.py=%.ptst)
+ALL_PROGS = $(PARALLEL_PROGS) $(SERIAL_PROGS)
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.py)
+SERIAL_PROGS = $(SERIAL_SRC:%=%.py)
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+NPROC = 2
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
 all: all-am
 
 .SUFFIXES:
@@ -283,6 +293,79 @@ ctags: CTAGS
 CTAGS:
 
 
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list='$(TESTS)'; \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		echo "XPASS: $$tst"; \
+	      ;; \
+	      *) \
+		echo "PASS: $$tst"; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xfail=`expr $$xfail + 1`; \
+		echo "XFAIL: $$tst"; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		echo "FAIL: $$tst"; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      echo "SKIP: $$tst"; \
+	    fi; \
+	  done; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="All $$all tests passed"; \
+	    else \
+	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all tests failed"; \
+	    else \
+	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    skipped="($$skip tests were not run)"; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  echo "$$dashes"; \
+	  echo "$$banner"; \
+	  test -z "$$skipped" || echo "$$skipped"; \
+	  test -z "$$report" || echo "$$report"; \
+	  echo "$$dashes"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
+
 distdir: $(DISTFILES)
 	$(mkdir_p) $(distdir)/$(srcdir)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
@@ -312,6 +395,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile
 installdirs:
@@ -384,20 +468,36 @@ ps-am:
 
 uninstall-am: uninstall-info-am
 
-.PHONY: all all-am check check-am clean clean-generic distclean \
-	distclean-generic distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-info-am
+.PHONY: all all-am check check-TESTS check-am clean clean-generic \
+	distclean distclean-generic distdir dvi dvi-am html html-am \
+	info info-am install install-am install-data install-data-am \
+	install-exec install-exec-am install-info install-info-am \
+	install-man install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am uninstall \
+	uninstall-am uninstall-info-am
 
 
-all: $(EXAMPLE_SUITE)
+all: $(ALL_SRC)
 	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$(SETPATH_PY) $(PARAM_FILES) . ; fi
 
-# Run the example script
+%.tst: %.py
+	./$< > $@ 2>&1
+	echo "done" $@
+
+%.ptst: %.py
+	$(MPI_COMMAND) ./$< > $@ 2>&1
+	echo "done" $@
+
+tests:
+	$(MAKE) $(TESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+serialtests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
 ex%: $(srcdir)/ex%.py
 	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$@.py . ; fi
 

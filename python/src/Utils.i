@@ -1,14 +1,15 @@
 // -*- c++ -*-
 
 
-
 %{
 
-#ifdef HAVE_MPI
-#include "mpi.h"
+
+#include "Sundance.hpp"
+
+
   PyObject* Init_Argv(PyObject *args) 
     {  
-      int i, error, myid, size;
+      int i;
       int argc = 0;  
       char **argv;   
 
@@ -22,12 +23,8 @@
     
       argv[i] = NULL; //Lam 7.0 requires last arg to be NULL  
   
-      error = MPI_Init(&argc, &argv); 
-      MPI_Comm_rank(MPI_COMM_WORLD, &myid);    
-      MPI_Comm_size(MPI_COMM_WORLD, &size);    
-
+      int error = SundanceStdFwk::Sundance::init(&argc, (void***) &argv);
       if (error != 0) {
-        MPI_Comm_rank(MPI_COMM_WORLD, &myid);    
         PyErr_SetString(PyExc_RuntimeError, "error");   
         return NULL;
       }  
@@ -36,35 +33,40 @@
     } 
   
   PyObject* Finalize() {  
-    int error, myid;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &myid);  
-  
-    error = MPI_Finalize();
-    if (error != 0) {
-      PyErr_SetString(PyExc_RuntimeError, "error");    //raise ValueError, errmsg
-      return NULL;
-    }  
+      int error = SundanceStdFwk::Sundance::finalize();
+       if (error != 0) {
+         PyErr_SetString(PyExc_RuntimeError, "error");    //raise ValueError, errmsg
+         return NULL;
+       }  
     
     return Py_BuildValue("");
   }
-#else
-  PyObject* Init_Argv(PyObject *args) 
-    {
-      return Py_BuildValue("");
-    }
 
-  PyObject* Finalize()
-    {
-      return Py_BuildValue("");
-    }
-#endif
- 
+  int getNProc() 
+  {
+    return MPIComm::world().getNProc();
+  }
+
+  int getRank() 
+  {
+    return MPIComm::world().getRank();
+  }
+
+
+  void mpiSynchronize() 
+  {
+    MPIComm::world().synchronize();
+  }
+  
   %}
 
 // MPI stuff
 PyObject* Init_Argv(PyObject *args);
 PyObject* Finalize();
+int getRank() ;
+int getNProc() ;
+void mpiSynchronize() ;
 
 // Python code.  Here we set the __version__ string, call MPI_Init()
 // and arrange for MPI_Finalize to be called (if appropriate), and

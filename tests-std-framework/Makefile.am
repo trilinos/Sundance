@@ -28,5 +28,18 @@
 # ************************************************************************
 #@HEADER
 
-SUBDIRS = HomogeneousDOFMap Assembly Problem
+SUBDIRS = $(LL_SUB) Problem
 
+if BUILD_LOW_LEVEL_TESTS
+LL_SUB=Assembly
+LL_TESTS = (cd Assembly; $(MAKE) tests)
+LL_SERIALTESTS = (cd Assembly; $(MAKE) serialtests)
+endif
+
+tests:
+	$(LL_TESTS)
+	(cd Problem; $(MAKE) tests)
+
+serialtests:
+	$(LL_SERIALTESTS)
+	(cd Problem; $(MAKE) serialtests)

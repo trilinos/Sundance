@@ -177,7 +177,8 @@ int main(int argc, void** argv)
     }
 	catch(exception& e)
 		{
-			Out::println(e.what());
+      cerr << "test FAILED!" << endl;
+      cerr << "detected exception: " << e.what() << endl;
 		}
   TimeMonitor::summarize();
 

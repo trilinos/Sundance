@@ -74,6 +74,7 @@ target_triplet = @target@
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.export.TSFExtended.in \
 	$(srcdir)/Makefile.export.in $(srcdir)/Makefile.in \
+	$(srcdir)/Makefile.internal.in \
 	$(srcdir)/Makefile.site.sundance.in $(top_srcdir)/configure \
 	$(top_srcdir)/python/src/.deps/dummy.in config/config.guess \
 	config/config.sub config/depcomp config/install-sh \
@@ -99,8 +100,9 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
-CONFIG_CLEAN_FILES = Makefile.export Makefile.export.TSFExtended \
-	Makefile.site.sundance python/src/.deps/dummy
+CONFIG_CLEAN_FILES = Makefile.internal Makefile.export \
+	Makefile.export.TSFExtended Makefile.site.sundance \
+	python/src/.deps/dummy
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -112,8 +114,9 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = src-solvers src-utils src-core src-std-mesh \
-	src-std-framework src-xml examples-tutorial tests-solvers \
-	tests-utils tests-core tests-std-mesh tests-std-framework
+	src-std-framework python src-xml examples-tutorial \
+	tests-solvers tests-utils tests-core tests-std-mesh \
+	tests-std-framework
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -134,12 +137,14 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_CXXTESTS_FALSE = @BUILD_CXXTESTS_FALSE@
+BUILD_CXXTESTS_TRUE = @BUILD_CXXTESTS_TRUE@
 BUILD_EXAMPLES_FALSE = @BUILD_EXAMPLES_FALSE@
 BUILD_EXAMPLES_TRUE = @BUILD_EXAMPLES_TRUE@
+BUILD_LOW_LEVEL_TESTS_FALSE = @BUILD_LOW_LEVEL_TESTS_FALSE@
+BUILD_LOW_LEVEL_TESTS_TRUE = @BUILD_LOW_LEVEL_TESTS_TRUE@
 BUILD_PYTHON_FALSE = @BUILD_PYTHON_FALSE@
 BUILD_PYTHON_TRUE = @BUILD_PYTHON_TRUE@
-BUILD_TESTS_FALSE = @BUILD_TESTS_FALSE@
-BUILD_TESTS_TRUE = @BUILD_TESTS_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -292,14 +297,25 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 #  of tests.  At present, new_package only offers src and example.
 # SUBDIRS = src example test 
 @BUILD_EXAMPLES_TRUE@EXAMPLES_SUBDIR = examples-tutorial
-@BUILD_TESTS_FALSE@SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework src-xml  $(EXAMPLES_SUBDIR)
-@BUILD_TESTS_TRUE@SUBDIRS = src-solvers tests-solvers \
-@BUILD_TESTS_TRUE@src-utils tests-utils \
-@BUILD_TESTS_TRUE@src-core tests-core \
-@BUILD_TESTS_TRUE@src-std-mesh tests-std-mesh \
-@BUILD_TESTS_TRUE@src-std-framework tests-std-framework \
-@BUILD_TESTS_TRUE@src-xml  $(EXAMPLES_SUBDIR)
+@PYTHON_USE_TRUE@PYTHON_SUBDIRS = python
+@PYTHON_USE_TRUE@PYTESTS = (cd python/example; $(MAKE) tests)
+@PYTHON_USE_TRUE@PYSERIALTESTS = (cd python/example; $(MAKE) serialtests)
+@BUILD_CXXTESTS_FALSE@SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework \
+@BUILD_CXXTESTS_FALSE@$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
 
+@BUILD_CXXTESTS_TRUE@SUBDIRS = src-solvers tests-solvers \
+@BUILD_CXXTESTS_TRUE@src-utils tests-utils \
+@BUILD_CXXTESTS_TRUE@src-core tests-core \
+@BUILD_CXXTESTS_TRUE@src-std-mesh tests-std-mesh \
+@BUILD_CXXTESTS_TRUE@src-std-framework tests-std-framework \
+@BUILD_CXXTESTS_TRUE@$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
+
+@BUILD_CXXTESTS_TRUE@CXX_SOLVER_TESTS = (cd tests-solvers; $(MAKE) tests) 
+@BUILD_CXXTESTS_TRUE@CXX_SOLVER_SERIALTESTS = (cd tests-solvers; $(MAKE) serialtests) 
+@BUILD_CXXTESTS_TRUE@CXX_SYMBOLIC_TESTS = (cd tests-core; $(MAKE) tests) 
+@BUILD_CXXTESTS_TRUE@CXX_SYMBOLIC_SERIALTESTS = (cd tests-core; $(MAKE) serialtests) 
+@BUILD_CXXTESTS_TRUE@CXX_FWK_TESTS = (cd tests-std-framework; $(MAKE) tests) 
+@BUILD_CXXTESTS_TRUE@CXX_FWK_SERIALTESTS = (cd tests-std-framework; $(MAKE) serialtests) 
 all: all-recursive
 
 .SUFFIXES:
@@ -336,6 +352,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(srcdir) && $(AUTOCONF)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
+Makefile.internal: $(top_builddir)/config.status $(srcdir)/Makefile.internal.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 Makefile.export: $(top_builddir)/config.status $(srcdir)/Makefile.export.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 Makefile.export.TSFExtended: $(top_builddir)/config.status $(srcdir)/Makefile.export.TSFExtended.in
@@ -704,22 +722,41 @@ uninstall-info: uninstall-info-recursive
 
 
 libonly:
-	(cd src-solvers; make install)
-	(cd src-utils; make install)
-	(cd src-core; make install)
-	(cd src-std-mesh; make install)
-	(cd src-std-framework; make install)
+	(cd src-solvers; $(MAKE) install)
+	(cd src-utils; $(MAKE) install)
+	(cd src-core; $(MAKE) install)
+	(cd src-std-mesh; $(MAKE) install)
+	(cd src-std-framework; $(MAKE) install)
 
 tags:
 	etags */*/*.hpp */*/*.cpp
 
 tests:
-	(cd tests-solvers; make tests) 
-	(cd tests-std-framework/Problem; make tests) 
+	@echo "--------------------------------------------------------------------"
+	@echo "running all tests"
+	@echo "--------------------------------------------------------------------"
+	$(CXX_SOLVER_TESTS)
+	$(CXX_SYMBOLIC_TESTS)
+	$(CXX_FWK_TESTS)
+	$(PYTESTS)
+	@echo "====================================================================="
+	@echo "Summary of serial tests:"
+	@echo "====================================================================="
+	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.tst python/example/*.tst
+	@echo "====================================================================="
+	@echo "Summary of parallel tests:"
+	@echo "====================================================================="
+	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.ptst python/example/*.ptst
 
 serialtests:
-	(cd tests-solvers; make serialtests) 	
-	(cd tests-std-framework/Problem; make serialtests) 	
+	$(CXX_SOLVER_SERIALTESTS)
+	$(CXX_SYMBOLIC_SERIALTESTS)
+	$(CXX_FWK_SERIALTESTS)
+	$(PYSERIALTESTS)
+	@echo "====================================================================="
+	@echo "Summary of serial tests:"
+	@echo "====================================================================="
+	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.tst python/example/*.tst
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

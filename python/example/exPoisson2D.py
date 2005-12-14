@@ -31,8 +31,8 @@ def main():
 
   vecType = EpetraVectorType()
   npx = 1
-  npy = 1
-  n = 10
+  npy = getNProc()
+  n = 20
   mesher  = PartitionedRectangleMesher(0.0, 1.0, n, npx,
                                        0.0, 2.0, n, npy);
   mesh = mesher.getMesh();
@@ -71,19 +71,26 @@ def main():
 
   exactSoln = 0.5*x*x + (1.0/3.0)*y;
 
-  diff = (soln - exactSoln)**2.0
-  diffDeriv = (grad*(soln - exactSoln))**2.0
-
-  print "error = " , math.sqrt(diff.integral(interior, mesh, quad4))
-  print "deriv error = " , math.sqrt(diffDeriv.integral(interior, mesh, quad4))
-
-
   writer = VTKWriter("Poisson2D");
   writer.addMesh(mesh)
   writer.addField("u0", soln)
   writer.write()
+  
 
+  diff = (soln - exactSoln)**2.0
+  diffDeriv = (dx*(soln - exactSoln))**2.0
+  
+  error = math.sqrt(diff.integral(interior, mesh, quad4))
+  derivError = math.sqrt(diffDeriv.integral(interior, mesh, quad4))
+  print "error = " , error
+  print "deriv error = " , derivError
 
+  error = max(error, derivError)
+
+  print "max err = ", error
+
+  tol = 1.0e-10
+  passFailTest(error, tol)
 
 
 

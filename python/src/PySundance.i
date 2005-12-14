@@ -15,6 +15,21 @@
     }
 }
 
+
+%{
+#include "Sundance.hpp"
+  %}
+
+%inline %{
+  bool passFailTest(double err, double tol)
+  {
+    return SundanceStdFwk::Sundance::passFailTest(err, tol);
+  }
+  %}
+
+
+
+
 %include Mesh.i
 
 %include Utils.i

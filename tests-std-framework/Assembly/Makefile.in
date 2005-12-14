@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(AssemblerTest1D_SOURCES) $(AssemblerTest2D_SOURCES) $(BasisCheck_SOURCES) $(IntegralTest1D_SOURCES) $(QuadratureIntegral2D_SOURCES) $(QuadratureTest_SOURCES) $(TransformedIntegral2D_SOURCES)
+SOURCES = $(BasisCheck_SOURCES) $(QuadratureIntegral2D_SOURCES) $(QuadratureTest_SOURCES) $(TransformedIntegral2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -111,10 +111,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = BasisCheck$(EXEEXT) AssemblerTest1D$(EXEEXT) \
-	AssemblerTest2D$(EXEEXT) TransformedIntegral2D$(EXEEXT) \
-	QuadratureIntegral2D$(EXEEXT) IntegralTest1D$(EXEEXT) \
-	QuadratureTest$(EXEEXT)
+noinst_PROGRAMS = $(am__EXEEXT_1) QuadratureIntegral2D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-std-framework/Assembly
@@ -136,22 +133,16 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
+am__EXEEXT_1 = BasisCheck$(EXEEXT) TransformedIntegral2D$(EXEEXT) \
+	QuadratureTest$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am_AssemblerTest1D_OBJECTS =  \
-	AssemblerTest1D-AssemblerTest1D.$(OBJEXT)
-AssemblerTest1D_OBJECTS = $(am_AssemblerTest1D_OBJECTS)
+am_BasisCheck_OBJECTS = BasisCheck-BasisCheck.$(OBJEXT)
+BasisCheck_OBJECTS = $(am_BasisCheck_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_2)
 am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_3)
-am_AssemblerTest2D_OBJECTS =  \
-	AssemblerTest2D-AssemblerTest2D.$(OBJEXT)
-AssemblerTest2D_OBJECTS = $(am_AssemblerTest2D_OBJECTS)
-am_BasisCheck_OBJECTS = BasisCheck-BasisCheck.$(OBJEXT)
-BasisCheck_OBJECTS = $(am_BasisCheck_OBJECTS)
-am_IntegralTest1D_OBJECTS = IntegralTest1D-IntegralTest1D.$(OBJEXT)
-IntegralTest1D_OBJECTS = $(am_IntegralTest1D_OBJECTS)
 am_QuadratureIntegral2D_OBJECTS =  \
 	QuadratureIntegral2D-QuadratureIntegral2D.$(OBJEXT)
 QuadratureIntegral2D_OBJECTS = $(am_QuadratureIntegral2D_OBJECTS)
@@ -168,14 +159,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(AssemblerTest1D_SOURCES) $(AssemblerTest2D_SOURCES) \
-	$(BasisCheck_SOURCES) $(IntegralTest1D_SOURCES) \
-	$(QuadratureIntegral2D_SOURCES) $(QuadratureTest_SOURCES) \
-	$(TransformedIntegral2D_SOURCES)
-DIST_SOURCES = $(AssemblerTest1D_SOURCES) $(AssemblerTest2D_SOURCES) \
-	$(BasisCheck_SOURCES) $(IntegralTest1D_SOURCES) \
-	$(QuadratureIntegral2D_SOURCES) $(QuadratureTest_SOURCES) \
-	$(TransformedIntegral2D_SOURCES)
+SOURCES = $(BasisCheck_SOURCES) $(QuadratureIntegral2D_SOURCES) \
+	$(QuadratureTest_SOURCES) $(TransformedIntegral2D_SOURCES)
+DIST_SOURCES = $(BasisCheck_SOURCES) $(QuadratureIntegral2D_SOURCES) \
+	$(QuadratureTest_SOURCES) $(TransformedIntegral2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -188,12 +175,14 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_CXXTESTS_FALSE = @BUILD_CXXTESTS_FALSE@
+BUILD_CXXTESTS_TRUE = @BUILD_CXXTESTS_TRUE@
 BUILD_EXAMPLES_FALSE = @BUILD_EXAMPLES_FALSE@
 BUILD_EXAMPLES_TRUE = @BUILD_EXAMPLES_TRUE@
+BUILD_LOW_LEVEL_TESTS_FALSE = @BUILD_LOW_LEVEL_TESTS_FALSE@
+BUILD_LOW_LEVEL_TESTS_TRUE = @BUILD_LOW_LEVEL_TESTS_TRUE@
 BUILD_PYTHON_FALSE = @BUILD_PYTHON_FALSE@
 BUILD_PYTHON_TRUE = @BUILD_PYTHON_TRUE@
-BUILD_TESTS_FALSE = @BUILD_TESTS_FALSE@
-BUILD_TESTS_TRUE = @BUILD_TESTS_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = $(TEUCHOS_CFLAGS)
@@ -322,6 +311,7 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
+TEST_SRC = BasisCheck TransformedIntegral2D  QuadratureTest
 BasisCheck_SOURCES = $(srcdir)/BasisCheck.cpp
 BasisCheck_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -331,24 +321,6 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 BasisCheck_CXXFLAGS = $(STD_FWK_INCLUDES)
 BasisCheck_LDADD = $(STD_FWK_LIBS) 
-AssemblerTest1D_SOURCES = $(srcdir)/AssemblerTest1D.cpp
-AssemblerTest1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-AssemblerTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-AssemblerTest1D_LDADD = $(STD_FWK_LIBS) 
-AssemblerTest2D_SOURCES = $(srcdir)/AssemblerTest2D.cpp
-AssemblerTest2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-AssemblerTest2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-AssemblerTest2D_LDADD = $(STD_FWK_LIBS) 
 TransformedIntegral2D_SOURCES = $(srcdir)/TransformedIntegral2D.cpp
 TransformedIntegral2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -367,15 +339,6 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 QuadratureIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 QuadratureIntegral2D_LDADD = $(STD_FWK_LIBS) 
-IntegralTest1D_SOURCES = $(srcdir)/IntegralTest1D.cpp
-IntegralTest1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-IntegralTest1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-IntegralTest1D_LDADD = $(STD_FWK_LIBS) 
 QuadratureTest_SOURCES = $(srcdir)/QuadratureTest.cpp
 QuadratureTest_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -385,6 +348,9 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 QuadratureTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 QuadratureTest_LDADD = $(STD_FWK_LIBS) 
+TEST_EXE = $(TEST_SRC:%=%.exe)
+CHECKTEST_ARGS = $(TESTS)
+TESTS = $(TEST_EXE:%.exe=%.tst)
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -546,18 +512,9 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-AssemblerTest1D$(EXEEXT): $(AssemblerTest1D_OBJECTS) $(AssemblerTest1D_DEPENDENCIES) 
-	@rm -f AssemblerTest1D$(EXEEXT)
-	$(CXXLINK) $(AssemblerTest1D_LDFLAGS) $(AssemblerTest1D_OBJECTS) $(AssemblerTest1D_LDADD) $(LIBS)
-AssemblerTest2D$(EXEEXT): $(AssemblerTest2D_OBJECTS) $(AssemblerTest2D_DEPENDENCIES) 
-	@rm -f AssemblerTest2D$(EXEEXT)
-	$(CXXLINK) $(AssemblerTest2D_LDFLAGS) $(AssemblerTest2D_OBJECTS) $(AssemblerTest2D_LDADD) $(LIBS)
 BasisCheck$(EXEEXT): $(BasisCheck_OBJECTS) $(BasisCheck_DEPENDENCIES) 
 	@rm -f BasisCheck$(EXEEXT)
 	$(CXXLINK) $(BasisCheck_LDFLAGS) $(BasisCheck_OBJECTS) $(BasisCheck_LDADD) $(LIBS)
-IntegralTest1D$(EXEEXT): $(IntegralTest1D_OBJECTS) $(IntegralTest1D_DEPENDENCIES) 
-	@rm -f IntegralTest1D$(EXEEXT)
-	$(CXXLINK) $(IntegralTest1D_LDFLAGS) $(IntegralTest1D_OBJECTS) $(IntegralTest1D_LDADD) $(LIBS)
 QuadratureIntegral2D$(EXEEXT): $(QuadratureIntegral2D_OBJECTS) $(QuadratureIntegral2D_DEPENDENCIES) 
 	@rm -f QuadratureIntegral2D$(EXEEXT)
 	$(CXXLINK) $(QuadratureIntegral2D_LDFLAGS) $(QuadratureIntegral2D_OBJECTS) $(QuadratureIntegral2D_LDADD) $(LIBS)
@@ -574,10 +531,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BasisCheck-BasisCheck.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QuadratureIntegral2D-QuadratureIntegral2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QuadratureTest-QuadratureTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TransformedIntegral2D-TransformedIntegral2D.Po@am__quote@
@@ -596,34 +550,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-AssemblerTest1D-AssemblerTest1D.o: $(srcdir)/AssemblerTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -MT AssemblerTest1D-AssemblerTest1D.o -MD -MP -MF "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" -c -o AssemblerTest1D-AssemblerTest1D.o `test -f '$(srcdir)/AssemblerTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/AssemblerTest1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po"; else rm -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/AssemblerTest1D.cpp' object='AssemblerTest1D-AssemblerTest1D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -c -o AssemblerTest1D-AssemblerTest1D.o `test -f '$(srcdir)/AssemblerTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/AssemblerTest1D.cpp
-
-AssemblerTest1D-AssemblerTest1D.obj: $(srcdir)/AssemblerTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -MT AssemblerTest1D-AssemblerTest1D.obj -MD -MP -MF "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" -c -o AssemblerTest1D-AssemblerTest1D.obj `if test -f '$(srcdir)/AssemblerTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/AssemblerTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/AssemblerTest1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo" "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Po"; else rm -f "$(DEPDIR)/AssemblerTest1D-AssemblerTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/AssemblerTest1D.cpp' object='AssemblerTest1D-AssemblerTest1D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest1D_CXXFLAGS) $(CXXFLAGS) -c -o AssemblerTest1D-AssemblerTest1D.obj `if test -f '$(srcdir)/AssemblerTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/AssemblerTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/AssemblerTest1D.cpp'; fi`
-
-AssemblerTest2D-AssemblerTest2D.o: $(srcdir)/AssemblerTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest2D_CXXFLAGS) $(CXXFLAGS) -MT AssemblerTest2D-AssemblerTest2D.o -MD -MP -MF "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Tpo" -c -o AssemblerTest2D-AssemblerTest2D.o `test -f '$(srcdir)/AssemblerTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/AssemblerTest2D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Tpo" "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Po"; else rm -f "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/AssemblerTest2D.cpp' object='AssemblerTest2D-AssemblerTest2D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest2D_CXXFLAGS) $(CXXFLAGS) -c -o AssemblerTest2D-AssemblerTest2D.o `test -f '$(srcdir)/AssemblerTest2D.cpp' || echo '$(srcdir)/'`$(srcdir)/AssemblerTest2D.cpp
-
-AssemblerTest2D-AssemblerTest2D.obj: $(srcdir)/AssemblerTest2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest2D_CXXFLAGS) $(CXXFLAGS) -MT AssemblerTest2D-AssemblerTest2D.obj -MD -MP -MF "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Tpo" -c -o AssemblerTest2D-AssemblerTest2D.obj `if test -f '$(srcdir)/AssemblerTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/AssemblerTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/AssemblerTest2D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Tpo" "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Po"; else rm -f "$(DEPDIR)/AssemblerTest2D-AssemblerTest2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/AssemblerTest2D.cpp' object='AssemblerTest2D-AssemblerTest2D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AssemblerTest2D_CXXFLAGS) $(CXXFLAGS) -c -o AssemblerTest2D-AssemblerTest2D.obj `if test -f '$(srcdir)/AssemblerTest2D.cpp'; then $(CYGPATH_W) '$(srcdir)/AssemblerTest2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/AssemblerTest2D.cpp'; fi`
-
 BasisCheck-BasisCheck.o: $(srcdir)/BasisCheck.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BasisCheck_CXXFLAGS) $(CXXFLAGS) -MT BasisCheck-BasisCheck.o -MD -MP -MF "$(DEPDIR)/BasisCheck-BasisCheck.Tpo" -c -o BasisCheck-BasisCheck.o `test -f '$(srcdir)/BasisCheck.cpp' || echo '$(srcdir)/'`$(srcdir)/BasisCheck.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BasisCheck-BasisCheck.Tpo" "$(DEPDIR)/BasisCheck-BasisCheck.Po"; else rm -f "$(DEPDIR)/BasisCheck-BasisCheck.Tpo"; exit 1; fi
@@ -637,20 +563,6 @@ BasisCheck-BasisCheck.obj: $(srcdir)/BasisCheck.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/BasisCheck.cpp' object='BasisCheck-BasisCheck.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BasisCheck_CXXFLAGS) $(CXXFLAGS) -c -o BasisCheck-BasisCheck.obj `if test -f '$(srcdir)/BasisCheck.cpp'; then $(CYGPATH_W) '$(srcdir)/BasisCheck.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/BasisCheck.cpp'; fi`
-
-IntegralTest1D-IntegralTest1D.o: $(srcdir)/IntegralTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -MT IntegralTest1D-IntegralTest1D.o -MD -MP -MF "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" -c -o IntegralTest1D-IntegralTest1D.o `test -f '$(srcdir)/IntegralTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/IntegralTest1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po"; else rm -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/IntegralTest1D.cpp' object='IntegralTest1D-IntegralTest1D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -c -o IntegralTest1D-IntegralTest1D.o `test -f '$(srcdir)/IntegralTest1D.cpp' || echo '$(srcdir)/'`$(srcdir)/IntegralTest1D.cpp
-
-IntegralTest1D-IntegralTest1D.obj: $(srcdir)/IntegralTest1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -MT IntegralTest1D-IntegralTest1D.obj -MD -MP -MF "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" -c -o IntegralTest1D-IntegralTest1D.obj `if test -f '$(srcdir)/IntegralTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/IntegralTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/IntegralTest1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo" "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Po"; else rm -f "$(DEPDIR)/IntegralTest1D-IntegralTest1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/IntegralTest1D.cpp' object='IntegralTest1D-IntegralTest1D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IntegralTest1D_CXXFLAGS) $(CXXFLAGS) -c -o IntegralTest1D-IntegralTest1D.obj `if test -f '$(srcdir)/IntegralTest1D.cpp'; then $(CYGPATH_W) '$(srcdir)/IntegralTest1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/IntegralTest1D.cpp'; fi`
 
 QuadratureIntegral2D-QuadratureIntegral2D.o: $(srcdir)/QuadratureIntegral2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(QuadratureIntegral2D_CXXFLAGS) $(CXXFLAGS) -MT QuadratureIntegral2D-QuadratureIntegral2D.o -MD -MP -MF "$(DEPDIR)/QuadratureIntegral2D-QuadratureIntegral2D.Tpo" -c -o QuadratureIntegral2D-QuadratureIntegral2D.o `test -f '$(srcdir)/QuadratureIntegral2D.cpp' || echo '$(srcdir)/'`$(srcdir)/QuadratureIntegral2D.cpp; \
@@ -743,6 +655,79 @@ GTAGS:
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list='$(TESTS)'; \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		echo "XPASS: $$tst"; \
+	      ;; \
+	      *) \
+		echo "PASS: $$tst"; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xfail=`expr $$xfail + 1`; \
+		echo "XFAIL: $$tst"; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		echo "FAIL: $$tst"; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      echo "SKIP: $$tst"; \
+	    fi; \
+	  done; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="All $$all tests passed"; \
+	    else \
+	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all tests failed"; \
+	    else \
+	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    skipped="($$skip tests were not run)"; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  echo "$$dashes"; \
+	  echo "$$banner"; \
+	  test -z "$$skipped" || echo "$$skipped"; \
+	  test -z "$$report" || echo "$$report"; \
+	  echo "$$dashes"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
+
 distdir: $(DISTFILES)
 	$(mkdir_p) $(distdir)/../..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
@@ -772,6 +757,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
@@ -848,17 +834,29 @@ ps-am:
 
 uninstall-am: uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+.PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
+	clean-generic clean-noinstPROGRAMS ctags distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-info-am
 
+
+%.tst : %.exe
+	./$< > $@ 2>&1 
+	echo "done" $@
+
+tests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+serialtests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 # ------------------------------------------------------------------------
 #

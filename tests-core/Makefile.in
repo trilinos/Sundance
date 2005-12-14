@@ -96,7 +96,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = SymbolicTests
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALTERNATE_AR = @ALTERNATE_AR@
@@ -107,12 +107,14 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_CXXTESTS_FALSE = @BUILD_CXXTESTS_FALSE@
+BUILD_CXXTESTS_TRUE = @BUILD_CXXTESTS_TRUE@
 BUILD_EXAMPLES_FALSE = @BUILD_EXAMPLES_FALSE@
 BUILD_EXAMPLES_TRUE = @BUILD_EXAMPLES_TRUE@
+BUILD_LOW_LEVEL_TESTS_FALSE = @BUILD_LOW_LEVEL_TESTS_FALSE@
+BUILD_LOW_LEVEL_TESTS_TRUE = @BUILD_LOW_LEVEL_TESTS_TRUE@
 BUILD_PYTHON_FALSE = @BUILD_PYTHON_FALSE@
 BUILD_PYTHON_TRUE = @BUILD_PYTHON_TRUE@
-BUILD_TESTS_FALSE = @BUILD_TESTS_FALSE@
-BUILD_TESTS_TRUE = @BUILD_TESTS_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -235,7 +237,9 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-SUBDIRS = SymbolicTests
+@BUILD_LOW_LEVEL_TESTS_TRUE@SUBDIRS = SymbolicTests
+@BUILD_LOW_LEVEL_TESTS_TRUE@LL_TESTS = (cd SymbolicTests; $(MAKE) tests)
+@BUILD_LOW_LEVEL_TESTS_TRUE@LL_SERIALTESTS = (cd SymbolicTests; $(MAKE) serialtests)
 all: all-recursive
 
 .SUFFIXES:
@@ -521,6 +525,12 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-info-am
 
+
+tests:
+	$(LL_TESTS)
+
+serialtests:
+	$(LL_SERIALTESTS)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

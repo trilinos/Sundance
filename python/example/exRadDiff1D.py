@@ -24,7 +24,7 @@ from noxSolver import solverParams
 def main():
 
   vecType = EpetraVectorType()
-  mesher  = PartitionedLineMesher(0.0, 1.0, 50);
+  mesher  = PartitionedLineMesher(0.0, 1.0, 400*getNProc());
   mesh = mesher.getMesh();
   basis = Lagrange(1)
 
@@ -58,7 +58,12 @@ def main():
 
   diff = (u0 - exactSoln)**2
 
-  print "error = " , math.sqrt(diff.integral(interior, mesh, quad))
+  error = math.sqrt(diff.integral(interior, mesh, quad))
+  print "error = " , error
+
+  tol = 1.0e-5
+  passFailTest(error, tol)
+  
   
   
 # This is a standard Python construct.  Put the code to be executed in a

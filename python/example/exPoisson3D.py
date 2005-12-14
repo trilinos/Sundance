@@ -42,7 +42,7 @@ def main():
     side6 = faces.labeledSubset(6);
 
     exactSoln = (x + 1.0)*x - 1.0/4.0;
-    
+
     eqn = Integral(interior, (grad*v)*(grad*u) +2.0*v, quad2)
     bc = EssentialBC(side4, v*(u-exactSoln), quad4) \
         + EssentialBC(side6, v*(u-exactSoln), quad4);
@@ -72,8 +72,7 @@ def main():
     diff = (soln - exactSoln)**2.0
     diffDeriv = (grad*(soln - exactSoln))**2.0
 
-    print "error = " , math.sqrt(diff.integral(interior, mesh, quad4))
-    print "deriv error = " , math.sqrt(diffDeriv.integral(interior, mesh, quad4))
+
 
 
     writer = VTKWriter("Poisson2D");
@@ -81,7 +80,17 @@ def main():
     writer.addField("u0", soln)
     writer.write()
 
+    error = math.sqrt(diff.integral(interior, mesh, quad4))
+    derivError = math.sqrt(diffDeriv.integral(interior, mesh, quad4))
+    print "error = " , error
+    print "deriv error = " , derivError
 
+    error = max(error, derivError)
+
+    print "max err = ", error
+
+    tol = 1.0e-13
+    passFailTest(error, tol)
 
 
 

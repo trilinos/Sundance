@@ -49,7 +49,7 @@ Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
     {
       return integrand;
     }
-  RefCountPtr<QuadratureFamilyStub> quad = rcp(new QuadratureFamilyStub(0));
+  RefCountPtr<QuadratureFamilyStub> quad = QuadratureFamilyStub::defaultQuadrature();
   return new SumOfBCs(domain.ptr(), integrand, quad);
 }
 

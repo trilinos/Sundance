@@ -111,11 +111,10 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = SimpleEval$(EXEEXT) PolynomialTest$(EXEEXT) \
-	TestEval$(EXEEXT) StdTransformation$(EXEEXT) \
-	VecOpTest$(EXEEXT) ScalabilityTest$(EXEEXT) \
-	DepthScalabilityTest$(EXEEXT) VecTimings$(EXEEXT) \
-	VariationTest$(EXEEXT)
+noinst_PROGRAMS = $(am__EXEEXT_1) SimpleEval$(EXEEXT) \
+	PolynomialTest$(EXEEXT) StdTransformation$(EXEEXT) \
+	ScalabilityTest$(EXEEXT) DepthScalabilityTest$(EXEEXT) \
+	VecTimings$(EXEEXT) VariationTest$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-core/SymbolicTests
@@ -137,6 +136,7 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
+am__EXEEXT_1 = TestEval$(EXEEXT) VecOpTest$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_DepthScalabilityTest_OBJECTS =  \
 	DepthScalabilityTest-DepthScalabilityTest.$(OBJEXT)
@@ -193,12 +193,14 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_CXXTESTS_FALSE = @BUILD_CXXTESTS_FALSE@
+BUILD_CXXTESTS_TRUE = @BUILD_CXXTESTS_TRUE@
 BUILD_EXAMPLES_FALSE = @BUILD_EXAMPLES_FALSE@
 BUILD_EXAMPLES_TRUE = @BUILD_EXAMPLES_TRUE@
+BUILD_LOW_LEVEL_TESTS_FALSE = @BUILD_LOW_LEVEL_TESTS_FALSE@
+BUILD_LOW_LEVEL_TESTS_TRUE = @BUILD_LOW_LEVEL_TESTS_TRUE@
 BUILD_PYTHON_FALSE = @BUILD_PYTHON_FALSE@
 BUILD_PYTHON_TRUE = @BUILD_PYTHON_TRUE@
-BUILD_TESTS_FALSE = @BUILD_TESTS_FALSE@
-BUILD_TESTS_TRUE = @BUILD_TESTS_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = $(TEUCHOS_CFLAGS)
@@ -327,6 +329,7 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
+TEST_SRC = TestEval VecOpTest
 LIBDEPS = $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a 
 
@@ -384,6 +387,9 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 StdTransformation_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 StdTransformation_LDADD = $(CORE_LIBS) 
+TEST_EXE = $(TEST_SRC:%=%.exe)
+TESTS = $(TEST_EXE:%.exe=%.tst)
+CHECKTEST_ARGS = $(TESTS)
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -778,6 +784,79 @@ GTAGS:
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
+check-TESTS: $(TESTS)
+	@failed=0; all=0; xfail=0; xpass=0; skip=0; \
+	srcdir=$(srcdir); export srcdir; \
+	list='$(TESTS)'; \
+	if test -n "$$list"; then \
+	  for tst in $$list; do \
+	    if test -f ./$$tst; then dir=./; \
+	    elif test -f $$tst; then dir=; \
+	    else dir="$(srcdir)/"; fi; \
+	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xpass=`expr $$xpass + 1`; \
+		failed=`expr $$failed + 1`; \
+		echo "XPASS: $$tst"; \
+	      ;; \
+	      *) \
+		echo "PASS: $$tst"; \
+	      ;; \
+	      esac; \
+	    elif test $$? -ne 77; then \
+	      all=`expr $$all + 1`; \
+	      case " $(XFAIL_TESTS) " in \
+	      *" $$tst "*) \
+		xfail=`expr $$xfail + 1`; \
+		echo "XFAIL: $$tst"; \
+	      ;; \
+	      *) \
+		failed=`expr $$failed + 1`; \
+		echo "FAIL: $$tst"; \
+	      ;; \
+	      esac; \
+	    else \
+	      skip=`expr $$skip + 1`; \
+	      echo "SKIP: $$tst"; \
+	    fi; \
+	  done; \
+	  if test "$$failed" -eq 0; then \
+	    if test "$$xfail" -eq 0; then \
+	      banner="All $$all tests passed"; \
+	    else \
+	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
+	    fi; \
+	  else \
+	    if test "$$xpass" -eq 0; then \
+	      banner="$$failed of $$all tests failed"; \
+	    else \
+	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
+	    fi; \
+	  fi; \
+	  dashes="$$banner"; \
+	  skipped=""; \
+	  if test "$$skip" -ne 0; then \
+	    skipped="($$skip tests were not run)"; \
+	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$skipped"; \
+	  fi; \
+	  report=""; \
+	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
+	    report="Please report to $(PACKAGE_BUGREPORT)"; \
+	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
+	      dashes="$$report"; \
+	  fi; \
+	  dashes=`echo "$$dashes" | sed s/./=/g`; \
+	  echo "$$dashes"; \
+	  echo "$$banner"; \
+	  test -z "$$skipped" || echo "$$skipped"; \
+	  test -z "$$report" || echo "$$report"; \
+	  echo "$$dashes"; \
+	  test "$$failed" -eq 0; \
+	else :; fi
+
 distdir: $(DISTFILES)
 	$(mkdir_p) $(distdir)/../..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
@@ -807,6 +886,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
@@ -883,17 +963,29 @@ ps-am:
 
 uninstall-am: uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+.PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
+	clean-generic clean-noinstPROGRAMS ctags distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-info-am
 
+
+%.tst : %.exe
+	./$< > $@ 2>&1 
+	echo "done" $@
+
+tests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+serialtests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 # ------------------------------------------------------------------------
 #
@@ -902,35 +994,6 @@ uninstall-am: uninstall-info-am
 include $(top_builddir)/Makefile.site.sundance
 include $(top_builddir)/Makefile.export.TSFExtended
 include $(TRILINOS_DIR)/packages/teuchos/Makefile.export
-
-#ListEval_SOURCES = $(srcdir)/ListEval.cpp 
-#
-#ListEval_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a 
-#
-#ListEval_CXXFLAGS = $(CORE_INCLUDES)
-#
-#ListEval_LDADD = $(CORE_LIBS) 
-#
-#
-#Integrals_SOURCES = $(srcdir)/Integrals.cpp 
-#
-#Integrals_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a 
-#
-#Integrals_CXXFLAGS = $(CORE_INCLUDES)
-#
-#Integrals_LDADD = $(CORE_LIBS)
-#
-#
-#EvalCache_SOURCES = $(srcdir)/EvalCache.cpp 
-#
-#EvalCache_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a 
-#
-#EvalCache_CXXFLAGS = $(CORE_INCLUDES)
-#
-#EvalCache_LDADD = $(CORE_LIBS) 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

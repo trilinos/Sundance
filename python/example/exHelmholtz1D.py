@@ -19,8 +19,9 @@ def main():
 
   vecType = EpetraVectorType()
   pi = 4.0*math.atan(1.0)
-  nx = 40
-  mesher  = PartitionedLineMesher(0.0, pi/4.0, nx);
+  nx = 200
+  nProc = getNProc()
+  mesher  = PartitionedLineMesher(0.0, pi/4.0, nx*nProc);
   mesh = mesher.getMesh();
   basis = Lagrange(2)
 
@@ -30,7 +31,7 @@ def main():
   dx = Derivative(0);
   
   quad = GaussianQuadrature(2)
-  quad6 = GaussianQuadrature(6)
+  quad8 = GaussianQuadrature(8)
   
   lpp = LeftPointPredicate()
   
@@ -52,8 +53,16 @@ def main():
 
   diff = pow(soln - exactSoln, 2.0)
 
-  print "error = " , math.sqrt(diff.integral(interior, mesh, quad))
-  
+  error = math.sqrt(diff.integral(interior, mesh, quad8))
+  print "error = " , error
+
+  tol = 1.0e-8
+  passFailTest(error, tol)
+
+  mpiSynchronize()
+  print "proc ", getRank(), " is done"
+  mpiSynchronize()
+
   
 # This is a standard Python construct.  Put the code to be executed in a
 # function [typically main()] and then use the following logic to call the

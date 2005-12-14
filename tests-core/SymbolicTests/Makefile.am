@@ -31,9 +31,10 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = SimpleEval PolynomialTest \
-TestEval StdTransformation VecOpTest \
-ScalabilityTest DepthScalabilityTest VecTimings VariationTest
+TEST_SRC = TestEval VecOpTest
+
+noinst_PROGRAMS = $(TEST_SRC) SimpleEval PolynomialTest \
+StdTransformation ScalabilityTest DepthScalabilityTest VecTimings VariationTest
 
 
 LIBDEPS = $(top_builddir)/src-core/libsundanceCore.a \
@@ -140,35 +141,22 @@ StdTransformation_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 StdTransformation_LDADD = $(CORE_LIBS) 
 
 
-#ListEval_SOURCES = $(srcdir)/ListEval.cpp 
-#
-#ListEval_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a 
-#
-#ListEval_CXXFLAGS = $(CORE_INCLUDES)
-#
-#ListEval_LDADD = $(CORE_LIBS) 
-#
-#
-#Integrals_SOURCES = $(srcdir)/Integrals.cpp 
-#
-#Integrals_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a 
-#
-#Integrals_CXXFLAGS = $(CORE_INCLUDES)
-#
-#Integrals_LDADD = $(CORE_LIBS)
-#
-#
-#EvalCache_SOURCES = $(srcdir)/EvalCache.cpp 
-#
-#EvalCache_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a 
-#
-#EvalCache_CXXFLAGS = $(CORE_INCLUDES)
-#
-#EvalCache_LDADD = $(CORE_LIBS) 
+TEST_EXE = $(TEST_SRC:%=%.exe)
+TESTS = $(TEST_EXE:%.exe=%.tst)
 
+CHECKTEST_ARGS = $(TESTS)
+
+%.tst : %.exe
+	./$< > $@ 2>&1 
+	echo "done" $@
+
+tests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+serialtests:
+	$(MAKE) $(TESTS)
+	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 
 include $(top_srcdir)/Makefile.common
