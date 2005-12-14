@@ -34,7 +34,7 @@ int main(int argc, void** argv)
        * 
        * Line 1: number of nodes
        * Lines 2 through N+1: data */
-      ifstream is("../../examples-tutorial/fieldData.dat");
+      ifstream is("../../../examples-tutorial/data/fieldData.dat");
       int nNodes;
       is >> nNodes;
 

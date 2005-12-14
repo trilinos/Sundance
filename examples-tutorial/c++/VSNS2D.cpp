@@ -7,7 +7,6 @@ using SundanceCore::List;
 
 int main(int argc, void** argv)
 {
-  
   try
 		{
       MPISession::init(&argc, &argv);
@@ -19,7 +18,7 @@ int main(int argc, void** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../examples-tutorial/square128.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/square128.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -73,14 +72,14 @@ int main(int argc, void** argv)
 
       BasisFamily L1 = new Lagrange(1);
       DiscreteSpace discSpace(mesh, List(L1, L1), vecType);
-      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
+      Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
 
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F 
         = new NonlinearProblem(mesh, eqn, bc, List(vPsi, vOmega),
                                List(psi, omega), u0, vecType);
 
-      ParameterXMLFileReader reader("../../examples-tutorial/nox.xml");
+      ParameterXMLFileReader reader("../../../examples-tutorial/data/nox-tsf.xml");
       ParameterList noxParams = reader.getParameters();
 
       NOXSolver solver(noxParams, F);

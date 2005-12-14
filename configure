@@ -5819,7 +5819,7 @@ fi;
 # Output files
 # ------------------------------------------------------------------------
 
-                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile Makefile.internal Makefile.export Makefile.export.TSFExtended Makefile.site.sundance examples-tutorial/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-solvers/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile python/Makefile python/src/Makefile python/src/SUNDANCE_HOME_DIR python/src/__init__.py python/src/.deps/dummy python/example/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-solvers/Makefile tests-solvers/VectorTests/Makefile tests-solvers/OperatorTests/Makefile tests-solvers/SolverTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
+                                                                                                                                                                                                                                                                                                                                                              ac_config_files="$ac_config_files Makefile Makefile.internal Makefile.export Makefile.export.TSFExtended Makefile.site.sundance examples-tutorial/Makefile examples-tutorial/c++/Makefile src-utils/Makefile src-core/Makefile src-std-mesh/Makefile src-std-framework/Makefile src-solvers/Makefile src-std-framework/SundanceDefaultPath.hpp src-xml/Makefile python/Makefile python/src/Makefile python/src/SUNDANCE_HOME_DIR python/src/__init__.py python/src/.deps/dummy python/example/Makefile tests-utils/Makefile tests-utils/Functors/Makefile tests-utils/Maps/Makefile tests-core/Makefile tests-core/SymbolicTests/Makefile tests-solvers/Makefile tests-solvers/VectorTests/Makefile tests-solvers/OperatorTests/Makefile tests-solvers/SolverTests/Makefile tests-std-mesh/Makefile tests-std-mesh/Simple/Makefile tests-std-mesh/Readers/Makefile tests-std-framework/Makefile tests-std-framework/Assembly/Makefile tests-std-framework/Problem/Makefile"
 
 
 
@@ -6527,6 +6527,7 @@ do
   "Makefile.export.TSFExtended" ) CONFIG_FILES="$CONFIG_FILES Makefile.export.TSFExtended" ;;
   "Makefile.site.sundance" ) CONFIG_FILES="$CONFIG_FILES Makefile.site.sundance" ;;
   "examples-tutorial/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples-tutorial/Makefile" ;;
+  "examples-tutorial/c++/Makefile" ) CONFIG_FILES="$CONFIG_FILES examples-tutorial/c++/Makefile" ;;
   "src-utils/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-utils/Makefile" ;;
   "src-core/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-core/Makefile" ;;
   "src-std-mesh/Makefile" ) CONFIG_FILES="$CONFIG_FILES src-std-mesh/Makefile" ;;

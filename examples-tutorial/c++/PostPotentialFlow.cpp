@@ -52,7 +52,7 @@ int main(int argc, void** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../examples-tutorial/post.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/post.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
 
@@ -92,7 +92,7 @@ int main(int argc, void** argv)
 
 
       /* Read the parameters for the linear solver from an XML file */
-      ParameterXMLFileReader reader("../../examples-tutorial/bicgstab.xml");
+      ParameterXMLFileReader reader("../../../data/examples-tutorial/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
 
       LinearSolver<double> linSolver 

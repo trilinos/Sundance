@@ -25,7 +25,8 @@ int main(int argc, void** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../examples-tutorial/box-0.05.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/box-0.05.ncdf", 
+                                     meshType);
       Mesh mesh = mesher.getMesh();
 
 
@@ -116,7 +117,7 @@ int main(int argc, void** argv)
 
       
 
-      ParameterXMLFileReader reader("../../examples-tutorial/nox.xml");
+      ParameterXMLFileReader reader("../../../examples-tutorial/data/nox-aztec.xml");
       ParameterList noxParams = reader.getParameters();
 
       NOXSolver solver(noxParams, F);

@@ -52,7 +52,7 @@ int main(int argc, void** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/vessel2D.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("../../../../tests-std-framework/Problem/vessel2D.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
 

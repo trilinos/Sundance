@@ -43,51 +43,6 @@
 # 
 # ************************************************************************
 #@HEADER
-
-#@HEADER
-# ************************************************************************
-# 
-#                               Sundance
-#                 Copyright (2002) Sandia Corporation
-# 
-#
-# Copyright (2001) Sandia Corportation. Under the terms of Contract 
-# DE-AC04-94AL85000, there is a non-exclusive license for use of this 
-# work by or on behalf of the U.S. Government.  Export of this program
-# may require a license from the United States Government.
-# 
-# NOTICE:  The United States Government is granted for itself and others
-# acting on its behalf a paid-up, nonexclusive, irrevocable worldwide
-# license in ths data to reproduce, prepare derivative works, and
-# perform publicly and display publicly.  Beginning five (5) years from
-# July 25, 2001, the United States Government is granted for itself and
-# others acting on its behalf a paid-up, nonexclusive, irrevocable
-# worldwide license in this data to reproduce, prepare derivative works,
-# distribute copies to the public, perform publicly and display
-# publicly, and to permit others to do so.
-# 
-# NEITHER THE UNITED STATES GOVERNMENT, NOR THE UNITED STATES DEPARTMENT
-# OF ENERGY, NOR SANDIA CORPORATION, NOR ANY OF THEIR EMPLOYEES, MAKES
-# ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR
-# RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY
-# INFORMATION, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS
-# THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
-# 
-# ************************************************************************
-#@HEADER
-
-# ------------------------------------------------------------------------
-#
-# Makefile.common is intended to be included by the subdirectory makefiles.
-# In this file, we define standard macros for include paths, library paths,
-# and library names used by Sundance. 
-#
-# This file is NOT modifed by automake or autoconf. 
-#
-# ------------------------------------------------------------------------
-
-SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) $(VSNS2D_SOURCES)
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -111,14 +66,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = PostPotentialFlow$(EXEEXT) \
-	RadiationDiffusion1D$(EXEEXT) PressureVessel2D$(EXEEXT) \
-	VSNS2D$(EXEEXT) Exo2Triangle$(EXEEXT) \
-	PressureStabilizedNS2D$(EXEEXT) \
-	PressureStabilizedNS3D$(EXEEXT) ReadField$(EXEEXT)
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/Makefile.common
 subdir = examples-tutorial
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
 	$(top_srcdir)/config/ac_python_module.m4 \
@@ -137,53 +86,17 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
-PROGRAMS = $(noinst_PROGRAMS)
-am_Exo2Triangle_OBJECTS = Exo2Triangle-Exo2Triangle.$(OBJEXT)
-Exo2Triangle_OBJECTS = $(am_Exo2Triangle_OBJECTS)
-am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_2)
-am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_3)
-am_PostPotentialFlow_OBJECTS =  \
-	PostPotentialFlow-PostPotentialFlow.$(OBJEXT)
-PostPotentialFlow_OBJECTS = $(am_PostPotentialFlow_OBJECTS)
-am_PressureStabilizedNS2D_OBJECTS =  \
-	PressureStabilizedNS2D-PressureStabilizedNS2D.$(OBJEXT)
-PressureStabilizedNS2D_OBJECTS = $(am_PressureStabilizedNS2D_OBJECTS)
-am_PressureStabilizedNS3D_OBJECTS =  \
-	PressureStabilizedNS3D-PressureStabilizedNS3D.$(OBJEXT)
-PressureStabilizedNS3D_OBJECTS = $(am_PressureStabilizedNS3D_OBJECTS)
-am_PressureVessel2D_OBJECTS =  \
-	PressureVessel2D-PressureVessel2D.$(OBJEXT)
-PressureVessel2D_OBJECTS = $(am_PressureVessel2D_OBJECTS)
-am_RadiationDiffusion1D_OBJECTS =  \
-	RadiationDiffusion1D-RadiationDiffusion1D.$(OBJEXT)
-RadiationDiffusion1D_OBJECTS = $(am_RadiationDiffusion1D_OBJECTS)
-am_ReadField_OBJECTS = ReadField-ReadField.$(OBJEXT)
-ReadField_OBJECTS = $(am_ReadField_OBJECTS)
-am_VSNS2D_OBJECTS = VSNS2D-VSNS2D.$(OBJEXT)
-VSNS2D_OBJECTS = $(am_VSNS2D_OBJECTS)
-DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-solvers -I$(top_builddir)/src-utils
-depcomp = $(SHELL) $(top_srcdir)/config/depcomp
-am__depfiles_maybe = depfiles
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
-SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) \
-	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
-	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
-	$(VSNS2D_SOURCES)
-DIST_SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) \
-	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
-	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
-	$(VSNS2D_SOURCES)
+SOURCES =
+DIST_SOURCES =
+RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+	html-recursive info-recursive install-data-recursive \
+	install-exec-recursive install-info-recursive \
+	install-recursive installcheck-recursive installdirs-recursive \
+	pdf-recursive ps-recursive uninstall-info-recursive \
+	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALTERNATE_AR = @ALTERNATE_AR@
@@ -204,13 +117,13 @@ BUILD_PYTHON_FALSE = @BUILD_PYTHON_FALSE@
 BUILD_PYTHON_TRUE = @BUILD_PYTHON_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = $(TEUCHOS_CFLAGS)
+CFLAGS = @CFLAGS@
 CHACO_LIB = @CHACO_LIB@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = $(TEUCHOS_CXXFLAGS)
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -218,9 +131,9 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
-EXEEXT = .exe
+EXEEXT = @EXEEXT@
 F77 = @F77@
-FFLAGS = $(TEUCHOS_FFLAGS)
+FFLAGS = @FFLAGS@
 FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 FIAT_STR = @FIAT_STR@
 GNU_HAVE_SWIG = @GNU_HAVE_SWIG@
@@ -234,7 +147,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LDFLAGS = $(TEUCHOS_LDFLAGS)
+LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
@@ -261,13 +174,7 @@ PYTHON_LSPEC = @PYTHON_LSPEC@
 PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_USE_FALSE = @PYTHON_USE_FALSE@
 PYTHON_USE_TRUE = @PYTHON_USE_TRUE@
-
-# ------------------------------------------------------------------------
-#
-# include macros specified by Trilinos
-#
-# ------------------------------------------------------------------------
-RANLIB = $(TEUCHOS_RANLIB)
+RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -330,208 +237,11 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-PostPotentialFlow_SOURCES = $(srcdir)/PostPotentialFlow.cpp
-PostPotentialFlow_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-PostPotentialFlow_CXXFLAGS = $(STD_FWK_INCLUDES)
-PostPotentialFlow_LDADD = $(STD_FWK_LIBS) 
-Exo2Triangle_SOURCES = $(srcdir)/Exo2Triangle.cpp
-Exo2Triangle_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-Exo2Triangle_CXXFLAGS = $(STD_FWK_INCLUDES)
-Exo2Triangle_LDADD = $(STD_FWK_LIBS) 
-RadiationDiffusion1D_SOURCES = $(srcdir)/RadiationDiffusion1D.cpp
-RadiationDiffusion1D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-RadiationDiffusion1D_CXXFLAGS = $(STD_FWK_INCLUDES)
-RadiationDiffusion1D_LDADD = $(STD_FWK_LIBS) 
-PressureVessel2D_SOURCES = $(srcdir)/PressureVessel2D.cpp
-PressureVessel2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-PressureVessel2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-PressureVessel2D_LDADD = $(STD_FWK_LIBS) 
-VSNS2D_SOURCES = $(srcdir)/VSNS2D.cpp
-VSNS2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-VSNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-VSNS2D_LDADD = $(STD_FWK_LIBS) 
-PressureStabilizedNS2D_SOURCES = $(srcdir)/PressureStabilizedNS2D.cpp
-PressureStabilizedNS2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-PressureStabilizedNS2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-PressureStabilizedNS2D_LDADD = $(STD_FWK_LIBS) 
-PressureStabilizedNS3D_SOURCES = $(srcdir)/PressureStabilizedNS3D.cpp
-PressureStabilizedNS3D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-PressureStabilizedNS3D_CXXFLAGS = $(STD_FWK_INCLUDES)
-PressureStabilizedNS3D_LDADD = $(STD_FWK_LIBS) 
-ReadField_SOURCES = $(srcdir)/ReadField.cpp
-ReadField_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-ReadField_CXXFLAGS = $(STD_FWK_INCLUDES)
-ReadField_LDADD = $(STD_FWK_LIBS) 
-SUNDANCE_DIR = $(top_srcdir)
-
-# ------------------------------------------------------------------------
-#
-# Specify libraries and library search paths. 
-# 
-# - SUNDANCE_LIBS and TRILINOS_LIBS are defined below. 
-# - LAPACK_LIBS, BLAS_LIBS, and FLIBS are defined automatically by autoconf. 
-#
-# ------------------------------------------------------------------------
-SOLVERS_LIB_PATH = \
--L$(top_builddir)/src-solvers
-
-SOLVERS_INCLUDE_PATH = \
--I$(top_builddir)/src-solvers \
--I$(top_srcdir)/src-solvers/Vectors \
--I$(top_srcdir)/src-solvers/Utils \
--I$(top_srcdir)/src-solvers/Concrete \
--I$(top_srcdir)/src-solvers/Operators \
--I$(top_srcdir)/src-solvers/LinearSolvers \
--I$(top_srcdir)/src-solvers/NonlinearSolvers \
--I$(top_srcdir)/src-solvers/Preconditioners \
--I$(top_srcdir)/src-solvers/Adapters \
--I$(top_srcdir)/src-solvers/Testing \
--I$(top_builddir)/src-solvers/Vectors \
--I$(top_builddir)/src-solvers/Utils \
--I$(top_builddir)/src-solvers/Concrete \
--I$(top_builddir)/src-solvers/Operators \
--I$(top_builddir)/src-solvers/LinearSolvers \
--I$(top_builddir)/src-solvers/NonlinearSolvers \
--I$(top_builddir)/src-solvers/Preconditioners \
--I$(top_builddir)/src-solvers/Testing \
--I$(top_builddir)/src-solvers/Adapters
-
-SOLVERS_LIBS = $(SOLVERS_LIB_PATH) -lTSFExtended $(TRILINOS_LIBS) $(SUNDIALS_LIBS)
-SOLVERS_INCLUDES = $(SOLVERS_INCLUDE_PATH) $(TRILINOS_INCLUDES) $(SUNDIALS_INCLUDES)
-UTIL_LIB_PATH = -L$(top_builddir)/src-utils $(SOLVERS_LIB_PATH) 
-UTIL_LIBS = $(UTIL_LIB_PATH) -lsundanceUtils $(SOLVERS_LIBS)
-UTIL_INCLUDES = \
--I$(top_builddir)/src-utils \
--I$(top_srcdir)/src-utils/Utilities \
--I$(top_builddir)/src-utils/Utilities \
-$(SOLVERS_INCLUDES)
-
-CORE_LIBS = $(CORE_LIB_PATH) -lsundanceCore $(UTIL_LIBS)
-CORE_LIB_PATH = \
--L$(top_builddir)/src-core 
-
-CORE_INCLUDE_PATH = \
--I$(top_builddir)/src-core \
--I$(top_srcdir)/src-core/UserExprs \
--I$(top_srcdir)/src-core/InternalExprs \
--I$(top_srcdir)/src-core/Evaluation \
--I$(top_srcdir)/src-core/FrameworkInterface \
--I$(top_srcdir)/src-core/SymbolicTransformations \
--I$(top_srcdir)/src-core/TestingUtilities \
--I$(top_builddir)/src-core/UserExprs \
--I$(top_builddir)/src-core/InternalExprs \
--I$(top_builddir)/src-core/Evaluation \
--I$(top_builddir)/src-core/FrameworkInterface \
--I$(top_builddir)/src-core/TestingUtilities \
--I$(top_builddir)/src-core/SymbolicTransformations 
-
-CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) 
-STD_MESH_LIB_PATH = \
--L$(top_builddir)/src-std-mesh 
-
-STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(UTIL_LIBS)
-STD_MESH_INCLUDE_PATH = \
--I$(top_builddir)/src-std-mesh \
--I$(top_srcdir)/src-std-mesh/Concrete \
--I$(top_srcdir)/src-std-mesh/Interface \
--I$(top_srcdir)/src-std-mesh/Sources \
--I$(top_srcdir)/src-std-mesh/Transformations \
--I$(top_srcdir)/src-std-mesh/Writers \
--I$(top_builddir)/src-std-mesh/Concrete \
--I$(top_builddir)/src-std-mesh/Interface \
--I$(top_builddir)/src-std-mesh/Sources \
--I$(top_builddir)/src-std-mesh/Transformations \
--I$(top_builddir)/src-std-mesh/Writers 
-
-STD_MESH_INCLUDES = $(STD_MESH_INCLUDE_PATH) $(UTIL_INCLUDES)
-STD_FWK_LIB_PATH = \
--L$(top_builddir)/src-std-framework 
-
-STD_FWK_INCLUDE_PATH = \
--I$(top_builddir)/src-std-framework \
--I$(top_srcdir)/src-std-framework/CellFilter \
--I$(top_srcdir)/src-std-framework/Elements \
--I$(top_srcdir)/src-std-framework/DOFMapping \
--I$(top_srcdir)/src-std-framework/Assembly \
--I$(top_srcdir)/src-std-framework/Problem \
--I$(top_builddir)/src-std-framework/CellFilter \
--I$(top_builddir)/src-std-framework/Elements \
--I$(top_builddir)/src-std-framework/DOFMapping \
--I$(top_builddir)/src-std-framework/Assembly \
--I$(top_builddir)/src-std-framework/Problem
-
-STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(STD_MESH_INCLUDE_PATH) \
-$(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
-
-STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
--lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(UTIL_LIBS) 
-
-XML_LIB_PATH = \
--L$(top_builddir)/src-xml 
-
-XML_INCLUDE_PATH = \
--I$(top_srcdir)/src-xml \
--I$(top_builddir)/src-xml 
-
-XML_INCLUDES = $(XML_INCLUDE_PATH) $(STD_FWK_INCLUDE_PATH) \
-$(STD_MESH_INCLUDE_PATH) $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES)
-
-XML_LIBS = $(XML_LIB_PATH) $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) \
-$(CORE_LIB_PATH) -lsundanceXML -lsundanceStdFwk \
--lsundanceStdMesh -lsundanceCore $(UTIL_LIBS) 
-
-MPI_LIBS = $(TEUCHOS_MPI_LIBS)
-MPI_LIBDIR = $(TEUCHOS_MPI_LIBDIR)
-MPI_INC = $(TEUCHOS_MPI_INC)
-MPI_DIR = $(TEUCHOS_MPI_DIR)
-FLIBS = $(TEUCHOS_FLIBS)
-BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
-LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
-all: all-am
+SUBDIRS = c++
+all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/Makefile.common $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -560,175 +270,66 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-
-clean-noinstPROGRAMS:
-	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-Exo2Triangle$(EXEEXT): $(Exo2Triangle_OBJECTS) $(Exo2Triangle_DEPENDENCIES) 
-	@rm -f Exo2Triangle$(EXEEXT)
-	$(CXXLINK) $(Exo2Triangle_LDFLAGS) $(Exo2Triangle_OBJECTS) $(Exo2Triangle_LDADD) $(LIBS)
-PostPotentialFlow$(EXEEXT): $(PostPotentialFlow_OBJECTS) $(PostPotentialFlow_DEPENDENCIES) 
-	@rm -f PostPotentialFlow$(EXEEXT)
-	$(CXXLINK) $(PostPotentialFlow_LDFLAGS) $(PostPotentialFlow_OBJECTS) $(PostPotentialFlow_LDADD) $(LIBS)
-PressureStabilizedNS2D$(EXEEXT): $(PressureStabilizedNS2D_OBJECTS) $(PressureStabilizedNS2D_DEPENDENCIES) 
-	@rm -f PressureStabilizedNS2D$(EXEEXT)
-	$(CXXLINK) $(PressureStabilizedNS2D_LDFLAGS) $(PressureStabilizedNS2D_OBJECTS) $(PressureStabilizedNS2D_LDADD) $(LIBS)
-PressureStabilizedNS3D$(EXEEXT): $(PressureStabilizedNS3D_OBJECTS) $(PressureStabilizedNS3D_DEPENDENCIES) 
-	@rm -f PressureStabilizedNS3D$(EXEEXT)
-	$(CXXLINK) $(PressureStabilizedNS3D_LDFLAGS) $(PressureStabilizedNS3D_OBJECTS) $(PressureStabilizedNS3D_LDADD) $(LIBS)
-PressureVessel2D$(EXEEXT): $(PressureVessel2D_OBJECTS) $(PressureVessel2D_DEPENDENCIES) 
-	@rm -f PressureVessel2D$(EXEEXT)
-	$(CXXLINK) $(PressureVessel2D_LDFLAGS) $(PressureVessel2D_OBJECTS) $(PressureVessel2D_LDADD) $(LIBS)
-RadiationDiffusion1D$(EXEEXT): $(RadiationDiffusion1D_OBJECTS) $(RadiationDiffusion1D_DEPENDENCIES) 
-	@rm -f RadiationDiffusion1D$(EXEEXT)
-	$(CXXLINK) $(RadiationDiffusion1D_LDFLAGS) $(RadiationDiffusion1D_OBJECTS) $(RadiationDiffusion1D_LDADD) $(LIBS)
-ReadField$(EXEEXT): $(ReadField_OBJECTS) $(ReadField_DEPENDENCIES) 
-	@rm -f ReadField$(EXEEXT)
-	$(CXXLINK) $(ReadField_LDFLAGS) $(ReadField_OBJECTS) $(ReadField_LDADD) $(LIBS)
-VSNS2D$(EXEEXT): $(VSNS2D_OBJECTS) $(VSNS2D_DEPENDENCIES) 
-	@rm -f VSNS2D$(EXEEXT)
-	$(CXXLINK) $(VSNS2D_LDFLAGS) $(VSNS2D_OBJECTS) $(VSNS2D_LDADD) $(LIBS)
-
-mostlyclean-compile:
-	-rm -f *.$(OBJEXT)
-
-distclean-compile:
-	-rm -f *.tab.c
-
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureVessel2D-PressureVessel2D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReadField-ReadField.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VSNS2D-VSNS2D.Po@am__quote@
-
-.cpp.o:
-@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
-
-.cpp.obj:
-@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-Exo2Triangle-Exo2Triangle.o: $(srcdir)/Exo2Triangle.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Exo2Triangle_CXXFLAGS) $(CXXFLAGS) -MT Exo2Triangle-Exo2Triangle.o -MD -MP -MF "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo" -c -o Exo2Triangle-Exo2Triangle.o `test -f '$(srcdir)/Exo2Triangle.cpp' || echo '$(srcdir)/'`$(srcdir)/Exo2Triangle.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo" "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po"; else rm -f "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Exo2Triangle.cpp' object='Exo2Triangle-Exo2Triangle.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Exo2Triangle_CXXFLAGS) $(CXXFLAGS) -c -o Exo2Triangle-Exo2Triangle.o `test -f '$(srcdir)/Exo2Triangle.cpp' || echo '$(srcdir)/'`$(srcdir)/Exo2Triangle.cpp
-
-Exo2Triangle-Exo2Triangle.obj: $(srcdir)/Exo2Triangle.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Exo2Triangle_CXXFLAGS) $(CXXFLAGS) -MT Exo2Triangle-Exo2Triangle.obj -MD -MP -MF "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo" -c -o Exo2Triangle-Exo2Triangle.obj `if test -f '$(srcdir)/Exo2Triangle.cpp'; then $(CYGPATH_W) '$(srcdir)/Exo2Triangle.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Exo2Triangle.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo" "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po"; else rm -f "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Exo2Triangle.cpp' object='Exo2Triangle-Exo2Triangle.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Exo2Triangle_CXXFLAGS) $(CXXFLAGS) -c -o Exo2Triangle-Exo2Triangle.obj `if test -f '$(srcdir)/Exo2Triangle.cpp'; then $(CYGPATH_W) '$(srcdir)/Exo2Triangle.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Exo2Triangle.cpp'; fi`
-
-PostPotentialFlow-PostPotentialFlow.o: $(srcdir)/PostPotentialFlow.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PostPotentialFlow_CXXFLAGS) $(CXXFLAGS) -MT PostPotentialFlow-PostPotentialFlow.o -MD -MP -MF "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Tpo" -c -o PostPotentialFlow-PostPotentialFlow.o `test -f '$(srcdir)/PostPotentialFlow.cpp' || echo '$(srcdir)/'`$(srcdir)/PostPotentialFlow.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Tpo" "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po"; else rm -f "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PostPotentialFlow.cpp' object='PostPotentialFlow-PostPotentialFlow.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PostPotentialFlow_CXXFLAGS) $(CXXFLAGS) -c -o PostPotentialFlow-PostPotentialFlow.o `test -f '$(srcdir)/PostPotentialFlow.cpp' || echo '$(srcdir)/'`$(srcdir)/PostPotentialFlow.cpp
-
-PostPotentialFlow-PostPotentialFlow.obj: $(srcdir)/PostPotentialFlow.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PostPotentialFlow_CXXFLAGS) $(CXXFLAGS) -MT PostPotentialFlow-PostPotentialFlow.obj -MD -MP -MF "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Tpo" -c -o PostPotentialFlow-PostPotentialFlow.obj `if test -f '$(srcdir)/PostPotentialFlow.cpp'; then $(CYGPATH_W) '$(srcdir)/PostPotentialFlow.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PostPotentialFlow.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Tpo" "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po"; else rm -f "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PostPotentialFlow.cpp' object='PostPotentialFlow-PostPotentialFlow.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PostPotentialFlow_CXXFLAGS) $(CXXFLAGS) -c -o PostPotentialFlow-PostPotentialFlow.obj `if test -f '$(srcdir)/PostPotentialFlow.cpp'; then $(CYGPATH_W) '$(srcdir)/PostPotentialFlow.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PostPotentialFlow.cpp'; fi`
-
-PressureStabilizedNS2D-PressureStabilizedNS2D.o: $(srcdir)/PressureStabilizedNS2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS2D_CXXFLAGS) $(CXXFLAGS) -MT PressureStabilizedNS2D-PressureStabilizedNS2D.o -MD -MP -MF "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Tpo" -c -o PressureStabilizedNS2D-PressureStabilizedNS2D.o `test -f '$(srcdir)/PressureStabilizedNS2D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureStabilizedNS2D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Tpo" "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po"; else rm -f "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureStabilizedNS2D.cpp' object='PressureStabilizedNS2D-PressureStabilizedNS2D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS2D_CXXFLAGS) $(CXXFLAGS) -c -o PressureStabilizedNS2D-PressureStabilizedNS2D.o `test -f '$(srcdir)/PressureStabilizedNS2D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureStabilizedNS2D.cpp
-
-PressureStabilizedNS2D-PressureStabilizedNS2D.obj: $(srcdir)/PressureStabilizedNS2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS2D_CXXFLAGS) $(CXXFLAGS) -MT PressureStabilizedNS2D-PressureStabilizedNS2D.obj -MD -MP -MF "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Tpo" -c -o PressureStabilizedNS2D-PressureStabilizedNS2D.obj `if test -f '$(srcdir)/PressureStabilizedNS2D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureStabilizedNS2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureStabilizedNS2D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Tpo" "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po"; else rm -f "$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureStabilizedNS2D.cpp' object='PressureStabilizedNS2D-PressureStabilizedNS2D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS2D_CXXFLAGS) $(CXXFLAGS) -c -o PressureStabilizedNS2D-PressureStabilizedNS2D.obj `if test -f '$(srcdir)/PressureStabilizedNS2D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureStabilizedNS2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureStabilizedNS2D.cpp'; fi`
-
-PressureStabilizedNS3D-PressureStabilizedNS3D.o: $(srcdir)/PressureStabilizedNS3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -MT PressureStabilizedNS3D-PressureStabilizedNS3D.o -MD -MP -MF "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.o `test -f '$(srcdir)/PressureStabilizedNS3D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureStabilizedNS3D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po"; else rm -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureStabilizedNS3D.cpp' object='PressureStabilizedNS3D-PressureStabilizedNS3D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.o `test -f '$(srcdir)/PressureStabilizedNS3D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureStabilizedNS3D.cpp
-
-PressureStabilizedNS3D-PressureStabilizedNS3D.obj: $(srcdir)/PressureStabilizedNS3D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -MT PressureStabilizedNS3D-PressureStabilizedNS3D.obj -MD -MP -MF "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.obj `if test -f '$(srcdir)/PressureStabilizedNS3D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureStabilizedNS3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureStabilizedNS3D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo" "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po"; else rm -f "$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureStabilizedNS3D.cpp' object='PressureStabilizedNS3D-PressureStabilizedNS3D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureStabilizedNS3D_CXXFLAGS) $(CXXFLAGS) -c -o PressureStabilizedNS3D-PressureStabilizedNS3D.obj `if test -f '$(srcdir)/PressureStabilizedNS3D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureStabilizedNS3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureStabilizedNS3D.cpp'; fi`
-
-PressureVessel2D-PressureVessel2D.o: $(srcdir)/PressureVessel2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureVessel2D_CXXFLAGS) $(CXXFLAGS) -MT PressureVessel2D-PressureVessel2D.o -MD -MP -MF "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Tpo" -c -o PressureVessel2D-PressureVessel2D.o `test -f '$(srcdir)/PressureVessel2D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureVessel2D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Tpo" "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Po"; else rm -f "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureVessel2D.cpp' object='PressureVessel2D-PressureVessel2D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureVessel2D_CXXFLAGS) $(CXXFLAGS) -c -o PressureVessel2D-PressureVessel2D.o `test -f '$(srcdir)/PressureVessel2D.cpp' || echo '$(srcdir)/'`$(srcdir)/PressureVessel2D.cpp
-
-PressureVessel2D-PressureVessel2D.obj: $(srcdir)/PressureVessel2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureVessel2D_CXXFLAGS) $(CXXFLAGS) -MT PressureVessel2D-PressureVessel2D.obj -MD -MP -MF "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Tpo" -c -o PressureVessel2D-PressureVessel2D.obj `if test -f '$(srcdir)/PressureVessel2D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureVessel2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureVessel2D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Tpo" "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Po"; else rm -f "$(DEPDIR)/PressureVessel2D-PressureVessel2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PressureVessel2D.cpp' object='PressureVessel2D-PressureVessel2D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PressureVessel2D_CXXFLAGS) $(CXXFLAGS) -c -o PressureVessel2D-PressureVessel2D.obj `if test -f '$(srcdir)/PressureVessel2D.cpp'; then $(CYGPATH_W) '$(srcdir)/PressureVessel2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PressureVessel2D.cpp'; fi`
-
-RadiationDiffusion1D-RadiationDiffusion1D.o: $(srcdir)/RadiationDiffusion1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadiationDiffusion1D_CXXFLAGS) $(CXXFLAGS) -MT RadiationDiffusion1D-RadiationDiffusion1D.o -MD -MP -MF "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Tpo" -c -o RadiationDiffusion1D-RadiationDiffusion1D.o `test -f '$(srcdir)/RadiationDiffusion1D.cpp' || echo '$(srcdir)/'`$(srcdir)/RadiationDiffusion1D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Tpo" "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Po"; else rm -f "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RadiationDiffusion1D.cpp' object='RadiationDiffusion1D-RadiationDiffusion1D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadiationDiffusion1D_CXXFLAGS) $(CXXFLAGS) -c -o RadiationDiffusion1D-RadiationDiffusion1D.o `test -f '$(srcdir)/RadiationDiffusion1D.cpp' || echo '$(srcdir)/'`$(srcdir)/RadiationDiffusion1D.cpp
-
-RadiationDiffusion1D-RadiationDiffusion1D.obj: $(srcdir)/RadiationDiffusion1D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadiationDiffusion1D_CXXFLAGS) $(CXXFLAGS) -MT RadiationDiffusion1D-RadiationDiffusion1D.obj -MD -MP -MF "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Tpo" -c -o RadiationDiffusion1D-RadiationDiffusion1D.obj `if test -f '$(srcdir)/RadiationDiffusion1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadiationDiffusion1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadiationDiffusion1D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Tpo" "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Po"; else rm -f "$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RadiationDiffusion1D.cpp' object='RadiationDiffusion1D-RadiationDiffusion1D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadiationDiffusion1D_CXXFLAGS) $(CXXFLAGS) -c -o RadiationDiffusion1D-RadiationDiffusion1D.obj `if test -f '$(srcdir)/RadiationDiffusion1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadiationDiffusion1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadiationDiffusion1D.cpp'; fi`
-
-ReadField-ReadField.o: $(srcdir)/ReadField.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ReadField_CXXFLAGS) $(CXXFLAGS) -MT ReadField-ReadField.o -MD -MP -MF "$(DEPDIR)/ReadField-ReadField.Tpo" -c -o ReadField-ReadField.o `test -f '$(srcdir)/ReadField.cpp' || echo '$(srcdir)/'`$(srcdir)/ReadField.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ReadField-ReadField.Tpo" "$(DEPDIR)/ReadField-ReadField.Po"; else rm -f "$(DEPDIR)/ReadField-ReadField.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ReadField.cpp' object='ReadField-ReadField.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ReadField_CXXFLAGS) $(CXXFLAGS) -c -o ReadField-ReadField.o `test -f '$(srcdir)/ReadField.cpp' || echo '$(srcdir)/'`$(srcdir)/ReadField.cpp
-
-ReadField-ReadField.obj: $(srcdir)/ReadField.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ReadField_CXXFLAGS) $(CXXFLAGS) -MT ReadField-ReadField.obj -MD -MP -MF "$(DEPDIR)/ReadField-ReadField.Tpo" -c -o ReadField-ReadField.obj `if test -f '$(srcdir)/ReadField.cpp'; then $(CYGPATH_W) '$(srcdir)/ReadField.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ReadField.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ReadField-ReadField.Tpo" "$(DEPDIR)/ReadField-ReadField.Po"; else rm -f "$(DEPDIR)/ReadField-ReadField.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ReadField.cpp' object='ReadField-ReadField.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ReadField_CXXFLAGS) $(CXXFLAGS) -c -o ReadField-ReadField.obj `if test -f '$(srcdir)/ReadField.cpp'; then $(CYGPATH_W) '$(srcdir)/ReadField.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ReadField.cpp'; fi`
-
-VSNS2D-VSNS2D.o: $(srcdir)/VSNS2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VSNS2D_CXXFLAGS) $(CXXFLAGS) -MT VSNS2D-VSNS2D.o -MD -MP -MF "$(DEPDIR)/VSNS2D-VSNS2D.Tpo" -c -o VSNS2D-VSNS2D.o `test -f '$(srcdir)/VSNS2D.cpp' || echo '$(srcdir)/'`$(srcdir)/VSNS2D.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VSNS2D-VSNS2D.Tpo" "$(DEPDIR)/VSNS2D-VSNS2D.Po"; else rm -f "$(DEPDIR)/VSNS2D-VSNS2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VSNS2D.cpp' object='VSNS2D-VSNS2D.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VSNS2D_CXXFLAGS) $(CXXFLAGS) -c -o VSNS2D-VSNS2D.o `test -f '$(srcdir)/VSNS2D.cpp' || echo '$(srcdir)/'`$(srcdir)/VSNS2D.cpp
-
-VSNS2D-VSNS2D.obj: $(srcdir)/VSNS2D.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VSNS2D_CXXFLAGS) $(CXXFLAGS) -MT VSNS2D-VSNS2D.obj -MD -MP -MF "$(DEPDIR)/VSNS2D-VSNS2D.Tpo" -c -o VSNS2D-VSNS2D.obj `if test -f '$(srcdir)/VSNS2D.cpp'; then $(CYGPATH_W) '$(srcdir)/VSNS2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VSNS2D.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/VSNS2D-VSNS2D.Tpo" "$(DEPDIR)/VSNS2D-VSNS2D.Po"; else rm -f "$(DEPDIR)/VSNS2D-VSNS2D.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/VSNS2D.cpp' object='VSNS2D-VSNS2D.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VSNS2D_CXXFLAGS) $(CXXFLAGS) -c -o VSNS2D-VSNS2D.obj `if test -f '$(srcdir)/VSNS2D.cpp'; then $(CYGPATH_W) '$(srcdir)/VSNS2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/VSNS2D.cpp'; fi`
 uninstall-info-am:
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $$MAKEFLAGS; amf=$$2; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+ctags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -740,10 +341,23 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
+	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
+	  include_option=--etags-include; \
+	  empty_fix=.; \
+	else \
+	  include_option=--include; \
+	  empty_fix=; \
+	fi; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test ! -f $$subdir/TAGS || \
+	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -756,7 +370,7 @@ TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
@@ -779,7 +393,6 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -806,19 +419,35 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d "$(distdir)/$$subdir" \
+	    || $(mkdir_p) "$(distdir)/$$subdir" \
+	    || exit 1; \
+	    distdir=`$(am__cd) $(distdir) && pwd`; \
+	    top_distdir=`$(am__cd) $(top_distdir) && pwd`; \
+	    (cd $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$$top_distdir" \
+	        distdir="$$distdir/$$subdir" \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
 check-am: all-am
-check: check-am
-all-am: Makefile $(PROGRAMS)
-installdirs:
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
+check: check-recursive
+all-am: Makefile
+installdirs: installdirs-recursive
+installdirs-am:
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-am
+installcheck: installcheck-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
@@ -834,23 +463,21 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
+clean: clean-recursive
 
-clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
+clean-am: clean-generic mostlyclean-am
 
-distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+distclean: distclean-recursive
 	-rm -f Makefile
-distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+distclean-am: clean-am distclean-generic distclean-tags
 
-dvi: dvi-am
+dvi: dvi-recursive
 
 dvi-am:
 
-html: html-am
+html: html-recursive
 
-info: info-am
+info: info-recursive
 
 info-am:
 
@@ -858,50 +485,44 @@ install-data-am:
 
 install-exec-am:
 
-install-info: install-info-am
+install-info: install-info-recursive
 
 install-man:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+maintainer-clean: maintainer-clean-recursive
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-am
+mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-generic
 
-pdf: pdf-am
+pdf: pdf-recursive
 
 pdf-am:
 
-ps: ps-am
+ps: ps-recursive
 
 ps-am:
 
 uninstall-am: uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-info-am
+uninstall-info: uninstall-info-recursive
 
+.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
+	clean clean-generic clean-recursive ctags ctags-recursive \
+	distclean distclean-generic distclean-recursive distclean-tags \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-generic \
+	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-info-am
 
-# ------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------
-
-include $(top_builddir)/Makefile.site.sundance
-include $(top_builddir)/Makefile.export.TSFExtended
-include $(TRILINOS_DIR)/packages/teuchos/Makefile.export
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

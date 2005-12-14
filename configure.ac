@@ -249,6 +249,7 @@ AC_CONFIG_FILES([
   Makefile.export.TSFExtended
   Makefile.site.sundance
   examples-tutorial/Makefile
+  examples-tutorial/c++/Makefile
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile

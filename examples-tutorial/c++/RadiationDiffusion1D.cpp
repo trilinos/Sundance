@@ -91,7 +91,7 @@ int main(int argc, void** argv)
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
       
-      ParameterXMLFileReader reader("../../examples-tutorial/nox.xml");
+      ParameterXMLFileReader reader("../../../examples-tutorial/data/nox-aztec.xml");
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;
