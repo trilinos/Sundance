@@ -99,16 +99,19 @@ NPROC = 2
 	echo "done" $@
 
 tests:
+	$(MAKE) all
 	$(MAKE) $(TESTS)
 	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 serialtests:
+	$(MAKE) all
 	$(MAKE) $(TESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 ex%: $(srcdir)/ex%.py
 	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$@.py . ; fi
+	chmod +x $@.py
 
 clean:
 	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/rm -f *.py ; fi

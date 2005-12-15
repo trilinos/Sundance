@@ -90,6 +90,8 @@ if PYTHON_USE
 PYTHON_SUBDIRS=python
 PYTESTS=(cd python/example; $(MAKE) tests)
 PYSERIALTESTS=(cd python/example; $(MAKE) serialtests)
+PY_TESTS_TO_CHECK=python/example/*.tst
+PY_PTESTS_TO_CHECK=python/example/*.ptst
 endif
 
 if BUILD_CXXTESTS
@@ -110,6 +112,8 @@ CXX_SYMBOLIC_SERIALTESTS = (cd tests-core; $(MAKE) serialtests)
 CXX_FWK_TESTS = (cd tests-std-framework; $(MAKE) tests) 
 CXX_FWK_SERIALTESTS = (cd tests-std-framework; $(MAKE) serialtests) 
 
+CXX_TESTS_TO_CHECK=tests-*/*/*.tst
+CXX_PTESTS_TO_CHECK=tests-*/*/*.ptst
 else
 SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework \
 $(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
@@ -146,11 +150,12 @@ tests:
 	@echo "====================================================================="
 	@echo "Summary of serial tests:"
 	@echo "====================================================================="
-	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.tst python/example/*.tst
+	$(top_srcdir)/etc/checkTests.pl $(CXX_TESTS_TO_CHECK) $(PY_TESTS_TO_CHECK)
 	@echo "====================================================================="
 	@echo "Summary of parallel tests:"
 	@echo "====================================================================="
-	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.ptst python/example/*.ptst
+	$(top_srcdir)/etc/checkTests.pl $(CXX_PTESTS_TO_CHECK) $(PY_PTESTS_TO_CHECK)
+
 
 serialtests:
 	$(CXX_SOLVER_SERIALTESTS)
@@ -160,4 +165,4 @@ serialtests:
 	@echo "====================================================================="
 	@echo "Summary of serial tests:"
 	@echo "====================================================================="
-	$(top_srcdir)/etc/checkTests.pl tests-*/*/*.tst python/example/*.tst
+	$(top_srcdir)/etc/checkTests.pl $(CXX_TESTS_TO_CHECK) $(PY_TESTS_TO_CHECK)
