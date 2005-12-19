@@ -24,7 +24,7 @@ def main():
   v = TestFunction(basis, "v");
   x = CoordExpr(0);
   dx = Derivative(0);
-  
+
   quad = GaussianQuadrature(2)
   
   lpp = LeftPointPredicate()

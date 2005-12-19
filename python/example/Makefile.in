@@ -240,7 +240,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
 PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D
-SERIAL_SRC = exPoisson3D
+SERIAL_SRC = exPoisson3D 
 ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
 SETPATH_PY = setpath.py 
 TESTS = $(ALL_PROGS:%.py=%.tst) 

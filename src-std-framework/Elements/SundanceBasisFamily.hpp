@@ -111,6 +111,19 @@ namespace SundanceStdFwk
   {
     return tuple(a,b,c,d,e);
   }
+
+
+  class BasisArray : public Array<BasisFamily>
+  {
+  public:
+    BasisArray() : Array<BasisFamily>() {;}
+
+    BasisArray(int n) : Array<BasisFamily>(n) {;}
+
+    BasisArray(const Array<BasisFamily>& a) 
+      : Array<BasisFamily>(a) 
+    {;}
+  };
 }
 
 #endif

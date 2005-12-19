@@ -250,6 +250,7 @@ AC_CONFIG_FILES([
   Makefile.site.sundance
   examples-tutorial/Makefile
   examples-tutorial/c++/Makefile
+  examples-tutorial/python/Makefile
   src-utils/Makefile
   src-core/Makefile
   src-std-mesh/Makefile

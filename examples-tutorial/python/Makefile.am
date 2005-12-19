@@ -27,8 +27,9 @@
 # @HEADER
 
 
-all: $(ALL_SRC)
-	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$(SETPATH_PY) $(PARAM_FILES) . ; fi
+all: $(PY_SRC) $(PARAM_FILES)
+	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/chmod +x $(PY_SRC) ; fi
+	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp -p $(srcdir)/$(SETPATH_PY) $(PARAM_FILES) $(PY_SRC) . ; 	fi
 
 
 ## #######################################################################
@@ -60,58 +61,13 @@ EXTRA_DIST = $(PARAM_FILES) setpath.py $(ALL_PROGS)
 MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
-PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D
-
-SERIAL_SRC = exPoisson3D 
-
-ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
-
+PY_SRC = $(srcdir)/PressureStabilizedNS2D.py
 
 
 SETPATH_PY = setpath.py 
 
 
-TESTS = $(ALL_PROGS:%.py=%.tst) 
 
-PTESTS = $(PARALLEL_PROGS:%.py=%.ptst)
-
-ALL_PROGS = $(PARALLEL_PROGS) $(SERIAL_PROGS)
-
-PARALLEL_PROGS = $(PARALLEL_SRC:%=%.py)
-SERIAL_PROGS = $(SERIAL_SRC:%=%.py)
-
-@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
-@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
-
-
-NPROC = 2
-
-@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
-@HAVE_MPI_FALSE@MPI_COMMAND = 
-   
-
-%.tst: %.py
-	./$< > $@ 2>&1
-	echo "done" $@
-
-%.ptst: %.py
-	$(MPI_COMMAND) ./$< > $@ 2>&1
-	echo "done" $@
-
-tests:
-	$(MAKE) all
-	$(MAKE) $(TESTS)
-	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
-	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
-
-serialtests:
-	$(MAKE) all
-	$(MAKE) $(TESTS)
-	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
-
-ex%: $(srcdir)/ex%.py
-	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/cp $(srcdir)/$@.py . ; fi
-	chmod +x $@.py
 
 clean:
 	if [ $(top_srcdir) != @abs_top_builddir@ ]; then /bin/rm -f *.py ; fi

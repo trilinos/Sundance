@@ -62,11 +62,11 @@ namespace SundanceStdFwk
     DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                   const VectorType<double>& vecType);
     /** */
-    DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
+    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const VectorType<double>& vecType);
 
     /** */
-    DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
+    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const RefCountPtr<DOFMapBase>& map,
                   const VectorType<double>& vecType);
 
@@ -77,7 +77,7 @@ namespace SundanceStdFwk
     int nFunc() const {return basis_.size();}
 
     /** */
-    const Array<BasisFamily>& basis() const {return basis_;}
+    const BasisArray& basis() const {return basis_;}
 
     /** */
     Vector<double> createVector() const {return vecSpace_.createMember();}
@@ -102,7 +102,7 @@ namespace SundanceStdFwk
     Mesh mesh_;
 
     /** */
-    Array<BasisFamily> basis_;
+    BasisArray basis_;
 
     /** */
     VectorSpace<double> vecSpace_;

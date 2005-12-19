@@ -29,4 +29,4 @@
 #@HEADER
 
 
-SUBDIRS = c++
+SUBDIRS = python c++ 

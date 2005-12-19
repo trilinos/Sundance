@@ -30,6 +30,8 @@ namespace SundanceCore
   public:
     Expr();
     ~Expr();
+
+    void setParameterValue(const double& val);
   };
 
   %extend Expr
@@ -39,6 +41,11 @@ namespace SundanceCore
     {
       string rtn = self->toString(); 
       return rtn;
+    }
+
+    Expr __getitem__(int i)
+    {
+      return (*self)[i];
     }
 
     double integral(const SundanceStdFwk::CellFilter& domain,

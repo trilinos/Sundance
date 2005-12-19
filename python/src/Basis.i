@@ -16,6 +16,7 @@
 %include "exception.i"
 
 
+
 namespace SundanceStdFwk
 {
   class BasisFamily
@@ -38,18 +39,86 @@ namespace SundanceStdFwk
     }
   }
 
- 
+
+  class BasisArray
+  {
+  public:
+    BasisArray(int n);
+  };
+
+  %extend BasisArray
+  {
+    using namespace std;
+    string __str__() 
+    {
+      string rtn; 
+      stringstream os;
+      os << *self;
+      rtn = os.str();
+      return rtn;
+    }
+  }
+    
+
 }
 
+
+
 %rename(Lagrange) makeLagrange;
-%rename(List) makeList;
+
 
 %inline %{
-  /* Create a line mesher */
+  /* Create a Lagrange basis function */
   SundanceStdFwk::BasisFamily makeLagrange(int order)
   {
     return new SundanceStdFwk::Lagrange(order);
   }
+
+  /* */
+  SundanceStdFwk::BasisArray 
+    BasisList(const SundanceStdFwk::BasisFamily& a)
+  {
+    return tuple(a);
+  }
+
+  /* */
+  SundanceStdFwk::BasisArray 
+    BasisList(const SundanceStdFwk::BasisFamily& a,
+              const SundanceStdFwk::BasisFamily& b)
+  {
+    return tuple(a,b);
+  }
+
+  /* */
+  SundanceStdFwk::BasisArray 
+    BasisList(const SundanceStdFwk::BasisFamily& a,
+              const SundanceStdFwk::BasisFamily& b,
+              const SundanceStdFwk::BasisFamily& c)
+  {
+    return tuple(a,b,c);
+  }
+
+  /* */
+  SundanceStdFwk::BasisArray 
+    BasisList(const SundanceStdFwk::BasisFamily& a,
+              const SundanceStdFwk::BasisFamily& b,
+              const SundanceStdFwk::BasisFamily& c,
+              const SundanceStdFwk::BasisFamily& d)
+  {
+    return tuple(a,b,c,d);
+  }
+
+  /* */
+  SundanceStdFwk::BasisArray 
+    BasisList(const SundanceStdFwk::BasisFamily& a,
+              const SundanceStdFwk::BasisFamily& b,
+              const SundanceStdFwk::BasisFamily& c,
+              const SundanceStdFwk::BasisFamily& d,
+              const SundanceStdFwk::BasisFamily& e)
+  {
+    return tuple(a,b,c,d,e);
+  }
+                                      
   %}
 
 

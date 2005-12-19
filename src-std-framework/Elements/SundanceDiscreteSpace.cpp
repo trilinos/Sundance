@@ -67,7 +67,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
   ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
 }
 
-DiscreteSpace::DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const VectorType<double>& vecType)
   : map_(), mesh_(mesh), basis_(basis), vecSpace_(), vecType_(vecType),
     ghostImporter_()
@@ -94,7 +94,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
 }
 
 
-DiscreteSpace::DiscreteSpace(const Mesh& mesh, const Array<BasisFamily>& basis,
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const RefCountPtr<DOFMapBase>& map,
                              const VectorType<double>& vecType)
   : map_(map), mesh_(mesh), basis_(basis), vecSpace_(), vecType_(vecType),
