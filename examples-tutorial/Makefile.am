@@ -29,4 +29,13 @@
 #@HEADER
 
 
-SUBDIRS = python c++ 
+if BUILD_CXXEXAMPLES
+CXX_SUBDIR = c++
+endif
+
+if PYTHON_USE
+PYTHON_SUBDIR = python
+endif
+
+
+SUBDIRS = $(PYTHON_SUBDIR) $(CXX_SUBDIR)

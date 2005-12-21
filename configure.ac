@@ -211,6 +211,9 @@ AM_CONDITIONAL(BUILD_LOW_LEVEL_TESTS, test "X$ac_cv_use_lowleveltests" != "Xno")
 TAC_ARG_ENABLE_FEATURE(examples, [Build examples for Sundance], EXAMPLES, yes)
 AM_CONDITIONAL(BUILD_EXAMPLES, test "X$ac_cv_use_examples" != "Xno")
 
+TAC_ARG_ENABLE_FEATURE(cxxexamples, [Build C++ examples for Sundance], CXXEXAMPLES, yes)
+AM_CONDITIONAL(BUILD_CXXEXAMPLES, test "X$ac_cv_use_cxxexamples" != "Xno")
+
 
 # ------------------------------------------------------------------------
 # Enable optional python wrappers
