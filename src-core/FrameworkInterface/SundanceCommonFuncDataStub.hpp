@@ -28,29 +28,40 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
-
-using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
+#ifndef SUNDANCE_COMMONFUNCDATASTUB_H
+#define SUNDANCE_COMMONFUNCDATASTUB_H
 
 
-XMLObject TestFuncElement::toXML() const 
+#include "SundanceDefs.hpp"
+
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
+
+namespace SundanceCore
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  namespace Internal
+  {
+    /** 
+     * CommonFuncDataStub is a placeholder for data to be shared between
+     * multiple components of a symbolic or discrete function. Such data
+     * is framework-dependent, and might be something like a basis function
+     * or vector of nodal function values.
+     */
+    class CommonFuncDataStub
+    {
+    public:
+      /** */
+      CommonFuncDataStub() {;}
+
+      /** */
+      virtual ~CommonFuncDataStub(){;}
+
+    private:
+    };
+  }
 }
 
 
+#endif /* DOXYGEN_DEVELOPER_ONLY */
+#endif

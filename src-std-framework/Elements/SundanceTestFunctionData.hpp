@@ -28,29 +28,49 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#ifndef SUNDANCE_TESTFUNCTIONDATA_H
+#define SUNDANCE_TESTFUNCTIONDATA_H
+
+#include "SundanceDefs.hpp"
+#include "SundanceTestFuncDataStub.hpp"
 #include "SundanceTestFuncElement.hpp"
+#include "SundanceFuncWithBasis.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
-
-
-XMLObject TestFuncElement::toXML() const 
+namespace SundanceStdFwk
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  using namespace SundanceUtils;
+  using namespace Teuchos;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
+
+  
+  namespace Internal
+  {
+    /** 
+     * TestFunctionData contains the specification of a test
+     * function's basis.
+     */
+    class TestFunctionData : public TestFuncDataStub
+    {
+    public:
+      /** */
+      TestFunctionData(const Array<BasisFamily>& basis)
+        : basis_(basis) {;}
+
+      /** */
+      virtual ~TestFunctionData(){;}
+      
+      /** */
+      const Array<BasisFamily>& basis() const {return basis_;}
+
+      /** */
+      static const TestFunctionData* getData(const TestFuncElement* ufe);
+    private:
+      Array<BasisFamily> basis_;
+    };
+
+  }
 }
 
 
+#endif

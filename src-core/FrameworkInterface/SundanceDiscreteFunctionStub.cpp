@@ -36,13 +36,14 @@ using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-DiscreteFunctionStub::DiscreteFunctionStub(const string& name, int nElems)
-	: ListExpr()
+DiscreteFunctionStub::DiscreteFunctionStub(const string& name, int nElems,
+                          const RefCountPtr<DiscreteFuncDataStub>& data)
+	: ListExpr(), data_(data)
 {
   for (int i=0; i<nElems; i++)
     {
       string suffix = "[" + Teuchos::toString(i) + "]";
-      append(new DiscreteFuncElement(this, name, suffix, i));
+      append(new DiscreteFuncElement(data, name, suffix, i));
     }
 }
 

@@ -28,29 +28,28 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
+#include "SundanceUnknownFunctionData.hpp"
+#include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
 
+using namespace SundanceStdMesh;
+using namespace SundanceStdFwk;
+using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
 
 
-XMLObject TestFuncElement::toXML() const 
+const UnknownFunctionData* UnknownFunctionData
+::getData(const UnknownFuncElement* dfe)
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  TEST_FOR_EXCEPTION(dfe==0, RuntimeError, 
+                     "null argument to UnknownFunctionData::getData()");
+  const UnknownFunctionData* rtn 
+    = dynamic_cast<const UnknownFunctionData*>(dfe->commonData());
+  TEST_FOR_EXCEPTION(rtn==0, RuntimeError, 
+                     "cast to UnknownFunctionData* failed for "
+                     "discrete function element " << dfe->toXML());
+  return rtn;
 }
-
-

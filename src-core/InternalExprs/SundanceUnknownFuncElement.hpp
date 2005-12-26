@@ -34,6 +34,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
+#include "SundanceUnknownFuncDataStub.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -42,10 +43,7 @@
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace Internal
-  {
-    class UnknownFunctionStub;
-  }
+
 
   namespace Internal
   {
@@ -62,7 +60,7 @@ namespace SundanceCore
     {
     public:
       /** */
-      UnknownFuncElement(const UnknownFunctionStub* master,
+      UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
                          const string& name,
                          const string& suffix,
                          int myIndex);
@@ -70,9 +68,9 @@ namespace SundanceCore
       /** virtual destructor */
       virtual ~UnknownFuncElement() {;}
 
-      /** Get the master unknown function 
-       * of which this object is an element */
-      const UnknownFunctionStub* master() const {return master_;}
+      /** Get the data associated with the vector-valued function 
+       * that contains this function element. */
+      const UnknownFuncDataStub* commonData() const {return commonData_.get();}
 
 
       /** */
@@ -82,7 +80,7 @@ namespace SundanceCore
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
       
     private:
-      const UnknownFunctionStub* master_;
+       const RefCountPtr<const UnknownFuncDataStub> commonData_;
     };
   }
 }

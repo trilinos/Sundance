@@ -111,7 +111,7 @@ TSFExtended::Vector<double> NonlinearProblem::getInitialGuess() const
                      "null discrete function pointer in "
                      "NonlinearProblem::getInitialGuess()");
   
-  Vector<double> u0 = discreteU0_->vector();
+  Vector<double> u0 = discreteU0_->getVector();
 
 
   return u0;

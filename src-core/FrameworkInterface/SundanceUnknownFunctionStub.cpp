@@ -40,13 +40,14 @@ using namespace Teuchos;
 
 
 
-UnknownFunctionStub::UnknownFunctionStub(const string& name, int nElems)
-	: SymbolicFunc()
+UnknownFunctionStub::UnknownFunctionStub(const string& name, int nElems,
+                                         const RefCountPtr<const UnknownFuncDataStub>& data)
+	: SymbolicFunc(), data_(data)
 {
   for (int i=0; i<nElems; i++)
     {
       string suffix = "[" + Teuchos::toString(i) + "]";
-      append(new UnknownFuncElement(this, name, suffix, i));
+      append(new UnknownFuncElement(data, name, suffix, i));
     }
 }
 

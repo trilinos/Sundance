@@ -185,6 +185,7 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivBase.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFuncDataStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContext.hpp \
@@ -196,7 +197,9 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceMultipleDeriv.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceNullCellFilterStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceQuadratureFamilyStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceRegionQuadCombo.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceTestFuncDataStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceTestFunctionStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceUnknownFuncDataStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceUnknownFunctionStub.hpp 
 
 SUNDANCE_FRAMEWORKINTERFACE = \
@@ -244,8 +247,10 @@ $(top_srcdir)/src-core/TestingUtilities/SundanceADCoord.hpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceADDerivative.hpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceADField.hpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceEvaluationTester.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestDiscreteFuncData.hpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceTestDiscreteFunction.hpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceTestEvalMediator.hpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestUnknownFuncData.hpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceTestUnknownFunction.hpp 
 
 SUNDANCE_TESTUTILITIES = \
@@ -256,6 +261,7 @@ $(top_srcdir)/src-core/TestingUtilities/SundanceADField.cpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceEvaluationTester.cpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceTestDiscreteFunction.cpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceTestEvalMediator.cpp \
+$(top_srcdir)/src-core/TestingUtilities/SundanceTestUnknownFuncData.cpp \
 $(top_srcdir)/src-core/TestingUtilities/SundanceTestUnknownFunction.cpp 
 
 

@@ -28,29 +28,27 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
+#include "SundanceTestFunction.hpp"
+#include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
 
+using namespace SundanceStdMesh;
+using namespace SundanceStdFwk;
+using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
+
+TestFunction::TestFunction(const BasisFamily& basis, const string& name)
+  : TestFunctionStub(name, basis.dim(),
+                        rcp(new TestFunctionData(tuple(basis)))), 
+    FuncWithBasis(basis)
+{;}
 
 
-XMLObject TestFuncElement::toXML() const 
-{
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
-}
-
-
+TestFunction::TestFunction(const Array<BasisFamily>& basis, const string& name)
+  : TestFunctionStub(name, BasisFamily::size(basis),
+                        rcp(new TestFunctionData(basis))), 
+    FuncWithBasis(basis)
+{;}

@@ -40,13 +40,14 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-DiscreteFuncElement::DiscreteFuncElement(DiscreteFunctionStub* master, 
-                                         const string& name,
-                                         const string& suffix,
-                                         int myIndex)
+DiscreteFuncElement
+::DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
+                      const string& name,
+                      const string& suffix,
+                      int myIndex)
 	: LeafExpr(), 
     FuncElementBase(name, suffix),
-    master_(master),
+    commonData_(data),
     myIndex_(myIndex)
 {}
 

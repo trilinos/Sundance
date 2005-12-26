@@ -28,29 +28,41 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
-
-using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
+#ifndef SUNDANCE_TESTFUNCDATASTUB_H
+#define SUNDANCE_TESTFUNCDATASTUB_H
 
 
-XMLObject TestFuncElement::toXML() const 
+#include "SundanceDefs.hpp"
+#include "SundanceCommonFuncDataStub.hpp"
+
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
+
+namespace SundanceCore
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  namespace Internal
+  {
+    /** 
+     * TestFuncDataStub is a placeholder for data to be shared between
+     * multiple components of a test function. Such data
+     * is framework-dependent, and might be something like a basis function.
+     */
+    class TestFuncDataStub : public CommonFuncDataStub
+    {
+    public:
+      /** */
+      TestFuncDataStub()
+        : CommonFuncDataStub() {;}
+
+      /** */
+      virtual ~TestFuncDataStub(){;}
+
+    private:
+    };
+  }
 }
 
 
+#endif /* DOXYGEN_DEVELOPER_ONLY */
+#endif

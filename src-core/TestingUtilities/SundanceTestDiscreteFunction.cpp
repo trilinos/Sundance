@@ -45,5 +45,5 @@ using namespace std;
 
 ADReal TestDiscreteFunction::evaluate() const
 {
-  return field_.evaluate();
+  return field().evaluate();
 }

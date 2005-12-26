@@ -36,16 +36,13 @@
 #include "SundanceFuncElementBase.hpp"
 #include "SundanceDiscreteFuncEvaluator.hpp"
 #include "SundanceLeafExpr.hpp"
+#include "SundanceDiscreteFuncDataStub.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace Internal
-  {
-    class DiscreteFunctionStub;
-  }
 
   namespace Internal
   {
@@ -59,8 +56,8 @@ namespace SundanceCore
      * of a (possibly) vector-valued discrete function. 
      *
      * DiscreteFuncElement is framework-independent. Any framework-specific
-     * information should go in a subclass of DiscreteFunctionStub.
-     * The DiscreteFunctionStub object can be accessed through the
+     * information should go in a subclass of DiscreteFuncDataStub.
+     * The DiscreteFuncDataStub object can be accessed through the
      * <tt>master()</tt> method of this class.
      */
     class DiscreteFuncElement : public virtual LeafExpr,
@@ -69,7 +66,7 @@ namespace SundanceCore
     {
     public:
       /** */
-      DiscreteFuncElement(DiscreteFunctionStub* master, 
+      DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
                           const string& name,
                           const string& suffix,
                           int myIndex);
@@ -77,13 +74,10 @@ namespace SundanceCore
       /** virtual destructor */
       virtual ~DiscreteFuncElement() {;}
 
-      /** Get the master discrete function 
-       * of which this object is an element */
-      const DiscreteFunctionStub* master() const {return master_;}
 
-      /** Get the master discrete function 
-       * of which this object is an element */
-      DiscreteFunctionStub* master() {return master_;}
+      /** Get the data associated with the vector-valued function 
+       * that contains this function element. */
+      const DiscreteFuncDataStub* commonData() const {return commonData_.get();}
 
       /** Get my index into the master's list of elements */
       int myIndex() const {return myIndex_;}
@@ -106,7 +100,7 @@ namespace SundanceCore
       
     private:
 
-      DiscreteFunctionStub* master_;
+      RefCountPtr<DiscreteFuncDataStub> commonData_;
 
       int myIndex_;
       

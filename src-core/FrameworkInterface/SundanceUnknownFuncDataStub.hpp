@@ -28,29 +28,41 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
-
-using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
+#ifndef SUNDANCE_UNKNOWNFUNCDATASTUB_H
+#define SUNDANCE_UNKNOWNFUNCDATASTUB_H
 
 
-XMLObject TestFuncElement::toXML() const 
+#include "SundanceDefs.hpp"
+#include "SundanceCommonFuncDataStub.hpp"
+
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
+
+namespace SundanceCore
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  namespace Internal
+  {
+    /** 
+     * UnknownFuncDataStub is a placeholder for data to be shared between
+     * multiple components of an unknown function. Such data
+     * is framework-dependent, and might be something like a basis function.
+     */
+    class UnknownFuncDataStub : public CommonFuncDataStub
+    {
+    public:
+      /** */
+      UnknownFuncDataStub()
+        : CommonFuncDataStub() {;}
+
+      /** */
+      virtual ~UnknownFuncDataStub(){;}
+
+    private:
+    };
+  }
 }
 
 
+#endif /* DOXYGEN_DEVELOPER_ONLY */
+#endif

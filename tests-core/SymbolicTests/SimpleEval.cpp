@@ -2,6 +2,7 @@
 #include "SundanceStdMathOps.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFunctionStub.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
@@ -26,6 +27,8 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 using SundanceCore::List;
+
+using SundanceCore::Internal::UnknownFuncElement;
 
 static Time& totalTimer() 
 {
@@ -164,7 +167,7 @@ int main(int argc, void** argv)
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(0)));
+                              rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
                    SundanceCore::List(v, s),
@@ -173,7 +176,14 @@ int main(int argc, void** argv)
                    context);
         }
 
-      
+      Expr uu0;
+      {
+        Expr uu = new UnknownFunctionStub("uu", 2);
+        uu0 = uu[0];
+      }
+
+
+      cerr << "uu0 = " << uu0 << endl;
 
     }
 	catch(exception& e)

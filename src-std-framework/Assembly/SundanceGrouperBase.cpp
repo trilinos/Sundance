@@ -108,9 +108,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
           SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        tab << "found unkID=" << unkID);
 
-          const FuncWithBasis* fb 
-            = dynamic_cast<const  FuncWithBasis*>(u->master());
-          unkBasis = fb->basis()[myIndex];
+          unkBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
           SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        tab << "found unkBasis=" << unkBasis);
 
@@ -139,15 +137,11 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
 
           if (t != 0) 
             {
-              const FuncWithBasis* fb 
-                = dynamic_cast<const  FuncWithBasis*>(t->master());
-              varBasis = fb->basis()[myIndex];
+              varBasis = TestFunctionData::getData(t)->basis()[myIndex];
             }
           else
             {
-              const FuncWithBasis* fb 
-                = dynamic_cast<const  FuncWithBasis*>(u->master());
-              varBasis = fb->basis()[myIndex];
+              varBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
             }
           SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                        tab << "found varBasis=" << varBasis);

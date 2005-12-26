@@ -37,13 +37,14 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-TestFunctionStub::TestFunctionStub(const string& name, int nElems)
-	: SymbolicFunc()
+TestFunctionStub::TestFunctionStub(const string& name, int nElems,
+                                   const RefCountPtr<const TestFuncDataStub>& data)
+	: SymbolicFunc(), data_(data)
 {
   for (int i=0; i<nElems; i++)
     {
       string suffix = "[" + Teuchos::toString(i) + "]";
-      append(new TestFuncElement(this, name, suffix, i));
+      append(new TestFuncElement(data, name, suffix, i));
     }
 }
 

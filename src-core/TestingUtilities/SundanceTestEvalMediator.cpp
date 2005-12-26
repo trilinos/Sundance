@@ -65,7 +65,7 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
   EvalManager::stack().setVecSize(1);
 
   Expr f = fields.flatten();
-  for (int i=0; i<f.size(); i++)
+  for (unsigned int i=0; i<f.size(); i++)
     {
       const DiscreteFuncElement* u0 
         = dynamic_cast<const DiscreteFuncElement*>(f[i].ptr().get());
@@ -73,12 +73,17 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
                          "TestEvalMediator ctor: field argument "
                          << f[i] << " is not a discrete function");
       funcIdToFieldNumberMap_.put(u0->funcID(), i);
-      const TestDiscreteFunction* df 
-        = dynamic_cast<const TestDiscreteFunction*>(u0->master());
-      TEST_FOR_EXCEPTION(df==0, InternalError,
+
+      const DiscreteFuncDataStub* data = u0->commonData();
+      const TestDiscreteFuncData* tdfd  
+        = dynamic_cast<const TestDiscreteFuncData*>(data);
+
+      TEST_FOR_EXCEPTION(tdfd==0, InternalError,
+                         "df " << f[i] << " is not a TestDiscreteFunction");
+      TEST_FOR_EXCEPTION(tdfd==0, InternalError,
                          "TestEvalMediator ctor: field argument "
                          << f[i] << " is not a TestDiscreteFunction");
-      fields_[i] = df->field();
+      fields_[i] = tdfd->field();
     }
 }
 

@@ -82,14 +82,8 @@ BasisFamily BasisFamily::getBasis(const Expr& expr)
     = dynamic_cast<const UnknownFuncElement*>(expr[0].ptr().get());
   if (u != 0)
     {
-      const UnknownFunctionStub* stub = u->master();
-      const UnknownFunction* unk = dynamic_cast<const UnknownFunction*>(stub);
-      TEST_FOR_EXCEPTION(unk==0, InternalError, 
-                         "In BasisFamily::getBasis() input expression " 
-                         << expr[0]
-                         << " derives from UnknownFunctionStub but not from "
-                         "UnknownFunction");
-      return unk->basis()[u->myIndex()];
+      const UnknownFunctionData* data = UnknownFunctionData::getData(u);
+      return data->basis()[u->myIndex()];
     }
 
   /* Next try to process assuming the input is a test function */
@@ -97,14 +91,8 @@ BasisFamily BasisFamily::getBasis(const Expr& expr)
     = dynamic_cast<const TestFuncElement*>(expr[0].ptr().get());
   if (t != 0)
     {
-      const TestFunctionStub* stub = t->master();
-      const TestFunction* test = dynamic_cast<const TestFunction*>(stub);
-      TEST_FOR_EXCEPTION(test==0, InternalError, 
-                         "In BasisFamily::getBasis() input expression " 
-                         << expr[0]
-                         << " derives from TestFunctionStub but not from "
-                         "TestFunction");
-      return test->basis()[t->myIndex()];
+      const TestFunctionData* data = TestFunctionData::getData(t);
+      return data->basis()[t->myIndex()];
     }
 
   /* Next try to process assuming the input is a discrete function */
@@ -112,15 +100,8 @@ BasisFamily BasisFamily::getBasis(const Expr& expr)
     = dynamic_cast<const DiscreteFuncElement*>(expr[0].ptr().get());
   if (d != 0)
     {
-      const DiscreteFunctionStub* stub = d->master();
-      const DiscreteFunction* disc 
-        = dynamic_cast<const DiscreteFunction*>(stub);
-      TEST_FOR_EXCEPTION(disc==0, InternalError, 
-                         "In BasisFamily::getBasis() input expression " 
-                         << expr[0]
-                         << " derives from DiscreteFunctionStub but not from "
-                         "DiscreteFunction");
-      return disc->basis()[d->myIndex()];
+      const DiscreteFunctionData* data = DiscreteFunctionData::getData(d);
+      return data->discreteSpace().basis()[d->myIndex()];
     }
 
   TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, RuntimeError,

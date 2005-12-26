@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
+#include "SundanceTestDiscreteFuncData.hpp"
 #include "SundanceADField.hpp"
 #include "TSFVector.hpp"
 
@@ -53,8 +54,7 @@ namespace SundanceTesting
     /** */
     TestDiscreteFunction(const ADField& field, 
                          const string& name="")
-      :  DiscreteFunctionStub(name, 1), field_(field)
-    {;}
+      :  DiscreteFunctionStub(name, 1, rcp(new TestDiscreteFuncData(field))) {;}
    
     /** virtual destructor */
     virtual ~TestDiscreteFunction() {;}
@@ -63,14 +63,14 @@ namespace SundanceTesting
     ADReal evaluate() const ;
 
     /** */
-    const ADField& field() const {return field_;}
+    const ADField& field() const {return data_->field();}
 
     /* boilerplate */
     GET_RCP(ExprBase);
 
 
   private:
-    ADField field_;
+    RefCountPtr<TestDiscreteFuncData> data_;
   };
 
 }

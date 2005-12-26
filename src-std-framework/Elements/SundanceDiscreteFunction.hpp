@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
+#include "SundanceDiscreteFunctionData.hpp"
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceDiscreteSpace.hpp"
 #include "TSFVector.hpp"
@@ -45,7 +46,6 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
   using namespace Internal;
-
 
   /** 
    * DiscreteFunction represents a function that is discretized
@@ -65,6 +65,39 @@ namespace SundanceStdFwk
     /** */
     DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
                      const string& name="");
+
+    /** */
+    static const DiscreteFunction* discFunc(const Expr& expr);
+
+
+    /** */
+    static DiscreteFunction* discFunc(Expr& expr);
+
+    /** */
+    void updateGhosts() const ;
+
+    /** */
+    void setVector(const Vector<double>& vec);
+
+    /** */
+    const Vector<double>& getVector() const 
+    {return data_->getVector();}
+
+    /** */
+    const DiscreteSpace& discreteSpace() const 
+    {return data_->discreteSpace();}
+
+    /** */
+    const Mesh& mesh() const {return discreteSpace().mesh();}
+
+    /** */
+    const RefCountPtr<DOFMapBase>& map() const {return discreteSpace().map();}
+
+
+    RefCountPtr<GhostView<double> > ghostView() const 
+    {return data_->ghostView();}
+
+    const DiscreteFunctionData* data() const {return data_.get();}
    
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -74,54 +107,16 @@ namespace SundanceStdFwk
     /* boilerplate */
     GET_RCP(ExprBase);
 
-    /** */
-    void updateGhosts() const ;
-
-    /** */
-    void setVector(const Vector<double>& vec);
-
-    /** */
-    const Vector<double>& getVector() const {return vector_;}
-
-    /** */
-    const DiscreteSpace& discreteSpace() const {return space_;}
-
-    /** */
-    const Mesh& mesh() const {return space_.mesh();}
-
-    /** */
-    const RefCountPtr<DOFMapBase>& map() const {return space_.map();}
 
     /** */
     void getLocalValues(int cellDim, 
                         const Array<int>& cellLID,
                         Array<double>& localValues) const ;
 
-    /** */
-    static const DiscreteFunction* discFunc(const Expr& expr);
-
-
-    /** */
-    static DiscreteFunction* discFunc(Expr& expr);
-
-
-    RefCountPtr<GhostView<double> > ghostView() const 
-    {updateGhosts(); return ghostView_;}
-
 
   private:
-    friend class NonlinearProblem;
 
-    /** */
-    const Vector<double>& vector() const {return vector_;}
-
-    DiscreteSpace space_;
-
-    Vector<double> vector_;
-
-    mutable RefCountPtr<GhostView<double> > ghostView_;
-
-    mutable bool ghostsAreValid_;
+    RefCountPtr<DiscreteFunctionData> data_;
 
 #endif /* DOXYGEN_DEVELOPER_ONLY */
   };

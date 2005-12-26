@@ -35,6 +35,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceListExpr.hpp"
+#include "SundanceDiscreteFuncDataStub.hpp"
 
 namespace SundanceCore
 {
@@ -69,7 +70,8 @@ namespace SundanceCore
     {
     public:
       /** */
-      DiscreteFunctionStub(const string& name, int nElems=1);
+      DiscreteFunctionStub(const string& name, int nElems=1,
+                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
 
       /** virtual destructor */
       virtual ~DiscreteFunctionStub() {;}
@@ -78,6 +80,12 @@ namespace SundanceCore
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
 
     protected:
+
+      /** */
+      const RefCountPtr<DiscreteFuncDataStub>& dataStub() const {return data_;}
+
+    private:
+      RefCountPtr<DiscreteFuncDataStub> data_;
     };
   }
 }

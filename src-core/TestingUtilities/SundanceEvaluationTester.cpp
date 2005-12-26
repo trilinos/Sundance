@@ -103,13 +103,16 @@ EvaluationTester::EvaluationTester(const Expr& e)
         = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
       TEST_FOR_EXCEPTION(fe==0, InternalError,
                          "unk " << unks[i] << " is not an UnknownFunction");
-      const TestUnknownFunction* tu 
-        = dynamic_cast<const TestUnknownFunction*>(fe->master());
 
-      TEST_FOR_EXCEPTION(tu==0, InternalError,
+      const UnknownFuncDataStub* data = fe->commonData();
+
+      const TestUnknownFuncData* tufd  
+        = dynamic_cast<const TestUnknownFuncData*>(data);
+
+      TEST_FOR_EXCEPTION(tufd==0, InternalError,
                          "unk " << unks[i] << " is not a TestUnknownFunction");
 
-      Expr discFunc = tu->createDiscreteFunction();
+      Expr discFunc = tufd->createDiscreteFunction(fe->name());
 
       const DiscreteFuncElement* df 
         = dynamic_cast<const DiscreteFuncElement*>(discFunc[0].ptr().get());

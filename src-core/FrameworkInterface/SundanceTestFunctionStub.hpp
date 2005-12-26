@@ -34,6 +34,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceSymbolicFunc.hpp"
+#include "SundanceTestFuncDataStub.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -76,13 +77,23 @@ namespace SundanceCore
     {
     public:
       /** Construct a scalar-valued test function */
-      TestFunctionStub(const string& name, int nElems=1);
+      TestFunctionStub(const string& name, int nElems=1,
+                       const RefCountPtr<const TestFuncDataStub>& data=RefCountPtr<const TestFuncDataStub>());
 
       /** */
       virtual ~TestFunctionStub() {;}
 
       /** */
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+
+    protected:
+
+      /** */
+      const RefCountPtr<const TestFuncDataStub>& dataStub() const 
+      {return data_;}
+
+    private:
+      RefCountPtr<const TestFuncDataStub> data_;
     };
   }
 }

@@ -28,29 +28,47 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
+#ifndef SUNDANCE_TESTUNKNOWNFUNCDATA_H
+#define SUNDANCE_TESTUNKNOWNFUNCDATA_H
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+#include "SundanceDefs.hpp"
+#include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceUnknownFuncDataStub.hpp"
+#include "SundanceADField.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
-
-
-XMLObject TestFuncElement::toXML() const 
+namespace SundanceTesting
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  using namespace SundanceUtils;
+  using namespace Teuchos;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
+
+  /** 
+   *
+   */
+  class TestUnknownFuncData : public UnknownFuncDataStub
+  {
+  public:
+    /** */
+    TestUnknownFuncData(const ADField& field)
+      : UnknownFuncDataStub(), field_(field)
+    {;}
+    
+    /** virtual destructor */
+    virtual ~TestUnknownFuncData() {;}
+
+    /** */
+    const ADField& field() const {return field_;}
+
+    /** */
+    Expr createDiscreteFunction(const string& name) const ;
+
+  private:
+    ADField field_;
+  };
+
 }
 
 
+
+#endif

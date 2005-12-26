@@ -91,6 +91,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.hpp \
@@ -102,15 +103,18 @@ $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.hpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.hpp
 
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp \
@@ -119,8 +123,12 @@ $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp
+$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp 
 
 SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\

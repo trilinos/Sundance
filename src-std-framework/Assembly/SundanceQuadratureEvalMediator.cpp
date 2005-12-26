@@ -212,7 +212,7 @@ void QuadratureEvalMediator
                           const Array<MultiIndex>& multiIndices,
                           Array<RefCountPtr<EvalVector> >& vec) const
 {
-  const DiscreteFunction* f = dynamic_cast<const DiscreteFunction*>(expr->master());
+  const DiscreteFunctionData* f = DiscreteFunctionData::getData(expr);
   TEST_FOR_EXCEPTION(f==0, InternalError,
                      "QuadratureEvalMediator::evalDiscreteFuncElement() called "
                      "with expr that is not a discrete function");
@@ -295,7 +295,7 @@ void QuadratureEvalMediator
     }
 }
 
-void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunction* f,
+void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
                                                const MultiIndex& mi) const 
 {
   int nFuncs = f->discreteSpace().nFunc();

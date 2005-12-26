@@ -35,6 +35,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceSymbolicFunc.hpp"
+#include "SundanceUnknownFuncDataStub.hpp"
 
 namespace SundanceCore
 {
@@ -71,13 +72,22 @@ namespace SundanceCore
     {
     public:
       /** */
-      UnknownFunctionStub(const string& name, int nElems=1);
+      UnknownFunctionStub(const string& name, int nElems=1,
+                          const RefCountPtr<const UnknownFuncDataStub>& data=RefCountPtr<const UnknownFuncDataStub>());
 
       /** virtual destructor */
       virtual ~UnknownFunctionStub() {;}
 
       /** */
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+
+    protected:
+
+      /** */
+      const RefCountPtr<const UnknownFuncDataStub>& dataStub() const {return data_;}
+
+    private:
+      RefCountPtr<const UnknownFuncDataStub> data_;
 
 
     };

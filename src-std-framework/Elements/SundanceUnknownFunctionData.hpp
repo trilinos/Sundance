@@ -28,29 +28,49 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
+#ifndef SUNDANCE_UNKNOWNFUNCTIONDATA_H
+#define SUNDANCE_UNKNOWNFUNCTIONDATA_H
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+#include "SundanceDefs.hpp"
+#include "SundanceUnknownFuncDataStub.hpp"
+#include "SundanceUnknownFuncElement.hpp"
+#include "SundanceFuncWithBasis.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
-
-
-XMLObject TestFuncElement::toXML() const 
+namespace SundanceStdFwk
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  using namespace SundanceUtils;
+  using namespace Teuchos;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
+
+  
+  namespace Internal
+  {
+    /** 
+     * UnknownFunctionData contains the specification of an unknown
+     * function's basis.
+     */
+    class UnknownFunctionData : public UnknownFuncDataStub
+    {
+    public:
+      /** */
+      UnknownFunctionData(const Array<BasisFamily>& basis)
+        : basis_(basis) {;}
+
+      /** */
+      virtual ~UnknownFunctionData(){;}
+      
+      /** */
+      const Array<BasisFamily>& basis() const {return basis_;}
+
+      /** */
+      static const UnknownFunctionData* getData(const UnknownFuncElement* ufe);
+    private:
+      Array<BasisFamily> basis_;
+    };
+
+  }
 }
 
 
+#endif

@@ -28,29 +28,45 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
+#ifndef SUNDANCE_TESTDISCRETEFUNCDATA_H
+#define SUNDANCE_TESTDISCRETEFUNCDATA_H
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+#include "SundanceDefs.hpp"
+#include "SundanceDiscreteFunctionStub.hpp"
+#include "SundanceDiscreteFuncDataStub.hpp"
+#include "SundanceADField.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
-
-
-XMLObject TestFuncElement::toXML() const 
+namespace SundanceTesting
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  using namespace SundanceUtils;
+  using namespace Teuchos;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
+
+  /** 
+   *
+   */
+  class TestDiscreteFuncData : public DiscreteFuncDataStub
+  {
+  public:
+    /** */
+    TestDiscreteFuncData(const ADField& field)
+      : DiscreteFuncDataStub(), field_(field)
+    {;}
+    
+    /** virtual destructor */
+    virtual ~TestDiscreteFuncData() {;}
+
+    /** */
+    const ADField& field() const {return field_;}
+
+
+  private:
+    ADField field_;
+  };
+
 }
 
 
+
+#endif

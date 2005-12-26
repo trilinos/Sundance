@@ -61,14 +61,14 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
           discreteSpace_ = df->discreteSpace();
           map_ = df->map();
           indices_ = tuple(0);
-          df_ = df;
+          df_ = df->data();
         }
       const DiscreteFuncElement* dfe 
         = dynamic_cast<const DiscreteFuncElement*>(expr[0].ptr().get());
       if (dfe != 0)
         {
-          const DiscreteFunction* f
-            = dynamic_cast<const DiscreteFunction*>(dfe->master());
+          const DiscreteFunctionData* f = DiscreteFunctionData::getData(dfe);
+
           TEST_FOR_EXCEPTION(f == 0, RuntimeError,
                              "ExprFieldWrapper ctor argument "
                              << expr << " is not a discrete function");

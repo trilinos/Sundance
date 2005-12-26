@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceUnknownFunctionData.hpp"
 #include "SundanceFuncWithBasis.hpp"
 
 namespace SundanceStdFwk
@@ -42,6 +43,8 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
   using namespace Internal;
+
+  
 
   /** 
    * UnknownFunction represents an unknown function in a finite
@@ -54,15 +57,10 @@ namespace SundanceStdFwk
   {
   public:
     /** */
-    UnknownFunction(const BasisFamily& basis, const string& name="")
-      : UnknownFunctionStub(name, basis.dim()), FuncWithBasis(basis)
-    {;}
+    UnknownFunction(const BasisFamily& basis, const string& name="");
 
     /** */
-    UnknownFunction(const Array<BasisFamily>& basis, const string& name="")
-      : UnknownFunctionStub(name, BasisFamily::size(basis)), 
-        FuncWithBasis(basis)
-    {;}
+    UnknownFunction(const Array<BasisFamily>& basis, const string& name="");
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */

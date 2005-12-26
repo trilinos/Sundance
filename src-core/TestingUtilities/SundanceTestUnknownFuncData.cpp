@@ -28,29 +28,24 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFuncElement.hpp"
 
+#include "SundanceTestDiscreteFunction.hpp"
+#include "SundanceTestUnknownFuncData.hpp"
+#include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
+#include "SundanceExceptions.hpp"
+
+using namespace SundanceCore::Internal;
+using namespace SundanceCore::Internal;
 using namespace SundanceCore;
 using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceTesting;
+using namespace TSFExtended;
 using namespace Teuchos;
+using namespace std;
 
-TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
-                                 const string& name,
-                                 const string& suffix,
-                                 int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
-{}
-
-
-XMLObject TestFuncElement::toXML() const 
+Expr TestUnknownFuncData::createDiscreteFunction(const string& name) const 
 {
-	XMLObject rtn("TestFuncElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  return new TestDiscreteFunction(field_, name + "0");
 }
-
 

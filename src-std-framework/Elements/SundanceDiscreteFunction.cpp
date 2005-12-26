@@ -52,52 +52,49 @@ static Time& getLocalValsTimer()
   return *rtn;
 }
 
-DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, const string& name)
-  : DiscreteFunctionStub(name, space.nFunc()), 
+DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
+                                   const string& name)
+  : DiscreteFunctionStub(name, space.nFunc(),
+                         rcp(new DiscreteFunctionData(space))), 
     FuncWithBasis(space.basis()),
-    space_(space),
-    vector_(space_.createVector()),
-    ghostView_(),
-    ghostsAreValid_(false)
-{}
+    data_()
+{
+  data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
+}
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const double& constantValue,
                                    const string& name)
-  : DiscreteFunctionStub(name, space.nFunc()), 
+  : DiscreteFunctionStub(name, space.nFunc(),
+                         rcp(new DiscreteFunctionData(space, constantValue))), 
     FuncWithBasis(space.basis()),
-    space_(space),
-    vector_(space_.createVector()),
-    ghostView_(),
-    ghostsAreValid_(false)
+    data_()
 {
-  vector_.setToConstant(constantValue);
+  data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
+  Vector<double> vec = data_->getVector();
+  vec.setToConstant(constantValue);
+  data_->setVector(vec);
 }
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
-                                   const Vector<double>& vector,
+                                   const Vector<double>& vec,
                                    const string& name)
-  : DiscreteFunctionStub(name, space.nFunc()), 
+  : DiscreteFunctionStub(name, space.nFunc(),
+                         rcp(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),
-    space_(space),
-    vector_(vector),
-    ghostView_(),
-    ghostsAreValid_(false)
-{}
+    data_()
+{
+  data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
+}
 
 void DiscreteFunction::setVector(const Vector<double>& vec) 
 {
-  ghostsAreValid_ = false;
-  vector_ = vec;
+  data_->setVector(vec);
 }
 
 void DiscreteFunction::updateGhosts() const
 {
-  if (!ghostsAreValid_)
-    {
-      space_.importGhosts(vector_, ghostView_);
-      ghostsAreValid_ = true;
-    }
+  data_->updateGhosts();
 }
 
 
@@ -106,43 +103,7 @@ void DiscreteFunction::getLocalValues(int cellDim,
                         Array<double>& localValues) const 
 {
   TimeMonitor timer(getLocalValsTimer());
-  Tabs tab;
-
-  if (Evaluator::classVerbosity() > VerbHigh)
-    {
-      cerr << tab << "getting DF local values" << endl;
-    }
-  updateGhosts();
-
-  const RefCountPtr<DOFMapBase>& map = space_.map();
-  static Array<int> dofs;
-  static Array<int> indices;
-  unsigned int nNodes;
-  map->getDOFsForCellBatch(cellDim, cellLID, dofs, nNodes);
-  int nFunc = space_.nFunc();
-  int nCells = cellLID.size();
-  localValues.resize(nFunc*cellLID.size()*nNodes);
-  indices.resize(dofs.size());
-  
-  /* store the values in fortran order with node number running fastest,
-   * then function ID, then cell ID */
-  for (unsigned int c=0; c<cellLID.size(); c++)
-    {
-      for (int f=0; f<nFunc; f++)
-        {
-          for (unsigned int n=0; n<nNodes; n++)
-            {
-              indices[(c*nFunc + f)*nNodes + n]
-                = dofs[(f*nCells + c)*nNodes + n];
-            }
-        }
-    }
-  ghostView_->getElements(&(indices[0]), indices.size(), localValues);
-
-  if (Evaluator::classVerbosity() > VerbHigh)
-    {
-      cerr << tab << "local values are " << localValues << endl;
-    }
+  data_->getLocalValues(cellDim, cellLID, localValues);
 }
 
 

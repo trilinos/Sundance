@@ -45,10 +45,3 @@ using namespace TSFExtended;
 using namespace Teuchos;
 using namespace std;
 
-Expr TestUnknownFunction::createDiscreteFunction() const 
-{
-  const UnknownFuncElement* u 
-    = dynamic_cast<const UnknownFuncElement*>(element(0).ptr().get());
-
-  return new TestDiscreteFunction(field_, u->rootName() + "0");
-}

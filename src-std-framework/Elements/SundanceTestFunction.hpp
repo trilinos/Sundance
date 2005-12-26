@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceTestFunctionStub.hpp"
+#include "SundanceTestFunctionData.hpp"
 #include "SundanceFuncWithBasis.hpp"
 
 namespace SundanceStdFwk
@@ -54,17 +55,12 @@ namespace SundanceStdFwk
   {
   public:
     /** */
-    TestFunction(const BasisFamily& basis, const string& name="")
-      : TestFunctionStub(name, basis.dim()), FuncWithBasis(basis)
-    {;}
+    TestFunction(const BasisFamily& basis, const string& name="");
 
     /** 
      * 
      */
-    TestFunction(const Array<BasisFamily>& basis, const string& name="")
-      : TestFunctionStub(name, BasisFamily::size(basis)), 
-        FuncWithBasis(basis)
-    {;}
+    TestFunction(const Array<BasisFamily>& basis, const string& name="");
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */

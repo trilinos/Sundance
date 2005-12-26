@@ -183,13 +183,18 @@ am__objects_2 = SundanceBasisFamilyBase.$(OBJEXT) \
 	SundanceBasisFamily.$(OBJEXT) \
 	SundanceClosedNewtonCotes.$(OBJEXT) \
 	SundanceDiscreteFunction.$(OBJEXT) \
+	SundanceDiscreteFunctionData.$(OBJEXT) \
 	SundanceDiscreteSpace.$(OBJEXT) \
 	SundanceFIATExpansion.$(OBJEXT) SundanceFIATLagrange.$(OBJEXT) \
 	SundanceGauss1D.$(OBJEXT) SundanceGaussianQuadrature.$(OBJEXT) \
 	SundanceLagrange.$(OBJEXT) SundanceQuadratureFamily.$(OBJEXT) \
 	SundanceQuadratureFamilyBase.$(OBJEXT) \
+	SundanceTestFunction.$(OBJEXT) \
+	SundanceTestFunctionData.$(OBJEXT) \
 	SundanceTetQuadrature.$(OBJEXT) \
-	SundanceTriangleQuadrature.$(OBJEXT)
+	SundanceTriangleQuadrature.$(OBJEXT) \
+	SundanceUnknownFunction.$(OBJEXT) \
+	SundanceUnknownFunctionData.$(OBJEXT)
 am__objects_3 = SundanceDOFMapBase.$(OBJEXT) \
 	SundanceDOFMapBuilder.$(OBJEXT) \
 	SundanceHomogeneousDOFMap.$(OBJEXT)
@@ -421,6 +426,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.hpp \
@@ -432,15 +438,18 @@ $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.hpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.hpp
 
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp \
@@ -449,8 +458,12 @@ $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp
+$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp 
 
 SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
@@ -810,6 +823,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDOFMapBuilder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDimensionalCellFilter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDiscreteFunction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDiscreteFunctionData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDiscreteSpace.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceElementIntegral.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExplicitCellSet.Po@am__quote@
@@ -840,9 +854,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSideCellFilter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceStdFwkEvalMediator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSubsetCellFilter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTestFunction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTestFunctionData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTetQuadrature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTriangleQuadrature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTrivialGrouper.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownFunction.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownFunctionData.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -1152,6 +1170,20 @@ SundanceDiscreteFunction.obj: $(top_srcdir)/src-std-framework/Elements/SundanceD
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceDiscreteFunction.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp'; fi`
 
+SundanceDiscreteFunctionData.o: $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceDiscreteFunctionData.o -MD -MP -MF "$(DEPDIR)/SundanceDiscreteFunctionData.Tpo" -c -o SundanceDiscreteFunctionData.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceDiscreteFunctionData.Tpo" "$(DEPDIR)/SundanceDiscreteFunctionData.Po"; else rm -f "$(DEPDIR)/SundanceDiscreteFunctionData.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp' object='SundanceDiscreteFunctionData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceDiscreteFunctionData.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp
+
+SundanceDiscreteFunctionData.obj: $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceDiscreteFunctionData.obj -MD -MP -MF "$(DEPDIR)/SundanceDiscreteFunctionData.Tpo" -c -o SundanceDiscreteFunctionData.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceDiscreteFunctionData.Tpo" "$(DEPDIR)/SundanceDiscreteFunctionData.Po"; else rm -f "$(DEPDIR)/SundanceDiscreteFunctionData.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp' object='SundanceDiscreteFunctionData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceDiscreteFunctionData.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp'; fi`
+
 SundanceDiscreteSpace.o: $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceDiscreteSpace.o -MD -MP -MF "$(DEPDIR)/SundanceDiscreteSpace.Tpo" -c -o SundanceDiscreteSpace.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceDiscreteSpace.Tpo" "$(DEPDIR)/SundanceDiscreteSpace.Po"; else rm -f "$(DEPDIR)/SundanceDiscreteSpace.Tpo"; exit 1; fi
@@ -1264,6 +1296,34 @@ SundanceQuadratureFamilyBase.obj: $(top_srcdir)/src-std-framework/Elements/Sunda
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceQuadratureFamilyBase.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp'; fi`
 
+SundanceTestFunction.o: $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTestFunction.o -MD -MP -MF "$(DEPDIR)/SundanceTestFunction.Tpo" -c -o SundanceTestFunction.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTestFunction.Tpo" "$(DEPDIR)/SundanceTestFunction.Po"; else rm -f "$(DEPDIR)/SundanceTestFunction.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp' object='SundanceTestFunction.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTestFunction.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp
+
+SundanceTestFunction.obj: $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTestFunction.obj -MD -MP -MF "$(DEPDIR)/SundanceTestFunction.Tpo" -c -o SundanceTestFunction.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTestFunction.Tpo" "$(DEPDIR)/SundanceTestFunction.Po"; else rm -f "$(DEPDIR)/SundanceTestFunction.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp' object='SundanceTestFunction.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTestFunction.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp'; fi`
+
+SundanceTestFunctionData.o: $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTestFunctionData.o -MD -MP -MF "$(DEPDIR)/SundanceTestFunctionData.Tpo" -c -o SundanceTestFunctionData.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTestFunctionData.Tpo" "$(DEPDIR)/SundanceTestFunctionData.Po"; else rm -f "$(DEPDIR)/SundanceTestFunctionData.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp' object='SundanceTestFunctionData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTestFunctionData.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp
+
+SundanceTestFunctionData.obj: $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTestFunctionData.obj -MD -MP -MF "$(DEPDIR)/SundanceTestFunctionData.Tpo" -c -o SundanceTestFunctionData.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTestFunctionData.Tpo" "$(DEPDIR)/SundanceTestFunctionData.Po"; else rm -f "$(DEPDIR)/SundanceTestFunctionData.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp' object='SundanceTestFunctionData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTestFunctionData.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp'; fi`
+
 SundanceTetQuadrature.o: $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceTetQuadrature.o -MD -MP -MF "$(DEPDIR)/SundanceTetQuadrature.Tpo" -c -o SundanceTetQuadrature.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceTetQuadrature.Tpo" "$(DEPDIR)/SundanceTetQuadrature.Po"; else rm -f "$(DEPDIR)/SundanceTetQuadrature.Tpo"; exit 1; fi
@@ -1291,6 +1351,34 @@ SundanceTriangleQuadrature.obj: $(top_srcdir)/src-std-framework/Elements/Sundanc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp' object='SundanceTriangleQuadrature.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTriangleQuadrature.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp'; fi`
+
+SundanceUnknownFunction.o: $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUnknownFunction.o -MD -MP -MF "$(DEPDIR)/SundanceUnknownFunction.Tpo" -c -o SundanceUnknownFunction.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUnknownFunction.Tpo" "$(DEPDIR)/SundanceUnknownFunction.Po"; else rm -f "$(DEPDIR)/SundanceUnknownFunction.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp' object='SundanceUnknownFunction.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnknownFunction.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp
+
+SundanceUnknownFunction.obj: $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUnknownFunction.obj -MD -MP -MF "$(DEPDIR)/SundanceUnknownFunction.Tpo" -c -o SundanceUnknownFunction.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUnknownFunction.Tpo" "$(DEPDIR)/SundanceUnknownFunction.Po"; else rm -f "$(DEPDIR)/SundanceUnknownFunction.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp' object='SundanceUnknownFunction.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnknownFunction.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp'; fi`
+
+SundanceUnknownFunctionData.o: $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUnknownFunctionData.o -MD -MP -MF "$(DEPDIR)/SundanceUnknownFunctionData.Tpo" -c -o SundanceUnknownFunctionData.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUnknownFunctionData.Tpo" "$(DEPDIR)/SundanceUnknownFunctionData.Po"; else rm -f "$(DEPDIR)/SundanceUnknownFunctionData.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp' object='SundanceUnknownFunctionData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnknownFunctionData.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp
+
+SundanceUnknownFunctionData.obj: $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUnknownFunctionData.obj -MD -MP -MF "$(DEPDIR)/SundanceUnknownFunctionData.Tpo" -c -o SundanceUnknownFunctionData.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUnknownFunctionData.Tpo" "$(DEPDIR)/SundanceUnknownFunctionData.Po"; else rm -f "$(DEPDIR)/SundanceUnknownFunctionData.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp' object='SundanceUnknownFunctionData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnknownFunctionData.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp'; fi`
 
 SundanceDOFMapBase.o: $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceDOFMapBase.o -MD -MP -MF "$(DEPDIR)/SundanceDOFMapBase.Tpo" -c -o SundanceDOFMapBase.o `test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp; \

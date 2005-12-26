@@ -58,7 +58,7 @@ void StdFwkEvalMediator::setCellBatch(const RefCountPtr<Array<int> >& cellLID,
   J_ = J;
 
   /* mark the function caches as invalid */
-  Map<const DiscreteFunction*, bool>::iterator iter;
+  Map<const DiscreteFunctionData*, bool>::iterator iter;
   for (iter = fCacheIsValid_.begin(); iter != fCacheIsValid_.end(); iter++)
     {
       iter->second = false;

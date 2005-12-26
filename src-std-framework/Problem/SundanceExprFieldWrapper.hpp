@@ -72,7 +72,7 @@ namespace SundanceStdFwk
     public:
       Expr expr_;
 
-      const DiscreteFunction* df_;
+      const DiscreteFunctionData* df_;
 
       DiscreteSpace discreteSpace_;
 

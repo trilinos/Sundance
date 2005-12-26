@@ -109,7 +109,7 @@ namespace SundanceStdFwk
 
 
       /** */
-      void fillFunctionCache(const DiscreteFunction* f,
+      void fillFunctionCache(const DiscreteFunctionData* f,
                              const MultiIndex& mi) const ;
 
      

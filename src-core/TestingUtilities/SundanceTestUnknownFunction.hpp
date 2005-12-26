@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestUnknownFuncData.hpp"
 #include "SundanceADField.hpp"
 
 namespace SundanceTesting
@@ -50,7 +51,7 @@ namespace SundanceTesting
   public:
     /** */
     TestUnknownFunction(const ADField& field, const string& name="")
-      : UnknownFunctionStub(name, 1), field_(field)
+      : UnknownFunctionStub(name, 1, rcp(new TestUnknownFuncData(field)))
     {;}
     
     /** virtual destructor */
@@ -63,7 +64,7 @@ namespace SundanceTesting
     GET_RCP(ExprBase);
 
   private:
-    ADField field_;
+    
   };
 
 }
