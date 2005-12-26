@@ -137,7 +137,8 @@ using namespace SundanceUtils;
        * @param facetIndex index into the list of the cell's facets
        */
       virtual int facetLID(int cellDim, int cellLID,
-                           int facetDim, int facetIndex) const = 0 ;
+                           int facetDim, int facetIndex,
+                           int& facetOrientation) const = 0 ;
 
       /** 
        * Return by reference argument an array containing
@@ -147,7 +148,9 @@ using namespace SundanceUtils;
       virtual void getFacetLIDs(int cellDim, 
                                 const Array<int>& cellLID,
                                 int facetDim,
-                                Array<int>& facetLID) const = 0 ;
+                                Array<int>& facetLID,
+                                bool getOrientations,
+                                Array<int>& facetOrientations) const = 0 ;
 
       /**
        * Return by reference argument an
@@ -157,7 +160,8 @@ using namespace SundanceUtils;
        * provide a more efficient implementation if desired. 
        */
       void getFacetArray(int cellDim, int cellLID, int facetDim, 
-                         Array<int>& facetLIDs) const ;
+                         Array<int>& facetLIDs,
+                         Array<int>& facetOrientations) const ;
 
 
       /** 

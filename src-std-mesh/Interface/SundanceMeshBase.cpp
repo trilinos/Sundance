@@ -55,15 +55,18 @@ static Time& facetGrabTimer()
 }
 
 void MeshBase::getFacetArray(int cellDim, int cellLID, int facetDim, 
-                             Array<int>& facetLIDs) const
+                             Array<int>& facetLIDs,
+                             Array<int>& facetOrientations) const
 {
   TimeMonitor timer(facetGrabTimer());
 
   int nf = numFacets(cellDim, cellLID, facetDim);
   facetLIDs.resize(nf);
+  facetOrientations.resize(nf);
   for (int f=0; f<nf; f++) 
     {
-      facetLIDs[f] = facetLID(cellDim, cellLID, facetDim, f);
+      facetLIDs[f] = facetLID(cellDim, cellLID, facetDim, f, 
+                              facetOrientations[f]);
     }
 }
 

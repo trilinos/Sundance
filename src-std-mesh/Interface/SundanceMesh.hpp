@@ -136,8 +136,11 @@ using namespace SundanceUtils;
      * @param facetIndex index into the list of the cell's facets
      */
     int facetLID(int cellDim, int cellLID,
-                 int facetDim, int facetIndex) const 
-    {return ptr()->facetLID(cellDim, cellLID, facetDim, facetIndex);}
+                 int facetDim, int facetIndex,
+                 int& facetOrientation) const 
+    {return ptr()->facetLID(cellDim, cellLID, 
+                            facetDim, facetIndex,
+                            facetOrientation);}
 
     /**
      * Return by reference argument an
@@ -145,8 +148,11 @@ using namespace SundanceUtils;
      * facets of the given cell
      */
     void getFacetArray(int cellDim, int cellLID, int facetDim, 
-                       Array<int>& facetLIDs) const 
-    {ptr()->getFacetArray(cellDim, cellLID, facetDim, facetLIDs);}
+                       Array<int>& facetLIDs,
+                       Array<int>& facetOrientations) const 
+    {ptr()->getFacetArray(cellDim, cellLID, 
+                          facetDim, facetLIDs,
+                          facetOrientations);}
 
     /** 
      * Return by reference argument an array containing
@@ -156,8 +162,12 @@ using namespace SundanceUtils;
     void getFacetLIDs(int cellDim, 
                       const Array<int>& cellLID,
                       int facetDim,
-                      Array<int>& facetLID) const 
-    {ptr()->getFacetLIDs(cellDim, cellLID, facetDim, facetLID);}
+                      Array<int>& facetLID,
+                      bool getOrientations,
+                      Array<int>& facetOrientations) const 
+    {ptr()->getFacetLIDs(cellDim, cellLID, 
+                         facetDim, facetLID, getOrientations,
+                         facetOrientations);}
 
 
     /** 

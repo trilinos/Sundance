@@ -124,9 +124,12 @@ namespace SundanceStdMesh
        * facets are being obtained
        * @param facetDim dimension of the desired facet
        * @param facetIndex index into the list of the cell's facets
+       * @param facetOrientation orientation of the facet as seen from
+       * the given cell (returned via reference)
        */
       virtual int facetLID(int cellDim, int cellLID,
-                           int facetDim, int facetIndex) const  ;
+                           int facetDim, int facetIndex,
+                           int& facetOrientation) const  ;
 
       /** 
        * Return by reference argument an array containing
@@ -136,7 +139,9 @@ namespace SundanceStdMesh
       virtual void getFacetLIDs(int cellDim, 
                                 const Array<int>& cellLID,
                                 int facetDim,
-                                Array<int>& facetLID) const ;
+                                Array<int>& facetLID,
+                                bool getOrientations,
+                                Array<int>& facetOrientations) const ;
 
       /** 
        * Return the number of maximal cofacets of the given cell
@@ -237,11 +242,17 @@ namespace SundanceStdMesh
       /** tuples of edge indices for the faces */
       ArrayOfTuples<int> faceEdges_;
     
+      /** tuples of edge signs for the faces */
+      ArrayOfTuples<int> faceEdgeSigns_;
+    
       /** tuples of vertex indices for the elements */
       ArrayOfTuples<int> elemVerts_;
 
       /** tuples of edge indices for the elements */
       ArrayOfTuples<int> elemEdges_;
+
+      /** tuples of edge orientations for the elements */
+      ArrayOfTuples<int> elemEdgeSigns_;
 
       /** tuples of face indices for the elements */
       ArrayOfTuples<int> elemFaces_;

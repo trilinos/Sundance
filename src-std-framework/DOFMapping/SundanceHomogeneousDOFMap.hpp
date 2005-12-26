@@ -105,6 +105,7 @@ using namespace SundanceStdMesh::Internal;
 
       /** */
       void setDOFs(int cellDim, int cellLID, 
+                   int orientation,
                    int& nextDOF, bool isRemote=false);
 
       /** */

@@ -172,6 +172,7 @@ void VTKWriter::writeCells(ostream& os) const
 
   int dim = mesh().spatialDim();
   int nc = mesh().numCells(dim);
+  int dummySign;
 
   os << conn.header() << endl;
   
@@ -181,7 +182,7 @@ void VTKWriter::writeCells(ostream& os) const
       
       for (int i=0; i<nNodes; i++)
         {
-          os << " " << mesh().facetLID(dim,c,0,i);
+          os << " " << mesh().facetLID(dim,c,0,i,dummySign);
         }
       os << endl;
     }

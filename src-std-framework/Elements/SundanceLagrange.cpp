@@ -70,6 +70,8 @@ int Lagrange::nNodes(int /* spatialDim */,
             return 3;
           case 2:
             return 6;
+          case 3:
+            return 10;
           default:
             TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
                                << " not implemented in Lagrange basis");
@@ -121,8 +123,14 @@ void Lagrange::getLocalDOFs(const CellType& cellType,
         dofs[1] = tuple(makeRange(3,2+n), 
                         makeRange(3+n, 2+2*n),
                         makeRange(3+2*n, 2+3*n));
-                                
-        dofs[2] = tuple(makeRange(3, order()));
+        if (order()<3)
+          {
+            dofs[2] = tuple(Array<int>());
+          }
+        else 
+          {
+            dofs[2] = tuple(makeRange(3+3*n, 3+3*n));
+          }
         return;
       }
     case TetCell:
@@ -225,6 +233,13 @@ void Lagrange::evalOnLine(const Point& pt,
 			tmp[1] = 2.0*x*(x-0.5);
 			tmp[2] = 4.0*x*(1.0-x);
 			break;
+    case 3:
+      tmp[0] = 9.0/2.0 * (1.0 - x) * (1.0/3.0 - x) * (2.0/3.0 - x);
+      tmp[1] = 9.0/2.0 * x * (x - 1.0/3.0) * (x - 2.0/3.0);
+      tmp[2] = 27.0/2.0 * x * (1.0 - x) * (2.0/3.0 - x);
+      tmp[3] = 27.0/2.0 * x * (1.0 - x) * (1.0/3.0 - x);
+
+      break;
 		default:
 			SUNDANCE_ERROR("Lagrange::evalOnLine polynomial order > 2 has not been"
                      " implemented");
@@ -277,6 +292,25 @@ void Lagrange::evalOnTriangle(const Point& pt,
 			tmp[4] = 4.0*x*y;
 			tmp[5] = 4.0*y*(1.0-x-y);
 			break;
+    case 3:
+      result.resize(10);
+      tmp.resize(10);
+      {
+        ADReal q1 = 1.0 - x - y;
+        ADReal q2 = x;
+        ADReal q3 = y;
+        tmp[0] = 9.0/2.0 * q1 * (q1 - 2.0/3.0) * (q1 - 1.0/3.0);
+        tmp[1] = 9.0/2.0 * q2 * (q2 - 2.0/3.0) * (q2 - 1.0/3.0);
+        tmp[2] = 9.0/2.0 * q3 * (q3 - 2.0/3.0) * (q3 - 1.0/3.0);
+        tmp[3] = 27.0/2.0 * q1 * q2   * (q1 - 1.0/3.0);
+        tmp[4] = 27.0/2.0 * q1 * q2   * (q2 - 1.0/3.0);
+        tmp[5] = 27.0/2.0 * q2 * q3   * (q2 - 1.0/3.0);
+        tmp[6] = 27.0/2.0 * q2 * q3   * (q3 - 1.0/3.0);
+        tmp[7] = 27.0/2.0 * q3 * q1   * (q3 - 1.0/3.0);
+        tmp[8] = 27.0/2.0 * q3 * q1   * (q1 - 1.0/3.0);
+        tmp[9] = 27.0 * q1 * q2 * q3;
+      }
+      break;
 		default:
 			SUNDANCE_ERROR("Lagrange::evalOnTriangle poly order > 2");
 		}

@@ -135,6 +135,7 @@ void TriangleWriter::writeFaces(const string& filename) const
 
   int dim = 2;
   int nFaces = mesh().numCells(dim);
+  int dummySign;
 
   os << nFaces << " 0" << endl;
 
@@ -145,7 +146,7 @@ void TriangleWriter::writeFaces(const string& filename) const
       
       for (int i=0; i<nNodes; i++)
         {
-          os << " " << mesh().facetLID(2,c,0,i) + indexOffset_;
+          os << " " << mesh().facetLID(2,c,0,i,dummySign) + indexOffset_;
         }
       os << endl;
     }
@@ -164,6 +165,7 @@ void TriangleWriter::writeEdges(const string& filename) const
   int dim = 1;
   int nEdges = mesh().numCells(dim);
   int nNodes = 2;
+  int dummySign;
 
   os << nEdges << " 0" << endl;
 
@@ -172,7 +174,7 @@ void TriangleWriter::writeEdges(const string& filename) const
       os << c + indexOffset_;
       for (int i=0; i<nNodes; i++)
         {
-          os << " " << mesh().facetLID(1,c,0,i) + indexOffset_;
+          os << " " << mesh().facetLID(1,c,0,i,dummySign) + indexOffset_;
         }
       os << endl;
     }
@@ -191,6 +193,7 @@ void TriangleWriter::writeCells(const string& filename) const
   int dim = mesh().spatialDim();
   int nCells = mesh().numCells(dim);
   int nAttr = cellScalarFields().length();
+  int dummySign;
 
   os << nCells << " " << dim+1 << " " << nAttr << endl;
 
@@ -201,7 +204,7 @@ void TriangleWriter::writeCells(const string& filename) const
       
       for (int i=0; i<nNodes; i++)
         {
-          os << " " << mesh().facetLID(dim,c,0,i) + indexOffset_;
+          os << " " << mesh().facetLID(dim,c,0,i,dummySign) + indexOffset_;
         }
       /*
       for (int f=0; f<nAttr; f++)

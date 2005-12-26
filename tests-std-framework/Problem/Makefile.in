@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
+SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(HighOrderPoisson2D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -134,12 +134,12 @@ CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
 am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
-	NoxPoisson1D$(EXEEXT) PoissonBoltzmann2D$(EXEEXT) \
-	RadDiff1D$(EXEEXT) NoxAlgebraic$(EXEEXT) Coupled1D$(EXEEXT) \
-	Coupled2D$(EXEEXT) Helmholtz1D$(EXEEXT) \
-	VorticityNavierStokes2D$(EXEEXT) VorticityStokes2D$(EXEEXT) \
-	AdvectionDiffusion2D$(EXEEXT) LinearVariationalTest$(EXEEXT) \
-	OptPoisson1D$(EXEEXT)
+	HighOrderPoisson2D$(EXEEXT) NoxPoisson1D$(EXEEXT) \
+	PoissonBoltzmann2D$(EXEEXT) RadDiff1D$(EXEEXT) \
+	NoxAlgebraic$(EXEEXT) Coupled1D$(EXEEXT) Coupled2D$(EXEEXT) \
+	Helmholtz1D$(EXEEXT) VorticityNavierStokes2D$(EXEEXT) \
+	VorticityStokes2D$(EXEEXT) AdvectionDiffusion2D$(EXEEXT) \
+	LinearVariationalTest$(EXEEXT) OptPoisson1D$(EXEEXT)
 am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) \
 	FunctionalTest$(EXEEXT) Kepler$(EXEEXT) Stokes2D$(EXEEXT)
@@ -164,6 +164,9 @@ am_FunctionalTest_OBJECTS = FunctionalTest-FunctionalTest.$(OBJEXT)
 FunctionalTest_OBJECTS = $(am_FunctionalTest_OBJECTS)
 am_Helmholtz1D_OBJECTS = Helmholtz1D-Helmholtz1D.$(OBJEXT)
 Helmholtz1D_OBJECTS = $(am_Helmholtz1D_OBJECTS)
+am_HighOrderPoisson2D_OBJECTS =  \
+	HighOrderPoisson2D-HighOrderPoisson2D.$(OBJEXT)
+HighOrderPoisson2D_OBJECTS = $(am_HighOrderPoisson2D_OBJECTS)
 am_Kepler_OBJECTS = Kepler-Kepler.$(OBJEXT)
 Kepler_OBJECTS = $(am_Kepler_OBJECTS)
 am_LinearVariationalTest_OBJECTS =  \
@@ -212,10 +215,10 @@ F77LINK = $(F77LD) $(AM_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
 SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) \
-	$(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) \
-	$(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) \
-	$(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
-	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(HighOrderPoisson2D_SOURCES) $(Kepler_SOURCES) \
+	$(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) \
+	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
+	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
 	$(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) \
 	$(VorticityNavierStokes2D_SOURCES) \
@@ -223,10 +226,10 @@ SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 DIST_SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) \
-	$(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) \
-	$(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) \
-	$(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
-	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(HighOrderPoisson2D_SOURCES) $(Kepler_SOURCES) \
+	$(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) \
+	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
+	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
 	$(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) \
 	$(VorticityNavierStokes2D_SOURCES) \
@@ -384,7 +387,8 @@ target_vendor = @target_vendor@
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
 Kepler Stokes2D
 
-PARALLEL_SRC = Poisson1D Poisson2D NoxPoisson1D PoissonBoltzmann2D \
+PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson2D \
+NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic \
 Coupled1D Coupled2D Helmholtz1D VorticityNavierStokes2D \
 VorticityStokes2D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D
@@ -417,6 +421,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 Poisson2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Poisson2D_LDADD = $(STD_FWK_LIBS) 
+HighOrderPoisson2D_SOURCES = $(srcdir)/HighOrderPoisson2D.cpp
+HighOrderPoisson2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+HighOrderPoisson2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+HighOrderPoisson2D_LDADD = $(STD_FWK_LIBS) 
 Poisson3D_SOURCES = $(srcdir)/Poisson3D.cpp
 Poisson3D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -780,6 +793,9 @@ FunctionalTest$(EXEEXT): $(FunctionalTest_OBJECTS) $(FunctionalTest_DEPENDENCIES
 Helmholtz1D$(EXEEXT): $(Helmholtz1D_OBJECTS) $(Helmholtz1D_DEPENDENCIES) 
 	@rm -f Helmholtz1D$(EXEEXT)
 	$(CXXLINK) $(Helmholtz1D_LDFLAGS) $(Helmholtz1D_OBJECTS) $(Helmholtz1D_LDADD) $(LIBS)
+HighOrderPoisson2D$(EXEEXT): $(HighOrderPoisson2D_OBJECTS) $(HighOrderPoisson2D_DEPENDENCIES) 
+	@rm -f HighOrderPoisson2D$(EXEEXT)
+	$(CXXLINK) $(HighOrderPoisson2D_LDFLAGS) $(HighOrderPoisson2D_OBJECTS) $(HighOrderPoisson2D_LDADD) $(LIBS)
 Kepler$(EXEEXT): $(Kepler_OBJECTS) $(Kepler_DEPENDENCIES) 
 	@rm -f Kepler$(EXEEXT)
 	$(CXXLINK) $(Kepler_LDFLAGS) $(Kepler_OBJECTS) $(Kepler_LDADD) $(LIBS)
@@ -836,6 +852,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eikonal2D-Eikonal2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionalTest-FunctionalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Helmholtz1D-Helmholtz1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Kepler-Kepler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinearVariationalTest-LinearVariationalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxAlgebraic-NoxAlgebraic.Po@am__quote@
@@ -962,6 +979,20 @@ Helmholtz1D-Helmholtz1D.obj: $(srcdir)/Helmholtz1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Helmholtz1D.cpp' object='Helmholtz1D-Helmholtz1D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Helmholtz1D_CXXFLAGS) $(CXXFLAGS) -c -o Helmholtz1D-Helmholtz1D.obj `if test -f '$(srcdir)/Helmholtz1D.cpp'; then $(CYGPATH_W) '$(srcdir)/Helmholtz1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Helmholtz1D.cpp'; fi`
+
+HighOrderPoisson2D-HighOrderPoisson2D.o: $(srcdir)/HighOrderPoisson2D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HighOrderPoisson2D_CXXFLAGS) $(CXXFLAGS) -MT HighOrderPoisson2D-HighOrderPoisson2D.o -MD -MP -MF "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Tpo" -c -o HighOrderPoisson2D-HighOrderPoisson2D.o `test -f '$(srcdir)/HighOrderPoisson2D.cpp' || echo '$(srcdir)/'`$(srcdir)/HighOrderPoisson2D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Tpo" "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Po"; else rm -f "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/HighOrderPoisson2D.cpp' object='HighOrderPoisson2D-HighOrderPoisson2D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HighOrderPoisson2D_CXXFLAGS) $(CXXFLAGS) -c -o HighOrderPoisson2D-HighOrderPoisson2D.o `test -f '$(srcdir)/HighOrderPoisson2D.cpp' || echo '$(srcdir)/'`$(srcdir)/HighOrderPoisson2D.cpp
+
+HighOrderPoisson2D-HighOrderPoisson2D.obj: $(srcdir)/HighOrderPoisson2D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HighOrderPoisson2D_CXXFLAGS) $(CXXFLAGS) -MT HighOrderPoisson2D-HighOrderPoisson2D.obj -MD -MP -MF "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Tpo" -c -o HighOrderPoisson2D-HighOrderPoisson2D.obj `if test -f '$(srcdir)/HighOrderPoisson2D.cpp'; then $(CYGPATH_W) '$(srcdir)/HighOrderPoisson2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/HighOrderPoisson2D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Tpo" "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Po"; else rm -f "$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/HighOrderPoisson2D.cpp' object='HighOrderPoisson2D-HighOrderPoisson2D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HighOrderPoisson2D_CXXFLAGS) $(CXXFLAGS) -c -o HighOrderPoisson2D-HighOrderPoisson2D.obj `if test -f '$(srcdir)/HighOrderPoisson2D.cpp'; then $(CYGPATH_W) '$(srcdir)/HighOrderPoisson2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/HighOrderPoisson2D.cpp'; fi`
 
 Kepler-Kepler.o: $(srcdir)/Kepler.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Kepler_CXXFLAGS) $(CXXFLAGS) -MT Kepler-Kepler.o -MD -MP -MF "$(DEPDIR)/Kepler-Kepler.Tpo" -c -o Kepler-Kepler.o `test -f '$(srcdir)/Kepler.cpp' || echo '$(srcdir)/'`$(srcdir)/Kepler.cpp; \

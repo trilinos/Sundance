@@ -49,6 +49,7 @@ Mesh ExtrusionMeshTransformation::apply(const Mesh& inputMesh) const
   outputMesh.estimateNumElements(3*nTri*nzLevels_);
 
   Array<int> facetNodes(3);
+  Array<int> facetOrientations(3);
 
   int tetCount = 0;
 
@@ -58,7 +59,7 @@ Mesh ExtrusionMeshTransformation::apply(const Mesh& inputMesh) const
                      "non-triangular mesh");
 	for (int i=0; i<nTri; i++)
 		{
-      inputMesh.getFacetArray(2, i, 0, facetNodes);
+      inputMesh.getFacetArray(2, i, 0, facetNodes, facetOrientations);
 
       SUNDANCE_OUT(this->verbosity()==VerbHigh,
                    "triangle=" << i << " facet nodes are " << facetNodes);

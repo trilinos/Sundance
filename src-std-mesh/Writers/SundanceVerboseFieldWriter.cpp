@@ -101,6 +101,7 @@ void VerboseFieldWriter::write() const
 
       for (int i=0; i<nElems; i++)
         {
+          int facetSign;
           Tabs tab1;
           os << tab1 << "L=" << i 
              << " G=" << mesh().mapLIDToGID(dim, i) 
@@ -109,13 +110,13 @@ void VerboseFieldWriter::write() const
           for (int j=0; j<numNodes; j++)
             {
               if (j != 0) os << ", ";
-              os << mesh().facetLID(dim, i, 0, j);
+              os << mesh().facetLID(dim, i, 0, j, facetSign);
             }
           os << "}, G={";
           for (int j=0; j<numNodes; j++)
             {
               if (j != 0) os << ", ";
-              os << mesh().mapLIDToGID(0, mesh().facetLID(dim, i, 0, j));
+              os << mesh().mapLIDToGID(0, mesh().facetLID(dim, i, 0, j, facetSign));
             }
           os << "}, owner=" << mesh().ownerProcID(dim,i)
              << ", label=" << mesh().label(dim,i) << endl;
@@ -126,8 +127,9 @@ void VerboseFieldWriter::write() const
               int nf = mesh().numFacets(dim, i, fd);
               for (int f=0; f<nf; f++)
                 {
+
                   Tabs tab3;
-                  int flid = mesh().facetLID(dim, i, fd, f);
+                  int flid = mesh().facetLID(dim, i, fd, f, facetSign);
                   int fgid = -1;
                   int fowner = -1;
                   if (mesh().hasIntermediateGIDs(fd))
@@ -142,7 +144,7 @@ void VerboseFieldWriter::write() const
                   for (int fn=0; fn<nfn; fn++)
                     {
                       if (fn != 0) os << ", ";
-                      os << mesh().facetLID(fd, flid, 0, fn);
+                      os << mesh().facetLID(fd, flid, 0, fn, facetSign);
                     }
                   os << "}" << endl;
                 }

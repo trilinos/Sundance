@@ -67,8 +67,10 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
     edgeVerts_(2),
     faceVerts_(dim),
     faceEdges_(dim),
+    faceEdgeSigns_(dim),
     elemVerts_(dim+1),
     elemEdges_(),
+    elemEdgeSigns_(),
     elemFaces_(dim+1),
     elemFaceRotations_(dim+1),
     vertexSetToFaceIndexMap_(),
@@ -104,8 +106,16 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
   tmpFaceEdges_.resize(3);
   tmpBase_[0] = &(tmpFaceVerts_[0]);
 
-  if (spatialDim()==2) elemEdges_.setTupleSize(3);
-  if (spatialDim()==3) elemEdges_.setTupleSize(6);
+  if (spatialDim()==2) 
+    {
+      elemEdges_.setTupleSize(3);
+      elemEdgeSigns_.setTupleSize(3);
+    }
+  if (spatialDim()==3) 
+    {
+      elemEdges_.setTupleSize(6);
+      elemEdgeSigns_.setTupleSize(6);
+    }
 }
 
 
@@ -553,6 +563,7 @@ void BasicSimplicialMesh::estimateNumElements(int nElems)
   faceEdges_.reserve(nFaces);
   elemVerts_.reserve(nElems);
   elemEdges_.reserve(nElems);
+  elemEdgeSigns_.reserve(nElems);
   elemFaces_.reserve(nElems);
   edgeCofacets_.reserve(nEdges);
   faceCofacets_.reserve(nFaces);
@@ -601,12 +612,15 @@ int BasicSimplicialMesh::numFacets(int cellDim, int cellLID,
 void BasicSimplicialMesh::getFacetLIDs(int cellDim, 
                                        const Array<int>& cellLID,
                                        int facetDim,
-                                       Array<int>& facetLID) const 
+                                       Array<int>& facetLID,
+                                       bool getSigns,
+                                       Array<int>& facetSign) const 
 {
   TimeMonitor timer(batchedFacetGrabTimer());
 
   int nf = numFacets(cellDim, cellLID[0], facetDim);
   facetLID.resize(cellLID.size() * nf);
+  if (facetDim > 0) facetSign.resize(cellLID.size() * nf);
 
   
   if (facetDim==0)
@@ -661,6 +675,18 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
                   facetLID[ptr] = fPtr[f];
                 }
             }
+          if (getSigns)
+            {
+              int signPtr=0;
+              for (unsigned int c=0; c<cellLID.size(); c++)
+                {
+                  const int* fPtr = &(elemEdgeSigns_.value(cellLID[c], 0));
+                  for (int f=0; f<nf; f++, signPtr++)
+                    {
+                      facetSign[signPtr] = fPtr[f];
+                    }
+                }
+            }
         }
       else
         {
@@ -671,6 +697,18 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
               for (int f=0; f<nf; f++, ptr++)
                 {
                   facetLID[ptr] = fPtr[f];
+                }
+            }
+          if (getSigns)
+            {
+              int signPtr=0;
+              for (unsigned int c=0; c<cellLID.size(); c++)
+                {
+                  const int* fPtr = &(elemEdgeSigns_.value(cellLID[c], 0));
+                  for (int f=0; f<nf; f++, signPtr++)
+                    {
+                      facetSign[signPtr] = fPtr[f];
+                    }
                 }
             }
         }
@@ -686,11 +724,23 @@ void BasicSimplicialMesh::getFacetLIDs(int cellDim,
               facetLID[ptr] = fPtr[f];
             }
         }
+      if (getSigns)
+        {
+          int signPtr=0;
+          for (unsigned int c=0; c<cellLID.size(); c++)
+            {
+              const int* fPtr = &(elemFaceRotations_.value(cellLID[c], 0));
+              for (int f=0; f<nf; f++, signPtr++)
+                {
+                  facetSign[signPtr] = fPtr[f];
+                }
+            }
+        }
     }
 }
 
 int BasicSimplicialMesh::facetLID(int cellDim, int cellLID,
-                                  int facetDim, int facetIndex) const 
+                                  int facetDim, int facetIndex, int& facetSign) const 
 {
 
   if (facetDim==0)
@@ -706,6 +756,7 @@ int BasicSimplicialMesh::facetLID(int cellDim, int cellLID,
     {
       if (cellDim==spatialDim())
         {
+          facetSign = elemEdgeSigns_.value(cellLID, facetIndex);
           return elemEdges_.value(cellLID, facetIndex);
         }
       else
@@ -715,6 +766,7 @@ int BasicSimplicialMesh::facetLID(int cellDim, int cellLID,
     }
   else
     {
+      facetSign = elemFaceRotations_.value(cellLID, facetIndex);
       return elemFaces_.value(cellLID, facetIndex);
     }
 }
@@ -825,6 +877,7 @@ int BasicSimplicialMesh::addElement(int globalIndex,
                                     int ownerProcID, int label)
 {
   int lid = elemVerts_.length();
+  elemEdgeSigns_.resize(lid+1);
 
   SUNDANCE_OUT(this->verbosity() > VerbHigh,
                "adding element " << vertLID);
@@ -841,6 +894,13 @@ int BasicSimplicialMesh::addElement(int globalIndex,
   static Array<int> edges;
   static Array<int> faces;
   static Array<int> faceRotations;
+
+  static Array<int> vertGID;
+  vertGID.resize(vertLID.size());
+  for (unsigned int i=0; i<vertLID.size(); i++) 
+    {
+      vertGID[i] = LIDToGIDMap_[0][vertLID[i]];
+    }
   
   if (spatialDim()==1)
     {
@@ -853,9 +913,16 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     {
       edges.resize(3);
       faces.resize(0);
+
       edges[0] = addEdge(vertLID[0], vertLID[1]);
+      elemEdgeSigns_.value(lid,0) = -1 + 2*(vertGID[1] > vertGID[0]);
+
       edges[1] = addEdge(vertLID[1], vertLID[2]);
+      elemEdgeSigns_.value(lid,1) = -1 + 2*(vertGID[2] > vertGID[1]);
+
       edges[2] = addEdge(vertLID[2], vertLID[0]);
+      elemEdgeSigns_.value(lid,2) = -1 + 2*(vertGID[0] > vertGID[2]);
+
       vertCofacets_[vertLID[0]].append(lid);
       vertCofacets_[vertLID[1]].append(lid);
       vertCofacets_[vertLID[2]].append(lid);
@@ -866,12 +933,25 @@ int BasicSimplicialMesh::addElement(int globalIndex,
       edges.resize(6);
       faces.resize(4);
       faceRotations.resize(4);
+
       edges[0] = addEdge(vertLID[0], vertLID[1]);
+      elemEdgeSigns_.value(lid,0) = -1 + 2*(vertGID[1] > vertGID[0]);
+
       edges[1] = addEdge(vertLID[1], vertLID[2]);
+      elemEdgeSigns_.value(lid,1) = -1 + 2*(vertGID[2] > vertGID[1]);
+
       edges[2] = addEdge(vertLID[2], vertLID[0]);
+      elemEdgeSigns_.value(lid,2) = -1 + 2*(vertGID[0] > vertGID[2]);
+
       edges[3] = addEdge(vertLID[0], vertLID[3]);
+      elemEdgeSigns_.value(lid,3) = -1 + 2*(vertGID[3] > vertGID[0]);
+
       edges[4] = addEdge(vertLID[1], vertLID[3]);
+      elemEdgeSigns_.value(lid,4) = -1 + 2*(vertGID[3] > vertGID[1]);
+
       edges[5] = addEdge(vertLID[2], vertLID[3]);
+      elemEdgeSigns_.value(lid,5) = -1 + 2*(vertGID[3] > vertGID[2]);
+
       vertCofacets_[vertLID[0]].append(lid);
       vertCofacets_[vertLID[1]].append(lid);
       vertCofacets_[vertLID[2]].append(lid);
