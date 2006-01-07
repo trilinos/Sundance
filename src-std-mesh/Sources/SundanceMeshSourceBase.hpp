@@ -41,7 +41,7 @@
 #include "TSFPrintable.hpp"
 #include "SundanceNoncopyable.hpp"
 #include "TSFObjectWithVerbosity.hpp"
-#include "SundanceCreatableMesh.hpp"
+#include "SundanceIncrementallyCreatableMesh.hpp"
 #include "Teuchos_ParameterList.hpp"
 
 namespace SundanceStdMesh

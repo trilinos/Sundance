@@ -41,8 +41,10 @@ int main(int argc, void** argv)
 
       MeshType meshType = new BasicSimplicialMeshType();
 
+      int np = MPIComm::world().getNProc();
+
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 4, 1,
-                                                         0.0, 1.0, 4, 1,
+                                                         0.0, 1.0, 4, np,
                                                          meshType);
 
       mesher.ptr()->verbosity() = VerbExtreme;

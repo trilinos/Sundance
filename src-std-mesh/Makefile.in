@@ -170,7 +170,7 @@ am__objects_1 = SundanceCellJacobianBatch.$(OBJEXT) \
 	SundanceIdentityReorderer.$(OBJEXT) SundanceMesh.$(OBJEXT) \
 	SundanceMeshBase.$(OBJEXT) SundanceMeshType.$(OBJEXT)
 am__objects_2 = SundanceBasicSimplicialMesh.$(OBJEXT) \
-	SundanceBasicVertexSet.$(OBJEXT)
+	SundanceBasicVertexView.$(OBJEXT)
 am__objects_3 = SundanceExtrusionMeshTransformation.$(OBJEXT) \
 	SundanceMeshTransformationBase.$(OBJEXT) \
 	SundanceMeshTransformation.$(OBJEXT)
@@ -362,7 +362,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellType.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererImplemBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.hpp \
-$(top_srcdir)/src-std-mesh/Interface/SundanceCreatableMesh.hpp \
+$(top_srcdir)/src-std-mesh/Interface/SundanceIncrementallyCreatableMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.hpp \
@@ -382,11 +382,11 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp
 SUNDANCE_CONCRETEMESHES_H = \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.hpp \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMeshType.hpp \
-$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.hpp 
+$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.hpp 
 
 SUNDANCE_CONCRETEMESHES = \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp \
-$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp 
+$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp 
 
 SUNDANCE_MESHSOURCES_H = \
 $(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.hpp \
@@ -725,7 +725,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBamgMeshReader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBasicSimplicialMesh.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBasicVertexSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBasicVertexView.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellJacobianBatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellReorderer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellReordererImplemBase.Po@am__quote@
@@ -892,19 +892,19 @@ SundanceBasicSimplicialMesh.obj: $(top_srcdir)/src-std-mesh/Concrete/SundanceBas
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasicSimplicialMesh.obj `if test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp'; fi`
 
-SundanceBasicVertexSet.o: $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasicVertexSet.o -MD -MP -MF "$(DEPDIR)/SundanceBasicVertexSet.Tpo" -c -o SundanceBasicVertexSet.o `test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasicVertexSet.Tpo" "$(DEPDIR)/SundanceBasicVertexSet.Po"; else rm -f "$(DEPDIR)/SundanceBasicVertexSet.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp' object='SundanceBasicVertexSet.o' libtool=no @AMDEPBACKSLASH@
+SundanceBasicVertexView.o: $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasicVertexView.o -MD -MP -MF "$(DEPDIR)/SundanceBasicVertexView.Tpo" -c -o SundanceBasicVertexView.o `test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasicVertexView.Tpo" "$(DEPDIR)/SundanceBasicVertexView.Po"; else rm -f "$(DEPDIR)/SundanceBasicVertexView.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp' object='SundanceBasicVertexView.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasicVertexSet.o `test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasicVertexView.o `test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp
 
-SundanceBasicVertexSet.obj: $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasicVertexSet.obj -MD -MP -MF "$(DEPDIR)/SundanceBasicVertexSet.Tpo" -c -o SundanceBasicVertexSet.obj `if test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasicVertexSet.Tpo" "$(DEPDIR)/SundanceBasicVertexSet.Po"; else rm -f "$(DEPDIR)/SundanceBasicVertexSet.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp' object='SundanceBasicVertexSet.obj' libtool=no @AMDEPBACKSLASH@
+SundanceBasicVertexView.obj: $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasicVertexView.obj -MD -MP -MF "$(DEPDIR)/SundanceBasicVertexView.Tpo" -c -o SundanceBasicVertexView.obj `if test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasicVertexView.Tpo" "$(DEPDIR)/SundanceBasicVertexView.Po"; else rm -f "$(DEPDIR)/SundanceBasicVertexView.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp' object='SundanceBasicVertexView.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasicVertexSet.obj `if test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasicVertexView.obj `if test -f '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp'; fi`
 
 SundanceExtrusionMeshTransformation.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExtrusionMeshTransformation.o -MD -MP -MF "$(DEPDIR)/SundanceExtrusionMeshTransformation.Tpo" -c -o SundanceExtrusionMeshTransformation.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.cpp; \

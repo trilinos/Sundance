@@ -38,13 +38,13 @@ using namespace SundanceUtils;
 using namespace TSFExtended;
 
 
-CreatableMesh* Mesh::creatableMesh()
+IncrementallyCreatableMesh* Mesh::creatableMesh()
 {
-  CreatableMesh* mci 
-    = dynamic_cast<CreatableMesh*>(ptr().get());
+  IncrementallyCreatableMesh* mci 
+    = dynamic_cast<IncrementallyCreatableMesh*>(ptr().get());
   TEST_FOR_EXCEPTION(mci==0, RuntimeError, 
                      "Mesh::creatableMesh() could not convert mesh to "
-                     "a type deriving from CreatableMesh");
+                     "a type deriving from IncrementallyCreatableMesh");
 
   return mci;
 }

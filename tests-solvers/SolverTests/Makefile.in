@@ -84,7 +84,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(IDAHeat_SOURCES)
+SOURCES = $(IDAHeat_SOURCES) $(PoissonBoltzmannTest_SOURCES) $(PoissonTest_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -111,7 +111,7 @@ host_triplet = @host@
 target_triplet = @target@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-noinst_PROGRAMS = IDAHeat$(EXEEXT)
+noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2)
 subdir = tests-solvers/SolverTests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
@@ -131,11 +131,19 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
+am__EXEEXT_1 = IDAHeat$(EXEEXT) PoissonTest$(EXEEXT) \
+	PoissonBoltzmannTest$(EXEEXT)
+am__EXEEXT_2 =
 PROGRAMS = $(noinst_PROGRAMS)
 am_IDAHeat_OBJECTS = IDAHeat-IDAHeat.$(OBJEXT)
 IDAHeat_OBJECTS = $(am_IDAHeat_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+am_PoissonBoltzmannTest_OBJECTS =  \
+	PoissonBoltzmannTest-PoissonBoltzmannTest.$(OBJEXT)
+PoissonBoltzmannTest_OBJECTS = $(am_PoissonBoltzmannTest_OBJECTS)
+am_PoissonTest_OBJECTS = PoissonTest-PoissonTest.$(OBJEXT)
+PoissonTest_OBJECTS = $(am_PoissonTest_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-solvers -I$(top_builddir)/src-utils
 depcomp = $(SHELL) $(top_srcdir)/config/depcomp
 am__depfiles_maybe = depfiles
@@ -144,8 +152,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(IDAHeat_SOURCES)
-DIST_SOURCES = $(IDAHeat_SOURCES)
+SOURCES = $(IDAHeat_SOURCES) $(PoissonBoltzmannTest_SOURCES) \
+	$(PoissonTest_SOURCES)
+DIST_SOURCES = $(IDAHeat_SOURCES) $(PoissonBoltzmannTest_SOURCES) \
+	$(PoissonTest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -421,10 +431,21 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
+PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest
+SERIAL_SRC = 
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 IDAHeat_SOURCES = $(srcdir)/IDAHeat.cpp 
 IDAHeat_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 IDAHeat_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
 IDAHeat_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+PoissonTest_SOURCES = $(srcdir)/PoissonTest.cpp 
+PoissonTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+PoissonTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+PoissonTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+PoissonBoltzmannTest_SOURCES = $(srcdir)/PoissonBoltzmannTest.cpp 
+PoissonBoltzmannTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+PoissonBoltzmannTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+PoissonBoltzmannTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
 @HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
@@ -471,6 +492,12 @@ clean-noinstPROGRAMS:
 IDAHeat$(EXEEXT): $(IDAHeat_OBJECTS) $(IDAHeat_DEPENDENCIES) 
 	@rm -f IDAHeat$(EXEEXT)
 	$(CXXLINK) $(IDAHeat_LDFLAGS) $(IDAHeat_OBJECTS) $(IDAHeat_LDADD) $(LIBS)
+PoissonBoltzmannTest$(EXEEXT): $(PoissonBoltzmannTest_OBJECTS) $(PoissonBoltzmannTest_DEPENDENCIES) 
+	@rm -f PoissonBoltzmannTest$(EXEEXT)
+	$(CXXLINK) $(PoissonBoltzmannTest_LDFLAGS) $(PoissonBoltzmannTest_OBJECTS) $(PoissonBoltzmannTest_LDADD) $(LIBS)
+PoissonTest$(EXEEXT): $(PoissonTest_OBJECTS) $(PoissonTest_DEPENDENCIES) 
+	@rm -f PoissonTest$(EXEEXT)
+	$(CXXLINK) $(PoissonTest_LDFLAGS) $(PoissonTest_OBJECTS) $(PoissonTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -479,6 +506,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IDAHeat-IDAHeat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonTest-PoissonTest.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -507,6 +536,34 @@ IDAHeat-IDAHeat.obj: $(srcdir)/IDAHeat.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/IDAHeat.cpp' object='IDAHeat-IDAHeat.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IDAHeat_CXXFLAGS) $(CXXFLAGS) -c -o IDAHeat-IDAHeat.obj `if test -f '$(srcdir)/IDAHeat.cpp'; then $(CYGPATH_W) '$(srcdir)/IDAHeat.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/IDAHeat.cpp'; fi`
+
+PoissonBoltzmannTest-PoissonBoltzmannTest.o: $(srcdir)/PoissonBoltzmannTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonBoltzmannTest_CXXFLAGS) $(CXXFLAGS) -MT PoissonBoltzmannTest-PoissonBoltzmannTest.o -MD -MP -MF "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Tpo" -c -o PoissonBoltzmannTest-PoissonBoltzmannTest.o `test -f '$(srcdir)/PoissonBoltzmannTest.cpp' || echo '$(srcdir)/'`$(srcdir)/PoissonBoltzmannTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Tpo" "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Po"; else rm -f "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PoissonBoltzmannTest.cpp' object='PoissonBoltzmannTest-PoissonBoltzmannTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonBoltzmannTest_CXXFLAGS) $(CXXFLAGS) -c -o PoissonBoltzmannTest-PoissonBoltzmannTest.o `test -f '$(srcdir)/PoissonBoltzmannTest.cpp' || echo '$(srcdir)/'`$(srcdir)/PoissonBoltzmannTest.cpp
+
+PoissonBoltzmannTest-PoissonBoltzmannTest.obj: $(srcdir)/PoissonBoltzmannTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonBoltzmannTest_CXXFLAGS) $(CXXFLAGS) -MT PoissonBoltzmannTest-PoissonBoltzmannTest.obj -MD -MP -MF "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Tpo" -c -o PoissonBoltzmannTest-PoissonBoltzmannTest.obj `if test -f '$(srcdir)/PoissonBoltzmannTest.cpp'; then $(CYGPATH_W) '$(srcdir)/PoissonBoltzmannTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PoissonBoltzmannTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Tpo" "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Po"; else rm -f "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PoissonBoltzmannTest.cpp' object='PoissonBoltzmannTest-PoissonBoltzmannTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonBoltzmannTest_CXXFLAGS) $(CXXFLAGS) -c -o PoissonBoltzmannTest-PoissonBoltzmannTest.obj `if test -f '$(srcdir)/PoissonBoltzmannTest.cpp'; then $(CYGPATH_W) '$(srcdir)/PoissonBoltzmannTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PoissonBoltzmannTest.cpp'; fi`
+
+PoissonTest-PoissonTest.o: $(srcdir)/PoissonTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonTest_CXXFLAGS) $(CXXFLAGS) -MT PoissonTest-PoissonTest.o -MD -MP -MF "$(DEPDIR)/PoissonTest-PoissonTest.Tpo" -c -o PoissonTest-PoissonTest.o `test -f '$(srcdir)/PoissonTest.cpp' || echo '$(srcdir)/'`$(srcdir)/PoissonTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PoissonTest-PoissonTest.Tpo" "$(DEPDIR)/PoissonTest-PoissonTest.Po"; else rm -f "$(DEPDIR)/PoissonTest-PoissonTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PoissonTest.cpp' object='PoissonTest-PoissonTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonTest_CXXFLAGS) $(CXXFLAGS) -c -o PoissonTest-PoissonTest.o `test -f '$(srcdir)/PoissonTest.cpp' || echo '$(srcdir)/'`$(srcdir)/PoissonTest.cpp
+
+PoissonTest-PoissonTest.obj: $(srcdir)/PoissonTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonTest_CXXFLAGS) $(CXXFLAGS) -MT PoissonTest-PoissonTest.obj -MD -MP -MF "$(DEPDIR)/PoissonTest-PoissonTest.Tpo" -c -o PoissonTest-PoissonTest.obj `if test -f '$(srcdir)/PoissonTest.cpp'; then $(CYGPATH_W) '$(srcdir)/PoissonTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PoissonTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PoissonTest-PoissonTest.Tpo" "$(DEPDIR)/PoissonTest-PoissonTest.Po"; else rm -f "$(DEPDIR)/PoissonTest-PoissonTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PoissonTest.cpp' object='PoissonTest-PoissonTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonTest_CXXFLAGS) $(CXXFLAGS) -c -o PoissonTest-PoissonTest.obj `if test -f '$(srcdir)/PoissonTest.cpp'; then $(CYGPATH_W) '$(srcdir)/PoissonTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PoissonTest.cpp'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

@@ -66,7 +66,7 @@ Mesh PartitionedLineMesher::fillMesh() const
       SUNDANCE_OUT(this->verbosity() > VerbLow, "adding point GID=" 
                    << globalIndex << " x=" << x << " owner=" << pointOwner); 
 			int lid = mesh.addVertex(globalIndex, x, pointOwner, 0);
-			pts[i-lowestVisiblePtX] = lid;
+			pts[i-lowestVisiblePtX] = globalIndex;
       SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
                    "point " << x << " registered with LID=" << lid);
     }

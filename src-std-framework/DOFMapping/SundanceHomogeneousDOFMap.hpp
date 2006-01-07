@@ -105,7 +105,6 @@ using namespace SundanceStdMesh::Internal;
 
       /** */
       void setDOFs(int cellDim, int cellLID, 
-                   int orientation,
                    int& nextDOF, bool isRemote=false);
 
       /** */
@@ -135,6 +134,8 @@ using namespace SundanceStdMesh::Internal;
       Array<int> totalNNodesPerCell_;
 
       Array<Array<int> > numFacets_;
+
+      Array<Array<int> > originalFacetOrientation_;
 
       bool basisIsContinuous_;
 

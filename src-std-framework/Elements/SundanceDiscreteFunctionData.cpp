@@ -139,10 +139,8 @@ void DiscreteFunctionData::getLocalValues(int cellDim,
     }
   ghostView_->getElements(&(indices[0]), indices.size(), localValues);
 
-  if (Evaluator::classVerbosity() > VerbHigh)
-    {
-      cerr << tab << "local values are " << localValues << endl;
-    }
+
+
 }
 
 

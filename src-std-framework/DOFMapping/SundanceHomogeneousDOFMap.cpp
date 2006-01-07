@@ -69,6 +69,7 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
     nNodesPerCell_(mesh.spatialDim()+1),
     totalNNodesPerCell_(mesh.spatialDim()+1, 0),
     numFacets_(mesh.spatialDim()+1),
+    originalFacetOrientation_(2),
     basisIsContinuous_(false)
 {
   verbosity() = DOFMapBase::classVerbosity();
@@ -95,6 +96,7 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
     nNodesPerCell_(mesh.spatialDim()+1),
     totalNNodesPerCell_(mesh.spatialDim()+1, 0),
     numFacets_(mesh.spatialDim()+1),
+    originalFacetOrientation_(2),
     basisIsContinuous_(false)
 {
   verbosity() = DOFMapBase::classVerbosity();
@@ -119,6 +121,8 @@ void HomogeneousDOFMap::allocate(const Mesh& mesh,
   Array<int> fid(numFuncs);
   for (int f=0; f<numFuncs; f++) fid[f] = f;
   funcIDOnCellSets().append(fid);
+
+
   
   for (int d=0; d<=dim_; d++)
     {
@@ -168,6 +172,8 @@ void HomogeneousDOFMap::allocate(const Mesh& mesh,
         {
           dofs_[d].resize(0);
         }
+
+      if (d > 0 && d < dim_) originalFacetOrientation_[d-1].resize(mesh.numCells(d));
 
       /* If any nodes are associated with the facets, then we know we have
        * a continuous basis function */
@@ -231,12 +237,12 @@ void HomogeneousDOFMap::initMap()
                   int dummy=0;
                   int cellGID = mesh().mapLIDToGID(dim_, cellLID);
                   remoteCells[dim_][owner].append(cellGID); 
-                  setDOFs(dim_, cellLID, 0, dummy);
+                  setDOFs(dim_, cellLID, dummy);
                 }
               else /* the cell is locally owned, so we can 
                     * set its DOF numbers now */
                 {
-                  setDOFs(dim_, cellLID, 0, nextDOF);
+                  setDOFs(dim_, cellLID, nextDOF);
                 }
             }
 
@@ -253,7 +259,8 @@ void HomogeneousDOFMap::initMap()
                       Array<int> facetLID(nf);
                       Array<int> facetOrientations(nf);
                       /* look up the LIDs of the facets */
-                      mesh().getFacetArray(dim_, cellLID, d, facetLID, facetOrientations);
+                      mesh().getFacetArray(dim_, cellLID, d, 
+                                           facetLID, facetOrientations);
                       /* for each facet, process its DOFs */
                       for (int f=0; f<nf; f++)
                         {
@@ -267,11 +274,18 @@ void HomogeneousDOFMap::initMap()
                                   int dummy=0;
                                   int facetGID = mesh().mapLIDToGID(d, facetLID[f]);
                                   remoteCells[d][owner].append(facetGID);
-                                  setDOFs(d, facetLID[f], facetOrientations[f], dummy);
+                                  setDOFs(d, facetLID[f], dummy);
                                 }
                               else /* we can assign a DOF locally */
                                 {
-                                  setDOFs(d, facetLID[f], facetOrientations[f], nextDOF);
+                                  /* assign DOF */
+                                  setDOFs(d, facetLID[f], nextDOF);
+                                  /* record the orientation wrt the maximal cell */
+                                  if (d > 0) 
+                                    {
+                                      originalFacetOrientation_[d-1][facetLID[f]] 
+                                        = facetOrientations[f];
+                                    }
                                 }
                             }
                         }
@@ -307,9 +321,19 @@ void HomogeneousDOFMap::initMap()
 void HomogeneousDOFMap::shareDOFs(int cellDim,
                                   const Array<Array<int> >& outgoingCellRequests)
 {
-  
+  int np = mesh().comm().getNProc();
+  int rank = mesh().comm().getRank();
+
+  if (np == 1) return;
+
+  TEST_FOR_EXCEPTION(np != outgoingCellRequests.size(), RuntimeError,
+                     "incorrect size of outgoingCellRequests array. Size is "
+                     << outgoingCellRequests.size() << ", should be np=" << np);
+
+
+
   Array<Array<int> > incomingCellRequests;
-  Array<Array<int> > outgoingDOFs(outgoingCellRequests.size());
+  Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
@@ -327,34 +351,48 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
   
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
-               "p=" << mesh().comm().getRank()
+               "p=" << rank
                << "recvd DOF requests for cells of dimension " << cellDim
                << " GID=" << incomingCellRequests);
 
-  /* get DOF numbers for the first node of every cell that's been 
+  /* get orientations and DOF numbers for the first node of every cell that's been 
    * requested by someone else */
-  for (int p=0; p<mesh().comm().getNProc(); p++)
+  for (int p=0; p<np; p++)
     {
-      if (p==mesh().comm().getRank()) continue;
+      if (p==rank) continue;
       const Array<int>& requestsFromProc = incomingCellRequests[p];
-      outgoingDOFs[p].resize(requestsFromProc.size());
+      int nReq = requestsFromProc.size();
+      int blockSize = 1;
+      if (cellDim > 0 && cellDim < dim_)
+        {
+          outgoingDOFs[p].resize(2 * nReq);
+          blockSize = 2;
+        }
+      else
+        {
+          outgoingDOFs[p].resize(nReq);
+        }
       SUNDANCE_OUT(this->verbosity() > VerbHigh,  
                    "p=" << mesh().comm().getRank() << " recv'd from proc=" << p
                    << " reqs for DOFs for cells " << requestsFromProc);
-      for (unsigned int c=0; c<requestsFromProc.size(); c++)
+      for (unsigned int c=0; c<nReq; c++)
         {
           int GID = requestsFromProc[c];
           SUNDANCE_OUT(this->verbosity() > VerbHigh,  
-                       "p=" << mesh().comm().getRank() 
+                       "p=" << rank
                        << " processing cell with d=" << cellDim 
                        << " GID=" << GID);
           int LID = mesh().mapGIDToLID(cellDim, GID);
           SUNDANCE_OUT(this->verbosity() > VerbHigh,  
-                       "p=" << mesh().comm().getRank() 
+                       "p=" << rank
                        << " LID=" << LID << " dofs=" << dofs_[cellDim]);
-          outgoingDOFs[p][c] = dofs_[cellDim][LID][0];
+          outgoingDOFs[p][blockSize*c] = dofs_[cellDim][LID][0];
+          if (cellDim > 0 && cellDim < dim_) 
+            {
+              outgoingDOFs[p][blockSize*c+1] = originalFacetOrientation_[cellDim-1][LID];
+            }
           SUNDANCE_OUT(this->verbosity() > VerbHigh,  
-                       "p=" << mesh().comm().getRank() 
+                       "p=" << rank
                        << " done processing cell with GID=" << GID);
         }
     }
@@ -380,13 +418,22 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
     {
       if (p==mesh().comm().getRank()) continue;
       const Array<int>& dofsFromProc = incomingDOFs[p];
-      for (unsigned int c=0; c<dofsFromProc.size(); c++)
+      int blockSize = 1;
+      if (cellDim > 0 && cellDim < dim_)
+        {
+          blockSize = 2;
+        }
+
+      for (unsigned int c=0; c<dofsFromProc.size()/blockSize; c++)
         {
           int cellGID = outgoingCellRequests[p][c];
           int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
-          int dof = dofsFromProc[c];
-          int orientation = 0;
-          setDOFs(cellDim, cellLID, orientation, dof);
+          int dof = dofsFromProc[blockSize*c];
+          setDOFs(cellDim, cellLID, dof, true);
+          if (cellDim > 0 && cellDim < dim_) 
+            {
+              originalFacetOrientation_[cellDim-1][cellLID] = dofsFromProc[blockSize*c+1];
+            }
         }
     }
   
@@ -394,49 +441,24 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
 
 
 
-void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID, int orientation,
+void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID, 
                                 int& nextDOF,
                                 bool isRemote)
 {
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "setting DOFs for " << cellDim << "-cell " << cellLID);
   Array<int>& cellDOFs = dofs_[cellDim][cellLID];
   
   int nn = nNodesPerCell_[cellDim];
   int nf = funcIDList().size();
 
-  if (cellDim==0 || nn <= 1 || cellDim==dim_) /* cases for which orientation 
-                                               * doesn't matter */
+  for (int i=0; i<nn; i++)
     {
-      for (int i=0; i<nn; i++)
+      for (int f=0; f<nf; f++)
         {
-          for (int f=0; f<nf; f++)
-            {
-              int k = nextDOF++;
-              cellDOFs[funcIDList()[f] + nf*i] = k;
-              if (isRemote) addGhostIndex(k);
-            }
-        }
-    }
-  else /* cases for which we need to permute DOFs according to the 
-        * orientation of the cell */
-    {
-      if (cellDim==1)
-        {
-          int j;
-          for (int i=0; i<nn; i++)
-            {
-              if (orientation==1) j=i;
-              else j=nn-1-i;
-              for (int f=0; f<nf; f++)
-                {
-                  int k = nextDOF++;
-                  cellDOFs[funcIDList()[f] + nf*j] = k;
-                  if (isRemote) addGhostIndex(k);
-                }
-            }
-        }
-      else
-        {
-          TEST_FOR_EXCEPTION(true, RuntimeError, "orientations not supported for faces");
+          int k = nextDOF++;
+          cellDOFs[funcIDList()[f] + nf*i] = k;
+          if (isRemote) addGhostIndex(k);
         }
     }
 }
@@ -464,22 +486,31 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
           buildMaximalDofTable();
         }
 
+      SUNDANCE_VERB_EXTREME(tab << "getting dofs for maximal cells");
 
       nNodes = totalNNodesPerCell_[cellDim];
       int nCells = cellLID.size();
       int nTotalCells = mesh().numCells(cellDim);
       int nf = funcIDList().size();
       dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
-
+      
       for (unsigned int c=0; c<cellLID.size(); c++)
         {
+          Tabs tab1;
+          SUNDANCE_VERB_EXTREME(tab1 << "cell=" << c);
           for (int fid=0; fid<nf; fid++)
             {
+              Tabs tab2;
+              SUNDANCE_VERB_EXTREME(tab2 << "f= " << fid);
               for (unsigned int n=0; n<nNodes; n++) 
                 {
+                  Tabs tab3;
                   dofs[(fid*nCells + c)*nNodes + n] 
                     = maximalDofs_[(fid*nTotalCells + cellLID[c])*nNodes + n];
+                  SUNDANCE_VERB_EXTREME(tab3 << "n=" << n << " dof=" 
+                                        << dofs[(fid*nCells + c)*nNodes + n]);
                 }
+              
             }
         }
     }
@@ -489,8 +520,8 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
       int nCells = cellLID.size();
       dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
 
-      SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "nf=" << nf
-                   << " total nNodes=" << totalNNodesPerCell_[cellDim]);
+      Tabs tab1;
+      SUNDANCE_VERB_EXTREME(tab1 << "getting dofs for non-maximal cells");
   
       static Array<Array<int> > facetLID(3);
       static Array<Array<int> > facetOrientations(3);
@@ -500,56 +531,85 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
         {
           numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
           mesh().getFacetLIDs(cellDim, cellLID, d, facetLID[d], 
-                              true, facetOrientations[d]);
+                              facetOrientations[d]);
         }
 
   
       int nInteriorNodes = localNodePtrs_[cellDim][cellDim][0].size();
   
       nNodes = totalNNodesPerCell_[cellDim];
+      
       for (unsigned int c=0; c<cellLID.size(); c++)
         {
-          Tabs tab1;
+          Tabs tab2;
+          SUNDANCE_VERB_EXTREME(tab2 << "cell=" << c);
+          SUNDANCE_VERB_EXTREME(tab2 << "doing interior nodes");
+
           /* first get the DOFs for the nodes associated with 
            * the cell's interior */
-          for (int n=0; n<nInteriorNodes; n++)
+          if (cellDim==0 || nInteriorNodes <= 1) /* orientation-independent */
             {
-              int ptr = localNodePtrs_[cellDim][cellDim][0][n];
-              for (int f=0; f<nf; f++)
+              for (int m=0; m<nInteriorNodes; m++)
                 {
-                  dofs[(f*nCells + c)*nNodes+ptr] 
-                    = dofs_[cellDim][cellLID[c]][f + nf*n];
+                  Tabs tab3;
+                  int ptr = localNodePtrs_[cellDim][cellDim][0][m];
+                  for (int f=0; f<nf; f++)
+                    {
+                      dofs[(f*nCells + c)*nNodes+ptr] 
+                        = dofs_[cellDim][cellLID[c]][f + nf*m];
+                      SUNDANCE_VERB_EXTREME(tab3 << "n=" << m << " f=" << f 
+                                            << " dof=" 
+                                            <<  dofs[(f*nCells + c)*nNodes+ptr]);
+                    }
+                }
+            }
+          else
+            {
+              int sign = originalFacetOrientation_[cellDim-1][cellLID[c]];
+              for (int m=0; m<nInteriorNodes; m++)
+                {
+                  int n = m;
+                  if (sign < 0) n = nInteriorNodes - 1 - m;
+                  Tabs tab3;
+                  int ptr = localNodePtrs_[cellDim][cellDim][0][m];
+                  for (int f=0; f<nf; f++)
+                    {
+                      dofs[(f*nCells + c)*nNodes+ptr] 
+                        = dofs_[cellDim][cellLID[c]][f + nf*n];
+                      SUNDANCE_VERB_EXTREME(tab3 << "n=" << m << " f=" << f 
+                                            << " dof=" 
+                                            <<  dofs[(f*nCells + c)*nNodes+ptr]);
+                    }
                 }
             }
 
+          SUNDANCE_VERB_EXTREME(tab1 << "doing facet nodes");
           /* now get the DOFs for the nodes on the facets */
           for (int d=0; d<cellDim; d++)
             {
-              SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                           tab1 << "d=" << d << " facets are " << facetLID[d]);
-      
+              Tabs tab3;
+              SUNDANCE_VERB_EXTREME(tab3 << "d= " << d);
               for (int f=0; f<numFacets[d]; f++)
                 {
-                  Tabs tab2;
+                  Tabs tab4;
                   int facetID = facetLID[d][c*numFacets[d]+f];
-                  SUNDANCE_OUT(this->verbosity() > VerbHigh && localNodePtrs_[cellDim][d][f].size() != 0, 
-                               tab2 << "dofs for all nodes of this facet are: "
-                               << dofs_[d][facetLID[d][f]]);
+                  
+                  SUNDANCE_VERB_EXTREME(tab4 << "f= " << f << " facetLID = " << facetID);
                   int nFacetNodes = localNodePtrs_[cellDim][d][f].size();
                   if (d==0 || nFacetNodes <= 1) /* orientation-independent */
                     {
-                      Tabs tab3;
+                      Tabs tab5;
                       for (int n=0; n<nFacetNodes; n++)
                         {
                           SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                       tab3 << "n=" << n);
+                                       tab5 << "n=" << n);
                           int ptr = localNodePtrs_[cellDim][d][f][n];
                           SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                       tab3 << "local ptr=" << ptr);
+                                       tab5 << "local ptr=" << ptr);
                           for (int funcID=0; funcID<nf; funcID++)
                             {
                               SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                           tab3 << "found dof=" 
+                                           tab5 << "found dof=" 
                                            << dofs_[d][facetID][funcID + nf*n]);
                               dofs[(funcID*nCells + c)*nNodes+ptr] 
                                 = dofs_[d][facetID][funcID + nf*n];
@@ -558,21 +618,23 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
                     }
                   else /* orientation-dependent */
                     {
-                      Tabs tab3;
+                      Tabs tab5;
                       int facetOrientation 
-                        = facetOrientations[d][c*numFacets[d]+f];
+                        = facetOrientations[d][c*numFacets[d]+f] 
+                        * originalFacetOrientation_[d-1][facetID];
                       for (int m=0; m<nFacetNodes; m++)
                         {
                           int n = m;
                           if (facetOrientation<0) n = nFacetNodes-1-m;
                           SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                       tab3 << "n=" << n);
+                                       tab5 << "n=" << n);
                           int ptr = localNodePtrs_[cellDim][d][f][m];
                           SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                       tab3 << "local ptr=" << ptr);
+                                       tab5 << "local ptr=" << ptr);
                           for (int funcID=0; funcID<nf; funcID++)
                             {
-                              SUNDANCE_OUT(this->verbosity() > VerbHigh, "found dof=" 
+                              SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                                           tab5 << "found dof=" 
                                            << dofs_[d][facetID][funcID + nf*n]);
                               dofs[(funcID*nCells + c)*nNodes+ptr] 
                                 = dofs_[d][facetID][funcID + nf*n];
@@ -608,7 +670,7 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
   for (int d=0; d<cellDim; d++) 
     {
       numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
-      mesh().getFacetLIDs(cellDim, cellLID, d, facetLID[d], true, facetOrientations[d]);
+      mesh().getFacetLIDs(cellDim, cellLID, d, facetLID[d], facetOrientations[d]);
     }
 
   
@@ -622,8 +684,10 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
   for (int c=0; c<nCells; c++)
     {
       Tabs tab1;
+      SUNDANCE_VERB_EXTREME(tab1 << "working on cell=" << c << " LID=" << cellLID[c]);
       /* first get the DOFs for the nodes associated with 
        * the cell's interior */
+      SUNDANCE_VERB_EXTREME(tab1 << "doing interior nodes");
       for (int n=0; n<nInteriorNodes; n++)
         {
           int ptr = localNodePtrs_[cellDim][cellDim][0][n];
@@ -634,36 +698,30 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
             }
         }
       
+      SUNDANCE_VERB_EXTREME(tab1 << "doing facet nodes");
       /* now get the DOFs for the nodes on the facets */
       for (int d=0; d<cellDim; d++)
         {
+          Tabs tab2;
+          SUNDANCE_VERB_EXTREME(tab2 << "facet dim=" << d);
           for (int f=0; f<numFacets[d]; f++)
             {
+              Tabs tab3;
               int facetID = facetLID[d][c*numFacets[d]+f];
-
-              SUNDANCE_OUT(this->verbosity() > VerbHigh 
-                           && localNodePtrs_[cellDim][d][f].size() != 0,
-                           tab1 << "cellLID=" << cellLID[c] << ", facet dim="
-                           << d << ", facetID=" << facetID);
-              SUNDANCE_OUT(this->verbosity() > VerbHigh 
-                           && localNodePtrs_[cellDim][d][f].size() != 0, 
-                           tab1 << "dofs for all nodes of this facet are: "
-                           << dofs_[d][facetLID[d][f]]);
+              SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
               int nFacetNodes = localNodePtrs_[cellDim][d][f].size();
               if (d == 0 || nFacetNodes <= 1) /* orientation-independent */
                 {
                   for (int n=0; n<nFacetNodes; n++)
                     {
-                      Tabs tab2;
+                      Tabs tab4;
                       SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                   tab2 << "n=" << n);
+                                   tab4 << "n=" << n);
                       int ptr = localNodePtrs_[cellDim][d][f][n];
-                      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                   tab2 << "local ptr=" << ptr);
                       for (int funcID=0; funcID<nf; funcID++)
                         {
                           SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                       tab2 << "found dof=" 
+                                       tab4 << "found dof=" 
                                        << dofs_[d][facetID][funcID + nf*n])
                             maximalDofs_[(funcID*nCells + c)*nNodes+ptr] 
                             = dofs_[d][facetID][funcID + nf*n];
@@ -672,21 +730,21 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
                 }
               else /* orientation-dependent */
                 {
-                  int facetOrientation = facetOrientations[d][c*numFacets[d]+f];
+                  Tabs tab4;
+                  int facetOrientation = facetOrientations[d][c*numFacets[d]+f]
+                    * originalFacetOrientation_[d-1][facetID];
                   for (int m=0; m<nFacetNodes; m++)
                     {
-                      Tabs tab2;
+                      Tabs tab4;
                       int n = m;
                       if (facetOrientation<0) n = nFacetNodes-1-m;
                       SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                   tab2 << "n=" << n);
+                                   tab4 << "n=" << n);
                       int ptr = localNodePtrs_[cellDim][d][f][m];
-                      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                   tab2 << "local ptr=" << ptr);
                       for (int funcID=0; funcID<nf; funcID++)
                         {
                           SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                                       tab2 << "found dof=" 
+                                       tab4 << "found dof=" 
                                        << dofs_[d][facetID][funcID + nf*n])
                             maximalDofs_[(funcID*nCells + c)*nNodes+ptr] 
                             = dofs_[d][facetID][funcID + nf*n];
@@ -778,6 +836,8 @@ void HomogeneousDOFMap::print(ostream& os) const
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
     {
+      mesh().comm().synchronize();
+      mesh().comm().synchronize();
       if (p == myRank)
         {
           os << tabs << 
@@ -798,6 +858,17 @@ void HomogeneousDOFMap::print(ostream& os) const
                       getDOFsForCell(d, c, funcIDList()[f], dofs);
                       os << tabs3 << "f=" << funcIDList()[f] << " " 
                          << dofs << endl;
+                      if (false)
+                        {
+                          os << tabs3 << "{";
+                          for (unsigned int i=0; i<dofs.size(); i++)
+                            {
+                              if (i != 0) os << ", ";
+                              if (isLocalDOF(dofs[i])) os << "L";
+                              else os << "R";
+                            }
+                          os << "}" << endl;
+                        }
                     }
                 }
             }

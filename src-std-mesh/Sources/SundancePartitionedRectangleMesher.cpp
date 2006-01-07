@@ -102,7 +102,7 @@ Mesh PartitionedRectangleMesher::fillMesh() const
                        << globalIndex << " x=" << x << " owner=" 
                        << pointOwner);
           int lid = mesh.addVertex(globalIndex, x, pointOwner, 0);
-          pts[i-lowestVisiblePtX][j-lowestVisiblePtY] = lid;
+          pts[i-lowestVisiblePtX][j-lowestVisiblePtY] = globalIndex;
           
           SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
                        "point " << x << " registered with LID=" << lid);

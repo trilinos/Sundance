@@ -28,7 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceLagrange.hpp"
+#include "SundanceP1NC.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
@@ -38,151 +38,64 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-Lagrange::Lagrange(int order)
-  : ScalarBasis(), order_(order)
+
+
+void P1NC::print(ostream& os) const 
 {
-TEST_FOR_EXCEPTION(order < 0, RuntimeError,
-                     "invalid polynomial order=" << order
-                     << " in Lagrange ctor");
+  os << "P1NC()";
 }
 
-void Lagrange::print(ostream& os) const 
-{
-  os << "Lagrange(" << order_ << ")";
-}
-
-int Lagrange::nNodes(int /* spatialDim */, 
-                     const CellType& cellType) const
+int P1NC::nNodes(int spatialDim, 
+                 const CellType& cellType) const
 {
   switch(cellType)
     {
-    case PointCell:
-      return 1;
     case LineCell:
-      return 1 + order_;
+      return 1;
     case TriangleCell:
-      {
-        switch(order_)
-          {
-          case 0:
-            return 1;
-          case 1:
-            return 3;
-          case 2:
-            return 6;
-          case 3:
-            return 10;
-          default:
-            TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
-                               << " not implemented in Lagrange basis");
-            return -1; // -Wall
-          }
-      }
-    case TetCell:
-      {switch(order_)
-          {
-          case 0:
-            return 1;
-          case 1:
-            return 4;
-          case 2:
-            return 10;
-          default:
-            TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
-                               << " not implemented in Lagrange basis");
-            return -1; // -Wall
-          }
-
-      }
+      return 3;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in Lagrange basis");
+                         << cellType << " not implemented in P1NC basis");
       return -1; // -Wall
     }
 }
 
-void Lagrange::getLocalDOFs(const CellType& cellType,
+void P1NC::getLocalDOFs(const CellType& cellType,
                             Array<Array<Array<int> > >& dofs) const 
 {
   switch(cellType)
     {
-    case PointCell:
-      dofs.resize(1);
-      dofs[0] = tuple(tuple(0));
-      return;
     case LineCell:
       dofs.resize(2);
       dofs[0] = tuple(tuple(0), tuple(1));
       dofs[1] = tuple(makeRange(2, order()));
       return;
     case TriangleCell:
-      {
-        int n = order()-1;
-        dofs.resize(3);
-        dofs[0] = tuple(tuple(0), tuple(1), tuple(2));
-        dofs[1] = tuple(makeRange(3,2+n), 
-                        makeRange(3+n, 2+2*n),
-                        makeRange(3+2*n, 2+3*n));
-        if (order()<3)
-          {
-            dofs[2] = tuple(Array<int>());
-          }
-        else 
-          {
-            dofs[2] = tuple(makeRange(3+3*n, 3+3*n));
-          }
-        return;
-      }
-    case TetCell:
-      {
-        dofs.resize(4);
-        dofs[0] = tuple(tuple(0), tuple(1), tuple(2), tuple(3));
-        if (order() == 2)
-          {
-            dofs[1] = tuple(tuple(4), tuple(5), tuple(6), 
-                            tuple(7), tuple(8), tuple(9));
-          }
-        else
-          {
-            dofs[1] = tuple(Array<int>(), Array<int>(),
-                            Array<int>(), Array<int>(), 
-                            Array<int>(), Array<int>());
-          }
-        dofs[2] = tuple(Array<int>(), Array<int>(), 
-                        Array<int>(), Array<int>());
-        dofs[3] = tuple(Array<int>());
-        return;
-      }
+      int n = order()-1;
+      dofs.resize(3);
+      dofs[0] = tuple(Array<int>());
+      dofs[1] = tuple(tuple(0), tuple(1), tuple(2));
+      dofs[2] = tuple(Array<int>());
+      return;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in Lagrange basis");
+                         << cellType << " not implemented in P1NC basis");
     }
 }
 
 
 
-Array<int> Lagrange::makeRange(int low, int high)
-{
-  if (high < low) return Array<int>();
-
-  Array<int> rtn(high-low+1);
-  for (int i=0; i<rtn.length(); i++) rtn[i] = low+i;
-  return rtn;
-}
-
-void Lagrange::refEval(int /* spatialDim */, 
-                       const CellType& cellType,
-                       const Array<Point>& pts,
-                       const MultiIndex& deriv,
-                       Array<Array<double> >& result) const
+void P1NC::refEval(int spatialDim, 
+                   const CellType& cellType,
+                   const Array<Point>& pts,
+                   const MultiIndex& deriv,
+                   Array<Array<double> >& result) const
 {
   result.resize(pts.length());
 
   switch(cellType)
     {
-    case PointCell:
-      result = tuple(tuple(1.0));
-      return;
     case LineCell:
       for (int i=0; i<pts.length(); i++)
         {
@@ -195,55 +108,26 @@ void Lagrange::refEval(int /* spatialDim */,
           evalOnTriangle(pts[i], deriv, result[i]);
         }
       return;
-    case TetCell:
-      for (int i=0; i<pts.length(); i++)
-        {
-          evalOnTet(pts[i], deriv, result[i]);
-        }
-      return;
     default:
-      SUNDANCE_ERROR("Lagrange::refEval() unimplemented for cell type ");
+      SUNDANCE_ERROR("P1NC::refEval() unimplemented for cell type "
+                     << cellType);
 
     }
 }
 
 /* ---------- evaluation on different cell types -------------- */
 
-void Lagrange::evalOnLine(const Point& pt, 
-													const MultiIndex& deriv,
-													Array<double>& result) const
+void P1NC::evalOnLine(const Point& pt, 
+                      const MultiIndex& deriv,
+                      Array<double>& result) const
 {
 	ADReal x = ADReal(pt[0], 0, 1);
 	ADReal one(1.0, 1);
 	
-	result.resize(order()+1);
+	result.resize(1);
 	Array<ADReal> tmp(result.length());
 
-	switch(order_)
-		{
-		case 0:
-			tmp[0] = one;
-			break;
-		case 1:
-			tmp[0] = 1.0 - x;
-			tmp[1] = x;
-			break;
-		case 2:
-			tmp[0] = 2.0*(1.0-x)*(0.5-x);
-			tmp[1] = 2.0*x*(x-0.5);
-			tmp[2] = 4.0*x*(1.0-x);
-			break;
-    case 3:
-      tmp[0] = 9.0/2.0 * (1.0 - x) * (1.0/3.0 - x) * (2.0/3.0 - x);
-      tmp[1] = 9.0/2.0 * x * (x - 1.0/3.0) * (x - 2.0/3.0);
-      tmp[2] = 27.0/2.0 * x * (1.0 - x) * (2.0/3.0 - x);
-      tmp[3] = 27.0/2.0 * x * (1.0 - x) * (x - 1.0/3.0);
-
-      break;
-		default:
-			SUNDANCE_ERROR("Lagrange::evalOnLine polynomial order > 2 has not been"
-                     " implemented");
-		}
+  tmp[0] = one;
 
 	for (int i=0; i<tmp.length(); i++)
 		{
@@ -252,7 +136,7 @@ void Lagrange::evalOnLine(const Point& pt,
 		}
 }
 
-void Lagrange::evalOnTriangle(const Point& pt, 
+void P1NC::evalOnTriangle(const Point& pt, 
 															const MultiIndex& deriv,
 															Array<double>& result) const
 
@@ -312,7 +196,7 @@ void Lagrange::evalOnTriangle(const Point& pt,
       }
       break;
 		default:
-			SUNDANCE_ERROR("Lagrange::evalOnTriangle poly order > 2");
+			SUNDANCE_ERROR("P1NC::evalOnTriangle poly order > 2");
 		}
 
 	for (int i=0; i<tmp.length(); i++)
@@ -327,7 +211,7 @@ void Lagrange::evalOnTriangle(const Point& pt,
 }
 
 
-void Lagrange::evalOnTet(const Point& pt, 
+void P1NC::evalOnTet(const Point& pt, 
 												 const MultiIndex& deriv,
 												 Array<double>& result) const
 {
@@ -369,7 +253,7 @@ void Lagrange::evalOnTet(const Point& pt,
 			tmp[9] = 4.0*y*z;
 			break;
 		default:
-			SUNDANCE_ERROR("Lagrange::evalOnTet poly order > 2");
+			SUNDANCE_ERROR("P1NC::evalOnTet poly order > 2");
 		}
 
 	for (int i=0; i<tmp.length(); i++)

@@ -29,118 +29,99 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include "SundanceEvaluator.hpp"
-
-using SundanceCore::List;
+#include <unistd.h>
+#include <sys/types.h>
 /** 
- * Solves the Poisson equation in 2D
+ * Solves the Poisson equation in 1D
  */
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-2.0) < 1.0e-10;});
 
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 
 int main(int argc, void** argv)
 {
-  
   try
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
+      //   cerr << "pid = " << getpid() << endl;
+      //int zippy = 1;
+      //while (zippy) ;
+
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
+       * be built using a PartitionedLineMesher. */
       int nx = 10;
-      int ny = 5;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
-                                                         0.0, 2.0, ny, 1,
-                                                         meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
-      CellFilter edges = new DimensionalCellFilter(1);
-
-      CellFilter left = edges.subset(new LeftPointTest());
-      CellFilter right = edges.subset(new RightPointTest());
-      CellFilter top = edges.subset(new TopPointTest());
-      CellFilter bottom = edges.subset(new BottomPointTest());
+      CellFilter points = new DimensionalCellFilter(0);
+      CellFilter leftPoint = points.subset(new LeftPointTest());
+      CellFilter rightPoint = points.subset(new RightPointTest());
 
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      int order = 2;
+      int order = 3;
+      double p = order;
       Expr u = new UnknownFunction(new Lagrange(order), "u");
       Expr v = new TestFunction(new Lagrange(order), "v");
 
-      /* Create differential operator and coordinate functions */
+      /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
-      Expr dy = new Derivative(1);
-      Expr grad = List(dx, dy);
       Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad2 = new GaussianQuadrature(2);
-      QuadratureFamily quad4 = new GaussianQuadrature(4);
+      QuadratureFamily quad = new GaussianQuadrature(2*order);
+
 
       /* Define the weak form */
-      //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-      Expr one = new Parameter(1.0);
-      Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  + one*v, quad2)
-        + Integral(top, -v/3.0, quad2) 
-        + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);
-      //        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
+      Expr exactSoln = pow(1.0 + x, p);
+      Expr source = p*(p-1.0)*pow(1.0+x, p-2.0);
+      Expr eqn = Integral(interior, (dx*v)*(dx*u) + v*source, quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, v*(u-0.5*x*x), quad4);
+      Expr bc = EssentialBC(leftPoint, v*(u-exactSoln), quad)
+        + EssentialBC(rightPoint, v*(u-exactSoln), quad);
 
       /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+      LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      cerr << "matrix = " << endl << prob.getOperator() << endl;
+      cerr << "rhs = " << endl << prob.getRHS() << endl;
+
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
+
+
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
+
       Expr soln = prob.solve(solver);
 
-      Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
 
-      /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Poisson2d");
-      w.addMesh(mesh);
-      w.addField("soln", new ExprFieldWrapper(soln[0]));
-      w.write();
+      TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
+                         RuntimeError,
+                         "solve failed");
 
-      Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
-                              err*err,
-                              quad4);
+                              pow(soln-exactSoln, 2),
+                              quad);
 
-      Expr derivErr = dx*(exactSoln-soln);
-      Expr derivErrExpr = Integral(interior, 
-                                   derivErr*derivErr, 
-                                   quad2);
-
-      FunctionalEvaluator errInt(mesh, errExpr);
-      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
-
-      double errorSq = errInt.evaluate();
+      double errorSq = evaluateIntegral(mesh, errExpr);
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-      double derivErrorSq = derivErrInt.evaluate();
-      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
-
-      Sundance::passFailTest(errorSq + derivErrorSq, 1.0e-11);
-
+      double tol = 1.0e-12;
+      Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
 		{

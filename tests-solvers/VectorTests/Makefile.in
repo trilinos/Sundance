@@ -111,7 +111,7 @@ host_triplet = @host@
 target_triplet = @target@
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
-noinst_PROGRAMS = VectorTest$(EXEEXT)
+noinst_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2)
 subdir = tests-solvers/VectorTests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
@@ -131,6 +131,8 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
+am__EXEEXT_1 = VectorTest$(EXEEXT)
+am__EXEEXT_2 =
 PROGRAMS = $(noinst_PROGRAMS)
 am_VectorTest_OBJECTS = VectorTest-VectorTest.$(OBJEXT)
 VectorTest_OBJECTS = $(am_VectorTest_OBJECTS)
@@ -421,6 +423,9 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
+PARALLEL_SRC = VectorTest
+SERIAL_SRC = 
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 VectorTest_SOURCES = $(srcdir)/VectorTest.cpp 
 VectorTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 VectorTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 

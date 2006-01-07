@@ -55,7 +55,7 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int n = 1;
+      int n = 5;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
                                                          0.0, 1.0, n, 1,
@@ -101,7 +101,7 @@ int main(int argc, void** argv)
       Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad6);
 
 
-      SundanceStdFwk::Internal::DOFMapBase::classVerbosity() = VerbExtreme;
+      //      SundanceStdFwk::Internal::DOFMapBase::classVerbosity() = VerbExtreme;
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
@@ -111,11 +111,6 @@ int main(int argc, void** argv)
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-//       cerr << "row map = " << endl;
-//       SundanceStdFwk::Internal::DOFMapBase::classVerbosity() = VerbSilent;
-//       prob.rowMap()->print(cerr);
-//       SundanceStdFwk::Internal::DOFMapBase::classVerbosity() = VerbExtreme;
-//       cerr << endl;
 
       Expr soln = prob.solve(solver);
 

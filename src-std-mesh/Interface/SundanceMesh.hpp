@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshBase.hpp"
-#include "SundanceCreatableMesh.hpp"
+#include "SundanceIncrementallyCreatableMesh.hpp"
 #include "SundanceIdentityReorderer.hpp"
 #include "SundanceCellReorderer.hpp"
 #include "TSFHandle.hpp"
@@ -119,6 +119,7 @@ using namespace SundanceUtils;
      */
     int ownerProcID(int cellDim, int cellLID) const 
     {return ptr()->ownerProcID(cellDim, cellLID);}
+    
 
     /** 
      * Return the number of facets of the given cell
@@ -163,11 +164,9 @@ using namespace SundanceUtils;
                       const Array<int>& cellLID,
                       int facetDim,
                       Array<int>& facetLID,
-                      bool getOrientations,
                       Array<int>& facetOrientations) const 
     {ptr()->getFacetLIDs(cellDim, cellLID, 
-                         facetDim, facetLID, getOrientations,
-                         facetOrientations);}
+                         facetDim, facetLID, facetOrientations);}
 
 
     /** 
@@ -274,7 +273,7 @@ using namespace SundanceUtils;
 
   private:
     /** */
-    CreatableMesh* creatableMesh();
+    IncrementallyCreatableMesh* creatableMesh();
   };
 }
 

@@ -30,11 +30,18 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = IDAHeat
+PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest
+
+SERIAL_SRC =
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
+
+
+
 
 IDAHeat_SOURCES = $(srcdir)/IDAHeat.cpp 
-
-
 
 IDAHeat_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 
@@ -44,12 +51,24 @@ IDAHeat_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS)
 
 
 
+PoissonTest_SOURCES = $(srcdir)/PoissonTest.cpp 
+
+PoissonTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+
+PoissonTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+
+PoissonTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS) 
 
 
 
 
+PoissonBoltzmannTest_SOURCES = $(srcdir)/PoissonBoltzmannTest.cpp 
 
+PoissonBoltzmannTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 
+PoissonBoltzmannTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+
+PoissonBoltzmannTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS) 
 
 
 

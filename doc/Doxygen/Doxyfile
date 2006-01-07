@@ -432,7 +432,7 @@ EXCLUDE_PATTERNS       =
 # the \include command).
 
 EXAMPLE_PATH           = ../test-std-framework/Problems \
-                         ../examples-tutorial
+                         ../examples-tutorial/c++
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -908,7 +908,7 @@ INCLUDE_FILE_PATTERNS  =
 # or name=definition (no spaces). If the definition and the = are 
 # omitted =1 is assumed.
 
-PREDEFINED             = DOXYGEN_DEVELOPER_ONLY \
+PREDEFINED             = \
 "HANDLE_CTORS(handle, contents)=/** Empty ctor */ handle() : Handle<contents >() {;} /** Construct a handle with a raw pointer to a contents */ handle(Handleable<contents >* rawPtr) : Handle<contents >(rawPtr) {;} /** Construct a handle with a smart pointer to a contents */ handle(const RefCountPtr<contents >& smartPtr) : Handle<contents >(smartPtr){;}" \
 "GET_RCP(base)=/** \name Handleable interface */ //@{ /** Return a RCP to self */ virtual RefCountPtr<base> getRcp() ; //@}" \
 "SUNDANCE_UNARY_OP(funcName, dummy, description)=/** \relates Expr description */ Expr funcName(const Expr& arg);"

@@ -47,7 +47,7 @@ namespace SundanceUtils
     {
     public:
       
-      static void println(const string& str) {cerr << str << endl;}
+      static void println(const string& str) {cout << str << endl;}
     private:
     };
 

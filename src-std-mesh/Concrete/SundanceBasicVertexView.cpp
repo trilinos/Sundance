@@ -1,4 +1,4 @@
-#include "SundanceBasicVertexSet.hpp"
+#include "SundanceBasicVertexView.hpp"
 #include "Teuchos_Utils.hpp"
 
 using namespace Teuchos;
@@ -7,7 +7,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 
 
-string VertexSet::toString() const
+string VertexView::toString() const
 {
   int* ptr = *base_ +  offset_*length_;
 	string rtn="{";

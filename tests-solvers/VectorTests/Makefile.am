@@ -30,11 +30,17 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = VectorTest
+PARALLEL_SRC = VectorTest
+
+SERIAL_SRC =
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
+
+
 
 VectorTest_SOURCES = $(srcdir)/VectorTest.cpp 
-
-
 
 VectorTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 

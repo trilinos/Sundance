@@ -36,8 +36,8 @@ noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
 Kepler Stokes2D
 
-PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson2D \
-NoxPoisson1D PoissonBoltzmann2D \
+PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
+HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic \
 Coupled1D Coupled2D Helmholtz1D VorticityNavierStokes2D \
 VorticityStokes2D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D
@@ -109,6 +109,19 @@ HighOrderPoisson2D_LDADD = $(STD_FWK_LIBS)
 
 
 
+HighOrderPoisson1D_SOURCES = $(srcdir)/HighOrderPoisson1D.cpp
+
+HighOrderPoisson1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+HighOrderPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+HighOrderPoisson1D_LDADD = $(STD_FWK_LIBS) 
+
+
 
 
 
@@ -127,6 +140,30 @@ Poisson3D_LDADD = $(STD_FWK_LIBS)
 
 
 
+HighOrderProjection1D_SOURCES = $(srcdir)/HighOrderProjection1D.cpp
+
+HighOrderProjection1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+HighOrderProjection1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+HighOrderProjection1D_LDADD = $(STD_FWK_LIBS) 
+
+
+HighOrderProjection2D_SOURCES = $(srcdir)/HighOrderProjection2D.cpp
+
+HighOrderProjection2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+HighOrderProjection2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+HighOrderProjection2D_LDADD = $(STD_FWK_LIBS) 
 
 
 

@@ -30,7 +30,16 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = CompoundOpTest BlockOpTest LinearCombinationTest
+PARALLEL_SRC = CompoundOpTest BlockOpTest LinearCombinationTest
+
+SERIAL_SRC =
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
+
+
+
 
 CompoundOpTest_SOURCES = $(srcdir)/CompoundOpTest.cpp 
 

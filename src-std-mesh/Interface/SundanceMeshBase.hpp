@@ -149,7 +149,6 @@ using namespace SundanceUtils;
                                 const Array<int>& cellLID,
                                 int facetDim,
                                 Array<int>& facetLID,
-                                bool getOrientations,
                                 Array<int>& facetOrientations) const = 0 ;
 
       /**

@@ -52,7 +52,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellType.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererImplemBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.hpp \
-$(top_srcdir)/src-std-mesh/Interface/SundanceCreatableMesh.hpp \
+$(top_srcdir)/src-std-mesh/Interface/SundanceIncrementallyCreatableMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.hpp \
@@ -74,11 +74,11 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceMeshType.cpp
 SUNDANCE_CONCRETEMESHES_H = \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.hpp \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMeshType.hpp \
-$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.hpp 
+$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.hpp 
 
 SUNDANCE_CONCRETEMESHES = \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp \
-$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexSet.cpp 
+$(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp 
 
 SUNDANCE_MESHSOURCES_H = \
 $(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.hpp \

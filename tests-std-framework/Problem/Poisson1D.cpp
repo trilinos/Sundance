@@ -92,17 +92,17 @@ int main(int argc, void** argv)
 
       Expr soln = prob.solve(solver);
 
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      cerr << "rhs = " << endl << prob.getRHS() << endl;
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      cerr << "matrix = " << endl << prob.getOperator() << endl;
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
+//       MPIComm::world().synchronize();
+//       MPIComm::world().synchronize();
+//       MPIComm::world().synchronize();
+//       cerr << "rhs = " << endl << prob.getRHS() << endl;
+//       MPIComm::world().synchronize();
+//       MPIComm::world().synchronize();
+//       MPIComm::world().synchronize();
+//       cerr << "matrix = " << endl << prob.getOperator() << endl;
+//       MPIComm::world().synchronize();
+//       MPIComm::world().synchronize();
+//       MPIComm::world().synchronize();
       Vector<double> x0 = DiscreteFunction::discFunc(soln)->getVector();
       cerr << "soln = " << endl << x0 << endl;
 
