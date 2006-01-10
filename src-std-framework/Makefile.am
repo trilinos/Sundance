@@ -133,12 +133,12 @@ $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp
 SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.hpp\
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.hpp
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp
 
 SUNDANCE_DOFMAPPING = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceHomogeneousDOFMap.cpp
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \

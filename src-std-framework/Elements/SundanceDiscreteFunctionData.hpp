@@ -89,7 +89,7 @@ namespace SundanceStdFwk
       /** */
       void getLocalValues(int cellDim, 
                           const Array<int>& cellLID,
-                          Array<double>& localValues) const ;
+                          Array<Array<double> >& localValues) const ;
 
 
       /** */

@@ -102,9 +102,10 @@ void DiscreteFunctionData::updateGhosts() const
 }
 
 
-void DiscreteFunctionData::getLocalValues(int cellDim, 
-                                          const Array<int>& cellLID,
-                                          Array<double>& localValues) const 
+void DiscreteFunctionData
+::getLocalValues(int cellDim, 
+                 const Array<int>& cellLID,
+                 Array<Array<double> >& localValues) const 
 {
   Tabs tab;
 
@@ -115,32 +116,18 @@ void DiscreteFunctionData::getLocalValues(int cellDim,
   updateGhosts();
 
   const RefCountPtr<DOFMapBase>& map = space_.map();
-  static Array<int> dofs;
-  static Array<int> indices;
-  unsigned int nNodes;
+  static Array<Array<int> > dofs;
+  Array<int> nNodes;
+
+  localValues.resize(map->nChunks());
   map->getDOFsForCellBatch(cellDim, cellLID, dofs, nNodes);
-  int nFunc = space_.nFunc();
-  int nCells = cellLID.size();
-  localValues.resize(nFunc*cellLID.size()*nNodes);
-  indices.resize(dofs.size());
-  
-  /* store the values in fortran order with node number running fastest,
-   * then function ID, then cell ID */
-  for (unsigned int c=0; c<cellLID.size(); c++)
+
+  for (unsigned int b=0; b<nNodes.size(); b++)
     {
-      for (int f=0; f<nFunc; f++)
-        {
-          for (unsigned int n=0; n<nNodes; n++)
-            {
-              indices[(c*nFunc + f)*nNodes + n]
-                = dofs[(f*nCells + c)*nNodes + n];
-            }
-        }
+      int nFuncs = map->nFuncs(b);
+      localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
+      ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
     }
-  ghostView_->getElements(&(indices[0]), indices.size(), localValues);
-
-
-
 }
 
 

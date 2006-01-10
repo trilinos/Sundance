@@ -88,7 +88,9 @@ int main(int argc, void** argv)
 
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
-
+      
+      cout << "row map = " << endl;
+      prob.rowMap()->print(cout);
 
       Expr soln = prob.solve(solver);
 

@@ -81,10 +81,6 @@ namespace SundanceStdFwk
 
       bool hasUnks() const ;
 
-      bool unksAreHomogeneous() const ;
-
-      bool testsAreHomogeneous() const ;
-
       bool unksAreOmnipresent() const ;
 
       bool testsAreOmnipresent() const ;

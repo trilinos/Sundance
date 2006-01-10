@@ -222,7 +222,15 @@ void QuadratureEvalMediator
        cerr << tab << "evaluting DF " << expr->name() << endl;
      }
 
-  for (unsigned int i=0; i<multiIndices.size(); i++)
+   const RefCountPtr<DOFMapBase>& dofMap = f->map(); 
+
+   int nQuad = quadWgts().size();
+   int myIndex = expr->myIndex();
+   int chunk = dofMap->chunkForFuncID(myIndex);
+   int funcIndex = dofMap->indexForFuncID(myIndex);
+   int nFuncs = dofMap->nFuncs(chunk);
+
+   for (unsigned int i=0; i<multiIndices.size(); i++)
     {
       Tabs tab1;
       const MultiIndex& mi = multiIndices[i];
@@ -245,16 +253,16 @@ void QuadratureEvalMediator
           else
             {
             }
-          const RefCountPtr<Array<double> >& cacheVals 
+
+          const RefCountPtr<Array<Array<double> > >& cacheVals 
             = fCache()[f];
-          int nFuncs = f->discreteSpace().nFunc();
-          int nQuad = quadWgts().size();
-          int myIndex = expr->myIndex();
-          const double* cachePtr = &((*cacheVals)[0]);
+
+          const double* cachePtr = &((*cacheVals)[chunk][0]);
           double* vecPtr = vec[i]->start();
-          int k = 0;
+          
           int cellSize = nQuad*nFuncs;
-          int offset = myIndex * nQuad;
+          int offset = funcIndex*nQuad;
+          int k = 0;
           for (unsigned int c=0; c<cellLID()->size(); c++)
             {
               for (int q=0; q<nQuad; q++, k++)
@@ -272,18 +280,19 @@ void QuadratureEvalMediator
           else
             {
             }
-          const RefCountPtr<Array<double> >& cacheVals 
+
+          const RefCountPtr<Array<Array<double> > >& cacheVals 
             = dfCache()[f];
-          int nFuncs = f->discreteSpace().nFunc();
+
           int dim = cellDim();
-          int nQuad = quadWgts().size();
           int pDir = mi.firstOrderDirection();
-          int myIndex = expr->myIndex();
-          const double* cachePtr = &((*cacheVals)[0]);
+          const double* cachePtr = &((*cacheVals)[chunk][0]);
           double* vecPtr = vec[i]->start();
-          int k = 0;
+
           int cellSize = nQuad*nFuncs*dim;
           int offset = myIndex * nQuad * dim;
+          int k = 0;
+
           for (unsigned int c=0; c<cellLID()->size(); c++)
             {
               for (int q=0; q<nQuad; q++, k++)
@@ -298,13 +307,13 @@ void QuadratureEvalMediator
 void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
                                                const MultiIndex& mi) const 
 {
-  int nFuncs = f->discreteSpace().nFunc();
+  const RefCountPtr<DOFMapBase>& dofMap = f->discreteSpace().map();
   int diffOrder = mi.order();
 
   int flops = 0;
   double jFlops = CellJacobianBatch::totalFlops();
 
-  RefCountPtr<Array<double> > cacheVals;
+  RefCountPtr<Array<Array<double> > > cacheVals;
   if (mi.order()==0)
     {
       if (fCache().containsKey(f))
@@ -313,7 +322,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         }
       else
         {
-          cacheVals = rcp(new Array<double>());
+          cacheVals = rcp(new Array<Array<double> >(dofMap->nChunks()));
           fCache().put(f, cacheVals);
         }
       fCacheIsValid().put(f, true);
@@ -326,17 +335,17 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         }
       else
         {
-          cacheVals = rcp(new Array<double>());
+          cacheVals = rcp(new Array<Array<double> >(dofMap->nChunks()));
           dfCache().put(f, cacheVals);
         }
       dfCacheIsValid().put(f, true);
     }
 
-  RefCountPtr<Array<double> > localValues;
+  RefCountPtr<Array<Array<double> > > localValues;
   if (!localValueCacheIsValid().containsKey(f) 
       || !localValueCacheIsValid().get(f))
     {
-      localValues = rcp(new Array<double>());
+      localValues = rcp(new Array<Array<double> >());
       f->getLocalValues(cellDim(), *cellLID(), *localValues);
       localValueCache().put(f, localValues);
       localValueCacheIsValid().put(f, true);
@@ -347,66 +356,63 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     }
 
   
-  BasisFamily basis = f->basis()[0];
-  for (int i=0; i<nFuncs; i++)
+  for (int chunk=0; chunk<dofMap->nChunks(); chunk++)
     {
-      const BasisFamily& b = f->basis()[i];
-      TEST_FOR_EXCEPTION(!(b == basis), RuntimeError,
-                         "mixed discrete functions not supported in quad eval "
-                         "mediator");
-    }
+      const BasisFamily& basis = dofMap->basis(chunk);
+      int nFuncs = dofMap->nFuncs(chunk);
 
-  RefCountPtr<Array<double> > refBasisValues 
-    = getRefBasisVals(basis, diffOrder);
+      RefCountPtr<Array<double> > refBasisValues 
+        = getRefBasisVals(basis, diffOrder);
 
-  int nQuad = quadWgts().size();
-  int nCells = cellLID()->size();
-  int nNodes = basis.nNodes(mesh().spatialDim(), cellType());
-  int nDir;
+      Array<double>& cache = (*cacheVals)[chunk];
 
+      int nQuad = quadWgts().size();
+      int nCells = cellLID()->size();
+      int nNodes = basis.nNodes(mesh().spatialDim(), cellType());
+      int nDir;
 
-  if (mi.order()==1)
-    {
-      nDir = cellDim();
-      cacheVals->resize(cellLID()->size() * nQuad * cellDim() * nFuncs);
-    }
-  else
-    {
-      nDir = 1;
-      cacheVals->resize(cellLID()->size() * nQuad * nFuncs);
-    }
-
-  /* 
-   * Sum over nodal values, which we can do with a matrix-matrix multiply
-   * between the ref basis values and the local function values.
-   */
-  int nRowsA = nQuad*nDir;
-  int nColsA = nNodes;
-  int nColsB = nFuncs*nCells; 
-  int lda = nRowsA;
-  int ldb = nNodes;
-  int ldc = lda;
-  double alpha = 1.0;
-  double beta = 0.0;
-  double* A = &((*refBasisValues)[0]);
-  double* B = &((*localValues)[0]);
-  double* C = &((*cacheVals)[0]);
-
-  dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
-         B, &ldb, &beta, C, &ldc);
-
-  
-  /* Transform derivatives to physical coordinates */
-  if (mi.order()==1)
-    {
-      int nRhs = nQuad * nFuncs;
-      for (unsigned int c=0; c<cellLID()->size(); c++)
+      if (mi.order()==1)
         {
-          double* rhsPtr = &(C[(nRhs * nDir)*c]);
-          J()->applyInvJ(c, 0, rhsPtr, nRhs, false);
+          nDir = cellDim();
+          cache.resize(cellLID()->size() * nQuad * cellDim() * nFuncs);
+        }
+      else
+        {
+          nDir = 1;
+          cache.resize(cellLID()->size() * nQuad * nFuncs);
+        }
+
+      /* 
+       * Sum over nodal values, which we can do with a matrix-matrix multiply
+       * between the ref basis values and the local function values.
+       */
+      int nRowsA = nQuad*nDir;
+      int nColsA = nNodes;
+      int nColsB = nFuncs*nCells; 
+      int lda = nRowsA;
+      int ldb = nNodes;
+      int ldc = lda;
+      double alpha = 1.0;
+      double beta = 0.0;
+      double* A = &((*refBasisValues)[0]);
+      double* B = &((*localValues)[chunk][0]);
+      double* C = &((*cacheVals)[chunk][0]);
+      
+      dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
+             B, &ldb, &beta, C, &ldc);
+      
+      
+      /* Transform derivatives to physical coordinates */
+      if (mi.order()==1)
+        {
+          int nRhs = nQuad * nFuncs;
+          for (unsigned int c=0; c<cellLID()->size(); c++)
+            {
+              double* rhsPtr = &(C[(nRhs * nDir)*c]);
+              J()->applyInvJ(c, 0, rhsPtr, nRhs, false);
+            }
         }
     }
-  
 
   jFlops = CellJacobianBatch::totalFlops() - jFlops;
   addFlops(flops + jFlops);

@@ -99,8 +99,8 @@ void DiscreteFunction::updateGhosts() const
 
 
 void DiscreteFunction::getLocalValues(int cellDim, 
-                        const Array<int>& cellLID,
-                        Array<double>& localValues) const 
+                                      const Array<int>& cellLID,
+                                      Array<Array<double> >& localValues) const 
 {
   TimeMonitor timer(getLocalValsTimer());
   data_->getLocalValues(cellDim, cellLID, localValues);

@@ -430,11 +430,11 @@ void Assembler::assemble(LinearOperator<double>& A,
   Array<double> constantCoeffs;
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
-  RefCountPtr<Array<int> > testLocalDOFs 
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > testLocalDOFs 
+    = rcp(new Array<Array<int> >());
 
-  RefCountPtr<Array<int> > unkLocalDOFs
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > unkLocalDOFs
+    = rcp(new Array<Array<int> >());
 
   if (matNeedsConfiguration_)
     {
@@ -540,10 +540,10 @@ void Assembler::assemble(LinearOperator<double>& A,
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          unsigned int nTestNodes;
-          unsigned int nUnkNodes;
-          rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
-                                       nTestNodes);
+          Array<int> nTestNodes;
+          Array<int> nUnkNodes;
+          rowMap_->getDOFsForCellBatch(cellDim, *workSet, 
+                                       *testLocalDOFs, nTestNodes);
           SUNDANCE_VERB_EXTREME(tab1 << "local DOF values " << *testLocalDOFs);
           if (rowMap_.get()==colMap_.get())
             {
@@ -580,8 +580,8 @@ void Assembler::assemble(LinearOperator<double>& A,
                   insertLocalMatrixBatch(cellDim, *workSet, isBCRqc_[r],
                                          *testLocalDOFs,
                                          *unkLocalDOFs,
-                                         group.nTestNodes(),
-                                         group.nUnkNodes(),
+                                         nTestNodes,
+                                         nUnkNodes,
                                          group.testID(), group.unkID(), 
                                          *localValues, mat);
                 }
@@ -589,7 +589,7 @@ void Assembler::assemble(LinearOperator<double>& A,
                 {
                   insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
                                          *testLocalDOFs,
-                                         group.nTestNodes(),
+                                         nTestNodes,
                                          group.testID(), *localValues, vec);
                 }
             }
@@ -635,8 +635,8 @@ void Assembler::assemble(Vector<double>& b) const
   Array<double> constantCoeffs;
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
-  RefCountPtr<Array<int> > testLocalDOFs 
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > testLocalDOFs 
+    = rcp(new Array<Array<int> >());
 
   if (vecNeedsConfiguration_)
     {
@@ -725,7 +725,7 @@ void Assembler::assemble(Vector<double>& b) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          unsigned int nTestNodes;
+          Array<int> nTestNodes;
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
                                        nTestNodes);
 
@@ -751,7 +751,7 @@ void Assembler::assemble(Vector<double>& b) const
 
               insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
                                      *testLocalDOFs,
-                                     group.nTestNodes(),
+                                     nTestNodes,
                                      group.testID(), *localValues, vec);
             }
         }
@@ -791,8 +791,8 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
   Array<double> constantCoeffs;
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
-  RefCountPtr<Array<int> > testLocalDOFs 
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > testLocalDOFs 
+    = rcp(new Array<Array<int> >());
 
   if (vecNeedsConfiguration_)
     {
@@ -883,7 +883,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          unsigned int nTestNodes;
+          Array<int> nTestNodes;
           rowMap_->getDOFsForCellBatch(cellDim, *workSet, *testLocalDOFs,
                                        nTestNodes);
 
@@ -913,7 +913,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
                 {
                   insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
                                          *testLocalDOFs,
-                                         group.nTestNodes(),
+                                         nTestNodes,
                                          group.testID(), *localValues, vec);
                 }
               else
@@ -1078,10 +1078,10 @@ void Assembler::evaluate(double& value) const
 void Assembler::insertLocalMatrixBatch(int cellDim, 
                                        const Array<int>& workSet, 
                                        bool isBCRqc,
-                                       const Array<int>& testIndices,
-                                       const Array<int>& unkIndices,
-                                       unsigned int nTestNodes, 
-                                       unsigned int nUnkNodes,
+                                       const Array<Array<int> >& testIndices,
+                                       const Array<Array<int> >& unkIndices,
+                                       const Array<int>& nTestNodes, 
+                                       const Array<int>& nUnkNodes,
                                        const Array<int>& testID, 
                                        const Array<int>& unkID,
                                        const Array<double>& localValues, 
@@ -1093,78 +1093,71 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
   SUNDANCE_VERB_HIGH(tab << "inserting local matrix values...");
 
   static Array<int> skipRow;
+  static Array<int> rows;
+  static Array<int> cols;
 
-  unsigned int nCells = workSet.size();
-  unsigned int rowsPerFunc = nTestNodes*workSet.size();
-  unsigned int colsPerFunc = nUnkNodes*workSet.size();
+  int nCells = workSet.size();
 
-  skipRow.resize(rowsPerFunc);
-
-  unsigned int highestIndex = lowestRow_ + rowMap_->numLocalDOFs();
-
-  unsigned int lowestLocalRow = rowMap_->lowestLocalDOF();
+  int highestIndex = lowestRow_ + rowMap_->numLocalDOFs();
+  int lowestLocalRow = rowMap_->lowestLocalDOF();
 
   if (verbosity() > VerbHigh)
     {
       cerr << "isBC " << isBCRqc << endl;
       cerr << "num test nodes = " << nTestNodes << endl;
       cerr << "num unk nodes = " << nUnkNodes << endl;
-      cerr << "num rows per function = " << rowsPerFunc << endl;
-      cerr << "num cols per function = " << colsPerFunc << endl;
       cerr << "num cells = " << nCells << endl;
       cerr << "testID = " << testID << endl;
       cerr << "unkID = " << unkID << endl;
     }
   for (unsigned int t=0; t<testID.size(); t++)
     {
+
+      int testChunk = rowMap_->chunkForFuncID(testID[t]);
+      int testFuncIndex = rowMap_->indexForFuncID(testID[t]);
+      const Array<int>& testDOFs = testIndices[testChunk];
+      int nTestFuncs = rowMap_->nFuncs(testChunk);
+      int numTestNodes = nTestNodes[testChunk];
+      int numRows = nCells * numTestNodes;
+      rows.resize(numRows);
+      skipRow.resize(numRows);
+      int r=0;
+      for (int c=0; c<nCells; c++)
+        {
+          for (int n=0; n<numTestNodes; n++, r++)
+            {
+              int row = testDOFs[(c*nTestFuncs + testFuncIndex)*numTestNodes + n];
+              rows[r] = row;
+              int localRow = rows[r]-lowestLocalRow;
+              skipRow[r] = row < lowestRow_ || row >= highestIndex
+                || (isBCRqc && !(*isBCRow_)[localRow])
+                || (!isBCRqc && (*isBCRow_)[localRow]);
+            }
+        }
+
       for (unsigned int u=0; u<unkID.size(); u++)
         {
-          if (isBCRqc)
+          
+          int unkChunk = colMap_->chunkForFuncID(unkID[u]);
+          int unkFuncIndex = colMap_->indexForFuncID(unkID[u]);
+          const Array<int>& unkDOFs = unkIndices[unkChunk];
+          int nUnkFuncs = colMap_->nFuncs(unkChunk);
+          int numUnkNodes = nUnkNodes[unkChunk];
+          cols.resize(nCells*numUnkNodes);
+          int j=0;
+          for (int c=0; c<nCells; c++)
             {
-              for (unsigned int r=0; r<rowsPerFunc; r++)
+              for (int n=0; n<numUnkNodes; n++, j++)
                 {
-                  unsigned int row = testIndices[r+testID[t]*rowsPerFunc];
-                  unsigned int localRowIndex = row - lowestLocalRow;
-                  skipRow[r] = row < lowestRow_ || row >= highestIndex
-                    || !(*isBCRow_)[localRowIndex];
+                  cols[j] = unkDOFs[(c*nUnkFuncs + unkFuncIndex)*numUnkNodes + n];
                 }
             }
-          else
-            {
-              for (unsigned int r=0; r<rowsPerFunc; r++)
-                {
-                  unsigned int row = testIndices[r+testID[t]*rowsPerFunc];
-                  unsigned int localRowIndex = row - lowestLocalRow;
-                  skipRow[r] = row < lowestRow_ || row >= highestIndex
-                    || (*isBCRow_)[localRowIndex];
-                }
-            }
-     
-          if (verbosity() > VerbHigh)
-            {
-              cerr << "adding: " << endl;
-              int k = 0;
-              for (unsigned int cell=0; cell<nCells; cell++)
-                {
-                  for (unsigned int r=0; r<nTestNodes; r++)
-                    {
-                      cerr << testIndices[testID[t]*rowsPerFunc + cell*nTestNodes+r]
-                           << ": {";
-                      for (unsigned int c=0; c<nUnkNodes; c++,k++)
-                        {
-                          cerr << "(" << unkIndices[unkID[u]*colsPerFunc+cell*nUnkNodes+c]
-                               << ", " << localValues[k] << ")";
-                          if (c < (nUnkNodes-1)) cerr << ", ";
-                        }
-                      cerr << "}" << endl;
-                    }
-                }
-            }
-          mat->addToElementBatch(rowsPerFunc,
-                                 nTestNodes,
-                                 &(testIndices[testID[t]*rowsPerFunc]),
-                                 nUnkNodes,
-                                 &(unkIndices[unkID[u]*colsPerFunc]),
+          
+          mat->addToElementBatch(numRows,
+                                 numTestNodes,
+                                 &(rows[0]),
+                                 numUnkNodes,
+                                 &(cols[0]),
                                  &(localValues[0]),
                                  &(skipRow[0]));
         }
@@ -1182,8 +1175,8 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
 void Assembler::insertLocalVectorBatch(int cellDim, 
                                        const Array<int>& workSet, 
                                        bool isBCRqc,
-                                       const Array<int>& testIndices,
-                                       unsigned int nTestNodes, 
+                                       const Array<Array<int> >& testIndices,
+                                       const Array<int>& nTestNodes, 
                                        const Array<int>& testID, 
                                        const Array<double>& localValues, 
                                        TSFExtended::LoadableVector<double>* vec) const 
@@ -1192,21 +1185,30 @@ void Assembler::insertLocalVectorBatch(int cellDim,
   Tabs tab;
   SUNDANCE_VERB_HIGH(tab << "inserting local vector values...");
   SUNDANCE_VERB_EXTREME(tab << "values are " << localValues);
-  unsigned int rowsPerFunc = nTestNodes*workSet.size();
 
-  unsigned int lowestLocalRow = rowMap_->lowestLocalDOF();
+  int lowestLocalRow = rowMap_->lowestLocalDOF();
+  int nCells = workSet.size();
 
   for (unsigned int i=0; i<testID.size(); i++)
     {
-      for (unsigned int r=0; r<rowsPerFunc; r++)
+      int chunk = rowMap_->chunkForFuncID(testID[i]);
+      int funcIndex = rowMap_->indexForFuncID(testID[i]);
+      const Array<int>& dofs = testIndices[chunk];
+      int nFuncs = rowMap_->nFuncs(chunk);
+      int nNodes = nTestNodes[chunk];
+      int r=0;
+      for (int c=0; c<nCells; c++)
         {
-          int rowIndex = testIndices[r + testID[i]*rowsPerFunc];
-          int localRowIndex = rowIndex - lowestLocalRow;
-          if (!(rowMap_->isLocalDOF(rowIndex))
-              || isBCRqc!=(*isBCRow_)[localRowIndex]) continue;
-          {
-            vec->addToElement(rowIndex, localValues[r]);
-          }
+          for (int n=0; n<nNodes; n++, r++)
+            {
+              int rowIndex = dofs[(c*nFuncs + funcIndex)*nNodes + n];
+              int localRowIndex = rowIndex - lowestLocalRow;
+              if (!(rowMap_->isLocalDOF(rowIndex))
+                  || isBCRqc!=(*isBCRow_)[localRowIndex]) continue;
+              {
+                vec->addToElement(rowIndex, localValues[r]);
+              }
+            }
         }
     }
   SUNDANCE_VERB_HIGH(tab << "...done");
@@ -1230,11 +1232,11 @@ void Assembler::getGraph(Array<int>& graphData,
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
-  RefCountPtr<Array<int> > testLocalDOFs 
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > testLocalDOFs 
+    = rcp(new Array<Array<int> >());
 
-  RefCountPtr<Array<int> > unkLocalDOFs
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > unkLocalDOFs
+    = rcp(new Array<Array<int> >());
 
   SUNDANCE_OUT(this->verbosity() > VerbLow, tab << "Creating graph: there are " << rowMap()->numLocalDOFs()
                << " local equations");
@@ -1331,14 +1333,14 @@ void Assembler::getGraph(Array<int>& graphData,
             bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
           }
       
-        unsigned int nTestNodes;
-        unsigned int nUnkNodes;
+        Array<int> numTestNodes;
+        Array<int> numUnkNodes;
 
       
 
-        unsigned int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
+        int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
 
-        unsigned int nt = eqn_->numVars();
+        int nt = eqn_->numVars();
         CellIterator iter=cells.begin();
         while (iter != cells.end())
           {
@@ -1352,39 +1354,49 @@ void Assembler::getGraph(Array<int>& graphData,
             int nCells = workSet->size();
 
             rowMap_->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
-                                         nTestNodes);
+                                         numTestNodes);
             if (rowMap_.get()==colMap_.get())
               {
                 unkLocalDOFs = testLocalDOFs;
-                nUnkNodes = nTestNodes;
+                numUnkNodes = numTestNodes;
               }
             else
               {
                 colMap_->getDOFsForCellBatch(dim, *workSet, 
-                                             *unkLocalDOFs, nUnkNodes);
+                                             *unkLocalDOFs, numUnkNodes);
               }
-          
+
             if (pairs.get() != 0)
               {
-                for (unsigned int c=0; c<workSet->size(); c++)
+                for (int c=0; c<nCells; c++)
                   {
-                    for (unsigned int t=0; t<nt; t++)
+                    for (int t=0; t<nt; t++)
                       {
+                        int tChunk = rowMap_->chunkForFuncID(t);
+                        int nTestFuncs = rowMap_->nFuncs(tChunk);
+                        int testFuncIndex = rowMap_->indexForFuncID(t);
+                        int nTestNodes = numTestNodes[tChunk];
+                        const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                         for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = unksForTests[t][uit];
-                            for (unsigned int n=0; n<nTestNodes; n++)
+                            int uChunk = colMap_->chunkForFuncID(u);
+                            int nUnkFuncs = colMap_->nFuncs(uChunk);
+                            int unkFuncIndex = colMap_->indexForFuncID(u);
+                            const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
+                            int nUnkNodes = numUnkNodes[uChunk];
+                            for (int n=0; n<nTestNodes; n++)
                               {
-                                unsigned int row
-                                  = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                                int row
+                                  = testDOFs[(c*nTestFuncs + testFuncIndex)*nTestNodes + n];
                                 if (row < lowestRow_ || row >= highestRow
                                     || (*isBCRow_)[row-lowestRow_]) continue;
                                 Set<int>& colSet = tmpGraph[row-lowestRow_];
-                                for (unsigned int m=0; m<nUnkNodes; m++)
+                                for (int m=0; m<nUnkNodes; m++)
                                   {
                                     int col 
-                                      = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
+                                      = unkDOFs[(c*nUnkFuncs + unkFuncIndex)*nUnkNodes + m];
                                     colSet.put(col);
                                   }
                               }
@@ -1394,25 +1406,35 @@ void Assembler::getGraph(Array<int>& graphData,
               }
             if (bcPairs.get() != 0)
               {
-                for (unsigned int c=0; c<workSet->size(); c++)
+                for (int c=0; c<nCells; c++)
                   {
-                    for (unsigned int t=0; t<nt; t++)
+                    for (int t=0; t<nt; t++)
                       {
+                        int tChunk = rowMap_->chunkForFuncID(t);
+                        int nTestFuncs = rowMap_->nFuncs(tChunk);
+                        int testFuncIndex = rowMap_->indexForFuncID(t);
+                        int nTestNodes = numTestNodes[tChunk];
+                        const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                         for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = bcUnksForTests[t][uit];
-                            for (unsigned int n=0; n<nTestNodes; n++)
+                            int uChunk = colMap_->chunkForFuncID(u);
+                            int nUnkFuncs = colMap_->nFuncs(uChunk);
+                            int unkFuncIndex = colMap_->indexForFuncID(u);
+                            const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
+                            int nUnkNodes = numUnkNodes[uChunk];
+                            for (int n=0; n<nTestNodes; n++)
                               {
-                                unsigned int row
-                                  = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                                int row
+                                  = testDOFs[(c*nTestFuncs + testFuncIndex)*nTestNodes + n];
                                 if (row < lowestRow_ || row >= highestRow
                                     || !(*isBCRow_)[row-lowestRow_]) continue;
                                 Set<int>& colSet = tmpGraph[row-lowestRow_];
-                                for (unsigned int m=0; m<nUnkNodes; m++)
+                                for (int m=0; m<nUnkNodes; m++)
                                   {
                                     int col 
-                                      = (*unkLocalDOFs)[(u*nCells+c)*nUnkNodes+m];
+                                      = unkDOFs[(c*nUnkFuncs + unkFuncIndex)*nUnkNodes + m];
                                     colSet.put(col);
                                   }
                               }
@@ -1469,11 +1491,11 @@ void Assembler
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
-  RefCountPtr<Array<int> > testLocalDOFs 
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > testLocalDOFs 
+    = rcp(new Array<Array<int> >());
 
-  RefCountPtr<Array<int> > unkLocalDOFs
-    = rcp(new Array<int>());
+  RefCountPtr<Array<Array<int> > > unkLocalDOFs
+    = rcp(new Array<Array<int> >());
 
   SUNDANCE_OUT(this->verbosity() > VerbLow, tab << "Creating graph: there are " << rowMap()->numLocalDOFs()
                << " local equations");
@@ -1555,14 +1577,12 @@ void Assembler
           bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
         }
       
-      unsigned int nTestNodes;
-      unsigned int nUnkNodes;
-
+      Array<int> numTestNodes;
+      Array<int> numUnkNodes;
       
+      int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
 
-      unsigned int highestRow = lowestRow_ + rowMap_->numLocalDOFs();
-
-      unsigned int nt = eqn_->numVars();
+      int nt = eqn_->numVars();
       CellIterator iter=cells.begin();
       while (iter != cells.end())
         {
@@ -1576,35 +1596,46 @@ void Assembler
           int nCells = workSet->size();
 
           rowMap_->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
-                                       nTestNodes);
+                                       numTestNodes);
           if (rowMap_.get()==colMap_.get())
             {
               unkLocalDOFs = testLocalDOFs;
-              nUnkNodes = nTestNodes;
+              numUnkNodes = numTestNodes;
             }
           else
             {
               colMap_->getDOFsForCellBatch(dim, *workSet, 
-                                           *unkLocalDOFs, nUnkNodes);
+                                           *unkLocalDOFs, numUnkNodes);
             }
+
           
           if (pairs.get() != 0)
             {
-              for (unsigned int c=0; c<workSet->size(); c++)
+              for (int c=0; c<nCells; c++)
                 {
-                  for (unsigned int t=0; t<nt; t++)
+                  for (int t=0; t<nt; t++)
                     {
+                      int tChunk = rowMap_->chunkForFuncID(t);
+                      int nTestFuncs = rowMap_->nFuncs(tChunk);
+                      int testFuncIndex = rowMap_->indexForFuncID(t);
+                      int nTestNodes = numTestNodes[tChunk];
+                      const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                       for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
                         {
                           Tabs tab2;
                           int u = unksForTests[t][uit];
-                          for (unsigned int n=0; n<nTestNodes; n++)
+                          int uChunk = colMap_->chunkForFuncID(u);
+                          int nUnkFuncs = colMap_->nFuncs(uChunk);
+                          int unkFuncIndex = colMap_->indexForFuncID(u);
+                          const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
+                          int nUnkNodes = numUnkNodes[uChunk];
+                          for (int n=0; n<nTestNodes; n++)
                             {
-                              unsigned int row
-                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                              int row
+                                = testDOFs[(c*nTestFuncs + testFuncIndex)*nTestNodes + n];
                               if (row < lowestRow_ || row >= highestRow
                                   || (*isBCRow_)[row-lowestRow_]) continue;
-                              const int* colPtr = &((*unkLocalDOFs)[(u*nCells+c)*nUnkNodes]);
+                              const int* colPtr = &(unkDOFs[(c*nUnkFuncs + unkFuncIndex)*nUnkNodes]);
                               icmf->initializeNonzerosInRow(row, nUnkNodes, colPtr);
                             }
                         }
@@ -1613,22 +1644,32 @@ void Assembler
             }
           if (bcPairs.get() != 0)
             {
-              for (unsigned int c=0; c<workSet->size(); c++)
+              for (int c=0; c<nCells; c++)
                 {
-                  for (unsigned int t=0; t<nt; t++)
+                  for (int t=0; t<nt; t++)
                     {
+                      int tChunk = rowMap_->chunkForFuncID(t);
+                      int nTestFuncs = rowMap_->nFuncs(tChunk);
+                      int testFuncIndex = rowMap_->indexForFuncID(t);
+                      int nTestNodes = numTestNodes[tChunk];
+                      const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                       for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
                         {
                           Tabs tab2;
                           int u = bcUnksForTests[t][uit];
-                          for (unsigned int n=0; n<nTestNodes; n++)
+                          int uChunk = colMap_->chunkForFuncID(u);
+                          int nUnkFuncs = colMap_->nFuncs(uChunk);
+                          int unkFuncIndex = colMap_->indexForFuncID(u);
+                          const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
+                          int nUnkNodes = numUnkNodes[uChunk];
+                          for (int n=0; n<nTestNodes; n++)
                             {
-                              unsigned int row
-                                = (*testLocalDOFs)[(t*nCells + c)*nTestNodes+n];
+                              int row
+                                = testDOFs[(c*nTestFuncs + testFuncIndex)*nTestNodes + n];
                               if (row < lowestRow_ || row >= highestRow
                                   || !(*isBCRow_)[row-lowestRow_]) continue;
 
-                              const int* colPtr = &((*unkLocalDOFs)[(u*nCells+c)*nUnkNodes]);
+                              const int* colPtr = &(unkDOFs[(c*nUnkFuncs + unkFuncIndex)*nUnkNodes]);
                               icmf->initializeNonzerosInRow(row, nUnkNodes, colPtr);
                             }
                         }

@@ -153,20 +153,21 @@ namespace SundanceStdFwk
       /** */
       void insertLocalMatrixBatch(int cellDim, const Array<int>& workSet,
                                   bool isBCRqc, 
-                                  const Array<int>& testIndices,
-                                  const Array<int>& unkIndices,
-                                  unsigned int nTestNodes, 
-                                  unsigned int nUnkNodes,
+                                  const Array<Array<int> >& testIndices,
+                                  const Array<Array<int> >& unkIndices,
+                                  const Array<int>& nTestNodes, 
+                                  const Array<int>& nUnkNodes,
                                   const Array<int>& testID,
                                   const Array<int>& unkID, 
                                   const Array<double>& localValues,
                                   TSFExtended::LoadableMatrix<double>* mat) const ;
 
       /** */
-      void insertLocalVectorBatch(int cellDim, const Array<int>& workSet,
+      void insertLocalVectorBatch(int cellDim, 
+                                  const Array<int>& workSet,
                                   bool isBCRqc, 
-                                  const Array<int>& testIndices,
-                                  unsigned int nTestNodes, 
+                                  const Array<Array<int> >& testIndices,
+                                  const Array<int>& nTestNodes, 
                                   const Array<int>& testID,
                                   const Array<double>& localValues,
                                   TSFExtended::LoadableVector<double>* vec) const ;
@@ -220,7 +221,7 @@ namespace SundanceStdFwk
 
       RefCountPtr<Array<int> > isBCRow_;
 
-      unsigned int lowestRow_;
+      int lowestRow_;
 
       VectorType<double> vecType_;
 

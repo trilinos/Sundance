@@ -28,6 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#include "SundanceMap.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
@@ -37,8 +38,15 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 
+static Time& dofLookupTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("unbatched dof lookup"); 
+  return *rtn;
+}
 
-DOFMapBase::DOFMapBase(const Mesh& mesh)
+DOFMapBase::DOFMapBase(const Mesh& mesh,
+                       const Array<BasisFamily>& basis)
   : localProcID_(mesh.comm().getRank()),
     mesh_(mesh),
     cellSets_(),
@@ -47,21 +55,53 @@ DOFMapBase::DOFMapBase(const Mesh& mesh)
     lowestLocalDOF_(),
     numDOFs_(),
     ghostIndices_(rcp(new Array<int>())),
-    dofsHaveBeenAssigned_()
-{;}
+    dofsHaveBeenAssigned_(),
+    chunkBasis_(),
+    chunkFuncIDs_(),
+    funcIDToChunkMap_(basis.size()),
+    funcIDToIndexMap_(basis.size())
+{
+  SundanceUtils::Map<BasisFamily, int> basisToIndexMap;
+  
+  int nBasis = basis.size();
+  for (int i=0; i<nBasis; i++)
+    {
+      if (!basisToIndexMap.containsKey(basis[i]))
+        {
+          chunkBasis_.append(basis[i]);
+          basisToIndexMap.put(basis[i], i);
+          chunkFuncIDs_.append(tuple(i));
+        }
+      else
+        {
+          int b = basisToIndexMap.get(basis[i]);
+          chunkFuncIDs_[b].append(i);
+        }
+      funcIDToChunkMap_[i] = basisToIndexMap.get(basis[i]);
+      funcIDToIndexMap_[i] = chunkFuncIDs_[funcIDToChunkMap_[i]].size()-1;
+    }
+
+  /* identify all functions as existing on the maximal cell set */
+  Array<int> fid(basis.size());
+  for (int f=0; f<nBasis; f++) fid[f] = f;
+  funcIDOnCellSets().append(fid);
+}
 
 void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
                                 int funcID,
                                 Array<int>& dofs) const
 {
-  Array<int> allDofs;
-  unsigned int nNodes;
+  TimeMonitor timer(dofLookupTimer());
+  
+  Array<Array<int> > allDofs;
+  Array<int> nNodes;
   getDOFsForCellBatch(cellDim, tuple(cellLID), allDofs, nNodes);
 
-  dofs.resize(nNodes);
-  unsigned int nFuncs = allDofs.size()/nNodes;
-  for (unsigned int i=0; i<nNodes; i++)
+  int chunkNumber = chunkForFuncID(funcID);
+  int funcIndex = indexForFuncID(funcID);
+  dofs.resize(nNodes[chunkNumber]);
+  for (int i=0; i<nNodes[chunkNumber]; i++)
     {
-      dofs[i] = allDofs[funcID + nFuncs*i];
+      dofs[i] = allDofs[chunkNumber][nNodes[chunkNumber]*funcIndex + i];
     }
 }

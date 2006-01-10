@@ -102,11 +102,11 @@ namespace SundanceStdFwk
 
 
       /** */
-      Map<const DiscreteFunctionData*, RefCountPtr<Array<double> > >& fCache() const {return fCache_;}
+      Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& fCache() const {return fCache_;}
       /** */
-      Map<const DiscreteFunctionData*, RefCountPtr<Array<double> > >& dfCache() const {return dfCache_;}
+      Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& dfCache() const {return dfCache_;}
       /** */
-      Map<const DiscreteFunctionData*, RefCountPtr<Array<double> > >& localValueCache() const {return localValueCache_;}
+      Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& localValueCache() const {return localValueCache_;}
       /** */
       Map<const DiscreteFunctionData*, bool>& fCacheIsValid() const {return fCacheIsValid_;}
       /** */
@@ -130,11 +130,11 @@ namespace SundanceStdFwk
       mutable bool jCacheIsValid_;
 
       /** */
-      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<double> > > fCache_;
+      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > fCache_;
       /** */
-      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<double> > > dfCache_; 
+      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > dfCache_; 
       /** */
-      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<double> > > localValueCache_;
+      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > localValueCache_;
 
       /** */
       mutable Map<const DiscreteFunctionData*, bool> fCacheIsValid_;

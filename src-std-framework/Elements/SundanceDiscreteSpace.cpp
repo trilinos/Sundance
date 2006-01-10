@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceDiscreteSpace.hpp"
-#include "SundanceHomogeneousDOFMap.hpp"
+#include "SundanceMixedDOFMap.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
@@ -47,7 +47,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecType_(vecType),
     ghostImporter_()
 {
-  map_ = rcp(new HomogeneousDOFMap(mesh, basis_[0], basis_.size()));
+  map_ = rcp(new MixedDOFMap(mesh, tuple(basis)));
 
   int nDof = map_->numLocalDOFs();
   int lowDof = map_->lowestLocalDOF();
@@ -72,7 +72,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
   : map_(), mesh_(mesh), basis_(basis), vecSpace_(), vecType_(vecType),
     ghostImporter_()
 {
-  map_ = rcp(new HomogeneousDOFMap(mesh, basis_[0], basis_.size()));
+  map_ = rcp(new MixedDOFMap(mesh, basis_));
 
   int nDof = map_->numLocalDOFs();
   int lowDof = map_->lowestLocalDOF();

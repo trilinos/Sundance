@@ -32,7 +32,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceBasisFamily.hpp"
-#include "SundanceHomogeneousDOFMap.hpp"
+#include "SundanceMixedDOFMap.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
@@ -83,54 +83,45 @@ void DOFMapBuilder::init()
    * map. */
   if (isSymmetric())
     {
-      /* if every test function is defined on the maximal cell set, and if
-       * all test functions share a common basis, then we 
-       * can build a homogeneous DOF map. */
-      if (testsAreHomogeneous() && testsAreOmnipresent())
+      /* if every test function is defined on the maximal cell set, then we 
+       * can build a mixed DOF map. */
+      if (testsAreOmnipresent())
         {
-          Expr test0 = eqn_->varFunc(0);
-          BasisFamily basis0 = BasisFamily::getBasis(test0);
-          rowMap_ = rcp(new HomogeneousDOFMap(mesh_, basis0, 
-                                              eqn_->numVars()));
+          rowMap_ = rcp(new MixedDOFMap(mesh_, testBasisArray()));
           colMap_ = rowMap_;
         }
       else
         {
-          SUNDANCE_ERROR("DOFMapBuilder::init() non-homogeneous test function spaces not yet supported");
+          SUNDANCE_ERROR("DOFMapBuilder::init() non-omnipresent test function "
+                         "spaces not yet supported");
         }
     }
   else
     {
-      /* if every test function is defined on the maximal cell set, and if
-       * all test functions share a common basis, then we 
-       * can build a homogeneous DOF map. */
-      if (testsAreHomogeneous() && testsAreOmnipresent())
+      /* if every test function is defined on the maximal cell set, then we
+       * can build a mixed DOF map. */
+      if (testsAreOmnipresent())
         {
-          Expr test0 = eqn_->varFunc(0);
-          BasisFamily basis0 = BasisFamily::getBasis(test0);
-          rowMap_ = rcp(new HomogeneousDOFMap(mesh_, basis0,  
-                                              eqn_->numVars()));
+          rowMap_ = rcp(new MixedDOFMap(mesh_, testBasisArray()));
         }
       else
         {
-          SUNDANCE_ERROR("DOFMapBuilder::init() non-homogeneous test function spaces not yet supported");
+          SUNDANCE_ERROR("DOFMapBuilder::init() non-omnipresent test function "
+                         "spaces not yet supported");
         }
       
       if (hasUnks())
         {
-          /* if every unk function is defined on the maximal cell set, and if
-           * all unk functions share a common basis, then we 
-           * can build a homogeneous DOF map. */
-          if (unksAreHomogeneous() && unksAreOmnipresent())
+          /* if every unk function is defined on the maximal cell set, then we
+           * can build a mixed DOF map. */
+          if (unksAreOmnipresent())
             {
-              Expr unk0 = eqn_->unkFunc(0);
-              BasisFamily basis0 = BasisFamily::getBasis(unk0);
-              colMap_ = rcp(new HomogeneousDOFMap(mesh_, basis0, 
-                                                  eqn_->numUnks()));
+              colMap_ = rcp(new MixedDOFMap(mesh_, unkBasisArray()));
             }
           else
             {
-              SUNDANCE_ERROR("DOFMapBuilder::init() non-homogeneous unknown function spaces not yet supported");
+              SUNDANCE_ERROR("DOFMapBuilder::init() non-omnipresent unknown "
+                             "function spaces not yet supported");
             }
         }
     }
@@ -162,33 +153,6 @@ bool DOFMapBuilder::hasUnks() const
   return eqn_->numUnks() > 0;
 }
 
-bool DOFMapBuilder::unksAreHomogeneous() const 
-{
-  if (eqn_->numUnks() > 1)
-    {
-      BasisFamily basis0 = BasisFamily::getBasis(eqn_->unkFunc(0));
-      for (unsigned int i=1; i<eqn_->numUnks(); i++) 
-        {
-          BasisFamily basis = BasisFamily::getBasis(eqn_->unkFunc(i));
-          if (!(basis == basis0)) return false;
-        }
-    }
-  return true;
-}
-
-bool DOFMapBuilder::testsAreHomogeneous() const 
-{
-  if (eqn_->numVars() > 1)
-    {
-      BasisFamily basis0 = BasisFamily::getBasis(eqn_->varFunc(0));
-      for (unsigned int i=1; i<eqn_->numVars(); i++) 
-        {
-          BasisFamily basis = BasisFamily::getBasis(eqn_->varFunc(i));
-          if (!(basis == basis0)) return false;
-        }
-    }
-  return true;
-}
 
 bool DOFMapBuilder::unksAreOmnipresent() const
 {
@@ -242,7 +206,7 @@ void DOFMapBuilder::markBCRows()
   int ndof = rowMap_->numLocalDOFs();
   Array<int>& isBC = *isBCRow_;
   for (int i=0; i<ndof; i++) isBC[i] = false;
-  Array<int> dofs;
+  Array<Array<int> > dofs(rowMap_->nChunks());
   Array<int> cellLID;
 
   for (unsigned int r=0; r<eqn_->numRegions(); r++)
@@ -259,7 +223,7 @@ void DOFMapBuilder::markBCRows()
         {
           cellLID.append(*c);
         }
-      unsigned int nTestNodes;
+
       /* find the functions that appear in BCs on this region */
       const Set<int>& bcFuncs = eqn_->bcVarsOnRegion(r);
       Array<int> bcFuncID = bcFuncs.elements();
@@ -268,28 +232,33 @@ void DOFMapBuilder::markBCRows()
           bcFuncID[f] = eqn_->reducedVarID(bcFuncID[f]);
         }
 
-      rowMap_->getDOFsForCellBatch(dim, cellLID, dofs, nTestNodes);
+      Array<int> nNodes;
+      rowMap_->getDOFsForCellBatch(dim, cellLID, dofs, nNodes);
       int offset = rowMap_->lowestLocalDOF();
       int high = offset + rowMap_->numLocalDOFs();
       if (cellLID.size()==0) continue;
-      int nFuncs = dofs.size()/(cellLID.size()*nTestNodes); 
-      int nCells = cellLID.size();
       for (unsigned int c=0; c<cellLID.size(); c++)
         {
-          for (unsigned int n=0; n<nTestNodes; n++)
+          for (int b=0; b<rowMap_->nChunks(); b++)
             {
-              for (unsigned int f=0; f<bcFuncID.size(); f++)
+              int nFuncs = rowMap_->nFuncs(b);
+              for (int n=0; n<nNodes[b]; n++)
                 {
-                  int dof = dofs[(bcFuncID[f]*nCells +c)*nTestNodes + n];
-                  if (dof < offset || dof >= high) continue;
-                  (*isBCRow_)[dof-offset]=true;
+                  for (unsigned int f=0; f<bcFuncID.size(); f++)
+                    {
+                      int funcOffset = rowMap_->indexForFuncID(bcFuncID[f]);
+                      int dof = dofs[b][(c*nFuncs + funcOffset)*nNodes[b]+n];
+                      if (dof < offset || dof >= high) continue;
+                      (*isBCRow_)[dof-offset]=true;
+                    }
                 }
             }
         }
       // for (unsigned int n=0; n<dofs.size(); n++) 
-//         {
-//           if (dofs[n] < offset || dofs[n] >= high) continue;
-//           (*isBCRow_)[dofs[n]-offset]=true;
-//         }
+      //         {
+      //           if (dofs[n] < offset || dofs[n] >= high) continue;
+      //           (*isBCRow_)[dofs[n]-offset]=true;
+      //         }
     }
 }
+        

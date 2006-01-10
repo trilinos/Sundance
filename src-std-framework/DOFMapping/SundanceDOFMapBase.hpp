@@ -34,15 +34,16 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceCellSet.hpp"
+#include "SundanceBasisFamily.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
   namespace Internal
   {
     using namespace Teuchos;
@@ -55,7 +56,8 @@ using namespace SundanceStdMesh::Internal;
     {
     public:
       /** */
-      DOFMapBase(const Mesh& mesh);
+      DOFMapBase(const Mesh& mesh,
+                 const Array<BasisFamily>& basis);
 
       
       /** */
@@ -70,10 +72,31 @@ using namespace SundanceStdMesh::Internal;
                                   int funcID,
                                   Array<int>& dofs) const ;
 
+      /** 
+       *
+       */
+      virtual void getDOFsForCellBatch(int cellDim, 
+                                       const Array<int>& cellLID,
+                                       Array<Array<int> >& dofs,
+                                       Array<int>& nNodes) const = 0 ;
+
       /** */
-      virtual void getDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
-                                       Array<int>& dofs, 
-                                       unsigned int& nNodes) const = 0 ;
+      int chunkForFuncID(int funcID) const {return funcIDToChunkMap_[funcID];}
+
+      /** */
+      int indexForFuncID(int funcID) const {return funcIDToIndexMap_[funcID];}
+
+      /** */
+      int nFuncs(int chunk) const {return chunkFuncIDs_[chunk].size();}
+
+      /** */
+      int nChunks() const {return chunkFuncIDs_.size();}
+
+      /** */
+      const BasisFamily& basis(int chunk) const {return chunkBasis_[chunk];}
+
+      /** */
+      const Array<int>& funcID(int chunk) const {return chunkFuncIDs_[chunk];}
 
       /** */
       const CellSet& cellSet(int i) const {return cellSets_[i];}
@@ -147,6 +170,18 @@ using namespace SundanceStdMesh::Internal;
       RefCountPtr<Array<int> > ghostIndices_;
 
       Array<Array<int> > dofsHaveBeenAssigned_;
+
+      /** Table of bases for each chunk */
+      Array<BasisFamily> chunkBasis_;
+
+      /** Table of lists of funcID for each chunk */
+      Array<Array<int> > chunkFuncIDs_;
+
+      /** Map for lookup of chunk number given a function ID */
+      Array<int> funcIDToChunkMap_;
+
+      /** Map for lookup of index into chunk given a function ID */
+      Array<int> funcIDToIndexMap_;
       
     };
   }

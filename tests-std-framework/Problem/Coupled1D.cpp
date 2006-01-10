@@ -75,9 +75,9 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(2), "u");
+      Expr u = new UnknownFunction(new Lagrange(3), "u");
       Expr v = new UnknownFunction(new Lagrange(2), "v");
-      Expr du = new TestFunction(new Lagrange(2), "du");
+      Expr du = new TestFunction(new Lagrange(3), "du");
       Expr dv = new TestFunction(new Lagrange(2), "dv");
 
       /* Create differential operator and coordinate function */
