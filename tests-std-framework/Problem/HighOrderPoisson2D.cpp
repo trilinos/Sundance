@@ -30,6 +30,7 @@
 
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
+#include "SundanceFIATLagrange.hpp"
 
 using SundanceCore::List;
 /** 
@@ -77,8 +78,8 @@ int main(int argc, void** argv)
        * Lagrange interpolants */
       int order = 3;
       double p = (double) order;
-      Expr u = new UnknownFunction(new Lagrange(order), "u");
-      Expr v = new TestFunction(new Lagrange(order), "v");
+      Expr u = new UnknownFunction(new FIATLagrange(order), "u");
+      Expr v = new TestFunction(new FIATLagrange(order), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);

@@ -43,6 +43,7 @@ static int line_sdline_to_fline[] = {0};
 static int *line_sd_to_fiat[] = {line_sdvert_to_fvert,line_sdline_to_fline};
 
 static int tri_sdvert_to_fvert[] = {0,1,2};
+//static int tri_sdline_to_fline[] = {2,0,1};
 static int tri_sdline_to_fline[] = {2,0,1};
 static int tri_sdtri_to_ftri[] = {0};
 
@@ -114,7 +115,8 @@ void FIATLagrange::getLocalDOFs( const CellType &cellType ,
       for (int e=0;e<(int)eids[d].size();e++) {
         dofs[d][e].resize( eids[d][e].size() );
         for (int n=0;n<(int)eids[d][e].size();n++) {
-          dofs[d][e][n] = eids[d][transfer_cur[e]][n];
+          dofs[d][e][n] = eids[d][e][n];
+          //dofs[d][transfer_cur[e]][n] = eids[d][e][n];
         }
       }
     }

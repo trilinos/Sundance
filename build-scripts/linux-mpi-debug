@@ -38,5 +38,6 @@ BUILD_DIR=`pwd`
 --with-trilinos=$HOME/Software/Math/trilinos-6.0.8/LINUX-DEBUG \
 --with-install="/usr/bin/install -c -p" \
 --with-sundials=$HOME/Software/Math/sundials/LINUX-DEBUG \
+--with-fiat=$HOME/Projects/fiat++/BUILD \
 --prefix=$BUILD_DIR
 

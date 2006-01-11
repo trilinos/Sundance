@@ -103,8 +103,8 @@ int main(int argc, void** argv)
       TimeMonitor t(totalTimer());
       Tabs tab0;
 
-      unsigned int pMax = 2;
-      unsigned int maxDim=3;
+      unsigned int pMax = 3;
+      unsigned int maxDim=2;
       double tol = 1.0e-13;
       int maxDiffOrder = 0;
       int numErrors = 0;

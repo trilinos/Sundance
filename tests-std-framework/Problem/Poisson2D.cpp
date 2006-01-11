@@ -30,6 +30,7 @@
 
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
+#include "SundanceFIATLagrange.hpp"
 
 using SundanceCore::List;
 /** 
@@ -55,8 +56,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 10;
-      int ny = 5;
+      int nx = 1;
+      int ny = 1;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 2.0, ny, 1,
@@ -76,9 +77,9 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      int order = 2;
-      Expr u = new UnknownFunction(new Lagrange(order), "u");
-      Expr v = new TestFunction(new Lagrange(order), "v");
+      int order = 3;
+      Expr u = new UnknownFunction(new FIATLagrange(order), "u");
+      Expr v = new TestFunction(new FIATLagrange(order), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
@@ -106,10 +107,12 @@ int main(int argc, void** argv)
 
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
+      cout << "map = " << endl;
+      prob.rowMap()->print(cout);
+      cout << endl;
       Expr soln = prob.solve(solver);
 
       Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
