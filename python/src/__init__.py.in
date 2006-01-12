@@ -26,4 +26,4 @@
 # ************************************************************************
 # @HEADER
 
-__all__ = ["SundanceStdMesh", "SundanceCore", "SundanceStdFwk"]
+__all__ = ["PySundance"]

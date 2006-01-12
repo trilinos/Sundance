@@ -140,8 +140,14 @@ bool TetQuadrature::test(int p)
                         * pow(z[q], (double) c)
                         * pow(1.0 - x[q] - y[q] - z[q], (double) d);
                     }
-                  pass = pass && fabs(sum - exact(a,b,c,d)) < 1.0e-14;
-                  fprintf(stderr, "order=%d m (%d, %d, %d %d) q=%22.15g exact=%22.15g\n", p, a, b, c, d, sum, exact(a, b, c, d));
+                  double err = fabs(sum - exact(a,b,c,d));
+                  bool localPass = err < 1.0e-14;
+                  pass = pass && localPass;
+                  if (!localPass)
+                    {
+                      fprintf(stderr, "order=%d m (%d, %d, %d %d) q=%22.15g exact=%22.15g\n", p, a, b, c, d, sum, exact(a, b, c, d));
+                      cerr << "error = " << err << endl;
+                    }
                 }
             }
         }

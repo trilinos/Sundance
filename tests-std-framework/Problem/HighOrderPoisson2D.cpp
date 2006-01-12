@@ -56,7 +56,7 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int n = 5;
+      int n = 4;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
                                                          0.0, 1.0, n, 1,
@@ -76,7 +76,7 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      int order = 3;
+      int order = 5;
       double p = (double) order;
       Expr u = new UnknownFunction(new FIATLagrange(order), "u");
       Expr v = new TestFunction(new FIATLagrange(order), "v");
@@ -89,17 +89,17 @@ int main(int argc, void** argv)
       Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad6 = new GaussianQuadrature(6);
+      QuadratureFamily quad = new GaussianQuadrature(2*order);
 
       /* Define the weak form */
       Expr alpha = sqrt(2.0);
       Expr z = x + alpha*y;
       Expr exactSoln = pow(z, p);
       Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  
-                          + v*p*(p-1.0)*(1.0+alpha*alpha)*pow(z,p-2), quad6);
+                          + v*p*(p-1.0)*(1.0+alpha*alpha)*pow(z,p-2), quad);
 
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad6);
+      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad);
 
 
       //      SundanceStdFwk::Internal::DOFMapBase::classVerbosity() = VerbExtreme;
@@ -121,7 +121,7 @@ int main(int argc, void** argv)
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
                               err*err,
-                              quad6);
+                              quad);
 
 
       FunctionalEvaluator errInt(mesh, errExpr);

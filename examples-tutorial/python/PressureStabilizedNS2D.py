@@ -14,6 +14,7 @@ from PySundance import *
 from noxSolver import solverParams
 
 def main():
+    
 
     vecType = EpetraVectorType()
 
@@ -75,20 +76,40 @@ def main():
     prob = NonlinearProblem(mesh, eqn, bc, List(vx,vy,q), List(ux,uy,p), u0, vecType)
     solver = NOXSolver(solverParams, prob)
 
-    numReynolds = 10;
-    finalReynolds = 200.0;
+    numReynolds = 20;
+    finalReynolds = 500.0;
 
+
+    # set up streamfunction calculation
+    psi = UnknownFunction(basis, "psi")
+    varPsi = TestFunction(basis, "varPsi")
+
+    bdry = BoundaryCellFilter()
+
+    ux0 = u0[0]
+    uy0 = u0[1]
+
+    curlU0 = dx*uy0 - dy*ux0
+    psiEqn = Integral(interior, (grad*psi)*(grad*varPsi) + varPsi*curlU0, quad4)
+    psiBC = EssentialBC(bdry, varPsi*psi, quad2)
+    psiProb = LinearProblem(mesh, psiEqn, psiBC, varPsi, psi, vecType)
+    
+
+
+    linSolver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
     
     for i in range(numReynolds+1) :
         Re = i*finalReynolds/numReynolds;
         reynolds.setParameterValue(Re);
         print 'doing Reynolds=', Re
         solver.solve()
+        psi0 = psiProb.solve(linSolver)
         w = VTKWriter("NS2D-" + str(Re))
         w.addMesh(mesh);
         w.addField("ux", u0[0])
         w.addField("uy", u0[1])
         w.addField("p", u0[2])
+        w.addField("psi", psi0)
         w.write();
 
 

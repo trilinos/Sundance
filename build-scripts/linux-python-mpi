@@ -43,5 +43,6 @@ CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops" \
 --disable-cxxexamples \
 --disable-lowleveltests \
 --with-sundials=$HOME/Software/Math/sundials/LINUX-OPT \
+--with-fiat=$HOME/Projects/fiat++/BUILD \
 --prefix=$BUILD_DIR
 

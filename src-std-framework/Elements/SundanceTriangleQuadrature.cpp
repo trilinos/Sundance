@@ -1,6 +1,8 @@
 #include "SundanceTriangleQuadrature.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceGauss1D.hpp"
+#include "SundanceTabs.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceUtils;
@@ -9,10 +11,20 @@ using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-
 void TriangleQuadrature::getPoints(int order, Array<double>& wgt,
-																	 Array<double>& x,
-																	 Array<double>& y)
+                                   Array<double>& x,
+                                   Array<double>& y)
+{
+  if (!getSymmetricPoints(order, wgt, x, y)) 
+    {
+      getNonsymmetricPoints(order, wgt, x, y);
+    }
+}
+
+
+bool TriangleQuadrature::getSymmetricPoints(int order, Array<double>& wgt,
+                                            Array<double>& x,
+                                            Array<double>& y)
 {
 
 	int np;
@@ -75,9 +87,7 @@ void TriangleQuadrature::getPoints(int order, Array<double>& wgt,
 		}
 	else
 		{
-			SUNDANCE_ERROR("symmetric quadrature rule order " 
-                     << order << 
-                     " not available for triangles");
+      return false;
 		}
 
 	for (int i=0; i<q.length(); i++)
@@ -92,8 +102,42 @@ void TriangleQuadrature::getPoints(int order, Array<double>& wgt,
 				}
 		}
 	
-	
+	return true;
 }
+
+
+
+
+void TriangleQuadrature::getNonsymmetricPoints(int order, Array<double>& wgt,
+                                               Array<double>& x,
+                                               Array<double>& y)
+{
+  int nNodes = (order+3)/2;
+  Gauss1D rule(nNodes, -1.0, 1.0);
+  Array<double> s = rule.nodes();
+  Array<double> t = s;
+  Array<double> w = rule.weights();
+  int n = rule.nPoints();
+
+  wgt.resize(n*n);
+  x.resize(n*n);
+  y.resize(n*n);
+
+  int k=0;
+  for (int i=0; i<n; i++)
+    {
+      double p = (1.0+s[i])/2.0;
+      double J = 1.0-p;
+      for (int j=0; j<n; j++, k++)
+        {
+          double q = (1.0 - p)*(1.0+t[j])/2.0;
+          x[k] = p;
+          y[k] = q;
+          wgt[k] = 0.5*w[i]*w[j]*J;
+        }
+    }
+}
+
 
 void TriangleQuadrature::permute(int m, const Array<double>& q,
 																 Array<Array<double> >& qPerm)
@@ -148,8 +192,14 @@ bool TriangleQuadrature::test(int p)
 									sum += 0.5*w[q] * pow(x[q], (double) a) * pow(y[q], (double) b)
 										* pow(1.0 - x[q] - y[q], (double) c);
 								}
-							pass = pass && fabs(sum - exact(a,b,c)) < 1.0e-14;
-							fprintf(stderr, "order=%d m (%d, %d, %d) q=%22.15g exact=%22.15g\n", p, a, b, c, sum, exact(a, b, c));
+              double err = fabs(sum - exact(a,b,c));
+              bool localPass = err < 1.0e-14;
+							pass = pass && localPass;
+              if (!localPass)
+                {
+                  fprintf(stderr, "order=%d m (%d, %d, %d) q=%22.15g exact=%22.15g\n", p, a, b, c, sum, exact(a, b, c));
+                  cerr << "error = " << err << endl;
+                }
 						}
 				}
 		}

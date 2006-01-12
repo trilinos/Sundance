@@ -50,7 +50,7 @@ ACLOCAL	= aclocal -I config
 ## #######################################################################
 
 PARAM_FILES = $(srcdir)/aztecSolver.py $(srcdir)/bicgstabSolver.py \
-$(srcdir)/noxSolver.py
+$(srcdir)/noxSolver.py $(srcdir)/amesosSolver.py
 
 EXTRA_DIST = $(PARAM_FILES) setpath.py $(ALL_PROGS)
 
@@ -60,7 +60,7 @@ EXTRA_DIST = $(PARAM_FILES) setpath.py $(ALL_PROGS)
 MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
-PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D
+PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D exConvTest2D
 
 SERIAL_SRC = exPoisson3D 
 

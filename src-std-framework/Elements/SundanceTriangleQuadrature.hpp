@@ -57,6 +57,14 @@ namespace SundanceStdFwk
 
     private:
 
+      static void getNonsymmetricPoints(int order, Array<double>& wgt,
+                                        Array<double>& x,
+                                        Array<double>& y);
+
+      static bool getSymmetricPoints(int order, Array<double>& wgt,
+                                     Array<double>& x,
+                                     Array<double>& y);
+
       static void permute(int m, const Array<double>& q,
                           Array<Array<double> >& qPerm);
 

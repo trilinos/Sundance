@@ -1,7 +1,7 @@
 <ParameterList>
   <ParameterList name="Linear Solver">
-    <Parameter name="Graph Fill" type="int" value="2"/>
-      <Parameter name="Max Iterations" type="int" value="1000"/>
+    <Parameter name="Graph Fill" type="int" value="1"/>
+      <Parameter name="Max Iterations" type="int" value="5000"/>
       <Parameter name="Method" type="string" value="GMRES"/>
       <Parameter name="Precond" type="string" value="Domain Decomposition"/>
       <Parameter name="Subdomain Solver" type="string" value="ILU"/>

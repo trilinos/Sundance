@@ -40,9 +40,12 @@ Mesh MeshSourceBase::getMesh() const
   if (!hasCachedMesh_)
     {
       Mesh rtn =  fillMesh();
-      cerr << tabs << "got a mesh with " << rtn.numCells(0)
-                        << " nodes and " << rtn.numCells(rtn.spatialDim())
-           << " maximal cells" << endl;
+      if (verbosity() > VerbSilent)
+        {
+          cerr << tabs << "got a mesh with " << rtn.numCells(0)
+               << " nodes and " << rtn.numCells(rtn.spatialDim())
+               << " maximal cells" << endl;
+        }
       return rtn;
     }
   return cachedMesh_;

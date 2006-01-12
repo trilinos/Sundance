@@ -34,7 +34,7 @@ void Gauss1D::computeWeights(int n, double a, double b)
 			double z = cos(M_PI*(i+0.75)/(n+0.5));
 			double dP;
 			double zOld;
-			double tol = 1.0e-13;
+			double tol = 1.0e-14;
 			// newton's method
 			do
 				{

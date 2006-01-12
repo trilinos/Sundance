@@ -18,7 +18,7 @@ def main():
   nProc = getNProc()
   mesher  = PartitionedLineMesher(0.0, 1.0, 20*nProc);
   mesh = mesher.getMesh();
-  basis = Lagrange(2)
+  basis = FIATLagrange(2)
 
   u = UnknownFunction(basis, "u");
   v = TestFunction(basis, "v");

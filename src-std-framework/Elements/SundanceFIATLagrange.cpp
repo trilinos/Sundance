@@ -177,7 +177,7 @@ void FIATLagrange::refEval( int spatialDim ,
     blitz::Array<double,2> fiat_results(fiat_results1.rows(),fiat_results1.columns());
     fiat_results = factor * fiat_results1;
     
-    std::cout << "tabulated FIAT results" << endl << fiat_results << endl;
+    //    std::cout << "tabulated FIAT results" << endl << fiat_results << endl;
 
     const vector<vector<vector<int> > >&eids 
       = fiatElems_[ct]->getDualBasis()->getEntityIds();

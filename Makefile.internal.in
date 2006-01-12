@@ -175,19 +175,30 @@ STD_MESH_INCLUDES = $(STD_MESH_INCLUDE_PATH)
 # --------- framework
 
 STD_FWK_LIB_PATH =  \
--L@abs_top_builddir@/src-std-framework 
+-L@abs_top_builddir@/src-std-framework \
+$(FIAT_LIB_PATH) 
 
-STD_FWK_INCLUDE_PATH =  \
+STD_FWK_INCLUDE_PATH = \
 -I@abs_top_builddir@/src-std-framework \
 -I@abs_top_srcdir@/src-std-framework/CellFilter \
 -I@abs_top_srcdir@/src-std-framework/Elements \
 -I@abs_top_srcdir@/src-std-framework/DOFMapping \
 -I@abs_top_srcdir@/src-std-framework/Assembly \
--I@abs_top_srcdir@/src-std-framework/Problem 
+-I@abs_top_srcdir@/src-std-framework/Problem \
+$(FIAT_INCLUDE_PATH) 
 
 STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
 
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) -lsundanceStdFwk $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) 
+
+FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
+
+@FIAT_STR@FIAT_LIB_PATH=-L$(FIAT_BUILD_DIR)/lib
+@FIAT_STR@FIAT_INCLUDE_PATH=-I$(FIAT_BUILD_DIR)/include
+
+@FIAT_STR@FIAT_LIBS=-L$(FIAT_BUILD_DIR)/lib -lfiat -lblitz
+
+
 
 
 

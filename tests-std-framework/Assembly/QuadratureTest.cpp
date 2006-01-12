@@ -48,7 +48,12 @@ int main(int argc, void** argv)
 			MPISession::init(&argc, &argv);
 
       Array<int> validTetOrders = tuple(1, 2, 4, 6);
-      Array<int> validTriOrders = tuple(1,2,3,4,5,6);
+      int maxorder = 15;
+      Array<int> validTriOrders(maxorder);
+      for (int i=0; i<maxorder; i++) validTriOrders[i] = i+1;
+
+      Array<int> triFailures;
+      Array<int> tetFailures;
 
       cerr << "------------- testing triangle rules -------------------"  << endl;
       for (int i=0; i<validTriOrders.size(); i++)
@@ -56,7 +61,11 @@ int main(int argc, void** argv)
           int p = validTriOrders[i];
 					bool pass = TriangleQuadrature::test(p);
 					if (pass) cerr << "order " << p << " PASSED" << endl;
-					else cerr << "order " << p << " FAILED" << endl;
+					else 
+            {
+              cerr << "order " << p << " FAILED" << endl;
+              triFailures.append(p);
+            }
 				}
       cerr << "------------- testing tet rules -------------------"  << endl;
           
@@ -65,8 +74,33 @@ int main(int argc, void** argv)
           int p = validTetOrders[i];
 					bool pass = TetQuadrature::test(p);
 					if (pass) cerr << "order " << p << " PASSED" << endl;
-					else cerr << "order " << p << " FAILED" << endl;
+					else 
+            {
+              cerr << "order " << p << " FAILED" << endl;
+              tetFailures.append(p);
+            }
 				}
+
+      if (tetFailures.size()>0) 
+        {
+          cout << "failures detected for tets: orders " << tetFailures << endl;
+          cout << "tet tests FAILED" << endl;
+        }
+      else
+        {
+          cout << "tet tests PASSED" << endl;
+        }
+
+      if (triFailures.size()>0) 
+        {
+          cout << "failures detected for tris: orders " << triFailures << endl;
+          cout << "tri tests FAILED" << endl;
+        }
+      else
+        {
+          cout << "tri tests PASSED" << endl;
+        }
+
 
 		}
 	catch(exception& e)

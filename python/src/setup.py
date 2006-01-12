@@ -84,6 +84,7 @@ for option in options:
     else:
         extra_link_args.append(option)
 
+
 # Define the strings that refer to the required local source files
 srcFiles = ["PySundance_wrap.cpp",
             os.path.join(srcdir,"PyTeuchos_Utils.cpp"),

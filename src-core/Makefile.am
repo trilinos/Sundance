@@ -182,6 +182,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp
 SUNDANCE_FRAMEWORKINTERFACE_H = \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceAbstractEvalMediator.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterStub.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceCommonFuncDataStub.hpp\
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivBase.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.hpp \

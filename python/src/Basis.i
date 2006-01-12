@@ -7,6 +7,7 @@
   // Sundance includes
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
+#include "SundanceFIATLagrange.hpp"
   %}
 
 
@@ -14,7 +15,6 @@
 %include "std_string.i"
 %include "std_vector.i"
 %include "exception.i"
-
 
 
 namespace SundanceStdFwk
@@ -65,6 +65,7 @@ namespace SundanceStdFwk
 
 
 %rename(Lagrange) makeLagrange;
+%rename(FIATLagrange) makeFIATLagrange;
 
 
 %inline %{
@@ -72,6 +73,11 @@ namespace SundanceStdFwk
   SundanceStdFwk::BasisFamily makeLagrange(int order)
   {
     return new SundanceStdFwk::Lagrange(order);
+  }
+  /* Create a Lagrange basis function */
+  SundanceStdFwk::BasisFamily makeFIATLagrange(int order)
+  {
+    return new SundanceStdFwk::FIATLagrange(order);
   }
 
   /* */
