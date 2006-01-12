@@ -39,5 +39,7 @@ BUILD_DIR=`pwd`
 --with-install="/usr/bin/install -c -p" \
 --with-sundials=$HOME/Software/Math/sundials/LINUX-DEBUG \
 --with-fiat=$HOME/Projects/fiat++/BUILD \
+--disable-cxxexamples \
+--disable-cxxtests \
 --prefix=$BUILD_DIR
 

@@ -246,6 +246,8 @@ void DOFMapBuilder::markBCRows()
                 {
                   for (unsigned int f=0; f<bcFuncID.size(); f++)
                     {
+                      int chunk = rowMap_->chunkForFuncID(bcFuncID[f]);
+                      if (chunk != b) continue;
                       int funcOffset = rowMap_->indexForFuncID(bcFuncID[f]);
                       int dof = dofs[b][(c*nFuncs + funcOffset)*nNodes[b]+n];
                       if (dof < offset || dof >= high) continue;

@@ -61,7 +61,8 @@ EXTRA_DIST = $(PARAM_FILES) setpath.py $(ALL_PROGS)
 MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
-PY_SRC = $(srcdir)/PressureStabilizedNS2D.py
+PY_SRC = $(srcdir)/PressureStabilizedNS2D.py $(srcdir)/TaylorHoodStokes.py
+
 
 
 SETPATH_PY = setpath.py 

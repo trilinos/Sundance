@@ -61,23 +61,26 @@ DOFMapBase::DOFMapBase(const Mesh& mesh,
     funcIDToChunkMap_(basis.size()),
     funcIDToIndexMap_(basis.size())
 {
-  SundanceUtils::Map<BasisFamily, int> basisToIndexMap;
+  SundanceUtils::Map<BasisFamily, int> basisToChunkMap;
   
   int nBasis = basis.size();
+  int chunk = 0;
   for (int i=0; i<nBasis; i++)
     {
-      if (!basisToIndexMap.containsKey(basis[i]))
+      if (!basisToChunkMap.containsKey(basis[i]))
         {
           chunkBasis_.append(basis[i]);
-          basisToIndexMap.put(basis[i], i);
+          basisToChunkMap.put(basis[i], chunk);
           chunkFuncIDs_.append(tuple(i));
+          chunk++;
         }
       else
         {
-          int b = basisToIndexMap.get(basis[i]);
+          int b = basisToChunkMap.get(basis[i]);
           chunkFuncIDs_[b].append(i);
         }
-      funcIDToChunkMap_[i] = basisToIndexMap.get(basis[i]);
+
+      funcIDToChunkMap_[i] = basisToChunkMap.get(basis[i]);
       funcIDToIndexMap_[i] = chunkFuncIDs_[funcIDToChunkMap_[i]].size()-1;
     }
 
