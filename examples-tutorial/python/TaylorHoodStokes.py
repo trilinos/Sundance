@@ -4,27 +4,26 @@
 
 # @HEADER
 
-import setpath
+
 import PySundance
 
 
 import math
 from PySundance import *
 
-from noxSolver import solverParams
-
 def main():
     vecType = EpetraVectorType()
 
     # read the mesh from an NCDF file
-    mesher  = ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/square-0.01.ncdf");
+    mesher  = ExodusNetCDFMeshReader("square-0.01.ncdf");
     mesh = mesher.getMesh();
 
     # Define the unknown and test functions for velocity and pressure.
     # We will use linear interpolation for all variables, which will
     # require the addition of a stabilization term.
-    pressure_basis = FIATLagrange(1)
-    velocity_basis = FIATLagrange(2)
+    pOrder = 2
+    pressure_basis = FIATLagrange(pOrder)
+    velocity_basis = FIATLagrange(pOrder+1)
     ux = UnknownFunction(velocity_basis,'ux');
     vx = TestFunction(velocity_basis,'vx');
     uy = UnknownFunction(velocity_basis,'uy');
@@ -47,32 +46,42 @@ def main():
     right = edges.labeledSubset(2);
     top = edges.labeledSubset(3);
     left = edges.labeledSubset(4);
+
+    nodes = DimensionalCellFilter(0)
+    pinpoint = nodes.labeledSubset(5)
     
-    quad2 = GaussianQuadrature(2)
-    quad4 = GaussianQuadrature(4)
+    quad = GaussianQuadrature(2*pOrder)
+    quadHigh = GaussianQuadrature(2*(pOrder+1))
 
     eqn = Integral( interior ,
                     (grad * vx) * (grad * ux) \
                     + (grad * vy) * (grad * uy) \
                     - p * (dx * vx + dy * vy ) \
-                    + q * (dx * ux + dy * uy ) , quad2 )
+                    + q * (dx * ux + dy * uy ) , quad )
 
-    bc = EssentialBC(left, vx*ux + vy*uy, quad2) \
-         + EssentialBC(right, vx*ux + vy*uy, quad2) \
-         + EssentialBC(top, vx*(ux-1.0) + vy*uy, quad2) \
-         + EssentialBC(bottom, vx*ux + vy*uy, quad2);
+    bc = EssentialBC(left, vx*ux + vy*uy, quadHigh) \
+         + EssentialBC(right, vx*ux + vy*uy, quadHigh) \
+         + EssentialBC(top, vx*(ux-1.0) + vy*uy, quadHigh) \
+         + EssentialBC(bottom, vx*ux + vy*uy, quadHigh) \
+         + EssentialBC(pinpoint, q*p, quad);
+
 
 #    vecBasis = BasisList(velocity_basis, velocity_basis, pressure_basis);
 #    discSpace = DiscreteSpace(mesh, vecBasis, vecType);
 #    u0 = DiscreteFunction(discSpace, 0.0);
 
-    linSolver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
+    linSolver = readSolver("aztec.xml");
+
+    print 'prob ctor'
     prob = LinearProblem(mesh, eqn, bc, List(vx,vy,q), List(ux,uy,p), vecType)
     #solver = NOXSolver(solverParams, prob)
 
+    print 'solving...'
     u0 = prob.solve(linSolver)
+    print '...done solve'
 
     # set up streamfunction calculation
+    basis = FIATLagrange(1)
     psi = UnknownFunction(basis, "psi")
     varPsi = TestFunction(basis, "varPsi")
 
@@ -82,8 +91,8 @@ def main():
     uy0 = u0[1]
 
     curlU0 = dx*uy0 - dy*ux0
-    psiEqn = Integral(interior, (grad*psi)*(grad*varPsi) + varPsi*curlU0, quad4)
-    psiBC = EssentialBC(bdry, varPsi*psi, quad2)
+    psiEqn = Integral(interior, (grad*psi)*(grad*varPsi) + varPsi*curlU0, quad)
+    psiBC = EssentialBC(bdry, varPsi*psi, quad)
     psiProb = LinearProblem(mesh, psiEqn, psiBC, varPsi, psi, vecType)
     
 
