@@ -29,7 +29,8 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-
+#include <unistd.h>
+#include <sys/unistd.h>
 
 using SundanceCore::List;
 /** 
@@ -59,6 +60,10 @@ int main(int argc, void** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
+
+      cout << "PID = " << getpid() << endl;
+      int debugWait = 1;
+      //     while (debugWait);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();

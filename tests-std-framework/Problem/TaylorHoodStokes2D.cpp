@@ -33,13 +33,15 @@
 
 using SundanceCore::List;
 /** 
- * Solves the Poisson equation in 2D using high-order Lagrange interpolation
+ * Solves the Poisson equation in 2D
  */
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
 CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;});
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;});
+
+CELL_PREDICATE(CornerPointTest, {return fabs(x[1]) < 1.0e-10 && fabs(x[0])<1.0e-10;});
 
 
 int main(int argc, void** argv)
@@ -55,35 +57,31 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int n = 4;
+      int nx = 32;
+      int ny = 32;
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
-                                                         0.0, 1.0, n, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
+                                                         0.0, 1.0, ny, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
-      CellFilter edges = new DimensionalCellFilter(1);
-
-      CellFilter left = edges.subset(new LeftPointTest());
-      CellFilter right = edges.subset(new RightPointTest());
-      CellFilter top = edges.subset(new TopPointTest());
-      CellFilter bottom = edges.subset(new BottomPointTest());
+      CellFilter bdry = new BoundaryCellFilter();
+      CellFilter nodes = new DimensionalCellFilter(0);
+      CellFilter corner = nodes.subset(new CornerPointTest());
 
       
-      /* Create unknown and test functions, discretized using Lagrange interpolants */
-#ifdef HAVE_FIAT
-      int order = 5;
-      BasisFamily basis = new FIATLagrange(order);
-#else
-      int order = 3;
-      BasisFamily basis = new Lagrange(order);
-#endif
-      double p = (double) order;
-      Expr u = new UnknownFunction(basis, "u");
-      Expr v = new TestFunction(basis, "v");
+      /* Unknown and test functions, using Taylor-Hood discretization */
+      Expr ux = new UnknownFunction(new Lagrange(2), "u_x");
+      Expr vx = new TestFunction(new Lagrange(2), "v_x");
+      Expr uy = new UnknownFunction(new Lagrange(2), "u_y");
+      Expr vy = new TestFunction(new Lagrange(2), "v_y");
+      Expr p = new UnknownFunction(new Lagrange(1), "p");
+      Expr q = new TestFunction(new Lagrange(1), "q");
+      Expr u = List(ux, uy);
+      Expr v = List(vx, vy);
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
@@ -93,48 +91,62 @@ int main(int argc, void** argv)
       Expr y = new CoordExpr(1);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(2*order);
+      QuadratureFamily quad2 = new GaussianQuadrature(2);
+      QuadratureFamily quad4 = new GaussianQuadrature(4);
 
       /* Define the weak form */
-      Expr alpha = sqrt(2.0);
-      Expr z = x + alpha*y;
-      Expr exactSoln = pow(z, p);
-      Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  
-                          + v*p*(p-1.0)*(1.0+alpha*alpha)*pow(z,p-2), quad);
 
+      Expr pi = 4.0*atan(1.0);
+      Expr sx = sin(pi*x);
+      Expr cx = cos(pi*x);
+      Expr sy = sin(pi*y);
+      Expr cy = cos(pi*y);
+      Expr psiExact = pow(pi, -3.0) * sx*sy;
+      Expr uExact = pow(pi, -2.0)*List(-sx*cy, cx*sy);
+      Expr fy = 4.0*cx*sy;
+
+      Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
+                          + (grad*vy)*(grad*uy)  - p*(dx*vx+dy*vy)
+                          + q*(dx*ux+dy*uy) - vy*fy,
+                          quad2);
+        
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad);
+      Expr bc = EssentialBC(bdry, v*(u-uExact), quad4)
+        + EssentialBC(corner, q*p, quad4);
 
-
-      //      SundanceStdFwk::Internal::DOFMapBase::classVerbosity() = VerbExtreme;
       /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+      LinearProblem prob(mesh, eqn, bc, List(vx, vy, q),
+                         List(ux, uy, p), vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/amesos.xml");
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-
       Expr soln = prob.solve(solver);
 
-      if (soln.ptr().get() != 0)
-        {
-      /* compute the error */
-      Expr err = exactSoln - soln;
+
+
+      /* Write the field in VTK format */
+      FieldWriter w = new VTKWriter("TaylorHoodStokes2d");
+      w.addMesh(mesh);
+      w.addField("ux", new ExprFieldWrapper(soln[0]));
+      w.addField("uy", new ExprFieldWrapper(soln[1]));
+      w.addField("p", new ExprFieldWrapper(soln[2]));
+      w.write();
+
+      Expr err = List(soln[0], soln[1]) - uExact;
       Expr errExpr = Integral(interior, 
                               err*err,
-                              quad);
-
+                              quad4);
 
       FunctionalEvaluator errInt(mesh, errExpr);
 
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-      Sundance::passFailTest(sqrt(errorSq), 1.0e-11);
-        }
+      Sundance::passFailTest(errorSq, 1.0e-6);
+
     }
 	catch(exception& e)
 		{

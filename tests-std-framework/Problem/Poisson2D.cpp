@@ -30,7 +30,6 @@
 
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
-#include "SundanceFIATLagrange.hpp"
 
 using SundanceCore::List;
 /** 
@@ -56,8 +55,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 1;
-      int ny = 1;
+      int nx = 10;
+      int ny = 10;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 2.0, ny, 1,
@@ -75,11 +74,11 @@ int main(int argc, void** argv)
       CellFilter bottom = edges.subset(new BottomPointTest());
 
       
-      /* Create unknown and test functions, discretized using first-order
+      /* Create unknown and test functions, discretized using second-order
        * Lagrange interpolants */
-      int order = 3;
-      Expr u = new UnknownFunction(new FIATLagrange(order), "u");
-      Expr v = new TestFunction(new FIATLagrange(order), "v");
+      BasisFamily basis = new Lagrange(2);
+      Expr u = new UnknownFunction(basis, "u");
+      Expr v = new TestFunction(basis, "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);

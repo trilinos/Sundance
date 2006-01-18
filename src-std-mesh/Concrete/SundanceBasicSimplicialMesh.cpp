@@ -94,8 +94,8 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
   estimateNumElements(1000);
 
   /* Set up the pointer giving a view of the face vertex array.
-     /* Resize to 1 so that phony dereference will work, then resize to zero to make the
-     * new array logically empty */
+   * Resize to 1 so that phony dereference will work, then resize to zero to make the
+   * new array logically empty */
   faceVertGIDs_.resize(1);
   faceVertGIDBase_[0] = &(faceVertGIDs_.value(0,0));
   faceVertGIDs_.resize(0);
@@ -891,8 +891,6 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     }
   if (spatialDim()==2)
     {
-      int edgeSign;
-
       /* In 2D, we need to define edges but not faces for the new element. */
       edges.resize(3);
       faces.resize(0);
@@ -910,8 +908,6 @@ int BasicSimplicialMesh::addElement(int globalIndex,
     }
   else if (spatialDim()==3)
     {
-      int edgeSign;
-
       /* In 3D, we need to define edges and faces for the new element. */
       edges.resize(6);
       faces.resize(4);
@@ -1344,7 +1340,6 @@ void BasicSimplicialMesh::assignIntermediateCellOwners(int cellDim)
   Array<Array<int> > incomingGIDs(comm().getNProc());
 
   /* Define these so we're not constantly dereferencing the owners arrays */
-  const Array<int>& ptOwners = ownerProcID_[0];
   Array<int>& cellOwners = ownerProcID_[cellDim];
 
   /* run through the cells, assigning GID numbers to the locally owned ones

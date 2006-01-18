@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include "SundanceFIATLagrange.hpp"
+
 
 /** 
  * Solves the Poisson equation in 1D
@@ -63,8 +63,8 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new FIATLagrange(2), "u");
-      Expr v = new TestFunction(new FIATLagrange(2), "v");
+      Expr u = new UnknownFunction(new Lagrange(2), "u");
+      Expr v = new TestFunction(new Lagrange(2), "v");
 
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
@@ -84,7 +84,7 @@ int main(int argc, void** argv)
 
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
-      cerr << "params = " << solverParams << endl;
+      cout << "params = " << solverParams << endl;
 
 
       LinearSolver<double> solver 
@@ -93,21 +93,24 @@ int main(int argc, void** argv)
       cout << "row map = " << endl;
       prob.rowMap()->print(cout);
 
-      Expr soln = prob.solve(solver);
 
-//       MPIComm::world().synchronize();
-//       MPIComm::world().synchronize();
-//       MPIComm::world().synchronize();
-//       cerr << "rhs = " << endl << prob.getRHS() << endl;
-//       MPIComm::world().synchronize();
-//       MPIComm::world().synchronize();
-//       MPIComm::world().synchronize();
-//       cerr << "matrix = " << endl << prob.getOperator() << endl;
-//       MPIComm::world().synchronize();
-//       MPIComm::world().synchronize();
-//       MPIComm::world().synchronize();
+
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      cout << "rhs = " << endl << prob.getRHS() << endl;
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      cout << "matrix = " << endl << prob.getOperator() << endl;
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+      MPIComm::world().synchronize();
+
+
+      Expr soln = prob.solve(solver);
       Vector<double> x0 = DiscreteFunction::discFunc(soln)->getVector();
-      cerr << "soln = " << endl << x0 << endl;
+      cout << "soln = " << endl << x0 << endl;
 
       TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
                          RuntimeError,
@@ -125,10 +128,10 @@ int main(int argc, void** argv)
                                    new GaussianQuadrature(2));
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      cout << "error norm = " << sqrt(errorSq) << endl << endl;
 
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
-      cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+      cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
       double tol = 1.0e-12;
       Sundance::passFailTest(sqrt(errorSq), tol);

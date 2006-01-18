@@ -186,7 +186,8 @@ am__objects_2 = SundanceBasisFamilyBase.$(OBJEXT) \
 	SundanceDiscreteFunctionData.$(OBJEXT) \
 	SundanceDiscreteSpace.$(OBJEXT) \
 	SundanceFIATExpansion.$(OBJEXT) SundanceFIATLagrange.$(OBJEXT) \
-	SundanceGauss1D.$(OBJEXT) SundanceGaussianQuadrature.$(OBJEXT) \
+	SundanceFIATP1NC.$(OBJEXT) SundanceGauss1D.$(OBJEXT) \
+	SundanceGaussianQuadrature.$(OBJEXT) \
 	SundanceLagrange.$(OBJEXT) SundanceQuadratureFamily.$(OBJEXT) \
 	SundanceQuadratureFamilyBase.$(OBJEXT) \
 	SundanceTestFunction.$(OBJEXT) \
@@ -429,6 +430,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFuncWithBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
@@ -452,6 +454,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
@@ -829,6 +832,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExprFieldWrapper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFIATExpansion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFIATLagrange.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFIATP1NC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctional.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctionalEvaluator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceGauss1D.Po@am__quote@
@@ -1224,6 +1228,20 @@ SundanceFIATLagrange.obj: $(top_srcdir)/src-std-framework/Elements/SundanceFIATL
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp' object='SundanceFIATLagrange.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFIATLagrange.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp'; fi`
+
+SundanceFIATP1NC.o: $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFIATP1NC.o -MD -MP -MF "$(DEPDIR)/SundanceFIATP1NC.Tpo" -c -o SundanceFIATP1NC.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceFIATP1NC.Tpo" "$(DEPDIR)/SundanceFIATP1NC.Po"; else rm -f "$(DEPDIR)/SundanceFIATP1NC.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp' object='SundanceFIATP1NC.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFIATP1NC.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp
+
+SundanceFIATP1NC.obj: $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFIATP1NC.obj -MD -MP -MF "$(DEPDIR)/SundanceFIATP1NC.Tpo" -c -o SundanceFIATP1NC.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceFIATP1NC.Tpo" "$(DEPDIR)/SundanceFIATP1NC.Po"; else rm -f "$(DEPDIR)/SundanceFIATP1NC.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp' object='SundanceFIATP1NC.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFIATP1NC.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp'; fi`
 
 SundanceGauss1D.o: $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceGauss1D.o -MD -MP -MF "$(DEPDIR)/SundanceGauss1D.Tpo" -c -o SundanceGauss1D.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp; \

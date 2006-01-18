@@ -424,7 +424,7 @@ MultipleDeriv FunctionalPolynomial::successorTerm(const MultipleDeriv& md) const
 {
   MultipleDeriv rtn;
 
-  int k = 0;
+  unsigned int k = 0;
   for (MultipleDeriv::const_iterator i=md.begin(); i!=md.end(); i++, k++)
     {
       if (k < md.size()-1) rtn.put(*i);

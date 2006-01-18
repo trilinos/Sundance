@@ -128,6 +128,7 @@ using namespace SundanceStdMesh::Internal;
       /** */
       const Array<int>& funcIDList() const {return funcIDOnCellSet(0);}
 
+      /** */
       static int uninitializedVal() {return -1;}
 
       /** Table of bases for each chunk */

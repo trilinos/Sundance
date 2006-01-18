@@ -43,7 +43,7 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-TEUCHOS_TIMER(evalVecTimer, "EvalVector ops");
+
 
 EvalVector::EvalVector(TempStack* s)
   : s_(s),

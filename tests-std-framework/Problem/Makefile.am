@@ -38,7 +38,7 @@ Kepler Stokes2D
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
-RadDiff1D NoxAlgebraic \
+RadDiff1D NoxAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D VorticityNavierStokes2D \
 VorticityStokes2D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D
 
@@ -178,6 +178,21 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 Stokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 Stokes2D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+TaylorHoodStokes2D_SOURCES = $(srcdir)/TaylorHoodStokes2D.cpp
+
+TaylorHoodStokes2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+TaylorHoodStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+TaylorHoodStokes2D_LDADD = $(STD_FWK_LIBS) 
 
 
 

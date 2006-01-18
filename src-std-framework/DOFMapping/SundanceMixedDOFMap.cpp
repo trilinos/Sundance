@@ -242,10 +242,12 @@ void MixedDOFMap::initMap()
                   int dummy=0;
                   int cellGID = mesh().mapLIDToGID(dim_, cellLID);
                   remoteCells[dim_][owner].append(cellGID); 
+                  /*
                   for (int b=0; b<nChunks(); b++)
                     {
                       setDOFs(b, dim_, cellLID, dummy);
                     }
+                  */
                 }
               else /* the cell is locally owned, so we can 
                     * set its DOF numbers now */
@@ -283,10 +285,12 @@ void MixedDOFMap::initMap()
                               int facetGID 
                                 = mesh().mapLIDToGID(d, facetLID[f]);
                               remoteCells[d][owner].append(facetGID);
+                              /*
                               for (int b=0; b<nChunks(); b++)
                                 {
                                   setDOFs(b, d, facetLID[f], dummy);
                                 }
+                              */
                             }
                           else /* we can assign a DOF locally */
                             {
@@ -360,8 +364,14 @@ void MixedDOFMap::shareDOFs(int cellDim,
    * (1) The first DOF for each chunk for the requested cell
    * (2) The orientation if the cell is an edge or face 
    */
-  int blockSize = nChunks();
-  bool sendOrientation = (cellDim > 0 && cellDim < dim_);
+  int blockSize = 0;
+  bool sendOrientation = false;
+  for (int b=0; b<nChunks(); b++)
+    {
+      int nDofs = nDofsPerCell_[b][cellDim];
+      if (nDofs > 0) blockSize++;
+      if (nDofs > 1 && cellDim > 0 && cellDim < dim_) sendOrientation = true;
+    }
   blockSize += sendOrientation;
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
@@ -395,14 +405,17 @@ void MixedDOFMap::shareDOFs(int cellDim,
           SUNDANCE_OUT(this->verbosity() > VerbHigh,  
                        "p=" << rank
                        << " LID=" << LID << " dofs=" << dofs_[cellDim]);
+          int blockOffset = 0;
           for (int b=0; b<nChunks(); b++)
             {
-              outgoingDOFs[p][blockSize*c+b] 
+              if (nDofsPerCell_[b][cellDim] == 0) continue;
+              outgoingDOFs[p][blockSize*c+blockOffset] 
                 = getInitialDOFForCell(cellDim, LID, b);
+              blockOffset++;
             }
           if (sendOrientation)
             {
-              outgoingDOFs[p][blockSize*c+nChunks()] 
+              outgoingDOFs[p][blockSize*(c+1) - 1] 
                 = originalFacetOrientation_[cellDim-1][LID];
             }
           SUNDANCE_OUT(this->verbosity() > VerbHigh,  
@@ -427,6 +440,7 @@ void MixedDOFMap::shareDOFs(int cellDim,
 
   
   /* now assign the DOFs from the other procs */
+
   for (int p=0; p<mesh().comm().getNProc(); p++)
     {
       if (p==mesh().comm().getRank()) continue;
@@ -436,15 +450,18 @@ void MixedDOFMap::shareDOFs(int cellDim,
         {
           int cellGID = outgoingCellRequests[p][c];
           int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
+          int blockOffset = 0;
           for (int b=0; b<nChunks(); b++)
             {
-              int dof = dofsFromProc[blockSize*c+b];
+              if (nDofsPerCell_[b][cellDim] == 0) continue;
+              int dof = dofsFromProc[blockSize*c+blockOffset];
               setDOFs(b, cellDim, cellLID, dof, true);
+              blockOffset++;
             }
-          if (cellDim > 0 && cellDim < dim_) 
+          if (sendOrientation) 
             {
               originalFacetOrientation_[cellDim-1][cellLID] 
-                = dofsFromProc[blockSize*c+nChunks()];
+                = dofsFromProc[blockSize*(c+1)-1];
             }
         }
     }
@@ -466,9 +483,9 @@ void MixedDOFMap::setDOFs(int basisChunk, int cellDim, int cellLID,
   
   if (isRemote)
     {
-      for (int i=0; i<nDofs; i++,nextDOF++) 
+      for (int i=0; i<nDofs; i++, nextDOF++) 
         {
-          ptr[i] = nextDOF;
+          ptr[i] = nextDOF;;
           addGhostIndex(nextDOF);
         }
     }
@@ -808,14 +825,11 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
       comm().synchronize();
     }
 
-  for (unsigned int c=0; c<dofs_[dim].size(); c++)
+  for (unsigned int chunk=0; chunk<dofs_[dim].size(); chunk++)
     {
-      if (hasBeenAssigned(dim, c))
+      for (unsigned int n=0; n<dofs_[dim][chunk].size(); n++)
         {
-          for (unsigned int n=0; n<dofs_[dim][c].size(); n++) 
-            {
-              dofs_[dim][c][n] += myOffset;
-            }
+          if (dofs_[dim][chunk][n] >= 0) dofs_[dim][chunk][n] += myOffset;
         }
     }
 
