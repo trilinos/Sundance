@@ -92,11 +92,6 @@ namespace SundanceStdFwk
     void evalOnTriangle(const Point& pt,
                         const MultiIndex& deriv,
                         Array<double>& result) const ;
-    
-    /** evaluate on a tet cell  */
-    void evalOnTet(const Point& pt,
-                   const MultiIndex& deriv,
-                   Array<double>& result) const ;
   };
 }
 

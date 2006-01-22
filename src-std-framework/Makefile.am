@@ -100,6 +100,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceFuncWithBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
@@ -123,6 +124,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp \

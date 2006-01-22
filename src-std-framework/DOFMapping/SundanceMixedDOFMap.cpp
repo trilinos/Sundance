@@ -136,29 +136,38 @@ void MixedDOFMap::allocate(const Mesh& mesh)
 
       for (int b=0; b<nChunks(); b++)
         {
-          /* look up the node pointer for this cell and for all of its
-           * facets */
-          basis(b).ptr()->getLocalDOFs(mesh.cellType(d), 
-                                       localNodePtrs_[b][d]);
-
-
-          SUNDANCE_VERB_HIGH(tab1 << "node ptrs for basis " << basis(b)
-                             << "and dimension " << d << " are " 
-                             << localNodePtrs_[b][d]);
-
-          /* with the node pointers in hand, we can work out the number
-           * of nodes per cell in this dimension for this basis */
-          if (localNodePtrs_[b][d][d].size() > 0) 
+          int nNodes = basis(b).ptr()->nNodes(dim_, mesh.cellType(d));
+          if (nNodes == 0)
             {
-              nNodesPerCell_[b][d] = localNodePtrs_[b][d][d][0].size();
-              if (nNodesPerCell_[b][d] > 0) cellHasAnyDOFs_[d] = true;
+              nNodesPerCell_[b][d] = 0;
+              nDofsPerCell_[b][d] = 0;
             }
           else
             {
-              nNodesPerCell_[b][d] = 0;
+              /* look up the node pointer for this cell and for all of its
+               * facets */
+              basis(b).ptr()->getLocalDOFs(mesh.cellType(d), 
+                                           localNodePtrs_[b][d]);
+              
+              
+              SUNDANCE_VERB_HIGH(tab1 << "node ptrs for basis " << basis(b)
+                                 << "and dimension " << d << " are " 
+                                 << localNodePtrs_[b][d]);
+              
+              /* with the node pointers in hand, we can work out the number
+               * of nodes per cell in this dimension for this basis */
+              if (localNodePtrs_[b][d][d].size() > 0) 
+                {
+                  nNodesPerCell_[b][d] = localNodePtrs_[b][d][d][0].size();
+                  if (nNodesPerCell_[b][d] > 0) cellHasAnyDOFs_[d] = true;
+                }
+              else
+                {
+                  nNodesPerCell_[b][d] = 0;
+                }
+              nDofsPerCell_[b][d] = nNodesPerCell_[b][d] * nFuncs(b);
             }
-          nDofsPerCell_[b][d] = nNodesPerCell_[b][d] * nFuncs(b);
-
+          
           SUNDANCE_VERB_HIGH(tab1 << 
                              "num nodes for basis " << basis(b)
                              << "and dimension " << d << " is " 
@@ -172,18 +181,20 @@ void MixedDOFMap::allocate(const Mesh& mesh)
             }
           totalNDofsPerCell_[b][d] = totalNNodesPerCell_[b][d] * nFuncs(b);
 
-          /* allocate the DOFs array for this dimension */
-          dofs_[d][b].resize(nDofsPerCell_[b][d] * numCells);
-
-          /* set all DOFs to a marker value */
-          int nDof = dofs_[d][b].size();
-          Array<int>& dofs = dofs_[d][b];
-          int marker = uninitializedVal();
-          for (int i=0; i<nDof; i++) 
+          if (nNodes > 0)
             {
-              dofs[i] = marker;
+              /* allocate the DOFs array for this dimension */
+              dofs_[d][b].resize(nDofsPerCell_[b][d] * numCells);
+              
+              /* set all DOFs to a marker value */
+              int nDof = dofs_[d][b].size();
+              Array<int>& dofs = dofs_[d][b];
+              int marker = uninitializedVal();
+              for (int i=0; i<nDof; i++) 
+                {
+                  dofs[i] = marker;
+                }
             }
-
           /* allocate the maximal dof array */
           if (d==dim_)
             {
@@ -580,8 +591,8 @@ void MixedDOFMap::getDOFsForCellBatch(int cellDim,
               /* first get the DOFs for the nodes associated with 
                * the cell's interior */
               SUNDANCE_VERB_EXTREME(tab2 << "doing interior nodes");
-
-              int nInteriorNodes = localNodePtrs_[b][cellDim][cellDim][0].size();
+              int nInteriorNodes = nNodesPerCell_[b][cellDim];
+              //              int nInteriorNodes = localNodePtrs_[b][cellDim][cellDim][0].size();
               if (nInteriorNodes > 0)
                 {
                   if (cellDim==0 || nInteriorNodes <= 1) /* orientation-independent */
@@ -745,6 +756,7 @@ void MixedDOFMap::buildMaximalDofTable() const
               for (int b=0; b<nChunks(); b++)
                 {
                   int nf = nFuncs(b);
+                  if (nDofsPerCell_[b][d]==0) continue;
                   int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
                   if (nFacetNodes == 0) continue;
                   const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);

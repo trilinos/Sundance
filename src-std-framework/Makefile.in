@@ -188,7 +188,8 @@ am__objects_2 = SundanceBasisFamilyBase.$(OBJEXT) \
 	SundanceFIATExpansion.$(OBJEXT) SundanceFIATLagrange.$(OBJEXT) \
 	SundanceFIATP1NC.$(OBJEXT) SundanceGauss1D.$(OBJEXT) \
 	SundanceGaussianQuadrature.$(OBJEXT) \
-	SundanceLagrange.$(OBJEXT) SundanceQuadratureFamily.$(OBJEXT) \
+	SundanceLagrange.$(OBJEXT) SundanceP1NC.$(OBJEXT) \
+	SundanceQuadratureFamily.$(OBJEXT) \
 	SundanceQuadratureFamilyBase.$(OBJEXT) \
 	SundanceTestFunction.$(OBJEXT) \
 	SundanceTestFunctionData.$(OBJEXT) \
@@ -435,6 +436,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceFuncWithBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
@@ -458,6 +460,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp \
@@ -848,6 +851,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMaximalCellFilter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMixedDOFMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNonlinearProblem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceP1NC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePositionalCellPredicate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceQuadratureEvalMediator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceQuadratureFamily.Po@am__quote@
@@ -1284,6 +1288,20 @@ SundanceLagrange.obj: $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp' object='SundanceLagrange.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLagrange.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp'; fi`
+
+SundanceP1NC.o: $(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceP1NC.o -MD -MP -MF "$(DEPDIR)/SundanceP1NC.Tpo" -c -o SundanceP1NC.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceP1NC.Tpo" "$(DEPDIR)/SundanceP1NC.Po"; else rm -f "$(DEPDIR)/SundanceP1NC.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp' object='SundanceP1NC.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceP1NC.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp
+
+SundanceP1NC.obj: $(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceP1NC.obj -MD -MP -MF "$(DEPDIR)/SundanceP1NC.Tpo" -c -o SundanceP1NC.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceP1NC.Tpo" "$(DEPDIR)/SundanceP1NC.Po"; else rm -f "$(DEPDIR)/SundanceP1NC.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp' object='SundanceP1NC.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceP1NC.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp'; fi`
 
 SundanceQuadratureFamily.o: $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceQuadratureFamily.o -MD -MP -MF "$(DEPDIR)/SundanceQuadratureFamily.Tpo" -c -o SundanceQuadratureFamily.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp; \

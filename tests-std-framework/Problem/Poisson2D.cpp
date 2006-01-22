@@ -55,8 +55,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 10;
-      int ny = 10;
+      int nx = 40;
+      int ny = 40;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 2.0, ny, 1,
@@ -109,18 +109,18 @@ int main(int argc, void** argv)
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      cout << "map = " << endl;
-      prob.rowMap()->print(cout);
-      cout << endl;
+      //      cout << "map = " << endl;
+      //prob.rowMap()->print(cout);
+      //cout << endl;
       Expr soln = prob.solve(solver);
 
       Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
 
       /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Poisson2d");
-      w.addMesh(mesh);
-      w.addField("soln", new ExprFieldWrapper(soln[0]));
-      w.write();
+      // FieldWriter w = new VTKWriter("Poisson2d");
+//       w.addMesh(mesh);
+//       w.addField("soln", new ExprFieldWrapper(soln[0]));
+//       w.write();
 
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 

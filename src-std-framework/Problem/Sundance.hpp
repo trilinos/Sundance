@@ -91,6 +91,7 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceFIATLagrange.hpp"
 #include "SundanceFIATP1NC.hpp"
+#include "SundanceP1NC.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 
 /* Problem level classes */

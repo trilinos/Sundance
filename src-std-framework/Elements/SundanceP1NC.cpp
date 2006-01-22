@@ -50,6 +50,8 @@ int P1NC::nNodes(int spatialDim,
 {
   switch(cellType)
     {
+    case PointCell:
+      return 0;
     case LineCell:
       return 1;
     case TriangleCell:
@@ -66,13 +68,15 @@ void P1NC::getLocalDOFs(const CellType& cellType,
 {
   switch(cellType)
     {
+    case PointCell:
+      dofs.resize(1);
+      dofs[0] = tuple(Array<int>());
     case LineCell:
       dofs.resize(2);
-      dofs[0] = tuple(tuple(0), tuple(1));
-      dofs[1] = tuple(makeRange(2, order()));
+      dofs[0] = tuple(Array<int>());
+      dofs[1] = tuple(tuple(0));
       return;
     case TriangleCell:
-      int n = order()-1;
       dofs.resize(3);
       dofs[0] = tuple(Array<int>());
       dofs[1] = tuple(tuple(0), tuple(1), tuple(2));
@@ -152,114 +156,23 @@ void P1NC::evalOnTriangle(const Point& pt,
   SUNDANCE_OUT(this->verbosity() > VerbHigh, "x=" << x.value() << " y="
                << y.value());
 
-	switch(order_)
-		{
-		case 0:
-      result.resize(1);
-      tmp.resize(1);
-			tmp[0] = one;
-			break;
-		case 1:
-      result.resize(3);
-      tmp.resize(3);
-			tmp[0] = 1.0 - x - y;
-			tmp[1] = x;
-			tmp[2] = y;
-			break;
-		case 2:
-      result.resize(6);
-      tmp.resize(6);
-			tmp[0] = (1.0-x-y)*(1.0-2.0*x-2.0*y);
-			tmp[1] = 2.0*x*(x-0.5);
-			tmp[2] = 2.0*y*(y-0.5);
-			tmp[3] = 4.0*x*(1.0-x-y); 
-			tmp[4] = 4.0*x*y;
-			tmp[5] = 4.0*y*(1.0-x-y);
-			break;
-    case 3:
-      result.resize(10);
-      tmp.resize(10);
-      {
-        ADReal q1 = 1.0 - x - y;
-        ADReal q2 = x;
-        ADReal q3 = y;
-        tmp[0] = 9.0/2.0 * q1 * (q1 - 2.0/3.0) * (q1 - 1.0/3.0);
-        tmp[1] = 9.0/2.0 * q2 * (q2 - 2.0/3.0) * (q2 - 1.0/3.0);
-        tmp[2] = 9.0/2.0 * q3 * (q3 - 2.0/3.0) * (q3 - 1.0/3.0);
-        tmp[3] = 27.0/2.0 * q1 * q2   * (q1 - 1.0/3.0);
-        tmp[4] = 27.0/2.0 * q1 * q2   * (q2 - 1.0/3.0);
-        tmp[5] = 27.0/2.0 * q2 * q3   * (q2 - 1.0/3.0);
-        tmp[6] = 27.0/2.0 * q2 * q3   * (q3 - 1.0/3.0);
-        tmp[7] = 27.0/2.0 * q3 * q1   * (q3 - 1.0/3.0);
-        tmp[8] = 27.0/2.0 * q3 * q1   * (q1 - 1.0/3.0);
-        tmp[9] = 27.0 * q1 * q2 * q3;
-      }
-      break;
-		default:
-			SUNDANCE_ERROR("P1NC::evalOnTriangle poly order > 2");
-		}
+  result.resize(3);
+  tmp.resize(3);
+
+  tmp[0] = 1.0 - 2.0*y;
+  tmp[1] = 2.0*(x + y) - 1.0;
+  tmp[2] = 1.0 - 2.0*x;
 
 	for (int i=0; i<tmp.length(); i++)
 		{
       SUNDANCE_OUT(this->verbosity() > VerbHigh,
                    "tmp[" << i << "]=" << tmp[i].value() 
                    << " grad=" << tmp[i].gradient());
-			if (deriv.order()==0) result[i] = tmp[i].value();
+			if (deriv.order()==0) 
+        result[i] = tmp[i].value();
 			else 
-          result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+        result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
 		}
 }
 
 
-void P1NC::evalOnTet(const Point& pt, 
-												 const MultiIndex& deriv,
-												 Array<double>& result) const
-{
-	ADReal x = ADReal(pt[0], 0, 3);
-	ADReal y = ADReal(pt[1], 1, 3);
-	ADReal z = ADReal(pt[2], 2, 3);
-	ADReal one(1.0, 3);
-
-
-	Array<ADReal> tmp(result.length());
-
-	switch(order_)
-		{
-		case 0:
-      tmp.resize(1);
-      result.resize(1);
-			tmp[0] = one;
-			break;
-		case 1:
-      result.resize(4);
-      tmp.resize(4);
-			tmp[0] = 1.0 - x - y - z;
-			tmp[1] = x;
-			tmp[2] = y;
-			tmp[3] = z;
-			break;
-		case 2:
-      result.resize(10);
-      tmp.resize(10);
-			tmp[0] = (1.0-x-y-z)*(1.0-2.0*x-2.0*y-2.0*z);
-			tmp[1] = 2.0*x*(x-0.5);
-			tmp[2] = 2.0*y*(y-0.5);
-			tmp[3] = 2.0*z*(z-0.5); 
-			tmp[4] = 4.0*x*(1.0-x-y-z);
-			tmp[5] = 4.0*x*y;
-			tmp[6] = 4.0*y*(1.0-x-y-z);
-			tmp[7] = 4.0*z*(1.0-x-y-z);
-			tmp[8] = 4.0*x*z;
-			tmp[9] = 4.0*y*z;
-			break;
-		default:
-			SUNDANCE_ERROR("P1NC::evalOnTet poly order > 2");
-		}
-
-	for (int i=0; i<tmp.length(); i++)
-		{
-			if (deriv.order()==0) result[i] = tmp[i].value();
-			else 
-				result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
-		}
-}
