@@ -21,7 +21,7 @@ def runtest(nMesh, order):
   mesher  = PartitionedRectangleMesher(0.0, 1.0, nMesh, npx,
                                        0.0, 1.0, nMesh, npy);
   mesh = mesher.getMesh();
-  basis = FIATLagrange(order)
+  basis = Lagrange(order)
 
   u = UnknownFunction(basis, "u");
   v = TestFunction(basis, "v");
@@ -87,7 +87,7 @@ def main() :
 
   print sizes
 
-  for order in range(1, 5):
+  for order in range(1, 3):
 
     data = []
 

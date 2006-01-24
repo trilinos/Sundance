@@ -43,6 +43,8 @@ namespace TSFExtended
   {
   public:
     Vector<Scalar> createMember();
+
+    int dim() const ;
   };
 
   %template(VecSpace) VectorSpace<double>;
@@ -61,6 +63,40 @@ namespace TSFExtended
 
     VectorSpace<Scalar> space() const ;
 
+    Vector<Scalar> copy() const ;
+
+    Vector<Scalar> acceptCopyOf(const Vector<Scalar>& x);
+
+    Vector<Scalar> dotStar(const Vector<Scalar>& other) const ;
+
+    Vector<Scalar> dotSlash(const Vector<Scalar>& other) const ;
+
+    Vector<Scalar> reciprocal() const ;
+
+    Vector<Scalar> abs() const ;
+
+    void setToConstant(const Scalar& alpha) ;
+
+    Scalar norm1() const ;
+
+    Scalar norm2() const ;
+
+    Scalar normInf() const ;
+
+    void zero();
+
+    Scalar max() const;
+
+    Scalar max(int& index)const;
+
+    Scalar max(const Scalar& bound, int& index)const;
+
+    Scalar min()const;
+
+    Scalar min(int& index)const;
+
+    Scalar min(const Scalar& bound, int& index)const;
+    
     %extend 
     {
       std::string __str__() 
@@ -70,6 +106,47 @@ namespace TSFExtended
         self->print(os);
         rtn = os.str();
         return rtn;
+      }
+
+      Vector<Scalar> __add__(const Vector<Scalar>& other) 
+      {
+        return (*self) + other;
+      }
+
+      Vector<Scalar> __sub__(const Vector<Scalar>& other) 
+      {
+        return (*self) - other;
+      }
+
+      Vector<Scalar> __mul__(const Scalar& other) 
+      {
+        return (*self) * other;
+      }
+
+      Vector<Scalar> __div__(const Scalar& other) 
+      {
+        return (*self) *(1.0/ other);
+      }
+
+      Vector<Scalar> __rmul__(const Scalar& other) 
+      {
+        return (*self) * other;
+      }
+
+      Scalar __mul__(const Vector<Scalar>& other) 
+      {
+        return (*self) * other;
+      }
+
+      
+      Scalar __getitem__(int globalIndex) const 
+      {
+        return self->getElement(globalIndex);
+      }
+      
+      void __setitem__(int globalIndex, const Scalar& value)
+      {
+        return self->setElement(globalIndex, value);
       }
     }
   };

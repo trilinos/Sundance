@@ -64,8 +64,9 @@ namespace SundanceStdFwk
 
 
 %rename(Lagrange) makeLagrange;
+#ifdef HAVE_FIAT
 %rename(FIATLagrange) makeFIATLagrange;
-
+#endif
 
 %inline %{
   /* Create a Lagrange basis function */
@@ -73,11 +74,13 @@ namespace SundanceStdFwk
   {
     return new SundanceStdFwk::Lagrange(order);
   }
+#ifdef HAVE_FIAT
   /* Create a Lagrange basis function */
   SundanceStdFwk::BasisFamily makeFIATLagrange(int order)
   {
     return new SundanceStdFwk::FIATLagrange(order);
   }
+#endif
 
   /* */
   SundanceStdFwk::BasisArray 

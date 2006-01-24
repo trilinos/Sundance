@@ -115,6 +115,15 @@ namespace SundanceStdFwk
     /* */
     ~DiscreteSpace();
 
+    /* */
+    const SundanceStdMesh::Mesh& mesh() const ;
+
+    /* */
+    TSFExtended::VectorSpace<double> vecSpace() const ;
+
+    /* */
+    TSFExtended::VectorType<double> vecType() const ;
+
     
   };
 

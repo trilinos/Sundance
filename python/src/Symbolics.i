@@ -14,6 +14,7 @@
 #include "SundanceParameter.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 #include "SundanceStdMathOps.hpp"
+#include "TSFVector.hpp"
   %}
 
 
@@ -43,10 +44,7 @@ namespace SundanceCore
       return rtn;
     }
 
-    Expr __getitem__(int i)
-    {
-      return (*self)[i];
-    }
+   
 
     double integral(const SundanceStdFwk::CellFilter& domain,
                     const SundanceStdMesh::Mesh& mesh,
@@ -154,6 +152,34 @@ namespace SundanceCore
       return self->operator[](i);
     }
 
+    /* get the vector underlying a discrete function */
+    TSFExtended::Vector<double> getVector() const 
+    {
+      /* cast to a discrete function. The validity of the cast
+       * is checked within discFunc(). */
+      const DiscreteFunction* df = DiscreteFunction::discFunc(*self);
+      return df->getVector();
+    }
+
+    /* get the vector underlying a discrete function */
+    void setVector(const TSFExtended::Vector<double>& vec) 
+    {
+      /* cast to a discrete function. The validity of the cast
+       * is checked within discFunc(). */
+      DiscreteFunction* df = DiscreteFunction::discFunc(*self);
+      df->setVector(vec);
+    }
+
+    /* get the discrete space associated with an expression */
+    SundanceStdFwk::DiscreteSpace discSpace() const
+    {
+      /* cast to a discrete function. The validity of the cast
+       * is checked within discFunc(). */
+      const DiscreteFunction* df = DiscreteFunction::discFunc(*self);
+      return df->discreteSpace();
+    }
+    
+    
 
     
 

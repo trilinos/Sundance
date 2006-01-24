@@ -30,7 +30,9 @@
 # ************************************************************************
 # @HEADER
 
-###--with-fiat=$HOME/Projects/FIAT/BUILD \
+
+#--with-fiat=$HOME/Projects/fiat++/BUILD \
+
 
 BUILD_DIR=`pwd`
 
@@ -43,6 +45,5 @@ CXXFLAGS="-Wall -O0 -g" \
 --disable-cxxexamples \
 --disable-lowleveltests \
 --with-sundials=$HOME/Software/Math/sundials/LINUX-OPT \
---with-fiat=$HOME/Projects/fiat++/BUILD \
 --prefix=$BUILD_DIR
 

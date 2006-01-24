@@ -16,9 +16,9 @@ def main():
   """Poisson example code"""
   vecType = EpetraVectorType()
   nProc = getNProc()
-  mesher  = PartitionedLineMesher(0.0, 1.0, 20*nProc);
+  mesher  = PartitionedLineMesher(0.0, 1.0, 10*nProc);
   mesh = mesher.getMesh();
-  basis = FIATLagrange(2)
+  basis = Lagrange(2)
 
   u = UnknownFunction(basis, "u");
   v = TestFunction(basis, "v");
@@ -42,6 +42,13 @@ def main():
   solver = buildSolver(solverParams)
 
   soln = prob.solve(solver)
+
+  # do a silly vector manipulation just to show how to use vectors
+  solnVec = soln.getVector()
+  print solnVec
+  solnVec = 2.0*solnVec - solnVec
+  print solnVec
+  soln.setVector(solnVec)
 
   exactSoln = x*(x-2.0)
 
