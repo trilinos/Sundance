@@ -83,7 +83,7 @@ L2Projector::L2Projector(const DiscreteSpace& space,
       for (int i=0; i<dim; i++)
         {
           Expr dx_i = new Derivative(i);
-          for (int j=0; j<v.size(); j++)
+          for (unsigned int j=0; j<v.size(); j++)
             {
               smoothingTerm = smoothingTerm 
                 + smoothing*(dx_i*v[j])*(dx_i*u[j]);

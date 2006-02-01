@@ -58,11 +58,14 @@ namespace SundanceStdFwk
                     const Array<int>& resultIndices);
       /** */
       IntegralGroup(const Array<int>& testID,
+                    const Array<int>& testBlock,
                     const Array<RefCountPtr<ElementIntegral> >& integrals,
                     const Array<int>& resultIndices);
       /** */
       IntegralGroup(const Array<int>& testID,
+                    const Array<int>& testBlock,
                     const Array<int>& unkID,
+                    const Array<int>& unkBlock,
                     const Array<RefCountPtr<ElementIntegral> >& integrals,
                     const Array<int>& resultIndices);
 
@@ -90,6 +93,14 @@ namespace SundanceStdFwk
       /** Return the unknown functions using this integral group */
       const Array<int>& unkID() const {return unkID_;}
 
+      /** Return the block numbers for the test functions */
+      const Array<int>& testBlock() const {return testBlock_;}
+
+      /** Return the block numbers for the unk functions */
+      const Array<int>& unkBlock() const {return unkBlock_;}
+
+
+
       /** Evaluate this integral group */
       bool evaluate(const CellJacobianBatch& J,
                     const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
@@ -113,6 +124,12 @@ namespace SundanceStdFwk
 
       /** */
       Array<int> unkID_;
+
+      /** */
+      Array<int> testBlock_;
+
+      /** */
+      Array<int> unkBlock_;
 
       /** */
       Array<RefCountPtr<ElementIntegral> > integrals_;

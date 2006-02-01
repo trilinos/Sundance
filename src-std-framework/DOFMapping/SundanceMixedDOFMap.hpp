@@ -43,9 +43,10 @@
 
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
+
   namespace Internal
   {
     using namespace Teuchos;
@@ -60,7 +61,7 @@ using namespace SundanceStdMesh::Internal;
     public:
       /** */
       MixedDOFMap(const Mesh& mesh, 
-                  const Array<BasisFamily>& basis);
+                  const BasisArray& basis);
                         
       /** */
       virtual ~MixedDOFMap(){;}

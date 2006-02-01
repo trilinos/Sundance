@@ -88,12 +88,6 @@ int main(int argc, void** argv)
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
 
-      cerr << "map = " << endl;
-      prob.rowMap()->print(cerr);
-      cerr << endl;
-      cerr << "matrix = " << endl << prob.getOperator() << endl;
-      cerr << "rhs = " << endl << prob.getRHS() << endl;
-
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;

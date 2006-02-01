@@ -87,11 +87,11 @@ LinearProblem Functional::linearVariationalProb(const Expr& var,
   Expr unkEvalPts = new ListExpr(zero);
 
   RefCountPtr<EquationSet> eqn 
-    = rcp(new EquationSet(integral_, bc_, var, varEvalPts,
-                          unk, unkEvalPts, fixed, fixedEvalPts));
+    = rcp(new EquationSet(integral_, bc_, tuple(var), tuple(varEvalPts),
+                          tuple(unk), tuple(unkEvalPts), tuple(fixed), tuple(fixedEvalPts)));
 
   RefCountPtr<Assembler> assembler 
-    = rcp(new Assembler(mesh_, eqn, vecType_));
+    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_)));
 
   return LinearProblem(assembler);
 }
@@ -105,11 +105,11 @@ NonlinearOperator<double> Functional
                            const Expr& fixedEvalPts) const
 {
   RefCountPtr<EquationSet> eqn 
-    = rcp(new EquationSet(integral_, bc_, var, varEvalPts,
-                          unk, unkEvalPts, fixed, fixedEvalPts));
+    = rcp(new EquationSet(integral_, bc_, tuple(var), tuple(varEvalPts),
+                          tuple(unk), tuple(unkEvalPts), tuple(fixed), tuple(fixedEvalPts)));
 
   RefCountPtr<Assembler> assembler 
-    = rcp(new Assembler(mesh_, eqn, vecType_));
+    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_)));
 
   return new NonlinearProblem(assembler, unkEvalPts);
 }

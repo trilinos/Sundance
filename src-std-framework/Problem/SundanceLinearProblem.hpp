@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceExpr.hpp"
+#include "SundanceBlock.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "TSFObjectWithVerbosity.hpp"
@@ -67,6 +68,10 @@ namespace SundanceStdFwk
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
                   const Expr& test, const Expr& unk, 
                   const TSFExtended::VectorType<double>& vecType);
+    
+    /** Construct with a mesh, equation set, bcs, and blocks of variables */
+    LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+                  const BlockArray& test, const BlockArray& unk);
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** */
@@ -90,17 +95,17 @@ namespace SundanceStdFwk
     LinearOperator<double> getOperator() const ;
 
     /** Return the map from cells and functions to row indices */
-    const RefCountPtr<DOFMapBase>& rowMap() const 
-    {return assembler_->rowMap();}
+    const RefCountPtr<DOFMapBase>& rowMap(int blockRow) const 
+    {return assembler_->rowMap()[blockRow];}
     
     /** Return the map from cells and functions to column indices */
-    const RefCountPtr<DOFMapBase>& colMap() const 
-    {return assembler_->colMap();}
+    const RefCountPtr<DOFMapBase>& colMap(int blockCol) const 
+    {return assembler_->colMap()[blockCol];}
     
     /** Return the set of row indices marked as 
      * essential boundary conditions */
-    const RefCountPtr<Set<int> >& bcRows() const 
-    {return assembler_->bcRows();}
+    const RefCountPtr<Set<int> >& bcRows(int blockRow) const 
+    {return assembler_->bcRows()[blockRow];}
 
     /** Form a solution expression out of a vector obtained from a linear
      * solver */

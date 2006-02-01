@@ -91,7 +91,7 @@ int main(int argc, void** argv)
         = LinearSolverBuilder::createSolver(solverParams);
       
       cout << "row map = " << endl;
-      prob.rowMap()->print(cout);
+      prob.rowMap(0)->print(cout);
 
 
 

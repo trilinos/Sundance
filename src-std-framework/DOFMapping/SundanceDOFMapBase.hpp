@@ -57,7 +57,7 @@ namespace SundanceStdFwk
     public:
       /** */
       DOFMapBase(const Mesh& mesh,
-                 const Array<BasisFamily>& basis);
+                 const BasisArray& basis);
 
       
       /** */

@@ -60,6 +60,8 @@ IntegralGroup
     nUnkNodes_(0),
     testID_(),
     unkID_(),
+    testBlock_(),
+    unkBlock_(),
     integrals_(integrals),
     resultIndices_(resultIndices)
 {
@@ -68,6 +70,7 @@ IntegralGroup
 
 IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
+                const Array<int>& testBlock,
                 const Array<RefCountPtr<ElementIntegral> >& integrals,
                 const Array<int>& resultIndices)
   : order_(1),
@@ -75,6 +78,8 @@ IntegralGroup
     nUnkNodes_(0),
     testID_(testID),
     unkID_(),
+    testBlock_(testBlock),
+    unkBlock_(),
     integrals_(integrals),
     resultIndices_(resultIndices)
 {
@@ -94,7 +99,9 @@ IntegralGroup
 
 IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
+                const Array<int>& testBlock,
                 const Array<int>& unkID,
+                const Array<int>& unkBlock,
                 const Array<RefCountPtr<ElementIntegral> >& integrals,
                 const Array<int>& resultIndices)
   : order_(2),
@@ -102,6 +109,8 @@ IntegralGroup
     nUnkNodes_(0),
     testID_(testID),
     unkID_(unkID),
+    testBlock_(testBlock),
+    unkBlock_(unkBlock),
     integrals_(integrals),
     resultIndices_(resultIndices)
 {

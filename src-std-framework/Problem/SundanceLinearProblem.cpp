@@ -81,9 +81,49 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr u0 = new ListExpr(zero);
   
   RefCountPtr<EquationSet> eqnSet 
+    = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0)));
+
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
+}
+
+LinearProblem::LinearProblem(const Mesh& mesh, 
+                             const Expr& eqn, 
+                             const Expr& bc,
+                             const BlockArray& test, 
+                             const BlockArray& unk)
+  : assembler_(),
+    A_(),
+    rhs_(),
+    status_()
+{
+  Array<Expr> v(test.size());  
+  Array<Expr> u(unk.size());
+  Array<Expr> u0(unk.size());
+  Array<VectorType<double> > testVecType(test.size());
+  Array<VectorType<double> > unkVecType(unk.size());
+
+  for (unsigned int i=0; i<test.size(); i++)
+    {
+      v[i] = test[i].expr().flatten();
+      testVecType[i] = test[i].vecType();
+    }
+
+  for (unsigned int i=0; i<unk.size(); i++)
+    {
+      u[i] = unk[i].expr().flatten();
+      Array<Expr> zero(u[i].size());
+      for (unsigned int j=0; j<u[i].size(); j++) 
+        {
+          Expr z = new ZeroExpr();
+          zero[j] = z;
+        }
+      u0[i] = new ListExpr(zero);
+    }
+  
+  RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, vecType));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType));
 }
 
 LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler) 
@@ -191,8 +231,22 @@ SolverState<double> LinearProblem
 
 Expr LinearProblem::formSolutionExpr(const Vector<double>& solnVector) const
 {
-  return new DiscreteFunction(*(assembler_->solutionSpace()),
-                              solnVector, "soln");
+  Array<Expr> rtn(assembler_->solutionSpace().size());
+  for (int i=0; i<rtn.size(); i++)
+    {
+      string name = "soln";
+      if ((int)rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
+      rtn[i] = new DiscreteFunction(*(assembler_->solutionSpace()[i]),
+                                    solnVector.getBlock(i), name);
+    }
+  if ((int) rtn.size() > 1)
+    {
+      return new ListExpr(rtn);
+    }
+  else
+    {
+      return rtn[0];
+    }
 }
 
 void LinearProblem::handleSolveFailure() const 

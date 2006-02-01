@@ -63,17 +63,17 @@ namespace SundanceStdFwk
       DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn);
 
       /** */
-      const RefCountPtr<DOFMapBase>& rowMap() const {return rowMap_;}
+      const Array<RefCountPtr<DOFMapBase> >& rowMap() const {return rowMap_;}
 
       /** */
-      const RefCountPtr<DOFMapBase>& colMap() const {return colMap_;}
+      const Array<RefCountPtr<DOFMapBase> >& colMap() const {return colMap_;}
 
       /** */
-      const RefCountPtr<Array<int> >& isBCRow() const {return isBCRow_;}
+      const Array<RefCountPtr<Array<int> > >& isBCRow() const {return isBCRow_;}
 
-      Array<BasisFamily> testBasisArray() const ;
+      Array<Array<BasisFamily> > testBasisArray() const ;
 
-      Array<BasisFamily> unkBasisArray() const ;
+      Array<Array<BasisFamily> > unkBasisArray() const ;
 
       const Mesh& mesh() const {return mesh_;}
 
@@ -87,9 +87,9 @@ namespace SundanceStdFwk
 
       bool regionIsMaximal(int r) const ;
 
-      bool isSymmetric() const ;
+      bool isSymmetric(int block) const ;
 
-      void markBCRows() ;
+      void markBCRows(int block) ;
 
       const MPIComm& comm() const {return mesh().comm();}
 
@@ -99,11 +99,11 @@ namespace SundanceStdFwk
 
       RefCountPtr<EquationSet> eqn_;
 
-      RefCountPtr<DOFMapBase> rowMap_;
+      Array<RefCountPtr<DOFMapBase> > rowMap_;
 
-      RefCountPtr<DOFMapBase> colMap_;
+      Array<RefCountPtr<DOFMapBase> > colMap_;
 
-      RefCountPtr<Array<int> > isBCRow_;
+      Array<RefCountPtr<Array<int> > > isBCRow_;
       
     };
   }

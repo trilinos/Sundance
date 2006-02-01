@@ -95,6 +95,10 @@ namespace SundanceStdFwk
     void importGhosts(const Vector<double>& x,
                       RefCountPtr<GhostView<double> >& ghostView) const ;
   private:
+
+    /** */
+    void init();
+    
     /** */
     RefCountPtr<DOFMapBase> map_;
 

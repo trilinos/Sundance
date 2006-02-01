@@ -69,9 +69,9 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     
 {
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, test, unk, u0));
+    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0)));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, vecType));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
 
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
@@ -79,8 +79,8 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
                      "null discrete function pointer in "
                      "NonlinearProblem ctor");
 
-  VectorSpace<double> domain = assembler_->solutionSpace()->vecSpace();
-  VectorSpace<double> range = assembler_->rowSpace()->vecSpace();
+  VectorSpace<double> domain = assembler_->solnVecSpace();
+  VectorSpace<double> range = assembler_->rowVecSpace();
 
   setDomainAndRange(domain, range);
 }
@@ -99,8 +99,8 @@ NonlinearProblem::NonlinearProblem(const RefCountPtr<Assembler>& assembler,
                      "null discrete function pointer in "
                      "NonlinearProblem ctor");
 
-  VectorSpace<double> domain = assembler_->solutionSpace()->vecSpace();
-  VectorSpace<double> range = assembler_->rowSpace()->vecSpace();
+  VectorSpace<double> domain = assembler_->solnVecSpace();
+  VectorSpace<double> range = assembler_->rowVecSpace();
 
   setDomainAndRange(domain, range);
 }

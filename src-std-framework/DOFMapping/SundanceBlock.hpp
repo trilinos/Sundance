@@ -28,67 +28,53 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_GROUPER_H
-#define SUNDANCE_GROUPER_H
+#ifndef SUNDANCE_BLOCK_H
+#define SUNDANCE_BLOCK_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSparsitySuperset.hpp"
-#include "SundanceIntegralGroup.hpp"
-#include "SundanceEquationSet.hpp"
+#include "SundanceExpr.hpp"
+#include "TSFVectorType.hpp"
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
+  using namespace SundanceCore;
   using namespace SundanceUtils;
   using namespace SundanceStdMesh;
   using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
-
-  namespace Internal
+  using namespace Teuchos;
+  using namespace TSFExtended;
+  
+  /** 
+   * 
+   */
+  class Block 
   {
-    using namespace Teuchos;
+  public:
+    /** */
+    Block(const Expr& expr, const VectorType<double>& vecType);
 
-    /** 
-     * Grouper
-     */
-    class GrouperBase
-      : public TSFExtended::ObjectWithVerbosity<GrouperBase>
-    {
-    public:
-      /** */
-      GrouperBase() {verbosity() = classVerbosity();}
+    /** */
+    const Expr& expr() const {return expr_;}
 
-      /** */
-      virtual ~GrouperBase(){;}
+    /** */
+    const VectorType<double>& vecType() const {return vecType_;}
 
-      /** */
-      virtual void findGroups(const EquationSet& eqn,
-                              int spatialDim,
-                              const CellType& cellType,
-                              int cellDim,
-                              const QuadratureFamily& quad,
-                              const RefCountPtr<SparsitySuperset>& sparsity,
-                              Array<IntegralGroup>& groups) const = 0 ;
+  private:
+    Expr expr_;
 
-    protected:
-      void extractWeakForm(const EquationSet& eqn,
-                           const MultipleDeriv& functionalDeriv,
-                           BasisFamily& testBasis, 
-                           BasisFamily& unkBasis,
-                           MultiIndex& miTest, MultiIndex& miUnk,
-                           int& rawVarID, int& rawUnkID,  
-                           int& reducedTestID, int& reducedUnkID, 
-                           int& testBlock, int& unkBlock, 
-                           bool& isOneForm) const ;
-                              
-    };
+    VectorType<double> vecType_;
+  };
 
-  }
+  /** */
+  class BlockArray : public Array<Block>
+  {
+  public:
+    /** */
+    BlockArray(const Array<Block>& a) : Array<Block>(a) {;}
+    
+  };
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

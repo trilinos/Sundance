@@ -58,7 +58,7 @@ static Time& dofBatchLookupTimer()
 }
 
 MixedDOFMap::MixedDOFMap(const Mesh& mesh, 
-                         const Array<BasisFamily>& basis)
+                         const BasisArray& basis)
   : DOFMapBase(mesh, basis), 
     dim_(mesh.spatialDim()),
     dofs_(mesh.spatialDim()+1),

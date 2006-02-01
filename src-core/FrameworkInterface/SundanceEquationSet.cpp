@@ -47,8 +47,8 @@ using namespace Teuchos;
 
 EquationSet::EquationSet(const Expr& eqns, 
                          const Expr& bcs, 
-                         const Expr& fields,
-                         const Expr& fieldValues)
+                         const Array<Expr>& fields,
+                         const Array<Expr>& fieldValues)
   : regions_(),
     varsOnRegions_(),
     unksOnRegions_(),
@@ -69,15 +69,17 @@ EquationSet::EquationSet(const Expr& eqns,
     unkLinearizationPts_(),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    varIDToBlockMap_(),
+    unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
     isFunctionalCalculator_(true)
 {
-  Expr unks;
-  Expr unkEvalPt;
-  Expr vars;
-  Expr varEvalPt;
+  Array<Expr> unks;
+  Array<Expr> unkEvalPt;
+  Array<Expr> vars;
+  Array<Expr> varEvalPt;
   
   compTypes_.put(FunctionalOnly);
 
@@ -97,9 +99,9 @@ EquationSet::EquationSet(const Expr& eqns,
 
 EquationSet::EquationSet(const Expr& eqns, 
                          const Expr& bcs,
-                         const Expr& vars, 
-                         const Expr& unks,
-                         const Expr& unkLinearizationPts)
+                         const Array<Expr>& vars, 
+                         const Array<Expr>& unks,
+                         const Array<Expr>& unkLinearizationPts)
   : regions_(),
     varsOnRegions_(),
     unksOnRegions_(),
@@ -120,12 +122,14 @@ EquationSet::EquationSet(const Expr& eqns,
     unkLinearizationPts_(unkLinearizationPts),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    varIDToBlockMap_(),
+    unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(false),
     isFunctionalCalculator_(false)
 {
-  Expr fixed;
+  Array<Expr> fixed;
 
   compTypes_.put(MatrixAndVector);
   compTypes_.put(VectorOnly);
@@ -155,12 +159,12 @@ EquationSet::EquationSet(const Expr& eqns,
 
 EquationSet::EquationSet(const Expr& eqns, 
                          const Expr& bcs,
-                         const Expr& vars,
-                         const Expr& varLinearizationPts, 
-                         const Expr& unks,
-                         const Expr& unkLinearizationPts,
-                         const Expr& fixedFields,
-                         const Expr& fixedFieldValues)
+                         const Array<Expr>& vars,
+                         const Array<Expr>& varLinearizationPts, 
+                         const Array<Expr>& unks,
+                         const Array<Expr>& unkLinearizationPts,
+                         const Array<Expr>& fixedFields,
+                         const Array<Expr>& fixedFieldValues)
   : regions_(),
     varsOnRegions_(),
     unksOnRegions_(),
@@ -181,6 +185,8 @@ EquationSet::EquationSet(const Expr& eqns,
     unkLinearizationPts_(unkLinearizationPts),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    varIDToBlockMap_(),
+    unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -213,10 +219,10 @@ EquationSet::EquationSet(const Expr& eqns,
 
 EquationSet::EquationSet(const Expr& eqns, 
                          const Expr& bcs,
-                         const Expr& vars,
-                         const Expr& varLinearizationPts, 
-                         const Expr& fixedFields,
-                         const Expr& fixedFieldValues)
+                         const Array<Expr>& vars,
+                         const Array<Expr>& varLinearizationPts, 
+                         const Array<Expr>& fixedFields,
+                         const Array<Expr>& fixedFieldValues)
   : regions_(),
     varsOnRegions_(),
     unksOnRegions_(),
@@ -237,6 +243,8 @@ EquationSet::EquationSet(const Expr& eqns,
     unkLinearizationPts_(),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    varIDToBlockMap_(),
+    unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -271,16 +279,14 @@ EquationSet::EquationSet(const Expr& eqns,
 
 void EquationSet::init(const Expr& eqns, 
                        const Expr& bcs,
-                       const Expr& vars, 
-                       const Expr& varLinearizationPts,
-                       const Expr& unks,
-                       const Expr& unkLinearizationPts,
-                       const Expr& fixedFields,
-                       const Expr& fixedFieldValues)
+                       const Array<Expr>& vars, 
+                       const Array<Expr>& varLinearizationPts,
+                       const Array<Expr>& unks,
+                       const Array<Expr>& unkLinearizationPts,
+                       const Array<Expr>& fixedFields,
+                       const Array<Expr>& fixedFieldValues)
 {
   verbosity() = classVerbosity();
-
-
 
   /* begin with a sanity check to ensure that the input equation set 
    * exists and is integral form */
@@ -306,21 +312,25 @@ void EquationSet::init(const Expr& eqns,
    * or UnknownFunction objects, as in a variational problem. 
    */
   bool varsAreTestFunctions = false;
-  for (unsigned int i=0; i<vars.size(); i++)
+  for (unsigned int b=0; b<vars.size(); b++)
     {
-      const TestFuncElement* t 
-        = dynamic_cast<const TestFuncElement*>(vars[i].ptr().get());
-      TEST_FOR_EXCEPTION(t == 0 && varsAreTestFunctions==true,
-                         RuntimeError,
-                         "variational function list " << vars
-                         << " contains a mix of test and non-test functions");
-      TEST_FOR_EXCEPTION(t != 0 && i>0 && varsAreTestFunctions==false,
-                         RuntimeError,
-                         "variational function list " << vars
-                         << " contains a mix of test and non-test functions");
-      if (t!=0) varsAreTestFunctions=true;
+      for (unsigned int i=0; i<vars[b].size(); i++)
+        {
+          const TestFuncElement* t 
+            = dynamic_cast<const TestFuncElement*>(vars[b][i].ptr().get());
+          TEST_FOR_EXCEPTION(t == 0 && varsAreTestFunctions==true,
+                             RuntimeError,
+                             "variational function list " << vars
+                             << " contains a mix of test and "
+                             "non-test functions");
+          TEST_FOR_EXCEPTION(t != 0 && i>0 && varsAreTestFunctions==false,
+                             RuntimeError,
+                             "variational function list " << vars
+                             << " contains a mix of test and "
+                             "non-test functions");
+          if (t!=0) varsAreTestFunctions=true;
+        }
     }
-
   TEST_FOR_EXCEPTION(varsAreTestFunctions == true
                      && isVariationalProblem_,
                      RuntimeError,
@@ -336,13 +346,18 @@ void EquationSet::init(const Expr& eqns,
    * position in the input function lists */
   Set<int> varFuncSet;
   Set<int> unkFuncSet;
-  for (unsigned int i=0; i<vars.size(); i++)
+  varIDToReducedIDMap_.resize(vars.size());
+  for (unsigned int b=0; b<vars.size(); b++)
     {
-      const FuncElementBase* t 
-        = dynamic_cast<const FuncElementBase*>(vars[i].ptr().get());
-      int fid = t->funcID();
-      varFuncSet.put(fid);
-      varIDToReducedIDMap_.put(fid, i);
+      for (unsigned int i=0; i<vars[b].size(); i++)
+        {
+          const FuncElementBase* t 
+            = dynamic_cast<const FuncElementBase*>(vars[b][i].ptr().get());
+          int fid = t->funcID();
+          varFuncSet.put(fid);
+          varIDToBlockMap_.put(fid, b);
+          varIDToReducedIDMap_[b].put(fid, i);
+        }
     }
 
   TEST_FOR_EXCEPTION(unks.size() == 0 && !isFunctionalCalculator_,
@@ -350,18 +365,22 @@ void EquationSet::init(const Expr& eqns,
                      "no unks passed to an equation set that is not "
                      "a gradient calculator");
 
-  
-  for (unsigned int i=0; i<unks.size(); i++)
+  unkIDToReducedIDMap_.resize(unks.size());
+  for (unsigned int b=0; b<unks.size(); b++)
     {
-      const UnknownFuncElement* u 
-        = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
-      TEST_FOR_EXCEPTION(u==0, RuntimeError, 
-                         "EquationSet ctor input unk function "
-                         << unks[i] 
-                         << " does not appear to be a unk function");
-      int fid = u->funcID();
-      unkFuncSet.put(fid);
-      unkIDToReducedIDMap_.put(fid, i);
+      for (unsigned int i=0; i<unks[b].size(); i++)
+        {
+          const UnknownFuncElement* u 
+            = dynamic_cast<const UnknownFuncElement*>(unks[b][i].ptr().get());
+          TEST_FOR_EXCEPTION(u==0, RuntimeError, 
+                             "EquationSet ctor input unk function "
+                             << unks[b][i] 
+                             << " does not appear to be a unk function");
+          int fid = u->funcID();
+          unkFuncSet.put(fid);
+          unkIDToBlockMap_.put(fid, b);
+          unkIDToReducedIDMap_[b].put(fid, i);
+        }
     }
 
 
@@ -436,16 +455,21 @@ void EquationSet::init(const Expr& eqns,
                 {
                   nonzeros = SymbPreprocessor
                     ::setupVariations(term, 
-                                      vars, varLinearizationPts,
-                                      unks, unkLinearizationPts,
-                                      fixedFields, fixedFieldValues,
+                                      toList(vars), 
+                                      toList(varLinearizationPts),
+                                      toList(unks), 
+                                      toList(unkLinearizationPts),
+                                      toList(fixedFields), 
+                                      toList(fixedFieldValues),
                                       context);
                 }
               else
                 {
-                  nonzeros = SymbPreprocessor::setupExpr(term, vars, unks, 
-                                                         unkLinearizationPts,
-                                                         context);
+                  nonzeros = SymbPreprocessor
+                    ::setupExpr(term, toList(vars), 
+                                toList(unks), 
+                                toList(unkLinearizationPts),
+                                context);
                 }
               addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
                                nonzeros, false);
@@ -461,16 +485,21 @@ void EquationSet::init(const Expr& eqns,
               if (isVariationalProblem_)
                 {
                   nonzeros = SymbPreprocessor
-                    ::setupVariations(term, vars, varLinearizationPts,
-                                      unks, unkLinearizationPts,
-                                      fixedFields, fixedFieldValues,
+                    ::setupVariations(term, toList(vars), 
+                                      toList(varLinearizationPts),
+                                      toList(unks), 
+                                      toList(unkLinearizationPts),
+                                      toList(fixedFields),
+                                      toList(fixedFieldValues),
                                       context);
                 }
               else
                 {
-                  nonzeros = SymbPreprocessor::setupExpr(term, vars, unks, 
-                                                         unkLinearizationPts,
-                                                         context);
+                  nonzeros = SymbPreprocessor
+                    ::setupExpr(term, toList(vars), 
+                                toList(unks), 
+                                toList(unkLinearizationPts),
+                                context);
                 }
               rqcToContext_[VectorOnly].put(rqc, context);
               regionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
@@ -484,15 +513,17 @@ void EquationSet::init(const Expr& eqns,
                 {
                   nonzeros = SymbPreprocessor
                     ::setupGradient(term, 
-                                    vars, varLinearizationPts,
-                                    fixedFields, fixedFieldValues,
+                                    toList(vars), toList(varLinearizationPts),
+                                    toList(fixedFields), 
+                                    toList(fixedFieldValues),
                                     context);
                 }
               else
                 {
                   nonzeros = SymbPreprocessor
                     ::setupFunctional(term, 
-                                      fixedFields, fixedFieldValues,
+                                      toList(fixedFields), 
+                                      toList(fixedFieldValues),
                                       context);
                 }
               rqcToContext_[FunctionalOnly].put(rqc, context);
@@ -505,8 +536,8 @@ void EquationSet::init(const Expr& eqns,
               DerivSet nonzeros;
               nonzeros = SymbPreprocessor
                 ::setupGradient(term, 
-                                vars, varLinearizationPts,
-                                fixedFields, fixedFieldValues,
+                                toList(vars), toList(varLinearizationPts),
+                                toList(fixedFields), toList(fixedFieldValues),
                                 context);
               rqcToContext_[FunctionalAndGradient].put(rqc, context);
               regionQuadComboNonzeroDerivs_[FunctionalAndGradient].put(rqc, nonzeros);
@@ -577,16 +608,20 @@ void EquationSet::init(const Expr& eqns,
                     {
                       nonzeros = SymbPreprocessor
                         ::setupVariations(term, 
-                                          vars, varLinearizationPts,
-                                          unks, unkLinearizationPts,
-                                          fixedFields, fixedFieldValues,
+                                          toList(vars), 
+                                          toList(varLinearizationPts),
+                                          toList(unks), 
+                                          toList(unkLinearizationPts),
+                                          toList(fixedFields), 
+                                          toList(fixedFieldValues),
                                           context);
                     }
                   else
                     {
-                      nonzeros = SymbPreprocessor::setupExpr(term, vars, unks, 
-                                                             unkLinearizationPts,
-                                                             context);
+                      nonzeros = SymbPreprocessor
+                        ::setupExpr(term, toList(vars), toList(unks), 
+                                    toList(unkLinearizationPts),
+                                    context);
                     }
                   addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
                                    nonzeros, true);
@@ -602,16 +637,20 @@ void EquationSet::init(const Expr& eqns,
                   if (isVariationalProblem_)
                     {
                       nonzeros = SymbPreprocessor
-                        ::setupVariations(term, vars, varLinearizationPts,
-                                          unks, unkLinearizationPts,
-                                          fixedFields, fixedFieldValues,
+                        ::setupVariations(term, toList(vars), 
+                                          toList(varLinearizationPts),
+                                          toList(unks), 
+                                          toList(unkLinearizationPts),
+                                          toList(fixedFields), 
+                                          toList(fixedFieldValues),
                                           context);
                     }
                   else
                     {
-                      nonzeros = SymbPreprocessor::setupExpr(term, vars, unks, 
-                                                             unkLinearizationPts,
-                                                             context);
+                      nonzeros = SymbPreprocessor
+                        ::setupExpr(term, toList(vars), toList(unks), 
+                                    toList(unkLinearizationPts),
+                                    context);
                     }
                   bcRqcToContext_[VectorOnly].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
@@ -625,15 +664,18 @@ void EquationSet::init(const Expr& eqns,
                     {
                       nonzeros = SymbPreprocessor
                         ::setupGradient(term, 
-                                        vars, varLinearizationPts,
-                                        fixedFields, fixedFieldValues,
+                                        toList(vars), 
+                                        toList(varLinearizationPts),
+                                        toList(fixedFields), 
+                                        toList(fixedFieldValues),
                                         context);
                     }
                   else
                     {
                       nonzeros = SymbPreprocessor
                         ::setupFunctional(term, 
-                                          fixedFields, fixedFieldValues,
+                                          toList(fixedFields), 
+                                          toList(fixedFieldValues),
                                           context);
                     }
                   bcRqcToContext_[FunctionalOnly].put(rqc, context);
@@ -646,8 +688,10 @@ void EquationSet::init(const Expr& eqns,
                   DerivSet nonzeros;
                   nonzeros = SymbPreprocessor
                     ::setupGradient(term, 
-                                    vars, varLinearizationPts,
-                                    fixedFields, fixedFieldValues,
+                                    toList(vars), 
+                                    toList(varLinearizationPts),
+                                    toList(fixedFields), 
+                                    toList(fixedFieldValues),
                                     context);
                   bcRqcToContext_[FunctionalAndGradient].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[FunctionalAndGradient].put(rqc, nonzeros);
@@ -812,4 +856,47 @@ const DerivSet& EquationSet::nonzeroBCFunctionalDerivs(ComputationType compType,
                      "EquationSet:nonzeroBCFunctionalDerivs() did not find key " 
                      << compType);
   return bcRegionQuadComboNonzeroDerivs_.get(compType).get(r);
+}
+
+
+
+int EquationSet::reducedVarID(int varID) const 
+{
+  TEST_FOR_EXCEPTION(!hasVarID(varID), RuntimeError, 
+                     "varID " << varID << " not found in equation set");
+
+  int b = blockForVarID(varID);
+  return varIDToReducedIDMap_[b].get(varID);
+}
+
+int EquationSet::reducedUnkID(int unkID) const 
+{
+  TEST_FOR_EXCEPTION(!hasUnkID(unkID), RuntimeError, 
+                     "unkID " << unkID << " not found in equation set");
+
+  int b = blockForUnkID(unkID);
+  return unkIDToReducedIDMap_[b].get(unkID);
+}
+
+
+Expr EquationSet::toList(const Array<Expr>& e)
+{
+  return new ListExpr(e);
+}
+
+
+int EquationSet::blockForVarID(int varID) const 
+{
+  TEST_FOR_EXCEPTION(!varIDToBlockMap_.containsKey(varID), RuntimeError,
+                     "key " << varID << " not found in map "
+                     << varIDToBlockMap_);
+  return varIDToBlockMap_.get(varID);
+}
+
+int EquationSet::blockForUnkID(int unkID) const 
+{
+  TEST_FOR_EXCEPTION(!unkIDToBlockMap_.containsKey(unkID), RuntimeError,
+                     "key " << unkID << " not found in map "
+                     << unkIDToBlockMap_);
+  return unkIDToBlockMap_.get(unkID);
 }

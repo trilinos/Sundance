@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceIntegral.hpp"
+#include "SundanceListExpr.hpp"
 #include "SundanceEssentialBC.hpp"
 #include "SundanceSumOfIntegrals.hpp"
 #include "SundanceSumOfBCs.hpp"
@@ -81,33 +82,33 @@ namespace SundanceCore
        * to specified values */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
-                  const Expr& fields,
-                  const Expr& fieldValues);
+                  const Array<Expr>& fields,
+                  const Array<Expr>& fieldValues);
 
       /** Set up equations written in weak form with test functions */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
-                  const Expr& vars, 
-                  const Expr& unks,
-                  const Expr& unkLinearizationPts);
+                  const Array<Expr>& vars, 
+                  const Array<Expr>& unks,
+                  const Array<Expr>& unkLinearizationPts);
 
       /* Set up calculation of a functional and its derivative wrt a 
        * set of variational functions */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
-                  const Expr& vars,
-                  const Expr& varLinearizationPts, 
-                  const Expr& fixedFields,
-                  const Expr& fixedFieldValues);
+                  const Array<Expr>& vars,
+                  const Array<Expr>& varLinearizationPts, 
+                  const Array<Expr>& fixedFields,
+                  const Array<Expr>& fixedFieldValues);
       /** Derive a variational problem from a functional */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
-                  const Expr& vars, 
-                  const Expr& varLinearizationPts,
-                  const Expr& unks,
-                  const Expr& unkLinearizationPts,
-                  const Expr& fixedFields,
-                  const Expr& fixedFieldValues);
+                  const Array<Expr>& vars, 
+                  const Array<Expr>& varLinearizationPts,
+                  const Array<Expr>& unks,
+                  const Array<Expr>& unkLinearizationPts,
+                  const Array<Expr>& fixedFields,
+                  const Array<Expr>& fixedFieldValues);
 
       /** \name Methods to access information required for building DOF maps */
       //@{
@@ -122,18 +123,24 @@ namespace SundanceCore
 
       /** Indicate whether the given region has an essential BC expression */
       bool isBCRegion(int d) const ;
-      
-      /** Returns the number of variational functions in this equation set */
-      unsigned int numVars() const {return varFuncs_.size();}
 
-      /** Returns the number of unk functions in this equation set */
-      unsigned int numUnks() const {return unkFuncs_.size();}
+      /** Returns the number of variational function blocks */
+      unsigned int numVarBlocks() const {return varFuncs_.size();}
 
-      /** Returns the i-th variational function */
-      const Expr& varFunc(int i) const {return varFuncs_[i];}
+      /** Returns the number of unknown function blocks */
+      unsigned int numUnkBlocks() const {return unkFuncs_.size();}
 
-      /** Returns the i-th unknown function */
-      const Expr& unkFunc(int i) const {return unkFuncs_[i];}
+      /** Returns the number of variational functions in this block */
+      unsigned int numVars(int block) const {return varFuncs_[block].size();}
+
+      /** Returns the number of unk functions in this block */
+      unsigned int numUnks(int block) const {return unkFuncs_[block].size();}
+
+      /** Returns the i-th variational function in block b */
+      const Expr& varFunc(int b, int i) const {return varFuncs_[b][i];}
+
+      /** Returns the i-th unknown function in block b */
+      const Expr& unkFunc(int b, int i) const {return unkFuncs_[b][i];}
 
       /** Returns the variational functions that appear explicitly
        * on the d-th region */
@@ -160,21 +167,30 @@ namespace SundanceCore
       /** Determine whether a given func ID is listed as a 
        * variational function in this equation set */
       bool hasVarID(int fid) const 
-      {return varIDToReducedIDMap_.containsKey(fid);}
+      {return varIDToBlockMap_.containsKey(fid);}
 
       /** Determine whether a given func ID is listed as a unk function 
        * in this equation set */
       bool hasUnkID(int fid) const 
-      {return unkIDToReducedIDMap_.containsKey(fid);}
+      {return unkIDToBlockMap_.containsKey(fid);}
+
+      /** get the block number for the given variational ID */
+      int blockForVarID(int varID) const ;
+
+      /** get the block number for the given unk ID */
+      int blockForUnkID(int unkID) const ;
 
       /** get the reduced ID for the given variational ID */
-      int reducedVarID(int varID) const 
-      {return varIDToReducedIDMap_.get(varID);}
+      int reducedVarID(int varID) const ;
 
       /** get the reduced ID for the given unk ID */
-      int reducedUnkID(int unkID) const 
-      {return unkIDToReducedIDMap_.get(unkID);}
-      
+      int reducedUnkID(int unkID) const ;
+
+      /** get the unreduced variational ID for the given reduced ID */
+      int unreducedVarID(int block, int reducedVarID) const ;
+
+      /** get the unreduced unknown ID for the given reduced ID */
+      int unreducedUnkID(int block, int reducedUnkID) const ;
       //@}
 
 
@@ -261,12 +277,15 @@ namespace SundanceCore
       /** */
       void init(const Expr& eqns, 
                 const Expr& bcs,
-                const Expr& vars, 
-                const Expr& varLinearizationPts,
-                const Expr& unks,
-                const Expr& unkLinearizationPts,
-                const Expr& fixedFields,
-                const Expr& fixedFieldValues);
+                const Array<Expr>& vars, 
+                const Array<Expr>& varLinearizationPts,
+                const Array<Expr>& unks,
+                const Array<Expr>& unkLinearizationPts,
+                const Array<Expr>& fixedFields,
+                const Array<Expr>& fixedFieldValues);
+
+      /** */
+      static Expr toList(const Array<Expr>& e);
 
       /** */
       void addToVarUnkPairs(const OrderedHandle<CellFilterStub>& domain,
@@ -329,22 +348,36 @@ namespace SundanceCore
       Map<ComputationType, Map<RegionQuadCombo, EvalContext> > bcRqcToContext_;
 
       /** var functions for this equation set */
-      Expr varFuncs_;
+      Array<Expr> varFuncs_;
 
       /** unknown functions for this equation set */
-      Expr unkFuncs_;
+      Array<Expr> unkFuncs_;
 
       /** The point in function space about which the equations
        * are linearized */
-      Expr unkLinearizationPts_;
+      Array<Expr> unkLinearizationPts_;
 
       /** map from variational function funcID to that function's
        * position in list of var functions */
-      Map<int, int> varIDToReducedIDMap_;
+      Array<Map<int, int> > varIDToReducedIDMap_;
 
       /** map from unknown function funcID to that function's
        * position in list of unk functions */
-      Map<int, int> unkIDToReducedIDMap_;
+      Array<Map<int, int> > unkIDToReducedIDMap_;
+
+      /** map from variational function funcID to that function's
+       * position in list of var blocks */
+      Map<int, int> varIDToBlockMap_;
+
+      /** map from unknown function funcID to that function's
+       * position in list of unk blocks */
+      Map<int, int> unkIDToBlockMap_;
+
+      /** Map from (block, unreduced var ID) to reduced ID */
+      Array<Array<int> > reducedVarID_;
+
+      /** Map from (block, unreduced unk ID) to reduced ID */
+      Array<Array<int> > reducedUnkID_;
 
       /** Set of the computation types supported her */
       Set<ComputationType> compTypes_;

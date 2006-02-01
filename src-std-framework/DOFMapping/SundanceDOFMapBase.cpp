@@ -46,7 +46,7 @@ static Time& dofLookupTimer()
 }
 
 DOFMapBase::DOFMapBase(const Mesh& mesh,
-                       const Array<BasisFamily>& basis)
+                       const BasisArray& basis)
   : localProcID_(mesh.comm().getRank()),
     mesh_(mesh),
     cellSets_(),

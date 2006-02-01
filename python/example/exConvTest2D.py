@@ -107,7 +107,7 @@ def main() :
       print "PASSED"
       
   if (ok != 1) :
-    print "FAILED: failres detected"
+    print "FAILED: failures detected"
   else:
     print "all orders PASSED"
 

@@ -75,7 +75,8 @@ namespace SundanceStdFwk
       /** */
       Assembler(const Mesh& mesh, 
                 const RefCountPtr<EquationSet>& eqn,
-                const VectorType<double>& vectorType,
+                const Array<VectorType<double> >& rowVectorType,
+                const Array<VectorType<double> >& colVectorType,
                 const VerbositySetting& verb = classVerbosity());
       /** */
       Assembler(const Mesh& mesh, 
@@ -83,30 +84,33 @@ namespace SundanceStdFwk
                 const VerbositySetting& verb = classVerbosity());
       
       /** */
-      const RefCountPtr<DOFMapBase>& rowMap() const 
+      const Array<RefCountPtr<DOFMapBase> >& rowMap() const 
       {return rowMap_;}
 
       /** */
-      const RefCountPtr<DOFMapBase>& colMap() const 
+      const Array<RefCountPtr<DOFMapBase> >& colMap() const 
       {return colMap_;}
 
       /** */
-      const RefCountPtr<DiscreteSpace>& solutionSpace() const 
+      const Array<RefCountPtr<DiscreteSpace> >& solutionSpace() const 
       {return colSpace_;}
 
       /** */
-      const RefCountPtr<DiscreteSpace>& rowSpace() const 
+      const Array<RefCountPtr<DiscreteSpace> >& rowSpace() const 
       {return rowSpace_;}
 
       /** */
-      const RefCountPtr<Set<int> >& bcRows() {return bcRows_;}
+      VectorSpace<double> solnVecSpace() const ;
+
+      /** */
+      VectorSpace<double> rowVecSpace() const ;
+
+      /** */
+      const Array<RefCountPtr<Set<int> > >& bcRows() {return bcRows_;}
 
       /** */
       void assemble(TSFExtended::LinearOperator<double>& A,
                     TSFExtended::Vector<double>& b) const ;
-
-      /** */
-      void dryAssemble(TSFExtended::LinearOperator<double>& A) const ;
 
 
       /** */
@@ -124,12 +128,14 @@ namespace SundanceStdFwk
       {static unsigned int rtn = defaultWorkSetSize(); return rtn;}
       
       /** */
-      void getGraph(Array<int>& graphData,
+      void getGraph(int br, int bc,
+                    Array<int>& graphData,
                     Array<int>& rowPtrs,
                     Array<int>& nnzPerRow) const ;
       
       /** */
-      void incrementalGetGraph(IncrementallyConfigurableMatrixFactory* mf) const ;
+      void incrementalGetGraph(int br, int bc, 
+                               IncrementallyConfigurableMatrixFactory* mf) const ;
 
       /** */
       void flushConfiguration() 
@@ -151,26 +157,30 @@ namespace SundanceStdFwk
                 const RefCountPtr<EquationSet>& eqn);
 
       /** */
-      void insertLocalMatrixBatch(int cellDim, const Array<int>& workSet,
-                                  bool isBCRqc, 
-                                  const Array<Array<int> >& testIndices,
-                                  const Array<Array<int> >& unkIndices,
-                                  const Array<int>& nTestNodes, 
-                                  const Array<int>& nUnkNodes,
-                                  const Array<int>& testID,
-                                  const Array<int>& unkID, 
-                                  const Array<double>& localValues,
-                                  TSFExtended::LoadableMatrix<double>* mat) const ;
+      void insertLocalMatrixBatch(int cellDim, 
+                                  const Array<int>& workSet, 
+                                  bool isBCRqc,
+                                  const Array<Array<Array<int> > >& testIndices,
+                                  const Array<Array<Array<int> > >& unkIndices,
+                                  const Array<Array<int> >& nTestNodes, 
+                                  const Array<Array<int> >& nUnkNodes,
+                                  const Array<int>& testID, 
+                                  const Array<int>& testBlock, 
+                                  const Array<int>& unkID,
+                                  const Array<int>& unkBlock,
+                                  const Array<double>& localValues, 
+                                  Array<Array<LoadableMatrix<double>* > >& mat) const ;
 
       /** */
       void insertLocalVectorBatch(int cellDim, 
-                                  const Array<int>& workSet,
-                                  bool isBCRqc, 
-                                  const Array<Array<int> >& testIndices,
-                                  const Array<int>& nTestNodes, 
-                                  const Array<int>& testID,
-                                  const Array<double>& localValues,
-                                  TSFExtended::LoadableVector<double>* vec) const ;
+                                  const Array<int>& workSet, 
+                                  bool isBCRqc,
+                                  const Array<Array<Array<int> > >& testIndices,
+                                  const Array<Array<int> >& nTestNodes, 
+                                  const Array<int>& testID, 
+                                  const Array<int>& testBlock, 
+                                  const Array<double>& localValues, 
+                                  Array<TSFExtended::LoadableVector<double>* >& vec) const ;
 
       /** */
       void configureMatrix(LinearOperator<double>& A,
@@ -180,7 +190,13 @@ namespace SundanceStdFwk
       void configureVector(Vector<double>& b) const ;
 
       /** */
-      bool isBCRow(int dof) const {return (*isBCRow_)[dof-lowestRow_];}
+      void configureMatrixBlock(int br, int bc, 
+                                LinearOperator<double>& A) const ;
+
+      /** */
+      void configureVectorBlock(int br, Vector<double>& b) const ;
+
+      Array<Array<int> > findNonzeroBlocks() const ;
 
       /** */
       static int defaultWorkSetSize() {return 100;}
@@ -195,15 +211,15 @@ namespace SundanceStdFwk
 
       RefCountPtr<EquationSet> eqn_;
 
-      RefCountPtr<DOFMapBase> rowMap_;
+      Array<RefCountPtr<DOFMapBase> > rowMap_;
 
-      RefCountPtr<DOFMapBase> colMap_;
+      Array<RefCountPtr<DOFMapBase> > colMap_;
 
-      RefCountPtr<DiscreteSpace> rowSpace_;
+      Array<RefCountPtr<DiscreteSpace> > rowSpace_;
 
-      RefCountPtr<DiscreteSpace> colSpace_;
+      Array<RefCountPtr<DiscreteSpace> > colSpace_;
 
-      RefCountPtr<Set<int> > bcRows_;
+      Array<RefCountPtr<Set<int> > > bcRows_;
 
       Array<RegionQuadCombo> rqc_;
 
@@ -219,11 +235,17 @@ namespace SundanceStdFwk
 
       RefCountPtr<EvalManager> evalMgr_;
 
-      RefCountPtr<Array<int> > isBCRow_;
+      Array<RefCountPtr<Array<int> > > isBCRow_;
 
-      int lowestRow_;
+      Array<int> lowestRow_;
 
-      VectorType<double> vecType_;
+      Array<VectorType<double> > rowVecType_;
+
+      Array<VectorType<double> > colVecType_;
+
+      Map<int, int> testIDToBlockMap_;
+
+      Map<int, int> unkIDToBlockMap_;
 
     };
   }

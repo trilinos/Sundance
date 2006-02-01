@@ -81,7 +81,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     vecType_(),
     gradient_()
 {
-  Expr fields;
+  Array<Expr> fields;
   Expr bcs;
   
   RefCountPtr<EquationSet> eqnSet 
@@ -103,14 +103,14 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     vecType_(vectorType),
     gradient_()
 {
-  Expr v = var.flatten();
-  Expr v0 = varValues.flatten();
-  Expr fixed;
+  Array<Expr> v = tuple(var.flatten());
+  Array<Expr> v0 = tuple(varValues.flatten());
+  Array<Expr> fixed;
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, fixed, fixed));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, vectorType));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType)));
 }
 
 
@@ -127,15 +127,15 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     vecType_(vectorType),
     gradient_()
 {
-  Expr f = fields.flatten();
-  Expr f0 = fieldValues.flatten();
-  Expr v = vars.flatten();
-  Expr v0 = varEvalPts.flatten();
+  Array<Expr> f = tuple(fields.flatten());
+  Array<Expr> f0 = tuple(fieldValues.flatten());
+  Array<Expr> v = tuple(vars.flatten());
+  Array<Expr> v0 = tuple(varEvalPts.flatten());
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, f, f0));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, vectorType));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType)));
 }
 
 double FunctionalEvaluator::evaluate() const
@@ -157,8 +157,15 @@ Expr FunctionalEvaluator::evalGradient(double& value) const
 {
   Vector<double> g = evalGradientVector(value);
 
-  return new DiscreteFunction(*(assembler_->rowSpace()),
-                              g, "gradient");
+  Array<Expr> rtn(assembler_->rowSpace().size());
+  for (int i=0; i<rtn.size(); i++)
+    {
+      string name = "gradient";
+      if (rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
+      rtn[i] = new DiscreteFunction(*(assembler_->rowSpace()[i]),
+                                    g.getBlock(i), name);
+    }
+  return new ListExpr(rtn);
 }
 
 

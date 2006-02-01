@@ -104,17 +104,26 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           BasisFamily unkBasis;
           MultiIndex miTest;
           MultiIndex miUnk;
+          int rawTestID;
+          int rawUnkID;
           int testID;
           int unkID;
+          int testBlock;
+          int unkBlock;
           bool isOneForm;
-          extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, testID, unkID,
+          extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, 
+                          rawTestID, rawUnkID,
+                          testID, unkID,
+                          testBlock, unkBlock,
                           isOneForm);
 
-          SUNDANCE_OUT(verb > VerbMedium, 
-                       tab1 << "test ID: " << testID);
 
-          SUNDANCE_OUT(!isOneForm && verb > VerbMedium,
-                       tab1 << "unk funcID: " << unkID << endl);
+          SUNDANCE_VERB_MEDIUM(tab1 << "test ID: " << testID << " block=" << testBlock);
+
+          if (!isOneForm)
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "unk funcID: " << unkID << " block=" << unkBlock);
+            }
                    
           SUNDANCE_OUT(verb > VerbMedium, tab1 << "deriv = " << d);
           SUNDANCE_OUT(verb > VerbMedium && sparsity->isConstant(i), 
@@ -201,20 +210,21 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
             {
               if (doGroups)
                 {
-                  if (!oneForms.containsKey(testID))
+                  if (!oneForms.containsKey(rawTestID))
                     {
-                      oneForms.put(testID, tuple(integral));
-                      oneFormResultIndices.put(testID, tuple(resultIndex));
+                      oneForms.put(rawTestID, tuple(integral));
+                      oneFormResultIndices.put(rawTestID, tuple(resultIndex));
                     }
                   else
                     {
-                      oneForms[testID].append(integral);
-                      oneFormResultIndices[testID].append(resultIndex);
+                      oneForms[rawTestID].append(integral);
+                      oneFormResultIndices[rawTestID].append(resultIndex);
                     }
                 }
               else
                 {
-                  groups.append(IntegralGroup(tuple(testID), tuple(integral),
+                  groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
+                                              tuple(integral),
                                               tuple(resultIndex)));
                 }
             }
@@ -222,13 +232,14 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
             {
               if (!doGroups)
                 {
-                  groups.append(IntegralGroup(tuple(testID), tuple(unkID),
+                  groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
+                                              tuple(unkID), tuple(unkBlock),
                                               tuple(integral),
                                               tuple(resultIndex)));
                 }
               else
                 {
-                  OrderedPair<int, int> testUnk(testID, unkID);
+                  OrderedPair<int, int> testUnk(rawTestID, rawUnkID);
                   if (!twoForms.containsKey(testUnk))
                     {
                       twoForms.put(testUnk, tuple(integral));
@@ -248,8 +259,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
     {
       for (twoFormMap::const_iterator i=twoForms.begin(); i!=twoForms.end(); i++)
         {
-          int testID = i->first.first();
-          int unkID = i->first.second();
+          int rawTestID = i->first.first();
+          int rawUnkID = i->first.second();
+          int testID = eqn.reducedVarID(rawTestID);
+          int unkID = eqn.reducedUnkID(rawUnkID);
+          int testBlock = eqn.blockForVarID(rawTestID);
+          int unkBlock = eqn.blockForUnkID(rawUnkID);
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = twoFormResultIndices.get(i->first);
@@ -262,13 +277,16 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j]));
             }
-          groups.append(IntegralGroup(tuple(testID), tuple(unkID), 
+          groups.append(IntegralGroup(tuple(testID), tuple(testBlock), tuple(unkID), 
+                                      tuple(unkBlock),
                                       integrals, resultIndices));
         }
 
       for (oneFormMap::const_iterator i=oneForms.begin(); i!=oneForms.end(); i++)
         {
-          int testID = i->first;
+          int rawTestID = i->first;
+          int testID = eqn.reducedVarID(rawTestID);
+          int testBlock = eqn.blockForVarID(rawTestID);
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = oneFormResultIndices.get(i->first);
@@ -280,7 +298,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
               SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j]));
             }
-          groups.append(IntegralGroup(tuple(testID),
+          groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
                                       integrals, resultIndices));
         }
     }

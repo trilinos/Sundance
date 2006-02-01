@@ -47,24 +47,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecType_(vecType),
     ghostImporter_()
 {
-  map_ = rcp(new MixedDOFMap(mesh, tuple(basis)));
-
-  int nDof = map_->numLocalDOFs();
-  int lowDof = map_->lowestLocalDOF();
-
-  Array<int> dofs(nDof);
-  for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
-
-  vecSpace_ = vecType_.createSpace(map_->numDOFs(),
-                                   map_->numLocalDOFs(),
-                                   &(dofs[0]));
-
-  RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
-  int nGhost = ghostIndices->size();
-  int* ghosts = 0;
-  if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
-
-  ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
+  init();
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
@@ -72,52 +55,48 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
   : map_(), mesh_(mesh), basis_(basis), vecSpace_(), vecType_(vecType),
     ghostImporter_()
 {
-  map_ = rcp(new MixedDOFMap(mesh, basis_));
-
-  int nDof = map_->numLocalDOFs();
-  int lowDof = map_->lowestLocalDOF();
-
-  Array<int> dofs(nDof);
-  for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
-
-  vecSpace_ = vecType_.createSpace(map_->numDOFs(),
-                                   map_->numLocalDOFs(),
-                                   &(dofs[0]));
-
-
-  RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
-  int nGhost = ghostIndices->size();
-  int* ghosts = 0;
-  if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
-
-  ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
+  init();
 }
 
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const RefCountPtr<DOFMapBase>& map,
                              const VectorType<double>& vecType)
-  : map_(map), mesh_(mesh), basis_(basis), vecSpace_(), vecType_(vecType),
+  : map_(map), mesh_(mesh), basis_(basis), 
+    vecSpace_(), vecType_(vecType),
     ghostImporter_()
 {
+  init();
+}
+
+
+
+void DiscreteSpace::init()
+{
+  if (map_.get()==0) 
+    {
+      map_ = rcp(new MixedDOFMap(mesh(), basis_));
+    }
   int nDof = map_->numLocalDOFs();
   int lowDof = map_->lowestLocalDOF();
-
+  
   Array<int> dofs(nDof);
   for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
-
+  
   vecSpace_ = vecType_.createSpace(map_->numDOFs(),
                                    map_->numLocalDOFs(),
                                    &(dofs[0]));
-
-
+  
+  
   RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
   int nGhost = ghostIndices->size();
   int* ghosts = 0;
   if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
-
+  
   ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
 }
+
+
 
 void DiscreteSpace::importGhosts(const Vector<double>& x,
                                  RefCountPtr<GhostView<double> >& ghostView) const

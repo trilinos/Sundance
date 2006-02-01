@@ -101,7 +101,7 @@ src-utils tests-utils \
 src-core tests-core \
 src-std-mesh tests-std-mesh \
 src-std-framework tests-std-framework \
-$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
+$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR)
 
 CXX_SOLVER_TESTS = (cd tests-solvers; $(MAKE) tests) 
 CXX_SOLVER_SERIALTESTS = (cd tests-solvers; $(MAKE) serialtests) 
@@ -116,7 +116,7 @@ CXX_TESTS_TO_CHECK=tests-*/*/*.tst
 CXX_PTESTS_TO_CHECK=tests-*/*/*.ptst
 else
 SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework \
-$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
+$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR)
 endif
 
 

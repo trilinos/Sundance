@@ -114,9 +114,8 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = src-solvers src-utils src-core src-std-mesh \
-	src-std-framework python src-xml examples-tutorial \
-	tests-solvers tests-utils tests-core tests-std-mesh \
-	tests-std-framework
+	src-std-framework python examples-tutorial tests-solvers \
+	tests-utils tests-core tests-std-mesh tests-std-framework
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -305,14 +304,14 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 @PYTHON_USE_TRUE@PY_TESTS_TO_CHECK = python/example/*.tst
 @PYTHON_USE_TRUE@PY_PTESTS_TO_CHECK = python/example/*.ptst
 @BUILD_CXXTESTS_FALSE@SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework \
-@BUILD_CXXTESTS_FALSE@$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
+@BUILD_CXXTESTS_FALSE@$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR)
 
 @BUILD_CXXTESTS_TRUE@SUBDIRS = src-solvers tests-solvers \
 @BUILD_CXXTESTS_TRUE@src-utils tests-utils \
 @BUILD_CXXTESTS_TRUE@src-core tests-core \
 @BUILD_CXXTESTS_TRUE@src-std-mesh tests-std-mesh \
 @BUILD_CXXTESTS_TRUE@src-std-framework tests-std-framework \
-@BUILD_CXXTESTS_TRUE@$(PYTHON_SUBDIRS) src-xml  $(EXAMPLES_SUBDIR)
+@BUILD_CXXTESTS_TRUE@$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR)
 
 @BUILD_CXXTESTS_TRUE@CXX_SOLVER_TESTS = (cd tests-solvers; $(MAKE) tests) 
 @BUILD_CXXTESTS_TRUE@CXX_SOLVER_SERIALTESTS = (cd tests-solvers; $(MAKE) serialtests) 

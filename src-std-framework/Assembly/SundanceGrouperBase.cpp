@@ -55,7 +55,9 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
                                   BasisFamily& varBasis, 
                                   BasisFamily& unkBasis,
                                   MultiIndex& miVar, MultiIndex& miUnk,
-                                  int& varID, int& unkID, 
+                                  int& rawVarID, int& rawUnkID,  
+                                  int& reducedVarID, int& reducedUnkID,  
+                                  int& testBlock, int& unkBlock, 
                                   bool& isOneForm) const
 {
   Tabs tab;
@@ -103,10 +105,12 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
                              "WeakFormBatch::extractWeakForm could not cast "
                              "unknown function to UnknownFuncElement");
           foundUnk = true;
-          unkID = eqn.reducedUnkID(funcID);
+          reducedUnkID = eqn.reducedUnkID(funcID);
+          rawUnkID = funcID;
+          unkBlock = eqn.blockForUnkID(funcID);
 
           SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-                       tab << "found unkID=" << unkID);
+                       tab << "found reducedUnkID=" << reducedUnkID);
 
           unkBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
           SUNDANCE_OUT(this->verbosity() > VerbMedium, 
@@ -119,10 +123,12 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       else
         {
           foundVar = true;
-          varID = eqn.reducedVarID(funcID);
+          reducedVarID = eqn.reducedVarID(funcID);
+          rawVarID = funcID;
+          testBlock = eqn.blockForVarID(funcID);
 
           SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-                       tab << "found varID=" << varID);
+                       tab << "found varID=" << reducedVarID);
 
           const UnknownFuncElement* u
             = dynamic_cast<const UnknownFuncElement*>(s);

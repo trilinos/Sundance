@@ -94,7 +94,7 @@ namespace SundanceStdFwk
     const RefCountPtr<DOFMapBase>& map() const {return discreteSpace().map();}
 
 
-    RefCountPtr<GhostView<double> > ghostView() const 
+    RefCountPtr<GhostView<double> >  ghostView() const 
     {return data_->ghostView();}
 
     const DiscreteFunctionData* data() const {return data_.get();}
