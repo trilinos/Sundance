@@ -84,7 +84,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(IDAHeat_SOURCES) $(PoissonBoltzmannTest_SOURCES) $(PoissonTest_SOURCES)
+SOURCES = $(BlockTriangularTest_SOURCES) $(IDAHeat_SOURCES) $(PoissonBoltzmannTest_SOURCES) $(PoissonTest_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -132,13 +132,16 @@ CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
 am__EXEEXT_1 = IDAHeat$(EXEEXT) PoissonTest$(EXEEXT) \
-	PoissonBoltzmannTest$(EXEEXT)
+	PoissonBoltzmannTest$(EXEEXT) BlockTriangularTest$(EXEEXT)
 am__EXEEXT_2 =
 PROGRAMS = $(noinst_PROGRAMS)
-am_IDAHeat_OBJECTS = IDAHeat-IDAHeat.$(OBJEXT)
-IDAHeat_OBJECTS = $(am_IDAHeat_OBJECTS)
+am_BlockTriangularTest_OBJECTS =  \
+	BlockTriangularTest-BlockTriangularTest.$(OBJEXT)
+BlockTriangularTest_OBJECTS = $(am_BlockTriangularTest_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+am_IDAHeat_OBJECTS = IDAHeat-IDAHeat.$(OBJEXT)
+IDAHeat_OBJECTS = $(am_IDAHeat_OBJECTS)
 am_PoissonBoltzmannTest_OBJECTS =  \
 	PoissonBoltzmannTest-PoissonBoltzmannTest.$(OBJEXT)
 PoissonBoltzmannTest_OBJECTS = $(am_PoissonBoltzmannTest_OBJECTS)
@@ -152,10 +155,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(IDAHeat_SOURCES) $(PoissonBoltzmannTest_SOURCES) \
-	$(PoissonTest_SOURCES)
-DIST_SOURCES = $(IDAHeat_SOURCES) $(PoissonBoltzmannTest_SOURCES) \
-	$(PoissonTest_SOURCES)
+SOURCES = $(BlockTriangularTest_SOURCES) $(IDAHeat_SOURCES) \
+	$(PoissonBoltzmannTest_SOURCES) $(PoissonTest_SOURCES)
+DIST_SOURCES = $(BlockTriangularTest_SOURCES) $(IDAHeat_SOURCES) \
+	$(PoissonBoltzmannTest_SOURCES) $(PoissonTest_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -431,7 +434,7 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
-PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest
+PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest
 SERIAL_SRC = 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 IDAHeat_SOURCES = $(srcdir)/IDAHeat.cpp 
@@ -446,6 +449,10 @@ PoissonBoltzmannTest_SOURCES = $(srcdir)/PoissonBoltzmannTest.cpp
 PoissonBoltzmannTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 PoissonBoltzmannTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
 PoissonBoltzmannTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+BlockTriangularTest_SOURCES = $(srcdir)/BlockTriangularTest.cpp 
+BlockTriangularTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+BlockTriangularTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+BlockTriangularTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
 @HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
@@ -489,6 +496,9 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+BlockTriangularTest$(EXEEXT): $(BlockTriangularTest_OBJECTS) $(BlockTriangularTest_DEPENDENCIES) 
+	@rm -f BlockTriangularTest$(EXEEXT)
+	$(CXXLINK) $(BlockTriangularTest_LDFLAGS) $(BlockTriangularTest_OBJECTS) $(BlockTriangularTest_LDADD) $(LIBS)
 IDAHeat$(EXEEXT): $(IDAHeat_OBJECTS) $(IDAHeat_DEPENDENCIES) 
 	@rm -f IDAHeat$(EXEEXT)
 	$(CXXLINK) $(IDAHeat_LDFLAGS) $(IDAHeat_OBJECTS) $(IDAHeat_LDADD) $(LIBS)
@@ -505,6 +515,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IDAHeat-IDAHeat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonTest-PoissonTest.Po@am__quote@
@@ -522,6 +533,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+BlockTriangularTest-BlockTriangularTest.o: $(srcdir)/BlockTriangularTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockTriangularTest_CXXFLAGS) $(CXXFLAGS) -MT BlockTriangularTest-BlockTriangularTest.o -MD -MP -MF "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Tpo" -c -o BlockTriangularTest-BlockTriangularTest.o `test -f '$(srcdir)/BlockTriangularTest.cpp' || echo '$(srcdir)/'`$(srcdir)/BlockTriangularTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Tpo" "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Po"; else rm -f "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/BlockTriangularTest.cpp' object='BlockTriangularTest-BlockTriangularTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockTriangularTest_CXXFLAGS) $(CXXFLAGS) -c -o BlockTriangularTest-BlockTriangularTest.o `test -f '$(srcdir)/BlockTriangularTest.cpp' || echo '$(srcdir)/'`$(srcdir)/BlockTriangularTest.cpp
+
+BlockTriangularTest-BlockTriangularTest.obj: $(srcdir)/BlockTriangularTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockTriangularTest_CXXFLAGS) $(CXXFLAGS) -MT BlockTriangularTest-BlockTriangularTest.obj -MD -MP -MF "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Tpo" -c -o BlockTriangularTest-BlockTriangularTest.obj `if test -f '$(srcdir)/BlockTriangularTest.cpp'; then $(CYGPATH_W) '$(srcdir)/BlockTriangularTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/BlockTriangularTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Tpo" "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Po"; else rm -f "$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/BlockTriangularTest.cpp' object='BlockTriangularTest-BlockTriangularTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(BlockTriangularTest_CXXFLAGS) $(CXXFLAGS) -c -o BlockTriangularTest-BlockTriangularTest.obj `if test -f '$(srcdir)/BlockTriangularTest.cpp'; then $(CYGPATH_W) '$(srcdir)/BlockTriangularTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/BlockTriangularTest.cpp'; fi`
 
 IDAHeat-IDAHeat.o: $(srcdir)/IDAHeat.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IDAHeat_CXXFLAGS) $(CXXFLAGS) -MT IDAHeat-IDAHeat.o -MD -MP -MF "$(DEPDIR)/IDAHeat-IDAHeat.Tpo" -c -o IDAHeat-IDAHeat.o `test -f '$(srcdir)/IDAHeat.cpp' || echo '$(srcdir)/'`$(srcdir)/IDAHeat.cpp; \

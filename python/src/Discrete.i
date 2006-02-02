@@ -5,6 +5,7 @@
 #include <Python.h>
 
   // Sundance includes
+#include "SundanceBlock.hpp"
 #include "SundanceL2Projector.hpp"
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceDiscreteFunction.hpp"
@@ -101,6 +102,10 @@
 
 namespace SundanceStdFwk
 {
+
+  
+
+
   class DiscreteSpace
   {
   public:
@@ -213,7 +218,6 @@ namespace SundanceStdFwk
     return new SundanceStdFwk::DiscreteFunction(space, val, name);
   }
   %}
-
 
 
 

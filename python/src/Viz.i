@@ -8,6 +8,7 @@
 #include "SundanceFieldWriter.hpp"
 #include "SundanceVTKWriter.hpp"
 #include "SundanceTriangleWriter.hpp"
+#include "SundanceMatlabWriter.hpp"
 #include "SundanceExprFieldWrapper.hpp"
 
   %}
@@ -46,6 +47,7 @@ namespace SundanceStdMesh
 }
 
 %rename(VTKWriter) makeVTKWriter;
+%rename(MatlabWriter) makeMatlabWriter;
 %rename(TriangleWriter) makeTriangleWriter;
 
 
@@ -64,6 +66,15 @@ namespace SundanceStdMesh
   {
     return new SundanceStdMesh
       ::TriangleWriter(filename);
+  }
+  %}
+
+%inline %{
+  /* Create a Matlab writer */
+  SundanceStdMesh::FieldWriter makeMatlabWriter(const std::string& filename)
+  {
+    return new SundanceStdMesh
+      ::MatlabWriter(filename);
   }
   %}
 

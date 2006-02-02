@@ -75,26 +75,26 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(3), "u");
-      Expr v = new UnknownFunction(new Lagrange(2), "v");
-      Expr du = new TestFunction(new Lagrange(3), "du");
-      Expr dv = new TestFunction(new Lagrange(2), "dv");
+      Expr u = new UnknownFunction(new Lagrange(5), "u");
+      Expr v = new UnknownFunction(new Lagrange(3), "v");
+      Expr du = new TestFunction(new Lagrange(5), "du");
+      Expr dv = new TestFunction(new Lagrange(3), "dv");
 
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
       Expr x = new CoordExpr(0);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad2 = new GaussianQuadrature(2);
+      QuadratureFamily quad = new GaussianQuadrature(10);
 
       
       /* Define the weak form */
       Expr eqn = Integral(interior, 
                           (dx*du)*(dx*u) + du*v + (dx*dv)*(dx*v) + x*dv, 
-                          quad2);
+                          quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, du*u + dv*v, quad2)
-        + EssentialBC(rightPoint, du*u + dv*v, quad2);
+      Expr bc = EssentialBC(leftPoint, du*u + dv*v, quad)
+        + EssentialBC(rightPoint, du*u + dv*v, quad);
 
 
       /* We can now set up the linear problem! */

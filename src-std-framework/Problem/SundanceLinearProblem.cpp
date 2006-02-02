@@ -111,6 +111,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   for (unsigned int i=0; i<unk.size(); i++)
     {
       u[i] = unk[i].expr().flatten();
+      unkVecType[i] = unk[i].vecType();
       Array<Expr> zero(u[i].size());
       for (unsigned int j=0; j<u[i].size(); j++) 
         {

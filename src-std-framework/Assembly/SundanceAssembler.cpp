@@ -399,15 +399,12 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
   if (nRowBlocks==1 && nColBlocks==1)
     {
       configureMatrixBlock(0,0,A);
-      configureVectorBlock(0,b);
     }
   else
     {
+      A = new BlockOperator<double>(solnVecSpace(), rowVecSpace());
       for (int br=0; br<nRowBlocks; br++)
         {
-          Vector<double> vecBlock;
-          configureVectorBlock(br, vecBlock);
-          b.setBlock(br, vecBlock);
           for (int bc=0; bc<nColBlocks; bc++)
             {
               if (isNonzero[br][bc])

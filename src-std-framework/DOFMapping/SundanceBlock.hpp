@@ -52,7 +52,12 @@ namespace SundanceStdFwk
   {
   public:
     /** */
-    Block(const Expr& expr, const VectorType<double>& vecType);
+    Block()
+      : expr_(), vecType_() {;}
+
+    /** */
+    Block(const Expr& expr, const VectorType<double>& vecType)
+      : expr_(expr), vecType_(vecType) {;}
 
     /** */
     const Expr& expr() const {return expr_;}
@@ -74,6 +79,14 @@ namespace SundanceStdFwk
     BlockArray(const Array<Block>& a) : Array<Block>(a) {;}
     
   };
+
+  /** \relates Block */
+  inline ostream& operator<<(ostream& os, const Block& block)
+  {
+    os << "Block[" << block.expr() << ", " << block.vecType() << "]";
+    return os;
+  }
+
 }
 
 

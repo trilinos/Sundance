@@ -235,13 +235,13 @@ AUTOMAKE_OPTIONS = foreign
 #       could get rid of these.
 #
 PARAM_FILES = $(srcdir)/aztecSolver.py $(srcdir)/bicgstabSolver.py \
-$(srcdir)/noxSolver.py $(srcdir)/amesosSolver.py
+$(srcdir)/noxSolver.py $(srcdir)/amesosSolver.py $(srcdir)/blockTriangularSolver.py 
 
 EXTRA_DIST = $(PARAM_FILES) setpath.py $(ALL_PROGS)
 MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
-PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D exConvTest2D
+PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D exConvTest2D exBlockTest
 SERIAL_SRC = exPoisson3D 
 ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
 SETPATH_PY = setpath.py 

@@ -471,6 +471,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp 
 
 SUNDANCE_DOFMAPPING_H = \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceBlock.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp

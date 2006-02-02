@@ -218,7 +218,32 @@ void Lagrange::evalOnLine(const Point& pt,
 	
 	result.resize(order()+1);
 	Array<ADReal> tmp(result.length());
+  Array<double> x0(order()+1);
 
+  if (order_ == 0)
+    {
+      tmp[0] = one;
+    }
+  else
+    {
+      x0[0] = 0.0;
+      x0[1] = 1.0;
+      for (int i=0; i<order_-1; i++)
+        {
+          x0[i+2] = (i+1.0)/order_;
+        }
+
+      for (int i=0; i<=order_; i++)
+        {
+          tmp[i] = one;
+          for (int j=0; j<=order_; j++)
+            {
+              if (i==j) continue;
+              tmp[i] *= (x - x0[j])/(x0[i]-x0[j]);
+            }
+        }
+    }
+  /*
 	switch(order_)
 		{
 		case 0:
@@ -244,7 +269,7 @@ void Lagrange::evalOnLine(const Point& pt,
 			SUNDANCE_ERROR("Lagrange::evalOnLine polynomial order > 2 has not been"
                      " implemented");
 		}
-
+  */
 	for (int i=0; i<tmp.length(); i++)
 		{
 			if (deriv.order()==0) result[i] = tmp[i].value();

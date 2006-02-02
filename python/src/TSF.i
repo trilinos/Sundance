@@ -89,14 +89,19 @@ namespace TSFExtended
 
     Scalar max(int& index)const;
 
-    Scalar max(const Scalar& bound, int& index)const;
+    Scalar max(const Scalar& bound, int& index) const;
 
     Scalar min()const;
 
     Scalar min(int& index)const;
 
-    Scalar min(const Scalar& bound, int& index)const;
-    
+    Scalar min(const Scalar& bound, int& index) const;
+
+    Vector<Scalar> getBlock(int i) const  ;
+
+    void setBlock(int i, const Vector<Scalar>& x) ;
+
+
     %extend 
     {
       std::string __str__() 
@@ -167,6 +172,17 @@ namespace TSFExtended
 
     Vector<Scalar> createMember();
 
+
+    /** return the number of subblocks. */
+    int numBlocks() const ;
+
+    /** get the i-th subblock */
+    VectorSpace<Scalar> getBlock(int i) const ;
+
+
+    /** set the i-th subblock */
+    void setBlock(int i, const VectorSpace<Scalar>& space);
+
     %extend 
     {
       std::string __str__() 
@@ -235,6 +251,37 @@ namespace TSFExtended
     LinearOperator();
     ~LinearOperator();
 
+    /** Return the domain */
+    const VectorSpace<Scalar> domain() const ;
+
+    /** Return the range */
+    const VectorSpace<Scalar> range() const ;
+
+
+    /** return number of block rows */
+    int numBlockRows() const;
+      
+
+    /** return number of block cols */
+    int numBlockCols() const;
+      
+
+    /** get the (i,j)-th block */
+    LinearOperator<Scalar> getBlock(const int &i, const int &j) const ;
+
+    /** set the (i,j)-th block 
+     *  If the domain and/or the range are not set, then we
+     *  are building the operator
+     */
+    void setBlock(int i, int j, 
+                  const LinearOperator<Scalar>& sub);
+
+    /**
+     * Return a TransposeOperator.
+     */
+    LinearOperator<Scalar> transpose() const ; 
+
+
     %extend
     {
       std::string __str__() 
@@ -245,6 +292,40 @@ namespace TSFExtended
         rtn = os.str();
         return rtn;
       }
+
+      Vector<Scalar> __mul__(const Vector<Scalar>& in) const 
+      {
+        Vector<Scalar> out;
+        self->apply(in, out);
+        return out;
+      }
+
+      LinearOperator<Scalar> __mul__(const LinearOperator<Scalar>& other) const 
+      {
+        return (*self) * other;
+      }
+
+      LinearOperator<Scalar> __add__(const LinearOperator<Scalar>& other) const 
+      {
+        return (*self) + other;
+      }
+
+      LinearOperator<Scalar> __sub__(const LinearOperator<Scalar>& other) const 
+      {
+        return (*self) + -1.0*other;
+      }
+      
+      LinearOperator<Scalar> __mul__(const Scalar& other) const 
+      {
+        return other * (*self);
+      }
+      
+      LinearOperator<Scalar> __rmul__(const Scalar& other) const 
+      {
+        return other * (*self);
+      }
+
+      
     }
   };
 

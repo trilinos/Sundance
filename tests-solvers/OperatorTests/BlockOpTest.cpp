@@ -107,6 +107,9 @@ int main(int argc, void *argv[])
 
       LinearOperator<double> A = builder.getOp();
 
+      cerr << "A num block rows = " << A.numBlockRows() << endl;
+      cerr << "A num block cols = " << A.numBlockCols() << endl;
+
       Vector<double> x = domain.createMember();
       cerr << "randomizing trial vector" << endl;
       Thyra::randomize(-1.0, 1.0, x.ptr().get());
