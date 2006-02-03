@@ -51,6 +51,17 @@ TRILINOS_DIR = @TRILINOS_DIR@
 FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 
 
+
+#-------------------------------------------------------------------------
+# FIAT stuff
+#-------------------------------------------------------------------------
+
+@FIAT_STR@FIAT_LIB_PATH=-L$(FIAT_BUILD_DIR)/lib
+@FIAT_STR@FIAT_INCLUDE_PATH=-I$(FIAT_BUILD_DIR)/include
+
+@FIAT_STR@FIAT_LIBS=-L$(FIAT_BUILD_DIR)/lib -lfiat -lblitz
+
+
 #-------------------------------------------------------------------------
 # Linker command flags
 #-------------------------------------------------------------------------
@@ -63,7 +74,7 @@ CORE_LIBS = -lsundanceCore
 
 STD_MESH_LIBS = -lsundanceStdMesh
 
-STD_FWK_LIBS = -lsundanceStdFwk
+STD_FWK_LIBS = -lsundanceStdFwk $(FIAT_LIB_PATH) $(FIAT_LIBS) $(FIAT_BLITZ_LIBS)
 
 
 #-------------------------------------------------------------------------
@@ -71,7 +82,7 @@ STD_FWK_LIBS = -lsundanceStdFwk
 #-------------------------------------------------------------------------
  
 SUNDANCE_INCLUDES = -I$(SUNDANCE_BUILD_DIRECTORY)/include \
--I$(TRILINOS_DIR)/include 
+-I$(TRILINOS_DIR)/include $(FIAT_INCLUDE_PATH)
 
 
 
