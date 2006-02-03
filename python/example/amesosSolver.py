@@ -3,8 +3,9 @@ from PySundance import *
 
 
 
-aztecSolverDict = {"Linear Solver" : 
-               {"Type" : "Amesos"}
-               }
+amesosSolverDict = {"Linear Solver" : 
+                    {"Type" : "Amesos",
+                     "Kernel" : "Umfpack"}
+                    }
 
 solverParams = dict2ParameterList(amesosSolverDict);
