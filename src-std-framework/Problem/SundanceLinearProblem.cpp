@@ -170,6 +170,7 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
 
   SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() solving system");
 
+  solnVec = rhs_.copy();
   status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_, solnVec)));
 
   const SolverState<double>& state = *status_;
@@ -206,6 +207,7 @@ SolverState<double> LinearProblem
 
   status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_, solnVec)));
 
+  
   const SolverState<double>& state = *status_;
   SUNDANCE_VERB_MEDIUM(tab << 
                        "LinearProblem::solve() done solving system: status is " 
@@ -233,6 +235,7 @@ SolverState<double> LinearProblem
 Expr LinearProblem::formSolutionExpr(const Vector<double>& solnVector) const
 {
   Array<Expr> rtn(assembler_->solutionSpace().size());
+
   for (int i=0; i<rtn.size(); i++)
     {
       string name = "soln";

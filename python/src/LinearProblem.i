@@ -7,6 +7,7 @@
 
   // Sundance includes
 #include "SundanceLinearProblem.hpp"
+#include "PySundanceLinearSolver.hpp"
 
   %}
 
@@ -137,4 +138,19 @@ namespace SundanceStdFwk
 
     SundanceCore::Expr solve(const TSFExtended::LinearSolver<double>& solver) const ;
   };
+
+  %extend LinearProblem {
+    SundanceCore::Expr solve(PyObject* pySolver)
+    {
+      TSFExtended::PySundanceLinearSolver* tmp  
+        = new TSFExtended::PySundanceLinearSolver(pySolver);
+      
+      Teuchos::RefCountPtr<TSFExtended::LinearSolverBase<double> > 
+        r = rcp(tmp);
+
+      TSFExtended::LinearSolver<double> cxxSolver = r;
+      return self->solve(cxxSolver);
+    }
+  }
+ 
 }

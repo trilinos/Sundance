@@ -1,5 +1,5 @@
 #ifndef PYSUNDANCE_Callback_h
-#define PYSUNDANCE_CCallback_h
+#define PYSUNDANCE_Callback_h
 
 #include "Python.h"
 

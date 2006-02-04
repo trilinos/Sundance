@@ -16,6 +16,7 @@
 #include "Teuchos_ParameterXMLFileReader.hpp"
 #include "PyTeuchos_Utils.hpp"
 #include "PySundanceNOXSolverHandle.hpp"
+#include "PySundanceLinearSolver.hpp"
   %}
 
 
@@ -34,7 +35,7 @@
 
 
 
- /* --------- vector space ------------ */
+/* --------- vector space ------------ */
 namespace TSFExtended
 {
   template <class Scalar> class Vector;
@@ -104,6 +105,11 @@ namespace TSFExtended
 
     %extend 
     {
+      int numBlocks() const
+      {
+        return self->space().numBlocks();
+      }
+
       std::string __str__() 
       {
         std::string rtn; 
@@ -160,7 +166,7 @@ namespace TSFExtended
 
 }
 
- /* --------- vector space ------------ */
+/* --------- vector space ------------ */
 namespace TSFExtended
 {
   template <class Scalar>
@@ -229,6 +235,53 @@ namespace TSFExtended
   %template(VecType) VectorType<double>;
 
 }
+
+
+
+/* --------- vector type ------------ */
+namespace TSFExtended
+{
+  enum SolverStatusCode {SolveCrashed, SolveFailedToConverge, SolveConverged};
+  
+  template <class Scalar>
+  class SolverState
+  {
+  public:
+    SolverState();
+    SolverState(SolverStatusCode finalState, const std::string& msg, 
+                int finalIters, const Scalar& finalResid);
+    ~SolverState();
+    
+    std::string stateDescription() const ;
+
+    /** */
+    const Scalar& finalResid() const ;
+
+    /** */
+    int finalIters() const ;
+
+    /** */
+    const SolverStatusCode& finalState() const ;
+
+    /** */
+    const std::string& finalMsg() const ;
+
+    %extend
+    {
+      std::string __str__() 
+      {
+        std::string rtn; 
+        std::stringstream os;
+        os << *self;
+        rtn = os.str();
+        return rtn;
+      }
+    }
+  };
+
+}
+
+
 
 %rename(EpetraVectorType) makeEpetraVectorType;
 
@@ -333,6 +386,9 @@ namespace TSFExtended
 
 }
 
+
+
+
 /* --------- linear solver ------------ */
 namespace TSFExtended
 {
@@ -342,6 +398,10 @@ namespace TSFExtended
   public:
     LinearSolver();
     ~LinearSolver();
+
+    SolverState<Scalar> solve(const LinearOperator<Scalar>& op,
+                              const Vector<Scalar>& rhs,
+                              Vector<Scalar>& soln) const ;
 
     %extend
     {
@@ -359,6 +419,7 @@ namespace TSFExtended
   %template(LinSol) LinearSolver<double>;
 
 }
+
 
 %inline %{
   /* Read a linear solver from an XML file */
@@ -469,3 +530,101 @@ namespace TSFExtended
     return rtn;
   }
   %}
+
+
+
+
+%inline %{
+  namespace TSFExtended
+  {
+    SolverState<double> 
+    PySundanceLinearSolver_solve(const PySundanceLinearSolver* solver,
+                                 const LinearOperator<double>& op,
+                                 const Vector<double>& rhs,
+                                 Vector<double>& soln)
+    {
+      swig_type_info* opType = SWIG_TypeQuery("TSFExtended::LinearOperator<double>*");
+      TEST_FOR_EXCEPTION(opType==0, runtime_error,
+                         "swig could not find a match for type name "
+                         "[TSFExtended::LinearOperator<double>]");
+
+
+      swig_type_info* vecType = SWIG_TypeQuery("TSFExtended::Vector<double>*");
+      TEST_FOR_EXCEPTION(vecType==0, runtime_error,
+                         "swig could not find a match for type name "
+                         "[TSFExtended::Vector<double>]");
+
+
+      swig_type_info* stateType = SWIG_TypeQuery("TSFExtended::SolverState<double>*");
+      TEST_FOR_EXCEPTION(stateType==0, runtime_error,
+                         "swig could not find a match for type name "
+                         "[TSFExtended::SolverState<double>]");
+
+
+      PyObject* opObj = SWIG_NewPointerObj( (void*) &op, opType, 0);
+      PyObject* rhsObj = SWIG_NewPointerObj( (void*) &rhs, vecType, 0);
+      PyObject* x0Obj = SWIG_NewPointerObj( (void*) &soln, vecType, 0);
+
+      PyObject* result = solver->pySolve(opObj, rhsObj, x0Obj);
+
+      if (0 == result) {
+        PyErr_Print();
+        return SolverState<double>(SolveCrashed, "null result from PySundanceLinearSolver",
+                                   1, 0.0);
+      }
+
+      PyObject* solnObj = 0;
+      PyObject* stateObj = 0 ;
+
+      Vector<double>* x = 0 ;
+      SolverState<double>* state = 0 ;
+
+      int isTuple = PyTuple_Check(result);
+
+      if (isTuple)
+        {
+          int size = PyTuple_Size(result);
+          switch(size)
+            {
+            case 2:
+              stateObj = PyTuple_GetItem(result, 1);
+              TEST_FOR_EXCEPTION(stateObj==0, runtime_error,
+                                 "null solver state in PySundanceLinearSolver_solve()");
+              SWIG_Python_ConvertPtr(stateObj, (void**) &state, stateType,  
+                                     SWIG_POINTER_EXCEPTION | 0);
+            case 1:
+              solnObj = PyTuple_GetItem(result, 0);
+              TEST_FOR_EXCEPTION(solnObj==0, runtime_error,
+                                 "null solution object in PySundanceLinearSolver_solve()");
+              SWIG_Python_ConvertPtr(solnObj, (void**) &x, vecType,  
+                                     SWIG_POINTER_EXCEPTION | 0);
+              break;
+            default:
+              TEST_FOR_EXCEPTION(size < 1 || size > 2, runtime_error,
+                                 "invalid return value size " << size 
+                                 << " in PySundanceLinearSolver_solve()");
+            }
+        }
+      else
+        {
+          SWIG_Python_ConvertPtr(result, (void**) &x, vecType,  
+                                 SWIG_POINTER_EXCEPTION | 0);
+        }
+
+      TEST_FOR_EXCEPTION(x==0, runtime_error, "null return vector in "
+                         " PySundanceLinearSolver_solve()");
+      soln = *x;
+
+      SolverState<double> rtn(SolveConverged, "unknown solve state", 1, 0);
+      if (state!=0) rtn = *state;
+      
+
+      Py_DECREF(result); // All done with returned result object
+
+      return rtn;
+    }
+  }
+  %}
+
+
+

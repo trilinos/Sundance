@@ -12,6 +12,7 @@ class LeftPointPredicate :
   def evalOp(self, pt) :
     return (math.fabs(pt) < 1.0e-10);
 
+
 def main():
   """Poisson example code"""
   vecType = EpetraVectorType()

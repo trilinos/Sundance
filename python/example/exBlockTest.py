@@ -6,8 +6,10 @@ import PySundance
 
 import math
 from PySundance import *
-from blockTriangularSolver import solverParams
+from aztecSolver import solverParams
 
+
+# -------------- set up cell filters ------------------------
 class LeftPointPredicate :
   def evalOp(self, pt) :
     return (math.fabs(pt) < 1.0e-10);
@@ -16,11 +18,47 @@ class RightPointPredicate :
   def evalOp(self, pt) :
     return (math.fabs(pt-1.0) < 1.0e-10);
 
+
+
+# ----------- block triangular solver --------------------
+
+class MyBlockSolver :
+
+  def __init__(self) :
+    self.solver_ = buildSolver(solverParams)
+    
+  def solve(self, A, b, x) :
+
+    A00 = A.getBlock(0,0);
+    A11 = A.getBlock(1,1);
+    A01 = A.getBlock(0,1);
+
+    b0 = b.getBlock(0)
+    b1 = b.getBlock(1)
+
+    x = b.copy()
+    x0 = x.getBlock(0)
+    x1 = x.getBlock(1)
+
+    state = self.solver_.solve(A11, b1, x1)
+
+    c = b0 - A01*x1
+    state = self.solver_.solve(A00, c, x0)
+
+    x.setBlock(0, x0)
+    x.setBlock(1, x1)
+
+    return (x, state)
+
+
+# ------------------------------------------------------------
+
+
 def main():
   """Poisson example code"""
   vecType = EpetraVectorType()
   nProc = getNProc()
-  nx = 128
+  nx = 10
   mesher  = PartitionedLineMesher(0.0, 1.0, nx*nProc);
   mesh = mesher.getMesh();
 
@@ -54,7 +92,7 @@ def main():
   unkBlock = BlockList(Block(u, vecType),  Block(v, vecType))
   prob = LinearProblem(mesh, eqn, bc, varBlock, unkBlock)
 
-  solver = buildSolver(solverParams)
+  solver = MyBlockSolver()
 
   soln = prob.solve(solver)
   

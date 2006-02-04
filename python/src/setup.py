@@ -90,6 +90,7 @@ srcFiles = ["PySundance_wrap.cpp",
             os.path.join(srcdir,"PyTeuchos_Utils.cpp"),
             os.path.join(srcdir,"PySundanceNOXSolverHandle.cpp"),
             os.path.join(srcdir,"PySundanceCallback.cpp"),
+            os.path.join(srcdir,"PySundanceLinearSolver.cpp"),
             os.path.join(srcdir,"PySundanceCellPredicate.cpp")]
 
 # Compiler and linker

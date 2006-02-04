@@ -39,7 +39,8 @@ EXTRA_DIST = PySundance.i setup.py \
 PyTeuchos_Utils.cpp PyTeuchos_Utils.hpp \
 PySundanceNOXSolverHandle.cpp PySundanceNOXSolverHandle.hpp \
 PySundanceCallback.cpp PySundanceCallback.hpp \
-PySundanceCellPredicate.cpp PySundanceCellPredicate.hpp
+PySundanceCellPredicate.cpp PySundanceCellPredicate.hpp \
+PySundanceLinearSolver.cpp PySundanceLinearSolver.hpp
 
 # Default make target
 all-am: build
