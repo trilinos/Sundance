@@ -11,6 +11,14 @@
 #include "TSFEpetraVectorType.hpp"
 #include "TSFLinearOperator.hpp"
 #include "TSFLinearSolver.hpp"
+#include "TSFPreconditionerFactory.hpp"
+#include "TSFPreconditioner.hpp"
+#include "TSFGenericLeftPreconditioner.hpp"
+#include "TSFGenericRightPreconditioner.hpp"
+#include "TSFProductVectorSpace.hpp"
+#include "TSFBlockOperator.hpp"
+#include "TSFGMRESSolver.hpp"
+#include "TSFBICGSTABSolver.hpp"
 #include "TSFNOXSolver.H"
 #include "TSFLinearSolverBuilder.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
@@ -32,6 +40,8 @@
 %rename(LinearSolver) LinSol;
 %rename(NonlinearOperator) NonlinOp;
 %rename(NOXSolver) makeNOXSolver;
+%rename(Preconditioner) Precond;
+%rename(PreconditionerFactory) PrecondFactory;
 
 
 
@@ -205,6 +215,35 @@ namespace TSFExtended
   %template(VecSpace) VectorSpace<double>;
 }
 
+
+%rename(BlockVectorSpace) makeBlockVectorSpace;
+
+%inline %{
+  /* Create block vector space */
+  TSFExtended::VectorSpace<double> 
+    makeBlockVectorSpace(TSFExtended::VectorSpace<double> vs)
+  {
+    return TSFExtended::productSpace(vs);
+  }
+
+  /* Create block vector space */
+  TSFExtended::VectorSpace<double> 
+    makeBlockVectorSpace(TSFExtended::VectorSpace<double> vs1,
+                         TSFExtended::VectorSpace<double> vs2)
+  {
+    return TSFExtended::productSpace(vs1, vs2);
+  }
+
+  /* Create block vector space */
+  TSFExtended::VectorSpace<double> 
+    makeBlockVectorSpace(TSFExtended::VectorSpace<double> vs1,
+                         TSFExtended::VectorSpace<double> vs2,
+                         TSFExtended::VectorSpace<double> vs3)
+  {
+    return TSFExtended::productSpace(vs1, vs2, vs3);
+  }
+
+  %}
 
 
 /* --------- vector type ------------ */
@@ -386,7 +425,32 @@ namespace TSFExtended
 
 }
 
+%rename(BlockOperator) makeBlockOperator;
 
+%inline %{
+  /* Create block operator */
+  TSFExtended::LinearOperator<double> 
+    makeBlockOperator(const TSFExtended::VectorSpace<double>& domain,
+                      const TSFExtended::VectorSpace<double>& range)
+  {
+    return LinearOperator<double>(new TSFExtended::BlockOperator<double>(domain, range));
+  }
+
+  %}
+
+
+
+%rename(IdentityOperator) makeIdentityOperator;
+
+%inline %{
+  /* Create block operator */
+  TSFExtended::LinearOperator<double> 
+    makeIdentityOperator(const TSFExtended::VectorSpace<double>& space)
+  {
+    return LinearOperator<double>(new TSFExtended::IdentityOperator<double>(space));
+  }
+
+  %}
 
 
 /* --------- linear solver ------------ */
@@ -418,8 +482,54 @@ namespace TSFExtended
 
   %template(LinSol) LinearSolver<double>;
 
+
+  %extend LinearOperator<Scalar> 
+  {
+    LinearOperator<Scalar> inverse(const LinearSolver<Scalar>& solver) const
+    {
+      return LinearOperator<Scalar>(new InverseOperator<double>(*self, solver));
+    }
+  }
+
 }
 
+
+
+%rename(BICGSTABSolver) makeBICGSTABSolver;
+%rename(GMRESSolver) makeGMRESSolver;
+
+%inline %{
+  TSFExtended::LinearSolver<double> makeGMRESSolver(const Teuchos::ParameterList& params)
+  {
+    return LinearSolver<double>(new TSFExtended::GMRESSolver<double>(params));
+  }
+  %}
+
+%inline %{
+  TSFExtended::LinearSolver<double> makeBICGSTABSolver(const Teuchos::ParameterList& params)
+  {
+    return LinearSolver<double>(new TSFExtended::BICGSTABSolver<double>(params));
+  }
+  %}
+
+%inline %{
+  TSFExtended::LinearSolver<double> makeGMRESSolver(const Teuchos::ParameterList& params,
+                                                    const TSFExtended::PreconditionerFactory<double>& precond)
+  {
+    return LinearSolver<double>(new TSFExtended::GMRESSolver<double>(params, precond));
+  }
+  %}
+
+%inline %{
+  TSFExtended::LinearSolver<double> makeBICGSTABSolver(const Teuchos::ParameterList& params,
+                                                    const TSFExtended::PreconditionerFactory<double>& precond)
+  {
+    return LinearSolver<double>(new TSFExtended::BICGSTABSolver<double>(params, precond));
+  }
+  %}
+
+
+ 
 
 %inline %{
   /* Read a linear solver from an XML file */
@@ -451,6 +561,119 @@ namespace TSFExtended
     return solver;
   }
   %}
+
+
+/* --------- preconditioner ------------ */
+namespace TSFExtended
+{
+  template <class Scalar>
+  class Preconditioner
+  {
+  public:
+    Preconditioner();
+    ~Preconditioner();
+
+    
+    
+    /** Left preconditioner */
+    LinearOperator<Scalar> left() const ;
+    
+    /** Right preconditioner */
+    LinearOperator<Scalar> right() const ;
+    
+    /** return true if this preconditioner has both left and
+     * right components. */
+    bool isTwoSided() const ;
+    
+    /** return true if this preconditioner has a nontrivial left component */
+    bool hasLeft() const ;
+    
+    /** return true if this preconditioner has
+     * a nontrivial right component */
+    bool hasRight() const ;
+    
+    /** return true if this preconditioner has neither left nor
+     * right operators defined */
+    bool isIdentity() const ;
+
+    %extend
+    {
+      std::string __str__() 
+      {
+        std::string rtn; 
+        std::stringstream os;
+        self->print(os);
+        rtn = os.str();
+        return rtn;
+      }
+    }
+  };
+
+  %template(Precond) Preconditioner<double>;
+}
+
+
+/* --------- preconditioner factory ------------ */
+namespace TSFExtended
+{
+  template <class Scalar>
+  class PreconditionerFactory
+  {
+  public:
+    PreconditionerFactory();
+    ~PreconditionerFactory();
+
+    Preconditioner<Scalar> createPreconditioner(const LinearOperator<Scalar>& A) const ;
+
+    %extend
+    {
+      std::string __str__() 
+      {
+        std::string rtn; 
+        std::stringstream os;
+        self->print(os);
+        rtn = os.str();
+        return rtn;
+      }
+    }
+  };
+
+  %template(PrecondFactory) PreconditionerFactory<double>;
+}
+
+
+%rename(ILUKPreconditionerFactory) makeILUKPreconditionerFactory;
+%inline %{
+  /* Create ILUK preconditioner factory  */
+  TSFExtended::PreconditionerFactory<double> 
+    makeILUKPreconditionerFactory(const Teuchos::ParameterList& params)
+  {
+    return TSFExtended::PreconditionerFactory<double>(new TSFExtended::ILUKPreconditionerFactory<double>(params));
+  }
+  %}
+
+%rename(GenericLeftPreconditioner) makeGenericLeftPreconditioner;
+
+%inline %{
+  /* Create generic left preconditioner  */
+  TSFExtended::Preconditioner<double> 
+    makeGenericLeftPreconditioner(const TSFExtended::LinearOperator<double>& left)
+  {
+    return TSFExtended::Preconditioner<double>(new TSFExtended::GenericLeftPreconditioner<double>(left));
+  }
+  %}
+
+%rename(GenericRightPreconditioner) makeGenericRightPreconditioner;
+
+%inline %{
+  /* Create generic left preconditioner  */
+  TSFExtended::Preconditioner<double> 
+    makeGenericRightPreconditioner(const TSFExtended::LinearOperator<double>& op)
+  {
+    return TSFExtended::Preconditioner<double>(new TSFExtended::GenericRightPreconditioner<double>(op));
+  }
+  %}
+
 
 
 

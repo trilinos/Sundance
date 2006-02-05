@@ -18,6 +18,7 @@
 %include "std_vector.i"
 %include "exception.i"
 
+Teuchos::ParameterList dict2ParameterList(PyObject* obj);
 
 namespace Teuchos
 {
@@ -26,6 +27,16 @@ namespace Teuchos
   public:
     ParameterList();
     ~ParameterList();
+
+    %extend
+    {
+      ParameterList(PyObject* dict)
+        {
+          ParameterList* p = new ParameterList(dict2ParameterList(dict));
+          return p;
+        }
+    }
+
 
     bool isParameter(const std::string& name) const ;
 
@@ -189,5 +200,6 @@ namespace Teuchos
 }
 
 
-Teuchos::ParameterList dict2ParameterList(PyObject* obj);
+
+
 

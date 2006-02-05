@@ -64,9 +64,7 @@ namespace SundanceStdFwk
 
 
 %rename(Lagrange) makeLagrange;
-#ifdef HAVE_FIAT
 %rename(FIATLagrange) makeFIATLagrange;
-#endif
 
 %inline %{
   /* Create a Lagrange basis function */
@@ -74,13 +72,18 @@ namespace SundanceStdFwk
   {
     return new SundanceStdFwk::Lagrange(order);
   }
-#ifdef HAVE_FIAT
   /* Create a Lagrange basis function */
   SundanceStdFwk::BasisFamily makeFIATLagrange(int order)
   {
+    #ifdef HAVE_FIAT
     return new SundanceStdFwk::FIATLagrange(order);
+    #else
+    TEST_FOR_EXCEPTION(true, RuntimeError, "FIATLagrange called, but "
+                       "FIAT not enabled. Try reconfiguring with "
+                       "--enable-fiat");
+    return BasisFamily(); // -Wall
+    #endif
   }
-#endif
 
   /* */
   SundanceStdFwk::BasisArray 

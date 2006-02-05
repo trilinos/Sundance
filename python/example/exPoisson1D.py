@@ -12,6 +12,16 @@ class LeftPointPredicate :
   def evalOp(self, pt) :
     return (math.fabs(pt) < 1.0e-10);
 
+tsfSolverParams = ParameterList({
+    "Max Iterations" : 1000,
+    "Tolerance" : 1.0e-12,
+    "Restart" : 1000,
+    "Verbosity" : 0
+    })
+
+ilukParams = ParameterList({
+  "Graph Fill" : 1
+    })
 
 def main():
   """Poisson example code"""
@@ -19,7 +29,7 @@ def main():
   nProc = getNProc()
   mesher  = PartitionedLineMesher(0.0, 1.0, 10*nProc);
   mesh = mesher.getMesh();
-  basis = Lagrange(2)
+  basis = FIATLagrange(2)
 
   u = UnknownFunction(basis, "u");
   v = TestFunction(basis, "v");
@@ -40,7 +50,8 @@ def main():
   
   prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
-  solver = buildSolver(solverParams)
+  precond = ILUKPreconditionerFactory(ilukParams)
+  solver = GMRESSolver(tsfSolverParams, precond)
 
   soln = prob.solve(solver)
 

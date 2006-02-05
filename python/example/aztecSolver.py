@@ -15,4 +15,4 @@ aztecSolverDict = {"Linear Solver" :
                 }
                }
 
-solverParams = dict2ParameterList(aztecSolverDict);
+solverParams = ParameterList(aztecSolverDict);
