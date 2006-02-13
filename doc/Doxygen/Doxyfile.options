@@ -1,8 +1,14 @@
 #
 # Include the global look and feel options
 #
-#@INCLUDE_PATH          = $(TRILINOS_HOME)/packages
-#@INCLUDE               = common/Doxyfile
+@INCLUDE_PATH          = $(TRILINOS_HOME)/packages
+@INCLUDE               = common/Doxyfile
+#
+# Set the paths in common/Doxyfile currectly!
+#
+HTML_HEADER            = $(TRILINOS_HOME)/packages/common/header.html
+HTML_FOOTER            = $(TRILINOS_HOME)/packages/common/footer.html
+HTML_STYLESHEET        = $(TRILINOS_HOME)/packages/common/styles.css
 #
 # Package options
 #
