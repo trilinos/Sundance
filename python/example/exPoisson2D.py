@@ -51,10 +51,10 @@ def main():
   
   interior = MaximalCellFilter()
   edges = DimensionalCellFilter(1)
-  left = edges.subset(PositionalCellPredicate(LeftPointPredicate()))
-  right = edges.subset(PositionalCellPredicate(RightPointPredicate()))
-  top = edges.subset(PositionalCellPredicate(TopPointPredicate()))
-  bottom = edges.subset(PositionalCellPredicate(BottomPointPredicate()))
+  left = edges.subset(LeftPointPredicate())
+  right = edges.subset(RightPointPredicate())
+  top = edges.subset(TopPointPredicate())
+  bottom = edges.subset(BottomPointPredicate())
 
   one = 1.0
   eqn = Integral(interior, (grad*v)*(grad*u) + one*v, quad2)\

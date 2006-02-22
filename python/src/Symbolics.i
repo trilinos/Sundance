@@ -242,6 +242,22 @@ namespace SundanceCore
   }
   %}
 
+%inline %{
+  /* Create an unknown function */
+  SundanceCore::Expr makeUnknownFunction(const SundanceStdFwk::BasisFamily& b)
+  {
+    return new SundanceStdFwk::UnknownFunction(b);
+  }
+  %}
+
+%inline %{
+  /* Create a test function */
+  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b)
+  {
+    return new SundanceStdFwk::TestFunction(b);
+  }
+  %}
+
 
 %inline %{
   /* Create a coordinate expression */

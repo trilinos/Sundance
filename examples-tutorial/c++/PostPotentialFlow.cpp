@@ -92,7 +92,7 @@ int main(int argc, void** argv)
 
 
       /* Read the parameters for the linear solver from an XML file */
-      ParameterXMLFileReader reader("../../../data/examples-tutorial/bicgstab.xml");
+      ParameterXMLFileReader reader("../../../examples-tutorial/data/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
 
       LinearSolver<double> linSolver 

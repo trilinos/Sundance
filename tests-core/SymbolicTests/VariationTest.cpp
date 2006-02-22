@@ -284,8 +284,8 @@ int main(int argc, void** argv)
 
       int maxDiffOrder = 2;
 
-      verbosity<SymbolicTransformation>() = VerbExtreme;
-      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<SymbolicTransformation>() = VerbSilent;
+      verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;
       Expr::showAllParens() = true;
@@ -295,7 +295,7 @@ int main(int argc, void** argv)
 
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
-      Expr grad = List(dx/*, dy*/);
+      Expr grad = List(dx, dy);
 
 			Expr u = new UnknownFunctionStub("u");
 			Expr T = new UnknownFunctionStub("T");
@@ -314,19 +314,18 @@ int main(int argc, void** argv)
       Expr alpha0 = new DiscreteFunctionStub("alpha0");
 
       Array<Expr> tests;
-      double h = 1.0;
-      Expr rho = /*0.5*(1.0 + */tanh(alpha/*/h*/)/*)*/;
+      double h = 0.1;
+      Expr rho = 0.5*(1.0 + tanh(alpha/h));
 
 
-      tests.append(0.5*(u-x)*(u-x) + 0.5*alpha*alpha 
-                   + (grad*lambda_u)*(grad*u) + alpha*lambda_u);
-
+      tests.append(0.5*(u-x)*(u-x) + sqrt(1.0e-10 + (grad*rho)*(grad*rho))
+                   + (grad*lambda_u)*(grad*u) + alpha*lambda_u );
 
       cerr << "STATE EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(0)));
+                              rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
                    lambda_u,
@@ -342,7 +341,7 @@ int main(int argc, void** argv)
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(0)));
+                              rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
                    u,
@@ -360,7 +359,7 @@ int main(int argc, void** argv)
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(0)));
+                              rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, 1, EvalContext::nextID());
           testExpr(tests[i], 
                    alpha, 
@@ -374,7 +373,7 @@ int main(int argc, void** argv)
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(0)));
+                              rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, 0, EvalContext::nextID());
           testExpr(tests[i], 
                    List(u, lambda_u, alpha),

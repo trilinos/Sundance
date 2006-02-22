@@ -42,8 +42,8 @@ def main():
   
   interior = MaximalCellFilter()
   points = DimensionalCellFilter(0)
-  leftPt = points.subset(PositionalCellPredicate(LeftPointPredicate()))
-  rightPt = points.subset(PositionalCellPredicate(RightPointPredicate()))
+  leftPt = points.subset(LeftPointPredicate())
+  rightPt = points.subset(RightPointPredicate())
   
   bc = EssentialBC(leftPt, v*(u-1.0), quad) \
        + EssentialBC(rightPt, v*(u-2.0), quad)

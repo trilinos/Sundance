@@ -72,15 +72,11 @@ def main():
 
   quad = GaussianQuadrature(8)
   
-  lpp = LeftPointPredicate()
-  rpp = RightPointPredicate()
   
   interior = MaximalCellFilter()
-  leftPtTest = PositionalCellPredicate(lpp)
-  rightPtTest = PositionalCellPredicate(rpp)
   points = DimensionalCellFilter(0)
-  leftPt = points.subset(leftPtTest)
-  rightPt = points.subset(rightPtTest)
+  leftPt = points.subset(LeftPointPredicate())
+  rightPt = points.subset(RightPointPredicate())
   
   eqn = Integral(interior, \
                  (dx*du)*(dx*u) + du*v + (dx*dv)*(dx*v) + x*dv, \

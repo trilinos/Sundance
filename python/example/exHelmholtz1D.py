@@ -33,12 +33,9 @@ def main():
   quad = GaussianQuadrature(2)
   quad8 = GaussianQuadrature(8)
   
-  lpp = LeftPointPredicate()
-  
   interior = MaximalCellFilter()
-  leftPtTest = PositionalCellPredicate(lpp)
   points = DimensionalCellFilter(0)
-  leftPt = points.subset(leftPtTest)
+  leftPt = points.subset(LeftPointPredicate())
   
   bc = EssentialBC(leftPt, v*(u-cos(x)), quad)
   eqn = Integral(interior, (dx*v)*(dx*u) - v*u, quad)

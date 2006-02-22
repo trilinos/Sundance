@@ -165,7 +165,14 @@ Expr FunctionalEvaluator::evalGradient(double& value) const
       rtn[i] = new DiscreteFunction(*(assembler_->rowSpace()[i]),
                                     g.getBlock(i), name);
     }
-  return new ListExpr(rtn);
+  if ((int)rtn.size()==1)
+    {
+      return rtn[0];
+    }
+  else
+    {
+      return new ListExpr(rtn);
+    }
 }
 
 

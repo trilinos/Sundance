@@ -206,15 +206,22 @@ string Sundance::searchForFile(const string& name)
 string Sundance::getPathStr() 
 {
   char* pathEnvStr = getenv("SUNDANCE_PATH");
-
+  char* pyPathEnvStr = getenv("PYTHONPATH");
+  string path;
+  
   if (pathEnvStr == NULL) 
     {
-      return defaultSundancePath();
+      path = defaultSundancePath();
     }
   else
     {
-      return pathEnvStr;
+      path = pathEnvStr;
     }
+  if (pyPathEnvStr!=NULL)
+    {
+      path = string(pyPathEnvStr) + ":" + path; 
+    }
+  return path;
 }
 
 Array<string> Sundance::parsePathStr() 

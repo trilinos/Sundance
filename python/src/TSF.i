@@ -732,8 +732,10 @@ namespace TSFExtended
 
 
 
+
+
 %inline %{
-  /* Read a linear solver from an XML file */
+  /* Create a nonlinear solver from a parameter list */
   TSFExtended::
     NOXSolverHandle makeNOXSolver(const Teuchos::ParameterList& params,
                                   const TSFExtended::NonlinearOperator<double>& F)
@@ -751,6 +753,18 @@ namespace TSFExtended
                   << e.what() << " in makeNOXSolver()" << std::endl;
       }
     return rtn;
+  }
+  %}
+
+
+%inline %{
+  /* Create a nonlinear solver from a Python dictionary */
+  TSFExtended::
+    NOXSolverHandle makeNOXSolver(PyObject* dict,
+                                  const TSFExtended::NonlinearOperator<double>& F)
+  {
+    Teuchos::ParameterList params = dict2ParameterList(dict);
+    return makeNOXSolver(params, F);
   }
   %}
 

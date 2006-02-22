@@ -74,11 +74,10 @@ namespace SundanceStdFwk
     ~CellFilter();
 
     
-    CellFilter labeledSubset(int label) const ;
-    CellFilter subset(const CellPredicate& predicate) const ;
-
     Internal::CellSet getCells(const SundanceStdMesh::Mesh& mesh) const ;
     int dimension(const SundanceStdMesh::Mesh& mesh) const ;
+
+    CellFilter labeledSubset(int label) const ;
   };
 
   %extend CellFilter
@@ -91,6 +90,14 @@ namespace SundanceStdFwk
       self->print(os);
       rtn = os.str();
       return rtn;
+    }
+
+    CellFilter subset(PyObject* functor) const
+    {
+      Teuchos::RefCountPtr<SundanceStdFwk::CellPredicateFunctorBase> f 
+        = Teuchos::rcp(new SundanceStdFwk::PySundanceCellPredicate(functor));
+      CellPredicate p = new SundanceStdFwk::PositionalCellPredicate(f);
+      return self->subset(p);
     }
   }
 
