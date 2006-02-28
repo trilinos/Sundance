@@ -31,12 +31,12 @@
 # @HEADER
 
 ###--with-fiat=$HOME/Projects/FIAT/BUILD \
+###--with-sundials=$HOME/Software/Math/sundials/LINUX-DEBUG \
 
 BUILD_DIR=`pwd`
 
 ../configure CXXFLAGS="-g -Wall" --enable-mpi --with-mpi-compilers \
 --with-trilinos=$HOME/Software/Math/trilinos-6.0.8/LINUX-DEBUG \
 --with-install="/usr/bin/install -c -p" \
---with-sundials=$HOME/Software/Math/sundials/LINUX-DEBUG \
 --prefix=$BUILD_DIR
 
