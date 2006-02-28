@@ -42,10 +42,10 @@ namespace SundanceUtils
   {
   public:
     /** */
-    static string date() {static string rtn = "19 OCt 2005"; return rtn;}
+    static string date() {static string rtn = "27 Feb 2006"; return rtn;}
 
     /** */
-    static string number() {static string rtn = "2.1.1"; return rtn;}
+    static string number() {static string rtn = "2.1.2"; return rtn;}
   };
 } 
 

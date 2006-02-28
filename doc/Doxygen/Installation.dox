@@ -103,7 +103,20 @@ to work with Sundance. Information on which Trilinos packages should be enabled
 plus sample configuration scripts are found on this page: 
 \ref conf_trilinos_page .
 
+\subsubsection conf_trilinos3pl Optional third-party libraries for Trilinos
 
+Certain Trilinos packages can use third-party libraries such as UMFPACK and SuperLU.
+Currently, the only one used by Sundance is 
+<A HREF="http://www.cise.ufl.edu/research/sparse/umfpack/"> UMFPACK. </A> 
+To enable UMFPACK, put
+<pre>
+--enable-amesos-umfpack
+</pre>
+in the Trilinos configuration command line. UMFPACK is enabled by default, so that you
+must either obtain and build it, or disable it with
+<pre>
+--disable-amesos-umfpack
+</pre>
 
 
 
@@ -113,7 +126,7 @@ Here we show an example of installing Trilinos. We will configure it
 for use with Sundance with settings appropriate to debugging.
 
 Trilinos is unpacked into a directory tagged by the minor version number, 
-for example, <tt>trilinos-6.0.4</tt>. The minor version number 6.0.4 appears
+for example, <tt>trilinos-6.0.8</tt>. The minor version number 6.0.8 appears
 in all examples below; it should of course be changed to the minor version
 number of your Trilinos installation.
 
@@ -121,28 +134,29 @@ It is assumed that you have installed BLAS, LAPACK, and any optional
 libraries such as MPI.
 It is assumed you have downloaded Trilinos and unpacked the source into
 some directory; in this example, we will work in a Trilinos directory
-<tt>$HOME/Software/Math/trilinos-6.0.4.</tt> As is explained in the Trilinos
+<tt>$HOME/Software/Math/trilinos-6.0.8.</tt> As is explained in the Trilinos
 installation guide, Trilinos should always be configured and built in a 
 build directory, <b>not</b> in the Trilinos source directory. In this
 example, we work in a build directory 
-<tt>$HOME/Software/Math/trilinos-6.0.4/LINUX-OPT.</tt>
+<tt>$HOME/Software/Math/trilinos-6.0.8/LINUX-OPT.</tt>
 
 The installation process is listed below for a case where you are using one
 of the \ref canned_scripts on the \ref conf_trilinos_page .
 \code
-<kevin@rusalka:Software/Math/trilinos-6.0.4> mkdir LINUX-OPT 
-<kevin@rusalka:Software/Math/trilinos-6.0.4> cd LINUX-OPT 
-<kevin@rusalka:Software/Math/trilinos-6.0.4/LINUX-OPT> ./sundance-linux-mpi-opt
-<kevin@rusalka:Software/Math/trilinos-6.0.4/LINUX-OPT> make
-<kevin@rusalka:Software/Math/trilinos-6.0.4/LINUX-OPT> make install
+<kevin@rusalka:Software/Math/trilinos-6.0.8> mkdir LINUX-OPT 
+<kevin@rusalka:Software/Math/trilinos-6.0.8> cd LINUX-OPT 
+<kevin@rusalka:Software/Math/trilinos-6.0.8/LINUX-OPT> ./sundance-linux-mpi-opt
+<kevin@rusalka:Software/Math/trilinos-6.0.8/LINUX-OPT> make
+<kevin@rusalka:Software/Math/trilinos-6.0.8/LINUX-OPT> make install
 \endcode
 
 The final step puts libraries and headers into the installation directory 
 specified in the configuration script; the sample script used here
 installs into the build directory. Thus in this example, headers and
 libraries are found in the <tt>include</tt> and <tt>lib</tt> subdirectories
-of <tt>HOME/Software/Math/trilinos-6.0.4/LINUX-OPT.</tt> The installation
+of <tt>HOME/Software/Math/trilinos-6.0.8/LINUX-OPT.</tt> The installation
 directory can be changed with the <tt>--prefix</tt> configure option. 
+
 
 \subsection conf_tri_sun Note on Concurrent Development of Trilinos and Sundance
 
@@ -169,7 +183,7 @@ and <tt>make</tt> must
 find out where to find headers and libraries for Trilinos. This is
 done through the <tt>--with-trilinos</tt> option to <tt>configure.</tt> With the 
 example Trilinos installation above, you would add 
-<tt>--with-trilinos=+\$\verb+HOME/Software/Math/trilinos-6.0.4/LINUX-OPT</tt>
+<tt>--with-trilinos=+\$\verb+HOME/Software/Math/trilinos-6.0.8/LINUX-OPT</tt>
 to the <tt>configure</tt>
 command line. If you have installed
 Trilinos somewhere else, you should change your 
@@ -181,12 +195,12 @@ subdirectory of Sundance.
 <li> <tt>build-scripts/linux-mpi-debug</tt> configures parallel Sundance
 on Linux with debugging flags set and array bounds checking. This
 script assumes that you have installed Trilinos in
-<tt>HOME/Software/Math/trilinos-6.0.4/LINUX-DEBUG.</tt>
+<tt>HOME/Software/Math/trilinos-6.0.8/LINUX-DEBUG.</tt>
 <li> <tt>build-scripts/linux-mpi-opt</tt> configures parallel Sundance
 on Linux with compile-time optimization and no debugging information
 or array bounds checking. This
 script assumes that you have installed Trilinos in
-<tt>HOME/Software/Math/trilinos-6.0.4/LINUX-OPT.</tt>
+<tt>HOME/Software/Math/trilinos-6.0.8/LINUX-OPT.</tt>
 </ul>
 These scripts can be used as a starting 
 point for other modes of building Sundance. 
