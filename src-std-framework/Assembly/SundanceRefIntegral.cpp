@@ -64,9 +64,10 @@ static Time& refIntegrationTimer()
 
 
 RefIntegral::RefIntegral(int spatialDim,
-                                 int dim, 
+                         const CellType& maxCellType,
+                         int dim, 
                          const CellType& cellType)
-  : ElementIntegral(spatialDim, dim, cellType), W_()
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType), W_()
 {
   Tabs tab0;
   verbosity() = classVerbosity();
@@ -76,12 +77,14 @@ RefIntegral::RefIntegral(int spatialDim,
 }
 
 RefIntegral::RefIntegral(int spatialDim,
-                                 int dim, 
+                         const CellType& maxCellType,
+                         int dim, 
                          const CellType& cellType,
                          const BasisFamily& testBasis,
                          int alpha,
                          int testDerivOrder)
-  : ElementIntegral(spatialDim, dim, cellType, testBasis, alpha, testDerivOrder), W_()
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
+                    testBasis, alpha, testDerivOrder), W_()
 {
   Tabs tab0;
   verbosity() = classVerbosity();
@@ -100,52 +103,62 @@ RefIntegral::RefIntegral(int spatialDim,
                      InternalError,
                      "Test function derivative order=" << testDerivOrder
                      << " must be 0 or 1");
+
+  W_.resize(nFacetCases());
+
+  CellType evalCellType = cellType;
+  if (nFacetCases() > 1) evalCellType = maxCellType;
   
-  W_.resize(nRefDerivTest() * nNodesTest());
-  for (unsigned int i=0; i<W_.size(); i++) W_[i]=0.0;
+  for (int fc=0; fc<nFacetCases(); fc++)
+    {
+      W_[fc].resize(nRefDerivTest() * nNodesTest());
+      for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
-  Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
+      Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
   
-  QuadratureFamily quad = new GaussianQuadrature(max(1, testBasis.order()));
-  Array<Point> quadPts;
-  Array<double> quadWeights;
-  quad.getPoints(cellType, quadPts, quadWeights);
-  int nQuad = quadPts.size();
+      QuadratureFamily quad = new GaussianQuadrature(max(1, testBasis.order()));
+      Array<Point> quadPts;
+      Array<double> quadWeights;
+      if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
+      else quad.getFacetPoints(maxCellType, dim, fc, quadPts, quadWeights);
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad pts" << quadPts);
+      int nQuad = quadPts.size();
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad weights" << quadWeights);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad pts" << quadPts);
 
-  for (int r=0; r<nRefDerivTest(); r++)
-    {
-      MultiIndex mi;
-      if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
-                               testBasisVals[r]);
-    }
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad weights" << quadWeights);
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "basis values" << testBasisVals);
-
-
-  for (int q=0; q<nQuad; q++)
-    {
-      for (int t=0; t<nRefDerivTest(); t++)
+      for (int r=0; r<nRefDerivTest(); r++)
         {
-          for (int nt=0; nt<nNodesTest(); nt++)
-            {
-              value(t, nt) 
-                += chop(quadWeights[q] * testBasisVals[t][q][nt]) ;
-            }
+          MultiIndex mi;
+          if (testDerivOrder==1) mi[r] = 1;
+          testBasis.ptr()->refEval(spatialDim, evalCellType, quadPts, mi, 
+                                   testBasisVals[r]);
         }
-    }    
 
-  for (unsigned int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "basis values" << testBasisVals);
 
-  addFlops(3*nQuad*nRefDerivTest()*nNodesTest() + W_.size());
 
+      for (int q=0; q<nQuad; q++)
+        {
+          for (int t=0; t<nRefDerivTest(); t++)
+            {
+              for (int nt=0; nt<nNodesTest(); nt++)
+                {
+                  value(fc, t, nt) 
+                    += chop(quadWeights[q] * testBasisVals[t][q][nt]) ;
+                }
+            }
+        }    
+
+      for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+
+      addFlops(3*nQuad*nRefDerivTest()*nNodesTest() + W_[fc].size());
+
+    }
   if (verbosity() > VerbMedium)
     {
       print(cerr);
@@ -156,7 +169,8 @@ RefIntegral::RefIntegral(int spatialDim,
 
 
 RefIntegral::RefIntegral(int spatialDim,
-                                 int dim,
+                         const CellType& maxCellType,
+                         int dim,
                          const CellType& cellType,
                          const BasisFamily& testBasis,
                          int alpha,
@@ -164,7 +178,7 @@ RefIntegral::RefIntegral(int spatialDim,
                          const BasisFamily& unkBasis,
                          int beta,
                          int unkDerivOrder)
-  : ElementIntegral(spatialDim, dim, cellType, 
+  : ElementIntegral(spatialDim, maxCellType,  dim, cellType,
                     testBasis, alpha, testDerivOrder, 
                     unkBasis, beta, unkDerivOrder), W_()
 
@@ -193,70 +207,78 @@ RefIntegral::RefIntegral(int spatialDim,
                      "Unknown function derivative order=" << unkDerivOrder
                      << " must be 0 or 1");
 
-  
-  W_.resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
-  for (unsigned int i=0; i<W_.size(); i++) W_[i]=0.0;
+  W_.resize(nFacetCases());
 
-  Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
-  Array<Array<Array<double> > > unkBasisVals(nRefDerivUnk());
+  CellType evalCellType = cellType;
+  if (nFacetCases() > 1) evalCellType = maxCellType;
+
+  for (int fc=0; fc<nFacetCases(); fc++)
+    {
+      W_[fc].resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
+      for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
+
+      Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
+      Array<Array<Array<double> > > unkBasisVals(nRefDerivUnk());
         
-  QuadratureFamily quad 
-    = new GaussianQuadrature(max(testBasis.order() + unkBasis.order(), 1));
-  Array<Point> quadPts;
-  Array<double> quadWeights;
-  quad.getPoints(cellType, quadPts, quadWeights);
-  int nQuad = quadPts.size();
+      QuadratureFamily quad 
+        = new GaussianQuadrature(max(testBasis.order() + unkBasis.order(), 1));
+      Array<Point> quadPts;
+      Array<double> quadWeights;
+      if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
+      else quad.getFacetPoints(maxCellType, dim, fc, quadPts, quadWeights);
+      int nQuad = quadPts.size();
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad pts" << quadPts);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad pts" << quadPts);
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad weights" << quadWeights);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad weights" << quadWeights);
 
-  for (int r=0; r<nRefDerivTest(); r++)
-    {
-      MultiIndex mi;
-      if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
-                               testBasisVals[r]);
-    }
-
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "test basis values" << testBasisVals);
-
-  for (int r=0; r<nRefDerivUnk(); r++)
-    {
-      MultiIndex mi;
-      if (unkDerivOrder==1) mi[r] = 1;
-      unkBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, unkBasisVals[r]);
-    }
-
-
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "unk basis values" << unkBasisVals);
-
-  for (int q=0; q<nQuad; q++)
-    {
-      for (int t=0; t<nRefDerivTest(); t++)
+      for (int r=0; r<nRefDerivTest(); r++)
         {
-          for (int nt=0; nt<nNodesTest(); nt++)
+          MultiIndex mi;
+          if (testDerivOrder==1) mi[r] = 1;
+          testBasis.ptr()->refEval(spatialDim, evalCellType, quadPts, mi, 
+                                   testBasisVals[r]);
+        }
+
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "test basis values" << testBasisVals);
+
+      for (int r=0; r<nRefDerivUnk(); r++)
+        {
+          MultiIndex mi;
+          if (unkDerivOrder==1) mi[r] = 1;
+          unkBasis.ptr()->refEval(spatialDim, evalCellType, 
+                                  quadPts, mi, unkBasisVals[r]);
+        }
+
+
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "unk basis values" << unkBasisVals);
+
+      for (int q=0; q<nQuad; q++)
+        {
+          for (int t=0; t<nRefDerivTest(); t++)
             {
-              for (int u=0; u<nRefDerivUnk(); u++)
+              for (int nt=0; nt<nNodesTest(); nt++)
                 {
-                  for (int nu=0; nu<nNodesUnk(); nu++)
+                  for (int u=0; u<nRefDerivUnk(); u++)
                     {
-                      value(t, nt, u, nu) 
-                        += chop(quadWeights[q] * testBasisVals[t][q][nt] 
-                                * unkBasisVals[u][q][nu]);
+                      for (int nu=0; nu<nNodesUnk(); nu++)
+                        {
+                          value(fc, t, nt, u, nu) 
+                            += chop(quadWeights[q] * testBasisVals[t][q][nt] 
+                                    * unkBasisVals[u][q][nu]);
+                        }
                     }
                 }
             }
         }
+      addFlops(4*nQuad*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
+               + W_[fc].size());
+      for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
     }
-  addFlops(4*nQuad*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
-           + W_.size());
-  for (unsigned int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
-
   if (verbosity() > VerbMedium)
     {
       print(cerr);
@@ -267,61 +289,86 @@ RefIntegral::RefIntegral(int spatialDim,
 
 void RefIntegral::print(ostream& os) const 
 {
-  if (order()==1)
+  for (int fc=0; fc<nFacetCases(); fc++)
     {
-      Tabs tab1;
-      os << tab1 << "reference one-form values" << endl;
-      if (testDerivOrder()==0)
+      if (order()==1)
         {
-          Tabs tab2;
-          os << tab2 << W_ << endl;
-        }
-      else
-        {
-          Tabs tab2;
-          for (int r=0; r<dim(); r++)
+          Tabs tab1;
+          os << tab1 << "reference one-form values" << endl;
+          if (testDerivOrder()==0)
             {
-              os << tab2 << "dir=" << r << " {";
-              for (int n=0; n<nNodes(); n++) 
+              Tabs tab2;
+              os << tab2 << W_[fc] << endl;
+            }
+          else
+            {
+              Tabs tab2;
+              for (int r=0; r<dim(); r++)
                 {
-                  if (n != 0) os << ", ";
-                  os << value(r, n);
+                  os << tab2 << "dir=" << r << " {";
+                  for (int n=0; n<nNodes(); n++) 
+                    {
+                      if (n != 0) os << ", ";
+                      os << value(fc, r, n);
+                    }
+                  os << "}" << endl;
+                }
+            }
+          os << tab1 << endl << tab1 << endl;
+        }
+      else if (order()==2)
+        {
+          Tabs tab1;
+          os << tab1 << "reference two-form values" << endl;
+          if (testDerivOrder()==0 && unkDerivOrder()==0)
+            {
+              Tabs tab2;
+              os << tab2 << "{";
+              for (int nt=0; nt<nNodesTest(); nt++) 
+                {
+                  if (nt!=0) os << ", ";
+                  os << "{";
+                  for (int nu=0; nu<nNodesUnk(); nu++)
+                    {
+                      if (nu!=0) os << ", ";
+                      os << value(fc, 0, nt, 0, nu);
+                    }
+                  os << "}";
                 }
               os << "}" << endl;
             }
-        }
-      os << tab1 << endl << tab1 << endl;
-    }
-  else if (order()==2)
-    {
-      Tabs tab1;
-      os << tab1 << "reference two-form values" << endl;
-      if (testDerivOrder()==0 && unkDerivOrder()==0)
-        {
-          Tabs tab2;
-          os << tab2 << "{";
-          for (int nt=0; nt<nNodesTest(); nt++) 
+          else if (testDerivOrder()==1 && unkDerivOrder()==1)
             {
-              if (nt!=0) os << ", ";
-              os << "{";
-              for (int nu=0; nu<nNodesUnk(); nu++)
+              Tabs tab2;
+              for (int t=0; t<dim(); t++)
                 {
-                  if (nu!=0) os << ", ";
-                  os << value(0, nt, 0, nu);
+                  for (int u=0; u<dim(); u++)
+                    {
+                      os << tab2 << "test dir=" << t 
+                         << ", unk dir=" << u << endl;
+                      Tabs tab3;
+                      os << tab3 << "{";
+                      for (int nt=0; nt<nNodesTest(); nt++) 
+                        {
+                          if (nt!=0) os << ", ";
+                          os << "{";
+                          for (int nu=0; nu<nNodesUnk(); nu++)
+                            {
+                              if (nu!=0) os << ", ";
+                              os << value(fc, t, nt, u, nu);
+                            }
+                          os << "}";
+                        }
+                      os << "}" << endl;
+                    }
                 }
-              os << "}";
             }
-          os << "}" << endl;
-        }
-      else if (testDerivOrder()==1 && unkDerivOrder()==1)
-        {
-          Tabs tab2;
-          for (int t=0; t<dim(); t++)
+          else if (testDerivOrder()==1 && unkDerivOrder()==0)
             {
-              for (int u=0; u<dim(); u++)
+              Tabs tab2;
+              for (int t=0; t<dim(); t++)
                 {
-                  os << tab2 << "test dir=" << t 
-                     << ", unk dir=" << u << endl;
+                  os << tab2 << "test dir=" << t << endl;
                   Tabs tab3;
                   os << tab3 << "{";
                   for (int nt=0; nt<nNodesTest(); nt++) 
@@ -331,65 +378,43 @@ void RefIntegral::print(ostream& os) const
                       for (int nu=0; nu<nNodesUnk(); nu++)
                         {
                           if (nu!=0) os << ", ";
-                          os << value(t, nt, u, nu);
+                          os << value(fc, t, nt, 0, nu);
                         }
                       os << "}";
                     }
                   os << "}" << endl;
                 }
             }
-        }
-      else if (testDerivOrder()==1 && unkDerivOrder()==0)
-        {
-          Tabs tab2;
-          for (int t=0; t<dim(); t++)
+          else /* if (testDerivOrder()==1 && unkDerivOrder()==0) */
             {
-              os << tab2 << "test dir=" << t << endl;
-              Tabs tab3;
-              os << tab3 << "{";
-              for (int nt=0; nt<nNodesTest(); nt++) 
+              Tabs tab2;
+              for (int u=0; u<dim(); u++)
                 {
-                  if (nt!=0) os << ", ";
-                  os << "{";
-                  for (int nu=0; nu<nNodesUnk(); nu++)
+                  os << tab2 << "unk dir=" << u << endl;
+                  Tabs tab3;
+                  os << tab3 << "{";
+                  for (int nt=0; nt<nNodesTest(); nt++) 
                     {
-                      if (nu!=0) os << ", ";
-                      os << value(t, nt, 0, nu);
+                      if (nt!=0) os << ", ";
+                      os << "{";
+                      for (int nu=0; nu<nNodesUnk(); nu++)
+                        {
+                          if (nu!=0) os << ", ";
+                          os << value(fc, 0, nt, u, nu);
+                        }
+                      os << "}";
                     }
-                  os << "}";
+                  os << "}" << endl;
                 }
-              os << "}" << endl;
             }
+          os << tab1 << endl << tab1 << endl;
+          os << tab1 << endl << tab1 << endl;
         }
-      else /* if (testDerivOrder()==1 && unkDerivOrder()==0) */
-        {
-          Tabs tab2;
-          for (int u=0; u<dim(); u++)
-            {
-              os << tab2 << "unk dir=" << u << endl;
-              Tabs tab3;
-              os << tab3 << "{";
-              for (int nt=0; nt<nNodesTest(); nt++) 
-                {
-                  if (nt!=0) os << ", ";
-                  os << "{";
-                  for (int nu=0; nu<nNodesUnk(); nu++)
-                    {
-                      if (nu!=0) os << ", ";
-                      os << value(0, nt, u, nu);
-                    }
-                  os << "}";
-                }
-              os << "}" << endl;
-            }
-        }
-      os << tab1 << endl << tab1 << endl;
-      os << tab1 << endl << tab1 << endl;
     }
 }
 
 
-void RefIntegral::transformZeroForm(const CellJacobianBatch& J,  
+void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,  
                                     const double& coeff,
                                     RefCountPtr<Array<double> >& A) const
 {
@@ -401,14 +426,16 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& J,
 
   /* The result for each cell is the cell's Jacobian determinant */
   double& a = (*A)[0];
-  for (int c=0; c<J.numCells(); c++)
+  for (int c=0; c<JVol.numCells(); c++)
     {
-      a += coeff * fabs(J.detJ()[c]);
+      a += coeff * fabs(JVol.detJ()[c]);
     }
-  addFlops(2*J.numCells());
+  addFlops(2*JVol.numCells());
 }
 
-void RefIntegral::transformOneForm(const CellJacobianBatch& J,  
+void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,  
+                                   const CellJacobianBatch& JVol,
+                                   const Array<int>& facetIndex,
                                    const double& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
@@ -423,37 +450,65 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& J,
     {
       double* aPtr = &((*A)[0]);
       int count = 0;
-      for (int c=0; c<J.numCells(); c++)
+      const Array<double>& w = W_[0];
+      for (int c=0; c<JVol.numCells(); c++)
         {
-          double detJ = coeff * fabs(J.detJ()[c]);
+          double detJ = coeff * fabs(JVol.detJ()[c]);
           for (int n=0; n<nNodes(); n++, count++) 
             {
-              aPtr[count] += detJ*W_[n];
+              aPtr[count] += detJ*w[n];
             }
         }
-      addFlops(J.numCells() * (nNodes() + 1));
+      addFlops(JVol.numCells() * (nNodes() + 1));
     }
   else
     {
-      int nCells = J.numCells();
+      /* If the derivative order is nonzero, then we have to do a transformation. 
+       * If we're also on a cell of dimension lower than maximal, we need to refer
+       * to the facet index of the facet being integrated. */
+      int nCells = JVol.numCells();
       double one = 1.0;
       int nTransRows = nRefDerivTest();
 
-      createOneFormTransformationMatrix(J);
+      createOneFormTransformationMatrix(JTrans, JVol);
 
       SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G(alpha()));
-      
       int nNodes0 = nNodes();
-      ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0]),
-               &nNodes0, &(G(alpha())[0]), &nTransRows, &one, 
-               &((*A)[0]), &nNodes0);
-
+      
+      if (nFacetCases()==1)
+        {
+          /* if we're on a maximal cell, we can do transformations 
+           * for all cells in a single batch. 
+           */
+          ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0][0]),
+                   &nNodes0, &(G(alpha())[0]), &nTransRows, &one, 
+                   &((*A)[0]), &nNodes0);
+        }
+      else
+        {
+          /* If we're on a lower-dimensional cell and have to transform, 
+           * we've got to do each transformation using a different facet case */
+          int N = 1;
+          for (int c=0; c<JVol.numCells(); c++)
+            {
+              int fc = facetIndex[c];
+              double* aPtr = &((*A)[c*nNodes0]);
+              ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
+                       &nNodes0, &(G(alpha())[c*nTransRows]), &nTransRows, &one, 
+                       aPtr, &nNodes0);
+              
+            }
+          
+        }
+      
       addFlops(2 * nNodes0 * nCells * nTransRows);
     }
 }
 
-void RefIntegral::transformTwoForm(const CellJacobianBatch& J,  
+void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
+                                   const CellJacobianBatch& JVol,
+                                   const Array<int>& facetIndex, 
                                    const double& coeff,
                                    RefCountPtr<Array<double> >& A) const
 {
@@ -466,26 +521,29 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)
     {
-      //      A->resize(J.numCells() * nNodes());
       double* aPtr = &((*A)[0]);
+      const Array<double>& w = W_[0];
       int count = 0;
-      for (int c=0; c<J.numCells(); c++)
+      for (int c=0; c<JVol.numCells(); c++)
         {
-          double detJ = coeff * fabs(J.detJ()[c]);
+          double detJ = coeff * fabs(JVol.detJ()[c]);
           for (int n=0; n<nNodes(); n++, count++) 
             {
-              aPtr[count] += detJ*W_[n];
+              aPtr[count] += detJ*w[n];
             }
         }
-      addFlops(J.numCells() * (nNodes() + 1));
+      addFlops(JVol.numCells() * (nNodes() + 1));
     }
   else
     {
-      int nCells = J.numCells();
+      /* If the derivative order is nonzero, then we have to do a transformation. 
+       * If we're also on a cell of dimension lower than maximal, we need to refer
+       * to the facet index of the facet being integrated. */
+      int nCells = JVol.numCells();
       double one = 1.0;
       int nTransRows = nRefDerivUnk()*nRefDerivTest();
 
-      createTwoFormTransformationMatrix(J);
+      createTwoFormTransformationMatrix(JTrans, JVol);
       
       double* GPtr;
       if (testDerivOrder() == 0)
@@ -509,11 +567,34 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& J,
         }
       
       int nNodes0 = nNodes();
-      ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0]),
-               &nNodes0, GPtr, 
-               &nTransRows, &one, &((*A)[0]), &nNodes0);
-       
+
+      if (nFacetCases()==1)
+        {
+          /* if we're on a maximal cell, we can do transformations 
+           * for all cells in a single batch. 
+           */
+          ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0][0]),
+                   &nNodes0, GPtr, &nTransRows, &one, 
+                   &((*A)[0]), &nNodes0);
+        }
+      else
+        {
+          /* If we're on a lower-dimensional cell and have to transform, 
+           * we've got to do each transformation using a different facet case */
+          int N = 1;
+          for (int c=0; c<JVol.numCells(); c++)
+            {
+              int fc = facetIndex[c];
+              double* aPtr = &((*A)[c*nNodes0]);
+              double* gPtr = &(GPtr[c*nTransRows]);
+              ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
+                       &nNodes0, gPtr, &nTransRows, &one, 
+                       aPtr, &nNodes0);
+              
+            }
+          
+        }
+      
       addFlops(2 * nNodes0 * nCells * nTransRows);
     }
 }
-

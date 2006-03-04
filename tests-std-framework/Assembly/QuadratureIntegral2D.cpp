@@ -125,6 +125,8 @@ int main(int argc, void** argv)
 
       Array<Array<double> > result;
 
+      Array<int> dummy;
+
       cerr << "------ Evaluating bases at vertices ----------" << endl
            << endl;
 
@@ -196,8 +198,8 @@ int main(int argc, void** argv)
                 {
                   int alpha = t;
                   Tabs tab;
-                  QuadratureIntegral ref(dim, dim, cellType, P, alpha, dp, quad);
-                  ref.transformOneForm(JBatch, f, A);
+                  QuadratureIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, quad);
+                  ref.transformOneForm(JBatch, JBatch, dummy, f, A);
                   cerr << tab << "test deriv direction =" << t << endl;
                   cerr << tab << "transformed local vector: " << endl;
                   cerr << tab << "{";
@@ -242,9 +244,9 @@ int main(int argc, void** argv)
                             {
                               Tabs tab;
                               int beta = u;
-                              QuadratureIntegral ref(dim, dim, cellType, P, alpha, 
+                              QuadratureIntegral ref(dim, cellType, dim, cellType, P, alpha, 
                                                      dp, Q, beta, dq, quad);
-                              ref.transformTwoForm(JBatch, f, A);
+                              ref.transformTwoForm(JBatch, JBatch, dummy, f, A);
 
                               cerr << tab << "test deriv direction =" << 
                                 t << ", unk deriv direction =" << u << endl;

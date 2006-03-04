@@ -32,6 +32,7 @@
 #include "SundanceExceptions.hpp"
 
 using namespace SundanceStdMesh::Internal;
+using namespace SundanceUtils;
 
 namespace SundanceStdMesh
 {
@@ -80,4 +81,72 @@ namespace SundanceStdMesh
       }
     return -1; // -Wall
   }
+
+  int numFacets(const CellType& cellType, int facetDim)
+  {
+    int d = dimension(cellType);
+    if (facetDim == d) return 1;
+
+    TEST_FOR_EXCEPTION(facetDim > d, RuntimeError,
+                       "invalid facet dim " << facetDim << " for cell "
+                       << toString(cellType));
+
+    switch(cellType)
+      {
+      case NullCell:
+      case PointCell:
+        return -1;
+      case LineCell:
+        return 2;
+      case TriangleCell:
+        return 3;
+      case TetCell:
+        if (facetDim==0 || facetDim==2) return 4;
+        return 6;
+      case QuadCell:
+        return 4;
+      case BrickCell:
+        if (facetDim==0) return 8;
+        else if (facetDim==1) return 12;
+        else return 6;
+      case PrismCell:
+        if (facetDim==0) return 6;
+        else if (facetDim==1) return 9;
+        else return 5;
+      }
+    return -1; // -Wall
+  }
+
+
+  CellType facetType(const CellType& cellType, int facetDim, int facetIndex)
+  {
+    int d = dimension(cellType);
+    if (facetDim == d) return cellType;
+    TEST_FOR_EXCEPTION(facetDim > d, RuntimeError,
+                       "invalid facet dim " << facetDim << " for cell "
+                       << toString(cellType));
+
+    if (facetDim==0) return PointCell;
+    if (facetDim==1) return LineCell;
+
+    switch(cellType)
+      {
+      case NullCell:
+      case PointCell:
+      case LineCell:
+      case TriangleCell:
+      case QuadCell:
+        return NullCell;
+
+      case TetCell:
+        return TriangleCell;
+      case BrickCell:
+        return QuadCell;
+      case PrismCell:
+        if (facetIndex==0 || facetIndex==4) return TriangleCell;
+        return QuadCell;
+      }
+    return NullCell;
+  }
+  
 }

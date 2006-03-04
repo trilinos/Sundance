@@ -102,7 +102,9 @@ namespace SundanceStdFwk
 
 
       /** Evaluate this integral group */
-      bool evaluate(const CellJacobianBatch& J,
+      bool evaluate(const CellJacobianBatch& JTrans,
+                    const CellJacobianBatch& JVol,
+                    const Array<int>& facetNum, 
                     const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
                     const Array<double>& constantCoeffs,
                     RefCountPtr<Array<double> >& A) const ;

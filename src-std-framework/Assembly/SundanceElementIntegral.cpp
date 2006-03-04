@@ -50,10 +50,12 @@ static Time& transCreationTimer()
 }
 
 ElementIntegral::ElementIntegral(int spatialDim,
+                                 const CellType& maxCellType,
                                  int dim, 
                                  const CellType& cellType)
   : spatialDim_(spatialDim),
     dim_(dim),
+    nFacetCases_(1),
     testDerivOrder_(-1), 
     nRefDerivTest_(-1),
     nNodesTest_(-1),
@@ -67,6 +69,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
 {;}
 
 ElementIntegral::ElementIntegral(int spatialDim,
+                                 const CellType& maxCellType,
                                  int dim, 
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
@@ -74,8 +77,9 @@ ElementIntegral::ElementIntegral(int spatialDim,
                                  int testDerivOrder)
   : spatialDim_(spatialDim),
     dim_(dim),
+    nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
-    nRefDerivTest_(ipow(dim, testDerivOrder)),
+    nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
     nNodesTest_(testBasis.nNodes(spatialDim, cellType)),
     unkDerivOrder_(-1), 
     nRefDerivUnk_(-1),
@@ -84,11 +88,20 @@ ElementIntegral::ElementIntegral(int spatialDim,
     order_(1),
     alpha_(alpha),
     beta_(-1)
-{;}
+{
+  /* if we're integrating a derivative along a facet, we need to refer back
+   * to the maximal cell. */
+  if (testDerivOrder >= 1 && dim != spatialDim)
+    {
+      nFacetCases_ = numFacets(maxCellType, dim);
+      nNodesTest_ = testBasis.nNodes(spatialDim, maxCellType);
+    }
+}
 
 
 
 ElementIntegral::ElementIntegral(int spatialDim,
+                                 const CellType& maxCellType,
                                  int dim,
                                  const CellType& cellType,
                                  const BasisFamily& testBasis,
@@ -99,17 +112,27 @@ ElementIntegral::ElementIntegral(int spatialDim,
                                  int unkDerivOrder)
   : spatialDim_(spatialDim),
     dim_(dim),
+    nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
-    nRefDerivTest_(ipow(dim, testDerivOrder)),
+    nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
     nNodesTest_(testBasis.nNodes(spatialDim, cellType)), 
     unkDerivOrder_(unkDerivOrder), 
-    nRefDerivUnk_(ipow(dim, unkDerivOrder)),
+    nRefDerivUnk_(ipow(spatialDim, unkDerivOrder)),
     nNodesUnk_(unkBasis.nNodes(spatialDim, cellType)), 
     nNodes_(nNodesTest_*nNodesUnk_),
     order_(2),
     alpha_(alpha),
     beta_(beta)
-{;}
+{
+  /* if we're integrating a derivative along a facet, we need to refer back
+   * to the maximal cell. */
+  if ((testDerivOrder >= 1 || unkDerivOrder >= 1)  && dim != spatialDim) 
+    {
+      nFacetCases_ = numFacets(maxCellType, dim);
+      nNodesTest_ = testBasis.nNodes(spatialDim, maxCellType);
+      nNodesUnk_ = unkBasis.nNodes(spatialDim, maxCellType);
+    }
+}
 
 
 Array<double>& ElementIntegral::G(int alpha)
@@ -160,14 +183,12 @@ int ElementIntegral::ipow(int base, int power)
   return rtn;
 }
 
-void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch& J) const
+void ElementIntegral
+::createTwoFormTransformationMatrix(const CellJacobianBatch& JTrans,
+                                    const CellJacobianBatch& JVol) const
 {
   TimeMonitor timer(transCreationTimer());
 
-  TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
-                     "Inconsistency between Jacobian dimension " << J.cellDim()
-                     << " and cell dimension " << dim() 
-                     << " in ElementIntegral::createTwoFormTransformationMatrix()");
 
   int flops = 0;
 
@@ -176,7 +197,7 @@ void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch&
       if (transformationMatrixIsValid(alpha(), beta())) return;
       transformationMatrixIsValid(alpha(), beta()) = true;
 
-      G(alpha(), beta()).resize(J.numCells() * J.cellDim() * J.cellDim());
+      G(alpha(), beta()).resize(JTrans.numCells() * JTrans.cellDim() * JTrans.cellDim());
 
       SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    Tabs() << "both derivs are first order");
@@ -184,11 +205,11 @@ void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch&
       double* GPtr = &(G(alpha(),beta())[0]);
       int k = 0;
 
-      for (int c=0; c<J.numCells(); c++)
+      for (int c=0; c<JTrans.numCells(); c++)
         {
           static Array<double> invJ;
-          J.getInvJ(c, invJ);
-          double detJ = fabs(J.detJ()[c]);
+          JTrans.getInvJ(c, invJ);
+          double detJ = fabs(JVol.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++)
             {
               for (int delta=0; delta<dim(); delta++, k++)
@@ -198,7 +219,7 @@ void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch&
                 }
             }
         }
-      flops = 2 * J.numCells() * dim() * dim() + J.numCells();
+      flops = 2 * JTrans.numCells() * dim() * dim() + JTrans.numCells();
     }
 
   else if (testDerivOrder() == 1 && unkDerivOrder() == 0)
@@ -206,22 +227,22 @@ void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch&
       if (transformationMatrixIsValid(alpha())) return;
       transformationMatrixIsValid(alpha()) = true;
 
-      G(alpha()).resize(J.numCells() * J.cellDim());
+      G(alpha()).resize(JTrans.numCells() * JTrans.cellDim());
 
       int k = 0;
       double* GPtr = &(G(alpha())[0]);
 
-      for (int c=0; c<J.numCells(); c++)
+      for (int c=0; c<JTrans.numCells(); c++)
         {
           static Array<double> invJ;
-          J.getInvJ(c, invJ);
-          double detJ = fabs(J.detJ()[c]);
+          JTrans.getInvJ(c, invJ);
+          double detJ = fabs(JVol.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++,k++)
             {
               GPtr[k] = detJ*invJ[alpha() + dim() * gamma];
             }
         }
-      flops = J.numCells() * dim() + J.numCells();
+      flops = JTrans.numCells() * dim() + JTrans.numCells();
     }
 
   else 
@@ -229,22 +250,22 @@ void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch&
       if (transformationMatrixIsValid(beta())) return;
       transformationMatrixIsValid(beta()) = true;
 
-      G(beta()).resize(J.numCells() * J.cellDim());
+      G(beta()).resize(JTrans.numCells() * JTrans.cellDim());
 
       int k = 0;
       double* GPtr = &(G(beta())[0]);
 
-      for (int c=0; c<J.numCells(); c++)
+      for (int c=0; c<JTrans.numCells(); c++)
         {
           static Array<double> invJ;
-          J.getInvJ(c, invJ);
-          double detJ = fabs(J.detJ()[c]);
+          JTrans.getInvJ(c, invJ);
+          double detJ = fabs(JVol.detJ()[c]);
           for (int gamma=0; gamma<dim(); gamma++,k++)
             {
               GPtr[k] = detJ*invJ[beta() + dim() * gamma];
             }
         }
-      flops = J.numCells() * dim() + J.numCells();
+      flops = JTrans.numCells() * dim() + JTrans.numCells();
     }
 
   addFlops(flops);
@@ -252,30 +273,31 @@ void ElementIntegral::createTwoFormTransformationMatrix(const CellJacobianBatch&
 
 
 void ElementIntegral
-::createOneFormTransformationMatrix(const CellJacobianBatch& J) const 
+::createOneFormTransformationMatrix(const CellJacobianBatch& JTrans,
+                                    const CellJacobianBatch& JVol) const 
 {
   TimeMonitor timer(transCreationTimer());
 
   if (transformationMatrixIsValid(alpha())) return;
   transformationMatrixIsValid(alpha()) = true;
 
-  TEST_FOR_EXCEPTION(J.cellDim() != dim(), InternalError,
-                     "Inconsistency between Jacobian dimension " << J.cellDim()
+  TEST_FOR_EXCEPTION(JTrans.cellDim() != dim(), InternalError,
+                     "Inconsistency between Jacobian dimension " << JTrans.cellDim()
                      << " and cell dimension " << dim() 
                      << " in ElementIntegral::createOneFormTransformationMatrix()");
 
-  int flops = J.numCells() * dim() + J.numCells();
+  int flops = JTrans.numCells() * dim() + JTrans.numCells();
 
-  G(alpha()).resize(J.numCells() * J.cellDim());
+  G(alpha()).resize(JTrans.numCells() * JTrans.cellDim());
 
   int k = 0;
   double* GPtr = &(G(alpha())[0]);
 
-  for (int c=0; c<J.numCells(); c++)
+  for (int c=0; c<JTrans.numCells(); c++)
     {
       Array<double> invJ;
-      J.getInvJ(c, invJ);
-      double detJ = fabs(J.detJ()[c]);
+      JTrans.getInvJ(c, invJ);
+      double detJ = fabs(JVol.detJ()[c]);
       for (int gamma=0; gamma<dim(); gamma++, k++)
         {
           GPtr[k] = detJ*invJ[alpha() + dim() * gamma]; 

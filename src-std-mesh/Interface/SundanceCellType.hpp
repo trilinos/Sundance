@@ -47,6 +47,12 @@ namespace SundanceStdMesh
   /** \relates CellType */
   int dimension(const CellType& c) ;
 
+  /** \relates CellType */
+  int numFacets(const CellType& c, int facetDim);
+
+  /** \relates CellType */
+  CellType facetType(const CellType& c, int facetDim, int facetIndex);
+
 
   /** \relates CellType */
   inline ostream& operator<<(ostream& os, const CellType& c)

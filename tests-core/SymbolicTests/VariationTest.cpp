@@ -314,12 +314,17 @@ int main(int argc, void** argv)
       Expr alpha0 = new DiscreteFunctionStub("alpha0");
 
       Array<Expr> tests;
-      double h = 0.1;
+      Expr h = new Parameter(0.1);
       Expr rho = 0.5*(1.0 + tanh(alpha/h));
 
 
-      tests.append(0.5*(u-x)*(u-x) + sqrt(1.0e-10 + (grad*rho)*(grad*rho))
-                   + (grad*lambda_u)*(grad*u) + alpha*lambda_u );
+
+      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
+
+      tests.append(/* 0.5*(u-x)*(u-x) +  */sqrt(1.0e-16 + (grad*rho)*(grad*rho))
+                   +  (grad*lambda_u)*(grad*u) + (1.0e-3 + 0.999*rho)*lambda_u );
+
 
       cerr << "STATE EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
@@ -353,8 +358,7 @@ int main(int argc, void** argv)
                    context);
         }
 
-      //      verbosity<Evaluator>() = VerbExtreme;
-      //      verbosity<EvaluatableExpr>() = VerbExtreme;
+
       cerr << "REDUCED GRADIENT " << endl;
       for (int i=0; i<tests.length(); i++)
         {

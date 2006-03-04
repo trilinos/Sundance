@@ -63,7 +63,24 @@ namespace SundanceStdFwk
     void getPoints(const CellType& cellType, 
                    Array<Point>& quadPoints,
                    Array<double>& quadWeights) const ;
+
+    /** Get quadrature points and weights for integration on a facet of a cell */
+    void getFacetPoints(const CellType& cellType, 
+                        int facetDim,
+                        int facetIndex,
+                        Array<Point>& quadPoints,
+                        Array<double>& quadWeights) const ;
   private:
+    /** Get quad points for a facet of a line */
+    void getLineFacetQuad(int facetDim,
+                          int facetIndex,
+                          Array<Point>& quadPoints,
+                          Array<double>& quadWeights) const ;
+    /** Get quad points for a facet of a triangle */
+    void getTriangleFacetQuad(int facetDim,
+                              int facetIndex,
+                              Array<Point>& quadPoints,
+                              Array<double>& quadWeights) const ;
   };
 }
 

@@ -141,8 +141,8 @@ void P1NC::evalOnLine(const Point& pt,
 }
 
 void P1NC::evalOnTriangle(const Point& pt, 
-															const MultiIndex& deriv,
-															Array<double>& result) const
+                          const MultiIndex& deriv,
+                          Array<double>& result) const
 
 
 

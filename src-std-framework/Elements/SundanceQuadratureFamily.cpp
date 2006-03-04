@@ -58,3 +58,102 @@ int QuadratureFamily::order() const
 {
   return ptr()->order();
 }
+
+
+void QuadratureFamily::getFacetPoints(const CellType& cellType, 
+                                      int facetDim,
+                                      int facetIndex,
+                                      Array<Point>& quadPoints,
+                                      Array<double>& quadWeights) const
+{
+  switch(cellType)
+    {
+    case LineCell:
+      getLineFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
+      break;
+    case TriangleCell:
+      getTriangleFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
+      break;
+      //    case TetCell:
+      // getTetFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
+      //break;
+    default:
+      TEST_FOR_EXCEPTION(true, RuntimeError,
+                         "getFacetPoints() not implemented for cell type "
+                         << cellType);
+    }
+}
+
+
+void QuadratureFamily::getLineFacetQuad(int facetDim,
+                                        int facetIndex,
+                                        Array<Point>& quadPoints,
+                                        Array<double>& quadWeights) const
+{
+  TEST_FOR_EXCEPTION(facetDim > 0, RuntimeError,
+                     "Invalid facet dimension " << facetDim 
+                     << " in getLineFacetQuad()");
+  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 1, RuntimeError,
+                     "Invalid facet index " << facetIndex  
+                     << " in getLineFacetQuad()");
+
+  quadPoints.resize(1);
+  quadWeights.resize(1);
+  quadWeights[0] = 1.0;  
+  quadPoints[0] = Point((double) facetIndex);
+}
+
+
+
+
+void QuadratureFamily::getTriangleFacetQuad(int facetDim,
+                                            int facetIndex,
+                                            Array<Point>& quadPoints,
+                                            Array<double>& quadWeights) const
+{
+  TEST_FOR_EXCEPTION(facetDim > 1, RuntimeError,
+                     "Invalid facet dimension " << facetDim 
+                     << " in getLineFacetQuad()");
+  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 2, RuntimeError,
+                     "Invalid facet index " << facetIndex  
+                     << " in getLineFacetQuad()");
+  if (facetDim==1)
+    {
+      Array<Point> facetPts;
+      Array<double> facetWts;
+      getPoints(LineCell, facetPts, facetWts);
+      quadPoints.resize(facetPts.size());
+      quadWeights.resize(facetWts.size());
+      for (unsigned int i=0; i<facetPts.size(); i++)
+        {
+          if (facetIndex==0)
+            {
+              quadPoints[i] = Point(facetPts[i][0], 0.0);
+              quadWeights[i] = facetWts[i];
+            }
+          else if (facetIndex==1)
+            {
+              quadPoints[i] = Point(1.0-facetPts[i][0], facetPts[i][0]);
+              quadWeights[i] = facetWts[i];
+            }
+          else
+            {
+              quadPoints[i] = Point(0.0, 1.0-facetPts[i][0]);
+              quadWeights[i] = facetWts[i];
+            }
+        }
+    }
+  else
+    {
+      quadPoints.resize(1);
+      quadWeights.resize(1);
+      quadWeights[0] = 1.0;  
+      if (facetIndex==0) quadPoints[0] = Point(0.0, 0.0);
+      else if (facetIndex==1) quadPoints[0] = Point(1.0, 0.0);
+      else quadPoints[0] = Point(0.0, 1.0);
+    }
+}
+
+
+
+

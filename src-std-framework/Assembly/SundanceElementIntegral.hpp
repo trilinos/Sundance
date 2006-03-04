@@ -62,11 +62,13 @@ namespace SundanceStdFwk
     public:
       /** Construct a zero-form */
       ElementIntegral(int spatialDim,
+                      const CellType& maxCellType,
                       int dim, 
                       const CellType& cellType);
 
       /** Construct a one-form */
       ElementIntegral(int spatialDim,
+                      const CellType& maxCellType,
                       int dim, 
                       const CellType& cellType,
                       const BasisFamily& testBasis,
@@ -75,6 +77,7 @@ namespace SundanceStdFwk
 
       /** Construct a two-form */
       ElementIntegral(int spatialDim,
+                      const CellType& maxCellType,
                       int dim,
                       const CellType& cellType,
                       const BasisFamily& testBasis,
@@ -100,6 +103,11 @@ namespace SundanceStdFwk
       /** Return the total number of elements in this local stiffness
        * matrix */
       int nNodes() const {return nNodes_;}
+
+      /** Return the number of different facets for which integrals must be tabulated
+       * in the cases where an integral must be done by referring back to a maximal
+       * cell */
+      int nFacetCases() const {return nFacetCases_;}
 
 
       /** */
@@ -172,15 +180,19 @@ namespace SundanceStdFwk
 
 
       /** */
-      void createTwoFormTransformationMatrix(const CellJacobianBatch& J) const;
+      void createTwoFormTransformationMatrix(const CellJacobianBatch& JTrans,
+                                             const CellJacobianBatch& JVol) const;
       /** */
-      void createOneFormTransformationMatrix(const CellJacobianBatch& J) const;
+      void createOneFormTransformationMatrix(const CellJacobianBatch& JTrans,
+                                             const CellJacobianBatch& JVol) const;
 
     private:
 
       int spatialDim_;
 
       int dim_;
+
+      int nFacetCases_;
 
       int testDerivOrder_;
 

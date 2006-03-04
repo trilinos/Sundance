@@ -63,10 +63,11 @@ static Time& quadratureTimer()
 
 
 QuadratureIntegral::QuadratureIntegral(int spatialDim,
-                         int dim, 
+                                       const CellType& maxCellType,
+                                       int dim, 
                                        const CellType& cellType,
                                        const QuadratureFamily& quad)
-  : ElementIntegral(spatialDim, dim, cellType),
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType),
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)
@@ -74,35 +75,43 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   Tabs tab0;
   verbosity() = classVerbosity();
 
-  /* create the quad points and weights */
-  Array<double> quadWeights;
-  Array<Point> quadPts;
-  quad.getPoints(cellType, quadPts, quadWeights);
-  nQuad_ = quadPts.size();
-  
-  W_.resize(nQuad());
+  W_.resize(nFacetCases());
 
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
-               tab0 << "num quad pts" << nQuad());
-
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad weights" << quadWeights);
-
-  for (int q=0; q<nQuad(); q++)
+  for (int fc=0; fc<nFacetCases(); fc++)
     {
-      W_[q] = quadWeights[q];
+      /* create the quad points and weights */
+      Array<double> quadWeights;
+      Array<Point> quadPts;
+      if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
+      else quad.getFacetPoints(maxCellType, dim, fc, quadPts, quadWeights);
+      nQuad_ = quadPts.size();
+      
+      W_[fc].resize(nQuad());
+      
+      SUNDANCE_OUT(this->verbosity() > VerbLow, 
+                   tab0 << "num quad pts" << nQuad());
+      
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad weights" << quadWeights);
+      
+      for (int q=0; q<nQuad(); q++)
+        {
+          W_[fc][q] = quadWeights[q];
+        }
     }    
 }
 
 
 QuadratureIntegral::QuadratureIntegral(int spatialDim,
+                                       const CellType& maxCellType,
                                        int dim, 
                                        const CellType& cellType,
                                        const BasisFamily& testBasis,
                                        int alpha,
                                        int testDerivOrder,
                                        const QuadratureFamily& quad)
-  : ElementIntegral(spatialDim, dim, cellType, testBasis, alpha, testDerivOrder),
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
+                    testBasis, alpha, testDerivOrder),
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)
@@ -127,51 +136,60 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                      << " must be 0 or 1");
   
 
-  /* create the quad points and weights */
-  Array<double> quadWeights;
-  Array<Point> quadPts;
-  quad.getPoints(cellType, quadPts, quadWeights);
-  nQuad_ = quadPts.size();
-  
-  W_.resize(nQuad() * nRefDerivTest() * nNodesTest());
+  W_.resize(nFacetCases());
 
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
-               tab0 << "num quad pts" << nQuad());
+  CellType evalCellType = cellType;
+  if (nFacetCases() > 1) evalCellType = maxCellType;
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad pts" << quadPts);
-
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad weights" << quadWeights);
-
-  Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
-
-  for (int r=0; r<nRefDerivTest(); r++)
+  for (int fc=0; fc<nFacetCases(); fc++)
     {
-      MultiIndex mi;
-      if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
-                               testBasisVals[r]);
-    }
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "basis values" << testBasisVals);
+      /* create the quad points and weights */
+      Array<double> quadWeights;
+      Array<Point> quadPts;
+      if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
+      else quad.getFacetPoints(maxCellType, dim, fc, quadPts, quadWeights);
+      nQuad_ = quadPts.size();
+      
+      W_[fc].resize(nQuad() * nRefDerivTest() * nNodesTest());
 
+      SUNDANCE_OUT(this->verbosity() > VerbLow, 
+                   tab0 << "num quad pts" << nQuad());
 
-  for (int q=0; q<nQuad(); q++)
-    {
-      for (int t=0; t<nRefDerivTest(); t++)
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad pts" << quadPts);
+
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad weights" << quadWeights);
+
+      Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
+
+      for (int r=0; r<nRefDerivTest(); r++)
         {
-          for (int nt=0; nt<nNodesTest(); nt++)
-            {
-              wValue(q, t, nt) 
-                = chop(quadWeights[q] * testBasisVals[t][q][nt]) ;
-            }
+          MultiIndex mi;
+          if (testDerivOrder==1) mi[r] = 1;
+          testBasis.ptr()->refEval(spatialDim, evalCellType, quadPts, mi, 
+                                   testBasisVals[r]);
         }
-    }    
-  
-  addFlops(2*nQuad()*nRefDerivTest()*nNodesTest());
 
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "basis values" << testBasisVals);
+
+
+      for (int q=0; q<nQuad(); q++)
+        {
+          for (int t=0; t<nRefDerivTest(); t++)
+            {
+              for (int nt=0; nt<nNodesTest(); nt++)
+                {
+                  wValue(fc, q, t, nt) 
+                    = chop(quadWeights[q] * testBasisVals[t][q][nt]) ;
+                }
+            }
+        }    
+  
+      addFlops(2*nQuad()*nRefDerivTest()*nNodesTest());
+    }
   if (verbosity() > VerbMedium)
     {
       print(cerr);
@@ -182,7 +200,8 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
 
 QuadratureIntegral::QuadratureIntegral(int spatialDim,
-                         int dim,
+                                       const CellType& maxCellType,
+                                       int dim,
                                        const CellType& cellType,
                                        const BasisFamily& testBasis,
                                        int alpha,
@@ -191,7 +210,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                                        int beta,
                                        int unkDerivOrder,
                                        const QuadratureFamily& quad)
-  : ElementIntegral(spatialDim, dim, cellType, 
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
                     testBasis, alpha, testDerivOrder, 
                     unkBasis, beta, unkDerivOrder), 
     W_(),
@@ -222,77 +241,89 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                      "Unknown function derivative order=" << unkDerivOrder
                      << " must be 0 or 1");
 
-  /* get the quad pts and weights */
-  Array<double> quadWeights;
-  Array<Point> quadPts;
-  quad.getPoints(cellType, quadPts, quadWeights);
-  nQuad_ = quadPts.size();
+  
 
-  W_.resize(nQuad() * nRefDerivTest() * nNodesTest()  
-            * nRefDerivUnk() * nNodesUnk());
+  W_.resize(nFacetCases());
 
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
-               tab0 << "num quad pts" << nQuad());
+  CellType evalCellType = cellType;
+  if (nFacetCases() > 1) evalCellType = maxCellType;
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad pts" << quadPts);
-
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "quad weights" << quadWeights);
-
-
-
-  /* compute the basis functions */
-  Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
-  Array<Array<Array<double> > > unkBasisVals(nRefDerivUnk());
-
-  for (int r=0; r<nRefDerivTest(); r++)
+  for (int fc=0; fc<nFacetCases(); fc++)
     {
-      MultiIndex mi;
-      if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, 
-                               testBasisVals[r]);
-    }
+      /* get the quad pts and weights */
+      Array<double> quadWeights;
+      Array<Point> quadPts;
+      if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
+      else quad.getFacetPoints(maxCellType, dim, fc, quadPts, quadWeights);
+      nQuad_ = quadPts.size();
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "test basis values" << testBasisVals);
+      W_[fc].resize(nQuad() * nRefDerivTest() * nNodesTest()  
+                * nRefDerivUnk() * nNodesUnk());
 
-  for (int r=0; r<nRefDerivUnk(); r++)
-    {
-      MultiIndex mi;
-      if (unkDerivOrder==1) mi[r] = 1;
-      unkBasis.ptr()->refEval(spatialDim, cellType, quadPts, mi, unkBasisVals[r]);
-    }
+      SUNDANCE_OUT(this->verbosity() > VerbLow, 
+                   tab0 << "num quad pts" << nQuad());
 
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad pts" << quadPts);
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab0 << "unk basis values" << unkBasisVals);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "quad weights" << quadWeights);
 
 
-  /* form the products of basis functions at each quad pt */
-  for (int q=0; q<nQuad(); q++)
-    {
-      for (int t=0; t<nRefDerivTest(); t++)
+
+      /* compute the basis functions */
+      Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
+      Array<Array<Array<double> > > unkBasisVals(nRefDerivUnk());
+
+      for (int r=0; r<nRefDerivTest(); r++)
         {
-          for (int nt=0; nt<nNodesTest(); nt++)
+          MultiIndex mi;
+          if (testDerivOrder==1) mi[r] = 1;
+          testBasis.ptr()->refEval(spatialDim, evalCellType, quadPts, mi, 
+                                   testBasisVals[r]);
+        }
+
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "test basis values" << testBasisVals);
+
+      for (int r=0; r<nRefDerivUnk(); r++)
+        {
+          MultiIndex mi;
+          if (unkDerivOrder==1) mi[r] = 1;
+          unkBasis.ptr()->refEval(spatialDim, evalCellType, 
+                                  quadPts, mi, unkBasisVals[r]);
+        }
+
+
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+                   tab0 << "unk basis values" << unkBasisVals);
+
+
+      /* form the products of basis functions at each quad pt */
+      for (int q=0; q<nQuad(); q++)
+        {
+          for (int t=0; t<nRefDerivTest(); t++)
             {
-              for (int u=0; u<nRefDerivUnk(); u++)
+              for (int nt=0; nt<nNodesTest(); nt++)
                 {
-                  for (int nu=0; nu<nNodesUnk(); nu++)
+                  for (int u=0; u<nRefDerivUnk(); u++)
                     {
-                      wValue(q, t, nt, u, nu)
-                        = chop(quadWeights[q] * testBasisVals[t][q][nt] 
-                               * unkBasisVals[u][q][nu]);
+                      for (int nu=0; nu<nNodesUnk(); nu++)
+                        {
+                          wValue(fc, q, t, nt, u, nu)
+                            = chop(quadWeights[q] * testBasisVals[t][q][nt] 
+                                   * unkBasisVals[u][q][nu]);
+                        }
                     }
                 }
             }
         }
+
+      addFlops(3*nQuad()*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
+               + W_[fc].size());
+      for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+    
     }
-
-  addFlops(3*nQuad()*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
-           + W_.size());
-  for (unsigned int i=0; i<W_.size(); i++) W_[i] = chop(W_[i]);
-
   if (verbosity() > VerbMedium)
     {
       print(cerr);
@@ -306,7 +337,9 @@ void QuadratureIntegral::print(ostream& os) const
   
 }
 
-void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& J,  
+void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,  
+                                           const CellJacobianBatch& JVol,
+                                           const Array<int>& facetIndex,
                                            const double* const coeff,
                                            RefCountPtr<Array<double> >& A) const
 {
@@ -315,25 +348,42 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& J,
                      "QuadratureIntegral::transformZeroForm() called "
                      "for form of order " << order());
 
-  //  A->resize(1);
   double& a = (*A)[0];
-  //  a = 0.0;
   double* coeffPtr = (double*) coeff;
-  for (int c=0; c<J.numCells(); c++)
+
+  if (nFacetCases()==1)
     {
-      double detJ = fabs(J.detJ()[c]);
-      for (int q=0; q<nQuad(); q++, coeffPtr++)
+      const Array<double>& w = W_[0];
+      for (int c=0; c<JVol.numCells(); c++)
         {
-          a += W_[q]*(*coeffPtr)*detJ;
+          double detJ = fabs(JVol.detJ()[c]);
+          for (int q=0; q<nQuad(); q++, coeffPtr++)
+            {
+              a += w[q]*(*coeffPtr)*detJ;
+            }
+        }
+    }
+  else
+    {
+      for (int c=0; c<JVol.numCells(); c++)
+        {
+          double detJ = fabs(JVol.detJ()[c]);
+          const Array<double>& w = W_[facetIndex[c]];
+          for (int q=0; q<nQuad(); q++, coeffPtr++)
+            {
+              a += w[q]*(*coeffPtr)*detJ;
+            }
         }
     }
 
-  addFlops(J.numCells()*(1 + 2*nQuad()));
+  addFlops(JVol.numCells()*(1 + 2*nQuad()));
 }
 
 
 
-void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,  
+void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,  
+                                          const CellJacobianBatch& JVol,
+                                          const Array<int>& facetIndex,
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
@@ -352,24 +402,29 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
       double* aPtr = &((*A)[0]);
       double* coeffPtr = (double*) coeff;
       int offset = 0 ;
+      const Array<double>& w = W_[0];
 
-      for (int c=0; c<J.numCells(); c++, offset+=nNodes())
+      for (int c=0; c<JVol.numCells(); c++, offset+=nNodes())
         {
-          double detJ = fabs(J.detJ()[c]);
+          double detJ = fabs(JVol.detJ()[c]);
           for (int q=0; q<nQuad(); q++, coeffPtr++)
             {
               double f = (*coeffPtr)*detJ;
               for (int n=0; n<nNodes(); n++) 
                 {
-                  aPtr[offset+n] += f*W_[n + nNodes()*q];
+                  aPtr[offset+n] += f*w[n + nNodes()*q];
                 }
             }
         }
-      addFlops( J.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
+      addFlops( JVol.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
     }
   else
     {
-      createOneFormTransformationMatrix(J);
+      /* If the derivative order is nonzero, then we have to do a transformation. 
+       * If we're also on a cell of dimension lower than maximal, we need to refer
+       * to the facet index of the facet being integrated. */
+
+      createOneFormTransformationMatrix(JTrans, JVol);
 
       SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    Tabs() << "transformation matrix=" << G(alpha()));
@@ -378,18 +433,20 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& J,
 
       if (useSumFirstMethod())
         {
-          transformSummingFirst(J.numCells(), GPtr, coeff, A);
+          transformSummingFirst(JVol.numCells(), facetIndex, GPtr, coeff, A);
         }
       else
         {
-          transformSummingLast(J.numCells(), GPtr, coeff, A);
+          transformSummingLast(JVol.numCells(), facetIndex, GPtr, coeff, A);
         }
     }
   addFlops(flops);
 }
 
 
-void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,  
+void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
+                                          const CellJacobianBatch& JVol,
+                                          const Array<int>& facetIndex,
                                           const double* const coeff,
                                           RefCountPtr<Array<double> >& A) const
 {
@@ -407,24 +464,25 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
       double* coeffPtr = (double*) coeff;
       int offset = 0 ;
 
-      for (int c=0; c<J.numCells(); c++, offset+=nNodes())
+      const Array<double>& w = W_[0];
+      for (int c=0; c<JVol.numCells(); c++, offset+=nNodes())
         {
-          double detJ = fabs(J.detJ()[c]);
+          double detJ = fabs(JVol.detJ()[c]);
           for (int q=0; q<nQuad(); q++, coeffPtr++)
             {
               double f = (*coeffPtr)*detJ;
               for (int n=0; n<nNodes(); n++) 
                 {
-                  aPtr[offset+n] += f*W_[n + nNodes()*q];
+                  aPtr[offset+n] += f*w[n + nNodes()*q];
                 }
             }
         }
 
-      addFlops( J.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
+      addFlops( JVol.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
     }
   else
     {
-      createTwoFormTransformationMatrix(J);
+      createTwoFormTransformationMatrix(JTrans, JVol);
       double* GPtr;
 
       if (testDerivOrder() == 0)
@@ -450,17 +508,18 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& J,
       
       if (useSumFirstMethod())
         {
-          transformSummingFirst(J.numCells(), GPtr, coeff, A);
+          transformSummingFirst(JTrans.numCells(), facetIndex, GPtr, coeff, A);
         }
       else
         {
-          transformSummingLast(J.numCells(), GPtr, coeff, A);
+          transformSummingLast(JTrans.numCells(), facetIndex, GPtr, coeff, A);
         }
     }
 }
 
 void QuadratureIntegral
 ::transformSummingFirst(int nCells,
+                        const Array<int>& facetIndex,
                         const double* const GPtr,
                         const double* const coeff,
                         RefCountPtr<Array<double> >& A) const
@@ -504,13 +563,16 @@ void QuadratureIntegral
     {
       /* sum untransformed basis combinations over quad points */
       for (int i=0; i<swSize; i++) sumWorkspace[i]=0.0;
+      int fc = 0;
+      if (nFacetCases() > 1) fc = facetIndex[c];
 
+      const Array<double>& w = W_[fc];
       for (int q=0; q<nQuad(); q++, coeffPtr++)
         {
           double f = (*coeffPtr);
           for (int n=0; n<swSize; n++) 
             {
-              sumWorkspace[n] += f*W_[n + q*swSize];
+              sumWorkspace[n] += f*w[n + q*swSize];
             }
         }
       /* transform the sum */
@@ -531,6 +593,7 @@ void QuadratureIntegral
 
 void QuadratureIntegral
 ::transformSummingLast(int nCells,
+                       const Array<int>& facetIndex,
                        const double* const GPtr,
                        const double* const coeff,
                        RefCountPtr<Array<double> >& A) const
@@ -565,6 +628,9 @@ void QuadratureIntegral
     {
       const double* const gCell = &(GPtr[transSize*c]);
       double* aCell = aPtr + nNodes()*c;
+      int fc = 0;
+      if (nFacetCases() > 1) fc = facetIndex[c];
+      const Array<double>& w = W_[fc];
 
       for (int q=0; q<nQuad(); q++)
         {
@@ -575,7 +641,7 @@ void QuadratureIntegral
             {
               for (int t=0; t<transSize; t++)
                 {
-                  aCell[n] += jWorkspace[t]*W_[n + nNodes()*(t + transSize*q)];
+                  aCell[n] += jWorkspace[t]*w[n + nNodes()*(t + transSize*q)];
                 }
             }
         }

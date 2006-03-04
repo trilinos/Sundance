@@ -112,7 +112,7 @@ int main(int argc, void** argv)
       Point b = Point(1.0, 0.0);
       Point c = Point(0.0, 1.0);
 
-      Point d = Point(0.0, 0.0);
+      Point d = Point(0.1, 0.1);
       Point e = Point(1.0, 0.0);
       Point f = Point(0.0, 1.0);
 
@@ -133,6 +133,7 @@ int main(int argc, void** argv)
 
 
       
+      Array<int> dummy;
       double coeff = 1.0;
       RefCountPtr<Array<double> > A = rcp(new Array<double>());
       RefCountPtr<Array<double> > B = rcp(new Array<double>());
@@ -157,11 +158,12 @@ int main(int argc, void** argv)
                 {
                   int alpha = t;
                   Tabs tab;
-                  RefIntegral ref(dim, dim, cellType, P, alpha, dp);
+                  RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp);
                   A->resize(JBatch.numCells() * ref.nNodes());
-                  ref.transformOneForm(JBatch, coeff, A);
+                  for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+                  ref.transformOneForm(JBatch, JBatch, dummy, coeff, A);
                   cerr << tab << "transformed reference element" << endl;
-                  cerr << tab << "test diff direction=" << t << endl;
+                  if (dp>0) cerr << tab << "test diff direction=" << t << endl;
                   for (int cell=0; cell<nCells; cell++)
                     {
                       cerr << tab << "{";
@@ -172,12 +174,13 @@ int main(int argc, void** argv)
                         }
                       cerr << "}" << endl;
                     }
-                  QuadratureIntegral quad(dim, dim, cellType, P, alpha, dp, q4);
+                  QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4);
                   Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                   B->resize(JBatch.numCells() * quad.nNodes());
-                  quad.transformOneForm(JBatch, &(quadCoeff[0]), B);
+                  for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+                  quad.transformOneForm(JBatch, JBatch, dummy, &(quadCoeff[0]), B);
                   cerr << tab << "transformed quad element" << endl;
-                  cerr << tab << "test diff direction =" << t << endl;
+                  if (dp>0) cerr << tab << "test diff direction =" << t << endl;
                   for (int cell=0; cell<nCells; cell++)
                     {
                       cerr << tab << "{";
@@ -190,7 +193,8 @@ int main(int argc, void** argv)
                     }
 
                   cerr << tab << "MISFIT quad-ref" << endl;
-                  cerr << tab << "test diff direction =" << t << endl;
+                  cerr << tab << "test diff order =" << dp << endl;
+                  if (dp>0) cerr << tab << "test diff direction =" << t << endl;
                   bool OK = true;
                   for (int cell=0; cell<nCells; cell++)
                     {
@@ -249,13 +253,16 @@ int main(int argc, void** argv)
                               //                              if (p==0 || q==0 || dp==0 || dq==0 || u==1
                               //  || t==1) continue;
                               int beta = u;
-                              RefIntegral ref(dim, dim, cellType, P, alpha,
+                              RefIntegral ref(dim, cellType, dim, cellType, P, alpha,
                                               dp, Q, beta, dq);
                               A->resize(JBatch.numCells() * ref.nNodes());
-                              ref.transformTwoForm(JBatch, coeff, A);
+                              for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+                              ref.transformTwoForm(JBatch, JBatch, dummy, coeff, A);
                               cerr << tab << "transformed ref element" << endl;
-                              cerr << tab << "t=dx(" << t << "), u=dx(" << u 
-                                   << ")" << endl;
+                              cerr << tab << "test diff order = " << dp << endl;
+                              if (dp>0) cerr << tab << "t=dx(" << t << ")" << endl;
+                              cerr << tab << "unk diff order = " << dq << endl;
+                              if (dq>0) cerr << tab << "u=dx(" << u << ")" << endl;
 
                               for (int cell=0; cell<nCells; cell++)
                                 {
@@ -275,15 +282,19 @@ int main(int argc, void** argv)
                                 }
 
 
-                              QuadratureIntegral quad(dim, dim, cellType, P, alpha,
+                              QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha,
                                                       dp, Q, beta, dq, q4);
                               Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                               B->resize(JBatch.numCells() * quad.nNodes());
-                              quad.transformTwoForm(JBatch, &(quadCoeff[0]), B);
+                              for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+                              quad.transformTwoForm(JBatch, JBatch, dummy, &(quadCoeff[0]), B);
 
                               cerr << tab << "transformed quad element" << endl;
-                              cerr << tab << "t=dx(" << t << "), u=dx(" 
-                                   << u << ")" << endl;
+                              cerr << tab << "test diff order = " << dp << endl;
+                              if (dp>0) cerr << tab << "t=dx(" << t << ")" << endl;
+                              cerr << tab << "unk diff order = " << dq << endl;
+                              if (dq>0) cerr << tab << "u=dx(" << u << ")" << endl;
+
                               for (int cell=0; cell<nCells; cell++)
                                 {
                                   cerr << tab << "cell=" << cell << " {";
@@ -303,8 +314,11 @@ int main(int argc, void** argv)
 
                               bool OK = true;
                               cerr << tab << "MISMATCH quad - ref" << endl;
-                              cerr << tab << "t=dx(" << t << "), u=dx(" 
-                                   << u << ")" << endl;
+                              cerr << tab << "test diff order = " << dp << endl;
+                              if (dp>0) cerr << tab << "t=dx(" << t << ")" << endl;
+                              cerr << tab << "unk diff order = " << dq << endl;
+                              if (dq>0) cerr << tab << "u=dx(" << u << ")" << endl;
+
                               for (int cell=0; cell<nCells; cell++)
                                 {
                                   cerr << tab << "cell #" << cell << " {";
@@ -333,6 +347,8 @@ int main(int argc, void** argv)
                                        << " q=" << q << "  dq=" << dq
                                        << "  u=" << u << endl;
                                 }
+
+                              cerr << endl << endl << endl << endl;
                             }
                         }
                     }

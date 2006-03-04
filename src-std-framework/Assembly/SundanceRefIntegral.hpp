@@ -87,11 +87,13 @@ namespace SundanceStdFwk
     public:
       /** Construct a reference zero-form */
       RefIntegral(int spatialDim,
+                  const CellType& maxCellType,
                   int dim, 
                   const CellType& cellType);
 
       /** Construct a reference one-form */
       RefIntegral(int spatialDim,
+                  const CellType& maxCellType,
                   int dim, 
                   const CellType& cellType,
                   const BasisFamily& testBasis,
@@ -100,6 +102,7 @@ namespace SundanceStdFwk
 
       /** Construct a reference two-form */
       RefIntegral(int spatialDim,
+                  const CellType& maxCellType,
                   int dim,
                   const CellType& cellType,
                   const BasisFamily& testBasis,
@@ -116,53 +119,63 @@ namespace SundanceStdFwk
       void print(ostream& os) const ;
 
       /** */
-      void transform(const CellJacobianBatch& J, 
+      void transform(const CellJacobianBatch& JTrans,
+                     const CellJacobianBatch& JVol,
+                     const Array<int>& facetNum,
                      const double& coeff,
                      RefCountPtr<Array<double> >& A) const 
       {
-        if (order()==2) transformTwoForm(J, coeff, A);
-        else if (order()==1) transformOneForm(J, coeff, A);
-        else transformZeroForm(J, coeff, A);
+        if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
+        else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
+        else transformZeroForm(JVol, coeff, A);
       }
 
       /** */
-      void transformTwoForm(const CellJacobianBatch& J, 
+      void transformTwoForm(const CellJacobianBatch& JTrans,
+                            const CellJacobianBatch& JVol,
+                            const Array<int>& facetNum, 
                             const double& coeff,
                             RefCountPtr<Array<double> >& A) const ;
 
       /** */
-      void transformOneForm(const CellJacobianBatch& J, 
+      void transformOneForm(const CellJacobianBatch& JTrans,
+                            const CellJacobianBatch& JVol,
+                            const Array<int>& facetNum, 
                             const double& coeff,
                             RefCountPtr<Array<double> >& A) const ;
 
       /** */
-      void transformZeroForm(const CellJacobianBatch& J, 
-                            const double& coeff,
-                            RefCountPtr<Array<double> >& A) const ;
+      void transformZeroForm(const CellJacobianBatch& JVol,
+                             const double& coeff,
+                             RefCountPtr<Array<double> >& A) const ;
       /** */
-      inline double& value(int testDerivDir, int testNode,
+      inline double& value(int facetCase, int testDerivDir, int testNode,
                            int unkDerivDir, int unkNode)
-      {return W_[unkNode + nNodesUnk()*testNode 
-                 + nNodes()*(unkDerivDir + nRefDerivUnk()*testDerivDir)];}
+      {return W_[facetCase][unkNode + nNodesUnk()*testNode 
+                            + nNodes()*(unkDerivDir 
+                                        + nRefDerivUnk()*testDerivDir)];}
 
       
 
       /** */
-      inline const double& value(int testDerivDir, int testNode,
+      inline const double& value(int facetCase, 
+                                 int testDerivDir, int testNode,
                                  int unkDerivDir, int unkNode) const 
       {
-        return W_[unkNode + nNodesUnk()*testNode 
-                  + nNodes()*(unkDerivDir + nRefDerivUnk()*testDerivDir)];
+        return W_[facetCase][unkNode + nNodesUnk()*testNode 
+                             + nNodes()*(unkDerivDir 
+                                         + nRefDerivUnk()*testDerivDir)];
       }
       
       /** */
-      inline double& value(int testDerivDir, int testNode)
-      {return W_[nNodesTest()*testDerivDir + testNode];}
+      inline double& value(int facetCase, int testDerivDir, int testNode)
+      {return W_[facetCase][nNodesTest()*testDerivDir + testNode];}
 
 
       /** */
-      inline const double& value(int testDerivDir, int testNode) const 
-      {return W_[nNodesTest()*testDerivDir + testNode];}
+      inline const double& value(int facetCase, 
+                                 int testDerivDir, int testNode) const 
+      {return W_[facetCase][nNodesTest()*testDerivDir + testNode];}
 
       static double& totalFlops() {static double rtn = 0; return rtn;}
 
@@ -172,7 +185,8 @@ namespace SundanceStdFwk
       
     private:
 
-      Array<double> W_;
+      Array<Array<double> > W_;
+
       
     };
   }

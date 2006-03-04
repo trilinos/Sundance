@@ -263,6 +263,7 @@ void Assembler::init(const Mesh& mesh,
 
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
+      CellType maxCellType = mesh.cellType(mesh.spatialDim());
       QuadratureFamily quad(rqc.quad());
 
       for (Set<ComputationType>::const_iterator 
@@ -281,7 +282,7 @@ void Assembler::init(const Mesh& mesh,
           SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
-          grouper->findGroups(*eqn, mesh.spatialDim(),
+          grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
                               cellType, cellDim, quad, sparsity, groups);
           groups_[compType].append(groups);
         }
@@ -302,6 +303,7 @@ void Assembler::init(const Mesh& mesh,
       
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
+      CellType maxCellType = mesh.cellType(mesh.spatialDim());
       QuadratureFamily quad(rqc.quad());
 
       for (Set<ComputationType>::const_iterator 
@@ -320,7 +322,7 @@ void Assembler::init(const Mesh& mesh,
           SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
-          grouper->findGroups(*eqn, mesh.spatialDim(),
+          grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
                               cellType, cellDim, quad, sparsity, groups);
           groups_[compType].append(groups);
         }
@@ -508,7 +510,9 @@ void Assembler::assemble(LinearOperator<double>& A,
 
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
+  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
+
 
   if (matNeedsConfiguration_)
     {
@@ -656,7 +660,7 @@ void Assembler::assemble(LinearOperator<double>& A,
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, vectorCoeffs,
+              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs,
                                   constantCoeffs, 
                                   localValues)) continue;
 
@@ -729,6 +733,7 @@ void Assembler::assemble(Vector<double>& b) const
 
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
+  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   if (vecNeedsConfiguration_)
@@ -838,7 +843,7 @@ void Assembler::assemble(Vector<double>& b) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, vectorCoeffs, 
+              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
@@ -894,6 +899,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
+  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   if (vecNeedsConfiguration_)
@@ -1006,7 +1012,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, vectorCoeffs, 
+              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
@@ -1077,6 +1083,7 @@ void Assembler::evaluate(double& value) const
 
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
+  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
   RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   double localSum = 0.0;
@@ -1158,7 +1165,7 @@ void Assembler::evaluate(double& value) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, vectorCoeffs, 
+              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {

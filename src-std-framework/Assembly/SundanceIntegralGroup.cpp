@@ -133,7 +133,9 @@ IntegralGroup
 }
 
 bool IntegralGroup
-::evaluate(const CellJacobianBatch& J,
+::evaluate(const CellJacobianBatch& JTrans,
+           const CellJacobianBatch& JVol,
+           const Array<int>& facetIndex, 
            const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
            const Array<double>& constantCoeffs,
            RefCountPtr<Array<double> >& A) const
@@ -148,7 +150,7 @@ bool IntegralGroup
 
   /* initialize the return vector */
   if (integrals_[0]->nNodes() == -1) A->resize(1);
-  else A->resize(J.numCells() * integrals_[0]->nNodes());
+  else A->resize(JVol.numCells() * integrals_[0]->nNodes());
   double* aPtr = &((*A)[0]);
   int n = A->size();
   for (int i=0; i<n; i++) aPtr[i] = 0.0;
@@ -172,7 +174,7 @@ bool IntegralGroup
           double f = constantCoeffs[resultIndices_[i]];
           SUNDANCE_OUT(this->verbosity() > VerbSilent,
                        tab << "Coefficient is " << f);
-          ref->transform(J, f, A);
+          ref->transform(JTrans, JVol, facetIndex, f, A);
         }
       else 
         {
@@ -187,7 +189,7 @@ bool IntegralGroup
                              << vectorCoeffs[resultIndices_[i]]->str()
                              << "]");
           const double* const f = vectorCoeffs[resultIndices_[i]]->start();
-          quad->transform(J, f, A);
+          quad->transform(JTrans, JVol, facetIndex, f, A);
         }
       SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "i=" << i << " A=" << *A);
     }
