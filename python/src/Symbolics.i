@@ -33,6 +33,18 @@ namespace SundanceCore
     ~Expr();
 
     void setParameterValue(const double& val);
+
+    /** Number of elements in top level of list */
+    unsigned int size() const ;
+
+    /** Total number of elements in list. */
+    unsigned int totalSize() const ;
+    
+    /** Append a new element to this list */
+    void append(const Expr& expr);
+    
+    /** Flatten this list */
+    Expr flatten() const ;
   };
 
   %extend Expr

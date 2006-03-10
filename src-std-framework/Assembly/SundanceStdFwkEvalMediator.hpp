@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceAbstractEvalMediator.hpp"
+#include "SundanceCellJacobianBatch.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceDiscreteFunction.hpp"
 
@@ -66,25 +67,42 @@ namespace SundanceStdFwk
     {
     public:
       /** */
-      StdFwkEvalMediator(const Mesh& mesh, int cellDim)
-        : mesh_(mesh),
-          cellDim_(cellDim),
-          cellType_(NullCell),
-          cellLID_(),
-          cacheIsValid_(false)
-      {;}
+      StdFwkEvalMediator(const Mesh& mesh, int cellDim);
 
       /** */
       virtual ~StdFwkEvalMediator(){;}
 
       /** */
-      void setCellBatch(const RefCountPtr<Array<int> >& cellLID,
-                        RefCountPtr<CellJacobianBatch>& J) ;
+      void setCellBatch(bool useMaximalCellsForTransformations,
+                        const RefCountPtr<Array<int> >& cellLID);
+
 
       /** */
-
       virtual void setCellType(const CellType& cellType) 
       {cellType_=cellType; cacheIsValid() = false; jCacheIsValid_=false;}
+
+      /** Return the Jacobian to be used in computing the volume of cells being
+       * integrated. This will not necessarily be the same as the Jacobian used
+       * for transformations of vectors: when integrating derivatives over 
+       * boundaries, the volume is the volume of the facet, while the 
+       * transformations are computed on the maximal cofacets. */
+      const CellJacobianBatch& JVol() const {return *JVol_;}
+
+      /** Return the Jacobian to be used in derivative transformations. */
+      const CellJacobianBatch& JTrans() const ;
+
+      /** When evaluating derivatives on boundaries, we evaluate basis functions
+       * on the maximal cofacets of the boundary cells. This function returns the
+       * facet index, relative to the maximal cofacet, of each boundary cell in the batch.
+       */
+      const Array<int>& facetIndices() const {return *facetIndices_;}
+
+      /** Indicate whether transformations use maximal cells */
+      bool useMaximalCells() const {return useMaximalCells_;}
+
+
+      /** */
+      const Array<int>& maxCellLIDs() const {return *maxCellLIDs_;}
 
 
     protected:
@@ -97,9 +115,6 @@ namespace SundanceStdFwk
       const RefCountPtr<Array<int> >& cellLID() const {return cellLID_;}
 
       bool& cacheIsValid() const {return cacheIsValid_;}
-
-      const RefCountPtr<CellJacobianBatch>& J() const {return J_;}
-
 
       /** */
       Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& fCache() const {return fCache_;}
@@ -123,7 +138,15 @@ namespace SundanceStdFwk
 
       RefCountPtr<Array<int> > cellLID_;
 
-      mutable RefCountPtr<CellJacobianBatch> J_;
+      bool useMaximalCells_;
+
+      mutable RefCountPtr<CellJacobianBatch> JVol_;
+
+      mutable RefCountPtr<CellJacobianBatch> JTrans_;
+
+      mutable RefCountPtr<Array<int> > facetIndices_;
+
+      mutable RefCountPtr<Array<int> > maxCellLIDs_;
 
       mutable bool cacheIsValid_;
 

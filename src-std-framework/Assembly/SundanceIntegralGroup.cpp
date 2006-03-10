@@ -63,9 +63,18 @@ IntegralGroup
     testBlock_(),
     unkBlock_(),
     integrals_(integrals),
-    resultIndices_(resultIndices)
+    resultIndices_(resultIndices),
+    requiresMaximalCofacet_(false)
 {
   verbosity() = classVerbosity();
+
+  for (unsigned int i=0; i<integrals_.size(); i++)
+    {
+      if (integrals[i]->nFacetCases() > 1) 
+        {
+          requiresMaximalCofacet_ = true;
+        }
+    }
 }
 
 IntegralGroup
@@ -81,7 +90,8 @@ IntegralGroup
     testBlock_(testBlock),
     unkBlock_(),
     integrals_(integrals),
-    resultIndices_(resultIndices)
+    resultIndices_(resultIndices),
+    requiresMaximalCofacet_(false)
 {
   verbosity() = classVerbosity();
 
@@ -94,6 +104,10 @@ IntegralGroup
                              "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
         }
       nTestNodes_ = nt;
+      if (integrals[i]->nFacetCases() > 1) 
+        {
+          requiresMaximalCofacet_ = true;
+        }
     }
 }
 
@@ -112,7 +126,8 @@ IntegralGroup
     testBlock_(testBlock),
     unkBlock_(unkBlock),
     integrals_(integrals),
-    resultIndices_(resultIndices)
+    resultIndices_(resultIndices),
+    requiresMaximalCofacet_(false)
 {
   verbosity() = classVerbosity();
 
@@ -129,6 +144,10 @@ IntegralGroup
         }
       nTestNodes_ = nt;
       nUnkNodes_ = nu;
+      if (integrals[i]->nFacetCases() > 1) 
+        {
+          requiresMaximalCofacet_ = true;
+        }
     }
 }
 

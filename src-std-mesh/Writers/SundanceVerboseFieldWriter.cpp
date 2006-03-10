@@ -76,6 +76,7 @@ void VerboseFieldWriter::write() const
       os << tab0 << "num elements = " << nElems << endl;
       os << tab0 << "Point list: " << endl;
 
+      int dummy;
       for (int i=0; i<nPts; i++)
         {
           Tabs tab1;
@@ -91,7 +92,7 @@ void VerboseFieldWriter::write() const
             {
               if (c==0) os << " " ;
               else os << ", ";
-              os << mesh().mapLIDToGID(dim, mesh().cofacetLID(0,i,c));
+              os << mesh().mapLIDToGID(dim, mesh().cofacetLID(0,i,c,dummy));
             }
           os << "}" << endl;
         }

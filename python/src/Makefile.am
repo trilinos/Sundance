@@ -26,6 +26,7 @@
 # ************************************************************************
 # @HEADER
 
+
 # Include swig rules
 include $(top_srcdir)/config/swig.am
 @HAVE_MPI_TRUE@MPI_FLAG = -DHAVE_MPI
@@ -49,6 +50,9 @@ all-am: build
 # setup.py script to work correctly
 tempdir = $(shell $(PYTHON) -c "import sys,os; from distutils.util import get_platform; print os.path.join('build','temp.%s-%s'%(get_platform(),sys.version[0:3]))")
 
+# path to shared library
+solibdir = $(shell $(PYTHON) -c "import sys,os; from distutils.util import get_platform; print os.path.join('build','lib.%s-%s'%(get_platform(),sys.version[0:3]),'PySundance')")
+
 $(tempdir):
 	@echo "Creating directory $@"
 	mkdir -p $@
@@ -58,7 +62,13 @@ INTERFACES = PySundance.i
 WRAPPERS   = $(INTERFACES:.i=_wrap.cpp)
 PROXIES    = $(INTERFACES:.i=.py      )
 
-build: $(WRAPPERS) $(tempdir)
+LIBDEPENDENCIES = $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+build: $(WRAPPERS) $(tempdir) $(LIBDEPENDENCIES)
+	rm -f $(solibdir)/_PySundance.so ../../python/python/src/PySundance_wrap.o
 	$(PYTHON) $(srcdir)/setup.py build
 
 install: build

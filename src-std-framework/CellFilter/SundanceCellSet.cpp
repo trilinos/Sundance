@@ -44,6 +44,7 @@ using namespace TSFExtended;
 
 CellSet CellSet::setUnion(const CellSet& other) const
 {
+  if (ptr().get()==0) return other;
   ExplicitCellSet* rtn = new ExplicitCellSet(mesh(), dimension(), cellType());
 
   checkCompatibility("union", other);

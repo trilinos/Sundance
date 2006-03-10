@@ -43,7 +43,11 @@ namespace SundanceStdFwk
   class BasisArray
   {
   public:
+    BasisArray();
     BasisArray(int n);
+
+    void append(const BasisFamily& b);
+
   };
 
   %extend BasisArray
@@ -83,6 +87,13 @@ namespace SundanceStdFwk
                        "--enable-fiat");
     return BasisFamily(); // -Wall
     #endif
+  }
+
+  /* */
+  SundanceStdFwk::BasisArray 
+    BasisList()
+  {
+    return BasisArray();
   }
 
   /* */

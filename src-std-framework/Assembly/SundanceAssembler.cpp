@@ -234,18 +234,22 @@ void Assembler::init(const Mesh& mesh,
                                                colMap_[b], colVecType_[b]));
         }
       groups_.put(MatrixAndVector, Array<Array<IntegralGroup> >());
+      rqcRequiresMaximalCofacets_.put(MatrixAndVector, Array<int>());
       contexts_.put(MatrixAndVector, Array<EvalContext>());
       evalExprs_.put(MatrixAndVector, Array<const EvaluatableExpr*>());
       groups_.put(VectorOnly, Array<Array<IntegralGroup> >());
+      rqcRequiresMaximalCofacets_.put(VectorOnly, Array<int>());
       contexts_.put(VectorOnly, Array<EvalContext>());
       evalExprs_.put(VectorOnly, Array<const EvaluatableExpr*>());
     }
   else
     {
       groups_.put(FunctionalAndGradient, Array<Array<IntegralGroup> >());
+      rqcRequiresMaximalCofacets_.put(FunctionalAndGradient, Array<int>());
       contexts_.put(FunctionalAndGradient, Array<EvalContext>());
       evalExprs_.put(FunctionalAndGradient, Array<const EvaluatableExpr*>());
       groups_.put(FunctionalOnly, Array<Array<IntegralGroup> >());
+      rqcRequiresMaximalCofacets_.put(FunctionalOnly, Array<int>());
       contexts_.put(FunctionalOnly, Array<EvalContext>());
       evalExprs_.put(FunctionalOnly, Array<const EvaluatableExpr*>());
     }
@@ -285,6 +289,16 @@ void Assembler::init(const Mesh& mesh,
           grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
                               cellType, cellDim, quad, sparsity, groups);
           groups_[compType].append(groups);
+          bool reqCofacets = false;
+          for (unsigned int g=0; g<groups.size(); g++)
+            {
+              if (groups[g].requiresMaximalCofacet()) 
+                {
+                  reqCofacets = true;
+                  break;
+                }
+            }
+          rqcRequiresMaximalCofacets_[compType].append(reqCofacets);
         }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
@@ -325,6 +339,16 @@ void Assembler::init(const Mesh& mesh,
           grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
                               cellType, cellDim, quad, sparsity, groups);
           groups_[compType].append(groups);
+          bool reqCofacets = false;
+          for (unsigned int g=0; g<groups.size(); g++)
+            {
+              if (groups[g].requiresMaximalCofacet()) 
+                {
+                  reqCofacets = true;
+                  break;
+                }
+            }
+          rqcRequiresMaximalCofacets_[compType].append(reqCofacets);
         }
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
@@ -507,12 +531,8 @@ void Assembler::assemble(LinearOperator<double>& A,
   SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
 
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
-
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
-  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
-  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
-
 
   if (matNeedsConfiguration_)
     {
@@ -615,10 +635,15 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           workSetCounter++;
 
-          mediators_[r]->setCellBatch(workSet, J);
+          bool useMaximalCellsForTransformations 
+            = rqcRequiresMaximalCofacets_.get(MatrixAndVector)[r];
+          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
+
+          const CellJacobianBatch& JVol = mediators_[r]->JVol();
+          const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
+          const Array<int>& facetIndices = mediators_[r]->facetIndices();
 
           evaluator->resetNumCalls();
-          //          mesh_.getJacobians(cellDim, *workSet, *J);
           evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
           if (verbosity() > VerbHigh)
@@ -660,7 +685,7 @@ void Assembler::assemble(LinearOperator<double>& A,
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs,
+              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs,
                                   constantCoeffs, 
                                   localValues)) continue;
 
@@ -733,8 +758,6 @@ void Assembler::assemble(Vector<double>& b) const
 
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
-  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
-  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   if (vecNeedsConfiguration_)
     {
@@ -814,8 +837,13 @@ void Assembler::assemble(Vector<double>& b) const
 
 
           workSetCounter++;
+          bool useMaximalCellsForTransformations 
+            = rqcRequiresMaximalCofacets_.get(VectorOnly)[r];
+          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
 
-          mediators_[r]->setCellBatch(workSet, J);
+          const CellJacobianBatch& JVol = mediators_[r]->JVol();
+          const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
+          const Array<int>& facetIndices = mediators_[r]->facetIndices();
 
           evaluator->resetNumCalls();
           //          mesh_.getJacobians(cellDim, *workSet, *J);
@@ -843,7 +871,7 @@ void Assembler::assemble(Vector<double>& b) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs, 
+              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
@@ -899,8 +927,6 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
-  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
-  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   if (vecNeedsConfiguration_)
     {
@@ -983,7 +1009,14 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
           workSetCounter++;
 
-          mediators_[r]->setCellBatch(workSet, J);
+          bool useMaximalCellsForTransformations 
+            = rqcRequiresMaximalCofacets_.get(FunctionalAndGradient)[r];
+          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
+
+          const CellJacobianBatch& JVol = mediators_[r]->JVol();
+          const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
+          const Array<int>& facetIndices = mediators_[r]->facetIndices();
+
 
           evaluator->resetNumCalls();
           //          mesh_.getJacobians(cellDim, *workSet, *J);
@@ -1012,7 +1045,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs, 
+              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
@@ -1083,8 +1116,6 @@ void Assembler::evaluate(double& value) const
 
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
-  RefCountPtr<Array<int> > facetIndices = rcp(new Array<int>());
-  RefCountPtr<CellJacobianBatch> J = rcp(new CellJacobianBatch());
 
   double localSum = 0.0;
 
@@ -1143,11 +1174,16 @@ void Assembler::evaluate(double& value) const
 
 
           workSetCounter++;
+          bool useMaximalCellsForTransformations 
+            = rqcRequiresMaximalCofacets_.get(FunctionalOnly)[r];
+          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
 
-          mediators_[r]->setCellBatch(workSet, J);
+          const CellJacobianBatch& JVol = mediators_[r]->JVol();
+          const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
+          const Array<int>& facetIndices = mediators_[r]->facetIndices();
+
 
           evaluator->resetNumCalls();
-          //          mesh_.getJacobians(cellDim, *workSet, *J);
           evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
           if (verbosity() > VerbHigh)
@@ -1165,7 +1201,7 @@ void Assembler::evaluate(double& value) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(*J, *J, *facetIndices, vectorCoeffs, 
+              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {

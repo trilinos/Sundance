@@ -176,7 +176,8 @@ using namespace SundanceUtils;
        * @param cofacetIndex index into the list of the cell's facets
        */
       virtual int cofacetLID(int cellDim, int cellLID,
-                             int cofacetIndex) const = 0 ;
+                             int cofacetIndex, 
+                             int& facetIndex) const = 0 ;
 
       /** 
        * Find the local ID of a cell given its global index

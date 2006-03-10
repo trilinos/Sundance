@@ -189,8 +189,9 @@ void ElementIntegral
 {
   TimeMonitor timer(transCreationTimer());
 
-
   int flops = 0;
+
+  int maxDim = JTrans.cellDim();
 
   if (testDerivOrder() == 1 && unkDerivOrder() == 1)
     {
@@ -210,16 +211,16 @@ void ElementIntegral
           static Array<double> invJ;
           JTrans.getInvJ(c, invJ);
           double detJ = fabs(JVol.detJ()[c]);
-          for (int gamma=0; gamma<dim(); gamma++)
+          for (int gamma=0; gamma<maxDim; gamma++)
             {
-              for (int delta=0; delta<dim(); delta++, k++)
+              for (int delta=0; delta<maxDim; delta++, k++)
                 {
-                  GPtr[k] =  detJ*invJ[alpha() + gamma*dim()]
-                    * invJ[beta() + dim()*delta];
+                  GPtr[k] =  detJ*invJ[alpha() + gamma*maxDim]
+                    * invJ[beta() + maxDim*delta];
                 }
             }
         }
-      flops = 2 * JTrans.numCells() * dim() * dim() + JTrans.numCells();
+      flops = 2 * JTrans.numCells() * maxDim * maxDim + JTrans.numCells();
     }
 
   else if (testDerivOrder() == 1 && unkDerivOrder() == 0)
@@ -237,12 +238,12 @@ void ElementIntegral
           static Array<double> invJ;
           JTrans.getInvJ(c, invJ);
           double detJ = fabs(JVol.detJ()[c]);
-          for (int gamma=0; gamma<dim(); gamma++,k++)
+          for (int gamma=0; gamma<maxDim; gamma++,k++)
             {
-              GPtr[k] = detJ*invJ[alpha() + dim() * gamma];
+              GPtr[k] = detJ*invJ[alpha() + maxDim * gamma];
             }
         }
-      flops = JTrans.numCells() * dim() + JTrans.numCells();
+      flops = JTrans.numCells() * maxDim + JTrans.numCells();
     }
 
   else 
@@ -260,12 +261,12 @@ void ElementIntegral
           static Array<double> invJ;
           JTrans.getInvJ(c, invJ);
           double detJ = fabs(JVol.detJ()[c]);
-          for (int gamma=0; gamma<dim(); gamma++,k++)
+          for (int gamma=0; gamma<maxDim; gamma++,k++)
             {
-              GPtr[k] = detJ*invJ[beta() + dim() * gamma];
+              GPtr[k] = detJ*invJ[beta() + maxDim * gamma];
             }
         }
-      flops = JTrans.numCells() * dim() + JTrans.numCells();
+      flops = JTrans.numCells() * maxDim + JTrans.numCells();
     }
 
   addFlops(flops);
@@ -278,15 +279,12 @@ void ElementIntegral
 {
   TimeMonitor timer(transCreationTimer());
 
+  int maxDim = JTrans.cellDim();
+
   if (transformationMatrixIsValid(alpha())) return;
   transformationMatrixIsValid(alpha()) = true;
 
-  TEST_FOR_EXCEPTION(JTrans.cellDim() != dim(), InternalError,
-                     "Inconsistency between Jacobian dimension " << JTrans.cellDim()
-                     << " and cell dimension " << dim() 
-                     << " in ElementIntegral::createOneFormTransformationMatrix()");
-
-  int flops = JTrans.numCells() * dim() + JTrans.numCells();
+  int flops = JTrans.numCells() * maxDim + JTrans.numCells();
 
   G(alpha()).resize(JTrans.numCells() * JTrans.cellDim());
 
@@ -298,9 +296,9 @@ void ElementIntegral
       Array<double> invJ;
       JTrans.getInvJ(c, invJ);
       double detJ = fabs(JVol.detJ()[c]);
-      for (int gamma=0; gamma<dim(); gamma++, k++)
+      for (int gamma=0; gamma<maxDim; gamma++, k++)
         {
-          GPtr[k] = detJ*invJ[alpha() + dim() * gamma]; 
+          GPtr[k] = detJ*invJ[alpha() + maxDim * gamma]; 
         }
     }
   

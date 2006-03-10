@@ -99,6 +99,9 @@ namespace SundanceStdFwk
       /** Return the block numbers for the unk functions */
       const Array<int>& unkBlock() const {return unkBlock_;}
 
+      /** Whether the group requires transformations based on a maximal cofacet */
+      bool requiresMaximalCofacet() const {return requiresMaximalCofacet_;}
+
 
 
       /** Evaluate this integral group */
@@ -138,6 +141,9 @@ namespace SundanceStdFwk
 
       /** */
       Array<int> resultIndices_;
+
+      /** */
+      bool requiresMaximalCofacet_;
     };
   }
 }

@@ -247,6 +247,8 @@ namespace SundanceStdFwk
 
       Map<int, int> unkIDToBlockMap_;
 
+      Map<ComputationType, Array<int> > rqcRequiresMaximalCofacets_;
+
     };
   }
 }

@@ -155,10 +155,13 @@ namespace SundanceStdMesh
        * @param cellDim dimension of the cell whose cofacets are being obtained
        * @param cellLID local index of the cell whose
        * cofacets are being obtained
-       * @param cofacetIndex index into the list of the cell's facets
+       * @param cofacetIndex which maximal cofacet to get
+       * @param cofacetIndex index of the cell cellLID into the list of the 
+       * maximal cell's facets
        */
       virtual int cofacetLID(int cellDim, int cellLID,
-                             int cofacetIndex) const  ;
+                             int cofacetIndex,
+                             int& facetIndex) const  ;
 
       /** 
        * Find the local ID of a cell given its global index

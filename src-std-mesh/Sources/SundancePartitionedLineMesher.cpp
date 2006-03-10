@@ -88,6 +88,10 @@ Mesh PartitionedLineMesher::fillMesh() const
       SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
                    "elem " << tuple(a,b) << " registered with LID=" << lid);
     }
+
+  if (px==0) mesh.setLabel(0, 0, 1); 
+  if (px==np-1) mesh.setLabel(0, mesh.mapGIDToLID(0, mesh.numCells(0)-1), 2);
+  
   
   return mesh;
 }

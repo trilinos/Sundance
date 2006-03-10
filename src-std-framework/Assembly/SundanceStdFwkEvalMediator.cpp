@@ -48,14 +48,47 @@ using namespace TSFExtended;
 
 
 
-void StdFwkEvalMediator::setCellBatch(const RefCountPtr<Array<int> >& cellLID,
-                                      RefCountPtr<CellJacobianBatch>& J) 
+StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
+  : mesh_(mesh),
+    cellDim_(cellDim),
+    cellType_(NullCell),
+    cellLID_(),
+    useMaximalCells_(false),
+    JVol_(rcp(new CellJacobianBatch())),
+    JTrans_(rcp(new CellJacobianBatch())),
+    facetIndices_(rcp(new Array<int>())),
+    maxCellLIDs_(rcp(new Array<int>())),
+    cacheIsValid_(false),
+    jCacheIsValid_(false),
+    fCache_(),
+    dfCache_(),
+    localValueCache_(),
+    fCacheIsValid_(),
+    dfCacheIsValid_(),
+    localValueCacheIsValid_()
+{;}
+
+void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
+                                      const RefCountPtr<Array<int> >& cellLID) 
 {
   cellLID_ = cellLID; 
   cacheIsValid() = false; 
   jCacheIsValid_=false;
-  mesh_.getJacobians(cellDim(), *cellLID, *J);
-  J_ = J;
+  mesh_.getJacobians(cellDim(), *cellLID, *JVol_);
+  useMaximalCells_ = useMaximalCells;
+
+  if (useMaximalCells_)
+    {
+      const Array<int>& cells = *cellLID;
+      facetIndices_->resize(cells.size());
+      maxCellLIDs_->resize(cells.size());
+      for (unsigned int c=0; c<cells.size(); c++)
+        {
+          (*maxCellLIDs_)[c] 
+            = mesh_.cofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
+        }
+      mesh_.getJacobians(mesh_.spatialDim(), *maxCellLIDs_, *JTrans_);
+    }
 
   /* mark the function caches as invalid */
   Map<const DiscreteFunctionData*, bool>::iterator iter;
@@ -71,4 +104,15 @@ void StdFwkEvalMediator::setCellBatch(const RefCountPtr<Array<int> >& cellLID,
     {
       iter->second = false;
     }
+}
+
+
+
+const CellJacobianBatch& StdFwkEvalMediator::JTrans() const
+{
+  /* If we're integrating a derivative on a boundary, JVol and JTrans will be
+   * different. Otherwise, they'll be the same, and we use JVol for both
+   * volume computations and vector transformations */
+  if (useMaximalCells_) return *JTrans_;
+  return *JVol_;
 }

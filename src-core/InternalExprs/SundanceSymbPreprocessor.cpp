@@ -121,6 +121,11 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   Expr u = unks.flatten();
   Expr u0 = evalPts.flatten();
 
+  TEST_FOR_EXCEPTION(u.size() != u0.size(), RuntimeError,
+                     "mismatched sizes of unknown list and evaluation points: "
+                     "u.size() = " << u.size()
+                     << ", u0.size() = " << u0.size());
+
   SundanceUtils::Set<int> testID;
   SundanceUtils::Set<int> unkID;
 

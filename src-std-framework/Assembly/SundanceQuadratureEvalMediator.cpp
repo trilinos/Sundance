@@ -403,13 +403,14 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       
       
       /* Transform derivatives to physical coordinates */
+      const CellJacobianBatch& J = JTrans();
       if (mi.order()==1)
         {
           int nRhs = nQuad * nFuncs;
           for (unsigned int c=0; c<cellLID()->size(); c++)
             {
               double* rhsPtr = &(C[(nRhs * nDir)*c]);
-              J()->applyInvJ(c, 0, rhsPtr, nRhs, false);
+              J.applyInvJ(c, 0, rhsPtr, nRhs, false);
             }
         }
     }

@@ -76,14 +76,18 @@ other packages installed, simply doing <tt>"configure; make"</tt> won't work.
 Please read the \ref installation_page page for information on what
 software must be installed first, and on how to choose <tt>configure</tt>
 options for Sundance.
+<li> <A HREF="PythonBuilds.html">
+Prebuilt shared libraries for PySundance
+</A>
+are available for some platforms.
 <li> There is a short <b><A HREF="Tutorial.pdf"> tutorial </A></b>
 on setting up linear and nonlinear PDE simulations.
-<li> Sundance is powerful, but can't do everything. Even
+<li> %Sundance is powerful, but can't do everything. Even
 among those things it can do in principle there are some things 
 that just haven't been added yet. Here is a listing
-of some of the \ref limits_page of Sundance. 
+of some of the \ref limits_page of %Sundance. 
 <li> This version is the result of 
-a complete rewrite of Sundance. If you have used
+a complete rewrite of %Sundance. If you have used
 version 1.0, <b> do not unpack this into your old distribution directory.
 </b> You may also want to read about some of the 
 \ref diff_page.

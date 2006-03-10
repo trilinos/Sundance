@@ -78,6 +78,8 @@ namespace SundanceStdFwk
     int dimension(const SundanceStdMesh::Mesh& mesh) const ;
 
     CellFilter labeledSubset(int label) const ;
+
+    CellFilter intersection(const CellFilter& other) const ;
   };
 
   %extend CellFilter
@@ -98,6 +100,16 @@ namespace SundanceStdFwk
         = Teuchos::rcp(new SundanceStdFwk::PySundanceCellPredicate(functor));
       CellPredicate p = new SundanceStdFwk::PositionalCellPredicate(f);
       return self->subset(p);
+    }
+
+    CellFilter __add__(const CellFilter& other) const
+    {
+      return self->operator+(other);
+    }
+
+    CellFilter __sub__(const CellFilter& other) const
+    {
+      return self->operator-(other);
     }
   }
 

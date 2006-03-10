@@ -159,15 +159,32 @@ bool DOFMapBuilder::unksAreOmnipresent() const
       numUnks += eqn_->numUnks(b);
     }
 
+  CellSet maxCellsWithAllUnks;
   for (unsigned int r=0; r<eqn_->numRegions(); r++)
     {
+      CellFilter f = eqn_->region(r);
       if (regionIsMaximal(r))
         {
-          if (eqn_->unksOnRegion(r).size() == numUnks) return true;
+          if ((int) eqn_->unksOnRegion(r).size() == numUnks) return true;
           else return false;
         }
+      else if (f.dimension(mesh_)==mesh_.spatialDim())
+        {
+          if ((int) eqn_->unksOnRegion(r).size() != numUnks) return false;
+          CellSet c = f.getCells(mesh_);
+          maxCellsWithAllUnks 
+            = maxCellsWithAllUnks.setUnion(c);
+        }
     }
-  return false;
+  CellFilter mf = new MaximalCellFilter();
+  CellSet allMax = mf.getCells(mesh_);
+  CellSet diff = maxCellsWithAllUnks.setDifference(allMax);
+  /* if the difference is nonzero, return false */
+  for (CellIterator i=diff.begin(); i != diff.end(); i++) 
+    {
+      return false;
+    }
+  return true;
 }
 
 bool DOFMapBuilder::testsAreOmnipresent() const
@@ -178,20 +195,40 @@ bool DOFMapBuilder::testsAreOmnipresent() const
       numVars += eqn_->numVars(b);
     }
   
+
+  CellSet maxCellsWithAllTests;
   for (unsigned int r=0; r<eqn_->numRegions(); r++)
     {
+      CellFilter f = eqn_->region(r);
       if (regionIsMaximal(r))
         {
-          if (eqn_->varsOnRegion(r).size() == numVars) return true;
+          if ((int) eqn_->varsOnRegion(r).size() == numVars) return true;
           else return false;
         }
+      else if (f.dimension(mesh_)==mesh_.spatialDim())
+        {
+          if ((int) eqn_->varsOnRegion(r).size() != numVars) return false;
+          CellSet c = f.getCells(mesh_);
+          maxCellsWithAllTests 
+            = maxCellsWithAllTests.setUnion(c);
+        }
     }
-  return false;
+
+  CellFilter mf = new MaximalCellFilter();
+  CellSet allMax = mf.getCells(mesh_);
+  CellSet diff = maxCellsWithAllTests.setDifference(allMax);
+  /* if the difference is nonzero, return false */
+  for (CellIterator i=diff.begin(); i != diff.end(); i++) 
+    {
+      return false;
+    }
+  return true;
+
 }
 
 bool DOFMapBuilder::isSymmetric(int b) const 
 {
-  if (eqn_->numVarBlocks() < b || eqn_->numUnkBlocks() < b) return false;
+  if ((int)eqn_->numVarBlocks() < b || (int)eqn_->numUnkBlocks() < b) return false;
 
   if (eqn_->numVars(b) != eqn_->numUnks(b)) return false;
 

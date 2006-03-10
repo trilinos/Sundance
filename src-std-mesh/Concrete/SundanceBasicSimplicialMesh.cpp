@@ -757,21 +757,36 @@ int BasicSimplicialMesh::numCofacets(int cellDim, int cellLID) const
 }
 
 int BasicSimplicialMesh::cofacetLID(int cellDim, int cellLID,
-                                    int cofacetIndex) const
+                                    int cofacetIndex,
+                                    int& facetIndex) const
 {
-
+  int rtn = -1;
   if (cellDim==0)
     {
-      return vertCofacets_[cellLID][cofacetIndex];
+      rtn = vertCofacets_[cellLID][cofacetIndex];
     }
-  if (cellDim==1)
+  else if (cellDim==1)
     {
-      return edgeCofacets_[cellLID][cofacetIndex];
+      rtn = edgeCofacets_[cellLID][cofacetIndex];
     }
-  if (cellDim==2)
+  else if (cellDim==2)
     {
-      return faceCofacets_[cellLID][cofacetIndex];
+      rtn = faceCofacets_[cellLID][cofacetIndex];
     }
+  else
+    {
+      TEST_FOR_EXCEPTION(true, RuntimeError, "invalid cell dimension " << cellDim
+                         << " in request for cofacet");
+    }
+
+  int dummy;
+  for (int f=0; f<numFacets(spatialDim(), rtn, cellDim); f++)
+    {
+      if (rtn==facetLID(spatialDim(), rtn, cellDim, f, dummy)) facetIndex = f;
+      return rtn;
+    }
+  TEST_FOR_EXCEPTION(true, RuntimeError, "reverse pointer to facet not found"
+                     " in request for cofacet");
   return -1; // -Wall
 }
 
