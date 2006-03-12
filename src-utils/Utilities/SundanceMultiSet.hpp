@@ -137,6 +137,40 @@ namespace SundanceUtils
       return os.str();
     }
 
+
+  template<class Key> inline
+  MultiSet<Key> makeMultiSet(const Key& k)
+  {
+    MultiSet<Key> rtn;
+    rtn.put(k);
+    return rtn;
+  }
+
+  template<class Key> inline
+  MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2)
+  {
+    MultiSet<Key> rtn = makeMultiSet<Key>(k1);
+    rtn.put(k2);
+    return rtn;
+  }
+
+  template<class Key> inline
+  MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2, const Key& k3)
+  {
+    MultiSet<Key> rtn = makeMultiSet<Key>(k1, k2);
+    rtn.put(k3);
+    return rtn;
+  }
+
+  template<class Key> inline
+  MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2, 
+                             const Key& k3, const Key& k4)
+  {
+    MultiSet<Key> rtn = makeMultiSet<Key>(k1, k2, k3);
+    rtn.put(k4);
+    return rtn;
+  }
+
 }
 
 namespace std

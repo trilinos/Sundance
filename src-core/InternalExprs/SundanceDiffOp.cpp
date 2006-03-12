@@ -123,7 +123,7 @@ Set<MultiSet<int> > DiffOp
 {
   Tabs tabs;
   Set<MultiSet<int> > rtn = activeFuncIDs;
-
+  rtn.put(MultiSet<int>());
   SUNDANCE_VERB_MEDIUM(tabs << "arg dependencies are " 
                        << evaluatableArg()->funcDependencies().toString());
 
@@ -157,6 +157,7 @@ Set<MultiSet<int> > DiffOp
           rtn.put(newDeriv);
         }
     }
+  SUNDANCE_VERB_MEDIUM(tabs << "found arg active funcs " << rtn.toString());
   return rtn;
 }
 

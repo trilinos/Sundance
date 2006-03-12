@@ -136,6 +136,75 @@ namespace SundanceUtils
     return os.str();
   }
 
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k)
+  {
+    Set<Key> rtn;
+    rtn.put(k);
+    return rtn;
+  }
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k1, const Key& k2)
+  {
+    Set<Key> rtn = makeSet<Key>(k1);
+    rtn.put(k2);
+    return rtn;
+  }
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3)
+  {
+    Set<Key> rtn = makeSet<Key>(k1, k2);
+    rtn.put(k3);
+    return rtn;
+  }
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4)
+  {
+    Set<Key> rtn = makeSet<Key>(k1, k2, k3);
+    rtn.put(k4);
+    return rtn;
+  }
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
+                   const Key& k5)
+  {
+    Set<Key> rtn = makeSet<Key>(k1, k2, k3, k4);
+    rtn.put(k5);
+    return rtn;
+  }
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
+                   const Key& k5, const Key& k6)
+  {
+    Set<Key> rtn = makeSet<Key>(k1, k2, k3, k4, k5);
+    rtn.put(k6);
+    return rtn;
+  }
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
+                   const Key& k5, const Key& k6, const Key& k7)
+  {
+    Set<Key> rtn = makeSet<Key>(k1, k2, k3, k4, k5, k6);
+    rtn.put(k7);
+    return rtn;
+  }
+
+  template<class Key> inline
+  Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
+                   const Key& k5, const Key& k6, const Key& k7, const Key& k8)
+  {
+    Set<Key> rtn = makeSet<Key>(k1, k2, k3, k4, k5, k6, k7);
+    rtn.put(k8);
+    return rtn;
+  }
+
 }
 
 namespace std

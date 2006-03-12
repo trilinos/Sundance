@@ -117,9 +117,14 @@ void SparsitySuperset::assembleSubsetUnions() const
 {
   Tabs tab;
   SUNDANCE_VERB_HIGH(tab << "assembling subset unions");
+  SUNDANCE_VERB_HIGH(tab << "initial state is: " << endl << *this);
+
+  
   typedef Map<keyPair, RefCountPtr<SparsitySubset> >::const_iterator iter;
 
   unsigned int oldSize = subsets_.size();
+  Map<keyPair, RefCountPtr<SparsitySubset> > newSubs = subsets_;
+  bool change = false;
 
   for (iter i=subsets_.begin(); i != subsets_.end(); i++)
     {
@@ -138,9 +143,10 @@ void SparsitySuperset::assembleSubsetUnions() const
           /* if the union is not a new subset, try again */
           if (subsets_.containsKey(newKey)) continue;
           /* add the new subset */
+          change = true;
           SparsitySuperset* me = const_cast<SparsitySuperset*>(this);
           RefCountPtr<SparsitySubset> s = rcp(new SparsitySubset(me));
-          subsets_.put(newKey, s);
+          newSubs.put(newKey, s);
           for (int k=0; k<sub1->numDerivs(); k++)
             {
               s->addDeriv(sub1->deriv(k), sub1->state(k));
@@ -158,13 +164,16 @@ void SparsitySuperset::assembleSubsetUnions() const
         }
     }
 
+  subsets_ = newSubs;
+
   /* if we have created new subsets, continue the process by recursion
    * until all subset combinations are enumerated */
-  if (oldSize != subsets_.size())
+  if (change)
     {
       SUNDANCE_VERB_HIGH(tab << "recursing");
       assembleSubsetUnions();
     }
+  SUNDANCE_VERB_HIGH(tab << "final state is: " << *this);
 }
 
 

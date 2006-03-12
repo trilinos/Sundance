@@ -84,8 +84,10 @@ namespace SundanceCore
 
         argSparsitySubset_ 
           = argSparsitySuperset_->findSubset(argMiSet, argActiveFuncs);
-        
+
         argEval_->addClient();
+
+        SUNDANCE_VERB_HIGH(tab << "done unary evalulator ctor");
       }
 
       /** */

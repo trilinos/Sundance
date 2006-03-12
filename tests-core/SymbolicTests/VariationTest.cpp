@@ -4,6 +4,8 @@
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceTestFunctionStub.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
+#include "SundanceUnknownFuncElement.hpp"
+#include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
@@ -273,6 +275,7 @@ void testExpr(const Expr& e,
     }
 }
 
+
 int main(int argc, void** argv)
 {
   
@@ -298,34 +301,70 @@ int main(int argc, void** argv)
       Expr grad = List(dx, dy);
 
 			Expr u = new UnknownFunctionStub("u");
-			Expr T = new UnknownFunctionStub("T");
 			Expr lambda_u = new UnknownFunctionStub("lambda_u");
-			Expr lambda_T = new UnknownFunctionStub("lambda_T");
 			Expr alpha = new UnknownFunctionStub("alpha");
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
 
       Expr u0 = new DiscreteFunctionStub("u0");
-      Expr T0 = new DiscreteFunctionStub("T0");
       Expr lambda_u0 = new DiscreteFunctionStub("lambda_u0");
-      Expr lambda_T0 = new DiscreteFunctionStub("lambda_T0");
       Expr zero = new ZeroExpr();
       Expr alpha0 = new DiscreteFunctionStub("alpha0");
 
       Array<Expr> tests;
-      Expr h = new Parameter(0.1);
-      Expr rho = 0.5*(1.0 + tanh(alpha/h));
+      //      Expr h = new Parameter(0.1);
+      double h = 0.1;
+      //      Expr rho = 0.5*(1.0 + tanh(alpha/h));
+      Expr rho = tanh(alpha);
 
 
 
       verbosity<Evaluator>() = VerbExtreme;
+      verbosity<SparsitySuperset>() = VerbExtreme;
       verbosity<EvaluatableExpr>() = VerbExtreme;
 
-      tests.append(/* 0.5*(u-x)*(u-x) +  */sqrt(1.0e-16 + (grad*rho)*(grad*rho))
-                   +  (grad*lambda_u)*(grad*u) + (1.0e-3 + 0.999*rho)*lambda_u );
+      //   tests.append(/* 0.5*(u-x)*(u-x) +  */sqrt(1.0e-16 + (grad*rho)*(grad*rho))
+      //             +  (lambda_u)*(u) + rho*lambda_u );
+
+      //tests.append(lambda_u*(u - sqrt(dx*tanh(alpha))));
+      tests.append(/*(rho+u)*lambda_u + */sqrt(dx*rho));
+
+      //#ifdef BLARF
+      const EvaluatableExpr* ee 
+        = dynamic_cast<const EvaluatableExpr*>(tests[0].ptr().get());
+      RegionQuadCombo rr(rcp(new CellFilterStub()), 
+                         rcp(new QuadratureFamilyStub(1)));
+      EvalContext cc(rr, maxDiffOrder, EvalContext::nextID());
+      Set<MultiIndex> miSet = makeSet<MultiIndex>(MultiIndex());
+
+      Set<MultiSet<int> > funcs 
+        = makeSet<MultiSet<int> >(makeMultiSet<int>(1),
+                                  makeMultiSet<int>(1,0));
 
 
+      
+      const UnknownFuncElement* uPtr
+        = dynamic_cast<const UnknownFuncElement*>(u[0].ptr().get());
+      const UnknownFuncElement* lPtr
+        = dynamic_cast<const UnknownFuncElement*>(lambda_u[0].ptr().get());
+      const UnknownFuncElement* aPtr
+        = dynamic_cast<const UnknownFuncElement*>(alpha[0].ptr().get());
+
+      RefCountPtr<DiscreteFuncElement> u0Ptr
+        = rcp_dynamic_cast<DiscreteFuncElement>(u0[0].ptr());
+      RefCountPtr<DiscreteFuncElement> l0Ptr
+        = rcp_dynamic_cast<DiscreteFuncElement>(lambda_u0[0].ptr());
+      RefCountPtr<DiscreteFuncElement> a0Ptr
+        = rcp_dynamic_cast<DiscreteFuncElement>(alpha0[0].ptr());
+      uPtr->substituteFunction(u0Ptr);
+      lPtr->substituteFunction(l0Ptr);
+      aPtr->substituteFunction(a0Ptr);
+      
+      ee->findNonzeros(cc, miSet, funcs, false);
+
+      //#endif
+#ifdef BLARF
       cerr << "STATE EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
         {
@@ -341,6 +380,7 @@ int main(int argc, void** argv)
                    List(alpha0),
                    context);
         }
+
 
       cerr << "ADJOINT EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
@@ -384,7 +424,7 @@ int main(int argc, void** argv)
                    List(u0, zero, alpha0),
                    context);
         }
-
+#endif
 
     }
 	catch(exception& e)

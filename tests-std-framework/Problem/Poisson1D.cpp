@@ -79,6 +79,10 @@ int main(int argc, void** argv)
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
+      //   verbosity<Evaluator>() = VerbExtreme;
+      verbosity<SparsitySuperset>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
+
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
@@ -89,10 +93,11 @@ int main(int argc, void** argv)
 
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
-      
+
+
+#ifdef BLARF      
       cout << "row map = " << endl;
       prob.rowMap(0)->print(cout);
-
 
 
       MPIComm::world().synchronize();
@@ -106,11 +111,9 @@ int main(int argc, void** argv)
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
       MPIComm::world().synchronize();
-
+#endif
 
       Expr soln = prob.solve(solver);
-      Vector<double> x0 = DiscreteFunction::discFunc(soln)->getVector();
-      cout << "soln = " << endl << x0 << endl;
 
       TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
                          RuntimeError,
@@ -134,7 +137,7 @@ int main(int argc, void** argv)
       cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
       double tol = 1.0e-12;
-      Sundance::passFailTest(sqrt(errorSq), tol);
+      Sundance::passFailTest(sqrt(errorSq + derivErrorSq), tol);
     }
 	catch(exception& e)
 		{
