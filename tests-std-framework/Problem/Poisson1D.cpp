@@ -79,9 +79,7 @@ int main(int argc, void** argv)
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
-      //   verbosity<Evaluator>() = VerbExtreme;
-      verbosity<SparsitySuperset>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
@@ -133,6 +131,10 @@ int main(int argc, void** argv)
       double errorSq = evaluateIntegral(mesh, errExpr);
       cout << "error norm = " << sqrt(errorSq) << endl << endl;
 
+
+      //   verbosity<Evaluator>() = VerbExtreme;
+      verbosity<SparsitySuperset>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
       cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 

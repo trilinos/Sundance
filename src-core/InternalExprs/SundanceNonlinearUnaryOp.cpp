@@ -94,13 +94,18 @@ Set<MultiSet<int> >
 NonlinearUnaryOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const 
 {
   typedef Set<MultiSet<int> >::const_iterator iter;
-  
+
+  const Set<int>& argFuncs = evaluatableArg()->funcDependencies();
+
   Set<MultiSet<int> > rtn;
-  rtn.put(MultiSet<int>());
+  if (activeFuncIDs.contains(MultiSet<int>())) rtn.put(MultiSet<int>());
 
   for (iter i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
     {
       const MultiSet<int>& f1 = *i;
+      if (f1.size() > maxFuncDiffOrder()) continue;
+      Set<int> f1Funcs = f1.toSet();
+      if (f1Funcs.intersection(argFuncs).size() == 0) continue;
       rtn.put(f1);
       for (iter j=activeFuncIDs.begin(); j != activeFuncIDs.end(); j++)
         {

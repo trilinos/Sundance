@@ -483,13 +483,13 @@ namespace TSFExtended
   %template(LinSol) LinearSolver<double>;
 
 
-  %extend LinearOperator<Scalar> 
-  {
-    LinearOperator<Scalar> inverse(const LinearSolver<Scalar>& solver) const
-    {
-      return LinearOperator<Scalar>(new InverseOperator<double>(*self, solver));
-    }
-  }
+ //  %extend LinOp 
+//   {
+//     LinOp inverse(const LinearSolver<Scalar>& solver) const
+//     {
+//       return LinOp(new InverseOperator<double>(*self, solver));
+//     }
+//   }
 
 }
 

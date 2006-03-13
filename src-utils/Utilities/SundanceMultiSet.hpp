@@ -32,6 +32,7 @@
 #define SUNDANCE_MULTISET_H
 
 #include "SundanceDefs.hpp"
+#include "SundanceSet.hpp"
 #include "Teuchos_Array.hpp"
 #include <set>
 
@@ -67,6 +68,9 @@ namespace SundanceUtils
 
       /** */
       void mergeFrom(const MultiSet<Key>& other) ;
+
+      /** */
+      Set<Key> toSet() const ;
 
       /** */
       string toString() const ;
@@ -111,6 +115,22 @@ namespace SundanceUtils
           put(*iter);
         }
     }
+
+
+  template<class Key> inline
+  Set<Key> MultiSet<Key>::toSet() const
+    {
+      Set<int> rtn;
+      typename MultiSet<Key>::const_iterator iter;
+
+      for (iter=this->begin(); iter != this->end(); iter++)
+        {
+          rtn.put(*iter);
+        }
+      return rtn;
+    }
+
+  
 
   template<class Key> inline
     ostream& MultiSet<Key>::toStream(ostream& os) const

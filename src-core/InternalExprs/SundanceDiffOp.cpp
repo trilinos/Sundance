@@ -122,8 +122,10 @@ Set<MultiSet<int> > DiffOp
 ::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const
 {
   Tabs tabs;
-  Set<MultiSet<int> > rtn = activeFuncIDs;
-  rtn.put(MultiSet<int>());
+  Set<MultiSet<int> > rtn;// = activeFuncIDs;
+  if (activeFuncIDs.contains(MultiSet<int>())) rtn.put(MultiSet<int>());
+
+
   SUNDANCE_VERB_MEDIUM(tabs << "arg dependencies are " 
                        << evaluatableArg()->funcDependencies().toString());
 

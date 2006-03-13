@@ -313,24 +313,27 @@ int main(int argc, void** argv)
       Expr alpha0 = new DiscreteFunctionStub("alpha0");
 
       Array<Expr> tests;
-      //      Expr h = new Parameter(0.1);
-      double h = 0.1;
-      //      Expr rho = 0.5*(1.0 + tanh(alpha/h));
+      Expr h = new Parameter(0.1);
+      //double h = 0.1;
+      //Expr rho = 0.5*(1.0 + tanh(alpha/h));
+
       Expr rho = tanh(alpha);
 
 
 
-      verbosity<Evaluator>() = VerbExtreme;
-      verbosity<SparsitySuperset>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+//       verbosity<Evaluator>() = VerbExtreme;
+//       verbosity<SparsitySuperset>() = VerbExtreme;
+//       verbosity<EvaluatableExpr>() = VerbExtreme;
 
-      //   tests.append(/* 0.5*(u-x)*(u-x) +  */sqrt(1.0e-16 + (grad*rho)*(grad*rho))
-      //             +  (lambda_u)*(u) + rho*lambda_u );
+      Expr q = u - x;
+      //tests.append( 0.5*q*q +  sqrt(1.0e-16 + (grad*rho)*(grad*rho)) 
+      //             +  (lambda_u)*(u)  + rho*lambda_u);
 
       //tests.append(lambda_u*(u - sqrt(dx*tanh(alpha))));
-      tests.append(/*(rho+u)*lambda_u + */sqrt(dx*rho));
+      tests.append(sqrt(dx*rho) + rho*lambda_u);
+      //      tests.append(pow(dx*(u0 - x), 2.0));
 
-      //#ifdef BLARF
+#ifdef BLARF
       const EvaluatableExpr* ee 
         = dynamic_cast<const EvaluatableExpr*>(tests[0].ptr().get());
       RegionQuadCombo rr(rcp(new CellFilterStub()), 
@@ -363,8 +366,8 @@ int main(int argc, void** argv)
       
       ee->findNonzeros(cc, miSet, funcs, false);
 
-      //#endif
-#ifdef BLARF
+#endif
+      //#ifdef BLARF
       cerr << "STATE EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
         {
@@ -424,7 +427,7 @@ int main(int argc, void** argv)
                    List(u0, zero, alpha0),
                    context);
         }
-#endif
+      //#endif
 
     }
 	catch(exception& e)

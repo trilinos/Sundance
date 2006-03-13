@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 #include <set>
+#include <algorithm>
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -64,6 +65,9 @@ namespace SundanceUtils
 
     /** */
     void merge(const Set<Key, Compare>& other);
+
+    /** */
+    Set<Key, Compare> intersection(const Set<Key, Compare>& other) const ;
 
     /** */
     ostream& toStream(ostream& os) const ;
@@ -109,6 +113,18 @@ namespace SundanceUtils
       {
         put(*iter);
       }
+  }
+
+  template<class Key, class Compare> inline
+  Set<Key, Compare> Set<Key, Compare>::intersection(const Set<Key, Compare>& other) const
+  {
+    Set<Key, Compare> rtn;
+    typename Set<Key, Compare>::const_iterator iter;
+
+    set_intersection(this->begin(), this->end(),
+                     other.begin(), other.end(), 
+                     insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
+    return rtn;
   }
 
   template<class Key, class Compare> inline
