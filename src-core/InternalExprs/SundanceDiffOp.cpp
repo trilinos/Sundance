@@ -47,6 +47,8 @@ DiffOp::DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg)
   : UnaryExpr(arg), mi_(op), myCoordDeriv_(), requiredFunctions_(),
     ignoreFuncTerms_(false)
 {
+  Tabs tabs;
+  SUNDANCE_VERB_HIGH(tabs << "forming DiffOp " << toString());
   typedef Set<int>::const_iterator setIter;
   myCoordDeriv_ = new CoordDeriv(mi_.firstOrderDirection());
   
@@ -119,14 +121,15 @@ Set<MultiIndex> DiffOp
 }
 
 Set<MultiSet<int> > DiffOp
-::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const
+::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
+                 int maxOrder) const
 {
   Tabs tabs;
   Set<MultiSet<int> > rtn;// = activeFuncIDs;
-  if (activeFuncIDs.contains(MultiSet<int>())) rtn.put(MultiSet<int>());
+  //  if (activeFuncIDs.contains(MultiSet<int>())) rtn.put(MultiSet<int>());
 
 
-  SUNDANCE_VERB_MEDIUM(tabs << "arg dependencies are " 
+  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg dependencies are " 
                        << evaluatableArg()->funcDependencies().toString());
 
   Set<int> allActiveFuncs;
@@ -144,7 +147,7 @@ Set<MultiSet<int> > DiffOp
          i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
     {
       const MultiSet<int>& d = *i;
-      SUNDANCE_VERB_MEDIUM(tabs << "deriv from outside is " << d.toString());
+      SUNDANCE_VERB_MEDIUM(tabs << "DiffOp deriv from outside is " << d.toString());
       if (d.size() >= maxFuncDiffOrder()) continue;
       for (Set<int>::const_iterator 
              j=evaluatableArg()->funcDependencies().begin(); 
@@ -153,27 +156,29 @@ Set<MultiSet<int> > DiffOp
           Tabs tab1;
           MultiSet<int> newDeriv = d;
           if (d.size() > 0 && !allActiveFuncs.contains(*j)) continue;
-          SUNDANCE_VERB_MEDIUM(tab1 << "internal dependency is " << *j);
+          SUNDANCE_VERB_MEDIUM(tab1 << "DiffOp internal dependency is " << *j);
           newDeriv.put(*j);
-          SUNDANCE_VERB_MEDIUM(tab1 << "created new arg deriv " << newDeriv.toString());
+          SUNDANCE_VERB_MEDIUM(tab1 << "DiffOp created new arg deriv " << newDeriv.toString());
           rtn.put(newDeriv);
         }
     }
-  SUNDANCE_VERB_MEDIUM(tabs << "found arg active funcs " << rtn.toString());
-  return rtn;
+  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp found arg active funcs " << rtn.toString());
+  
+  return evaluatableArg()->filterActiveFuncs(rtn);
 }
 
 
 void DiffOp::findNonzeros(const EvalContext& context,
                           const Set<MultiIndex>& multiIndices,
-                          const Set<MultiSet<int> >& activeFuncIDs,
+                          const Set<MultiSet<int> >& inputActiveFuncIDs,
                           bool regardFuncsAsConstant) const
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for diff op " << toString()
                        << " subject to multi index set " 
                        << multiIndices.toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "active funcs are " << activeFuncIDs);
+
+  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
                        regardFuncsAsConstant))
@@ -183,7 +188,7 @@ void DiffOp::findNonzeros(const EvalContext& context,
     }
 
   addActiveFuncs(context, activeFuncIDs);
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
 
   ignoreFuncTerms_ = regardFuncsAsConstant;
   if (ignoreFuncTerms_)
@@ -196,22 +201,22 @@ void DiffOp::findNonzeros(const EvalContext& context,
   /* Figure out the sparsity pattern for the argument.  */
   Set<MultiIndex> argMI = argMultiIndices(multiIndices);
   
-  SUNDANCE_VERB_MEDIUM(tabs << "arg multi index set is " << endl << argMI);
+  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg multi index set is " << endl << argMI);
 
   
 
-  Set<MultiSet<int> > argFuncs = argActiveFuncs(activeFuncIDs);
+  Set<MultiSet<int> > argFuncs = argActiveFuncs(activeFuncIDs, -1);
 
-  SUNDANCE_VERB_MEDIUM(tabs << "arg active func set is " << endl << argFuncs);
+  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg active func set is " << endl << argFuncs);
 
   evaluatableArg()->findNonzeros(context, argMI,
                                  argFuncs,
                                  regardFuncsAsConstant);
 
   RefCountPtr<SparsitySubset> argSparsity
-    = evaluatableArg()->sparsitySubset(context, argMI, argFuncs);
+    = evaluatableArg()->sparsitySubset(context, argMI, argFuncs, true);
 
-  SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity subset is " 
+  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg sparsity subset is " 
                        << endl << *argSparsity);
 
 

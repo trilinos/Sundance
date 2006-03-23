@@ -82,6 +82,7 @@ int main(int argc, void** argv)
       
 
       /* We can now set up the linear problem! */
+
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
@@ -132,9 +133,7 @@ int main(int argc, void** argv)
       cout << "error norm = " << sqrt(errorSq) << endl << endl;
 
 
-      //   verbosity<Evaluator>() = VerbExtreme;
-      verbosity<SparsitySuperset>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
       cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 

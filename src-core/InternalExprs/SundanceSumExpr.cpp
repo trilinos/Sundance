@@ -48,10 +48,13 @@ SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
                  const RefCountPtr<ScalarExpr>& right, int sign)
 	: BinaryExpr(left, right, sign)
 {
+  Tabs tabs;
+  SUNDANCE_VERB_HIGH(tabs << "forming SumExpr " << toString());
   typedef Set<int>::const_iterator setIter;
 
   if (isEvaluatable(left.get()) && isEvaluatable(right.get()))
     {
+
       for (int d=0; d<MultiIndex::maxDim(); d++) 
         {
           int lod = leftEvaluatable()->orderOfSpatialDependency(d);
@@ -63,6 +66,8 @@ SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
       Set<MultiSet<int> > tmp = leftEvaluatable()->funcIDSet();
       tmp.merge(rightEvaluatable()->funcIDSet());
       setFuncIDSet(tmp);
+      Tabs tab1;
+      SUNDANCE_VERB_HIGH(tab1 << "dependencies are " << tmp);
     }
 }
 

@@ -888,7 +888,18 @@ void MixedDOFMap::print(ostream& os) const
                 {
                   Tabs tabs2;
                   os << tabs2 << "Cell LID=" << c << " GID=" 
-                     << mesh().mapLIDToGID(d, c) << endl;
+                     << mesh().mapLIDToGID(d, c);
+                  if (d==0) 
+                    {
+                      os << " x=" << mesh().nodePosition(c) << endl;
+                    }
+                  else 
+                    {
+                      Array<int> facetLIDs;
+                      Array<int> facetDirs;
+                      mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
+                      os << " nodes=" << facetLIDs << endl;
+                    }
                   for (unsigned int f=0; f<funcIDList().size(); f++)
                     {
                       Tabs tabs3;

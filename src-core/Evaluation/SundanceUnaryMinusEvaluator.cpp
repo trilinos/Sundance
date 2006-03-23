@@ -49,24 +49,34 @@ UnaryMinusEvaluator
                       const EvalContext& context)
   : UnaryEvaluator<UnaryMinus>(expr, context)
 {
-  int vecResultIndex = 0;
-  int constResultIndex = 0;
-  
-  for (int i=0; i<this->sparsity()->numDerivs(); i++)
+  try
     {
-      /* Determine the index into which the result will be written */
-      bool resultIsConstant = this->sparsity()->state(i)==ConstantDeriv; 
-
-      if (!resultIsConstant)
+      int vecResultIndex = 0;
+      int constResultIndex = 0;
+      
+      for (int i=0; i<this->sparsity()->numDerivs(); i++)
         {
-          addVectorIndex(i, vecResultIndex);
-          vecResultIndex++;
+          /* Determine the index into which the result will be written */
+          bool resultIsConstant = this->sparsity()->state(i)==ConstantDeriv; 
+          
+          if (!resultIsConstant)
+            {
+              addVectorIndex(i, vecResultIndex);
+              vecResultIndex++;
+            }
+          else
+            {
+              addConstantIndex(i, constResultIndex);
+              constResultIndex++;
+            }
         }
-      else
-        {
-          addConstantIndex(i, constResultIndex);
-          constResultIndex++;
-        }
+    }
+  catch(std::exception& e)
+    {
+      TEST_FOR_EXCEPTION(true, RuntimeError, 
+                         "exception detected in UnaryMinusEvaluator: expr="
+                         << expr->toString() << endl
+                         << "exception=" << e.what());
     }
 }
 
@@ -90,7 +100,7 @@ void UnaryMinusEvaluator
 
   if (verbosity() > VerbLow)
     {
-      cerr << tab << "operand results" << endl;
+      cerr << tab << "UnaryMinus operand results" << endl;
       argSparsitySuperset()->print(cerr, vectorResults,
                            constantResults);
     }

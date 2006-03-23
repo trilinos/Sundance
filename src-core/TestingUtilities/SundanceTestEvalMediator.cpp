@@ -60,7 +60,8 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
   : AbstractEvalMediator(),
     x_(),
     funcIdToFieldNumberMap_(),
-    fields_(fields.totalSize())
+    fields_(fields.totalSize()),
+    fieldNames_(fields.totalSize())
 {
   EvalManager::stack().setVecSize(1);
 
@@ -84,6 +85,7 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
                          "TestEvalMediator ctor: field argument "
                          << f[i] << " is not a TestDiscreteFunction");
       fields_[i] = tdfd->field();
+      fieldNames_[i] = f[i].toString();
     }
 }
 

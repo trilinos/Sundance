@@ -72,8 +72,9 @@ namespace SundanceCore
 
           /** */
           virtual Set<MultiSet<int> > 
-          argActiveFuncs(const Set<MultiSet<int> >& activeFuncID) const 
-          {return activeFuncID;}
+          argActiveFuncs(const Set<MultiSet<int> >& activeFuncID, 
+                         int maxOrder) const ;
+
           
           /** */
           void addActiveFuncs(const EvalContext& context,

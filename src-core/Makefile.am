@@ -149,6 +149,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceNonlinearUnaryOpEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceNullEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceProductEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceStringEvalMediator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceSubtypeEvaluator.hpp \
@@ -170,6 +171,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceDiffOpEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceNonlinearUnaryOpEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceNullEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceProductEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceStringEvalMediator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceSumEvaluator.cpp \

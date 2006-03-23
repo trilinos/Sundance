@@ -97,7 +97,8 @@ namespace SundanceCore
     private:
       /** */
       Set<MultiSet<int> > 
-      argActiveFuncs(const Set<MultiSet<int> >& activeFuncID) const ;
+      argActiveFuncs(const Set<MultiSet<int> >& activeFuncID,
+                     int maxOrder) const ;
 
       /** */
       RefCountPtr<UserDefFunctor> op_;

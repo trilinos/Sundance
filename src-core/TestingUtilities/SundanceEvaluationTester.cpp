@@ -326,7 +326,7 @@ double EvaluationTester
       cerr << tab2 << endl;
       SUNDANCE_VERB_MEDIUM(tab2 << "f(A_i+h)=" << fPlus << "      f(A_i-h)=" << fMinus);
 
-      cerr << tab2 << i << " exact first deriv=" << afdFirst[i]
+      cerr << tab2 << "field " << tem_->fieldName(i) << " exact first deriv=" << afdFirst[i]
            << "    fd=" << fdFirst[i] << "    |exact - fd|=" 
            << error1 << endl;
       if (error1 > tol) 
@@ -341,14 +341,14 @@ double EvaluationTester
       * on the AFD first derivs*/
       fdSecond[i][i] = (firstPlus[i] - firstMinus[i])/2.0/step;
       double error2 = fabs(fdSecond[i][i] - afdSecond[i][i])/(step + fabs(afdSecond[i][i]));
-      cerr << tab2 << i << " exact second deriv=" << afdSecond[i][i]
+      cerr << tab2 << "field " << tem_->fieldName(i) << " exact second deriv=" << afdSecond[i][i]
            << "    fd=" << fdSecond[i][i] << "    |exact - fd|=" 
            << error2 << endl;
       if (error2 > tol2) 
         {
           isOK = false;
           cerr << tab2 << "second deriv calculation wrt field "
-               << i << " FAILED" << endl;
+               << tem_->fieldName(i) << " FAILED" << endl;
           Tabs tab3;
           cerr << tab3 << "f'(A_i+h) = " << firstPlus[i] << endl;
           cerr << tab3 << "f'(A_i-h) = " << firstMinus[i] << endl;
@@ -379,7 +379,7 @@ double EvaluationTester
 //           fdSecond[j][i] = fdSecond[i][j];
           fdSecond[i][j] = (firstPlus[j] - firstMinus[j])/2.0/step;
           error2 = fabs(fdSecond[i][j] - afdSecond[i][j])/(step + fabs(afdSecond[i][j]));
-          cerr << tab2 << "(" << i << ", " << j 
+          cerr << tab2 << "(" << tem_->fieldName(i) << ", " << tem_->fieldName(j) 
                << ") exact mixed deriv=" << afdSecond[i][j]
                << "    fd=" << fdSecond[i][j] << "    |exact - fd|=" 
            << error2 << endl;

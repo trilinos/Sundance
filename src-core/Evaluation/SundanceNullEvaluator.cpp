@@ -28,8 +28,11 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceSpatiallyConstantExpr.hpp"
+#include "SundanceNullEvaluator.hpp"
+#include "SundanceEvalManager.hpp"
+#include "SundanceSet.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -38,44 +41,19 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-SpatiallyConstantExpr::SpatiallyConstantExpr(const double& value)
-	: EvaluatableExpr(), value_(value)
+
+
+void NullEvaluator::internalEval(const EvalManager& mgr,
+                                 Array<double>& constantResults,
+                                 Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  for (int d=0; d<MultiIndex::maxDim(); d++) 
-    {
-      setOrderOfDependency(d, 0);
-    }
+  Tabs tab;
+  SUNDANCE_VERB_MEDIUM(tab << "doing null evaluation... nothing to do");
 }
 
 
-
-
-void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,
-                                         const Set<MultiIndex>& multiIndices,
-                                         const Set<MultiSet<int> >& inputActiveFuncIDs,
-                                         bool regardFuncsAsConstant) const
+NullEvaluator::NullEvaluator() 
 {
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for constant" 
-                       << toString() << " subject to multiindices "
-                       << multiIndices);
-
-  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
-
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant))
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
-      return;
-    }
-
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
-
-  if (activeFuncIDs.contains(MultiSet<int>()))
-    {
-      subset->addDeriv(MultipleDeriv(), ConstantDeriv);
-    }
-
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  regardFuncsAsConstant);
+  Tabs tab;
+  SUNDANCE_VERB_MEDIUM(tab << "NullEvaluator ctor");
 }

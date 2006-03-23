@@ -30,6 +30,7 @@
 
 #include "SundanceMultipleDeriv.hpp"
 #include "SundanceCoordDeriv.hpp"
+#include "SundanceFunctionalDeriv.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -64,6 +65,22 @@ MultiIndex MultipleDeriv::spatialDeriv() const
           int d = i->coordDeriv()->dir();
           rtn[d] += 1;
         }
+    }
+  return rtn;
+}
+
+MultiSet<int> MultipleDeriv::funcIDs() const
+{
+  MultiSet<int> rtn;
+  for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
+    {
+      if (i->isFunctionalDeriv())
+        {
+          int f = i->funcDeriv()->funcID();
+          rtn.put(f);
+        }
+      TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
+                         "MultipleDeriv::funcIDs() found spatial deriv");
     }
   return rtn;
 }

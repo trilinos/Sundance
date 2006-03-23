@@ -591,7 +591,9 @@ void Assembler::assemble(LinearOperator<double>& A,
   for (unsigned int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
-      SUNDANCE_VERB_MEDIUM(tab0 << "doing subregion=" 
+      SUNDANCE_VERB_MEDIUM(endl 
+                           << "================================================="
+                           << endl << tab0 << " doing subregion=" 
                            << rqc_[r]);     
 
 
@@ -919,7 +921,9 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
                      "Assembler::evaluate(f,df) called for an assembler that "
                      "does not support value/gradient assembly");
 
-  SUNDANCE_VERB_LOW("Computing functional and gradient"); 
+  SUNDANCE_VERB_LOW("-----------------------------------------------------------------"); 
+  SUNDANCE_VERB_LOW("------- Computing functional and gradient "); 
+  SUNDANCE_VERB_LOW("-----------------------------------------------------------------"); 
 
   SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
 
@@ -1108,7 +1112,11 @@ void Assembler::evaluate(double& value) const
                      "Assembler::evaluate(f) called for an assembler that "
                      "does not support functional evaluation");
 
-  SUNDANCE_VERB_LOW(tab << "Computing functional"); 
+
+  SUNDANCE_VERB_LOW("-----------------------------------------------------------------"); 
+  SUNDANCE_VERB_LOW("------- Computing functional"); 
+  SUNDANCE_VERB_LOW("-----------------------------------------------------------------"); 
+
 
   SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
 
@@ -1173,7 +1181,7 @@ void Assembler::evaluate(double& value) const
           SUNDANCE_VERB_EXTREME("cells are " << *workSet);
 
 
-          workSetCounter++;
+
           bool useMaximalCellsForTransformations 
             = rqcRequiresMaximalCofacets_.get(FunctionalOnly)[r];
           mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
@@ -1212,6 +1220,7 @@ void Assembler::evaluate(double& value) const
                                  << (*localValues)[0]);
               localSum += (*localValues)[0];
             }
+          workSetCounter++;
         }
     }
 
@@ -1269,6 +1278,9 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
     }
   for (unsigned int t=0; t<testID.size(); t++)
     {
+      Tabs tab1;
+      SUNDANCE_VERB_EXTREME(tab1 << "test ID = " << testID[t]);
+      SUNDANCE_VERB_EXTREME(tab1 << "is BC eqn = " << isBCRqc);
       int br = testBlock[t];
       const RefCountPtr<DOFMapBase>& rowMap = rowMap_[br];
       int highestIndex = lowestRow_[br] + rowMap->numLocalDOFs();
@@ -1276,10 +1288,12 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
       int testChunk = rowMap->chunkForFuncID(testID[t]);
       int testFuncIndex = rowMap->indexForFuncID(testID[t]);
       const Array<int>& testDOFs = testIndices[br][testChunk];
+      SUNDANCE_VERB_EXTREME(tab1 << "test DOFs = " << testDOFs);
       int nTestFuncs = rowMap->nFuncs(testChunk);
       int numTestNodes = nTestNodes[br][testChunk];
       int numRows = nCells * numTestNodes;
       const Array<int>& isBCRow = *(isBCRow_[br]);
+      SUNDANCE_VERB_EXTREME(tab1 << "isBCRow = " << isBCRow);
       rows.resize(numRows);
       skipRow.resize(numRows);
       int r=0;
@@ -1294,6 +1308,20 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
                 || (isBCRqc && !isBCRow[localRow])
                 || (!isBCRqc && isBCRow[localRow]);
             }
+        }
+
+      if (verbosity() > VerbHigh)
+        {
+          Tabs tab2;
+          Set<int> activeRows;
+          Set<int> skippedRows;
+          for (int i=0; i<numRows; i++) 
+            {
+              if (skipRow[i]) skippedRows.put(rows[i]);
+              else activeRows.put(rows[i]);
+            }
+          cerr << tab2 << "active rows = " << activeRows << endl;
+          cerr << tab2 << "skipped rows = " << skippedRows << endl;
         }
 
       for (unsigned int u=0; u<unkID.size(); u++)
@@ -1355,6 +1383,9 @@ void Assembler
 
   for (unsigned int i=0; i<testID.size(); i++)
     {
+      Tabs tab1;
+      SUNDANCE_VERB_EXTREME(tab1 << "test ID = " << testID[i]);
+      SUNDANCE_VERB_EXTREME(tab1 << "is BC eqn = " << isBCRqc);
       int br = testBlock[i];
       const RefCountPtr<DOFMapBase>& rowMap = rowMap_[br];
       int lowestLocalRow = rowMap->lowestLocalDOF();
@@ -1366,6 +1397,7 @@ void Assembler
       const Array<int>& isBCRow = *(isBCRow_[br]);
       int r=0;
       TSFExtended::LoadableVector<double>* vecBlock = vec[br];
+
       for (int c=0; c<nCells; c++)
         {
           for (int n=0; n<nNodes; n++, r++)

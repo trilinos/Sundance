@@ -40,6 +40,8 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]+1.0) < 1.0e-10;});
 CELL_PREDICATE(BottomPointTest, {return fabs(x[1]+1.0) < 1.0e-10;});
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;});
+CELL_PREDICATE(PeggedPointTest, {return fabs(x[1]+1.0) < 1.0e-10 
+                  && fabs(x[0]+1.0) < 1.0e-10 ;});
 
 int main(int argc, void** argv)
 {
@@ -54,8 +56,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 64;
-      int ny = 64;
+      int nx = 128;
+      int ny = 128;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, nx, np,
                                                          -1.0, 1.0, ny, 1,
@@ -84,7 +86,7 @@ int main(int argc, void** argv)
       CellFilter right = edges.subset(new RightPointTest());
       CellFilter top = edges.subset(new TopPointTest());
       CellFilter bottom = edges.subset(new BottomPointTest());
-
+      CellFilter peg = points.subset(new PeggedPointTest());
 
 
       
@@ -117,15 +119,31 @@ int main(int argc, void** argv)
       Expr uInflow = 0.5*(1.0-y*y);
       Expr bc = EssentialBC(left, vx*(ux-uInflow) + vy*uy, quad2)
         + EssentialBC(top, vx*ux + vy*uy, quad2)
-        + EssentialBC(bottom, vx*ux + vy*uy, quad2);
+        + EssentialBC(bottom, vx*ux + vy*uy, quad2)
+        + EssentialBC(peg, p*q, quad2);
 
 
-   
+         
 
+      //#define BLAHBLAH 1
+#ifdef BLAHBLAH
+      verbosity<Evaluator>() = VerbMedium;
+      verbosity<SparsitySuperset>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<Assembler>() = VerbExtreme;
+#endif
+
+      cerr << "Expr with children verbosity = " << verbosity<ExprWithChildren>() << endl;
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q), 
                          List(ux, uy, p), vecType);
+      cerr << "Expr with children verbosity = " << verbosity<ExprWithChildren>() << endl;
 
+
+#ifdef BLAHBLAH     
+      cout << "row map = " << endl;
+      prob.rowMap(0)->print(cout);
+#endif
      
 
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");

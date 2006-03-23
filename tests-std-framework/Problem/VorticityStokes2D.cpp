@@ -56,7 +56,7 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 128/np;
+      int nx = 64/np;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 1.0, nx, 1,
@@ -108,27 +108,13 @@ int main(int argc, void** argv)
       LinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega), 
                          List(psi, omega), vecType);
 
-      ParameterList params;
-      ParameterList solverParams;
-      solverParams.set("Type", "TSF");
-      solverParams.set("Method", "BICGSTAB");
-      solverParams.set("Max Iterations", 1000);
-      solverParams.set("Tolerance", 1.0e-12);
-      solverParams.set("Precond", "ILUK");
-      solverParams.set("Graph Fill", 1);
-      solverParams.set("Verbosity", 4);
-
-      params.set("Linear Solver", solverParams);
-
-      XMLParameterListWriter paramWriter;
-      
-      cerr << "solver = " << paramWriter.toXML(params) << endl;
-
-
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(params);
+        = LinearSolverBuilder::createSolver(solverParams);
 
-    
+
+      cerr << "starting solve..." << endl;
 
       Expr soln = prob.solve(solver);
 

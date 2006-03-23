@@ -71,7 +71,8 @@ Evaluator* DerivOfSymbFunc::createEvaluator(const EvaluatableExpr* expr,
 }
 
 Set<MultiSet<int> > DerivOfSymbFunc
-::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const
+::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
+                 int maxOrder) const
 {
   Tabs tabs;
   Set<MultiSet<int> > rtn;
@@ -85,7 +86,10 @@ Set<MultiSet<int> > DerivOfSymbFunc
     {
       MultiSet<int> f;
       f.put(*j);
-      rtn.put(f);
+      if (maxOrder < 0 || (maxOrder >= 0 && f.size() <= maxOrder))
+        {
+          rtn.put(f);
+        }
     }
   
   for (Set<MultiSet<int> >::const_iterator 
@@ -94,21 +98,27 @@ Set<MultiSet<int> > DerivOfSymbFunc
       const MultiSet<int>& d = *i;
       if (d.size() >= 1) continue;
       SUNDANCE_VERB_MEDIUM(tabs << "deriv from outside is " << d.toString());
-      rtn.put(d);
+      if (maxOrder<0 || (maxOrder >= 0 && d.size() <= maxOrder))
+        {
+          rtn.put(d);
+        }
     }
   return rtn;
 }
 
 void DerivOfSymbFunc::findNonzeros(const EvalContext& context,
                           const Set<MultiIndex>& multiIndices,
-                          const Set<MultiSet<int> >& activeFuncIDs,
+                          const Set<MultiSet<int> >& inputActiveFuncIDs,
                           bool regardFuncsAsConstant) const
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for deriv of func " << toString()
                        << " subject to multi index set " 
                        << multiIndices.toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "active funcs are " << activeFuncIDs);
+  SUNDANCE_VERB_MEDIUM(tabs << "active funcs are " << inputActiveFuncIDs);
+  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
+  SUNDANCE_VERB_MEDIUM(tabs << "filtered active funcs are " 
+                       << activeFuncIDs);
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
                        regardFuncsAsConstant))
@@ -118,7 +128,7 @@ void DerivOfSymbFunc::findNonzeros(const EvalContext& context,
     }
 
   addActiveFuncs(context, activeFuncIDs);
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
 
 
   /* Figure out the sparsity pattern for the argument.  */
@@ -128,7 +138,7 @@ void DerivOfSymbFunc::findNonzeros(const EvalContext& context,
 
   
 
-  Set<MultiSet<int> > argFuncs = argActiveFuncs(activeFuncIDs);
+  Set<MultiSet<int> > argFuncs = argActiveFuncs(activeFuncIDs, -1);
 
   SUNDANCE_VERB_MEDIUM(tabs << "arg active func set is " << endl << argFuncs);
 
@@ -137,7 +147,7 @@ void DerivOfSymbFunc::findNonzeros(const EvalContext& context,
                                  regardFuncsAsConstant);
 
   RefCountPtr<SparsitySubset> argSparsity
-    = evaluatableArg()->sparsitySubset(context, argMI, argFuncs);
+    = evaluatableArg()->sparsitySubset(context, argMI, argFuncs, true);
 
   SUNDANCE_VERB_MEDIUM(tabs << "arg sparsity subset is " 
                        << endl << *argSparsity);

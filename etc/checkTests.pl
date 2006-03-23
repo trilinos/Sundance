@@ -15,6 +15,8 @@ use Term::ANSIColor;
 @crashes = ();
 # list of missing tests
 @missing = ();
+# list of inactive tests
+@inactive = ();
 
 $terminal = $ENV{"TERM"} || "dumb";
 
@@ -50,12 +52,17 @@ foreach $i (0 .. $#ARGV)
     # if MISSING, add filename to missing list
     if ($state =~ /MISSING/) {
       push(@missing, $file);
-      $msgcolor = color("bold red");
+      $msgcolor = color("green");
     }
     # if CRASHED, add filename to crash list
     if ($state =~ /CRASHED/) {
       push(@crashes, $file);
       $msgcolor = color("bold red");
+    }
+    # if INACTIVE, add filename to crash list
+    if ($state =~ /INACTIVE/) {
+      push(@inactive, $file);
+      $msgcolor = color("green");
     }
     # print status of this file
     printf "%-60s", ${file};
@@ -129,10 +136,12 @@ sub checkFile
     $passed = 0;
     $failed = 0;
     $crashed = 0;
+    $inactive = 0;
     $state = "CRASHED";
     while ($line = <FILE>) {
       $passed = $passed || $line =~ /PASS/;
       $failed = $failed || $line =~ /FAIL/;
+      $inactive = $inactive || $line =~ /INACTIVE/;
     }
     
     if ($failed!=0)
@@ -141,10 +150,14 @@ sub checkFile
       }
     else 
       {
-		  if($passed!=0)
-		  {
+        if($passed!=0)
+        {
         	$state = "PASSED";
-		   }
+        }
+        if($inactive!=0)
+          {
+            $state = "INACTIVE";
+          }
       }
 
     return $state;

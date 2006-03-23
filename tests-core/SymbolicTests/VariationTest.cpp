@@ -29,6 +29,102 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+namespace SundanceCore
+{
+  /** */
+  Expr slopeBarrier2D(const double& p, const Expr& x) ;
+
+  /**
+   *
+   */
+  class SlopeBarrierFunctor : public UnaryFunctor
+  {
+  public:
+    /** */
+    SlopeBarrierFunctor(double p);
+
+    /** */
+    virtual void eval0(const double* const x, 
+                       int nx, 
+                       double* f) const  ;
+    
+    /** */
+    virtual void eval1(const double* const x, 
+                       int nx, 
+                       double* f, 
+                       double* df_dx) const ;
+
+    
+  private:
+    double p_;
+  };
+
+}
+
+namespace SundanceCore
+{
+  Expr slopeBarrier2D(const double& p, const Expr& x)
+  {
+    RefCountPtr<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(x[0].ptr());
+    RefCountPtr<UnaryFunctor> f = rcp(new SlopeBarrierFunctor(p));
+    return new NonlinearUnaryOp(arg, f);
+  }
+}
+
+
+
+SlopeBarrierFunctor::SlopeBarrierFunctor(double p)
+  : UnaryFunctor("SlopeBarrier(" + Teuchos::toString(p) + ")"),
+    p_(p)
+{;}
+
+
+void SlopeBarrierFunctor::eval0(const double* const x, 
+                                int nx, 
+                                double* f) const 
+{
+  double xp;
+
+  for (int i=0; i<nx; i++)
+    {
+      if (x[i] <= 1.0)
+        {
+          xp = ::pow(x[i], p_);
+          f[i] = xp + 1.0/xp - 2.0;
+        }
+      else
+        {
+          f[i] = 0.0;
+        }
+    }
+}
+
+
+void SlopeBarrierFunctor::eval1(const double* const x, 
+                                int nx, 
+                                double* f, 
+                                double* df_dx) const 
+{
+  double xp;
+
+  for (int i=0; i<nx; i++)
+    {
+      if (x[i] <= 1.0)
+        {
+          xp = ::pow(x[i], p_);
+          f[i] = xp + 1.0/xp - 2.0;
+          df_dx[i] = p_*(xp - 1.0/xp)/x[i];
+        }
+      else
+        {
+          f[i] = 0.0;
+          df_dx[i] = 0.0;
+        }
+    }
+}
+
+
+
 static Time& totalTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -302,6 +398,8 @@ int main(int argc, void** argv)
 
 			Expr u = new UnknownFunctionStub("u");
 			Expr lambda_u = new UnknownFunctionStub("lambda_u");
+			Expr T = new UnknownFunctionStub("T");
+			Expr lambda_T = new UnknownFunctionStub("lambda_T");
 			Expr alpha = new UnknownFunctionStub("alpha");
 
       Expr x = new CoordExpr(0);
@@ -309,29 +407,46 @@ int main(int argc, void** argv)
 
       Expr u0 = new DiscreteFunctionStub("u0");
       Expr lambda_u0 = new DiscreteFunctionStub("lambda_u0");
+      Expr T0 = new DiscreteFunctionStub("T0");
+      Expr lambda_T0 = new DiscreteFunctionStub("lambda_T0");
       Expr zero = new ZeroExpr();
       Expr alpha0 = new DiscreteFunctionStub("alpha0");
 
       Array<Expr> tests;
-      Expr h = new Parameter(0.1);
-      //double h = 0.1;
-      //Expr rho = 0.5*(1.0 + tanh(alpha/h));
+      //Expr h = new Parameter(0.1);
+      double h = 0.1;
+      Expr rho = 0.5*(1.0 + tanh(alpha/h));
 
-      Expr rho = tanh(alpha);
+      //      Expr rho = tanh(alpha);
+      Expr sigma =  0.1 + 0.9*rho;
 
+      Expr zeta = slopeBarrier2D(1.5, (grad*alpha)*(grad*alpha) + alpha*alpha/h/h);
+        
 
-
-//       verbosity<Evaluator>() = VerbExtreme;
-//       verbosity<SparsitySuperset>() = VerbExtreme;
-//       verbosity<EvaluatableExpr>() = VerbExtreme;
+      //#define BLAHBLAH 1
+#ifdef BLAHBLAH
+      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<SparsitySuperset>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
+#endif
 
       Expr q = u - x;
-      //tests.append( 0.5*q*q +  sqrt(1.0e-16 + (grad*rho)*(grad*rho)) 
-      //             +  (lambda_u)*(u)  + rho*lambda_u);
+      tests.append( pow(T-3.14, 2.0)
+                    + pow(u-2.72, 2.0)
+                    + 0.5*T*T
+                    + 0.5*(grad*u)*(grad*u)
+                    + 0.5*q*q + zeta + 0.5*(grad*alpha)*(grad*alpha)
+                    + sqrt(1.0e-16 + (grad*rho)*(grad*rho)) 
+                    +  -sigma*(grad*lambda_u)*(grad*u)
+                    + -sigma*sigma*lambda_T
+                    + sigma*(grad*lambda_T)*(grad*T)
+                    + lambda_T*sigma*(grad*u)*(grad*T)
+                    + lambda_u - lambda_T);
 
-      //tests.append(lambda_u*(u - sqrt(dx*tanh(alpha))));
-      tests.append(sqrt(dx*rho) + rho*lambda_u);
-      //      tests.append(pow(dx*(u0 - x), 2.0));
+      //      tests.append(sqrt(dx*tanh(alpha)));
+      //      tests.append(sqrt(1+(dx*rho)*(dx*rho))  + rho*lambda_u );
+      //      tests.append(pow(dx*(u0 - x*x ), 2.0));
+      //      tests.append(-lambda_u);
 
 #ifdef BLARF
       const EvaluatableExpr* ee 
@@ -368,41 +483,76 @@ int main(int argc, void** argv)
 
 #endif
       //#ifdef BLARF
-      cerr << "STATE EQUATIONS " << endl;
+      cerr << endl << "============== u STATE EQUATIONS =================" << endl;
+
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
-                   lambda_u,
-                   zero,
-                   u,
-                   u0,
-                   List(alpha),
-                   List(alpha0),
+                   List(lambda_u),
+                   List(zero),
+                   List(u),
+                   List(u0),
+                   List(alpha, T, lambda_T),
+                   List(alpha0, T0, zero),
                    context);
         }
 
+      cerr << endl << "============== T STATE EQUATIONS =================" << endl;
 
-      cerr << "ADJOINT EQUATIONS " << endl;
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
           testExpr(tests[i], 
-                   u,
-                   u0, 
-                   lambda_u,
-                   lambda_u0,
-                   List(alpha),
-                   List(alpha0),
+                   List(lambda_T),
+                   List(zero),
+                   List(T),
+                   List(T0),
+                   List(alpha, u, lambda_u),
+                   List(alpha0, u0, zero),
                    context);
         }
 
 
-      cerr << "REDUCED GRADIENT " << endl;
+
+      cerr << endl << "=============== T ADJOINT EQUATIONS =================" << endl;
+      for (int i=0; i<tests.length(); i++)
+        {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(1)));
+          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
+          testExpr(tests[i], 
+                   List(T),
+                   List(T0),
+                   List(lambda_T),
+                   List(lambda_T0),
+                   List(alpha, u, lambda_u),
+                   List(alpha0, u0, zero),
+                   context);
+        }
+
+      cerr << endl << "=============== u ADJOINT EQUATIONS =================" << endl;
+      for (int i=0; i<tests.length(); i++)
+        {
+          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+                              rcp(new QuadratureFamilyStub(1)));
+          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
+          testExpr(tests[i], 
+                   List(u),
+                   List(u0),
+                   List(lambda_u),
+                   List(lambda_u0),
+                   List(alpha, T, lambda_T),
+                   List(alpha0, T0, zero),
+                   context);
+        }
+
+
+      cerr << endl << "================ REDUCED GRADIENT ====================" << endl;
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
@@ -411,20 +561,20 @@ int main(int argc, void** argv)
           testExpr(tests[i], 
                    alpha, 
                    alpha0,
-                   List(u, lambda_u),
-                   List(u0, lambda_u0),
+                   List(u, T, lambda_u, lambda_T),
+                   List(u0, T0, lambda_u0, lambda_T0),
                    context);
         }
 
-      cerr << "FUNCTIONAL " << endl;
+      cerr << endl << "=================== FUNCTIONAL ====================" << endl;
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, 0, EvalContext::nextID());
           testExpr(tests[i], 
-                   List(u, lambda_u, alpha),
-                   List(u0, zero, alpha0),
+                   List(u, T, lambda_u, lambda_T, alpha),
+                   List(u0, T0, zero, zero, alpha0),
                    context);
         }
       //#endif

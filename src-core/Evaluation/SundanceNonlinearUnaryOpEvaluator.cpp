@@ -61,7 +61,7 @@ NonlinearUnaryOpEvaluator
 {
 
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "initializing nonlinear unary op evaluator for " 
+  SUNDANCE_VERB_LOW(tabs << "NonlinearUnaryOp evaluator ctor for " 
                     << expr->toString());
 
   SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
@@ -84,21 +84,23 @@ NonlinearUnaryOpEvaluator
           /* we'll need the index of the argument's value in the superset
            * of results */
           int argIndexInSuperset = argSparsitySuperset()->getIndex(d);
-          SUNDANCE_VERB_MEDIUM(tabs << "arg value found at index "
+          SUNDANCE_VERB_MEDIUM(tabs << "arg value found at index="
                                << argIndexInSuperset 
-                               << "in arg result superset");
+                               << " in arg result superset");
           TEST_FOR_EXCEPTION(argIndexInSuperset==-1, InternalError,
                              "derivative " << d
                              << " found in arg subset but not in "
                              "arg superset");
-          d0ArgDerivIndex_ = argIndexInSuperset;
+
           if (argSparsitySubset()->state(i)==ConstantDeriv)
             {
+              d0ArgDerivIndex_ = argEval()->constantIndexMap().get(argIndexInSuperset);
               d0ArgDerivIsConstant_ = true;
               SUNDANCE_VERB_MEDIUM(tabs << "arg value is constant");
             }
           else
             {
+              d0ArgDerivIndex_ = argEval()->vectorIndexMap().get(argIndexInSuperset);
               d0ArgDerivIsConstant_ = false;
               SUNDANCE_VERB_MEDIUM(tabs << "arg value is non-constant");
             }
@@ -124,7 +126,9 @@ NonlinearUnaryOpEvaluator
   int vecCounter = 0;
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
+      Tabs tab2;
       const MultipleDeriv& d = this->sparsity()->deriv(i);
+      SUNDANCE_VERB_MEDIUM(tab2 << "building computation tables for result deriv " << d);
       TEST_FOR_EXCEPTION(d.order() > 2, RuntimeError,
                          "deriv order > 2 not implemented for unary math ops");
 
@@ -137,25 +141,34 @@ NonlinearUnaryOpEvaluator
 
       if (order==0)
         {
+          Tabs tab3;
           /* The zeroth order functional derivative is just the operator
            * F(g), so we need not record any derivatives of the 
            * argument. All we have to do is record the index into which
            * we will write the result of the operation. */
+          SUNDANCE_VERB_MEDIUM(tab3 << "finding procedure for computing 0-th derivative");
           if (d0ArgDerivIsConstant_)
             {
-              d0ResultIndex_ = constCounter;;
+              Tabs tab4;
+              d0ResultIndex_ = constCounter;
               addConstantIndex(i, constCounter++); /* result is a constant */
+              SUNDANCE_VERB_MEDIUM(tab4 << "result is constant: arg index=" << i 
+                                   << ", rtn result index=" << d0ResultIndex_);
             }
           else
             {
+              Tabs tab4;
               d0ResultIndex_ = vecCounter;
               addVectorIndex(i, vecCounter++); /* result is a vector */
+              SUNDANCE_VERB_MEDIUM(tab4 << "result is vector: arg index=" << i 
+                                   << ", rtn result index=" << d0ResultIndex_);
             }
-          SUNDANCE_VERB_MEDIUM(tabs << "operator value goes into result index"
+          SUNDANCE_VERB_MEDIUM(tab3 << "operator value goes into result index "
                                << d0ResultIndex_);
         }
       else if (order==1)
         {
+          Tabs tab3;
           /* The first order functional derivative wrt u is
            * F_u = F'(g) g_u. We must record the index where we will 
            * write this result, the index into the arg's results
@@ -170,8 +183,8 @@ NonlinearUnaryOpEvaluator
            * This will save us a vector copy. 
            */
 
+          SUNDANCE_VERB_MEDIUM(tab3 << "finding procedure for computing 1st derivative");
           /* Record the index at which we will record this derivative */
-          Tabs tab1;
           d1ResultIndex_.append(i);
           addVectorIndex(i, vecCounter++); /* result is a vector */
           
@@ -188,12 +201,12 @@ NonlinearUnaryOpEvaluator
           /* Record index of g_u in arg results, and also whether it
            * is a constant or a vector */
           int index = argSparsitySuperset()->getIndex(d);
-          SUNDANCE_VERB_MEDIUM(tab1 << "deriv " << d << " found at index "
+          SUNDANCE_VERB_MEDIUM(tab3 << "deriv " << d << " found at index "
                                << index << " in arg results");
 
           if (argSparsitySuperset()->state(index)==ConstantDeriv)
             {
-              Tabs tab2;
+              Tabs tab4;
               SUNDANCE_VERB_MEDIUM(tab2 << "arg deriv is constant");
               TEST_FOR_EXCEPTION(!argEval()->constantIndexMap().containsKey(index),
                                  InternalError,
@@ -204,8 +217,8 @@ NonlinearUnaryOpEvaluator
             }
           else
             {
-              Tabs tab2;
-              SUNDANCE_VERB_MEDIUM(tab2 << "arg deriv is non-constant");
+              Tabs tab4;
+              SUNDANCE_VERB_MEDIUM(tab4 << "arg deriv is non-constant");
               TEST_FOR_EXCEPTION(!argEval()->vectorIndexMap().containsKey(index),
                                  InternalError,
                                  "index " << index 
@@ -217,7 +230,7 @@ NonlinearUnaryOpEvaluator
         }
       else if (order==2)
         {
-
+          Tabs tab3;
           /* A second derivative wrt u and v will look like 
            * F_uv = F"(g) g_u g_v + F' g_uv. 
            * We therefore need to know the indices from which to obtain
@@ -236,6 +249,8 @@ NonlinearUnaryOpEvaluator
            * first-order calculations so that g_u and g_v can be
            * overwritten as well.
            */
+
+          SUNDANCE_VERB_MEDIUM(tab3 << "finding procedure for computing 2nd derivative");
           d2ResultIndex_.append(i);
           addVectorIndex(i, vecCounter++); /* result is a vector */
           
@@ -270,7 +285,7 @@ NonlinearUnaryOpEvaluator
 
           /* 
            * Find the indices of the two first-order factors g_u and g_v,
-           * and whether thery are constant. 
+           * and whether they are constant. 
            */
           int j=0;
           for (MultipleDeriv::const_iterator 
@@ -322,6 +337,14 @@ void NonlinearUnaryOpEvaluator
 
   evalOperand(mgr, argConstantResults, argVectorResults);
 
+  if (verbosity() > VerbLow)
+    {
+      Tabs tab2;
+      cerr << tab2 << "NonlinearUnaryOp operand results" << endl;
+      argSparsitySuperset()->print(cerr, argVectorResults,
+                                   argConstantResults);
+    }
+
   /* If the arg deriv index is -1, nothing needs to be computed by this 
    * evaluator in this context. Return now if we have no work to do here */
   if (d0ArgDerivIndex_==-1) return;
@@ -336,12 +359,18 @@ void NonlinearUnaryOpEvaluator
   RefCountPtr<EvalVector> argValue;
   if (d0ArgDerivIsConstant_)
     {
+      Tabs tab2;
+      SUNDANCE_VERB_HIGH(tab2 << "getting constant arg value from arg result index "
+                         << d0ArgDerivIndex_);
       argValue = mgr.popVector();
       argValue->resize(1);
       argValue->setToConstant(argConstantResults[d0ArgDerivIndex_]);
     }
   else
     {
+      Tabs tab2;
+      SUNDANCE_VERB_HIGH(tab2 << "getting vector arg value from arg result index "
+                         << d0ArgDerivIndex_);
       argValue = argVectorResults[d0ArgDerivIndex_];
     }
 
@@ -352,12 +381,16 @@ void NonlinearUnaryOpEvaluator
 
   if (d0ArgDerivIsConstant_)
     {
+      Tabs tab2;
+      SUNDANCE_VERB_MEDIUM(tab2 << "the function argument is constant");
       constantResults.resize(1);
       constantResults[0] = opDerivs[0]->start()[0];
+      
     }
   else
     {
-  
+      Tabs tab2;
+      SUNDANCE_VERB_MEDIUM(tab2 << "the function argument is non-constant");
       /*
        * Allocate the results array
        */
@@ -488,9 +521,16 @@ void NonlinearUnaryOpEvaluator
 
 
       /* --- Zeroth derivative term */
-
-      vectorResults[d0ResultIndex_] = opDerivs[0];
+      SUNDANCE_VERB_HIGH(tabs << "evaluating zeroth deriv");
+      if (d0ResultIndex_ >= 0) vectorResults[d0ResultIndex_] = opDerivs[0];
     }  
+
+  if (verbosity() > VerbLow)
+    {
+      cerr << tabs << "NonlinearUnaryOp results" << endl;
+      sparsity()->print(cout, vectorResults,
+                        constantResults);
+    }
 }
 
 

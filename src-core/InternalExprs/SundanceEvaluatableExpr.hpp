@@ -160,7 +160,8 @@ namespace SundanceCore
        * the given set of differential operators in the given context. */
       RefCountPtr<SparsitySubset> sparsitySubset(const EvalContext& context,
                                                  const Set<MultiIndex>& multiIndices,
-                                                 const Set<MultiSet<int> >& activeFuncIDs) const ;
+                                                 const Set<MultiSet<int> >& activeFuncIDs,
+                                                 bool failIfNotFound) const ;
 
 
 
@@ -243,6 +244,11 @@ namespace SundanceCore
 
       /** */
       static RefCountPtr<Set<int> > getFuncIDSet(const Expr& funcs);
+
+      /** Filter the input active function list to eliminate functions
+       * not appearing in the list of functional dependencies */
+      Set<MultiSet<int> > filterActiveFuncs(const Set<MultiSet<int> >& inputActiveFuncs) const ;
+
 
     protected:
 

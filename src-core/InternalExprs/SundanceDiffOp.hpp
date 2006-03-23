@@ -133,7 +133,8 @@ namespace SundanceCore
        * funcs for the next higher order of differentiation.
        */
       virtual Set<MultiSet<int> > 
-      argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const ;
+      argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
+                     int maxOrder) const ;
 
     private:
 

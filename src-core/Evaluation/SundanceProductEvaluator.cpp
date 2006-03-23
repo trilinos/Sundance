@@ -62,326 +62,336 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
     startingVectors_(maxOrder_+1),
     startingParities_(maxOrder_+1)
 {
-  Tabs tabs;
-
-  SUNDANCE_VERB_LOW(tabs << "initializing product evaluator for " 
-                    << expr->toString());
-
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << *(this->sparsity)());
-
-  SUNDANCE_VERB_MEDIUM(tabs << "left sparsity " << endl 
-                       << *(leftSparsity()) << endl
-                       << tabs << "right sparsity " 
-                       << endl << *(rightSparsity()));
-  
-  SUNDANCE_VERB_HIGH(tabs << "left vector index map " 
-                     << leftEval()->vectorIndexMap() << endl
-                     << tabs << "right vector index map " 
-                     << rightEval()->vectorIndexMap() << endl
-                     << tabs << "left constant index map " 
-                     << leftEval()->constantIndexMap() << endl
-                     << tabs << "right constant index map " 
-                     << rightEval()->constantIndexMap());
-                     
-  int vecResultIndex = 0;
-  int constResultIndex = 0;
-
-  for (int i=0; i<this->sparsity()->numDerivs(); i++)
+  try
     {
-      Tabs tab0;
-      const MultipleDeriv& d = this->sparsity()->deriv(i);
+      Tabs tabs;
 
-      SUNDANCE_VERB_MEDIUM(tabs << endl << "finding rules for deriv " << d);
+      SUNDANCE_VERB_LOW(tabs << "initializing product evaluator for " 
+                        << expr->toString());
 
-      int order = d.order();
+      SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << *(this->sparsity)());
 
-      /* Determine the index into which the result will be written */
-      bool resultIsConstant = this->sparsity()->state(i)==ConstantDeriv; 
-      resultIsConstant_[order].append(resultIsConstant);
-      if (resultIsConstant)
-        {
-          SUNDANCE_VERB_HIGH(tab0 << endl 
-                             << "result will be in constant index " << constResultIndex);
-          resultIndex_[order].append(constResultIndex);
-          addConstantIndex(i, constResultIndex);
-          constResultIndex++;
-        }
-      else
-        {
-          SUNDANCE_VERB_HIGH(tab0 << endl 
-                             << "result will be in constant index " << vecResultIndex);
-          resultIndex_[order].append(vecResultIndex);
-          addVectorIndex(i, vecResultIndex);
-          vecResultIndex++;
-        }
+      SUNDANCE_VERB_MEDIUM(tabs << "left sparsity " << endl 
+                           << *(leftSparsity()) << endl
+                           << tabs << "right sparsity " 
+                           << endl << *(rightSparsity()));
+  
+      SUNDANCE_VERB_HIGH(tabs << "left vector index map " 
+                         << leftEval()->vectorIndexMap() << endl
+                         << tabs << "right vector index map " 
+                         << rightEval()->vectorIndexMap() << endl
+                         << tabs << "left constant index map " 
+                         << leftEval()->constantIndexMap() << endl
+                         << tabs << "right constant index map " 
+                         << rightEval()->constantIndexMap());
+                     
+      int vecResultIndex = 0;
+      int constResultIndex = 0;
 
-      /* If possible, we want to do the calculations in-place, writing into
-       * one of the two operand's results vectors for the same derivative.
-       * Provided that we process derivatives in descending order, it is
-       * safe to destroy the operands' result vectors.
-       */
-       
-      int dnLeftIndex = leftSparsity()->getIndex(d);
-      int dnRightIndex = rightSparsity()->getIndex(d);
-
-      
-      bool hasVectorWorkspace = false;
-      bool workspaceIsLeft = false;
-      int workspaceIndex = -1;
-      int workspaceCoeffIndex = -1;
-      bool workspaceCoeffIsConstant = false;
-
-
-      bool dnLeftIsConst = false;
-      if (dnLeftIndex != -1) 
-        {
-          dnLeftIsConst = leftSparsity()->state(dnLeftIndex)==ConstantDeriv;
-        }
-      bool dnRightIsConst = false;
-      if (dnRightIndex != -1)
-        {
-          dnRightIsConst = rightSparsity()->state(dnRightIndex)==ConstantDeriv;
-        }
-
-      /* First try to use the left result as a workspace */
-      if (dnLeftIndex != -1 && !dnLeftIsConst 
-          && rightSparsity()->containsDeriv(MultipleDeriv()))
-        {
-          /* We can write onto left vector */
-          hasVectorWorkspace = true;
-          workspaceIndex = leftEval()->vectorIndexMap().get(dnLeftIndex);       
-          SUNDANCE_VERB_HIGH(tab0 << "using left as workspace");
-          workspaceIsLeft = true;
-          int d0RightIndex = rightSparsity()->getIndex(MultipleDeriv());
-          bool d0RightIsConst = rightSparsity()->state(d0RightIndex)==ConstantDeriv;
-          workspaceCoeffIsConstant = d0RightIsConst;
-          if (d0RightIsConst)
-            {
-              workspaceCoeffIndex 
-                = rightEval()->constantIndexMap().get(d0RightIndex);
-            }
-          else
-            {
-              workspaceCoeffIndex 
-                = rightEval()->vectorIndexMap().get(d0RightIndex);
-            }
-        }
-
-      /* If the left didn't provide a workspace, try the right */
-      if (!hasVectorWorkspace && dnRightIndex != -1 && !dnRightIsConst
-          && leftSparsity()->containsDeriv(MultipleDeriv()))
-        {
-          /* We can write onto right vector */
-          hasVectorWorkspace = true;
-          workspaceIndex = rightEval()->vectorIndexMap().get(dnRightIndex); 
-          workspaceIsLeft = false;
-          SUNDANCE_VERB_HIGH(tab0 << "using right as workspace");
-          int d0LeftIndex = leftSparsity()->getIndex(MultipleDeriv());
-          bool d0LeftIsConst = leftSparsity()->state(d0LeftIndex)==ConstantDeriv;
-          workspaceCoeffIsConstant = d0LeftIsConst;
-          if (d0LeftIsConst)
-            {
-              workspaceCoeffIndex 
-                = leftEval()->constantIndexMap().get(d0LeftIndex);
-            }
-          else
-            {
-              workspaceCoeffIndex 
-                = leftEval()->vectorIndexMap().get(d0LeftIndex);
-            }
-        }
-      
-      if (hasVectorWorkspace && verbosity() > VerbMedium)
-        {
-          string wSide = "right";
-          MultipleDeriv wsDeriv;
-          if (workspaceIsLeft) 
-            {
-              wSide = "left";
-              wsDeriv = leftSparsity()->deriv(dnLeftIndex);
-            }
-          else
-            {
-              wsDeriv = rightSparsity()->deriv(dnRightIndex);
-            }
-          SUNDANCE_VERB_MEDIUM(tab0 << "has workspace vector: "
-                               << wSide << " deriv= " 
-                               << wsDeriv
-                               << ", coeff index= " << workspaceCoeffIndex);
-        }
-      else
-        {
-          SUNDANCE_VERB_MEDIUM(tab0 << "has no workspace vector");
-        }
-
-      hasWorkspace_[order].append(hasVectorWorkspace);
-      workspaceIsLeft_[order].append(workspaceIsLeft);
-      workspaceIndex_[order].append(workspaceIndex);
-      workspaceCoeffIndex_[order].append(workspaceCoeffIndex);
-      workspaceCoeffIsConstant_[order].append(workspaceCoeffIsConstant);
-      
-      ProductRulePerms perms;
-      d.productRulePermutations(perms);
-      SUNDANCE_VERB_EXTREME(tabs << "product rule permutations " << perms);
-
-      Array<Array<int> > ccTerms;
-      Array<Array<int> > cvTerms;
-      Array<Array<int> > vcTerms;
-      Array<Array<int> > vvTerms;
-      Array<int> startingVector;
-      ProductParity startingParity;
-
-      bool hasStartingVector = false;
-
-      for (ProductRulePerms::const_iterator 
-             iter = perms.begin(); iter != perms.end(); iter++)
-        {
-          Tabs tab1;
-          MultipleDeriv dLeft = iter->first.first();
-          MultipleDeriv dRight = iter->first.second();
-          int multiplicity = iter->second;
-          
-          /* skip this combination if we've already pulled it out 
-           * for workspace */
-          if (hasVectorWorkspace && workspaceIsLeft 
-              && dLeft.order()==order) continue;
-          if (hasVectorWorkspace && !workspaceIsLeft 
-              && dRight.order()==order) continue;
-
-          if (!leftSparsity()->containsDeriv(dLeft)
-              || !rightSparsity()->containsDeriv(dRight)) continue;
-          int iLeft = leftSparsity()->getIndex(dLeft);
-          int iRight = rightSparsity()->getIndex(dRight);
-
-          if (iLeft==-1 || iRight==-1) continue;
-          SUNDANCE_VERB_EXTREME(tab1 << "left deriv=" << dLeft);
-          SUNDANCE_VERB_EXTREME(tab1 << "right deriv=" << dRight);
-
-          bool leftIsConst = leftSparsity()->state(iLeft)==ConstantDeriv;
-          bool rightIsConst = rightSparsity()->state(iRight)==ConstantDeriv;
-
-          if (leftIsConst)
-            {
-              Tabs tab2;
-              SUNDANCE_VERB_EXTREME(tab2 << "left is const");
-              int leftIndex = leftEval()->constantIndexMap().get(iLeft);
-              if (rightIsConst)
-                {
-                  SUNDANCE_VERB_EXTREME(tab2 << "right is const");
-                  int rightIndex = rightEval()->constantIndexMap().get(iRight);
-                  ccTerms.append(tuple(leftIndex, rightIndex, multiplicity));
-                }
-              else
-                {
-                  SUNDANCE_VERB_EXTREME(tab2 << "right is vec");
-                  int rightIndex = rightEval()->vectorIndexMap().get(iRight);
-                  if (!hasVectorWorkspace && !hasStartingVector)
-                    {
-                      SUNDANCE_VERB_EXTREME(tab1 << "found c-v starting vec");
-                      startingVector = tuple(leftIndex, rightIndex, 
-                                             multiplicity);
-                      hasStartingVector = true;
-                      startingParity = ConstVec;
-                    }
-                  else
-                    {
-                      SUNDANCE_VERB_EXTREME(tab1 << "found c-v term");
-                      cvTerms.append(tuple(leftIndex, rightIndex, 
-                                           multiplicity));
-                    }
-                }
-            }
-          else
-            {
-              Tabs tab2;
-              SUNDANCE_VERB_EXTREME(tab2 << "left is vec");
-              int leftIndex = leftEval()->vectorIndexMap().get(iLeft);
-              if (rightIsConst)
-                {
-                  SUNDANCE_VERB_EXTREME(tab2 << "right is const");
-                  int rightIndex = rightEval()->constantIndexMap().get(iRight);
-                  if (!hasVectorWorkspace && !hasStartingVector)
-                    {
-                      SUNDANCE_VERB_EXTREME(tab1 << "found v-c starting vec");
-                      startingVector = tuple(leftIndex, rightIndex, 
-                                             multiplicity);
-                      hasStartingVector = true;
-                      startingParity = VecConst;
-                    }
-                  else
-                    {
-                      SUNDANCE_VERB_EXTREME(tab1 << "found v-c term");
-                      vcTerms.append(tuple(leftIndex, rightIndex, 
-                                           multiplicity));
-                    }
-                }
-              else
-                {
-                  SUNDANCE_VERB_EXTREME(tab2 << "right is vec");
-                  int rightIndex = rightEval()->vectorIndexMap().get(iRight);
-                  if (!hasVectorWorkspace && !hasStartingVector)
-                    {
-                      SUNDANCE_VERB_EXTREME(tab1 << "found v-v starting vec");
-                      startingVector = tuple(leftIndex, rightIndex, 
-                                             multiplicity);
-                      hasStartingVector = true;
-                      startingParity = VecVec;
-                    }
-                  else
-                    {
-                      SUNDANCE_VERB_EXTREME(tab1 << "found v-v term");
-                      vvTerms.append(tuple(leftIndex, rightIndex, 
-                                           multiplicity));
-                    }
-                }
-            }
-        }
-      ccTerms_[order].append(ccTerms);
-      cvTerms_[order].append(cvTerms);
-      vcTerms_[order].append(vcTerms);
-      vvTerms_[order].append(vvTerms);
-      startingVectors_[order].append(startingVector);
-      startingParities_[order].append(startingParity);
-
-      if (verbosity() > VerbMedium)
+      for (int i=0; i<this->sparsity()->numDerivs(); i++)
         {
           Tabs tab0;
-          cerr << tab0 << "deriv " << i << " order=" << order ;
+          const MultipleDeriv& d = this->sparsity()->deriv(i);
+
+          SUNDANCE_VERB_MEDIUM(tabs << endl << "finding rules for deriv " << d);
+
+          int order = d.order();
+
+          /* Determine the index into which the result will be written */
+          bool resultIsConstant = this->sparsity()->state(i)==ConstantDeriv; 
+          resultIsConstant_[order].append(resultIsConstant);
           if (resultIsConstant)
             {
-              cerr << " constant result ";
+              SUNDANCE_VERB_HIGH(tab0 << endl 
+                                 << "result will be in constant index " << constResultIndex);
+              resultIndex_[order].append(constResultIndex);
+              addConstantIndex(i, constResultIndex);
+              constResultIndex++;
             }
           else
             {
-              cerr << " vector result ";
+              SUNDANCE_VERB_HIGH(tab0 << endl 
+                                 << "result will be in constant index " << vecResultIndex);
+              resultIndex_[order].append(vecResultIndex);
+              addVectorIndex(i, vecResultIndex);
+              vecResultIndex++;
             }
-          cerr << resultIndex_[order] << endl;
-          {
-            Tabs tab1;
-            if (hasStartingVector) 
-              {
-                cerr << tab1 << "starting vector " << startingVector << endl;
-              }
-            cerr << tab1 << "c-c terms " << ccTerms << endl;
-            cerr << tab1 << "c-v terms " << cvTerms << endl;
-            cerr << tab1 << "v-c terms " << vcTerms << endl;
-            cerr << tab1 << "v-v terms " << vvTerms << endl;
-          }
-        }
-    }
 
-  if (verbosity() > VerbMedium)
+          /* If possible, we want to do the calculations in-place, writing into
+           * one of the two operand's results vectors for the same derivative.
+           * Provided that we process derivatives in descending order, it is
+           * safe to destroy the operands' result vectors.
+           */
+       
+          int dnLeftIndex = leftSparsity()->getIndex(d);
+          int dnRightIndex = rightSparsity()->getIndex(d);
+
+      
+          bool hasVectorWorkspace = false;
+          bool workspaceIsLeft = false;
+          int workspaceIndex = -1;
+          int workspaceCoeffIndex = -1;
+          bool workspaceCoeffIsConstant = false;
+
+
+          bool dnLeftIsConst = false;
+          if (dnLeftIndex != -1) 
+            {
+              dnLeftIsConst = leftSparsity()->state(dnLeftIndex)==ConstantDeriv;
+            }
+          bool dnRightIsConst = false;
+          if (dnRightIndex != -1)
+            {
+              dnRightIsConst = rightSparsity()->state(dnRightIndex)==ConstantDeriv;
+            }
+
+          /* First try to use the left result as a workspace */
+          if (dnLeftIndex != -1 && !dnLeftIsConst 
+              && rightSparsity()->containsDeriv(MultipleDeriv()))
+            {
+              /* We can write onto left vector */
+              hasVectorWorkspace = true;
+              workspaceIndex = leftEval()->vectorIndexMap().get(dnLeftIndex);       
+              SUNDANCE_VERB_HIGH(tab0 << "using left as workspace");
+              workspaceIsLeft = true;
+              int d0RightIndex = rightSparsity()->getIndex(MultipleDeriv());
+              bool d0RightIsConst = rightSparsity()->state(d0RightIndex)==ConstantDeriv;
+              workspaceCoeffIsConstant = d0RightIsConst;
+              if (d0RightIsConst)
+                {
+                  workspaceCoeffIndex 
+                    = rightEval()->constantIndexMap().get(d0RightIndex);
+                }
+              else
+                {
+                  workspaceCoeffIndex 
+                    = rightEval()->vectorIndexMap().get(d0RightIndex);
+                }
+            }
+
+          /* If the left didn't provide a workspace, try the right */
+          if (!hasVectorWorkspace && dnRightIndex != -1 && !dnRightIsConst
+              && leftSparsity()->containsDeriv(MultipleDeriv()))
+            {
+              /* We can write onto right vector */
+              hasVectorWorkspace = true;
+              workspaceIndex = rightEval()->vectorIndexMap().get(dnRightIndex); 
+              workspaceIsLeft = false;
+              SUNDANCE_VERB_HIGH(tab0 << "using right as workspace");
+              int d0LeftIndex = leftSparsity()->getIndex(MultipleDeriv());
+              bool d0LeftIsConst = leftSparsity()->state(d0LeftIndex)==ConstantDeriv;
+              workspaceCoeffIsConstant = d0LeftIsConst;
+              if (d0LeftIsConst)
+                {
+                  workspaceCoeffIndex 
+                    = leftEval()->constantIndexMap().get(d0LeftIndex);
+                }
+              else
+                {
+                  workspaceCoeffIndex 
+                    = leftEval()->vectorIndexMap().get(d0LeftIndex);
+                }
+            }
+      
+          if (hasVectorWorkspace && verbosity() > VerbMedium)
+            {
+              string wSide = "right";
+              MultipleDeriv wsDeriv;
+              if (workspaceIsLeft) 
+                {
+                  wSide = "left";
+                  wsDeriv = leftSparsity()->deriv(dnLeftIndex);
+                }
+              else
+                {
+                  wsDeriv = rightSparsity()->deriv(dnRightIndex);
+                }
+              SUNDANCE_VERB_MEDIUM(tab0 << "has workspace vector: "
+                                   << wSide << " deriv= " 
+                                   << wsDeriv
+                                   << ", coeff index= " << workspaceCoeffIndex);
+            }
+          else
+            {
+              SUNDANCE_VERB_MEDIUM(tab0 << "has no workspace vector");
+            }
+
+          hasWorkspace_[order].append(hasVectorWorkspace);
+          workspaceIsLeft_[order].append(workspaceIsLeft);
+          workspaceIndex_[order].append(workspaceIndex);
+          workspaceCoeffIndex_[order].append(workspaceCoeffIndex);
+          workspaceCoeffIsConstant_[order].append(workspaceCoeffIsConstant);
+      
+          ProductRulePerms perms;
+          d.productRulePermutations(perms);
+          SUNDANCE_VERB_EXTREME(tabs << "product rule permutations " << perms);
+
+          Array<Array<int> > ccTerms;
+          Array<Array<int> > cvTerms;
+          Array<Array<int> > vcTerms;
+          Array<Array<int> > vvTerms;
+          Array<int> startingVector;
+          ProductParity startingParity;
+
+          bool hasStartingVector = false;
+
+          for (ProductRulePerms::const_iterator 
+                 iter = perms.begin(); iter != perms.end(); iter++)
+            {
+              Tabs tab1;
+              MultipleDeriv dLeft = iter->first.first();
+              MultipleDeriv dRight = iter->first.second();
+              int multiplicity = iter->second;
+          
+              /* skip this combination if we've already pulled it out 
+               * for workspace */
+              if (hasVectorWorkspace && workspaceIsLeft 
+                  && dLeft.order()==order) continue;
+              if (hasVectorWorkspace && !workspaceIsLeft 
+                  && dRight.order()==order) continue;
+
+              if (!leftSparsity()->containsDeriv(dLeft)
+                  || !rightSparsity()->containsDeriv(dRight)) continue;
+              int iLeft = leftSparsity()->getIndex(dLeft);
+              int iRight = rightSparsity()->getIndex(dRight);
+
+              if (iLeft==-1 || iRight==-1) continue;
+              SUNDANCE_VERB_EXTREME(tab1 << "left deriv=" << dLeft);
+              SUNDANCE_VERB_EXTREME(tab1 << "right deriv=" << dRight);
+
+              bool leftIsConst = leftSparsity()->state(iLeft)==ConstantDeriv;
+              bool rightIsConst = rightSparsity()->state(iRight)==ConstantDeriv;
+
+              if (leftIsConst)
+                {
+                  Tabs tab2;
+                  SUNDANCE_VERB_EXTREME(tab2 << "left is const");
+                  int leftIndex = leftEval()->constantIndexMap().get(iLeft);
+                  if (rightIsConst)
+                    {
+                      SUNDANCE_VERB_EXTREME(tab2 << "right is const");
+                      int rightIndex = rightEval()->constantIndexMap().get(iRight);
+                      ccTerms.append(tuple(leftIndex, rightIndex, multiplicity));
+                    }
+                  else
+                    {
+                      SUNDANCE_VERB_EXTREME(tab2 << "right is vec");
+                      int rightIndex = rightEval()->vectorIndexMap().get(iRight);
+                      if (!hasVectorWorkspace && !hasStartingVector)
+                        {
+                          SUNDANCE_VERB_EXTREME(tab1 << "found c-v starting vec");
+                          startingVector = tuple(leftIndex, rightIndex, 
+                                                 multiplicity);
+                          hasStartingVector = true;
+                          startingParity = ConstVec;
+                        }
+                      else
+                        {
+                          SUNDANCE_VERB_EXTREME(tab1 << "found c-v term");
+                          cvTerms.append(tuple(leftIndex, rightIndex, 
+                                               multiplicity));
+                        }
+                    }
+                }
+              else
+                {
+                  Tabs tab2;
+                  SUNDANCE_VERB_EXTREME(tab2 << "left is vec");
+                  int leftIndex = leftEval()->vectorIndexMap().get(iLeft);
+                  if (rightIsConst)
+                    {
+                      SUNDANCE_VERB_EXTREME(tab2 << "right is const");
+                      int rightIndex = rightEval()->constantIndexMap().get(iRight);
+                      if (!hasVectorWorkspace && !hasStartingVector)
+                        {
+                          SUNDANCE_VERB_EXTREME(tab1 << "found v-c starting vec");
+                          startingVector = tuple(leftIndex, rightIndex, 
+                                                 multiplicity);
+                          hasStartingVector = true;
+                          startingParity = VecConst;
+                        }
+                      else
+                        {
+                          SUNDANCE_VERB_EXTREME(tab1 << "found v-c term");
+                          vcTerms.append(tuple(leftIndex, rightIndex, 
+                                               multiplicity));
+                        }
+                    }
+                  else
+                    {
+                      SUNDANCE_VERB_EXTREME(tab2 << "right is vec");
+                      int rightIndex = rightEval()->vectorIndexMap().get(iRight);
+                      if (!hasVectorWorkspace && !hasStartingVector)
+                        {
+                          SUNDANCE_VERB_EXTREME(tab1 << "found v-v starting vec");
+                          startingVector = tuple(leftIndex, rightIndex, 
+                                                 multiplicity);
+                          hasStartingVector = true;
+                          startingParity = VecVec;
+                        }
+                      else
+                        {
+                          SUNDANCE_VERB_EXTREME(tab1 << "found v-v term");
+                          vvTerms.append(tuple(leftIndex, rightIndex, 
+                                               multiplicity));
+                        }
+                    }
+                }
+            }
+          ccTerms_[order].append(ccTerms);
+          cvTerms_[order].append(cvTerms);
+          vcTerms_[order].append(vcTerms);
+          vvTerms_[order].append(vvTerms);
+          startingVectors_[order].append(startingVector);
+          startingParities_[order].append(startingParity);
+
+          if (verbosity() > VerbMedium)
+            {
+              Tabs tab0;
+              cerr << tab0 << "deriv " << i << " order=" << order ;
+              if (resultIsConstant)
+                {
+                  cerr << " constant result ";
+                }
+              else
+                {
+                  cerr << " vector result ";
+                }
+              cerr << resultIndex_[order] << endl;
+              {
+                Tabs tab1;
+                if (hasStartingVector) 
+                  {
+                    cerr << tab1 << "starting vector " << startingVector << endl;
+                  }
+                cerr << tab1 << "c-c terms " << ccTerms << endl;
+                cerr << tab1 << "c-v terms " << cvTerms << endl;
+                cerr << tab1 << "v-c terms " << vcTerms << endl;
+                cerr << tab1 << "v-v terms " << vvTerms << endl;
+              }
+            }
+        }
+
+      if (verbosity() > VerbMedium)
         {
           cerr << tabs << "maps: " << endl;
           cerr << tabs << "vector index map " << vectorIndexMap() << endl;
           cerr << tabs << "constant index map " << constantIndexMap() << endl;
         }
+    }
+  catch(std::exception& e)
+    {
+      TEST_FOR_EXCEPTION(true, RuntimeError, 
+                         "exception detected in ProductEvaluator: expr="
+                         << expr->toString() << endl
+                         << "exception=" << e.what());
+    }
 }
 
 void ProductEvaluator
 ::internalEval(const EvalManager& mgr,
-       Array<double>& constantResults,
-       Array<RefCountPtr<EvalVector> >& vectorResults) const
+               Array<double>& constantResults,
+               Array<RefCountPtr<EvalVector> >& vectorResults) const
 {
   //  TimeMonitor timer(evalTimer());
   Tabs tabs;
@@ -661,6 +671,6 @@ void ProductEvaluator
     {
       cerr << tabs << "product result " << endl;
       this->sparsity()->print(cerr, vectorResults,
-                        constantResults);
+                              constantResults);
     }
 }

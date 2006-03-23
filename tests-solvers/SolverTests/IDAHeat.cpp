@@ -297,7 +297,7 @@ int main(int argc, void *argv[])
       int rank = MPISession::getRank();
       int nProc = MPISession::getNProc();
 #ifndef HAVE_SUNDIALS
-      cout << "sundials not present... test disabled" << endl;
+      cout << "sundials not present... test INACTIVE" << endl;
 #else
 
       IDAHeat model(n, new EpetraVectorType());

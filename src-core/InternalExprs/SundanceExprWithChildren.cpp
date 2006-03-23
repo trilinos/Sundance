@@ -34,6 +34,7 @@
 #include "SundanceExpr.hpp"
 #include "SundanceEvaluatorFactory.hpp"
 #include "SundanceEvaluator.hpp"
+#include "SundanceNullEvaluator.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceUnaryExpr.hpp"
 
@@ -87,24 +88,42 @@ const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
 
 void ExprWithChildren::findNonzeros(const EvalContext& context,
                                     const Set<MultiIndex>& multiIndices,
-                                    const Set<MultiSet<int> >& activeFuncIDs,
+                                    const Set<MultiSet<int> >& inputActiveFuncIDs,
                                     bool regardFuncsAsConstant) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for " 
+  ExprWithChildren* nonConstSelf = const_cast<ExprWithChildren*>(this);
+  EvaluatableExpr* nonConstBase = static_cast<EvaluatableExpr*>(nonConstSelf);
+  nonConstBase->verbosity() = TSFExtended::verbosity<EvaluatableExpr>();
+  SUNDANCE_VERB_HIGH(tabs << "finding nonzeros for ExprWithChildren " 
                        << toString() << " subject to multiindex set "
                        << multiIndices.toString());
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
+  if (this->verbosity() > VerbHigh)
+    {
+      SUNDANCE_OUT(true, tabs << "num children = " << children_.size());
+      for (unsigned int i=0; i<children_.size(); i++)
+        {
+          Tabs tab1;
+          SUNDANCE_OUT(true, tab1 << "child #" << i << " = " 
+                       << evaluatableChild(i)->toString());
+        }
+    }
+
+
+  Set<MultiSet<int> > filteredActiveFuncs = filterActiveFuncs(inputActiveFuncIDs);
+
+  if (nonzerosAreKnown(context, multiIndices, filteredActiveFuncs,
                        regardFuncsAsConstant))
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      SUNDANCE_VERB_HIGH(tabs << "...reusing previously computed data");
       return;
     }
 
   const UnaryExpr* ue = dynamic_cast<const UnaryExpr*>(this);
-  if (ue != 0) ue->addActiveFuncs(context, activeFuncIDs);
+  if (ue != 0) ue->addActiveFuncs(context, filteredActiveFuncs);
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset 
+    = sparsitySubset(context, multiIndices, filteredActiveFuncs, false);
 
   /* The sparsity pattern is the union of the 
    * operands' sparsity patterns. If any functional derivatives
@@ -113,17 +132,23 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
   for (unsigned int i=0; i<children_.size(); i++)
     {
       Tabs tab1;
-      SUNDANCE_VERB_MEDIUM(tab1 << "finding nonzeros for child " 
+      SUNDANCE_VERB_HIGH(tab1 << "finding nonzeros for child " 
                            << evaluatableChild(i)->toString());
       evaluatableChild(i)->findNonzeros(context, multiIndices,
-                                        activeFuncIDs,
+                                        filteredActiveFuncs,
                                         regardFuncsAsConstant);
 
+      Set<MultiSet<int> > filteredChildActiveFuncs 
+        = evaluatableChild(i)->filterActiveFuncs(filteredActiveFuncs);
+      
+      SUNDANCE_VERB_HIGH(tab1 << "reading sparsity subset for child " 
+                           << evaluatableChild(i)->toString());
+
       RefCountPtr<SparsitySubset> childSparsitySubset 
-        = evaluatableChild(i)->sparsitySubset(context, multiIndices, activeFuncIDs);
+        = evaluatableChild(i)->sparsitySubset(context, multiIndices, filteredChildActiveFuncs, true);
           
 
-      SUNDANCE_VERB_MEDIUM(tabs << "child #" << i 
+      SUNDANCE_VERB_HIGH(tabs << "child #" << i 
                            << " sparsity subset is " 
                            << endl << *childSparsitySubset);
       
@@ -134,14 +159,15 @@ void ExprWithChildren::findNonzeros(const EvalContext& context,
         }
     }
 
-  SUNDANCE_VERB_HIGH(tabs << "expr " + toString() << ": my sparsity subset is " 
+  SUNDANCE_VERB_HIGH(tabs << "done with ExprWithChildren " 
+                     + toString() << ": my sparsity subset is " 
                      << endl << *subset);
 
-  SUNDANCE_VERB_HIGH(tabs << "expr " + toString() 
+  SUNDANCE_VERB_HIGH(tabs << "done with ExprWithChildren " + toString() 
                      << " my sparsity superset is " 
                      << endl << *sparsitySuperset(context));
 
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
+  addKnownNonzero(context, multiIndices, filteredActiveFuncs,
                   regardFuncsAsConstant);
 }
 
@@ -150,17 +176,31 @@ void ExprWithChildren::setupEval(const EvalContext& context) const
   Tabs tabs;
   SUNDANCE_VERB_HIGH(tabs << "expr " + toString() 
                      << ": creating evaluators for children");
-  for (unsigned int i=0; i<children_.size(); i++)
+  SUNDANCE_VERB_HIGH(tabs << "my sparsity superset = " << *sparsitySuperset(context));
+
+
+  if (sparsitySuperset(context)->numDerivs() > 0)
     {
-      Tabs tabs1;
-      SUNDANCE_VERB_HIGH(tabs1 << "creating evaluator for child " 
-                         << evaluatableChild(i)->toString());
-      evaluatableChild(i)->setupEval(context);
+      for (unsigned int i=0; i<children_.size(); i++)
+        {
+          Tabs tabs1;
+          SUNDANCE_VERB_HIGH(tabs1 << "creating evaluator for child " 
+                             << evaluatableChild(i)->toString());
+          evaluatableChild(i)->setupEval(context);
+        }
     }
 
   if (!evaluators().containsKey(context))
     {
-      RefCountPtr<Evaluator> eval = rcp(createEvaluator(this, context));
+      RefCountPtr<Evaluator> eval;
+      if (sparsitySuperset(context)->numDerivs()>0)
+        {
+          eval = rcp(createEvaluator(this, context));
+        }
+      else
+        {
+          eval = rcp(new NullEvaluator());
+        }
       evaluators().put(context, eval);
     }
 }

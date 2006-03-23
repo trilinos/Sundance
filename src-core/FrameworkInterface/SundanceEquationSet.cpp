@@ -507,25 +507,57 @@ void EquationSet::init(const Expr& eqns,
           /* prepare calculation of functional value only */
           if (compTypes_.contains(FunctionalOnly))
             {
-              EvalContext context(rqc, 0, contextID[2]);
+              int maxOrder = 0;
+              EvalContext context(rqc, maxOrder, contextID[2]);
               DerivSet nonzeros;
-              if (compTypes_.contains(FunctionalAndGradient))
+              Expr fields;
+              Expr fieldValues;
+              if (fixedFields.size() > 0)
                 {
-                  nonzeros = SymbPreprocessor
-                    ::setupGradient(term, 
-                                    toList(vars), toList(varLinearizationPts),
-                                    toList(fixedFields), 
-                                    toList(fixedFieldValues),
-                                    context);
+                  if (vars.size() > 0)
+                    {
+                      fields = List(toList(fixedFields), toList(vars));
+                      fields = fields.flatten();
+                    }
+                  else
+                    {
+                      fields = toList(fixedFields);
+                    }
                 }
               else
                 {
-                  nonzeros = SymbPreprocessor
-                    ::setupFunctional(term, 
-                                      toList(fixedFields), 
-                                      toList(fixedFieldValues),
-                                      context);
+                  if (vars.size() > 0)
+                    {
+                      fields = toList(vars);
+                    }
                 }
+              if (fixedFieldValues.size() > 0)
+                {
+                  if (varLinearizationPts.size() > 0)
+                    {
+                      fieldValues = List(toList(fixedFieldValues), 
+                                         toList(varLinearizationPts));
+                      fieldValues = fieldValues.flatten();
+                    }
+                  else
+                    {
+                      fieldValues = toList(fixedFieldValues);
+                    }
+                }
+              else
+                {
+                  if (varLinearizationPts.size() > 0)
+                    {
+                      fieldValues = toList(varLinearizationPts);
+                    }
+                }
+
+              nonzeros = SymbPreprocessor
+                ::setupFunctional(term, 
+                                  fields,
+                                  fieldValues,
+                                  context);
+              
               rqcToContext_[FunctionalOnly].put(rqc, context);
               regionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
             }
@@ -660,27 +692,55 @@ void EquationSet::init(const Expr& eqns,
                 {
                   EvalContext context(rqc, 0, contextID[2]);
                   DerivSet nonzeros;
-                  if (compTypes_.contains(FunctionalAndGradient))
+                  Expr fields;
+                  Expr fieldValues;
+                  if (fixedFields.size() > 0)
                     {
-                      nonzeros = SymbPreprocessor
-                        ::setupGradient(term, 
-                                        toList(vars), 
-                                        toList(varLinearizationPts),
-                                        toList(fixedFields), 
-                                        toList(fixedFieldValues),
-                                        context);
+                      if (vars.size() > 0)
+                        {
+                          fields = List(toList(fixedFields), toList(vars));
+                          fields = fields.flatten();
+                        }
+                      else
+                        {
+                          fields = toList(fixedFields);
+                        }
                     }
                   else
                     {
-                      nonzeros = SymbPreprocessor
-                        ::setupFunctional(term, 
-                                          toList(fixedFields), 
-                                          toList(fixedFieldValues),
-                                          context);
+                      if (vars.size() > 0)
+                        {
+                          fields = toList(vars);
+                        }
                     }
+                  if (fixedFieldValues.size() > 0)
+                    {
+                      if (varLinearizationPts.size() > 0)
+                        {
+                          fieldValues = List(toList(fixedFieldValues), 
+                                             toList(varLinearizationPts));
+                          fieldValues = fieldValues.flatten();
+                        }
+                      else
+                        {
+                          fieldValues = toList(fixedFieldValues);
+                        }
+                    }
+                  else
+                    {
+                      if (varLinearizationPts.size() > 0)
+                        {
+                          fieldValues = toList(varLinearizationPts);
+                        }
+                    }
+                  nonzeros = SymbPreprocessor
+                    ::setupFunctional(term, 
+                                      fields, fieldValues,
+                                      context);
+                  
                   bcRqcToContext_[FunctionalOnly].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
-                }
+            }
               /* prepare calculation of functional value and gradient */
               if (compTypes_.contains(FunctionalAndGradient))
                 {

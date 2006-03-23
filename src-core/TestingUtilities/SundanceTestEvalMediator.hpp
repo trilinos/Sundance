@@ -67,6 +67,9 @@ namespace SundanceTesting
     int numFields() const {return fields_.size();}
 
     /** */
+    const string& fieldName(int i) const {return fieldNames_[i];}
+
+    /** */
     void setFieldCoeff(int i, double A) {fields_[i].setCoeff(A);}
 
     /** */
@@ -100,6 +103,7 @@ namespace SundanceTesting
     Point x_;
     Map<int, int> funcIdToFieldNumberMap_;
     Array<ADField> fields_;
+    Array<string> fieldNames_;
   };
 }
 

@@ -192,7 +192,8 @@ void ProductExpr
               //                   << " R=" << right.toString());
               if (leftEvaluatable()->funcIDSet().contains(left))
                 {
-                  rightFuncs.put(right);
+                  if (rightEvaluatable()->funcIDSet().contains(right)) 
+                    rightFuncs.put(right);
                 }
               else
                 {
@@ -202,7 +203,8 @@ void ProductExpr
                 }
               if (rightEvaluatable()->funcIDSet().contains(right))
                 {
-                  leftFuncs.put(left);
+                  if (leftEvaluatable()->funcIDSet().contains(left))
+                    leftFuncs.put(left);
                 }
               else
                 {
@@ -223,15 +225,16 @@ void ProductExpr
 
 void ProductExpr::findNonzeros(const EvalContext& context,
                                const Set<MultiIndex>& multiIndices,
-                               const Set<MultiSet<int> >& activeFuncIDs,
+                               const Set<MultiSet<int> >& inputActiveFuncIDs,
                                bool regardFuncsAsConstant) const
 {
 
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for product expr" 
                        << toString() << " subject to multiindices "
-                       << multiIndices << " and active functional derivs " 
-                       << activeFuncIDs);
+                       << multiIndices);
+
+  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
 
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
                        regardFuncsAsConstant))
@@ -240,7 +243,7 @@ void ProductExpr::findNonzeros(const EvalContext& context,
       return;
     }
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
 
   Set<MultiIndex> miLeft;
   Set<MultiIndex> miRight;
@@ -252,6 +255,9 @@ void ProductExpr::findNonzeros(const EvalContext& context,
   findChildActiveFuncs(activeFuncIDs,
                        leftFuncIDs,
                        rightFuncIDs);
+
+  if (miLeft.size() > 0) rightFuncIDs.put(MultiSet<int>());
+  if (miRight.size() > 0) leftFuncIDs.put(MultiSet<int>());
   SUNDANCE_VERB_HIGH(tabs << "ProdExpr: active funcs for left are: "
                      << leftFuncIDs.toString());
 
@@ -274,10 +280,10 @@ void ProductExpr::findNonzeros(const EvalContext& context,
                                    regardFuncsAsConstant);
 
   RefCountPtr<SparsitySubset> leftSparsity 
-    = leftEvaluatable()->sparsitySubset(context, miLeft, leftFuncIDs);
+    = leftEvaluatable()->sparsitySubset(context, miLeft, leftFuncIDs, true);
 
   RefCountPtr<SparsitySubset> rightSparsity 
-    = rightEvaluatable()->sparsitySubset(context, miRight, rightFuncIDs);
+    = rightEvaluatable()->sparsitySubset(context, miRight, rightFuncIDs, true);
 
 
 
@@ -359,8 +365,10 @@ void ProductExpr::findNonzeros(const EvalContext& context,
           SUNDANCE_VERB_HIGH(tabs << "ProductExpr " + toString() 
                              << ":  " 
                              << funcs);
+
           
-          if (!activeFuncIDs.contains(funcs)) 
+          if (!(activeFuncIDs.contains(funcs) 
+                || (funcs.size()==0 && multiIndices.contains(netDeriv))))
             {
               SUNDANCE_VERB_HIGH(tabs << "skipping " << funcs);
               continue;

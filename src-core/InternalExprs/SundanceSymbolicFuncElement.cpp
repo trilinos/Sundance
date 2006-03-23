@@ -87,7 +87,7 @@ void SymbolicFuncElement
 void SymbolicFuncElement
 ::findNonzeros(const EvalContext& context,
                const Set<MultiIndex>& multiIndices,
-               const Set<MultiSet<int> >& activeFuncIDs,
+               const Set<MultiSet<int> >& inputActiveFuncIDs,
                bool regardFuncsAsConstant) const
 {
 
@@ -95,8 +95,9 @@ void SymbolicFuncElement
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for symbolic func " 
                        << toString()
                        << " subject to multi index set " 
-                       << multiIndices.toString()
-                       << " and active funcs " << activeFuncIDs);
+                       << multiIndices.toString());
+
+  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
 
   
   if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
@@ -107,15 +108,15 @@ void SymbolicFuncElement
     }
 
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
 
   if (evalPtIsZero())
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "eval point is a zero expr");
+      SUNDANCE_VERB_MEDIUM(tabs << "SymbolicFuncElement eval point is a zero expr");
     }
   else
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "eval point is a nonzero expr");
+      SUNDANCE_VERB_MEDIUM(tabs << "SymbolicFuncElement eval point is a nonzero expr");
     }
 
   /* Evaluate the function itself, i.e., the zeroth deriv of the function.
@@ -159,6 +160,8 @@ void SymbolicFuncElement
     = dynamic_cast<const DiscreteFuncElement*>(evalPt());
   if (df != 0)
     {
+      Tabs tab1;
+      SUNDANCE_VERB_MEDIUM(tabs << "SymbolicFuncElement finding nonzero pattern for eval pt");
       df->findNonzeros(context, multiIndices, activeFuncIDs,
                        regardFuncsAsConstant);
     }

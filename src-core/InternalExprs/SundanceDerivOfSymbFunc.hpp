@@ -83,7 +83,8 @@ namespace SundanceCore
                                          const EvalContext& context) const ;
 
       /** */
-      virtual Set<MultiSet<int> > argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const ;
+      virtual Set<MultiSet<int> > argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
+                                                 int maxOrder) const ;
 
       /** */
       FunctionalDeriv* representMeAsFunctionalDeriv() const ;

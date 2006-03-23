@@ -31,6 +31,7 @@
 #include "SundanceEvaluatableExpr.hpp"
 #include "SundanceEvaluatorFactory.hpp"
 #include "SundanceEvaluator.hpp"
+#include "SundanceNullEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceExpr.hpp"
@@ -70,24 +71,39 @@ EvaluatableExpr::EvaluatableExpr()
 RefCountPtr<SparsitySubset> 
 EvaluatableExpr::sparsitySubset(const EvalContext& context,
                                 const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs) const 
+                                const Set<MultiSet<int> >& activeFuncIDs,
+                                bool failIfNotFound) const 
 {
   Tabs tab;
   RefCountPtr<SparsitySuperset> super = sparsitySuperset(context);
 
-//   SUNDANCE_VERB_HIGH(tab << "getting subset for miSet=" 
-//                      << multiIndices.toString() << " and active funcs="
-//                      << activeFuncIDs << ". Superset is "
-//                      << *super);
-
-  if (!super->hasSubset(multiIndices, activeFuncIDs))
+  SUNDANCE_VERB_HIGH(tab << "EvaluatableExpr getting subset for miSet=" 
+                     << multiIndices.toString() << " and active funcs="
+                     << activeFuncIDs << ". Superset is " << endl 
+                     << *super);
+  Set<MultiSet<int> > myActiveFuncs;
+  typedef Set<MultiSet<int> >::const_iterator iter;
+  for (iter i=activeFuncIDs.begin(); i!=activeFuncIDs.end(); i++)
     {
-//       SUNDANCE_VERB_HIGH(tab << "miSet, func combination not found");
-      super->addSubset(multiIndices, activeFuncIDs);
+      Set<int> tmp = i->toSet();
+      if (tmp.intersection(funcDependencies()).size()==tmp.size())
+        {
+          myActiveFuncs.put(*i);
+        }
+    }
+  if (activeFuncIDs.contains(MultiSet<int>())) myActiveFuncs.put(MultiSet<int>());
+
+  if (!super->hasSubset(multiIndices, myActiveFuncs))
+    {
+      TEST_FOR_EXCEPTION(failIfNotFound, RuntimeError, 
+                         "sparsity subset not found for multiindex set "
+                         << multiIndices.toString() << " and active funcs "
+                         << myActiveFuncs);
+      super->addSubset(multiIndices, myActiveFuncs);
     }
 
 
-  return super->subset(multiIndices, activeFuncIDs);
+  return super->subset(multiIndices, myActiveFuncs);
 }
 
 
@@ -153,7 +169,18 @@ void EvaluatableExpr::setupEval(const EvalContext& context) const
 {
   if (!evaluators_.containsKey(context))
     {
-      RefCountPtr<Evaluator> eval = rcp(createEvaluator(this, context));
+      Tabs tabs;
+      SUNDANCE_VERB_HIGH(tabs << "my sparsity superset = " 
+                         << *sparsitySuperset(context));
+      RefCountPtr<Evaluator> eval;
+      if (sparsitySuperset(context)->numDerivs()>0)
+        {
+          eval = rcp(createEvaluator(this, context));
+        }
+      else
+        {
+          eval = rcp(new NullEvaluator());
+        }
       evaluators_.put(context, eval);
     }
 }
@@ -193,14 +220,18 @@ void EvaluatableExpr::setFuncIDSet(const Set<MultiSet<int> >& funcIDSet)
 {
   funcIDSet_ = funcIDSet;
   for (Set<MultiSet<int> >::const_iterator 
-         i=funcIDSet.begin(); i != funcIDSet.begin(); i++)
+         i=funcIDSet.begin(); i != funcIDSet.end(); i++)
     {
       const MultiSet<int>& d = *i;
-      for (MultiSet<int>::const_iterator j=d.begin(); j != d.begin(); j++)
+      for (MultiSet<int>::const_iterator j=d.begin(); j != d.end(); j++)
         {
           funcDependencies_.put(*j);
         }
     }
+  
+  Tabs tabs;
+  SUNDANCE_VERB_HIGH(tabs << "after setFuncIDSet, dependencies are " 
+                     << funcDependencies());
 }
 
 
@@ -246,6 +277,26 @@ RefCountPtr<Set<int> > EvaluatableExpr::getFuncIDSet(const Expr& funcs)
                          << " found in getFuncIDSet()");
       rtn->put(sfe->funcID());
     }
+  return rtn;
+}
+
+
+Set<MultiSet<int> > EvaluatableExpr
+::filterActiveFuncs(const Set<MultiSet<int> >& inputActiveFuncIDs) const
+{
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs << "input active funcs are " 
+                       << inputActiveFuncIDs);
+  Set<MultiSet<int> > tmp = funcIDSet().intersection(inputActiveFuncIDs);
+  Set<MultiSet<int> > rtn;
+
+  typedef Set<MultiSet<int> >::const_iterator iter;
+
+  for (iter i=tmp.begin(); i!=tmp.end(); i++)
+    {
+      rtn.put(*i);
+    }
+  SUNDANCE_VERB_MEDIUM(tabs << "filtered active funcs are " << rtn);
   return rtn;
 }
 

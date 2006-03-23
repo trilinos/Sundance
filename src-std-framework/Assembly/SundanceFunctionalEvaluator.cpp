@@ -239,6 +239,7 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
       double den = fabs(df_dx[i]) + fabs(gradF0View->getElement(i));
       double r = 0.0;
       if (fabs(den) > 1.0e-10) r = num/den;
+      else r = 1.0;
       if (showAll)
         {
           cerr << "i " << i << " FD=" << df_dx[i] 

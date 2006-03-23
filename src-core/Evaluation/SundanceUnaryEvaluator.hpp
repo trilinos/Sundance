@@ -65,29 +65,41 @@ namespace SundanceCore
           argSparsitySuperset_(argExpr_->sparsitySuperset(context)),
           argEval_(argExpr_->evaluator(context))
       {
-        Tabs tab;
+        try
+          {
+            Tabs tab;
 
-        SUNDANCE_VERB_HIGH(tab << "UnaryEvaluator ctor: ");
+            SUNDANCE_VERB_HIGH(tab << "UnaryEvaluator ctor: expr = " << expr->toString());
 
-        const Set<MultiIndex>& miSet = this->sparsity()->allMultiIndices();
-        const Set<MultiSet<int> >& activeFuncs = expr->getActiveFuncs(context);
-
-        SUNDANCE_VERB_HIGH(tab << "my multiindices: " << miSet);
-        SUNDANCE_VERB_HIGH(tab << "my active funcs: " << activeFuncs);
-
-
-        Set<MultiIndex> argMiSet = expr->argMultiIndices(miSet);
-        Set<MultiSet<int> > argActiveFuncs 
-          = expr->argActiveFuncs(activeFuncs);
-        SUNDANCE_VERB_HIGH(tab << "arg multiindices: " << argMiSet);
-        SUNDANCE_VERB_HIGH(tab << "arg active funcs: " << argActiveFuncs);
-
-        argSparsitySubset_ 
-          = argSparsitySuperset_->findSubset(argMiSet, argActiveFuncs);
-
-        argEval_->addClient();
-
-        SUNDANCE_VERB_HIGH(tab << "done unary evalulator ctor");
+            const Set<MultiIndex>& miSet = this->sparsity()->allMultiIndices();
+            const Set<MultiSet<int> >& activeFuncs = expr->getActiveFuncs(context);
+            
+            SUNDANCE_VERB_HIGH(tab << "my multiindices: " << miSet);
+            SUNDANCE_VERB_HIGH(tab << "my active funcs: " << activeFuncs);
+            
+            SUNDANCE_VERB_HIGH(tab << "arg sparsity superset maxOrder: " 
+                               << argSparsitySuperset_->maxOrder());
+            Set<MultiIndex> argMiSet = expr->argMultiIndices(miSet);
+            Set<MultiSet<int> > argActiveFuncs 
+              = expr->argActiveFuncs(activeFuncs, argSparsitySuperset_->maxOrder());
+            SUNDANCE_VERB_HIGH(tab << "arg multiindices: " << argMiSet);
+            SUNDANCE_VERB_HIGH(tab << "arg active funcs: " << argActiveFuncs);
+            
+            argSparsitySubset_ 
+              = argSparsitySuperset_->findSubset(argMiSet, argActiveFuncs);
+            
+            argEval_->addClient();
+            
+            SUNDANCE_VERB_HIGH(tab << "done unary evalulator ctor");
+          }
+        catch(std::exception& e)
+          {
+            TEST_FOR_EXCEPTION(true, RuntimeError, 
+                               "exception detected in UnaryEvaluator: expr="
+                               << expr->toString() << endl
+                               << "arg=" << expr->evaluatableArg()->toString() << endl
+                               << "exception=" << e.what());
+          }
       }
 
       /** */

@@ -344,11 +344,14 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
                                            RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
+  Tabs tabs;
   TEST_FOR_EXCEPTION(order() != 0, InternalError,
                      "QuadratureIntegral::transformZeroForm() called "
                      "for form of order " << order());
-
+  
+  SUNDANCE_VERB_MEDIUM(tabs << "doing zero form by quadrature");
   double& a = (*A)[0];
+  SUNDANCE_VERB_EXTREME(tabs << "input A = " << *A);
   double* coeffPtr = (double*) coeff;
 
   if (nFacetCases()==1)
@@ -375,6 +378,7 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
             }
         }
     }
+  SUNDANCE_VERB_EXTREME(tabs << "output A = " << *A);
 
   addFlops(JVol.numCells()*(1 + 2*nQuad()));
 }
@@ -388,10 +392,11 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
                                           RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
+  Tabs tabs;
   TEST_FOR_EXCEPTION(order() != 1, InternalError,
                      "QuadratureIntegral::transformOneForm() called for form "
                      "of order " << order());
-
+  SUNDANCE_VERB_MEDIUM(tabs << "doing one form by quadrature");
   int flops = 0;
 
   /* If the derivative order is zero, the only thing to be done 
@@ -400,22 +405,33 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   if (testDerivOrder() == 0)
     {
       double* aPtr = &((*A)[0]);
+      SUNDANCE_VERB_EXTREME(tabs << "input A = " << *A);
       double* coeffPtr = (double*) coeff;
       int offset = 0 ;
       const Array<double>& w = W_[0];
 
       for (int c=0; c<JVol.numCells(); c++, offset+=nNodes())
         {
+          Tabs tab2;
           double detJ = fabs(JVol.detJ()[c]);
+          SUNDANCE_VERB_EXTREME(tab2 << "c=" << c << " detJ=" << detJ);
           for (int q=0; q<nQuad(); q++, coeffPtr++)
             {
+              Tabs tab3;
               double f = (*coeffPtr)*detJ;
+              SUNDANCE_VERB_EXTREME(tab3 << "q=" << q << " coeff=" << 
+                                    *coeffPtr << " f=" << f);
               for (int n=0; n<nNodes(); n++) 
                 {
+                  Tabs tab4;
+                  SUNDANCE_VERB_EXTREME(tab4 << "n=" << n << " w=" <<  
+                                        w[n + nNodes()*q]);
                   aPtr[offset+n] += f*w[n + nNodes()*q];
                 }
             }
         }
+      
+      SUNDANCE_VERB_EXTREME(tabs << "output A = " << *A);
       addFlops( JVol.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
     }
   else
@@ -451,9 +467,11 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
                                           RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
+  Tabs tabs;
   TEST_FOR_EXCEPTION(order() != 2, InternalError,
                      "QuadratureIntegral::transformTwoForm() called for form "
                      "of order " << order());
+  SUNDANCE_VERB_MEDIUM(tabs << "doing one form by quadrature");
 
   /* If the derivative orders are zero, the only thing to be done 
    * is to multiply by the cell's Jacobian determinant and sum over the

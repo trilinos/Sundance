@@ -209,14 +209,22 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   Set<MultiIndex> multiIndices;
   multiIndices.put(MultiIndex());
 
-  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+  SUNDANCE_OUT(verbosity<EvaluatableExpr>() > VerbLow,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
   e->findNonzeros(region, multiIndices, activeFuncIDs, u0IsZero);
 
-   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+  
+  SUNDANCE_OUT(verbosity<EvaluatableExpr>() > VerbLow,
                tab << endl << tab 
-                << " ************* Setting up evaluators for expr " << endl);
+               << " ************* Sparsity pattern for expr " << endl
+               << tab << e->toString() << endl
+               << *(e->sparsitySuperset(region)) << endl
+               << tab << " --------------------------------------------- "
+               << endl);
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+               << " ************* Setting up evaluators for expr " << endl);
   e->setupEval(region);
 
   DerivSet derivs = e->sparsitySuperset(region)->derivSet();

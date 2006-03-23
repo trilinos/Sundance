@@ -121,7 +121,8 @@ namespace SundanceCore
        * is the union of the two multisets */
       MultipleDeriv product(const MultipleDeriv& other) const ;
 
-
+      /** */
+      MultiSet<int> funcIDs() const ;
 
       /** \name Utilities used in computing product rule permutations */
       //@

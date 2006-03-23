@@ -51,16 +51,25 @@ void UnaryExpr::addActiveFuncs(const EvalContext& context,
                                const Set<MultiSet<int> >& activeFuncIDs) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "Expr " << toString() << " adding active funcs "
+  SUNDANCE_VERB_HIGH(tabs << "UnaryExpr " << toString() << " adding active funcs "
                      << activeFuncIDs);
+
+
+  typedef Set<MultiSet<int> >::const_iterator iter;
+  Set<MultiSet<int> > funcs = evaluatableArg()->funcIDSet();
+  Set<MultiSet<int> > myActiveFuncs = activeFuncIDs.intersection(funcs);  
+
   if (allActiveFuncs_.containsKey(context))
     {
-      allActiveFuncs_[context].merge(activeFuncIDs);        
+      allActiveFuncs_[context].merge(myActiveFuncs);        
     }
   else
     {
-      allActiveFuncs_.put(context, activeFuncIDs);
+      allActiveFuncs_.put(context, myActiveFuncs);
     }
+  
+  SUNDANCE_VERB_HIGH(tabs << "UnaryExpr " << toString() << " added active funcs "
+                     << myActiveFuncs);
 
 }
 
@@ -70,4 +79,24 @@ const Set<MultiSet<int> >& UnaryExpr::getActiveFuncs(const EvalContext& context)
                      InternalError,
                      "context " << context << " does not exist in UnaryExpr::getActiveFuncs()");
   return allActiveFuncs_.get(context);
+}
+
+Set<MultiSet<int> > 
+UnaryExpr::argActiveFuncs(const Set<MultiSet<int> >& activeFuncID, 
+                          int maxOrder) const
+{
+  typedef Set<MultiSet<int> >::const_iterator iter;
+  Set<MultiSet<int> > rtn;
+
+  Set<MultiSet<int> > funcs = evaluatableArg()->funcIDSet();
+
+
+  for (iter i=activeFuncID.begin(); i!=activeFuncID.end(); i++)
+    {
+      if (maxOrder < 0 || (maxOrder>=0 && i->size() <= maxOrder)) 
+        {
+          if (funcs.contains(*i)) rtn.put(*i);
+        }
+    }
+  return rtn;
 }

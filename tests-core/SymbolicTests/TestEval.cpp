@@ -75,14 +75,20 @@ int main(int argc, void** argv)
       TimeMonitor timer(totalTimer());
 
       //       verbosity<SymbolicTransformation>() = VerbSilent;
-      //       verbosity<EvaluationTester>() = VerbExtreme;
-      //   verbosity<Evaluator>() = VerbExtreme;
+      //#define BLAHBLAH
+#ifdef BLAHBLAH
+      verbosity<EvaluationTester>() = VerbExtreme;
+      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<SparsitySuperset>() = VerbExtreme;
+      verbosity<SparsitySubset>() = VerbExtreme;
       verbosity<EvalVector>() = VerbSilent;
-      // verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
       verbosity<AbstractEvalMediator>() = VerbSilent;
+#endif
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
+
       ProductTransformation::optimizeFunctionDiffOps() = true;
 
       Expr dx = new Derivative(0);
@@ -112,10 +118,12 @@ int main(int argc, void** argv)
       bool isOK = true;
       Array<string> failures;
 
-      //#ifdef BLARF
+
+
       TESTER(u, U);
 
       TESTER(-u, -U);
+
 
       /* ----------- cases of sum expressions ------------------- */
 
@@ -253,8 +261,9 @@ int main(int argc, void** argv)
 
       TESTER((dx*(x-w)), (Dx*(X-W)));
 
-      TESTER((dx*(x*w+w)), (Dx*(X*W+W)));
 
+      TESTER((dx*(x*w+w)), (Dx*(X*W+W)));
+      //#ifdef BLARF
       TESTER((dx*(x*w-w)), (Dx*(X*W-W)));
 
       TESTER((dx*(w + x*w)), (Dx*(W + X*W)));
@@ -262,8 +271,10 @@ int main(int argc, void** argv)
 
       TESTER((dx*(w - x*w)), (Dx*(W - X*W)));
 
-      TESTER((dx*(x*w)), (Dx*(X*W)));
+      //#endif
 
+      TESTER((dx*(x*w)), (Dx*(X*W)));
+      //#ifdef BLARF
       TESTER((dx*(y*w)), (Dx*(Y*W)));
 
       TESTER((dx*(u*w)), (Dx*(U*W)));
@@ -323,6 +334,16 @@ int main(int argc, void** argv)
 
       TESTER(w*sin(u), W*sin(U));
 
+      TESTER(w*sin(u-x), W*sin(U-X));
+
+      TESTER(sin(dx*u), sin(Dx*U));
+
+      TESTER(w*sin(dx*u), W*sin(Dx*U));
+
+      TESTER((dx*sin(u)), (Dx*(sin(U))));
+
+      TESTER(w*(dx*sin(u)), W*(Dx*(sin(U))));
+
       TESTER(sin(u*cos(x)), sin(U*cos(X)));
 
       TESTER(sin(u*x), sin(U*X));
@@ -335,7 +356,9 @@ int main(int argc, void** argv)
 
 
       TESTER(sin(u)/u, sin(U)/U);
-      //#endif
+
+      TESTER(sin(cos(u)), sin((cos(U))));
+
 
 
       if (isOK)
@@ -344,7 +367,7 @@ int main(int argc, void** argv)
         }
       else
         {
-          cerr << "test FAILED!" << endl;
+          cerr << "overall test FAILED!" << endl;
           cerr << endl << "failed exprs: " << endl
                << endl;
           for (unsigned int i=0; i<failures.size(); i++)
@@ -356,7 +379,7 @@ int main(int argc, void** argv)
     }
 	catch(exception& e)
 		{
-      cerr << "test FAILED!" << endl;
+      cerr << "overall test FAILED!" << endl;
       cerr << "detected exception: " << e.what() << endl;
 		}
   TimeMonitor::summarize();

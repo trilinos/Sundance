@@ -88,7 +88,8 @@ UserDefOp::UserDefOp(const Expr& arg,
 }
 
 Set<MultiSet<int> > 
-UserDefOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs) const 
+UserDefOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
+                          int maxOrder) const 
 {
   typedef Set<MultiSet<int> >::const_iterator iter;
 
@@ -146,14 +147,15 @@ XMLObject UserDefOp::toXML() const
 
 void UserDefOp::findNonzeros(const EvalContext& context,
                              const Set<MultiIndex>& multiIndices,
-                             const Set<MultiSet<int> >& activeFuncIDs,
+                             const Set<MultiSet<int> >& inputActiveFuncIDs,
                              bool regardFuncsAsConstant) const
 {
   Tabs tabs;
   SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for user-defined "
                        "nonlinear op" << toString() 
                        << " subject to multiindices " << multiIndices); 
-  SUNDANCE_VERB_MEDIUM(tabs << "active funcs are " << activeFuncIDs);
+
+  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
 
 
 
@@ -164,10 +166,10 @@ void UserDefOp::findNonzeros(const EvalContext& context,
       return;
     }
 
-  Set<MultiSet<int> > childFuncIDs = argActiveFuncs(activeFuncIDs);
+  Set<MultiSet<int> > childFuncIDs = argActiveFuncs(activeFuncIDs, -1);
   SUNDANCE_VERB_HIGH(tabs << "active funcs for arg are: " << childFuncIDs);
 
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs);
+  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
 
   for (int i=0; i<numChildren(); i++)
     {
@@ -176,7 +178,7 @@ void UserDefOp::findNonzeros(const EvalContext& context,
                                         regardFuncsAsConstant);
 
       RefCountPtr<SparsitySubset> argSparsitySubset 
-        = evaluatableChild(i)->sparsitySubset(context, multiIndices, childFuncIDs);
+        = evaluatableChild(i)->sparsitySubset(context, multiIndices, childFuncIDs, true);
 
       for (int j=0; j<argSparsitySubset->numDerivs(); j++)
         {
