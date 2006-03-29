@@ -402,3 +402,45 @@ void ProductExpr::findNonzeros(const EvalContext& context,
   addKnownNonzero(context, multiIndices, activeFuncIDs,
                   regardFuncsAsConstant);
 }
+
+
+
+
+Set<Array<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& context) const
+{
+  Set<Array<int> > rtn;
+  if (order > 2) return rtn;
+
+  if (order==2)
+    {
+      rtn.put(tuple(0,1));
+      return rtn;
+    }
+
+  const Set<MultipleDeriv>& wLeft 
+    = leftEvaluatable()->findW(0, context);
+  const Set<MultipleDeriv>& wRight
+    = rightEvaluatable()->findW(0, context);
+  
+  if (order==0)
+    {
+      if (wLeft.size() > 0)
+        {
+          rtn.put(tuple(0));
+        }
+      if (wRight.size() > 0)
+        {
+          rtn.put(tuple(1));
+        }
+    }
+  
+  if (order==1)
+    {
+      if (wLeft.size() > 0) rtn.put(tuple(1));
+      if (wRight.size() > 0) rtn.put(tuple(0));
+    }
+
+  
+  return rtn;
+}
+

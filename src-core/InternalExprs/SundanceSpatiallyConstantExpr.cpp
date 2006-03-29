@@ -48,6 +48,16 @@ SpatiallyConstantExpr::SpatiallyConstantExpr(const double& value)
 }
 
 
+Set<MultipleDeriv> 
+SpatiallyConstantExpr::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) rtn.put(MultipleDeriv());
+
+  return rtn;
+}
+
 
 
 void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,

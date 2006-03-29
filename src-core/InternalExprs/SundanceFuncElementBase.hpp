@@ -34,8 +34,10 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceScalarExpr.hpp"
+#include "SundanceEvalContext.hpp"
 #include "SundanceMultiSet.hpp"
 #include "SundanceSet.hpp"
+#include "SundanceMultipleDeriv.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -101,6 +103,7 @@ namespace SundanceCore
 
           /** Write self in Latex form */
           virtual ostream& toLatex(ostream& os, bool paren) const ;
+
 
         protected:
           /** Determine whether this function is in the given active set */

@@ -53,6 +53,19 @@ XMLObject CellDiameterExpr::toXML() const
 }
 
 
+
+Set<MultipleDeriv> 
+CellDiameterExpr::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+  
+  if (order==0) rtn.put(MultipleDeriv());
+  
+  return rtn;
+}
+
+
+
 void CellDiameterExpr::findNonzeros(const EvalContext& context,
                                     const Set<MultiIndex>& multiIndices,
                                     const Set<MultiSet<int> >& inputActiveFuncIDs,

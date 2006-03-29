@@ -169,6 +169,11 @@ namespace SundanceTesting
   {
     return exp(x.evaluate());
   }
+  
+  inline ADReal log(const ADField& x)
+  {
+    return log(x.evaluate());
+  }
 }
 
 

@@ -129,6 +129,9 @@ namespace SundanceCore
                              Set<MultiIndex>,
                              Set<MultiSet<int> >,
                              bool> NonzeroSpecifier ;
+
+      typedef OrderedTriple<EvalContext, Set<MultipleDeriv>, Set<MultipleDeriv> > RKey;
+
     public:
       /** Ctor is empty, but has some internal initialization to do
        * and so must be called by all subclasses */
@@ -250,6 +253,30 @@ namespace SundanceCore
       Set<MultiSet<int> > filterActiveFuncs(const Set<MultiSet<int> >& inputActiveFuncs) const ;
 
 
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindW(int order, const EvalContext& context) const = 0 ;
+
+      /** */
+      const Set<MultipleDeriv>& findW(int order, 
+                                      const EvalContext& context) const ;
+      /** */
+      Set<MultipleDeriv> setProduct(const Set<MultipleDeriv>& a,
+                                    const Set<MultipleDeriv>& b) const ;
+      
+      /** */
+      const Set<MultipleDeriv>& findR(int order, const EvalContext& context,
+                                      const Set<MultipleDeriv>& RInput,
+                                      const Set<MultipleDeriv>& RInputMinus) const ;
+
+      /** */
+      virtual Set<MultipleDeriv> internalFindR(int order, const EvalContext& context,
+                                               const Set<MultipleDeriv>& RInput,
+                                               const Set<MultipleDeriv>& RInputMinus) const ;
+
+      
+                
+      
     protected:
 
       /** Record the evaluator to be used for the given context */
@@ -289,6 +316,26 @@ namespace SundanceCore
       void setFuncIDSet(const Set<MultiSet<int> >& funcIDSet);
 
 
+
+      /** 
+       * Computes
+       * \f[ 
+       * T_x(S) = \left\{\mu \vert \lambda\in S \wedge (\alpha_\lambda + x=\alpha_\mu)
+       *           \wedge (u_\lambda = u_\mu) \right\}
+       * \f]
+       */
+      static Set<MultipleDeriv> computeT(int xDir, const Set<MultipleDeriv>& S);
+
+      /** 
+       * Computes
+       * \f[ 
+       * K_x(S) = \left\{\mu \vert \mu\in S \wedge p_W(D_{\alpha_\mu + x} u_\mu) \right\} 
+       * \f]
+       */
+      static Set<MultipleDeriv> computeK(int xDir, const Set<MultipleDeriv>& S);
+
+      /** */
+      static Set<MultipleDeriv> computeH(bool pred, const Set<MultipleDeriv>& S);
     private:
 
       /** 
@@ -314,6 +361,9 @@ namespace SundanceCore
       mutable Set<NonzeroSpecifier> knownNonzeros_;
 
       mutable bool nodesHaveBeenCounted_; 
+
+      mutable Array<Map<RKey, Set<MultipleDeriv> > > contextToRTableMap_;
+      mutable Array<Map<EvalContext, Set<MultipleDeriv> > > contextToWTableMap_;
     };
   }
 }

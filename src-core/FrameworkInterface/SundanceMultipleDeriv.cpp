@@ -98,8 +98,23 @@ MultipleDeriv MultipleDeriv::product(const MultipleDeriv& other) const
       rtn.put(*i);
     }
   return rtn;
-  
 }
+
+MultipleDeriv MultipleDeriv::factorOutDeriv(const Deriv& x) const
+{
+  MultipleDeriv rtn;
+  MultipleDeriv::const_iterator i;
+  bool gotIt = false;
+  for (i=this->begin(); i!=this->end(); i++)
+    {
+      if (!gotIt && *i==x) {gotIt=true; continue;}
+      rtn.put(*i);
+    }
+  return rtn;
+}
+
+
+
 void MultipleDeriv
 ::productRulePermutations(ProductRulePerms& perms) const 
 {

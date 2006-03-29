@@ -23,6 +23,7 @@
 %include "std_vector.i"
 %include "exception.i"
 
+%feature("autodoc");
 
 namespace SundanceCore
 {
@@ -31,6 +32,7 @@ namespace SundanceCore
   public:
     Expr();
     ~Expr();
+    Expr(const double& c);
 
     void setParameterValue(const double& val);
 
@@ -202,6 +204,11 @@ namespace SundanceCore
   Expr List(const Expr& a);
   Expr List(const Expr& a, const Expr& b);
   Expr List(const Expr& a, const Expr& b, const Expr& c);
+  Expr List(const Expr& a, const Expr& b, const Expr& c, const Expr& d);
+  Expr List(const Expr& a, const Expr& b, const Expr& c, const Expr& d,
+            const Expr& e);
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f);
 
   Expr pow(const Expr& x, const double& a);
 
@@ -235,6 +242,7 @@ namespace SundanceCore
 %rename(CoordExpr) makeCoordExpr;
 %rename(Derivative) makeDerivative;
 %rename(Parameter) makeParameter;
+
 
 %inline %{
   /* Create an unknown function */
@@ -305,4 +313,3 @@ namespace SundanceCore
     return new SundanceCore::Parameter(val, name);
   }
   %}
-

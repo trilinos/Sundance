@@ -76,6 +76,17 @@ namespace SundanceCore
       /** */
       virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
 					 const EvalContext& context) const ;
+      
+      /** */
+      virtual Set<Array<int> > internalFindQ_W(int order, 
+                                               const EvalContext& context) const ;
+
+      
+
+      /** */
+      virtual bool isProduct() const {return true;}
+
+      
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}

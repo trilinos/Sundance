@@ -474,3 +474,141 @@ bool DiffOp::canBackOutDeriv(const Deriv& d, const MultiIndex& x,
 
 
 
+Set<MultipleDeriv> DiffOp::internalFindR(int order, 
+                                         const EvalContext& context,
+                                         const Set<MultipleDeriv>& RInput,
+                                         const Set<MultipleDeriv>& RInputMinus) const
+{
+  Set<MultipleDeriv> rtn;
+
+  const Set<MultipleDeriv>& Warg = evaluatableArg()->findW(order, context);
+
+  const Deriv& x = myCoordDeriv();
+  
+  Set<MultipleDeriv>::const_iterator i;
+  for (i=Warg.begin(); i!=Warg.end(); i++)
+    {
+      if (!(i->contains(x))) continue;
+      MultipleDeriv xRemoved = i->factorOutDeriv(x);
+      if (RInputMinus.contains(xRemoved)) rtn.put(*i);
+    }
+  
+  for (i=Warg.begin(); i!=Warg.end(); i++)
+    {
+      const MultipleDeriv& md = *i;
+      for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
+        {
+          const Deriv& d = *j;
+          /* coord derivs are handled elsewhere, so skip any coord derivs */
+          if (!d.isFunctionalDeriv()) continue;
+          /* see if the multiple deriv can be "factored" into a single deriv
+           * corresponding to one of the nonzero functions, plus a remaining 
+           * multiple deriv that is a member of RMinus */
+          MultipleDeriv remainder = md.factorOutDeriv(d);
+          const FunctionalDeriv* fd = d.funcDeriv();
+          const FuncElementBase* f = fd->func();
+          const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
+          TEST_FOR_EXCEPTION(s==0, RuntimeError, "non-symbolic function in functional "
+                             "derivative " << d);
+          
+          if (!s->evalPtIsZero() && RInputMinus.contains(remainder))
+            {
+              rtn.put(md);
+              /* If we've added this multiple deriv to the set, there's no need to
+               * test the other permutations so we can skip the rest of the loop. */
+              break;
+            }
+        }
+    }
+
+  for (i=Warg.begin(); i!=Warg.end(); i++)
+    {
+      Tabs tab1;
+      const MultipleDeriv& md = *i;
+
+      for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
+        {
+          Tabs tab2;
+          const Deriv& d = *j;
+          if (!d.isFunctionalDeriv()) continue;
+          MultipleDeriv remainder = md.factorOutDeriv(d);
+          remainder.put(d.funcDeriv()->derivWrtMultiIndex(mi()));
+          if (RInput.contains(remainder)) rtn.put(remainder);
+        }
+    }
+
+  return rtn;
+}
+
+
+Set<MultipleDeriv> DiffOp::internalFindW(int order, const EvalContext& context) const
+{
+  Tabs tabs;
+  const Deriv& x = myCoordDeriv();
+  const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
+  const Set<MultipleDeriv>& WArgPlus = evaluatableArg()->findW(order+1, context);
+  Set<MultipleDeriv> rtn;
+
+  Set<MultipleDeriv>::const_iterator i;
+  
+  /* */
+  cout << tabs << "W(order) for arg = " << WArg << endl;
+  cout << tabs << "W(order+1) for arg = " << WArgPlus << endl;
+  for (i=WArgPlus.begin(); i!=WArgPlus.end(); i++)
+    {
+      Tabs tab1;
+      /* look for a nonzero mixed spatial/functional deriv */
+      const MultipleDeriv& md = *i;
+      cout << tab1 << "checking arg deriv = " << md << endl;
+      if (md.contains(x)) 
+        {
+          Tabs tab2;
+          MultipleDeriv remainder = md.factorOutDeriv(x);
+          cout << tab2 << "adding = " << remainder << endl;
+          rtn.put(md.factorOutDeriv(x));
+        }
+
+      /* look for a nonzero functional deriv times a nonzero function */ 
+      for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
+        {
+          Tabs tab2;
+          const Deriv& d = *j;
+          if (!d.isFunctionalDeriv()) continue;
+          MultipleDeriv remainder = md.factorOutDeriv(d);
+          const FunctionalDeriv* fd = d.funcDeriv();
+          const FuncElementBase* f = fd->func();
+          const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
+          TEST_FOR_EXCEPTION(s==0, RuntimeError, "non-symbolic function in functional "
+                             "derivative " << d);
+          if (!s->evalPtIsZero())
+            {
+              cout << tab2 << "adding = " << remainder << endl;
+              rtn.put(remainder);
+            }
+        }
+    }
+
+  /* */
+  cout << tabs << "doing delta terms" << endl;
+  for (i=WArg.begin(); i!=WArg.end(); i++)
+    {
+      Tabs tab1;
+      const MultipleDeriv& md = *i;
+      cout << tab1 << "checking arg deriv = " << md << endl;
+
+      for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
+        {
+          Tabs tab2;
+          const Deriv& d = *j;
+          if (!d.isFunctionalDeriv()) continue;
+          MultipleDeriv remainder = md.factorOutDeriv(d);
+          remainder.put(d.funcDeriv()->derivWrtMultiIndex(mi()));
+          cout << tab2 << "adding = " << remainder << endl;
+          rtn.put(remainder);
+        }
+    }
+
+  return rtn;
+}
+
+

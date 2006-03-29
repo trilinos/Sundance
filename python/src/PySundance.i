@@ -2,6 +2,8 @@
 
 %module PySundance
 
+%feature("autodoc");
+
 %exception 
 {
   try

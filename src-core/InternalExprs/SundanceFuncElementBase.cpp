@@ -49,6 +49,8 @@ FuncElementBase::FuncElementBase(const string& rootName)
     suffix_(), id_(nextID()++)
 {}
 
+
+
 bool FuncElementBase::isInActiveSet(const Set<MultiSet<int> >& activeFuncIDs) const
 {
   for (Set<MultiSet<int> >::const_iterator 

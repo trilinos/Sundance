@@ -64,6 +64,26 @@ SymbolicFuncElement::SymbolicFuncElement(const string& name,
 }
 
 
+Set<MultipleDeriv> 
+SymbolicFuncElement::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) 
+    {
+      if (!evalPtIsZero()) rtn.put(MultipleDeriv());
+    }
+  else if (order==1)
+    {
+      Deriv d = new FunctionalDeriv(this, MultiIndex());
+      MultipleDeriv md;
+      md.put(d);
+      rtn.put(md);
+    }
+
+  return rtn;
+}
+
 bool SymbolicFuncElement::evalPtIsZero() const
 {
   TEST_FOR_EXCEPTION(evalPt_.get()==0, InternalError,

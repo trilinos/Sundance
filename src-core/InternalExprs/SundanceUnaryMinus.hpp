@@ -68,6 +68,13 @@ namespace SundanceCore
           virtual XMLObject toXML() const ;
 
           /** */
+          virtual bool isLinear() const {return true;}
+
+          /** */
+          virtual Set<Array<int> > internalFindQ_W(int order, 
+                                                   const EvalContext& context) const ;
+
+          /** */
           virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
         };

@@ -76,6 +76,23 @@ string CoordExpr::coordName(int dir, const string& name)
 }
 
 
+Set<MultipleDeriv> 
+CoordExpr::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) rtn.put(MultipleDeriv());
+
+  if (order==1) 
+    {
+      Deriv x = new CoordDeriv(dir_);
+      MultipleDeriv md;
+      md.put(x);
+      rtn.put(md);
+    }
+  return rtn;
+}
+
 
 void CoordExpr::findNonzeros(const EvalContext& context,
                              const Set<MultiIndex>& multiIndices,

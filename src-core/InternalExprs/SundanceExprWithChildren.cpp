@@ -49,7 +49,8 @@ using namespace TSFExtended;
 
 ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& children)
 	: EvaluatableExpr(), 
-    children_(children)
+    children_(children),
+    contextToQWMap_(4)
 {}
 
 
@@ -280,4 +281,174 @@ int ExprWithChildren::countNodes() const
         }
     }
   return count;
+}
+
+
+Set<MultipleDeriv> 
+ExprWithChildren::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+  
+  /* we'll dealt with zero order derivatives specially */
+  if (order==0) 
+    {
+      /* If I am an arbitrary nonlinear expression, I cannot be known to
+       * be zero regardless of the state of my arguments. Return the
+       * zeroth-order derivative. */
+      if (!(isLinear() || isProduct())) 
+        {
+          rtn.put(MultipleDeriv());
+          return rtn;
+        }
+
+      /* At this point, I've dealt with arbitrary nonlinear exprs so 
+       * I know I'm either a product or a linear expr */
+
+      const Set<Array<int> >& Q = findQ_W(0, context);
+
+      /* If there are no nonzero terms, a linear combination or a product
+       * will be zero. Return the empty set. */
+      if (Q.size()==0)
+        {
+          return rtn;
+        }
+      
+      /* if I'm a linear combination and any term is nonzero, I am nonzero */
+      if (isLinear())
+        {
+          rtn.put(MultipleDeriv());          
+          return rtn;
+        }
+
+      /* The only possibility remaining is that I'm a product.
+       * If any term is zero, I am zero. If a term is 
+       * known to be zero, it's index will not appear in Q, so that 
+       * comparing the size of Q and the number of children tells me
+       * if I'm zero.
+       */
+      if (Q.size() == numChildren())
+        {
+          rtn.put(MultipleDeriv());
+        }
+      return rtn;
+    }
+
+
+  /* now do arbitrary order deriv */
+  for (int i=1; i<=order; i++) 
+    {
+      const Set<Array<int> >& Q = findQ_W(i, context);
+      
+      for (Set<Array<int> >::const_iterator j=Q.begin(); j!=Q.end(); j++)
+        {
+          if (j->size()==1)
+            {
+              int childIndex = (*j)[0];
+              const Set<MultipleDeriv>& childW 
+                = evaluatableChild(childIndex)->findW(order, context);
+              rtn.merge(childW);
+            }
+          else if (j->size()==2)
+            {
+              int i1 = (*j)[0];
+              int i2 = (*j)[1];
+              
+              if (order==2)
+                {
+                  const Set<MultipleDeriv>& childW1 
+                    = evaluatableChild(i1)->findW(1, context);
+                  const Set<MultipleDeriv>& childW2 
+                    = evaluatableChild(i2)->findW(1, context);
+                  rtn.merge(setProduct(childW1, childW2));
+                }
+              else
+                {
+                  const Set<MultipleDeriv>& childW12 
+                    = evaluatableChild(i1)->findW(2, context);
+                  const Set<MultipleDeriv>& childW21 
+                    = evaluatableChild(i2)->findW(1, context);
+                  const Set<MultipleDeriv>& childW11 
+                    = evaluatableChild(i1)->findW(1, context);
+                  const Set<MultipleDeriv>& childW22 
+                    = evaluatableChild(i2)->findW(2, context);
+                  rtn.merge(setProduct(childW12, childW21));
+                  rtn.merge(setProduct(childW11, childW22));
+                }
+            }
+          else if (j->size()==3)
+            {
+              int i1 = (*j)[0];
+              int i2 = (*j)[1];
+              int i3 = (*j)[2];
+              
+              if (order==3)
+                {
+                  const Set<MultipleDeriv>& childW1 
+                    = evaluatableChild(i1)->findW(1, context);
+                  const Set<MultipleDeriv>& childW2 
+                    = evaluatableChild(i2)->findW(1, context);
+                  const Set<MultipleDeriv>& childW3 
+                    = evaluatableChild(i3)->findW(1, context);
+                  rtn.merge(setProduct(setProduct(childW1, childW2), childW3));
+                }
+              
+            }
+            
+        }
+    }
+
+  return rtn;
+}
+
+const Set<Array<int> >& 
+ExprWithChildren::findQ_W(int order, 
+                          const EvalContext& context) const
+{
+  if (!contextToQWMap_[order].containsKey(context))
+    {
+      contextToQWMap_[order].put(context, internalFindQ_W(order, context));
+    }
+  return contextToQWMap_[order].get(context);
+}
+
+Set<Array<int> > ExprWithChildren
+::internalFindQ_W(int order, 
+                  const EvalContext& context) const
+{
+  Set<Array<int> > rtn;
+
+  if (order <= 1)
+    {
+      for (int i=0; i<numChildren(); i++) rtn.put(tuple(i));
+      return rtn;
+    }
+  if (order==2)
+    {
+      for (int i=0; i<numChildren(); i++) 
+        {
+          for (int j=0; j<=i; j++) 
+            {
+              rtn.put(tuple(i,j));
+            }
+        }
+      return rtn;
+    }
+  if (order==3)
+    {
+      for (int i=0; i<numChildren(); i++) 
+        {
+          for (int j=0; j<=i; j++) 
+            {
+              for (int k=0; k<=j; k++) 
+                {
+                  rtn.put(tuple(i,j, k));
+                }
+            }
+        }
+      return rtn;
+    }
+  
+  TEST_FOR_EXCEPTION(order > 3, RuntimeError, "invalid order " << order);
+  
+  return rtn;
 }

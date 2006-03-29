@@ -79,6 +79,10 @@ namespace SundanceCore
                                 const Set<MultiSet<int> >& activeFuncIDs,
                                 bool regardFuncsAsConstant) const ;
 
+    /** */
+    virtual Set<MultipleDeriv> 
+    internalFindW(int order, const EvalContext& context) const ;
+
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 

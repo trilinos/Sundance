@@ -98,6 +98,18 @@ namespace SundanceCore
                                     const Set<MultiIndex>& multiIndices,
                                     const Set<MultiSet<int> >& activeFuncIDs,
                                     bool regardFuncsAsConstant) const ;
+          /** */
+          virtual Set<MultipleDeriv> 
+          internalFindW(int order, const EvalContext& context) const ;
+
+          /** */
+          const Set<Array<int> >& findQ_W(int order, 
+                                          const EvalContext& context) const ;
+
+          /** */
+          virtual Set<Array<int> > 
+          internalFindQ_W(int order, 
+                          const EvalContext& context) const ;
           
           /** Return true if any child returns true. The sum expression
            * will override this requiring all children to return true */
@@ -117,8 +129,19 @@ namespace SundanceCore
           
           /** */
           virtual int countNodes() const ;
+
+          /** */
+          virtual bool isLinear() const {return false;}
+
+          /** */
+          virtual bool isProduct() const {return false;}
+
+
+          
         private:
           Array<RefCountPtr<ScalarExpr> > children_;
+
+          mutable Array<Map<EvalContext, Set<Array<int> > > > contextToQWMap_;
       };          
 
     }

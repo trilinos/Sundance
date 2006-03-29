@@ -31,6 +31,7 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordDeriv.hpp"
+#include "SundanceDeriv.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -50,6 +51,34 @@ DiscreteFuncElement
     commonData_(data),
     myIndex_(myIndex)
 {}
+
+Set<MultipleDeriv> 
+DiscreteFuncElement::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) 
+    {
+      rtn.put(MultipleDeriv());
+    }
+  if (order==1)
+    {
+      Deriv x = new CoordDeriv(0);
+      Deriv y = new CoordDeriv(1);
+      Deriv z = new CoordDeriv(2);
+      MultipleDeriv mx;
+      MultipleDeriv my;
+      MultipleDeriv mz;
+      mx.put(x);
+      my.put(y);
+      mz.put(z);
+      rtn.put(mx);
+      rtn.put(my);
+      rtn.put(mz);
+    }
+
+  return rtn;
+}
 
 void DiscreteFuncElement::findNonzeros(const EvalContext& context,
                                        const Set<MultiIndex>& multiIndices,

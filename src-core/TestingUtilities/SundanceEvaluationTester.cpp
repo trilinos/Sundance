@@ -145,6 +145,14 @@ EvaluationTester::EvaluationTester(const Expr& e)
                                            context_);
 
   sparsity_ = ev_->sparsitySuperset(context_);
+
+  SUNDANCE_VERB_LOW(tabs << "finding W...");
+  for (int i=0; i<=2; i++)
+    {
+      Tabs tab2;
+      cout << tab2 << "order=" << i << " W = " << ev_->findW(i, context_) << endl;
+    }
+
 }
 
 

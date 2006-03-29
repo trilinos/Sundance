@@ -60,7 +60,9 @@ EvaluatableExpr::EvaluatableExpr()
     funcIDSet_(),
     funcDependencies_(),
     knownNonzeros_(),
-    nodesHaveBeenCounted_(false)
+    nodesHaveBeenCounted_(false),
+    contextToRTableMap_(maxFuncDiffOrder()+1),
+    contextToWTableMap_(maxFuncDiffOrder()+1)
 {
   addFuncIDCombo(MultiSet<int>());
 }
@@ -77,7 +79,7 @@ EvaluatableExpr::sparsitySubset(const EvalContext& context,
   Tabs tab;
   RefCountPtr<SparsitySuperset> super = sparsitySuperset(context);
 
-  SUNDANCE_VERB_HIGH(tab << "EvaluatableExpr getting subset for miSet=" 
+  SUNDANCE_VERB_HIGH(tab << "EvaluatableExpr " << toString() << " getting subset for miSet=" 
                      << multiIndices.toString() << " and active funcs="
                      << activeFuncIDs << ". Superset is " << endl 
                      << *super);
@@ -302,3 +304,69 @@ Set<MultiSet<int> > EvaluatableExpr
 
 
 
+
+const Set<MultipleDeriv>& 
+EvaluatableExpr::findW(int order, 
+                       const EvalContext& context) const
+{
+  Tabs tabs;
+  
+  if (contextToWTableMap_[order].containsKey(context))
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+    }
+  else
+    {
+      contextToWTableMap_[order].put(context, internalFindW(order, context));
+    }
+
+  return contextToWTableMap_[order].get(context);
+}
+
+
+Set<MultipleDeriv> 
+EvaluatableExpr::setProduct(const Set<MultipleDeriv>& a,
+                            const Set<MultipleDeriv>& b) const
+{
+  Set<MultipleDeriv> rtn;
+  for (Set<MultipleDeriv>::const_iterator i=a.begin(); i!=a.end(); i++)
+    {
+      for (Set<MultipleDeriv>::const_iterator j=b.begin(); j!=b.end(); j++)
+        {
+          rtn.put(i->product(*j));
+        }
+    }
+  return rtn;
+}
+
+const Set<MultipleDeriv>& 
+EvaluatableExpr::findR(int order, 
+                       const EvalContext& context,
+                       const Set<MultipleDeriv>& RInput,
+                       const Set<MultipleDeriv>& RInputMinus) const
+{
+  Tabs tabs;
+  RKey k(context, RInput, RInputMinus);
+  
+  if (contextToRTableMap_[order].containsKey(k))
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+    }
+  else
+    {
+      contextToRTableMap_[order].put(k, 
+                                     internalFindR(order, context, RInput, RInputMinus));
+    }
+
+  return contextToRTableMap_[order].get(k);
+}
+
+Set<MultipleDeriv> EvaluatableExpr
+::internalFindR(int order, 
+                const EvalContext& context,
+                const Set<MultipleDeriv>& RInput,
+                const Set<MultipleDeriv>& RInputMinus) const
+{
+  const Set<MultipleDeriv>& W = findW(order, context);
+  return RInput.intersection(W);
+}

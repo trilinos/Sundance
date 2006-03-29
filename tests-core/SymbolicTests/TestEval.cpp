@@ -118,7 +118,7 @@ int main(int argc, void** argv)
       bool isOK = true;
       Array<string> failures;
 
-
+      //#ifdef BLARF
 
       TESTER(u, U);
 
@@ -340,9 +340,6 @@ int main(int argc, void** argv)
 
       TESTER(w*sin(dx*u), W*sin(Dx*U));
 
-      TESTER((dx*sin(u)), (Dx*(sin(U))));
-
-      TESTER(w*(dx*sin(u)), W*(Dx*(sin(U))));
 
       TESTER(sin(u*cos(x)), sin(U*cos(X)));
 
@@ -359,6 +356,20 @@ int main(int argc, void** argv)
 
       TESTER(sin(cos(u)), sin((cos(U))));
 
+      //#endif
+      //TESTER((dx*u), (Dx*U));
+      TESTER((dx*sin(u)), (Dx*(sin(U))));
+
+      //#ifdef BLARF
+
+      //      TESTER((dx*sin(cos(u))), (Dx*(sin(cos(U)))));
+
+      //      TESTER(w*(dx*sin(u)), W*(Dx*(sin(U))));
+
+      //      TESTER(dx*(exp(2.0*log(u))), Dx*(exp(2.0*log(U))));
+
+      //      TESTER(dx*(u*u), Dx*(U*U));
+      // #endif
 
 
       if (isOK)

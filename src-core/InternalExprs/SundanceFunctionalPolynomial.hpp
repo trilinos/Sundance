@@ -64,6 +64,11 @@ namespace SundanceCore
       /** virtual destructor */
       virtual ~FunctionalPolynomial() {;}
 
+
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindW(int order, const EvalContext& context) const ;
+
       /** 
        * Determine which functional and spatial derivatives are nonzero in the
        * given context. We also keep track of which derivatives

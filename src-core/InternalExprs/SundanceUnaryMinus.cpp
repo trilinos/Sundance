@@ -50,6 +50,30 @@ UnaryMinus::UnaryMinus(const RefCountPtr<ScalarExpr>& arg)
     }
 }
 
+Set<Array<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& context) const
+{
+  Set<Array<int> > rtn;
+  if (order > 1) return rtn;
+
+  if (order==1)
+    {
+      /* first derivatives of the sum wrt the arguments are 
+       * always nonzero */
+      rtn.put(tuple(0));
+    }
+  else 
+    {
+      /* zeroth derivatives are nonzero if terms are nonzero */
+      const Set<MultipleDeriv>& w 
+        = evaluatableArg()->findW(0, context);
+      if (w.size() > 0)
+        {
+          rtn.put(tuple(0));
+        }
+    }
+  return rtn;
+}
+
 ostream& UnaryMinus::toText(ostream& os, bool paren) const 
 {
   if (paren) os << "(";

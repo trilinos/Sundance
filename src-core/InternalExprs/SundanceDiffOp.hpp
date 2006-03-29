@@ -75,8 +75,20 @@ namespace SundanceCore
       /** Write in XML */
       virtual XMLObject toXML() const ;
 
-      
 
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindW(int order, const EvalContext& context) const ;
+
+
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindR(int order, const EvalContext& context,
+                    const Set<MultipleDeriv>& RInput,
+                    const Set<MultipleDeriv>& RInputMinus) const ;
+      
+      
+      
       /** */
       const Deriv& myCoordDeriv() const {return myCoordDeriv_;}
 
@@ -135,6 +147,8 @@ namespace SundanceCore
       virtual Set<MultiSet<int> > 
       argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
                      int maxOrder) const ;
+
+
 
     private:
 

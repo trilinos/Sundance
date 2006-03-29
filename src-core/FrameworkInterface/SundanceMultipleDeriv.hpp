@@ -121,6 +121,15 @@ namespace SundanceCore
        * is the union of the two multisets */
       MultipleDeriv product(const MultipleDeriv& other) const ;
 
+
+      /** 
+       * Return a copy of this derivative, but with the specified single
+       * derivative removed. For example, if <t>this</t> is
+       * \f$ \{u,v,w\} \f$, calling <t>factorOutDeriv(v)</t> will
+       * return \f$\{u,w\}\f$.
+       */
+      MultipleDeriv factorOutDeriv(const Deriv& x) const ;
+
       /** */
       MultiSet<int> funcIDs() const ;
 

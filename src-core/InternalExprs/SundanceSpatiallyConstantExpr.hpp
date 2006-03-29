@@ -62,16 +62,19 @@ namespace SundanceCore
           /** */
           virtual bool isConstant() const {return true;}
 
-      /** 
-       * Determine which functional and spatial derivatives are nonzero in the
-       * given context. We also keep track of which derivatives
-       * are known to be constant, which can simplify evaluation. 
-       */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const ;
-
+          /** 
+           * Determine which functional and spatial derivatives are nonzero in the
+           * given context. We also keep track of which derivatives
+           * are known to be constant, which can simplify evaluation. 
+           */
+          virtual void findNonzeros(const EvalContext& context,
+                                    const Set<MultiIndex>& multiIndices,
+                                    const Set<MultiSet<int> >& activeFuncIDs,
+                                    bool regardFuncsAsConstant) const ;
+          /** */
+          virtual Set<MultipleDeriv> 
+          internalFindW(int order, const EvalContext& context) const ;
+          
         private:
           double value_;
         };

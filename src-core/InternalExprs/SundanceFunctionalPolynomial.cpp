@@ -128,6 +128,16 @@ FunctionalPolynomial::FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr
     }
 }
 
+
+Set<MultipleDeriv> 
+FunctionalPolynomial::internalFindW(int order, const EvalContext& context) const
+{
+  TEST_FOR_EXCEPTION(true, InternalError, 
+                     "FunctionalPolynomial not implemented");
+  return Set<MultipleDeriv> ();
+}
+
+
 RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
 addPoly(const FunctionalPolynomial* other, int sign) const 
 {
