@@ -82,10 +82,9 @@ namespace SundanceCore
 
 
       /** */
-      virtual Set<MultipleDeriv> 
-      internalFindR(int order, const EvalContext& context,
-                    const Set<MultipleDeriv>& RInput,
-                    const Set<MultipleDeriv>& RInputMinus) const ;
+      virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+      internalDetermineR(const EvalContext& context,
+                         const Array<Set<MultipleDeriv> >& RInput) const ;
       
       
       

@@ -130,6 +130,29 @@ namespace SundanceCore
        */
       MultipleDeriv factorOutDeriv(const Deriv& x) const ;
 
+
+      /** 
+       * Return a copy of this derivative, but with all single derivs
+       * in the the specified multiple
+       * derivative removed. For example, if <t>this</t> is
+       * \f$ \{u,v,w\} \f$, calling <t>factorOutDeriv(u,v)</t> will
+       * return \f$\{w\}\f$.
+       */
+      MultipleDeriv factorOutDeriv(const MultipleDeriv& x) const ;
+
+
+      /** 
+       * Return true is all single derivatives appearing in x also appear in this.
+       */
+      bool containsDeriv(const MultipleDeriv& x) const ;
+
+
+      /** 
+       *
+       */
+      bool isInRequiredSet(const Set<MultiSet<int> >& funcCombinations,
+                           const Set<MultiIndex>& multiIndices) const ;
+
       /** */
       MultiSet<int> funcIDs() const ;
 

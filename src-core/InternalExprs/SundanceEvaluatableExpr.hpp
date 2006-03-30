@@ -130,7 +130,6 @@ namespace SundanceCore
                              Set<MultiSet<int> >,
                              bool> NonzeroSpecifier ;
 
-      typedef OrderedTriple<EvalContext, Set<MultipleDeriv>, Set<MultipleDeriv> > RKey;
 
     public:
       /** Ctor is empty, but has some internal initialization to do
@@ -265,15 +264,23 @@ namespace SundanceCore
                                     const Set<MultipleDeriv>& b) const ;
       
       /** */
-      const Set<MultipleDeriv>& findR(int order, const EvalContext& context,
-                                      const Set<MultipleDeriv>& RInput,
-                                      const Set<MultipleDeriv>& RInputMinus) const ;
+      void determineR(const EvalContext& context,
+                      const Array<Set<MultipleDeriv> >& RInput) const ;
 
       /** */
-      virtual Set<MultipleDeriv> internalFindR(int order, const EvalContext& context,
-                                               const Set<MultipleDeriv>& RInput,
-                                               const Set<MultipleDeriv>& RInputMinus) const ;
+      virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+      internalDetermineR(const EvalContext& context,
+                         const Array<Set<MultipleDeriv> >& RInput) const ;
 
+      /** */
+      const Set<MultipleDeriv>& getR(int order, const EvalContext& context) const ;
+
+      
+      /** */
+      Array<Set<MultipleDeriv> > 
+      computeInputR(const EvalContext& context,
+                    const Array<Set<MultiSet<int> > >& funcIDCombinations,
+                    const Array<Set<MultiIndex> >& spatialDerivs) const ;
       
                 
       
@@ -362,7 +369,7 @@ namespace SundanceCore
 
       mutable bool nodesHaveBeenCounted_; 
 
-      mutable Array<Map<RKey, Set<MultipleDeriv> > > contextToRTableMap_;
+      mutable Array<Map<EvalContext, Set<MultipleDeriv> > > contextToRTableMap_;
       mutable Array<Map<EvalContext, Set<MultipleDeriv> > > contextToWTableMap_;
     };
   }

@@ -339,34 +339,71 @@ EvaluatableExpr::setProduct(const Set<MultipleDeriv>& a,
   return rtn;
 }
 
-const Set<MultipleDeriv>& 
-EvaluatableExpr::findR(int order, 
-                       const EvalContext& context,
-                       const Set<MultipleDeriv>& RInput,
-                       const Set<MultipleDeriv>& RInputMinus) const
+void EvaluatableExpr::determineR(const EvalContext& context,
+                            const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tabs;
-  RKey k(context, RInput, RInputMinus);
+  RefCountPtr<Array<Set<MultipleDeriv> > > additionToR 
+    =  internalDetermineR(context, RInput);
   
-  if (contextToRTableMap_[order].containsKey(k))
+  for (unsigned int i=0; i<RInput.size(); i++)
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      if (!contextToRTableMap_[i].containsKey(context))
+        {
+          contextToRTableMap_[i].put(context, (*additionToR)[i]); 
+        }
+      else
+        {
+          contextToRTableMap_[i][context].merge((*additionToR)[i]);
+        }
     }
-  else
-    {
-      contextToRTableMap_[order].put(k, 
-                                     internalFindR(order, context, RInput, RInputMinus));
-    }
-
-  return contextToRTableMap_[order].get(k);
 }
 
-Set<MultipleDeriv> EvaluatableExpr
-::internalFindR(int order, 
-                const EvalContext& context,
-                const Set<MultipleDeriv>& RInput,
-                const Set<MultipleDeriv>& RInputMinus) const
+RefCountPtr<Array<Set<MultipleDeriv> > > EvaluatableExpr
+::internalDetermineR(const EvalContext& context,
+                     const Array<Set<MultipleDeriv> >& RInput) const
 {
-  const Set<MultipleDeriv>& W = findW(order, context);
-  return RInput.intersection(W);
+  RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
+    = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
+
+  for (unsigned int i=0; i<RInput.size(); i++)
+    {
+      const Set<MultipleDeriv>& Wi = findW(i, context);
+      (*rtn)[i] = RInput[i].intersection(Wi);
+    }
+  return rtn;
 }
+
+const Set<MultipleDeriv>& EvaluatableExpr
+::getR(int order, const EvalContext& context) const
+{
+  TEST_FOR_EXCEPTION(!contextToRTableMap_[order].containsKey(context),
+                     RuntimeError, "R not found for context " << context);
+  
+  return contextToRTableMap_[order].get(context);
+}
+
+Array<Set<MultipleDeriv> > EvaluatableExpr
+::computeInputR(const EvalContext& context,
+                const Array<Set<MultiSet<int> > >& funcIDCombinations,
+                const Array<Set<MultiIndex> >& spatialDerivs) const 
+{
+  Array<Set<MultipleDeriv> > rtn(funcIDCombinations.size());
+  for (unsigned int order=0; order<funcIDCombinations.size(); order++)
+    {
+      const Set<MultipleDeriv>& W = findW(order, context);
+      const Set<MultiSet<int> >& fOrder = funcIDCombinations[order];
+
+      for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
+        {
+          const MultipleDeriv& nonzeroDeriv = *i;
+          if (nonzeroDeriv.isInRequiredSet(funcIDCombinations[order],
+                                           spatialDerivs[order]))
+            {
+              rtn[order].put(nonzeroDeriv);
+            }
+        }
+    }
+  return rtn;
+}
+

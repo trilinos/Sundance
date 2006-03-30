@@ -102,17 +102,56 @@ MultipleDeriv MultipleDeriv::product(const MultipleDeriv& other) const
 
 MultipleDeriv MultipleDeriv::factorOutDeriv(const Deriv& x) const
 {
-  MultipleDeriv rtn;
-  MultipleDeriv::const_iterator i;
-  bool gotIt = false;
-  for (i=this->begin(); i!=this->end(); i++)
+  MultipleDeriv rtn = *this;
+
+  MultipleDeriv::iterator i = rtn.find(x);
+
+  /* remove a single copy of the given derivative */
+  if (i != rtn.end()) rtn.erase(i);
+
+  return rtn;
+}
+
+
+bool MultipleDeriv::containsDeriv(const MultipleDeriv& x) const
+{
+  for (MultipleDeriv::const_iterator i=x.begin(); i!=x.end(); i++)
     {
-      if (!gotIt && *i==x) {gotIt=true; continue;}
-      rtn.put(*i);
+      if ( count(*i) <= x.count(*i) ) return false;
+    }
+  return true;
+}
+
+MultipleDeriv MultipleDeriv::factorOutDeriv(const MultipleDeriv& x) const
+{
+  MultipleDeriv rtn = *this;
+
+  for (MultipleDeriv::const_iterator i=x.begin(); i!=x.end(); i++)
+    {
+      MultipleDeriv::iterator j = rtn.find(*i);
+
+      /* remove a single copy of the given derivative */
+      if (j != rtn.end()) rtn.erase(j);
     }
   return rtn;
 }
 
+bool MultipleDeriv
+::isInRequiredSet(const Set<MultiSet<int> >& funcCombinations,
+                  const Set<MultiIndex>& multiIndices) const
+{
+  if (spatialOrder() == 0)
+    {
+      return funcCombinations.contains(funcIDs());
+    }
+  else
+    {
+      TEST_FOR_EXCEPTION(order() > spatialOrder(), RuntimeError,
+                         "can't handle mixed spatial/functional derivatives "
+                         "at this point");
+      return multiIndices.contains(spatialDeriv());
+    }
+}
 
 
 void MultipleDeriv
