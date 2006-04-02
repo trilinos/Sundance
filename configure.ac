@@ -143,6 +143,19 @@ AC_MSG_RESULT([${TRILINOS_DIR}])
 ]
 )
 
+AC_ARG_WITH(trilinos-devel,
+AC_HELP_STRING([--with-trilinos-devel],[whether to use development version of Trilinos]),
+[
+AC_MSG_CHECKING(Whether to use development version of Trilinos)
+AC_MSG_RESULT([yes])
+],
+[
+AC_MSG_CHECKING(Whether to use development version of Trilinos)
+AC_MSG_RESULT([no])
+AC_DEFINE(TRILINOS_6,,[define if we are using Trilinos 6.0.x])
+]
+)
+
 # ------------------------------------------------------------------------
 # Check for FIAT
 # ------------------------------------------------------------------------

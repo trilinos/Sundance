@@ -910,6 +910,7 @@ Optional Packages:
                           Chaco libraries ["-lchaco"]
   --with-chaco-libdir=DIR Chaco library directory. Do not use -L
   --with-trilinos         root directory of Trilinos installation
+  --with-trilinos-devel   whether to use development version of Trilinos
   --with-fiat=FIAT_BUILD_DIR
                           use FIAT build directory (enables FIAT)
   --with-sundials=SUNDIALS_BUILD_DIR
@@ -3775,7 +3776,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3778:" \
+echo "$as_me:3779:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4151,6 +4152,31 @@ echo "$as_me:$LINENO: checking Trilinos root directory" >&5
 echo $ECHO_N "checking Trilinos root directory... $ECHO_C" >&6
 echo "$as_me:$LINENO: result: ${TRILINOS_DIR}" >&5
 echo "${ECHO_T}${TRILINOS_DIR}" >&6
+
+
+fi;
+
+
+# Check whether --with-trilinos-devel or --without-trilinos-devel was given.
+if test "${with_trilinos_devel+set}" = set; then
+  withval="$with_trilinos_devel"
+
+echo "$as_me:$LINENO: checking Whether to use development version of Trilinos" >&5
+echo $ECHO_N "checking Whether to use development version of Trilinos... $ECHO_C" >&6
+echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+
+else
+
+echo "$as_me:$LINENO: checking Whether to use development version of Trilinos" >&5
+echo $ECHO_N "checking Whether to use development version of Trilinos... $ECHO_C" >&6
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+cat >>confdefs.h <<\_ACEOF
+#define TRILINOS_6
+_ACEOF
+
 
 
 fi;
