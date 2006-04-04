@@ -54,6 +54,8 @@ class TriangleReader :
 
         return mesh
 
+    
+
     # Read the .node file
     def readPoints(self, mesh) :
 
@@ -72,6 +74,8 @@ class TriangleReader :
             break
 
         mesh.setDimension(d)
+        mesh.setNumAttributes(nAttr)
+        mesh.setNumMarkers(nMark)
 
         # read remaining lines, adding the points
         # each line looks like [gid, x_1 ... x_d , attrs, bdry]
@@ -79,8 +83,16 @@ class TriangleReader :
             line = f.readline()
             if not line : break
             if line[0]=='#': continue
-            data = map(float, line.split()[1:d+1])
-            mesh.addPoint(data)
+            pt = map(float, line.split()[1:d+1])
+            mesh.addPoint(pt)
+            if nAttr>0 :
+                attr = map(float, line.split()[d+1:d+1+nAttr])
+                mesh.addNodeAttrs(attr)
+            if nMark>0 :
+                mark = map(float, line.split()[d+1+nAttr:d+1+nAttr+nMark])
+                mesh.addMarker(mark)
+
+
 
 
     # Read the .ele file
@@ -95,7 +107,10 @@ class TriangleReader :
             header = line.split()
             nElems = int(header[0])
             d = int(header[1])-1
+            nAttr = int(header[2])
             break
+        
+        mesh.setNumElemAttributes(nAttr)
 
          # read lines, building elements and the element-to-node map
         while 1:
@@ -105,10 +120,13 @@ class TriangleReader :
              toks = line.split()
              ele = int(toks[0])
              verts = Set()
+             attrs = []
              for i in range(d+1) :
                  node = int(toks[i+1])-self.indexOffset_
                  verts.add(node)
              mesh.addElem(verts)
-        
+             for i in range(nAttr) :
+                 attrs.append(float(toks[i+2+d]))
+             mesh.addElemAttrs(attrs)
     
     

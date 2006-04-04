@@ -271,19 +271,43 @@ def getNodeAssignments(nProc, elemAssignments,
 #
 #-----------------------------------------------------------------------
 
-def distributeNodes(filename, nProc, nodeAssignments,
-                    nodeOwners, nodesPerProc, nodeMap, nodeData) :
+def distributeNodes(filename, mesh, nProc, nodeAssignments,
+                    nodeOwners, nodesPerProc) :
     files = []
+    lidCount = []
     for p in range(nProc) :
         f = file(filename + '.%d.%d.node' % (nProc,p), 'w')
-        f.write('%d\n' % (nodesPerProc[p]))
+        f.write('%d %d %d %d\n' % (nodesPerProc[p], mesh.dim(),
+                                   mesh.numNodeAttributes(), mesh.numMarkers()))
         files.append(f)
+        lidCount.append(0)
 
     for n in range(len(nodeAssignments)) :
         p = nodeAssignments[n]
-        gid = nodeMap[n]
-        x = nodeData[n]
-        files[p].write('%d %s\n' % (gid, x))
+        lidCount[p] = lidCount[p]+1
+        files[p].write('%d %s\n' % (lidCount[p], mesh.getNodeData(n)))
+        
+#-----------------------------------------------------------------------
+#
+# distributeElems() writes the elements to NProc different ele files
+#
+#-----------------------------------------------------------------------
+
+def distributeElems(filename, mesh, nProc, elemAssignments, 
+                    elemsPerProc) :
+    files = []
+    lidCount = []
+    for p in range(nProc) :
+        f = file(filename + '.%d.%d.ele' % (nProc,p), 'w')
+        f.write('%d %d %d\n' % (elemsPerProc[p], mesh.dim()+1, 
+                                   mesh.numElemAttributes()))
+        files.append(f)
+        lidCount.append(0)
+
+    for n in range(len(elemAssignments)) :
+        p = elemAssignments[n]
+        lidCount[p] = lidCount[p]+1
+        files[p].write('%d %s\n' % (lidCount[p], mesh.getElemData(n)))
     
 
 

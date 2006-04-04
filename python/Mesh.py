@@ -40,12 +40,27 @@ from sets import Set
 class Mesh :
     def __init__(self) :
         self.pts_ = []
+        self.nodeAttrs_ = []
+        self.elemAttrs_ = []
+        self.marks_ = []
         self.elemVerts_ = []
         self.vertToElemMap_ = {}
         self.dim_ = 0
+        self.numElemAttr_ = 0
+        self.numNodeAttr_ = 0
+        self.numMark_ = 0
 
     def setDimension(self, d) :
         self.dim_ = d
+
+    def setNumAttributes(self, numAttr) :
+        self.numAttr_ = numAttr
+
+    def setNumElemAttributes(self, numAttr) :
+        self.numElemAttr_ = numAttr
+        
+    def setNumMarkers(self, numMark) :
+        self.numMark_ = numMark
         
     def numPts(self) :
         return len(self.pts_)
@@ -53,8 +68,29 @@ class Mesh :
     def numElems(self) :
         return len(self.elemVerts_)
 
+    def numNodeAttributes(self) :
+        return self.numNodeAttr_
+
+    def numElemAttributes(self) :
+        return self.numElemAttr_
+
+    def numMarkers(self) :
+        return self.numMark_
+
+    def dim(self) :
+        return self.dim_;
+
     def addPoint(self, pt) :
         self.pts_.append(pt)
+
+    def addMarker(self, mark) :
+        self.marks_.append(mark)
+
+    def addNodeAttrs(self, attrs) :
+        self.nodeAttrs_.append(attrs)
+
+    def addElemAttrs(self, attrs) :
+        self.elemAttrs_.append(attrs)
 
     def addElem(self, elemVerts) :
         lid = len(self.elemVerts_)
@@ -64,6 +100,56 @@ class Mesh :
             if v not in self.vertToElemMap_ :
                 self.vertToElemMap_[v] = Set()
             self.vertToElemMap_[v].add(lid)
+
+
+    def getNodeData(self, index) :
+        ptStr = self.ptToStr(self.pts_[index])
+        
+        if self.numNodeAttr_==0 :
+            attrStr = '';
+        else:
+            attrStr = self.nodeAttrs_[index]
+        
+        if self.numMark_==0 :
+            markStr = '';
+        else:
+            markStr = self.marks_[index]
+
+        if self.numNodeAttr_==0 :
+            if self.numMark_==0 :
+                return '%s' % ptStr
+            else:
+                return '%s %s' % (ptStr, markStr)
+        else:
+            if self.numMark_==0 :
+                return '%s %s' % (ptStr, attrStr)
+            else:
+                return '%s %s %s' % (ptStr, attrStr, markStr)
+
+
+    def getElemData(self, index) :
+        vertStr = self.vertsToStr(self.elemVerts_[index])
+        
+        if self.numElemAttr_==0 :
+            return '%s' % vertStr
+        else:
+            attrStr = self.elemAttrs_[index]
+            return '%s %s' % (vertStr, attrStr)        
+
+        
+
+    def ptToStr(self, pt):
+        if self.dim_==2:
+            return '%g %g' % (pt[0], pt[1])
+        else:
+            return '%g %g %g' % (pt[0], pt[1], pt[2])
+        
+    def vertsToStr(self, verts):
+        rtn = '';
+        for v in verts :
+            vs = '%d ' % v
+            rtn = rtn + vs
+        return rtn
 
     def findNeighbors(self) :
         neighbors = []
@@ -133,6 +219,13 @@ class Mesh :
             nodesPerProc[elemAssignments[owner]] = nodesPerProc[elemAssignments[owner]]+1
     
         return (nodeAssignments, nodeOwners, nodesPerProc)
+
+
+    def getElemsPerProc(self, nProc, elemAssignments) :
+        elemsPerProc = range(nProc)
+        for e in elemAssignments:
+            elemsPerProc[e] = elemsPerProc[e]+1
+        return elemsPerProc
 
 
     def getOffProcData(self, p, elemAssignments, nodeAssignments) :
