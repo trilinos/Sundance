@@ -264,7 +264,8 @@ namespace SundanceStdMesh
        * \param myFacetNumber facet number of the edge within the element
        * \return LID of this edge
        */
-      int addEdge(int vertLID, int vertLID, int elemLID, int myFacetNumber);
+//bvbw reddish probl, changed vertLID to verLID2
+      int addEdge(int vertLID, int vertLID2, int elemLID, int myFacetNumber);
 
       /** 
        * Check for the presence of the edge (vertLID1, vertLID2) in the mesh.

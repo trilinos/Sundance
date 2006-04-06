@@ -75,7 +75,9 @@ int main(int argc, void *argv[])
 
       cerr << "exact solution = " << endl << exact << endl;
 
-      double err = (exact-soln).norm2()/sqrt(nLocalRows*nProc);
+//bvbw reddish port hack
+      double temp_val = nLocalRows*nProc;
+      double err = (exact-soln).norm2()/sqrt(temp_val);
       cerr << "error norm = " << err << endl;
       
 

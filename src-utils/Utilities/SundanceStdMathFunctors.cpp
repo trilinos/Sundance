@@ -28,6 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#include <math.h>
 #include "SundanceStdMathFunctors.hpp"
 #include "Teuchos_Utils.hpp"
 
@@ -51,11 +52,14 @@ void PowerFunctor::eval1(const double* const x,
           double px = ::pow(x[i], p_-1);
           df[i] = p_*px;
           f[i] = x[i]*px;
+//bvbw tried to include math.h, without success
+#ifdef REDDISH_PORT_PROBLEM
           TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
                              || fpclassify(df[i]) != FP_NORMAL,
                              RuntimeError,
                              "Non-normal floating point result detected in "
                              "evaluation of unary functor " << name());
+#endif
         }
     }
   else
@@ -83,11 +87,13 @@ void PowerFunctor::eval2(const double* const x,
           d2f_dxx[i] = p_ * (p_-1) * px;
           df[i] = p_*x[i]*px;
           f[i] = x[i]*x[i]*px;
+#ifdef REDDISH_PORT_PROBLEM
           TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
                              || fpclassify(df[i]) != FP_NORMAL,
                              RuntimeError,
                              "Non-normal floating point result detected in "
                              "evaluation of unary functor " << name());
+#endif
         }
     }
   else
@@ -111,10 +117,12 @@ void PowerFunctor::eval0(const double* const x,
       for (int i=0; i<nx; i++) 
         {
           f[i] = ::pow(x[i], p_);
+#ifdef REDDISH_PORT_PROBLEM
           TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL, 
                              RuntimeError,
                              "Non-normal floating point result detected in "
                              "evaluation of unary functor " << name());
+#endif
         }
     }
   else
