@@ -108,12 +108,12 @@ class Mesh :
         if self.numNodeAttr_==0 :
             attrStr = '';
         else:
-            attrStr = self.nodeAttrs_[index]
+            attrStr = self.attrsToStr(self.nodeAttrs_[index])
         
         if self.numMark_==0 :
             markStr = '';
         else:
-            markStr = self.marks_[index]
+            markStr = self.attrsToStr(self.marks_[index])
 
         if self.numNodeAttr_==0 :
             if self.numMark_==0 :
@@ -127,8 +127,8 @@ class Mesh :
                 return '%s %s %s' % (ptStr, attrStr, markStr)
 
 
-    def getElemData(self, index) :
-        vertStr = self.vertsToStr(self.elemVerts_[index])
+    def getElemData(self, index, nodeGIDToLIDMap) :
+        vertStr = self.vertsToStr(self.elemVerts_[index], nodeGIDToLIDMap)
         
         if self.numElemAttr_==0 :
             return '%s' % vertStr
@@ -143,12 +143,19 @@ class Mesh :
             return '%g %g' % (pt[0], pt[1])
         else:
             return '%g %g %g' % (pt[0], pt[1], pt[2])
-        
-    def vertsToStr(self, verts):
+
+    def vertsToStr(self, verts, nodeGIDToLIDMap):
         rtn = '';
         for v in verts :
-            vs = '%d ' % v
+            vs = '%d ' % nodeGIDToLIDMap[v]
             rtn = rtn + vs
+        return rtn
+
+    def attrsToStr(self, attrs) : 
+        rtn = '';
+        for a in attrs :
+            s = '%d ' % a
+            rtn = rtn + s
         return rtn
 
     def findNeighbors(self) :
@@ -211,7 +218,7 @@ class Mesh :
     def getNodeAssignments(self, nProc, elemAssignments) :
         nodeAssignments = []
         nodeOwners = []
-        nodesPerProc = range(nProc)
+        nodesPerProc = [0 for i in range(nProc)]
         for node in self.vertToElemMap_.keys() :
             owner = max(self.vertToElemMap_[node])
             nodeOwners.append(owner)
@@ -222,7 +229,7 @@ class Mesh :
 
 
     def getElemsPerProc(self, nProc, elemAssignments) :
-        elemsPerProc = range(nProc)
+        elemsPerProc = [0 for i in range(nProc)]
         for e in elemAssignments:
             elemsPerProc[e] = elemsPerProc[e]+1
         return elemsPerProc
@@ -261,8 +268,40 @@ class Mesh :
         return (offProcNodes, offProcElems)
     
             
+    
+    def getNodeParInfo(self, p, nProc, nodeAssignments, offProcNodes) :
 
+        nodeGID = []
+        nodeOwners = []
 
+        for n in range(len(nodeAssignments)) :
+            if nodeAssignments[n]==p :
+                nodeGID.append(n)
+                nodeOwners.append(p)
+
+        for n in offProcNodes :
+            nodeGID.append(n)
+            nodeOwners.append(nodeAssignments[n])    
+
+        return (nodeGID, nodeOwners)
+    
+    def getElemParInfo(self, p, nProc, elemAssignments, offProcElems) :
+
+        elemGID = []
+        elemOwners = []
+
+        for n in range(len(elemAssignments)) :
+            if elemAssignments[n]==p :
+                elemGID.append(n)
+                elemOwners.append(p)
+
+        for n in offProcElems :
+            elemGID.append(n)
+            elemOwners.append(elemAssignments[n])
+
+        return (elemGID, elemOwners)
+    
+                
         
                 
             

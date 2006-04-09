@@ -45,7 +45,7 @@ Mesh MeshSource::getMesh() const
       int nProc = ptr()->comm().getNProc();
       SUNDANCE_OUT(ptr()->verbosity() > VerbSilent, 
                    "MeshSource::getMesh()");
-      if (serializeLocal() && nProc > 1)
+      if (staggerOutput() && nProc > 1)
         {
           int myRank = ptr()->comm().getRank();
           for (int p=0; p<nProc; p++)
@@ -62,8 +62,9 @@ Mesh MeshSource::getMesh() const
         {
           rtn = ptr()->getMesh();
         }
-      if (rtn.spatialDim() > 1) rtn.assignIntermediateCellOwners(1);
-      if (rtn.spatialDim() > 2) rtn.assignIntermediateCellOwners(2);
+
+      //      if (rtn.spatialDim() > 1) rtn.assignIntermediateCellOwners(1);
+      //      if (rtn.spatialDim() > 2) rtn.assignIntermediateCellOwners(2);
     }
   catch(std::exception& e)
     {

@@ -43,12 +43,6 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 
-static Time& dofLookupTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("unbatched dof lookup"); 
-  return *rtn;
-}
 
 static Time& dofBatchLookupTimer() 
 {
@@ -167,6 +161,16 @@ void MixedDOFMap::allocate(const Mesh& mesh)
                 }
               nDofsPerCell_[b][d] = nNodesPerCell_[b][d] * nFuncs(b);
             }
+
+          /* if the cell is of intermediate dimension and it has DOFs, we
+           * need to assign GIDs for the cells of this dimension. Otherwise,
+           * we can skip intermediate GID assignment, saving some parallel
+           * communication */
+          if (nDofsPerCell_[b][d] > 0 && d > 0 && d < mesh.spatialDim())
+            {
+              Mesh& tmpMesh = const_cast<Mesh&>(mesh);
+              tmpMesh.assignIntermediateCellGIDs(d);
+            }
           
           SUNDANCE_VERB_HIGH(tab1 << 
                              "num nodes for basis " << basis(b)
@@ -207,7 +211,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
         {
           originalFacetOrientation_[d-1].resize(numCells);
         }
-
+      
     }
   SUNDANCE_VERB_LOW(tab << "done allocating DOF map");
 }
@@ -250,15 +254,8 @@ void MixedDOFMap::initMap()
                * DOF information from another processor */
               if (isRemote(dim_, cellLID, owner))
                 {
-                  int dummy=0;
                   int cellGID = mesh().mapLIDToGID(dim_, cellLID);
                   remoteCells[dim_][owner].append(cellGID); 
-                  /*
-                  for (int b=0; b<nChunks(); b++)
-                    {
-                      setDOFs(b, dim_, cellLID, dummy);
-                    }
-                  */
                 }
               else /* the cell is locally owned, so we can 
                     * set its DOF numbers now */
@@ -292,16 +289,9 @@ void MixedDOFMap::initMap()
                           /* the facet may be owned by another processor */
                           if (isRemote(d, facetLID[f], owner))
                             {
-                              int dummy=0;
                               int facetGID 
                                 = mesh().mapLIDToGID(d, facetLID[f]);
                               remoteCells[d][owner].append(facetGID);
-                              /*
-                              for (int b=0; b<nChunks(); b++)
-                                {
-                                  setDOFs(b, d, facetLID[f], dummy);
-                                }
-                              */
                             }
                           else /* we can assign a DOF locally */
                             {
@@ -644,7 +634,7 @@ void MixedDOFMap::getDOFsForCellBatch(int cellDim,
                       int facetID = facetLID[d][c*numFacets[d]+f];
                       SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
                       int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
-                      const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
+                      //const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
                       int* toPtr1 = &(dofs[b][dofsPerCell*c]);
                       const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
                       for (int func=0; func<nf; func++)
@@ -696,7 +686,6 @@ void MixedDOFMap::buildMaximalDofTable() const
 
   for (int c=0; c<nCells; c++) cellLID[c]=c;
   
-  int totalNumDOFs = 0;
   for (int d=0; d<cellDim; d++) 
     {
       numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
@@ -724,7 +713,7 @@ void MixedDOFMap::buildMaximalDofTable() const
         {
           if (nInteriorNodes[b]>0)
             {
-              const int* fromPtr = getInitialDOFPtrForCell(dim_, cellLID[c], b);
+              //const int* fromPtr = getInitialDOFPtrForCell(dim_, cellLID[c], b);
               int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
               int nf = nFuncs(b);
               for (int func=0; func<nf; func++)
@@ -759,7 +748,7 @@ void MixedDOFMap::buildMaximalDofTable() const
                   if (nDofsPerCell_[b][d]==0) continue;
                   int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
                   if (nFacetNodes == 0) continue;
-                  const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
+                  //  const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
                   int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
                   const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
                   for (int func=0; func<nf; func++)
@@ -870,6 +859,8 @@ void MixedDOFMap::print(ostream& os) const
 
   Tabs tabs;
 
+
+
   os << "DOFS = " << dofs_ << endl;
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
@@ -898,7 +889,13 @@ void MixedDOFMap::print(ostream& os) const
                       Array<int> facetLIDs;
                       Array<int> facetDirs;
                       mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
-                      os << " nodes=" << facetLIDs << endl;
+                      Array<int> facetGIDs(facetLIDs.size());
+                      for (unsigned int v=0; v<facetLIDs.size(); v++)
+                        {
+                          facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
+                        }
+                      os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
+                         << endl;
                     }
                   for (unsigned int f=0; f<funcIDList().size(); f++)
                     {

@@ -137,6 +137,8 @@ namespace SundanceStdFwk
     TSFExtended::LinearOperator<double> getOperator() const ;
 
     SundanceCore::Expr solve(const TSFExtended::LinearSolver<double>& solver) const ;
+
+    
   };
 
   %extend LinearProblem {
@@ -150,6 +152,26 @@ namespace SundanceStdFwk
 
       TSFExtended::LinearSolver<double> cxxSolver = r;
       return self->solve(cxxSolver);
+    }
+  }
+
+  %extend LinearProblem {
+    void printRowMap() const 
+    {
+      for (int b=0; b<self->numBlockRows(); b++)
+        {
+          self->rowMap(b)->print(cout);
+        }
+    }
+  }
+
+  %extend LinearProblem {
+    void printColMap() const 
+    {
+      for (int b=0; b<self->numBlockCols(); b++)
+        {
+          self->colMap(b)->print(cout);
+        }
     }
   }
  

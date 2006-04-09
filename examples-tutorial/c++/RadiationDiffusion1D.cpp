@@ -52,7 +52,8 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 100*np, meshType);
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, 20, 2, 
+                                                         0.0, 1.0, 20, 2, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells

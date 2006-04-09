@@ -37,7 +37,6 @@ def main():
 
   discSpace = DiscreteSpace(mesh, basis, vecType)
   projector = L2Projector(discSpace, 1.0 + x)
-  print "projecting"
   u0 = projector.project()
   
   interior = MaximalCellFilter()

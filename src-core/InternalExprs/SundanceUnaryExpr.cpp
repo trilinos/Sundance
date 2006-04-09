@@ -93,7 +93,7 @@ UnaryExpr::argActiveFuncs(const Set<MultiSet<int> >& activeFuncID,
 
   for (iter i=activeFuncID.begin(); i!=activeFuncID.end(); i++)
     {
-      if (maxOrder < 0 || (maxOrder>=0 && i->size() <= maxOrder)) 
+      if (maxOrder < 0 || (maxOrder>=0 && ((int) i->size()) <= maxOrder)) 
         {
           if (funcs.contains(*i)) rtn.put(*i);
         }

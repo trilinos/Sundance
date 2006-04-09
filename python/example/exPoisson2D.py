@@ -7,6 +7,10 @@
 import setpath
 import PySundance
 
+class RootOnly :
+  def write(self, str) :
+    if getRank()==0 : print str,
+
 
 import math
 from PySundance import *
@@ -32,10 +36,18 @@ def main():
   vecType = EpetraVectorType()
   npx = 1
   npy = getNProc()
-  n = 20
-  mesher  = PartitionedRectangleMesher(0.0, 1.0, n, npx,
-                                       0.0, 2.0, n, npy);
+  ny = 16
+  nx = 16
+  mesher  = PartitionedRectangleMesher(0.0, 1.0, nx, npx,
+                                       0.0, 2.0, ny/npy, npy);
   mesh = mesher.getMesh();
+
+  check = mesh.checkConsistency('meshCheck')
+  root = RootOnly()
+
+
+  if check==0 :
+    print 'INCONSISTENT MESH'
   basis = Lagrange(2)
 
   u = UnknownFunction(basis, "u");
@@ -69,6 +81,7 @@ def main():
 
   soln = prob.solve(solver)
 
+
   exactSoln = 0.5*x*x + (1.0/3.0)*y;
 
   writer = VTKWriter("Poisson2D");
@@ -82,12 +95,12 @@ def main():
   
   error = math.sqrt(diff.integral(interior, mesh, quad4))
   derivError = math.sqrt(diffDeriv.integral(interior, mesh, quad4))
-  print "error = " , error
-  print "deriv error = " , derivError
+  print >> root, "error = " , error
+  print >> root, "deriv error = " , derivError
 
   error = max(error, derivError)
 
-  print "max err = ", error
+  print >> root, "max err = ", error
 
   tol = 1.0e-10
   passFailTest(error, tol)

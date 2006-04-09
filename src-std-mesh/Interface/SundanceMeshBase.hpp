@@ -185,6 +185,11 @@ using namespace SundanceUtils;
       virtual int mapGIDToLID(int cellDim, int globalIndex) const = 0 ;
 
     
+      /** 
+       * Determine whether a given cell GID exists on this processor
+       */
+      virtual bool hasGID(int cellDim, int globalIndex) const = 0 ;
+
 
       /** 
        * Find the global ID of a cell given its local index
@@ -204,10 +209,11 @@ using namespace SundanceUtils;
       virtual void setLabel(int cellDim, int cellLID, int label) = 0 ;
 
       /** Work out global numberings for the cells of dimension cellDim */
-      virtual void assignIntermediateCellOwners(int cellDim) = 0 ;
+      virtual void assignIntermediateCellGIDs(int cellDim) = 0 ;
 
       /** */
       virtual bool hasIntermediateGIDs(int dim) const = 0 ;
+
 
       /** Return the MPI communicator over which this mesh is
        * distributed */
@@ -224,6 +230,12 @@ using namespace SundanceUtils;
       const CellReordererImplemBase* reorderer() const 
       {return reorderer_.get();}
       //@}
+
+
+      /** Whether to stagger output in parallel. Set to true for
+       * readable output in parallel debugging sessions. This should
+       * be normally, as it causes one synchronization point per process. */
+      static bool& staggerOutput() {static bool rtn=false; return rtn;}
     
     private:
       int dim_;

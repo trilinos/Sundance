@@ -139,6 +139,9 @@ namespace SundanceStdMesh
 
     /** */
     string parFilename_;
+
+    /** */
+    mutable int offset_;
 #endif  /* DOXYGEN_DEVELOPER_ONLY */   
   };
 }

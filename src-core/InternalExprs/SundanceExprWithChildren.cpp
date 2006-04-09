@@ -326,7 +326,7 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
        * comparing the size of Q and the number of children tells me
        * if I'm zero.
        */
-      if (Q.size() == numChildren())
+      if (((int) Q.size()) == numChildren())
         {
           rtn.put(MultipleDeriv());
         }

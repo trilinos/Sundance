@@ -86,7 +86,7 @@ Set<MultiSet<int> > DerivOfSymbFunc
     {
       MultiSet<int> f;
       f.put(*j);
-      if (maxOrder < 0 || (maxOrder >= 0 && f.size() <= maxOrder))
+      if (maxOrder < 0 || (maxOrder >= 0 && ((int)f.size()) <= maxOrder))
         {
           rtn.put(f);
         }
@@ -98,7 +98,7 @@ Set<MultiSet<int> > DerivOfSymbFunc
       const MultiSet<int>& d = *i;
       if (d.size() >= 1) continue;
       SUNDANCE_VERB_MEDIUM(tabs << "deriv from outside is " << d.toString());
-      if (maxOrder<0 || (maxOrder >= 0 && d.size() <= maxOrder))
+      if (maxOrder<0 || (maxOrder >= 0 && ((int)d.size()) <= maxOrder))
         {
           rtn.put(d);
         }

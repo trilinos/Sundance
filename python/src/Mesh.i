@@ -33,6 +33,8 @@ namespace SundanceStdMesh
     ~Mesh();
     int spatialDim() const ;
     int numCells(int dim) const ;
+    void dump(const std::string& str) const ;
+    bool checkConsistency(const std::string& str) const ;
   };
 
   %extend Mesh

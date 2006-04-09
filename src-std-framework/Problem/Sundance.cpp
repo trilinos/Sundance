@@ -56,10 +56,14 @@ static Time& totalTimer()
 
 int Sundance::init(int* argc, void*** argv)
 {
+
   try
     {
       /* start up MPI. In a serial run, this will be a no-op */
       MPISession::init(argc, argv);
+
+      /* Start a stopwatch. It will be stopped upon a call to finalize() */
+      totalTimer().start();
 
       Tabs tab;
 
@@ -119,6 +123,18 @@ int Sundance::init(int* argc, void*** argv)
   return 0;
 } 
 
+
+bool& Sundance::showStartupMessage()
+{
+#ifdef TRILINOS_6
+  static bool rtn=false; 
+  return rtn;
+#else
+  return MPISession::showStartupMessage();
+#endif
+}
+
+
 void Sundance::setOption(const string& optionName, 
                          int& value, 
                          const string& helpMsg)
@@ -162,6 +178,8 @@ void Sundance::handleException(std::exception& e)
 
 int Sundance::finalize()
 {
+  totalTimer().stop();
+
   try
     {
       Tabs tab;
@@ -383,7 +401,11 @@ VerbositySetting Sundance::verbosity(const string& str)
 
 bool Sundance::checkTest(double error, double tol)
 {
-  return error < tol;
+  int myFail = error > tol;
+  int anyFail = 0;
+  MPIComm::world().allReduce((void*) &myFail, (void*) &anyFail, 1, MPIComm::INT,
+                     MPIComm::SUM);
+  return (anyFail == 0);
 }
 
 bool Sundance:: passFailTest(double error, double tol)
@@ -395,13 +417,16 @@ bool Sundance:: passFailTest(double error, double tol)
       cerr << "tolerance = " << tol << endl;
     }
   pass = checkTest(error, tol);
-  if (pass)
+  if (MPIComm::world().getRank()==0)
     {
-      cerr << "test PASSED" << endl;
-    }
-  else
-    {
-      cerr << "test FAILED" << endl;
+      if (pass)
+        {
+          cerr << "test PASSED" << endl;
+        }
+      else
+        {
+          cerr << "test FAILED" << endl;
+        }
     }
   return pass;
 }

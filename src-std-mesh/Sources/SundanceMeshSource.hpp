@@ -86,11 +86,10 @@ namespace SundanceStdMesh
     static MeshType& defaultMeshType() ;
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
-    static bool& serializeLocal() {static bool rtn=false; return rtn;}
+    static bool& staggerOutput() {static bool rtn=false; return rtn;}
 #endif
 
   private:
-    
   };
 }
 

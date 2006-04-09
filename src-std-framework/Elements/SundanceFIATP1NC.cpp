@@ -106,8 +106,8 @@ void FIATP1NC::getLocalDOFs( const CellType &cellType ,
         dofs[0] = tuple(tuple(0));
       }
       else {
-        int sdim = dimension( cellType );
-        int **transfer = sd_to_fiat[sdim];
+        // int sdim = dimension( cellType );
+        //        int **transfer = sd_to_fiat[sdim];
         if (fiatElems_.find(cellType) == fiatElems_.end())
           FIAT_ERROR("cell type " << cellType << " not present in elems "
                      "for FIATP1NC");
@@ -116,7 +116,7 @@ void FIATP1NC::getLocalDOFs( const CellType &cellType ,
         dofs.resize(eids.size());
         for (int d=0;d<(int)eids.size();d++) {
           dofs[d].resize(eids[d].size());
-          int *transfer_cur = transfer[d];
+          //int *transfer_cur = transfer[d];
           for (int e=0;e<(int)eids[d].size();e++) {
             dofs[d][e].resize( eids[d][e].size() );
             for (int n=0;n<(int)eids[d][e].size();n++) {

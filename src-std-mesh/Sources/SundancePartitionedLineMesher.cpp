@@ -1,5 +1,6 @@
 #include "SundancePartitionedLineMesher.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceCollectiveExceptionCheck.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
@@ -17,81 +18,91 @@ PartitionedLineMesher::PartitionedLineMesher(const ParameterList& params)
 
 Mesh PartitionedLineMesher::fillMesh() const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-               "PartitionedLineMesher::fillLocalMesh() is meshing "
-               "interval [" << ax_ << ", " << bx_ << "]");
+  Mesh mesh;
 
-  SUNDANCE_OUT(this->verbosity() == VerbHigh,
-               "PartitionedLineMesher::fillLocalMesh() starting creation "
-               "of empty mesh");
+  try
+    {
+      //      MeshBase::classVerbosity() = VerbExtreme;
+      //      ((PartitionedLineMesher*)this)->verbosity() = VerbExtreme;
+      SUNDANCE_OUT(this->verbosity() > VerbSilent,
+                   "PartitionedLineMesher::fillLocalMesh() is meshing "
+                   "interval [" << ax_ << ", " << bx_ << "]");
 
-  Mesh mesh = createMesh(1);
+      mesh = createMesh(1);
 
-  SUNDANCE_OUT(this->verbosity() == VerbHigh,
-               "PartitionedLineMesher::fillLocalMesh() done creation of "
-               "empty mesh");
-  
-  /* compute number of points per proc */
 
-  int np = nProc();
-	int nppx = nx_/np;
+      /* compute number of points per proc */
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-               "PartitionedLineMesher::fillLocalMesh() has " << nppx
-               << " points per proc");
+      int np = nProc();
+      int nppx = nx_/np;
 
-	int px = myRank();
+      SUNDANCE_OUT(this->verbosity() > VerbSilent,
+                   "PartitionedLineMesher::fillLocalMesh() has " << nppx
+                   << " points per proc");
 
-	int lowestVisiblePtX = px*nppx-1;
-	if (lowestVisiblePtX < 0) lowestVisiblePtX = 0;
+      int px = myRank();
+
+      int lowestVisiblePtX = px*nppx-1;
+      if (lowestVisiblePtX < 0) lowestVisiblePtX = 0;
 	
-	int highestVisiblePtX = lowestVisiblePtX + nppx + 1;
-	if (highestVisiblePtX > nx_) highestVisiblePtX = nx_;
+      int highestVisiblePtX = lowestVisiblePtX + nppx + 1;
+      if (highestVisiblePtX > nx_) highestVisiblePtX = nx_;
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-               "index range is [" << lowestVisiblePtX << ", " << 
-               highestVisiblePtX << "]");
+      SUNDANCE_OUT(this->verbosity() > VerbSilent,
+                   "index range is [" << lowestVisiblePtX << ", " << 
+                   highestVisiblePtX << "]");
 
-	Array<int> pts(highestVisiblePtX-lowestVisiblePtX+1); 
-	int globalIndex = 0;
+      Array<int> pts(highestVisiblePtX-lowestVisiblePtX+1); 
+      int globalIndex = 0;
 
-	/* add the visible points into the mesh */
-  for (int i=0; i<=nx_; i++, globalIndex++)
-    {
-			if (i < lowestVisiblePtX || i > highestVisiblePtX) continue;
-			int pointOwner = i/nppx;
-			if (i==nx_) pointOwner--;
-			Point x( ax_ + ((double) i)*(bx_-ax_)/((double) nx_)); 
+      /* add the visible points into the mesh */
+      for (int i=0; i<=nx_; i++, globalIndex++)
+        {
+          if (i < lowestVisiblePtX || i > highestVisiblePtX) continue;
+          int pointOwner = i/nppx;
+          if (i==nx_) pointOwner--;
+          Point x( ax_ + ((double) i)*(bx_-ax_)/((double) nx_)); 
 
-      SUNDANCE_OUT(this->verbosity() > VerbLow, "adding point GID=" 
-                   << globalIndex << " x=" << x << " owner=" << pointOwner); 
-			int lid = mesh.addVertex(globalIndex, x, pointOwner, 0);
-			pts[i-lowestVisiblePtX] = globalIndex;
-      SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
-                   "point " << x << " registered with LID=" << lid);
-    }
+          SUNDANCE_OUT(this->verbosity() > VerbLow, "adding point GID=" 
+                       << globalIndex << " x=" << x << " owner=" << pointOwner); 
+          int lid = mesh.addVertex(globalIndex, x, pointOwner, 0);
+          pts[i-lowestVisiblePtX] = globalIndex;
+          SUNDANCE_OUT(this->verbosity() >  VerbHigh,
+                       "point " << x << " registered with LID=" << lid);
+        }
 
-	/* add the visible cells to the mesh */
-	globalIndex = 0 ;
+      /* add the visible cells to the mesh */
+      globalIndex = 0 ;
 
-  for (int i=0; i<nx_; i++, globalIndex++)
-    {
-			if (i < lowestVisiblePtX || i >= highestVisiblePtX) continue;
-			int a = pts[i-lowestVisiblePtX];
-			int b = pts[i-lowestVisiblePtX+1];
-			int cellOwner = i/nppx;
-      SUNDANCE_OUT(this->verbosity() > VerbLow, "adding elem GID=" 
-                   << globalIndex << " nodes=" << tuple(a,b) 
-                   << " owner=" << cellOwner); 
+      for (int i=0; i<nx_; i++, globalIndex++)
+        {
+          if (i < lowestVisiblePtX || i >= highestVisiblePtX) continue;
+          int a = pts[i-lowestVisiblePtX];
+          int b = pts[i-lowestVisiblePtX+1];
+          int cellOwner = i/nppx;
+          SUNDANCE_OUT(this->verbosity() > VerbLow, "adding elem GID=" 
+                       << globalIndex << " nodes=" << tuple(a,b) 
+                       << " owner=" << cellOwner); 
 
-      int lid = mesh.addElement(globalIndex, tuple(a,b), cellOwner, 0);
-      SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
-                   "elem " << tuple(a,b) << " registered with LID=" << lid);
-    }
+          int lid = mesh.addElement(globalIndex, tuple(a,b), cellOwner, 0);
+          SUNDANCE_OUT(this->verbosity() >  VerbHigh,
+                       "elem " << tuple(a,b) << " registered with LID=" << lid);
+        }
 
-  if (px==0) mesh.setLabel(0, 0, 1); 
-  if (px==np-1) mesh.setLabel(0, mesh.mapGIDToLID(0, mesh.numCells(0)-1), 2);
+      if (px==0) mesh.setLabel(0, 0, 1); 
+      if (px==np-1) mesh.setLabel(0, mesh.mapGIDToLID(0, nx_), 2);
+    
   
-  
+
+    }
+  catch(std::exception& e0)
+    {
+      reportFailure(comm());
+      SUNDANCE_TRACE_MSG(e0, "while meshing a line");
+    }
+  TEST_FOR_EXCEPTION(checkForFailures(comm()), RuntimeError, 
+                     "off-proc error detected on proc=" << myRank()
+                     << " while meshing line");
   return mesh;
+  
 }

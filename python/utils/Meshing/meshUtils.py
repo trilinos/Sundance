@@ -256,7 +256,7 @@ def getNodeAssignments(nProc, elemAssignments,
                        nodeToElemMap) :
     nodeAssignments = []
     nodeOwners = []
-    nodesPerProc = range(nProc)
+    nodesPerProc = [0 for i in range(nProc)]
     for node in nodeToElemMap.keys() :
         owner = max(nodeToElemMap[node])
         nodeOwners.append(owner)
@@ -267,47 +267,59 @@ def getNodeAssignments(nProc, elemAssignments,
 
 #-----------------------------------------------------------------------
 #
-# distributeNodes() writes the nodes to NProc different node files
+# writeNodes() writes the node data for the given processor
 #
 #-----------------------------------------------------------------------
 
-def distributeNodes(filename, mesh, nProc, nodeAssignments,
-                    nodeOwners, nodesPerProc) :
-    files = []
-    lidCount = []
-    for p in range(nProc) :
-        f = file(filename + '.%d.%d.node' % (nProc,p), 'w')
-        f.write('%d %d %d %d\n' % (nodesPerProc[p], mesh.dim(),
-                                   mesh.numNodeAttributes(), mesh.numMarkers()))
-        files.append(f)
-        lidCount.append(0)
+def writeNodes(filename, mesh, procID, nProc, nodeAssignments,
+               nodesPerProc, offProcNodes) :
+    lidCount = 0
+    
+    f = file(filename + '.%d.%d.node' % (nProc,procID), 'w')
+    nNodesP = nodesPerProc + len(offProcNodes)
+    f.write('%d %d %d %d\n' % (nNodesP, mesh.dim(),
+                               mesh.numNodeAttributes(),
+                               mesh.numMarkers()))
 
+    nodeGIDToLIDMap = {}
+    
     for n in range(len(nodeAssignments)) :
-        p = nodeAssignments[n]
-        lidCount[p] = lidCount[p]+1
-        files[p].write('%d %s\n' % (lidCount[p], mesh.getNodeData(n)))
+        if procID==nodeAssignments[n]:
+            f.write('%d %s\n' % (lidCount, mesh.getNodeData(n)))
+            nodeGIDToLIDMap[n] = lidCount
+            lidCount = lidCount+1
+                        
+
+    for n in offProcNodes :
+        f.write('%d %s\n' % (lidCount, mesh.getNodeData(n)))
+        nodeGIDToLIDMap[n] = lidCount
+        lidCount = lidCount+1
+
+    return nodeGIDToLIDMap
+        
         
 #-----------------------------------------------------------------------
 #
-# distributeElems() writes the elements to NProc different ele files
+# writeElems() writes the element data for the given processor
 #
 #-----------------------------------------------------------------------
 
-def distributeElems(filename, mesh, nProc, elemAssignments, 
-                    elemsPerProc) :
-    files = []
-    lidCount = []
-    for p in range(nProc) :
-        f = file(filename + '.%d.%d.ele' % (nProc,p), 'w')
-        f.write('%d %d %d\n' % (elemsPerProc[p], mesh.dim()+1, 
-                                   mesh.numElemAttributes()))
-        files.append(f)
-        lidCount.append(0)
+def writeElems(filename, mesh, procID, nProc, elemAssignments, 
+               elemsPerProc, offProcElems, nodeGIDToLIDMap) :
+    lidCount = 0
+    f = file(filename + '.%d.%d.ele' % (nProc,procID), 'w')
+    nElemsP = elemsPerProc + len(offProcElems)
+    f.write('%d %d %d\n' % (nElemsP, mesh.dim()+1, 
+                            mesh.numElemAttributes()))
 
     for n in range(len(elemAssignments)) :
-        p = elemAssignments[n]
-        lidCount[p] = lidCount[p]+1
-        files[p].write('%d %s\n' % (lidCount[p], mesh.getElemData(n)))
+        if procID==elemAssignments[n]:
+            f.write('%d %s\n' % (lidCount, mesh.getElemData(n, nodeGIDToLIDMap)))
+            lidCount = lidCount+1
+
+    for n in offProcElems :
+        f.write('%d %s\n' % (lidCount, mesh.getElemData(n, nodeGIDToLIDMap)))
+        lidCount = lidCount+1
     
 
 
@@ -326,6 +338,34 @@ def writePartitionFile(filename, nElems, nProcs) :
     partFile.write('%d %d\n' % (nElems, nProcs))
     for i in range(len(assignments)) :
         partFile.write('%d %d\n' % (i, assignments[i]))
+
+#-----------------------------------------------------------------------
+#
+# writeParFile() writes to a .par file. See the Sundance TriangleMeshReader
+# for documentation on this format. 
+#
+#-----------------------------------------------------------------------
+
+def writeParFile(filename, procID, nProc, ptGID, ptOwners,
+                 elemGID, elemOwners) :
+
+    f = file(filename + '.%d.%d.par' % (nProc,procID), 'w')
+    f.write('%d %d\n' % (procID, nProc))
+    f.write('%d\n' % len(ptGID))
+
+    lid = 0
+    
+    for n in range(len(ptGID)) :
+        f.write('%d %d %d\n' % (lid, ptGID[n], ptOwners[n]))
+        lid = lid + 1
+
+    f.write('%d\n' % len(elemGID))
+
+    lid = 0
+    for n in range(len(elemGID)) :
+        f.write('%d %d %d\n' % (lid, elemGID[n], elemOwners[n]))
+        lid = lid+1
+    
 
     
        

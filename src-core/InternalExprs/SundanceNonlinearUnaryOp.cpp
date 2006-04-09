@@ -120,20 +120,20 @@ NonlinearUnaryOp::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
   for (iter i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
     {
       const MultiSet<int>& f1 = *i;
-      if (f1.size() > maxOrder) continue;
+      if (((int)f1.size()) > maxOrder) continue;
       if (!argFuncIDs.contains(f1)) continue;
       rtn.put(f1);
       for (iter j=activeFuncIDs.begin(); j != activeFuncIDs.end(); j++)
         {
           const MultiSet<int>& f2 = *j;
-          if (f1.size()+f2.size() > maxOrder) continue;
+          if ( ((int) (f1.size()+f2.size())) > maxOrder) continue;
           MultiSet<int> f12 = f1.merge(f2);
           if (!argFuncIDs.contains(f12)) continue;
           rtn.put(f12);
           for (iter k=activeFuncIDs.begin(); k != activeFuncIDs.end(); k++)
             {
               const MultiSet<int>& f3 = *k;
-              if (f1.size()+f2.size() +f3.size() > maxOrder) continue;
+              if ( ((int) (f1.size()+f2.size() +f3.size())) > maxOrder) continue;
               MultiSet<int> f123 = f12.merge(f3);
               if (!argFuncIDs.contains(f123)) continue;
               rtn.put(f123);

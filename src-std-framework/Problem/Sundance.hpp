@@ -193,6 +193,10 @@ namespace SundanceStdFwk
     /** */
     static void setSettings(const XMLObject& xml);
 
+    /** Set to true if a message should be written by each processor
+     * at startup. */
+    static bool& showStartupMessage();
+
   private:
     static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}

@@ -37,6 +37,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshBase.hpp"
+#include "SundanceSet.hpp"
 #include "SundanceBasicVertexView.hpp"
 #include "SundanceArrayOfTuples.hpp"
 #include "SundanceIncrementallyCreatableMesh.hpp"
@@ -168,6 +169,11 @@ namespace SundanceStdMesh
        */
       virtual int mapGIDToLID(int cellDim, int globalIndex) const  ;
 
+      /** 
+       * Determine whether a given cell GID exists on this processor
+       */
+      virtual bool hasGID(int cellDim, int globalIndex) const ;
+
     
 
       /** 
@@ -225,7 +231,7 @@ namespace SundanceStdMesh
       virtual void estimateNumElements(int numElements);
 
       /** Coordinate intermediate cell definitions across processors  */
-      virtual void assignIntermediateCellOwners(int cellDim) ;
+      virtual void assignIntermediateCellGIDs(int cellDim) ;
 
       /** */
       virtual bool hasIntermediateGIDs(int dim) const 
@@ -252,6 +258,8 @@ namespace SundanceStdMesh
        */
       int addFace(int vertLID1, int vertLID2, int vertLID3,
                   int edgeLID1, int edgeLID2, int edgeLID3,
+                  int elemLID,
+                  int elemGID,
                   int& rotation);
 
       /**
@@ -261,11 +269,12 @@ namespace SundanceStdMesh
        *
        * \param vertLID{1,2} 
        * \param elemLID LID of the element that is adding the edge
+       * \param elemGID GID of the element that is adding the edge
        * \param myFacetNumber facet number of the edge within the element
        * \return LID of this edge
        */
-//bvbw reddish probl, changed vertLID to verLID2
-      int addEdge(int vertLID, int vertLID2, int elemLID, int myFacetNumber);
+      int addEdge(int vertLID1, int vertLID2, int elemLID, int elemGID, 
+                  int myFacetNumber);
 
       /** 
        * Check for the presence of the edge (vertLID1, vertLID2) in the mesh.
@@ -287,7 +296,7 @@ namespace SundanceStdMesh
 
       /** 
        * Check whether the face defined by the given vertices exists
-       * in the mesh. Throws an exception if the face does not exist.
+       * in the mesh. Returns -1 if the face does not exist.
        * Called during the synchronization of intermediate cell GIDs.
        * \param vertGID{1,2,3} the global indices of the vertices defining the face
        * \return the LID of the face
@@ -296,7 +305,21 @@ namespace SundanceStdMesh
 
       /** */
       void synchronizeGIDNumbering(int dim, int localCount) ;
+      
+      /** */
+      void resolveEdgeOwnership(int cellDim);
 
+      /** */
+      string cellStr(int dim, const int* verts) const ;
+
+      /** */
+      string cellToStr(int dim, int cellLID) const ;
+
+      /** */
+      string printCells(int dim) const ;
+
+      /** */
+      void synchronizeNeighborLists();
       
       
 
@@ -438,6 +461,13 @@ namespace SundanceStdMesh
 
       /** flag indicating whether the face GIDs have been synchronized */
       bool hasFaceGIDs_;
+
+      /** Set of all neighbor processors sharing data with this one */
+      Set<int> neighbors_;
+
+      /** Whether the neighbor lists have been synchronized across 
+       * processors */
+      bool neighborsAreSynchronized_;
 
 
       /** 

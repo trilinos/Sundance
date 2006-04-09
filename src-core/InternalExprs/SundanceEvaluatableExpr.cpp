@@ -392,7 +392,7 @@ Array<Set<MultipleDeriv> > EvaluatableExpr
   for (unsigned int order=0; order<funcIDCombinations.size(); order++)
     {
       const Set<MultipleDeriv>& W = findW(order, context);
-      const Set<MultiSet<int> >& fOrder = funcIDCombinations[order];
+      //const Set<MultiSet<int> >& fOrder = funcIDCombinations[order];
 
       for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
         {

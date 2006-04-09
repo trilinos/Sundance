@@ -236,7 +236,7 @@ Expr LinearProblem::formSolutionExpr(const Vector<double>& solnVector) const
 {
   Array<Expr> rtn(assembler_->solutionSpace().size());
 
-  for (int i=0; i<rtn.size(); i++)
+  for (unsigned int i=0; i<rtn.size(); i++)
     {
       string name = "soln";
       if ((int)rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";

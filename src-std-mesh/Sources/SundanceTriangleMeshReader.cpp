@@ -15,21 +15,25 @@ TriangleMeshReader::TriangleMeshReader(const string& fname,
   : MeshReaderBase(fname, meshType, comm),
     nodeFilename_(filename()),
     elemFilename_(filename()),
-    parFilename_(filename())
+    parFilename_(filename()),
+    offset_(0)
 {
   
 
   if (nProc() > 1)
     {
-      nodeFilename_ = nodeFilename_ + Teuchos::toString(myRank());
-      parFilename_ = parFilename_ + Teuchos::toString(myRank());
-      elemFilename_ = elemFilename_ + Teuchos::toString(myRank());
+      string suffix =  "." + Teuchos::toString(nProc()) 
+        + "." + Teuchos::toString(myRank());
+      nodeFilename_ = nodeFilename_ + suffix;
+      parFilename_ = parFilename_ + suffix;
+      elemFilename_ = elemFilename_ + suffix;
     }
   nodeFilename_ = nodeFilename_ + ".node";
   elemFilename_ = elemFilename_ + ".ele";
   parFilename_ = parFilename_ + ".par";
   
   verbosity() = classVerbosity();
+  //  verbosity() = VerbExtreme;
   SUNDANCE_OUT(this->verbosity() > VerbLow,
                "node filename = " << nodeFilename_);
   
@@ -47,9 +51,11 @@ TriangleMeshReader::TriangleMeshReader(const ParameterList& params)
 
   if (nProc() > 1)
     {
-      nodeFilename_ = nodeFilename_ + Teuchos::toString(myRank());
-      parFilename_ = parFilename_ + Teuchos::toString(myRank());
-      elemFilename_ = elemFilename_ + Teuchos::toString(myRank());
+      string suffix =  "." + Teuchos::toString(nProc()) 
+        + "." + Teuchos::toString(myRank());
+      nodeFilename_ = nodeFilename_ + suffix;
+      parFilename_ = parFilename_ + suffix;
+      elemFilename_ = elemFilename_ + suffix;
     }
   nodeFilename_ = nodeFilename_ + ".node";
   elemFilename_ = elemFilename_ + ".ele";
@@ -248,6 +254,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
     {
       /* If we're running in parallel, we'd better have consistent numbers
        * of points in the .node and .par file. */
+      nPoints = ptGID.length();
       TEST_FOR_EXCEPTION(atoi(tokens[0]) != nPoints, RuntimeError,
                          "TriangleMeshReader::getMesh() found inconsistent "
                          "numbers of points in .node file and par file. Node "
@@ -271,7 +278,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
 	Array<bool> usedPoint(nPoints);
 	nodeAttributes()->resize(nPoints);
 
-	int offset=0;
+	offset_=-1;
 	bool first = true;
 
   /* read all the points */
@@ -291,11 +298,11 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
        * inspect the first node line to decide which numbering to use. */
       if (first)
         {
-          offset = atoi(tokens[0]);
-          TEST_FOR_EXCEPTION(offset < 0 || offset > 1, RuntimeError,
+          offset_ = atoi(tokens[0]);
+          TEST_FOR_EXCEPTION(offset_ < 0 || offset_ > 1, RuntimeError,
                              "TriangleMeshReader::getMesh() expected "
                              "either 0-offset or 1-offset numbering. Found an "
-                             "initial offset of " << offset << " in line \n["
+                             "initial offset of " << offset_ << " in line \n["
                              << line << "]\n of file " << nodeFilename_);
           first = false;
         }
@@ -334,6 +341,8 @@ void TriangleMeshReader::readElems(Mesh& mesh,
                                    Array<int>& elemGID,
                                    Array<int>& elemOwner) const 
 {
+  try
+    {
   string line;  
   Array<string> tokens;
 	/* Open the element file */
@@ -348,8 +357,8 @@ void TriangleMeshReader::readElems(Mesh& mesh,
                      "the .ele file. Found line \n[" << line
                      << "]\n in file " << elemFilename_);
                    
-  int nElems = 0;
-  int offset = 1;
+  int nElems = -1;
+
 	if (nProc()==1)
     {
       nElems = atoi(tokens[0]);
@@ -365,6 +374,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
     {
       /* If we're running in parallel, we'd better have consistent numbers
        * of points in the .node and .par file. */
+      nElems = elemGID.length();
       TEST_FOR_EXCEPTION(atoi(tokens[0]) != nElems, RuntimeError,
                          "TriangleMeshReader::readElems() found inconsistent "
                          "numbers of elements in .ele file and par file. Elem "
@@ -402,11 +412,18 @@ void TriangleMeshReader::readElems(Mesh& mesh,
 
       for (int d=0; d<=dim; d++)
         {
-          nodes[d] = ptGID[atoi(tokens[d+1])-offset];
+          nodes[d] = ptGID[atoi(tokens[d+1])-offset_];
         }
 
       int elemLabel = 0;
-      mesh.addElement(elemGID[count], nodes, elemOwner[count], elemLabel);
+      try
+        {
+          mesh.addElement(elemGID[count], nodes, elemOwner[count], elemLabel);
+        }
+      catch(std::exception& ex1)
+        {
+          SUNDANCE_TRACE(ex1);
+        }
 			
 			(*elemAttributes())[count].resize(nAttributes);
 			for (int i=0; i<nAttributes; i++)
@@ -414,5 +431,9 @@ void TriangleMeshReader::readElems(Mesh& mesh,
 					(*elemAttributes())[count][i] = atof(tokens[1+ptsPerElem+i]);
 				}
     }
-
+    }
+  catch(std::exception& ex)
+    {
+      SUNDANCE_TRACE(ex);
+    }
 }

@@ -193,6 +193,12 @@ using namespace SundanceUtils;
     int mapGIDToLID(int cellDim, int globalIndex) const 
     {return ptr()->mapGIDToLID(cellDim, globalIndex);}
 
+    /** 
+     * Determine whether a given cell GID exists on this processor
+     */
+    bool hasGID(int cellDim, int globalIndex) const 
+    {return ptr()->hasGID(cellDim, globalIndex);}
+
     
 
     /** 
@@ -260,9 +266,10 @@ using namespace SundanceUtils;
     }
 
     /** Work out global numberings for the cells of dimension cellDim */
-    void assignIntermediateCellOwners(int cellDim) 
+    void assignIntermediateCellGIDs(int cellDim) 
     {
-      ptr()->assignIntermediateCellOwners(cellDim);
+      if (!hasIntermediateGIDs(cellDim))
+        ptr()->assignIntermediateCellGIDs(cellDim);
     }
 
     /** */
@@ -270,11 +277,41 @@ using namespace SundanceUtils;
     {
       return ptr()->hasIntermediateGIDs(cellDim);
     }
-    
+
+    /** */
+    void dump(const string& filename) const ;
+
+    /** Test the consistency of the mesh numbering scheme 
+     * across processors. This is meant as a check on Sundance's internal
+     * logic rather than as a check on the validity of a user's mesh. */
+    bool checkConsistency(const string& filename) const ;
+
+    /** Test the consistency of the mesh numbering scheme 
+     * across processors. This is meant as a check on Sundance's internal
+     * logic rather than as a check on the validity of a user's mesh. */
+    bool checkConsistency(ostream& os) const ;
 
   private:
     /** */
     IncrementallyCreatableMesh* creatableMesh();
+
+
+    /** */
+    bool checkVertexConsistency(ostream& os) const ;
+    /** */
+    bool checkCellConsistency(ostream& os, int dim) const ;
+
+    /** */
+    bool checkRemoteEntity(ostream& os, int p, int dim, int gid, 
+                           int owner, bool mustExist, int& lid) const ;
+
+    /** */
+    bool testIdentity(ostream& os, int a, int b, const string& msg) const ;
+
+    /** */
+    bool testIdentity(ostream& os, 
+                      const Array<int>& a,
+                      const Array<int>& b, const string& msg) const ;
   };
 }
 

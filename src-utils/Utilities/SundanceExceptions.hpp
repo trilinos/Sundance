@@ -56,6 +56,15 @@
   throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
+#define SUNDANCE_TRACE_MSG(e, msg)                      \
+{ \
+  TeuchosOStringStream omsg; \
+	omsg << e.what() << endl \
+  << "caught in " << __FILE__ << ":" << __LINE__ << endl ; \
+  omsg << msg << endl; \
+  throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+}
+
 #define SUNDANCE_BOUNDSCHECK(i, low, high, msg) \
 { \
   TEST_FOR_EXCEPTION( i < low || i > high, SundanceUtils::RuntimeError, \

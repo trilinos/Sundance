@@ -28,67 +28,32 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_OUT_H
-#define SUNDANCE_OUT_H
+#ifndef SUNDANCE_COLLECTIVEEXCEPTIONCHECK_H
+#define SUNDANCE_COLLECTIVEEXCEPTIONCHECK_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_TestForException.hpp"
-#include "TSFObjectWithVerbosity.hpp"
-#include "Teuchos_RefCountPtr.hpp"
+#include "Teuchos_MPIComm.hpp"
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceUtils
 {
   using namespace Teuchos;
-  /**
-   *
-   */
-  class Out
-    {
-    public:
-      
-      static void println(const string& str) 
-      {
-        if (hasLogFile()) *logFile() << str << endl;
-        if (!suppressStdout()) cout << str << endl;
-      }
 
-      static void setLogFile(const string& filename)
-      {
-        logFile() = rcp(new ofstream(filename.c_str()));
-        hasLogFile() = true;
-      }
 
-      static bool& suppressStdout() {static bool rtn=false; return rtn;}
+  /** Call this function upon catching an exception at a point before a collective
+   * operation. This function will do an AllReduce in conjunction with calls
+   * to either this function or its partner, checkForFailures(), on the
+   * other processors. This procedure has the effect of communicating to the other
+   * processors that an exception has been detected on this one. */
+  void reportFailure(const MPIComm& comm);
 
-    private:
-      static bool& hasLogFile() {static bool rtn=false; return rtn;}
-      static RefCountPtr<ostream>& logFile() {static RefCountPtr<ostream> rtn; return rtn;}
-      
-    };
-
+  /** Call this function after exception-free completion of a
+   * try/catch block preceding a collective operation. This function
+   * will do an AllReduce in conjunction with calls to either this
+   * function or its partner, reportFailure(), on the other
+   * processors. If a failure has been reported by another processor, the
+   * call to checkForFailures() will return true and an exception can be thrown. */
+  bool checkForFailures(const MPIComm& comm);
 }
 
-#define SUNDANCE_OUT(test, msg) \
-{ \
-  if (test) \
-    { \
-      TeuchosOStringStream omsg; \
-      omsg << msg; \
-      Out::println(omsg.str());                 \
-    } \
-}
-
-
-#define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_OUT(this->verbosity() > VerbHigh, msg)
-#define SUNDANCE_VERB_HIGH(msg) SUNDANCE_OUT(this->verbosity() > VerbMedium, msg)
-#define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_OUT(this->verbosity() > VerbLow, msg)
-#define SUNDANCE_VERB_LOW(msg) SUNDANCE_OUT(this->verbosity() > VerbSilent, msg)
-
-
-
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

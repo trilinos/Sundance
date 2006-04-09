@@ -122,7 +122,7 @@ void SparsitySuperset::assembleSubsetUnions() const
   
   typedef Map<keyPair, RefCountPtr<SparsitySubset> >::const_iterator iter;
 
-  unsigned int oldSize = subsets_.size();
+  //  unsigned int oldSize = subsets_.size();
   Map<keyPair, RefCountPtr<SparsitySubset> > newSubs = subsets_;
   bool change = false;
 

@@ -107,6 +107,12 @@ namespace SundanceStdFwk
     const RefCountPtr<Set<int> >& bcRows(int blockRow) const 
     {return assembler_->bcRows()[blockRow];}
 
+    /** Return the number of block rows in the problem  */
+    int numBlockRows() const {return assembler_->rowMap().size();}
+
+    /** Return the number of block cols in the problem  */
+    int numBlockCols() const {return assembler_->colMap().size();}
+
     /** Form a solution expression out of a vector obtained from a linear
      * solver */
     Expr formSolutionExpr(const Vector<double>& solnVector) const ;
