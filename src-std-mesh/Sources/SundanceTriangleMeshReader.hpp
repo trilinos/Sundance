@@ -124,6 +124,8 @@ namespace SundanceStdMesh
     Mesh readNodes(Array<int>& ptGID,
                    Array<int>& ptOwner) const ;
 
+    void readSides(Mesh& mesh) const ;
+
     /** */
     void readElems(Mesh& mesh,
                    const Array<int>& nodeGID,
@@ -139,6 +141,9 @@ namespace SundanceStdMesh
 
     /** */
     string parFilename_;
+
+    /** */
+    string sideFilename_;
 
     /** */
     mutable int offset_;

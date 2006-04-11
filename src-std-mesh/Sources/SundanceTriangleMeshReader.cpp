@@ -16,6 +16,7 @@ TriangleMeshReader::TriangleMeshReader(const string& fname,
     nodeFilename_(filename()),
     elemFilename_(filename()),
     parFilename_(filename()),
+    sideFilename_(filename()),
     offset_(0)
 {
   
@@ -27,10 +28,12 @@ TriangleMeshReader::TriangleMeshReader(const string& fname,
       nodeFilename_ = nodeFilename_ + suffix;
       parFilename_ = parFilename_ + suffix;
       elemFilename_ = elemFilename_ + suffix;
+      sideFilename_ = sideFilename_ + suffix;
     }
   nodeFilename_ = nodeFilename_ + ".node";
   elemFilename_ = elemFilename_ + ".ele";
   parFilename_ = parFilename_ + ".par";
+  sideFilename_ = sideFilename_ + ".side";
   
   verbosity() = classVerbosity();
   //  verbosity() = VerbExtreme;
@@ -85,6 +88,8 @@ Mesh TriangleMeshReader::fillMesh() const
   mesh = readNodes(ptGID, ptOwner);
 
   readElems(mesh, ptGID, cellGID, cellOwner);
+
+  readSides(mesh);
 
   //  mesh.assignGlobalIndices();
 
@@ -343,94 +348,154 @@ void TriangleMeshReader::readElems(Mesh& mesh,
 {
   try
     {
-  string line;  
-  Array<string> tokens;
-	/* Open the element file */
+      string line;  
+      Array<string> tokens;
+      /* Open the element file */
 	
-	RefCountPtr<ifstream> elemStream = openFile(elemFilename_, "element info");
+      RefCountPtr<ifstream> elemStream = openFile(elemFilename_, "element info");
 
-  getNextLine(*elemStream, line, tokens, '#');
-
-  TEST_FOR_EXCEPTION(tokens.length() != 3, RuntimeError,
-                     "TriangleMeshReader::getMesh() requires 3 "
-                     "entries on the header line in "
-                     "the .ele file. Found line \n[" << line
-                     << "]\n in file " << elemFilename_);
-                   
-  int nElems = -1;
-
-	if (nProc()==1)
-    {
-      nElems = atoi(tokens[0]);
-      elemGID.resize(nElems);
-      elemOwner.resize(nElems);
-      for (int i=0; i<nElems; i++)
-        {
-          elemGID[i] = i;
-          elemOwner[i] = 0;
-        }
-    }
-  else
-    {
-      /* If we're running in parallel, we'd better have consistent numbers
-       * of points in the .node and .par file. */
-      nElems = elemGID.length();
-      TEST_FOR_EXCEPTION(atoi(tokens[0]) != nElems, RuntimeError,
-                         "TriangleMeshReader::readElems() found inconsistent "
-                         "numbers of elements in .ele file and par file. Elem "
-                         "file " << elemFilename_ << " had nElems=" 
-                         << atoi(tokens[0]) << " but .par file " 
-                         << parFilename_ << " had nElems=" << nElems);
-    }
-
-	int ptsPerElem = atoi(tokens[1]);
-
-  TEST_FOR_EXCEPTION(ptsPerElem != mesh.spatialDim()+1, RuntimeError,
-                     "TriangleMeshReader::readElems() found inconsistency "
-                     "between number of points per element=" << ptsPerElem 
-                     << " and dimension=" << mesh.spatialDim() << ". Number of pts "
-                     "per element should be dimension + 1");
-
-	int nAttributes = atoi(tokens[2]);
-	elemAttributes()->resize(nElems);
-
-  int dim = mesh.spatialDim();
-  Array<int> nodes(dim+1);
-
-  for (int count=0; count<nElems; count++)
-    {
       getNextLine(*elemStream, line, tokens, '#');
+
+      TEST_FOR_EXCEPTION(tokens.length() != 3, RuntimeError,
+                         "TriangleMeshReader::getMesh() requires 3 "
+                         "entries on the header line in "
+                         "the .ele file. Found line \n[" << line
+                         << "]\n in file " << elemFilename_);
+                   
+      int nElems = -1;
+
+      if (nProc()==1)
+        {
+          nElems = atoi(tokens[0]);
+          elemGID.resize(nElems);
+          elemOwner.resize(nElems);
+          for (int i=0; i<nElems; i++)
+            {
+              elemGID[i] = i;
+              elemOwner[i] = 0;
+            }
+        }
+      else
+        {
+          /* If we're running in parallel, we'd better have consistent numbers
+           * of points in the .node and .par file. */
+          nElems = elemGID.length();
+          TEST_FOR_EXCEPTION(atoi(tokens[0]) != nElems, RuntimeError,
+                             "TriangleMeshReader::readElems() found inconsistent "
+                             "numbers of elements in .ele file and par file. Elem "
+                             "file " << elemFilename_ << " had nElems=" 
+                             << atoi(tokens[0]) << " but .par file " 
+                             << parFilename_ << " had nElems=" << nElems);
+        }
+
+      int ptsPerElem = atoi(tokens[1]);
+
+      TEST_FOR_EXCEPTION(ptsPerElem != mesh.spatialDim()+1, RuntimeError,
+                         "TriangleMeshReader::readElems() found inconsistency "
+                         "between number of points per element=" << ptsPerElem 
+                         << " and dimension=" << mesh.spatialDim() << ". Number of pts "
+                         "per element should be dimension + 1");
+
+      int nAttributes = atoi(tokens[2]);
+      elemAttributes()->resize(nElems);
+
+      int dim = mesh.spatialDim();
+      Array<int> nodes(dim+1);
+
+      for (int count=0; count<nElems; count++)
+        {
+          getNextLine(*elemStream, line, tokens, '#');
       
-      TEST_FOR_EXCEPTION(tokens.length() 
-                         != (1 + ptsPerElem + nAttributes),
-                         RuntimeError,
-                         "TriangleMeshReader::readElems() found bad elem "
-                         "input line. Expected " 
-                         << (1 + ptsPerElem + nAttributes)
-                         << " entries but found line \n[" << 
-                         line << "]\n in file " << elemFilename_);
+          TEST_FOR_EXCEPTION(tokens.length() 
+                             != (1 + ptsPerElem + nAttributes),
+                             RuntimeError,
+                             "TriangleMeshReader::readElems() found bad elem "
+                             "input line. Expected " 
+                             << (1 + ptsPerElem + nAttributes)
+                             << " entries but found line \n[" << 
+                             line << "]\n in file " << elemFilename_);
 
-      for (int d=0; d<=dim; d++)
-        {
-          nodes[d] = ptGID[atoi(tokens[d+1])-offset_];
-        }
+          for (int d=0; d<=dim; d++)
+            {
+              nodes[d] = ptGID[atoi(tokens[d+1])-offset_];
+            }
 
-      int elemLabel = 0;
-      try
-        {
-          mesh.addElement(elemGID[count], nodes, elemOwner[count], elemLabel);
-        }
-      catch(std::exception& ex1)
-        {
-          SUNDANCE_TRACE(ex1);
-        }
+          int elemLabel = 0;
+          try
+            {
+              mesh.addElement(elemGID[count], nodes, elemOwner[count], elemLabel);
+            }
+          catch(std::exception& ex1)
+            {
+              SUNDANCE_TRACE(ex1);
+            }
 			
-			(*elemAttributes())[count].resize(nAttributes);
-			for (int i=0; i<nAttributes; i++)
-				{
-					(*elemAttributes())[count][i] = atof(tokens[1+ptsPerElem+i]);
-				}
+          (*elemAttributes())[count].resize(nAttributes);
+          for (int i=0; i<nAttributes; i++)
+            {
+              (*elemAttributes())[count][i] = atof(tokens[1+ptsPerElem+i]);
+            }
+        }
     }
+  catch(std::exception& ex)
+    {
+      SUNDANCE_TRACE(ex);
+    }
+}
+
+
+void TriangleMeshReader::readSides(Mesh& mesh) const 
+{
+  try
+    {
+      string line;  
+      Array<string> tokens;
+      /* Open the side file */
+      RefCountPtr<ifstream> sideStream 
+        = rcp(new ifstream(sideFilename_.c_str()));
+      /* Not all meshes will have sides files.
+       * If the sides file doesn't exist, return. */
+      if (sideStream.get()==0 || *sideStream==0) 
+        {
+          SUNDANCE_VERB_LOW("side file [" << sideFilename_ << "] not found");
+          return;
+        }
+
+      getNextLine(*sideStream, line, tokens, '#');
+
+      TEST_FOR_EXCEPTION(tokens.length() != 1, RuntimeError,
+                         "TriangleMeshReader::readSides() requires 1 "
+                         "entry on the header line in "
+                         "the .side file. Found line \n[" << line
+                         << "]\n in file " << sideFilename_);
+
+      int nSides = atoi(tokens[0]);
+
+      int elemDim = mesh.spatialDim();
+      int sideDim = elemDim - 1;
+
+      for (int i=0; i<nSides; i++)
+        {
+          getNextLine(*sideStream, line, tokens, '#');
+      
+          TEST_FOR_EXCEPTION(tokens.length() != 4,
+                             RuntimeError,
+                             "TriangleMeshReader::readSides() found bad side "
+                             "input line. Expected 4 entries but found line \n[" 
+                             << line << "]\n in file " << sideFilename_);
+
+          int elemGID = atoi(tokens[1]);
+          int elemFacet = atoi(tokens[2]);
+          TEST_FOR_EXCEPTION(!mesh.hasGID(elemDim, elemGID), RuntimeError,
+                             "element GID " << elemGID << " not found");
+          int elemLID = mesh.mapGIDToLID(elemDim, elemGID);
+          int o=0; // dummy orientation variable; not needed here
+          int sideLID = mesh.facetLID(elemDim, elemLID, sideDim, elemFacet, o);
+          
+          int sideLabel = atoi(tokens[3]);
+
+          mesh.setLabel(sideDim, sideLID, sideLabel);
+        }
     }
   catch(std::exception& ex)
     {

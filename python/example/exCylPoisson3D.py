@@ -11,13 +11,34 @@ import PySundance
 import math
 from PySundance import *
 
+import setpath
+from PySundance import *
+
+
+
+aztecSolverDict = {"Linear Solver" : 
+               {"Type" : "Aztec",
+                "Method" : "GMRES",
+                "Max Iterations" : 1000,
+                "Tolerance" : 1.0e-12,
+                "Precond" : "Domain Decomposition",
+                "Subdomain Solver" : "ILU",
+                "Graph Fill" : 1,
+                "Verbosity" : 4
+                }
+               }
+
+solverParams = ParameterList(aztecSolverDict);
+
+
 def main():
 
     vecType = EpetraVectorType()
-    mesher  = ExodusNetCDFMeshReader("../../../tests-std-framework/Problem"
-                                     "/cube-coarse.ncdf");
+    mesher  = TriangleMeshReader("../../../tests-std-framework/Problem/ring3D-0.008a");
+
+    print 'reading mesh...'
     mesh = mesher.getMesh();
-    basis = Lagrange(2)
+    basis = Lagrange(1)
 
     u = UnknownFunction(basis, "u");
     v = TestFunction(basis, "v");
@@ -34,38 +55,33 @@ def main():
 
     interior = MaximalCellFilter()
     faces = DimensionalCellFilter(2)
-    side1 = faces.labeledSubset(1);
-    side2 = faces.labeledSubset(2);
-    side3 = faces.labeledSubset(3);
-    side4 = faces.labeledSubset(4);
-    side5 = faces.labeledSubset(5);
-    side6 = faces.labeledSubset(6);
+    inner = faces.labeledSubset(1);
+    outer = faces.labeledSubset(2);
 
-    exactSoln = (x + 1.0)*x - 1.0/4.0;
+    rSq = x*x + y*y
+    exactSoln = log(rSq)
 
-    eqn = Integral(interior, (grad*v)*(grad*u) +2.0*v, quad2)
-    bc = EssentialBC(side4, v*(u-exactSoln), quad4) \
-        + EssentialBC(side6, v*(u-exactSoln), quad4);
+    eqn = Integral(interior, (grad*v)*(grad*u), quad2)
+    bc = EssentialBC(inner, v*(u-exactSoln), quad4) \
+        + EssentialBC(outer, v*(u-exactSoln), quad4);
 
     prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
-    solver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
-
+    print 'solving problem...'
+    solver = buildSolver(solverParams)
     soln = prob.solve(solver)
 
+    print 'discretizing exact soln and error norms...'
     discSpace = DiscreteSpace(mesh, basis, vecType)
-    proj1 = L2Projector(discSpace, exactSoln)
-    proj2 = L2Projector(discSpace, soln - exactSoln)
     proj3 = L2Projector(discSpace, pow(soln - exactSoln, 2.0))
-    exactDisc = proj1.project()
-    error = proj2.project()
+    procField = DiscreteFunction(discSpace, getRank())
     errorSq = proj3.project()
 
-    w = VTKWriter("Poisson3D")
+    print 'writing viz for exact soln and error norms...'
+    w = VTKWriter("CylPoisson3D")
     w.addMesh(mesh);
     w.addField("soln", soln)
-    w.addField("exact soln", exactDisc)
-    w.addField("error", error)
+    w.addField("procID", procField)
     w.addField("errorSq", errorSq)
     w.write();
 
@@ -73,17 +89,10 @@ def main():
     diffDeriv = (grad*(soln - exactSoln))**2.0
 
 
-
     error = math.sqrt(diff.integral(interior, mesh, quad4))
-    derivError = math.sqrt(diffDeriv.integral(interior, mesh, quad4))
     print "error = " , error
-    print "deriv error = " , derivError
 
-    error = max(error, derivError)
-
-    print "max err = ", error
-
-    tol = 1.0e-13
+    tol = 1.0e-5
     passFailTest(error, tol)
 
 

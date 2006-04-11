@@ -52,6 +52,8 @@ class TriangleReader :
 
         self.readElems(mesh)
 
+        self.readSides(mesh)
+
         return mesh
 
     
@@ -128,5 +130,32 @@ class TriangleReader :
              for i in range(nAttr) :
                  attrs.append(float(toks[i+2+d]))
              mesh.addElemAttrs(attrs)
+    
+    
+
+
+    # Read the .side file
+    def readSides(self, mesh) :
+        
+        f = file(self.filename_ + '.side')
+
+        # read header 
+        while 1 :
+            line = f.readline()
+            if line[0]=='#': continue
+            header = line.split()
+            nSides = int(header[0])
+            break
+        
+         # read lines, building elements and the element-to-node map
+        while 1:
+             line = f.readline()
+             if not line : break
+             if line[0]=='#': continue
+             toks = line.split()
+             side = int(toks[0])
+             elem = int(toks[1])
+             facet = int(toks[2])
+             label = int(toks[3]) 
     
     

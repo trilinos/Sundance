@@ -41,7 +41,7 @@ Mesh MeshBuilder::createMesh(const ParameterList& params)
     }
   else if (type=="Triangle")
     {
-      mesher = new ExodusNetCDFMeshReader(params);
+      mesher = new TriangleMeshReader(params);
     }
 
   TEST_FOR_EXCEPTION(mesher.ptr().get()==0, RuntimeError,

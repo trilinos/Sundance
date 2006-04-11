@@ -43,8 +43,9 @@ using namespace SundanceUtils;
 MeshBase::MeshBase(int dim, const MPIComm& comm) 
   : dim_(dim), 
     comm_(comm),
-    reorderer_(Mesh::defaultReorderer().createInstance(this)) 
+    reorderer_(Mesh::defaultReorderer().createInstance(this))
 {;}
+
 
 
 static Time& facetGrabTimer() 
@@ -69,6 +70,8 @@ void MeshBase::getFacetArray(int cellDim, int cellLID, int facetDim,
                               facetOrientations[f]);
     }
 }
+
+
 
 
 

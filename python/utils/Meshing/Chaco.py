@@ -50,6 +50,7 @@ class Chaco :
     # driver routine for the partitioning
     def partition(self, mesh, nProc) :
 
+        print 'creating graph...'
         mesh.writeGraph(self.filename_)
         self.runChaco(nProc)
         return self.readElemAssignments(self.filename_)
@@ -67,7 +68,7 @@ class Chaco :
         paramsFile.write('KL_NTRIES_BAD=10\n')
         paramsFile.write('KL_IMBALANCE=0.02\n')
         paramsFile.write('INTERNAL_VERTICES=true\n')
-        paramsFile.write('MATCH_TYPE=4\n')
+        paramsFile.write('MATCH_TYPE=2\n')
         paramsFile.write('HEAVY_MATCH=true\n')
         paramsFile.write('TERM_PROP=true\n')
         paramsFile.write('COARSE_NLEVEL_KL=1\n')
@@ -78,13 +79,14 @@ class Chaco :
         inputFile = file('chacoInput', 'w')
         inputFile.write('%s.graph\n' % self.filename_)
         inputFile.write('%s.assign\n' % self.filename_)
-        inputFile.write('1\n')
-        inputFile.write('100\n')
-        inputFile.write('%d\n' % nProcs)
-        inputFile.write('1\n')
-        inputFile.write('n\n')
+        inputFile.write('1\n')    # select partitioning algorithm. 1=multilevel
+        inputFile.write('100\n')  # num vertices in coarsest graph
+        inputFile.write('%d\n' % nProcs) # number of partitions
+        inputFile.write('1\n') # apply bisection
+        inputFile.write('n\n') # answer 'n' to query about running another problem
         inputFile.flush()
         inputFile.close()
+        print 'calling Chaco'
         posix.system('chaco < chacoInput')
 
     def readElemAssignments(self, filename) :

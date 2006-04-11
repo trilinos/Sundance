@@ -300,7 +300,46 @@ def writeNodes(filename, mesh, procID, nProc, nodeAssignments,
         
 #-----------------------------------------------------------------------
 #
-# writeElems() writes the element data for the given processor
+# writeSides() writes the sideset data for the given processor
+#
+#-----------------------------------------------------------------------
+
+def writeSides(filename, mesh, procID, nProc, elemAssignments, 
+               elemsPerProc, offProcElems, nodeGIDToLIDMap) :
+    lidCount = 0
+    f = file(filename + '.%d.%d.side' % (nProc,procID), 'w')
+
+    
+    for n in range(len(elemAssignments)) :
+        if procID==elemAssignments[n]:
+            lidCount = lidCount+mesh.elemNumSides(n)
+            
+    for n in offProcElems :
+        lidCount = lidCount+mesh.elemNumSides(n)
+
+    nSides = lidCount
+    f.write('%d' % nSides)
+
+    lid = 0
+    for n in range(len(elemAssignments)) :
+        if procID==elemAssignments[n]:
+            sides = mesh.getElemSides(n)
+            for side in sides:
+                f.write('%d %d %d %d', lid, n, side[0], side[1])
+                lid = lid + 1
+            
+    for n in offProcElems :
+        if procID==elemAssignments[n]:
+            sides = mesh.getElemSides(n)
+            for side in sides:
+                f.write('%d %d %d %d', lid, n, side[0], side[1])
+                lid = lid + 1
+
+
+        
+#-----------------------------------------------------------------------
+#
+# writeElems() writes the elements for the given processor
 #
 #-----------------------------------------------------------------------
 
@@ -308,6 +347,7 @@ def writeElems(filename, mesh, procID, nProc, elemAssignments,
                elemsPerProc, offProcElems, nodeGIDToLIDMap) :
     lidCount = 0
     f = file(filename + '.%d.%d.ele' % (nProc,procID), 'w')
+
     nElemsP = elemsPerProc + len(offProcElems)
     f.write('%d %d %d\n' % (nElemsP, mesh.dim()+1, 
                             mesh.numElemAttributes()))

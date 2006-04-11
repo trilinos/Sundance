@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) $(VSNS2D_SOURCES)
+SOURCES = $(CubicCDR_SOURCES) $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) $(VSNS2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -137,15 +137,18 @@ am__EXEEXT_1 = PostPotentialFlow$(EXEEXT) \
 	RadiationDiffusion1D$(EXEEXT) PressureVessel2D$(EXEEXT) \
 	VSNS2D$(EXEEXT) Exo2Triangle$(EXEEXT) \
 	PressureStabilizedNS2D$(EXEEXT) \
-	PressureStabilizedNS3D$(EXEEXT) ReadField$(EXEEXT)
+	PressureStabilizedNS3D$(EXEEXT) ReadField$(EXEEXT) \
+	CubicCDR$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am_Exo2Triangle_OBJECTS = Exo2Triangle-Exo2Triangle.$(OBJEXT)
-Exo2Triangle_OBJECTS = $(am_Exo2Triangle_OBJECTS)
+am_CubicCDR_OBJECTS = CubicCDR-CubicCDR.$(OBJEXT)
+CubicCDR_OBJECTS = $(am_CubicCDR_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_2)
 am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_3)
+am_Exo2Triangle_OBJECTS = Exo2Triangle-Exo2Triangle.$(OBJEXT)
+Exo2Triangle_OBJECTS = $(am_Exo2Triangle_OBJECTS)
 am_PostPotentialFlow_OBJECTS =  \
 	PostPotentialFlow-PostPotentialFlow.$(OBJEXT)
 PostPotentialFlow_OBJECTS = $(am_PostPotentialFlow_OBJECTS)
@@ -173,13 +176,13 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) \
+SOURCES = $(CubicCDR_SOURCES) $(Exo2Triangle_SOURCES) \
+	$(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) \
 	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
 	$(VSNS2D_SOURCES)
-DIST_SOURCES = $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) \
+DIST_SOURCES = $(CubicCDR_SOURCES) $(Exo2Triangle_SOURCES) \
+	$(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) \
 	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
 	$(VSNS2D_SOURCES)
@@ -335,7 +338,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 TESTS_SRC = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
 VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D \
-ReadField
+ReadField CubicCDR
 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 REQUIREMENTS = $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -416,6 +419,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 ReadField_CXXFLAGS = $(STD_FWK_INCLUDES)
 ReadField_LDADD = $(STD_FWK_LIBS) 
+CubicCDR_SOURCES = $(srcdir)/CubicCDR.cpp
+CubicCDR_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+CubicCDR_CXXFLAGS = $(STD_FWK_INCLUDES)
+CubicCDR_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -577,6 +589,9 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+CubicCDR$(EXEEXT): $(CubicCDR_OBJECTS) $(CubicCDR_DEPENDENCIES) 
+	@rm -f CubicCDR$(EXEEXT)
+	$(CXXLINK) $(CubicCDR_LDFLAGS) $(CubicCDR_OBJECTS) $(CubicCDR_LDADD) $(LIBS)
 Exo2Triangle$(EXEEXT): $(Exo2Triangle_OBJECTS) $(Exo2Triangle_DEPENDENCIES) 
 	@rm -f Exo2Triangle$(EXEEXT)
 	$(CXXLINK) $(Exo2Triangle_LDFLAGS) $(Exo2Triangle_OBJECTS) $(Exo2Triangle_LDADD) $(LIBS)
@@ -608,6 +623,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CubicCDR-CubicCDR.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po@am__quote@
@@ -630,6 +646,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+CubicCDR-CubicCDR.o: $(srcdir)/CubicCDR.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CubicCDR_CXXFLAGS) $(CXXFLAGS) -MT CubicCDR-CubicCDR.o -MD -MP -MF "$(DEPDIR)/CubicCDR-CubicCDR.Tpo" -c -o CubicCDR-CubicCDR.o `test -f '$(srcdir)/CubicCDR.cpp' || echo '$(srcdir)/'`$(srcdir)/CubicCDR.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CubicCDR-CubicCDR.Tpo" "$(DEPDIR)/CubicCDR-CubicCDR.Po"; else rm -f "$(DEPDIR)/CubicCDR-CubicCDR.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/CubicCDR.cpp' object='CubicCDR-CubicCDR.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CubicCDR_CXXFLAGS) $(CXXFLAGS) -c -o CubicCDR-CubicCDR.o `test -f '$(srcdir)/CubicCDR.cpp' || echo '$(srcdir)/'`$(srcdir)/CubicCDR.cpp
+
+CubicCDR-CubicCDR.obj: $(srcdir)/CubicCDR.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CubicCDR_CXXFLAGS) $(CXXFLAGS) -MT CubicCDR-CubicCDR.obj -MD -MP -MF "$(DEPDIR)/CubicCDR-CubicCDR.Tpo" -c -o CubicCDR-CubicCDR.obj `if test -f '$(srcdir)/CubicCDR.cpp'; then $(CYGPATH_W) '$(srcdir)/CubicCDR.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/CubicCDR.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/CubicCDR-CubicCDR.Tpo" "$(DEPDIR)/CubicCDR-CubicCDR.Po"; else rm -f "$(DEPDIR)/CubicCDR-CubicCDR.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/CubicCDR.cpp' object='CubicCDR-CubicCDR.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CubicCDR_CXXFLAGS) $(CXXFLAGS) -c -o CubicCDR-CubicCDR.obj `if test -f '$(srcdir)/CubicCDR.cpp'; then $(CYGPATH_W) '$(srcdir)/CubicCDR.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/CubicCDR.cpp'; fi`
 
 Exo2Triangle-Exo2Triangle.o: $(srcdir)/Exo2Triangle.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Exo2Triangle_CXXFLAGS) $(CXXFLAGS) -MT Exo2Triangle-Exo2Triangle.o -MD -MP -MF "$(DEPDIR)/Exo2Triangle-Exo2Triangle.Tpo" -c -o Exo2Triangle-Exo2Triangle.o `test -f '$(srcdir)/Exo2Triangle.cpp' || echo '$(srcdir)/'`$(srcdir)/Exo2Triangle.cpp; \

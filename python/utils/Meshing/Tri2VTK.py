@@ -15,13 +15,15 @@ from PySundance import *
 def main():
 
     # Read the mesh from a Triangle file
-    filename = 'diskWithHole-med'
+    filename = 'couette'
     mesher  = TriangleMeshReader(filename)
     mesh = mesher.getMesh()
-    check = mesh.checkConsistency('meshCheck')
-    print 'check=', check
-    if check==0 :
-        print 'INCONSISTENT MESH'
+
+    if 0:
+        print 'Checking mesh consistency'
+        check = mesh.checkConsistency('meshCheck')
+        if check==0 :
+            print 'INCONSISTENT MESH'
     
     vecType = EpetraVectorType()
     basis = Lagrange(0)

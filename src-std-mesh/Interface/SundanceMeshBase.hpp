@@ -243,6 +243,7 @@ using namespace SundanceUtils;
       MPIComm comm_;
 
       RefCountPtr<CellReordererImplemBase> reorderer_;
+
     };
   }
 }

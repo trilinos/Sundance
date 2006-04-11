@@ -49,6 +49,7 @@ class Mesh :
         self.numElemAttr_ = 0
         self.numNodeAttr_ = 0
         self.numMark_ = 0
+        self.sides_ = {}
 
     def setDimension(self, d) :
         self.dim_ = d
@@ -101,6 +102,24 @@ class Mesh :
                 self.vertToElemMap_[v] = Set()
             self.vertToElemMap_[v].add(lid)
 
+    def addSide(self, elemGID, facet, label) :
+        if elemGID in self.sides_ :
+            self.sides_[elemGID].append((facet, label))
+        else:
+            self.sides_[elemGID] = [(facet, label)]
+
+    def getElemSides(self, elemGID) :
+        return self.sides_[elemGID]
+
+    def elemNumSides(self, elemGID) :
+        if elemGID in self.sides_:
+            return len(self.sides_[elemGID])
+        else:
+            return 0
+
+    def hasSides(self) :
+        return len(self.sides_) > 0
+
 
     def getNodeData(self, index) :
         ptStr = self.ptToStr(self.pts_[index])
@@ -134,9 +153,7 @@ class Mesh :
             return '%s' % vertStr
         else:
             attrStr = self.elemAttrs_[index]
-            return '%s %s' % (vertStr, attrStr)        
-
-        
+            return '%s %s' % (vertStr, attrStr)
 
     def ptToStr(self, pt):
         if self.dim_==2:
@@ -183,8 +200,10 @@ class Mesh :
         return (neighbors, nEdges)
 
     def writeGraph(self, filename) :
+         print 'determining neighbors...'
          (neighbors, nEdges) = self.findNeighbors()
          graphFile = file(filename + '.graph', 'w')
+         print 'writing graph file...'
          graphFile.write('%d %d\n' % (self.numElems(), nEdges))
 
          for i in range(self.numElems()) :

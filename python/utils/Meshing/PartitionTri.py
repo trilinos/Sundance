@@ -44,7 +44,12 @@ offset = 0
 
 r = TriangleReader(filename, offset)
 
+
+print 'starting to read mesh...'
+
 mesh = r.getMesh()
+
+print 'starting Chaco partitioning...'
 
 
 
@@ -52,14 +57,17 @@ c = Chaco(filename, offset)
 
 elemAssignments = c.partition(mesh, np)
 
+print 'starting assignment determination...'
 
 (nodeAssignments, nodeOwners, nodesPerProc) = mesh.getNodeAssignments(np, elemAssignments)
+
+print 'starting elem count...'
 
 elemsPerProc = mesh.getElemsPerProc(np, elemAssignments)
 
 
-
 for procID in range(np) :
+    print 'writing for p=', procID, ' of ', np
     (offProcNodes, offProcElems) = mesh.getOffProcData(procID, elemAssignments,
                                                        nodeAssignments)
     nodeGIDToLIDMap = writeNodes(filename, mesh, procID, np, nodeAssignments,

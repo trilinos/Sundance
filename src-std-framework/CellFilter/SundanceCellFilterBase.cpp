@@ -50,23 +50,6 @@ CellSet CellFilterBase::getCells(const Mesh& mesh) const
       cellSetCache_ = internalGetCells(mesh);
     }
   return cellSetCache_;
-//   print(cerr);
-
-  // if (!cellSetCache_.containsKey(mesh.id()))
-//     {
-//       SUNDANCE_OUT(this->verbosity() > VerbMedium,
-//                    "cell set " << toXML() << " is computing cell cache");
-
-//       CellSet cells = internalGetCells(mesh);
-//       cellSetCache_.put(mesh.id(), cells);
-//     }
-//   else
-//     {
-//       SUNDANCE_OUT(this->verbosity() > VerbMedium,
-//                    "cell set " << toXML() << " is reusing cell cache");
-//     }
-//  return cellSetCache_.get(mesh.id());
-
 }
 
 
