@@ -79,6 +79,10 @@ namespace SundanceCore
        * that contains this function element. */
       const DiscreteFuncDataStub* commonData() const {return commonData_.get();}
 
+      /** Get the data associated with the vector-valued function 
+       * that contains this function element. */
+      DiscreteFuncDataStub* commonData() {return commonData_.get();}
+
       /** Get my index into the master's list of elements */
       int myIndex() const {return myIndex_;}
 

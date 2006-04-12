@@ -37,9 +37,40 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 Parameter::Parameter(const double& value, const string& name)
-	: FuncElementBase(name), 
-    SpatiallyConstantExpr(value)
-{}
+	: FuncElementBase(name, ""),
+    DiscreteFuncElement(rcp(new ParameterData(value)), name, "", 0), 
+    SpatiallyConstantExpr()
+{;}
+
+void Parameter::setValue(const double& value)
+{
+  
+  data()->setValue(value);
+}
+
+const double& Parameter::value() const {return data()->value();}
+
+
+void Parameter::findNonzeros(const EvalContext& context,
+                             const Set<MultiIndex>& multiIndices,
+                             const Set<MultiSet<int> >& activeFuncIDs,
+                             bool regardFuncsAsConstant) const 
+{
+  SpatiallyConstantExpr::findNonzeros(context, multiIndices, activeFuncIDs,
+                                      regardFuncsAsConstant);
+}
+
+
+Set<MultipleDeriv> Parameter::internalFindW(int order, const EvalContext& context) const 
+{
+  return SpatiallyConstantExpr::internalFindW(order, context);
+}
+
+Evaluator* Parameter::createEvaluator(const EvaluatableExpr* expr,
+                                      const EvalContext& context) const 
+{
+  return SpatiallyConstantExpr::createEvaluator(expr, context);
+}
 
 
 XMLObject Parameter::toXML() const 
@@ -51,4 +82,22 @@ XMLObject Parameter::toXML() const
 }
 
 
+const ParameterData* Parameter::data() const
+{
+  const ParameterData* pd = dynamic_cast<const ParameterData*>(commonData());
 
+  TEST_FOR_EXCEPTION(pd==0, InternalError, "cast failed");
+
+  return pd;
+}
+
+
+
+ParameterData* Parameter::data()
+{
+  ParameterData* pd = dynamic_cast<ParameterData*>(commonData());
+
+  TEST_FOR_EXCEPTION(pd==0, InternalError, "cast failed");
+
+  return pd;
+}

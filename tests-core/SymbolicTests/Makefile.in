@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(DepthScalabilityTest_SOURCES) $(PolynomialTest_SOURCES) $(ScalabilityTest_SOURCES) $(SimpleEval_SOURCES) $(StdTransformation_SOURCES) $(TestEval_SOURCES) $(VariationTest_SOURCES) $(VecOpTest_SOURCES) $(VecTimings_SOURCES)
+SOURCES = $(DepthScalabilityTest_SOURCES) $(PolynomialTest_SOURCES) $(ScalabilityTest_SOURCES) $(SensitivityTest_SOURCES) $(SimpleEval_SOURCES) $(StdTransformation_SOURCES) $(TestEval_SOURCES) $(VariationTest_SOURCES) $(VecOpTest_SOURCES) $(VecTimings_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -112,9 +112,10 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 noinst_PROGRAMS = $(am__EXEEXT_1) SimpleEval$(EXEEXT) \
-	PolynomialTest$(EXEEXT) StdTransformation$(EXEEXT) \
-	ScalabilityTest$(EXEEXT) DepthScalabilityTest$(EXEEXT) \
-	VecTimings$(EXEEXT) VariationTest$(EXEEXT)
+	SensitivityTest$(EXEEXT) PolynomialTest$(EXEEXT) \
+	StdTransformation$(EXEEXT) ScalabilityTest$(EXEEXT) \
+	DepthScalabilityTest$(EXEEXT) VecTimings$(EXEEXT) \
+	VariationTest$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-core/SymbolicTests
@@ -150,6 +151,9 @@ PolynomialTest_OBJECTS = $(am_PolynomialTest_OBJECTS)
 am_ScalabilityTest_OBJECTS =  \
 	ScalabilityTest-ScalabilityTest.$(OBJEXT)
 ScalabilityTest_OBJECTS = $(am_ScalabilityTest_OBJECTS)
+am_SensitivityTest_OBJECTS =  \
+	SensitivityTest-SensitivityTest.$(OBJEXT)
+SensitivityTest_OBJECTS = $(am_SensitivityTest_OBJECTS)
 am_SimpleEval_OBJECTS = SimpleEval-SimpleEval.$(OBJEXT)
 SimpleEval_OBJECTS = $(am_SimpleEval_OBJECTS)
 am_StdTransformation_OBJECTS =  \
@@ -172,15 +176,16 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(DepthScalabilityTest_SOURCES) $(PolynomialTest_SOURCES) \
-	$(ScalabilityTest_SOURCES) $(SimpleEval_SOURCES) \
-	$(StdTransformation_SOURCES) $(TestEval_SOURCES) \
-	$(VariationTest_SOURCES) $(VecOpTest_SOURCES) \
-	$(VecTimings_SOURCES)
-DIST_SOURCES = $(DepthScalabilityTest_SOURCES) \
-	$(PolynomialTest_SOURCES) $(ScalabilityTest_SOURCES) \
+	$(ScalabilityTest_SOURCES) $(SensitivityTest_SOURCES) \
 	$(SimpleEval_SOURCES) $(StdTransformation_SOURCES) \
 	$(TestEval_SOURCES) $(VariationTest_SOURCES) \
 	$(VecOpTest_SOURCES) $(VecTimings_SOURCES)
+DIST_SOURCES = $(DepthScalabilityTest_SOURCES) \
+	$(PolynomialTest_SOURCES) $(ScalabilityTest_SOURCES) \
+	$(SensitivityTest_SOURCES) $(SimpleEval_SOURCES) \
+	$(StdTransformation_SOURCES) $(TestEval_SOURCES) \
+	$(VariationTest_SOURCES) $(VecOpTest_SOURCES) \
+	$(VecTimings_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -331,7 +336,7 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-TEST_SRC = TestEval VecOpTest
+TEST_SRC = TestEval VecOpTest 
 LIBDEPS = $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a 
 
@@ -383,6 +388,12 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 
 TestEval_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 TestEval_LDADD = $(CORE_LIBS) 
+SensitivityTest_SOURCES = $(srcdir)/SensitivityTest.cpp 
+SensitivityTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+SensitivityTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+SensitivityTest_LDADD = $(CORE_LIBS) 
 StdTransformation_SOURCES = $(srcdir)/StdTransformation.cpp 
 StdTransformation_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-utils/libsundanceUtils.a 
@@ -562,6 +573,9 @@ PolynomialTest$(EXEEXT): $(PolynomialTest_OBJECTS) $(PolynomialTest_DEPENDENCIES
 ScalabilityTest$(EXEEXT): $(ScalabilityTest_OBJECTS) $(ScalabilityTest_DEPENDENCIES) 
 	@rm -f ScalabilityTest$(EXEEXT)
 	$(CXXLINK) $(ScalabilityTest_LDFLAGS) $(ScalabilityTest_OBJECTS) $(ScalabilityTest_LDADD) $(LIBS)
+SensitivityTest$(EXEEXT): $(SensitivityTest_OBJECTS) $(SensitivityTest_DEPENDENCIES) 
+	@rm -f SensitivityTest$(EXEEXT)
+	$(CXXLINK) $(SensitivityTest_LDFLAGS) $(SensitivityTest_OBJECTS) $(SensitivityTest_LDADD) $(LIBS)
 SimpleEval$(EXEEXT): $(SimpleEval_OBJECTS) $(SimpleEval_DEPENDENCIES) 
 	@rm -f SimpleEval$(EXEEXT)
 	$(CXXLINK) $(SimpleEval_LDFLAGS) $(SimpleEval_OBJECTS) $(SimpleEval_LDADD) $(LIBS)
@@ -590,6 +604,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DepthScalabilityTest-DepthScalabilityTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PolynomialTest-PolynomialTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScalabilityTest-ScalabilityTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SensitivityTest-SensitivityTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleEval-SimpleEval.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StdTransformation-StdTransformation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestEval-TestEval.Po@am__quote@
@@ -652,6 +667,20 @@ ScalabilityTest-ScalabilityTest.obj: $(srcdir)/ScalabilityTest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ScalabilityTest.cpp' object='ScalabilityTest-ScalabilityTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScalabilityTest_CXXFLAGS) $(CXXFLAGS) -c -o ScalabilityTest-ScalabilityTest.obj `if test -f '$(srcdir)/ScalabilityTest.cpp'; then $(CYGPATH_W) '$(srcdir)/ScalabilityTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ScalabilityTest.cpp'; fi`
+
+SensitivityTest-SensitivityTest.o: $(srcdir)/SensitivityTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SensitivityTest_CXXFLAGS) $(CXXFLAGS) -MT SensitivityTest-SensitivityTest.o -MD -MP -MF "$(DEPDIR)/SensitivityTest-SensitivityTest.Tpo" -c -o SensitivityTest-SensitivityTest.o `test -f '$(srcdir)/SensitivityTest.cpp' || echo '$(srcdir)/'`$(srcdir)/SensitivityTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SensitivityTest-SensitivityTest.Tpo" "$(DEPDIR)/SensitivityTest-SensitivityTest.Po"; else rm -f "$(DEPDIR)/SensitivityTest-SensitivityTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SensitivityTest.cpp' object='SensitivityTest-SensitivityTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SensitivityTest_CXXFLAGS) $(CXXFLAGS) -c -o SensitivityTest-SensitivityTest.o `test -f '$(srcdir)/SensitivityTest.cpp' || echo '$(srcdir)/'`$(srcdir)/SensitivityTest.cpp
+
+SensitivityTest-SensitivityTest.obj: $(srcdir)/SensitivityTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SensitivityTest_CXXFLAGS) $(CXXFLAGS) -MT SensitivityTest-SensitivityTest.obj -MD -MP -MF "$(DEPDIR)/SensitivityTest-SensitivityTest.Tpo" -c -o SensitivityTest-SensitivityTest.obj `if test -f '$(srcdir)/SensitivityTest.cpp'; then $(CYGPATH_W) '$(srcdir)/SensitivityTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SensitivityTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SensitivityTest-SensitivityTest.Tpo" "$(DEPDIR)/SensitivityTest-SensitivityTest.Po"; else rm -f "$(DEPDIR)/SensitivityTest-SensitivityTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SensitivityTest.cpp' object='SensitivityTest-SensitivityTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SensitivityTest_CXXFLAGS) $(CXXFLAGS) -c -o SensitivityTest-SensitivityTest.obj `if test -f '$(srcdir)/SensitivityTest.cpp'; then $(CYGPATH_W) '$(srcdir)/SensitivityTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SensitivityTest.cpp'; fi`
 
 SimpleEval-SimpleEval.o: $(srcdir)/SimpleEval.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SimpleEval_CXXFLAGS) $(CXXFLAGS) -MT SimpleEval-SimpleEval.o -MD -MP -MF "$(DEPDIR)/SimpleEval-SimpleEval.Tpo" -c -o SimpleEval-SimpleEval.o `test -f '$(srcdir)/SimpleEval.cpp' || echo '$(srcdir)/'`$(srcdir)/SimpleEval.cpp; \

@@ -28,59 +28,45 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SPATIALLYCONSTANTEXPR_H
-#define SUNDANCE_SPATIALLYCONSTANTEXPR_H
-
-#include "SundanceLeafExpr.hpp"
-#include "SundanceConstantEvaluator.hpp"
-#include "SundanceDiscreteFuncDataStub.hpp"
-
+#ifndef SUNDANCE_UNKNOWNPARAMETER_H
+#define SUNDANCE_UNKNOWNPARAMETER_H
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
+
+#include "SundanceDefs.hpp"
+#include "SundanceUnknownParameterElement.hpp"
+#include "SundanceSymbolicFunc.hpp"
 
 namespace SundanceCore
 {
   using namespace SundanceUtils;
+  using namespace Teuchos;
+  using namespace Internal;
+
   namespace Internal
+  {
+    using std::string;
+    using std::ostream;
+
+    /** 
+     *
+     */
+    class UnknownParameter : public SymbolicFunc
     {
+    public:
       /** */
-      class SpatiallyConstantExpr : public virtual LeafExpr,
-                                    public GenericEvaluatorFactory<SpatiallyConstantExpr, ConstantEvaluator>
-        {
-        public:
-          /** */
-          SpatiallyConstantExpr() ;
+      UnknownParameter(const string& name);
 
-          /** */
-          virtual ~SpatiallyConstantExpr(){;}
+      /** virtual destructor */
+      virtual ~UnknownParameter() {;}
 
-          /** */
-          virtual const double& value() const = 0;
+      /** */
+      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
 
-          /** */
-          virtual void setValue(const double& value) = 0 ;
-
-          /** */
-          virtual bool isConstant() const {return true;}
-
-          /** 
-           * Determine which functional and spatial derivatives are nonzero in the
-           * given context. We also keep track of which derivatives
-           * are known to be constant, which can simplify evaluation. 
-           */
-          virtual void findNonzeros(const EvalContext& context,
-                                    const Set<MultiIndex>& multiIndices,
-                                    const Set<MultiSet<int> >& activeFuncIDs,
-                                    bool regardFuncsAsConstant) const ;
-          /** */
-          virtual Set<MultipleDeriv> 
-          internalFindW(int order, const EvalContext& context) const ;
-          
-        private:
-        };
-    }
+    };
+  }
 }
 
-
 #endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

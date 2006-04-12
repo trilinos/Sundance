@@ -28,38 +28,20 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceConstantExpr.hpp"
+#include "SundanceUnknownParameter.hpp"
+#include "SundanceUnknownParameterElement.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-ConstantExpr::ConstantExpr(const double& value)
-	: SpatiallyConstantExpr(), value_(value)
-{}
 
 
-
-ostream& ConstantExpr::toText(ostream& os, bool /* paren */) const 
+UnknownParameter::UnknownParameter(const string& name)
+	: SymbolicFunc()
 {
-	os << value();
-	return os;
+  append(new UnknownParameterElement(name, "", 0));
 }
-
-ostream& ConstantExpr::toLatex(ostream& os, bool /* paren */) const 
-{
-	os << value();
-	return os;
-}
-
-
-XMLObject ConstantExpr::toXML() const 
-{
-	XMLObject rtn("Constant");
-	rtn.addAttribute("value", Teuchos::toString(value()));
-	return rtn;
-}
-
-

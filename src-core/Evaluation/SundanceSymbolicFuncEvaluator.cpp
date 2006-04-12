@@ -32,8 +32,10 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceSymbolicFuncEvaluator.hpp"
 #include "SundanceDiscreteFuncEvaluator.hpp"
+#include "SundanceConstantEvaluator.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceParameter.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceSet.hpp"
 #include "SundanceTabs.hpp"
@@ -52,9 +54,11 @@ SymbolicFuncElementEvaluator
                                const EvalContext& context)
   : SubtypeEvaluator<SymbolicFuncElement>(expr, context),
     mi_(),
-    spatialDerivs_(),
-    ones_(),
+    spatialDerivPtrs_(),
+    onePtrs_(),
+    paramValuePtrs_(),
     df_(dynamic_cast<const DiscreteFuncElement*>(expr->evalPt())),
+    p_(dynamic_cast<const Parameter*>(expr->evalPt())),
     stringReps_()
 {
   
@@ -72,6 +76,7 @@ SymbolicFuncElementEvaluator
                      "evaluation point=" << expr->toString()
                      << " that is neither zero nor a discrete "
                      "function.");
+
 
   static Array<string> coordNames;
   if (coordNames.size() != 3)
@@ -97,11 +102,16 @@ SymbolicFuncElementEvaluator
                              "spatial derivative of a zero function. All "
                              "such expressions should have been "
                              "automatically eliminated by this point.");
+          TEST_FOR_EXCEPTION(p_ != 0, InternalError,
+                             "SymbolicFuncElementEvaluator ctor detected a "
+                             "spatial derivative of a constant parameter. All "
+                             "such expressions should have been "
+                             "automatically eliminated by this point.");
 
           mi_.append(this->sparsity()->multiIndex(i));
           miSet.put(this->sparsity()->multiIndex(i));
           addVectorIndex(i, vectorCounter);
-          spatialDerivs_.append(vectorCounter++);
+          spatialDerivPtrs_.append(vectorCounter++);
           int dir = this->sparsity()->multiIndex(i).firstOrderDirection();
           string deriv = "D[" + df_->name() + ", " + coordNames[dir] + "]";
           stringReps_.append(deriv);
@@ -125,9 +135,18 @@ SymbolicFuncElementEvaluator
                              "zero-order derivative of a zero function. All "
                              "such expressions should have been "
                              "automatically eliminated by this point.");
-              /* value of zeroth functional deriv is a discrete function */
-              addVectorIndex(i, vectorCounter);
-              spatialDerivs_.append(vectorCounter++);
+              /* value of zeroth functional deriv is either 
+               * a discrete function or a parameter */
+              if (p_ == 0)
+                {
+                  addVectorIndex(i, vectorCounter);
+                  spatialDerivPtrs_.append(vectorCounter++);
+                }
+              else
+                {
+                  addConstantIndex(i, constantCounter);
+                  paramValuePtrs_.append(constantCounter++);
+                }
               mi_.append(MultiIndex());
               miSet.put(MultiIndex());
               stringReps_.append(df_->name());
@@ -136,16 +155,22 @@ SymbolicFuncElementEvaluator
             {
               /* value of first functional deriv is one */
               addConstantIndex(i, constantCounter);
-              ones_.append(constantCounter++);
+              onePtrs_.append(constantCounter++);
             }
         }
     }
 
-  if (df_ != 0)
+  if (p_==0 && df_ != 0)
     {
       SUNDANCE_VERB_MEDIUM(tabs << "setting up evaluation for discrete eval pt");
       df_->setupEval(context);
       dfEval_ = dynamic_cast<const DiscreteFuncElementEvaluator*>(df_->evaluator(context).get());
+    }
+  else if (p_ != 0)
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "setting up evaluation for parameter eval pt");
+      p_->setupEval(context);
+      pEval_ = dynamic_cast<const ConstantEvaluator*>(p_->evaluator(context).get());
     }
 }
 
@@ -170,11 +195,11 @@ void SymbolicFuncElementEvaluator
         }
     }
 
-  constantResults.resize(ones_.size());
-  vectorResults.resize(spatialDerivs_.size());
+  constantResults.resize(onePtrs_.size() + paramValuePtrs_.size());
+  vectorResults.resize(spatialDerivPtrs_.size());
 
   /* Evaluate discrete functions if necessary */
-  if (df_ != 0 && mi_.size() > 0)
+  if (p_==0 && df_ != 0 && mi_.size() > 0)
     {
       for (unsigned int i=0; i<mi_.size(); i++)
         {
@@ -187,11 +212,18 @@ void SymbolicFuncElementEvaluator
         }
       mgr.evalDiscreteFuncElement(df_, mi_, vectorResults);
     }
+  if (p_!=0 && mi_.size() > 0)
+    {
+      Array<RefCountPtr<EvalVector> > paramVectorResults;
+      Array<double> paramConstResults;
+      pEval_->eval(mgr, paramConstResults, paramVectorResults);
+      constantResults[paramValuePtrs_[0]] = paramConstResults[0];
+    }
 
   /* Set the known one entries to one */
-  for (unsigned int i=0; i<ones_.size(); i++)
+  for (unsigned int i=0; i<onePtrs_.size(); i++)
     {
-      constantResults[ones_[i]] = 1.0;
+      constantResults[onePtrs_[i]] = 1.0;
     }
   
 

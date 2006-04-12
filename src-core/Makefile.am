@@ -55,6 +55,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUnknownParameter.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.hpp 
 
@@ -68,6 +69,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUnknownParameter.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp 
 
 
@@ -87,6 +89,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceParameterData.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceProductExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceScalarExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceSparsitySubset.hpp \
@@ -102,6 +105,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceTestFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.hpp 
 
 SUNDANCE_INTERNALEXPRS = \
@@ -135,6 +139,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceTestFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp 
 
 SUNDANCE_EVALUATION_H = \

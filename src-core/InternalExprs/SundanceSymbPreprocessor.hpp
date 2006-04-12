@@ -80,6 +80,17 @@ namespace SundanceCore
                                       const EvalContext& region);
 
         /** */
+        static DerivSet setupSensitivities(const Expr& expr, 
+                                           const Expr& tests,
+                                           const Expr& unks,
+                                           const Expr& unkEvalPts,
+                                           const Expr& unkParams,
+                                           const Expr& unkParamEvalPts,
+                                           const Expr& fixedFields,
+                                           const Expr& fixedFieldEvalPts, 
+                                           const EvalContext& region);
+
+        /** */
         static DerivSet setupExpr(const Expr& expr, 
                                   const Expr& tests,
                                   const Expr& unks,

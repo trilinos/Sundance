@@ -70,6 +70,8 @@ int main(int argc, void** argv)
 
       /* Create differential operator and coordinate function */
       Expr dx = new Derivative(0);
+      Expr dy = new Derivative(1);
+      Expr grad = List(dx, dy);
       Expr x = new CoordExpr(0);
 
       /* Create a discrete space, and discretize the function 1.0+x on it */
@@ -82,7 +84,7 @@ int main(int argc, void** argv)
 
      
       /* Define the weak form */
-      Expr eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad);
+      Expr eqn = Integral(interior, u*u*u*(grad*v)*(grad*u), quad);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*(u-(x+1.0)), quad)
         + EssentialBC(rightPoint, v*(u-(x+1.0)), quad); 

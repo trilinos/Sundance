@@ -50,10 +50,6 @@ namespace SundanceCore
           virtual ~ZeroExpr() {;}
 
           /** */
-          virtual bool hasNonzeroDeriv(const MultipleDeriv& /* d */) const 
-          {return false;}
-          
-          /** */
           virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
         protected:
         private:

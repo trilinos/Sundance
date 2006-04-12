@@ -39,6 +39,7 @@
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceUnknownFuncElement.hpp"
+#include "SundanceUnknownParameterElement.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceTestFunctionStub.hpp"
 #include "SundanceFunctionalDeriv.hpp"
@@ -797,6 +798,252 @@ DerivSet SymbPreprocessor::setupFunctional(const Expr& expr,
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
                << " ************* Finding nonzeros for expr " << endl);
+  e->findNonzeros(region, multiIndices, activeFuncIDs, false);
+
+   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+                << " ************* Setting up evaluators for expr " << endl);
+  e->setupEval(region);
+
+  DerivSet derivs = e->sparsitySuperset(region)->derivSet();
+
+  return derivs;
+}
+
+
+
+
+
+
+
+DerivSet SymbPreprocessor::setupSensitivities(const Expr& expr, 
+                                              const Expr& tests,
+                                              const Expr& unks,
+                                              const Expr& unkEvalPts,
+                                              const Expr& unkParams,
+                                              const Expr& unkParamEvalPts,
+                                              const Expr& fixedFields,
+                                              const Expr& fixedFieldEvalPts, 
+                                              const EvalContext& region)
+{
+  TimeMonitor t(preprocTimer());
+  Tabs tab;
+
+  const EvaluatableExpr* e 
+    = dynamic_cast<const EvaluatableExpr*>(expr.ptr().get());
+
+  SUNDANCE_OUT(Evaluator::classVerbosity() > VerbSilent,
+               tab << "************ setting up sensitivity calculation with expr: " 
+               << expr 
+               << endl << tab << "computing sensitivities of " << unks
+               << endl << tab << "with respect to parameters " << unkParams
+               << endl << tab << "the eval point for the unks is" 
+               << unkEvalPts
+               << endl << tab << " and the eval point for the parameters is " 
+               << unkParamEvalPts);
+
+  TEST_FOR_EXCEPTION(e==0, InternalError,
+                     "Non-evaluatable expr " << expr.toString()
+                     << " given to SymbPreprocessor::setupExpr()");
+
+  /* make flat lists of variations, unknowns, and fixed fields */
+  Expr v = tests.flatten();
+  Expr u = unks.flatten();
+  Expr u0 = unkEvalPts.flatten();
+  Expr alpha = unkParams.flatten();
+  Expr alpha0 = unkParamEvalPts.flatten();
+  Expr f = fixedFields.flatten();
+  Expr f0 = fixedFieldEvalPts.flatten();
+  
+
+  SundanceUtils::Set<int> testID;
+  SundanceUtils::Set<int> unkID;
+  SundanceUtils::Set<int> paramID;
+  SundanceUtils::Set<int> fixedID;
+
+  SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
+
+  /* check the test functions for redundancies and non-test funcs */
+  for (unsigned int i=0; i<v.size(); i++)
+    {
+      const TestFuncElement* vPtr
+        = dynamic_cast<const TestFuncElement*>(v[i].ptr().get());
+      TEST_FOR_EXCEPTION(vPtr==0, RuntimeError, "list of purported test funcs "
+                         "contains a non-test function " << v[i].toString());
+      int fid = vPtr->funcID();
+      TEST_FOR_EXCEPTION(testID.contains(fid), RuntimeError,
+                         "duplicate test function in list "
+                         << tests.toString());
+      testID.put(fid);
+      vPtr->substituteZero();
+    }
+
+  
+
+  /* check the unk functions for redundancies and non-unk funcs */
+  for (unsigned int i=0; i<u.size(); i++)
+    {
+      const UnknownFuncElement* uPtr
+        = dynamic_cast<const UnknownFuncElement*>(u[i].ptr().get());
+      TEST_FOR_EXCEPTION(uPtr==0, RuntimeError,
+                         "list of purported unknown funcs "
+                         "contains a non-unknown function "
+                         << u[i].toString());
+      int fid = uPtr->funcID();
+      TEST_FOR_EXCEPTION(unkID.contains(fid), RuntimeError,
+                         "duplicate unknown function in list "
+                         << u.toString());
+      unkID.put(fid);
+      RefCountPtr<DiscreteFuncElement> u0Ptr
+        = rcp_dynamic_cast<DiscreteFuncElement>(u0[i].ptr());
+      RefCountPtr<ZeroExpr> u0ZeroPtr
+        = rcp_dynamic_cast<ZeroExpr>(u0[i].ptr());
+      TEST_FOR_EXCEPTION(u0Ptr.get()==NULL && u0ZeroPtr.get()==NULL,
+                         RuntimeError,
+                         "unknown evaluation point " << u0[i].toString()
+                         << " is neither a discrete function nor a zero expr");
+      if (u0Ptr.get()==NULL)
+        {
+          uPtr->substituteZero();
+        }
+      else
+        {
+          uPtr->substituteFunction(u0Ptr);
+        }
+    }
+
+  /* check the unk parameters for redundancies and non-unk funcs */
+  for (unsigned int i=0; i<alpha.size(); i++)
+    {
+      const UnknownParameterElement* aPtr
+        = dynamic_cast<const UnknownParameterElement*>(alpha[i].ptr().get());
+      TEST_FOR_EXCEPTION(aPtr==0, RuntimeError,
+                         "list of purported unknown parameters "
+                         "contains a function that is not an unknown parameter"
+                         << alpha[i].toString());
+      int fid = aPtr->funcID();
+      TEST_FOR_EXCEPTION(paramID.contains(fid), RuntimeError,
+                         "duplicate unknown parameter in list "
+                         << alpha.toString());
+      paramID.put(fid);
+      RefCountPtr<Parameter> a0Ptr
+        = rcp_dynamic_cast<Parameter>(alpha0[i].ptr());
+      TEST_FOR_EXCEPTION(a0Ptr.get()==NULL,
+                         RuntimeError,
+                         "parameter evaluation point " << alpha0[i].toString()
+                         << " is not a parameter");
+      aPtr->substituteFunction(a0Ptr);
+    }
+
+  /* check the fixed functions for redundancies and non-unk funcs */
+  for (unsigned int i=0; i<f.size(); i++)
+    {
+      const UnknownFuncElement* fPtr
+        = dynamic_cast<const UnknownFuncElement*>(f[i].ptr().get());
+      TEST_FOR_EXCEPTION(fPtr==0, RuntimeError,
+                         "list of purported fixed funcs "
+                         "contains a non-unknown function "
+                         << f[i].toString());
+      int fid = fPtr->funcID();
+      TEST_FOR_EXCEPTION(fixedID.contains(fid), RuntimeError,
+                         "duplicate unknown function in list "
+                         << f.toString());
+      fixedID.put(fid);
+      RefCountPtr<DiscreteFuncElement> f0Ptr
+        = rcp_dynamic_cast<DiscreteFuncElement>(f0[i].ptr());
+      RefCountPtr<ZeroExpr> f0ZeroPtr
+        = rcp_dynamic_cast<ZeroExpr>(f0[i].ptr());
+      TEST_FOR_EXCEPTION(f0Ptr.get()==NULL && f0ZeroPtr.get()==NULL,
+                         RuntimeError,
+                         "fixed-field evaluation point " 
+                         << f0[i].toString()
+                         << " is neither a discrete function nor a zero expr");
+      if (f0Ptr.get()==NULL)
+        {
+          fPtr->substituteZero();
+        }
+      else
+        {
+          fPtr->substituteFunction(f0Ptr);
+        }
+    }
+
+  /* Make sure there's no overlap between the test, unk, params, and fixed sets */
+  for (Set<int>::const_iterator i=testID.begin(); i != testID.end(); i++)
+    {
+      TEST_FOR_EXCEPTION(unkID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both unknown and test lists");
+      TEST_FOR_EXCEPTION(paramID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both test and param lists");
+      TEST_FOR_EXCEPTION(fixedID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both test and fixed lists");
+    }
+  for (Set<int>::const_iterator i=unkID.begin(); i != unkID.end(); i++)
+    {
+      TEST_FOR_EXCEPTION(fixedID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both unknown and fixed lists");
+      TEST_FOR_EXCEPTION(paramID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both unknown and param lists");
+    }
+  for (Set<int>::const_iterator i=fixedID.begin(); i != fixedID.end(); i++)
+    {
+      TEST_FOR_EXCEPTION(paramID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both param and fixed lists");
+    }
+  
+
+  /* put together the set of functions that are active differentiation
+   * variables */
+  for (Set<int>::const_iterator i=testID.begin(); i != testID.end(); i++)
+    {
+      MultiSet<int> testDeriv;
+      testDeriv.put(*i);
+      activeFuncIDs.put(testDeriv);
+      for (Set<int>::const_iterator j=unkID.begin(); j != unkID.end(); j++)
+        {
+          MultiSet<int> testUnkDeriv;
+          testUnkDeriv.put(*i);
+          testUnkDeriv.put(*j);
+          activeFuncIDs.put(testUnkDeriv);
+        }
+      for (Set<int>::const_iterator j=paramID.begin(); j != paramID.end(); j++)
+        {
+          MultiSet<int> testUnkDeriv;
+          testUnkDeriv.put(*i);
+          testUnkDeriv.put(*j);
+          activeFuncIDs.put(testUnkDeriv);
+        }
+    }
+
+  
+  
+
+  /* ----------------------------------------------------------
+   * set up the expression for evaluation 
+   * ----------------------------------------------------------
+   *
+   * In this step, we work out the sparsity structure of the expression's
+   * functional derivatives, and create evaluator objects. 
+   */
+
+
+  
+  Set<MultiIndex> multiIndices;
+  multiIndices.put(MultiIndex());
+
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+               << " ************* Finding nonzeros for expr " << endl);
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+               << " ************* Active funcs are " << activeFuncIDs << endl);
+  
   e->findNonzeros(region, multiIndices, activeFuncIDs, false);
 
    SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,

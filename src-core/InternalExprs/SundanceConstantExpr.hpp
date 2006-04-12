@@ -63,21 +63,12 @@ namespace SundanceCore
           /** */
           virtual bool isImmutable() const {return true;}
 
-          /**
-           * Indicate whether the given functional derivative is nonzero.
-           * A constant expression has a nonzero derivative only if the
-           * order of the derivative is zero. 
-           */
-          virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const
-          {return d.order()==0;}
-
-          /**
-           * Find all functions and their derivatives beneath my level
-           * in the tree. A constant expr has no functions beneath it,
-           * so this method does nothing.
-           */
-          virtual void getRoughDependencies(Set<Deriv>& /* funcs */) const {;}
-
+          
+          /** */
+          virtual void setValue(const double& value) {value_ = value;}
+          
+          /** */
+          virtual const double& value() const {return value_;}
           
 
 
@@ -85,6 +76,7 @@ namespace SundanceCore
           virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
         protected:
         private:
+          double value_;
         };
     }
 }

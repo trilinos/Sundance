@@ -33,9 +33,10 @@
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceFuncElementBase.hpp"
+#include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
 #include "SundanceLeafExpr.hpp"
+#include "SundanceParameterData.hpp"
 
 
 namespace SundanceCore
@@ -57,7 +58,7 @@ namespace SundanceCore
    * When a constant's value may need to be changed, use a Parameter rather
    * than a simple double.
    */
-  class Parameter : public Internal::FuncElementBase,
+  class Parameter : public Internal::DiscreteFuncElement,
                     public Internal::SpatiallyConstantExpr
   {
   public:
@@ -70,23 +71,35 @@ namespace SundanceCore
     /** */
     virtual XMLObject toXML() const ;
 
+    /** */
+    virtual const double& value() const ;
+    
+    /** */
+    virtual void setValue(const double& value) ;
+
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 
-    /**
-     * Indicate whether the given functional derivative is nonzero.
-     * A constant expression has a nonzero derivative only if the
-     * order of the derivative is zero. 
-     */
-    virtual bool hasNonzeroDeriv(const MultipleDeriv& d) const
-    {return d.order()==0;}
 
-    /**
-     * Find all functions and their derivatives beneath my level
-     * in the tree. A constant expr has no functions beneath it,
-     * so this method does nothing.
+    /** 
+     * Determine which functional and spatial derivatives are nonzero in the
+     * given context. We also keep track of which derivatives
+     * are known to be constant, which can simplify evaluation. 
      */
-    virtual void getRoughDependencies(Set<Deriv>& /* funcs */) const {;}
+    virtual void findNonzeros(const EvalContext& context,
+                              const Set<MultiIndex>& multiIndices,
+                              const Set<MultiSet<int> >& activeFuncIDs,
+                              bool regardFuncsAsConstant) const ;
+
+    /** */
+    virtual Set<MultipleDeriv> 
+    internalFindW(int order, const EvalContext& context) const ;
+
+
+    /** */
+    virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+                                       const EvalContext& context) const ;
+    
 
     /** Write self in text form */
     virtual ostream& toText(ostream& os, bool paren) const 
@@ -95,7 +108,15 @@ namespace SundanceCore
     /** */
     virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
 
+  protected:
+    /** */
+    const Internal::ParameterData* data() const ;
+
+    /** */
+    Internal::ParameterData* data();
+
 #endif /* DOXYGEN_DEVELOPER_ONLY */
+
   };
 }
 #endif

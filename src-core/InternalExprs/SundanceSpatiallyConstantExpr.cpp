@@ -38,8 +38,8 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-SpatiallyConstantExpr::SpatiallyConstantExpr(const double& value)
-	: EvaluatableExpr(), value_(value)
+SpatiallyConstantExpr::SpatiallyConstantExpr()
+	: EvaluatableExpr()
 {
   for (int d=0; d<MultiIndex::maxDim(); d++) 
     {

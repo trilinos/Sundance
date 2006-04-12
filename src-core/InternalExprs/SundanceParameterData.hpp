@@ -28,57 +28,46 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SPATIALLYCONSTANTEXPR_H
-#define SUNDANCE_SPATIALLYCONSTANTEXPR_H
+#ifndef SUNDANCE_PARAMETERDATA_H
+#define SUNDANCE_PARAMETERDATA_H
 
-#include "SundanceLeafExpr.hpp"
-#include "SundanceConstantEvaluator.hpp"
+
+#include "SundanceDefs.hpp"
 #include "SundanceDiscreteFuncDataStub.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
+
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
   namespace Internal
+  {
+    /** 
+     * ParameterData is the specialization of DiscreteFuncDataStub to the
+     * case of a constant-valued discrete function. It is used
+     * as the discrete value of an unknown parameter expression.
+     */
+    class ParameterData : public DiscreteFuncDataStub 
     {
+    public:
       /** */
-      class SpatiallyConstantExpr : public virtual LeafExpr,
-                                    public GenericEvaluatorFactory<SpatiallyConstantExpr, ConstantEvaluator>
-        {
-        public:
-          /** */
-          SpatiallyConstantExpr() ;
+      ParameterData(const double& value)
+        : DiscreteFuncDataStub(), value_(value) {;}
 
-          /** */
-          virtual ~SpatiallyConstantExpr(){;}
+      /** */
+      virtual ~ParameterData(){;}
 
-          /** */
-          virtual const double& value() const = 0;
+      /** */
+      void setValue(const double& value) {value_ = value;}
 
-          /** */
-          virtual void setValue(const double& value) = 0 ;
+      /** */
+      const double& value() const {return value_;}
 
-          /** */
-          virtual bool isConstant() const {return true;}
-
-          /** 
-           * Determine which functional and spatial derivatives are nonzero in the
-           * given context. We also keep track of which derivatives
-           * are known to be constant, which can simplify evaluation. 
-           */
-          virtual void findNonzeros(const EvalContext& context,
-                                    const Set<MultiIndex>& multiIndices,
-                                    const Set<MultiSet<int> >& activeFuncIDs,
-                                    bool regardFuncsAsConstant) const ;
-          /** */
-          virtual Set<MultipleDeriv> 
-          internalFindW(int order, const EvalContext& context) const ;
-          
-        private:
-        };
-    }
+    private:
+      double value_;
+    };
+  }
 }
 
 

@@ -48,7 +48,7 @@ namespace SundanceCore
      * multiple components of an unknown function. Such data
      * is framework-dependent, and might be something like a basis function.
      */
-    class UnknownFuncDataStub : public CommonFuncDataStub
+    class UnknownFuncDataStub : virtual public CommonFuncDataStub
     {
     public:
       /** */

@@ -49,7 +49,7 @@ namespace SundanceCore
      * is framework-dependent, and might be something like a basis function
      * or a vector of values.
      */
-    class DiscreteFuncDataStub : public CommonFuncDataStub
+    class DiscreteFuncDataStub : virtual public CommonFuncDataStub
     {
     public:
       /** */

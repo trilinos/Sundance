@@ -40,10 +40,14 @@
 
 namespace SundanceCore 
 {
+  class Parameter;
+
   namespace Internal 
   {
     class DiscreteFuncElementEvaluator; 
     class SymbolicFuncElement;
+    class ConstantEvaluator; 
+
     /** 
      *
      */
@@ -68,13 +72,18 @@ namespace SundanceCore
 
       /** */
       const DiscreteFuncElementEvaluator* dfEval() const {return dfEval_;}
+      /** */
+      const ConstantEvaluator* pEval() const {return pEval_;}
 
     private:
       Array<MultiIndex> mi_;
-      Array<int> spatialDerivs_;
-      Array<int> ones_;
+      Array<int> spatialDerivPtrs_;
+      Array<int> onePtrs_;
+      Array<int> paramValuePtrs_;
       const DiscreteFuncElement* df_;
+      const Parameter* p_;
       const DiscreteFuncElementEvaluator* dfEval_;
+      const ConstantEvaluator* pEval_;
       Array<string> stringReps_;
     };
 
