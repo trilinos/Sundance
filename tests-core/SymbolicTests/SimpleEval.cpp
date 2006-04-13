@@ -61,14 +61,18 @@ void doit(const Expr& e,
 
   mgr.setMediator(mediator);
 
+  Expr params;
+
   const EvaluatableExpr* ev 
     = dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get());
 
-  DerivSet d = SymbPreprocessor::setupExpr(e[0], 
-                                           tests,
-                                           unks,
-                                           u0,
-                                           region);
+  DerivSet d = SymbPreprocessor::setupFwdProblem(e[0], 
+                                                 tests,
+                                                 unks,
+                                                 u0,
+                                                 params,
+                                                 params,
+                                                 region);
 
   Tabs tab;
   cerr << tab << *ev->sparsitySuperset(region) << endl;

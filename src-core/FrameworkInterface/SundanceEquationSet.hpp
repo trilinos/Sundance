@@ -57,7 +57,8 @@ namespace SundanceCore
      *
      */
     enum ComputationType {MatrixAndVector, VectorOnly, 
-                          FunctionalOnly, FunctionalAndGradient};
+                          FunctionalOnly, FunctionalAndGradient,
+                          Sensitivities};
     /** 
      * EquationSet is an object in which the symbolic specification 
      * of a problem, its BCs, its test and unknown functions, and the
@@ -85,12 +86,17 @@ namespace SundanceCore
                   const Array<Expr>& fields,
                   const Array<Expr>& fieldValues);
 
-      /** Set up equations written in weak form with test functions */
+      /** Set up equations written in weak form with test functions. If
+       * unk params are present, sensitivity equations will be set up as
+       * well. */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
                   const Array<Expr>& vars, 
                   const Array<Expr>& unks,
-                  const Array<Expr>& unkLinearizationPts);
+                  const Array<Expr>& unkLinearizationPts,
+                  const Expr& unkParams,
+                  const Expr& unkParamEvalPts);
+
 
       /* Set up calculation of a functional and its derivative wrt a 
        * set of variational functions */
@@ -130,6 +136,9 @@ namespace SundanceCore
       /** Returns the number of unknown function blocks */
       unsigned int numUnkBlocks() const {return unkFuncs_.size();}
 
+      /** Returns the number of unknown parameters */
+      unsigned int numUnkParams() const {return unkParams_.size();}
+
       /** Returns the number of variational functions in this block */
       unsigned int numVars(int block) const {return varFuncs_[block].size();}
 
@@ -141,6 +150,9 @@ namespace SundanceCore
 
       /** Returns the i-th unknown function in block b */
       const Expr& unkFunc(int b, int i) const {return unkFuncs_[b][i];}
+
+      /** Returns the i-th unknown parameter */
+      const Expr& unkParam(int i) const {return unkParams_[i];}
 
       /** Returns the variational functions that appear explicitly
        * on the d-th region */
@@ -174,6 +186,11 @@ namespace SundanceCore
       bool hasUnkID(int fid) const 
       {return unkIDToBlockMap_.containsKey(fid);}
 
+      /** Determine whether a given func ID is listed as a unk parameter 
+       * in this equation set */
+      bool hasUnkParamID(int fid) const 
+      {return unkParamIDToReducedUnkParamIDMap_.containsKey(fid);}
+
       /** get the block number for the given variational ID */
       int blockForVarID(int varID) const ;
 
@@ -186,11 +203,17 @@ namespace SundanceCore
       /** get the reduced ID for the given unk ID */
       int reducedUnkID(int unkID) const ;
 
+      /** get the reduced ID for the given unk parameter ID */
+      int reducedUnkParamID(int unkID) const ;
+
       /** get the unreduced variational ID for the given reduced ID */
       int unreducedVarID(int block, int reducedVarID) const ;
 
       /** get the unreduced unknown ID for the given reduced ID */
       int unreducedUnkID(int block, int reducedUnkID) const ;
+
+      /** get the unreduced unknown param ID for the given reduced ID */
+      int unreducedUnkParamID(int reducedUnkParamID) const ;
       //@}
 
 
@@ -199,6 +222,9 @@ namespace SundanceCore
 
       /** */
       bool isFunctionalCalculator() const {return isFunctionalCalculator_;}
+
+      /** */
+      bool isSensitivityCalculator() const {return isSensitivityProblem_;}
       
 
       /** Returns the list of distinct subregion-quadrature combinations
@@ -281,6 +307,8 @@ namespace SundanceCore
                 const Array<Expr>& varLinearizationPts,
                 const Array<Expr>& unks,
                 const Array<Expr>& unkLinearizationPts,
+                const Expr& unkParams,
+                const Expr& unkParamEvalPts,
                 const Array<Expr>& fixedFields,
                 const Array<Expr>& fixedFieldValues);
 
@@ -357,6 +385,12 @@ namespace SundanceCore
        * are linearized */
       Array<Expr> unkLinearizationPts_;
 
+      /** unknown parameters for this equation set */
+      Expr unkParams_;
+
+      /** unknown parameter evaluation points for this equation set */
+      Expr unkParamEvalPts_;
+
       /** map from variational function funcID to that function's
        * position in list of var functions */
       Array<Map<int, int> > varIDToReducedIDMap_;
@@ -364,6 +398,10 @@ namespace SundanceCore
       /** map from unknown function funcID to that function's
        * position in list of unk functions */
       Array<Map<int, int> > unkIDToReducedIDMap_;
+
+      /** map from unknown function funcID to that function's
+       * position in list of unk functions */
+      Map<int, int> unkParamIDToReducedUnkParamIDMap_;
 
       /** map from variational function funcID to that function's
        * position in list of var blocks */
@@ -379,7 +417,10 @@ namespace SundanceCore
       /** Map from (block, unreduced unk ID) to reduced ID */
       Array<Array<int> > reducedUnkID_;
 
-      /** Set of the computation types supported her */
+      /** Map from unreduced unk ID to reduced ID */
+      Array<int> reducedUnkParamID_;
+
+      /** Set of the computation types supported here */
       Set<ComputationType> compTypes_;
 
       
@@ -393,6 +434,10 @@ namespace SundanceCore
       /** Flag indicating whether this equation set is a functional
        * calculator */
       bool isFunctionalCalculator_;
+      
+      /** Flag indicating whether this equation set is 
+       * a sensitivity problem */
+      bool isSensitivityProblem_;
 
     };
   }

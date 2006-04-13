@@ -40,7 +40,7 @@ int main(int argc, void** argv)
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
 
       mesher.ptr()->verbosity() = VerbExtreme;
-      mesher.serializeLocal();
+
 
       Mesh mesh = mesher.getMesh();
 

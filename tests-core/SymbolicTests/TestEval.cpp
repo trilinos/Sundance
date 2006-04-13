@@ -354,11 +354,11 @@ int main(int argc, void** argv)
 
       TESTER(sin(u)/u, sin(U)/U);
 
-      TESTER(sin(cos(u)), sin((cos(U))));
+      //TESTER(sin(cos(u)), sin((cos(U))));
 
       //#endif
       //TESTER((dx*u), (Dx*U));
-      TESTER((dx*sin(u)), (Dx*(sin(U))));
+      //    TESTER((dx*sin(u)), (Dx*(sin(U))));
 
       //#ifdef BLARF
 

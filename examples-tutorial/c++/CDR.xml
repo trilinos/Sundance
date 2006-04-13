@@ -39,12 +39,12 @@
   <!-- (3) npx times npy must equal the number of processors                        -->
 <ParameterList name="Mesh">
   <Parameter name="type" type="string" value="Rectangle"/>
-  <Parameter name="nx" type="int" value="32"/>
-  <Parameter name="npx" type="int" value="2"/>
+  <Parameter name="nx" type="int" value="16"/>
+  <Parameter name="npx" type="int" value="4"/>
   <Parameter name="ax" type="double" value="0.0"/>
   <Parameter name="bx" type="double" value="1.0"/>
-  <Parameter name="ny" type="int" value="32"/>
-  <Parameter name="npy" type="int" value="2"/>
+  <Parameter name="ny" type="int" value="16"/>
+  <Parameter name="npy" type="int" value="4"/>
   <Parameter name="ay" type="double" value="0.0"/>
   <Parameter name="by" type="double" value="1.0"/>
 </ParameterList>
@@ -90,7 +90,7 @@
         <Parameter name="Subdomain Solver" type="string" value="ILU"/>
         <Parameter name="Tolerance" type="double" value="1e-8"/>
         <Parameter name="Type" type="string" value="Aztec"/>
-        <Parameter name="Verbosity" type="int" value="1"/>
+        <Parameter name="Verbosity" type="int" value="0"/>
       </ParameterList>
 
    </ParameterList>

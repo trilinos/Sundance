@@ -71,6 +71,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
 {
   Expr u = unk.flatten();
   Expr v = test.flatten();
+  Expr alpha;
+  Expr alpha0;
   Array<Expr> zero(u.size());
   for (unsigned int i=0; i<u.size(); i++) 
     {
@@ -81,10 +83,47 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr u0 = new ListExpr(zero);
   
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0)));
+    = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
+                          alpha, alpha0));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
 }
+
+
+LinearProblem::LinearProblem(const Mesh& mesh, 
+                             const Expr& eqn, 
+                             const Expr& bc,
+                             const Expr& test, 
+                             const Expr& unk, 
+                             const Expr& unkParams, 
+                             const Expr& unkParamVals, 
+                             const VectorType<double>& vecType)
+  : assembler_(),
+    A_(),
+    rhs_(),
+    status_()
+{
+  Expr u = unk.flatten();
+  Expr v = test.flatten();
+  Expr alpha = unkParams.flatten();
+  Expr alpha0 = unkParamVals.flatten();
+  Array<Expr> zero(u.size());
+  for (unsigned int i=0; i<u.size(); i++) 
+    {
+      Expr z = new ZeroExpr();
+      zero[i] = z;
+    }
+
+  Expr u0 = new ListExpr(zero);
+  
+  RefCountPtr<EquationSet> eqnSet 
+    = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
+                          alpha, alpha0));
+
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
+}
+
+
 
 LinearProblem::LinearProblem(const Mesh& mesh, 
                              const Expr& eqn, 
@@ -99,6 +138,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
   Array<Expr> u0(unk.size());
+  Expr alpha;
+  Expr alpha0;
   Array<VectorType<double> > testVecType(test.size());
   Array<VectorType<double> > unkVecType(unk.size());
 
@@ -122,7 +163,55 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     }
   
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, v, u, u0));
+    = rcp(new EquationSet(eqn, bc, v, u, u0,
+                          alpha, alpha0));
+
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType));
+}
+
+
+LinearProblem::LinearProblem(const Mesh& mesh, 
+                             const Expr& eqn, 
+                             const Expr& bc,
+                             const BlockArray& test, 
+                             const BlockArray& unk,
+                             const Expr& unkParams, 
+                             const Expr& unkParamVals)
+  : assembler_(),
+    A_(),
+    rhs_(),
+    status_()
+{
+  Array<Expr> v(test.size());  
+  Array<Expr> u(unk.size());
+  Array<Expr> u0(unk.size());
+  Expr alpha = unkParams.flatten();
+  Expr alpha0 = unkParamVals.flatten();
+  Array<VectorType<double> > testVecType(test.size());
+  Array<VectorType<double> > unkVecType(unk.size());
+
+  for (unsigned int i=0; i<test.size(); i++)
+    {
+      v[i] = test[i].expr().flatten();
+      testVecType[i] = test[i].vecType();
+    }
+
+  for (unsigned int i=0; i<unk.size(); i++)
+    {
+      u[i] = unk[i].expr().flatten();
+      unkVecType[i] = unk[i].vecType();
+      Array<Expr> zero(u[i].size());
+      for (unsigned int j=0; j<u[i].size(); j++) 
+        {
+          Expr z = new ZeroExpr();
+          zero[j] = z;
+        }
+      u0[i] = new ListExpr(zero);
+    }
+  
+  RefCountPtr<EquationSet> eqnSet 
+    = rcp(new EquationSet(eqn, bc, v, u, u0,
+                          alpha, alpha0));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType));
 }

@@ -88,11 +88,13 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   return derivs;
 }
 
-DerivSet SymbPreprocessor::setupExpr(const Expr& expr, 
-                                     const Expr& tests,
-                                     const Expr& unks,
-                                     const Expr& evalPts, 
-                                     const EvalContext& region)
+DerivSet SymbPreprocessor::setupFwdProblem(const Expr& expr, 
+                                           const Expr& tests,
+                                           const Expr& unks,
+                                           const Expr& evalPts, 
+                                           const Expr& unkParams,
+                                           const Expr& unkParamEvalPts,
+                                           const EvalContext& region)
 {
   TimeMonitor t(preprocTimer());
   Tabs tab;
@@ -121,6 +123,8 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
   Expr v = tests.flatten();
   Expr u = unks.flatten();
   Expr u0 = evalPts.flatten();
+  Expr alpha = unkParams.flatten();
+  Expr alpha0 = unkParamEvalPts.flatten();
 
   TEST_FOR_EXCEPTION(u.size() != u0.size(), RuntimeError,
                      "mismatched sizes of unknown list and evaluation points: "
@@ -129,6 +133,7 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
 
   SundanceUtils::Set<int> testID;
   SundanceUtils::Set<int> unkID;
+  SundanceUtils::Set<int> paramID;
 
   SundanceUtils::Set<MultiSet<int> > activeFuncIDs;
 
@@ -180,6 +185,30 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
         }
     }
 
+
+  /* check the unk parameters for redundancies and non-unk funcs */
+  for (unsigned int i=0; i<alpha.size(); i++)
+    {
+      const UnknownParameterElement* aPtr
+        = dynamic_cast<const UnknownParameterElement*>(alpha[i].ptr().get());
+      TEST_FOR_EXCEPTION(aPtr==0, RuntimeError,
+                         "list of purported unknown parameters "
+                         "contains a function that is not an unknown parameter"
+                         << alpha[i].toString());
+      int fid = aPtr->funcID();
+      TEST_FOR_EXCEPTION(paramID.contains(fid), RuntimeError,
+                         "duplicate unknown parameter in list "
+                         << alpha.toString());
+      paramID.put(fid);
+      RefCountPtr<Parameter> a0Ptr
+        = rcp_dynamic_cast<Parameter>(alpha0[i].ptr());
+      TEST_FOR_EXCEPTION(a0Ptr.get()==NULL,
+                         RuntimeError,
+                         "parameter evaluation point " << alpha0[i].toString()
+                         << " is not a parameter");
+      aPtr->substituteFunction(a0Ptr);
+    }
+
   for (Set<int>::const_iterator i=testID.begin(); i != testID.end(); i++)
     {
       MultiSet<int> testDeriv;
@@ -195,6 +224,23 @@ DerivSet SymbPreprocessor::setupExpr(const Expr& expr,
     }
 
   
+
+  /* Make sure there's no overlap between the test, unk, and params sets */
+  for (Set<int>::const_iterator i=testID.begin(); i != testID.end(); i++)
+    {
+      TEST_FOR_EXCEPTION(unkID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both unknown and test lists");
+      TEST_FOR_EXCEPTION(paramID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both test and param lists");
+    }
+  for (Set<int>::const_iterator i=unkID.begin(); i != unkID.end(); i++)
+    {
+      TEST_FOR_EXCEPTION(paramID.contains(*i), RuntimeError,
+                         "Function with ID=" << *i << " appears in "
+                         "both unknown and param lists");
+    }
   
 
   /* ----------------------------------------------------------
@@ -1003,8 +1049,6 @@ DerivSet SymbPreprocessor::setupSensitivities(const Expr& expr,
   for (Set<int>::const_iterator i=testID.begin(); i != testID.end(); i++)
     {
       MultiSet<int> testDeriv;
-      testDeriv.put(*i);
-      activeFuncIDs.put(testDeriv);
       for (Set<int>::const_iterator j=unkID.begin(); j != unkID.end(); j++)
         {
           MultiSet<int> testUnkDeriv;

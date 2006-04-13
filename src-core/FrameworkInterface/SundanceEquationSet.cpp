@@ -31,6 +31,7 @@
 #include "SundanceEquationSet.hpp"
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceUnknownFuncElement.hpp"
+#include "SundanceUnknownParameterElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceExceptions.hpp"
@@ -67,14 +68,18 @@ EquationSet::EquationSet(const Expr& eqns,
     varFuncs_(),
     unkFuncs_(),
     unkLinearizationPts_(),
+    unkParams_(),
+    unkParamEvalPts_(),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
-    isFunctionalCalculator_(true)
+    isFunctionalCalculator_(true),
+    isSensitivityProblem_(false)
 {
   Array<Expr> unks;
   Array<Expr> unkEvalPt;
@@ -94,6 +99,7 @@ EquationSet::EquationSet(const Expr& eqns,
 
   init(eqns, bcs, vars, varEvalPt,
        unks, unkEvalPt,
+       unkParams_, unkParamEvalPts_,
        fields, fieldValues);
 }
 
@@ -101,7 +107,9 @@ EquationSet::EquationSet(const Expr& eqns,
                          const Expr& bcs,
                          const Array<Expr>& vars, 
                          const Array<Expr>& unks,
-                         const Array<Expr>& unkLinearizationPts)
+                         const Array<Expr>& unkLinearizationPts,
+                         const Expr& unkParams,
+                         const Expr& unkParamEvalPts)
   : regions_(),
     varsOnRegions_(),
     unksOnRegions_(),
@@ -120,19 +128,24 @@ EquationSet::EquationSet(const Expr& eqns,
     varFuncs_(vars),
     unkFuncs_(unks),
     unkLinearizationPts_(unkLinearizationPts),
+    unkParams_(unkParams),
+    unkParamEvalPts_(unkParamEvalPts),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(false),
-    isFunctionalCalculator_(false)
+    isFunctionalCalculator_(false),
+    isSensitivityProblem_(unkParams.size() > 0)
 {
   Array<Expr> fixed;
 
   compTypes_.put(MatrixAndVector);
   compTypes_.put(VectorOnly);
+
 
   rqcToContext_.put(MatrixAndVector, Map<RegionQuadCombo, EvalContext>());
   bcRqcToContext_.put(MatrixAndVector, Map<RegionQuadCombo, EvalContext>());
@@ -150,9 +163,20 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadComboNonzeroDerivs_.put(VectorOnly, 
                                       Map<RegionQuadCombo, DerivSet>());
 
+  if (unkParams.size() > 0) 
+    {
+      compTypes_.put(Sensitivities);
+      rqcToContext_.put(Sensitivities, Map<RegionQuadCombo, EvalContext>());
+      bcRqcToContext_.put(Sensitivities, Map<RegionQuadCombo, EvalContext>());
+      regionQuadComboNonzeroDerivs_.put(Sensitivities, 
+                                        Map<RegionQuadCombo, DerivSet>());
+      bcRegionQuadComboNonzeroDerivs_.put(Sensitivities, 
+                                          Map<RegionQuadCombo, DerivSet>());
+    }
 
   init(eqns, bcs, vars, fixed,
        unks, unkLinearizationPts,
+       unkParams_, unkParamEvalPts_,
        fixed, fixed);
 }
 
@@ -183,14 +207,18 @@ EquationSet::EquationSet(const Expr& eqns,
     varFuncs_(vars),
     unkFuncs_(unks),
     unkLinearizationPts_(unkLinearizationPts),
+    unkParams_(),
+    unkParamEvalPts_(),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
-    isFunctionalCalculator_(false)
+    isFunctionalCalculator_(false),
+    isSensitivityProblem_(false)
 {
 
   compTypes_.put(MatrixAndVector);
@@ -214,6 +242,7 @@ EquationSet::EquationSet(const Expr& eqns,
 
   init(eqns, bcs, vars, varLinearizationPts, 
        unks, unkLinearizationPts,
+       unkParams_, unkParamEvalPts_,
        fixedFields, fixedFieldValues);
 }
 
@@ -241,14 +270,18 @@ EquationSet::EquationSet(const Expr& eqns,
     varFuncs_(vars),
     unkFuncs_(),
     unkLinearizationPts_(),
+    unkParams_(),
+    unkParamEvalPts_(),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
+    unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
-    isFunctionalCalculator_(true)
+    isFunctionalCalculator_(true),
+    isSensitivityProblem_(false)
 {
   compTypes_.put(FunctionalOnly);
   compTypes_.put(FunctionalAndGradient);
@@ -271,6 +304,7 @@ EquationSet::EquationSet(const Expr& eqns,
 
   init(eqns, bcs, vars, varLinearizationPts, 
        unkFuncs_, unkLinearizationPts_,
+       unkParams_, unkParamEvalPts_,       
        fixedFields, fixedFieldValues);
 }
 
@@ -283,6 +317,8 @@ void EquationSet::init(const Expr& eqns,
                        const Array<Expr>& varLinearizationPts,
                        const Array<Expr>& unks,
                        const Array<Expr>& unkLinearizationPts,
+                       const Expr& unkParams,
+                       const Expr& unkParamEvalPts,
                        const Array<Expr>& fixedFields,
                        const Array<Expr>& fixedFieldValues)
 {
@@ -346,6 +382,7 @@ void EquationSet::init(const Expr& eqns,
    * position in the input function lists */
   Set<int> varFuncSet;
   Set<int> unkFuncSet;
+  Set<int> unkParamSet;
   varIDToReducedIDMap_.resize(vars.size());
   for (unsigned int b=0; b<vars.size(); b++)
     {
@@ -365,6 +402,7 @@ void EquationSet::init(const Expr& eqns,
                      "no unks passed to an equation set that is not "
                      "a gradient calculator");
 
+  /* set up func ID maps for unks */
   unkIDToReducedIDMap_.resize(unks.size());
   for (unsigned int b=0; b<unks.size(); b++)
     {
@@ -381,6 +419,20 @@ void EquationSet::init(const Expr& eqns,
           unkIDToBlockMap_.put(fid, b);
           unkIDToReducedIDMap_[b].put(fid, i);
         }
+    }
+
+  /* set up func ID maps for unk parameters */
+  for (unsigned int i=0; i<unkParams.size(); i++)
+    {
+      const UnknownParameterElement* u 
+        = dynamic_cast<const UnknownParameterElement*>(unkParams[i].ptr().get());
+      TEST_FOR_EXCEPTION(u==0, RuntimeError, 
+                         "EquationSet ctor input unk parameter "
+                         << unkParams[i] 
+                         << " does not appear to be a unk parameter");
+      int fid = u->funcID();
+      unkParamSet.put(fid);
+      unkParamIDToReducedUnkParamIDMap_.put(fid, i);
     }
 
 
@@ -415,6 +467,7 @@ void EquationSet::init(const Expr& eqns,
   Set<RegionQuadCombo> rqcBCSet;
 
   Array<int> contextID = tuple(EvalContext::nextID(),
+                               EvalContext::nextID(),
                                EvalContext::nextID(),
                                EvalContext::nextID(),
                                EvalContext::nextID());
@@ -466,10 +519,12 @@ void EquationSet::init(const Expr& eqns,
               else
                 {
                   nonzeros = SymbPreprocessor
-                    ::setupExpr(term, toList(vars), 
-                                toList(unks), 
-                                toList(unkLinearizationPts),
-                                context);
+                    ::setupFwdProblem(term, toList(vars), 
+                                      toList(unks), 
+                                      toList(unkLinearizationPts),
+                                      unkParams, 
+                                      unkParamEvalPts,
+                                      context);
                 }
               addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
                                nonzeros, false);
@@ -496,13 +551,32 @@ void EquationSet::init(const Expr& eqns,
               else
                 {
                   nonzeros = SymbPreprocessor
-                    ::setupExpr(term, toList(vars), 
-                                toList(unks), 
-                                toList(unkLinearizationPts),
-                                context);
+                    ::setupFwdProblem(term, toList(vars), 
+                                      toList(unks), 
+                                      toList(unkLinearizationPts),
+                                      unkParams, 
+                                      unkParamEvalPts,
+                                      context);
                 }
               rqcToContext_[VectorOnly].put(rqc, context);
               regionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
+            }
+          /* prepare calculation of sensitivities */
+          if (compTypes_.contains(Sensitivities))
+            {
+              EvalContext context(rqc, 2, contextID[4]);
+              DerivSet nonzeros;
+              nonzeros = SymbPreprocessor
+                ::setupSensitivities(term, toList(vars), 
+                                     toList(unks), 
+                                     toList(unkLinearizationPts),
+                                     unkParams, 
+                                     unkParamEvalPts,
+                                     toList(fixedFields),
+                                     toList(fixedFieldValues),
+                                     context);
+              rqcToContext_[Sensitivities].put(rqc, context);
+              regionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
             }
           /* prepare calculation of functional value only */
           if (compTypes_.contains(FunctionalOnly))
@@ -651,9 +725,11 @@ void EquationSet::init(const Expr& eqns,
                   else
                     {
                       nonzeros = SymbPreprocessor
-                        ::setupExpr(term, toList(vars), toList(unks), 
-                                    toList(unkLinearizationPts),
-                                    context);
+                        ::setupFwdProblem(term, toList(vars), toList(unks), 
+                                          toList(unkLinearizationPts),
+                                          unkParams, 
+                                          unkParamEvalPts,
+                                          context);
                     }
                   addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
                                    nonzeros, true);
@@ -680,12 +756,31 @@ void EquationSet::init(const Expr& eqns,
                   else
                     {
                       nonzeros = SymbPreprocessor
-                        ::setupExpr(term, toList(vars), toList(unks), 
-                                    toList(unkLinearizationPts),
-                                    context);
+                        ::setupFwdProblem(term, toList(vars), toList(unks), 
+                                          toList(unkLinearizationPts),
+                                          unkParams, 
+                                          unkParamEvalPts,
+                                          context);
                     }
                   bcRqcToContext_[VectorOnly].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
+                }
+              /* prepare calculation of sensitivities */
+              if (compTypes_.contains(Sensitivities))
+                {
+                  EvalContext context(rqc, 2, contextID[4]);
+                  DerivSet nonzeros;
+                  nonzeros = SymbPreprocessor
+                    ::setupSensitivities(term, toList(vars), 
+                                         toList(unks), 
+                                         toList(unkLinearizationPts),
+                                         unkParams, 
+                                         unkParamEvalPts,
+                                         toList(fixedFields),
+                                         toList(fixedFieldValues),
+                                         context);
+                  bcRqcToContext_[Sensitivities].put(rqc, context);
+                  bcRegionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
                 }
               /* prepare calculation of functional value only */
               if (compTypes_.contains(FunctionalOnly))
@@ -936,6 +1031,15 @@ int EquationSet::reducedUnkID(int unkID) const
 
   int b = blockForUnkID(unkID);
   return unkIDToReducedIDMap_[b].get(unkID);
+}
+
+
+int EquationSet::reducedUnkParamID(int unkID) const 
+{
+  TEST_FOR_EXCEPTION(!hasUnkParamID(unkID), RuntimeError, 
+                     "unkParamID " << unkID << " not found in equation set");
+
+  return unkParamIDToReducedUnkParamIDMap_.get(unkID);
 }
 
 

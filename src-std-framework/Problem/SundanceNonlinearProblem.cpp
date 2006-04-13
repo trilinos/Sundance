@@ -68,8 +68,41 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     discreteU0_(0)
     
 {
+  Expr params;
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0)));
+    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), params, params));
+
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
+
+  discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
+
+  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+                     "null discrete function pointer in "
+                     "NonlinearProblem ctor");
+
+  VectorSpace<double> domain = assembler_->solnVecSpace();
+  VectorSpace<double> range = assembler_->rowVecSpace();
+
+  setDomainAndRange(domain, range);
+}
+
+NonlinearProblem::NonlinearProblem(const Mesh& mesh, 
+                                   const Expr& eqn, 
+                                   const Expr& bc,
+                                   const Expr& test, 
+                                   const Expr& unk, 
+                                   const Expr& u0, 
+                                   const Expr& params, 
+                                   const Expr& paramVals,  
+                                   const VectorType<double>& vecType)
+  : NonlinearOperatorBase<double>(),
+    assembler_(),
+    u0_(u0),
+    discreteU0_(0)
+    
+{
+  RefCountPtr<EquationSet> eqnSet 
+    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), params, paramVals));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
 

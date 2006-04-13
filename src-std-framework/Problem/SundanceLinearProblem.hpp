@@ -72,6 +72,18 @@ namespace SundanceStdFwk
     /** Construct with a mesh, equation set, bcs, and blocks of variables */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
                   const BlockArray& test, const BlockArray& unk);
+    
+    /** Construct with a mesh, equation set, bcs, test and unknown funcs,
+     * parameters, and a vector type. */
+    LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+                  const Expr& test, const Expr& unk, 
+                  const Expr& unkParams, const Expr& unkParamVals, 
+                  const TSFExtended::VectorType<double>& vecType);
+    
+    /** Construct with a mesh, equation set, bcs, parameters, and blocks of variables */
+    LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+                  const BlockArray& test, const BlockArray& unk, 
+                  const Expr& unkParams, const Expr& unkParamVals);
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** */

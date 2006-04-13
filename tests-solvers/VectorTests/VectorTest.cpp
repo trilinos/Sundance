@@ -42,7 +42,6 @@ using namespace TSFExtendedOps;
 
 int main(int argc, void *argv[]) 
 {
-#ifdef REDDISH_PROB
   try
     {
       MPISession::init(&argc, &argv);
@@ -75,6 +74,6 @@ int main(int argc, void *argv[])
       cerr << "Caught exception: " << e.what() << endl;
     }
   MPISession::finalize();
-#endif
+
 }
 

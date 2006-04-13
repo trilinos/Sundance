@@ -91,11 +91,13 @@ namespace SundanceCore
                                            const EvalContext& region);
 
         /** */
-        static DerivSet setupExpr(const Expr& expr, 
-                                  const Expr& tests,
-                                  const Expr& unks,
-                                  const Expr& u0,
-                                  const EvalContext& region);
+        static DerivSet setupFwdProblem(const Expr& expr, 
+                                        const Expr& tests,
+                                        const Expr& unks,
+                                        const Expr& u0,
+                                        const Expr& unkParams,
+                                        const Expr& unkParamEvalPts,
+                                        const EvalContext& region);
         /** */
         static DerivSet setupExpr(const Expr& expr, 
                                   const Expr& unks,
