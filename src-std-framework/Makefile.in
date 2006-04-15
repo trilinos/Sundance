@@ -212,6 +212,7 @@ am__objects_4 = SundanceAssembler.$(OBJEXT) \
 am__objects_5 = Sundance.$(OBJEXT) SundanceExprFieldWrapper.$(OBJEXT) \
 	SundanceFunctional.$(OBJEXT) SundanceL2Projector.$(OBJEXT) \
 	SundanceLinearProblem.$(OBJEXT) \
+	SundanceModelEvaluatorBase.$(OBJEXT) \
 	SundanceNonlinearProblem.$(OBJEXT)
 am__objects_6 = $(am__objects_1) $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5)
@@ -294,6 +295,7 @@ MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
+MOOCHO_STR = @MOOCHO_STR@
 MPI_CC_EXISTS = @MPI_CC_EXISTS@
 MPI_CXX = @MPI_CXX@
 MPI_CXX_EXISTS = @MPI_CXX_EXISTS@
@@ -513,6 +515,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.hpp 
 
 SUNDANCE_PROBLEM = \
@@ -521,6 +524,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp 
 
 STD_FWK_SOURCES = \
@@ -851,6 +855,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLocalMatrixContainer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMaximalCellFilter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMixedDOFMap.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceModelEvaluatorBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNonlinearProblem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceP1NC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePositionalCellPredicate.Po@am__quote@
@@ -1681,6 +1686,20 @@ SundanceLinearProblem.obj: $(top_srcdir)/src-std-framework/Problem/SundanceLinea
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp' object='SundanceLinearProblem.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLinearProblem.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp'; fi`
+
+SundanceModelEvaluatorBase.o: $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceModelEvaluatorBase.o -MD -MP -MF "$(DEPDIR)/SundanceModelEvaluatorBase.Tpo" -c -o SundanceModelEvaluatorBase.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceModelEvaluatorBase.Tpo" "$(DEPDIR)/SundanceModelEvaluatorBase.Po"; else rm -f "$(DEPDIR)/SundanceModelEvaluatorBase.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp' object='SundanceModelEvaluatorBase.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceModelEvaluatorBase.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp
+
+SundanceModelEvaluatorBase.obj: $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceModelEvaluatorBase.obj -MD -MP -MF "$(DEPDIR)/SundanceModelEvaluatorBase.Tpo" -c -o SundanceModelEvaluatorBase.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceModelEvaluatorBase.Tpo" "$(DEPDIR)/SundanceModelEvaluatorBase.Po"; else rm -f "$(DEPDIR)/SundanceModelEvaluatorBase.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp' object='SundanceModelEvaluatorBase.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceModelEvaluatorBase.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp'; fi`
 
 SundanceNonlinearProblem.o: $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceNonlinearProblem.o -MD -MP -MF "$(DEPDIR)/SundanceNonlinearProblem.Tpo" -c -o SundanceNonlinearProblem.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp; \

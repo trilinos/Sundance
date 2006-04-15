@@ -151,6 +151,11 @@ TSFExtended::Vector<double> NonlinearProblem::getInitialGuess() const
 }
 
 
+LinearOperator<double> NonlinearProblem::allocateJacobian() const
+{
+  return assembler_->allocateMatrix();
+}
+
 
 LinearOperator<double> NonlinearProblem::
 computeJacobianAndFunction(Vector<double>& functionValue) const
@@ -171,6 +176,35 @@ computeJacobianAndFunction(Vector<double>& functionValue) const
   assembler_->assemble(J_, functionValue);
 
   return J_;
+}
+
+void NonlinearProblem::
+computeJacobianAndFunction(LinearOperator<double>& J,
+                           Vector<double>& resid) const
+{
+  /* Set the vector underlying the discrete 
+   * function to the evaluation point*/
+
+  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+                     "null discrete function pointer in "
+                     "NonlinearProblem::jacobian()");
+
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+                     "null evaluation point in "
+                     "NonlinearProblem::jacobian()");
+
+  TEST_FOR_EXCEPTION(J.ptr().get()==0, RuntimeError,
+                     "null Jacobian pointer in "
+                     "NonlinearProblem::jacobian()");
+
+  TEST_FOR_EXCEPTION(resid.ptr().get()==0, RuntimeError,
+                     "null residual pointer in "
+                     "NonlinearProblem::jacobian()");
+
+  discreteU0_->setVector(currentEvalPt());
+
+  assembler_->assemble(J, resid);
+  J_ = J;
 }
 
 
@@ -194,5 +228,30 @@ Vector<double> NonlinearProblem::computeFunctionValue() const
   assembler_->assemble(rtn);
 
   return rtn;
+}
+
+
+
+void NonlinearProblem::computeFunctionValue(Vector<double>& resid) const 
+{
+  /* Set the vector underlying the discrete 
+   * function to the evaluation point*/
+
+  TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
+                     "null discrete function pointer in "
+                     "NonlinearProblem::computeFunctionValue()");
+
+  TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
+                     "null evaluation point in "
+                     "NonlinearProblem::computeFunctionValue()");
+
+  TEST_FOR_EXCEPTION(resid.ptr().get()==0, RuntimeError,
+                     "null residual pointer in "
+                     "NonlinearProblem::computeFunctionValue()");
+
+  discreteU0_->setVector(currentEvalPt());
+
+
+  assembler_->assemble(resid);
 }
 

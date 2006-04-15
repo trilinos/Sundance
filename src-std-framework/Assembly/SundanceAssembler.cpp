@@ -353,6 +353,8 @@ void Assembler::init(const Mesh& mesh,
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
     }
+
+  cout << "done assembler ctor" << endl;
 }
 
 void Assembler::configureVector(Vector<double>& b) const 
@@ -506,6 +508,15 @@ void Assembler::configureMatrixBlock(int br, int bc,
   }
 
   SUNDANCE_VERB_MEDIUM(tab << "...done");
+}
+
+TSFExtended::LinearOperator<double> Assembler::allocateMatrix() const
+{
+  cout << "in allocate matrix" << endl;
+  TSFExtended::LinearOperator<double> A;
+  TSFExtended::Vector<double> b;
+  configureMatrix(A, b);
+  return A;
 }
 
 

@@ -311,7 +311,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_CXXTESTS_TRUE BUILD_CXXTESTS_FALSE BUILD_LOW_LEVEL_TESTS_TRUE BUILD_LOW_LEVEL_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE BUILD_CXXEXAMPLES_TRUE BUILD_CXXEXAMPLES_FALSE PYTHON_USE_TRUE PYTHON_USE_FALSE PYTHON PYTHON_PREFIX PYTHON_EXECPREFIX BUILD_PYTHON_TRUE BUILD_PYTHON_FALSE PYTHON_CSPEC PYTHON_LSPEC CXXCPP EGREP WITH_SWIG SWIG SWIG_LIB SWIG_PYTHON_OPT SWIG_PYTHON_CPPFLAGS HAVE_SWIG_TRUE HAVE_SWIG_FALSE GNU_HAVE_SWIG ac_aux_dir SUNDANCE_BUILD_DIRECTORY FIAT_STR FIAT_BUILD_DIR SUNDIALS_STR SUNDIALS_BUILD_DIR CHACO_LIB TRILINOS_DIR LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar MPI_CXX HAVE_MPI_TRUE HAVE_MPI_FALSE MPI_CXX_EXISTS MPI_CC_EXISTS MPI_F77_EXISTS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE F77 FFLAGS ac_ct_F77 RANLIB ac_ct_RANLIB USE_ALTERNATE_AR_TRUE USE_ALTERNATE_AR_FALSE ALTERNATE_AR HAVE_CHACO_TRUE HAVE_CHACO_FALSE BUILD_CXXTESTS_TRUE BUILD_CXXTESTS_FALSE BUILD_LOW_LEVEL_TESTS_TRUE BUILD_LOW_LEVEL_TESTS_FALSE BUILD_EXAMPLES_TRUE BUILD_EXAMPLES_FALSE BUILD_CXXEXAMPLES_TRUE BUILD_CXXEXAMPLES_FALSE PYTHON_USE_TRUE PYTHON_USE_FALSE PYTHON PYTHON_PREFIX PYTHON_EXECPREFIX BUILD_PYTHON_TRUE BUILD_PYTHON_FALSE PYTHON_CSPEC PYTHON_LSPEC CXXCPP EGREP WITH_SWIG SWIG SWIG_LIB SWIG_PYTHON_OPT SWIG_PYTHON_CPPFLAGS HAVE_SWIG_TRUE HAVE_SWIG_FALSE GNU_HAVE_SWIG ac_aux_dir SUNDANCE_BUILD_DIRECTORY MOOCHO_STR FIAT_STR FIAT_BUILD_DIR SUNDIALS_STR SUNDIALS_BUILD_DIR CHACO_LIB TRILINOS_DIR LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -913,6 +913,7 @@ Optional Packages:
   --with-trilinos-devel   whether to use development version of Trilinos
   --with-fiat=FIAT_BUILD_DIR
                           use FIAT build directory (enables FIAT)
+  --with-moocho           whether to use MOOCHO
   --with-sundials=SUNDIALS_BUILD_DIR
                           use SUNDIALS build directory (enables SUNDIALS)
   --with-python[=PYTHON]
@@ -3776,7 +3777,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3779:" \
+echo "$as_me:3780:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4207,6 +4208,33 @@ else
   FIAT_STR="#"
   echo "$as_me:$LINENO: checking FIAT directory" >&5
 echo $ECHO_N "checking FIAT directory... $ECHO_C" >&6
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+
+fi;
+
+# ------------------------------------------------------------------------
+# Check for MOOCHO
+# ------------------------------------------------------------------------
+
+
+# Check whether --with-moocho or --without-moocho was given.
+if test "${with_moocho+set}" = set; then
+  withval="$with_moocho"
+
+  MOOCHO_STR=""
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_ENABLED_MOOCHO
+_ACEOF
+
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+
+else
+
+  MOOCHO_STR="#"
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 
@@ -5878,6 +5906,7 @@ fi;
 
 
 
+
 # ------------------------------------------------------------------------
 # Output files
 # ------------------------------------------------------------------------
@@ -6819,6 +6848,7 @@ s,@HAVE_SWIG_FALSE@,$HAVE_SWIG_FALSE,;t t
 s,@GNU_HAVE_SWIG@,$GNU_HAVE_SWIG,;t t
 s,@ac_aux_dir@,$ac_aux_dir,;t t
 s,@SUNDANCE_BUILD_DIRECTORY@,$SUNDANCE_BUILD_DIRECTORY,;t t
+s,@MOOCHO_STR@,$MOOCHO_STR,;t t
 s,@FIAT_STR@,$FIAT_STR,;t t
 s,@FIAT_BUILD_DIR@,$FIAT_BUILD_DIR,;t t
 s,@SUNDIALS_STR@,$SUNDIALS_STR,;t t

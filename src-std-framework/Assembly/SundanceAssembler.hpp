@@ -108,6 +108,9 @@ namespace SundanceStdFwk
       /** */
       const Array<RefCountPtr<Set<int> > >& bcRows() {return bcRows_;}
 
+      /** Allocate, but do not fill, the matrix */
+      TSFExtended::LinearOperator<double> allocateMatrix() const ;
+
       /** */
       void assemble(TSFExtended::LinearOperator<double>& A,
                     TSFExtended::Vector<double>& b) const ;

@@ -176,6 +176,23 @@ AC_ARG_WITH(fiat,
 ]
 )
 
+# ------------------------------------------------------------------------
+# Check for MOOCHO
+# ------------------------------------------------------------------------
+
+AC_ARG_WITH(moocho, 
+[AC_HELP_STRING([--with-moocho],[whether to use MOOCHO])],
+[
+  MOOCHO_STR=""
+  AC_DEFINE(HAVE_ENABLED_MOOCHO,,[define if we want to use MOOCHO])
+  AC_MSG_RESULT([yes])
+],
+[
+  MOOCHO_STR="#"
+  AC_MSG_RESULT([no])
+]
+)
+
 # ---------------0--------------------------------------------------------
 # Check for SUNDIALS
 # ------------------------------------------------------------------------
@@ -248,6 +265,7 @@ TAC_ARG_WITH_INCDIRS
 
 AC_SUBST(ac_aux_dir)
 AC_SUBST(SUNDANCE_BUILD_DIRECTORY)
+AC_SUBST(MOOCHO_STR)
 AC_SUBST(FIAT_STR)
 AC_SUBST(FIAT_BUILD_DIR)
 AC_SUBST(SUNDIALS_STR)

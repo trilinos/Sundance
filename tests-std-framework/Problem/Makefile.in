@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) $(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES)
+SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) $(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) $(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -144,7 +144,8 @@ am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
 	OptPoisson1D$(EXEEXT)
 am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) \
-	FunctionalTest$(EXEEXT) Kepler$(EXEEXT) Stokes2D$(EXEEXT)
+	FunctionalTest$(EXEEXT) Kepler$(EXEEXT) Stokes2D$(EXEEXT) \
+	SimpleModelEvalTest$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_AdvectionDiffusion2D_OBJECTS =  \
 	AdvectionDiffusion2D-AdvectionDiffusion2D.$(OBJEXT)
@@ -202,6 +203,9 @@ am_PoissonOnDisk_OBJECTS = PoissonOnDisk-PoissonOnDisk.$(OBJEXT)
 PoissonOnDisk_OBJECTS = $(am_PoissonOnDisk_OBJECTS)
 am_RadDiff1D_OBJECTS = RadDiff1D-RadDiff1D.$(OBJEXT)
 RadDiff1D_OBJECTS = $(am_RadDiff1D_OBJECTS)
+am_SimpleModelEvalTest_OBJECTS =  \
+	SimpleModelEvalTest-SimpleModelEvalTest.$(OBJEXT)
+SimpleModelEvalTest_OBJECTS = $(am_SimpleModelEvalTest_OBJECTS)
 am_Stokes2D_OBJECTS = Stokes2D-Stokes2D.$(OBJEXT)
 Stokes2D_OBJECTS = $(am_Stokes2D_OBJECTS)
 am_TaylorHoodStokes2D_OBJECTS =  \
@@ -229,8 +233,8 @@ SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
-	$(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) \
-	$(TaylorHoodStokes2D_SOURCES)
+	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
+	$(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES)
 DIST_SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) \
@@ -241,8 +245,8 @@ DIST_SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
-	$(RadDiff1D_SOURCES) $(Stokes2D_SOURCES) \
-	$(TaylorHoodStokes2D_SOURCES)
+	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
+	$(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -305,6 +309,7 @@ MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
+MOOCHO_STR = @MOOCHO_STR@
 MPI_CC_EXISTS = @MPI_CC_EXISTS@
 MPI_CXX = @MPI_CXX@
 MPI_CXX_EXISTS = @MPI_CXX_EXISTS@
@@ -394,7 +399,7 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
-Kepler Stokes2D
+Kepler Stokes2D SimpleModelEvalTest
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
@@ -654,6 +659,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 PoissonBoltzmann2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 PoissonBoltzmann2D_LDADD = $(STD_FWK_LIBS) 
+SimpleModelEvalTest_SOURCES = $(srcdir)/SimpleModelEvalTest.cpp
+SimpleModelEvalTest_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+SimpleModelEvalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
+SimpleModelEvalTest_LDADD = $(STD_FWK_LIBS) 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
 @HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
@@ -888,6 +902,9 @@ PoissonOnDisk$(EXEEXT): $(PoissonOnDisk_OBJECTS) $(PoissonOnDisk_DEPENDENCIES)
 RadDiff1D$(EXEEXT): $(RadDiff1D_OBJECTS) $(RadDiff1D_DEPENDENCIES) 
 	@rm -f RadDiff1D$(EXEEXT)
 	$(CXXLINK) $(RadDiff1D_LDFLAGS) $(RadDiff1D_OBJECTS) $(RadDiff1D_LDADD) $(LIBS)
+SimpleModelEvalTest$(EXEEXT): $(SimpleModelEvalTest_OBJECTS) $(SimpleModelEvalTest_DEPENDENCIES) 
+	@rm -f SimpleModelEvalTest$(EXEEXT)
+	$(CXXLINK) $(SimpleModelEvalTest_LDFLAGS) $(SimpleModelEvalTest_OBJECTS) $(SimpleModelEvalTest_LDADD) $(LIBS)
 Stokes2D$(EXEEXT): $(Stokes2D_OBJECTS) $(Stokes2D_DEPENDENCIES) 
 	@rm -f Stokes2D$(EXEEXT)
 	$(CXXLINK) $(Stokes2D_LDFLAGS) $(Stokes2D_OBJECTS) $(Stokes2D_LDADD) $(LIBS)
@@ -923,6 +940,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonBoltzmann2D-PoissonBoltzmann2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonOnDisk-PoissonOnDisk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadDiff1D-RadDiff1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes2D-Stokes2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TaylorHoodStokes2D-TaylorHoodStokes2D.Po@am__quote@
 
@@ -1247,6 +1265,20 @@ RadDiff1D-RadDiff1D.obj: $(srcdir)/RadDiff1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RadDiff1D.cpp' object='RadDiff1D-RadDiff1D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -c -o RadDiff1D-RadDiff1D.obj `if test -f '$(srcdir)/RadDiff1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadDiff1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadDiff1D.cpp'; fi`
+
+SimpleModelEvalTest-SimpleModelEvalTest.o: $(srcdir)/SimpleModelEvalTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SimpleModelEvalTest_CXXFLAGS) $(CXXFLAGS) -MT SimpleModelEvalTest-SimpleModelEvalTest.o -MD -MP -MF "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Tpo" -c -o SimpleModelEvalTest-SimpleModelEvalTest.o `test -f '$(srcdir)/SimpleModelEvalTest.cpp' || echo '$(srcdir)/'`$(srcdir)/SimpleModelEvalTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Tpo" "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Po"; else rm -f "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SimpleModelEvalTest.cpp' object='SimpleModelEvalTest-SimpleModelEvalTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SimpleModelEvalTest_CXXFLAGS) $(CXXFLAGS) -c -o SimpleModelEvalTest-SimpleModelEvalTest.o `test -f '$(srcdir)/SimpleModelEvalTest.cpp' || echo '$(srcdir)/'`$(srcdir)/SimpleModelEvalTest.cpp
+
+SimpleModelEvalTest-SimpleModelEvalTest.obj: $(srcdir)/SimpleModelEvalTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SimpleModelEvalTest_CXXFLAGS) $(CXXFLAGS) -MT SimpleModelEvalTest-SimpleModelEvalTest.obj -MD -MP -MF "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Tpo" -c -o SimpleModelEvalTest-SimpleModelEvalTest.obj `if test -f '$(srcdir)/SimpleModelEvalTest.cpp'; then $(CYGPATH_W) '$(srcdir)/SimpleModelEvalTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SimpleModelEvalTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Tpo" "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Po"; else rm -f "$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SimpleModelEvalTest.cpp' object='SimpleModelEvalTest-SimpleModelEvalTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SimpleModelEvalTest_CXXFLAGS) $(CXXFLAGS) -c -o SimpleModelEvalTest-SimpleModelEvalTest.obj `if test -f '$(srcdir)/SimpleModelEvalTest.cpp'; then $(CYGPATH_W) '$(srcdir)/SimpleModelEvalTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SimpleModelEvalTest.cpp'; fi`
 
 Stokes2D-Stokes2D.o: $(srcdir)/Stokes2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes2D_CXXFLAGS) $(CXXFLAGS) -MT Stokes2D-Stokes2D.o -MD -MP -MF "$(DEPDIR)/Stokes2D-Stokes2D.Tpo" -c -o Stokes2D-Stokes2D.o `test -f '$(srcdir)/Stokes2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes2D.cpp; \

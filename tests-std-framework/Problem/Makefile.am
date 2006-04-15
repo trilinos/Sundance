@@ -34,7 +34,7 @@ EXEEXT = .exe
 noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
 
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
-Kepler Stokes2D
+Kepler Stokes2D SimpleModelEvalTest
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
@@ -477,6 +477,24 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 PoissonBoltzmann2D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 PoissonBoltzmann2D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+
+SimpleModelEvalTest_SOURCES = $(srcdir)/SimpleModelEvalTest.cpp
+
+SimpleModelEvalTest_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+SimpleModelEvalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+SimpleModelEvalTest_LDADD = $(STD_FWK_LIBS) 
+
+
 
 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
