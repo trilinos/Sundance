@@ -33,7 +33,9 @@ int main(int argc, void** argv)
        * the file is read from the command line:
        * --input=<filename>. The default is CDR.xml. */
       string filename = "CDR.xml";
+      string path = "../../../examples-tutorial/c++/";
       Sundance::setOption("input", filename, "name of XML input file");
+      Sundance::setOption("path", path, "path to file");
       
       /* Initialize everything, reading command-line arguments */
       Sundance::init(&argc, &argv);
@@ -52,7 +54,7 @@ int main(int argc, void** argv)
 
       /* Read the parameters from the input file given on the command line */
       if (myRank==0) cout << "reading input file..." << endl;
-      FileInputSource fis(filename);
+      FileInputSource fis(path + filename);
       XMLObject xml = fis.getObject();
       XMLParameterListReader paramsReader;
       ParameterList params = paramsReader.toParameterList(xml);
@@ -60,6 +62,9 @@ int main(int argc, void** argv)
       /* Read solver parameters. The solver object will be built later, after
        * the discrete problem has been created.  */
       ParameterList solverParams = params.sublist("Nonlinear Solver");
+      ParameterList linSolverParams = params.sublist("Linear Solver");
+      LinearSolver<double> linSolver 
+        = LinearSolverBuilder::createSolver(linSolverParams);
 
 
       /* Create the mesh as specified by the Mesh parameter section */
@@ -81,6 +86,10 @@ int main(int argc, void** argv)
       
       /* Read the filename for viz output */
       string outfile = getParameter<string>(params, "Output Filename");
+      bool doSensitivities 
+        = getParameter<bool>(params, "Compute Sensitivities");
+      bool writeEachContinuationStep 
+        = getParameter<bool>(params, "Write Each Continuation Step");
 
 
       /* =================================================================== 
@@ -195,6 +204,39 @@ int main(int argc, void** argv)
       /* Create an expression for thie initial guess */
       DiscreteSpace discSpace(mesh, L1, vecType);
       Expr psi0 = new DiscreteFunction(discSpace, 0.0, "psi0");
+
+
+      /* ================================================================== 
+       *   Sensitivity problem setup
+       *
+       * Here we create problems for the sensitivities wrt alpha and beta.
+       * 
+       * These problems will be used if
+       *
+       * ================================================================== */
+      
+      Expr alphaSensEqn = Integral(interior, 
+                                   (grad*vPsi)*(D*(grad*psi) - u*psi), quad)
+        + Integral(interior, vPsi*(psi0 + alpha*psi 
+                                   + 3.0*beta*psi0*psi0*psi), quad);
+      Expr alphaSensBC = EssentialBC(left, vPsi*psi, bcQuad);
+      
+      Expr betaSensEqn = Integral(interior, 
+                                  (grad*vPsi)*(D*(grad*psi) - u*psi), quad)
+        + Integral(interior, vPsi*(alpha*psi0 + psi0*psi0*psi0
+                                   + 3.0*beta*psi0*psi0*psi), quad);
+      Expr betaSensBC = EssentialBC(left, vPsi*psi, bcQuad);
+
+      LinearProblem alphaSensProb(mesh, alphaSensEqn, alphaSensBC,
+                                  vPsi, psi, vecType);
+
+      LinearProblem betaSensProb(mesh, betaSensEqn, betaSensBC,
+                                 vPsi, psi, vecType);
+                   
+
+      
+      
+
       
       /* Create a (TSF) NonlinearOperator object representing the function F in
       * the nonlinear equation F(psi)=0 */
@@ -219,6 +261,7 @@ int main(int argc, void** argv)
         = getParameter<int>(solverParams, 
                             "Number of Continuation Steps");
 
+
       for (int i=1; i<=numContinuationSteps; i++)
         {
           if (myRank==0) cout << "continuation step " << i << endl;
@@ -226,8 +269,31 @@ int main(int argc, void** argv)
           double b = i*beta0/((double) numContinuationSteps);
           alpha.setParameterValue(a);
           beta.setParameterValue(b);
-
           NOX::StatusTest::StatusType status = solver.solve();
+
+          Expr sa0;
+          Expr sb0;
+          
+          if (doSensitivities && writeEachContinuationStep)
+            {
+              sa0 = alphaSensProb.solve(linSolver);
+              sb0 = betaSensProb.solve(linSolver);
+            }
+          
+          if (writeEachContinuationStep)
+            {
+              if (myRank==0) cout << "writing VTK output..." << endl;
+              FieldWriter w = new VTKWriter(outfile + "-" 
+                                            + Teuchos::toString(i));
+              w.addMesh(mesh);
+              w.addField("psi0", new ExprFieldWrapper(psi0[0]));
+              if (doSensitivities)
+                {
+                  w.addField("sens_alpha", new ExprFieldWrapper(sa0[0]));
+                  w.addField("sens_beta", new ExprFieldWrapper(sb0[0]));
+                }
+              w.write();
+            }
         }
 
 
@@ -240,12 +306,15 @@ int main(int argc, void** argv)
        *
        * =================================================================== */
       
-      if (myRank==0) cout << "writing VTK output..." << endl;
-
-      FieldWriter w = new VTKWriter(outfile);
-      w.addMesh(mesh);
-      w.addField("psi0", new ExprFieldWrapper(psi0[0]));
-      w.write();
+      if (!writeEachContinuationStep)
+        {
+          if (myRank==0) cout << "writing VTK output..." << endl;
+          
+          FieldWriter w = new VTKWriter(outfile);
+          w.addMesh(mesh);
+          w.addField("psi0", new ExprFieldWrapper(psi0[0]));
+          w.write();
+        }
 
       /* all done! */
     }

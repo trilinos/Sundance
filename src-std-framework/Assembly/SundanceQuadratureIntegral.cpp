@@ -339,6 +339,7 @@ void QuadratureIntegral::print(ostream& os) const
 
 void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,  
                                            const CellJacobianBatch& JVol,
+                                           const Array<int>& isLocalFlag,
                                            const Array<int>& facetIndex,
                                            const double* const coeff,
                                            RefCountPtr<Array<double> >& A) const
@@ -348,39 +349,61 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
   TEST_FOR_EXCEPTION(order() != 0, InternalError,
                      "QuadratureIntegral::transformZeroForm() called "
                      "for form of order " << order());
+
+  TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != 0 
+                      && (int) isLocalFlag.size() != JVol.numCells(),
+                      RuntimeError,
+                      "mismatch between isLocalFlag.size()=" << isLocalFlag.size()
+                      << " and JVol.numCells()=" << JVol.numCells());
+
+  bool checkLocalFlag = (int) isLocalFlag.size() != 0;
+
   
   SUNDANCE_VERB_MEDIUM(tabs << "doing zero form by quadrature");
   double& a = (*A)[0];
   SUNDANCE_VERB_EXTREME(tabs << "input A = " << *A);
   double* coeffPtr = (double*) coeff;
 
+  int flops = 0;
   if (nFacetCases()==1)
     {
       const Array<double>& w = W_[0];
       for (int c=0; c<JVol.numCells(); c++)
         {
+          if (checkLocalFlag && !isLocalFlag[c]) 
+            {
+              coeffPtr += nQuad();
+              continue;
+            }
           double detJ = fabs(JVol.detJ()[c]);
           for (int q=0; q<nQuad(); q++, coeffPtr++)
             {
               a += w[q]*(*coeffPtr)*detJ;
             }
+          flops += 3*nQuad();
         }
     }
   else
     {
       for (int c=0; c<JVol.numCells(); c++)
         {
+          if (checkLocalFlag && !isLocalFlag[c]) 
+            {
+              coeffPtr += nQuad();
+              continue;
+            }
           double detJ = fabs(JVol.detJ()[c]);
           const Array<double>& w = W_[facetIndex[c]];
           for (int q=0; q<nQuad(); q++, coeffPtr++)
             {
               a += w[q]*(*coeffPtr)*detJ;
             }
+          flops += 3*nQuad();
         }
     }
   SUNDANCE_VERB_EXTREME(tabs << "output A = " << *A);
 
-  addFlops(JVol.numCells()*(1 + 2*nQuad()));
+  addFlops(flops);
 }
 
 

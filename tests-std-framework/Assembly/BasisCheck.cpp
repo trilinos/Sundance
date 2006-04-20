@@ -139,7 +139,7 @@ int main(int argc, void** argv)
 #else
                   BasisFamily b2 = new Lagrange(p);
 #endif
-                  for (unsigned int d=0; d<=maxDiffOrder; d++)
+                  for (int d=0; d<=maxDiffOrder; d++)
                     {
                       if (cellDim==0 && d>0) continue;
                       Tabs tab4;

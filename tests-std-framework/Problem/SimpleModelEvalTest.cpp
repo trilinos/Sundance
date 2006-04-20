@@ -29,18 +29,31 @@
 /* @HEADER@ */
 
 #include "SundanceDefs.hpp"
-#include "TSF_config.h"
+#include "TSFConfigDefs.hpp"
 
-#ifdef HAVE_ENABLED_MOOCHO
+#ifndef HAVE_ENABLED_MOOCHO
+
+#include <iostream>
+
+int main()
+{
+  std::cout << "moocho not present: test INACTIVE" << endl;
+}
+
+#else
 
 #include "MoochoPack_MoochoSolver.hpp"
 #include "NLPInterfacePack_NLPFirstOrderThyraModelEvaluator.hpp"
 #include "Thyra_DefaultModelEvaluatorWithSolveFactory.hpp"
 #include "Thyra_AmesosLinearOpWithSolveFactory.hpp"
+#include "Thyra_BelosLinearOpWithSolveFactory.hpp"
+#include "Thyra_AztecOOLinearOpWithSolveFactory.hpp"
+#include "Thyra_IfpackPreconditionerFactory.hpp"
 #include "Thyra_DefaultSerialVectorSpace.hpp"
 
+#include "SundanceNLPModelEvaluator.hpp"
 #include "Sundance.hpp"
-#include "SundanceModelEvaluatorBase.hpp"
+
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
@@ -48,260 +61,20 @@ CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 
 namespace Thyra
 {
-  class SimpleSundanceModel : public SundanceModelEvaluator
+  class SimpleSundanceModel : public SundanceNLPModelEvaluator
   {
   public:
-    SimpleSundanceModel(const VectorType<double>& vecType)
-      : SundanceModelEvaluator(vecType),
-        paramSpace_(rcp(new DefaultSerialVectorSpace<double>(4))),
-        alpha_(4),
-        u0_(),
-        prob_(),
-        sensProb_(4),
-        obj_(),
-        objEval_()
-    {
-      MeshType meshType = new BasicSimplicialMeshType();
-      int np = MPIComm::world().getNProc();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
-      Mesh mesh = mesher.getMesh();
-
-      /* Create a cell filter that will identify the maximal cells
-       * in the interior of the domain */
-      CellFilter interior = new MaximalCellFilter();
-      CellFilter points = new DimensionalCellFilter(0);
-      CellFilter leftPoint = points.subset(new LeftPointTest());
-      CellFilter rightPoint = points.subset(new RightPointTest());
-
-      /* Create unknown and test functions, discretized using first-order
-       * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(2), "u");
-      Expr v = new TestFunction(new Lagrange(2), "v");
-
-      /* Create differential operator and coordinate function */
-      Expr dx = new SundanceCore::Derivative(0);
-      Expr x = new CoordExpr(0);
-
-      const double pi = 4.0*atan(1.0);
-
-      Expr source = 0.0;
-      
-      for (unsigned int i=1; i<=alpha_.size(); i++) 
-        {
-          alpha_[i-1] = new Parameter(1.0);
-          source = source + pi*pi*i*i* alpha_[i-1] * sin(i*pi*x);
-        }
-
-      /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(4);
-
-      
-      /* Define the weak form */
-      Expr eqn = Integral(interior, (dx*v)*(dx*u) + v*source, quad);
-      /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*u, quad)
-        + EssentialBC(rightPoint, v*u, quad);
-
-      /* Create a discrete space, and discretize the function 1.0 on it */
-      DiscreteSpace discSpace(mesh, new Lagrange(2), vecType);
-      u0_ = new DiscreteFunction(discSpace, 1.0, "u0");
-
-      /* create the forward problem */
-      prob_  = rcp(new NonlinearProblem(mesh, eqn, bc, v, u, u0_, vecType));
-
-      /* Write the sensitivity problems by hand. This will be unnecessary once
-       * parametric differentiation is online. */
-      for (unsigned int i=0; i<alpha_.size(); i++)
-        { 
-          double w = (i+1)*(i+1)*pi*pi;
-          Expr sensEqn = Integral(interior, (dx*v)*(dx*u) + w*v*sin((i+1)*pi*x), quad);
-          Expr sensBC = EssentialBC(leftPoint, v*u, quad)
-            + EssentialBC(rightPoint, v*u, quad);
-          sensProb_[i] = LinearProblem(mesh, sensEqn, sensBC, v, u, vecType);
-        }
-
-      Expr uStar = sin(pi*x) + 0.3*sin(2.0*pi*x);
-      Expr objective = Integral(interior, 0.5*pow(u - uStar, 2.0), quad);
-      obj_ = Functional(mesh, objective, vecType);
-      objEval_ = obj_.evaluator(u, u0_);
-    }
+    /** */
+    SimpleSundanceModel(const VectorType<double>& vecType);
 
     /** */
-    void internalEvalModel(const Vector<double>& stateVec,
-                           const Vector<double>& params,
-                           Vector<double>& resid,
-                           double& objFuncVal,
-                           LinearOperator<double>& df_dx,
-                           Array<Vector<double> >& df_dp,
-                           Vector<double>& dg_dp_T,
-                           Vector<double>& dg_dx_T) const 
-    {
-      TEST_FOR_EXCEPTION(params.ptr().get()==0, RuntimeError,
-                         "null params vector!");
-      TEST_FOR_EXCEPTION( (int) alpha_.size() != params.space().dim(),
-                         RuntimeError,
-                         "Mismatch between input parameter vector space and "
-                         "symbolic parameter object size");
-
-      TEST_FOR_EXCEPTION(stateVec.ptr().get()==0, RuntimeError,
-                         "null state vector!");
-
-
-      const DefaultSerialVector<double>* dsv_params 
-        = dynamic_cast<const DefaultSerialVector<double>*>(params.ptr().get());
-      //      DefaultSerialVector<double>* dsv_dg_dp_T 
-      // = dynamic_cast<DefaultSerialVector<double>*>(dg_dp_T.ptr().get());
-
-      TEST_FOR_EXCEPTION(dsv_params == 0, RuntimeError, "params vector is not a default serial vector");
-      //      TEST_FOR_EXCEPTION(dsv_dg_dp_T == 0, RuntimeError, "dg_dp_T vector is not a default serial vector");
-
-      /* set the symbolic parameter values to the input parameters */
-      cout << "parameters are: " << endl;
-      for (unsigned int i=0; i<alpha_.size(); i++)
-        {
-
-          alpha_[i].setParameterValue(dsv_params->getPtr()[i]);
-          cout << i << " " << alpha_[i] << endl;
-        }
-      
-
-      cout << "printing state vector" << endl;
-      /* set the symbolic state function value to the input state */
-      //      DiscreteFunction::discFunc(u0_)->setVector(stateVec);
-
-      cout << "state vector is " << stateVec.description() << endl;
-      prob_->setEvalPt(stateVec);
-
-      /* compute the Jacobian and residual of the constraints */
-      if (df_dx.ptr().get()!=0 && resid.ptr().get() != 0)
-        {
-          cout << "computing Jacobian and residual..." << endl;
-          prob_->computeJacobianAndFunction(df_dx, resid);          
-          cout << "residual vector is " << resid.description() << endl;
-          cout << "J is " << endl;
-          df_dx.print(cout);
-        }
-      else if (resid.ptr().get() != 0 && df_dx.ptr().get()==0)
-        {
-          cout << "computing residual w/o Jacobian..." << endl;
-          prob_->computeFunctionValue(resid);
-          cout << "residual vector is " << resid.description() << endl;
-        }
-      else if (df_dx.ptr().get()!=0 && resid.ptr().get() == 0)
-        {
-          cout << "computing Jacobian w/o residual..." << endl;
-          Vector<double> dummy = constraintSpace().createMember();
-          prob_->computeJacobianAndFunction(df_dx, dummy);          
-          cout << "J is " << endl;
-          df_dx.print(cout);
-        }
-      else
-        {
-          cout << "requested neither the residual nor the Jacobian" << endl;
-        }
-        
-
-      /* compute the derivatives of the constraint residual wrt the parameters */
-      cout << "sensitivities are: " << endl;
-      for (unsigned int i=0; i<alpha_.size(); i++)
-        {
-          df_dp[i] = sensProb_[i].getRHS();
-          cout << i << " " << df_dp[i].description() << endl;
-        }
-
-      /* evaluate the objective function and its gradient wrt the states */ 
-      if (dg_dx_T.ptr().get() != 0)
-        {
-          cout << "computing objective function and gradient" << endl;
-          Expr df_dx_Expr = objEval_.evalGradient(objFuncVal);
-          dg_dx_T.acceptCopyOf(DiscreteFunction::discFunc(df_dx_Expr)->getVector());
-          cout << "value = " << objFuncVal << endl;
-          cout << "gradient = " << dg_dx_T.description() << endl;
-        }
-      else
-        {
-          cout << "computing objective function" << endl;
-          objFuncVal = objEval_.evaluate();
-          cout << "value = " << objFuncVal << endl;
-        }
-      
-
-
-      /* evaluate the derivatives of the objective function wrt the parameters */
-      /* set the symbolic parameter values to the input parameters */
-      if (dg_dp_T.ptr().get() != 0)
-        {
-          dg_dp_T.setToConstant(0.0);
-        }
-    }
+    Array<double> exactSoln() const ;
 
     /** */
-    VectorSpace<double> paramSpace() const 
-    {
-      return paramSpace_;
-    }        
-           
-    /** */
-    VectorSpace<double> stateSpace() const 
-    {
-      VectorSpace<double> rtn = createW().domain();
-      cout << "state space is " << rtn.description() << endl;
-      return rtn;
-    }
-           
-    /** */
-    VectorSpace<double> constraintSpace() const 
-    {
-      VectorSpace<double> rtn = createW().range();
-      cout << "constraint space is " << rtn.description() << endl;
-      return rtn;
-    }
-           
-    /** */
-    LinearOperator<double> createW() const 
-    {
-      static LinearOperator<double> J = prob_->allocateJacobian();
-      TEST_FOR_EXCEPTION(J.ptr().get()==0, RuntimeError,
-                         "null Jacobian");
-      return J;
-    }
-
-
-    /** */
-    Vector<double> getInitialState() const 
-    {
-      return stateSpace().createMember();
-    }
-
+    Mesh mesh() const {return mesh_;}
     
-    /** */
-    Vector<double> getInitialParameters() const 
-    {
-      Vector<double> rtn = paramSpace().createMember();
-      rtn.setToConstant(3.14159);
-      return rtn;
-    }
-
-    
-      
-
   private:
-    VectorSpace<double> paramSpace_;
-
-    mutable Array<Expr> alpha_;
-
-    mutable Expr u0_;
-
-    RefCountPtr<NonlinearProblem> prob_;
-
-    Array<LinearProblem> sensProb_;
-
-    Functional obj_;
-
-    FunctionalEvaluator objEval_;
-
-    
-
+    Mesh mesh_;
   };
 }
 
@@ -315,17 +88,33 @@ int main(int argc, void** argv)
 		{
       bool doSim=false;
       Sundance::setOption("doSim", "doOpt", doSim, "whether to do simulation or optimization");
+      string solverSpec = "belos";
+      Sundance::setOption("solver", solverSpec, "specify solver: options are amesos, aztec, belos");
       Sundance::init(&argc, &argv);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
-      RefCountPtr<Thyra::ModelEvaluator<double> > model 
+      RefCountPtr<Thyra::SimpleSundanceModel> ssModel 
         = rcp(new Thyra::SimpleSundanceModel(vecType));
+      RefCountPtr<Thyra::ModelEvaluator<double> > model = ssModel;
 
-      RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> >
-        lowsFactory = rcp(new Thyra::AmesosLinearOpWithSolveFactory());
+      RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> >lowsFactory;
 
+      if (solverSpec=="aztec")
+        {
+          lowsFactory = rcp(new Thyra::AztecOOLinearOpWithSolveFactory());
+          lowsFactory->setPreconditionerFactory(rcp(new Thyra::IfpackPreconditionerFactory()),"");
+        }
+      else if (solverSpec=="belos")
+        {
+          lowsFactory = rcp(new Thyra::BelosLinearOpWithSolveFactory<double>());
+          lowsFactory->setPreconditionerFactory(rcp(new Thyra::IfpackPreconditionerFactory()),"");
+        }
+      else
+        {
+          lowsFactory = rcp(new Thyra::AmesosLinearOpWithSolveFactory());
+        }
       RefCountPtr<Thyra::ModelEvaluator<double> > modelWithLOWS
         = rcp(new Thyra::DefaultModelEvaluatorWithSolveFactory<double>(model,
                                                                        lowsFactory));
@@ -346,9 +135,17 @@ int main(int argc, void** argv)
       
       // Solve the NLP
       const MoochoSolver::ESolutionStatus	solution_status = solver.solve_nlp();
-      //#else
-      cout << "moocho not present: test INACTIVE" << endl;
 
+      Array<double> exact = ssModel->exactSoln();
+      Array<double> soln = ssModel->parameters();
+      cout << "exact solution: " << exact << endl;
+      cout << "numerical solution: " << soln << endl;
+      double error = 0.0;
+      for (unsigned int i=0; i<exact.size(); i++) error += pow(exact[i]-soln[i], 2.0);
+      error = sqrt(error);
+
+      bool OK = solution_status == MoochoSolver::SOLVE_RETURN_SOLVED;
+      Sundance::passFailTest("MOOCHO converged", OK, error, 1.0e-3);
     }
 	catch(exception& e)
 		{
@@ -356,15 +153,94 @@ int main(int argc, void** argv)
 		}
   Sundance::finalize();
 }
-#else
 
-#error blah
 
-#include <iostream>
-
-int main()
+namespace Thyra
 {
-  std::cout << "moocho not present: test INACTIVE" << endl;
-}
+  SimpleSundanceModel::SimpleSundanceModel(const VectorType<double>& vecType)
+    : SundanceNLPModelEvaluator(vecType),
+      mesh_()
+  {
+    MeshType meshType = new BasicSimplicialMeshType();
+    int np = MPIComm::world().getNProc();
+    MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
+    mesh_ = mesher.getMesh();
 
+    /* Create a cell filter that will identify the maximal cells
+     * in the interior of the domain */
+    CellFilter interior = new MaximalCellFilter();
+    CellFilter points = new DimensionalCellFilter(0);
+    CellFilter leftPoint = points.subset(new LeftPointTest());
+    CellFilter rightPoint = points.subset(new RightPointTest());
+
+    /* Create unknown and test functions, discretized using first-order
+     * Lagrange interpolants */
+    Expr u = new UnknownFunction(new Lagrange(2), "u");
+    Expr v = new TestFunction(new Lagrange(2), "v");
+
+    /* Create differential operator and coordinate function */
+    Expr dx = new SundanceCore::Derivative(0);
+    Expr x = new CoordExpr(0);
+
+    const double pi = 4.0*atan(1.0);
+
+    Expr source = 0.0;
+    Array<Expr> a(4);
+
+    for (unsigned int i=1; i<=a.size(); i++) 
+      {
+        a[i-1] = new Parameter(1.0);
+        source = source + pi*pi*i*i* a[i-1] * sin(i*pi*x);
+      }
+    Expr alpha = new ListExpr(a);
+
+    /* We need a quadrature rule for doing the integrations */
+    QuadratureFamily quad = new GaussianQuadrature(4);
+
+      
+    /* Define the weak form */
+    Expr eqn = Integral(interior, (dx*v)*(dx*u) + v*source, quad);
+    /* Define the Dirichlet BC */
+    Expr bc = EssentialBC(leftPoint, v*u, quad)
+      + EssentialBC(rightPoint, v*u, quad);
+
+    /* Create a discrete space, and discretize the function 1.0 on it */
+    DiscreteSpace discSpace(mesh_, new Lagrange(2), vecType);
+    Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
+
+    /* create the forward problem */
+    NonlinearProblem prob(mesh_, eqn, bc, v, u, u0, vecType);
+      
+    /* Write the sensitivity problems by hand. This will be unnecessary once
+     * parametric differentiation is online. */
+    Array<LinearProblem> sensProb(alpha.size());
+    for (unsigned int i=0; i<alpha.size(); i++)
+      { 
+        double w = (i+1)*(i+1)*pi*pi;
+        Expr sensEqn = Integral(interior, 
+                                (dx*v)*(dx*u) + w*v*sin((i+1)*pi*x), quad);
+        Expr sensBC = EssentialBC(leftPoint, v*u, quad)
+          + EssentialBC(rightPoint, v*u, quad);
+        sensProb[i] = LinearProblem(mesh_, sensEqn, sensBC, v, u, vecType);
+      }
+
+    Expr sourceBasis = List(sin(pi*x), sin(2.0*pi*x), sin(3.0*pi*x), sin(4.0*pi*x));
+    Expr uStar = 0.0;
+    for (unsigned int i=0; i<exactSoln().size(); i++)
+      {
+        uStar = uStar - sourceBasis[i] * exactSoln()[i];
+      }
+    
+    Expr objective = Integral(interior, 0.5*pow(u - uStar, 2.0), quad);
+    Functional obj(mesh_, objective, vecType);
+
+    initialize(alpha, u, u0, prob, sensProb, obj);
+  }
+
+  Array<double> SimpleSundanceModel::exactSoln() const
+  {
+    return tuple(1.0, 0.3, 0.2, 0.1);
+  }
+}
 #endif
+

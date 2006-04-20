@@ -141,11 +141,11 @@ am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
 	TaylorHoodStokes2D$(EXEEXT) Coupled1D$(EXEEXT) \
 	Coupled2D$(EXEEXT) Helmholtz1D$(EXEEXT) \
 	AdvectionDiffusion2D$(EXEEXT) LinearVariationalTest$(EXEEXT) \
-	OptPoisson1D$(EXEEXT)
-am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
-	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) \
-	FunctionalTest$(EXEEXT) Kepler$(EXEEXT) Stokes2D$(EXEEXT) \
+	OptPoisson1D$(EXEEXT) FunctionalTest$(EXEEXT) \
 	SimpleModelEvalTest$(EXEEXT)
+am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
+	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) Kepler$(EXEEXT) \
+	Stokes2D$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_AdvectionDiffusion2D_OBJECTS =  \
 	AdvectionDiffusion2D-AdvectionDiffusion2D.$(OBJEXT)
@@ -398,13 +398,12 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
-Kepler Stokes2D SimpleModelEvalTest
-
+SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic TaylorHoodStokes2D \
-Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D
+Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
+FunctionalTest SimpleModelEvalTest
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 Poisson1D_SOURCES = $(srcdir)/Poisson1D.cpp

@@ -102,12 +102,7 @@ static Time& colSearchTimer()
   return *rtn;
 }
 
-static Time& tmpGraphBuildTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("tmp graph creation"); 
-  return *rtn;
-}
+
 
 static Time& matAllocTimer() 
 {
@@ -354,7 +349,6 @@ void Assembler::init(const Mesh& mesh,
                                                        quad)));
     }
 
-  cout << "done assembler ctor" << endl;
 }
 
 void Assembler::configureVector(Vector<double>& b) const 
@@ -512,7 +506,6 @@ void Assembler::configureMatrixBlock(int br, int bc,
 
 TSFExtended::LinearOperator<double> Assembler::allocateMatrix() const
 {
-  cout << "in allocate matrix" << endl;
   TSFExtended::LinearOperator<double> A;
   TSFExtended::Vector<double> b;
   configureMatrix(A, b);
@@ -536,6 +529,10 @@ void Assembler::assemble(LinearOperator<double>& A,
 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
+  /* isLocalFlag won't be used in this calculation, because we need off-proc
+   * elements in this evaluation mode. Define it, but leave it empty. */
+  RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
+
 
   SUNDANCE_VERB_LOW(tab << "Assembling matrix and vector"); 
 
@@ -698,7 +695,7 @@ void Assembler::assemble(LinearOperator<double>& A,
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs,
+              if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs,
                                   constantCoeffs, 
                                   localValues)) continue;
 
@@ -757,6 +754,9 @@ void Assembler::assemble(Vector<double>& b) const
   numAssembleCalls()++;
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
+  /* isLocalFlag won't be used in this calculation, because we need off-proc
+   * elements in this evaluation mode. Define it, but leave it empty. */
+  RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(VectorOnly),
                      RuntimeError,
@@ -884,7 +884,7 @@ void Assembler::assemble(Vector<double>& b) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs, 
+              if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
@@ -926,6 +926,10 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
   numAssembleCalls()++;
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
+  /* isLocalFlag will be used in this calculation because we need to accumulate
+   * local values only in zero-form calculations */
+  RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
+
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalAndGradient),
                      RuntimeError,
@@ -967,6 +971,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
     }
 
   double localSum = 0.0;
+  int myRank = MPIComm::world().getRank();
 
   const Array<EvalContext>& contexts = contexts_.get(FunctionalAndGradient);
   const Array<Array<IntegralGroup> >& groups 
@@ -1011,9 +1016,13 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
           Tabs tab1;
           /* build up the work set */
           workSet->resize(0);
+          isLocalFlag->resize(0);
           for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
             {
               workSet->append(*iter);
+              /* we need the isLocalFlag values so that we can ignore contributions
+               * to zero-forms from off-processor elements */
+              isLocalFlag->append(myRank==mesh_.ownerProcID(cellDim, *iter));
             }
 
           SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
@@ -1060,7 +1069,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs, 
+              if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
@@ -1117,6 +1126,10 @@ void Assembler::evaluate(double& value) const
   numAssembleCalls()++;
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
+  /* isLocalFlag will not be used in this calculation because all integrals 
+   * are zero forms, allowing us to skip off-processor elements before 
+   * doing integrals. */
+  RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(FunctionalOnly),
                      RuntimeError,
@@ -1175,15 +1188,34 @@ void Assembler::evaluate(double& value) const
 
       CellIterator iter=cells.begin();
       int workSetCounter = 0;
+      int myRank = MPIComm::world().getRank();
+      int nProcs = MPIComm::world().getNProc();
 
       while (iter != cells.end())
         {
           Tabs tab1;
-          /* build up the work set */
+          /* build up the work set, and set the isLocal flags that let us avoid
+           * summing zero-forms on off-processor cells. If we have only
+           * one processor we can streamline this loop, and several inside the
+           * integration loop, if we leave the isLocalFlag array empty. */
           workSet->resize(0);
-          for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+          isLocalFlag->resize(0);
+          if (nProcs > 1)
             {
-              workSet->append(*iter);
+              for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+                {
+                  /* We ignore off-proc cells in this context, so that they don't get
+                   * added twice into the functional */
+                  if (mesh_.ownerProcID(cellDim, *iter) != myRank) continue;
+                  workSet->append(*iter);
+                }
+            }
+          else
+            {
+              for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+                {
+                  workSet->append(*iter);
+                }
             }
 
           SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
@@ -1220,7 +1252,7 @@ void Assembler::evaluate(double& value) const
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               const IntegralGroup& group = groups[r][g];
-              if (!group.evaluate(JTrans, JVol, facetIndices, vectorCoeffs, 
+              if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
@@ -1236,7 +1268,6 @@ void Assembler::evaluate(double& value) const
     }
 
   value = localSum;
-
   mesh_.comm().allReduce((void*) &localSum, (void*) &value, 1, 
                          MPIComm::DOUBLE, MPIComm::SUM);
   SUNDANCE_VERB_LOW(tab << "Assembler: done computing functional");
@@ -2018,4 +2049,8 @@ VectorSpace<double> Assembler::rowVecSpace() const
 }
 
 
-
+unsigned int& Assembler::workSetSize()
+{
+  static unsigned int rtn = defaultWorkSetSize(); 
+  return rtn;
+}

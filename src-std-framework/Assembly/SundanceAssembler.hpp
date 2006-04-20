@@ -127,8 +127,8 @@ namespace SundanceStdFwk
       void evaluate(double& value) const ;
 
       /** */
-      static unsigned int& workSetSize() 
-      {static unsigned int rtn = defaultWorkSetSize(); return rtn;}
+      static unsigned int& workSetSize() ;
+
       
       /** */
       void getGraph(int br, int bc,
@@ -202,7 +202,7 @@ namespace SundanceStdFwk
       Array<Array<int> > findNonzeroBlocks() const ;
 
       /** */
-      static int defaultWorkSetSize() {return 100;}
+      static int defaultWorkSetSize() {static int rtn=100; return rtn;}
       
       mutable bool matNeedsConfiguration_;
       

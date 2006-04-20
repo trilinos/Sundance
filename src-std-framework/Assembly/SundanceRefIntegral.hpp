@@ -121,13 +121,14 @@ namespace SundanceStdFwk
       /** */
       void transform(const CellJacobianBatch& JTrans,
                      const CellJacobianBatch& JVol,
+                     const Array<int>& isLocalFlag,
                      const Array<int>& facetNum,
                      const double& coeff,
                      RefCountPtr<Array<double> >& A) const 
       {
         if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
         else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
-        else transformZeroForm(JVol, coeff, A);
+        else transformZeroForm(JVol, isLocalFlag, coeff, A);
       }
 
       /** */
@@ -146,6 +147,7 @@ namespace SundanceStdFwk
 
       /** */
       void transformZeroForm(const CellJacobianBatch& JVol,
+                             const Array<int>& isLocalFlag,
                              const double& coeff,
                              RefCountPtr<Array<double> >& A) const ;
       /** */

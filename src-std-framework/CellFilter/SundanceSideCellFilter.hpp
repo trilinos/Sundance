@@ -70,6 +70,9 @@ using namespace SundanceStdMesh::Internal;
     /** Return the type name */
     virtual string typeName() const {return "SideCellFilter";}
 
+    /** Describable interface */
+    virtual string description() const {return "SideCellFilter";}
+
     /** Compare to another object */
     virtual bool lessThan(const CellFilterStub* other) const ;
 

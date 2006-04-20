@@ -91,18 +91,20 @@ namespace SundanceStdFwk
       /** */
       void transform(const CellJacobianBatch& JTrans,
                      const CellJacobianBatch& JVol,
+                     const Array<int>& isLocalFlag,
                      const Array<int>& facetNum,
                      const double* const coeff,
                      RefCountPtr<Array<double> >& A) const 
       {
         if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
         else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
-        else transformZeroForm(JTrans, JVol, facetNum, coeff, A);
+        else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, coeff, A);
       }
       
       /** */
       void transformZeroForm(const CellJacobianBatch& JTrans,
                              const CellJacobianBatch& JVol,
+                             const Array<int>& isLocalFlag,
                              const Array<int>& facetIndex,
                              const double* const coeff,
                              RefCountPtr<Array<double> >& A) const ;

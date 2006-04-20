@@ -140,11 +140,6 @@ int main(int argc, void** argv)
 
 
 
-      //      LinearOperator<double> A = prob.getOperator();
-
-      Assembler::workSetSize() = 100;
-
-
       Expr soln = prob.solve(solver);
 
       Expr x2 = x*x;
@@ -175,7 +170,7 @@ int main(int argc, void** argv)
 
       
       /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Coupled2d");
+      FieldWriter w = new VTKWriter("Coupled2D");
       w.addMesh(mesh);
       w.addField("v", new ExprFieldWrapper(soln[0]));
       w.addField("u", new ExprFieldWrapper(soln[1]));

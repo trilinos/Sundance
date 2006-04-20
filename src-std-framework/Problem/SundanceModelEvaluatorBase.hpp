@@ -50,7 +50,8 @@ namespace Thyra
   /** 
    * 
    */
-  class SundanceModelEvaluator : public ModelEvaluator<double>
+  class SundanceModelEvaluator : public ModelEvaluator<double>,
+                                 public TSFExtended::ObjectWithVerbosity<SundanceModelEvaluator>
   {
   public:
     /** */

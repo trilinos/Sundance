@@ -44,19 +44,7 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-static Time& functionalEvalTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("functional evaluation"); 
-  return *rtn;
-}
 
-static Time& functionalEvalSetupTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("functional evaluation setup"); 
-  return *rtn;
-}
 
 namespace SundanceStdFwk
 {
@@ -158,7 +146,7 @@ Expr FunctionalEvaluator::evalGradient(double& value) const
   Vector<double> g = evalGradientVector(value);
 
   Array<Expr> rtn(assembler_->rowSpace().size());
-  for (int i=0; i<rtn.size(); i++)
+  for (unsigned int i=0; i<rtn.size(); i++)
     {
       string name = "gradient";
       if (rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
@@ -181,74 +169,90 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   bool showAll = false;
   Tabs tabs;
   double f0, fPlus, fMinus;
-  Vector<double> gradF0 = evalGradientVector(f0);
+  Expr gradF0 = evalGradient(f0);
+  
 
 
   DiscreteFunction* df = DiscreteFunction::discFunc(varValues_);
+  DiscreteFunction* dg = DiscreteFunction::discFunc(gradF0);
   Vector<double> x = df->getVector();
 
-  LoadableVector<double>* loadableX 
-    = dynamic_cast<LoadableVector<double>*>(x.ptr().get());
+  RefCountPtr<GhostView<double> > xView = df->ghostView();
+  RefCountPtr<GhostView<double> > gradF0View = dg->ghostView();
 
 
-  RefCountPtr<GhostView<double> > xView;
-  RefCountPtr<GhostView<double> > gradF0View;
+  TEST_FOR_EXCEPTION(xView.get() == 0, RuntimeError, 
+                     "bad pointer in FunctionalEvaluator::fdGradientCheck");
+  TEST_FOR_EXCEPTION(gradF0View.get() == 0, RuntimeError, 
+                     "bad pointer in FunctionalEvaluator::fdGradientCheck");
 
-  RefCountPtr<GhostImporter<double> > importer 
-    = vecType_.createGhostImporter(x.space(), 0, 0);
+  int nTot = x.space().dim();
+  int n = x.space().numLocalElements();
+  int lowestIndex = x.space().lowestLocallyOwnedIndex();
 
-
-  TEST_FOR_EXCEPTION(xView.get() != 0, RuntimeError, "bad pointer in FunctionalEvaluator::fdGradientCheck");
-  //  cerr << "importing x" << endl;
-  importer->importView(x, xView);
-  //  cerr << "importing grad f" << endl;
-  importer->importView(gradF0, gradF0View);
-
-  int n = x.space().dim();
-
-  cerr << tabs << "doing fd check: vec dim = " << n 
-       << " h=" << h << endl;
+  cerr << tabs << "doing fd check:  h=" << h << endl;
   Array<double> df_dx(n);
 
-  for (int i=0; i<n; i++)
+  int localIndex = 0;
+  for (int globalIndex=0; globalIndex<nTot; globalIndex++)
     {
-      double tmp = xView->getElement(i);
-      loadableX->setElement(i, tmp + h);
+      double tmp=0.0;
+      bool isLocal = globalIndex >= lowestIndex 
+        && globalIndex < (lowestIndex+n);
+      if (isLocal)
+        {
+          tmp = xView->getElement(globalIndex);
+          x.setElement(globalIndex, tmp + h);
+        }
       df->setVector(x);
       fPlus = evaluate();
-      loadableX->setElement(i, tmp - h);
+      if (isLocal)
+        {
+          x.setElement(globalIndex, tmp - h);
+        }
       df->setVector(x);
       fMinus = evaluate();
       
-      df_dx[i] = (fPlus - fMinus)/2.0/h;
-      if (showAll)
+      if (isLocal)
         {
-          cerr << "i " << i << " x_i=" << tmp 
-               << " f(x)=" << f0 
-               << " f(x+h)=" << fPlus 
-               << " f(x-h)=" << fMinus << endl;
+          df_dx[localIndex] = (fPlus - fMinus)/2.0/h;
+          if (showAll)
+            {
+              cerr << "i " << globalIndex << " x_i=" << tmp 
+                   << " f(x)=" << f0 
+                   << " f(x+h)=" << fPlus 
+                   << " f(x-h)=" << fMinus << endl;
+            }
+          x.setElement(globalIndex, tmp);
+          localIndex++;
         }
-      loadableX->setElement(i, tmp);
+      df->setVector(x);
     }
   
-  double maxErr = 0.0;
+  double localMaxErr = 0.0;
 
+  showAll = true;
   for (int i=0; i<n; i++)
     {
-      double num =  fabs(df_dx[i]-gradF0View->getElement(i));
-      double den = fabs(df_dx[i]) + fabs(gradF0View->getElement(i));
+      int globalIndex = lowestIndex + i;
+      double num =  fabs(df_dx[i]-gradF0View->getElement(globalIndex));
+      double den = fabs(df_dx[i]) + fabs(gradF0View->getElement(globalIndex));
       double r = 0.0;
       if (fabs(den) > 1.0e-10) r = num/den;
       else r = 1.0;
       if (showAll)
         {
-          cerr << "i " << i << " FD=" << df_dx[i] 
-               << " grad=" << gradF0View->getElement(i)
+          cerr << "i " << i << " g=" << globalIndex << " FD=" << df_dx[i] 
+               << " grad=" << gradF0View->getElement(globalIndex)
                << " r=" << r << endl;
         }
-      if (maxErr < r) maxErr = r;
+      if (localMaxErr < r) localMaxErr = r;
     }
-
+  cout << "local max error = " << localMaxErr << endl;
+  
+  double maxErr = localMaxErr;
+  MPIComm::world().allReduce((void*) &localMaxErr, (void*) &maxErr, 1, 
+                             MPIComm::DOUBLE, MPIComm::MAX);
   cerr << tabs << "fd check: max error = " << maxErr << endl;
 
   return maxErr;

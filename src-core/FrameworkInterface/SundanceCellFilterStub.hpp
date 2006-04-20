@@ -62,7 +62,7 @@ namespace SundanceCore
      */
     class CellFilterStub : public TSFExtended::Handleable<CellFilterStub>,
                            public TSFExtended::Printable,
-                           public TSFExtended::Describable,
+                           public Teuchos::Describable,
                            public Noncopyable,
                            public ObjectWithInstanceID<CellFilterStub>,
                            public TSFExtended::ObjectWithVerbosity<CellFilterStub>
@@ -90,7 +90,7 @@ namespace SundanceCore
       /** \name Describable interface */
       //@{
       /** Print to a stream */
-      virtual string describe() const 
+      virtual string description() const 
       {return "CellFilterStub[id=" + Teuchos::toString(id()) + "]";}
       //@}
 

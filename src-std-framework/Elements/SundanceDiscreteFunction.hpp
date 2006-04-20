@@ -98,7 +98,7 @@ namespace SundanceStdFwk
     {return data_->ghostView();}
 
     const DiscreteFunctionData* data() const {return data_.get();}
-   
+
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */

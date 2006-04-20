@@ -34,6 +34,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceModelEvaluatorBase.hpp"
+
 #ifdef HAVE_ENABLED_MOOCHO
 #include "Thyra_DefaultSerialVectorSpace.hpp"
 
@@ -157,10 +158,13 @@ SundanceModelEvaluator
 
 
 
-void SundanceModelEvaluator::evalModel(const ModelEvaluatorBase::InArgs<double>& inArgs,
-                                          const ModelEvaluatorBase::OutArgs<double>& outArgs) const
+void SundanceModelEvaluator
+::evalModel(const ModelEvaluatorBase::InArgs<double>& inArgs,
+            const ModelEvaluatorBase::OutArgs<double>& outArgs) const
 {
-  cout << "------------------calling eval model -----------------------" << endl;
+  Tabs tabs;
+  if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tabs << 
+                       "------------------calling eval model -----------------------");
   /* read input args. The const casts are needed until ConstVector is ready */
   TSFExtended::Vector<double> x = rcp_const_cast<VectorBase<double> >(inArgs.get_x());
 
@@ -178,17 +182,12 @@ void SundanceModelEvaluator::evalModel(const ModelEvaluatorBase::InArgs<double>&
   /* df/dx */
   TSFExtended::LinearOperator<double> df_dx = 
     rcp_dynamic_cast<SingleScalarTypeOpBase<double> >(outArgs.get_W_op());
-  if (outArgs.get_W_op().get()==0) 
-    {
-      cout << "out arg W_op is initially null" << endl;
-    }
-  else 
+  
+  if (outArgs.get_W_op().get()!=0) 
     {
       TEST_FOR_EXCEPTION(df_dx.ptr().get()==0, RuntimeError,  
-                         "W_op is non-null but could not be cast to a SingleScalarTypeOpBase<double>");
-      cout << "output arg W before fill" << endl;
-      df_dx.print(cout);
-                         
+                         "W_op is non-null but could not be cast to "
+                         "a SingleScalarTypeOpBase<double>");
     }
   
 
@@ -232,25 +231,23 @@ void SundanceModelEvaluator::evalModel(const ModelEvaluatorBase::InArgs<double>&
   if (outArgs.get_W_op().get()!=0) 
     {
       TEST_FOR_EXCEPTION(df_dx.ptr().get()==0, RuntimeError,  
-                         "W_op is non-null but could not be cast to a SingleScalarTypeOpBase<double>");
-      cout << "output arg W after fill" << endl;
-      df_dx.print(cout);
-                         
+                         "W_op is non-null but could not be cast to a "
+                         "SingleScalarTypeOpBase<double>");
     }
 
   /* Fill in objective function value */
   if ( g.ptr().get() != 0 )
     {
-      DefaultSerialVector<double>* dsv_g = dynamic_cast<DefaultSerialVector<double>* >(g.ptr().get());
-      dsv_g->getPtr()[0] = gVal;
+      g[0] = gVal;
     }
   /* f, g, and df_dx are already in the right form. 
    * We need to fill in the multivectors df_dp, dg_dp, and dg_dx */
   
-  /* copy the vectors df_dp into the columns of df_dp_mv */
+  /* if requested, copy the vectors df_dp into the columns of df_dp_mv */
   if (df_dp_mv.get() != 0)
     {
-      cout << "df_dp multivector was requested" << endl;
+      Tabs tab2;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "df_dp multivector was requested");
       for (unsigned int i=0; i<df_dp.size(); i++)
         {
           Vector<double> col = df_dp_mv->col(i);
@@ -259,40 +256,51 @@ void SundanceModelEvaluator::evalModel(const ModelEvaluatorBase::InArgs<double>&
     }
   else
     {
-      cout << "df_dp multivector was NOT requested" << endl;
+      Tabs tab2;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "df_dp multivector was NOT requested");
     }
 
-  /* */
+  /* 
+   * If requested, set the dg_dx return value 
+   */
   if (dg_dx_trans_mv.get() != 0)
     {
-      cout << "dg_dx multivector was requested" << endl;
+      Tabs tab2;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "dg_dx multivector was requested");
       Vector<double> dg_dx_mv_row =  dg_dx_trans_mv->col(0);
-      cout << "extracted zeroth column: " 
-           << dg_dx_mv_row.description() << endl;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_HIGH(tab2 << "extracted zeroth column: " 
+                         << dg_dx_mv_row.description());
       TEST_FOR_EXCEPT(dg_dx_T.ptr().get()==0);
-      cout << "output from internal eval: " << dg_dx_T.description() << endl;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "output from internal eval: " 
+                           << dg_dx_T.description());
       dg_dx_mv_row.acceptCopyOf(dg_dx_T);
-      cout << "got dg_dx multivector" << endl;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "got dg_dx multivector");
     }
   else
     {
-      cout << "dg_dx multivector was NOT requested" << endl;
+      Tabs tab2;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "dg_dx multivector was NOT requested");
     }
 
-  /* */
+  /* 
+   * If requested, set the dg_dp return value 
+   */
   if (dg_dp_trans_mv.get() != 0)
     {
-      cout << "dg_dp multivector was requested" << endl;
+      Tabs tab2;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "dg_dp multivector was requested");
       Vector<double> dg_dp_mv_row =  dg_dp_trans_mv->col(0);
       dg_dp_mv_row.acceptCopyOf(dg_dp_T);
-      cout << "got dg_dp multivector" << endl;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "got dg_dp multivector");
+
     }
   else
     {
-      cout << "dg_dp multivector was NOT requested" << endl;
+      Tabs tab2;
+      if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "dg_dp multivector was NOT requested");
     }
 
-  cout << "done evaluation!" << endl;
+  if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tabs << "done evaluation!");
 }
 
 

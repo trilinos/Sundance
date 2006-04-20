@@ -33,13 +33,13 @@ EXEEXT = .exe
 
 noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
 
-SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D FunctionalTest \
-Kepler Stokes2D SimpleModelEvalTest
+SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D 
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic TaylorHoodStokes2D \
-Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D
+Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
+FunctionalTest SimpleModelEvalTest
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 

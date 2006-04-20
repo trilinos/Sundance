@@ -414,7 +414,8 @@ void RefIntegral::print(ostream& os) const
 }
 
 
-void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,  
+void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
+                                    const Array<int>& isLocalFlag,  
                                     const double& coeff,
                                     RefCountPtr<Array<double> >& A) const
 {
@@ -423,16 +424,42 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
   TEST_FOR_EXCEPTION(order() != 0, InternalError,
                      "RefIntegral::transformZeroForm() called "
                      "for form of order " << order());
+
   Tabs tabs;  
   SUNDANCE_VERB_MEDIUM(tabs << "doing zero form by reference");
 
-  /* The result for each cell is the cell's Jacobian determinant */
   double& a = (*A)[0];
-  for (int c=0; c<JVol.numCells(); c++)
+  int flops = 0;
+
+  /* if we don't need to check whether elements are local, we
+   * can streamline the loop. This will be the case when
+   * we are evaluating a functional but not its gradient */
+  if ((int) isLocalFlag.size()==0)
     {
-      a += coeff * fabs(JVol.detJ()[c]);
+      for (int c=0; c<JVol.numCells(); c++)
+        {
+          a += coeff * fabs(JVol.detJ()[c]);
+        }
+      flops = 2*JVol.numCells();
     }
-  addFlops(2*JVol.numCells());
+  else
+    {
+      TEST_FOR_EXCEPTION( (int) isLocalFlag.size() != JVol.numCells(),
+                          RuntimeError,
+                          "mismatch between isLocalFlag.size()=" 
+                          << isLocalFlag.size()
+                          << " and JVol.numCells()=" << JVol.numCells());
+
+      for (int c=0; c<JVol.numCells(); c++)
+        {
+          if (isLocalFlag[c]) 
+            {
+              flops+=2; 
+              a += coeff * fabs(JVol.detJ()[c]);
+            }
+        }
+    }
+  addFlops(flops);
 }
 
 void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,  

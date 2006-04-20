@@ -37,6 +37,7 @@
 #include "SundanceEvaluatableExpr.hpp"
 
 
+
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
@@ -51,10 +52,10 @@ namespace SundanceCore
   namespace Internal
     {
       /** */
-      class SymbPreprocessor
+      class SymbPreprocessor 
       {
       public:
-
+        
         /** */
         static DerivSet setupVariations(const Expr& expr, 
                                         const Expr& vars,

@@ -68,6 +68,10 @@ using namespace SundanceStdMesh::Internal;
 
     /** */
     virtual RefCountPtr<CellFilterBase> getRcp() {return rcp(this);}
+
+    /** */
+    virtual string description() const 
+    {return "LabeledSubset(label=" + label_ + ", super=" + superset.description()+")";}
     
 
   protected:

@@ -102,11 +102,15 @@ DerivSet SymbPreprocessor::setupFwdProblem(const Expr& expr,
   const EvaluatableExpr* e 
     = dynamic_cast<const EvaluatableExpr*>(expr.ptr().get());
 
-  SUNDANCE_OUT(Evaluator::classVerbosity() > VerbSilent,
-               tab << "************ setting up expr: " << expr 
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               SUNDANCE_HEADER_LINE << tab 
+               << "setting up forward problem expr: " << expr 
                << endl << tab << "with test functions " << tests
                << endl << tab << "and unknown functions " << unks
-               << endl << tab << "at the eval point " << evalPts);
+               << endl << tab 
+               << "at the eval point " << evalPts
+               << SUNDANCE_HEADER_LINE);
+
 
   TEST_FOR_EXCEPTION(e==0, InternalError,
                      "Non-evaluatable expr " << expr.toString()

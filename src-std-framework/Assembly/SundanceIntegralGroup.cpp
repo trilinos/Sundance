@@ -154,6 +154,7 @@ IntegralGroup
 bool IntegralGroup
 ::evaluate(const CellJacobianBatch& JTrans,
            const CellJacobianBatch& JVol,
+           const Array<int>& isLocalFlag, 
            const Array<int>& facetIndex, 
            const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
            const Array<double>& constantCoeffs,
@@ -193,7 +194,7 @@ bool IntegralGroup
           double f = constantCoeffs[resultIndices_[i]];
           SUNDANCE_OUT(this->verbosity() > VerbSilent,
                        tab << "Coefficient is " << f);
-          ref->transform(JTrans, JVol, facetIndex, f, A);
+          ref->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
         }
       else 
         {
@@ -208,7 +209,7 @@ bool IntegralGroup
                              << vectorCoeffs[resultIndices_[i]]->str()
                              << "]");
           const double* const f = vectorCoeffs[resultIndices_[i]]->start();
-          quad->transform(JTrans, JVol, facetIndex, f, A);
+          quad->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
         }
       SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "i=" << i << " A=" << *A);
     }

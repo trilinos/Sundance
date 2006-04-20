@@ -59,6 +59,11 @@ namespace SundanceStdFwk
     /** */
     virtual XMLObject toXML() const ;
 
+    /** Describable interface */
+    virtual string description() const 
+    {return "GaussianQuadrature[order=" + Teuchos::toString(order()) 
+         +  "]";}
+
     /* handleable boilerplate */
     GET_RCP(QuadratureFamilyStub);
 

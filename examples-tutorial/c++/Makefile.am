@@ -37,7 +37,7 @@ noinst_PROGRAMS = $(TESTS_SRC:%=%.exe)
 
 TESTS_SRC = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
 VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D \
-ReadField CubicCDR
+ReadField CubicCDR ControlCDR
 
 
 
@@ -184,6 +184,21 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 CubicCDR_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 CubicCDR_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+ControlCDR_SOURCES = $(srcdir)/ControlCDR.cpp
+
+ControlCDR_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+ControlCDR_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+ControlCDR_LDADD = $(STD_FWK_LIBS) 
 
 
 

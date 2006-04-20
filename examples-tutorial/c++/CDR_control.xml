@@ -1,0 +1,56 @@
+<ParameterList name="CDR Boundary Control">
+
+
+<!-- Name of output file. A .vtu or .pvtu suffix will be appended          -->
+<Parameter name="Output Filename"   type="string"   value="cdr-control"/>
+
+
+<!-- Model specification -->
+
+<ParameterList name="Model">
+  <!-- alpha=0 is a phase transition. With positive alpha, the field damps  -->
+  <!-- very quickly with distance from a nonzero fluctuation. When alpha is -->
+  <!-- negative, macroscopically large zones of nonzero order parameter can -->
+  <!-- exist.                                                               -->
+  <Parameter name="Alpha" type="double" value="-0.2"/>
+  <!-- beta sets the magnitude of the nonzero constant solutions            -->
+  <!-- psi(x)=beta/alpha. Positive and negative beta/alpha are the          -->
+  <!-- minimizers of the Landau Hamiltonian reached in the limit            -->
+  <!-- as D goes to zero.                                                   -->
+  <Parameter name="Beta" type="double" value="0.2"/>
+  <!-- D is the strength of the diffusion term                              -->
+  <Parameter name="Diffusivity" type="double" value="0.01"/>
+  <!-- Wavelength of fluctuations in psi at Dirichlet boundary              -->
+  <Parameter name="BC Wavelength" type="double" value="0.45"/>
+  <!-- Scale of advective velocity field                                    -->
+  <Parameter name="Peak Velocity" type="double" value="0.001"/>
+  <!-- Order of quadrature rule used on boundary surfaces                   -->
+  <Parameter name="BC Quadrature Order" type="int" value="4"/>
+  <!-- Number of design variables                                           -->
+  <Parameter name="Num Controls" type="int" value="4"/>
+</ParameterList>
+
+
+<!-- Mesh specification -->
+  <!-- Notes:                                                                       -->
+  <!-- (1) don't change ax, bx, ay, or by just yet. The hardwired cell filters      -->
+  <!--     in CubicCDR.cpp depend on these values. If you want to change them,      -->
+  <!--     you'll have to modify the predicate definitions in CubicCDR.cpp.         -->
+  <!-- (2) The parameters nx and ny are the numbers of elements in x and y          -->
+  <!--     *per processor*. Holding them fixed as npx and npx increase will         -->
+  <!--     increase the overall problem size.                                       -->
+  <!-- (3) npx times npy must equal the number of processors                        -->
+<ParameterList name="Mesh">
+  <Parameter name="type" type="string" value="Rectangle"/>
+  <Parameter name="nx" type="int" value="64"/>
+  <Parameter name="npx" type="int" value="1"/>
+  <Parameter name="ax" type="double" value="0.0"/>
+  <Parameter name="bx" type="double" value="1.0"/>
+  <Parameter name="ny" type="int" value="64"/>
+  <Parameter name="npy" type="int" value="1"/>
+  <Parameter name="ay" type="double" value="0.0"/>
+  <Parameter name="by" type="double" value="1.0"/>
+</ParameterList>
+
+
+</ParameterList>

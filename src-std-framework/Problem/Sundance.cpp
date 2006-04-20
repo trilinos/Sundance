@@ -45,6 +45,8 @@
 #include "SundanceDefaultPath.hpp"
 #include "SundanceVersionString.hpp"
 #include "SundanceProductTransformation.hpp"
+#include <unistd.h>
+#include <sys/unistd.h>
 
 
 static Time& totalTimer() 
@@ -84,6 +86,7 @@ int Sundance::init(int* argc, void*** argv)
       string configFilename = "SundanceConfig.xml";
 
       bool defaultFpCheck = false;
+      bool debugWait = false;
       bool cmdFpCheck = defaultFpCheck;
       int defaultWorkSetSize = 100;
       int cmdWorkSetSize = defaultWorkSetSize;
@@ -96,6 +99,9 @@ int Sundance::init(int* argc, void*** argv)
       clp().setOption("workset", &cmdWorkSetSize, 
                       "Work set size");
 
+      
+      clp().setOption("debug", "nodebug", &debugWait, "Whether to attach a debugger to this process, holding until 'wait' is set to 0");
+
 
       clp().throwExceptions(false);
 
@@ -106,13 +112,27 @@ int Sundance::init(int* argc, void*** argv)
                          RuntimeError,
                          "Command-line parsing failed");
 
+      if (debugWait)
+        {
+          int wait=1;
+          int pid = getpid();
+          string myCommandName=((char**)(*argv))[0];
+          string debugCmd = "ddd -x ~/.gdbinit " + myCommandName 
+            + " " + Teuchos::toString(pid) + " &";
+          cerr << "launching " << debugCmd << endl;
+          system(debugCmd.c_str());
+          while (wait) {;}
+        }
+
+
+
       /* process the settings file */
       setSettings(configFilename);
 
-
-      if (cmdWorkSetSize != defaultWorkSetSize)
+      bool worksetSetOnCmdLine = cmdWorkSetSize != defaultWorkSetSize;
+      if (worksetSetOnCmdLine)
         {
-          Assembler::workSetSize() = cmdWorkSetSize;
+          Assembler::workSetSize() = (unsigned int) cmdWorkSetSize;
         }
     }
   catch(std::exception& e)
@@ -276,7 +296,7 @@ void Sundance::setSettings(const XMLObject& xml)
           if (name=="Work Set Size")
             {
               int workSetSize = child.getRequiredInt("value");
-              Assembler::workSetSize() = workSetSize;
+              Assembler::workSetSize() = (unsigned int) workSetSize;
             }
           else if (name=="Check for Floating Point Errors")
             {
@@ -420,6 +440,35 @@ bool Sundance:: passFailTest(double error, double tol)
   if (MPIComm::world().getRank()==0)
     {
       if (pass)
+        {
+          cerr << "test PASSED" << endl;
+        }
+      else
+        {
+          cerr << "test FAILED" << endl;
+        }
+    }
+  return pass;
+}
+
+
+bool Sundance:: passFailTest(const string& statusMsg,
+                             bool status, double error, double tol)
+{
+  bool pass;
+  if (MPIComm::world().getRank()==0)
+    {
+
+      cerr << statusMsg << ": ";
+      if (status) cerr << "true" << endl;
+      else cerr << "false" << endl;
+      cerr << "error norm = " << error << endl;
+      cerr << "tolerance = " << tol << endl;
+    }
+  pass = checkTest(error, tol);
+  if (MPIComm::world().getRank()==0)
+    {
+      if (status && pass)
         {
           cerr << "test PASSED" << endl;
         }

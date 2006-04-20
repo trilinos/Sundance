@@ -186,6 +186,10 @@ namespace SundanceStdFwk
     static bool passFailTest(double error, double tol);
 
     /** */
+    static bool passFailTest(const string& statusMsg,
+                             bool status, double error, double tol);
+
+    /** */
     static string searchForFile(const string& name);    
 
     static VerbositySetting verbosity(const string& str);

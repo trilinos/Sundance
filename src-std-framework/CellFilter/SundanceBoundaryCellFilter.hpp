@@ -61,6 +61,10 @@ namespace SundanceStdFwk
     /** */
     virtual ~BoundaryCellFilter(){;}
 
+    /** Print to a stream */
+    virtual string description() const 
+    {return "BoundaryCellFilter";}
+
     /* */
     GET_RCP(CellFilterStub);
 

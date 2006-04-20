@@ -28,6 +28,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#include "SundanceTabs.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 
 using namespace SundanceCore;
@@ -61,9 +62,15 @@ int RegionQuadCombo::getID(const RefCountPtr<CellFilterStub>& domain,
 
 string RegionQuadCombo::toString() const
 {
-  return "RegionQuadCombo[id="
-    + Teuchos::toString(id_) + "cell filter=" + domain_->description() 
-    + " quad=" + quad_->description() + "]";
+  TeuchosOStringStream oss;
+  Tabs tabs;
+
+  oss << "Integration Region" << endl;
+  {
+    oss << tabs << "cell filter=" << domain_->description() << endl;
+    oss << tabs << "quadrature rule=" << quad_->description() << endl;
+  }
+  return oss.str();
 }
 
 SundanceUtils::Map<RegPair, int>& RegionQuadCombo::domainAndQuadToIDMap()

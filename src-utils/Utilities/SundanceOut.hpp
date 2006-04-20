@@ -87,6 +87,7 @@ namespace SundanceUtils
 #define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_OUT(this->verbosity() > VerbLow, msg)
 #define SUNDANCE_VERB_LOW(msg) SUNDANCE_OUT(this->verbosity() > VerbSilent, msg)
 
+#define SUNDANCE_HEADER_LINE "\n------------------------------------------------------------------\n"
 
 
 
