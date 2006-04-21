@@ -56,17 +56,16 @@
 </ParameterList>
 
 
-<!-- Linear solver to be used for sensitivity equations -->
+<!-- Linear solver to be used for sensitivity equations (NOT in the nonlinear solve) -->
 <ParameterList name="Linear Solver">
 <ParameterList name="Linear Solver">
-   <Parameter name="Graph Fill" type="int" value="3"/>
    <Parameter name="Max Iterations" type="int" value="10000"/>
    <Parameter name="Restart Size" type="int" value="2000"/> 
    <Parameter name="Method" type="string" value="GMRES"/>
-   <Parameter name="Precond" type="string" value="Domain Decomposition"/>
-   <Parameter name="Subdomain Solver" type="string" value="ILU"/>
+   <Parameter name="Precond" type="string" value="ML"/>
    <Parameter name="Tolerance" type="double" value="1e-8"/>
    <Parameter name="Type" type="string" value="Aztec"/>
+   <Parameter name="ML Levels" type="int" value="4"/>
    <Parameter name="Verbosity" type="int" value="1"/>
 </ParameterList>
 </ParameterList>
