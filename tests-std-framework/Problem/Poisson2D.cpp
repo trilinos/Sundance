@@ -47,6 +47,15 @@ int main(int argc, void** argv)
   
   try
 		{
+      int nx = 10;
+      int ny = 10;
+      string solverFile = "aztec.xml";
+      string path = "../../../tests-std-framework/Problem/";
+      Sundance::setOption("nx", nx, "number of elements in x");
+      Sundance::setOption("ny", ny, "number of elements in y");
+      Sundance::setOption("solver", solverFile, "name of XML file for solver");
+      Sundance::setOption("path", path, "path to file");
+
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
@@ -55,8 +64,6 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 10;
-      int ny = 10;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 2.0, ny, 1,
@@ -104,7 +111,7 @@ int main(int argc, void** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterXMLFileReader reader(path + solverFile);
       ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);

@@ -1206,7 +1206,7 @@ void Assembler::evaluate(double& value) const
                 {
                   /* We ignore off-proc cells in this context, so that they don't get
                    * added twice into the functional */
-                  if (mesh_.ownerProcID(cellDim, *iter) != myRank) continue;
+                  isLocalFlag->append(myRank==mesh_.ownerProcID(cellDim, *iter));
                   workSet->append(*iter);
                 }
             }

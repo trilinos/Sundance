@@ -4,6 +4,12 @@
 <!-- Name of output file. A .vtu or .pvtu suffix will be appended          -->
 <Parameter name="Output Filename"   type="string"   value="cdr"/>
 
+<!-- Whether to solve sensitivity equations -->
+<Parameter name="Compute Sensitivities"   type="bool"   value="false"/>
+
+<!-- Whether to write the result at each continuation step -->
+<Parameter name="Write Each Continuation Step"   type="bool"   value="false"/>
+
 <!-- Model specification -->
 
 <ParameterList name="Model">
@@ -22,7 +28,7 @@
   <!-- Wavelength of fluctuations in psi at Dirichlet boundary              -->
   <Parameter name="BC Wavelength" type="double" value="0.45"/>
   <!-- Scale of advective velocity field                                    -->
-  <Parameter name="Peak Velocity" type="double" value="0.025"/>
+  <Parameter name="Peak Velocity" type="double" value="0.0"/>
   <!-- Order of quadrature rule used on boundary surfaces                   -->
   <Parameter name="BC Quadrature Order" type="int" value="4"/>
 </ParameterList>
@@ -39,16 +45,31 @@
   <!-- (3) npx times npy must equal the number of processors                        -->
 <ParameterList name="Mesh">
   <Parameter name="type" type="string" value="Rectangle"/>
-  <Parameter name="nx" type="int" value="200"/>
-  <Parameter name="npx" type="int" value="4"/>
+  <Parameter name="nx" type="int" value="128"/>
+  <Parameter name="npx" type="int" value="1"/>
   <Parameter name="ax" type="double" value="0.0"/>
   <Parameter name="bx" type="double" value="1.0"/>
-  <Parameter name="ny" type="int" value="200"/>
-  <Parameter name="npy" type="int" value="4"/>
+  <Parameter name="ny" type="int" value="128"/>
+  <Parameter name="npy" type="int" value="1"/>
   <Parameter name="ay" type="double" value="0.0"/>
   <Parameter name="by" type="double" value="1.0"/>
 </ParameterList>
 
+
+<!-- Linear solver to be used for sensitivity equations -->
+<ParameterList name="Linear Solver">
+<ParameterList name="Linear Solver">
+   <Parameter name="Graph Fill" type="int" value="3"/>
+   <Parameter name="Max Iterations" type="int" value="10000"/>
+   <Parameter name="Restart Size" type="int" value="2000"/> 
+   <Parameter name="Method" type="string" value="GMRES"/>
+   <Parameter name="Precond" type="string" value="Domain Decomposition"/>
+   <Parameter name="Subdomain Solver" type="string" value="ILU"/>
+   <Parameter name="Tolerance" type="double" value="1e-8"/>
+   <Parameter name="Type" type="string" value="Aztec"/>
+   <Parameter name="Verbosity" type="int" value="1"/>
+</ParameterList>
+</ParameterList>
 
 <!-- Nonlinear solver specification -->
 <ParameterList name="Nonlinear Solver">
@@ -68,7 +89,7 @@
 
       <ParameterList name="Status Test">
         <Parameter name="Max Iterations" type="int" value="25"/>
-        <Parameter name="Tolerance" type="double" value="1e-8"/>
+        <Parameter name="Tolerance" type="double" value="1e-10"/>
       </ParameterList>
 
       <!-- See the NOX documentation for printing settings.                -->
@@ -82,15 +103,18 @@
       <!-- residual more quickly, but the resulting Newton steps are bad; presumably  -->
       <!-- BICGSTAB isn't actually reducing the error despite the residual reduction. -->
       <ParameterList name="Linear Solver">
-        <Parameter name="Graph Fill" type="int" value="3"/>
-        <Parameter name="Max Iterations" type="int" value="10000"/>
-        <Parameter name="Restart" type="int" value="2000"/> 
+     <!--   <Parameter name="Graph Fill" type="int" value="3"/> -->
+        <Parameter name="Max Iterations" type="int" value="1500"/>
+        <Parameter name="Restart Size" type="int" value="200"/> 
         <Parameter name="Method" type="string" value="GMRES"/>
-        <Parameter name="Precond" type="string" value="Domain Decomposition"/>
-        <Parameter name="Subdomain Solver" type="string" value="ILU"/>
+        <Parameter name="Precond" type="string" value="ML"/>
+        <Parameter name="ML Symmetric" type="bool" value="false"/>
+        <Parameter name="Recursive Iterate" type="bool" value="true"/>
+        <Parameter name="ML Levels" type="int" value="4"/>
+      <!--  <Parameter name="Subdomain Solver" type="string" value="ILU"/> -->
         <Parameter name="Tolerance" type="double" value="1e-8"/>
         <Parameter name="Type" type="string" value="Aztec"/>
-        <Parameter name="Verbosity" type="int" value="0"/>
+        <Parameter name="Verbosity" type="int" value="4"/>
       </ParameterList>
 
    </ParameterList>

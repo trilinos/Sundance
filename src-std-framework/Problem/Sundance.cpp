@@ -213,7 +213,7 @@ int Sundance::finalize()
           cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
         }
 
-      if (MPIComm::world().getNProc()==1) TimeMonitor::summarize();
+      TimeMonitor::summarize();
 
       MPISession::finalize();
     }
