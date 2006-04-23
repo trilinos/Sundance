@@ -53,6 +53,16 @@ int main()
 
 #include "SundanceNLPModelEvaluator.hpp"
 #include "Sundance.hpp"
+#include "Teuchos_MPIContainerComm.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
+
+static Time& moochoTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("moocho solve"); 
+  return *rtn;
+}
 
 
 
@@ -87,21 +97,23 @@ namespace Thyra
     }
 
     
-    /** */
-    Vector<double> getInitialParameters() const 
-    {
-      Vector<double> rtn = paramSpace().createMember();
-      for (int i=0; i<paramSpace().dim(); i++) rtn[i] = 0.25;
-      return rtn;
-    }
 
+    /** */
     const string& outfile() const {return outfile_;}
 
+    /** */
     const Mesh& mesh() const {return mesh_;}
+
+    /** */
+    const Expr& target() const {return target_;}
+
+    /** */
+    void setTargetVector(const Expr& expr);
 
   private:
     string outfile_;
     Mesh mesh_;
+    Expr target_;
   };
 }
 
@@ -143,10 +155,15 @@ int main(int argc, void** argv)
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
-      RefCountPtr<Thyra::CDRControlModel> ssModel 
+      /* create an object for the physics model */
+      RefCountPtr<Thyra::CDRControlModel> cdrModel 
         = rcp(new Thyra::CDRControlModel(params, vecType));
-      RefCountPtr<Thyra::ModelEvaluator<double> > model = ssModel;
 
+
+      RefCountPtr<Thyra::ModelEvaluator<double> > model = cdrModel;
+
+      
+      /* specify the linear solver */
       RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> >lowsFactory;
 
       if (solverSpec=="aztec")
@@ -167,29 +184,65 @@ int main(int argc, void** argv)
         = rcp(new Thyra::DefaultModelEvaluatorWithSolveFactory<double>(model,
                                                                        lowsFactory));
 
+      
+      
+      TEST_FOR_EXCEPT(!params.isSublist("Forward Problem"));
+      ParameterList fwdParams = params.sublist("Forward Problem");
+      Expr fwdSoln = cdrModel->solveForward(fwdParams);
+      
+      string outputFilename = "fwdSoln";
+      if (fwdParams.isParameter("Output Filename"))
+        {
+          outputFilename = getParameter<string>(fwdParams, "Output Filename");
+        }
+      
+      cdrModel->setTargetVector(fwdSoln);
+
+      Array<double> initialGuess;
+
+      if (myRank==0)
+        {
+          initialGuess = cdrModel->paramArray(fwdParams, "Design Parameters");
+          double perturbation = getParameter<double>(params, "Perturbation Magnitude");
+          
+          for (unsigned int i=0; i<initialGuess.size(); i++)
+            {
+              double a = 1.0-perturbation;
+              double b = 2.0*perturbation;
+              initialGuess[i] = initialGuess[i] * (a + b*rand()/((double)RAND_MAX));
+            }
+        }
+      MPIContainerComm<double>::bcast(initialGuess, 0, cdrModel->mesh().comm());
+      cdrModel->setInitialParameters(initialGuess);
+
       int flag=0;
       if (doSim)
         {
           flag = -1;
         }
-
-      NLPFirstOrderThyraModelEvaluator nlp(modelWithLOWS, flag, flag);
-
-      // Create the solver object
-      MoochoSolver  solver;
       
+      NLPFirstOrderThyraModelEvaluator nlp(modelWithLOWS, flag, flag);
+      
+      // Create the optimization solver object
+      MoochoSolver  solver;
+          
       // Set the NLP
       solver.set_nlp( Teuchos::rcp(&nlp,false) );
-
+      
       if (myRank==0) cout << "starting solve" << endl;
-      // Solve the NLP
-      const MoochoSolver::ESolutionStatus	solution_status = solver.solve_nlp();
 
-      Expr uFinal = ssModel->stateVariable();
-      FieldWriter writer = new VTKWriter(ssModel->outfile());
-      writer.addMesh(ssModel->mesh());
-      writer.addField("Optimal Psi", new ExprFieldWrapper(uFinal[0]));
-      writer.write();
+      {
+        TimeMonitor timer(moochoTimer());
+        // Solve the NLP
+        const MoochoSolver::ESolutionStatus	solution_status = solver.solve_nlp();
+      }
+
+      Expr uFinal = cdrModel->stateVariable();
+      FieldWriter w2 = new VTKWriter(cdrModel->outfile());
+      w2.addMesh(cdrModel->mesh());
+      w2.addField("Target", new ExprFieldWrapper(fwdSoln[0]));
+      w2.addField("Optimal Psi", new ExprFieldWrapper(uFinal[0]));
+      w2.write();
     }
 	catch(exception& e)
 		{
@@ -203,7 +256,7 @@ namespace Thyra
 {
   CDRControlModel::CDRControlModel(const ParameterList& paramList,
                                    const VectorType<double>& vecType)
-    : SundanceNLPModelEvaluator(vecType), outfile_(), mesh_()
+    : SundanceNLPModelEvaluator(vecType), outfile_(), mesh_(), target_()
   {
     int myRank = MPIComm::world().getRank();
     /* Create the mesh as specified by the Mesh parameter section */
@@ -223,9 +276,18 @@ namespace Thyra
     double u0 = getParameter<double>(modelParams, "Peak Velocity");
     int bcQuadOrder = getParameter<int>(modelParams, "BC Quadrature Order");
     int numControls = getParameter<int>(modelParams, "Num Controls");
+
+    /* register alpha and beta as continuation parameters */
+    Expr ab = List(new Parameter(alpha0), new Parameter(beta0));
+    Expr abFinal = List(new Parameter(alpha0), new Parameter(beta0));
+    setContinuationParameters(ab);
+    setFinalContinuationValues(abFinal);
+    Expr alpha = ab[0];
+    Expr beta = ab[1];
     
     /* Read the filename for viz output */
     outfile_ = getParameter<string>(paramList, "Output Filename");
+
 
     /* =================================================================== 
      *   Equation definition 
@@ -300,12 +362,6 @@ namespace Thyra
     else if (dimension==2) u = List(ux, uy);
     else u = List(ux, uy, uz);
     
-    /* Create parameter expressions for alpha and beta. These will be
-     * modified during the continuation loop, and thus must be
-     * parameter exprs rather than constants. */
-    Expr alpha = new Parameter(alpha0);
-    Expr beta = new Parameter(beta0);
-
     
     /* Define the boundary field in terms of the design parameters */
     Expr control = 0.0;
@@ -313,7 +369,7 @@ namespace Thyra
     for (unsigned int i=1; i<=p.size(); i++) 
       {
         p[i-1] = new Parameter(1.0);
-        control = control + pi*pi*i*i*p[i-1] * sin(i*pi*y);
+        control = control + p[i-1]*sin(i*pi*y);
       }
     Expr param = new ListExpr(p);
 
@@ -346,7 +402,7 @@ namespace Thyra
     Array<LinearProblem> sensProb(param.size());
     for (unsigned int i=0; i<param.size(); i++)
       { 
-        Expr w = pi*pi*(i+1)*(i+1)*sin((i+1)*pi*y);
+        Expr w = sin((i+1)*pi*y);
         Expr sensEqn = Integral(interior, (grad*vPsi)*(D*(grad*psi) - u*psi), quad)
           + Integral(interior, vPsi * psi * (alpha + 3.0*beta * psi0*psi0), quad)
           + Integral(right, vPsi*ux*psi0, bcQuad); 
@@ -354,16 +410,27 @@ namespace Thyra
         sensProb[i] = LinearProblem(mesh, sensEqn, sensBC, vPsi, psi, vecType);
       }
 
-    Expr psiStar = sin(2.0*pi*y);// + 0.1*cos(5.0*pi*y);
+
+    /* Define the target expression */
+    target_ = new DiscreteFunction(discSpace, 1.0);
     
-    Expr objective = Integral(interior, 0.5*pow(psi - psiStar, 2.0)*pow(x,6.0), quad);
+    Expr objective = Integral(interior, 0.5*pow(psi - target_, 2.0), quad);
     Functional obj(mesh, objective, vecType);
 
     if (myRank==0) cout << "initializing NLP..." << endl;    
 
     initialize(param, psi, psi0, prob, sensProb, obj);
 
+    
+
     if (myRank==0) cout << "done initializing NLP..." << endl; 
+  }
+
+  void CDRControlModel::setTargetVector(const Expr& expr)
+  {
+    const Vector<double>& vec 
+      = DiscreteFunction::discFunc(expr)->getVector().copy();
+    DiscreteFunction::discFunc(target_)->setVector(vec);
   }
 
 }

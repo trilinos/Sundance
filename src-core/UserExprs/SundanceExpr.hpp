@@ -249,6 +249,8 @@ namespace SundanceCore
 
       /** */
       void setParameterValue(const double& value);
+      /** */
+      double getParameterValue() const ;
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY

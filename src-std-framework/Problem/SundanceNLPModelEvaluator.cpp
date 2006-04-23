@@ -33,6 +33,7 @@
 
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
+#include "TSFNOXSolver.H"
 #include "SundanceNLPModelEvaluator.hpp"
 
 #ifdef HAVE_ENABLED_MOOCHO
@@ -40,12 +41,15 @@
 SundanceNLPModelEvaluator::SundanceNLPModelEvaluator(const VectorType<double>& vecType)
   : SundanceModelEvaluator(vecType),
     paramSpace_(),
+    initParams_(),
     paramExpr_(),
     stateExpr_(),
     prob_(),
     sensProb_(),
     obj_(),
-    objEval_()
+    objEval_(),
+    contParams_(),
+    finalContParams_()
 {;}
 
 
@@ -67,6 +71,30 @@ void SundanceNLPModelEvaluator::initialize(const Expr& paramExpr,
   paramSpace_ = pSpace;
 }
 
+void SundanceNLPModelEvaluator::setInitialParameters(const Array<double>& a)
+{
+  initParams_ = a;
+}
+
+
+Vector<double> SundanceNLPModelEvaluator::getInitialParameters() const 
+{
+  Vector<double> rtn = paramSpace().createMember();
+  if (initParams_.size() == 0)
+    {
+      rtn.setToConstant(0.0);
+    }
+  else
+    {
+      TEST_FOR_EXCEPT(initParams_.size() != rtn.space().dim());
+      for (unsigned int i=0; i<initParams_.size(); i++)
+        {
+          rtn[i] = initParams_[i];
+        }
+    }
+  return rtn;
+}
+
 void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec,
                                                   const Vector<double>& params,
                                                   Vector<double>& resid,
@@ -77,6 +105,7 @@ void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec
                                                   Vector<double>& dg_dx_T) const 
 {
   Tabs tabs;
+
   TEST_FOR_EXCEPTION(params.ptr().get()==0, RuntimeError,
                      "null params vector!");
   TEST_FOR_EXCEPTION( (int) paramExpr_.size() != params.space().dim(),
@@ -102,7 +131,7 @@ void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec
 
   /* set the symbolic state function value to the input state */
 
-  if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tabs << "state vector is " 
+  if (MPIComm::world().getRank()==0) SUNDANCE_VERB_HIGH(tabs << "state vector is " 
                        << stateVec.description());
   prob_.setEvalPt(stateVec);
   
@@ -180,6 +209,82 @@ Array<double> SundanceNLPModelEvaluator::parameters() const
   return rtn;
 }
 
+Array<double> SundanceNLPModelEvaluator
+::paramArray(const ParameterList& params,
+             const string& paramName) const
+{
+  string str = getParameter<string>(params, paramName);
+  Array<string> toks = StrUtils::stringTokenizer(str);
+  Array<double> rtn(toks.size());
+  for (unsigned int i=0; i<toks.size(); i++)
+    {
+      rtn[i] = StrUtils::atof(toks[i]);
+    }
+  return rtn;
+}
+
+
+Expr SundanceNLPModelEvaluator
+::solveForward(const ParameterList& fwdParams) const
+{
+
+  RefCountPtr<TSFExtended::NonlinearOperatorBase<double> > p 
+    = rcp(&prob_, false);
+  TSFExtended::NonlinearOperator<double> prob = p;
+
+
+  /* set up the nonlinear solver */
+  TEST_FOR_EXCEPT(!fwdParams.isSublist("Nonlinear Solver"));
+
+  ParameterList nonlinParams = fwdParams.sublist("Nonlinear Solver");
+  int numContSteps = 1;
+  if (nonlinParams.isParameter("Number of Continuation Steps"))
+    {
+      numContSteps = getParameter<int>(nonlinParams, "Number of Continuation Steps");
+    }
+
+  TSFExtended::NOXSolver solver(nonlinParams, prob);
+
+
+  /* set the design parameters as given in the the XML input */
+  TEST_FOR_EXCEPT(!fwdParams.isParameter("Design Parameters"));
+  Array<double> designParams = paramArray(fwdParams, "Design Parameters");
+  TEST_FOR_EXCEPT(designParams.size() != paramExpr_.size());
+                     
+  for (unsigned int i=0; i<paramExpr_.size(); i++)
+    {
+      Tabs tab2;
+      Expr p_i = paramExpr_[i];
+      p_i.setParameterValue(designParams[i]);
+      if (MPIComm::world().getRank()==0) 
+        SUNDANCE_VERB_MEDIUM(tab2 << i << " " << paramExpr_[i]);
+    }
+
+  /* run the continuation loop */
+  for (int i=0; i<numContSteps; i++)
+    {
+      for (unsigned int j=0; j<numContinuationParameters(); j++)
+        {
+          Expr c = continuationParameters(j);
+          Expr cFinal = finalContinuationValues(j);
+          double cStep = cFinal.getParameterValue() * ((double) i)/((double) numContSteps-1);
+
+          c.setParameterValue(cStep);
+        }
+      /* solve, writing the solution into stateExpr_ */
+      solver.solve();
+    }
+  
+  /* copy the solution from stateExpr into a new field */
+  const DiscreteSpace& discSpace 
+    = DiscreteFunction::discFunc(stateExpr_)->discreteSpace();
+  const Vector<double>& vec 
+    = DiscreteFunction::discFunc(stateExpr_)->getVector().copy();
+  
+  return new DiscreteFunction(discSpace, vec);
+  
+  
+}
 
 
 #endif

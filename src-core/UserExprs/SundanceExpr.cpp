@@ -441,6 +441,15 @@ void Expr::setParameterValue(const double& value)
   pe->setValue(value);
 }
 
+double Expr::getParameterValue() const 
+{
+  const Parameter* pe = dynamic_cast<const Parameter*>(ptr().get());
+  TEST_FOR_EXCEPTION(pe==0, RuntimeError, 
+                     "Expr " << *this << " is not a Parameter expr, and "
+                     "so getParameterValue() should not be called");
+  return pe->value();
+}
+
 namespace SundanceCore
 {
   using namespace SundanceUtils;

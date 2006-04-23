@@ -62,18 +62,17 @@ namespace Thyra
     virtual Vector<double> getInitialState() const 
     {
       Vector<double> rtn = stateSpace().createMember();
-      rtn.setToConstant(1.25);
+      rtn.setToConstant(0.0);
       return rtn;
     }
 
     
     /** */
-    virtual Vector<double> getInitialParameters() const 
-    {
-      Vector<double> rtn = paramSpace().createMember();
-      rtn.setToConstant(3.14);
-      return rtn;
-    }
+    virtual Vector<double> getInitialParameters() const ;
+
+
+    /** */
+    void setInitialParameters(const Array<double>& a);
 
     /** */
     void internalEvalModel(const Vector<double>& stateVec,
@@ -122,8 +121,34 @@ namespace Thyra
     Expr stateVariable() const {return stateExpr_;}
 
 
+    /** */
+    Expr solveForward(const ParameterList& fwdParams) const ;
+
+
+    /** */
+    Array<double> paramArray(const ParameterList& params,
+                             const string& paramName) const ;
+
+    /** */
+    void setContinuationParameters(const Expr& contParams) {contParams_ = contParams;}
+
+    /** */
+    void setFinalContinuationValues(const Expr& finalContParams) 
+    {finalContParams_ = finalContParams;}
+
+    /** */
+    Expr continuationParameters(int i) const {return contParams_[i];}
+    /** */
+    unsigned int numContinuationParameters() const {return contParams_.size();}
+
+    /** */
+    Expr finalContinuationValues(int i) const {return finalContParams_[i];}
+    
+
   private:
     VectorSpace<double> paramSpace_;
+
+    Array<double> initParams_;
 
     mutable Expr paramExpr_;
 
@@ -136,6 +161,12 @@ namespace Thyra
     Functional obj_;
     
     FunctionalEvaluator objEval_;
+
+    Expr contParams_;
+
+    Expr finalContParams_;
+
+
   };
 }
 
