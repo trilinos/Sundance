@@ -44,12 +44,9 @@ int main()
 
 #include "MoochoPack_MoochoSolver.hpp"
 #include "NLPInterfacePack_NLPFirstOrderThyraModelEvaluator.hpp"
-#include "Thyra_DefaultModelEvaluatorWithSolveFactory.hpp"
-#include "Thyra_AmesosLinearOpWithSolveFactory.hpp"
-#include "Thyra_BelosLinearOpWithSolveFactory.hpp"
-#include "Thyra_AztecOOLinearOpWithSolveFactory.hpp"
-#include "Thyra_IfpackPreconditionerFactory.hpp"
+#include "Thyra_LOWSFactoryBuilder.hpp"
 #include "Thyra_DefaultSerialVectorSpace.hpp"
+#include "Thyra_DefaultModelEvaluatorWithSolveFactory.hpp"
 
 #include "SundanceNLPModelEvaluator.hpp"
 #include "Sundance.hpp"
@@ -125,11 +122,6 @@ int main(int argc, void** argv)
 
   try
 		{
-      bool doSim=false;
-      Sundance::setOption("doSim", "doOpt", doSim, "whether to do simulation or optimization");
-      string solverSpec = "belos";
-      Sundance::setOption("solver", solverSpec, "specify solver: options are amesos, aztec, belos");
-
       /* We will read input parameters from an XML file. The name of
        * the file is read from the command line:
        * --input=<filename>. The default is CDR.xml. */
@@ -152,6 +144,8 @@ int main(int argc, void** argv)
       XMLParameterListReader paramsReader;
       ParameterList params = paramsReader.toParameterList(xml);
 
+      if (myRank==0) cout << " CDR input parameters = " << endl << params << endl;
+
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
@@ -163,29 +157,18 @@ int main(int argc, void** argv)
       RefCountPtr<Thyra::ModelEvaluator<double> > model = cdrModel;
 
       
-      /* specify the linear solver */
-      RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> >lowsFactory;
+      /* specify the linear solver to be used in Moocho */
 
-      if (solverSpec=="aztec")
-        {
-          lowsFactory = rcp(new Thyra::AztecOOLinearOpWithSolveFactory());
-          lowsFactory->setPreconditionerFactory(rcp(new Thyra::IfpackPreconditionerFactory()),"");
-        }
-      else if (solverSpec=="belos")
-        {
-          lowsFactory = rcp(new Thyra::BelosLinearOpWithSolveFactory<double>());
-          lowsFactory->setPreconditionerFactory(rcp(new Thyra::IfpackPreconditionerFactory()),"");
-        }
-      else
-        {
-          lowsFactory = rcp(new Thyra::AmesosLinearOpWithSolveFactory());
-        }
+      RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> > lowsFactory
+        = LOWSFactoryBuilder::createLOWSFactory(params.sublist("Linear Solver"));
+
       RefCountPtr<Thyra::ModelEvaluator<double> > modelWithLOWS
         = rcp(new Thyra::DefaultModelEvaluatorWithSolveFactory<double>(model,
                                                                        lowsFactory));
 
       
-      
+
+      /* set up the solution of the forward problem to obtain a target */
       TEST_FOR_EXCEPT(!params.isSublist("Forward Problem"));
       ParameterList fwdParams = params.sublist("Forward Problem");
       Expr fwdSoln = cdrModel->solveForward(fwdParams);
@@ -198,6 +181,7 @@ int main(int argc, void** argv)
       
       cdrModel->setTargetVector(fwdSoln);
 
+      /* perturb the initial guess from the values used to make the target */
       Array<double> initialGuess;
 
       if (myRank==0)
@@ -215,28 +199,24 @@ int main(int argc, void** argv)
       MPIContainerComm<double>::bcast(initialGuess, 0, cdrModel->mesh().comm());
       cdrModel->setInitialParameters(initialGuess);
 
-      int flag=0;
-      if (doSim)
-        {
-          flag = -1;
-        }
+
+
+      /* set up a Moocho NLP object */
+      NLPFirstOrderThyraModelEvaluator nlp(modelWithLOWS, 0, 0);
       
-      NLPFirstOrderThyraModelEvaluator nlp(modelWithLOWS, flag, flag);
-      
-      // Create the optimization solver object
+      /* Create the optimization solver object */
       MoochoSolver  solver;
-          
-      // Set the NLP
       solver.set_nlp( Teuchos::rcp(&nlp,false) );
       
-      if (myRank==0) cout << "starting solve" << endl;
 
+      /* do it! */
       {
         TimeMonitor timer(moochoTimer());
-        // Solve the NLP
+        if (myRank==0) cout << "starting solve" << endl;
         const MoochoSolver::ESolutionStatus	solution_status = solver.solve_nlp();
       }
 
+      /* write viz output */
       Expr uFinal = cdrModel->stateVariable();
       FieldWriter w2 = new VTKWriter(cdrModel->outfile());
       w2.addMesh(cdrModel->mesh());

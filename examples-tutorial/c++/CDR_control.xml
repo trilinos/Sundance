@@ -6,7 +6,7 @@
 
 
 <!-- Fractional perturbation of initial parameters away from nominal       -->
-<Parameter name="Perturbation Magnitude" type="double" value="0.1"/>
+<Parameter name="Perturbation Magnitude" type="double" value="0.25"/>
 
 
 <!-- Model specification -->
@@ -33,6 +33,23 @@
 </ParameterList>
 
 
+
+<!-- specification of linear solver to be used in MOOCHO -->
+<ParameterList name="Linear Solver">
+   <ParameterList name="Belos">
+     <!-- no params -->
+   </ParameterList>
+
+   <ParameterList name="ML">
+      <Parameter name="Problem Type"  type="string"   value="SA"/>
+      <Parameter name="output"  type="int"   value="0"/>
+   </ParameterList>
+
+</ParameterList>
+
+
+
+
 <!-- Mesh specification -->
   <!-- Notes:                                                                       -->
   <!-- (1) don't change ax, bx, ay, or by just yet. The hardwired cell filters      -->
@@ -53,6 +70,7 @@
   <Parameter name="ay" type="double" value="0.0"/>
   <Parameter name="by" type="double" value="1.0"/>
 </ParameterList>
+
 
 
 
@@ -101,7 +119,7 @@
       <!-- See the NOX documentation for printing settings.                -->
       <!-- 15=0xF prints pretty much everything.                           -->
       <ParameterList name="Printing">
-        <Parameter name="Output Information" type="int" value="15"/>
+        <Parameter name="Output Information" type="int" value="0"/>
       </ParameterList>
 
       <!-- use Aztec for linear solves -->
@@ -109,16 +127,17 @@
       <!-- residual more quickly, but the resulting Newton steps are bad; presumably  -->
       <!-- BICGSTAB isn't actually reducing the error despite the residual reduction. -->
       <ParameterList name="Linear Solver">
-        <Parameter name="Max Iterations" type="int" value="1500"/>
+<!--        <Parameter name="Max Iterations" type="int" value="1500"/> -->
         <Parameter name="Restart Size" type="int" value="200"/> 
         <Parameter name="Method" type="string" value="GMRES"/>
         <Parameter name="Precond" type="string" value="ML"/>
         <Parameter name="ML Symmetric" type="bool" value="false"/>
         <Parameter name="Recursive Iterate" type="bool" value="true"/>
         <Parameter name="ML Levels" type="int" value="4"/>
+        <Parameter name="ML Verbosity" type="int" value="0"/>
         <Parameter name="Tolerance" type="double" value="1e-10"/>
         <Parameter name="Type" type="string" value="Aztec"/>
-        <Parameter name="Verbosity" type="int" value="4"/>
+        <Parameter name="Verbosity" type="int" value="0"/> 
       </ParameterList>
 
    </ParameterList>
