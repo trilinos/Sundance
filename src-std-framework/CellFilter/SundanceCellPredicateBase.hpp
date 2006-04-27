@@ -87,6 +87,9 @@ using namespace SundanceStdMesh::Internal;
       /** */
       virtual bool lessThan(const CellPredicateBase* other) const = 0 ;
 
+      /** */
+      virtual string description() const {return typeName();}
+
 
       /** */
       virtual string typeName() const {return typeid(*this).name();}

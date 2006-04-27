@@ -68,6 +68,15 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
     localValueCacheIsValid_()
 {;}
 
+void StdFwkEvalMediator::setCellType(const CellType& cellType,
+                               const CellType& maxCellType) 
+{
+  cellType_=cellType; 
+  maxCellType_ = maxCellType_;
+  cacheIsValid() = false; 
+  jCacheIsValid_=false;
+}
+
 void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
                                       const RefCountPtr<Array<int> >& cellLID) 
 {
@@ -86,6 +95,8 @@ void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
         {
           (*maxCellLIDs_)[c] 
             = mesh_.cofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
+          cout << "max cellLID=" << (*maxCellLIDs_)[c] 
+               << ", facetIndex=" << (*facetIndices_)[c] << endl;
         }
       mesh_.getJacobians(mesh_.spatialDim(), *maxCellLIDs_, *JTrans_);
     }
@@ -115,4 +126,16 @@ const CellJacobianBatch& StdFwkEvalMediator::JTrans() const
    * volume computations and vector transformations */
   if (useMaximalCells_) return *JTrans_;
   return *JVol_;
+}
+
+const Array<int>& StdFwkEvalMediator::dofCellLIDs() const
+{
+  if (useMaximalCells_) return *maxCellLIDs_;
+  return *cellLID_;
+}
+
+const CellType& StdFwkEvalMediator::dofCellType() const 
+{
+  if (useMaximalCells_) return maxCellType_;
+  return cellType_;
 }

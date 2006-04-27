@@ -160,8 +160,7 @@ namespace SundanceStdFwk
                 const RefCountPtr<EquationSet>& eqn);
 
       /** */
-      void insertLocalMatrixBatch(int cellDim, 
-                                  const Array<int>& workSet, 
+      void insertLocalMatrixBatch(int nCells, 
                                   bool isBCRqc,
                                   const Array<Array<Array<int> > >& testIndices,
                                   const Array<Array<Array<int> > >& unkIndices,
@@ -175,8 +174,7 @@ namespace SundanceStdFwk
                                   Array<Array<LoadableMatrix<double>* > >& mat) const ;
 
       /** */
-      void insertLocalVectorBatch(int cellDim, 
-                                  const Array<int>& workSet, 
+      void insertLocalVectorBatch(int nCells, 
                                   bool isBCRqc,
                                   const Array<Array<Array<int> > >& testIndices,
                                   const Array<Array<int> >& nTestNodes, 

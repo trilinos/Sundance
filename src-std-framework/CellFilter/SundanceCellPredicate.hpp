@@ -68,6 +68,9 @@ using namespace SundanceStdMesh::Internal;
     /** write to XML */
     XMLObject toXML() const {return ptr()->toXML();}
 
+    /** */
+    string description() const {return ptr()->description();}
+
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
     /** set the mesh on which cells are to be tested */

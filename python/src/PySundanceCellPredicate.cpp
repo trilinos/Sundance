@@ -4,19 +4,35 @@ using namespace SundanceStdFwk;
 using namespace SundanceUtils;
 
 PySundanceCellPredicate::PySundanceCellPredicate(PyObject* functor) 
-  : py_functor_(functor), py_evalOp_()
+  : py_functor_(functor), evalOpCallback_(), descrCallback_()
 
 {
+  cerr << "creating functor object" << endl;
   // Increment the reference count
   Py_XINCREF(py_functor_);
 
   // If the python object has a "evalOp" attribute, set it
-  // to be the PySundanceCellPredicate computeF callback function
-  if (PyObject_HasAttrString (py_functor_,
-			      "evalOp")) {
-    setEvalOp(PyObject_GetAttrString(py_functor_,
-				       "evalOp"));
-  }
+  // to be the PySundanceCellPredicate computeF callback function. If not,
+  // we have an error!
+  if (PyObject_HasAttrString (py_functor_, "evalOp")) 
+    {
+      setEvalOp(PyObject_GetAttrString(py_functor_, "evalOp"));
+    } 
+  else
+    {
+      TEST_FOR_EXCEPTION(true, RuntimeError,
+                         "PySundanceCellPredicate bound to a Python object "
+                         "without a method called evalOp().");
+    }
+
+  // If the python object has a "description" attribute, bind
+  // it to the description() function call. Otherwise, use
+  // a raw description of this object as a description. 
+  if (PyObject_HasAttrString (py_functor_, "description")) 
+    {
+      setDescr(PyObject_GetAttrString(py_functor_, "description"));
+    }
+  cerr << "done creating functor object" << endl;
 }
 
 PySundanceCellPredicate::~PySundanceCellPredicate() {
@@ -27,6 +43,9 @@ PySundanceCellPredicate::~PySundanceCellPredicate() {
 
 bool PySundanceCellPredicate::operator()(const Point& x) const 
 {
+  TEST_FOR_EXCEPTION(evalOpCallback_.get()==0, RuntimeError,
+                     "null pointer to python evalOp() method");
+
   PyObject * arglist;
   PyObject * result;
 
@@ -45,7 +64,7 @@ bool PySundanceCellPredicate::operator()(const Point& x) const
       TEST_FOR_EXCEPTION(true, RuntimeError,
                          "point dimension = " << x << " not supported");
     }
-  result = PyEval_CallObject(py_evalOp_.getFunction(), arglist);
+  result = PyEval_CallObject(evalOpCallback_->getFunction(), arglist);
   Py_DECREF(arglist);  // All done with argument list
 
   if (0 == result) {
@@ -56,9 +75,53 @@ bool PySundanceCellPredicate::operator()(const Point& x) const
   return (bool) PyObject_IsTrue(result);
 }
 
-
-PyObject * PySundanceCellPredicate::setEvalOp(PyObject * p_pyObject)
+string PySundanceCellPredicate::description() const 
 {
-  return py_evalOp_.setFunction(p_pyObject);
+  cerr << "doing Py descr" << endl;
+  PyObject* result = 0 ;
+
+  if (descrCallback_.get() != 0)
+    {
+      cerr << "doing Py callback" << endl;
+      PyObject* arglist;
+      
+      arglist = Py_BuildValue("()");
+      result = PyEval_CallObject(descrCallback_->getFunction(), arglist);
+      Py_DECREF(arglist);  // All done with argument list
+    }
+  else
+    {
+      result = PyObject_Str(py_functor_);
+    }
+      
+  if (0 == result) 
+    {
+      PyErr_Print();
+      TEST_FOR_EXCEPTION(true, RuntimeError, "zero result from python callback");
+    }
+  
+  Py_DECREF(result); // All done with returned result object
+  
+  char* str = 0;
+  int len = 0;
+  PyString_AsStringAndSize(result, &str, &len);
+
+  return string(str);
+}
+
+
+PyObject * PySundanceCellPredicate::setEvalOp(PyObject* pyClass)
+{
+  PySundanceCallback* cb = new PySundanceCallback();
+  evalOpCallback_ = rcp(cb);
+  return evalOpCallback_->setFunction(pyClass);
+}
+
+
+PyObject * PySundanceCellPredicate::setDescr(PyObject* pyClass)
+{
+  PySundanceCallback* cb = new PySundanceCallback();
+  descrCallback_ = rcp(cb);
+  return descrCallback_->setFunction(pyClass);
 }
 

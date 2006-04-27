@@ -70,6 +70,12 @@ using namespace SundanceStdMesh::Internal;
       /** */
       virtual bool lessThan(const CellFilterStub* other) const ;
 
+      /** */
+      virtual string description() const 
+      {return "Subset(predicate=" + predicate_.description() 
+          + ", super=" + superset_.description()+")";}
+
+
       /* */
       GET_RCP(CellFilterStub);
     

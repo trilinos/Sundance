@@ -86,7 +86,8 @@ namespace SundanceStdFwk
                                         RefCountPtr<EvalVector>& vec) const ;
 
       /** */
-      virtual void setCellType(const CellType& cellType) ;
+      virtual void setCellType(const CellType& cellType,
+                               const CellType& maxCellType) ;
 
       /** */
       virtual void print(ostream& os) const ;
@@ -123,6 +124,9 @@ namespace SundanceStdFwk
       Map<CellType, RefCountPtr<Array<Point> > > refQuadPts_;
 
       /** */
+      Map<CellType, RefCountPtr<Array<Array<Point> > > > refFacetQuadPts_;
+
+      /** */
       Map<CellType, RefCountPtr<Array<double> > > refQuadWeights_;
 
       /** */
@@ -130,6 +134,8 @@ namespace SundanceStdFwk
 
       /** */
       mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<double> > > > refBasisVals_;
+
+      mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<double> > > > > refFacetBasisVals_;
       
     };
   }

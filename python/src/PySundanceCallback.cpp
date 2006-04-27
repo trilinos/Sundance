@@ -6,18 +6,18 @@ using std::cout;
 using std::endl;
 
 PySundanceCallback::PySundanceCallback()
-  : mp_callback(0)
+  : callback_(NULL)
 {
   // Nothing here yet
 }
 
 PySundanceCallback::~PySundanceCallback()
 {
-  Py_XDECREF(mp_callback);   /* Dispose of callback */
-  mp_callback = 0;
+  Py_XDECREF(callback_);   /* Dispose of callback */
+  callback_ = 0;
 }
 
-PyObject * PySundanceCallback::setFunction( PyObject * p_args)
+PyObject * PySundanceCallback::setFunction( PyObject * pyMethod)
 {
     PyObject *p_result = NULL;
     PyObject *p_temp   = NULL;
@@ -26,7 +26,7 @@ PyObject * PySundanceCallback::setFunction( PyObject * p_args)
 
     assert(0 != p_args && "Null argument passed to setFunction()");
     
-    if (PyArg_ParseTuple(p_args, "O", &p_temp)) {
+    if (PyArg_ParseTuple(pyMethod, "O", &p_temp)) {
       // Assume that if this is a tuple, the item in the tuple is a
       // PyObject that is a pointer to a Python function. This is the
       // case when this function is called from Python.
@@ -35,7 +35,7 @@ PyObject * PySundanceCallback::setFunction( PyObject * p_args)
       // Otherwise we assume that this function is directly passed a
       // PyObject that is a pointer to a Python function.  This is the
       // case when this function is called from C++.
-      p_func = p_args;
+      p_func = pyMethod;
     }
 
     if (!PyCallable_Check(p_func)) {
@@ -45,8 +45,8 @@ PyObject * PySundanceCallback::setFunction( PyObject * p_args)
       return NULL;
     }
     Py_XINCREF(p_func);          /* Add a reference to new callback */
-    Py_XDECREF(mp_callback);     /* Dispose of previous callback    */
-    mp_callback = p_func;        /* Remember new callback           */
+    Py_XDECREF(callback_);     /* Dispose of previous callback    */
+    callback_ = p_func;        /* Remember new callback           */
     /* Boilerplate to return "None" */
     Py_INCREF(Py_None);
     p_result = Py_None;
@@ -57,12 +57,12 @@ PyObject * PySundanceCallback::setFunction( PyObject * p_args)
  
 PyObject * PySundanceCallback::getFunction()
 {
-  assert (0 != mp_callback && "PySundanceCallback function not yet assigned");
-  return mp_callback;
+  assert (0 != callback_ && "PySundanceCallback function not yet assigned");
+  return callback_;
 }
 
 const PyObject * PySundanceCallback::getFunction() const
 {
-  assert (0 != mp_callback && "PySundanceCallback function not yet assigned");
-  return mp_callback;
+  assert (0 != callback_ && "PySundanceCallback function not yet assigned");
+  return callback_;
 }

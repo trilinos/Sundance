@@ -95,6 +95,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
     {
       nFacetCases_ = numFacets(maxCellType, dim);
       nNodesTest_ = testBasis.nNodes(spatialDim, maxCellType);
+      nNodes_ = nNodesTest_;
     }
 }
 
@@ -131,6 +132,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
       nFacetCases_ = numFacets(maxCellType, dim);
       nNodesTest_ = testBasis.nNodes(spatialDim, maxCellType);
       nNodesUnk_ = unkBasis.nNodes(spatialDim, maxCellType);
+      nNodes_ = nNodesTest_ * nNodesUnk_;
     }
 }
 

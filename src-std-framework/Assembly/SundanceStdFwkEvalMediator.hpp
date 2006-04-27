@@ -77,9 +77,9 @@ namespace SundanceStdFwk
                         const RefCountPtr<Array<int> >& cellLID);
 
 
-      /** */
-      virtual void setCellType(const CellType& cellType) 
-      {cellType_=cellType; cacheIsValid() = false; jCacheIsValid_=false;}
+      /** Update the cell type */
+      virtual void setCellType(const CellType& cellType,
+                               const CellType& maxCellType) ;
 
       /** Return the Jacobian to be used in computing the volume of cells being
        * integrated. This will not necessarily be the same as the Jacobian used
@@ -104,13 +104,23 @@ namespace SundanceStdFwk
       /** */
       const Array<int>& maxCellLIDs() const {return *maxCellLIDs_;}
 
+      /** Return the cells used in determining the DOFs */
+      const Array<int>& dofCellLIDs() const ;
+
+      /** Return the cell type used in determining the DOFs */
+      const CellType& dofCellType() const ;
+
 
     protected:
       const Mesh& mesh() const {return mesh_;}
 
       int cellDim() const {return cellDim_;}
 
+      int maxCellDim() const {return mesh_.spatialDim();}
+
       const CellType& cellType() const {return cellType_;}
+
+      const CellType& maxCellType() const {return maxCellType_;}
 
       const RefCountPtr<Array<int> >& cellLID() const {return cellLID_;}
 
@@ -135,6 +145,8 @@ namespace SundanceStdFwk
       int cellDim_;
 
       CellType cellType_;
+
+      CellType maxCellType_;
 
       RefCountPtr<Array<int> > cellLID_;
 

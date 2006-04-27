@@ -791,8 +791,11 @@ int BasicSimplicialMesh::cofacetLID(int cellDim, int cellLID,
   int dummy;
   for (int f=0; f<numFacets(spatialDim(), rtn, cellDim); f++)
     {
-      if (rtn==facetLID(spatialDim(), rtn, cellDim, f, dummy)) facetIndex = f;
-      return rtn;
+      if (cellLID==facetLID(spatialDim(), rtn, cellDim, f, dummy)) 
+        {
+          facetIndex = f;
+          return rtn;
+        }
     }
   TEST_FOR_EXCEPTION(true, RuntimeError, "reverse pointer to facet not found"
                      " in request for cofacet");

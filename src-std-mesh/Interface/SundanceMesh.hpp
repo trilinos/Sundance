@@ -180,7 +180,10 @@ using namespace SundanceUtils;
      * @param cellDim dimension of the cell whose cofacets are being obtained
      * @param cellLID local index of the cell whose
      * cofacets are being obtained
-     * @param cofacetIndex index into the list of the cell's facets
+     * @param cofacetIndex index of the maximal cell 
+     * into the list of the cell's cofacets
+     * @param facetIndex index of the calling cell
+     * into the list of the maximal cell's facets
      */
     int cofacetLID(int cellDim, int cellLID,
                    int cofacetIndex,

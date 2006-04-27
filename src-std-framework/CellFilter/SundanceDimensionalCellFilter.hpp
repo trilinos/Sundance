@@ -79,7 +79,7 @@ using namespace SundanceStdMesh::Internal;
 
     /** */
     virtual string description() const 
-    {return "DimensionalCellFilter(d=" + Teuchos::toString(dim_) + ")";}
+    {return "Cells(d=" + Teuchos::toString(dim_) + ")";}
 
     /** */
     virtual bool lessThan(const CellFilterStub* other) const ;

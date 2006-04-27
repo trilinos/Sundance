@@ -529,6 +529,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
+
   /* isLocalFlag won't be used in this calculation, because we need off-proc
    * elements in this evaluation mode. Define it, but leave it empty. */
   RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
@@ -617,7 +618,8 @@ void Assembler::assemble(LinearOperator<double>& A,
       CellSet cells = filter.getCells(mesh_);
       int cellDim = filter.dimension(mesh_);
       CellType cellType = mesh_.cellType(cellDim);
-      mediators_[r]->setCellType(cellType);      
+      CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
+      mediators_[r]->setCellType(cellType, maxCellType);      
 
       SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
 
@@ -647,7 +649,8 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           bool useMaximalCellsForTransformations 
             = rqcRequiresMaximalCofacets_.get(MatrixAndVector)[r];
-          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
+          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, 
+                                      workSet);
 
           const CellJacobianBatch& JVol = mediators_[r]->JVol();
           const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
@@ -668,27 +671,38 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           Array<Array<int> > nTestNodes(numRowBlocks);
           Array<Array<int> > nUnkNodes(numColBlocks);
-          
+          /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
+           * which isn't necessarily the same as the dim of the cells on which the 
+           * integrations are done. They will differ in the case where evaluations
+           * must be refered to a maximal cell */
+          int dofCellDim = cellDim;
+          if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
+
           for (int br=0; br<numRowBlocks; br++)
             {   
-              rowMap_[br]->getDOFsForCellBatch(cellDim, *workSet, 
-                                               (*testLocalDOFs)[br], nTestNodes[br]);
+              rowMap_[br]->getDOFsForCellBatch(dofCellDim, 
+                                               mediators_[r]->dofCellLIDs(),
+                                               (*testLocalDOFs)[br], 
+                                               nTestNodes[br]);
             }
-          SUNDANCE_VERB_EXTREME(tab1 << "local DOF values " << *testLocalDOFs);
+          SUNDANCE_VERB_EXTREME(tab1 << "local test DOF values " << *testLocalDOFs);
           for (int bc=0; bc<numColBlocks; bc++)
             {
-              if (bc < numRowBlocks && rowMap_[bc].get()==colMap_[bc].get())
+              if (bc < numRowBlocks && rowMap_[bc].get()==colMap_[bc].get()
+                  && !useMaximalCellsForTransformations)
                 {
                   (*unkLocalDOFs)[bc] = (*testLocalDOFs)[bc];
                   nUnkNodes[bc] = nTestNodes[bc];
                 }
               else
                 {
-                  colMap_[bc]->getDOFsForCellBatch(cellDim, *workSet,
+                  colMap_[bc]->getDOFsForCellBatch(dofCellDim, 
+                                                   mediators_[r]->dofCellLIDs(),
                                                    (*unkLocalDOFs)[bc],
                                                    nUnkNodes[bc]);
                 }
             }
+          SUNDANCE_VERB_EXTREME(tab1 << "local unk DOF values " << *unkLocalDOFs);
           
           ElementIntegral::invalidateTransformationMatrices();
 
@@ -702,7 +716,8 @@ void Assembler::assemble(LinearOperator<double>& A,
               if (verbosity() > VerbHigh)
                 {
                   cerr << endl << endl 
-                       << "--------------- doing integral group " << g << endl;
+                       << "--------------- doing integral group " << g 
+                       << " on the current subregion" << endl;
                   cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
                   cerr << "num unk DOFs = " << unkLocalDOFs->size() << endl;
                   cerr << "num entries = " << localValues->size() << endl;
@@ -710,7 +725,7 @@ void Assembler::assemble(LinearOperator<double>& A,
                 }
               if (group.isTwoForm())
                 {
-                  insertLocalMatrixBatch(cellDim, *workSet, isBCRqc_[r],
+                  insertLocalMatrixBatch(workSet->size(), isBCRqc_[r],
                                          *testLocalDOFs,
                                          *unkLocalDOFs,
                                          nTestNodes,
@@ -721,7 +736,7 @@ void Assembler::assemble(LinearOperator<double>& A,
                 }
               else
                 {
-                  insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
+                  insertLocalVectorBatch(workSet->size(), isBCRqc_[r], 
                                          *testLocalDOFs,
                                          nTestNodes,
                                          group.testID(),group.testBlock(),
@@ -821,7 +836,8 @@ void Assembler::assemble(Vector<double>& b) const
       CellSet cells = filter.getCells(mesh_);
       int cellDim = filter.dimension(mesh_);
       CellType cellType = mesh_.cellType(cellDim);
-      mediators_[r]->setCellType(cellType);      
+      CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
+      mediators_[r]->setCellType(cellType, maxCellType);      
 
 
       SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
@@ -873,10 +889,19 @@ void Assembler::assemble(Vector<double>& b) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
+          /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
+           * which isn't necessarily the same as the dim of the cells on which the 
+           * integrations are done. They will differ in the case where evaluations
+           * must be refered to a maximal cell */
+          int dofCellDim = cellDim;
+          if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
+
           Array<Array<int> > nTestNodes(numRowBlocks);
           for (int br=0; br<numRowBlocks; br++)
             {
-              rowMap_[br]->getDOFsForCellBatch(cellDim, *workSet, (*testLocalDOFs)[br],
+              rowMap_[br]->getDOFsForCellBatch(dofCellDim, 
+                                               mediators_[r]->dofCellLIDs(),
+                                               (*testLocalDOFs)[br],
                                                nTestNodes[br]);
             }
 
@@ -894,13 +919,14 @@ void Assembler::assemble(Vector<double>& b) const
               if (verbosity() > VerbHigh)
                 {
                   cerr << endl << endl 
-                       << "--------------- doing integral group " << g << endl;
+                       << "--------------- doing integral group " << g 
+                       << " on the current subregion"<< endl;
                   cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
                   cerr << "num entries = " << localValues->size() << endl;
                   cerr << "values = " << *localValues << endl;
                 }
 
-              insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
+              insertLocalVectorBatch(workSet->size(), isBCRqc_[r], 
                                      *testLocalDOFs,
                                      nTestNodes,
                                      group.testID(), group.testBlock(), *localValues, vec);
@@ -999,7 +1025,8 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
       CellSet cells = filter.getCells(mesh_);
       int cellDim = filter.dimension(mesh_);
       CellType cellType = mesh_.cellType(cellDim);
-      mediators_[r]->setCellType(cellType);      
+      CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
+      mediators_[r]->setCellType(cellType, maxCellType);      
 
 
       SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
@@ -1057,10 +1084,19 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
+          /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
+           * which isn't necessarily the same as the dim of the cells on which the 
+           * integrations are done. They will differ in the case where evaluations
+           * must be refered to a maximal cell */
+          int dofCellDim = cellDim;
+          if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
+
           Array<Array<int> > nTestNodes(numRowBlocks);
           for (int br=0; br<numRowBlocks; br++)
             {
-              rowMap_[br]->getDOFsForCellBatch(cellDim, *workSet, (*testLocalDOFs)[br],
+              rowMap_[br]->getDOFsForCellBatch(dofCellDim, 
+                                               mediators_[r]->dofCellLIDs(),
+                                               (*testLocalDOFs)[br],
                                                nTestNodes[br]);
             }
 
@@ -1079,7 +1115,8 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
               if (verbosity() > VerbHigh)
                 {
                   cerr << endl << endl 
-                       << "--------------- doing integral group " << g << endl;
+                       << "--------------- doing integral group " << g 
+                       << " on the current subregion" << endl;
                   cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
                   cerr << "num entries = " << localValues->size() << endl;
                   cerr << "values = " << *localValues << endl;
@@ -1087,7 +1124,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
               
               if (group.isOneForm())
                 {
-                  insertLocalVectorBatch(cellDim, *workSet, isBCRqc_[r], 
+                  insertLocalVectorBatch(workSet->size(), isBCRqc_[r], 
                                          *testLocalDOFs,
                                          nTestNodes,
                                          group.testID(), group.testBlock(), 
@@ -1177,7 +1214,8 @@ void Assembler::evaluate(double& value) const
       CellSet cells = filter.getCells(mesh_);
       int cellDim = filter.dimension(mesh_);
       CellType cellType = mesh_.cellType(cellDim);
-      mediators_[r]->setCellType(cellType);      
+      CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
+      mediators_[r]->setCellType(cellType, maxCellType);      
 
 
       SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
@@ -1283,8 +1321,7 @@ void Assembler::evaluate(double& value) const
 /* ------------  insert elements into the matrix  ------------- */
 
 
-void Assembler::insertLocalMatrixBatch(int cellDim, 
-                                       const Array<int>& workSet, 
+void Assembler::insertLocalMatrixBatch(int nCells,
                                        bool isBCRqc,
                                        const Array<Array<Array<int> > >& testIndices,
                                        const Array<Array<Array<int> > >& unkIndices,
@@ -1305,8 +1342,6 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
   static Array<int> skipRow;
   static Array<int> rows;
   static Array<int> cols;
-
-  int nCells = workSet.size();
 
 
   if (verbosity() > VerbHigh)
@@ -1373,6 +1408,7 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
           int unkChunk = colMap->chunkForFuncID(unkID[u]);
           int unkFuncIndex = colMap->indexForFuncID(unkID[u]);
           const Array<int>& unkDOFs = unkIndices[bc][unkChunk];
+          SUNDANCE_VERB_EXTREME(tab1 << "unk DOFs = " << unkDOFs);
           int nUnkFuncs = colMap->nFuncs(unkChunk);
           int numUnkNodes = nUnkNodes[bc][unkChunk];
           cols.resize(nCells*numUnkNodes);
@@ -1405,8 +1441,7 @@ void Assembler::insertLocalMatrixBatch(int cellDim,
 /* ------------  insert elements into the vector  ------------- */
 
 void Assembler
-::insertLocalVectorBatch(int cellDim, 
-                         const Array<int>& workSet, 
+::insertLocalVectorBatch(int nCells, 
                          bool isBCRqc,
                          const Array<Array<Array<int> > >& testIndices,
                          const Array<Array<int> >& nTestNodes, 
@@ -1420,8 +1455,6 @@ void Assembler
   SUNDANCE_VERB_HIGH(tab << "inserting local vector values...");
   SUNDANCE_VERB_EXTREME(tab << "values are " << localValues);
 
-
-  int nCells = workSet.size();
 
   for (unsigned int i=0; i<testID.size(); i++)
     {

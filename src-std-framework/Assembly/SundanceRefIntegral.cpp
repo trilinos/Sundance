@@ -621,6 +621,8 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
               int fc = facetIndex[c];
               double* aPtr = &((*A)[c*nNodes0]);
               double* gPtr = &(GPtr[c*nTransRows]);
+              SUNDANCE_VERB_EXTREME(tabs << "c=" << c << ", facet case=" << fc
+                                    << " W=" << W_[fc]);
               ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
                        &nNodes0, gPtr, &nTransRows, &one, 
                        aPtr, &nNodes0);

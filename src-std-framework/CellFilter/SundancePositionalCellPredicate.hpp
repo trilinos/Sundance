@@ -66,6 +66,9 @@ public:\
 
     /** */
     virtual bool operator()(const Point& x) const = 0 ;
+
+    /** */
+    virtual string description() const {return typeid(*this).name();}
   };
 
   
@@ -92,6 +95,9 @@ public:\
 
     /** comparison */
     virtual bool lessThan(const CellPredicateBase* other) const ;
+
+    /** */
+    virtual string description() const {return func_->description();}
 
     /* */
     GET_RCP(CellPredicateBase);

@@ -57,23 +57,28 @@ QuadratureEvalMediator
   : StdFwkEvalMediator(mesh, cellDim),
     quad_(quad),
     refQuadPts_(),
+    refFacetQuadPts_(),
     refQuadWeights_(),
     physQuadPts_(),
-    refBasisVals_(2)
+    refBasisVals_(2),
+    refFacetBasisVals_(2)
 {}
 
-void QuadratureEvalMediator::setCellType(const CellType& cellType) 
+void QuadratureEvalMediator::setCellType(const CellType& cellType,
+                                         const CellType& maxCellType) 
 {
-  StdFwkEvalMediator::setCellType(cellType);
+  StdFwkEvalMediator::setCellType(cellType, maxCellType);
   
   if (refQuadPts_.containsKey(cellType)) return;
 
   
   RefCountPtr<Array<Point> > pts = rcp(new Array<Point>());
   RefCountPtr<Array<double> > wgts = rcp(new Array<double>());
+  RefCountPtr<Array<Array<Point> > > facetPts = rcp(new Array<Array<Point> >());
 
   quad_.getPoints(cellType, *pts, *wgts);
   refQuadPts_.put(cellType, pts);
+  refFacetQuadPts_.put(cellType, facetPts);
   refQuadWeights_.put(cellType, wgts);
   
 }
@@ -135,6 +140,8 @@ RefCountPtr<Array<double> > QuadratureEvalMediator
   RefCountPtr<Array<double> > rtn ;
 
   typedef OrderedPair<BasisFamily, CellType> key;
+
+  TEST_FOR_EXCEPT(diffOrder > 1);
 
   if (!refBasisVals_[diffOrder].containsKey(key(basis, cellType())))
     {

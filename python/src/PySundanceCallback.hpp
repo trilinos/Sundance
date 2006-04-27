@@ -10,16 +10,16 @@ public:
   PySundanceCallback();
   ~PySundanceCallback();
 
-  PyObject       * setFunction(PyObject * args);
-  PyObject       * getFunction();
-  const PyObject * getFunction() const;
+  PyObject* setFunction(PyObject* pyMethod);
+  PyObject* getFunction();
+  const PyObject* getFunction() const;
 
 private:
   // Private and not implemented so never can be called
   PySundanceCallback(const PySundanceCallback & a_ref);
   const PySundanceCallback & operator = (const PySundanceCallback & a_ref); 
 
-  PyObject * mp_callback;
+  PyObject* callback_;
 };
 
 #endif //Callback_h

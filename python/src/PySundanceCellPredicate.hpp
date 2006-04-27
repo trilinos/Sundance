@@ -23,8 +23,12 @@ namespace SundanceStdFwk
     /** */
     bool operator()(const SundanceUtils::Point& x) const ;
 
+    /** */
+    string description() const ;
+
   protected:
-    PyObject * setEvalOp(PyObject *);
+    PyObject* setEvalOp(PyObject* pyClass);
+    PyObject* setDescr(PyObject* pyClass);
 
   private:
     // Private and not implemented
@@ -34,7 +38,8 @@ namespace SundanceStdFwk
 
   private:
     PyObject* py_functor_;
-    mutable PySundanceCallback  py_evalOp_;
+    mutable RefCountPtr<PySundanceCallback>  evalOpCallback_;
+    mutable RefCountPtr<PySundanceCallback>  descrCallback_;
   };
 }
 #endif // 
