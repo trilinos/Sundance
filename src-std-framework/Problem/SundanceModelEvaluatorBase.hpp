@@ -36,7 +36,7 @@
 #ifdef HAVE_ENABLED_MOOCHO
 
 #include "Sundance.hpp"
-#include "Thyra_ModelEvaluator.hpp"
+#include "Thyra_StateFuncModelEvaluatorBase.hpp"
 
 namespace Thyra
 {
@@ -50,7 +50,7 @@ namespace Thyra
   /** 
    * 
    */
-  class SundanceModelEvaluator : public ModelEvaluator<double>,
+  class SundanceModelEvaluator : public StateFuncModelEvaluatorBase<double>,
                                  public TSFExtended::ObjectWithVerbosity<SundanceModelEvaluator>
   {
   public:
@@ -82,32 +82,12 @@ namespace Thyra
       return objectiveSpace_.ptr();
     }
 
-    /** Get an initial guess for the parameters */
-    RefCountPtr<const VectorBase<double> > get_p_init(int l) const ;
-
-    /** Get an initial guess for the state variables */
-    RefCountPtr<const VectorBase<double> > get_x_init() const ;
+    /** Get an initial guess for the variables */
+    InArgs<double> getNominalValues() const;
 
     /** Create an object for df/dx */
     RefCountPtr<LinearOpBase<double> > create_W_op() const 
     {return createW().ptr();}
-
-    /** create an object for the derivatives of the constraint wrt the parameters  */
-    ModelEvaluatorBase::DerivativeMultiVector<double> 
-    create_DfDp_mv(int l, 
-                   EDerivativeMultiVectorOrientation orientation) const;
-
-    /** create an object for the derivatives of the objective wrt the state  */
-    ModelEvaluatorBase::DerivativeMultiVector<double> 
-    create_DgDx_mv(int l, 
-                   EDerivativeMultiVectorOrientation orientation) const;
-
-    /** create an object for the derivatives of the objective wrt the parameters  */
-    ModelEvaluatorBase::DerivativeMultiVector<double> 
-    create_DgDp_mv(int j, int l,
-                   EDerivativeMultiVectorOrientation orientation) const;
-
-    
 
     /** Create a container for the input arguments */
     InArgs<double> createInArgs() const ;

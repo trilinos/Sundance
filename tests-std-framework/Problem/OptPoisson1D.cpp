@@ -36,8 +36,8 @@ using SundanceCore::List;
  */
 
 static const double pi = 4.0*atan(1.0);
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-pi) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-pi) < 1.0e-10;})
 
 
 int main(int argc, void** argv)

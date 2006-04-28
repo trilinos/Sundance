@@ -35,8 +35,8 @@
  */
 
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 
 int main(int argc, void** argv)
 {

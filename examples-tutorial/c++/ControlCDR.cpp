@@ -70,10 +70,10 @@ static Time& moochoTimer()
 
 /* These macros define predicate classes to be used in identifying
  * boundary regions */
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 
 
 namespace Thyra

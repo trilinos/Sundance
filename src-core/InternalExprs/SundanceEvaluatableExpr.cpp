@@ -47,10 +47,7 @@ using namespace TSFExtended;
 using namespace Internal;
 using namespace Internal;
 
-TEUCHOS_TIMER(evalTimer, "Symbolic Evaluation");
-
-
-
+TEUCHOS_TIMER(evalTimer, "Symbolic Evaluation")
 
 EvaluatableExpr::EvaluatableExpr()
 	: ScalarExpr(), 

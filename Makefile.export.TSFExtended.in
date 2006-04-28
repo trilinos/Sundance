@@ -53,8 +53,8 @@ include $(TRILINOS_DIR)/packages/ml/Makefile.export.ml
 include $(TRILINOS_DIR)/packages/amesos/Makefile.export.amesos
 @MOOCHO_STR@include $(TRILINOS_DIR)/packages/moocho/Makefile.export.moocho
 
-
-TSFEXTENDED_INCLUDES = -I$(TRILINOS_DIR)/include $(MOOCHO_INCLUDES)
+TSFEXTENDED_INCLUDES = -I$(TRILINOS_DIR)/include $(MOOCHO_INCLUDES) $(NOX_INCLUDES) \
+$(ML_INCLUDES) $(AMESOS_INCLUDES) $(IFPACK_INCLUDES) $(THYRA_INCLUDES) $(EPETRAEXT_INCLUDES)
 
 TMP_TSFEXTENDED_LIBS = @LDFLAGS@ \
 -L@abs_top_builddir@/src-solvers \

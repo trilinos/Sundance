@@ -58,7 +58,7 @@
 #include "TSFRandomSparseMatrix.hpp"
 #include "TSFCompoundTester.hpp"
 
-STREAM_OUT(Vector<double>);
+STREAM_OUT(Vector<double>)
 //using namespace Teuchos;
 using namespace TSFExtended;
 using namespace TSFExtendedOps;

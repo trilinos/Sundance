@@ -107,18 +107,18 @@
 
 #endif /* HAVE_CONFIG_H */
 
-namespace Teuchos {;}
+namespace Teuchos {}
 
-namespace SundanceUtils {;}
+namespace SundanceUtils {}
 
 namespace SundanceCore 
 {
-  namespace Internal{;}
+  namespace Internal{}
 }
 
 namespace SundanceStdMesh
 {
-  namespace Internal{;}
+  namespace Internal{}
 }
 
 #endif

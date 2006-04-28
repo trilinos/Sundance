@@ -52,7 +52,7 @@ extern "C"
   /* LAPACK factorization */
   void dgetrf_(const int* M, const int* N, double* A, const int* lda, 
                const int* iPiv, int* info);
-};
+}
 
 static Time& jacobianInversionTimer() 
 {
@@ -73,7 +73,7 @@ CellJacobianBatch::CellJacobianBatch()
   : spatialDim_(0), cellDim_(0), 
     jSize_(0), numCells_(0), numQuad_(0), iPiv_(), J_(), detJ_(), invJ_(),
     isFactored_(false), hasInverses_(false)
-{;}
+{}
 
 void CellJacobianBatch::resize(int numCells, int numQuad, 
                                int spatialDim, int cellDim)

@@ -153,17 +153,17 @@ func->eval1(&xVal, 1, &f, &df);\
 return ADReal(f, df*x.gradient());}
 
 
-  SUNDANCE_AD_FUNCTOR(exp, StdExp);
+  SUNDANCE_AD_FUNCTOR(exp, StdExp)
 
-  SUNDANCE_AD_FUNCTOR(log, StdLog);
+  SUNDANCE_AD_FUNCTOR(log, StdLog)
 
-  SUNDANCE_AD_FUNCTOR(sqrt, StdSqrt);
+  SUNDANCE_AD_FUNCTOR(sqrt, StdSqrt)
 
-  SUNDANCE_AD_FUNCTOR(sin, StdSin);
+  SUNDANCE_AD_FUNCTOR(sin, StdSin)
 
-  SUNDANCE_AD_FUNCTOR(cos, StdCos);
+  SUNDANCE_AD_FUNCTOR(cos, StdCos)
 
-} 
+}
 
 
 namespace std

@@ -104,59 +104,15 @@ ModelEvaluatorBase::OutArgs<double> SundanceModelEvaluator::createOutArgs() cons
   return outArgs;
 }
 
-
-RefCountPtr<const VectorBase<double> > 
-SundanceModelEvaluator::get_p_init(int i) const
+ModelEvaluatorBase::InArgs<double>
+SundanceModelEvaluator::getNominalValues() const
 {
-  TEST_FOR_EXCEPT(i != 0);
-  return getInitialParameters().ptr();
+  typedef ModelEvaluatorBase MEB;
+  MEB::InArgs<double> nominalValues = this->createInArgs();
+  nominalValues.set_x(getInitialState().ptr());
+  nominalValues.set_p(0,getInitialParameters().ptr());
+  return nominalValues;
 }
-
-RefCountPtr<const VectorBase<double> > 
-SundanceModelEvaluator::get_x_init() const
-{
-  return getInitialState().ptr();
-}
-
-ModelEvaluatorBase::DerivativeMultiVector<double> 
-SundanceModelEvaluator
-::create_DfDp_mv(int i, 
-                 EDerivativeMultiVectorOrientation orientation) const
-{
-  TEST_FOR_EXCEPT(i != 0);
-  RefCountPtr<MultiVectorBase<double> > mv = 
-    createMembers(get_f_space(), get_p_space(0)->dim());
-
-  return DerivativeMultiVector<double>(mv, orientation);
-}
-
-ModelEvaluatorBase::DerivativeMultiVector<double> 
-SundanceModelEvaluator
-::create_DgDx_mv(int i, 
-                 EDerivativeMultiVectorOrientation orientation) const
-{
-  TEST_FOR_EXCEPT(i != 0);
-  RefCountPtr<MultiVectorBase<double> > mv = createMember(get_x_space());
-
-  return DerivativeMultiVector<double>(mv, orientation);
-}
-
-
-
-ModelEvaluatorBase::DerivativeMultiVector<double> 
-SundanceModelEvaluator
-::create_DgDp_mv(int i, int j, 
-                 EDerivativeMultiVectorOrientation orientation) const
-{
-  TEST_FOR_EXCEPT(i != 0);
-  TEST_FOR_EXCEPT(j != 0);
-  RefCountPtr<MultiVectorBase<double> > mv = createMember(get_p_space(0));
-
-  return DerivativeMultiVector<double>(mv, orientation);
-}
-
-
-
 
 void SundanceModelEvaluator
 ::evalModel(const ModelEvaluatorBase::InArgs<double>& inArgs,

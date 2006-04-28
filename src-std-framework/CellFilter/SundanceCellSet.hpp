@@ -102,7 +102,7 @@ using namespace SundanceStdMesh::Internal;
 
   }
 
-  STREAM_OUT(Internal::CellSet);
+  STREAM_OUT(Internal::CellSet)
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

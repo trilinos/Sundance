@@ -44,8 +44,8 @@ using SundanceCore::List;
  * u(x) = \frac{1}{120} x^5 - \frac{1}{36} x^3 + \frac{7}{360} x
  */
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 
 int main(int argc, void** argv)
 {
