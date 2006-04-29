@@ -230,6 +230,7 @@ string Sundance::searchForFile(const string& name)
   string pathSep = "/";
   Array<string> path = parsePathStr();
 
+  if (name.length() && name[0]=='/') return name; // Use absolute path!
   for (unsigned int i=0; i<path.size(); i++)
     {
       ifstream fileToTry((path[i] + pathSep + name).c_str());
