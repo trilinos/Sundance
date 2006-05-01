@@ -2,10 +2,11 @@
 #define PYSUNDANCE_FIAT_H
 #include "Python.h"
 #include "SundanceScalarBasis.hpp"
-
+#include "SundanceDefs.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+#include <stack>
 
 namespace SundanceStdFwk
-{
 {
   using namespace SundanceUtils;
   using namespace SundanceStdMesh;
@@ -27,7 +28,7 @@ namespace SundanceStdFwk
 		      Array<Array<Array<int> > >& dofs) const;
     
     int nNodes(int spatialDim ,
-	       const CellType& cellType );
+	       const CellType& cellType ) const;
     
     void refEval(int spatialDim,
 		 const CellType& cellType,

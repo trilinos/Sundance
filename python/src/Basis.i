@@ -69,6 +69,7 @@ namespace SundanceStdFwk
 
 %rename(Lagrange) makeLagrange;
 %rename(FIATLagrange) makeFIATLagrange;
+%rename(FIATScalarAdapter) makeFIATScalarAdapter;
 
 %inline %{
   /* Create a Lagrange basis function */
@@ -88,6 +89,14 @@ namespace SundanceStdFwk
     return BasisFamily(); // -Wall
     #endif
   }
+
+  #ifdef HAVE_PY_FIAT
+  SundanceStdFwk::BasisFamily makeFIATScalarAdapter(PyObject *py_basis ,
+						    int order)
+  {
+    return new SundanceStdFwk::FIATScalarAdapter(py_basis,order);
+  }
+  #endif
 
   /* */
   SundanceStdFwk::BasisArray 

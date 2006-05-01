@@ -1,6 +1,8 @@
-#include "SundanceFIATScalarAdapter.hpp"
+#include "PySundanceFIATScalarAdapter.hpp"
 
-#ifdef HAVE_PY_FIAT
+using namespace SundanceStdFwk;
+using namespace SundanceStdFwk::Internal;
+
 
 static int line_sdvert_to_fvert[] = {0,1};
 static int line_sdline_to_fline[] = {0};
@@ -8,7 +10,7 @@ static int *line_sd_to_fiat[] = {line_sdvert_to_fvert,line_sdline_to_fline};
 static int tri_sdvert_to_fvert[] = {0,1,2};
 static int tri_sdline_to_fline[] = {2,0,1};
 static int tri_sdtri_to_ftri[] = {0};
-static int *tri_sd_to_fiat[] = {tri_sdvert_to_vert,
+static int *tri_sd_to_fiat[] = {tri_sdvert_to_fvert,
 				tri_sdline_to_fline,
 				tri_sdtri_to_ftri};
 static int tet_sdvert_to_fvert[] = {0,1,2,3};
@@ -29,9 +31,12 @@ static int **sd_to_fiat[] = {NULL,
 static CellType sdim_to_cellType[] = 
   {PointCell,LineCell,TriangleCell,TetCell};
 
+#ifdef HAVE_PY_FIAT
+
 namespace SundanceStdFwk
 {
-  FIATScalarAdapter::FIATScalarAdapter( PyObject *pyfamilyclass ) :
+  FIATScalarAdapter::FIATScalarAdapter( PyObject *pyfamilyclass ,
+					int order ) :
     order_( order )
   {
     for (int i=0;i<3;i++) {
@@ -89,7 +94,7 @@ namespace SundanceStdFwk
 	  dofs[i][j].resize( num_nodes_cur );
 	  for (int k=0;k<num_nodes_cur;k++) {
 	    PyObject *pyk = PyInt_FromLong( (long) k );
-	    PyOjbect *pynodecur = PyObject_GetItem( nodes_per_facet , pyk );
+	    PyObject *pynodecur = PyObject_GetItem( nodes_per_facet , pyk );
 	    dofs[i][j][k] = PyInt_AsLong( pynodecur );
 	    Py_DECREF( pynodecur );
 	    Py_DECREF( pyk );
@@ -116,7 +121,7 @@ namespace SundanceStdFwk
     else {
       int celldim = dimension( cellType );
       // throw a Sundance exception if spatialDim > cellDim
-      PyObject *basis = bases[celldim-1];
+      PyObject *basis = bases_[celldim-1];
       PyObject *dual_basis = PyObject_CallMethod( basis , 
 						  "dual_basis" ,
 						  NULL );
@@ -136,9 +141,11 @@ namespace SundanceStdFwk
       }
 
       Py_DECREF( dual_basis );
+
+      return nnod;
+
     }
 
-    return nnod;
   }
 
   void FIATScalarAdapter::refEval( int spatialDim ,
@@ -154,14 +161,14 @@ namespace SundanceStdFwk
     else {
       // keep a stack of every python object we create.  This makes
       // DECREF'ing easy to do
-      std::stack<PyObject *> to_decref;
+      stack<PyObject *> to_decref;
 
       // Get list of points to put into FIAT
       int cellDim = dimension( cellType );
       PyObject *py_list_of_points = PyList_New(pts.size());
       to_decref.push( py_list_of_points );
 
-      for (int i=0;i<pts.size();i++) {
+      for (int i=0;i<(int)pts.size();i++) {
 	// Create a Python tuple for the point, converting from
 	// Sundance (0,1)-based coordinates to FIAT (-1,1)-based coordinates
 	PyObject *py_pt_cur = PyTuple_New( spatialDim );
@@ -177,7 +184,9 @@ namespace SundanceStdFwk
 	  PyTuple_SetItem( py_pt_cur , j , py_coord );
 	  to_decref.push( py_coord );
 	}
-	PyObject_SetItem( py_list_of_points , i , py_pt_cur );
+	PyObject *py_i = PyInt_FromLong( (long) i );
+	to_decref.push( py_i );
+	PyObject_SetItem( py_list_of_points , py_i , py_pt_cur );
       }
 
       // Extract the function space from the basis
@@ -191,9 +200,11 @@ namespace SundanceStdFwk
       PyObject *py_alpha = PyTuple_New( spatialDim );
       to_decref.push( py_alpha );
       for (int i=0;i<spatialDim;i++) {
-	PyObject *py_alpha_i = PyInt_FromLong( (long) alpha[i] );
+	PyObject *py_alpha_i = PyInt_FromLong( (long) deriv[i] );
 	to_decref.push( py_alpha_i );
-	PyObject_SetItem( py_alpha , i , py_alpha_i );
+	PyObject *py_i = PyInt_FromLong( (long) i );
+	to_decref.push( py_i );
+	PyObject_SetItem( py_alpha , py_i , py_alpha_i );
 
       }
 
@@ -226,12 +237,12 @@ namespace SundanceStdFwk
       int num_bf = PyObject_Length( py_tabulation_first_row );
 
       result.resize( pts.size() );
-      for (int i=0;i<pts.size();i++) {
+      for (int i=0;i<(int)pts.size();i++) {
 	result.resize( num_bf );
       }
 
-      CellType ct = sdim_to_cellType[ sdatialDim ];
-      int cd = dimension[ct];
+      CellType ct = sdim_to_cellType[ spatialDim ];
+      int cd = dimension(ct);
 
       
       Array<Array<Array<int> > > dofs;
@@ -240,18 +251,18 @@ namespace SundanceStdFwk
 
       int cur = 0;
       int **sd_to_fiat_spd = sd_to_fiat[spatialDim];
-      for (int d=0;d<=pd;d++) {
+      for (int d=0;d<=cd;d++) {
 	int *sd_to_fiat_spd_d = sd_to_fiat_spd[d];
-	for (int e=0;e<=dofs[e].size();e++) {
+	for (int e=0;e<=(int)dofs[e].size();e++) {
 	  int fiat_e = sd_to_fiat_spd_d[e];
 	  for (int n=0;n<(int)dofs[e][d].size();n++) {
 	    for (int p=0;p<(int)pts.length();p++) {
 	      PyObject *py_ij_tuple = 
-		Py_BuildObject( "(ii)" , dofs[d][fiat_e][n] , p );
-	      to_decref( py_ij_tuple );
+		Py_BuildValue( "(ii)" , dofs[d][fiat_e][n] , p );
+	      to_decref.push( py_ij_tuple );
 	      PyObject *py_tab_cur_ij = 
 		PyObject_GetItem( py_tabulation , py_ij_tuple );
-	      to_decref( py_tab_cur_ij );
+	      to_decref.push( py_tab_cur_ij );
 	      result[p][cur] = PyFloat_AsDouble( py_tab_cur_ij );
 	    }
 	    cur++;
@@ -269,5 +280,4 @@ namespace SundanceStdFwk
   }
   
 }
-
 #endif

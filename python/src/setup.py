@@ -91,7 +91,8 @@ srcFiles = ["PySundance_wrap.cpp",
             os.path.join(srcdir,"PySundanceNOXSolverHandle.cpp"),
             os.path.join(srcdir,"PySundanceCallback.cpp"),
             os.path.join(srcdir,"PySundanceLinearSolver.cpp"),
-            os.path.join(srcdir,"PySundanceCellPredicate.cpp")]
+            os.path.join(srcdir,"PySundanceCellPredicate.cpp"),
+            os.path.join(srcdir,"PySundanceFIATScalarAdapter.cpp")]
 
 # Compiler and linker
 sysconfig.get_config_vars()
