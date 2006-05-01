@@ -16,7 +16,7 @@ namespace SundanceStdFwk
   using namespace Teuchos;
 
 
-  class FIATScalarAdapter : public SundanceScalarBasis
+  class FIATScalarAdapter : public ScalarBasis
   {
   public:
     FIATScalarAdapter( PyObject *pyfamilyclass , int order );
@@ -36,11 +36,6 @@ namespace SundanceStdFwk
 		 Array<Array<double> >& result) const;
     
     int order() const { return order_; }
-    
-    int dim() const;
-    
-    bool lessThan(const BasisFamilyBase* other) const
-    { return order() < other->order(); }
     
   private:
     // we instantiate the basis for each order
