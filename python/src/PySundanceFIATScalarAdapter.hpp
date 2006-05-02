@@ -1,5 +1,5 @@
-#ifndef PYSUNDANCE_FIAT_H
-#define PYSUNDANCE_FIAT_H
+#ifndef PYSUNDANCE_FIATSCALARADAPTER_H
+#define PYSUNDANCE_FIATSCALARADAPTER_H
 #include "Python.h"
 #include "SundanceScalarBasis.hpp"
 #include "SundanceDefs.hpp"
@@ -37,6 +37,12 @@ namespace SundanceStdFwk
 		 Array<Array<double> >& result) const;
     
     int order() const { return order_; }
+
+    /** Needed for Printable interface */
+    void print(std::ostream& os) const {os << "FIATScalarAdapter";}
+
+    /* Needed for Handleable interface */
+    GET_RCP(BasisFamilyBase);
     
   private:
     // we instantiate the basis for each order

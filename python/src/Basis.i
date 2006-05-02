@@ -1,6 +1,9 @@
 // -*- c++ -*-
 
+
 %{
+
+#define HAVE_PY_FIAT
   // System includes
 #include <Python.h>
 
@@ -8,6 +11,7 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
 #include "SundanceFIATLagrange.hpp"
+#include "PySundanceFIATScalarAdapter.hpp"
   %}
 
 

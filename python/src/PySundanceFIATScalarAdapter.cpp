@@ -31,6 +31,7 @@ static int **sd_to_fiat[] = {NULL,
 static CellType sdim_to_cellType[] = 
   {PointCell,LineCell,TriangleCell,TetCell};
 
+#define HAVE_PY_FIAT
 #ifdef HAVE_PY_FIAT
 
 namespace SundanceStdFwk
