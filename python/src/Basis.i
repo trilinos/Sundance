@@ -12,6 +12,7 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceFIATLagrange.hpp"
 #include "PySundanceFIATScalarAdapter.hpp"
+#include "PySundanceBasisCheck.hpp"
   %}
 
 

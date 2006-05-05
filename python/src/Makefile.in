@@ -286,7 +286,8 @@ PySundanceNOXSolverHandle.cpp PySundanceNOXSolverHandle.hpp \
 PySundanceCallback.cpp PySundanceCallback.hpp \
 PySundanceCellPredicate.cpp PySundanceCellPredicate.hpp \
 PySundanceLinearSolver.cpp PySundanceLinearSolver.hpp \
-PySundanceFIATScalarAdapter.cpp PySundanceFIATScalarAdapter.hpp
+PySundanceFIATScalarAdapter.cpp PySundanceFIATScalarAdapter.hpp \
+PySundanceBasisCheck.cpp PySundanceBasisCheck.hpp
 
 
 # Currently, this temporary directory is required to be present for the
