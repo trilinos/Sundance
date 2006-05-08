@@ -34,4 +34,6 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 
-void checkbasis( BasisFamily &b1 , BasisFamily &b2 );
+namespace SundanceStdFwk {
+  void checkbasis( BasisFamily &b1 , BasisFamily &b2 );
+}

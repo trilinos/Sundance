@@ -95,13 +95,12 @@ namespace SundanceStdFwk
     #endif
   }
 
-  #ifdef HAVE_PY_FIAT
   SundanceStdFwk::BasisFamily makeFIATScalarAdapter(PyObject *py_basis ,
 						    int order)
   {
     return new SundanceStdFwk::FIATScalarAdapter(py_basis,order);
   }
-  #endif
+
 
   /* */
   SundanceStdFwk::BasisArray 

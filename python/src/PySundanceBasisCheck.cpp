@@ -60,7 +60,7 @@ unsigned int iPow(unsigned int base, unsigned int exponent)
   return rtn;
 }
 
-
+namespace SundanceStdFwk {
 void checkbasis( BasisFamily &b1 , BasisFamily &b2 )
 {
   unsigned int maxDim=3;
@@ -140,4 +140,5 @@ void checkbasis( BasisFamily &b1 , BasisFamily &b2 )
     }
   }    
   cerr << endl << endl << "Summary: detected " << numErrors << " errors " << endl;
+}
 }

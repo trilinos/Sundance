@@ -1,5 +1,7 @@
 #include "PySundanceFIATScalarAdapter.hpp"
-
+#include <stack>
+#include <iostream>
+using namespace std;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 
@@ -36,118 +38,121 @@ static CellType sdim_to_cellType[] =
 
 namespace SundanceStdFwk
 {
-  FIATScalarAdapter::FIATScalarAdapter( PyObject *pyfamilyclass ,
-					int order ) :
-    order_( order )
-  {
-    for (int i=0;i<3;i++) {
-      PyObject *arglist = Py_BuildValue( "(dd)" , i+1 , order_ );
-      bases_[i] = PyEval_CallObject( pyfamilyclass , arglist );
-      Py_DECREF( arglist );
-    }
-  }
-  
-  FIATScalarAdapter::~FIATScalarAdapter()
-  {
-    for (int i=0;i<3;i++) {
-      Py_DECREF( bases_[i] );
-    }
-  }
-  
-  void FIATScalarAdapter::getLocalDOFs(const CellType& cellType,
-				       Array<Array<Array<int> > >& dofs ) const
-  {
-    if (PointCell == cellType) {
-    }
-    else {
-      const int celldim = dimension( cellType );
-      PyObject *basis = bases_[ celldim - 1 ];
-      
-      PyObject *dual_basis = PyObject_CallMethod( basis , "dual_basis" ,
-						  NULL );
-      
-      dofs.resize( celldim );
-      
-      
-      for (int i=0;i<celldim;i++) {
-	PyObject *nodes_per_dim = 
-	  PyObject_CallMethod( dual_basis , "getNodeIds" , 
-			       "i" , i ); 
-	
-	int num_facets = PyObject_Length( nodes_per_dim );
-	
-	dofs[i].resize( num_facets );
-	
-	for (int j=0;j<num_facets;j++) {
-	  // convert j to a Python integer
-	  PyObject *pyj = PyInt_FromLong( (long) j );
+	FIATScalarAdapter::FIATScalarAdapter( PyObject *pyfamilyclass ,
+										  int order ) :
+		order_( order )
+	{
+    	stack<PyObject *> to_decref;
+
+		cout << PyCallable_Check( pyfamilyclass ) << endl;
+
+	    /* instantiate basis for each shape */
+		bases_.resize( 3 );
+		for (int i=0;i<3;i++) {
+			PyObject *arglist = Py_BuildValue( "(ii)" , i+1 , order_ );
+			if (!arglist) cout << "barf" << endl;
+			bases_[i] = PyObject_CallObject( pyfamilyclass , arglist  );
+			if (!bases_[i]) cout << "puke" << endl;
+			to_decref.push( arglist );
+	    }
+
+    	/* pretabulate all the dof in the constructor */
+    	/* one dof array for each cellType I instantiate */
+		dof_.resize( 3 );
+		for (int cd=1;cd<=3;cd++) {
+			dof_[cd-1].resize( cd + 1 );
+			PyObject *basis = bases_[cd-1];
+			PyObject *dual_basis = PyObject_CallMethod( basis , "dual_basis" ,
+						 						    	NULL );
+			to_decref.push( dual_basis );
+			for (int i=0;i<=cd;i++) {
+		  		PyObject *nodes_per_dim =
+		  		PyObject_CallMethod( dual_basis , "getNodeIDs" ,
+					  	         	 "i" , i );
+				to_decref.push( nodes_per_dim );
+				int num_facets = PyObject_Length( nodes_per_dim );
+				dof_[cd-1][i].resize( num_facets );
+				for (int j=0;j<num_facets;j++) {
+					cout << "facet number " << j << endl;
+		  			PyObject *pyj = PyInt_FromLong( (long) j );
+		  			to_decref.push( pyj );
+		  			PyObject *nodes_per_facet =
+		    		PyObject_GetItem( nodes_per_dim , pyj );
+		  			to_decref.push( nodes_per_facet );
+		  			int num_nodes_this_facet = PyObject_Length( nodes_per_facet );
 	  
-	  // Extract the Python list of integers associated
-	  // with facet j of dimension i
-	  PyObject *nodes_per_facet =
-	    PyObject_GetItem( nodes_per_dim , pyj );
-	  
-	  int num_nodes_cur = PyObject_Length( nodes_per_facet );
-	  
-	  
-	  // resize the innermost array and copy the data from
-	  // the Python list to the Techos array.
-	  dofs[i][j].resize( num_nodes_cur );
-	  for (int k=0;k<num_nodes_cur;k++) {
-	    PyObject *pyk = PyInt_FromLong( (long) k );
-	    PyObject *pynodecur = PyObject_GetItem( nodes_per_facet , pyk );
-	    dofs[i][j][k] = PyInt_AsLong( pynodecur );
-	    Py_DECREF( pynodecur );
-	    Py_DECREF( pyk );
-	  }
-	  
-	  Py_DECREF( pyj );
-	  Py_DECREF( nodes_per_facet );
+		  			dof_[cd-1][i][j].resize( num_nodes_this_facet );
+		  			for (int k=0;k<num_nodes_this_facet;k++) {
+		    			PyObject *pyk = PyInt_FromLong( (long) k );
+		    			to_decref.push( pyk );
+		    			PyObject *pynodecur = PyObject_GetItem( nodes_per_facet , pyk );
+		    			to_decref.push( pynodecur );
+		    			dof_[cd-1][i][j][k] = (int) PyInt_AsLong( pynodecur );
+					}
+				}
+			}
+		}
+
+    	while (!to_decref.empty()) {
+      		PyObject *foo = to_decref.top();
+      		Py_DECREF( foo );
+      		to_decref.pop();
+    	}	
+
 	}
-	
-	Py_DECREF( nodes_per_dim );
-	Py_DECREF( dual_basis );
-      }
-    }
-  }
   
+	FIATScalarAdapter::~FIATScalarAdapter()
+	{
+		for (int i=0;i<3;i++) {
+			Py_DECREF( bases_[i] );
+    	}
+	}
+  
+  	/* loops over pretabulated data structures and copies into dofs */
+	void FIATScalarAdapter::getLocalDOFs(const CellType& cellType,
+										 Array<Array<Array<int> > >& dofs ) const
+	{
+    	if (PointCell == cellType) {
+			dofs.resize(1);
+			dofs[0] = tuple(tuple(0));
+			return;
+	    }
+    	else {
+			int cd = dimension( cellType );
+			Array<Array<Array<int> > >& dofs_cur = dofs_[cd-1];
+			dofs.resize( dofs_cur.size() );
+			for (unsigned i=0;i<dofs_cur.size();i++) {
+				dofs[i].resize( dofs_cur[i].size() );
+				for (unsigned j=0;j<dofs_cur[i].size();j++) {
+					dofs[i][j].resize( dofs_cur[i][j].size() );
+					for (unsigned k=0;k<dofs_cur[i][j].size();k++) {
+						dofs[i][j][k] = dofs_cur[i][j][k];
+					}
+				}
+			}
+			return;
+  		}
+	}
 
-  // sum over spatial dimensions up to and including spatialDim
-  // for the given cellType
-  int FIATScalarAdapter::nNodes( int spatialDim,
-				 const CellType& cellType ) const 
-  {
-    if (PointCell == cellType) {
-    }
-    else {
-      int celldim = dimension( cellType );
-      // throw a Sundance exception if spatialDim > cellDim
-      PyObject *basis = bases_[celldim-1];
-      PyObject *dual_basis = PyObject_CallMethod( basis , 
-						  "dual_basis" ,
-						  NULL );
-      int nnod = 0;
-      for (int i=0;i<=spatialDim;i++) {
-	PyObject *nodes_per_dim =
-	  PyObject_CallMethod( dual_basis , "getNodeIDs" ,
-			       "i" , i );
+	// sum over spatial dimensions up to and including spatialDim
+	// for the given cellType
+	int FIATScalarAdapter::nNodes( int spatialDim,
+								   const CellType& cellType ) const 
+	{
+		if (PointCell == cellType) {
+			return 1;
+		}
+		else {
+			int celldim = dimension( cellType );
+			int nn = 0;
+			Array<Array<Array<int> > >& dofs_cur = dof_[celldim-1];
+			for (int i=0;i<=spatialDim;i++) {
+				nn += dofs_cur[i][0].size();
+			}
 
-	PyObject *nodes_on_facet0 =
-	  PyObject_GetItem( nodes_per_dim , 0 );
-	
-	nnod += PyObject_Length( nodes_on_facet0 );
-
-	Py_DECREF( nodes_on_facet0 );
-	Py_DECREF( nodes_per_dim );
-      }
-
-      Py_DECREF( dual_basis );
-
-      return nnod;
-
-    }
-
-  }
+			return nn;
+		}
+	}
 
   void FIATScalarAdapter::refEval( int spatialDim ,
 				   const CellType& cellType ,
