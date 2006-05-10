@@ -48,7 +48,7 @@ namespace SundanceStdFwk
     // we instantiate the basis for each order
     int order_;
     Array<PyObject *> bases_;
-    Array<Array<Array<Array<double> > > > dof_;
+    Array<Array<Array<Array<int> > > > dof_;
   };
   
   
