@@ -31,8 +31,8 @@ static int **sd_to_fiat[] = {NULL,
 			     tri_sd_to_fiat,
 			     tet_sd_to_fiat};
 
-//static CellType sdim_to_cellType[] = 
-//  {PointCell,LineCell,TriangleCell,TetCell};
+static CellType sdim_to_cellType[] = 
+  {PointCell,LineCell,TriangleCell,TetCell};
 
 #define HAVE_PY_FIAT
 #ifdef HAVE_PY_FIAT
@@ -111,10 +111,10 @@ namespace SundanceStdFwk
 	void FIATScalarAdapter::getLocalDOFs(const CellType& cellType,
 										 Array<Array<Array<int> > >& dofs ) const
 	{
+//		cout << "getting local dof" << endl;
     	if (PointCell == cellType) {
 			dofs.resize(1);
 			dofs[0] = tuple(tuple(0));
-			return;
 	    }
     	else {
 			int cd = dimension( cellType );
@@ -129,8 +129,9 @@ namespace SundanceStdFwk
 					}
 				}
 			}
-			return;
   		}
+//  		cout << "done getting local dof" << endl;
+		return;
 	}
 
 	// sum over spatial dimensions up to and including spatialDim
@@ -138,7 +139,9 @@ namespace SundanceStdFwk
 	int FIATScalarAdapter::nNodes( int spatialDim,
 								   const CellType& cellType ) const 
 	{
+//		cout << "getting nnodes" << endl;
 		if (PointCell == cellType) {
+//			cout << "done getting nodes" << endl;
 			return 1;
 		}
 		else {
@@ -148,6 +151,8 @@ namespace SundanceStdFwk
 			for (int i=0;i<=cellDim;i++) {
 				nn += numFacets( cellType , i ) * dofs_cur[i][0].size();
 			}
+
+//			cout << "done getting nnodes" << endl;
 
 			return nn;
 		}
@@ -168,10 +173,11 @@ namespace SundanceStdFwk
 			result = tuple(tuple(1.0));
 		}
 		else {
-			cout << "refevaling" << endl;
-			cout << "spatial dim: " << spatialDim << endl;
-			cout << "cell dim: " << dimension( cellType ) << endl;
-			cout << "pts sizes: " << pts.size() << " " << pts[0].dim() << endl;
+// 			cout << "refevaling" << endl;
+// 			cout << "spatial dim: " << spatialDim << endl;
+// 			cout << "cell dim: " << dimension( cellType ) << endl;
+// 			cout << "pts sizes: " << pts.size() << " " << pts[0].dim() << endl;
+// 			cout << nNodes( dimension(cellType) , cellType ) << " nodes" << endl;
  			stack<PyObject *> to_decref;
  			int cellDim = dimension( cellType );
  
@@ -181,14 +187,17 @@ namespace SundanceStdFwk
  				result[i].resize(nn);
  			}
  
- 			cout << "making points" << endl;
+// 			cout << "result sizes" << endl;
+//  			for (unsigned i=0;i<result.size();i++) {
+//  				cout << result[i].size() << endl;
+//  			}
+// 			cout << "making points" << endl;
  			// This is the list of points converted into a Python list
 			PyObject *py_list_of_points = PyList_New(pts.size());
 			TEST_FOR_EXCEPTION( !py_list_of_points , RuntimeError, 
 								"Unable to create list" );
 			to_decref.push( py_list_of_points );
 			for (unsigned i=0;i<pts.size();i++) {
-				cout << "i: " << i << endl;
 				// Create a Python tuple for the point, converting from
 				// Sundance (0,1)-based coordinates to FIAT (-1,1)-based 
 				// coordinates
@@ -196,10 +205,7 @@ namespace SundanceStdFwk
 				TEST_FOR_EXCEPTION( !py_pt_cur , RuntimeError ,
 									"Unable to create tuple" );
 				for (int j=0;j<cellDim;j++) {
-					cout << "j: " << j << endl;
-					cout << "old pt: " << pts[i][j] << endl;
 					double coord_cur = 2.0 * ( pts[i][j] - 0.5 );
-					cout << "new pt:" << coord_cur << endl;
 					PyObject *py_coord = PyFloat_FromDouble( coord_cur );
 					TEST_FOR_EXCEPTION( !py_coord , RuntimeError ,
 										"Unable to create PyFloat" );
@@ -211,22 +217,21 @@ namespace SundanceStdFwk
 				}
 				for (int j=cellDim;j<spatialDim;j++) {
 					PyObject *py_coord = PyFloat_FromDouble( -1.0 );
-					cout << "-1.0" << endl;
 					int msg = PyTuple_SetItem( py_pt_cur , j , py_coord );
 					TEST_FOR_EXCEPTION( msg==-1 , RuntimeError ,
 										"Unable to set tuple item" );
 					// PyTuple_SetItem steals a reference to py_coord;
 					// not added to the decref stack
 				}
-				cout << "putting into list" << endl;
+//				cout << "putting into list" << endl;
 				int msg = PyList_SetItem( py_list_of_points , i , py_pt_cur );
 				// reference to py_pt_cur stolen
 				TEST_FOR_EXCEPTION( msg==-1 , RuntimeError ,
 									"Unable to set tuple item" );
-				cout << "done putting into list" << endl;
+//				cout << "done putting into list" << endl;
 			}
 
-			cout << "done making points" << endl;
+//			cout << "done making points" << endl;
 
 			// Extract the function space from the basis
 			PyObject *py_basis = bases_[spatialDim-1];
@@ -270,7 +275,8 @@ namespace SundanceStdFwk
 			// the data directly if we have a speed problem.
 			// 
 			// This function should give a 2d array that is num_pts by
-			// num_bf
+			// the number of basis functions associated with cellType
+			// (and things that cover it)
 			PyObject *py_tabulation =
 				PyObject_CallMethod( py_deriv_space , "tabulate" ,
 									 "(O)" , py_list_of_points );
@@ -279,30 +285,41 @@ namespace SundanceStdFwk
 			to_decref.push( py_tabulation );
 
 			Array<Array<Array<int> > > dofs;
-			getLocalDOFs( cellType , dofs );
+			getLocalDOFs( sdim_to_cellType[spatialDim] , dofs );
+
+
+			double factor = pow( 2.0 , deriv.order() );
 
 			int cur = 0;
 			int **sd_to_fiat_spd = sd_to_fiat[spatialDim];
 			for (unsigned d=0;d<=(unsigned)cellDim;d++) {
+//				cout << "copying points for dimension " << d << endl;
 				int *sd_to_fiat_spd_d = sd_to_fiat_spd[d];
-				for (unsigned e=0;e<=dofs[e].size();e++) {
+				for (int e=0;e<numFacets(cellType,d);e++) {
+//					cout << "\tcopying points for facet " << e << endl;
 					int fiat_e = sd_to_fiat_spd_d[e];
-					for (unsigned n=0;n<dofs[e][d].size();n++) {
+//					cout << "fiat_e: " << fiat_e << endl;
+					for (unsigned n=0;n<dofs[d][e].size();n++) {
+//						cout << "\t\tcopying points for local bf " << n << endl;
+//						cout << "\t\tcur " << cur << endl;
 						for (unsigned p=0;p<pts.size();p++) {
+//							cout << "\t\t\tcopying value for point " << p << endl;
+//							cout << "ij tuple" << endl;
 							PyObject *py_ij_tuple = 
 								Py_BuildValue( "(ii)" , dofs[d][fiat_e][n] , p );
 							to_decref.push( py_ij_tuple );
+//							cout << "lookup" << endl;
 							PyObject *py_tab_cur_ij = 
 								PyObject_GetItem( py_tabulation , py_ij_tuple );
 							to_decref.push( py_tab_cur_ij );
-							result[p][cur] = PyFloat_AsDouble( py_tab_cur_ij );
+							result[p][cur] = factor * PyFloat_AsDouble( py_tab_cur_ij );
 						}
 						cur++;
 					}
 				}
 			}
 
-			cout << "done refevaling" << endl;
+//			cout << "done refevaling" << endl;
 
 
 			while (!to_decref.empty()) {
