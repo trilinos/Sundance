@@ -66,7 +66,7 @@ namespace SundanceStdFwk
       virtual ~QuadratureFamilyBase(){;}
 
       /** Get the quadrature points and weights for the given cell type */
-      void getPoints(const CellType& cellType, 
+      virtual void getPoints(const CellType& cellType, 
                      Array<Point>& quadPoints,
                      Array<double>& quadWeights) const ;
     protected:
