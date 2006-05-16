@@ -43,7 +43,7 @@ PySundanceCallback.cpp PySundanceCallback.hpp \
 PySundanceCellPredicate.cpp PySundanceCellPredicate.hpp \
 PySundanceLinearSolver.cpp PySundanceLinearSolver.hpp \
 PySundanceFIATScalarAdapter.cpp PySundanceFIATScalarAdapter.hpp \
-PySundanceBasisCheck.cpp PySundanceBasisCheck.hpp
+PySundanceFIATQuadratureAdapter.cpp PySundanceFIATQuadratureAdapter.hpp
 
 # Default make target
 all-am: build

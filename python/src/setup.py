@@ -93,7 +93,7 @@ srcFiles = ["PySundance_wrap.cpp",
             os.path.join(srcdir,"PySundanceLinearSolver.cpp"),
             os.path.join(srcdir,"PySundanceCellPredicate.cpp"),
             os.path.join(srcdir,"PySundanceFIATScalarAdapter.cpp"),
-            os.path.join(srcdir,"PySundanceBasisCheck.cpp")]
+            os.path.join(srcdir,"PySundanceFIATQuadratureAdapter.cpp")]
 
 # Compiler and linker
 sysconfig.get_config_vars()

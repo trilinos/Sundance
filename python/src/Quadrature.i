@@ -40,12 +40,21 @@ namespace SundanceStdFwk
 }
 
 %rename(GaussianQuadrature) makeGaussianQuadrature;
+%rename(FIATQuadratureAdapter) makeFIATQuadratureAdapter;
 
 %inline %{
-  /* Create a line mesher */
+  /* Create a Gaussian quadrature object */
   SundanceStdFwk::QuadratureFamily makeGaussianQuadrature(int order)
   {
     return new SundanceStdFwk::GaussianQuadrature(order);
   }
+  
+  SundanceStdFwk::FIATQuadratureAdapter 
+  	makeFIATQuadratureAdapter(PyObject *py_quad_factory , int order)
+  {
+    return new SundanceStdFwk::FIATQuadratureAdapter(factor,order);
+  }
+  
+  
   %}
 

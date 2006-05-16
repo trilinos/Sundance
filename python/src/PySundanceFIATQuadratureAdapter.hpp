@@ -18,10 +18,22 @@ namespace SundanceStdFwk
 	{
 	public:
 		FIATQuadratureAdapter( PyObject *py_quad_factory , int order );
-		virtual ~FIATQuadratureAdapter();
+		virtual ~FIATQuadratureAdapter() {}
 		virtual void getPoints( const CellType& cellType ,
 								Array<Point>& quadPoints ,
 								Array<double>& quadWeights ) const;
+
+		/** */
+		virtual XMLObject toXML() const ;
+		
+		/** Describable interface */
+		virtual string description() const 
+		{return "FIATQuadrature[order=" + Teuchos::toString(order()) 
+			+  "]";}
+
+		/** handleable boilerplate */
+		GET_RCP(QuadratureFamilyStub);
+
 	private:
 		// constructor will pretabulate for line, triangle, and tet and
 		// store in these arrays

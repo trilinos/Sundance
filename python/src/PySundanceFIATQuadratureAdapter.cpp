@@ -1,6 +1,14 @@
 #include "PySundanceFIATQuadratureAdapter.hpp"
+#include <stack>
 
 using namespace std;
+using namespace SundanceStdFwk;
+using namespace SundanceUtils;
+using namespace SundanceStdFwk::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
+using namespace Teuchos;
+
 
 namespace SundanceStdFwk 
 {
@@ -15,7 +23,7 @@ namespace SundanceStdFwk
 			// to get the FIAT quadrature rule for that shape
 
 			PyObject *py_quad_rule = 
-				PyObject_CallFunction( py_quad_factory , "(ii)" , i+1 , order() );
+				PyObject_CallFunction( py_quad_factory , "(ii)" , i+1 , order );
 			TEST_FOR_EXCEPTION( !py_quad_rule , RuntimeError , 
 								"Unable to construct quadrature rule" );
 			to_decref.push( py_quad_rule );
@@ -51,14 +59,14 @@ namespace SundanceStdFwk
 			pts_[i].resize( num_points );
 			wts_[i].resize( num_points );
 			
-			for (unsigned j=0;j<num_points;j++) {
+			for (int j=0;j<num_points;j++) {
 				pts_[i][j].resize(i+1);				
 			}
 			
 			// copy data for the points
 			// lookup functions into list and tuple are borrowed reference
 			// and hence don't need to be decrefed
-			for (unsigned j=0;j<num_points;j++) {
+			for (int j=0;j<num_points;j++) {
 				// Get a tuple that is the current point
 				PyObject *py_pt_cur = PyList_GetItem( py_quad_points , j );
 				for (unsigned k=0;k<i+1;k++) {
@@ -70,7 +78,7 @@ namespace SundanceStdFwk
 			// copy data for weights
 			// since they are a Numeric array, I go through the
 			// object protocol and have to decref.
-			for (unsigned j=0;j<num_points;j++) {
+			for (int j=0;j<num_points;j++) {
 				PyObject *py_j = PyInt_FromLong( (long) j );
 				PyObject *py_wt_cur = PyObject_GetItem( py_quad_weights , py_j );
 				wts_[i][j] = PyFloat_AsDouble( py_wt_cur );
@@ -86,14 +94,8 @@ namespace SundanceStdFwk
 		}
 	}
 
-	virtual FIATQuadratureAdapter::~FIATQuadratureAdapter()
-	{
-		for (unsigned i=0;i<3;i++) {
-			Py_DECREF( pts_[i] ); Py_DECREF( wts_[i] );
-		}
-	}
 	
-	virtual void FIATQuadratureAdapter::getPoints( const CellType& cellType ,
+	void FIATQuadratureAdapter::getPoints( const CellType& cellType ,
 												   Array<Point>& quadPoints,
 												   Array<double>& quadWeights ) const
 	{
@@ -103,8 +105,8 @@ namespace SundanceStdFwk
 		quadPoints.resize( pts.size() );
 		quadWeights.resize( wts.size() );
 		for (unsigned i=0;i<pts.size();i++) {
-			quadPoints[i].resize( pts[i].size() );
-			for (unsigned j=0;j<pts[i].size();j++) {
+			quadPoints[i].resize( pts[i].dim() );
+			for (int j=0;j<pts[i].dim();j++) {
 				quadPoints[i][j] = pts[i][j];
 			}
 			quadWeights[i] = wts[i];
@@ -112,6 +114,13 @@ namespace SundanceStdFwk
 
 		return;
 	}
-
-
+	
+	XMLObject FIATQuadratureAdapter::toXML() const 
+	{
+		XMLObject rtn("FIATQuadrature");
+		rtn.addAttribute("order", Teuchos::toString(order()));
+		return rtn;
+	}
+	
+	
 }
