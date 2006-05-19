@@ -48,13 +48,12 @@ namespace SundanceStdFwk
   {
     return new SundanceStdFwk::GaussianQuadrature(order);
   }
-  
-  SundanceStdFwk::FIATQuadratureAdapter 
+
+  /*  SundanceStdFwk::FIATQuadratureAdapter 
   	makeFIATQuadratureAdapter(PyObject *py_quad_factory , int order)
   {
     return new SundanceStdFwk::FIATQuadratureAdapter(factor,order);
-  }
-  
+    }*/
   
   %}
 
