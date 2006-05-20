@@ -39,7 +39,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace Teuchos;
 
-virtual void QuadratureFamilyBase::getPoints(const CellType& cellType, 
+void QuadratureFamilyBase::getPoints(const CellType& cellType, 
                                      Array<Point>& quadPoints,
                                      Array<double>& quadWeights) const
 {
