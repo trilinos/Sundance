@@ -39,7 +39,7 @@ PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
-FunctionalTest SimpleModelEvalTest
+FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 
@@ -348,17 +348,17 @@ Eikonal2D_LDADD = $(STD_FWK_LIBS)
 
 
 
-#VorticityStokes2D_SOURCES = $(srcdir)/VorticityStokes2D.cpp
-#
-#VorticityStokes2D_DEPENDENCIES = \
-#$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-#$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-#$(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-#
-#VorticityStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-#
-#VorticityStokes2D_LDADD = $(STD_FWK_LIBS) 
+VorticityStokes2D_SOURCES = $(srcdir)/VorticityStokes2D.cpp
+
+VorticityStokes2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+VorticityStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+VorticityStokes2D_LDADD = $(STD_FWK_LIBS) 
 
 
 
@@ -391,17 +391,17 @@ Helmholtz1D_LDADD = $(STD_FWK_LIBS)
 
 
 
-#VorticityNavierStokes2D_SOURCES = $(srcdir)/VorticityNavierStokes2D.cpp
-#
-#VorticityNavierStokes2D_DEPENDENCIES = \
-#$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-#$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-#$(top_builddir)/src-core/libsundanceCore.a \
-#$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-#
-#VorticityNavierStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-#
-#VorticityNavierStokes2D_LDADD = $(STD_FWK_LIBS) 
+VorticityNavierStokes2D_SOURCES = $(srcdir)/VorticityNavierStokes2D.cpp
+
+VorticityNavierStokes2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+VorticityNavierStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+VorticityNavierStokes2D_LDADD = $(STD_FWK_LIBS) 
 
 
 

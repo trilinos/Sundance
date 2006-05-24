@@ -56,7 +56,8 @@ int main(int argc, void** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 64/np;
+      int nx = 32;
+      int ny = 32;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 1.0, nx, 1,
@@ -108,7 +109,7 @@ int main(int argc, void** argv)
       LinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega), 
                          List(psi, omega), vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
@@ -119,7 +120,7 @@ int main(int argc, void** argv)
       Expr soln = prob.solve(solver);
 
       /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("VorticityStokes2d");
+      FieldWriter w = new VTKWriter("VorticityStokes2D");
       w.addMesh(mesh);
       w.addField("psi", new ExprFieldWrapper(soln[0]));
       w.addField("omega", new ExprFieldWrapper(soln[1]));

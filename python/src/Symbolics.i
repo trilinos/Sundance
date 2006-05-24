@@ -242,6 +242,7 @@ namespace SundanceCore
 %rename(CoordExpr) makeCoordExpr;
 %rename(Derivative) makeDerivative;
 %rename(Parameter) makeParameter;
+%rename(CellDiameterExpr) makeCellDiameterExpr;
 
 
 %inline %{
@@ -284,6 +285,14 @@ namespace SundanceCore
   SundanceCore::Expr makeCoordExpr(int dir)
   {
     return new SundanceCore::CoordExpr(dir);
+  }
+  %}
+
+%inline %{
+  /* Create a cell diameter expression */
+  SundanceCore::Expr makeCellDiameterExpr()
+  {
+    return new SundanceCore::CellDiameterExpr();
   }
   %}
 

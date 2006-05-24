@@ -117,6 +117,14 @@ namespace SundanceCore
       /** */
       virtual Set<MultipleDeriv> 
       internalFindW(int order, const EvalContext& context) const ;
+          
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindV(int order, const EvalContext& context) const ;
+          
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindC(int order, const EvalContext& context) const ;
 
       
 

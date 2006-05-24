@@ -77,6 +77,12 @@ namespace SundanceCore
           MultiIndex operator+(const MultiIndex& other) const ;
 
           /** */
+          MultiIndex operator-(const MultiIndex& other) const ;
+
+          /** */
+          MultiIndex operator-() const ;
+
+          /** */
           string toString() const ;
 
           /** */
@@ -90,6 +96,9 @@ namespace SundanceCore
 
           /** */
           static int maxDim() {return 3;}
+
+          /** */
+          bool isValid() const ;
 
           /** */
           string coordForm() const ;

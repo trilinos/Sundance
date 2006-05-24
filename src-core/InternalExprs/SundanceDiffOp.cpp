@@ -478,81 +478,44 @@ RefCountPtr<Array<Set<MultipleDeriv> > >
 DiffOp::internalDetermineR(const EvalContext& context,
                            const Array<Set<MultipleDeriv> >& RInput) const
 {
-  const Deriv& x = myCoordDeriv();
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "DiffOp::internalDetermineR for=" << toString());
+  SUNDANCE_VERB_HIGH(tab0 << "RInput = " << RInput );
 
-  /* record R for self */
   RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
-    = EvaluatableExpr::internalDetermineR(context, RInput);
-
-   
-  /* work out RInput for the argument */
-  Array<Set<MultipleDeriv> > RArg(RInput.size()+1);
-
-  for (unsigned int order=0; order<RArg.size(); order++)
-    {
-      const Set<MultipleDeriv>& Warg = evaluatableArg()->findW(order, context);      
-      const Set<MultipleDeriv>& R = RInput[order];
-      Set<MultipleDeriv> RMinus;
-      if (order > 0) RMinus = RInput[order-1];
-      Set<MultipleDeriv>& tmp = RArg[order];
-      
-      Set<MultipleDeriv>::const_iterator i;
-      for (i=Warg.begin(); i!=Warg.end(); i++)
-        {
-          if (!(i->contains(x))) continue;
-          MultipleDeriv xRemoved = i->factorOutDeriv(x);
-          if (RMinus.contains(xRemoved)) tmp.put(*i);
-        }
+    = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
   
-      for (i=Warg.begin(); i!=Warg.end(); i++)
-        {
-          const MultipleDeriv& md = *i;
-          for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
-            {
-              const Deriv& d = *j;
-              /* coord derivs are handled elsewhere, so skip any coord derivs */
-              if (!d.isFunctionalDeriv()) continue;
-              /* see if the multiple deriv can be "factored" into a single deriv
-               * corresponding to one of the nonzero functions, plus a remaining 
-               * multiple deriv that is a member of RMinus */
-              MultipleDeriv remainder = md.factorOutDeriv(d);
-              const FunctionalDeriv* fd = d.funcDeriv();
-              const FuncElementBase* f = fd->func();
-              const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
-              TEST_FOR_EXCEPTION(s==0, RuntimeError, "non-symbolic function in functional "
-                                 "derivative " << d);
-          
-              if (!s->evalPtIsZero() && RMinus.contains(remainder))
-                {
-                  tmp.put(md);
-                  /* If we've added this multiple deriv to the set, there's no need to
-                   * test the other permutations so we can skip the rest of the loop. */
-                  break;
-                }
-            }
-        }
+  {
+    Tabs tab1;
+    for (unsigned int i=0; i<RInput.size(); i++)
+      {
+        Tabs tab2;
+        const Set<MultipleDeriv>& Wi = findW(i, context);
+        SUNDANCE_VERB_EXTREME( tab2 << "W[" << i << "] = " << Wi );
+        (*rtn)[i] = RInput[i].intersection(Wi);
+      }
 
-      for (i=Warg.begin(); i!=Warg.end(); i++)
-        {
-          Tabs tab1;
-          const MultipleDeriv& md = *i;
-
-          for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
-            {
-              Tabs tab2;
-              const Deriv& d = *j;
-              if (!d.isFunctionalDeriv()) continue;
-              MultipleDeriv remainder = md.factorOutDeriv(d);
-              remainder.put(d.funcDeriv()->derivWrtMultiIndex(mi()));
-              if (R.contains(remainder)) tmp.put(remainder);
-            }
-        }
-    }
-
-  /* Propagate the computation of R into the argument */
-  evaluatableArg()->determineR(context, RArg);
-
-  
+    const Set<MultipleDeriv>& W1 = evaluatableArg()->findW(1, context);
+    SUNDANCE_VERB_HIGH(tab1 << "arg W1 = " << W1);
+    Set<MultipleDeriv> Zx = applyZx(W1, mi_);
+    SUNDANCE_VERB_HIGH(tab1 << "Z = " << Zx);
+    Array<Set<MultipleDeriv> > RArg(RInput.size()+1);
+    RArg[0] = Set<MultipleDeriv>();
+    
+    for (unsigned int order=0; order<RInput.size(); order++)
+      {
+        const Set<MultipleDeriv>& WArgPlus = evaluatableArg()->findW(order+1, context);
+        const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
+        RArg[order+1].merge(setProduct(Zx, RInput[order]).intersection(WArgPlus));
+        RArg[order].merge(applyTx(RInput[order], -mi_).intersection(WArg));
+      }
+    
+    SUNDANCE_VERB_HIGH(tab1 << "calling determineR() for arg");
+    evaluatableArg()->determineR(context, RArg);
+  }
+  SUNDANCE_VERB_HIGH(tab0 << "R = " << (*rtn) );
+  SUNDANCE_VERB_HIGH(tab0 << "done with DiffOp::internalDetermineR for "
+                     << toString());
   /* all done */  
   return rtn;
 }
@@ -561,70 +524,83 @@ DiffOp::internalDetermineR(const EvalContext& context,
 Set<MultipleDeriv> DiffOp::internalFindW(int order, const EvalContext& context) const
 {
   Tabs tabs;
-  const Deriv& x = myCoordDeriv();
+  SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindW for " << toString());
+
+  const Set<MultipleDeriv>& W1 = evaluatableArg()->findW(1, context);
   const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
   const Set<MultipleDeriv>& WArgPlus = evaluatableArg()->findW(order+1, context);
+
+  Set<MultipleDeriv> rtn 
+    = setDivision(WArgPlus, applyZx(W1, mi_)).setUnion(applyTx(WArg, mi_)); 
+
+  SUNDANCE_VERB_HIGH(tabs << "W[" << order << "]=" << rtn);
+  SUNDANCE_VERB_HIGH(tabs << "done with DiffOp::internalFindW for "
+                     << toString());
+
+  return rtn;
+}
+
+
+Set<MultipleDeriv> DiffOp::internalFindV(int order, const EvalContext& context) const
+{
+  Tabs tabs;
+  SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindV() for " 
+                     << toString());
+
   Set<MultipleDeriv> rtn;
+  {
+    Tabs tab1;
+    const Set<MultipleDeriv>& V1 = evaluatableArg()->findV(1, context);
+    const Set<MultipleDeriv>& VArg = evaluatableArg()->findV(order, context);
+    const Set<MultipleDeriv>& VArgPlus 
+      = evaluatableArg()->findV(order+1, context);
 
-  Set<MultipleDeriv>::const_iterator i;
-  
-  /* */
-  cout << tabs << "W(order) for arg = " << WArg << endl;
-  cout << tabs << "W(order+1) for arg = " << WArgPlus << endl;
-  for (i=WArgPlus.begin(); i!=WArgPlus.end(); i++)
-    {
-      Tabs tab1;
-      /* look for a nonzero mixed spatial/functional deriv */
-      const MultipleDeriv& md = *i;
-      cout << tab1 << "checking arg deriv = " << md << endl;
-      if (md.contains(x)) 
-        {
-          Tabs tab2;
-          MultipleDeriv remainder = md.factorOutDeriv(x);
-          cout << tab2 << "adding = " << remainder << endl;
-          rtn.put(md.factorOutDeriv(x));
-        }
+    SUNDANCE_VERB_EXTREME(tab1 << "VArg=" << VArg);
+    SUNDANCE_VERB_EXTREME(tab1 << "VArgPlus=" << VArgPlus);
 
-      /* look for a nonzero functional deriv times a nonzero function */ 
-      for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
-        {
-          Tabs tab2;
-          const Deriv& d = *j;
-          if (!d.isFunctionalDeriv()) continue;
-          MultipleDeriv remainder = md.factorOutDeriv(d);
-          const FunctionalDeriv* fd = d.funcDeriv();
-          const FuncElementBase* f = fd->func();
-          const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
-          TEST_FOR_EXCEPTION(s==0, RuntimeError, "non-symbolic function in functional "
-                             "derivative " << d);
-          if (!s->evalPtIsZero())
-            {
-              cout << tab2 << "adding = " << remainder << endl;
-              rtn.put(remainder);
-            }
-        }
-    }
+    Set<MultipleDeriv> Z = applyZx(V1, mi_);
+    Set<MultipleDeriv> T = applyTx(VArg, mi_);
+    
+    SUNDANCE_VERB_EXTREME(tab1 << "Z=" << Z);
+    SUNDANCE_VERB_EXTREME(tab1 << "T=" << T);
+    
+    rtn = setDivision(VArgPlus, Z).setUnion(T); 
+    
+    SUNDANCE_VERB_EXTREME(tab1 << "VArgPlus/Z union T =" << rtn);
+    rtn = rtn.intersection(findR(order, context));
+    
+  }
+  SUNDANCE_VERB_HIGH(tabs << "V[" << order << "]=" << rtn);
+  SUNDANCE_VERB_HIGH(tabs << "done with DiffOp::internalFindV for "
+                     << toString());
 
-  /* */
-  cout << tabs << "doing delta terms" << endl;
-  for (i=WArg.begin(); i!=WArg.end(); i++)
-    {
-      Tabs tab1;
-      const MultipleDeriv& md = *i;
-      cout << tab1 << "checking arg deriv = " << md << endl;
+  return rtn;
+}
 
-      for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
-        {
-          Tabs tab2;
-          const Deriv& d = *j;
-          if (!d.isFunctionalDeriv()) continue;
-          MultipleDeriv remainder = md.factorOutDeriv(d);
-          remainder.put(d.funcDeriv()->derivWrtMultiIndex(mi()));
-          cout << tab2 << "adding = " << remainder << endl;
-          rtn.put(remainder);
-        }
-    }
 
+Set<MultipleDeriv> DiffOp::internalFindC(int order, const EvalContext& context) const
+{
+  Tabs tabs;
+  SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindC() for " 
+                     << toString());
+  Set<MultipleDeriv> rtn ;
+
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_EXTREME(tab1 << "finding R");
+    const Set<MultipleDeriv>& R = findR(order, context);
+    SUNDANCE_VERB_EXTREME(tab1 << "finding V");
+    const Set<MultipleDeriv>& V = findV(order, context);
+
+    SUNDANCE_VERB_EXTREME(tab1 << "R=" << R);
+    SUNDANCE_VERB_EXTREME(tab1 << "V=" << V);
+    rtn = R.setDifference(V);
+    SUNDANCE_VERB_HIGH(tabs << "C[" << order << "]=" << rtn);
+  }
+
+  SUNDANCE_VERB_HIGH(tabs << "C[" << order << "]=R\\V = " << rtn);
+  SUNDANCE_VERB_HIGH(tabs << "done with DiffOp::internalFindC for "
+                     << toString());
   return rtn;
 }
 

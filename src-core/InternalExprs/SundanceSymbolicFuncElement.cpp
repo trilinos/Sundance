@@ -67,11 +67,24 @@ SymbolicFuncElement::SymbolicFuncElement(const string& name,
 Set<MultipleDeriv> 
 SymbolicFuncElement::internalFindW(int order, const EvalContext& context) const
 {
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "SFE::internalFindW(order=" << order << ") for "
+                     << toString());
+
   Set<MultipleDeriv> rtn;
 
   if (order==0) 
     {
-      if (!evalPtIsZero()) rtn.put(MultipleDeriv());
+      Tabs tab1;
+      if (!evalPtIsZero()) 
+        {
+          SUNDANCE_VERB_EXTREME(tab1 << "value of " << toString() << " is nonzero" );
+          rtn.put(MultipleDeriv());
+        }
+      else
+        {
+          SUNDANCE_VERB_EXTREME( tab1 << "value of " << toString() << " is zero" );
+        }
     }
   else if (order==1)
     {
@@ -80,7 +93,54 @@ SymbolicFuncElement::internalFindW(int order, const EvalContext& context) const
       md.put(d);
       rtn.put(md);
     }
+  
+  SUNDANCE_VERB_HIGH( tab << "SFE: W[" << order << "] = " << rtn );
 
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+SymbolicFuncElement::internalFindV(int order, const EvalContext& context) const
+{
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "SFE::internalFindV(order=" << order << ") for "
+                     << toString());
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) 
+    {
+      if (!evalPtIsZero()) rtn.put(MultipleDeriv());
+    }
+  
+  SUNDANCE_VERB_EXTREME( tab << "SFE: V = " << rtn );
+  SUNDANCE_VERB_EXTREME( tab << "SFE: R = " << findR(order, context) );
+  rtn = rtn.intersection(findR(order, context));
+
+  SUNDANCE_VERB_HIGH( tab << "SFE: V[" << order << "] = " << rtn );
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+SymbolicFuncElement::internalFindC(int order, const EvalContext& context) const
+{
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "SFE::internalFindV(order=" << order << ") for "
+                     << toString());
+  Set<MultipleDeriv> rtn;
+
+  if (order==1)
+    {
+      Deriv d = new FunctionalDeriv(this, MultiIndex());
+      MultipleDeriv md;
+      md.put(d);
+      rtn.put(md);
+    }
+
+  rtn = rtn.intersection(findR(order, context));
+
+  SUNDANCE_VERB_HIGH( tab << "SFE: C[" << order << "] = " << rtn );
   return rtn;
 }
 

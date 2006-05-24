@@ -103,13 +103,50 @@ namespace SundanceCore
           internalFindW(int order, const EvalContext& context) const ;
 
           /** */
-          const Set<Array<int> >& findQ_W(int order, 
+          virtual Set<MultipleDeriv> 
+          internalFindC(int order, const EvalContext& context) const ;
+          
+          /** */
+          virtual Set<MultipleDeriv> 
+          internalFindV(int order, const EvalContext& context) const ;
+
+          /** */
+          virtual void displayNonzeros(ostream& os, 
+                                       const EvalContext& context) const ;
+
+          /** */
+          const Set<MultiSet<int> >& findQ_W(int order, 
                                           const EvalContext& context) const ;
 
           /** */
-          virtual Set<Array<int> > 
+          const Set<MultiSet<int> >& findQ_C(int order, 
+                                          const EvalContext& context) const ;
+
+          /** */
+          const Set<MultiSet<int> >& findQ_V(int order, 
+                                          const EvalContext& context) const ;
+
+          /** */
+          virtual Set<MultiSet<int> > 
           internalFindQ_W(int order, 
                           const EvalContext& context) const ;
+
+          /** */
+          virtual Set<MultiSet<int> > 
+          internalFindQ_V(int order, 
+                          const EvalContext& context) const ;
+
+          /** */
+          virtual Set<MultiSet<int> > 
+          internalFindQ_C(int order, 
+                          const EvalContext& context) const ;
+
+          /** */
+          const Set<MultiSet<int> >& getI_N() const ;
+
+          /** */
+          Set<MultiSet<int> > indexSetProduct(const Set<MultiSet<int> >& a,
+                                              const Set<MultiSet<int> >& b) const ;
           
           /** Return true if any child returns true. The sum expression
            * will override this requiring all children to return true */
@@ -137,11 +174,36 @@ namespace SundanceCore
           virtual bool isProduct() const {return false;}
 
 
+          /** */
+          Set<MultiSet<int> > subsetContainingIndex(const Set<MultiSet<int> >& s,
+                                                    int index) const ;
+
+          /** */
+          virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+          internalDetermineR(const EvalContext& context,
+                             const Array<Set<MultipleDeriv> >& RInput) const ;
+
+          /** Determine whether the given child is needed to compute derivatives
+           * of the given order */
+          bool childIsRequired(int childIndex, int diffOrder,
+                               const EvalContext& context) const ;
+
+
+
+          /** */
+          Set<MultipleDeriv> product(const Array<int>& J, const Array<int>& K,
+                                     DerivSubsetSpecifier dss,
+                                     const EvalContext& context) const ;
           
         private:
           Array<RefCountPtr<ScalarExpr> > children_;
 
-          mutable Array<Map<EvalContext, Set<Array<int> > > > contextToQWMap_;
+          static Map<int, Set<MultiSet<int> > >& cachedI_N()
+          {static Map<int, Set<MultiSet<int> > > rtn; return rtn;}
+
+          mutable Array<Map<EvalContext, Set<MultiSet<int> > > > contextToQWMap_;
+          mutable Array<Map<EvalContext, Set<MultiSet<int> > > > contextToQVMap_;
+          mutable Array<Map<EvalContext, Set<MultiSet<int> > > > contextToQCMap_;
       };          
 
     }

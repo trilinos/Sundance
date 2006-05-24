@@ -157,6 +157,8 @@ int main(int argc, void** argv)
 			Expr u = new UnknownFunctionStub("u");
 			Expr alpha = new UnknownParameter("alpha");
 			Expr alpha0 = new Parameter(3.14, "alpha0");
+			Expr beta = new UnknownParameter("beta");
+			Expr beta0 = new Parameter(2.72, "beta0");
 			Expr v = new TestFunctionStub("v");
 
       cerr << "u=" << u << endl;
@@ -173,7 +175,7 @@ int main(int argc, void** argv)
 
       
 
-      tests.append(v*dx*(u*u - x*u) + dx*(v*alpha*u));
+      tests.append(v*dx*(u*u - x*u) + dx*(v*alpha*u) + v*sin(alpha*u) + 2.0*v + v*exp(u*beta));
 
 
       for (int i=0; i<tests.length(); i++)
@@ -185,8 +187,8 @@ int main(int argc, void** argv)
                    SundanceCore::List(v),
                    SundanceCore::List(u),
                    SundanceCore::List(u0),
-                   SundanceCore::List(alpha),
-                   SundanceCore::List(alpha0),
+                   SundanceCore::List(alpha, beta),
+                   SundanceCore::List(alpha0, beta0),
                    context);
         }
 

@@ -299,6 +299,7 @@ AC_CONFIG_FILES([
 	python/src/.deps/dummy
   python/example/Makefile
   tests-utils/Makefile
+  tests-utils/Combinatorics/Makefile
   tests-utils/Functors/Makefile
   tests-utils/Maps/Makefile
   tests-core/Makefile

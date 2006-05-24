@@ -406,14 +406,16 @@ void ProductExpr::findNonzeros(const EvalContext& context,
 
 
 
-Set<Array<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& context) const
+Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& context) const
 {
-  Set<Array<int> > rtn;
+  Tabs tab0;
+
+  Set<MultiSet<int> > rtn;
   if (order > 2) return rtn;
 
   if (order==2)
     {
-      rtn.put(tuple(0,1));
+      rtn.put(makeMultiSet<int>(0,1));
       return rtn;
     }
 
@@ -426,21 +428,56 @@ Set<Array<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& cont
     {
       if (wLeft.size() > 0)
         {
-          rtn.put(tuple(0));
+          rtn.put(makeMultiSet<int>(0));
         }
       if (wRight.size() > 0)
         {
-          rtn.put(tuple(1));
+          rtn.put(makeMultiSet<int>(1));
         }
     }
   
   if (order==1)
     {
-      if (wLeft.size() > 0) rtn.put(tuple(1));
-      if (wRight.size() > 0) rtn.put(tuple(0));
+      if (wLeft.size() > 0) rtn.put(makeMultiSet<int>(1));
+      if (wRight.size() > 0) rtn.put(makeMultiSet<int>(0));
     }
+
 
   
   return rtn;
 }
 
+
+Set<MultiSet<int> > ProductExpr::internalFindQ_V(int order, const EvalContext& context) const
+{
+  Tabs tab0;
+
+  Set<MultiSet<int> > rtn;
+  if (order > 1) return rtn;
+
+  const Set<MultipleDeriv>& vLeft 
+    = leftEvaluatable()->findV(0, context);
+  const Set<MultipleDeriv>& vRight
+    = rightEvaluatable()->findV(0, context);
+
+  if (order==0)
+    {
+      if (vLeft.size() > 0)
+        {
+          rtn.put(makeMultiSet<int>(0));
+        }
+      if (vRight.size() > 0)
+        {
+          rtn.put(makeMultiSet<int>(1));
+        }
+    }
+
+  if (order==1)
+    {
+      if (vLeft.size() > 0) rtn.put(makeMultiSet<int>(1));
+      if (vRight.size() > 0) rtn.put(makeMultiSet<int>(0));
+    }
+
+  
+  return rtn;
+}

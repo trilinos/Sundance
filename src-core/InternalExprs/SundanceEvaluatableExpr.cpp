@@ -58,13 +58,27 @@ EvaluatableExpr::EvaluatableExpr()
     funcDependencies_(),
     knownNonzeros_(),
     nodesHaveBeenCounted_(false),
-    contextToRTableMap_(maxFuncDiffOrder()+1),
-    contextToWTableMap_(maxFuncDiffOrder()+1)
+    contextToDSSMap_(numDerivSubsetTypes(), maxFuncDiffOrder()+1),
+    rIsReady_(false),
+    allOrdersMap_(numDerivSubsetTypes())
 {
   addFuncIDCombo(MultiSet<int>());
 }
 
-
+string EvaluatableExpr::derivType(const DerivSubsetSpecifier& dss) const
+{
+  switch(dss)
+    {
+    case RequiredNonzeros:
+      return "R";
+    case ConstantNonzeros:
+      return "C";
+    case VariableNonzeros:
+      return "V";
+    default:
+      return "W";
+    }
+}
 
 
 RefCountPtr<SparsitySubset> 
@@ -299,25 +313,79 @@ Set<MultiSet<int> > EvaluatableExpr
   return rtn;
 }
 
+const Set<MultipleDeriv>& 
+EvaluatableExpr::findW(int order,
+                       const EvalContext& context) const
+{
+  return findDerivSubset(order, AllNonzeros, context);
+}
 
+const Set<MultipleDeriv>& 
+EvaluatableExpr::findV(int order,
+                       const EvalContext& context) const
+{
+  return findDerivSubset(order, VariableNonzeros, context);
+}
+
+const Set<MultipleDeriv>& 
+EvaluatableExpr::findC(int order,
+                       const EvalContext& context) const
+{
+  return findDerivSubset(order, ConstantNonzeros, context);
+}
+
+const Set<MultipleDeriv>& 
+EvaluatableExpr::findR(int order,
+                       const EvalContext& context) const
+{
+  TEST_FOR_EXCEPTION(!rIsReady_, InternalError,
+                     "findR() cannot be used for initial computation of the "
+                     "R subset. Calling object is " << toString());
+  return findDerivSubset(order, RequiredNonzeros, context);
+}
 
 
 const Set<MultipleDeriv>& 
-EvaluatableExpr::findW(int order, 
-                       const EvalContext& context) const
+EvaluatableExpr::findDerivSubset(int order,
+                                 const DerivSubsetSpecifier& dss,
+                                 const EvalContext& context) const
 {
   Tabs tabs;
-  
-  if (contextToWTableMap_[order].containsKey(context))
+  SUNDANCE_VERB_HIGH(tabs << "finding " << derivType(dss) 
+                     << "[" << order << "] for " << toString());
+  if (contextToDSSMap_[dss][order].containsKey(context))
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
+      Tabs tab1;
+      SUNDANCE_VERB_HIGH(tab1 << "...reusing previously computed data");
     }
   else
     {
-      contextToWTableMap_[order].put(context, internalFindW(order, context));
+      switch(dss)
+        {
+        case AllNonzeros:
+          contextToDSSMap_[dss][order].put(context, internalFindW(order, context));
+          break;
+        case RequiredNonzeros:
+          break;
+        case VariableNonzeros:
+          contextToDSSMap_[dss][order].put(context, internalFindV(order, context));
+          break;
+        case ConstantNonzeros:
+          contextToDSSMap_[dss][order].put(context, internalFindC(order, context));
+          break;
+        default:
+          TEST_FOR_EXCEPTION(true, InternalError, "this should never happen");
+        }
     }
 
-  return contextToWTableMap_[order].get(context);
+
+  if (!contextToDSSMap_[dss][order].containsKey(context))
+    {
+      contextToDSSMap_[dss][order].put(context, Set<MultipleDeriv>());
+    }
+  const Set<MultipleDeriv>& rtn = contextToDSSMap_[dss][order].get(context);
+  SUNDANCE_VERB_HIGH(tabs << "found " << rtn);
+  return rtn;
 }
 
 
@@ -336,8 +404,42 @@ EvaluatableExpr::setProduct(const Set<MultipleDeriv>& a,
   return rtn;
 }
 
+Set<MultiSet<int> > EvaluatableExpr::setDivision(const Set<MultiSet<int> >& s,
+                                                 int index) const 
+{
+  Set<MultiSet<int> > rtn;
+  for (Set<MultiSet<int> >::const_iterator 
+         i=s.begin(); i!=s.end(); i++)
+    {
+      if (i->contains(index))
+        {
+          MultiSet<int> e = *i;
+          e.erase(index);
+          rtn.put(e);
+        }
+    }
+  return rtn;
+}
+
+
+Set<MultipleDeriv>  
+EvaluatableExpr::setDivision(const Set<MultipleDeriv>& a,
+                             const Set<MultipleDeriv>& b) const
+{
+  Set<MultipleDeriv> rtn;
+  for (Set<MultipleDeriv>::const_iterator i=a.begin(); i!=a.end(); i++)
+    {
+      for (Set<MultipleDeriv>::const_iterator j=b.begin(); j!=b.end(); j++)
+        {
+          MultipleDeriv c = i->factorOutDeriv(*j);
+          if (c.size() != 0) rtn.put(c);
+        }
+    }
+  return rtn;
+}
+
 void EvaluatableExpr::determineR(const EvalContext& context,
-                            const Array<Set<MultipleDeriv> >& RInput) const
+                                 const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tabs;
   RefCountPtr<Array<Set<MultipleDeriv> > > additionToR 
@@ -345,40 +447,43 @@ void EvaluatableExpr::determineR(const EvalContext& context,
   
   for (unsigned int i=0; i<RInput.size(); i++)
     {
-      if (!contextToRTableMap_[i].containsKey(context))
+      if (!contextToDSSMap_[RequiredNonzeros][i].containsKey(context))
         {
-          contextToRTableMap_[i].put(context, (*additionToR)[i]); 
+          contextToDSSMap_[RequiredNonzeros][i].put(context, (*additionToR)[i]); 
         }
       else
         {
-          contextToRTableMap_[i][context].merge((*additionToR)[i]);
+          contextToDSSMap_[RequiredNonzeros][i][context].merge((*additionToR)[i]);
         }
     }
+  rIsReady_ = true;
+
 }
 
 RefCountPtr<Array<Set<MultipleDeriv> > > EvaluatableExpr
 ::internalDetermineR(const EvalContext& context,
                      const Array<Set<MultipleDeriv> >& RInput) const
 {
+  Tabs tab0;
   RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
 
+  SUNDANCE_VERB_HIGH( tab0 << "EE::internalDetermineR() for " << toString() );
+  SUNDANCE_VERB_HIGH( tab0 << "RInput = " << RInput );
+
   for (unsigned int i=0; i<RInput.size(); i++)
     {
+      Tabs tab1;
       const Set<MultipleDeriv>& Wi = findW(i, context);
+      SUNDANCE_VERB_EXTREME( tab1 << "W[" << i << "] = " << Wi );
       (*rtn)[i] = RInput[i].intersection(Wi);
     }
+
+  SUNDANCE_VERB_HIGH( tab0 << "R = " << (*rtn) );
+
   return rtn;
 }
 
-const Set<MultipleDeriv>& EvaluatableExpr
-::getR(int order, const EvalContext& context) const
-{
-  TEST_FOR_EXCEPTION(!contextToRTableMap_[order].containsKey(context),
-                     RuntimeError, "R not found for context " << context);
-  
-  return contextToRTableMap_[order].get(context);
-}
 
 Array<Set<MultipleDeriv> > EvaluatableExpr
 ::computeInputR(const EvalContext& context,
@@ -389,7 +494,6 @@ Array<Set<MultipleDeriv> > EvaluatableExpr
   for (unsigned int order=0; order<funcIDCombinations.size(); order++)
     {
       const Set<MultipleDeriv>& W = findW(order, context);
-      //const Set<MultiSet<int> >& fOrder = funcIDCombinations[order];
 
       for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
         {
@@ -402,5 +506,64 @@ Array<Set<MultipleDeriv> > EvaluatableExpr
         }
     }
   return rtn;
+}
+
+
+const Set<MultipleDeriv>& EvaluatableExpr::findW(const EvalContext& context) const
+{
+  return findDerivSubset(AllNonzeros, context);
+}
+
+const Set<MultipleDeriv>& EvaluatableExpr::findR(const EvalContext& context) const
+{
+  return findDerivSubset(RequiredNonzeros, context);
+}
+
+const Set<MultipleDeriv>& EvaluatableExpr::findC(const EvalContext& context) const
+{
+  return findDerivSubset(ConstantNonzeros, context);
+}
+
+const Set<MultipleDeriv>& EvaluatableExpr::findV(const EvalContext& context) const
+{
+  return findDerivSubset(VariableNonzeros, context);
+}
+
+const Set<MultipleDeriv>& 
+EvaluatableExpr::findDerivSubset(const DerivSubsetSpecifier& dss,
+                                 const EvalContext& context) const
+{
+  if (!allOrdersMap_[dss].containsKey(context))
+    {
+      Set<MultipleDeriv> tmp;
+      for (int i=0; i<=3; i++)
+        {
+          tmp.merge(findDerivSubset(i, dss, context));
+        }
+      allOrdersMap_[dss].put(context, tmp);
+    }
+
+  return allOrdersMap_[dss].get(context);
+}
+
+void EvaluatableExpr::displayNonzeros(ostream& os, const EvalContext& context) const 
+{
+  Tabs tabs0;
+  os << tabs0 << "Nonzeros of " << toString() << endl;
+
+  const Set<MultipleDeriv>& W = findW(context);
+  const Set<MultipleDeriv>& R = findR(context);
+  const Set<MultipleDeriv>& C = findC(context);
+  const Set<MultipleDeriv>& V = findV(context);
+
+  
+  for (Set<MultipleDeriv>::const_iterator i=W.begin(); i != W.end(); i++)
+    {
+      Tabs tab1;
+      string state = "Variable";
+      if (C.contains(*i)) state = "Constant";
+      if (!R.contains(*i)) state = "Not Required";
+      os << tab1 << std::setw(25) << std::left << i->toString() << ": " << state << endl;
+    }
 }
 

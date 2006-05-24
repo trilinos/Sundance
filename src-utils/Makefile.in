@@ -158,6 +158,7 @@ libsundanceUtils_a_AR = $(AR) $(ARFLAGS)
 libsundanceUtils_a_DEPENDENCIES =
 am__objects_1 = SundanceADReal.$(OBJEXT) \
 	SundanceCollectiveExceptionCheck.$(OBJEXT) \
+	SundanceCombinatorialUtils.$(OBJEXT) \
 	SundanceExceptions.$(OBJEXT) SundanceFunctorDomain.$(OBJEXT) \
 	SundanceIntHashSet.$(OBJEXT) SundancePoint.$(OBJEXT) \
 	SundanceStdMathFunctors.$(OBJEXT) SundanceTabs.$(OBJEXT) \
@@ -344,6 +345,7 @@ SUNDANCE_UTILITIES_H = \
 $(top_srcdir)/src-utils/Utilities/SundanceADReal.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceArrayOfTuples.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDebug.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDefs.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.hpp \
@@ -366,6 +368,7 @@ $(top_srcdir)/src-utils/Utilities/SundanceVersionString.hpp
 SUNDANCE_UTILITIES = \
 $(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceIntHashSet.cpp \
@@ -675,6 +678,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceADReal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCollectiveExceptionCheck.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCombinatorialUtils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExceptions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctorDomain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceIntHashSet.Po@am__quote@
@@ -724,6 +728,20 @@ SundanceCollectiveExceptionCheck.obj: $(top_srcdir)/src-utils/Utilities/Sundance
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.cpp' object='SundanceCollectiveExceptionCheck.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCollectiveExceptionCheck.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.cpp'; fi`
+
+SundanceCombinatorialUtils.o: $(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCombinatorialUtils.o -MD -MP -MF "$(DEPDIR)/SundanceCombinatorialUtils.Tpo" -c -o SundanceCombinatorialUtils.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceCombinatorialUtils.Tpo" "$(DEPDIR)/SundanceCombinatorialUtils.Po"; else rm -f "$(DEPDIR)/SundanceCombinatorialUtils.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp' object='SundanceCombinatorialUtils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCombinatorialUtils.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp
+
+SundanceCombinatorialUtils.obj: $(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCombinatorialUtils.obj -MD -MP -MF "$(DEPDIR)/SundanceCombinatorialUtils.Tpo" -c -o SundanceCombinatorialUtils.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceCombinatorialUtils.Tpo" "$(DEPDIR)/SundanceCombinatorialUtils.Po"; else rm -f "$(DEPDIR)/SundanceCombinatorialUtils.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp' object='SundanceCombinatorialUtils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCombinatorialUtils.obj `if test -f '$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp'; fi`
 
 SundanceExceptions.o: $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExceptions.o -MD -MP -MF "$(DEPDIR)/SundanceExceptions.Tpo" -c -o SundanceExceptions.o `test -f '$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp; \

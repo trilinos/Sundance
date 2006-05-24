@@ -64,6 +64,14 @@ namespace SundanceCore
     class EvaluatorFactory;
 
     /**
+     *
+     */
+    enum DerivSubsetSpecifier {AllNonzeros, 
+                               RequiredNonzeros,
+                               VariableNonzeros,
+                               ConstantNonzeros};
+
+    /**
      * Class EvaluatableExpr provides common functionality for
      * determination of the sparsity pattern of the matrix of functional
      * derivatives, and managing Evaluator objects. Because we will 
@@ -256,12 +264,70 @@ namespace SundanceCore
       virtual Set<MultipleDeriv> 
       internalFindW(int order, const EvalContext& context) const = 0 ;
 
+      /** Find spatially-variable functional derivatives. Default implementation
+       * returns R */
+      virtual Set<MultipleDeriv> 
+      internalFindV(int order, const EvalContext& context) const
+      {return findR(order, context);}
+
+      /** Find spatially-constant functional derivatives. Default implementation
+       * returns the empty set */
+      virtual Set<MultipleDeriv> 
+      internalFindC(int order, const EvalContext& context) const
+      {Set<MultipleDeriv> rtn; return rtn;}
+
+      
+
+      /** */
+      const Set<MultipleDeriv>& 
+      findDerivSubset(int order,
+                      const DerivSubsetSpecifier& dss,
+                      const EvalContext& context) const ;
+      /** */
+      const Set<MultipleDeriv>& 
+      findDerivSubset(const DerivSubsetSpecifier& dss,
+                      const EvalContext& context) const ;
+
+
       /** */
       const Set<MultipleDeriv>& findW(int order, 
                                       const EvalContext& context) const ;
+
+      /** */
+      const Set<MultipleDeriv>& findR(int order, 
+                                      const EvalContext& context) const ;
+      /** */
+      const Set<MultipleDeriv>& findV(int order, 
+                                      const EvalContext& context) const ;
+      /** */
+      const Set<MultipleDeriv>& findC(int order, 
+                                      const EvalContext& context) const ;
+
+
+      /** */
+      const Set<MultipleDeriv>& findW(const EvalContext& context) const ;
+
+      /** */
+      const Set<MultipleDeriv>& findR(const EvalContext& context) const ;
+      /** */
+      const Set<MultipleDeriv>& findV(const EvalContext& context) const ;
+      /** */
+      const Set<MultipleDeriv>& findC(const EvalContext& context) const ;
+
+      /** */
+      virtual void displayNonzeros(ostream& os, 
+                                   const EvalContext& context) const ;
+
+
       /** */
       Set<MultipleDeriv> setProduct(const Set<MultipleDeriv>& a,
                                     const Set<MultipleDeriv>& b) const ;
+      /** */
+      Set<MultipleDeriv> setDivision(const Set<MultipleDeriv>& a,
+                                     const Set<MultipleDeriv>& b) const ;
+      /** */
+      Set<MultiSet<int> > setDivision(const Set<MultiSet<int> >& s,
+                                      int index) const ;
       
       /** */
       void determineR(const EvalContext& context,
@@ -343,7 +409,13 @@ namespace SundanceCore
 
       /** */
       static Set<MultipleDeriv> computeH(bool pred, const Set<MultipleDeriv>& S);
+
+      /** */
+      string derivType(const DerivSubsetSpecifier& dss) const;
     private:
+      
+      /** */
+      static int numDerivSubsetTypes() {static int rtn=4; return rtn;}
 
       /** 
        * evaluators, indexed by context 
@@ -369,8 +441,11 @@ namespace SundanceCore
 
       mutable bool nodesHaveBeenCounted_; 
 
-      mutable Array<Map<EvalContext, Set<MultipleDeriv> > > contextToRTableMap_;
-      mutable Array<Map<EvalContext, Set<MultipleDeriv> > > contextToWTableMap_;
+      mutable Array<Array<Map<EvalContext, Set<MultipleDeriv> > > > contextToDSSMap_;
+
+      mutable bool rIsReady_;
+
+      mutable Array<Map<EvalContext, Set<MultipleDeriv> > > allOrdersMap_;
     };
   }
 }

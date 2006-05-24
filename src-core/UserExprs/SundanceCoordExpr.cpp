@@ -79,6 +79,8 @@ string CoordExpr::coordName(int dir, const string& name)
 Set<MultipleDeriv> 
 CoordExpr::internalFindW(int order, const EvalContext& context) const
 {
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "CoordExpr::internalFindW() for " << toString());  
   Set<MultipleDeriv> rtn;
 
   if (order==0) rtn.put(MultipleDeriv());
@@ -90,6 +92,41 @@ CoordExpr::internalFindW(int order, const EvalContext& context) const
       md.put(x);
       rtn.put(md);
     }
+
+  SUNDANCE_VERB_HIGH(tab0 << "W[" << order << "]=" << rtn);
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+CoordExpr::internalFindV(int order, const EvalContext& context) const
+{
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "CoordExpr::internalFindV() for " << toString());  
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) rtn.put(MultipleDeriv());
+
+  SUNDANCE_VERB_HIGH(tab0 << "V[" << order << "]=" << rtn);
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+CoordExpr::internalFindC(int order, const EvalContext& context) const
+{
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "CoordExpr::internalFindC() for " << toString());  
+  Set<MultipleDeriv> rtn;
+
+  if (order==1) 
+    {
+      Deriv x = new CoordDeriv(dir_);
+      MultipleDeriv md;
+      md.put(x);
+      rtn.put(md);
+    }
+  SUNDANCE_VERB_HIGH(tab0 << "C[" << order << "]=" << rtn);
   return rtn;
 }
 

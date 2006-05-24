@@ -60,6 +60,28 @@ MultiIndex MultiIndex::operator+(const MultiIndex& other) const
 	return rtn;
 }
 
+MultiIndex MultiIndex::operator-(const MultiIndex& other) const 
+{
+	MultiIndex rtn;
+
+	for (int i=0; i<maxDim(); i++)
+		{
+			rtn.m_[i] = m_[i] - other[i];
+		}
+	return rtn;
+}
+
+MultiIndex MultiIndex::operator-() const 
+{
+	MultiIndex rtn;
+
+	for (int i=0; i<maxDim(); i++)
+		{
+			rtn.m_[i] = -m_[i];
+		}
+	return rtn;
+}
+
 string MultiIndex::toString() const
 {
 	return "(" + Teuchos::toString(m_[0]) + ","
@@ -103,6 +125,15 @@ int MultiIndex::order() const
 			h += m_[i];
 		}
 	return h;
+}
+
+bool MultiIndex::isValid() const 
+{
+	for (int i=0; i<maxDim(); i++)
+		{
+      if (m_[i] < 0) return false;
+		}
+	return true;
 }
 
 int MultiIndex::firstOrderDirection() const 

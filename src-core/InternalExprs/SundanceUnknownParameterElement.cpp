@@ -166,6 +166,32 @@ UnknownParameterElement::internalFindW(int order, const EvalContext& context) co
 
 
 
+Set<MultipleDeriv> 
+UnknownParameterElement::internalFindV(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+UnknownParameterElement::internalFindC(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  if (order==1)
+    {
+      Deriv d = new FunctionalDeriv(this, MultiIndex());
+      MultipleDeriv md;
+      md.put(d);
+      rtn.put(md);
+    }
+  return rtn.intersection(findR(order, context));
+}
+
+
+
 Evaluator* UnknownParameterElement
 ::createEvaluator(const EvaluatableExpr* expr,
                   const EvalContext& context) const 

@@ -75,6 +75,14 @@ namespace SundanceCore
           /** */
           virtual Set<MultipleDeriv> 
           internalFindW(int order, const EvalContext& context) const ;
+
+          /** Find spatially-constant functional derivatives */
+          virtual Set<MultipleDeriv> 
+          internalFindC(int order, const EvalContext& context) const ;
+
+          /** Find spatially-variable functional derivatives */
+          virtual Set<MultipleDeriv> 
+          internalFindV(int order, const EvalContext& context) const ;
           
         private:
         };

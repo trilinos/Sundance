@@ -36,8 +36,8 @@ def main():
   vecType = EpetraVectorType()
   npx = 1
   npy = getNProc()
-  ny = 16
-  nx = 16
+  ny = 32
+  nx = 32
   mesher  = PartitionedRectangleMesher(0.0, 1.0, nx, npx,
                                        0.0, 2.0, ny/npy, npy);
   mesh = mesher.getMesh();
@@ -77,7 +77,7 @@ def main():
   
   prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
-  solver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
+  solver = readSolver("../../../tests-std-framework/Problem/aztec-ml.xml");
 
   soln = prob.solve(solver)
 

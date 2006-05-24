@@ -83,6 +83,14 @@ int main(int argc, void** argv)
       double L0 = getParameter<double>(modelParams, "BC Wavelength");
       double u0 = getParameter<double>(modelParams, "Peak Velocity");
       int bcQuadOrder = getParameter<int>(modelParams, "BC Quadrature Order");
+
+      double gammaBC = 1.0;
+      bool nodalBC = getParameter<bool>(modelParams, "Apply BCs at Nodes");
+      bool robinBC = getParameter<bool>(modelParams, "Use Robin BCs");
+      if (robinBC)
+        {
+          gammaBC = getParameter<double>(modelParams, "Robin BC gamma");
+        }
       
       /* Read the filename for viz output */
       string outfile = getParameter<string>(params, "Output Filename");
@@ -109,8 +117,11 @@ int main(int argc, void** argv)
       /* Create cell filters */
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
+      CellFilter nodes = new DimensionalCellFilter(0);
 
-      CellFilter left = edges.subset(new LeftPointTest());
+      CellFilter left;
+      if (nodalBC) left = nodes.subset(new LeftPointTest());
+      else left = nodes.subset(new LeftPointTest());
       CellFilter right = edges.subset(new RightPointTest());
       CellFilter top = edges.subset(new TopPointTest());
       CellFilter bottom = edges.subset(new BottomPointTest());
@@ -182,10 +193,20 @@ int main(int argc, void** argv)
        */
       Expr eqn = Integral(interior, (grad*vPsi)*(D*(grad*psi) - u*psi), quad)
         + Integral(interior, vPsi * psi * (alpha + beta * psi*psi), quad)
-        + Integral(right, vPsi*ux*psi, bcQuad); 
+        + Integral(right, vPsi*ux*psi, bcQuad);
+
+      Expr h = new CellDiameterExpr();
+      if (robinBC) eqn = eqn + Integral(left, (1.0/h)*gammaBC*vPsi*(psi - sin(2.0*pi*y/L0)), bcQuad);
         
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(left, vPsi*(psi - sin(2.0*pi*y/L0)), bcQuad);
+      Expr bc;
+      Expr bcScale;
+      if (!robinBC)
+        {
+          if (nodalBC) bcScale = 1.0;
+          else bcScale = 1.0/h;
+          bc = EssentialBC(left, bcScale*vPsi*(psi - sin(2.0*pi*y/L0)), bcQuad);
+        }
 
 
 

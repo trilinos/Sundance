@@ -33,7 +33,7 @@ EXEEXT = .exe
 
 TEST_SRC = TestEval VecOpTest 
 
-noinst_PROGRAMS = $(TEST_SRC) SimpleEval SensitivityTest PolynomialTest \
+noinst_PROGRAMS = $(TEST_SRC) SetTest SimpleEval SensitivityTest PolynomialTest \
 StdTransformation ScalabilityTest DepthScalabilityTest VecTimings VariationTest
 
 
@@ -128,6 +128,16 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 TestEval_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 TestEval_LDADD = $(CORE_LIBS) 
+
+
+SetTest_SOURCES = $(srcdir)/SetTest.cpp 
+
+SetTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+SetTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+
+SetTest_LDADD = $(CORE_LIBS) 
 
 
 

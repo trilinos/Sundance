@@ -117,7 +117,7 @@ int Sundance::init(int* argc, void*** argv)
           int wait=1;
           int pid = getpid();
           string myCommandName=((char**)(*argv))[0];
-          string debugCmd = "ddd -x ~/.gdbinit " + myCommandName 
+          string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName 
             + " " + Teuchos::toString(pid) + " &";
           cerr << "launching " << debugCmd << endl;
           system(debugCmd.c_str());
@@ -212,9 +212,10 @@ int Sundance::finalize()
           cerr << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
           cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
         }
-
+      cerr << "p=" << MPIComm::world().getRank() << " summarize()" << endl;
       TimeMonitor::summarize();
 
+      cerr << "p=" << MPIComm::world().getRank() << " finalize()" << endl;
       MPISession::finalize();
     }
   catch(std::exception& e)

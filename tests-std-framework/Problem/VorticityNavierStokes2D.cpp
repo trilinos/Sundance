@@ -60,7 +60,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int n=64;
+      int n=32;
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
                                                          0.0, 1.0, n, 1,
                                                          meshType);
@@ -117,7 +117,7 @@ int main(int argc, void** argv)
 
       BasisFamily L1 = new Lagrange(1);
       DiscreteSpace discSpace(mesh, SundanceStdFwk::List(L1, L1), vecType);
-      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
+      Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
 
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F 
@@ -131,11 +131,11 @@ int main(int argc, void** argv)
 
       NOXSolver solver(noxParams, F);
 
-      int numReynolds = 1;
+      int numReynolds = 10;
       double finalReynolds = 100.0;
-      for (int r=1; r<=numReynolds; r++)
+      for (int r=0; r<numReynolds; r++)
         {
-          double Re = r*finalReynolds/((double) numReynolds);
+          double Re = r*finalReynolds/((double) numReynolds-1);
           reynolds.setParameterValue(Re);
           cerr << "--------------------------------------------------------- " << endl;
           cerr << " solving for Reynolds Number = " << Re << endl;

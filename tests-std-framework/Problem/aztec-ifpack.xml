@@ -1,3 +1,5 @@
+
+
 <ParameterList>
   <ParameterList name="Linear Solver">
     <Parameter name="Max Iterations" type="int" value="5000"/>
@@ -7,7 +9,7 @@
        <Parameter name="Prec Type" type="string" value="ILU"/>
        <Parameter name="Overlap" type="int" value="1"/>
        <ParameterList name="Ifpack Settings">
-          <Parameter name="fact: level-of-fill" type="int" value="0"/>
+          <Parameter name="fact: level-of-fill" type="int" value="2"/>
        </ParameterList>
     </ParameterList> 
     <Parameter name="Tolerance" type="double" value="1e-12"/>

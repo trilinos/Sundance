@@ -58,6 +58,21 @@ SpatiallyConstantExpr::internalFindW(int order, const EvalContext& context) cons
   return rtn;
 }
 
+Set<MultipleDeriv> 
+SpatiallyConstantExpr::internalFindV(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+SpatiallyConstantExpr::internalFindC(int order, const EvalContext& context) const
+{
+  return findR(order, context);
+}
+
 
 
 void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,

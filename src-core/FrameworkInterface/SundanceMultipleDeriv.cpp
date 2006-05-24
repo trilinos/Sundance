@@ -31,6 +31,7 @@
 #include "SundanceMultipleDeriv.hpp"
 #include "SundanceCoordDeriv.hpp"
 #include "SundanceFunctionalDeriv.hpp"
+#include "SundanceSymbolicFuncElement.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -146,9 +147,9 @@ bool MultipleDeriv
     }
   else
     {
-      TEST_FOR_EXCEPTION(order() > spatialOrder(), RuntimeError,
-                         "can't handle mixed spatial/functional derivatives "
-                         "at this point");
+      //    TEST_FOR_EXCEPTION(order() > spatialOrder(), RuntimeError,
+      //                         "can't handle mixed spatial/functional derivatives "
+      //                         "at this point");
       return multiIndices.contains(spatialDeriv());
     }
 }
@@ -229,3 +230,82 @@ int MultipleDeriv::pow2(int n)
   return p2[n];
 }
 
+
+
+namespace SundanceCore
+{
+  namespace Internal
+  {
+    Set<MultipleDeriv> applyTx(const Set<MultipleDeriv>& s,
+                               const MultiIndex& x)
+    {
+      Set<MultipleDeriv> rtn;
+
+      for (Set<MultipleDeriv>::const_iterator i=s.begin(); i!=s.end(); i++)
+        {
+          const MultipleDeriv& md = *i;
+          for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
+            {
+              const Deriv& d = *j;
+              if (d.isFunctionalDeriv())
+                {
+                  const FunctionalDeriv* f = d.funcDeriv();
+                  const MultiIndex& mi = f->multiIndex();
+                  const FuncElementBase* func = f->func();
+                  MultiIndex miNew = mi+x;
+                  if (miNew.isValid())
+                    {
+                      Deriv dNew = new FunctionalDeriv(func, miNew);
+                      MultipleDeriv mdNew = md;
+                      mdNew.erase(d);
+                      mdNew.put(dNew);
+                      rtn.put(mdNew);
+                    }
+                }
+            }
+        }
+      return rtn;
+    }
+
+    Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
+                               const MultiIndex& x)
+    {
+      Set<MultipleDeriv> rtn;
+
+      TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
+                         "invalid multiindex " << x << " in this context");
+      
+      for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
+        {
+          const MultipleDeriv& md = *i;
+          TEST_FOR_EXCEPTION(md.order() != 1, InternalError,
+                             "Only first-order multiple functional derivatives "
+                             "should appear in this function. The derivative "
+                             << md << " is not first-order.");
+
+          const Deriv& d = *(md.begin());
+
+          if (d.isCoordDeriv() && x.order()==1)
+            {
+              /* accept a coordinate derivative if it is equivalent to the
+               * specified multiindex */
+              const CoordDeriv* c = d.coordDeriv();
+              if (c->dir() == x.firstOrderDirection()) rtn.put(md);
+            }
+          else
+            {
+              /* accept a functional derivative if the associated function 
+               * is not identically zero */
+              const FunctionalDeriv* f = d.funcDeriv();
+              const FuncElementBase* func = f->func();
+              const SymbolicFuncElement* sfe 
+                = dynamic_cast<const SymbolicFuncElement*>(func);
+              TEST_FOR_EXCEPTION(sfe==0, InternalError, "can't cast function in "
+                                 << d << " to a SymbolicFuncElement");
+              if (!sfe->evalPtIsZero()) rtn.put(md);
+            }
+        }
+      return rtn;
+    }
+  }
+}

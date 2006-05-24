@@ -48,6 +48,7 @@ SUNDANCE_UTILITIES_H = \
 $(top_srcdir)/src-utils/Utilities/SundanceADReal.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceArrayOfTuples.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDebug.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceDefs.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.hpp \
@@ -70,6 +71,7 @@ $(top_srcdir)/src-utils/Utilities/SundanceVersionString.hpp
 SUNDANCE_UTILITIES = \
 $(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceCollectiveExceptionCheck.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceCombinatorialUtils.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceExceptions.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceFunctorDomain.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceIntHashSet.cpp \

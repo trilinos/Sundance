@@ -39,6 +39,8 @@
 #include "TSFLinearSolver.hpp"
 #include "TSFAztecSolver.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
+#include "TSFLinearSolverBuilder.hpp"
+#include "Teuchos_ParameterXMLFileReader.hpp"
 
 using namespace Teuchos;
 using namespace TSFExtended;
@@ -59,30 +61,35 @@ int main(int argc, void *argv[])
 
       VectorType<double> type = new EpetraVectorType();
 
-      /* create the range space  */
-      int nLocalRows = 10;
+      string solverFile = "poissonParams.xml";
+      string path = "../../../tests-solvers/SolverTests/";
 
-      MatrixLaplacian1D builder(nLocalRows, type);
+      ParameterXMLFileReader reader(path + solverFile);
+      ParameterList solverParams = reader.getParameters();
+
+      /* create the range space  */
+      int nLocalRows = solverParams.get<int>("nLocal");
+
+      bool symBC = solverParams.get<bool>("Symmetrize BCs");
+
+      MatrixLaplacian1D builder(nLocalRows, type, symBC);
 
       LinearOperator<double> A = builder.getOp();
 
       Vector<double> x = A.domain().createMember();
+      int myRank = MPIComm::world().getRank();
+      int nProcs = MPIComm::world().getNProc();
+      
+
       Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
+      if (myRank==0) x[0] = 0.0;
+      if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;
 
       Vector<double> y = A*x;
       Vector<double> ans = A.range().createMember();
 
-      cerr << "x=" << x << endl;
-      cerr << "y=" << y << endl;
-
-      ParameterList params;
-      params.set("Method", "GMRES");
-      params.set("Precond", "ML");
-      params.set("ML Levels", 2);
-      params.set("Max Iterations", 100);
-      params.set("Tolerance", 1.0e-12);
-
-      LinearSolver<double> solver = new AztecSolver(params);
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
 
       SolverState<double> state = solver.solve(A, y, ans);
       

@@ -28,26 +28,32 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceTestFunctionStub.hpp"
-#include "SundanceTestFuncElement.hpp"
+#ifndef SUNDANCE_COMBINATORIALUTILS_H
+#define SUNDANCE_COMBINATORIALUTILS_H
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+#ifndef DOXYGEN_DEVELOPER_ONLY
 
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+#include "SundanceDefs.hpp"
+#include "Teuchos_Array.hpp"
 
-TestFunctionStub::TestFunctionStub(const string& name, int nElems,
-                                   const RefCountPtr<const TestFuncDataStub>& data)
-	: SymbolicFunc(), data_(data)
+namespace SundanceUtils
 {
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      if (nElems > 1) suffix = "[" + Teuchos::toString(i) + "]";
-      append(new TestFuncElement(data, name, suffix, i));
-    }
+  using namespace Teuchos;
+  /**
+   * Return partitions of an integer
+   * @author Kevin Long
+   */
+  Array<Array<int> > partitionInteger(int n);
+
+  /** 
+   * Return compositions of an integer
+   */
+  Array<Array<Array<int> > > compositions(int n);
 }
+
+#endif  /* DOXYGEN_DEVELOPER_ONLY */   
+
+#endif
 
 
 

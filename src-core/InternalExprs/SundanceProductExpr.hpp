@@ -78,8 +78,12 @@ namespace SundanceCore
 					 const EvalContext& context) const ;
       
       /** */
-      virtual Set<Array<int> > internalFindQ_W(int order, 
-                                               const EvalContext& context) const ;
+      virtual Set<MultiSet<int> > internalFindQ_W(int order, 
+                                                  const EvalContext& context) const ;
+      
+      /** */
+      virtual Set<MultiSet<int> > internalFindQ_V(int order, 
+                                                  const EvalContext& context) const ;
 
       
 

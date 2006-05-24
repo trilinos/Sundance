@@ -46,7 +46,8 @@ UnknownFunctionStub::UnknownFunctionStub(const string& name, int nElems,
 {
   for (int i=0; i<nElems; i++)
     {
-      string suffix = "[" + Teuchos::toString(i) + "]";
+      string suffix;
+      if (nElems > 1) suffix = "[" + Teuchos::toString(i) + "]";
       append(new UnknownFuncElement(data, name, suffix, i));
     }
 }

@@ -170,6 +170,25 @@ namespace SundanceCore
     };
 
 
+    /** 
+     * \brief Tranform the input set S as follows: for each multiple derivative
+     * in S, apply the multiindex x to each of its component functional derivatives 
+     * in turn. Note that the multiindex may have negative indices. Results with
+     * negative multiindices are ignored.
+     */
+    Set<MultipleDeriv> applyTx(const Set<MultipleDeriv>& S,
+                               const MultiIndex& x);
+    /** 
+     * \brief Filter the input set W, allowing only coordinate derivatives in the 
+     * direction x and functional derivatives whose associated functions
+     * have nonzero evaluation points. This function is used 
+     * in the spatial/functional chain rule to identify those terms resulting
+     * from differentiation wrt x or functional derivatives. 
+     */
+    Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
+                               const MultiIndex& x);
+
+
     /**
      *
      */

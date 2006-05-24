@@ -9,17 +9,7 @@
       <Parameter name="Tolerance" type="double" value="1e-8"/>
     </ParameterList>
 
-<!--
-    <ParameterList name="Linear Solver">
-      <Parameter name="Graph Fill" type="int" value="1"/>
-      <Parameter name="Max Iterations" type="int" value="500"/>
-      <Parameter name="Method" type="string" value="GMRES"/>
-      <Parameter name="Precond" type="string" value="Domain Decomposition"/>
-      <Parameter name="Subdomain Solver" type="string" value="ILU"/>
-      <Parameter name="Tolerance" type="double" value="1e-10"/>
-      <Parameter name="Type" type="string" value="Aztec"/>
-    </ParameterList>
--->
+
     <ParameterList name="Linear Solver">
       <Parameter name="Graph Fill" type="int" value="2"/>
       <Parameter name="Max Iterations" type="int" value="1000"/>

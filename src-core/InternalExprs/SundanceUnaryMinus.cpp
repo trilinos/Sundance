@@ -50,16 +50,16 @@ UnaryMinus::UnaryMinus(const RefCountPtr<ScalarExpr>& arg)
     }
 }
 
-Set<Array<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& context) const
+Set<MultiSet<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& context) const
 {
-  Set<Array<int> > rtn;
+  Set<MultiSet<int> > rtn;
   if (order > 1) return rtn;
 
   if (order==1)
     {
       /* first derivatives of the sum wrt the arguments are 
        * always nonzero */
-      rtn.put(tuple(0));
+      rtn.put(makeMultiSet<int>(0));
     }
   else 
     {
@@ -68,7 +68,7 @@ Set<Array<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& conte
         = evaluatableArg()->findW(0, context);
       if (w.size() > 0)
         {
-          rtn.put(tuple(0));
+          rtn.put(makeMultiSet<int>(0));
         }
     }
   return rtn;

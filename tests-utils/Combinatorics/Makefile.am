@@ -28,4 +28,23 @@
 # ************************************************************************
 #@HEADER
 
-SUBDIRS = Functors Maps Combinatorics
+
+EXEEXT = .exe
+
+noinst_PROGRAMS = CombTest
+
+LIBDEPS = $(top_builddir)/src-utils/libsundanceUtils.a 
+
+CombTest_SOURCES = $(srcdir)/CombTest.cpp 
+
+CombTest_DEPENDENCIES = $(top_builddir)/src-utils/libsundanceUtils.a 
+
+CombTest_CXXFLAGS = $(UTIL_INCLUDES)
+
+CombTest_LDADD = $(UTIL_LIBS) 
+
+
+
+
+
+include $(top_srcdir)/Makefile.common

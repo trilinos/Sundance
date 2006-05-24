@@ -71,7 +71,7 @@ namespace SundanceCore
           virtual bool isLinear() const {return true;}
 
           /** */
-          virtual Set<Array<int> > internalFindQ_W(int order, 
+          virtual Set<MultiSet<int> > internalFindQ_W(int order, 
                                                    const EvalContext& context) const ;
 
           /** */

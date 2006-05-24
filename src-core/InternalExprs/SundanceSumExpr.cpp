@@ -100,34 +100,3 @@ bool SumExpr::allTermsHaveTestFunctions() const
     && rightEvaluatable()->allTermsHaveTestFunctions();
 }
 
-
-Set<Array<int> > SumExpr::internalFindQ_W(int order, const EvalContext& context) const
-{
-  Set<Array<int> > rtn;
-  if (order > 1) return rtn;
-
-  if (order==1)
-    {
-      /* first derivatives of the sum wrt the arguments are 
-       * always nonzero */
-      rtn.put(tuple(0));
-      rtn.put(tuple(1));
-    }
-  else 
-    {
-      /* zeroth derivatives are nonzero if terms are nonzero */
-      const Set<MultipleDeriv>& wLeft 
-        = leftEvaluatable()->findW(0, context);
-      const Set<MultipleDeriv>& wRight
-        = rightEvaluatable()->findW(0, context);
-      if (wLeft.size() > 0)
-        {
-          rtn.put(tuple(0));
-        }
-      if (wRight.size() > 0)
-        {
-          rtn.put(tuple(1));
-        }
-    }
-  return rtn;
-}

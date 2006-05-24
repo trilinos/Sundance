@@ -38,9 +38,11 @@ BUILD_DIR=`pwd`
 
 ../configure --enable-mpi --with-mpi-compilers \
 CXXFLAGS="-Wall -O0 -g" \
---with-trilinos=$HOME/Software/Math/trilinos-6.0.8/LINUX-DEBUG \
+--with-trilinos=$HOME/Projects/Trilinos/LINUX-DEBUG \
 --with-install="/usr/bin/install -c -p" \
 --enable-python \
+--with-trilinos-devel \
+--with-moocho \
 --disable-cxxtests \
 --disable-cxxexamples \
 --disable-lowleveltests \

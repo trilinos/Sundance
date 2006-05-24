@@ -42,6 +42,8 @@
 #include "TSFProductVectorSpace.hpp"
 #include "TSFAztecSolver.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
+#include "TSFLinearSolverBuilder.hpp"
+#include "Teuchos_ParameterXMLFileReader.hpp"
 
 using namespace Teuchos;
 using namespace TSFExtended;
@@ -99,17 +101,13 @@ int main(int argc, void *argv[])
       bigRHS = bigA * bigX;
       Vector<double> bigSoln = blockSpace.createMember();
 
-      //      cerr << "bigRHS=" << bigRHS << endl;
-      //      cerr << "bigX=" << bigX << endl;
+     string solverFile = "poissonParams.xml";
+      string path = "../../../tests-solvers/SolverTests/";
 
-      ParameterList params;
-      params.set("Method", "GMRES");
-      params.set("Precond", "ML");
-      params.set("ML Levels", 2);
-      params.set("Max Iterations", 100);
-      params.set("Tolerance", 1.0e-12);
-
-      LinearSolver<double> solver = new AztecSolver(params);
+      ParameterXMLFileReader reader(path + solverFile);
+      ParameterList solverParams = reader.getParameters();
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
       LinearSolver<double> blockSolver 
         = new BlockTriangularSolver<double>(solver);
       

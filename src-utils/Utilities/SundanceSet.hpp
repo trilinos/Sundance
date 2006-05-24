@@ -70,6 +70,12 @@ namespace SundanceUtils
     Set<Key, Compare> intersection(const Set<Key, Compare>& other) const ;
 
     /** */
+    Set<Key, Compare> setUnion(const Set<Key, Compare>& other) const ;
+
+    /** */
+    Set<Key, Compare> setDifference(const Set<Key, Compare>& other) const ;
+
+    /** */
     ostream& toStream(ostream& os) const ;
 
     /** */
@@ -124,6 +130,30 @@ namespace SundanceUtils
     set_intersection(this->begin(), this->end(),
                      other.begin(), other.end(), 
                      insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
+    return rtn;
+  }
+
+  template<class Key, class Compare> inline
+  Set<Key, Compare> Set<Key, Compare>::setUnion(const Set<Key, Compare>& other) const
+  {
+    Set<Key, Compare> rtn;
+    typename Set<Key, Compare>::const_iterator iter;
+
+    set_union(this->begin(), this->end(),
+              other.begin(), other.end(), 
+              insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
+    return rtn;
+  }
+
+  template<class Key, class Compare> inline
+  Set<Key, Compare> Set<Key, Compare>::setDifference(const Set<Key, Compare>& other) const
+  {
+    Set<Key, Compare> rtn;
+    typename Set<Key, Compare>::const_iterator iter;
+
+    set_difference(this->begin(), this->end(),
+                   other.begin(), other.end(), 
+                   insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
     return rtn;
   }
 
