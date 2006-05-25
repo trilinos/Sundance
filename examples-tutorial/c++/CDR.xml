@@ -4,6 +4,7 @@
 <!-- Name of output file. A .vtu or .pvtu suffix will be appended          -->
 <Parameter name="Output Filename"   type="string"   value="cdr"/>
 
+
 <!-- Whether to solve sensitivity equations -->
 <Parameter name="Compute Sensitivities"   type="bool"   value="true"/>
 
@@ -51,11 +52,11 @@
   <!-- (3) npx times npy must equal the number of processors                        -->
 <ParameterList name="Mesh">
   <Parameter name="type" type="string" value="Rectangle"/>
-  <Parameter name="nx" type="int" value="128"/>
+  <Parameter name="nx" type="int" value="512"/>
   <Parameter name="npx" type="int" value="1"/>
   <Parameter name="ax" type="double" value="0.0"/>
   <Parameter name="bx" type="double" value="1.0"/>
-  <Parameter name="ny" type="int" value="128"/>
+  <Parameter name="ny" type="int" value="512"/>
   <Parameter name="npy" type="int" value="1"/>
   <Parameter name="ay" type="double" value="0.0"/>
   <Parameter name="by" type="double" value="1.0"/>
@@ -81,7 +82,7 @@
     <Parameter name="Tolerance" type="double" value="1.0e-8"/>
     <Parameter name="Type" type="string" value="Aztec"/>
     <Parameter name="Restart Size" type="int" value="200"/>
-    <Parameter name="Verbosity" type="int" value="4"/>
+    <Parameter name="Verbosity" type="int" value="0"/>
 </ParameterList>
 </ParameterList>
 
@@ -92,7 +93,7 @@
    <!-- Continuation parameters. It is a good idea to do continuation on the      -->
    <!-- nonlinear terms; a cold start from psi=0 when alpha and beta are large    -->
    <!-- will lead to convergence problems                                         -->
-   <Parameter  name="Number of Continuation Steps"  type="int" value="1"/>
+   <Parameter  name="Number of Continuation Steps"  type="int" value="5"/>
 
    <!-- NOX parameters -->
    <ParameterList name="NOX Solver">
@@ -121,7 +122,7 @@
       <!-- See the NOX documentation for printing settings.                -->
       <!-- 15=0xF prints pretty much everything.                           -->
       <ParameterList name="Printing">
-        <Parameter name="Output Information" type="int" value="15"/>
+        <Parameter name="Output Information" type="int" value="0"/>
       </ParameterList>
 
       <!-- use Aztec for linear solves -->
@@ -145,7 +146,7 @@
         <Parameter name="Tolerance" type="double" value="1.0e-8"/>
         <Parameter name="Type" type="string" value="Aztec"/>
         <Parameter name="Restart Size" type="int" value="200"/>
-        <Parameter name="Verbosity" type="int" value="4"/>
+        <Parameter name="Verbosity" type="int" value="0"/>
       </ParameterList>
 
    </ParameterList>

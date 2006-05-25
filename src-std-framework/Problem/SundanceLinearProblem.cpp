@@ -51,11 +51,20 @@ using namespace TSFExtended;
 using namespace std;
 
 
+static Time& lpCtorTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("LinearProblem ctor"); 
+  return *rtn;
+}
+
 LinearProblem::LinearProblem() 
   : assembler_(),
     A_(),
     rhs_()
-{}
+{
+  TimeMonitor timer(lpCtorTimer());
+}
 
 
 LinearProblem::LinearProblem(const Mesh& mesh, 
@@ -69,6 +78,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     rhs_(),
     status_()
 {
+  TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flatten();
   Expr v = test.flatten();
   Expr alpha;
@@ -103,6 +113,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     rhs_(),
     status_()
 {
+  TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flatten();
   Expr v = test.flatten();
   Expr alpha = unkParams.flatten();
@@ -135,6 +146,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     rhs_(),
     status_()
 {
+  TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
   Array<Expr> u0(unk.size());
@@ -182,6 +194,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     rhs_(),
     status_()
 {
+  TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
   Array<Expr> u0(unk.size());
@@ -220,7 +233,9 @@ LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler)
   : assembler_(assembler),
     A_(),
     rhs_()
-{}
+{  
+  TimeMonitor timer(lpCtorTimer());
+}
 
 
 TSFExtended::Vector<double> LinearProblem::getRHS() const 

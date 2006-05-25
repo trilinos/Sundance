@@ -47,12 +47,22 @@ using namespace std;
 using namespace TSFExtended;
 
 
+static Time& nlpCtorTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("NonlinearProblem ctor"); 
+  return *rtn;
+}
+
+
 NonlinearProblem::NonlinearProblem() 
   : NonlinearOperatorBase<double>(),
     assembler_(),
     u0_(),
     discreteU0_(0)
-{}
+{
+  TimeMonitor timer(nlpCtorTimer());
+}
 
 
 NonlinearProblem::NonlinearProblem(const Mesh& mesh, 
@@ -68,6 +78,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     discreteU0_(0)
     
 {
+  TimeMonitor timer(nlpCtorTimer());
   Expr params;
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), params, params));
@@ -101,6 +112,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     discreteU0_(0)
     
 {
+  TimeMonitor timer(nlpCtorTimer());
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), params, paramVals));
 
@@ -126,6 +138,7 @@ NonlinearProblem::NonlinearProblem(const RefCountPtr<Assembler>& assembler,
     u0_(u0),
     discreteU0_(0)
 {
+  TimeMonitor timer(nlpCtorTimer());
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,

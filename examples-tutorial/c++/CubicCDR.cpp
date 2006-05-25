@@ -19,6 +19,19 @@ CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 
 
+static Time& sensTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("sensitivity solve"); 
+  return *rtn;
+}
+
+static Time& outputTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("output"); 
+  return *rtn;
+}
 
 int main(int argc, void** argv)
 {
@@ -296,6 +309,7 @@ int main(int argc, void** argv)
           double b = i*beta0/((double) numContinuationSteps);
           alpha.setParameterValue(a);
           beta.setParameterValue(b);
+
           NOX::StatusTest::StatusType status = solver.solve();
 
           Expr sa0;
@@ -303,12 +317,14 @@ int main(int argc, void** argv)
           
           if (doSensitivities)
             {
+              TimeMonitor stimer(sensTimer());
               sa0 = alphaSensProb.solve(linSolver);
               sb0 = betaSensProb.solve(linSolver);
             }
           
           if (writeEachContinuationStep)
             {
+              TimeMonitor otimer(outputTimer());
               if (myRank==0) cout << "writing VTK output..." << endl;
               FieldWriter w = new VTKWriter(outfile + "-" 
                                             + Teuchos::toString(i));
@@ -335,6 +351,7 @@ int main(int argc, void** argv)
       
       if (!writeEachContinuationStep)
         {
+          TimeMonitor otimer(outputTimer());
           if (myRank==0) cout << "writing VTK output..." << endl;
           
           FieldWriter w = new VTKWriter(outfile);

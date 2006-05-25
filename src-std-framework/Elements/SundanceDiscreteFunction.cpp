@@ -48,7 +48,13 @@ using namespace Teuchos;
 static Time& getLocalValsTimer() 
 {
   static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("DF getLocalValues()"); 
+    = TimeMonitor::getNewTimer("DF getLocalValues"); 
+  return *rtn;
+}
+static Time& dfCtorTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("DF ctor"); 
   return *rtn;
 }
 
@@ -59,6 +65,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
     FuncWithBasis(space.basis()),
     data_()
 {
+  TimeMonitor timer(dfCtorTimer());
   data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
 }
 
@@ -70,6 +77,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
     FuncWithBasis(space.basis()),
     data_()
 {
+  TimeMonitor timer(dfCtorTimer());
   data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
   Vector<double> vec = data_->getVector();
   vec.setToConstant(constantValue);
@@ -84,6 +92,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
     FuncWithBasis(space.basis()),
     data_()
 {
+  TimeMonitor timer(dfCtorTimer());
   data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
 }
 
