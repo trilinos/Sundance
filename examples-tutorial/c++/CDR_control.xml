@@ -43,14 +43,21 @@
 
 <!-- specification of linear solver to be used in MOOCHO -->
 <ParameterList name="Linear Solver">
-   <ParameterList name="Aztec">
+   <ParameterList name="Belos">
      <!-- no params -->
    </ParameterList>
 
-   <ParameterList name="ML">
-      <Parameter name="Problem Type"  type="string"   value="SA"/>
-      <Parameter name="output"  type="int"   value="0"/>
-   </ParameterList>
+   <ParameterList name="Preconditioner">
+      <Parameter name="Type" type="string" value="ML"/>
+      <Parameter name="Problem Type" type="string" value="SA"/>
+      <ParameterList name="ML Settings">
+         <Parameter name="output" type="int" value="0"/>
+         <Parameter name="prec type" type="string" value="MGW"/>
+         <Parameter name="max levels" type="int" value="10"/>
+         <Parameter name="smoother: type" type="string" value="symmetric Gauss-Seidel"/>
+         <Parameter name="aggregation: damping factor" type="double" value="1.33"/>
+      </ParameterList>
+    </ParameterList> 
 
 </ParameterList>
 
