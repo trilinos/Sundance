@@ -5,7 +5,7 @@
 <Parameter name="Output Filename"   type="string"   value="cdr"/>
 
 <!-- Whether to solve sensitivity equations -->
-<Parameter name="Compute Sensitivities"   type="bool"   value="false"/>
+<Parameter name="Compute Sensitivities"   type="bool"   value="true"/>
 
 <!-- Whether to write the result at each continuation step -->
 <Parameter name="Write Each Continuation Step"   type="bool"   value="false"/>
@@ -32,7 +32,7 @@
   <!-- Order of quadrature rule used on boundary surfaces                   -->
   <Parameter name="BC Quadrature Order" type="int" value="4"/>
   <!-- Whether to apply Dirichlet BCs on nodes or edges                    -->
-  <Parameter name="Apply BCs at Nodes" type="bool" value="false"/>
+  <Parameter name="Apply BCs at Nodes" type="bool" value="true"/>
   <!-- Whether to approximate Dirichlet BCs by Robin BCs                   -->
   <Parameter name="Use Robin BCs" type="bool" value="false"/>
   <!-- Weighting for Robin BCs                                             -->
@@ -51,11 +51,11 @@
   <!-- (3) npx times npy must equal the number of processors                        -->
 <ParameterList name="Mesh">
   <Parameter name="type" type="string" value="Rectangle"/>
-  <Parameter name="nx" type="int" value="600"/>
+  <Parameter name="nx" type="int" value="128"/>
   <Parameter name="npx" type="int" value="1"/>
   <Parameter name="ax" type="double" value="0.0"/>
   <Parameter name="bx" type="double" value="1.0"/>
-  <Parameter name="ny" type="int" value="600"/>
+  <Parameter name="ny" type="int" value="128"/>
   <Parameter name="npy" type="int" value="1"/>
   <Parameter name="ay" type="double" value="0.0"/>
   <Parameter name="by" type="double" value="1.0"/>
@@ -63,25 +63,28 @@
 
 
 <!-- Linear solver to be used for sensitivity equations (NOT in the nonlinear solve) -->
+<ParameterList name="Sensitivity Solver">
 <ParameterList name="Linear Solver">
-  <ParameterList name="Linear Solver">
-    <Parameter name="Max Iterations" type="int" value="500"/>
+    <Parameter name="Max Iterations" type="int" value="100"/>
     <Parameter name="Method" type="string" value="GMRES"/>
     <ParameterList name="Preconditioner">
-       <Parameter name="Type" type="string" value="ML"/>
-       <Parameter name="Problem Type" type="string" value="SA"/>
-       <ParameterList name="ML Settings">
-          <Parameter name="output" type="int" value="10"/>
-          <Parameter name="eigen-analysis" type="string" value="power-method"/>
-          <Parameter name="smoother: type" type="string" value="MLS"/>
-          <Parameter name="aggregation: damping factor" type="double" value="1.33"/>
-       </ParameterList>
+        <Parameter name="Type" type="string" value="ML"/>
+        <Parameter name="Problem Type" type="string" value="SA"/>
+        <ParameterList name="ML Settings">
+            <Parameter name="output" type="int" value="0"/>
+            <Parameter name="prec type" type="string" value="MGW"/>
+            <Parameter name="max levels" type="int" value="10"/>
+            <Parameter name="smoother: type" type="string" value="symmetric Gauss-Seidel"/>
+            <Parameter name="aggregation: damping factor" type="double" value="1.33"/>
+        </ParameterList>
     </ParameterList> 
     <Parameter name="Tolerance" type="double" value="1.0e-8"/>
     <Parameter name="Type" type="string" value="Aztec"/>
+    <Parameter name="Restart Size" type="int" value="200"/>
     <Parameter name="Verbosity" type="int" value="4"/>
-  </ParameterList>
 </ParameterList>
+</ParameterList>
+
 
 <!-- Nonlinear solver specification -->
 <ParameterList name="Nonlinear Solver">
@@ -132,7 +135,7 @@
           <Parameter name="Type" type="string" value="ML"/>
           <Parameter name="Problem Type" type="string" value="SA"/>
           <ParameterList name="ML Settings">
-            <Parameter name="output" type="int" value="10"/>
+            <Parameter name="output" type="int" value="0"/>
             <Parameter name="prec type" type="string" value="MGW"/>
             <Parameter name="max levels" type="int" value="10"/>
             <Parameter name="smoother: type" type="string" value="symmetric Gauss-Seidel"/>

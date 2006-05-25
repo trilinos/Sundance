@@ -257,6 +257,14 @@ namespace Thyra
     int bcQuadOrder = getParameter<int>(modelParams, "BC Quadrature Order");
     int numControls = getParameter<int>(modelParams, "Num Controls");
 
+    double gammaBC = 1.0;
+    bool nodalBC = getParameter<bool>(modelParams, "Apply BCs at Nodes");
+    bool robinBC = getParameter<bool>(modelParams, "Use Robin BCs");
+    if (robinBC)
+      {
+        gammaBC = getParameter<double>(modelParams, "Robin BC gamma");
+      }
+
     /* register alpha and beta as continuation parameters */
     Expr ab = List(new Parameter(alpha0), new Parameter(beta0));
     Expr abFinal = List(new Parameter(alpha0), new Parameter(beta0));
@@ -286,8 +294,13 @@ namespace Thyra
     /* Create cell filters */
     CellFilter interior = new MaximalCellFilter();
     CellFilter edges = new DimensionalCellFilter(1);
+    CellFilter nodes = new DimensionalCellFilter(0);
     
-    CellFilter left = edges.subset(new LeftPointTest());
+
+    CellFilter left;
+    if (nodalBC) left = nodes.subset(new LeftPointTest());
+    else left = nodes.subset(new LeftPointTest());
+
     CellFilter right = edges.subset(new RightPointTest());
     CellFilter top = edges.subset(new TopPointTest());
     CellFilter bottom = edges.subset(new BottomPointTest());
@@ -366,8 +379,20 @@ namespace Thyra
       + Integral(interior, vPsi * psi * (alpha + beta * psi*psi), quad)
       + Integral(right, vPsi*ux*psi, bcQuad); 
         
-    /* Define the Dirichlet BC using the control field */
-    Expr bc = EssentialBC(left, vPsi*(psi - control), bcQuad);
+    /* Define the left BC using the control field */
+    Expr bc;
+    Expr bcScale;
+    Expr h = new CellDiameterExpr();
+    if (!robinBC)
+      {
+        if (nodalBC) bcScale = 1.0;
+        else bcScale = 1.0/h;
+        bc = EssentialBC(left, bcScale*vPsi*(psi - control), bcQuad);
+      }
+    else
+      {
+        eqn = eqn + Integral(left, (1.0/h)*gammaBC*vPsi*(psi - control), bcQuad);
+      }
 
 
     /* Create a discrete space, and discretize the function 0.0 on it */
@@ -386,7 +411,15 @@ namespace Thyra
         Expr sensEqn = Integral(interior, (grad*vPsi)*(D*(grad*psi) - u*psi), quad)
           + Integral(interior, vPsi * psi * (alpha + 3.0*beta * psi0*psi0), quad)
           + Integral(right, vPsi*ux*psi0, bcQuad); 
-        Expr sensBC = EssentialBC(left, vPsi*(psi - w), bcQuad);
+        Expr sensBC;
+        if (!robinBC)
+          {
+            sensBC = EssentialBC(left, bcScale*vPsi*(psi - w), bcQuad);
+          }
+        else
+          {
+            eqn = eqn + Integral(left, (1.0/h)*gammaBC*vPsi*(psi - w), bcQuad);
+          }
         sensProb[i] = LinearProblem(mesh, sensEqn, sensBC, vPsi, psi, vecType);
       }
 

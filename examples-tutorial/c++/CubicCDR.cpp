@@ -62,7 +62,7 @@ int main(int argc, void** argv)
       /* Read solver parameters. The solver object will be built later, after
        * the discrete problem has been created.  */
       ParameterList solverParams = params.sublist("Nonlinear Solver");
-      ParameterList linSolverParams = params.sublist("Linear Solver");
+      ParameterList linSolverParams = params.sublist("Sensitivity Solver");
       LinearSolver<double> linSolver 
         = LinearSolverBuilder::createSolver(linSolverParams);
 
@@ -232,21 +232,27 @@ int main(int argc, void** argv)
        *
        * Here we create problems for the sensitivities wrt alpha and beta.
        * 
-       * These problems will be used if
-       *
        * ================================================================== */
       
+      Expr w = gammaBC/h;
       Expr alphaSensEqn = Integral(interior, 
                                    (grad*vPsi)*(D*(grad*psi) - u*psi), quad)
         + Integral(interior, vPsi*(psi0 + alpha*psi 
                                    + 3.0*beta*psi0*psi0*psi), quad);
-      Expr alphaSensBC = EssentialBC(left, vPsi*psi, bcQuad);
+      if (robinBC) alphaSensEqn = alphaSensEqn + Integral(left, w*vPsi*psi, bcQuad);
+
+      Expr alphaSensBC;
+      if (!robinBC)
+          alphaSensBC = EssentialBC(left, bcScale*vPsi*psi, bcQuad);
       
       Expr betaSensEqn = Integral(interior, 
                                   (grad*vPsi)*(D*(grad*psi) - u*psi), quad)
         + Integral(interior, vPsi*(alpha*psi0 + psi0*psi0*psi0
                                    + 3.0*beta*psi0*psi0*psi), quad);
-      Expr betaSensBC = EssentialBC(left, vPsi*psi, bcQuad);
+      if (robinBC) betaSensEqn = betaSensEqn + Integral(left, w*vPsi*psi, bcQuad);
+      Expr betaSensBC;
+      if (!robinBC)
+          betaSensBC = EssentialBC(left, bcScale*vPsi*psi, bcQuad);
 
       LinearProblem alphaSensProb(mesh, alphaSensEqn, alphaSensBC,
                                   vPsi, psi, vecType);
@@ -295,7 +301,7 @@ int main(int argc, void** argv)
           Expr sa0;
           Expr sb0;
           
-          if (doSensitivities && writeEachContinuationStep)
+          if (doSensitivities)
             {
               sa0 = alphaSensProb.solve(linSolver);
               sb0 = betaSensProb.solve(linSolver);
