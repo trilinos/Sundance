@@ -69,24 +69,13 @@ int Sundance::init(int* argc, void*** argv)
 
       Tabs tab;
 
-      if (MPIComm::world().getRank()==0)
-        {
-          cerr << "Simulation built using Sundance version " 
-               << VersionString::number() 
-               << " (" << VersionString::date() << ")" << endl;
-      
-          cerr << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
-               << endl;
-          cerr << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
-          cerr << tab << endl;
-        }
-  
-
       /* read standard command line flags */
       string configFilename = "SundanceConfig.xml";
 
       bool defaultFpCheck = false;
       bool debugWait = false;
+      bool showVersion = false;
+      bool showBanner = true;
       bool cmdFpCheck = defaultFpCheck;
       int defaultWorkSetSize = 100;
       int cmdWorkSetSize = defaultWorkSetSize;
@@ -96,6 +85,11 @@ int Sundance::init(int* argc, void*** argv)
       clp().setOption("config", &configFilename, "Configuration file");
       clp().setOption("fpcheck", "nofpcheck", &cmdFpCheck, 
                       "Check results of math lib calls in expr evals");
+      clp().setOption("version", "noversion", &showVersion, 
+                      "Show Sundance version number and exit");
+      clp().setOption("banner", "nobanner", &showBanner, 
+                      "Show Sundance banner on root processor at start of run");
+
       clp().setOption("workset", &cmdWorkSetSize, 
                       "Work set size");
 
@@ -112,6 +106,35 @@ int Sundance::init(int* argc, void*** argv)
                          RuntimeError,
                          "Command-line parsing failed");
 
+
+      if (showVersion)
+        {
+          if (MPIComm::world().getRank()==0)
+            {
+              cout << "Simulation built using Sundance version " 
+               << VersionString::number() 
+               << " (" << VersionString::date() << ")" << endl;
+      
+              cout << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
+                   << endl;
+              cout << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
+              cout << tab << endl;
+              exit(0);
+            }
+        }
+      if (showBanner && MPIComm::world().getRank()==0)
+        {
+          cout << "Simulation built using Sundance version " 
+               << VersionString::number() 
+               << " (" << VersionString::date() << ")" << endl;
+      
+          cout << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
+               << endl;
+          cout << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
+          cout << tab << endl;
+        }
+
+
       if (debugWait)
         {
           int wait=1;
@@ -119,7 +142,7 @@ int Sundance::init(int* argc, void*** argv)
           string myCommandName=((char**)(*argv))[0];
           string debugCmd = "ddd --gdb -x ~/.gdbinit " + myCommandName 
             + " " + Teuchos::toString(pid) + " &";
-          cerr << "launching " << debugCmd << endl;
+          cout << "launching " << debugCmd << endl;
           system(debugCmd.c_str());
           while (wait) {;}
         }
@@ -191,8 +214,8 @@ void Sundance::setOption(const string& optionTrueName,
 
 void Sundance::handleException(std::exception& e)
 {
-  cerr << "Sundance detected exception: " << endl;
-  cerr << e.what() << endl;
+  cout << "Sundance detected exception: " << endl;
+  cout << e.what() << endl;
 }
 
 
@@ -203,19 +226,16 @@ int Sundance::finalize()
   try
     {
       Tabs tab;
-      if (MPIComm::world().getRank()==0)
+      if (false && MPIComm::world().getRank()==0)
         {
-          cerr << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
-          cerr << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
-          cerr << tab << "ref integration flops: " 
+          cout << tab << "eval vector flops: " << EvalVector::totalFlops() << endl;
+          cout << tab << "quadrature flops: " << QuadratureIntegral::totalFlops() << endl;
+          cout << tab << "ref integration flops: " 
                << RefIntegral::totalFlops() << endl;
-          cerr << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
-          cerr << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
+          cout << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
+          cout << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
         }
-      cerr << "p=" << MPIComm::world().getRank() << " summarize()" << endl;
       TimeMonitor::summarize();
-
-      cerr << "p=" << MPIComm::world().getRank() << " finalize()" << endl;
       MPISession::finalize();
     }
   catch(std::exception& e)
@@ -435,19 +455,19 @@ bool Sundance:: passFailTest(double error, double tol)
   bool pass;
   if (MPIComm::world().getRank()==0)
     {
-      cerr << "error norm = " << error << endl;
-      cerr << "tolerance = " << tol << endl;
+      cout << "error norm = " << error << endl;
+      cout << "tolerance = " << tol << endl;
     }
   pass = checkTest(error, tol);
   if (MPIComm::world().getRank()==0)
     {
       if (pass)
         {
-          cerr << "test PASSED" << endl;
+          cout << "test PASSED" << endl;
         }
       else
         {
-          cerr << "test FAILED" << endl;
+          cout << "test FAILED" << endl;
         }
     }
   return pass;
@@ -461,22 +481,22 @@ bool Sundance:: passFailTest(const string& statusMsg,
   if (MPIComm::world().getRank()==0)
     {
 
-      cerr << statusMsg << ": ";
-      if (status) cerr << "true" << endl;
-      else cerr << "false" << endl;
-      cerr << "error norm = " << error << endl;
-      cerr << "tolerance = " << tol << endl;
+      cout << statusMsg << ": ";
+      if (status) cout << "true" << endl;
+      else cout << "false" << endl;
+      cout << "error norm = " << error << endl;
+      cout << "tolerance = " << tol << endl;
     }
   pass = checkTest(error, tol);
   if (MPIComm::world().getRank()==0)
     {
       if (status && pass)
         {
-          cerr << "test PASSED" << endl;
+          cout << "test PASSED" << endl;
         }
       else
         {
-          cerr << "test FAILED" << endl;
+          cout << "test FAILED" << endl;
         }
     }
   return pass;

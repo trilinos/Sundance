@@ -117,6 +117,10 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), params, paramVals));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
+  cout << "******** n local DOF=" << assembler_->colMap()[0]->numLocalDOFs() << endl;
+  cout << "******** n remote DOF=" << assembler_->colMap()[0]->ghostIndices()->size() << endl;
+  cout << "******** n local eqn=" << assembler_->rowMap()[0]->numLocalDOFs() << endl;
+  cout << "******** n remote eqn=" << assembler_->rowMap()[0]->ghostIndices()->size() << endl;
 
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
