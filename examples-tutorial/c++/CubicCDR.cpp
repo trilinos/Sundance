@@ -32,6 +32,26 @@ static Time& outputTimer()
     = TimeMonitor::getNewTimer("output"); 
   return *rtn;
 }
+static Time& xmlTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("xml reading"); 
+  return *rtn;
+}
+
+static Time& paramsTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("xml to params conversion"); 
+  return *rtn;
+}
+
+static Time& linSolveBuilderTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("building linear solver"); 
+  return *rtn;
+}
 
 int main(int argc, void** argv)
 {
@@ -66,22 +86,35 @@ int main(int argc, void** argv)
        * =================================================================== */
 
       /* Read the parameters from the input file given on the command line */
-      if (myRank==0) cout << "reading input file..." << endl;
+      //      if (myRank==0) cout << "reading input file..." << endl;
       FileInputSource fis(path + filename);
-      XMLObject xml = fis.getObject();
+      XMLObject xml;
+      {
+        TimeMonitor xtimer(xmlTimer());
+        xml = fis.getObject();
+      }
+
       XMLParameterListReader paramsReader;
-      ParameterList params = paramsReader.toParameterList(xml);
+      ParameterList params;
+      {
+        TimeMonitor ptimer(paramsTimer());
+        params = paramsReader.toParameterList(xml);
+      }
 
       /* Read solver parameters. The solver object will be built later, after
        * the discrete problem has been created.  */
       ParameterList solverParams = params.sublist("Nonlinear Solver");
       ParameterList linSolverParams = params.sublist("Sensitivity Solver");
-      LinearSolver<double> linSolver 
-        = LinearSolverBuilder::createSolver(linSolverParams);
+      LinearSolver<double> linSolver;
+
+      {
+        TimeMonitor lstimer(linSolveBuilderTimer());
+        linSolver = LinearSolverBuilder::createSolver(linSolverParams);
+      }
 
 
       /* Create the mesh as specified by the Mesh parameter section */
-      if (myRank==0) cout << "getting mesh..." << endl;
+      //      if (myRank==0) cout << "getting mesh..." << endl;
 
       ParameterList meshParams = params.sublist("Mesh");
       Mesh mesh = MeshBuilder::createMesh(meshParams);
@@ -120,7 +153,7 @@ int main(int argc, void** argv)
        *
        * =================================================================== */
 
-      if (myRank==0) cout << "setting up equation..." << endl;
+      //      if (myRank==0) cout << "setting up equation..." << endl;
 
       const double pi = 4.0*atan(1.0);
       Expr x = new CoordExpr(0);
@@ -230,7 +263,7 @@ int main(int argc, void** argv)
        *
        * ================================================================== */
 
-      if (myRank==0) cout << "building discrete problem..." << endl;
+      //      if (myRank==0) cout << "building discrete problem..." << endl;
 
       /* Specify that we will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -294,7 +327,7 @@ int main(int argc, void** argv)
        *
        * =================================================================== */
 
-      if (myRank==0) cout << "solving nonlinear system..." << endl;
+      //      if (myRank==0) cout << "solving nonlinear system..." << endl;
 
       NOXSolver solver(solverParams, F);
       int numContinuationSteps 
@@ -304,7 +337,7 @@ int main(int argc, void** argv)
 
       for (int i=1; i<=numContinuationSteps; i++)
         {
-          if (myRank==0) cout << "continuation step " << i << endl;
+          //          if (myRank==0) cout << "continuation step " << i << endl;
           double a = i*alpha0/((double) numContinuationSteps);
           double b = i*beta0/((double) numContinuationSteps);
           alpha.setParameterValue(a);
@@ -325,7 +358,7 @@ int main(int argc, void** argv)
           if (writeEachContinuationStep)
             {
               TimeMonitor otimer(outputTimer());
-              if (myRank==0) cout << "writing VTK output..." << endl;
+              //              if (myRank==0) cout << "writing VTK output..." << endl;
               FieldWriter w = new VTKWriter(outfile + "-" 
                                             + Teuchos::toString(i));
               w.addMesh(mesh);
@@ -352,7 +385,7 @@ int main(int argc, void** argv)
       if (!writeEachContinuationStep)
         {
           TimeMonitor otimer(outputTimer());
-          if (myRank==0) cout << "writing VTK output..." << endl;
+          //          if (myRank==0) cout << "writing VTK output..." << endl;
           
           FieldWriter w = new VTKWriter(outfile);
           w.addMesh(mesh);
