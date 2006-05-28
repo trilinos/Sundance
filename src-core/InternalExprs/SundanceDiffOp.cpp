@@ -524,17 +524,31 @@ DiffOp::internalDetermineR(const EvalContext& context,
 Set<MultipleDeriv> DiffOp::internalFindW(int order, const EvalContext& context) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindW for " << toString());
+  SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindW(order="
+                     << order << ") for " << toString());
 
-  const Set<MultipleDeriv>& W1 = evaluatableArg()->findW(1, context);
-  const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
-  const Set<MultipleDeriv>& WArgPlus = evaluatableArg()->findW(order+1, context);
+  Set<MultipleDeriv> rtn ;
+  if (order <= 2)
+    {
+      Tabs tab1;
+      const Set<MultipleDeriv>& W1 = evaluatableArg()->findW(1, context);
+      const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
+      const Set<MultipleDeriv>& WArgPlus = evaluatableArg()->findW(order+1, context);
 
-  Set<MultipleDeriv> rtn 
-    = setDivision(WArgPlus, applyZx(W1, mi_)).setUnion(applyTx(WArg, mi_)); 
-
+      SUNDANCE_VERB_EXTREME(tab1 << "W1 = " << W1);
+      SUNDANCE_VERB_EXTREME(tab1 << "WArg = " << WArg);
+      SUNDANCE_VERB_EXTREME(tab1 << "WArgPlus = " << WArgPlus);
+      Set<MultipleDeriv> Tx = applyTx(WArg, mi_);
+      Set<MultipleDeriv> ZXx = applyZx(W1, mi_).setUnion(Xx(mi_));
+      SUNDANCE_VERB_EXTREME(tab1 << "Tx(Warg) = " << Tx);
+      SUNDANCE_VERB_EXTREME(tab1 << "ZXx(W1) = " << ZXx);
+      Set<MultipleDeriv> WargPlusOslashZXx = setDivision(WArgPlus, ZXx);
+      SUNDANCE_VERB_EXTREME(tab1 << "WArgPlus / ZXx = " 
+                            << WargPlusOslashZXx);
+      rtn = WargPlusOslashZXx.setUnion(Tx); 
+    }
   SUNDANCE_VERB_HIGH(tabs << "W[" << order << "]=" << rtn);
-  SUNDANCE_VERB_HIGH(tabs << "done with DiffOp::internalFindW for "
+  SUNDANCE_VERB_HIGH(tabs << "done with DiffOp::internalFindW(" << order << ") for "
                      << toString());
 
   return rtn;
@@ -544,34 +558,46 @@ Set<MultipleDeriv> DiffOp::internalFindW(int order, const EvalContext& context) 
 Set<MultipleDeriv> DiffOp::internalFindV(int order, const EvalContext& context) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindV() for " 
+  SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindV(" << order << ") for " 
                      << toString());
 
   Set<MultipleDeriv> rtn;
+  
+  if (order <= 2)
   {
     Tabs tab1;
-    const Set<MultipleDeriv>& V1 = evaluatableArg()->findV(1, context);
+    const Set<MultipleDeriv>& W1 = evaluatableArg()->findW(1, context);
     const Set<MultipleDeriv>& VArg = evaluatableArg()->findV(order, context);
     const Set<MultipleDeriv>& VArgPlus 
       = evaluatableArg()->findV(order+1, context);
+    const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
+    const Set<MultipleDeriv>& WArgPlus 
+      = evaluatableArg()->findW(order+1, context);
 
+    SUNDANCE_VERB_EXTREME(tab1 << "W1=" << W1);
     SUNDANCE_VERB_EXTREME(tab1 << "VArg=" << VArg);
     SUNDANCE_VERB_EXTREME(tab1 << "VArgPlus=" << VArgPlus);
+    SUNDANCE_VERB_EXTREME(tab1 << "WArg=" << WArg);
+    SUNDANCE_VERB_EXTREME(tab1 << "WArgPlus=" << WArgPlus);
 
-    Set<MultipleDeriv> Z = applyZx(V1, mi_);
-    Set<MultipleDeriv> T = applyTx(VArg, mi_);
-    
-    SUNDANCE_VERB_EXTREME(tab1 << "Z=" << Z);
-    SUNDANCE_VERB_EXTREME(tab1 << "T=" << T);
-    
-    rtn = setDivision(VArgPlus, Z).setUnion(T); 
-    
-    SUNDANCE_VERB_EXTREME(tab1 << "VArgPlus/Z union T =" << rtn);
+    Set<MultipleDeriv> Tx = applyTx(VArg, mi_);
+    Set<MultipleDeriv> Zx = applyZx(W1, mi_);
+    SUNDANCE_VERB_EXTREME(tab1 << "Tx(Varg) = " << Tx);
+    SUNDANCE_VERB_EXTREME(tab1 << "Zx(W1) = " << Zx);
+    Set<MultipleDeriv> WargPlusOslashZx = setDivision(WArgPlus, Zx);
+    Set<MultipleDeriv> VargPlusOslashXx = setDivision(VArgPlus, Xx(mi_));
+    SUNDANCE_VERB_EXTREME(tab1 << "WArgPlus / Z_alpha = " 
+                          << WargPlusOslashZx);
+    SUNDANCE_VERB_EXTREME(tab1 << "VArgPlus / X_alpha = " 
+                          << VargPlusOslashXx);
+    rtn = WargPlusOslashZx.setUnion(VargPlusOslashXx).setUnion(Tx); 
+   
+    SUNDANCE_VERB_EXTREME(tab1 << "WArgPlus/Z union VArgPlus/X union T =" << rtn);
     rtn = rtn.intersection(findR(order, context));
-    
   }
+
   SUNDANCE_VERB_HIGH(tabs << "V[" << order << "]=" << rtn);
-  SUNDANCE_VERB_HIGH(tabs << "done with DiffOp::internalFindV for "
+  SUNDANCE_VERB_HIGH(tabs << "done with DiffOp::internalFindV(" << order << ") for "
                      << toString());
 
   return rtn;
@@ -591,6 +617,8 @@ Set<MultipleDeriv> DiffOp::internalFindC(int order, const EvalContext& context) 
     const Set<MultipleDeriv>& R = findR(order, context);
     SUNDANCE_VERB_EXTREME(tab1 << "finding V");
     const Set<MultipleDeriv>& V = findV(order, context);
+    /** Call findC() to ensure that the argument has C tabulated */
+    evaluatableArg()->findC(order, context);
 
     SUNDANCE_VERB_EXTREME(tab1 << "R=" << R);
     SUNDANCE_VERB_EXTREME(tab1 << "V=" << V);

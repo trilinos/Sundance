@@ -267,6 +267,20 @@ namespace SundanceCore
       return rtn;
     }
 
+    Set<MultipleDeriv> Xx(const MultiIndex& x)
+    {
+      Set<MultipleDeriv> rtn;
+
+      TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
+                         "invalid multiindex " << x << " in this context");
+
+      Deriv xd = new CoordDeriv(x.firstOrderDirection());
+      MultipleDeriv xmd;
+      xmd.put(xd);
+      rtn.put(xmd);
+      return rtn;
+    }
+
     Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
                                const MultiIndex& x)
     {
@@ -274,7 +288,7 @@ namespace SundanceCore
 
       TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
                          "invalid multiindex " << x << " in this context");
-      
+
       for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
         {
           const MultipleDeriv& md = *i;
@@ -285,14 +299,7 @@ namespace SundanceCore
 
           const Deriv& d = *(md.begin());
 
-          if (d.isCoordDeriv() && x.order()==1)
-            {
-              /* accept a coordinate derivative if it is equivalent to the
-               * specified multiindex */
-              const CoordDeriv* c = d.coordDeriv();
-              if (c->dir() == x.firstOrderDirection()) rtn.put(md);
-            }
-          else
+          if (d.isFunctionalDeriv())
             {
               /* accept a functional derivative if the associated function 
                * is not identically zero */

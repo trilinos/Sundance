@@ -313,7 +313,8 @@ Set<MultipleDeriv>
 ExprWithChildren::internalFindV(int order, const EvalContext& context) const
 {
   Tabs tab0;
-  SUNDANCE_VERB_HIGH(tab0 << "EWC::internalFindV() for " << toString());
+  SUNDANCE_VERB_HIGH(tab0 << "EWC::internalFindV(" << order 
+                     << ") for " << toString());
 
   Set<MultipleDeriv> rtn;
 
@@ -333,8 +334,8 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
       rtn = rtn.intersection(R0);
 
       SUNDANCE_VERB_HIGH(tab0 << "V[" << order << "]=" << rtn);
-      SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindV for "
-                         << toString());
+      SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindV(" << order
+                         << ") for " << toString());
       return rtn;
     }
 
@@ -346,7 +347,7 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
       Tabs tab1;
       SUNDANCE_VERB_EXTREME(tab1 << "i=" << i);
       const Set<MultiSet<int> >& QC = findQ_C(i, context);
-      SUNDANCE_VERB_EXTREME(tab1 << "QC = " << QC);
+      SUNDANCE_VERB_EXTREME(tab1 << "QC[" << i << "] = " << QC);
       for (Set<MultiSet<int> >::const_iterator j=QC.begin(); j!=QC.end(); j++)
         {
           Tabs tab2;
@@ -369,7 +370,7 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
         }
 
       const Set<MultiSet<int> >& QV = findQ_V(i, context);
-      SUNDANCE_VERB_EXTREME(tab1 << "QV = " << QV);
+      SUNDANCE_VERB_EXTREME(tab1 << "QV[" << i << "] = " << QV);
       for (Set<MultiSet<int> >::const_iterator j=QV.begin(); j!=QV.end(); j++)
         {
           Tabs tab2;
@@ -390,8 +391,8 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
     }
 
   SUNDANCE_VERB_HIGH(tab0 << "V[" << order << "]=" << rtn);
-  SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindV for "
-                     << toString());
+  SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindV(" << order
+                     << ") for " << toString());
 
   return rtn;
 }
@@ -404,7 +405,8 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
   Set<MultipleDeriv> rtn;
   bool started = false;
 
-  SUNDANCE_VERB_HIGH(tab0 << "EWC::internalFindC() for " << toString());
+  SUNDANCE_VERB_HIGH(tab0 << "EWC::internalFindC(" << order 
+                     << ") for " << toString());
 
   /* we'll dealt with zero order derivatives specially */
   if (order==0) 
@@ -419,8 +421,8 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
       const Set<MultipleDeriv>& R0 = findR(0, context);
       rtn = R0.setDifference(rtn);
       SUNDANCE_VERB_HIGH(tab0 << "C[" << order << "]=" << rtn);
-      SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindC for "
-                         << toString());
+      SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindC(" << order
+                         << ") for " << toString());
       return rtn;
     }
 
@@ -502,8 +504,8 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
     }
 
   SUNDANCE_VERB_HIGH(tab0 << "C[" << order << "]=" << rtn);
-  SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindC for "
-                     << toString());
+  SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindC(" << order
+                     << ") for " << toString());
   return rtn;
 }
 
@@ -666,6 +668,8 @@ Set<MultiSet<int> > ExprWithChildren::indexSetProduct(const Set<MultiSet<int> >&
 Set<MultiSet<int> > ExprWithChildren::internalFindQ_V(int order, 
                                                       const EvalContext& context) const
 {
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "EWC::internalFindQ_V(order=" << order <<")");
   Set<MultiSet<int> > rtn;
 
   if (!isLinear())
@@ -679,8 +683,9 @@ Set<MultiSet<int> > ExprWithChildren::internalFindQ_V(int order,
               break;
             }
         }
-      if (isVar) rtn = findQ_V(order, context); 
+      if (isVar) rtn = findQ_W(order, context); 
     }
+  SUNDANCE_VERB_HIGH(tab0 << "Q_V = " << rtn);
   return rtn;
 }
 

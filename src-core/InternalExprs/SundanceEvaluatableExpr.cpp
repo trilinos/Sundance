@@ -433,6 +433,7 @@ EvaluatableExpr::setDivision(const Set<MultipleDeriv>& a,
         {
           MultipleDeriv c = i->factorOutDeriv(*j);
           if (c.size() != 0) rtn.put(c);
+          if (*i == *j) rtn.put(MultipleDeriv());
         }
     }
   return rtn;

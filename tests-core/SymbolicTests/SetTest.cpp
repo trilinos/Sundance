@@ -173,6 +173,7 @@ void doit(const Expr& e,
         }
     }
 
+  cout << "---------------------------------------------------------------------" << endl;
   ev->displayNonzeros(cout, region);
 }
 
@@ -192,7 +193,7 @@ int main(int argc, void** argv)
       verbosity<SymbolicTransformation>() = VerbSilent;
       verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbSilent;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
@@ -217,7 +218,7 @@ int main(int argc, void** argv)
 
       
 
-      tests.append(v*dx*(u*x));
+      tests.append( v*(dx*(x*u)) + (dx*v)*u);
 
 
       for (int i=0; i<tests.length(); i++)

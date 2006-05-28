@@ -189,6 +189,9 @@ namespace SundanceCore
                                const MultiIndex& x);
 
 
+    /** */
+    Set<MultipleDeriv> Xx(const MultiIndex& x) ;
+
     /**
      *
      */
