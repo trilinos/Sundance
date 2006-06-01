@@ -475,7 +475,8 @@ void Assembler::configureMatrixBlock(int br, int bc,
    * structuring is not supported, do collective structuring */
   if ((icmf==0 || !matrixEliminatesRepeatedCols()) && ccmf != 0)
     {
-      SUNDANCE_VERB_MEDIUM(tab << "Assembler: doing collective matrix structuring...");
+      Tabs tab1;
+      SUNDANCE_VERB_MEDIUM(tab1 << "Assembler: doing collective matrix structuring...");
       Array<int> graphData;
       Array<int> nnzPerRow;
       Array<int> rowPtrs;
@@ -485,6 +486,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
     }
   else
     {
+      Tabs tab1;
       SUNDANCE_VERB_MEDIUM(tab << "Assembler: doing incremental matrix structuring...");
       incrementalGetGraph(br, bc, icmf);
       {
@@ -1804,7 +1806,7 @@ void Assembler
             }
         }
       Array<Set<int> > unksForTestsSet(eqn_->numVars(br));
-      Array<Set<int> > bcUnksForTestsSet(eqn_->numVars(bc));
+      Array<Set<int> > bcUnksForTestsSet(eqn_->numVars(br));
 
       Set<OrderedPair<int, int> >::const_iterator i;
       

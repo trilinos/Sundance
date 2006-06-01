@@ -6,7 +6,7 @@ import PySundance
 
 import math
 from PySundance import *
-from aztecSolver import solverParams
+from amesosSolver import solverParams
 
 
 # -------------- set up cell filters ------------------------
