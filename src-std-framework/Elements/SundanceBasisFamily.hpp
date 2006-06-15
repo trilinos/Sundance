@@ -113,6 +113,53 @@ namespace SundanceStdFwk
   }
 
 
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c, const BasisFamily& d, 
+                                 const BasisFamily& e, const BasisFamily& f)
+  {
+    return tuple(a,b,c,d,e,f);
+  }
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c, const BasisFamily& d, 
+                                 const BasisFamily& e, const BasisFamily& f, 
+                                 const BasisFamily& g)
+  {
+    return tuple(a,b,c,d,e,f,g);
+  }
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c, const BasisFamily& d, 
+                                 const BasisFamily& e, const BasisFamily& f, 
+                                 const BasisFamily& g, const BasisFamily& h)
+  {
+    return tuple(a,b,c,d,e,f,g,h);
+  }
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c, const BasisFamily& d, 
+                                 const BasisFamily& e, const BasisFamily& f, 
+                                 const BasisFamily& g, const BasisFamily& h, 
+                                 const BasisFamily& i)
+  {
+    return tuple(a,b,c,d,e,f,g,h,i);
+  }
+
+  /** \relates BasisFamily */
+  inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b,
+                                 const BasisFamily& c, const BasisFamily& d, 
+                                 const BasisFamily& e, const BasisFamily& f, 
+                                 const BasisFamily& g, const BasisFamily& h, 
+                                 const BasisFamily& i, const BasisFamily& j)
+  {
+    return tuple(a,b,c,d,e,f,g,h,i,j);
+  }
+
+
   class BasisArray : public Array<BasisFamily>
   {
   public:

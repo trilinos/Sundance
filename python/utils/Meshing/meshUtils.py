@@ -309,33 +309,40 @@ def writeSides(filename, mesh, procID, nProc, elemAssignments,
     lidCount = 0
     f = file(filename + '.%d.%d.side' % (nProc,procID), 'w')
 
+    keys = mesh.sides().keys()
     
-    for n in range(len(elemAssignments)) :
-        if procID==elemAssignments[n]:
+    for n in keys :
+        if procID==elemAssignments[n] or n in offProcElems :
             lidCount = lidCount+mesh.elemNumSides(n)
             
-    for n in offProcElems :
-        lidCount = lidCount+mesh.elemNumSides(n)
-
     nSides = lidCount
-    f.write('%d' % nSides)
+    f.write('%d\n' % nSides)
 
     lid = 0
-    for n in range(len(elemAssignments)) :
-        if procID==elemAssignments[n]:
+    for n in keys :
+        if procID==elemAssignments[n] or n in offProcElems:
             sides = mesh.getElemSides(n)
             for side in sides:
-                f.write('%d %d %d %d', lid, n, side[0], side[1])
+                f.write('%d %d %d %d\n' % (lid, n, side[0], side[1]))
                 lid = lid + 1
             
-    for n in offProcElems :
-        if procID==elemAssignments[n]:
-            sides = mesh.getElemSides(n)
-            for side in sides:
-                f.write('%d %d %d %d', lid, n, side[0], side[1])
-                lid = lid + 1
 
 
+        
+#-----------------------------------------------------------------------
+#
+# writeList() writes the elements of a list without commas or brackets
+#
+#-----------------------------------------------------------------------
+
+def writeList(x) :
+    rtn = '';
+    for s in x:
+        if s=='[' or s==']' : continue
+        rtn = rtn + s
+    return rtn
+        
+        
         
 #-----------------------------------------------------------------------
 #
@@ -354,11 +361,13 @@ def writeElems(filename, mesh, procID, nProc, elemAssignments,
 
     for n in range(len(elemAssignments)) :
         if procID==elemAssignments[n]:
-            f.write('%d %s\n' % (lidCount, mesh.getElemData(n, nodeGIDToLIDMap)))
+            attrs = mesh.getElemData(n, nodeGIDToLIDMap)
+            f.write('%d %s\n' % (lidCount, writeList(attrs)))
             lidCount = lidCount+1
 
     for n in offProcElems :
-        f.write('%d %s\n' % (lidCount, mesh.getElemData(n, nodeGIDToLIDMap)))
+        attrs = mesh.getElemData(n, nodeGIDToLIDMap)
+        f.write('%d %s\n' % (lidCount, writeList(attrs)))
         lidCount = lidCount+1
     
 

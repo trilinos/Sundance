@@ -346,6 +346,28 @@ namespace SundanceCore
   Expr List(const Expr& a, const Expr& b, const Expr& c,
             const Expr& d, const Expr& e, const Expr& f);
 
+  /** \relates Expr */
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f,
+            const Expr& g);
+
+
+  /** \relates Expr */
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f,
+            const Expr& g, const Expr& h);
+
+  /** \relates Expr */
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f,
+            const Expr& g, const Expr& h, const Expr& i);
+
+  /** \relates Expr */
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f,
+            const Expr& g, const Expr& h, const Expr& i,
+            const Expr& j);
+
   
 }
 

@@ -145,9 +145,15 @@ namespace SundanceCore
       return rtn;
     }
 
-    Expr __div__(const double& other) 
+    Expr __rdiv__(const double& other) 
     {
       SundanceCore::Expr rtn = other / (*self);
+      return rtn;
+    }
+
+    Expr __div__(const double& other) 
+    {
+      SundanceCore::Expr rtn = (*self)/other;
       return rtn;
     }
 

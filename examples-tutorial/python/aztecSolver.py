@@ -1,4 +1,3 @@
-import setpath
 from PySundance import *
 
 

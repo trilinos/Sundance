@@ -485,5 +485,19 @@ namespace SundanceCore
   {
     return new ListExpr(tuple(a,b,c,d,e,f));
   }
+
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f,
+            const Expr& g)
+  {
+    return new ListExpr(tuple(a,b,c,d,e,f,g));
+  }
+
+  Expr List(const Expr& a, const Expr& b, const Expr& c,
+            const Expr& d, const Expr& e, const Expr& f,
+            const Expr& g, const Expr& h)
+  {
+    return new ListExpr(tuple(a,b,c,d,e,f,g,h));
+  }
 }
 

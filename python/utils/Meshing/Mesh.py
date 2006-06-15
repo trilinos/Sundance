@@ -120,6 +120,9 @@ class Mesh :
     def hasSides(self) :
         return len(self.sides_) > 0
 
+    def sides(self) :
+        return self.sides_
+
 
     def getNodeData(self, index) :
         ptStr = self.ptToStr(self.pts_[index])

@@ -15,7 +15,7 @@ from PySundance import *
 def main():
 
     # Read the mesh from a Triangle file
-    filename = 'couette'
+    filename = 'hole-0.05'
     mesher  = TriangleMeshReader(filename)
     mesh = mesher.getMesh()
 

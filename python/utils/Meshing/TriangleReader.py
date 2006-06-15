@@ -156,6 +156,7 @@ class TriangleReader :
              side = int(toks[0])
              elem = int(toks[1])
              facet = int(toks[2])
-             label = int(toks[3]) 
+             label = int(toks[3])
+             mesh.addSide(elem, facet, label)
     
     

@@ -81,4 +81,6 @@ for procID in range(np) :
     if mesh.hasSides() :
         writeSides(filename, mesh, procID, np, elemAssignments,
                    elemsPerProc[procID], offProcElems, nodeGIDToLIDMap)
+    else:
+        print 'no sides!'
     
