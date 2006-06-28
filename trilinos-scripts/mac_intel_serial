@@ -1,0 +1,32 @@
+# This builds Trilinos on Rob Kirby's dual-core Intel macbook pro.
+# it assumes you are using the default Apple-installed gcc
+# it also assumes you have installed the f2c and fort77 packages
+# from fink.
+# I am actually using the expat library from darwinports.  I don't think
+# that matters.
+# It uses the preinstalled vecLib framework for blas/lapack
+
+BUILD_DIR=`pwd`
+
+../configure CC=gcc CXX=g++ F77=fort77 \
+    --cache-file=config.cache \
+	--disable-mpi \
+	--disable-default-packages --disable-examples \
+    --enable-teuchos --enable-teuchos-extended \
+    --enable-teuchos-complex --enable-teuchos-abc --enable-teuchos-expat \
+    --enable-thyra \
+    --disable-thyra-tests --disable-thyra-examples \
+    --disable-aztecoo-thyra --disable-amesos-thyra --disable-epetra-thyra \
+    --enable-epetra --enable-epetraext \
+    --enable-ml --disable-ml-examples \
+    --enable-aztecoo \
+    --enable-ifpack \
+    --enable-nox \
+    --enable-amesos \
+    --disable-loca \
+    --with-gnumake \
+    --with-install="/usr/bin/install -c -p" \
+    --with-incdirs="-I/opt/local/include" \
+    --with-ldflags="-L/opt/local/lib -L/sw/lib -framework vecLib -lf2c" \
+    --with-libs="-lexpat" \
+    --prefix="$BUILD_DIR"
