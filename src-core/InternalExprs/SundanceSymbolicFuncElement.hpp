@@ -103,17 +103,6 @@ namespace SundanceCore
 
       /** \name Preprocessing */
       //@{
-      /** 
-       * Determine which functional and spatial derivatives are nonzero in the
-       * given context. We also keep track of which functional derivatives
-       * are known to be constant, which can simplify evaluation. 
-       */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const ;
-
-          
       /** */
       virtual Set<MultipleDeriv> 
       internalFindW(int order, const EvalContext& context) const ;
@@ -126,6 +115,14 @@ namespace SundanceCore
       virtual Set<MultipleDeriv> 
       internalFindC(int order, const EvalContext& context) const ;
 
+      /** */
+      virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+      internalDetermineR(const EvalContext& context,
+                         const Array<Set<MultipleDeriv> >& RInput) const ;
+      /** */
+      virtual void registerSpatialDerivs(const EvalContext& context, 
+                                         const Set<MultiIndex>& miSet) const ;
+      //@}
       
 
       /** */

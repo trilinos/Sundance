@@ -165,6 +165,11 @@ namespace SundanceTesting
     return cos(x.evaluate());
   }
   
+  inline ADReal pow(const ADField& x, const double& y)
+  {
+    return pow(x.evaluate(), y);
+  }
+  
   inline ADReal exp(const ADField& x)
   {
     return exp(x.evaluate());

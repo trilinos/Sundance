@@ -33,8 +33,9 @@ EXEEXT = .exe
 
 TEST_SRC = TestEval VecOpTest 
 
-noinst_PROGRAMS = $(TEST_SRC) SetTest SimpleEval SensitivityTest PolynomialTest \
-StdTransformation ScalabilityTest DepthScalabilityTest VecTimings VariationTest
+noinst_PROGRAMS = $(TEST_SRC) SetTest ChainRule SimpleEval SensitivityTest \
+PolynomialTest StdTransformation ScalabilityTest DepthScalabilityTest \
+VecTimings VariationTest
 
 
 LIBDEPS = $(top_builddir)/src-core/libsundanceCore.a \
@@ -48,6 +49,19 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 SimpleEval_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 SimpleEval_LDADD = $(CORE_LIBS) 
+
+
+
+ChainRule_SOURCES = $(srcdir)/ChainRule.cpp 
+
+ChainRule_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+ChainRule_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+
+ChainRule_LDADD = $(CORE_LIBS) 
+
+
 
 
 PolynomialTest_SOURCES = $(srcdir)/PolynomialTest.cpp 

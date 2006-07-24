@@ -165,8 +165,8 @@ bool IntegralGroup
 
 
   SUNDANCE_OUT(this->verbosity() > VerbSilent,
-               tab0 << "evaluating an integral group of size "
-               << integrals_.size());
+               tab0 << "----------------- evaluating an integral group of size "
+               << integrals_.size() << "----------------------");
 
   /* initialize the return vector */
   if (integrals_[0]->nNodes() == -1) A->resize(1);
@@ -208,12 +208,13 @@ bool IntegralGroup
                              "IntegralGroup::evaluate(). String value is ["
                              << vectorCoeffs[resultIndices_[i]]->str()
                              << "]");
+
           const double* const f = vectorCoeffs[resultIndices_[i]]->start();
           quad->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
         }
-      SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "i=" << i << " A=" << *A);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "i=" << i << " integral values=" << *A);
     }
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, tab0 << "done");
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, tab0 << "done integral group evaluation");
 
   return true;
 }

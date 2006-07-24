@@ -145,6 +145,8 @@ $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp
 SUNDANCE_EVALUATION_H = \
 $(top_srcdir)/src-core/Evaluation/SundanceBinaryEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceChainRuleEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceChainRuleSum.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDerivOfSymbFuncEvaluator.hpp \
@@ -168,6 +170,8 @@ $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.hpp
 
 SUNDANCE_EVALUATION = \
 $(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceChainRuleEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceChainRuleSum.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDerivOfSymbFuncEvaluator.cpp \

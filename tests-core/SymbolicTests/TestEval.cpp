@@ -37,34 +37,75 @@ static Time& totalTimer()
 }
 
 
-#define TESTER(expr, adExpr)\
-{\
-Tabs tabs1;\
-cerr << tabs1 << endl << tabs1\
-<< "------------- Testing " << (expr).toString() << " -----------"\
-<< endl << tabs1 << endl;\
-EvaluationTester tester((expr));\
-bool thisTestIsOK = true;\
-double f = tester.fdEvaluate(fdStep, tol1, tol2, thisTestIsOK);\
-if (!thisTestIsOK)\
-{\
-  isOK = false;\
-}\
-double adf = (adExpr).value();\
-cerr << tabs1 << "expr value = " << f << " check=" << adf \
-<< " |f-check|=" << fabs(f-adf) << endl;\
-double fError = fabs(f-adf);\
-if (fError > tol1)\
-{\
-thisTestIsOK=false;\
-cerr << "value computation FAILED" << endl;\
-isOK = false;\
-}\
-if (!thisTestIsOK)\
-{\
-failures.append(#expr);\
-}\
-}
+#define LOUD()                                          \
+  {                                                     \
+    verbosity<EvaluationTester>() = VerbExtreme;        \
+    verbosity<Evaluator>() = VerbExtreme;               \
+    verbosity<SparsitySuperset>() = VerbSilent;         \
+    verbosity<EvalVector>() = VerbSilent;               \
+    verbosity<EvaluatableExpr>() = VerbExtreme;         \
+    verbosity<AbstractEvalMediator>() = VerbExtreme;    \
+  }
+
+#define QUIET()                                         \
+  {                                                     \
+    verbosity<EvaluationTester>() = VerbSilent;         \
+    verbosity<Evaluator>() = VerbSilent;                \
+    verbosity<SparsitySuperset>() = VerbSilent;         \
+    verbosity<EvalVector>() = VerbSilent;               \
+    verbosity<EvaluatableExpr>() = VerbSilent;          \
+    verbosity<AbstractEvalMediator>() = VerbSilent;     \
+  }
+
+#define TESTER(expr, adExpr)                                            \
+  {                                                                     \
+    Tabs tabs1;                                                         \
+    cerr << tabs1 << endl << tabs1                                      \
+         << "------------- Testing " << (expr).toString() << " -----------" \
+         << endl << tabs1 << endl;                                      \
+    bool thisTestIsOK = true;                                           \
+    try                                                                 \
+      {                                                                 \
+      EvaluationTester tester((expr));                                  \
+      double f = tester.fdEvaluate(fdStep, tol1, tol2, thisTestIsOK);   \
+      if (!thisTestIsOK)                                                \
+        {                                                               \
+          isOK = false;                                                 \
+        }                                                               \
+      double adf = (adExpr).value();                                    \
+      cerr << tabs1 << "expr value = " << f << " check=" << adf         \
+           << " |f-check|=" << fabs(f-adf) << endl;                     \
+      double fError = fabs(f-adf);                                      \
+      if (fError > tol1)                                                \
+        {                                                               \
+          thisTestIsOK=false;                                           \
+          cerr << "value computation FAILED" << endl;                   \
+          isOK = false;                                                 \
+        }                                                               \
+      }                                                                 \
+    catch(std::exception& ex)                                           \
+      {                                                                 \
+        thisTestIsOK = false;                                           \
+        isOK=false;                                                     \
+        cerr << "exception: " << ex.what() << endl ;                    \
+      }                                                                 \
+    if (!thisTestIsOK)                                                  \
+      {                                                                 \
+        failures.append(#expr);                                         \
+        cerr << "test " << (expr).toString() << " FAILED" << endl << endl;\
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        cerr << "test " << (expr).toString() << " PASSED" << endl << endl; \
+      }\
+  }
+
+
+#define XTESTER(X,Y)                            \
+  LOUD();                                       \
+  TESTER(X,Y);                                   \
+  QUIET();                                      \
+  goto finish;
 
 int main(int argc, void** argv)
 {
@@ -79,11 +120,10 @@ int main(int argc, void** argv)
 #ifdef BLAHBLAH
       verbosity<EvaluationTester>() = VerbExtreme;
       verbosity<Evaluator>() = VerbExtreme;
-      verbosity<SparsitySuperset>() = VerbExtreme;
-      verbosity<SparsitySubset>() = VerbExtreme;
+      verbosity<SparsitySuperset>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbExtreme;
-      verbosity<AbstractEvalMediator>() = VerbSilent;
+      verbosity<AbstractEvalMediator>() = VerbExtreme;
 #endif
       Expr::showAllParens() = true;
 
@@ -112,15 +152,20 @@ int main(int argc, void** argv)
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
 
-      double tol1 = 1.0e-6;
-      double tol2 = 1.0e-6;
-      double fdStep = 1.0e-3;
+      Expr g = x*x + y*y;
+      Expr f = x*x;
+      Expr h = x+y;
+
+      double tol1 = 1.0e-5;
+      double tol2 = 1.0e-5;
+      double fdStep = 1.0e-5;
       bool isOK = true;
       Array<string> failures;
 
-      //#ifdef BLARF
+      //#ifdef blarf
 
       TESTER(u, U);
+
 
       TESTER(-u, -U);
 
@@ -160,6 +205,7 @@ int main(int argc, void** argv)
       /* ----------- cases of product expressions ------------------- */
 
       /* */
+
       TESTER( u*u, U*U );
 
       /* */
@@ -167,6 +213,9 @@ int main(int argc, void** argv)
 
       /* */
       TESTER( u*w, U*W );
+
+      /* */
+      TESTER( w*(u*u-2.0), W*(U*U-2.0) );
 
       /* */
       TESTER( u*u*w, U*U*W );
@@ -241,7 +290,7 @@ int main(int argc, void** argv)
       /* -------------- tests of diff ops ----------------------- */
 
 
-     
+      //#endif     
 
       /* */
       TESTER((dx*u), (Dx*U));
@@ -249,9 +298,18 @@ int main(int argc, void** argv)
       /* */
       TESTER((dx*x), (Dx*X));
 
+      TESTER((dx*(x*x)), (Dx*(X*X)));
+
+      TESTER((dx*(y*y)), (Dx*(Y*Y)));
+
+      TESTER((dx*(x*x + y*y)), (Dx*(X*X + Y*Y)));
+
+      TESTER((dx*(x*w)), (Dx*(X*W)));
+
       /* */
       TESTER((dx*y), (Dx*Y));
 
+      TESTER((dx*u+dx*w), (Dx*U+Dx*W));
       
       TESTER((dx*(u+w)), (Dx*(U+W)));
 
@@ -273,13 +331,32 @@ int main(int argc, void** argv)
 
       //#endif
 
-      TESTER((dx*(x*w)), (Dx*(X*W)));
+
       //#ifdef BLARF
       TESTER((dx*(y*w)), (Dx*(Y*W)));
 
       TESTER((dx*(u*w)), (Dx*(U*W)));
 
-      Expr g = x*x + y*y;
+      TESTER((dx*(3.0*u*w)), (Dx*(3.0*U*W)));
+
+      TESTER((u*(dx*u)), (U*(Dx*U)));
+
+      TESTER((dx*(u*u)), (Dx*(U*U)));
+
+
+      TESTER((dx*(h)), (Dx*(X+Y)));
+      TESTER((dx*(x*h)), (Dx*(X*(X+Y))));
+
+      TESTER((dx*(h) + dy*(h)), (Dx*(X+Y) + Dy*(X+Y)));
+
+      TESTER((dx*(x*h) + dy*(y*h)), (Dx*(X*(X+Y)) + Dy*(Y*(X+Y))));
+
+      TESTER((dx*(y*h) + dy*(x*h)), (Dx*(Y*(X+Y)) + Dy*(X*(X+Y))));
+
+      TESTER((u*(dx*(f) + dy*(f))), (U*(Dx*(X*X) + Dy*(X*X))));
+
+
+      TESTER((u*(dx*(x*x+y*y) + dy*(x*x+y*y))), (U*(Dx*(X*X + Y*Y) + Dy*(X*X + Y*Y))));
 
       TESTER((u*(dx*(g) + dy*(g))), (U*(Dx*(X*X + Y*Y) + Dy*(X*X + Y*Y))));
        
@@ -330,7 +407,21 @@ int main(int argc, void** argv)
       TESTER((u*(dx*(u*x))), (U*(Dx*(U*X))));
 
       /* Unary operators */
+      TESTER(sin(u), sin(U));
+
+      TESTER(sin(0.5*u), sin(0.5*U));
+
+      TESTER(sin(u+w), sin(U+W));
+
+      TESTER(sin(u*w), sin(U*W));
+
+      TESTER(sin(0.5+u), sin(0.5+U));
+
       TESTER(sin(x), sin(X));
+
+      TESTER(sin(u*x), sin(U*X));
+
+      TESTER(sin(0.5*u*x), sin(0.5*U*X));
 
       TESTER(w*sin(u), W*sin(U));
 
@@ -343,9 +434,9 @@ int main(int argc, void** argv)
 
       TESTER(sin(u*cos(x)), sin(U*cos(X)));
 
-      TESTER(sin(u*x), sin(U*X));
+      TESTER(sin(0.5*(w+u)), sin(0.5*(W+U)));
 
-
+      TESTER(sin(0.5*w*u), sin(0.5*W*U));
 
       TESTER(sin(u*x+0.5*w*u), sin(U*X+0.5*W*U));
 
@@ -354,24 +445,54 @@ int main(int argc, void** argv)
 
       TESTER(sin(u)/u, sin(U)/U);
 
-      //TESTER(sin(cos(u)), sin((cos(U))));
+      TESTER(sin(cos(u)), sin((cos(U))));
 
-      //#endif
-      //TESTER((dx*u), (Dx*U));
-      //    TESTER((dx*sin(u)), (Dx*(sin(U))));
+      TESTER(sin(cos(x)), sin((cos(X))));
 
-      //#ifdef BLARF
+      TESTER((dx*sin(x)), (Dx*(sin(X))));
 
-      //      TESTER((dx*sin(cos(u))), (Dx*(sin(cos(U)))));
+      TESTER((dx*sin(u)), (Dx*(sin(U))));
 
-      //      TESTER(w*(dx*sin(u)), W*(Dx*(sin(U))));
+      TESTER((dx*exp(u)), (Dx*(exp(U))));
 
-      //      TESTER(dx*(exp(2.0*log(u))), Dx*(exp(2.0*log(U))));
+      TESTER((dx*exp(u+w)), (Dx*(exp(U+W))));
 
-      //      TESTER(dx*(u*u), Dx*(U*U));
-      // #endif
+      TESTER((dx*exp(u*u)), (Dx*(exp(U*U))));
+
+      TESTER((dx*exp(u*w)), (Dx*(exp(U*W))));
+
+      TESTER((dx*exp(2.0*u)), (Dx*(exp(2.0*U))));
+
+      TESTER((dx*exp(-u)), (Dx*(exp(-U))));
+
+      TESTER((dx*exp(-1.0*u)), (Dx*(exp(-1.0*U))));
+
+      TESTER((dx*(cos(x)*sin(x))), (Dx*(cos(X)*sin(X))));
+
+      TESTER((dx*(cos(x)*sin(y))), (Dx*(cos(X)*sin(Y))));
+
+      TESTER((dx*sin(cos(u))), (Dx*(sin(cos(U)))));
+
+      TESTER((dx*sin(2.0*cos(u))), (Dx*(sin(2.0*cos(U)))));
+
+      TESTER(w*(dx*sin(u)), W*(Dx*(sin(U))));
+
+      TESTER(dx*(pow(u, 2.0)), Dx*(pow(U, 2.0)));
+
+      TESTER(dx*(pow(u, 4.0)), Dx*(pow(U, 4.0)));
+
+      TESTER(log(u), log(U));
+
+      TESTER(dx*(log(u)), Dx*(log(U)));
+
+      TESTER(dx*(exp(log(u))), Dx*(exp(log(U))));
+
+      TESTER(dx*(exp(-log(u))), Dx*(exp(-log(U))));
+
+      TESTER(dx*(exp(2.0*log(u))), Dx*(exp(2.0*log(U))));
 
 
+    finish:
       if (isOK)
         {
           cerr << "all tests PASSED!" << endl;

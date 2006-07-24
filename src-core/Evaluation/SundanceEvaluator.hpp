@@ -106,11 +106,11 @@ namespace SundanceCore
       
 
       /** */
-      const Map<int, int>& constantIndexMap() const 
+      const SundanceUtils::Map<int, int>& constantIndexMap() const 
       {return constantIndexMap_;}
 
       /** */
-      const Map<int, int>& vectorIndexMap() const 
+      const SundanceUtils::Map<int, int>& vectorIndexMap() const 
       {return vectorIndexMap_;}
     protected:
 
@@ -143,9 +143,9 @@ namespace SundanceCore
 
       mutable Array<double> constantResultCache_;
 
-      Map<int, int> constantIndexMap_;
+      SundanceUtils::Map<int, int> constantIndexMap_;
 
-      Map<int, int> vectorIndexMap_;
+      SundanceUtils::Map<int, int> vectorIndexMap_;
 
       Array<int> vectorIndices_;
 

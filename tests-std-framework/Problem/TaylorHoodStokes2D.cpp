@@ -96,7 +96,7 @@ int main(int argc, void** argv)
 
       /* Define the weak form */
 
-      Expr pi = 4.0*atan(1.0);
+      double pi = 4.0*atan(1.0);
       Expr sx = sin(pi*x);
       Expr cx = cos(pi*x);
       Expr sy = sin(pi*y);
@@ -124,7 +124,6 @@ int main(int argc, void** argv)
         = LinearSolverBuilder::createSolver(solverParams);
 
       Expr soln = prob.solve(solver);
-
 
 
       /* Write the field in VTK format */

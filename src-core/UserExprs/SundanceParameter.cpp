@@ -51,15 +51,6 @@ void Parameter::setValue(const double& value)
 const double& Parameter::value() const {return data()->value();}
 
 
-void Parameter::findNonzeros(const EvalContext& context,
-                             const Set<MultiIndex>& multiIndices,
-                             const Set<MultiSet<int> >& activeFuncIDs,
-                             bool regardFuncsAsConstant) const 
-{
-  SpatiallyConstantExpr::findNonzeros(context, multiIndices, activeFuncIDs,
-                                      regardFuncsAsConstant);
-}
-
 
 Set<MultipleDeriv> Parameter::internalFindW(int order, const EvalContext& context) const 
 {

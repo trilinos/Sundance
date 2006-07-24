@@ -53,16 +53,14 @@ SymbolicFuncElement::SymbolicFuncElement(const string& name,
     evalPt_(),
     evalPtDerivSetIndices_(),
     myIndex_(myIndex)
-{
-  /* I have nonzero functional deriv of zero order, and of first order wrt 
-   * myself */
-  int fid = funcID();
-  MultiSet<int> derivWrtMe;
-  derivWrtMe.put(fid);
-  addFuncIDCombo(derivWrtMe);
-  addFuncIDCombo(MultiSet<int>());
-}
+{}
 
+void SymbolicFuncElement::registerSpatialDerivs(const EvalContext& context, 
+                                                const Set<MultiIndex>& miSet) const
+{
+  evalPt()->registerSpatialDerivs(context, miSet);
+  EvaluatableExpr::registerSpatialDerivs(context, miSet);
+}
 
 Set<MultipleDeriv> 
 SymbolicFuncElement::internalFindW(int order, const EvalContext& context) const
@@ -72,6 +70,12 @@ SymbolicFuncElement::internalFindW(int order, const EvalContext& context) const
                      << toString());
 
   Set<MultipleDeriv> rtn;
+
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_HIGH(tab1 << "findW() for eval point");
+    evalPt()->findW(order, context);
+  }
 
   if (order==0) 
     {
@@ -108,11 +112,17 @@ SymbolicFuncElement::internalFindV(int order, const EvalContext& context) const
                      << toString());
   Set<MultipleDeriv> rtn;
 
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_HIGH(tab1 << "findV() for eval point");
+    evalPt()->findV(order, context);
+  }
+
   if (order==0) 
     {
       if (!evalPtIsZero()) rtn.put(MultipleDeriv());
     }
-  
+
   SUNDANCE_VERB_EXTREME( tab << "SFE: V = " << rtn );
   SUNDANCE_VERB_EXTREME( tab << "SFE: R = " << findR(order, context) );
   rtn = rtn.intersection(findR(order, context));
@@ -130,6 +140,12 @@ SymbolicFuncElement::internalFindC(int order, const EvalContext& context) const
                      << toString());
   Set<MultipleDeriv> rtn;
 
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_HIGH(tab1 << "findC() for eval point");
+    evalPt()->findC(order, context);
+  }
+
   if (order==1)
     {
       Deriv d = new FunctionalDeriv(this, MultiIndex());
@@ -142,6 +158,23 @@ SymbolicFuncElement::internalFindC(int order, const EvalContext& context) const
 
   SUNDANCE_VERB_HIGH( tab << "SFE: C[" << order << "] = " << rtn );
   return rtn;
+}
+
+
+RefCountPtr<Array<Set<MultipleDeriv> > > SymbolicFuncElement
+::internalDetermineR(const EvalContext& context,
+                     const Array<Set<MultipleDeriv> >& RInput) const
+{
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "SFE::internalDetermineR() for "
+                     << toString());
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_HIGH(tab1 << "determineR() for eval point");
+    evalPt()->determineR(context, RInput);
+  }
+
+  return EvaluatableExpr::internalDetermineR(context, RInput);
 }
 
 bool SymbolicFuncElement::evalPtIsZero() const
@@ -163,102 +196,6 @@ void SymbolicFuncElement
 {
   evalPt_ = u0;
 }
-
-void SymbolicFuncElement
-::findNonzeros(const EvalContext& context,
-               const Set<MultiIndex>& multiIndices,
-               const Set<MultiSet<int> >& inputActiveFuncIDs,
-               bool regardFuncsAsConstant) const
-{
-
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for symbolic func " 
-                       << toString()
-                       << " subject to multi index set " 
-                       << multiIndices.toString());
-
-  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
-
-  
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant))
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
-      return;
-    }
-
-
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
-
-  if (evalPtIsZero())
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "SymbolicFuncElement eval point is a zero expr");
-    }
-  else
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "SymbolicFuncElement eval point is a nonzero expr");
-    }
-
-  /* Evaluate the function itself, i.e., the zeroth deriv of the function.
-   * If this is a test function, or if we are doing a linear problem,
-   * then we skip this step. */
-  if (!regardFuncsAsConstant && !evalPtIsZero())
-    {
-      if (activeFuncIDs.contains(MultiSet<int>()))
-        {
-          Tabs tab1;
-          SUNDANCE_VERB_MEDIUM(tab1 << "adding deriv {}");
-          subset->addDeriv(MultipleDeriv(), VectorDeriv);
-          SUNDANCE_VERB_HIGH(tab1 << "sparsity subset is now "
-                             << endl << *subset);
-        }
-      else
-        {
-          SUNDANCE_VERB_MEDIUM(tabs << "value of " << toString() << " not required");
-        }
-    }
-  else
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "value of " << toString() << " not required");
-    }
-  
-  /* If this function is one of the active variables, then
-   * add the deriv wrt this func to the sparsity pattern */
-  MultiSet<int> myFuncID;
-  myFuncID.put(funcID());
-  if (activeFuncIDs.contains(myFuncID))
-    {
-      subset->addDeriv(new FunctionalDeriv(this, MultiIndex()),
-                       ConstantDeriv);
-    }
-  else
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "deriv wrt to " << toString() << " not required");
-    }
-  
-  const DiscreteFuncElement* df 
-    = dynamic_cast<const DiscreteFuncElement*>(evalPt());
-  if (df != 0)
-    {
-      Tabs tab1;
-      SUNDANCE_VERB_MEDIUM(tabs << "SymbolicFuncElement finding nonzero pattern for eval pt");
-      df->findNonzeros(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant);
-    }
-  
-
-  SUNDANCE_VERB_HIGH(tabs << "symbolic func " + toString()
-                     << ": my sparsity subset is " 
-                     << endl << *subset);
-
-  SUNDANCE_VERB_HIGH(tabs << "symbolic func " + toString() 
-                     << " my sparsity superset is " 
-                     << endl << *sparsitySuperset(context));
-
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  regardFuncsAsConstant);
-}
-
 
 
 

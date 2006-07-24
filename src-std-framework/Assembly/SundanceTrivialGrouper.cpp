@@ -79,10 +79,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   for (int i=0; i<sparsity->numDerivs(); i++)
     {
       Tabs tab1;
-
       const MultipleDeriv& d = sparsity->deriv(i);
+      SUNDANCE_VERB_MEDIUM(tab1 << "defining integration policy for "
+                           << d);
+      
       if (d.order()==0) 
         {
+          Tabs tab2;
           RefCountPtr<ElementIntegral> integral ;
           int resultIndex;
           if (sparsity->isConstant(i))
@@ -97,12 +100,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                                     cellDim, cellType, quad));
               resultIndex = vecCount++;
             }
+          SUNDANCE_VERB_MEDIUM(tab2 << "is zero-form");
           groups.append(IntegralGroup(tuple(integral),
                                       tuple(resultIndex)));
         }
       else
         {
-
+          Tabs tab2;
           BasisFamily testBasis;
           BasisFamily unkBasis;
           MultiIndex miTest;
@@ -121,23 +125,33 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                           isOneForm);
 
 
-          SUNDANCE_VERB_MEDIUM(tab1 << "test ID: " << testID << " block=" << testBlock);
+          if (isOneForm)
+            {
+              SUNDANCE_VERB_MEDIUM(tab2 << "is one-form");
+            }
+          else
+            {
+              SUNDANCE_VERB_MEDIUM(tab2 << "is two-form");
+            }
+
+          SUNDANCE_VERB_MEDIUM(tab2 << "test ID: " << testID << " block=" << testBlock);
 
           if (!isOneForm)
             {
-              SUNDANCE_VERB_MEDIUM(tab1 << "unk funcID: " << unkID << " block=" << unkBlock);
+              SUNDANCE_VERB_MEDIUM(tab2 << "unk funcID: " << unkID << " block=" << unkBlock);
             }
                    
-          SUNDANCE_OUT(verb > VerbMedium, tab1 << "deriv = " << d);
+          SUNDANCE_OUT(verb > VerbMedium, tab2 << "deriv = " << d);
           SUNDANCE_OUT(verb > VerbMedium && sparsity->isConstant(i), 
-                       tab1 << "coeff is constant");
+                       tab2 << "coeff is constant");
           SUNDANCE_OUT(verb > VerbMedium && !sparsity->isConstant(i), 
-                       tab1 << "coeff is non-constant");
+                       tab2 << "coeff is non-constant");
 
           RefCountPtr<ElementIntegral> integral;
           int resultIndex;
           if (sparsity->isConstant(i))
             {
+              Tabs tab3;
               if (isOneForm)
                 {
                   int alpha=0;
@@ -146,7 +160,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                       alpha = miTest.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
-                               tab1 << "creating reference integral for one-form");
+                               tab3 << "creating reference integral for one-form");
                   integral = rcp(new RefIntegral(spatialDim, maxCellType, 
                                                  cellDim, cellType,
                                                  testBasis, alpha, 
@@ -165,7 +179,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                       beta = miUnk.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
-                               tab1 << "creating reference integral for two-form");
+                               tab3 << "creating reference integral for two-form");
                   integral = rcp(new RefIntegral(spatialDim, maxCellType,
                                                  cellDim, cellType,
                                                  testBasis, alpha, miTest.order(),
@@ -175,6 +189,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
             }
           else
             {
+              Tabs tab3;
               if (isOneForm)
                 {
                   int alpha=0;
@@ -183,7 +198,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                       alpha = miTest.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
-                               tab1 << "creating quadrature integral for two-form");
+                               tab3 << "creating quadrature integral for two-form");
                   integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                                                         cellDim, cellType,
                                                         testBasis, alpha, 
@@ -202,7 +217,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                       beta = miUnk.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
-                               tab1 << "creating quadrature integral for two-form");
+                               tab3 << "creating quadrature integral for two-form");
                   integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                                                         cellDim, cellType,
                                                         testBasis, alpha, 
@@ -264,8 +279,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 
   if (doGroups)
     {
+      Tabs tab2;
+      SUNDANCE_OUT(verb > VerbLow, tab2 << "creating integral groups");
       for (twoFormMap::const_iterator i=twoForms.begin(); i!=twoForms.end(); i++)
         {
+          Tabs tab3;
+          SUNDANCE_OUT(verb > VerbLow, tab3 << "integral group number="
+                       << groups.size());
           int rawTestID = i->first.first();
           int rawUnkID = i->first.second();
           int testID = eqn.reducedVarID(rawTestID);
@@ -275,13 +295,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = twoFormResultIndices.get(i->first);
-          SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
-                               << tab << "testID=" << testID << endl
-                               << tab << "unkID=" << unkID << endl
-                               << tab << "resultIndices=" << resultIndices);
+          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating two-form integral group" << endl
+                               << tab3 << "testID=" << testID << endl
+                               << tab3 << "unkID=" << unkID << endl
+                               << tab3 << "resultIndices=" << resultIndices);
           for (unsigned int j=0; j<resultIndices.size(); j++)
             {
-              SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
+              SUNDANCE_OUT(verb > VerbLow, tab3 << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j]));
             }
           groups.append(IntegralGroup(tuple(testID), tuple(testBlock), tuple(unkID), 
@@ -291,18 +311,21 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 
       for (oneFormMap::const_iterator i=oneForms.begin(); i!=oneForms.end(); i++)
         {
+          Tabs tab3;
+          SUNDANCE_OUT(verb > VerbLow, tab3 << "integral group number="
+                       << groups.size());
           int rawTestID = i->first;
           int testID = eqn.reducedVarID(rawTestID);
           int testBlock = eqn.blockForVarID(rawTestID);
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = oneFormResultIndices.get(i->first);
-          SUNDANCE_OUT(verb > VerbLow, tab << "creating integral group" << endl
-                               << tab << "testID=" << testID << endl
-                               << tab << "resultIndices=" << resultIndices);
+          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating one-form integral group" << endl
+                               << tab3 << "testID=" << testID << endl
+                               << tab3 << "resultIndices=" << resultIndices);
           for (unsigned int j=0; j<resultIndices.size(); j++)
             {
-              SUNDANCE_OUT(verb > VerbLow, tab << "deriv " << j << " " 
+              SUNDANCE_OUT(verb > VerbLow, tab3 << "deriv " << j << " " 
                            << sparsity->deriv(resultIndices[j]));
             }
           groups.append(IntegralGroup(tuple(testID), tuple(testBlock),

@@ -43,6 +43,18 @@ MultipleDeriv::MultipleDeriv()
   : MultiSet<Deriv>()
 {}
 
+MultipleDeriv::MultipleDeriv(const Deriv& d)
+  : MultiSet<Deriv>()
+{
+  put(d);
+}
+MultipleDeriv::MultipleDeriv(const Deriv& d1, const Deriv& d2)
+  : MultiSet<Deriv>()
+{
+  put(d1);
+  put(d2);
+}
+
 int MultipleDeriv::spatialOrder() const 
 {
   int rtn = 0;
@@ -110,6 +122,8 @@ MultipleDeriv MultipleDeriv::factorOutDeriv(const Deriv& x) const
   /* remove a single copy of the given derivative */
   if (i != rtn.end()) rtn.erase(i);
 
+  if (rtn.size() == this->size()) return MultipleDeriv();
+
   return rtn;
 }
 
@@ -134,6 +148,8 @@ MultipleDeriv MultipleDeriv::factorOutDeriv(const MultipleDeriv& x) const
       /* remove a single copy of the given derivative */
       if (j != rtn.end()) rtn.erase(j);
     }
+
+  if (rtn.size() == this->size()) return MultipleDeriv();
   return rtn;
 }
 
@@ -257,7 +273,7 @@ namespace SundanceCore
                     {
                       Deriv dNew = new FunctionalDeriv(func, miNew);
                       MultipleDeriv mdNew = md;
-                      mdNew.erase(d);
+                      mdNew.erase(mdNew.find(d));
                       mdNew.put(dNew);
                       rtn.put(mdNew);
                     }

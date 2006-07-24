@@ -72,61 +72,7 @@ namespace SundanceCore
                                ConstantNonzeros};
 
     /**
-     * Class EvaluatableExpr provides common functionality for
-     * determination of the sparsity pattern of the matrix of functional
-     * derivatives, and managing Evaluator objects. Because we will 
-     * need to evaluate expressions in different ways depending
-     * on context, we shouldn't do evaluation in a method
-     * of EvaluatableExpr, but rather delegate evaluation to a
-     * separate class, Evaluator. EvaluatableExpr stores a suite of
-     * Evaluator objects, indexed by EvalCOntext.
-
      *
-     * Evaluation is a logically const operation, and preprocessing
-     * is an implementation detail, so most evaluation and preprocessing
-     * related methods of EvaluatableExpr are declared const, and
-     * the internal data is declared mutable.
-     *
-     * <h3> Evaluation context </h3>
-     *
-     * A given expression might be evaluated in a number of different
-     * contexts, in which different spatial or functional derivatives
-     * are required. Naturally, we will never want to evaluate quantities
-     * that are not required in the current evaluation context, so we will
-     * build sparsity tables and evaluation instructions on a 
-     * context-by-context basis. 
-     *
-     * <h3> Sparsity determination </h3>
-     *
-     * It is important to know the sparsity structure of the matrix
-     * of partial functional derivatives. To determine whether an
-     * EvaluatableExpr* <tt>e</tt> has a nonzero partial derivative
-     * <tt>d,</tt> call <tt>e->hasNonzeroDeriv(d).</tt>
-     *
-     * Since sparsity determination does take some time in a complicated
-     * expression, the nonzeroness of a given derivative is cached
-     * once determined. The cache object is derivNonzeronessCache_,
-     * which is declared mutable to maintain the logical constness
-     * of hasNonzeroDeriv().
-     *
-     * Information about exactly which derivatives are nonzero
-     * and required
-     * at a given node in a given region is
-     * stored in a SparsitySuperset object. Since the derivatives required
-     * will depend on region, there will be a SparsitySuperset
-     * object for each region. 
-     *
-     * <h3> Evaluation </h3>
-     *
-     * The interface for evaluation is the evaluate() method. 
-     * Arguments are
-     * a const reference to an EvalManager and
-     * a smart pointer to a EvalVectorArray. The EvalManager
-     * EvalManager is to supply any provide callbacks for evaluation of objects
-     * such as discrete functions which require knowledge of the
-     * mesh and field data structures to be carried out. The
-     * EvalVectorArray object contains vectors for the results of
-     * all functional derivatives evaluated at this node.
      */
 
     class EvaluatableExpr : public virtual ScalarExpr,
@@ -166,59 +112,12 @@ namespace SundanceCore
        */
       virtual void setupEval(const EvalContext& context) const ;
 
-      /** Return the subset of nonzero derivatives required to evaluate
-       * the given set of differential operators in the given context. */
-      RefCountPtr<SparsitySubset> sparsitySubset(const EvalContext& context,
-                                                 const Set<MultiIndex>& multiIndices,
-                                                 const Set<MultiSet<int> >& activeFuncIDs,
-                                                 bool failIfNotFound) const ;
-
+      
 
 
       /** Return the set of all nonzero derivatives
        * required in the given context */
       RefCountPtr<SparsitySuperset> sparsitySuperset(const EvalContext& context) const ;
-
-      /** 
-       * Determine which functional and spatial derivatives are nonzero in the
-       * given context. We also keep track of which derivatives
-       * are known to be constant, which can simplify evaluation. 
-       */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const = 0 ;
-
-      /** */
-      bool nonzerosAreKnown(const EvalContext& context,
-                            const Set<MultiIndex>& multiIndices,
-                            const Set<MultiSet<int> >& activeFuncIDs,
-                            bool regardFuncsAsConstant) const ;
-          
-
-      /** 
-       * Return the polynomial order of this expr's dependence on the 
-       * given spatial coordinate function. Non-polynomial functions
-       * (e.g., sqrt()) are assigned order=-1. This convention is 
-       * non-standard mathematically but allows us to use integer 
-       * order variables for all functions. 
-       * Unknown, test, and discrete functions are assumed non-polynomial.
-       * By default, any otherwise unspecified expression is assumed 
-       * to be non-polynomial. 
-       */
-      int orderOfSpatialDependency(int spatialDir) const 
-      {return orderOfDependency_[spatialDir];}
-
-      /** 
-       * Return all function combinations for which the mixed
-       * functional derivatives can be nonzero.
-       */
-      const Set<MultiSet<int> >& funcIDSet() const {return funcIDSet_;}
-
-      /**
-       * Return the set of functions that appear in this expression.
-       */
-      const Set<int>& funcDependencies() const {return funcDependencies_;}
 
       //@}
       
@@ -236,6 +135,7 @@ namespace SundanceCore
 
       /** Return the evaluator to be used for the given context */
       const RefCountPtr<Evaluator>& evaluator(const EvalContext& context) const; 
+
       /** */
       virtual void showSparsity(ostream& os, 
                                 const EvalContext& context) const ;
@@ -251,13 +151,6 @@ namespace SundanceCore
 
       /** */
       static unsigned int maxFuncDiffOrder() {static int rtn=3; return rtn;}
-
-      /** */
-      static RefCountPtr<Set<int> > getFuncIDSet(const Expr& funcs);
-
-      /** Filter the input active function list to eliminate functions
-       * not appearing in the list of functional dependencies */
-      Set<MultiSet<int> > filterActiveFuncs(const Set<MultiSet<int> >& inputActiveFuncs) const ;
 
 
       /** */
@@ -287,7 +180,6 @@ namespace SundanceCore
       const Set<MultipleDeriv>& 
       findDerivSubset(const DerivSubsetSpecifier& dss,
                       const EvalContext& context) const ;
-
 
       /** */
       const Set<MultipleDeriv>& findW(int order, 
@@ -347,6 +239,11 @@ namespace SundanceCore
       computeInputR(const EvalContext& context,
                     const Array<Set<MultiSet<int> > >& funcIDCombinations,
                     const Array<Set<MultiIndex> >& spatialDerivs) const ;
+
+
+      /** */
+      virtual void registerSpatialDerivs(const EvalContext& context, 
+                                         const Set<MultiIndex>& miSet) const ;
       
                 
       
@@ -356,13 +253,6 @@ namespace SundanceCore
       void registerEvaluator(const EvalContext& context,
                              const RefCountPtr<Evaluator>& evaluator) const 
       {return evaluators_.put(context, evaluator);}
-
-      /** Set the order of dependency of this expression on the
-       * given spatial coordinate function. This method exists as a utility
-       * to be called at construction time, and should probably not be
-       * called at other times. */
-      void setOrderOfDependency(int spatialDir, int order)
-      {orderOfDependency_[spatialDir] = order;}
 
       /** */
       static bool isEvaluatable(const ExprBase* expr);
@@ -376,42 +266,11 @@ namespace SundanceCore
       int maxOrder(const Set<MultiIndex>& m) const ;
 
       /** */
-      void addKnownNonzero(const EvalContext& context,
-                           const Set<MultiIndex>& multiIndices,
-                           const Set<MultiSet<int> >& activeFuncIDs,
-                           bool regardFuncsAsConstant) const ;
-
-
-      /** */
-      void addFuncIDCombo(const MultiSet<int>& funcIDSet);
-
-      /** */
-      void setFuncIDSet(const Set<MultiSet<int> >& funcIDSet);
-
-
-
-      /** 
-       * Computes
-       * \f[ 
-       * T_x(S) = \left\{\mu \vert \lambda\in S \wedge (\alpha_\lambda + x=\alpha_\mu)
-       *           \wedge (u_\lambda = u_\mu) \right\}
-       * \f]
-       */
-      static Set<MultipleDeriv> computeT(int xDir, const Set<MultipleDeriv>& S);
-
-      /** 
-       * Computes
-       * \f[ 
-       * K_x(S) = \left\{\mu \vert \mu\in S \wedge p_W(D_{\alpha_\mu + x} u_\mu) \right\} 
-       * \f]
-       */
-      static Set<MultipleDeriv> computeK(int xDir, const Set<MultipleDeriv>& S);
-
-      /** */
-      static Set<MultipleDeriv> computeH(bool pred, const Set<MultipleDeriv>& S);
+      const Set<MultiIndex>& activeSpatialDerivs(const EvalContext& context) const ;
 
       /** */
       string derivType(const DerivSubsetSpecifier& dss) const;
+
     private:
       
       /** */
@@ -446,6 +305,8 @@ namespace SundanceCore
       mutable bool rIsReady_;
 
       mutable Array<Map<EvalContext, Set<MultipleDeriv> > > allOrdersMap_;
+
+      mutable Map<EvalContext, Set<MultiIndex> > activeSpatialDerivMap_;
     };
   }
 }

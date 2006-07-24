@@ -79,9 +79,19 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     
 {
   TimeMonitor timer(nlpCtorTimer());
-  Expr params;
+
+  Expr unkParams;
+  Expr fixedParams;
+  Expr fixedFields;
+  Expr unkParamValues;
+  Expr fixedParamValues;
+  Expr fixedFieldValues;
+
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), params, params));
+    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0),
+                          unkParams, unkParamValues,
+                          fixedParams, fixedParamValues,
+                          tuple(fixedFields), tuple(fixedFieldValues)));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
 
@@ -113,8 +123,17 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
     
 {
   TimeMonitor timer(nlpCtorTimer());
+
+  Expr fixedParams;
+  Expr fixedFields;
+  Expr fixedParamValues;
+  Expr fixedFieldValues;
+
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), params, paramVals));
+    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), 
+                          params, paramVals,
+                          fixedParams, fixedParamValues,
+                          tuple(fixedFields), tuple(fixedFieldValues)));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
   cout << "******** n local DOF=" << assembler_->colMap()[0]->numLocalDOFs() << endl;
@@ -240,7 +259,6 @@ Vector<double> NonlinearProblem::computeFunctionValue() const
 
   discreteU0_->setVector(currentEvalPt());
 
-
   Vector<double> rtn = createMember(range());
   assembler_->assemble(rtn);
 
@@ -267,7 +285,6 @@ void NonlinearProblem::computeFunctionValue(Vector<double>& resid) const
                      "NonlinearProblem::computeFunctionValue()");
 
   discreteU0_->setVector(currentEvalPt());
-
 
   assembler_->assemble(resid);
 }

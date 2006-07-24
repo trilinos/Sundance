@@ -46,134 +46,25 @@ using namespace Teuchos;
 
 
 
-SparsitySuperset::SparsitySuperset()
+SparsitySuperset::SparsitySuperset(const Set<MultipleDeriv>& C,
+                                   const Set<MultipleDeriv>& V)
   : maxOrder_(0),
     derivToIndexMap_(),
     derivs_(),
     states_(),
     multiIndex_(),
-    subsets_(),
-    allMultiIndices_(),
-    allFuncIDs_(),
     numConstantDerivs_(0),
     numVectorDerivs_(0)
-{}
-
-void SparsitySuperset::addSubset(const Set<MultiIndex>& multiIndices,
-                                 const Set<MultiSet<int> >& funcIDs)
 {
-  if (hasSubset(multiIndices, funcIDs)) return;
-  
-  allMultiIndices_.merge(multiIndices);
-  allFuncIDs_.merge(funcIDs);
-  RefCountPtr<SparsitySubset> s = rcp(new SparsitySubset(this));
-  subsets_.put(keyPair(multiIndices, funcIDs), s);
-}
-
-bool SparsitySuperset::hasSubset(const Set<MultiIndex>& multiIndices,
-                                 const Set<MultiSet<int> >& funcIDs) const 
-{
-  return subsets_.containsKey(keyPair(multiIndices, funcIDs));
-}
-
-const RefCountPtr<SparsitySubset>& 
-SparsitySuperset::subset(const Set<MultiIndex>& multiIndices,
-                         const Set<MultiSet<int> >& funcIDs) const
-{
-  return subsets_.get(keyPair(multiIndices, funcIDs));
-}
-
-RefCountPtr<SparsitySubset> 
-SparsitySuperset::subset(const Set<MultiIndex>& multiIndices,
-                         const Set<MultiSet<int> >& funcIDs) 
-{
-  return subsets_.get(keyPair(multiIndices, funcIDs));
-}
-
-RefCountPtr<SparsitySubset> 
-SparsitySuperset::findSubset(const Set<MultiIndex>& multiIndices,
-                             const Set<MultiSet<int> >& funcIDs) const
-{
-  /* first see if the subset exists */
-  if (hasSubset(multiIndices, funcIDs))
+  for (Set<MultipleDeriv>::const_iterator i=C.begin(); i!=C.end(); i++)
     {
-      return subsets_.get(keyPair(multiIndices, funcIDs));
+      addDeriv(*i, ConstantDeriv);
     }
 
-  /* next, try to find it as the union of two or more existing subsets */
-  assembleSubsetUnions();
-  
-  TEST_FOR_EXCEPTION(!hasSubset(multiIndices, funcIDs),
-                     InternalError,
-                     "sparsity subset for MI=" << multiIndices.toString()
-                     << ", funcID=" << funcIDs.toString()
-                     << " not found in superset " 
-                     << *this);
-
-  return subsets_.get(keyPair(multiIndices, funcIDs));
-}
-
-void SparsitySuperset::assembleSubsetUnions() const
-{
-  Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "assembling subset unions");
-  SUNDANCE_VERB_HIGH(tab << "initial state is: " << endl << *this);
-
-  
-  typedef Map<keyPair, RefCountPtr<SparsitySubset> >::const_iterator iter;
-
-  //  unsigned int oldSize = subsets_.size();
-  Map<keyPair, RefCountPtr<SparsitySubset> > newSubs = subsets_;
-  bool change = false;
-
-  for (iter i=subsets_.begin(); i != subsets_.end(); i++)
+  for (Set<MultipleDeriv>::const_iterator i=V.begin(); i!=V.end(); i++)
     {
-      const keyPair& key1 = i->first;
-      const RefCountPtr<SparsitySubset>& sub1 = i->second;
-      for (iter j=subsets_.begin(); j != i; j++)
-        {
-          Tabs tab1;
-          const keyPair& key2 = j->first;
-          const RefCountPtr<SparsitySubset>& sub2 = j->second;
-          Set<MultiIndex> newMiSet = key1.first();
-          newMiSet.merge(key2.first());
-          Set<MultiSet<int> > newFuncIDSet = key1.second();
-          newFuncIDSet.merge(key2.second());
-          keyPair newKey(newMiSet, newFuncIDSet);
-          /* if the union is not a new subset, try again */
-          if (subsets_.containsKey(newKey)) continue;
-          /* add the new subset */
-          change = true;
-          SparsitySuperset* me = const_cast<SparsitySuperset*>(this);
-          RefCountPtr<SparsitySubset> s = rcp(new SparsitySubset(me));
-          newSubs.put(newKey, s);
-          for (int k=0; k<sub1->numDerivs(); k++)
-            {
-              s->addDeriv(sub1->deriv(k), sub1->state(k));
-            }
-          
-          for (int k=0; k<sub2->numDerivs(); k++)
-            {
-              s->addDeriv(sub2->deriv(k), sub2->state(k));
-            }
-          SUNDANCE_VERB_HIGH(tab1 << "added new subset " 
-                             << endl << tab1 << *s
-                             << endl << tab1 << "with key " 
-                             "miSet=" << newMiSet.toString()
-                             << ", funcIDSet=" << newFuncIDSet.toString());
-        }
+      addDeriv(*i, VectorDeriv);
     }
-
-  subsets_ = newSubs;
-
-  /* if we have created new subsets, continue the process by recursion
-   * until all subset combinations are enumerated */
-  if (change)
-    {
-      SUNDANCE_VERB_HIGH(tab << "recursing");
-      assembleSubsetUnions();
-    }
-  SUNDANCE_VERB_HIGH(tab << "final state is: " << *this);
 }
 
 
@@ -292,51 +183,6 @@ void SparsitySuperset::print(ostream& os,
 
 
 
-void SparsitySuperset::displayAll(ostream& os) const 
-{
-  Tabs tabs;
-
-  /* find the maximum size of the string reps of the derivatives.
-   * We'll use this to set the field width for printing derivatives. */
-  int maxlen = 25;
-  for (unsigned int i=0; i<derivs_.size(); i++)
-    {
-      int s = derivs_[i].toString().length();
-      if (s > maxlen) maxlen = s;
-    }
-
-
-  os << tabs << "SparsitySuperset" << endl;
-  for (unsigned int i=0; i<derivs_.size(); i++)
-    {
-      os << tabs << i << "\tderiv=\t";
-      os.width(maxlen);
-      os.setf(ios_base::left, ios_base::adjustfield);
-      os << derivs_[i].toString() << "\tstate=\t" ;
-      switch(states_[i])
-        {
-        case ZeroDeriv:
-          os  << "Zero" << endl;
-          break;
-        case ConstantDeriv:
-          os << "Constant" << endl;
-          break;
-        case VectorDeriv:
-          os << "Vector" << endl;
-          break;
-        }
-    }
-
-  os << tabs << "Subsets" << endl;
-  for (Map<keyPair, RefCountPtr<SparsitySubset> >::const_iterator
-         i=subsets_.begin(); i != subsets_.end(); i++)
-    {
-      Tabs tabs1;
-      os << tabs1 << "Subset: " << i->first << endl;
-      i->second->print(os);
-    }
-}
-
 void SparsitySuperset::print(ostream& os) const 
 {
   Tabs tabs;
@@ -371,16 +217,6 @@ void SparsitySuperset::print(ostream& os) const
           break;
         }
     }
-
-  os << tabs << "Subsets" << endl;
-  for (Map<keyPair, RefCountPtr<SparsitySubset> >::const_iterator
-         i=subsets_.begin(); i != subsets_.end(); i++)
-    {
-      Tabs tabs1;
-      os << tabs1 << "Subset: " << i->first << endl;
-      i->second->print(os);
-    }
-
 }
 
 string SparsitySuperset::toString() const 

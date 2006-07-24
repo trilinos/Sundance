@@ -40,12 +40,7 @@ using namespace TSFExtended;
 
 SpatiallyConstantExpr::SpatiallyConstantExpr()
 	: EvaluatableExpr()
-{
-  for (int d=0; d<MultiIndex::maxDim(); d++) 
-    {
-      setOrderOfDependency(d, 0);
-    }
-}
+{}
 
 
 Set<MultipleDeriv> 
@@ -73,34 +68,3 @@ SpatiallyConstantExpr::internalFindC(int order, const EvalContext& context) cons
   return findR(order, context);
 }
 
-
-
-void SpatiallyConstantExpr::findNonzeros(const EvalContext& context,
-                                         const Set<MultiIndex>& multiIndices,
-                                         const Set<MultiSet<int> >& inputActiveFuncIDs,
-                                         bool regardFuncsAsConstant) const
-{
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for constant" 
-                       << toString() << " subject to multiindices "
-                       << multiIndices);
-
-  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
-
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant))
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
-      return;
-    }
-
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
-
-  if (activeFuncIDs.contains(MultiSet<int>()))
-    {
-      subset->addDeriv(MultipleDeriv(), ConstantDeriv);
-    }
-
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  regardFuncsAsConstant);
-}

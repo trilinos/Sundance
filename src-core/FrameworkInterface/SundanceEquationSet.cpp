@@ -48,6 +48,8 @@ using namespace Teuchos;
 
 EquationSet::EquationSet(const Expr& eqns, 
                          const Expr& bcs, 
+                         const Expr& params,
+                         const Expr& paramEvalPts,
                          const Array<Expr>& fields,
                          const Array<Expr>& fieldValues)
   : regions_(),
@@ -100,6 +102,7 @@ EquationSet::EquationSet(const Expr& eqns,
   init(eqns, bcs, vars, varEvalPt,
        unks, unkEvalPt,
        unkParams_, unkParamEvalPts_,
+       params, paramEvalPts,
        fields, fieldValues);
 }
 
@@ -109,7 +112,11 @@ EquationSet::EquationSet(const Expr& eqns,
                          const Array<Expr>& unks,
                          const Array<Expr>& unkLinearizationPts,
                          const Expr& unkParams,
-                         const Expr& unkParamEvalPts)
+                         const Expr& unkParamEvalPts, 
+                         const Expr& params,
+                         const Expr& paramEvalPts,
+                         const Array<Expr>& fixedFields,
+                         const Array<Expr>& fixedFieldValues)
   : regions_(),
     varsOnRegions_(),
     unksOnRegions_(),
@@ -141,8 +148,6 @@ EquationSet::EquationSet(const Expr& eqns,
     isFunctionalCalculator_(false),
     isSensitivityProblem_(unkParams.size() > 0)
 {
-  Array<Expr> fixed;
-
   compTypes_.put(MatrixAndVector);
   compTypes_.put(VectorOnly);
 
@@ -174,10 +179,12 @@ EquationSet::EquationSet(const Expr& eqns,
                                           Map<RegionQuadCombo, DerivSet>());
     }
 
-  init(eqns, bcs, vars, fixed,
+  Array<Expr> zero;
+  init(eqns, bcs, vars, zero,
        unks, unkLinearizationPts,
        unkParams_, unkParamEvalPts_,
-       fixed, fixed);
+       params, paramEvalPts,
+       fixedFields, fixedFieldValues);
 }
 
 
@@ -186,7 +193,9 @@ EquationSet::EquationSet(const Expr& eqns,
                          const Array<Expr>& vars,
                          const Array<Expr>& varLinearizationPts, 
                          const Array<Expr>& unks,
-                         const Array<Expr>& unkLinearizationPts,
+                         const Array<Expr>& unkLinearizationPts, 
+                         const Expr& params,
+                         const Expr& paramEvalPts,
                          const Array<Expr>& fixedFields,
                          const Array<Expr>& fixedFieldValues)
   : regions_(),
@@ -243,6 +252,7 @@ EquationSet::EquationSet(const Expr& eqns,
   init(eqns, bcs, vars, varLinearizationPts, 
        unks, unkLinearizationPts,
        unkParams_, unkParamEvalPts_,
+       params, paramEvalPts,
        fixedFields, fixedFieldValues);
 }
 
@@ -250,6 +260,8 @@ EquationSet::EquationSet(const Expr& eqns,
                          const Expr& bcs,
                          const Array<Expr>& vars,
                          const Array<Expr>& varLinearizationPts, 
+                         const Expr& params,
+                         const Expr& paramEvalPts,
                          const Array<Expr>& fixedFields,
                          const Array<Expr>& fixedFieldValues)
   : regions_(),
@@ -304,7 +316,8 @@ EquationSet::EquationSet(const Expr& eqns,
 
   init(eqns, bcs, vars, varLinearizationPts, 
        unkFuncs_, unkLinearizationPts_,
-       unkParams_, unkParamEvalPts_,       
+       unkParams_, unkParamEvalPts_,   
+       params, paramEvalPts, 
        fixedFields, fixedFieldValues);
 }
 
@@ -318,7 +331,9 @@ void EquationSet::init(const Expr& eqns,
                        const Array<Expr>& unks,
                        const Array<Expr>& unkLinearizationPts,
                        const Expr& unkParams,
-                       const Expr& unkParamEvalPts,
+                       const Expr& unkParamEvalPts, 
+                       const Expr& fixedParams,
+                       const Expr& fixedParamEvalPts,
                        const Array<Expr>& fixedFields,
                        const Array<Expr>& fixedFieldValues)
 {
@@ -512,8 +527,12 @@ void EquationSet::init(const Expr& eqns,
                                       toList(varLinearizationPts),
                                       toList(unks), 
                                       toList(unkLinearizationPts),
+                                      unkParams, 
+                                      unkParamEvalPts,
                                       toList(fixedFields), 
                                       toList(fixedFieldValues),
+                                      fixedParams, 
+                                      fixedParamEvalPts,
                                       context);
                 }
               else
@@ -524,6 +543,10 @@ void EquationSet::init(const Expr& eqns,
                                       toList(unkLinearizationPts),
                                       unkParams, 
                                       unkParamEvalPts,
+                                      fixedParams, 
+                                      fixedParamEvalPts,
+                                      toList(fixedFields), 
+                                      toList(fixedFieldValues),
                                       context);
                 }
               addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
@@ -544,8 +567,12 @@ void EquationSet::init(const Expr& eqns,
                                       toList(varLinearizationPts),
                                       toList(unks), 
                                       toList(unkLinearizationPts),
+                                      unkParams, 
+                                      unkParamEvalPts,
                                       toList(fixedFields),
                                       toList(fixedFieldValues),
+                                      fixedParams, 
+                                      fixedParamEvalPts,
                                       context);
                 }
               else
@@ -556,6 +583,10 @@ void EquationSet::init(const Expr& eqns,
                                       toList(unkLinearizationPts),
                                       unkParams, 
                                       unkParamEvalPts,
+                                      fixedParams, 
+                                      fixedParamEvalPts,
+                                      toList(fixedFields), 
+                                      toList(fixedFieldValues),
                                       context);
                 }
               rqcToContext_[VectorOnly].put(rqc, context);
@@ -568,13 +599,15 @@ void EquationSet::init(const Expr& eqns,
               DerivSet nonzeros;
               nonzeros = SymbPreprocessor
                 ::setupSensitivities(term, toList(vars), 
-                                     toList(unks), 
-                                     toList(unkLinearizationPts),
-                                     unkParams, 
-                                     unkParamEvalPts,
-                                     toList(fixedFields),
-                                     toList(fixedFieldValues),
-                                     context);
+                                      toList(unks), 
+                                      toList(unkLinearizationPts),
+                                      unkParams, 
+                                      unkParamEvalPts,
+                                      fixedParams, 
+                                      fixedParamEvalPts,
+                                      toList(fixedFields), 
+                                      toList(fixedFieldValues),
+                                      context);
               rqcToContext_[Sensitivities].put(rqc, context);
               regionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
             }
@@ -628,6 +661,8 @@ void EquationSet::init(const Expr& eqns,
 
               nonzeros = SymbPreprocessor
                 ::setupFunctional(term, 
+                                  fixedParams, 
+                                  fixedParamEvalPts,
                                   fields,
                                   fieldValues,
                                   context);
@@ -643,6 +678,8 @@ void EquationSet::init(const Expr& eqns,
               nonzeros = SymbPreprocessor
                 ::setupGradient(term, 
                                 toList(vars), toList(varLinearizationPts),
+                                fixedParams, 
+                                fixedParamEvalPts,
                                 toList(fixedFields), toList(fixedFieldValues),
                                 context);
               rqcToContext_[FunctionalAndGradient].put(rqc, context);
@@ -680,6 +717,8 @@ void EquationSet::init(const Expr& eqns,
                 }
               Set<int>& t = varsOnRegions_.get(reg);
               t.merge(bcSum->funcsOnRegion(d, varFuncSet));
+              cout << "added vars " << bcSum->funcsOnRegion(d, varFuncSet)
+                   << " to region " << reg << endl;
               Set<int>& u = unksOnRegions_.get(reg);
               u.merge(bcSum->funcsOnRegion(d, unkFuncSet));
             }
@@ -718,8 +757,12 @@ void EquationSet::init(const Expr& eqns,
                                           toList(varLinearizationPts),
                                           toList(unks), 
                                           toList(unkLinearizationPts),
+                                          unkParams, 
+                                          unkParamEvalPts,
                                           toList(fixedFields), 
                                           toList(fixedFieldValues),
+                                          fixedParams, 
+                                          fixedParamEvalPts,
                                           context);
                     }
                   else
@@ -729,6 +772,10 @@ void EquationSet::init(const Expr& eqns,
                                           toList(unkLinearizationPts),
                                           unkParams, 
                                           unkParamEvalPts,
+                                          fixedParams, 
+                                          fixedParamEvalPts,
+                                          toList(fixedFields), 
+                                          toList(fixedFieldValues),
                                           context);
                     }
                   addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
@@ -749,8 +796,12 @@ void EquationSet::init(const Expr& eqns,
                                           toList(varLinearizationPts),
                                           toList(unks), 
                                           toList(unkLinearizationPts),
+                                          unkParams, 
+                                          unkParamEvalPts,
                                           toList(fixedFields), 
                                           toList(fixedFieldValues),
+                                          fixedParams, 
+                                          fixedParamEvalPts,
                                           context);
                     }
                   else
@@ -760,6 +811,10 @@ void EquationSet::init(const Expr& eqns,
                                           toList(unkLinearizationPts),
                                           unkParams, 
                                           unkParamEvalPts,
+                                          fixedParams, 
+                                          fixedParamEvalPts,
+                                          toList(fixedFields), 
+                                          toList(fixedFieldValues),
                                           context);
                     }
                   bcRqcToContext_[VectorOnly].put(rqc, context);
@@ -771,14 +826,15 @@ void EquationSet::init(const Expr& eqns,
                   EvalContext context(rqc, 2, contextID[4]);
                   DerivSet nonzeros;
                   nonzeros = SymbPreprocessor
-                    ::setupSensitivities(term, toList(vars), 
-                                         toList(unks), 
-                                         toList(unkLinearizationPts),
-                                         unkParams, 
-                                         unkParamEvalPts,
-                                         toList(fixedFields),
-                                         toList(fixedFieldValues),
-                                         context);
+                    ::setupSensitivities(term, toList(vars), toList(unks), 
+                                          toList(unkLinearizationPts),
+                                          unkParams, 
+                                          unkParamEvalPts,
+                                          fixedParams, 
+                                          fixedParamEvalPts,
+                                          toList(fixedFields), 
+                                          toList(fixedFieldValues),
+                                          context);
                   bcRqcToContext_[Sensitivities].put(rqc, context);
                   bcRegionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
                 }
@@ -830,6 +886,8 @@ void EquationSet::init(const Expr& eqns,
                     }
                   nonzeros = SymbPreprocessor
                     ::setupFunctional(term, 
+                                      fixedParams, 
+                                      fixedParamEvalPts,
                                       fields, fieldValues,
                                       context);
                   
@@ -845,6 +903,8 @@ void EquationSet::init(const Expr& eqns,
                     ::setupGradient(term, 
                                     toList(vars), 
                                     toList(varLinearizationPts),
+                                    fixedParams, 
+                                    fixedParamEvalPts,
                                     toList(fixedFields), 
                                     toList(fixedFieldValues),
                                     context);

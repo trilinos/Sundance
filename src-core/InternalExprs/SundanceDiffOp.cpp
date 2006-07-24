@@ -33,6 +33,7 @@
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceCoordDeriv.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceZeroExpr.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
@@ -49,34 +50,22 @@ DiffOp::DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg)
 {
   Tabs tabs;
   SUNDANCE_VERB_HIGH(tabs << "forming DiffOp " << toString());
-  typedef Set<int>::const_iterator setIter;
   myCoordDeriv_ = new CoordDeriv(mi_.firstOrderDirection());
-  
-  if (isEvaluatable(arg.get()))
-    {
-      for (int d=0; d<MultiIndex::maxDim(); d++) 
-        {
-          if (op[d] == 0) continue;
-          /* if the arg is constant wrt the diff op, 
-           * it remains constant (zero) */ 
-          if (evaluatableArg()->orderOfSpatialDependency(d) == 0 ) continue;
-          /* if the arg is nonpolynomial wrt the diff op's direction, 
-           * it remains
-           * nonpolynomial */
-          if (evaluatableArg()->orderOfSpatialDependency(d) < 0 ) 
-            {
-              setOrderOfDependency(d, -1);
-            }
-          else
-            {
-              /* otherwise adjust the order for differentiation */
-              setOrderOfDependency(d, max(evaluatableArg()->orderOfSpatialDependency(d) - op[d], 0));
-            }
-        }
-
-      setFuncIDSet(evaluatableArg()->funcIDSet());
-    }
 }
+
+void DiffOp::registerSpatialDerivs(const EvalContext& context, 
+                                   const Set<MultiIndex>& miSet) const
+{
+  EvaluatableExpr::registerSpatialDerivs(context, miSet);
+  Set<MultiIndex> s;
+  for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
+    {
+      const MultiIndex& m = *i;
+      s.put(m+mi_);
+    }
+  evaluatableArg()->registerSpatialDerivs(context, s);
+}
+
 
 ostream& DiffOp::toText(ostream& os, bool /* paren */) const 
 {
@@ -107,371 +96,34 @@ Evaluator* DiffOp::createEvaluator(const EvaluatableExpr* expr,
   return new DiffOpEvaluator(dynamic_cast<const DiffOp*>(expr), context);
 }
 
-Set<MultiIndex> DiffOp
-::argMultiIndices(const Set<MultiIndex>& multiIndices) const
+
+
+void DiffOp::requestMultiIndexAtEvalPoint(const MultiIndex& mi,
+                                          const MultipleDeriv& u,
+                                          const EvalContext& context) const 
 {
-  Set<MultiIndex> rtn;
-  for (Set<MultiIndex>::const_iterator iter=multiIndices.begin();
-       iter != multiIndices.end(); iter++)
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "DiffOp::requestMultiIndexAtEvalPoint() for=" << toString());
+  TEST_FOR_EXCEPT(u.size() != 1);
+  const Deriv& d = *(u.begin());
+  if (d.isFunctionalDeriv())
     {
-      rtn.put((*iter) + mi_);
-    }
-
-  return rtn;
-}
-
-Set<MultiSet<int> > DiffOp
-::argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
-                 int maxOrder) const
-{
-  Tabs tabs;
-  Set<MultiSet<int> > rtn;// = activeFuncIDs;
-  //  if (activeFuncIDs.contains(MultiSet<int>())) rtn.put(MultiSet<int>());
-
-
-  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg dependencies are " 
-                       << evaluatableArg()->funcDependencies().toString());
-
-  Set<int> allActiveFuncs;
-  for (Set<MultiSet<int> >::const_iterator 
-         i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
-    {
-      const MultiSet<int>& d = *i;
-      for (MultiSet<int>::const_iterator j=d.begin(); j != d.end(); j++)
-        {
-          allActiveFuncs.put(*j);
-        }
-    }
-
-  for (Set<MultiSet<int> >::const_iterator 
-         i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
-    {
-      const MultiSet<int>& d = *i;
-      SUNDANCE_VERB_MEDIUM(tabs << "DiffOp deriv from outside is " << d.toString());
-      if (d.size() >= maxFuncDiffOrder()) continue;
-      for (Set<int>::const_iterator 
-             j=evaluatableArg()->funcDependencies().begin(); 
-           j != evaluatableArg()->funcDependencies().end(); j++)
-        {
-          Tabs tab1;
-          MultiSet<int> newDeriv = d;
-          if (d.size() > 0 && !allActiveFuncs.contains(*j)) continue;
-          SUNDANCE_VERB_MEDIUM(tab1 << "DiffOp internal dependency is " << *j);
-          newDeriv.put(*j);
-          SUNDANCE_VERB_MEDIUM(tab1 << "DiffOp created new arg deriv " << newDeriv.toString());
-          rtn.put(newDeriv);
-        }
-    }
-  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp found arg active funcs " << rtn.toString());
-  
-  return evaluatableArg()->filterActiveFuncs(rtn);
-}
-
-
-void DiffOp::findNonzeros(const EvalContext& context,
-                          const Set<MultiIndex>& multiIndices,
-                          const Set<MultiSet<int> >& inputActiveFuncIDs,
-                          bool regardFuncsAsConstant) const
-{
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for diff op " << toString()
-                       << " subject to multi index set " 
-                       << multiIndices.toString());
-
-  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
-
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant))
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
-      return;
-    }
-
-  addActiveFuncs(context, activeFuncIDs);
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
-
-  ignoreFuncTerms_ = regardFuncsAsConstant;
-  if (ignoreFuncTerms_)
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "evaluating symbolic functions at zero");
-    }
-
-
-
-  /* Figure out the sparsity pattern for the argument.  */
-  Set<MultiIndex> argMI = argMultiIndices(multiIndices);
-  
-  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg multi index set is " << endl << argMI);
-
-  
-
-  Set<MultiSet<int> > argFuncs = argActiveFuncs(activeFuncIDs, -1);
-
-  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg active func set is " << endl << argFuncs);
-
-  evaluatableArg()->findNonzeros(context, argMI,
-                                 argFuncs,
-                                 regardFuncsAsConstant);
-
-  RefCountPtr<SparsitySubset> argSparsity
-    = evaluatableArg()->sparsitySubset(context, argMI, argFuncs, true);
-
-  SUNDANCE_VERB_MEDIUM(tabs << "DiffOp arg sparsity subset is " 
-                       << endl << *argSparsity);
-
-
-  for (int i=0; i<argSparsity->numDerivs(); i++)
-    {
-      Tabs tab1;
-
-      const MultipleDeriv& md = argSparsity->deriv(i);
-
-      if (md.order()==0) continue;
-      
-      SUNDANCE_VERB_MEDIUM(tab1 << "finding the effect of the argument's "
-                           "nonzero derivative " << md);
-      // cerr << "inverting " << md << endl;
-      
-
-
-      Map<MultipleDeriv, DerivState> isolatedTerms;
-      Map<MultipleDeriv, Deriv> funcTerms;
-      getResultDerivs(argSparsity->deriv(i), 
-                      argSparsity->state(i),
-                      isolatedTerms,
-                      funcTerms);
-
-      SUNDANCE_VERB_MEDIUM(tab1 << "monomials = " 
-                           << isolatedTerms);
-
-
-      for (Map<MultipleDeriv, DerivState>::const_iterator 
-             iter=isolatedTerms.begin(); iter != isolatedTerms.end(); iter++)
-        {
-          subset->addDeriv(iter->first, iter->second);
-        }
-
-      if (!ignoreFuncTerms())
-        {
-          SUNDANCE_VERB_MEDIUM(tab1 << "func terms = " << funcTerms);
-          for (Map<MultipleDeriv, Deriv>::const_iterator 
-                 iter=funcTerms.begin(); iter != funcTerms.end(); iter++)
-            {
-              subset->addDeriv(iter->first, VectorDeriv);
-            }
-        }
-    }
-
-
-  SUNDANCE_VERB_HIGH(tabs << "diff op " + toString()
-                     << ": my sparsity subset is " 
-                     << endl << *subset);
-
-  SUNDANCE_VERB_HIGH(tabs << "diff op " + toString() 
-                     << " my sparsity superset is " 
-                     << endl << *sparsitySuperset(context));
-
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  regardFuncsAsConstant);
-  //  cerr << "my sparsity: " << *subset << endl;
-}
-
-void DiffOp::getResultDerivs(const MultipleDeriv& argDeriv,
-                             const DerivState& argDerivState,
-                             Map<MultipleDeriv, DerivState>& isolatedTerms,
-                             Map<MultipleDeriv, Deriv>& funcTerms) const
-{
-
-  /* List the functional (not coord) single derivs in the 
-   * specified multiple derivative of the argument */
-  Array<Deriv> argSingleDerivs;
-  for (MultipleDeriv::const_iterator j=argDeriv.begin(); 
-       j != argDeriv.end(); j++)
-    {
-      const Deriv& d = *j;
-      if (d.isCoordDeriv()) continue;
-      argSingleDerivs.append(d);
-    }
-
-  TEST_FOR_EXCEPTION(argDeriv.order() > 3, RuntimeError,
-                     "DiffOp::getResultDerivs() cannot handle derivatives "
-                     "of order > 3");
-
-  
-  
-
-  if (argDeriv.order()==1)
-    {
-      Tabs tab1;
-      /* Map first-order derivatives of the argument to derivatives
-       * of the diff op */
-
-      if (argSingleDerivs.size()==0) 
-        {
-          /* If the argument derivative is spatial, it maps to the application
-           * of the diff op to the argument, i.e., the 
-           * zeroth functional derivative of the diff op expression. */
-          isolatedTerms.put(MultipleDeriv(), argDerivState);
-        }
-      else
-        {
-          /* The chain rule for spatial derivatives produces a term
-           * involving a first-order functional deriv times a higher
-           * spatial derivative of the argument of that functional deriv.
-           * Thus a first-order functional deriv of the argument
-           * maps back to a zeroth order functional deriv of the diff op,
-           * with a coefficient function.  */
-          const FuncElementBase* f = argSingleDerivs[0].funcDeriv()->func();
-          const SymbolicFuncElement* s = dynamic_cast<const SymbolicFuncElement*>(f);
-          //          if (t == 0 && !ignoreFuncTerms())
-          if (!s->evalPtIsZero())
-            {
-              Deriv d = argSingleDerivs[0].funcDeriv()->derivWrtMultiIndex(mi_);
-              funcTerms.put(MultipleDeriv(), d);
-            }
-          
-          /* The only other way a first functional deriv will appear is 
-           * through first functional differentiation of the spatial
-           * chain rule. We need to back out the variable of differentiation
-           * that produced this term. It is possible that no such variable
-           * exists */
-          
-          Deriv dBack;
-          if (canBackOutDeriv(argSingleDerivs[0], mi_, dBack))
-            {
-              MultipleDeriv mdBack;
-              mdBack.put(dBack);
-              isolatedTerms.put(mdBack, argDerivState);
-            }
-        }
-    }
-  else if (argDeriv.order()==2)
-    {
-      /* Map second-order derivatives of the argument to derivatives
-       * of the diff op */
-      
-      if (argSingleDerivs.size()==1)
-        {
-          /* A first-order functional derivative here means we have a mixed
-           * spatial-functional second derivative. That corresponds to 
-           * the "commuting" term in a first functional deriv of the diff op.
-           * The variable of differentiation here is the single deriv. */
-          MultipleDeriv md1;
-          md1.put(argSingleDerivs[0]);
-          isolatedTerms.put(md1, argDerivState);
-        }
-      else 
-        {
-          /* Doing functional differentiation on a chain-rule expansion
-           * of a spatial derivative produces terms
-           * involving second-order functional derivs times a higher
-           * spatial derivative of the function that is the argument of
-           * functional differentiation. */
-          MultipleDeriv md1;
-          md1.put(argSingleDerivs[0]);
-          MultipleDeriv md2;
-          md2.put(argSingleDerivs[1]);
-
-          const FuncElementBase* f0 = argSingleDerivs[0].funcDeriv()->func();
-          const SymbolicFuncElement* s0 = dynamic_cast<const SymbolicFuncElement*>(f0);
-
-          const FuncElementBase* f1 = argSingleDerivs[1].funcDeriv()->func();
-          const SymbolicFuncElement* s1 = dynamic_cast<const SymbolicFuncElement*>(f1);
-
-          //          if (t0==0 && !ignoreFuncTerms())
-          if (!s0->evalPtIsZero())
-            {
-              Deriv d1 = argSingleDerivs[0].funcDeriv()->derivWrtMultiIndex(mi_);
-              funcTerms.put(md2, d1);
-            }
-
-          //         if (t1==0 && !ignoreFuncTerms())
-          if (!s1->evalPtIsZero())
-            {
-              Deriv d2 = argSingleDerivs[1].funcDeriv()->derivWrtMultiIndex(mi_);
-
-              funcTerms.put(md1, d2);
-            }
-
-          
-          
-          Deriv dBack;
-          if (canBackOutDeriv(argSingleDerivs[0], mi_, dBack))
-            {
-              MultipleDeriv md1;
-              md1.put(argSingleDerivs[1]);
-              md1.put(dBack);
-              isolatedTerms.put(md1, argDerivState);
-            }
-          if (canBackOutDeriv(argSingleDerivs[1], mi_, dBack))
-            {
-              MultipleDeriv md1;
-              md1.put(argSingleDerivs[0]);
-              md1.put(dBack);
-              isolatedTerms.put(md1, argDerivState);
-            }
-        }
-    }
-  else if (argDeriv.order()==3)
-    {
-      if (argSingleDerivs.size()==2)
-        {
-          /* A mixed second-order functional, first-order spatial deriv here is
-           * the commuting term in the chain rule. */
-          MultipleDeriv md1;
-          md1.put(argSingleDerivs[0]);
-          md1.put(argSingleDerivs[1]);
-          isolatedTerms.put(md1, argDerivState);
-        }
-      else
-        {
-          /* a third-order functional 
-           * deriv appears in the chain rule expansion of a second deriv */
-          MultipleDeriv md12;
-          MultipleDeriv md13;
-          MultipleDeriv md23;
-
-          md12.put(argSingleDerivs[0]);
-          md12.put(argSingleDerivs[1]);
-
-          md13.put(argSingleDerivs[0]);
-          md13.put(argSingleDerivs[2]);
-
-          md23.put(argSingleDerivs[1]);
-          md23.put(argSingleDerivs[2]);
-
-          
-
-          Deriv d1 = argSingleDerivs[0].funcDeriv()->derivWrtMultiIndex(mi_);
-          Deriv d2 = argSingleDerivs[1].funcDeriv()->derivWrtMultiIndex(mi_);
-          Deriv d3 = argSingleDerivs[2].funcDeriv()->derivWrtMultiIndex(mi_);
-
-          funcTerms.put(md12, d3);
-          funcTerms.put(md13, d2);
-          funcTerms.put(md23, d1);
-        }
+      const FuncElementBase* f = d.funcDeriv()->func();
+      const MultiIndex& newMi = mi + d.funcDeriv()->multiIndex(); 
+      const SymbolicFuncElement* sfe 
+        = dynamic_cast<const SymbolicFuncElement*>(f);
+      TEST_FOR_EXCEPT(sfe == 0);
+      const EvaluatableExpr* evalPt = sfe->evalPt();
+      const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(evalPt);
+      if (z != 0) return;
+      const DiscreteFuncElement* df 
+        = dynamic_cast<const DiscreteFuncElement*>(evalPt);
+      df->addMultiIndex(newMi);
+      df->findW(1, context);
+      df->findV(1, context);
+      df->findC(1, context);
     }
 }
-
-
-bool DiffOp::canBackOutDeriv(const Deriv& d, const MultiIndex& x, 
-                             Deriv& rtnDeriv) const
-{
-  TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
-                     "DiffOp::canBackOutDeriv should not be called for "
-                     "spatial derivative");
-
-  MultiIndex alpha = d.funcDeriv()->multiIndex();
-  MultiIndex miNew;
-  for (int i=0; i<MultiIndex::maxDim(); i++)
-    {
-      miNew[i] = alpha[i] + x[i];
-      if (miNew[i] < 0) return false;
-    }
-  rtnDeriv = new FunctionalDeriv(d.funcDeriv()->func(), miNew);
-  return true;
-}
-
 
 
 RefCountPtr<Array<Set<MultipleDeriv> > > 
@@ -497,21 +149,43 @@ DiffOp::internalDetermineR(const EvalContext& context,
 
     const Set<MultipleDeriv>& W1 = evaluatableArg()->findW(1, context);
     SUNDANCE_VERB_HIGH(tab1 << "arg W1 = " << W1);
-    Set<MultipleDeriv> Zx = applyZx(W1, mi_);
-    SUNDANCE_VERB_HIGH(tab1 << "Z = " << Zx);
+    Set<MultipleDeriv> ZxXx = applyZx(W1, mi_).setUnion(Xx(mi_));
+    SUNDANCE_VERB_HIGH(tab1 << "Z union X = " << ZxXx);
     Array<Set<MultipleDeriv> > RArg(RInput.size()+1);
-    RArg[0] = Set<MultipleDeriv>();
+    RArg[0].put(MultipleDeriv());
+    RArg[1].put(MultipleDeriv(new CoordDeriv(mi_.firstOrderDirection())));
+
+
     
     for (unsigned int order=0; order<RInput.size(); order++)
       {
+        Tabs tab2;
         const Set<MultipleDeriv>& WArgPlus = evaluatableArg()->findW(order+1, context);
         const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
-        RArg[order+1].merge(setProduct(Zx, RInput[order]).intersection(WArgPlus));
+        SUNDANCE_VERB_HIGH(tab2 << "order = " << order);
+        SUNDANCE_VERB_HIGH(tab2 << "RInput = " << RInput[order]);
+        SUNDANCE_VERB_HIGH(tab2 << "WArg = " << WArg);
+        SUNDANCE_VERB_HIGH(tab2 << "WArgPlus = " << WArgPlus);
+        SUNDANCE_VERB_HIGH(tab2 << "ZxXx times RInput = " 
+                           << setProduct(ZxXx, RInput[order]));
+        SUNDANCE_VERB_HIGH(tab2 << "Tx(RInput, " << -mi_ << ") = " 
+                           << applyTx(RInput[order], -mi_) );
+        RArg[order+1].merge(setProduct(ZxXx, RInput[order]).intersection(WArgPlus));
         RArg[order].merge(applyTx(RInput[order], -mi_).intersection(WArg));
       }
+    SUNDANCE_VERB_HIGH(tab1 << "RArg = " << RArg);
     
-    SUNDANCE_VERB_HIGH(tab1 << "calling determineR() for arg");
+    SUNDANCE_VERB_HIGH(tab1 << "calling determineR() for arg "
+                       << evaluatableArg()->toString());
     evaluatableArg()->determineR(context, RArg);
+
+    /* inform the evaluation points of all functions appearing in the argument
+     * that we'll need their spatial derivatives in direction mi(). */
+    const Set<MultipleDeriv>& RArg1 = evaluatableArg()->findR(1, context);
+    for (Set<MultipleDeriv>::const_iterator i=RArg1.begin(); i!=RArg1.end(); i++)
+      {
+        requestMultiIndexAtEvalPoint(mi(), *i, context);
+      }
   }
   SUNDANCE_VERB_HIGH(tab0 << "R = " << (*rtn) );
   SUNDANCE_VERB_HIGH(tab0 << "done with DiffOp::internalDetermineR for "

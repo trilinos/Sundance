@@ -66,16 +66,6 @@ bool ExprWithChildren::isConstant() const
   return true;
 }
 
-void ExprWithChildren::accumulateFuncSet(Set<int>& funcIDs,
-                                         const Set<int>& activeFuncs) const
-{
-  for (unsigned int i=0; i<children_.size(); i++) 
-    {
-      children_[i]->accumulateFuncSet(funcIDs, activeFuncs);
-    }
-}
-
-
 const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
 {
   const EvaluatableExpr* e 
@@ -90,89 +80,23 @@ const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
 }
 
 
-void ExprWithChildren::findNonzeros(const EvalContext& context,
-                                    const Set<MultiIndex>& multiIndices,
-                                    const Set<MultiSet<int> >& inputActiveFuncIDs,
-                                    bool regardFuncsAsConstant) const
+void ExprWithChildren::accumulateFuncSet(Set<int>& funcIDs, 
+                                         const Set<int>& activeSet) const
 {
-  Tabs tabs;
-  ExprWithChildren* nonConstSelf = const_cast<ExprWithChildren*>(this);
-  EvaluatableExpr* nonConstBase = static_cast<EvaluatableExpr*>(nonConstSelf);
-  nonConstBase->verbosity() = TSFExtended::verbosity<EvaluatableExpr>();
-  SUNDANCE_VERB_HIGH(tabs << "finding nonzeros for ExprWithChildren " 
-                     << toString() << " subject to multiindex set "
-                     << multiIndices.toString());
-  if (this->verbosity() > VerbHigh)
+  for (unsigned int i=0; i<children_.size(); i++) 
     {
-      SUNDANCE_OUT(true, tabs << "num children = " << children_.size());
-      for (unsigned int i=0; i<children_.size(); i++)
-        {
-          Tabs tab1;
-          SUNDANCE_OUT(true, tab1 << "child #" << i << " = " 
-                       << evaluatableChild(i)->toString());
-        }
+      children_[i]->accumulateFuncSet(funcIDs, activeSet);
     }
+}
 
-
-  Set<MultiSet<int> > filteredActiveFuncs = filterActiveFuncs(inputActiveFuncIDs);
-
-  if (nonzerosAreKnown(context, multiIndices, filteredActiveFuncs,
-                       regardFuncsAsConstant))
+void ExprWithChildren::registerSpatialDerivs(const EvalContext& context, 
+                                             const Set<MultiIndex>& miSet) const
+{
+  for (unsigned int i=0; i<children_.size(); i++) 
     {
-      SUNDANCE_VERB_HIGH(tabs << "...reusing previously computed data");
-      return;
+      evaluatableChild(i)->registerSpatialDerivs(context, miSet);
     }
-
-  const UnaryExpr* ue = dynamic_cast<const UnaryExpr*>(this);
-  if (ue != 0) ue->addActiveFuncs(context, filteredActiveFuncs);
-
-  RefCountPtr<SparsitySubset> subset 
-    = sparsitySubset(context, multiIndices, filteredActiveFuncs, false);
-
-  /* The sparsity pattern is the union of the 
-   * operands' sparsity patterns. If any functional derivatives
-   * appear in multiple operands, the state of that derivative is
-   * the more general of the states */
-  for (unsigned int i=0; i<children_.size(); i++)
-    {
-      Tabs tab1;
-      SUNDANCE_VERB_HIGH(tab1 << "finding nonzeros for child " 
-                         << evaluatableChild(i)->toString());
-      evaluatableChild(i)->findNonzeros(context, multiIndices,
-                                        filteredActiveFuncs,
-                                        regardFuncsAsConstant);
-
-      Set<MultiSet<int> > filteredChildActiveFuncs 
-        = evaluatableChild(i)->filterActiveFuncs(filteredActiveFuncs);
-      
-      SUNDANCE_VERB_HIGH(tab1 << "reading sparsity subset for child " 
-                         << evaluatableChild(i)->toString());
-
-      RefCountPtr<SparsitySubset> childSparsitySubset 
-        = evaluatableChild(i)->sparsitySubset(context, multiIndices, filteredChildActiveFuncs, true);
-          
-
-      SUNDANCE_VERB_HIGH(tabs << "child #" << i 
-                         << " sparsity subset is " 
-                         << endl << *childSparsitySubset);
-      
-      for (int j=0; j<childSparsitySubset->numDerivs(); j++)
-        {
-          subset->addDeriv(childSparsitySubset->deriv(j),
-                           childSparsitySubset->state(j));
-        }
-    }
-
-  SUNDANCE_VERB_HIGH(tabs << "done with ExprWithChildren " 
-                     + toString() << ": my sparsity subset is " 
-                     << endl << *subset);
-
-  SUNDANCE_VERB_HIGH(tabs << "done with ExprWithChildren " + toString() 
-                     << " my sparsity superset is " 
-                     << endl << *sparsitySuperset(context));
-
-  addKnownNonzero(context, multiIndices, filteredActiveFuncs,
-                  regardFuncsAsConstant);
+  EvaluatableExpr::registerSpatialDerivs(context, miSet);
 }
 
 void ExprWithChildren::setupEval(const EvalContext& context) const
@@ -183,6 +107,8 @@ void ExprWithChildren::setupEval(const EvalContext& context) const
   SUNDANCE_VERB_HIGH(tabs << "my sparsity superset = " << *sparsitySuperset(context));
 
 
+  /* Create the evaluators for the children first so that I can refer to
+   * them when I create my own evaluator */
   if (sparsitySuperset(context)->numDerivs() > 0)
     {
       for (unsigned int i=0; i<children_.size(); i++)
@@ -214,7 +140,7 @@ void ExprWithChildren::showSparsity(ostream& os,
 {
   Tabs tab0;
   os << tab0 << "Node: " << toString() << endl;
-  sparsitySuperset(context)->displayAll(os);
+  sparsitySuperset(context)->print(os);
   for (unsigned int i=0; i<children_.size(); i++)
     {
       Tabs tab1;
@@ -341,6 +267,7 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
 
 
   /* now do arbitrary order derivatives with the multivariable chain rule*/
+  const Set<MultipleDeriv>& RM = findR(order, context);
   Array<Array<Array<int> > > comp = compositions(order);
   for (int i=1; i<=order; i++) 
     {
@@ -390,6 +317,7 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
         }
     }
 
+  rtn = rtn.intersection(RM);
   SUNDANCE_VERB_HIGH(tab0 << "V[" << order << "]=" << rtn);
   SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindV(" << order
                      << ") for " << toString());
@@ -503,6 +431,7 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
         }
     }
 
+  rtn = rtn.intersection(RM);
   SUNDANCE_VERB_HIGH(tab0 << "C[" << order << "]=" << rtn);
   SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindC(" << order
                      << ") for " << toString());
@@ -776,9 +705,9 @@ RefCountPtr<Array<Set<MultipleDeriv> > > ExprWithChildren
     {
       Tabs tab1;
       MultiSet<int> mi = makeMultiSet(i);
-      SUNDANCE_VERB_EXTREME(tab1 << "Q1_i = " << mi );
+      SUNDANCE_VERB_EXTREME(tab1 << "i=" << i << ", Q1_i = " << mi );
       TEST_FOR_EXCEPTION(mi.size() != 1, InternalError, "unexpected multiset size");
-      int i = *(mi.begin());
+      //      int i = *(mi.begin());
       Set<MultipleDeriv> R11;
       Set<MultipleDeriv> R12;
       Set<MultipleDeriv> R13;

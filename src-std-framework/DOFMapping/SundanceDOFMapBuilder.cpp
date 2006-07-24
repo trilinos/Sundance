@@ -195,7 +195,6 @@ bool DOFMapBuilder::testsAreOmnipresent() const
       numVars += eqn_->numVars(b);
     }
   
-
   CellSet maxCellsWithAllTests;
   for (unsigned int r=0; r<eqn_->numRegions(); r++)
     {
@@ -203,11 +202,17 @@ bool DOFMapBuilder::testsAreOmnipresent() const
       if (regionIsMaximal(r))
         {
           if ((int) eqn_->varsOnRegion(r).size() == numVars) return true;
-          else return false;
+          else 
+            {
+              return false;
+            }
         }
       else if (f.dimension(mesh_)==mesh_.spatialDim())
         {
-          if ((int) eqn_->varsOnRegion(r).size() != numVars) return false;
+          if ((int) eqn_->varsOnRegion(r).size() != numVars) 
+            {
+              return false;
+            }
           CellSet c = f.getCells(mesh_);
           maxCellsWithAllTests 
             = maxCellsWithAllTests.setUnion(c);

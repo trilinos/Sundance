@@ -59,7 +59,7 @@ DiscreteFuncElementEvaluator
   SUNDANCE_VERB_MEDIUM(tabs << "initializing discrete func evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity()));
 
   static Array<string> coordNames;
   if (coordNames.size() != 3)
@@ -116,7 +116,14 @@ DiscreteFuncElementEvaluator
 
 bool DiscreteFuncElementEvaluator::hasMultiIndex(const MultiIndex& mi) const
 {
-  return miToIndexMap_.containsKey(mi);
+  Tabs tabs;
+  bool rtn = miToIndexMap_.containsKey(mi);
+  SUNDANCE_VERB_MEDIUM(tabs << "checking for mi=" << mi << " for " 
+                       << expr()->toString()
+                       << endl << tabs 
+                       << " sparsity " << endl << *(this->sparsity()));
+  
+  return rtn;
 }
 
 int DiscreteFuncElementEvaluator::miIndex(const MultiIndex& mi) const
@@ -156,5 +163,6 @@ void DiscreteFuncElementEvaluator
       this->sparsity()->print(cerr, vectorResults,
                             constantResults);
     }
+  SUNDANCE_VERB_LOW(tabs << "DiscreteFuncEvaluator::eval() done"); 
 }
 

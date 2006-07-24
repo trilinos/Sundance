@@ -306,6 +306,7 @@ namespace SundanceCore
   /** \relates Expr */
   inline ostream& operator<<(ostream& os, const Expr& e)
     {
+      if (e.ptr().get()==0) {os << "Expr()"; return os;}
       return e.ptr()->toText(os, false);
     }
 

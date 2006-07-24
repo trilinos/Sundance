@@ -141,14 +141,18 @@ static Time& doitTimer()
 
 
 
-void doit(const Expr& e, 
-          const Expr& vars,
-          const Expr& varEvalPt,
-          const Expr& unks,
-          const Expr& unkEvalPt, 
-          const Expr& fixed,
-          const Expr& fixedEvalPt, 
-          const EvalContext& region)
+void doVariations(const Expr& e, 
+                  const Expr& vars,
+                  const Expr& varEvalPt,
+                  const Expr& unks,
+                  const Expr& unkEvalPt, 
+                  const Expr& unkParams,
+                  const Expr& unkParamEvalPts,
+                  const Expr& fixed,
+                  const Expr& fixedEvalPt, 
+                  const Expr& fixedParams,
+                  const Expr& fixedParamEvalPts, 
+                  const EvalContext& region)
 {
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
@@ -167,8 +171,12 @@ void doit(const Expr& e,
                                                  varEvalPt,
                                                  unks,
                                                  unkEvalPt,
+                                                 unkParams,
+                                                 unkParamEvalPts,
                                                  fixed,
                                                  fixedEvalPt,
+                                                 fixedParams,
+                                                 fixedParamEvalPts,
                                                  region);
 
   Tabs tab;
@@ -188,12 +196,14 @@ void doit(const Expr& e,
   // results->print(cerr, ev->sparsitySuperset(region).get());
 }
 
-void doit(const Expr& e, 
-          const Expr& vars,
-          const Expr& varEvalPt,
-          const Expr& fixed,
-          const Expr& fixedEvalPt, 
-          const EvalContext& region)
+void doGradient(const Expr& e, 
+                const Expr& vars,
+                const Expr& varEvalPt,
+                const Expr& fixedParams,
+                const Expr& fixedParamEvalPts,
+                const Expr& fixed,
+                const Expr& fixedEvalPts, 
+                const EvalContext& region)
 {
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
@@ -210,8 +220,10 @@ void doit(const Expr& e,
   DerivSet d = SymbPreprocessor::setupGradient(e[0], 
                                                vars,
                                                varEvalPt,
+                                               fixedParams,
+                                               fixedParamEvalPts,
                                                fixed,
-                                               fixedEvalPt,
+                                               fixedEvalPts,
                                                region);
 
   Tabs tab;
@@ -233,10 +245,12 @@ void doit(const Expr& e,
 
 
 
-void doit(const Expr& e, 
-          const Expr& fixed,
-          const Expr& fixedEvalPt, 
-          const EvalContext& region)
+void doFunctional(const Expr& e, 
+                  const Expr& fixedParams,
+                  const Expr& fixedParamEvalPts,
+                  const Expr& fixed,
+                  const Expr& fixedEvalPt, 
+                  const EvalContext& region)
 {
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
@@ -251,6 +265,8 @@ void doit(const Expr& e,
     = dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get());
 
   DerivSet d = SymbPreprocessor::setupFunctional(e[0], 
+                                                 fixedParams,
+                                                 fixedParamEvalPts,
                                                  fixed,
                                                  fixedEvalPt,
                                                  region);
@@ -274,14 +290,18 @@ void doit(const Expr& e,
 
 
 
-void testExpr(const Expr& e,  
-              const Expr& vars,
-              const Expr& varEvalPt,
-              const Expr& unks,
-              const Expr& unkEvalPt, 
-              const Expr& fixed,
-              const Expr& fixedEvalPt,  
-              const EvalContext& region)
+void testVariations(const Expr& e,  
+                    const Expr& vars,
+                    const Expr& varEvalPt,
+                    const Expr& unks,
+                    const Expr& unkEvalPt, 
+                    const Expr& unkParams,
+                    const Expr& unkParamEvalPts,
+                    const Expr& fixed,
+                    const Expr& fixedEvalPt, 
+                    const Expr& fixedParams,
+                    const Expr& fixedParamEvalPts,  
+                    const EvalContext& region)
 {
   cerr << endl 
        << "------------------------------------------------------------- " << endl;
@@ -291,7 +311,14 @@ void testExpr(const Expr& e,
 
   try
     {
-      doit(e, vars, varEvalPt, unks, unkEvalPt, fixed, fixedEvalPt, region);
+      doVariations(e, vars, varEvalPt, 
+                   unks, unkEvalPt, 
+                   unkParams,
+                   unkParamEvalPts,
+                   fixed, fixedEvalPt, 
+                   fixedParams,
+                   fixedParamEvalPts,
+                   region);
     }
   catch(exception& ex)
     {
@@ -308,12 +335,14 @@ void testExpr(const Expr& e,
     }
 }
 
-void testExpr(const Expr& e,  
-              const Expr& vars,
-              const Expr& varEvalPt,
-              const Expr& fixed,
-              const Expr& fixedEvalPt,  
-              const EvalContext& region)
+void testGradient(const Expr& e,  
+                  const Expr& vars,
+                  const Expr& varEvalPt,
+                  const Expr& fixedParams,
+                  const Expr& fixedParamEvalPts,
+                  const Expr& fixed,
+                  const Expr& fixedEvalPt,  
+                  const EvalContext& region)
 {
   cerr << endl 
        << "------------------------------------------------------------- " << endl;
@@ -323,7 +352,12 @@ void testExpr(const Expr& e,
 
   try
     {
-      doit(e, vars, varEvalPt, fixed, fixedEvalPt, region);
+      doGradient(e, vars, varEvalPt,  
+                 fixedParams,
+                 fixedParamEvalPts,
+                 fixed, 
+                 fixedEvalPt, 
+                 region);
     }
   catch(exception& ex)
     {
@@ -341,10 +375,12 @@ void testExpr(const Expr& e,
 }
 
 
-void testExpr(const Expr& e,  
-              const Expr& fixed,
-              const Expr& fixedEvalPt,  
-              const EvalContext& region)
+void testFunctional(const Expr& e, 
+                    const Expr& fixedParams,
+                    const Expr& fixedParamEvalPts, 
+                    const Expr& fixed,
+                    const Expr& fixedEvalPt,  
+                    const EvalContext& region)
 {
   cerr << endl 
        << "------------------------------------------------------------- " << endl;
@@ -354,7 +390,9 @@ void testExpr(const Expr& e,
 
   try
     {
-      doit(e, fixed, fixedEvalPt, region);
+      doFunctional(e,   
+                   fixedParams,
+                   fixedParamEvalPts,fixed, fixedEvalPt, region);
     }
   catch(exception& ex)
     {
@@ -401,6 +439,12 @@ int main(int argc, void** argv)
 			Expr T = new UnknownFunctionStub("T");
 			Expr lambda_T = new UnknownFunctionStub("lambda_T");
 			Expr alpha = new UnknownFunctionStub("alpha");
+
+			Expr unkParams;
+			Expr unkParamValues;
+
+			Expr fixedParams;
+			Expr fixedParamValues;
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -490,14 +534,18 @@ int main(int argc, void** argv)
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
-          testExpr(tests[i], 
-                   List(lambda_u),
-                   List(zero),
-                   List(u),
-                   List(u0),
-                   List(alpha, T, lambda_T),
-                   List(alpha0, T0, zero),
-                   context);
+          testVariations(tests[i], 
+                         List(lambda_u),
+                         List(zero),
+                         List(u),
+                         List(u0),
+                         unkParams,
+                         unkParamValues,
+                         List(alpha, T, lambda_T),
+                         List(alpha0, T0, zero),
+                         fixedParams,
+                         fixedParamValues,
+                         context);
         }
 
       cerr << endl << "============== T STATE EQUATIONS =================" << endl;
@@ -507,14 +555,18 @@ int main(int argc, void** argv)
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
-          testExpr(tests[i], 
-                   List(lambda_T),
-                   List(zero),
-                   List(T),
-                   List(T0),
-                   List(alpha, u, lambda_u),
-                   List(alpha0, u0, zero),
-                   context);
+          testVariations(tests[i], 
+                         List(lambda_T),
+                         List(zero),
+                         List(T),
+                         List(T0),
+                         unkParams,
+                         unkParamValues,
+                         List(alpha, u, lambda_u),
+                         List(alpha0, u0, zero),
+                         fixedParams,
+                         fixedParamValues,
+                         context);
         }
 
 
@@ -525,14 +577,18 @@ int main(int argc, void** argv)
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
-          testExpr(tests[i], 
-                   List(T),
-                   List(T0),
-                   List(lambda_T),
-                   List(lambda_T0),
-                   List(alpha, u, lambda_u),
-                   List(alpha0, u0, zero),
-                   context);
+          testVariations(tests[i], 
+                         List(T),
+                         List(T0),
+                         List(lambda_T),
+                         List(lambda_T0),
+                         unkParams,
+                         unkParamValues,
+                         List(alpha, u, lambda_u),
+                         List(alpha0, u0, zero),
+                         fixedParams,
+                         fixedParamValues,
+                         context);
         }
 
       cerr << endl << "=============== u ADJOINT EQUATIONS =================" << endl;
@@ -541,14 +597,18 @@ int main(int argc, void** argv)
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
-          testExpr(tests[i], 
-                   List(u),
-                   List(u0),
-                   List(lambda_u),
-                   List(lambda_u0),
-                   List(alpha, T, lambda_T),
-                   List(alpha0, T0, zero),
-                   context);
+          testVariations(tests[i], 
+                         List(u),
+                         List(u0),
+                         List(lambda_u),
+                         List(lambda_u0),
+                         unkParams,
+                         unkParamValues,
+                         List(alpha, T, lambda_T),
+                         List(alpha0, T0, zero),
+                         fixedParams,
+                         fixedParamValues,
+                         context);
         }
 
 
@@ -558,12 +618,14 @@ int main(int argc, void** argv)
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, 1, EvalContext::nextID());
-          testExpr(tests[i], 
-                   alpha, 
-                   alpha0,
-                   List(u, T, lambda_u, lambda_T),
-                   List(u0, T0, lambda_u0, lambda_T0),
-                   context);
+          testGradient(tests[i], 
+                       alpha, 
+                       alpha0,
+                       fixedParams,
+                       fixedParamValues,
+                       List(u, T, lambda_u, lambda_T),
+                       List(u0, T0, lambda_u0, lambda_T0),
+                       context);
         }
 
       cerr << endl << "=================== FUNCTIONAL ====================" << endl;
@@ -572,10 +634,12 @@ int main(int argc, void** argv)
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
           EvalContext context(rqc, 0, EvalContext::nextID());
-          testExpr(tests[i], 
-                   List(u, T, lambda_u, lambda_T, alpha),
-                   List(u0, T0, zero, zero, alpha0),
-                   context);
+          testFunctional(tests[i], 
+                         fixedParams,
+                         fixedParamValues,
+                         List(u, T, lambda_u, lambda_T, alpha),
+                         List(u0, T0, zero, zero, alpha0),
+                         context);
         }
       //#endif
 

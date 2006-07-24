@@ -53,17 +53,11 @@ EvaluatableExpr::EvaluatableExpr()
 	: ScalarExpr(), 
     evaluators_(),
     sparsity_(),
-    orderOfDependency_(MultiIndex::maxDim(), -1),
-    funcIDSet_(),
-    funcDependencies_(),
-    knownNonzeros_(),
     nodesHaveBeenCounted_(false),
     contextToDSSMap_(numDerivSubsetTypes(), maxFuncDiffOrder()+1),
     rIsReady_(false),
     allOrdersMap_(numDerivSubsetTypes())
-{
-  addFuncIDCombo(MultiSet<int>());
-}
+{}
 
 string EvaluatableExpr::derivType(const DerivSubsetSpecifier& dss) const
 {
@@ -80,47 +74,29 @@ string EvaluatableExpr::derivType(const DerivSubsetSpecifier& dss) const
     }
 }
 
-
-RefCountPtr<SparsitySubset> 
-EvaluatableExpr::sparsitySubset(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool failIfNotFound) const 
+void EvaluatableExpr::registerSpatialDerivs(const EvalContext& context, 
+                                            const Set<MultiIndex>& miSet) const
 {
-  Tabs tab;
-  RefCountPtr<SparsitySuperset> super = sparsitySuperset(context);
-
-  SUNDANCE_VERB_HIGH(tab << "EvaluatableExpr " << toString() << " getting subset for miSet=" 
-                     << multiIndices.toString() << " and active funcs="
-                     << activeFuncIDs << ". Superset is " << endl 
-                     << *super);
-  Set<MultiSet<int> > myActiveFuncs;
-  typedef Set<MultiSet<int> >::const_iterator iter;
-  for (iter i=activeFuncIDs.begin(); i!=activeFuncIDs.end(); i++)
+  if (activeSpatialDerivMap_.containsKey(context))
     {
-      Set<int> tmp = i->toSet();
-      if (tmp.intersection(funcDependencies()).size()==tmp.size())
-        {
-          myActiveFuncs.put(*i);
-        }
+      Set<MultiIndex> s = activeSpatialDerivMap_[context];
+      s.merge(miSet);
+      activeSpatialDerivMap_.put(context, s);
     }
-  if (activeFuncIDs.contains(MultiSet<int>())) myActiveFuncs.put(MultiSet<int>());
-
-  if (!super->hasSubset(multiIndices, myActiveFuncs))
+  else
     {
-      TEST_FOR_EXCEPTION(failIfNotFound, RuntimeError, 
-                         "sparsity subset not found for multiindex set "
-                         << multiIndices.toString() << " and active funcs "
-                         << myActiveFuncs);
-      super->addSubset(multiIndices, myActiveFuncs);
+      activeSpatialDerivMap_.put(context, miSet);
     }
-
-
-  return super->subset(multiIndices, myActiveFuncs);
 }
 
-
-
+const Set<MultiIndex>& EvaluatableExpr
+::activeSpatialDerivs(const EvalContext& context) const
+{
+  TEST_FOR_EXCEPTION(!activeSpatialDerivMap_.containsKey(context),
+                     InternalError,
+                     "Unknown context " << context);
+  return activeSpatialDerivMap_[context];
+}
 
 RefCountPtr<SparsitySuperset> 
 EvaluatableExpr::sparsitySuperset(const EvalContext& context) const 
@@ -133,7 +109,7 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
     }
   else
     {
-      rtn = rcp(new SparsitySuperset());
+      rtn = rcp(new SparsitySuperset(findC(context), findV(context)));
       sparsity_.put(context, rtn);
     }
   return rtn;
@@ -141,33 +117,12 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
 
 
 
- const RefCountPtr<Evaluator>&
+const RefCountPtr<Evaluator>&
 EvaluatableExpr::evaluator(const EvalContext& context) const 
 {
   TEST_FOR_EXCEPTION(!evaluators_.containsKey(context), RuntimeError, 
                      "Evaluator not found for context " << context);
   return evaluators_.get(context);
-}
-
-bool EvaluatableExpr
-::nonzerosAreKnown(const EvalContext& context,
-                   const Set<MultiIndex>& multiIndices,
-                   const Set<MultiSet<int> >& activeFuncIDs,
-                   bool regardFuncsAsConstant) const 
-{
-  NonzeroSpecifier spec(context, multiIndices, 
-                        activeFuncIDs, regardFuncsAsConstant);
-  return knownNonzeros_.contains(spec);
-}
-
-void EvaluatableExpr::addKnownNonzero(const EvalContext& context,
-                                      const Set<MultiIndex>& multiIndices,
-                                      const Set<MultiSet<int> >& activeFuncIDs,
-                                      bool regardFuncsAsConstant) const 
-{
-  NonzeroSpecifier spec(context, multiIndices, 
-                        activeFuncIDs, regardFuncsAsConstant);
-  knownNonzeros_.put(spec);
 }
 
 void EvaluatableExpr::evaluate(const EvalManager& mgr,
@@ -180,6 +135,8 @@ void EvaluatableExpr::evaluate(const EvalManager& mgr,
 
 void EvaluatableExpr::setupEval(const EvalContext& context) const
 {
+  Tabs tabs0;
+  SUNDANCE_VERB_HIGH(tabs0 << "setupEval() for " << this->toString());
   if (!evaluators_.containsKey(context))
     {
       Tabs tabs;
@@ -188,13 +145,20 @@ void EvaluatableExpr::setupEval(const EvalContext& context) const
       RefCountPtr<Evaluator> eval;
       if (sparsitySuperset(context)->numDerivs()>0)
         {
+          SUNDANCE_VERB_HIGH(tabs << "calling createEvalulator()");
           eval = rcp(createEvaluator(this, context));
         }
       else
         {
+          SUNDANCE_VERB_HIGH(tabs << "creating null evalulator");
           eval = rcp(new NullEvaluator());
         }
       evaluators_.put(context, eval);
+    }
+  else
+    {
+      Tabs tabs;
+      SUNDANCE_VERB_HIGH(tabs << "reusing existing evaluator...");
     }
 }
 
@@ -203,7 +167,7 @@ void EvaluatableExpr::showSparsity(ostream& os,
 {
   Tabs tab0;
   os << tab0 << "Node: " << toString() << endl;
-  sparsitySuperset(context)->displayAll(os);
+  sparsitySuperset(context)->print(os);
 }
 
 
@@ -217,36 +181,6 @@ int EvaluatableExpr::maxOrder(const Set<MultiIndex>& m) const
     }
   return rtn;
 }
-
-void EvaluatableExpr::addFuncIDCombo(const MultiSet<int>& funcIDSet)
-{
-  funcIDSet_.put(funcIDSet);
-  for (MultiSet<int>::const_iterator 
-         i=funcIDSet.begin(); i != funcIDSet.end(); i++)
-    {
-      funcDependencies_.put(*i);
-    }
-}
-
-
-void EvaluatableExpr::setFuncIDSet(const Set<MultiSet<int> >& funcIDSet)
-{
-  funcIDSet_ = funcIDSet;
-  for (Set<MultiSet<int> >::const_iterator 
-         i=funcIDSet.begin(); i != funcIDSet.end(); i++)
-    {
-      const MultiSet<int>& d = *i;
-      for (MultiSet<int>::const_iterator j=d.begin(); j != d.end(); j++)
-        {
-          funcDependencies_.put(*j);
-        }
-    }
-  
-  Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "after setFuncIDSet, dependencies are " 
-                     << funcDependencies());
-}
-
 
 const EvaluatableExpr* EvaluatableExpr::getEvalExpr(const Expr& expr)
 {
@@ -276,42 +210,6 @@ int EvaluatableExpr::countNodes() const
 }
 
 
-RefCountPtr<Set<int> > EvaluatableExpr::getFuncIDSet(const Expr& funcs)
-{
-  RefCountPtr<Set<int> > rtn = rcp(new Set<int>());
-
-  Expr f = funcs.flatten();
-  for (unsigned int i=0; i<f.size(); i++)
-    {
-      const SymbolicFuncElement* sfe 
-        = dynamic_cast<const SymbolicFuncElement*>(f[i].ptr().get());
-      TEST_FOR_EXCEPTION(sfe==0, RuntimeError,
-                         "non-symbolic function expr " << f[i]
-                         << " found in getFuncIDSet()");
-      rtn->put(sfe->funcID());
-    }
-  return rtn;
-}
-
-
-Set<MultiSet<int> > EvaluatableExpr
-::filterActiveFuncs(const Set<MultiSet<int> >& inputActiveFuncIDs) const
-{
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "input active funcs are " 
-                       << inputActiveFuncIDs);
-  Set<MultiSet<int> > tmp = funcIDSet().intersection(inputActiveFuncIDs);
-  Set<MultiSet<int> > rtn;
-
-  typedef Set<MultiSet<int> >::const_iterator iter;
-
-  for (iter i=tmp.begin(); i!=tmp.end(); i++)
-    {
-      rtn.put(*i);
-    }
-  SUNDANCE_VERB_MEDIUM(tabs << "filtered active funcs are " << rtn);
-  return rtn;
-}
 
 const Set<MultipleDeriv>& 
 EvaluatableExpr::findW(int order,
@@ -414,7 +312,7 @@ Set<MultiSet<int> > EvaluatableExpr::setDivision(const Set<MultiSet<int> >& s,
       if (i->contains(index))
         {
           MultiSet<int> e = *i;
-          e.erase(index);
+          e.erase(e.find(index));
           rtn.put(e);
         }
     }
@@ -557,7 +455,6 @@ void EvaluatableExpr::displayNonzeros(ostream& os, const EvalContext& context) c
   const Set<MultipleDeriv>& C = findC(context);
   const Set<MultipleDeriv>& V = findV(context);
 
-  
   for (Set<MultipleDeriv>::const_iterator i=W.begin(); i != W.end(); i++)
     {
       Tabs tab1;

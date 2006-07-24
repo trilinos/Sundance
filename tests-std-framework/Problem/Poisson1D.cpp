@@ -118,6 +118,10 @@ int main(int argc, void** argv)
                          RuntimeError,
                          "solve failed");
 
+      Expr zz = Integral(interior, soln[0], quad);
+      double totalU = evaluateIntegral(mesh, zz);
+      cerr << "total vorticity = " << totalU << endl;
+
       Expr exactSoln = x*(x-2.0);
 
       Expr errExpr = Integral(interior, 

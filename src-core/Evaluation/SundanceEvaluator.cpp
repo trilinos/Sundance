@@ -76,7 +76,7 @@ void Evaluator::eval(const EvalManager& mgr,
 
   /* Go ahead and copy the constant results every time, 
    * since this is cheap */
-  constantResults = constantResultCache_;
+  if (constantResultCache_.size() > 0) constantResults = constantResultCache_;
 
   /* If all clients have called, we can return the original data
    * which can then be changed by the client. */

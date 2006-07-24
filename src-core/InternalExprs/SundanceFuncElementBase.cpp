@@ -50,21 +50,10 @@ FuncElementBase::FuncElementBase(const string& rootName)
 {}
 
 
-
-bool FuncElementBase::isInActiveSet(const Set<MultiSet<int> >& activeFuncIDs) const
+void FuncElementBase::accumulateFuncSet(Set<int>& funcIDs, 
+                                        const Set<int>& activeSet) const
 {
-  for (Set<MultiSet<int> >::const_iterator 
-         i=activeFuncIDs.begin(); i != activeFuncIDs.end(); i++)
-    {
-      if (i->contains(funcID())) return true;
-    }
-  return false;
-}
-
-void FuncElementBase::accumulateFuncSet(Set<int>& funcIDs,
-                                        const Set<int>& activeFuncs) const
-{
-  if (activeFuncs.contains(funcID())) funcIDs.put(funcID());
+  if (activeSet.contains(funcID())) funcIDs.put(funcID());
 }
 
 ostream& FuncElementBase::toText(ostream& os, bool /* paren */) const 

@@ -71,11 +71,6 @@ namespace SundanceCore
            * be constant if all children are constant. */
           virtual bool isConstant() const ;
 
-          /** Append to the set of func IDs present in 
-           * this expression. */
-          virtual void accumulateFuncSet(Set<int>& funcIDs,
-                                         const Set<int>& activeFuncs) const ;
-
           /** Return the number of children */
           int numChildren() const {return children_.size();}
           
@@ -89,15 +84,6 @@ namespace SundanceCore
           /** Get a handle to the i-th child */
           Expr child(int i) const {return Expr::handle(children_[i]);}
 
-          /** 
-           * Generic ExprWithChildren objects find the sparsity to be
-           * the union of the children's sparsity patterns. DiffOp and
-           * ProductExpr will need to override this method.
-           */
-          virtual void findNonzeros(const EvalContext& context,
-                                    const Set<MultiIndex>& multiIndices,
-                                    const Set<MultiSet<int> >& activeFuncIDs,
-                                    bool regardFuncsAsConstant) const ;
           /** */
           virtual Set<MultipleDeriv> 
           internalFindW(int order, const EvalContext& context) const ;
@@ -194,6 +180,14 @@ namespace SundanceCore
           Set<MultipleDeriv> product(const Array<int>& J, const Array<int>& K,
                                      DerivSubsetSpecifier dss,
                                      const EvalContext& context) const ;
+
+          /** Append to the set of func IDs present in this expression. */
+          virtual void accumulateFuncSet(Set<int>& funcIDs, 
+                                         const Set<int>& activeSet) const ;
+
+          /** */
+          virtual void registerSpatialDerivs(const EvalContext& context, 
+                                             const Set<MultiIndex>& miSet) const ;
           
         private:
           Array<RefCountPtr<ScalarExpr> > children_;

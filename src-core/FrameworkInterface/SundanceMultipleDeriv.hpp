@@ -97,6 +97,12 @@ namespace SundanceCore
       /** Construct an empty multiple derivative */
       MultipleDeriv();
 
+      /** Construct a first-order multiple deriv */
+      MultipleDeriv(const Deriv& d);
+
+      /** Construct a second-order multiple deriv */
+      MultipleDeriv(const Deriv& d1, const Deriv& d2);
+
       /** Return the order of this derivative. Since a
        * multiple derivative is a multiset of first-order
        * derivatives, the order of the multiple derivative is the
@@ -133,8 +139,7 @@ namespace SundanceCore
 
       /** 
        * Return a copy of this derivative, but with all single derivs
-       * in the the specified multiple
-       * derivative removed. For example, if <t>this</t> is
+       * in the the argument removed. For example, if <t>this</t> is
        * \f$ \{u,v,w\} \f$, calling <t>factorOutDeriv(u,v)</t> will
        * return \f$\{w\}\f$.
        */

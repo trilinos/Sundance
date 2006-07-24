@@ -41,8 +41,10 @@ int main(int argc, void** argv)
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
+
+      EquationSet::classVerbosity() = VerbExtreme;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -50,7 +52,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 1*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -78,7 +80,9 @@ int main(int argc, void** argv)
       Expr bc;
 
       /* We can now set up the nonlinear problem! */
-      NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+      GrouperBase::classVerbosity() = VerbExtreme;
+      NonlinearOperator<double> F 
+        = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
 
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
       ParameterList noxParams = reader.getParameters();
@@ -106,5 +110,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

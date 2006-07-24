@@ -34,7 +34,14 @@
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceSparsitySubset.hpp"
+#include "SundanceDefs.hpp"
+#include "SundanceDerivSet.hpp"
+#include "SundanceDeriv.hpp"
+#include "SundanceMultipleDeriv.hpp"
+#include "SundanceMap.hpp"
+#include "SundanceEvalVector.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+#include "Teuchos_Array.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -47,56 +54,30 @@ namespace SundanceCore
 
   namespace Internal
     {
-      
+      /**
+       * DerivState can be used to classify the known state of
+       * each functional derivative at any node in the expression
+       * tree.  ZeroDeriv means the derivative is structurally
+       * zero at that node -- note that derivatives that are
+       * nonzero at a root node can be structurally zero at some
+       * child node. ConstantDeriv means that the derivative is
+       * known to be a constant (in space) at that
+       * node. VectorDeriv means that the derivative is non-zero,
+       * non-constant, i.e., a vector of values.
+       */
+      enum DerivState {ZeroDeriv, ConstantDeriv, VectorDeriv};
 
       /**
-       * A SparsitySuperset contains a specification of which functional
-       * and spatial derivatives are nonzero at a given node in an expression
-       * graph in a particular evaluation context. 
        *
-       * A superset is further partitioned into subsets containing just 
-       * those derivatives required for evaluation of a particular
-       * set of spatial derivatives of this expression. 
        */
       class SparsitySuperset 
         : public TSFExtended::ObjectWithVerbosity<SparsitySuperset>
         {
         public:
           
-          typedef OrderedPair<Set<MultiIndex>, Set<MultiSet<int> > > keyPair;
-
-          friend class SparsitySubset;
-
-          /** Create an empty superset */
-          SparsitySuperset();
-
-          /** \name Subset manipulation */
-          //@{
-          /** Add a new subset of derivatives, defined as those derivatives
-           * required for evaluation of the given set of differential
-           * operators applied to this expression */
-          void addSubset(const Set<MultiIndex>& multiIndices,
-                         const Set<MultiSet<int> >& funcIDs);
-
-          /** Get the subset of derivatives required to evaluate the
-           * given set of differential operators */
-          const RefCountPtr<SparsitySubset>& subset(const Set<MultiIndex>& multiIndices,
-                                                    const Set<MultiSet<int> >& funcIDs) const ;
-
-          /** Get the subset of derivatives required to evaluate the
-           * given set of differential operators*/
-          RefCountPtr<SparsitySubset> subset(const Set<MultiIndex>& multiIndices,
-                                             const Set<MultiSet<int> >& funcIDs) ;
-
-          /** Get the subset of derivatives required to evaluate the
-           * given set of differential operators*/
-          RefCountPtr<SparsitySubset> findSubset(const Set<MultiIndex>& multiIndices,
-                                                 const Set<MultiSet<int> >& funcIDs) const ;
-
-          /** Tell whether the specified subset has been defined */
-          bool hasSubset(const Set<MultiIndex>& multiIndices,
-                         const Set<MultiSet<int> >& funcIDs) const ;
-          //@}
+          /** Create a sparsity set */
+          SparsitySuperset(const Set<MultipleDeriv>& C,
+                           const Set<MultipleDeriv>& V);
 
           /** \name Access to information about individual derivatives */
           //@{
@@ -146,9 +127,6 @@ namespace SundanceCore
           {return multiIndex_[i];}
           //@}
           
-          const Set<MultiIndex>& allMultiIndices() const 
-          {return allMultiIndices_;}
-
           /** */
           void print(ostream& os) const ;
           /** */
@@ -161,9 +139,6 @@ namespace SundanceCore
 
           /** */
           DerivSet derivSet() const ;
-
-          /** */
-          void displayAll(ostream& os) const ;
 
         private:
 
@@ -178,38 +153,27 @@ namespace SundanceCore
                         const DerivState& state);
 
           /** */
-          void assembleSubsetUnions() const ;
-
-          /** */
-          mutable int maxOrder_;
+          int maxOrder_;
 
           /** Map from deriv to position of the derivative's
            * value in the results array */
-          mutable Map<MultipleDeriv, int> derivToIndexMap_;
+          SundanceUtils::Map<MultipleDeriv, int> derivToIndexMap_;
 
           /** The list of functional derivatives whose values are
            * stored in this results set */
-          mutable Array<MultipleDeriv> derivs_;
+          Array<MultipleDeriv> derivs_;
 
           /** The state of each derivative at this node in the expression */
-          mutable Array<DerivState> states_;
+          Array<DerivState> states_;
 
           /** Multiindices */
-          mutable Array<MultiIndex> multiIndex_;
-
-          /** Table of subsets */
-          mutable Map<keyPair, RefCountPtr<SparsitySubset> > subsets_;
+          Array<MultiIndex> multiIndex_;
 
           /** */
-          mutable Set<MultiIndex> allMultiIndices_;
+          int numConstantDerivs_;
 
           /** */
-          mutable Set<MultiSet<int> > allFuncIDs_;
-
-          /** */
-          mutable int numConstantDerivs_;
-
-          mutable int numVectorDerivs_;
+          int numVectorDerivs_;
 
           
 

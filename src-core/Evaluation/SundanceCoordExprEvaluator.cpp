@@ -126,7 +126,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
       vectorResults.resize(1);
       vectorResults[0] = mgr.popVector();
       mgr.evalCoordExpr(expr(), vectorResults[0]);
-      if (EvalVector::shadowOps()) vectorResults[0]->setString(stringRep_);
+      vectorResults[0]->setString(stringRep_);
     }
   
   if (doDeriv_)
@@ -137,7 +137,8 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "results " << endl;
+      Tabs tab1;
+      cerr << tab1 << "results " << endl;
       this->sparsity()->print(cerr, vectorResults,
                             constantResults);
     }

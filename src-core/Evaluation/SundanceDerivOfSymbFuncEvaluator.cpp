@@ -65,9 +65,6 @@ DerivOfSymbFuncEvaluator
 
   SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "argument sparsity subset " << endl 
-                       << *(argSparsitySubset()));
-
   const MultiIndex& mi = expr->mi();
   const SymbolicFuncElement* sf 
     = dynamic_cast<const SymbolicFuncElement*>(expr->evaluatableArg());
@@ -109,6 +106,11 @@ DerivOfSymbFuncEvaluator
       evalPtIsZero_ = true;
       return;
     }
+  else
+    {
+      SUNDANCE_VERB_MEDIUM(tabs << "setting up evaluation for discrete eval pt");
+      u->setupEval(context);
+    }
   
   int vecResultIndex = 0;
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
@@ -129,24 +131,29 @@ DerivOfSymbFuncEvaluator
             = dynamic_cast<const DiscreteFuncElement*>(evalPt);
           
           TEST_FOR_EXCEPTION(df==0, InternalError,
-                             "DiffOpEvaluator ctor: evaluation point of "
+                             "DerivOfSymbFuncEvaluator ctor: evaluation point of "
                              "unknown function " << u->toString() 
                              << " is not a discrete function");
   
           const SymbolicFuncElementEvaluator* uEval 
             = dynamic_cast<const SymbolicFuncElementEvaluator*>(u->evaluator(context).get());
+          TEST_FOR_EXCEPTION(uEval==0, InternalError,
+                             "DerivOfSymbFuncEvaluator ctor: null evaluator for "
+                             "evaluation point");
           
           const DiscreteFuncElementEvaluator* dfEval = uEval->dfEval();
+
+          TEST_FOR_EXCEPTION(dfEval==0, InternalError,
+                             "DerivOfSymbFuncEvaluator ctor: evaluator for "
+                             "evaluation point is not a "
+                             "DiscreteFuncElementEvaluator");
+
           funcEvaluator_.append(dfEval);
           funcSparsitySuperset_ = dfEval->sparsity();
 
-          TEST_FOR_EXCEPTION(dfEval==0, InternalError,
-                             "DiffOpEvaluator ctor: evaluator for "
-                             "evaluation point is not a "
-                             "DiscreteFuncElementEvaluator");
   
           TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), InternalError,
-                             "DiffOpEvaluator ctor: evaluator for "
+                             "DerivOfSymbFuncEvaluator ctor: evaluator for "
                              "discrete function " << df->toString()
                              << " does not know about multiindex "
                              << mi.toString());

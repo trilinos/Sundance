@@ -142,6 +142,16 @@ namespace SundanceUtils
                    const ADReal& a);
 
 
+  inline ADReal pow(const ADReal& x, const double& y)
+  {
+    Teuchos::RefCountPtr<UnaryFunctor> func = Teuchos::rcp(new PowerFunctor(y));
+    double f;
+    double df;
+    double xVal = x.value();
+    func->eval1(&xVal, 1, &f, &df);
+    return ADReal(f, df*x.gradient());
+  }
+
 #define SUNDANCE_AD_FUNCTOR(opName, functorName) \
 inline ADReal opName(const ADReal& x)\
 {\
@@ -163,6 +173,8 @@ return ADReal(f, df*x.gradient());}
 
   SUNDANCE_AD_FUNCTOR(cos, StdCos)
 
+
+    
 }
 
 

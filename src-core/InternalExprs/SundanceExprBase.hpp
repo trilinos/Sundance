@@ -72,7 +72,7 @@ namespace SundanceCore
           /** Append to the set of func IDs present in this expression.
            * Base class does nothing */
           virtual void accumulateFuncSet(Set<int>& funcIDs, 
-                                        const Set<int>& activeSet) const {;}
+                                         const Set<int>& activeSet) const {;}
 
           /** Indicate whether this expression contains any test 
            * functions. Default is to return false. This will be

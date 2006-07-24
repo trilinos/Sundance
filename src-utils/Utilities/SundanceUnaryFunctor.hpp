@@ -81,6 +81,14 @@ namespace SundanceUtils
                        double* f, 
                        double* df_dx,
                        double* d2f_dxx) const ;
+    
+    /** */
+    virtual void eval3(const double* const x, 
+                       int nx, 
+                       double* f, 
+                       double* df_dx,
+                       double* d2f_dxx,
+                       double* d3f_dxxx) const ;
 
     
 
@@ -95,6 +103,13 @@ namespace SundanceUtils
                        double* f, 
                        double* df_dx,
                        double* d2f_dxx) const ;
+    /** */
+    void evalFDDerivs3(const double* const x, 
+                       int nx, 
+                       double* f, 
+                       double* df_dx,
+                       double* d2f_dxx,
+                       double* d3f_dxxx) const ;
 
     /** */
     bool testDerivs(const double& x, const double& tol) const ;
@@ -108,7 +123,7 @@ namespace SundanceUtils
     /** Specify whether we should test for NAN or INFINITE results. */
     static bool& checkResults() {static bool rtn = false; return rtn;}
 
-    static double& fdStep() {static double rtn = 1.0e-6; return rtn;}
+    static double& fdStep() {static double rtn = 1.0e-3; return rtn;}
 
     const RefCountPtr<FunctorDomain>& domain() const 
     {return domain_;}
@@ -122,103 +137,242 @@ namespace SundanceUtils
 }
 
 /** */
-#define SUNDANCE_UNARY_FUNCTOR(opName, functorName, description, domain,\
-                     funcDefinition, firstDerivDefinition, \
-                     secondDerivDefinition) \
-  class functorName : public SundanceUtils::UnaryFunctor \
-  {\
-  public:\
-    /** ctor for description functor */\
+#define SUNDANCE_UNARY_FUNCTOR(opName, functorName, description, domain, \
+                               funcDefinition, firstDerivDefinition,    \
+                               secondDerivDefinition)                   \
+  class functorName : public SundanceUtils::UnaryFunctor                \
+  {                                                                     \
+  public:                                                               \
+    /** ctor for description functor */                                 \
     functorName() : SundanceUtils::UnaryFunctor(#opName, rcp(new domain)) {;} \
-    /** virtual dtor */\
-  virtual ~functorName(){;}\
-    /** Evaluate function at an array of values */ \
-    void eval0(const double* const x, int nx, double* f) const ;\
-    /** Evaluate function and first derivative at an array of values */\
-    void eval1(const double* const x, \
-              int nx, \
-              double* f, \
-              double* df) const ;\
-    /** Evaluate function and first derivative at an array of values */\
-    void eval2(const double* const x, \
-              int nx, \
-              double* f, \
-              double* df, \
-              double* d2f_dxx) const ;\
-  };\
-inline void functorName::eval0(const double* const x, int nx, double* f) const \
-{\
-   if (checkResults())\
-     {\
-        for (int i=0; i<nx; i++) \
-          {\
-             f[i] = funcDefinition;\
-          TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i]), RuntimeError, "Non-normal floating point result detected in evaluation of unary functor " << name() << " at argument " << x[i]);\
-          }\
-     }\
-   else\
-     {\
-        for (int i=0; i<nx; i++) f[i] = funcDefinition;\
-     }\
-}\
-inline void functorName::eval1(const double* const x, \
-                              int nx, \
-                              double* f, \
-                              double* df) const \
-{ \
-    if (checkResults())\
-      {\
-         for (int i=0; i<nx; i++) \
-           {\
-             f[i] = funcDefinition;\
-             df[i] = firstDerivDefinition;\
-             TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i]),\
-                              RuntimeError,\
-                              "Non-normal floating point result detected in "\
-                              "evaluation of unary functor " \
-                                << name() << " at argument " << x[i]);\
-           }\
-      }\
-    else\
-      {\
-         for (int i=0; i<nx; i++) \
-           { \
-             f[i] = funcDefinition;\
-             df[i] = firstDerivDefinition;\
-           }\
-      }\
-}\
-inline void functorName::eval2(const double* const x, \
-                              int nx, \
-                              double* f, \
-                              double* df,\
-                              double* d2f) const \
-{ \
-    if (checkResults())\
-      {\
-         for (int i=0; i<nx; i++) \
-           {\
-              f[i] = funcDefinition;\
-              df[i] = firstDerivDefinition;\
-              d2f[i] = secondDerivDefinition;\
-              TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i]),\
-                              RuntimeError,\
-                              "Non-normal floating point result detected in "\
-                              "evaluation of unary functor " \
-                                 << name() << " at argument " << x[i] );\
-           }\
-      }\
-    else\
-      {\
-         for (int i=0; i<nx; i++) \
-           { \
-               f[i] = funcDefinition;\
-               df[i] = firstDerivDefinition;\
-               d2f[i] = secondDerivDefinition;\
-           }\
-      }\
+      /** virtual dtor */                                               \
+      virtual ~functorName(){;}                                         \
+      /** Evaluate function at an array of values */                    \
+      void eval0(const double* const x, int nx, double* f) const ;      \
+      /** Evaluate function and first derivative at an array of values */ \
+      void eval1(const double* const x,                                 \
+                 int nx,                                                \
+                 double* f,                                             \
+                 double* df) const ;                                    \
+      /** Evaluate function and first two derivatives at an array of values */ \
+      void eval2(const double* const x,                                 \
+                 int nx,                                                \
+                 double* f,                                             \
+                 double* df,                                            \
+                 double* d2f_dxx) const ;                               \
+  };                                                                    \
+  inline void functorName::eval0(const double* const x, int nx, double* f) const \
+  {                                                                     \
+    if (checkResults())                                                 \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+          {                                                             \
+            f[i] = funcDefinition;                                      \
+            TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i]), RuntimeError, "Non-normal floating point result detected in evaluation of unary functor " << name() << " at argument " << x[i]); \
+          }                                                             \
+     }                                                                  \
+   else                                                                 \
+     {                                                                  \
+       for (int i=0; i<nx; i++) f[i] = funcDefinition;                  \
+     }                                                                  \
+}                                                                       \
+  inline void functorName::eval1(const double* const x,                 \
+                               int nx,                                  \
+                               double* f,                               \
+                               double* df) const                        \
+{                                                                       \
+  if (checkResults())                                                   \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+             df[i] = firstDerivDefinition;                              \
+             TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i]), \
+                                RuntimeError,                           \
+                                "Non-normal floating point result detected in " \
+                                "evaluation of unary functor "          \
+                                << name() << " at argument " << x[i]);  \
+           }                                                            \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+             df[i] = firstDerivDefinition;                              \
+           }                                                            \
+      }                                                                 \
+}                                                                       \
+  inline void functorName::eval2(const double* const x,                 \
+                               int nx,                                  \
+                               double* f,                               \
+                               double* df,                              \
+                               double* d2f) const                       \
+{                                                                       \
+  if (checkResults())                                                   \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+              df[i] = firstDerivDefinition;                             \
+              d2f[i] = secondDerivDefinition;                           \
+              TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i]), \
+                                 RuntimeError,                          \
+                                 "Non-normal floating point result detected in " \
+                                 "evaluation of unary functor "         \
+                                 << name() << " at argument " << x[i] ); \
+           }                                                            \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+               df[i] = firstDerivDefinition;                            \
+               d2f[i] = secondDerivDefinition;                          \
+           }                                                            \
+      }                                                                 \
 }
 
+
+
+/** */
+#define SUNDANCE_UNARY_FUNCTOR3(opName, functorName, description, domain, \
+                               funcDefinition, firstDerivDefinition,    \
+                                secondDerivDefinition, thirdDerivDefinition) \
+  class functorName : public SundanceUtils::UnaryFunctor                \
+  {                                                                     \
+  public:                                                               \
+    /** ctor for description functor */                                 \
+    functorName() : SundanceUtils::UnaryFunctor(#opName, rcp(new domain)) {;} \
+      /** virtual dtor */                                               \
+      virtual ~functorName(){;}                                         \
+      /** Evaluate function at an array of values */                    \
+      void eval0(const double* const x, int nx, double* f) const ;      \
+      /** Evaluate function and first derivative at an array of values */ \
+      void eval1(const double* const x,                                 \
+                 int nx,                                                \
+                 double* f,                                             \
+                 double* df) const ;                                    \
+      /** Evaluate function and first two derivatives at an array of values */ \
+      void eval2(const double* const x,                                 \
+                 int nx,                                                \
+                 double* f,                                             \
+                 double* df,                                            \
+                 double* d2f_dxx) const ;                               \
+      /** Evaluate function and first thress derivatives at an array of values */ \
+      void eval3(const double* const x,                                 \
+                 int nx,                                                \
+                 double* f,                                             \
+                 double* df,                                            \
+                 double* d2f_dxx,                                       \
+                 double* d3f_dxxx) const ;                                        \
+  };                                                                    \
+  inline void functorName::eval0(const double* const x, int nx, double* f) const \
+  {                                                                     \
+    if (checkResults())                                                 \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+          {                                                             \
+            f[i] = funcDefinition;                                      \
+            TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i]), RuntimeError, "Non-normal floating point result detected in evaluation of unary functor " << name() << " at argument " << x[i]); \
+          }                                                             \
+     }                                                                  \
+   else                                                                 \
+     {                                                                  \
+       for (int i=0; i<nx; i++) f[i] = funcDefinition;                  \
+     }                                                                  \
+}                                                                       \
+  inline void functorName::eval1(const double* const x,                 \
+                               int nx,                                  \
+                               double* f,                               \
+                               double* df) const                        \
+{                                                                       \
+  if (checkResults())                                                   \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+             df[i] = firstDerivDefinition;                              \
+             TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i]), \
+                                RuntimeError,                           \
+                                "Non-normal floating point result detected in " \
+                                "evaluation of unary functor "          \
+                                << name() << " at argument " << x[i]);  \
+           }                                                            \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+             df[i] = firstDerivDefinition;                              \
+           }                                                            \
+      }                                                                 \
+}                                                                       \
+  inline void functorName::eval2(const double* const x,                 \
+                               int nx,                                  \
+                               double* f,                               \
+                               double* df,                              \
+                               double* d2f) const                       \
+{                                                                       \
+  if (checkResults())                                                   \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+              df[i] = firstDerivDefinition;                             \
+              d2f[i] = secondDerivDefinition;                           \
+              TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i]), \
+                                 RuntimeError,                          \
+                                 "Non-normal floating point result detected in " \
+                                 "evaluation of unary functor "         \
+                                 << name() << " at argument " << x[i] ); \
+           }                                                            \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+               df[i] = firstDerivDefinition;                            \
+               d2f[i] = secondDerivDefinition;                          \
+           }                                                            \
+      }                                                                 \
+}                                                                     \
+  inline void functorName::eval3(const double* const x,                 \
+                                 int nx,                                \
+                                 double* f,                             \
+                                 double* df,                            \
+                                 double* d2f,                           \
+                                 double* d3f) const                     \
+{                                                                       \
+  if (checkResults())                                                   \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+              df[i] = firstDerivDefinition;                             \
+              d2f[i] = secondDerivDefinition;                           \
+              d3f[i] = thirdDerivDefinition;                           \
+              TEST_FOR_EXCEPTION(Teuchos::ScalarTraits<double>::isnaninf(f[i])||Teuchos::ScalarTraits<double>::isnaninf(df[i])||Teuchos::ScalarTraits<double>::isnaninf(d2f[i])||Teuchos::ScalarTraits<double>::isnaninf(d3f[i]), \
+                                 RuntimeError,                          \
+                                 "Non-normal floating point result detected in " \
+                                 "evaluation of unary functor "         \
+                                 << name() << " at argument " << x[i] ); \
+           }                                                            \
+      }                                                                 \
+    else                                                                \
+      {                                                                 \
+        for (int i=0; i<nx; i++)                                        \
+           {                                                            \
+             f[i] = funcDefinition;                                     \
+               df[i] = firstDerivDefinition;                            \
+               d2f[i] = secondDerivDefinition;                          \
+               d3f[i] = thirdDerivDefinition;                          \
+           }                                                            \
+      }                                                                 \
+}
 
                   
 #endif  /* DOXYGEN_DEVELOPER_ONLY */  

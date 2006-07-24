@@ -81,8 +81,6 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flatten();
   Expr v = test.flatten();
-  Expr alpha;
-  Expr alpha0;
   Array<Expr> zero(u.size());
   for (unsigned int i=0; i<u.size(); i++) 
     {
@@ -91,10 +89,19 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     }
 
   Expr u0 = new ListExpr(zero);
+
+  Expr unkParams;
+  Expr fixedParams;
+  Array<Expr> fixedFields;
+  Expr unkParamValues;
+  Expr fixedParamValues;
+  Array<Expr> fixedFieldValues;
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
-                          alpha, alpha0));
+                          unkParams, unkParamValues,
+                          fixedParams, fixedParamValues,
+                          fixedFields, fixedFieldValues));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
 }
@@ -126,10 +133,15 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     }
 
   Expr u0 = new ListExpr(zero);
+
+  Array<Expr> fixedFields;
+  Expr fixedParams;
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
-                          alpha, alpha0));
+                          alpha, alpha0,
+                          fixedParams, fixedParams, 
+                          fixedFields, fixedFields));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
 }
@@ -150,8 +162,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
   Array<Expr> u0(unk.size());
-  Expr alpha;
-  Expr alpha0;
+
   Array<VectorType<double> > testVecType(test.size());
   Array<VectorType<double> > unkVecType(unk.size());
 
@@ -173,10 +184,19 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         }
       u0[i] = new ListExpr(zero);
     }
+
+  Expr unkParams;
+  Expr fixedParams;
+  Array<Expr> fixedFields;
+  Expr unkParamValues;
+  Expr fixedParamValues;
+  Array<Expr> fixedFieldValues;
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0,
-                          alpha, alpha0));
+                          unkParams, unkParamValues,
+                          fixedParams, fixedParamValues,
+                          fixedFields, fixedFieldValues));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType));
 }
@@ -198,8 +218,6 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
   Array<Expr> u0(unk.size());
-  Expr alpha = unkParams.flatten();
-  Expr alpha0 = unkParamVals.flatten();
   Array<VectorType<double> > testVecType(test.size());
   Array<VectorType<double> > unkVecType(unk.size());
 
@@ -221,10 +239,17 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         }
       u0[i] = new ListExpr(zero);
     }
+
+  Expr fixedParams;
+  Array<Expr> fixedFields;
+  Expr fixedParamValues;
+  Array<Expr> fixedFieldValues;
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0,
-                          alpha, alpha0));
+                          unkParams.flatten(), unkParamVals.flatten(),
+                          fixedParams, fixedParamValues,
+                          fixedFields, fixedFieldValues));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType));
 }

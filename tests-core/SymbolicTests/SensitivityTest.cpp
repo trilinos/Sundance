@@ -78,6 +78,8 @@ void doit(const Expr& e,
                                                     paramVals,
                                                     fixed,
                                                     fixed0,
+                                                    fixed0,
+                                                    fixed0,
                                                     region);
 
   Tabs tab;

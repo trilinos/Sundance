@@ -83,6 +83,8 @@ namespace SundanceCore
        * to specified values */
       EquationSet(const Expr& eqns, 
                   const Expr& bcs,
+                  const Expr& params,
+                  const Expr& paramValues,
                   const Array<Expr>& fields,
                   const Array<Expr>& fieldValues);
 
@@ -95,7 +97,11 @@ namespace SundanceCore
                   const Array<Expr>& unks,
                   const Array<Expr>& unkLinearizationPts,
                   const Expr& unkParams,
-                  const Expr& unkParamEvalPts);
+                  const Expr& unkParamEvalPts, 
+                  const Expr& params,
+                  const Expr& paramValues,
+                  const Array<Expr>& fixedFields,
+                  const Array<Expr>& fixedFieldValues);
 
 
       /* Set up calculation of a functional and its derivative wrt a 
@@ -104,6 +110,8 @@ namespace SundanceCore
                   const Expr& bcs,
                   const Array<Expr>& vars,
                   const Array<Expr>& varLinearizationPts, 
+                  const Expr& params,
+                  const Expr& paramValues,
                   const Array<Expr>& fixedFields,
                   const Array<Expr>& fixedFieldValues);
       /** Derive a variational problem from a functional */
@@ -112,7 +120,9 @@ namespace SundanceCore
                   const Array<Expr>& vars, 
                   const Array<Expr>& varLinearizationPts,
                   const Array<Expr>& unks,
-                  const Array<Expr>& unkLinearizationPts,
+                  const Array<Expr>& unkLinearizationPts, 
+                  const Expr& params,
+                  const Expr& paramValues,
                   const Array<Expr>& fixedFields,
                   const Array<Expr>& fixedFieldValues);
 
@@ -308,7 +318,9 @@ namespace SundanceCore
                 const Array<Expr>& unks,
                 const Array<Expr>& unkLinearizationPts,
                 const Expr& unkParams,
-                const Expr& unkParamEvalPts,
+                const Expr& unkParamEvalPts, 
+                const Expr& fixedParams,
+                const Expr& fixedParamValues,
                 const Array<Expr>& fixedFields,
                 const Array<Expr>& fixedFieldValues);
 

@@ -138,20 +138,22 @@ EvaluationTester::EvaluationTester(const Expr& e)
   mgr_.setMediator(mediator_);
 
   SUNDANCE_VERB_LOW(tabs << "setting up evaluation...");
+  Expr dummy;
 
-  DerivSet d = SymbPreprocessor::setupExpr(e[0], 
-                                           unkList,
-                                           discList,
-                                           context_);
+  DerivSet d = SymbPreprocessor::setupVariations(e[0], 
+                                                 unkList,
+                                                 discList,
+                                                 unkList,
+                                                 discList,
+                                                 dummy,
+                                                 dummy,
+                                                 dummy,
+                                                 dummy,
+                                                 dummy,
+                                                 dummy,
+                                                 context_);
 
   sparsity_ = ev_->sparsitySuperset(context_);
-
-  SUNDANCE_VERB_LOW(tabs << "finding W...");
-  for (int i=0; i<=2; i++)
-    {
-      Tabs tab2;
-      cout << tab2 << "order=" << i << " W = " << ev_->findW(i, context_) << endl;
-    }
 
 }
 

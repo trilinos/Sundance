@@ -197,6 +197,8 @@ Assembler
 void Assembler::init(const Mesh& mesh, 
                      const RefCountPtr<EquationSet>& eqn)
 {
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "starting Assembler::init()");
   RefCountPtr<GrouperBase> grouper = rcp(new TrivialGrouper());
   grouper->verbosity() = verbosity();
 
@@ -251,14 +253,14 @@ void Assembler::init(const Mesh& mesh,
 
   for (unsigned int r=0; r<eqn->regionQuadCombos().size(); r++)
     {
+      Tabs tab1;
       const RegionQuadCombo& rqc = eqn->regionQuadCombos()[r];
-                         
       rqc_.append(rqc);
       isBCRqc_.append(false);
       const Expr& expr = eqn->expr(rqc);
 
-      SUNDANCE_VERB_HIGH("creating integral groups for rqc=" << rqc << endl
-                         << "expr = " << expr);
+      SUNDANCE_VERB_HIGH(tab1 << "creating integral groups for rqc=" 
+                         << rqc << endl << tab1 << "expr = " << expr);
 
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
@@ -270,15 +272,19 @@ void Assembler::init(const Mesh& mesh,
            i!=eqn->computationTypes().end();
            i++)
         {
+          Tabs tab2;
           const ComputationType& compType = *i;
-          //          const DerivSet& derivs = eqn->nonzeroFunctionalDerivs(compType, rqc);
+          SUNDANCE_VERB_HIGH(tab2 << "computation type " << compType);
+
           EvalContext context = eqn->rqcToContext(compType, rqc);
+
+          SUNDANCE_VERB_HIGH(tab2 << "context " << context);
           contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
           evalExprs_[compType].append(ee);
           const RefCountPtr<SparsitySuperset>& sparsity 
             = ee->sparsitySuperset(context);
-          SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
+          SUNDANCE_VERB_EXTREME(tab2 << "sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
           grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
@@ -302,12 +308,14 @@ void Assembler::init(const Mesh& mesh,
   
   for (unsigned int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
     {
+      Tabs tab1;
       const RegionQuadCombo& rqc = eqn->bcRegionQuadCombos()[r];
       rqc_.append(rqc);
       isBCRqc_.append(true);
       const Expr& expr = eqn->bcExpr(rqc);
 
-      SUNDANCE_VERB_HIGH("creating integral groups for rqc=" << rqc << endl
+      SUNDANCE_VERB_HIGH(tab1 << "creating integral groups for rqc=" 
+                         << rqc << endl << tab1 
                          << "expr = " << expr.toXML().toString());
       
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
@@ -320,15 +328,17 @@ void Assembler::init(const Mesh& mesh,
            i!=eqn->computationTypes().end();
            i++)
         {
+          Tabs tab2;
           const ComputationType& compType = *i;
-          //        const DerivSet& derivs = eqn->nonzeroBCFunctionalDerivs(compType, rqc);
+          SUNDANCE_VERB_HIGH(tab2 << "computation type " << compType);
           EvalContext context = eqn->bcRqcToContext(compType, rqc);
+          SUNDANCE_VERB_HIGH(tab2 << "context " << context);
           contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
           evalExprs_[compType].append(ee);
           const RefCountPtr<SparsitySuperset>& sparsity 
             = ee->sparsitySuperset(context);
-          SUNDANCE_VERB_EXTREME("sparsity pattern " << *sparsity);
+          SUNDANCE_VERB_EXTREME(tab2 << "sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
           grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
@@ -473,7 +483,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
 
   /* If collective structuring is the user preference, or if incremental
    * structuring is not supported, do collective structuring */
-  if ((icmf==0 || !matrixEliminatesRepeatedCols()) && ccmf != 0)
+  if (false /* (icmf==0 || !matrixEliminatesRepeatedCols()) && ccmf != 0 */)
     {
       Tabs tab1;
       SUNDANCE_VERB_MEDIUM(tab1 << "Assembler: doing collective matrix structuring...");
@@ -710,6 +720,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
+              Tabs tab2;
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs,
                                   constantCoeffs, 
@@ -717,13 +728,13 @@ void Assembler::assemble(LinearOperator<double>& A,
 
               if (verbosity() > VerbHigh)
                 {
-                  cerr << endl << endl 
-                       << "--------------- doing integral group " << g 
+                  cerr << tab2 << endl << tab2 << endl 
+                       << tab2 << "--------------- doing integral group " << g 
                        << " on the current subregion" << endl;
-                  cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
-                  cerr << "num unk DOFs = " << unkLocalDOFs->size() << endl;
-                  cerr << "num entries = " << localValues->size() << endl;
-                  cerr << "values = " << *localValues << endl;
+                  cerr << tab2 << "num test DOFs = " << testLocalDOFs->size() << endl;
+                  cerr << tab2 << "num unk DOFs = " << unkLocalDOFs->size() << endl;
+                  cerr << tab2 << "num entries = " << localValues->size() << endl;
+                  cerr << tab2 << "values = " << *localValues << endl;
                 }
               if (group.isTwoForm())
                 {
@@ -794,6 +805,11 @@ void Assembler::assemble(Vector<double>& b) const
       configureVector(b);
     }
 
+  if (verbosity() > VerbHigh)
+    {
+      cerr << "initial vector = " << endl;
+      b.print(cerr);
+    }
   
   int numRowBlocks = b.space().numBlocks();
 
@@ -828,6 +844,7 @@ void Assembler::assemble(Vector<double>& b) const
 
       
       SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs[r]->toString());
+      SUNDANCE_VERB_MEDIUM(tab0 << "context is " << contexts[r]);
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
@@ -910,6 +927,8 @@ void Assembler::assemble(Vector<double>& b) const
           ElementIntegral::invalidateTransformationMatrices();
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
+              Tabs tab3;
+
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
@@ -920,12 +939,12 @@ void Assembler::assemble(Vector<double>& b) const
 
               if (verbosity() > VerbHigh)
                 {
-                  cerr << endl << endl 
-                       << "--------------- doing integral group " << g 
+                  cerr << tab3 << endl << tab3 << endl 
+                       << tab3 << "--------------- doing integral group " << g 
                        << " on the current subregion"<< endl;
-                  cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
-                  cerr << "num entries = " << localValues->size() << endl;
-                  cerr << "values = " << *localValues << endl;
+                  cerr << tab3 << "num test DOFs = " << testLocalDOFs->size() << endl;
+                  cerr << tab3 << "num entries = " << localValues->size() << endl;
+                  cerr << tab3 << "values to be inserted = " << *localValues << endl;
                 }
 
               insertLocalVectorBatch(workSet->size(), isBCRqc_[r], 
@@ -936,12 +955,13 @@ void Assembler::assemble(Vector<double>& b) const
         }
     }
 
-  SUNDANCE_VERB_LOW(tab << "Assembler: done assembling vector");
+
   if (verbosity() > VerbHigh)
     {
       cerr << "vector = " << endl;
       b.print(cerr);
     }
+  SUNDANCE_VERB_LOW(tab << "Assembler: done assembling vector");
 }
 
 
@@ -1104,8 +1124,10 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
           ElementIntegral::invalidateTransformationMatrices();
 
+          SUNDANCE_VERB_HIGH(tab1 << "doing integral groups");
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
+              Tabs tab3;
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
@@ -1116,12 +1138,12 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
               if (verbosity() > VerbHigh)
                 {
-                  cerr << endl << endl 
-                       << "--------------- doing integral group " << g 
+                  cerr << tab3 << endl << tab3 << endl 
+                       << tab3 << "--------------- doing integral group " << g 
                        << " on the current subregion" << endl;
-                  cerr << "num test DOFs = " << testLocalDOFs->size() << endl;
-                  cerr << "num entries = " << localValues->size() << endl;
-                  cerr << "values = " << *localValues << endl;
+                  cerr << tab3 << "num test DOFs = " << testLocalDOFs->size() << endl;
+                  cerr << tab3 << "num entries = " << localValues->size() << endl;
+                  cerr << tab3 << "values = " << *localValues << endl;
                 }
               
               if (group.isOneForm())
@@ -1288,15 +1310,25 @@ void Assembler::evaluate(double& value) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
+          SUNDANCE_VERB_HIGH(tab1 << "doing integral groups");
           ElementIntegral::invalidateTransformationMatrices();
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
+              Tabs tab3;
               const IntegralGroup& group = groups[r][g];
               if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs, 
                                   constantCoeffs, 
                                   localValues)) 
                 {
                   continue;
+                }
+              if (verbosity() > VerbHigh)
+                {
+                  cerr << tab3 << endl << tab3 << endl 
+                       << tab3 << "--------------- doing integral group " << g 
+                       << " on the current subregion" << endl;
+                  cerr << tab3 << "num entries = " << localValues->size() << endl;
+                  cerr << tab3 << "values = " << *localValues << endl;
                 }
               SUNDANCE_VERB_HIGH(tab1 << "contribution from work set "
                                  << workSetCounter << " is " 
@@ -1477,6 +1509,7 @@ void Assembler
 
       for (int c=0; c<nCells; c++)
         {
+          Tabs tab2;
           for (int n=0; n<nNodes; n++, r++)
             {
               int rowIndex = dofs[(c*nFuncs + funcIndex)*nNodes + n];
@@ -1489,7 +1522,7 @@ void Assembler
             }
         }
     }
-  SUNDANCE_VERB_HIGH(tab << "...done");
+  SUNDANCE_VERB_HIGH(tab << "...done vector insertion");
 }
 
 

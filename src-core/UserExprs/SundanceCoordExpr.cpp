@@ -45,9 +45,7 @@ using namespace TSFExtended;
 CoordExpr::CoordExpr(int dir, const string& name)
   : LeafExpr(), FuncElementBase(coordName(dir, name), ""), 
     dir_(dir)
-{
-  setOrderOfDependency(dir, 1);
-}
+{}
 
 XMLObject CoordExpr::toXML() const 
 {
@@ -131,62 +129,6 @@ CoordExpr::internalFindC(int order, const EvalContext& context) const
 }
 
 
-void CoordExpr::findNonzeros(const EvalContext& context,
-                             const Set<MultiIndex>& multiIndices,
-                             const Set<MultiSet<int> >& inputActiveFuncIDs,
-                             bool regardFuncsAsConstant) const
-{
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for coord func " << toString()
-                       << " subject to multi index set " 
-                       << multiIndices.toString());
-
-  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
-
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant))
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
-      return;
-    }
-
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
-
-  MultiIndex myDirection;
-  myDirection[dir_] = 1;
-  if (multiIndices.contains(myDirection)) 
-    {
-      subset->addDeriv(new CoordDeriv(dir_), ConstantDeriv);
-     //  if (activeFuncIDs.contains(MultiSet<int>()))
-//         {
-//           subset->addDeriv(new CoordDeriv(dir_), ConstantDeriv);
-//         }
-    }
-  MultiIndex empty;
-  if (multiIndices.contains(empty))
-    {
-      if (activeFuncIDs.contains(MultiSet<int>()))
-        {
-          subset->addDeriv(MultipleDeriv(), VectorDeriv);
-        }
-    }
-
-  
-
-  SUNDANCE_VERB_HIGH(tabs << "coord expr: " + toString() 
-                     << ": my sparsity subset is " 
-                       << endl << *subset);
-
-  TEST_FOR_EXCEPTION(sparsitySuperset(context).get()==0, InternalError,
-                     "null sparsity superset detected in CoordExpr::findNonzeros()");
-
-  SUNDANCE_VERB_HIGH(tabs << "coord expr:  " 
-                     + toString() << ": my sparsity superset is " 
-                     << endl << *sparsitySuperset(context));
-
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  regardFuncsAsConstant);
-}
 
 
 

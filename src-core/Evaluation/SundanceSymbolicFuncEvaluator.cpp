@@ -225,7 +225,13 @@ void SymbolicFuncElementEvaluator
     {
       constantResults[onePtrs_[i]] = 1.0;
     }
-  
+  if (verbosity() > VerbMedium)
+    {
+      cerr << tabs << "results " << endl;
+      this->sparsity()->print(cerr, vectorResults,
+                            constantResults);
+    }
+  SUNDANCE_VERB_LOW(tabs << "SymbolicFuncEvaluator::eval() done"); 
 
 }
 

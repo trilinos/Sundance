@@ -62,6 +62,7 @@ void doit(const Expr& e,
   mgr.setMediator(mediator);
 
   Expr params;
+  Expr fixed;
 
   const EvaluatableExpr* ev 
     = dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get());
@@ -72,6 +73,8 @@ void doit(const Expr& e,
                                                  u0,
                                                  params,
                                                  params,
+                                                 fixed, fixed,
+                                                 fixed, fixed,
                                                  region);
 
   Tabs tab;

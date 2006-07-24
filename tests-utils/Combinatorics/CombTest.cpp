@@ -19,10 +19,22 @@ int main(int argc, void** argv)
 
       for (int n=1; n<=4; n++)
         {
-          Array<Array<Array<int> > > x = compositions(n);
-          cout << "N=" << n << " x=" << x << endl;
+          Array<Array<Array<int> > > c = compositions(n);
+          cout << "N=" << n << " compositions=" << c << endl;
 
+          MultiSet<int> mu;
+          for (int m=1; m<=n; m++)
+            {
+              mu.put(m);
 
+            }
+          for (int m=1; m<=n; m++)
+            {
+              Array<Array<Array<int> > > b = binnings(mu, m);
+              cout << "binnings = " << b << endl;
+            }
+
+          /*
 
           for (unsigned int i=0; i<x.size(); i++)
             {
@@ -34,9 +46,14 @@ int main(int argc, void** argv)
                       sum += x[i][j][k];
                     }
                   if (sum != n) bad = true;
+                  cout << "arrangements(" << x[i][j] << " = " 
+                       << indexArrangements(x[i][j]) << endl;
                 }
             }
+
+          */
         }
+
 
       if (!bad) 
         {

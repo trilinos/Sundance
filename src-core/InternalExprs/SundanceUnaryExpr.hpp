@@ -65,26 +65,9 @@ namespace SundanceCore
           const EvaluatableExpr* evaluatableArg() const 
           {return evaluatableChild(0);}
 
-          /** */
-          virtual Set<MultiIndex> argMultiIndices(const Set<MultiIndex>& multiIndices) const 
-          {return multiIndices;}
           
-
-          /** */
-          virtual Set<MultiSet<int> > 
-          argActiveFuncs(const Set<MultiSet<int> >& activeFuncID, 
-                         int maxOrder) const ;
-
-          
-          /** */
-          void addActiveFuncs(const EvalContext& context,
-                              const Set<MultiSet<int> >& activeFuncIDs) const ;
-          
-          /** */
-          const Set<MultiSet<int> >& getActiveFuncs(const EvalContext& context) const ;
         private:
-          mutable Map<EvalContext, Set<MultiSet<int> > > allActiveFuncs_;
-        };
+      };
     }
 }
 

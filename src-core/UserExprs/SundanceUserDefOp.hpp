@@ -57,7 +57,6 @@ namespace SundanceCore
      * function into the Sundance Expr system.
      */
   class UserDefOp : public ExprWithChildren,
-                    public Internal::NonlinearExpr,
                     public GenericEvaluatorFactory<UserDefOp, UserDefOpEvaluator>
     {
     public:
@@ -81,25 +80,11 @@ namespace SundanceCore
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-      /** 
-       * Determine which functional and spatial derivatives are nonzero in the
-       * given context. We also keep track of which derivatives
-       * are known to be constant, which can simplify evaluation. 
-       */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const ;
-
 
       /** Access to the operator */
       const UserDefFunctor* op() const {return op_.get();}
     private:
-      /** */
-      Set<MultiSet<int> > 
-      argActiveFuncs(const Set<MultiSet<int> >& activeFuncID,
-                     int maxOrder) const ;
-
+    
       /** */
       RefCountPtr<UserDefFunctor> op_;
 

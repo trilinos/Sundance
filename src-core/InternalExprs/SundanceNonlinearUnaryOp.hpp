@@ -40,7 +40,6 @@
 #include "SundanceSet.hpp"
 #include "SundanceMultipleDeriv.hpp"
 #include "SundanceNonlinearUnaryOpEvaluator.hpp"
-#include "SundanceNonlinearExpr.hpp"
 
 
 
@@ -60,7 +59,6 @@ namespace SundanceCore
      *
      */
     class NonlinearUnaryOp : public UnaryExpr,
-                             public NonlinearExpr,
                              public GenericEvaluatorFactory<NonlinearUnaryOp, NonlinearUnaryOpEvaluator>
     {
     public:
@@ -70,13 +68,6 @@ namespace SundanceCore
 
       /** virtual destructor */
       virtual ~NonlinearUnaryOp() {;}
-
-      /** Preprocessing step to determine which functional 
-       * derivatives are nonzero */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const ;
 
       /** Write a simple text description suitable
        * for output to a terminal */
@@ -95,19 +86,8 @@ namespace SundanceCore
       /** Access to the operator */
       const UnaryFunctor* op() const {return op_.get();}
 
-      /** 
-       * Given a set of active function combinations, get the active
-       * function combinations requested of the argument
-       */
-      virtual Set<MultiSet<int> > 
-      argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
-                     int maxOrder) const ;
-
-      /** Given a set of required multiindices, find the set of multiindices
-       * required of the argument */
-      Set<MultiIndex> argMultiIndices(const Set<MultiIndex>& miSet) const ;
     private:
-
+      
       RefCountPtr<UnaryFunctor> op_;
 
     };

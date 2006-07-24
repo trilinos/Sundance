@@ -32,7 +32,7 @@
 <!-- your matrix library has unusually bad incremental insertion         -->
 <!-- performance.                                                        -->
 
-<Parameter name="Matrix Library Eliminates Repeated Graph Entries" value="true"/>
+<Parameter name="Matrix Library Eliminates Repeated Graph Entries" value="false"/>
 
 
 
@@ -41,7 +41,7 @@
 
 <Verbosity context="Assembly" value="Silent"/>
 
-<Verbosity context="Evaluation" value="Silent"/>
+<Verbosity context="Evaluation" value="Extreme/>
 
 <Verbosity context="Integration Management" value="Silent"/>
 

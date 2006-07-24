@@ -32,6 +32,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceDiffOp.hpp"
 #include "SundanceFunctionalDeriv.hpp"
+#include "SundanceCoordDeriv.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceUnknownFuncElement.hpp"
@@ -75,7 +76,7 @@ DiffOpEvaluator
     SUNDANCE_VERB_MEDIUM(tab0 << "return sparsity " << endl << *(this->sparsity)());
 
     SUNDANCE_VERB_MEDIUM(tab0 << "argument sparsity subset " << endl 
-                         << *(argSparsitySubset()));
+                         << *(argSparsitySuperset()));
 
     Map<const DiscreteFuncElementEvaluator*, int> funcToIndexMap;
 
@@ -84,199 +85,199 @@ DiffOpEvaluator
   
     for (int i=0; i<this->sparsity()->numDerivs(); i++)
       {
+        Tabs tab1;
+        const MultipleDeriv& resultDeriv = this->sparsity()->deriv(i);
+        SUNDANCE_VERB_HIGH(tab0 << "working out procedure for computing " 
+                           << resultDeriv);
+
         if (this->sparsity()->state(i)==ConstantDeriv)
           {
+            Tabs tab2;
             addConstantIndex(i, constResultIndex);
             resultIndices_[i] = constResultIndex++;
             isConstant_[i] = true;
+            SUNDANCE_VERB_HIGH(tab2 << "deriv is constant, will be stored at index "
+                               << resultIndices_[i] << " in the const result array");
           }
         else
           {
+            Tabs tab2;
             addVectorIndex(i, vecResultIndex);
             resultIndices_[i] = vecResultIndex++;
             isConstant_[i] = false;
+            SUNDANCE_VERB_HIGH(tab2 << "deriv is variable, will be stored at index "
+                               << resultIndices_[i] << " in the var result array");
           }
-      }
 
 
-  
-    SUNDANCE_VERB_MEDIUM(tab0 << "looking for my derivs induced by arg derivs");
-    for (int i=0; i<argSparsitySubset()->numDerivs(); i++)
-      {
-        Tabs tab1;
-        Map<MultipleDeriv, DerivState> monomials;
-        Map<MultipleDeriv, Deriv> funcTerms;
-        expr->getResultDerivs(argSparsitySubset()->deriv(i), 
-                              argSparsitySubset()->state(i),
-                              monomials, 
-                              funcTerms);
-      
-        SUNDANCE_VERB_MEDIUM(tab1 << "looking for effect of argument deriv " 
-                             << argSparsitySubset()->deriv(i));
+        int order = resultDeriv.order();
+        const Set<MultipleDeriv>& RArg 
+          = argExpr()->findR(order, context);
+        const Set<MultipleDeriv>& RArgPlus
+          = argExpr()->findR(order+1, context);
+        const Set<MultipleDeriv>& W1Arg 
+          = argExpr()->findW(1, context);
 
         
-        {
-          Tabs tab2;
-          SUNDANCE_VERB_MEDIUM(tab2 << "found monomials " << monomials
-                               << " and function terms " << funcTerms);
-      
-          /* we'll need the index of the argument's deriv in the superset
-           * of results */
-          int argIndexInSuperset = argSparsitySuperset()->getIndex(argSparsitySubset()->deriv(i));
-          TEST_FOR_EXCEPTION(argIndexInSuperset==-1, InternalError,
-                             "derivative " << argSparsitySubset()->deriv(i)
-                             << " found in arg subset but not in arg superset");
+        SUNDANCE_VERB_HIGH(tab1 << "RArgPlus = " << RArgPlus);
 
-          SUNDANCE_VERB_MEDIUM(tab2 << "looking for effects of function terms");
+        Set<MultipleDeriv> funcTermCoeffs 
+          = RArgPlus.intersection(increasedDerivs(resultDeriv, W1Arg));
+        SUNDANCE_VERB_HIGH(tab1 << "getting direct chain rule terms");
 
-          for (Map<MultipleDeriv, Deriv>::const_iterator 
-                 iter = funcTerms.begin(); iter != funcTerms.end(); iter++)
-            {
-              Tabs tab3;
-              const MultipleDeriv& target = iter->first;
-              const Deriv& d = iter->second;
+        for (Set<MultipleDeriv>::const_iterator 
+               j=funcTermCoeffs.begin(); j != funcTermCoeffs.end(); j++)
+          {
+            Tabs tab2;
+            SUNDANCE_VERB_HIGH(tab2 << "getting coefficient of " << *j);
 
-              SUNDANCE_VERB_MEDIUM(tab3 << "derivative " << d << " contributes to "
-                                   "functional deriv " << target);
+            int argIndex = argSparsitySuperset()->getIndex(*j);
+            TEST_FOR_EXCEPTION(argIndex==-1, RuntimeError,
+                               "Derivative " << *j << " expected in argument "
+                               "but not found");
+
+            Deriv lambda = remainder(*j, resultDeriv);
+
+            if (lambda.isCoordDeriv())
+              {
+                Tabs tab3;
+                SUNDANCE_VERB_HIGH(tab2 << "detected coordinate deriv");
+                if (lambda.coordDeriv()->dir()!=expr->mi().firstOrderDirection())
+                  {
+                    SUNDANCE_VERB_HIGH(tab2 << "direction mismatch, skipping");
+                    continue;
+                  }
+                const DerivState& argState = argSparsitySuperset()->state(argIndex);
+                if (argState==ConstantDeriv)
+                  {
+                    int constArgIndex = argEval()->constantIndexMap().get(argIndex);
+                    constantMonomials_[i].append(constArgIndex);
+                  }
+                else
+                  {
+                    int vectorArgIndex = argEval()->vectorIndexMap().get(argIndex);
+                    vectorMonomials_[i].append(vectorArgIndex);
+                  }
+              }
+            else
+              {
+                Tabs tab3;
+                SUNDANCE_VERB_HIGH(tab3 << "detected functional deriv " << lambda);
+                const FuncElementBase* f = lambda.funcDeriv()->func();
+                const MultiIndex& mi = expr->mi() + lambda.funcDeriv()->multiIndex(); 
+                SUNDANCE_VERB_HIGH(tab3 << "modified multiIndex is " << mi);
+
+                const TestFuncElement* t 
+                  = dynamic_cast<const TestFuncElement*>(f);
+                if (t != 0) continue;
+
+                const UnknownFuncElement* u 
+                  = dynamic_cast<const UnknownFuncElement*>(f);
+                TEST_FOR_EXCEPTION(u==0, InternalError,
+                                   "Non-unknown function detected where an unknown "
+                                   "function was expected in "
+                                   "DiffOpEvaluator ctor");
+
+
+                const EvaluatableExpr* evalPt = u->evalPt();
+                const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(evalPt);
+                if (z != 0) continue;
+                TEST_FOR_EXCEPTION(z != 0, InternalError,
+                                   "DiffOpEvaluator detected identically zero "
+                                   "function");
+
+                const DiscreteFuncElement* df 
+                  = dynamic_cast<const DiscreteFuncElement*>(evalPt);
           
+                TEST_FOR_EXCEPTION(df==0, InternalError,
+                                   "DiffOpEvaluator ctor: evaluation point of "
+                                   "unknown function " << u->toString() 
+                                   << " is not a discrete function");
 
-              TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
-                                 "Coord deriv detected where a functional "
-                                 "deriv was expected in "
-                                 "DiffOpEvaluator ctor");
-              const FuncElementBase* f = d.funcDeriv()->func();
-              const MultiIndex& mi = d.funcDeriv()->multiIndex();
+                const SymbolicFuncElementEvaluator* uEval 
+                  = dynamic_cast<const SymbolicFuncElementEvaluator*>(u->evaluator(context).get());
+
+                const DiscreteFuncElementEvaluator* dfEval = uEval->dfEval();
+
+
+                TEST_FOR_EXCEPTION(dfEval==0, InternalError,
+                                   "DiffOpEvaluator ctor: evaluator for "
+                                   "evaluation point is not a "
+                                   "DiscreteFuncElementEvaluator");
+
+                TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), InternalError,
+                                   "DiffOpEvaluator ctor: evaluator for "
+                                   "discrete function " << df->toString()
+                                   << " does not know about multiindex "
+                                   << mi.toString());
           
+                int fIndex;
+                int miIndex = dfEval->miIndex(mi);
           
-              const TestFuncElement* t 
-                = dynamic_cast<const TestFuncElement*>(f);
-              if (t != 0) continue;
+                if (funcToIndexMap.containsKey(dfEval))
+                  {
+                    fIndex = funcToIndexMap.get(dfEval);
+                  }
+                else
+                  {
+                    fIndex = funcEvaluators_.size();
+                    funcEvaluators_.append(dfEval);
+                    funcToIndexMap.put(dfEval, fIndex);
+                  }
 
-              const UnknownFuncElement* u 
-                = dynamic_cast<const UnknownFuncElement*>(f);
-              TEST_FOR_EXCEPTION(u==0, InternalError,
-                                 "Non-unknown function detected where an unknown "
-                                 "function was expected in "
-                                 "DiffOpEvaluator ctor");
-
-
-              const EvaluatableExpr* evalPt = u->evalPt();
-              const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(evalPt);
-              if (z != 0) continue;
-              TEST_FOR_EXCEPTION(z != 0, InternalError,
-                                 "DiffOpEvaluator detected identically zero "
-                                 "function");
-
-              const DiscreteFuncElement* df 
-                = dynamic_cast<const DiscreteFuncElement*>(evalPt);
-          
-              TEST_FOR_EXCEPTION(df==0, InternalError,
-                                 "DiffOpEvaluator ctor: evaluation point of "
-                                 "unknown function " << u->toString() 
-                                 << " is not a discrete function");
-
-              const SymbolicFuncElementEvaluator* uEval 
-                = dynamic_cast<const SymbolicFuncElementEvaluator*>(u->evaluator(context).get());
-
-              const DiscreteFuncElementEvaluator* dfEval = uEval->dfEval();
+            
+                const DerivState& argState = argSparsitySuperset()->state(argIndex);
+                if (argState==ConstantDeriv)
+                  {
+                    int constArgIndex = argEval()->constantIndexMap().get(argIndex);
+                    constantCoeffFuncIndices_[i].append(fIndex);
+                    constantCoeffFuncMi_[i].append(miIndex);
+                    constantFuncCoeffs_[i].append(constArgIndex);
+                  }
+                else
+                  {
+                    int vectorArgIndex = argEval()->vectorIndexMap().get(argIndex);
+                    vectorCoeffFuncIndices_[i].append(fIndex);
+                    vectorCoeffFuncMi_[i].append(miIndex);
+                    vectorFuncCoeffs_[i].append(vectorArgIndex);
+                  }
+              }
+          }
 
 
-              TEST_FOR_EXCEPTION(dfEval==0, InternalError,
-                                 "DiffOpEvaluator ctor: evaluator for "
-                                 "evaluation point is not a "
-                                 "DiscreteFuncElementEvaluator");
+        SUNDANCE_VERB_HIGH(tab1 << "getting indirect chain rule terms");
+        Set<MultipleDeriv> isolatedTerms 
+          = RArg.intersection(backedDerivs(resultDeriv, W1Arg));
 
-              TEST_FOR_EXCEPTION(!dfEval->hasMultiIndex(mi), InternalError,
-                                 "DiffOpEvaluator ctor: evaluator for "
-                                 "discrete function " << df->toString()
-                                 << " does not know about multiindex "
-                                 << mi.toString());
-          
-              bool coeffIsConstant = argSparsitySubset()->state(i)==ConstantDeriv;
-              
-              int fIndex;
-              int miIndex = dfEval->miIndex(mi);
-          
-              if (funcToIndexMap.containsKey(dfEval))
-                {
-                  fIndex = funcToIndexMap.get(dfEval);
-                }
-              else
-                {
-                  fIndex = funcEvaluators_.size();
-                  funcEvaluators_.append(dfEval);
-                  funcToIndexMap.put(dfEval, fIndex);
-                }
-
-              int resultIndex = this->sparsity()->getIndex(target);
-
-              if (coeffIsConstant)
-                {
-                  Tabs tab4;
-                  SUNDANCE_VERB_MEDIUM(tab4 << "found constant coeff function term: arg deriv "
-                                       << argSparsitySubset()->deriv(i) 
-                                       << " times "
-                                       << d);
-                  int constArgIndex = argEval()->constantIndexMap().get(argIndexInSuperset);
-                  constantCoeffFuncIndices_[resultIndex].append(fIndex);
-                  constantCoeffFuncMi_[resultIndex].append(miIndex);
-                  constantFuncCoeffs_[resultIndex].append(constArgIndex);
-                }
-              else
-                {     
-                  Tabs tab4;
-                  SUNDANCE_VERB_MEDIUM(tab4 << "found vec coeff function term: arg deriv "
-                                       << argSparsitySubset()->deriv(i) 
-                                       << " times "
-                                       << d);
-                  int vectorArgIndex = argEval()->vectorIndexMap().get(argIndexInSuperset);
-                  vectorCoeffFuncIndices_[resultIndex].append(fIndex);
-                  vectorCoeffFuncMi_[resultIndex].append(miIndex);
-                  vectorFuncCoeffs_[resultIndex].append(vectorArgIndex);
-                }
-
-            }
-    
-      
-          SUNDANCE_VERB_MEDIUM(tab1 << "looking for effects of monomials");
-      
-          for (Map<MultipleDeriv, DerivState>::const_iterator 
-                 iter = monomials.begin(); iter != monomials.end(); 
-               iter++)
-            {
-              Tabs tab3;
-              int resultIndex = this->sparsity()->getIndex(iter->first);
-              SUNDANCE_VERB_MEDIUM(tab3 << "monomial " << iter->first
-                                   << " contributes to result index " 
-                                   << resultIndex);
-              if (iter->second==ConstantDeriv)
-                {
-                  Tabs tab4;
-                  SUNDANCE_VERB_MEDIUM(tab4 << "found constant-valued monomial: "
-                                       "arg deriv " 
-                                       << argSparsitySubset()->deriv(i));
-                  int constArgIndex = argEval()->constantIndexMap().get(argIndexInSuperset);
-                  constantMonomials_[resultIndex].append(constArgIndex);
-                }
-              else
-                {
-                  Tabs tab4;
-                  SUNDANCE_VERB_MEDIUM(tab4 << "found vector-valued monomial: "
-                                       "arg deriv " << argSparsitySubset()->deriv(i));
-                  int vectorArgIndex = argEval()->vectorIndexMap().get(argIndexInSuperset);
-                  vectorMonomials_[resultIndex].append(vectorArgIndex);
-                }
-            }
-        }
+        for (Set<MultipleDeriv>::const_iterator 
+               j=isolatedTerms.begin(); j != isolatedTerms.end(); j++)
+          {
+            int argIndex = argSparsitySuperset()->getIndex(*j);
+            TEST_FOR_EXCEPTION(argIndex==-1, RuntimeError,
+                               "Derivative " << *j << " expected in argument "
+                               "but not found");
+            const DerivState& argState = argSparsitySuperset()->state(argIndex);
+            if (argState==ConstantDeriv)
+              {
+                int constArgIndex = argEval()->constantIndexMap().get(argIndex);
+                constantMonomials_[i].append(constArgIndex);
+              }
+            else
+              {
+                int vectorArgIndex = argEval()->vectorIndexMap().get(argIndex);
+                vectorMonomials_[i].append(vectorArgIndex);
+              }
+          }
       }
   }
+
   if (verbosity() > VerbMedium)
     {
       cerr << tabs << "instruction tables for summing chain rule" << endl;
       for (int i=0; i<this->sparsity()->numDerivs(); i++)
         {
           Tabs tab1;
-          cerr << tab1 << "deriv " << i << endl;
+          cerr << tab1 << "deriv " << sparsity()->deriv(i) << endl;
           {
             Tabs tab2;
             cerr << tab2 << "constant monomials: " << constantMonomials_[i]
@@ -302,6 +303,84 @@ DiffOpEvaluator
           }
         }
     }
+}
+
+
+Deriv DiffOpEvaluator::remainder(const MultipleDeriv& big, 
+                                 const MultipleDeriv& little) const 
+{
+  Tabs tab;
+  SUNDANCE_VERB_EXTREME(tab << "computing remainder: big=" << big << ", little="
+                        << little);
+  TEST_FOR_EXCEPT(big.order()-little.order() != 1);
+
+  MultipleDeriv r;
+  if (little.order()==0) r = big;
+  else r = big.factorOutDeriv(little);
+
+  SUNDANCE_VERB_EXTREME(tab << "remainder = " << r);
+
+  TEST_FOR_EXCEPT(r.order() != 1);
+
+  return *(r.begin());
+}
+
+Set<MultipleDeriv> DiffOpEvaluator
+::increasedDerivs(const MultipleDeriv& mu,
+                  const Set<MultipleDeriv>& W1) const
+{
+  Tabs tabs;
+  SUNDANCE_VERB_HIGH(tabs << "computing increased derivs");
+  Set<MultipleDeriv> rtn;
+  for (Set<MultipleDeriv>::const_iterator i=W1.begin(); i!=W1.end(); i++)
+    {
+      MultipleDeriv md = *i;
+      TEST_FOR_EXCEPT(md.order() != 1);
+      Deriv lambda = *(md.begin());
+      MultipleDeriv lambdaMu = mu;
+      lambdaMu.put(lambda);
+      rtn.put(lambdaMu);
+    }
+  SUNDANCE_VERB_HIGH(tabs << "increased derivs = " << rtn);
+  return rtn;
+}
+
+Set<MultipleDeriv> DiffOpEvaluator
+::backedDerivs(const MultipleDeriv& mu,
+               const Set<MultipleDeriv>& W1) const
+{
+  Tabs tabs;
+  SUNDANCE_VERB_HIGH(tabs << "computing backed-out derivs for mu= " << mu
+                     << ", W1=" << W1);
+  Set<MultipleDeriv> rtn;
+  if (mu.order() != 0) 
+    {
+      const MultiIndex& alpha = expr()->mi();
+
+      for (Set<MultipleDeriv>::const_iterator i=W1.begin(); i!=W1.end(); i++)
+        {
+          const MultipleDeriv& md = *i;
+          TEST_FOR_EXCEPT(md.order() != 1);
+          Deriv lambda = *(md.begin());
+          if (lambda.isCoordDeriv()) continue;
+          int lambda_fid = lambda.funcDeriv()->funcID();
+          const MultiIndex& lambda_mi = lambda.funcDeriv()->multiIndex(); 
+          for (MultipleDeriv::const_iterator j=mu.begin(); j!=mu.end(); j++)
+            {
+              const Deriv& d = *j;
+              if (d.isCoordDeriv()) continue;
+              int d_fid = d.funcDeriv()->funcID();
+              const MultiIndex& d_mi = d.funcDeriv()->multiIndex(); 
+              if (d_fid != lambda_fid) continue;
+              if (!(alpha + lambda_mi == d_mi)) continue;
+              MultipleDeriv z = mu.factorOutDeriv(d);
+              z.put(lambda);
+              rtn.put(z);
+            }
+        }
+    }
+  SUNDANCE_VERB_HIGH(tabs << "backed-out derivs = " << rtn);
+  return rtn;
 }
 
 
@@ -353,6 +432,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       SUNDANCE_VERB_MEDIUM(tab1 << "working on deriv " 
                            << this->sparsity()->deriv(i));
 
+      /* add constant monomials */
       double constantVal = 0.0;
       for (unsigned int j=0; j<constantMonomials_[i].size(); j++)
         {

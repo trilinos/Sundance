@@ -41,6 +41,15 @@ namespace SundanceCore
       TEUCHOS_TIMER(evalTimer, "diff op evaluation");
     private:
 
+      Set<MultipleDeriv> increasedDerivs(const MultipleDeriv& mu,
+                                         const Set<MultipleDeriv>& W1) const ;
+
+      Set<MultipleDeriv> backedDerivs(const MultipleDeriv& mu,
+                                      const Set<MultipleDeriv>& W1) const ;
+
+      Deriv remainder(const MultipleDeriv& big, 
+                      const MultipleDeriv& little) const ;
+
       Array<int> isConstant_;
 
       Array<int> resultIndices_;

@@ -47,29 +47,7 @@ using namespace Teuchos;
 SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
                  const RefCountPtr<ScalarExpr>& right, int sign)
 	: BinaryExpr(left, right, sign)
-{
-  Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "forming SumExpr " << toString());
-  typedef Set<int>::const_iterator setIter;
-
-  if (isEvaluatable(left.get()) && isEvaluatable(right.get()))
-    {
-
-      for (int d=0; d<MultiIndex::maxDim(); d++) 
-        {
-          int lod = leftEvaluatable()->orderOfSpatialDependency(d);
-          int rod = rightEvaluatable()->orderOfSpatialDependency(d);
-          if (lod < 0 || rod < 0) setOrderOfDependency(d, -1);
-          else setOrderOfDependency(d, max(lod, rod));
-        }
-
-      Set<MultiSet<int> > tmp = leftEvaluatable()->funcIDSet();
-      tmp.merge(rightEvaluatable()->funcIDSet());
-      setFuncIDSet(tmp);
-      Tabs tab1;
-      SUNDANCE_VERB_HIGH(tab1 << "dependencies are " << tmp);
-    }
-}
+{}
 
 bool SumExpr::isHungryDiffOp() const
 {

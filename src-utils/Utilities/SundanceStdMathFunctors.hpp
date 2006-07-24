@@ -62,6 +62,7 @@ namespace SundanceUtils
                       double* f, 
                       double* df_dx,
                       double* d2f_dxx) const ;
+
   private:
     double p_;
   };
@@ -73,21 +74,21 @@ namespace SundanceUtils
   SUNDANCE_UNARY_FUNCTOR(reciprocal, StdReciprocal, "reciprocal function", 
                          NonzeroDomain(), 1.0/x[i], -f[i]*f[i], -2.0*df[i]/x[i])
 
-  SUNDANCE_UNARY_FUNCTOR(fabs, StdFabs, "absolute value", UnboundedDomain(), ::fabs(x[i]), ((x[i]>=0.0) ? x[i] : -x[i]), 0.0)
+    SUNDANCE_UNARY_FUNCTOR(fabs, StdFabs, "absolute value", UnboundedDomain(), ::fabs(x[i]), ((x[i]>=0.0) ? x[i] : -x[i]), 0.0)
 
   SUNDANCE_UNARY_FUNCTOR(sign, StdSign, "sign function", UnboundedDomain(), 
                          ((x[i]>0.0) ? 1.0 : ( (x[i]<0.0) ? -1.0 : 0.0)), 
                          0.0, 0.0)
 
-  SUNDANCE_UNARY_FUNCTOR(exp, StdExp, "exponential function", UnboundedDomain(), ::exp(x[i]), f[i], f[i])
+    SUNDANCE_UNARY_FUNCTOR3(exp, StdExp, "exponential function", UnboundedDomain(), ::exp(x[i]), f[i], f[i], f[i])
 
-  SUNDANCE_UNARY_FUNCTOR(log, StdLog, "logarithm", PositiveDomain(), ::log(x[i]), 1.0/x[i], -df[i]*df[i])
+    SUNDANCE_UNARY_FUNCTOR3(log, StdLog, "logarithm", PositiveDomain(), ::log(x[i]), 1.0/x[i], -df[i]*df[i], -2.0*d2f[i]*df[i])
 
   SUNDANCE_UNARY_FUNCTOR(sqrt, StdSqrt, "square root", PositiveDomain(), ::sqrt(x[i]), 0.5/f[i], -0.5*df[i]/x[i])
 
-  SUNDANCE_UNARY_FUNCTOR(sin, StdSin, "sine function", UnboundedDomain(), ::sin(x[i]), ::cos(x[i]), -f[i])
+    SUNDANCE_UNARY_FUNCTOR3(sin, StdSin, "sine function", UnboundedDomain(), ::sin(x[i]), ::cos(x[i]), -f[i], -df[i])
 
-  SUNDANCE_UNARY_FUNCTOR(cos, StdCos, "cosine function", UnboundedDomain(), ::cos(x[i]), -::sin(x[i]), -f[i])
+    SUNDANCE_UNARY_FUNCTOR3(cos, StdCos, "cosine function", UnboundedDomain(), ::cos(x[i]), -::sin(x[i]), -f[i], -df[i])
 
   SUNDANCE_UNARY_FUNCTOR(tan, StdTan, "tangent function", UnboundedDomain(),
                          ::tan(x[i]), 1.0 + f[i]*f[i], 2.0*f[i]*df[i])

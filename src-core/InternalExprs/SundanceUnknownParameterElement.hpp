@@ -69,15 +69,7 @@ namespace SundanceCore
       /** virtual destructor */
       virtual ~UnknownParameterElement() {;}
 
-      /** 
-       * Determine which functional and spatial derivatives are nonzero in the
-       * given context. We also keep track of which functional derivatives
-       * are known to be constant, which can simplify evaluation. 
-       */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const ;
+      
       /** */
       virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
                                          const EvalContext& context) const ;

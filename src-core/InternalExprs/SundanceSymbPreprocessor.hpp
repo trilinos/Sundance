@@ -62,51 +62,57 @@ namespace SundanceCore
                                         const Expr& varEvalPts,
                                         const Expr& unks,
                                         const Expr& unkEvalPts,
+                                        const Expr& unkParams,
+                                        const Expr& unkParamEvalPts,
                                         const Expr& fixedFields,
-                                        const Expr& fixedFieldEvalPts,
-                                        const EvalContext& region);
+                                        const Expr& fixedFieldEvalPts, 
+                                        const Expr& fixedParams,
+                                        const Expr& fixedParamEvalPts, 
+                                        const EvalContext& context);
 
         /** */
         static DerivSet setupFunctional(const Expr& expr, 
+                                        const Expr& fixedParams,
+                                        const Expr& fixedParamEvalPts,
                                         const Expr& fixedFields,
                                         const Expr& fixedFieldEvalPts,
-                                        const EvalContext& region);
+                                        const EvalContext& context);
 
         /** */
         static DerivSet setupGradient(const Expr& expr, 
                                       const Expr& vars,
                                       const Expr& varEvalPts,
+                                      const Expr& fixedParams,
+                                      const Expr& fixedParamEvalPts,
                                       const Expr& fixedFields,
-                                      const Expr& fixedFieldEvalPts,
-                                      const EvalContext& region);
+                                      const Expr& fixedFieldEvalPts, 
+                                      const EvalContext& contex);
 
         /** */
         static DerivSet setupSensitivities(const Expr& expr, 
                                            const Expr& tests,
                                            const Expr& unks,
-                                           const Expr& unkEvalPts,
+                                           const Expr& unkEvalPts, 
                                            const Expr& unkParams,
                                            const Expr& unkParamEvalPts,
+                                           const Expr& fixedParams,
+                                           const Expr& fixedParamEvalPts,
                                            const Expr& fixedFields,
-                                           const Expr& fixedFieldEvalPts, 
-                                           const EvalContext& region);
+                                           const Expr& fixedFieldEvalPts,
+                                           const EvalContext& context);
 
         /** */
         static DerivSet setupFwdProblem(const Expr& expr, 
                                         const Expr& tests,
                                         const Expr& unks,
-                                        const Expr& u0,
+                                        const Expr& unkEvalPts, 
                                         const Expr& unkParams,
                                         const Expr& unkParamEvalPts,
-                                        const EvalContext& region);
-        /** */
-        static DerivSet setupExpr(const Expr& expr, 
-                                  const Expr& unks,
-                                  const Expr& u0,
-                                  const EvalContext& region);
-        /** */
-        static DerivSet setupExpr(const Expr& expr, 
-                                  const EvalContext& region);
+                                        const Expr& fixedParams,
+                                        const Expr& fixedParamEvalPts,
+                                        const Expr& fixedFields,
+                                        const Expr& fixedFieldEvalPts,
+                                        const EvalContext& context);
 
         /** */
         TEUCHOS_TIMER(preprocTimer, "symbolic preprocessing");

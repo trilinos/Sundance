@@ -66,36 +66,6 @@ CellDiameterExpr::internalFindW(int order, const EvalContext& context) const
 
 
 
-void CellDiameterExpr::findNonzeros(const EvalContext& context,
-                                    const Set<MultiIndex>& multiIndices,
-                                    const Set<MultiSet<int> >& inputActiveFuncIDs,
-                                    bool regardFuncsAsConstant) const
-{
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "finding nonzeros for cell diameter " << toString()
-                       << " subject to multi index set " 
-                       << multiIndices.toString());
-
-  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
-
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant))
-    {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
-      return;
-    }
-
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
-
-  MultiIndex empty;
-  if (multiIndices.contains(empty))
-    {
-      subset->addDeriv(MultipleDeriv(), VectorDeriv);
-    }
-
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  regardFuncsAsConstant);
-}
 
 ostream& CellDiameterExpr::toText(ostream& os, bool paren) const
 {

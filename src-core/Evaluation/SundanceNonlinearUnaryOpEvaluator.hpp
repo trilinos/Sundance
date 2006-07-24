@@ -33,7 +33,7 @@
 #define SUNDANCE_NONLINEARUNARYOPEVALUATOR_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceUnaryEvaluator.hpp"
+#include "SundanceChainRuleEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -44,12 +44,11 @@ namespace SundanceCore
   namespace Internal 
   {
     class NonlinearUnaryOp;
-    class SymbolicFuncElementEvaluator;
     
     /**
      *
      */
-    class NonlinearUnaryOpEvaluator : public UnaryEvaluator<NonlinearUnaryOp>
+    class NonlinearUnaryOpEvaluator : public ChainRuleEvaluator
     {
     public:
       /** */
@@ -60,23 +59,19 @@ namespace SundanceCore
       virtual ~NonlinearUnaryOpEvaluator(){;}
 
       /** */
-      virtual void internalEval(const EvalManager& mgr,
-                   Array<double>& constantResults,
-                   Array<RefCountPtr<EvalVector> >& vectorResults) const ;
-
+      virtual void evalArgDerivs(const EvalManager& mgr,
+                                 const Array<RefCountPtr<Array<double> > >& constArgRes,
+                                 const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
+                                 Array<double>& constArgDerivs,
+                                 Array<RefCountPtr<EvalVector> >& varArgDerivs) const;
+      
       /** */
-      TEUCHOS_TIMER(evalTimer, "nonlinear unary op evaluation");
+      TEUCHOS_TIMER(evalTimer, "nonlinear unary op arg evaluation");
     private:
+      const UnaryFunctor* op_;
       int maxOrder_;
-      int d0ResultIndex_;
-      int d0ArgDerivIndex_;
-      bool d0ArgDerivIsConstant_;
-      Array<int> d1ResultIndex_;
-      Array<int> d1ArgDerivIndex_;
-      Array<int> d1ArgDerivIsConstant_;
-      Array<int> d2ResultIndex_;
-      Array<Array<int> > d2ArgDerivIndex_;
-      Array<Array<int> > d2ArgDerivIsConstant_;
+      bool argIsConstant_;
+      int argValueIndex_;
     }; 
   }
 }

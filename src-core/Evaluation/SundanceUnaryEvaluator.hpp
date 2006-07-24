@@ -61,7 +61,6 @@ namespace SundanceCore
                      const EvalContext& context)
         : SubtypeEvaluator<ExprType>(expr, context),
           argExpr_(expr->evaluatableArg()),
-          argSparsitySubset_(),
           argSparsitySuperset_(argExpr_->sparsitySuperset(context)),
           argEval_(argExpr_->evaluator(context))
       {
@@ -71,22 +70,8 @@ namespace SundanceCore
 
             SUNDANCE_VERB_HIGH(tab << "UnaryEvaluator ctor: expr = " << expr->toString());
 
-            const Set<MultiIndex>& miSet = this->sparsity()->allMultiIndices();
-            const Set<MultiSet<int> >& activeFuncs = expr->getActiveFuncs(context);
-            
-            SUNDANCE_VERB_HIGH(tab << "my multiindices: " << miSet);
-            SUNDANCE_VERB_HIGH(tab << "my active funcs: " << activeFuncs);
-            
             SUNDANCE_VERB_HIGH(tab << "arg sparsity superset maxOrder: " 
                                << argSparsitySuperset_->maxOrder());
-            Set<MultiIndex> argMiSet = expr->argMultiIndices(miSet);
-            Set<MultiSet<int> > argActiveFuncs 
-              = expr->argActiveFuncs(activeFuncs, argSparsitySuperset_->maxOrder());
-            SUNDANCE_VERB_HIGH(tab << "arg multiindices: " << argMiSet);
-            SUNDANCE_VERB_HIGH(tab << "arg active funcs: " << argActiveFuncs);
-            
-            argSparsitySubset_ 
-              = argSparsitySuperset_->findSubset(argMiSet, argActiveFuncs);
             
             argEval_->addClient();
             
@@ -115,10 +100,6 @@ namespace SundanceCore
     protected:
 
       /** */
-      const RefCountPtr<SparsitySubset>& argSparsitySubset() const 
-      {return argSparsitySubset_;}
-
-      /** */
       const RefCountPtr<SparsitySuperset>& argSparsitySuperset() const 
       {return argSparsitySuperset_;}
       
@@ -141,8 +122,6 @@ namespace SundanceCore
       }
     private:
       const EvaluatableExpr* argExpr_;
-
-      RefCountPtr<SparsitySubset> argSparsitySubset_;
 
       RefCountPtr<SparsitySuperset> argSparsitySuperset_;
 

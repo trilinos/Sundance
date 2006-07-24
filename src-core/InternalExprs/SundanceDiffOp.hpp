@@ -95,6 +95,11 @@ namespace SundanceCore
       virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
       internalDetermineR(const EvalContext& context,
                          const Array<Set<MultipleDeriv> >& RInput) const ;
+
+      /** */
+      void requestMultiIndexAtEvalPoint(const MultiIndex& mi,
+                                        const MultipleDeriv& u,
+                                        const EvalContext& context) const ;
       
       
       
@@ -115,56 +120,25 @@ namespace SundanceCore
 
     
       
-      /** 
-       * Determine which functional and spatial derivatives are nonzero in the
-       * given context. We also keep track of which derivatives
-       * are known to be constant, which can simplify evaluation. 
-       */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const ;
+     
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
 
-      /** Determine the functional derivatives of this expression that
-       * are produced through the chain rule
-       * by the presence of the given derivative of the argument. 
-       */
-      void getResultDerivs(const MultipleDeriv& argDeriv,
-                           const DerivState& sourceState,
-                           Map<MultipleDeriv, DerivState>& isolatedTerms,
-                           Map<MultipleDeriv, Deriv>& funcTerms) const ;
-
-
-      /** */
-      virtual Set<MultiIndex> argMultiIndices(const Set<MultiIndex>& myMultiindices) const ;
-        
-      /** */
-      bool ignoreFuncTerms() const {return ignoreFuncTerms_;}
-
       /** */
       virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
                                          const EvalContext& context) const ;
 
-      /** 
-       * Given a set of active function combinations, get the active
-       * funcs for the next higher order of differentiation.
-       */
-      virtual Set<MultiSet<int> > 
-      argActiveFuncs(const Set<MultiSet<int> >& activeFuncIDs,
-                     int maxOrder) const ;
+     
 
-
+      /** */
+      virtual void registerSpatialDerivs(const EvalContext& context, 
+                                         const Set<MultiIndex>& miSet) const ;
 
     private:
 
       
-      bool canBackOutDeriv(const Deriv& d, const MultiIndex& x, 
-                           Deriv& rtnDeriv) const ;
-
       
 
       MultiIndex mi_;
@@ -174,7 +148,6 @@ namespace SundanceCore
 
       mutable Map<MultipleDeriv, SundanceUtils::Set<Deriv>, 
                   increasingOrder<MultipleDeriv> > requiredFunctions_;
-
 
       mutable bool ignoreFuncTerms_;
     };

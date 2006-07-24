@@ -38,17 +38,7 @@ using namespace Teuchos;
 
 UnaryMinus::UnaryMinus(const RefCountPtr<ScalarExpr>& arg)
   : UnaryExpr(arg)
-{
-  if (isEvaluatable(arg.get()))
-    {
-      for (int d=0; d<MultiIndex::maxDim(); d++) 
-        {
-          setOrderOfDependency(d, evaluatableArg()->orderOfSpatialDependency(d));
-        }
-
-      setFuncIDSet(evaluatableArg()->funcIDSet());
-    }
-}
+{}
 
 Set<MultiSet<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& context) const
 {

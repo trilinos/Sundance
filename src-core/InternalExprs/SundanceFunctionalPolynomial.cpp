@@ -320,13 +320,6 @@ Evaluator* FunctionalPolynomial::createEvaluator(const EvaluatableExpr* expr,
   return (Evaluator*) 0;
 }
 
-void FunctionalPolynomial::findNonzeros(const EvalContext& context,
-                                        const Set<MultiIndex>& multiIndices,
-                                        const Set<MultiSet<int> >& activeFuncIDs,
-                                        bool regardFuncsAsConstant) const
-{
-  TEST_FOR_EXCEPTION(true, RuntimeError, "poly eval not ready");
-}
 
 
 bool FunctionalPolynomial::isConvertibleToPoly(const ScalarExpr* expr)

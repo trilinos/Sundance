@@ -86,23 +86,30 @@ namespace SundanceCore
       /** Get my index into the master's list of elements */
       int myIndex() const {return myIndex_;}
 
-     /** 
-       * Determine which functional and spatial derivatives are nonzero in the
-       * given context. We also keep track of which derivatives
-       * are known to be constant, which can simplify evaluation. 
-       */
-      virtual void findNonzeros(const EvalContext& context,
-                                const Set<MultiIndex>& multiIndices,
-                                const Set<MultiSet<int> >& activeFuncIDs,
-                                bool regardFuncsAsConstant) const ;
-
-          
+      /** Inform this function that it will need to be evaluated using the specified
+       * multiIndex*/
+      void addMultiIndex(const MultiIndex& newMi) const ;
+      
       /** */
       virtual Set<MultipleDeriv> 
       internalFindW(int order, const EvalContext& context) const ;
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindV(int order, const EvalContext& context) const ;
+      /** */
+      virtual Set<MultipleDeriv> 
+      internalFindC(int order, const EvalContext& context) const ;
+
+      /** */
+      virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+      internalDetermineR(const EvalContext& context,
+                         const Array<Set<MultipleDeriv> >& RInput) const ;
 
       /** */
       virtual XMLObject toXML() const ;
+
+      /** */
+      const Set<MultiIndex>& multiIndexSet() const {return miSet_;}
 
       /** */
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
@@ -112,6 +119,8 @@ namespace SundanceCore
       RefCountPtr<DiscreteFuncDataStub> commonData_;
 
       int myIndex_;
+
+      mutable Set<MultiIndex> miSet_;
       
 #endif /* DOXYGEN_DEVELOPER_ONLY */
     };

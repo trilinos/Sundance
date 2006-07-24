@@ -71,9 +71,11 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
 {
   Array<Expr> fields;
   Expr bcs;
+  Expr params;
+
   
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(integral, bcs, fields, fields));
+    = rcp(new EquationSet(integral, bcs, params, params, fields, fields));
   
   
   assembler_ = rcp(new Assembler(mesh, eqnSet));
@@ -94,9 +96,10 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   Array<Expr> v = tuple(var.flatten());
   Array<Expr> v0 = tuple(varValues.flatten());
   Array<Expr> fixed;
+  Expr params;
   
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(integral, bcs, v, v0, fixed, fixed));
+    = rcp(new EquationSet(integral, bcs, v, v0, params, params, fixed, fixed));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType)));
 }
@@ -119,9 +122,11 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   Array<Expr> f0 = tuple(fieldValues.flatten());
   Array<Expr> v = tuple(vars.flatten());
   Array<Expr> v0 = tuple(varEvalPts.flatten());
+
+  Expr params;
   
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(integral, bcs, v, v0, f, f0));
+    = rcp(new EquationSet(integral, bcs, v, v0, params, params, f, f0));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType)));
 }

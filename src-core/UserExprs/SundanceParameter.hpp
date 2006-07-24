@@ -79,21 +79,25 @@ namespace SundanceCore
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-
-
-    /** 
-     * Determine which functional and spatial derivatives are nonzero in the
-     * given context. We also keep track of which derivatives
-     * are known to be constant, which can simplify evaluation. 
-     */
-    virtual void findNonzeros(const EvalContext& context,
-                              const Set<MultiIndex>& multiIndices,
-                              const Set<MultiSet<int> >& activeFuncIDs,
-                              bool regardFuncsAsConstant) const ;
-
     /** */
     virtual Set<MultipleDeriv> 
     internalFindW(int order, const EvalContext& context) const ;
+          
+    /** */
+    virtual Set<MultipleDeriv> 
+    internalFindV(int order, const EvalContext& context) const 
+    {return SpatiallyConstantExpr::internalFindV(order, context);}
+    
+    /** */
+    virtual Set<MultipleDeriv> 
+    internalFindC(int order, const EvalContext& context) const 
+    {return SpatiallyConstantExpr::internalFindC(order, context);}
+
+    /** */
+    virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+    internalDetermineR(const EvalContext& context,
+                       const Array<Set<MultipleDeriv> >& RInput) const 
+    {return EvaluatableExpr::internalDetermineR(context, RInput);}
 
 
     /** */

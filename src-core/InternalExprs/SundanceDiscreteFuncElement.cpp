@@ -49,84 +49,96 @@ DiscreteFuncElement
 	: LeafExpr(), 
     FuncElementBase(name, suffix),
     commonData_(data),
-    myIndex_(myIndex)
+    myIndex_(myIndex),
+    miSet_()
 {}
+
+
+RefCountPtr<Array<Set<MultipleDeriv> > > DiscreteFuncElement
+::internalDetermineR(const EvalContext& context,
+                     const Array<Set<MultipleDeriv> >& RInput) const
+{
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "DFE::internalDetermineR() for "
+                     << toString());
+  Array<Set<MultipleDeriv> > RIn = RInput;
+  Set<MultiIndex> miSet = activeSpatialDerivs(context);
+
+  for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
+    {
+      const MultiIndex& mi = *i;
+      int order = mi.order();
+      if (order==0) RIn[0].put(MultipleDeriv());
+      if (order==1) RIn[1].put(MultipleDeriv(new CoordDeriv(mi.firstOrderDirection())));
+    }
+
+  return EvaluatableExpr::internalDetermineR(context, RIn);
+}
+
 
 Set<MultipleDeriv> 
 DiscreteFuncElement::internalFindW(int order, const EvalContext& context) const
 {
   Set<MultipleDeriv> rtn;
 
+  Set<MultiIndex> miSet = activeSpatialDerivs(context);
+
   if (order==0) 
     {
-      rtn.put(MultipleDeriv());
+      if (miSet.contains(MultiIndex())) rtn.put(MultipleDeriv());
     }
   if (order==1)
     {
-      Deriv x = new CoordDeriv(0);
-      Deriv y = new CoordDeriv(1);
-      Deriv z = new CoordDeriv(2);
-      MultipleDeriv mx;
-      MultipleDeriv my;
-      MultipleDeriv mz;
-      mx.put(x);
-      my.put(y);
-      mz.put(z);
-      rtn.put(mx);
-      rtn.put(my);
-      rtn.put(mz);
+      for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
+        {
+          const MultiIndex& mi = *i;
+          int diffOrder = mi.order();
+          if (diffOrder==1) 
+            rtn.put(MultipleDeriv(new CoordDeriv(mi.firstOrderDirection())));
+        }
     }
 
   return rtn;
 }
 
-void DiscreteFuncElement::findNonzeros(const EvalContext& context,
-                                       const Set<MultiIndex>& multiIndices,
-                                       const Set<MultiSet<int> >& inputActiveFuncIDs,
-                                       bool regardFuncsAsConstant) const
+Set<MultipleDeriv> 
+DiscreteFuncElement::internalFindV(int order, const EvalContext& context) const
 {
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "DFE::internalFindV(order=" << order << ") for "
+                     << toString());
+  Set<MultipleDeriv> rtn;
+  Set<MultiIndex> miSet = activeSpatialDerivs(context);
 
-  Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs << "DiscreteFunc " << toString() << " finding nonzeros " 
-                       " subject to multiindices "
-                       << multiIndices);
-
-  Set<MultiSet<int> > activeFuncIDs = filterActiveFuncs(inputActiveFuncIDs);
-
-  if (nonzerosAreKnown(context, multiIndices, activeFuncIDs,
-                       regardFuncsAsConstant))
+  if (order==0) 
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "...reusing previously computed data");
-      return;
+      if (miSet.contains(MultiIndex())) rtn.put(MultipleDeriv());
     }
-
-
-  RefCountPtr<SparsitySubset> subset = sparsitySubset(context, multiIndices, activeFuncIDs, false);
-  
-  for (Set<MultiIndex>::const_iterator 
-         i=multiIndices.begin(); i != multiIndices.end(); i++)
+  if (order==1)
     {
-      if (i->order()==1)
+      for (Set<MultiIndex>::const_iterator i=miSet.begin(); i!=miSet.end(); i++)
         {
-          subset->addDeriv(new CoordDeriv(i->firstOrderDirection()), 
-                           VectorDeriv);
-        }
-      if (i->order()==0)
-        {
-          subset->addDeriv(MultipleDeriv(),
-                           VectorDeriv);
+          const MultiIndex& mi = *i;
+          int diffOrder = mi.order();
+          if (diffOrder==1) 
+            rtn.put(MultipleDeriv(new CoordDeriv(mi.firstOrderDirection())));
         }
     }
   
-  SUNDANCE_VERB_HIGH(tabs << "DiscreteFuncElement " + toString()
-                     << ": my sparsity subset is " 
-                     << endl << *subset);
+  rtn = rtn.intersection(findR(order, context));
+  return rtn;
+}
 
-  SUNDANCE_VERB_HIGH(tabs << "DiscreteFuncElement " + toString() 
-                     << " my sparsity superset is " 
-                     << endl << *sparsitySuperset(context));
-  addKnownNonzero(context, multiIndices, activeFuncIDs,
-                  regardFuncsAsConstant);
+Set<MultipleDeriv> 
+DiscreteFuncElement::internalFindC(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+  return rtn;
+}
+
+void DiscreteFuncElement::addMultiIndex(const MultiIndex& newMi) const
+{
+  miSet_.put(newMi);
 }
 
 XMLObject DiscreteFuncElement::toXML() const 

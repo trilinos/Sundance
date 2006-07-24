@@ -86,9 +86,17 @@ LinearProblem Functional::linearVariationalProb(const Expr& var,
 
   Expr unkEvalPts = new ListExpr(zero);
 
+  Expr unkParams;
+  Expr fixedParams;
+  Expr unkParamValues;
+  Expr fixedParamValues;
+
   RefCountPtr<EquationSet> eqn 
-    = rcp(new EquationSet(integral_, bc_, tuple(var), tuple(varEvalPts),
-                          tuple(unk), tuple(unkEvalPts), tuple(fixed), tuple(fixedEvalPts)));
+    = rcp(new EquationSet(integral_, bc_, 
+                          tuple(var), tuple(varEvalPts),
+                          tuple(unk), tuple(unkEvalPts), 
+                          unkParams, unkParamValues,
+                          tuple(fixed), tuple(fixedEvalPts)));
 
   RefCountPtr<Assembler> assembler 
     = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_)));
@@ -104,9 +112,18 @@ NonlinearOperator<double> Functional
                            const Expr& fixed,
                            const Expr& fixedEvalPts) const
 {
+
+  Expr unkParams;
+  Expr fixedParams;
+  Expr unkParamValues;
+  Expr fixedParamValues;
+
   RefCountPtr<EquationSet> eqn 
-    = rcp(new EquationSet(integral_, bc_, tuple(var), tuple(varEvalPts),
-                          tuple(unk), tuple(unkEvalPts), tuple(fixed), tuple(fixedEvalPts)));
+    = rcp(new EquationSet(integral_, bc_, 
+                          tuple(var), tuple(varEvalPts),
+                          tuple(unk), tuple(unkEvalPts), 
+                          fixedParams, fixedParamValues,
+                          tuple(fixed), tuple(fixedEvalPts)));
 
   RefCountPtr<Assembler> assembler 
     = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_)));
@@ -119,11 +136,16 @@ FunctionalEvaluator Functional::evaluator(const Expr& var,
                                           const Expr& fixed,
                                           const Expr& fixedEvalPts) const 
 {
+
+  Expr unkParams;
+  Expr fixedParams;
+  Expr unkParamValues;
+  Expr fixedParamValues;
+
   return FunctionalEvaluator(mesh_, integral_, bc_,
                              var, 
                              varEvalPts, 
-                             fixed, 
-                             fixedEvalPts,
+                             fixedParams, fixedParamValues,
                              vecType_);
 }
 

@@ -124,8 +124,8 @@ int main(int argc, void** argv)
 
 
       /* now compute a functional at a particular value of a field */
-      Expr alpha = new UnknownFunction(new Lagrange(2), "u");
-      Expr beta = new TestFunction(new Lagrange(2), "v");
+      Expr alpha = new UnknownFunction(new Lagrange(2), "alpha");
+      Expr beta = new TestFunction(new Lagrange(2), "beta");
 
       DiscreteSpace discSpace(mesh, new Lagrange(2), vecType);
       L2Projector projector(discSpace, x*(pi-x));
@@ -133,14 +133,6 @@ int main(int argc, void** argv)
 
       cout << "computing Integral(0.5*pow(alpha-sin(pi*x), 2)) at alpha0=x*(pi-x)"
            << endl;
-      Expr g = Integral(interior, 0.5*pow(alpha-sin(pi*x), 2.0) , quad4);
-      Expr dg = Integral(interior, alpha*beta 
-                         + (alpha0-sin(pi*x))*beta , quad4);
-      Expr bc;
-      LinearProblem phony(mesh, dg, bc, beta, alpha, vecType);
-      Vector<double> dgVec = phony.getRHS();
-
-      double gExact = 0.5*(-2.0*pi*I1Exact + I3Exact + 2.0*I2Exact + I4Exact);
       //#define BLAHBLAH 1
 #ifdef BLAHBLAH
       verbosity<Evaluator>() = VerbExtreme;
@@ -148,7 +140,30 @@ int main(int argc, void** argv)
       verbosity<EvaluatableExpr>() = VerbExtreme;
       verbosity<Assembler>() = VerbExtreme;
       verbosity<ElementIntegral>() = VerbExtreme;
+      EvalVector::shadowOps() = true;
 #endif   
+      Expr g = Integral(interior, 0.5*pow(alpha-sin(pi*x), 2.0) , quad4);
+      //    Expr g = Integral(interior, 0.5*(alpha-sin(pi*x))*(alpha-sin(pi*x)) , quad4);
+      //Expr g = Integral(interior, sin(alpha), quad4);
+      //Expr dg = Integral(interior, alpha*beta+cos(alpha0)*beta, quad4);
+      Expr dg = Integral(interior, alpha*beta 
+                         + (alpha0-sin(pi*x))*beta , quad4);
+      Expr bc;
+      LinearProblem phony(mesh, dg, bc, beta, alpha, vecType);
+      Vector<double> dgVec = phony.getRHS();
+
+      double gExact = 0.5*(-2.0*pi*I1Exact + I3Exact + 2.0*I2Exact + I4Exact);
+
+      //#define BLAHBLAH 1
+#ifdef BLAHBLAH
+      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<SparsitySuperset>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<Assembler>() = VerbExtreme;
+      verbosity<ElementIntegral>() = VerbExtreme;
+      EvalVector::shadowOps() = true;
+#endif   
+
       Functional G(mesh, g, vecType);
 
       FunctionalEvaluator gEval = G.evaluator(alpha, alpha0);
@@ -164,9 +179,10 @@ int main(int argc, void** argv)
       MPIComm::world().synchronize();
       
       /* now compute the derivative of a functional wrt a field variable */
-
+ 
       cout << "computing function value and gradient together: " << endl;
       Expr dGdAlpha = gEval.evalGradient(gVal);
+      cout << "getting vector " << endl;
       Vector<double> dgNumVec 
         = DiscreteFunction::discFunc(dGdAlpha)->getVector();
       Vector<double> dgDiff = dgVec - dgNumVec;

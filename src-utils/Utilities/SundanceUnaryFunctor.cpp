@@ -52,6 +52,16 @@ void UnaryFunctor::eval2(const double* const x,
   evalFDDerivs2(x, nx, f, df_dx, d2f_dxx);
 }
 
+void UnaryFunctor::eval3(const double* const x, 
+                        int nx, 
+                        double* f, 
+                        double* df_dx,
+                        double* d2f_dxx,
+                        double* d3f_dxxx) const
+{
+  evalFDDerivs3(x, nx, f, df_dx, d2f_dxx, d3f_dxxx);
+}
+
 
 void UnaryFunctor::evalFDDerivs1(const double* const x, 
                                  int nx, 
@@ -108,6 +118,44 @@ void UnaryFunctor::evalFDDerivs2(const double* const x,
       df_dx[i] = w1*( 8.0*(fPlus1-fMinus1) - (fPlus2 - fMinus2) );
       d2f_dxx[i] = w2*(16.0*(fPlus1 + fMinus1) 
                         - 30.0*f[i] - (fPlus2+fMinus2));
+    }
+}
+
+void UnaryFunctor::evalFDDerivs3(const double* const x, 
+                                 int nx, 
+                                 double* f, 
+                                 double* df_dx,
+                                 double* d2f_dxx,
+                                 double* d3f_dxxx) const
+{
+  eval0(x, nx, f);
+
+  double w1 = 1.0/h_/12.0;
+  double w2 = w1/h_;
+  double w3 = 0.5/h_/h_/h_;
+
+  for (int i=0; i<nx; i++)
+    {
+      double xPlus1 = x[i] + h_;
+      double xMinus1 = x[i] - h_;
+      double fPlus1;
+      double fMinus1;
+      double xPlus2 = x[i] + 2.0*h_;
+      double xMinus2 = x[i] - 2.0*h_;
+      double fPlus2;
+      double fMinus2;
+      eval0(&xPlus1, 1, &fPlus1);
+      eval0(&xMinus1, 1, &fMinus1);
+      eval0(&xPlus2, 1, &fPlus2);
+      eval0(&xMinus2, 1, &fMinus2);
+      df_dx[i] = w1*( 8.0*(fPlus1-fMinus1) - (fPlus2 - fMinus2) );
+      d2f_dxx[i] = w2*(16.0*(fPlus1 + fMinus1) 
+                        - 30.0*f[i] - (fPlus2+fMinus2));
+      d3f_dxxx[i] = w3*(fPlus2 - 2.0*fPlus1 + 2.0*fMinus1 - fMinus2);
+      cout << "qqqqqqqqqqqqqqqqqqqqqqq" << endl;
+      cout << "w3=" << w3 << endl;
+      cout << "f(x+h)=" << fPlus1 << ", f(x-h)=" << fMinus1 << endl;
+      cout << "f(x+2h)=" << fPlus2 << ", f(x-2h)=" << fMinus2 << endl;
     }
 }
 

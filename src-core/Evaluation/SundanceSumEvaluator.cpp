@@ -288,7 +288,7 @@ void SumEvaluator
         = leftConstResults[ccSums_[i][1]] 
         + sign_*rightConstResults[ccSums_[i][2]];
       SUNDANCE_VERB_MEDIUM(tab1 << "c-c sum for " 
-                           << vectorResultDeriv(ccSums_[i][0])
+                           << constantResultDeriv(ccSums_[i][0])
                            << ": L=" << leftConstResults[ccSums_[i][1]] 
                            << " R=" << sign_*rightConstResults[ccSums_[i][2]]);
     }

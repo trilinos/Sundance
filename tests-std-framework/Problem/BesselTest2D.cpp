@@ -33,6 +33,18 @@
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
 
+
+#ifndef HAVE_MULTIVARIABLE_USER_DEF_OPS
+
+#include <iostream>
+
+int main()
+{
+  std::cout << "multivariable user def ops not present: test INACTIVE" << endl;
+}
+
+#else
+
 /** 
  * 
  */
@@ -177,3 +189,6 @@ double BesselJFunc::eval0(const Array<double>& vars) const
 {
   return jn(n_, vars[0]);
 }
+
+
+#endif

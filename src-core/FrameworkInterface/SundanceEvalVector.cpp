@@ -129,8 +129,9 @@ void EvalVector::add_SV(const double& alpha,
 
   if (shadowOps())
     {
-      str_ = "(" + str_ + "+" 
+      if (str_ != "0") str_ = "(" + str_ + "+" 
         + Teuchos::toString(alpha) + "*" + B->str_ + ")";
+      else str_ = Teuchos::toString(alpha) + "*" + B->str_;
     }
 }
 
@@ -152,8 +153,9 @@ void EvalVector::add_S(const double& alpha)
 
   if (shadowOps())
     {
-      str_ = "(" + str_ + "+" 
+      if (str_ != "0") str_ = "(" + str_ + "+" 
         + Teuchos::toString(alpha) + ")";
+      else str_ = Teuchos::toString(alpha);
     }
 }
 
@@ -177,7 +179,8 @@ void EvalVector::add_V(const EvalVector* A)
 
   if (shadowOps())
     {
-      str_ = "(" + str_ + " + " +  A->str_ + ")";
+      if (str_ != "0") str_ = "(" + str_ + " + " +  A->str_ + ")";
+      else str_ = A->str_;
     }
 }
 
@@ -203,8 +206,9 @@ void EvalVector::add_SVV(const double& alpha,
 
   if (shadowOps())
     {
-      str_ = "(" + str_ + " + " + Teuchos::toString(alpha) + "*"
-        + B->str() + "*" + C->str() + ")";
+      if (str_ != "0") str_ = "(" + str_ + " + " 
+        + Teuchos::toString(alpha) + "*" + B->str() + "*" + C->str() + ")";
+      else str_ = Teuchos::toString(alpha) + "*" + B->str() + "*" + C->str();
     }
 }
 
@@ -229,7 +233,9 @@ void EvalVector::add_VV(const EvalVector* A,
 
   if (shadowOps())
     {
-      str_ = "(" + str_ + " + " + A->str() + "*" + B->str() + ")";
+      if (str_ != "0") str_ = "(" + str_ + " + " + A->str() 
+        + "*" + B->str() + ")";
+      else str_ =A->str() + "*" + B->str();
     }
 }
 
@@ -256,8 +262,9 @@ void EvalVector::multiply_S_add_SV(const double& alpha,
 
   if (shadowOps())
     {
-      str_ = "(" + Teuchos::toString(alpha) + "*" + str_ + "+"
+      if (str_ != "0") str_ = "(" + Teuchos::toString(alpha) + "*" + str_ + "+"
         + Teuchos::toString(beta) + "*" + C->str_ + ")";
+      else str_ = Teuchos::toString(beta) + "*" + C->str_;
     }
 }
 
@@ -282,8 +289,9 @@ void EvalVector::multiply_S_add_S(const double& alpha,
 
   if (shadowOps())
     {
-      str_ = "(" + Teuchos::toString(alpha) + "*" + str_
+      if (str_ != "0") str_ = "(" + Teuchos::toString(alpha) + "*" + str_
         + " + " + Teuchos::toString(beta) + ")";
+      else str_ = Teuchos::toString(beta);
     }
 }
 
@@ -306,7 +314,7 @@ void EvalVector::multiply_V(const EvalVector* A)
 
   if (shadowOps())
     {
-      str_ = str() + "*" + A->str();
+      if (str_ != "0") str_ = str() + "*" + A->str();
     }
 }
 
@@ -336,8 +344,9 @@ void EvalVector::multiply_V_add_VVV(const EvalVector* A,
 
   if (shadowOps())
     {
-      str_ = "(" + str() + "*" + A->str() + " + " 
+      if (str_ != "0") str_ = "(" + str() + "*" + A->str() + " + " 
         + B->str() + "*" + C->str() + "*" + D->str() + ")";
+      else str_ = B->str() + "*" + C->str() + "*" + D->str();
     }
 }
 
@@ -775,6 +784,7 @@ void EvalVector::applyUnaryOperator(const UnaryFunctor* func,
 
 void EvalVector::print(ostream& os) const 
 {
+  TEST_FOR_EXCEPTION(shadowOps() && str_.size()==0, RuntimeError, "empty eval vector result string!");
   os << str_;
 
   if (data_->size() > 0)
