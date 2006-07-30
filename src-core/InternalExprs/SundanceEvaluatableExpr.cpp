@@ -455,6 +455,8 @@ void EvaluatableExpr::displayNonzeros(ostream& os, const EvalContext& context) c
   const Set<MultipleDeriv>& C = findC(context);
   const Set<MultipleDeriv>& V = findV(context);
 
+  TEST_FOR_EXCEPT(C.intersection(V).size() != 0);
+
   for (Set<MultipleDeriv>::const_iterator i=W.begin(); i != W.end(); i++)
     {
       Tabs tab1;

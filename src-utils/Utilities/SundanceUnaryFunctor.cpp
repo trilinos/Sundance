@@ -152,10 +152,6 @@ void UnaryFunctor::evalFDDerivs3(const double* const x,
       d2f_dxx[i] = w2*(16.0*(fPlus1 + fMinus1) 
                         - 30.0*f[i] - (fPlus2+fMinus2));
       d3f_dxxx[i] = w3*(fPlus2 - 2.0*fPlus1 + 2.0*fMinus1 - fMinus2);
-      cout << "qqqqqqqqqqqqqqqqqqqqqqq" << endl;
-      cout << "w3=" << w3 << endl;
-      cout << "f(x+h)=" << fPlus1 << ", f(x-h)=" << fMinus1 << endl;
-      cout << "f(x+2h)=" << fPlus2 << ", f(x-2h)=" << fMinus2 << endl;
     }
 }
 

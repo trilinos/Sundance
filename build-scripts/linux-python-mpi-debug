@@ -32,20 +32,18 @@
 
 
 #--with-fiat=$HOME/Projects/fiat++/BUILD \
+##--with-sundials=$HOME/Software/Math/sundials/LINUX-OPT \
 
 
 BUILD_DIR=`pwd`
 
 ../configure --enable-mpi --with-mpi-compilers \
 CXXFLAGS="-Wall -O0 -g" \
---with-trilinos=$HOME/Projects/Trilinos/LINUX-DEBUG \
+--with-trilinos=$HOME/Software/Math/trilinos-6.0.18/LINUX-DEBUG \
 --with-install="/usr/bin/install -c -p" \
 --enable-python \
---with-trilinos-devel \
---with-moocho \
 --disable-cxxtests \
 --disable-cxxexamples \
 --disable-lowleveltests \
---with-sundials=$HOME/Software/Math/sundials/LINUX-OPT \
 --prefix=$BUILD_DIR
 

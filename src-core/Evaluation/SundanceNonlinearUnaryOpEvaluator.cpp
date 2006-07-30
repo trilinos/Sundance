@@ -151,7 +151,7 @@ void NonlinearUnaryOpEvaluator
         }
 
       double* f = varArgDerivs[0]->start();
-      double* df_dArg;
+      double* df_dArg = 0 ;
       if (maxOrder_ >= 1) 
         {
           varArgDerivs[1] = varArgDerivs[0]->clone();
@@ -161,7 +161,7 @@ void NonlinearUnaryOpEvaluator
             }
           df_dArg = varArgDerivs[1]->start();
         }
-      double* d2f_dArg2;
+      double* d2f_dArg2 = 0 ;
       if (maxOrder_ >= 2) 
         {
           varArgDerivs[2] = varArgDerivs[0]->clone();
@@ -171,7 +171,7 @@ void NonlinearUnaryOpEvaluator
             }
           d2f_dArg2 = varArgDerivs[2]->start();
         }
-      double* d3f_dArg3;
+      double* d3f_dArg3 = 0 ;
       if (maxOrder_ >= 3) 
         {
           UnaryFunctor::fdStep()=1.0e-3;
@@ -189,12 +189,18 @@ void NonlinearUnaryOpEvaluator
           op_->eval0(argValue, nx, f);
           break;
         case 1:
+          TEST_FOR_EXCEPT(df_dArg==0);
           op_->eval1(argValue, nx, f, df_dArg);
           break;
         case 2:
+          TEST_FOR_EXCEPT(df_dArg==0);
+          TEST_FOR_EXCEPT(d2f_dArg2==0);
           op_->eval2(argValue, nx, f, df_dArg, d2f_dArg2);
           break;
         case 3:
+          TEST_FOR_EXCEPT(df_dArg==0);
+          TEST_FOR_EXCEPT(d2f_dArg2==0);
+          TEST_FOR_EXCEPT(d3f_dArg3==0);
           op_->eval3(argValue, nx, f, df_dArg, d2f_dArg2, d3f_dArg3);
           break;
         default:

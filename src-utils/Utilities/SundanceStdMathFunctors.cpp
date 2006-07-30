@@ -45,30 +45,57 @@ void PowerFunctor::eval1(const double* const x,
                         double* f, 
                         double* df) const
 {
-  if (checkResults())
+  if (p_==2)
     {
       for (int i=0; i<nx; i++) 
         {
-          double px = ::pow(x[i], p_-1);
-          df[i] = p_*px;
-          f[i] = x[i]*px;
-//bvbw tried to include math.h, without success
-#ifdef REDDISH_PORT_PROBLEM
-          TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
-                             || fpclassify(df[i]) != FP_NORMAL,
-                             RuntimeError,
-                             "Non-normal floating point result detected in "
-                             "evaluation of unary functor " << name());
-#endif
+          df[i] = 2.0*x[i];
+          f[i] = x[i]*x[i];
+        }
+    }
+  else if (p_==1)
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          df[i] = 0.0;
+          f[i] = 1.0;
+        }
+    }
+  else if (p_==0)
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          df[i] = 0.0;
+          f[i] = 0.0;
         }
     }
   else
     {
-      for (int i=0; i<nx; i++) 
+      if (checkResults())
         {
-          double px = ::pow(x[i], p_-1);
-          df[i] = p_*px;
-          f[i] = x[i]*px;
+          for (int i=0; i<nx; i++) 
+            {
+              double px = ::pow(x[i], p_-1);
+              df[i] = p_*px;
+              f[i] = x[i]*px;
+              //bvbw tried to include math.h, without success
+#ifdef REDDISH_PORT_PROBLEM
+              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+                                 || fpclassify(df[i]) != FP_NORMAL,
+                                 RuntimeError,
+                                 "Non-normal floating point result detected in "
+                                 "evaluation of unary functor " << name());
+#endif
+            }
+        }
+      else
+        {
+          for (int i=0; i<nx; i++) 
+            {
+              double px = ::pow(x[i], p_-1);
+              df[i] = p_*px;
+              f[i] = x[i]*px;
+            }
         }
     }
 }
@@ -79,31 +106,143 @@ void PowerFunctor::eval2(const double* const x,
                         double* df,
                         double* d2f_dxx) const
 {
-  if (checkResults())
+  if (p_==2)
     {
       for (int i=0; i<nx; i++) 
         {
-          double px = ::pow(x[i], p_-2);
-          d2f_dxx[i] = p_ * (p_-1) * px;
-          df[i] = p_*x[i]*px;
-          f[i] = x[i]*x[i]*px;
-#ifdef REDDISH_PORT_PROBLEM
-          TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
-                             || fpclassify(df[i]) != FP_NORMAL,
-                             RuntimeError,
-                             "Non-normal floating point result detected in "
-                             "evaluation of unary functor " << name());
-#endif
+          d2f_dxx[i] = 2.0;
+          df[i] = 2.0*x[i];
+          f[i] = x[i]*x[i];
+        }
+    }
+  else if (p_==1)
+    {
+       for (int i=0; i<nx; i++) 
+        {
+          d2f_dxx[i] = 0.0;
+          df[i] = 1.0;
+          f[i] = x[i];
+        }
+    }
+  else if (p_==0)
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          d2f_dxx[i] = 0.0;
+          df[i] = 0.0;
+          f[i] = 1.0;
         }
     }
   else
     {
+      if (checkResults())
+        {
+          for (int i=0; i<nx; i++) 
+            {
+              double px = ::pow(x[i], p_-2);
+              d2f_dxx[i] = p_ * (p_-1) * px;
+              df[i] = p_*x[i]*px;
+              f[i] = x[i]*x[i]*px;
+#ifdef REDDISH_PORT_PROBLEM
+              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+                                 || fpclassify(df[i]) != FP_NORMAL,
+                                 RuntimeError,
+                                 "Non-normal floating point result detected in "
+                                 "evaluation of unary functor " << name());
+#endif
+            }
+        }
+      else
+        {
+          for (int i=0; i<nx; i++) 
+            {
+              double px = ::pow(x[i], p_-2);
+              d2f_dxx[i] = p_ * (p_-1) * px;
+              df[i] = p_*x[i]*px;
+              f[i] = x[i]*x[i]*px;
+            }
+        }
+    }
+}
+
+
+void PowerFunctor::eval3(const double* const x, 
+                         int nx, 
+                         double* f, 
+                         double* df,
+                         double* d2f_dxx,
+                         double* d3f_dxxx) const
+{
+  if (p_==3)
+    {
       for (int i=0; i<nx; i++) 
         {
-          double px = ::pow(x[i], p_-2);
-          d2f_dxx[i] = p_ * (p_-1) * px;
-          df[i] = p_*x[i]*px;
-          f[i] = x[i]*x[i]*px;
+          d3f_dxxx[i] = 6.0;
+          d2f_dxx[i] = 6.0*x[i];
+          df[i] = 3.0*x[i]*x[i];
+          f[i] = x[i]*x[i]*x[i];
+        }
+    }
+  else if (p_==2)
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          d3f_dxxx[i] = 0.0;
+          d2f_dxx[i] = 2.0;
+          df[i] = 2.0*x[i];
+          f[i] = x[i]*x[i];
+        }
+    }
+  else if (p_==1)
+    {
+       for (int i=0; i<nx; i++) 
+        {
+          d3f_dxxx[i] = 0.0;
+          d2f_dxx[i] = 0.0;
+          df[i] = 1.0;
+          f[i] = x[i];
+        }
+    }
+  else if (p_==0)
+    {
+      for (int i=0; i<nx; i++) 
+        {
+          d3f_dxxx[i] = 0.0;
+          d2f_dxx[i] = 0.0;
+          df[i] = 0.0;
+          f[i] = 1.0;
+        }
+    }
+  else
+    {
+      if (checkResults())
+        {
+          for (int i=0; i<nx; i++) 
+            {
+              double px = ::pow(x[i], p_-3);
+              d3f_dxxx[i] = p_ * (p_-1) * (p_-2) * px;
+              d2f_dxx[i] = p_ * (p_-1) * x[i] * px;
+              df[i] = p_*x[i]*x[i]*px;
+              f[i] = x[i]*x[i]*x[i]*px;
+#ifdef REDDISH_PORT_PROBLEM
+              TEST_FOR_EXCEPTION(fpclassify(f[i]) != FP_NORMAL 
+                                 || fpclassify(df[i]) != FP_NORMAL,
+                                 RuntimeError,
+                                 "Non-normal floating point result detected in "
+                                 "evaluation of unary functor " << name());
+#endif
+            }
+        }
+      else
+        {
+          for (int i=0; i<nx; i++) 
+            {
+              double px = ::pow(x[i], p_-3);
+              d3f_dxxx[i] = p_ * (p_-1) * (p_-2) * px;
+              d2f_dxx[i] = p_ * (p_-1) * x[i] * px;
+              df[i] = p_*x[i]*x[i]*px;
+              f[i] = x[i]*x[i]*x[i]*px;
+            }
         }
     }
 }

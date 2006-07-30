@@ -44,6 +44,8 @@ namespace SundanceUtils
   public:
     FunctorDomain();
 
+    virtual ~FunctorDomain(){;}
+
     virtual bool hasLowerBound() const {return false;}
 
     virtual double lowerBound() const ;
@@ -70,9 +72,9 @@ namespace SundanceUtils
   public:
     PositiveDomain();
 
-    virtual bool hasLowerBound() const {return true;}
+     bool hasLowerBound() const {return true;}
 
-    virtual double lowerBound() const {return 0.0;}
+     double lowerBound() const {return 0.0;}
   };
 
 
@@ -81,13 +83,13 @@ namespace SundanceUtils
   public:
     BoundedDomain(const double& lower, const double& upper);
 
-    virtual bool hasLowerBound() const {return true;}
+     bool hasLowerBound() const {return true;}
 
-    virtual double lowerBound() const {return lower_;}
+     double lowerBound() const {return lower_;}
 
-    virtual bool hasUpperBound() const {return true;}
+     bool hasUpperBound() const {return true;}
 
-    virtual double upperBound() const {return upper_;}
+     double upperBound() const {return upper_;}
 
   private:
     double lower_;
@@ -101,9 +103,9 @@ namespace SundanceUtils
   public:
     LowerBoundedDomain(const double& lower);
 
-    virtual bool hasLowerBound() const {return true;}
+     bool hasLowerBound() const {return true;}
 
-    virtual double lowerBound() const {return lower_;}
+     double lowerBound() const {return lower_;}
 
   private:
     double lower_;
@@ -114,9 +116,9 @@ class NonzeroDomain : public FunctorDomain
   public:
     NonzeroDomain();
 
-    virtual bool hasExcludedPoint() const {return true;}
+     bool hasExcludedPoint() const {return true;}
 
-    virtual double excludedPoint() const {return 0.0;}
+     double excludedPoint() const {return 0.0;}
   };
 
 }

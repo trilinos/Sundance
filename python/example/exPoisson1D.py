@@ -47,9 +47,8 @@ def main():
   
   prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
-  precond = ILUKPreconditionerFactory(ilukParams)
-  solver = GMRESSolver(tsfSolverParams, precond)
-
+  solver = readSolver("../../../tests-std-framework/Problem/aztec-ml.xml");
+  
   soln = prob.solve(solver)
 
   # do a silly vector manipulation just to show how to use vectors

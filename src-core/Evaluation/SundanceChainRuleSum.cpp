@@ -114,7 +114,7 @@ void ChainRuleSum
     } 
   for (unsigned int i=0; i<vArgResults.size(); i++)
     {
-      for (int j=0; j<vArgResults[i]->size(); j++)
+      for (unsigned int j=0; j<vArgResults[i]->size(); j++)
         {
           int s = (*(vArgResults[i]))[j]->length();
           TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, InternalError,

@@ -210,7 +210,7 @@ int ChainRuleEvaluator::derivComboMultiplicity(const MultiSet<MultipleDeriv>& b)
                      "deriv order " << totOrder << " not supported");
 
   if (b.size()==1) return 1;  /* handles case with a single multiple deriv */
-  if (totOrder == b.size()) return 1; /* handles case with N first derivs */
+  if (totOrder == (int) b.size()) return 1; /* handles case with N first derivs */
 
   /* The only remaining cases are total order = 3, grouped in 2 bins. 
    * Order=3 in 1 bin and order=3 in 3 bins have been delat with already. 

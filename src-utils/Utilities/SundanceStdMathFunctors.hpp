@@ -63,6 +63,14 @@ namespace SundanceUtils
                       double* df_dx,
                       double* d2f_dxx) const ;
 
+    /** Evaluate power function and first three derivs at an array of values */
+    virtual void eval3(const double* const x, 
+                      int nx, 
+                      double* f, 
+                      double* df_dx,
+                      double* d2f_dxx,
+                      double* d3f_dxxx) const ;
+
   private:
     double p_;
   };
