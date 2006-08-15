@@ -228,7 +228,6 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   SundanceUtils::Set<int> fixedID;
 
 
-
   /* check the var functions for redundancies and non-var funcs */
   for (unsigned int i=0; i<v.size(); i++)
     {
@@ -259,7 +258,6 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
         }
     }
 
-  
 
   /* check the unk functions for redundancies and non-unk funcs */
   for (unsigned int i=0; i<u.size(); i++)

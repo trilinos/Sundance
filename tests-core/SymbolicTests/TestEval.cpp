@@ -6,6 +6,7 @@
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
+#include "SundanceListExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
 #include "SundanceProductTransformation.hpp"
 #include "SundanceDeriv.hpp"
@@ -25,6 +26,7 @@
 using namespace SundanceUtils;
 using namespace SundanceTesting;
 using namespace SundanceCore;
+using SundanceCore::List;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
@@ -107,6 +109,10 @@ static Time& totalTimer()
   QUIET();                                      \
   goto finish;
 
+
+
+
+
 int main(int argc, void** argv)
 {
   try
@@ -146,6 +152,8 @@ int main(int argc, void** argv)
       ADDerivative Dy(1);
       ADDerivative Dz(2);
 
+      ADReal C_old = sin(X)*sin(Y);
+
 			Expr u = new TestUnknownFunction(U, "u");
 			Expr w = new TestUnknownFunction(W, "w");
 
@@ -155,6 +163,10 @@ int main(int argc, void** argv)
       Expr g = x*x + y*y;
       Expr f = x*x;
       Expr h = x+y;
+      Expr c_old = sin(x)*sin(y);
+      double dt = 0.01;
+
+      Expr grad = List(dx, dy);
 
       double tol1 = 1.0e-5;
       double tol2 = 1.0e-5;
@@ -490,6 +502,10 @@ int main(int argc, void** argv)
       TESTER(dx*(exp(-log(u))), Dx*(exp(-log(U))));
 
       TESTER(dx*(exp(2.0*log(u))), Dx*(exp(2.0*log(U))));
+
+      TESTER(w*((u-c_old)/dt) + (grad*w)*(grad*(u + c_old)/2.0),
+             W*((U-C_old)/dt) + (Dx*W)*(Dx*(U + C_old)/2.0) + (Dy*W)*(Dy*(U + C_old)/2.0));
+             
 
 
     finish:

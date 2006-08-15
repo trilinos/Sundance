@@ -70,6 +70,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUnknownParameter.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.cpp 
 
 

@@ -99,6 +99,7 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
       vectorResults.resize(1);
       vectorResults[0] = mgr.popVector();
       mgr.evalCellDiameterExpr(expr(), vectorResults[0]);
+      mgr.stack().setVecSize(vectorResults[0]->length());
       if (EvalVector::shadowOps()) vectorResults[0]->setString(stringRep_);
     }
 

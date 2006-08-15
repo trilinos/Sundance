@@ -31,7 +31,7 @@
 
 EXEEXT = .exe
 
-TEST_SRC = TestEval VecOpTest 
+TEST_SRC = TestEval VecOpTest UserDefTest
 
 noinst_PROGRAMS = $(TEST_SRC) SetTest ChainRule SimpleEval SensitivityTest \
 PolynomialTest StdTransformation ScalabilityTest DepthScalabilityTest \
@@ -60,6 +60,17 @@ $(top_builddir)/src-utils/libsundanceUtils.a
 ChainRule_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 
 ChainRule_LDADD = $(CORE_LIBS) 
+
+
+
+UserDefTest_SOURCES = $(srcdir)/UserDefTest.cpp 
+
+UserDefTest_DEPENDENCIES = $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a 
+
+UserDefTest_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
+
+UserDefTest_LDADD = $(CORE_LIBS) 
 
 
 

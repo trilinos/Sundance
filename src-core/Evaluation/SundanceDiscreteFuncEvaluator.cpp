@@ -156,6 +156,7 @@ void DiscreteFuncElementEvaluator
       vectorResults[i]->setString(stringReps_[i]);
     }
   mgr.evalDiscreteFuncElement(expr(), mi_, vectorResults);
+  mgr.stack().setVecSize(vectorResults[0]->length());
   
   if (verbosity() > VerbMedium)
     {

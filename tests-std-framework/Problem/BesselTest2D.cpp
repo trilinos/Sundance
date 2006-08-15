@@ -34,16 +34,8 @@
 #include "SundanceUserDefOp.hpp"
 
 
-#ifndef HAVE_MULTIVARIABLE_USER_DEF_OPS
 
-#include <iostream>
 
-int main()
-{
-  std::cout << "multivariable user def ops not present: test INACTIVE" << endl;
-}
-
-#else
 
 /** 
  * 
@@ -57,6 +49,8 @@ public:
 
   /** */
   virtual double eval0(const Array<double>& vars) const ;
+  /** */
+  int numArgs() const {return 1;}
 
 private:
   int n_;
@@ -94,6 +88,8 @@ public:
 
   /** */
   virtual double eval0(const Array<double>& vars) const ;
+  /** */
+  int numArgs() const {return 2;}
 
 private:
   double A_;
@@ -125,7 +121,14 @@ Expr DrumFunc(int n, double A, const Expr& x, const Expr& y)
 
 
 
-
+#define LOUD()                                          \
+  {                                                     \
+    verbosity<Evaluator>() = VerbExtreme;               \
+    verbosity<SparsitySuperset>() = VerbSilent;         \
+    verbosity<EvalVector>() = VerbSilent;               \
+    verbosity<EvaluatableExpr>() = VerbExtreme;         \
+    verbosity<AbstractEvalMediator>() = VerbExtreme;    \
+  }
 
 int main(int argc, void** argv)
 {
@@ -140,8 +143,8 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 10.0, 64, 1,
-                                                         0.0, 10.0, 64, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 10.0, 128, 1,
+                                                         0.0, 10.0, 128, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -164,6 +167,12 @@ int main(int argc, void** argv)
       Expr JnDisc = L2Projector(discSpace, Jn).project();
       Expr DnDisc = L2Projector(discSpace, Dn).project();
 
+      Expr errExpr = Integral(interior, 
+                              0.01 * pow(JnDisc*(x*x - y*y)/r/r -DnDisc, 2.0),
+                              new GaussianQuadrature(4) );
+
+      double errorSq = evaluateIntegral(mesh, errExpr);
+
        /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Bessel2d");
       w.addMesh(mesh);
@@ -171,8 +180,8 @@ int main(int argc, void** argv)
       w.addField("Drum_n", new ExprFieldWrapper(DnDisc));
       w.write();
 
-      double tol = 1.0e-12;
-      Sundance::passFailTest(0, tol);
+      double tol = 1.0e-6;
+      Sundance::passFailTest(::sqrt(errorSq), tol);
     }
 	catch(exception& e)
 		{
@@ -191,4 +200,3 @@ double BesselJFunc::eval0(const Array<double>& vars) const
 }
 
 
-#endif

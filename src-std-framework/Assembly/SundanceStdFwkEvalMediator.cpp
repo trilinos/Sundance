@@ -94,7 +94,7 @@ void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
       for (unsigned int c=0; c<cells.size(); c++)
         {
           (*maxCellLIDs_)[c] 
-            = mesh_.cofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
+            = mesh_.maxCofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
           cout << "max cellLID=" << (*maxCellLIDs_)[c] 
                << ", facetIndex=" << (*facetIndices_)[c] << endl;
         }

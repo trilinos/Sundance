@@ -30,6 +30,7 @@
 
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceTempStack.hpp"
 #include "SundanceCellDiameterExpr.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
@@ -236,6 +237,7 @@ void QuadratureEvalMediator
    int chunk = dofMap->chunkForFuncID(myIndex);
    int funcIndex = dofMap->indexForFuncID(myIndex);
    int nFuncs = dofMap->nFuncs(chunk);
+
 
    for (unsigned int i=0; i<multiIndices.size(); i++)
     {

@@ -79,9 +79,11 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
     elemFaces_(dim+1),
     elemFaceRotations_(dim+1),
     vertexSetToFaceIndexMap_(),
+    edgeFaces_(),
     edgeCofacets_(),
     faceCofacets_(),
     vertEdges_(),
+    vertFaces_(),
     vertCofacets_(),
     vertEdgePartners_(),
     LIDToGIDMap_(dim+1),
@@ -747,7 +749,7 @@ int BasicSimplicialMesh::facetLID(int cellDim, int cellLID,
 }
 
 
-int BasicSimplicialMesh::numCofacets(int cellDim, int cellLID) const 
+int BasicSimplicialMesh::numMaxCofacets(int cellDim, int cellLID) const 
 {
 
   if (cellDim==0)
@@ -765,7 +767,9 @@ int BasicSimplicialMesh::numCofacets(int cellDim, int cellLID) const
   return -1; // -Wall
 }
 
-int BasicSimplicialMesh::cofacetLID(int cellDim, int cellLID,
+
+
+int BasicSimplicialMesh::maxCofacetLID(int cellDim, int cellLID,
                                     int cofacetIndex,
                                     int& facetIndex) const
 {
@@ -800,6 +804,50 @@ int BasicSimplicialMesh::cofacetLID(int cellDim, int cellLID,
   TEST_FOR_EXCEPTION(true, RuntimeError, "reverse pointer to facet not found"
                      " in request for cofacet");
   return -1; // -Wall
+}
+
+
+void BasicSimplicialMesh::getCofacets(int cellDim, int cellLID,
+                                      int cofacetDim, Array<int>& cofacetLIDs) const 
+{
+  TEST_FOR_EXCEPTION(cofacetDim > spatialDim() || cofacetDim < 0, RuntimeError,
+                     "invalid cofacet dimension=" << cofacetDim);
+  TEST_FOR_EXCEPTION( cofacetDim <= cellDim, RuntimeError,
+                      "invalid cofacet dimension=" << cofacetDim
+                      << " for cell dim=" << cellDim);
+  if (cofacetDim==spatialDim())
+    {
+      cofacetLIDs.resize(numMaxCofacets(cellDim, cellLID));
+      int dum=0;
+      for (unsigned int f=0; f<cofacetLIDs.size(); f++)
+        {
+          cofacetLIDs[f] = maxCofacetLID(cellDim, cellLID, f, dum);
+        }
+    }
+  else
+    {
+      if (cellDim==0)
+        {
+          if (cofacetDim==1) cofacetLIDs = vertEdges_[cellLID];
+          else if (cofacetDim==2) cofacetLIDs = vertFaces_[cellLID];
+          else TEST_FOR_EXCEPT(true);
+        }
+      else if (cellDim==1)
+        { 
+          if (cofacetDim==2) cofacetLIDs = edgeFaces_[cellLID];
+          else TEST_FOR_EXCEPT(true);
+        }
+      else if (cellDim==2)
+        {
+          /* this should never happen, because the only possibility is a maximal cofacet,
+           * which would have been handled above */
+          TEST_FOR_EXCEPT(true);
+        }
+      else
+        {
+          TEST_FOR_EXCEPT(true);
+        }
+    }
 }
 
 int BasicSimplicialMesh::mapGIDToLID(int cellDim, int globalIndex) const
@@ -862,6 +910,7 @@ int BasicSimplicialMesh::addVertex(int globalIndex, const Point& x,
 
   vertCofacets_.resize(points_.length());
   vertEdges_.resize(points_.length());
+  if (spatialDim() > 2) vertFaces_.resize(points_.length());
   vertEdgePartners_.resize(points_.length());
   
   return lid;
@@ -1070,6 +1119,16 @@ int BasicSimplicialMesh::addFace(int v1, int v2, int v3,
       
       /* update the cell count */
       numCells_[spatialDim()-1]++;
+
+      /* Register the face as a cofacet of its edges */
+      edgeFaces_[e1].append(lid);
+      edgeFaces_[e2].append(lid);
+      edgeFaces_[e3].append(lid);
+
+      /* Register the face as a cofacet of its vertices */
+      vertFaces_[v1].append(lid);
+      vertFaces_[v2].append(lid);
+      vertFaces_[v3].append(lid);
 
       /* return the LID of the new face */
       return lid;
@@ -1316,6 +1375,8 @@ int BasicSimplicialMesh::addEdge(int v1, int v2,
       vertEdgePartners_[v2].append(v1);
       /* create storage for the cofacets of the new edge */
       edgeCofacets_.resize(lid+1);
+      if (spatialDim() > 2) edgeFaces_.resize(lid+1);
+      
       
       /* the new edge is so far unlabeled, so set its label to zero */
       labels_[1].append(0);

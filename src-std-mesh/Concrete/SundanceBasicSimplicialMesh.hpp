@@ -149,10 +149,10 @@ namespace SundanceStdMesh
       /** 
        * Return the number of maximal cofacets of the given cell
        */
-      virtual int numCofacets(int cellDim, int cellLID) const  ;
+      virtual int numMaxCofacets(int cellDim, int cellLID) const  ;
 
       /** 
-       * Return the local ID of a cofacet cell
+       * Return the local ID of a maximal cofacet cell
        * @param cellDim dimension of the cell whose cofacets are being obtained
        * @param cellLID local index of the cell whose
        * cofacets are being obtained
@@ -160,10 +160,22 @@ namespace SundanceStdMesh
        * @param cofacetIndex index of the cell cellLID into the list of the 
        * maximal cell's facets
        */
-      virtual int cofacetLID(int cellDim, int cellLID,
+      virtual int maxCofacetLID(int cellDim, int cellLID,
                              int cofacetIndex,
                              int& facetIndex) const  ;
 
+      
+      /** 
+       * Find the cofacets of the given cell
+       * @param cellDim dimension of the cell whose cofacets are being obtained
+       * @param cellLID local index of the cell whose
+       * cofacets are being obtained
+       * @param cofacetDim dimension of the cofacets to get
+       * @param cofacetLIDs LIDs of the cofacet
+       */
+      void getCofacets(int cellDim, int cellLID,
+                       int cofacetDim, Array<int>& cofacetLIDs) const ;
+      
       /** 
        * Find the local ID of a cell given its global index
        */
@@ -401,6 +413,10 @@ namespace SundanceStdMesh
       /** table for mapping vertex set -> face index */
       Hashtable<VertexView, int> vertexSetToFaceIndexMap_;
 
+      /** array of face cofacets for the edges. The first index
+       * is the edge LID, the second the cofacet number. */
+      Array<Array<int> > edgeFaces_;
+
       /** array of element cofacets for the edges. The first index
        * is the edge LID, the second the cofacet number. */
       Array<Array<int> > edgeCofacets_;
@@ -412,6 +428,10 @@ namespace SundanceStdMesh
       /** array of edge cofacets for the vertices. The first index is the 
        * vertex LID, the second the edge cofacet number. */
       Array<Array<int> > vertEdges_;
+
+      /** array of face cofacet LIDs for the vertices. The first index is the 
+       * vertex LID, the second the cofacet number. */
+      Array<Array<int> > vertFaces_;
 
       /** array of maximal cofacets for the vertices. The first index is the
        * vertex LID, the second the cafacet number. */

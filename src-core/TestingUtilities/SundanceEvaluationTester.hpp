@@ -66,11 +66,16 @@ namespace SundanceTesting
   {
   public:
     /** */
-    EvaluationTester(const Expr& e);
+    EvaluationTester(const Expr& e, int maxDiffOrder=2);
 
     /** */
     double evaluate(Array<double>& firstDerivs, 
                     Array<Array<double> >& secondDerivs) const ;
+    /** */
+    double evaluate(Array<double>& firstDerivs) const ;
+
+    /** */
+    double evaluate() const ;
     
     double fdEvaluate(const double& step, const double& tol, 
                       const double& tol2,
@@ -91,6 +96,7 @@ namespace SundanceTesting
     const EvaluatableExpr* ev_;
     RefCountPtr<SparsitySuperset> sparsity_;
     Map<int, int> unkIDToDiscreteIDMap_;
+    int maxDiffOrder_;
   };
 
 }

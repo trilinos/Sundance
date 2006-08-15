@@ -120,6 +120,10 @@ int main(int argc, void *argv[])
           xBlock[i] = x.getBlock(i);
         }
 
+      Vector<double> xx = x.copy();
+
+      
+
       cerr << "------------------------------------------------------------" << endl;
       cerr << "computing A*x..." << endl;
       Vector<double> y0 = A * x;

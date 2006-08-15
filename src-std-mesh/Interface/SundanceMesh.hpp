@@ -172,8 +172,8 @@ using namespace SundanceUtils;
     /** 
      * Return the number of maximal cofacets of the given cell
      */
-    int numCofacets(int cellDim, int cellLID) const 
-    {return ptr()->numCofacets(cellDim, cellLID);}
+    int numMaxCofacets(int cellDim, int cellLID) const 
+    {return ptr()->numMaxCofacets(cellDim, cellLID);}
 
     /** 
      * Return the local ID of a maximal cofacet of a cell
@@ -185,10 +185,22 @@ using namespace SundanceUtils;
      * @param facetIndex index of the calling cell
      * into the list of the maximal cell's facets
      */
-    int cofacetLID(int cellDim, int cellLID,
+    int maxCofacetLID(int cellDim, int cellLID,
                    int cofacetIndex,
                    int& facetIndex) const 
-    {return ptr()->cofacetLID(cellDim, cellLID, cofacetIndex, facetIndex);}
+    {return ptr()->maxCofacetLID(cellDim, cellLID, cofacetIndex, facetIndex);}
+
+    /** 
+     * Find the cofacets of the given cell
+     * @param cellDim dimension of the cell whose cofacets are being obtained
+     * @param cellLID local index of the cell whose
+     * cofacets are being obtained
+     * @param cofacetDim dimension of the cofacets to get
+     * @param cofacetLIDs LIDs of the cofacet
+     */
+    void getCofacets(int cellDim, int cellLID,
+                     int cofacetDim, Array<int>& cofacetLIDs) const 
+    {ptr()->getCofacets(cellDim, cellLID, cofacetDim, cofacetLIDs);}
 
     /** 
      * Find the local ID of a cell given its global index

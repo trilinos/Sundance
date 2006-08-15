@@ -49,7 +49,7 @@ using namespace std;
 
 
 
-EvaluationTester::EvaluationTester(const Expr& e)
+EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
   : e_(e),
     rqc_(),
     context_(),
@@ -58,11 +58,11 @@ EvaluationTester::EvaluationTester(const Expr& e)
     tem_(),
     ev_(dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get())),
     sparsity_(),
-    unkIDToDiscreteIDMap_()
+    unkIDToDiscreteIDMap_(),
+    maxDiffOrder_(maxDiffOrder)
 {
   verbosity() = classVerbosity();
   Tabs tabs;
-  int maxDiffOrder = 2;
 
   SUNDANCE_VERB_LOW(tabs << "creating tester for expression " << e.toString());
 
@@ -140,22 +140,246 @@ EvaluationTester::EvaluationTester(const Expr& e)
   SUNDANCE_VERB_LOW(tabs << "setting up evaluation...");
   Expr dummy;
 
-  DerivSet d = SymbPreprocessor::setupVariations(e[0], 
-                                                 unkList,
-                                                 discList,
-                                                 unkList,
-                                                 discList,
-                                                 dummy,
-                                                 dummy,
-                                                 dummy,
-                                                 dummy,
-                                                 dummy,
-                                                 dummy,
-                                                 context_);
+  if (maxDiffOrder_ > 0)
+    {
+      SymbPreprocessor::setupVariations(e[0], 
+                                        unkList,
+                                        discList,
+                                        unkList,
+                                        discList,
+                                        dummy,
+                                        dummy,
+                                        dummy,
+                                        dummy,
+                                        dummy,
+                                        dummy,
+                                        context_);
+    }
+  else
+    {
+      SymbPreprocessor::setupFunctional(e[0], 
+                                        dummy,
+                                        dummy,
+                                        unkList,
+                                        discList,
+                                        context_);
+    }
 
   sparsity_ = ev_->sparsitySuperset(context_);
 
 }
+
+
+
+double EvaluationTester::evaluate() const 
+{
+  Tabs tabs;
+
+  Array<double> constantResults;
+  Array<RefCountPtr<EvalVector> > vectorResults;
+
+  
+  SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
+
+  tem_->setEvalPoint(ADField::evalPoint());
+  ev_->evaluator(context_)->resetNumCalls();
+  ev_->evaluate(mgr_, constantResults, vectorResults);
+
+  if (verbosity() > VerbLow)
+    {
+      ev_->sparsitySuperset(context_)->print(cerr, vectorResults,
+                                             constantResults);
+    }
+
+  int vectorCount=0;
+  int constantCount=0;
+  double rtn = 0.0;
+
+  for (int i=0; i<sparsity_->numDerivs(); i++)
+    {
+      const MultipleDeriv& md = sparsity_->deriv(i);
+      
+      Array<int> fieldIndex;
+      Array<MultiIndex> mi;
+
+      SUNDANCE_VERB_MEDIUM("md=" << md);
+
+      for (MultipleDeriv::const_iterator 
+             iter=md.begin(); iter != md.end(); iter++)
+        {
+          const Deriv& d = *iter;
+          TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+                             "coordinate deriv found in TestEvalMediator::"
+                             "sumFunctionalChainRule");
+          const FunctionalDeriv* f = d.funcDeriv();
+          int uid = f->funcID();
+          SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
+          TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+                             InternalError,
+                             "uid " << uid << " not found in map " 
+                             <<unkIDToDiscreteIDMap_ );
+          int fid = unkIDToDiscreteIDMap_.get(uid);
+          int m = tem_->funcIdToFieldNumberMap().get(fid);
+          fieldIndex.append(m);
+          mi.append(f->multiIndex());
+        }
+
+      SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
+                           << ", multiindices are=" <<mi.toString() );
+
+
+      int resultIndex;
+      if (sparsity_->state(i)==ConstantDeriv)
+        {
+          resultIndex = constantCount++;
+        }
+      else
+        {
+          resultIndex = vectorCount++;
+        }
+      
+      double fieldDerivs = 1.0;
+      for (unsigned int k=0; k<fieldIndex.size(); k++)
+        {
+          fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
+        }
+
+      double coeff;
+      if (sparsity_->state(i)==ConstantDeriv)
+        {
+          coeff = constantResults[resultIndex];
+        }
+      else
+        {
+          coeff = vectorResults[resultIndex]->start()[0];
+        }
+      SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
+                           << " value=" << fieldDerivs << " coeff=" << coeff);
+
+      if (fieldIndex.size() == 0)
+        {
+          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
+          rtn += coeff * fieldDerivs;
+        }
+    }
+
+  return rtn;
+}
+
+
+
+
+
+double EvaluationTester::evaluate(Array<double>& firstDerivs) const 
+{
+  Tabs tabs;
+
+  firstDerivs.resize(tem_->numFields());
+  for (int i=0; i<tem_->numFields(); i++) 
+    {
+      firstDerivs[i] = 0.0;
+    }
+
+  Array<double> constantResults;
+  Array<RefCountPtr<EvalVector> > vectorResults;
+
+  
+  SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
+
+  tem_->setEvalPoint(ADField::evalPoint());
+  ev_->evaluator(context_)->resetNumCalls();
+  ev_->evaluate(mgr_, constantResults, vectorResults);
+
+  if (verbosity() > VerbLow)
+    {
+      ev_->sparsitySuperset(context_)->print(cerr, vectorResults,
+                                             constantResults);
+    }
+
+  int vectorCount=0;
+  int constantCount=0;
+  double rtn = 0.0;
+
+  for (int i=0; i<sparsity_->numDerivs(); i++)
+    {
+      const MultipleDeriv& md = sparsity_->deriv(i);
+      
+      Array<int> fieldIndex;
+      Array<MultiIndex> mi;
+
+      SUNDANCE_VERB_MEDIUM("md=" << md);
+
+      for (MultipleDeriv::const_iterator 
+             iter=md.begin(); iter != md.end(); iter++)
+        {
+          const Deriv& d = *iter;
+          TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+                             "coordinate deriv found in TestEvalMediator::"
+                             "sumFunctionalChainRule");
+          const FunctionalDeriv* f = d.funcDeriv();
+          int uid = f->funcID();
+          SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
+          TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+                             InternalError,
+                             "uid " << uid << " not found in map " 
+                             <<unkIDToDiscreteIDMap_ );
+          int fid = unkIDToDiscreteIDMap_.get(uid);
+          int m = tem_->funcIdToFieldNumberMap().get(fid);
+          fieldIndex.append(m);
+          mi.append(f->multiIndex());
+        }
+
+      SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
+                           << ", multiindices are=" <<mi.toString() );
+
+
+      int resultIndex;
+      if (sparsity_->state(i)==ConstantDeriv)
+        {
+          resultIndex = constantCount++;
+        }
+      else
+        {
+          resultIndex = vectorCount++;
+        }
+      
+      double fieldDerivs = 1.0;
+      for (unsigned int k=0; k<fieldIndex.size(); k++)
+        {
+          fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
+        }
+
+      double coeff;
+      if (sparsity_->state(i)==ConstantDeriv)
+        {
+          coeff = constantResults[resultIndex];
+        }
+      else
+        {
+          coeff = vectorResults[resultIndex]->start()[0];
+        }
+      SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
+                           << " value=" << fieldDerivs << " coeff=" << coeff);
+
+      if (fieldIndex.size() == 0)
+        {
+          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
+          rtn += coeff * fieldDerivs;
+        }
+      else if (fieldIndex.size() == 1)
+        {
+          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to first deriv");
+          firstDerivs[fieldIndex[0]] += coeff * fieldDerivs;
+        }
+    }
+
+  return rtn;
+}
+
+
+
+
+
 
 
 

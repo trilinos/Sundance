@@ -85,14 +85,14 @@ void VerboseFieldWriter::write() const
              << " x=" << mesh().nodePosition(i) 
              << " owner=" << mesh().ownerProcID(0,i) 
              << " label=" << mesh().label(0,i) << endl;
-          int nc = mesh().numCofacets(0,i);
+          int nc = mesh().numMaxCofacets(0,i);
           Tabs tab2;
           os << tab2 << "num cofacets=" << nc << " cofs = {";
           for (int c=0; c<nc; c++)
             {
               if (c==0) os << " " ;
               else os << ", ";
-              os << mesh().mapLIDToGID(dim, mesh().cofacetLID(0,i,c,dummy));
+              os << mesh().mapLIDToGID(dim, mesh().maxCofacetLID(0,i,c,dummy));
             }
           os << "}" << endl;
         }

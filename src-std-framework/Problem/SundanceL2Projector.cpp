@@ -65,13 +65,15 @@ L2Projector::L2Projector(const DiscreteSpace& space,
                      RuntimeError,
                      "Empty basis?");
   
-  Expr v = new TestFunction(space.basis()[0]);
-  Expr u = new UnknownFunction(space.basis()[0]);
+  Expr v = new TestFunction(space.basis()[0], "dummy_v[0]");
+  Expr u = new UnknownFunction(space.basis()[0], "dummy_u[0]");
   
   for (unsigned int i=1; i<space.basis().size(); i++)
     {
-      v.append(new TestFunction(space.basis()[i]));
-      u.append(new UnknownFunction(space.basis()[i]));
+      v.append(new TestFunction(space.basis()[i], "dummy_v[" 
+                                + Teuchos::toString(i)+"]"));
+      u.append(new UnknownFunction(space.basis()[i], "dummy_u[" 
+                                + Teuchos::toString(i)+"]"));
     }
 
   CellFilter interior = new MaximalCellFilter();

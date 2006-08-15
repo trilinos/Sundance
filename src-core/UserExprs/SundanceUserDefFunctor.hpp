@@ -32,6 +32,8 @@
 #define SUNDANCE_USERDEFFUNCTOR_H
 
 #include "SundanceDefs.hpp"
+#include "SundanceMap.hpp"
+#include "SundanceMultiSet.hpp"
 #include "SundanceExceptions.hpp"
 #include "Teuchos_Array.hpp"
 
@@ -53,7 +55,7 @@ namespace SundanceCore
     {
     public:
       /** ctor */
-      UserDefFunctor(const string& name) : name_(name) {;}
+      UserDefFunctor(const string& name) ;
 
       /** */
       virtual ~UserDefFunctor(){;}
@@ -62,7 +64,23 @@ namespace SundanceCore
       const string& name() const {return name_;}
 
       /** */
-      virtual double eval0(const Array<double>& vars) const = 0 ;
+      virtual double eval0(const Array<double>& vars) const ;
+
+      /** */
+      virtual double eval1(const Array<double>& vars, double* derivs) const ;
+
+      /** */
+      virtual void evalArgDerivs(int maxOrder, 
+                                 const Array<double>& vars,
+                                 Array<double>& argDerivs) const ;
+
+      /** */
+      virtual void getArgDerivIndices(const Array<int>& orders,
+                                      SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
+                                      SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
+
+      /** */
+      virtual int numArgs() const = 0 ;
                         
 
     private:

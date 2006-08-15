@@ -126,6 +126,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
       vectorResults.resize(1);
       vectorResults[0] = mgr.popVector();
       mgr.evalCoordExpr(expr(), vectorResults[0]);
+      mgr.stack().setVecSize(vectorResults[0]->length());
       vectorResults[0]->setString(stringRep_);
     }
   

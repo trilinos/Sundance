@@ -48,7 +48,7 @@ bool BoundaryCellPredicate::lessThan(const CellPredicateBase* other) const
 
 bool BoundaryCellPredicate::test(int cellLID) const 
 {
-  return mesh().numCofacets(cellDim(), cellLID) == 1;
+  return mesh().numMaxCofacets(cellDim(), cellLID) == 1;
 }
 
 XMLObject BoundaryCellPredicate::toXML() const 

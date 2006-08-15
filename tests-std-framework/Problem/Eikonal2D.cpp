@@ -62,6 +62,8 @@ public:
     double* x = const_cast<double*>(&(vars[0]));
     return besi0_(x);
   }
+  /** */
+  int numArgs() const {return 1;}
 
 };
 
@@ -78,7 +80,7 @@ int main(int argc, void** argv)
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
       int precision = 3;    // precision when printing vectors
-      double epsilon = 1.0;   
+      double epsilon = 2.0;   
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -163,13 +165,13 @@ int main(int argc, void** argv)
       w.write();
 
       Expr errExpr = Integral(interior, 
-                              pow(u0[0]-exactSoln, 2.0),
+                              pow(u0[0]-exactSoln, 2.0)/(epsilon+pow(exactSoln,2.0)),
                               new GaussianQuadrature(4) );
       double errorSq = evaluateIntegral(mesh, errExpr)/pi/R0/R0;
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-      double tol = 1.0e-6;
-      Sundance::passFailTest(errorSq, tol);
+      double tol = 1.0e-4;
+      Sundance::passFailTest(::sqrt(errorSq), tol);
       
     }
 	catch(exception& e)
