@@ -141,7 +141,7 @@ void NonlinearUnaryOpEvaluator
     {
       const double* argValue = (*(vArgResults[0]))[argValueIndex_]->start();
       varArgDerivs.resize(maxOrder_+1);
-      varArgDerivs[0] = (*(vArgResults[0]))[argValueIndex_]->clone();
+      varArgDerivs[0] = mgr.stack().popVector();//(*(vArgResults[0]))[argValueIndex_]->clone();
       int nx = varArgDerivs[0]->length();
 
       const string& argStr = (*(vArgResults[0]))[argValueIndex_]->str();
@@ -154,7 +154,7 @@ void NonlinearUnaryOpEvaluator
       double* df_dArg = 0 ;
       if (maxOrder_ >= 1) 
         {
-          varArgDerivs[1] = varArgDerivs[0]->clone();
+          varArgDerivs[1] = mgr.stack().popVector();//varArgDerivs[0]->clone();
           if (EvalVector::shadowOps())
             {
               varArgDerivs[1]->setString(op_->name() + "'(" + argStr + ")");
@@ -164,7 +164,7 @@ void NonlinearUnaryOpEvaluator
       double* d2f_dArg2 = 0 ;
       if (maxOrder_ >= 2) 
         {
-          varArgDerivs[2] = varArgDerivs[0]->clone();
+          varArgDerivs[2] =mgr.stack().popVector();// varArgDerivs[0]->clone();
           if (EvalVector::shadowOps())
             {
               varArgDerivs[2]->setString(op_->name() + "''(" + argStr + ")");
@@ -175,7 +175,7 @@ void NonlinearUnaryOpEvaluator
       if (maxOrder_ >= 3) 
         {
           UnaryFunctor::fdStep()=1.0e-3;
-          varArgDerivs[3] = varArgDerivs[0]->clone();
+          varArgDerivs[3] = mgr.stack().popVector();//varArgDerivs[0]->clone();
           if (EvalVector::shadowOps())
             {
               varArgDerivs[3]->setString(op_->name() + "'''(" + argStr + ")");

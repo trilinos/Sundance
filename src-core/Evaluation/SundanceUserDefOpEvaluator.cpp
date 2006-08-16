@@ -166,6 +166,9 @@ void UserDefOpEvaluator
 
   int numPoints = EvalManager::stack().vecSize();
 
+  TEST_FOR_EXCEPTION(numPoints==0, InternalError,
+                     "Empty vector detected in evalArgDerivs()");
+
 
   varArgDerivs.resize(numVarArgDerivs_);
   for (unsigned int i=0; i<varArgDerivs.size(); i++)

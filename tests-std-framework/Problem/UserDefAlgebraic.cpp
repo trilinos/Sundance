@@ -29,7 +29,12 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include "SundanceTrivialGrouper.hpp"
+#include "SundanceUserDefFunctor.hpp"
+#include "SundanceUserDefOp.hpp"
+#include "NOX.H"
+#include "NOX_Common.H"
+#include "NOX_Utils.H"
+#include "NOX_TSF_Group.H"
 
 #define LOUD()                                          \
   {                                                     \
@@ -40,13 +45,71 @@
     verbosity<AbstractEvalMediator>() = VerbExtreme;    \
   }
 
+/** Evaluate u*v - 6.0 */
+class F1 : public UserDefFunctor
+{
+public:
+  F1() : UserDefFunctor("F1"){;}
+  virtual ~F1(){;}
+  double eval1(const Array<double>& vars, double* df) const ;
+  double eval0(const Array<double>& vars) const ;
+  int numArgs() const {return 2;}
+};
+
+
+double F1::eval1(const Array<double>& vars, double* df) const
+{
+  double rtn = vars[0]*vars[1] - 6.0;
+  df[0] = vars[1];
+  df[1] = vars[0];
+  return rtn;
+}
+
+double F1::eval0(const Array<double>& vars) const
+{
+  return vars[0]*vars[1] - 6.0;
+}
+
+
+/** Evaluate u^2 - v - 1.0 */
+class F2 : public UserDefFunctor
+{
+public:
+  F2() : UserDefFunctor("F2"){;}
+  virtual ~F2(){;}
+  double eval1(const Array<double>& vars, double* df) const ;
+  double eval0(const Array<double>& vars) const ;
+  int numArgs() const {return 2;}
+};
+
+
+double F2::eval1(const Array<double>& vars, double* df) const
+{
+  double rtn = vars[0]*vars[0] - vars[1] - 1.0;
+  df[0] = 2.0*vars[0];
+  df[1] = -1.0;
+  return rtn;
+}
+
+double F2::eval0(const Array<double>& vars) const
+{
+  return vars[0]*vars[0] - vars[1] - 1.0;
+}
+
+
+
+
+
+
 int main(int argc, void** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
+
+      EquationSet::classVerbosity() = VerbExtreme;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -54,7 +117,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 1*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -64,85 +127,55 @@ int main(int argc, void** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr v = new TestFunction(new Lagrange(1), "v");
+      Expr u1 = new UnknownFunction(new Lagrange(1), "u1");
+      Expr v1 = new TestFunction(new Lagrange(1), "v1");
+      Expr u2 = new UnknownFunction(new Lagrange(1), "u2");
+      Expr v2 = new TestFunction(new Lagrange(1), "v2");
 
-      /* Create a discrete space, and discretize the function 1.0 on it */
-      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
-      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
+      /* Create a discrete space, and discretize the function 1.5 on it */
+      BasisFamily L1 = new Lagrange(1);
+      DiscreteSpace discSpace(mesh, SundanceStdFwk::List(L1, L1), vecType);
+      Expr u0 = new DiscreteFunction(discSpace, 1.5, "u0");
+
+      Expr f1 = new UserDefOp(List(u1, u2), rcp(new F1()));
+      Expr f2 = new UserDefOp(List(u1, u2), rcp(new F2()));
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad = new GaussianQuadrature(2);
 
       /* Now we set up the weak form of our equation. */
-      Expr eqn = Integral(interior, v*(u*u-2.0), quad);
+      Expr eqn = Integral(interior, v1*f1 + v2*f2, quad);
 
       /* There are no boundary conditions for this problem, so the
        * BC expression is empty */
       Expr bc;
 
-      LOUD();
+        /* We can now set up the nonlinear problem! */
+      NonlinearOperator<double> F 
+        = new NonlinearProblem(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
 
-      /* We can now set up the nonlinear problem! */
-      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterList noxParams = reader.getParameters();
 
-      /* Set up the linear solver used in solving J*delta+b = 0 */
-      ParameterList solverParams;
+      cerr << "solver params = " << noxParams << endl;
 
-      solverParams.set(LinearSolverBase<double>::verbosityParam(), 0);
-      solverParams.set(IterativeSolver<double>::maxitersParam(), 100);
-      solverParams.set(IterativeSolver<double>::tolParam(), 1.0e-12);
+      NOXSolver solver(noxParams, F);
 
-      LinearSolver<double> solver = new BICGSTABSolver<double>(solverParams);
+      solver.solve();
 
-      /* Do the nonlinear solve */
-      
-      Vector<double> x0 = prob.getInitialGuess();
-      bool converged = false;
-      for (int i=0; i<20; i++)
-        {
-          prob.setEvalPt(x0);
-          LinearOperator<double> J = prob.getJacobian();
-          Vector<double> b = prob.getFunctionValue();
-          Vector<double> solnVec;
-          SolverState<double> state = solver.solve(J, b, solnVec);
+      Expr errExpr = Integral(interior, 
+                              pow(u0[0]-2.0, 2) + pow(u0[1]-3.0, 2),
+                              new GaussianQuadrature(2));
 
-          cerr << "solver state = " << endl << state << endl;
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-          x0 = x0 - solnVec;
-          cerr << "step norm = " << solnVec.norm2() << endl;
-
-          if (solnVec.norm2() < 1.0e-14) 
-            {
-              cerr << "Newton's method converged!" << endl;
-              converged = true;
-              break;
-            }
-        }
-      
-      if (!converged) 
-        {
-          cerr << "FAILED TO CONVERGE!" << endl;
-        }
-      else
-        {
-          cerr << "solution is " << endl << x0 << endl;
-        }
-
-      double err = 0.0;
-      for (int i=0; i<x0.space().dim(); i++) 
-        {
-          err += pow(x0.getElement(i) - sqrt(2.0), 2.0);
-        }
-      err = sqrt(err)/x0.space().dim();
-
-      cerr << "error norm is " << endl << err << endl;
-      double tol = 1.0e-12;
-      Sundance::passFailTest(err, tol);
+      double tol = 1.0e-8;
+      Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
 		}
-  MPISession::finalize();
+  Sundance::finalize();
 }

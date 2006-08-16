@@ -211,6 +211,7 @@ void SymbolicFuncElementEvaluator
           vectorResults[i]->setString(stringReps_[i]);
         }
       mgr.evalDiscreteFuncElement(df_, mi_, vectorResults);
+      mgr.stack().setVecSize(vectorResults[0]->length());
     }
   if (p_!=0 && mi_.size() > 0)
     {
