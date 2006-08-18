@@ -30,6 +30,7 @@
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearOperator.hpp"
+#include "TSFInverseOperator.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFVectorSpace.hpp"
@@ -91,28 +92,37 @@ int main(int argc, void *argv[])
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      SolverState<double> state = solver.solve(A, y, ans);
+      LinearOperator<double> AInv = new TSFExtended::InverseOperator<double>(A, solver);
+
+      ans = AInv * y;
+
+      //      SolverState<double> state = solver.solve(A, y, ans);
       
-      cerr << state << endl;
 
-      cerr << "solver is " << solver << endl;
+      
+      //      cout << state << endl;
 
+      cout << "solver is " << solver << endl;
+
+      cout << "answer is " << endl;
+      ans.print(cout);
+      
       double err = (x-ans).norm2();
-      cerr << "error norm = " << err << endl;
+      cout << "error norm = " << err << endl;
 
       double tol = 1.0e-10;
       if (err > tol)
         {
-          cerr << "Poisson solve test FAILED" << endl;
+          cout << "Poisson solve test FAILED" << endl;
         }
       else
         {
-          cerr << "Poisson solve test PASSED" << endl;
+          cout << "Poisson solve test PASSED" << endl;
         }
     }
   catch(std::exception& e)
     {
-      cerr << "Caught exception: " << e.what() << endl;
+      cout << "Caught exception: " << e.what() << endl;
     }
   MPISession::finalize();
 }
