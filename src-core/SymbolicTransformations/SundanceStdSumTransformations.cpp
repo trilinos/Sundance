@@ -59,10 +59,14 @@ StdSumTransformations::StdSumTransformations()
   : SumTransformationSequence()
 {
   append(rcp(new RemoveZeroFromSum()));
+  append(rcp(new RemoveUnaryMinusFromSum()));
+  append(rcp(new ReorderSum()));
+
   append(rcp(new SumConstants()));
-  append(rcp(new MoveConstantsToLeftOfSum()));
-  append(rcp(new RearrangeRightSumWithConstant()));
-  append(rcp(new RearrangeLeftSumWithConstant()));
+
+  //  append(rcp(new MoveConstantsToLeftOfSum()));
+  //  append(rcp(new RearrangeRightSumWithConstant()));
+  //  append(rcp(new RearrangeLeftSumWithConstant()));
   append(rcp(new IdentifyPolynomialSum()));
   append(rcp(new SumIntegrals()));
 }
@@ -91,15 +95,224 @@ bool IdentifyPolynomialSum::doTransform(const RefCountPtr<ScalarExpr>& left,
 }
 
 
+bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& l, 
+                             const RefCountPtr<ScalarExpr>& r,
+                             int sign, RefCountPtr<ScalarExpr>& rtn) const
+{
+  Expr L = Expr::handle(l);
+  Expr R = Expr::handle(r);
+
+  /* first we check to see whether the terms are already in order.
+   * The left and right trees are already ordered, so that if the
+   * first term on the right is after the last term on the left, the
+   * combination of both is already ordered. In that case, nothing more needs
+   * to be done. 
+   */
+  SundanceUtils::Map<Expr, int> tree = L.getSumTree();
+  SundanceUtils::Map<Expr, int>::const_reverse_iterator iL = tree.rbegin();
+  Expr endOfLeft = iL->first;
+  SundanceUtils::Map<Expr, int> rightTree = R.getSumTree();
+  SundanceUtils::Map<Expr, int>::const_iterator iR = rightTree.begin();
+  Expr startOfRight = iR->first;
+
+  if (endOfLeft.lessThan(startOfRight))
+    {
+      Tabs tab1;
+      SUNDANCE_VERB_MEDIUM(tab1 << "Terms are already ordered, doing nothing");
+      return false;
+    }
+  else
+    {
+      Tabs tab1;
+
+      for (Map<Expr, int>::const_iterator i=rightTree.begin(); i!=rightTree.end(); i++)
+        {
+          int leftCount = 0;
+          if (tree.containsKey(i->first))
+            {
+              leftCount = tree[i->first];
+            }
+          int count = leftCount + sign * i->second;
+          tree.put(i->first, count);
+        }
+      SUNDANCE_VERB_MEDIUM(tab1 << "Ordered terms are: " << tree);      
+
+
+      Expr sum = 0.0;
+
+      /* add up all terms. If no terms are left after cancellations, the result will 
+       * be zero. */
+      for (Map<Expr, int>::const_iterator i=tree.begin(); i!=tree.end(); i++)
+        {
+          const Expr& term = i->first;
+          int count = i->second;
+          if (count==0) continue;
+          if (count==1) sum = sum + term;
+          else if (count==-1) sum = sum - term;
+          else sum = sum + count*term;
+        }
+      
+      rtn = getScalar(sum);
+      return true;
+    }
+}
+
+#ifdef OLD_CODE
+
+bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& l, 
+                             const RefCountPtr<ScalarExpr>& r,
+                             int sign, RefCountPtr<ScalarExpr>& rtn) const
+{
+  Tabs tabs;
+  SUNDANCE_VERB_LOW(tabs << "trying ReorderSum");
+  Tabs tab0;
+  SUNDANCE_VERB_MEDIUM(tab0 << "L=" << l->toString());
+  SUNDANCE_VERB_MEDIUM(tab0 << "R=" << r->toString());
+  const SumExpr* sLeft = dynamic_cast<const SumExpr*>(l.get());
+  const SumExpr* sRight = dynamic_cast<const SumExpr*>(r.get());
+
+  if (sLeft==0 && sRight==0)
+    {
+      Tabs tab1;
+      if (Expr::handle(r).lessThan(Expr::handle(l)))
+        {
+          if (sign>0)
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "Both are non-sums: R < L, so reordering to R+L");
+              rtn = getScalar(Expr::handle(r) + Expr::handle(l));
+            }
+          else
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "Both are non-sums: R < L, reordering to -R+L");
+              rtn = getScalar(-Expr::handle(r) + Expr::handle(l));
+            }
+          return true;
+        }
+    }
+
+
+  if (sLeft != 0)
+    {
+      Tabs tab1;
+      Expr ll = sLeft->left();
+      Expr lr = sLeft->right();
+      int lSign = sLeft->sign();
+      if (Expr::handle(r).lessThan(ll))
+        {
+          if (sign > 0)
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "L is a sum: R < LL, reordering to R+L");
+              rtn = getScalar(Expr::handle(r) + Expr::handle(l));
+            }
+          else
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "L is a sum: R < LL, reordering to -R+L");
+              rtn = getScalar(-Expr::handle(r) + Expr::handle(l));
+            }
+          return true;
+        }
+      if (Expr::handle(r).lessThan(lr)) 
+        {
+          if (sign > 0)
+            {
+              if (lSign > 0)
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "L is a sum: LL < R < LR, reordering to LL + R + LR");
+                  rtn = getScalar(ll + Expr::handle(r) + lr);
+                }
+              else
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "L is a sum: LL < R < LR, reordering to LL + R - LR");
+                  rtn = getScalar(ll + Expr::handle(r) - lr);
+                }
+            }
+          else
+            {
+              if (lSign > 0)
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "L is a sum: LL < R < LR, reordering to LL - R + LR");
+                  rtn = getScalar(ll - Expr::handle(r) + lr);
+                }
+              else
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "L is a sum: LL < R < LR, "
+                                       "reordering to LL - R - LR");
+                  rtn = getScalar(ll - Expr::handle(r) - lr);
+                }
+            }
+          return true;
+        }
+    }
+  if (sRight != 0)
+    {
+      Tabs tab1;
+      Expr rl = sRight->left();
+      Expr rr = sRight->right();
+      int rSign = sRight->sign();
+
+      if (rr.lessThan(Expr::handle(l)))
+        {
+          if (sign > 0)
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "R is a sum: R < L, reordering to R+L");
+              rtn = getScalar(Expr::handle(r) + Expr::handle(l));
+            }
+          else
+            {
+              SUNDANCE_VERB_MEDIUM(tab1 << "R is a sum: R < L, reordering to -R+L");
+              rtn = getScalar(-Expr::handle(r) + Expr::handle(l));
+            }
+          return true;
+        }
+
+      if (rl.lessThan(Expr::handle(l)))
+        {
+          if (sign > 0)
+            {
+              if (rSign > 0)
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "R is a sum: RL < L < RR, reordering to RL+L+RR");
+                  rtn = getScalar(rl + Expr::handle(l) + rr);
+                }
+              else
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "R is a sum: RL < L < RR, reordering to RL+L-RR");
+                  rtn = getScalar(rl + Expr::handle(l) - rr);
+                }
+            }
+          else
+            {
+              if (rSign > 0)
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "R is a sum: RL < L < RR, reordering to -RL+L-RR");
+                  rtn = getScalar(-rl + Expr::handle(l) - rr);
+                }
+              else
+                {
+                  SUNDANCE_VERB_MEDIUM(tab1 << "R is a sum: RL < L < RR, reordering to -RL+L+RR");
+                  rtn = getScalar(-rl + Expr::handle(l) + rr);
+                }
+            }
+          return true;
+        }
+    }
+  
+  return false;
+}
+
+#endif
+
 
 bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                     int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying RemoveZeroFromSum");
   /* Check for the trivial case of operation with zero */
   
   /* If I'm constant and my value is zero, return other */
   const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
-  if (cl != 0 && cl->value()==0.0)
+  if (cl != 0 && (cl->value()==0.0 || cl->value()==-0.0))
     {
       if (verbosity() > 1)
         {
@@ -112,7 +325,7 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
 
   /* If other is zero, return me */
   const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
-  if (cr != 0 && cr->value()==0.0) 
+  if (cr != 0 && (cr->value()==0.0 || cr->value()==-0.0)) 
     {
       if (verbosity() > 1)
         {
@@ -147,9 +360,72 @@ bool MoveConstantsToLeftOfSum::doTransform(const RefCountPtr<ScalarExpr>& left, 
   return false;
 }
 
+
+bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
+                                          const RefCountPtr<ScalarExpr>& right,
+                                          int sign, 
+                                          RefCountPtr<ScalarExpr>& rtn) const
+{
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying RemoveUnaryMinusFromSum");
+  /* if the right operand is a unary minus, 
+   * transform u +/- (-v) --> u -/+ v */
+  const UnaryMinus* ul = dynamic_cast<const UnaryMinus*>(left.get());
+  const UnaryMinus* ur = dynamic_cast<const UnaryMinus*>(right.get());
+  if (ul != 0 && ur != 0)
+    {
+      if (verbosity() > 1)
+        {
+          Out::println("RemoveUnaryMinusFromSum identified both "
+                       "operands as unary minuses.");
+        }
+      rtn = getScalar(-(Expr::handle(chooseSign(sign, getScalar(ur->arg()))) 
+                        + ul->arg()));
+      return true;
+    }
+  else if (ul != 0)
+    {
+      if (verbosity() > 1)
+        {
+          Out::println("RemoveUnaryMinusFromSum identified left "
+                       "operand as unary minus.");
+        }
+      if (sign > 0)
+        {
+          rtn = getScalar(-(ul->arg() - Expr::handle(right)));
+        }
+      else
+        {
+          rtn = getScalar(-(ul->arg() + Expr::handle(right)));
+        }
+      return true;
+    }
+  else if (ur != 0)
+    {
+      if (verbosity() > 1)
+        {
+          Out::println("RemoveUnaryMinusFromSum identified right "
+                       "operand as unary minus.");
+        }
+      if (sign > 0)
+        {
+          rtn = getScalar(Expr::handle(left) - ur->arg());
+        }
+      else
+        {
+          rtn = getScalar(Expr::handle(left) + ur->arg());
+        }
+      return true;
+    }
+
+  return false;
+}
+
 bool SumConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying SumConstants");
   /* Check to see if both are constant. If so, sum them and return */
   if (left->isConstant() && right->isConstant())
     {
@@ -302,6 +578,8 @@ bool SumIntegrals::doTransform(const RefCountPtr<ScalarExpr>& left,
                                const RefCountPtr<ScalarExpr>& right,
                                int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying SumIntegrals");
   const SumOfIntegrals* sLeft 
     = dynamic_cast<const SumOfIntegrals*>(left.get());
   const SumOfIntegrals* sRight 

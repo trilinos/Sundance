@@ -48,6 +48,7 @@
 
 SUNDANCE_USEREXPRS_H = \
 $(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceComplexExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
@@ -62,6 +63,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.hpp
 
 SUNDANCE_USEREXPRS = \
 $(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceComplexExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \

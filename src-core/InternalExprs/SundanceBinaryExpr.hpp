@@ -91,6 +91,9 @@ namespace SundanceCore
           /** Downcast the right expr to a scalar expr */
           const ScalarExpr* rightScalar() const {return scalarChild(1);}
 
+          /** Ordering operator for use in transforming exprs to standard form */
+          virtual bool lessThan(const ScalarExpr* other) const ;
+
         protected:
 
           

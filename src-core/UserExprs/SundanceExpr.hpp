@@ -33,9 +33,11 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExprBase.hpp"
+#include "SundanceMap.hpp"
 #include "TSFHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_TimeMonitor.hpp"
+#include <complex>
 
 
 namespace SundanceCore
@@ -195,6 +197,9 @@ namespace SundanceCore
       /** Construct with a constant. Creates a ConstantExpr. */
       Expr(const double& c);
 
+      /** Construct with a complex constant. Creates a ComplexExpr. */
+      Expr(const complex<double>& c);
+
       /** Add two expressions. The operands must have identical list
        * structures.
        */
@@ -217,8 +222,22 @@ namespace SundanceCore
       Expr operator/(const double& other) const 
       {return operator*(1.0/other);}
 
+      /** Divide an expression by a complex. */
+      Expr operator/(const complex<double>& other) const 
+      {return operator*(1.0/other);}
+
       /** Unary minus operator */
       Expr operator-() const ;
+
+      /** Return real part of a complex expression */
+      Expr real() const ;
+
+      /** Return imaginary part of a complex expression */
+      Expr imag() const ;
+
+      /** Return complex conjugate */
+      Expr conj() const ;
+
 
       /** List element accessor */
       const Expr& operator[](int i) const ;
@@ -243,6 +262,9 @@ namespace SundanceCore
 
       /** */
       XMLObject toXML() const ;
+
+      /** */
+      bool isComplex() const ;
 
 
       
@@ -286,6 +308,21 @@ namespace SundanceCore
         return *rtn;
       }
 
+      /** Comparison operator for ordering expr trees, DO NOT use for comparison
+       * of numerical values. */
+      bool lessThan(const Expr& other) const ;
+
+      /** Comparison operator for ordering expr trees, DO NOT use for comparison
+       * of numerical values. */
+      bool operator<(const Expr& other) const ;
+
+      /** Equality test operator for ordering expr trees, DO NOT use for comparison
+       * of numerical values. */
+      bool sameAs(const Expr& other) const ;
+
+      /** */
+      SundanceUtils::Map<Expr, int> getSumTree() const ;
+
 
     private:
 
@@ -325,6 +362,34 @@ namespace SundanceCore
   /** \relates Expr */
   inline Expr operator/(const double& a, const Expr& x)
     {return Expr(a) / x;}
+
+  /** \relates Expr */
+  inline Expr operator+(const complex<double>& a, const Expr& x)
+    {return Expr(a) + x;}
+
+  /** \relates Expr */
+  inline Expr operator-(const complex<double>& a, const Expr& x)
+    {return Expr(a) - x;}
+
+  /** \relates Expr */
+  inline Expr operator*(const complex<double>& a, const Expr& x)
+    {return Expr(a) * x;}
+
+  /** \relates Expr */
+  inline Expr operator/(const complex<double>& a, const Expr& x)
+    {return Expr(a) / x;}
+
+  /** \relates Expr */
+  inline Expr Re(const Expr& a) {return a.real();}
+
+  /** \relates Expr */
+  inline Expr Im(const Expr& a) {return a.imag();}
+
+  /** \relates Expr */
+  inline Expr conj(const Expr& a) {return a.conj();}
+
+  /** \relates Expr */
+  Expr Complex(const Expr& real, const Expr& imag);
 
   /** \relates Expr */
   Expr List(const Expr& a);

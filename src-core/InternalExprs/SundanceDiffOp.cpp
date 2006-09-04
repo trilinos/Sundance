@@ -307,3 +307,16 @@ Set<MultipleDeriv> DiffOp::internalFindC(int order, const EvalContext& context) 
 }
 
 
+
+
+bool DiffOp::lessThan(const ScalarExpr* other) const
+{
+  const DiffOp* d = dynamic_cast<const DiffOp*>(other);
+  TEST_FOR_EXCEPTION(d==0, InternalError, "cast should never fail at this point");
+  
+  if (myCoordDeriv_ < d->myCoordDeriv_) return true;
+  if (d->myCoordDeriv_ < myCoordDeriv_) return false;
+  
+  return ExprWithChildren::lessThan(other);
+}
+

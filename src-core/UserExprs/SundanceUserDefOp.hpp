@@ -83,6 +83,9 @@ namespace SundanceCore
 
       /** Access to the operator */
       const UserDefFunctor* op() const {return op_.get();}
+
+      /** Ordering operator for use in transforming exprs to standard form */
+      virtual bool lessThan(const ScalarExpr* other) const ;
     private:
     
       /** */

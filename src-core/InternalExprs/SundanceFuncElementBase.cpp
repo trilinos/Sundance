@@ -70,4 +70,12 @@ ostream& FuncElementBase::toLatex(ostream& os, bool /* paren */) const
 
 
 
+bool FuncElementBase::lessThan(const ScalarExpr* other) const
+{
+  const FuncElementBase* f = dynamic_cast<const FuncElementBase*>(other);
+  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  
+  return (funcID() < f->funcID());
+}
+
   

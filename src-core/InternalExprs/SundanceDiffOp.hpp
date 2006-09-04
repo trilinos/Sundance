@@ -136,6 +136,9 @@ namespace SundanceCore
       virtual void registerSpatialDerivs(const EvalContext& context, 
                                          const Set<MultiIndex>& miSet) const ;
 
+      /** Ordering operator for use in transforming exprs to standard form */
+      virtual bool lessThan(const ScalarExpr* other) const ;
+
     private:
 
       

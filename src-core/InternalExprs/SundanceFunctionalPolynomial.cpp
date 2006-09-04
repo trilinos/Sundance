@@ -527,3 +527,15 @@ string FunctionalPolynomial::evalString() const
   return sCurr.begin()->second;
 }
 
+
+
+bool FunctionalPolynomial::lessThan(const ScalarExpr* other) const
+{
+  const FunctionalPolynomial* f = dynamic_cast<const FunctionalPolynomial*>(other);
+  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  
+  TEST_FOR_EXCEPTION(true, RuntimeError, "FunctionalPolynomial::lessThan() not "
+                     "implemented");
+}
+
+  

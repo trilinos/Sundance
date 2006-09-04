@@ -28,61 +28,63 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_CONSTANTEXPR_H
-#define SUNDANCE_CONSTANTEXPR_H
+#ifndef SUNDANCE_COMPLEXEXPR_H
+#define SUNDANCE_COMPLEXEXPR_H
 
-#include "SundanceSpatiallyConstantExpr.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
+#include "SundanceDefs.hpp"
+#include "SundanceExpr.hpp"
+
 
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace Internal
-    {
-      /**
-       * ConstantExpr contains an immutable constant, to be distinguished
-       * from a parameter that is constant in space but can change
-       * during the course of a simulation.
-       */
-      class ConstantExpr : public SpatiallyConstantExpr
-        {
-        public:
-          ConstantExpr(const double& value);
-          virtual ~ConstantExpr() {;}
+  using namespace Teuchos;
+  using namespace Internal;
 
-          /** */
-          virtual ostream& toText(ostream& os, bool paren) const ;
-
-          /** */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
-
-          /** */
-          virtual XMLObject toXML() const ;
-
-          /** */
-          virtual bool isImmutable() const {return true;}
-
-          
-          /** */
-          virtual void setValue(const double& value) {value_ = value;}
-          
-          /** */
-          virtual const double& value() const {return value_;}
-
-          /** Ordering operator for use in transforming exprs to standard form */
-          virtual bool lessThan(const ScalarExpr* other) const ;
-          
+  using std::string;
+  using std::ostream;
 
 
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
-        protected:
-        private:
-          double value_;
-        };
-    }
+  /** 
+   * Complex expression
+   */
+  class ComplexExpr : public Internal::ExprBase
+  {
+  public:
+    /** */
+    ComplexExpr(const Expr& re, const Expr& im);
+
+    /** virtual destructor */
+    virtual ~ComplexExpr() {;}
+
+    /** */
+    virtual XMLObject toXML() const ;
+
+    /** */
+    virtual const Expr& real() const {return real_;}
+
+    /** */
+    virtual const Expr& imag() const {return imag_;}
+
+    /** Write self in text form */
+    virtual ostream& toText(ostream& os, bool paren) const 
+    {os << "Complex[re=" << real() << " im= " << imag() << "]"; return os;}
+
+    /** Write self in text form */
+    virtual ostream& toLatex(ostream& os, bool paren) const 
+    {os << real() << "+i" << imag(); return os;}
+
+    /** */
+    virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+
+  protected:
+
+  private:
+    Expr real_;
+    Expr imag_;
+
+
+  };
 }
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

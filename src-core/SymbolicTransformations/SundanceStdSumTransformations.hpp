@@ -74,6 +74,50 @@ namespace SundanceCore
       virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
+
+    /** 
+     * Put terms in a standard order
+     */
+    class ReorderSum : public SumTransformation
+    {
+    public:
+      /** */
+      ReorderSum() : SumTransformation() {;}
+
+      /** */
+      virtual ~ReorderSum(){;}
+
+      /** */
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
+                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+    };
+    
+
+    /** 
+     * Simplify sums involving unary minuses
+     * \f[
+     * x + (-y) \rightarrow x-y. 
+     * \f]
+     * \f[
+     * (-x) + (-y) \rightarrow -(x+y). 
+     * \f]
+     * \f[
+     * (-x) + y \rightarrow y-x. 
+     * \f]
+     */
+    class RemoveUnaryMinusFromSum : public SumTransformation
+    {
+    public:
+      /** */
+      RemoveUnaryMinusFromSum() : SumTransformation() {;}
+
+      /** */
+      virtual ~RemoveUnaryMinusFromSum(){;}
+
+      /** */
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
+                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+    };
     
     /** 
      * Transform a sum by removing a zero term: 

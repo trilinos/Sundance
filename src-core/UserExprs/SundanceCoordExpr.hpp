@@ -83,6 +83,9 @@ namespace SundanceCore
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
+      /** Ordering operator for use in transforming exprs to standard form */
+      virtual bool lessThan(const ScalarExpr* other) const ;
+
       static string coordName(int dir, const string& name);
 
     private:

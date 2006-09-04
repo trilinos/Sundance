@@ -222,3 +222,33 @@ XMLObject SumOfIntegrals::toXML() const
 
   return rtn;
 }
+
+
+bool SumOfIntegrals::lessThan(const ScalarExpr* other) const
+{
+  const SumOfIntegrals* f = dynamic_cast<const SumOfIntegrals*>(other);
+  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  
+  if (regions_.size() < f->regions_.size()) return true;
+  if (regions_.size() > f->regions_.size()) return false;
+
+  for (unsigned int i=0; i<regions_.size(); i++)
+    {
+      if (regions_[i] < f->regions_[i]) return true;
+      if (f->regions_[i] < regions_[i]) return false;
+
+      if (quad_[i] < f->quad_[i]) return true;
+      if (f->quad_[i] < quad_[i]) return false;
+
+      if (expr_[i].size() < f->expr_[i].size()) return true;
+      if (expr_[i].size() > f->expr_[i].size()) return false;
+
+      for (unsigned int j=0; j<expr_[i].size(); j++)
+        {
+          if (expr_[i][j].lessThan(f->expr_[i][j])) return true;
+          if (f->expr_[i][j].lessThan(expr_[i][j])) return false;
+        }
+    }
+  
+  return false;
+}

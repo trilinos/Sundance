@@ -70,14 +70,32 @@ int CellFilter::dimension(const Mesh& mesh) const
 
 CellFilter CellFilter::operator+(const CellFilter& other) const 
 {
-  return new BinaryCellFilter(*this, other, BinaryCellFilter::Union);
+  if (ptr().get()==0)
+    {
+      return other;
+    }
+  else if (other.ptr().get()==0)
+    {
+      return *this;
+    }
+  else
+    {
+      return new BinaryCellFilter(*this, other, BinaryCellFilter::Union);
+    }
 }
 
 
 
 CellFilter CellFilter::operator-(const CellFilter& other) const 
 {
-  return new BinaryCellFilter(*this, other, BinaryCellFilter::Difference);
+  if (other.ptr().get()==0)
+    {
+      return *this;
+    }
+  else
+    {
+      return new BinaryCellFilter(*this, other, BinaryCellFilter::Difference);
+    }
 }
 
 

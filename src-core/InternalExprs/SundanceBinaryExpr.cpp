@@ -45,8 +45,15 @@ BinaryExpr::BinaryExpr(const RefCountPtr<ScalarExpr>& left,
 {}
 
 
-
-
+bool BinaryExpr::lessThan(const ScalarExpr* other) const
+{
+  const BinaryExpr* b = dynamic_cast<const BinaryExpr*>(other);
+  TEST_FOR_EXCEPTION(b==0, InternalError, "cast should never fail at this point");
+  
+  if (sign_ < b->sign_) return true;
+  if (sign_ > b->sign_) return false;
+  return ExprWithChildren::lessThan(other);
+}
 
 ostream& BinaryExpr:: toText(ostream& os, bool paren) const 
 {

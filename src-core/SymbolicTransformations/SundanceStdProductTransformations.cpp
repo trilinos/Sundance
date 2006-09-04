@@ -58,8 +58,11 @@ StdProductTransformations::StdProductTransformations()
   : ProductTransformationSequence()
 {
   append(rcp(new RemoveZeroFromProduct()));
+  append(rcp(new RemoveOneFromProduct()));
+  append(rcp(new RemoveMinusOneFromProduct()));
   append(rcp(new KillDiffOpOnConstant()));
   append(rcp(new BringConstantOutsideDiffOp()));
+  append(rcp(new MoveUnaryMinusOutsideProduct()));
   append(rcp(new AssociateHungryDiffOpWithOperand()));
   append(rcp(new DistributeSumOfDiffOps()));
   append(rcp(new ApplySimpleDiffOp()));
@@ -74,18 +77,123 @@ bool RemoveZeroFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
                                         const RefCountPtr<ScalarExpr>& right,
                                         RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying RemoveZerofromProduct");
+  
   /* Check for the trivial case of multiplication by zero */
-  if (dynamic_cast<const ZeroExpr*>(left.get())
-      || dynamic_cast<const ZeroExpr*>(right.get()))
+  const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
+  const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
+
+  if (cl != 0)
     {
-      if (verbosity() > 1)
+      if (cl->value()==0.0 || cl->value()==-0.0)
         {
-          Out::println("RemoveZeroFromProduct::doTransform "
-                       "identified multiplication "
-                       "by zero. Applying transformation 0*u --> u");
+          if (verbosity() > 1)
+            {
+              Out::println("RemoveOneFromProduct::doTransform "
+                           "identified multiplication "
+                           "by zero. Applying transformation 0*u --> 0");
+            }
+          rtn = rcp(new ZeroExpr());
+          return true;
         }
-      rtn = rcp(new ZeroExpr());
-      return true;
+    }
+  if (cr != 0)
+    {
+      if (cr->value()==0.0 || cr->value()==-0.0)
+        {
+          if (verbosity() > 1)
+            {
+              Out::println("RemoveOneFromProduct::doTransform "
+                           "identified multiplication "
+                           "by zero. Applying transformation u*0 --> u");
+            }
+          rtn = rcp(new ZeroExpr());
+          return true;
+        }
+    }
+  return false;
+}
+
+bool RemoveOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
+                                       const RefCountPtr<ScalarExpr>& right,
+                                       RefCountPtr<ScalarExpr>& rtn) const
+{
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying RemoveOnefromProduct");
+  /* Check for the trivial case of multiplication by one */
+  const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
+  const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
+
+  if (cl != 0)
+    {
+      if (cl->value()==1.0)
+        {
+          if (verbosity() > 1)
+            {
+              Out::println("RemoveOneFromProduct::doTransform "
+                           "identified multiplication "
+                           "by one. Applying transformation 1*u --> u");
+            }
+          rtn = getScalar(Expr::handle(right));
+          return true;
+        }
+    }
+  if (cr != 0)
+    {
+      if (cr->value()==1.0)
+        {
+          if (verbosity() > 1)
+            {
+              Out::println("RemoveOneFromProduct::doTransform "
+                           "identified multiplication "
+                           "by one. Applying transformation u*1 --> u");
+            }
+          rtn = getScalar(Expr::handle(left));
+          return true;
+        }
+    }
+  return false;
+}
+
+
+bool RemoveMinusOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
+                                            const RefCountPtr<ScalarExpr>& right,
+                                            RefCountPtr<ScalarExpr>& rtn) const
+{
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying RemoveOnefromProduct");
+  /* Check for the trivial case of multiplication by minus one */
+  const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
+  const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
+
+  if (cl != 0)
+    {
+      if (cl->value()==-1.0)
+        {
+          if (verbosity() > 1)
+            {
+              Out::println("RemoveMinusOneFromProduct::doTransform "
+                           "identified multiplication "
+                           "by one. Applying transformation -1*u --> -u");
+            }
+          rtn = getScalar(-Expr::handle(right));
+          return true;
+        }
+    }
+  if (cr != 0)
+    {
+      if (cr->value()==-1.0)
+        {
+          if (verbosity() > 1)
+            {
+              Out::println("RemoveMinusOneFromProduct::doTransform "
+                           "identified multiplication "
+                           "by one. Applying transformation u*(-1) --> -u");
+            }
+          rtn = getScalar(-Expr::handle(left));
+          return true;
+        }
     }
   return false;
 }
@@ -94,6 +202,8 @@ bool MoveConstantsToLeftOfProduct::doTransform(const RefCountPtr<ScalarExpr>& le
                                                const RefCountPtr<ScalarExpr>& right,
                                                RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying MoveConstantsToLeftOfProduct");
   /* If the left operand is non-constant and
    * the right operand is a constant, 
    * transform u*constant --> constant*u */
@@ -112,9 +222,61 @@ bool MoveConstantsToLeftOfProduct::doTransform(const RefCountPtr<ScalarExpr>& le
   return false;
 }
 
+bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
+                                               const RefCountPtr<ScalarExpr>& right,
+                                               RefCountPtr<ScalarExpr>& rtn) const
+{
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying MoveUnaryMinusOutsideProduct");
+  /* If one of the operands is a unary minus, apply it to the whole
+   * product. If both are unary minuses, multiply the operands, removing
+   * the unary minuses. */
+  const UnaryMinus* ul = dynamic_cast<const UnaryMinus*>(left.get());
+  const UnaryMinus* ur = dynamic_cast<const UnaryMinus*>(right.get());
+  if (ur != 0 && ul != 0)
+    {
+      if (verbosity() > 1)
+        {
+          Out::println("MoveUnaryMinusOutsideProduct::doTransform "
+                       "identified both operands "
+                       "as unary minuses. Applying transformation (-x)*(-y) "
+                       "--> x*y.");
+        }
+      rtn = getScalar(ul->arg() * ur->arg());
+      return true;
+    }
+  else if (ur != 0)
+    {
+      if (verbosity() > 1)
+        {
+          Out::println("MoveUnaryMinusOutsideProduct::doTransform "
+                       "identified right operand "
+                       "as a unary minus. Applying transformation x*(-y) "
+                       "--> -(x*y).");
+        }
+      rtn = rcp(new UnaryMinus(getScalar(Expr::handle(left) * ur->arg())));
+      return true;
+    }
+  else if (ul != 0)
+    {
+      if (verbosity() > 1)
+        {
+          Out::println("MoveUnaryMinusOutsideProduct::doTransform "
+                       "identified left operand "
+                       "as a unary minus. Applying transformation (-x)*y "
+                       "--> -(x*y).");
+        }
+      rtn = rcp(new UnaryMinus(getScalar(ul->arg() *Expr::handle(right))));
+      return true;
+    }
+  return false;
+}
+
 bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                     RefCountPtr<ScalarExpr>& rtn) const
 {
+  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+               "trying MultiplyConstants");
   /* If both operands are constant, just multiply them */
   if (left->isConstant() && right->isConstant())
     {

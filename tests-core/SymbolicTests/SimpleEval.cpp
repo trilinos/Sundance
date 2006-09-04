@@ -10,6 +10,7 @@
 #include "SundanceSymbolicTransformation.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceParameter.hpp"
+#include "SundanceIntegral.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPISession.hpp"
@@ -138,7 +139,7 @@ int main(int argc, void** argv)
 
       int maxDiffOrder = 2;
 
-      verbosity<SymbolicTransformation>() = VerbSilent;
+      verbosity<SymbolicTransformation>() = VerbExtreme;
       verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;
       verbosity<EvaluatableExpr>() = VerbSilent;
@@ -149,16 +150,43 @@ int main(int argc, void** argv)
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
 
+      Expr x = new CoordExpr(0);
+      Expr y = new CoordExpr(1);
+
 			Expr u = new UnknownFunctionStub("u");
-			Expr w = new UnknownFunctionStub("w");
 			Expr v = new TestFunctionStub("v");
+
+			Expr ux = new UnknownFunctionStub("ux");
+			Expr vx = new TestFunctionStub("vx");
+
+			Expr uy = new UnknownFunctionStub("uy");
+			Expr vy = new TestFunctionStub("vy");
+
+			Expr p = new UnknownFunctionStub("p");
+			Expr q = new TestFunctionStub("q");double pi = 4.0*atan(1.0);
+      Expr sx = sin(pi*x);
+      Expr cx = cos(pi*x);
+      Expr sy = sin(pi*y);
+      Expr cy = cos(pi*y);
+      Expr psiExact = pow(pi, -3.0) * sx*sy;
+      Expr uExact = pow(pi, -2.0)*List(-sx*cy, cx*sy);
+      Expr fy = 4.0*cx*sy;
+
+      Handle<CellFilterStub> interior = rcp(new CellFilterStub());
+      Handle<QuadratureFamilyStub> quad = rcp(new QuadratureFamilyStub(1));
+
+      Expr grad = List(dx, dy);
+      Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
+                          + (grad*vy)*(grad*uy)  - p*(dx*vx+dy*vy)
+                          + q*(dx*ux+dy*uy) - vy*fy,
+                          quad);
+
+			Expr w = new UnknownFunctionStub("w");
 			Expr s = new TestFunctionStub("s");
 
       cerr << "u=" << u << endl;
       cerr << "v=" << v << endl;
 
-      Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
 
       Expr u0 = new DiscreteFunctionStub("u0");
       Expr w0 = new DiscreteFunctionStub("w0");
@@ -166,6 +194,18 @@ int main(int argc, void** argv)
 
       Array<Expr> tests;
 
+      Expr z = Complex(x,y);
+      Expr I = Complex(0.0, 1.0);
+
+      cout << "z = " << x + I*y << endl;
+
+      cout << "u + y + v + s + x + w = " << u + y + v + s + x + w << endl;
+
+      cout << "|z|^2 = " << (dx*(x + I*y)) * (dx*(x - I*y)) << endl;
+
+
+
+#ifdef BLAh
       
 
       tests.append(v*(dx*(u - u0)));
@@ -191,7 +231,7 @@ int main(int argc, void** argv)
 
 
       cerr << "uu0 = " << uu0 << endl;
-
+#endif
     }
 	catch(exception& e)
 		{

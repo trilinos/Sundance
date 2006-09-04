@@ -47,6 +47,18 @@ UserDefOp::UserDefOp(const Expr& arg,
 
 
 
+bool UserDefOp::lessThan(const ScalarExpr* other) const
+{
+  const UserDefOp* f = dynamic_cast<const UserDefOp*>(other);
+  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  
+  if (op() < f->op()) return true;
+  if (op() > f->op()) return false;
+
+  return ExprWithChildren::lessThan(other);
+}
+
+
 ostream& UserDefOp::toText(ostream& os, bool paren) const 
 {
   os << op_->name() << "(";

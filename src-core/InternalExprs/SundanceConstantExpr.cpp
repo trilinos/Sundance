@@ -40,6 +40,12 @@ ConstantExpr::ConstantExpr(const double& value)
 	: SpatiallyConstantExpr(), value_(value)
 {}
 
+bool ConstantExpr::lessThan(const ScalarExpr* other) const
+{
+  const ConstantExpr* c = dynamic_cast<const ConstantExpr*>(other);
+  TEST_FOR_EXCEPTION(c==0, InternalError, "cast should never fail at this point");
+  return value() < c->value();
+}
 
 
 ostream& ConstantExpr::toText(ostream& os, bool /* paren */) const 

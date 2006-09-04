@@ -47,6 +47,13 @@ CoordExpr::CoordExpr(int dir, const string& name)
     dir_(dir)
 {}
 
+bool CoordExpr::lessThan(const ScalarExpr* other) const
+{
+  const CoordExpr* c = dynamic_cast<const CoordExpr*>(other);
+  TEST_FOR_EXCEPTION(c==0, InternalError, "cast should never fail at this point");
+  return dir() < c->dir();
+}
+
 XMLObject CoordExpr::toXML() const 
 {
   XMLObject rtn("CoordExpr");

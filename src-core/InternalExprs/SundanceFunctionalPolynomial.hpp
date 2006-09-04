@@ -109,6 +109,9 @@ namespace SundanceCore
       /** Write in XML */
       virtual XMLObject toXML() const ;
 
+      /** Ordering operator for use in transforming exprs to standard form */
+      virtual bool lessThan(const ScalarExpr* other) const ;
+
     private:
 
       /** */

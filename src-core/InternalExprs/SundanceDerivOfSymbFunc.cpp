@@ -70,3 +70,14 @@ Evaluator* DerivOfSymbFunc::createEvaluator(const EvaluatableExpr* expr,
   return new DerivOfSymbFuncEvaluator(dynamic_cast<const DerivOfSymbFunc*>(expr), context);
 }
 
+
+bool DerivOfSymbFunc::lessThan(const ScalarExpr* other) const
+{
+  const DerivOfSymbFunc* d = dynamic_cast<const DerivOfSymbFunc*>(other);
+  TEST_FOR_EXCEPTION(d==0, InternalError, "cast should never fail at this point");
+  
+  if (funcID_ < d->funcID_) return true;
+  if (funcID_ > d->funcID_) return false;
+  
+  return DiffOp::lessThan(other);
+}

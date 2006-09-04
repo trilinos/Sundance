@@ -56,6 +56,25 @@ ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& childr
     contextToQCMap_(4)
 {}
 
+bool ExprWithChildren::lessThan(const ScalarExpr* other) const
+{
+  const ExprWithChildren* c = dynamic_cast<const ExprWithChildren*>(other);
+  TEST_FOR_EXCEPTION(c==0, InternalError, "cast should never fail at this point");
+
+  if (children_.size() < c->children_.size()) return true;
+  if (children_.size() > c->children_.size()) return false;
+  
+  for (unsigned int i=0; i<children_.size(); i++)
+    {
+      Expr me = Expr::handle(children_[i]);
+      Expr you = Expr::handle(c->children_[i]);
+      if (me.lessThan(you)) return true;
+      if (you.lessThan(me)) return false;
+    }
+  return false;
+}
+
+
 
 bool ExprWithChildren::isConstant() const
 {

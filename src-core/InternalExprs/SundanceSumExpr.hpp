@@ -71,6 +71,9 @@ namespace SundanceCore
 
           /** */
           virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+          
+          /** */
+          const Map<Expr, int>& getSumTree() const {return sumTree_;}
 
         protected:
           /** */
@@ -83,6 +86,7 @@ namespace SundanceCore
           virtual const string& opChar() const ;
 
         private:
+          Map<Expr, int> sumTree_;
 
 
         };

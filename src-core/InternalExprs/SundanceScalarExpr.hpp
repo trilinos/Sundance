@@ -72,6 +72,9 @@ namespace SundanceCore
            * differential operator that is awaiting an argument. */
           virtual bool isHungryDiffOp() const {return false;}
 
+          /** Ordering operator for use in transforming exprs to standard form */
+          virtual bool lessThan(const ScalarExpr* other) const = 0 ;
+
         protected:
         };
     }

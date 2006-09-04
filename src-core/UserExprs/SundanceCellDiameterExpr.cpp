@@ -45,6 +45,15 @@ CellDiameterExpr::CellDiameterExpr(const string& name)
   : LeafExpr(), name_(name)
 {}
 
+bool CellDiameterExpr::lessThan(const ScalarExpr* other) const
+{
+  const CellDiameterExpr* f = dynamic_cast<const CellDiameterExpr*>(other);
+  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  
+  return false;
+}
+
+
 XMLObject CellDiameterExpr::toXML() const 
 {
   XMLObject rtn("CellDiameterExpr");

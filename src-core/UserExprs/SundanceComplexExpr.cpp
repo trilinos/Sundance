@@ -28,61 +28,27 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_CONSTANTEXPR_H
-#define SUNDANCE_CONSTANTEXPR_H
+#include "SundanceComplexExpr.hpp"
+#include "SundanceOut.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 
-#include "SundanceSpatiallyConstantExpr.hpp"
+using namespace SundanceCore;
+using namespace SundanceUtils;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
+using namespace SundanceCore::Internal;
+using namespace Teuchos;
+using namespace TSFExtended;
 
-namespace SundanceCore
+ComplexExpr::ComplexExpr(const Expr& re, const Expr& im)
+  : ExprBase(), real_(re), imag_(im)
+{}
+
+
+XMLObject ComplexExpr::toXML() const 
 {
-  using namespace SundanceUtils;
-  namespace Internal
-    {
-      /**
-       * ConstantExpr contains an immutable constant, to be distinguished
-       * from a parameter that is constant in space but can change
-       * during the course of a simulation.
-       */
-      class ConstantExpr : public SpatiallyConstantExpr
-        {
-        public:
-          ConstantExpr(const double& value);
-          virtual ~ConstantExpr() {;}
-
-          /** */
-          virtual ostream& toText(ostream& os, bool paren) const ;
-
-          /** */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
-
-          /** */
-          virtual XMLObject toXML() const ;
-
-          /** */
-          virtual bool isImmutable() const {return true;}
-
-          
-          /** */
-          virtual void setValue(const double& value) {value_ = value;}
-          
-          /** */
-          virtual const double& value() const {return value_;}
-
-          /** Ordering operator for use in transforming exprs to standard form */
-          virtual bool lessThan(const ScalarExpr* other) const ;
-          
-
-
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
-        protected:
-        private:
-          double value_;
-        };
-    }
+	XMLObject rtn("Complex");
+  rtn.addChild(real().toXML());
+  rtn.addChild(imag().toXML());
+	return rtn;
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-#endif

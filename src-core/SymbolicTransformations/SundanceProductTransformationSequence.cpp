@@ -52,7 +52,7 @@ bool ProductTransformationSequence::doTransform(const RefCountPtr<ScalarExpr>& l
                "testing whether to transform product: " << endl
                << "left = " << left->toString() << endl
                << "right = " << right->toString());
-  
+
   for (unsigned int i=0; i<this->size(); i++)
     {
       if ((*this)[i]->doTransform(left, right, rtn)) return true;

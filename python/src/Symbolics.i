@@ -58,6 +58,11 @@ namespace SundanceCore
       return rtn;
     }
 
+    string fullForm() const
+    {
+      return self->toXML().toString();
+    }
+
    
 
     double integral(const SundanceStdFwk::CellFilter& domain,
@@ -125,6 +130,30 @@ namespace SundanceCore
       return rtn;
     }
 
+    Expr __add__(const complex<double>& other) 
+    {
+      SundanceCore::Expr rtn = self->operator+(other);
+      return rtn;
+    }
+
+    Expr __sub__(const complex<double>& other) 
+    {
+      SundanceCore::Expr rtn = self->operator-(other);
+      return rtn;
+    }
+
+    Expr __mul__(const complex<double>& other) 
+    {
+      SundanceCore::Expr rtn = self->operator*(other);
+      return rtn;
+    }
+
+    Expr __div__(const complex<double>& other) 
+    {
+      SundanceCore::Expr rtn = self->operator/(other);
+      return rtn;
+    }
+
     /* operations with scalars to the left */
 
     Expr __radd__(const double& other) 
@@ -146,6 +175,30 @@ namespace SundanceCore
     }
 
     Expr __rdiv__(const double& other) 
+    {
+      SundanceCore::Expr rtn = other / (*self);
+      return rtn;
+    }
+
+    Expr __radd__(const complex<double>& other) 
+    {
+      SundanceCore::Expr rtn = other + *self;
+      return rtn;
+    }
+
+    Expr __rsub__(const complex<double>& other) 
+    {
+      SundanceCore::Expr rtn = other - *self;
+      return rtn;
+    }
+
+    Expr __rmul__(const complex<double>& other) 
+    {
+      SundanceCore::Expr rtn = other * (*self);
+      return rtn;
+    }
+
+    Expr __rdiv__(const complex<double>& other) 
     {
       SundanceCore::Expr rtn = other / (*self);
       return rtn;
@@ -206,6 +259,8 @@ namespace SundanceCore
 
     
   }
+
+  Expr Complex(const Expr& real, const Expr& imag);
 
   Expr List(const Expr& a);
   Expr List(const Expr& a, const Expr& b);

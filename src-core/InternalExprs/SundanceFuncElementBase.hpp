@@ -103,6 +103,9 @@ namespace SundanceCore
           /** Write self in Latex form */
           virtual ostream& toLatex(ostream& os, bool paren) const ;
 
+          /** Ordering operator for use in transforming exprs to standard form */
+          virtual bool lessThan(const ScalarExpr* other) const ;
+
 
         protected:
           /** Determine whether this function is in the given active set */

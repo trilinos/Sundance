@@ -81,6 +81,53 @@ namespace SundanceCore
                                RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
+    
+    /** 
+     * Transform a product by removing multiplication by 1.0: 
+     * \f[
+     * x \times 1.0 \rightarrow x. 
+     * \f]
+     * \f[
+     * 1.0 \times x \rightarrow x. 
+     * \f]
+     */
+    class RemoveOneFromProduct : public ProductTransformation
+    {
+    public:
+      /** */
+      RemoveOneFromProduct() : ProductTransformation() {;}
+
+      /** */
+      virtual ~RemoveOneFromProduct(){;}
+
+      /** */
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
+                               RefCountPtr<ScalarExpr>& rtn) const ;
+    };
+
+    /** 
+     * Transform a product by removing multiplication by -1.0: 
+     * \f[
+     * x \times (-1.0) \rightarrow -x. 
+     * \f]
+     * \f[
+     * -1.0 \times x \rightarrow -x. 
+     * \f]
+     */
+    class RemoveMinusOneFromProduct : public ProductTransformation
+    {
+    public:
+      /** */
+      RemoveMinusOneFromProduct() : ProductTransformation() {;}
+
+      /** */
+      virtual ~RemoveMinusOneFromProduct(){;}
+
+      /** */
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
+                               RefCountPtr<ScalarExpr>& rtn) const ;
+    };
+
     /** 
      * Multiply two constant exprs without transformation 
      */
@@ -112,6 +159,33 @@ namespace SundanceCore
 
       /** */
       virtual ~MoveConstantsToLeftOfProduct(){;}
+
+      /** */
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
+                               RefCountPtr<ScalarExpr>& rtn) const ;
+    };
+
+    /** 
+     * Transform a product by any unary minus operations outside the
+     * product
+     * \f[
+     * (-x) \times y \rightarrow -(x \times y)
+     * \f]
+     * \f[
+     * x \times (-y) \rightarrow -(x \times y)
+     * \f]
+     * \f[
+     * )-x) \times (-y) \rightarrow x \times y
+     * \f]
+     **/
+    class MoveUnaryMinusOutsideProduct : public ProductTransformation
+    {
+    public:
+      /** */
+      MoveUnaryMinusOutsideProduct() : ProductTransformation() {;}
+
+      /** */
+      virtual ~MoveUnaryMinusOutsideProduct(){;}
 
       /** */
       virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,

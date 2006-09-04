@@ -34,9 +34,9 @@ int main(int argc, void** argv)
       MPISession::init(&argc, &argv);
 
       
-      verbosity<SymbolicTransformation>() = VerbSilent;
+      //      verbosity<SymbolicTransformation>() = VerbExtreme;
 
-      Expr::showAllParens() = true;
+      Expr::showAllParens() = false;
       EvalVector::shadowOps() = true;
 
       Expr dx = new Derivative(0);
@@ -59,11 +59,17 @@ int main(int argc, void** argv)
       
       ok = ok && checkStringForms( zero + u, u );
 
+      ok = ok && checkStringForms( u - zero, u );
+      
+      ok = ok && checkStringForms( -zero + u, u );
+
+      ok = ok && checkStringForms( -x + v, -(x-v));
+
       ok = ok && checkStringForms( u + alpha, alpha + u );
 
       ok = ok && checkStringForms( u - alpha, -alpha + u );
 
-      ok = ok && checkStringForms( (u+alpha) + beta, (beta + alpha) + u);
+      ok = ok && checkStringForms( u+alpha + beta, beta + alpha + u);
 
       ok = ok && checkStringForms( (u-alpha) + beta, (beta + -alpha) + u);
 
@@ -79,9 +85,25 @@ int main(int argc, void** argv)
 
       ok = ok && checkStringForms( u * alpha, alpha * u );
 
-      ok = ok && checkStringForms( u * zero, zero);
+      ok = ok && checkStringForms( u * 0.0, 0.0);
 
-      ok = ok && checkStringForms( zero * u, zero);
+      ok = ok && checkStringForms( 0.0 * u, 0.0);
+
+      ok = ok && checkStringForms( u * 1.0, u);
+
+      ok = ok && checkStringForms( 1.0 * u, u);
+
+      ok = ok && checkStringForms( -1.0 * u, -u);
+
+      ok = ok && checkStringForms( -(-u), u);
+
+      ok = ok && checkStringForms( u * 1.0 + u*0.0, u);
+
+      ok = ok && checkStringForms( 1.0 * u + u*0.0, u);
+
+      ok = ok && checkStringForms( u * 1.0 + 0.0*u, u);
+
+      ok = ok && checkStringForms( 1.0 * u + 0.0*u, u);
 
       ok = ok && checkStringForms( u * (alpha * v), alpha * (u * v) );
 
@@ -90,6 +112,22 @@ int main(int argc, void** argv)
       ok = ok && checkStringForms( (alpha * u) * beta, (beta * alpha) * u);
 
       ok = ok && checkStringForms( (alpha * u) * v, alpha * (u * v) );
+
+      ok = ok && checkStringForms( (-u)*(-v), u*v);
+
+      ok = ok && checkStringForms( u*(-v), -u*v);
+
+      ok = ok && checkStringForms( (-u)*v, -u*v);
+
+      ok = ok && checkStringForms( x + (-u)*v, x-u*v);
+
+      ok = ok && checkStringForms( -x + (-u)*v, -(x+u*v));
+
+      ok = ok && checkStringForms( -x + v, v - x);
+
+      ok = ok && checkStringForms( u*(-1.0*v), -u*v);
+
+      ok = ok && checkStringForms( (-1.0*u)*v, -u*v);
 
       ok = ok && checkStringForms( dx * (alpha * u), alpha * (dx * u));
 
@@ -100,6 +138,9 @@ int main(int argc, void** argv)
       ok = ok && checkStringForms( (dx + dy)*u, dx*u + dy*u );
 
       ok = ok && checkStringForms( (u*dx)*v, u*(dx*v) );
+
+
+
 
       if (ok) cerr << "All are OK" << endl;
       else cerr << "failures detected!" << endl;

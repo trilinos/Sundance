@@ -42,6 +42,14 @@ Derivative::Derivative(int direction)
 	m_[direction] = 1;
 }
 
+bool Derivative::lessThan(const ScalarExpr* other) const
+{
+  const Derivative* d = dynamic_cast<const Derivative*>(other);
+  TEST_FOR_EXCEPTION(d==0, InternalError, "cast should never fail at this point");
+  return multiIndex() < d->multiIndex();
+}
+
+
 ostream& Derivative::toText(ostream& os, bool /* paren */) const 
 {
 	os << "D[" << m_.toString() << "]";

@@ -46,8 +46,25 @@ using namespace Teuchos;
 
 SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
                  const RefCountPtr<ScalarExpr>& right, int sign)
-	: BinaryExpr(left, right, sign)
-{}
+	: BinaryExpr(left, right, sign), sumTree_()
+{
+  Expr L = Expr::handle(left);
+  Expr R = Expr::handle(right);
+
+  sumTree_ = L.getSumTree();
+  Map<Expr, int> rightTree = R.getSumTree();
+
+  for (Map<Expr, int>::const_iterator i=rightTree.begin(); i!=rightTree.end(); i++)
+    {
+      int leftCount = 0;
+      if (sumTree_.containsKey(i->first))
+        {
+          leftCount = sumTree_[i->first];
+        }
+      int rightCount = sign * i->second;
+      sumTree_.put(i->first, leftCount + rightCount);
+    }
+}
 
 bool SumExpr::isHungryDiffOp() const
 {
@@ -77,4 +94,5 @@ bool SumExpr::allTermsHaveTestFunctions() const
   return leftEvaluatable()->allTermsHaveTestFunctions()
     && rightEvaluatable()->allTermsHaveTestFunctions();
 }
+
 

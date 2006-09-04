@@ -63,7 +63,7 @@ static Time& totalTimer()
   {                                                                     \
     Tabs tabs1;                                                         \
     cerr << tabs1 << endl << tabs1                                      \
-         << "------------- Testing " << (expr).toString() << " -----------" \
+         << "------------- Testing " << #expr << " -----------"        \
          << endl << tabs1 << endl;                                      \
     bool thisTestIsOK = true;                                           \
     try                                                                 \
@@ -121,7 +121,7 @@ int main(int argc, void** argv)
       Tabs tabs;
       TimeMonitor timer(totalTimer());
 
-      //       verbosity<SymbolicTransformation>() = VerbSilent;
+      //verbosity<SymbolicTransformation>() = VerbExtreme;
       //#define BLAHBLAH
 #ifdef BLAHBLAH
       verbosity<EvaluationTester>() = VerbExtreme;
@@ -174,21 +174,28 @@ int main(int argc, void** argv)
       bool isOK = true;
       Array<string> failures;
 
-      //#ifdef blarf
+
 
       TESTER(u, U);
 
 
       TESTER(-u, -U);
 
+      
+      /* ----------- tests of symbolic simplifications -------------*/
+      TESTER( u - u, U - U );
 
-      /* ----------- cases of sum expressions ------------------- */
+      TESTER( u + u, 2.0*U );
+
+
+
+      /* ----------- distinct cases of sum expressions ------------------- */
 
       /* tests const-const and vec-vec sums */
-      TESTER( u + u, U + U );
+      TESTER( u + w, U + W );
 
       /* tests const-const and vec-vec subtractions */
-      TESTER( u - u, U - U );
+      TESTER( u - w, U - W );
 
       /* tests vec-vec and const-0 sums */
       TESTER( u + x, U + X );
