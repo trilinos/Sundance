@@ -47,6 +47,15 @@ namespace SundanceCore
     
     /** Flatten this list */
     Expr flatten() const ;
+
+    /** Return real part of a complex expression */
+    Expr real() const ;
+    
+    /** Return imaginary part of a complex expression */
+    Expr imag() const ;
+    
+    /** Return complex conjugate */
+    Expr conj() const ;
   };
 
   %extend Expr
@@ -261,6 +270,11 @@ namespace SundanceCore
   }
 
   Expr Complex(const Expr& real, const Expr& imag);
+
+  Expr conj(const Expr& x);
+
+  Expr Re(const Expr& x);
+  Expr Im(const Expr& x);
 
   Expr List(const Expr& a);
   Expr List(const Expr& a, const Expr& b);

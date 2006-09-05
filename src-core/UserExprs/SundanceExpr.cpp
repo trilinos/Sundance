@@ -188,10 +188,8 @@ Expr Expr::operator+(const Expr& other) const
         }
       else 
         {
-          cout << "computing complex expr: " << endl;
           Expr rtn = new ComplexExpr((*this)[0].real() + other[0].real(),
                                      (*this)[0].imag() + other[0].imag());
-          cout << "complex = " << rtn << endl;
           return rtn;
         }
     }

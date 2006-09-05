@@ -43,13 +43,14 @@ Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
               const Expr& integrand)
 {
   RefCountPtr<QuadratureFamilyStub> quad 
-    = QuadratureFamilyStub::defaultQuadrature();
-  return new SumOfIntegrals(domain.ptr(), integrand, quad);
+    = QuadratureFamilyStub::defaultQuadrature(); 
+
+  return new SumOfIntegrals(domain.ptr(), Re(integrand), quad);
 }
 
 Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
                         const Expr& integrand,
                         const Handle<QuadratureFamilyStub>& quad)
 {
-  return new SumOfIntegrals(domain.ptr(), integrand, quad.ptr());
+  return new SumOfIntegrals(domain.ptr(), Re(integrand), quad.ptr());
 }

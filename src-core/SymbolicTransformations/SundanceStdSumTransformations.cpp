@@ -138,7 +138,7 @@ bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& l,
       SUNDANCE_VERB_MEDIUM(tab1 << "Ordered terms are: " << tree);      
 
 
-      Expr sum = 0.0;
+      Expr sum = new ZeroExpr();
 
       /* add up all terms. If no terms are left after cancellations, the result will 
        * be zero. */

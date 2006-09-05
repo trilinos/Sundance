@@ -61,7 +61,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 # Define the suite of examples
 PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D exConvTest2D exBlockTest \
-exVorticityStokes2D
+exVorticityStokes2D exComplexHelmholtz1D
 
 SERIAL_SRC = exPoisson3D exCylPoisson3D
 

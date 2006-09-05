@@ -50,7 +50,7 @@ Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
       return integrand;
     }
   RefCountPtr<QuadratureFamilyStub> quad = QuadratureFamilyStub::defaultQuadrature();
-  return new SumOfBCs(domain.ptr(), integrand, quad);
+  return new SumOfBCs(domain.ptr(), Re(integrand), quad);
 }
 
 Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
@@ -63,5 +63,5 @@ Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
     {
       return integrand;
     }
-  return new SumOfBCs(domain.ptr(), integrand, quad.ptr());
+  return new SumOfBCs(domain.ptr(), Re(integrand), quad.ptr());
 }
