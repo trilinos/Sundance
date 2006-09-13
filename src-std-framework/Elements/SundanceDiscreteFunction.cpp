@@ -70,6 +70,17 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 }
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
+                                   const Array<string>& name)
+  : DiscreteFunctionStub(name, space.nFunc(),
+                         rcp(new DiscreteFunctionData(space))), 
+    FuncWithBasis(space.basis()),
+    data_()
+{
+  TimeMonitor timer(dfCtorTimer());
+  data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
+}
+
+DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const double& constantValue,
                                    const string& name)
   : DiscreteFunctionStub(name, space.nFunc(),
@@ -85,8 +96,35 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 }
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
+                                   const double& constantValue,
+                                   const Array<string>& name)
+  : DiscreteFunctionStub(name, space.nFunc(),
+                         rcp(new DiscreteFunctionData(space, constantValue))), 
+    FuncWithBasis(space.basis()),
+    data_()
+{
+  TimeMonitor timer(dfCtorTimer());
+  data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
+  Vector<double> vec = data_->getVector();
+  vec.setToConstant(constantValue);
+  data_->setVector(vec);
+}
+
+DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const Vector<double>& vec,
                                    const string& name)
+  : DiscreteFunctionStub(name, space.nFunc(),
+                         rcp(new DiscreteFunctionData(space, vec))), 
+    FuncWithBasis(space.basis()),
+    data_()
+{
+  TimeMonitor timer(dfCtorTimer());
+  data_ = rcp_dynamic_cast<DiscreteFunctionData>(dataStub());
+}
+
+DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
+                                   const Vector<double>& vec,
+                                   const Array<string>& name)
   : DiscreteFunctionStub(name, space.nFunc(),
                          rcp(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),

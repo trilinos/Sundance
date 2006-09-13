@@ -162,6 +162,9 @@ namespace SundanceStdFwk
 
     /** */
     mutable RefCountPtr<SolverState<double> > status_;
+
+    /** */
+    Array<Array<string> > names_;
     
   };
 }

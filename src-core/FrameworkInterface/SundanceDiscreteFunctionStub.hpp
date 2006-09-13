@@ -72,6 +72,9 @@ namespace SundanceCore
       /** */
       DiscreteFunctionStub(const string& name, int nElems=1,
                           const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+      /** */
+      DiscreteFunctionStub(const Array<string>& names, int nElems=1,
+                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
 
       /** virtual destructor */
       virtual ~DiscreteFunctionStub() {;}

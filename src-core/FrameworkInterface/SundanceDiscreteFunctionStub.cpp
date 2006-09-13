@@ -48,4 +48,19 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name, int nElems,
     }
 }
 
+DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& names, int nElems,
+                          const RefCountPtr<DiscreteFuncDataStub>& data)
+	: ListExpr(), data_(data)
+{
+  TEST_FOR_EXCEPTION(names.size() != nElems,
+                     RuntimeError,
+                     "mismatch between size of names array=" << names 
+                     << " and specified size=" << nElems);
+
+  for (int i=0; i<nElems; i++)
+    {
+      append(new DiscreteFuncElement(data, "", names[i], i));
+    }
+}
+
 

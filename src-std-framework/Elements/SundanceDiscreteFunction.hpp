@@ -65,6 +65,16 @@ namespace SundanceStdFwk
     /** */
     DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
                      const string& name="");
+    /** */
+    DiscreteFunction(const DiscreteSpace& space, const Array<string>& names);
+
+    /** */
+    DiscreteFunction(const DiscreteSpace& space, const Vector<double>& vec, 
+                     const Array<string>& names);
+
+    /** */
+    DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
+                     const Array<string>& name);
 
     /** */
     static const DiscreteFunction* discFunc(const Expr& expr);

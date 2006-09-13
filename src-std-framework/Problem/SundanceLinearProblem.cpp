@@ -76,7 +76,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   : assembler_(),
     A_(),
     rhs_(),
-    status_()
+    status_(),
+    names_(1)
 {
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flatten();
@@ -86,6 +87,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     {
       Expr z = new ZeroExpr();
       zero[i] = z;
+      names_[0].append(u[i].toString());
     }
 
   Expr u0 = new ListExpr(zero);
@@ -118,7 +120,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   : assembler_(),
     A_(),
     rhs_(),
-    status_()
+    status_(),
+    names_(1)
 {
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flatten();
@@ -130,6 +133,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     {
       Expr z = new ZeroExpr();
       zero[i] = z;
+      names_[0].append(u[i].toString());
     }
 
   Expr u0 = new ListExpr(zero);
@@ -156,7 +160,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   : assembler_(),
     A_(),
     rhs_(),
-    status_()
+    status_(),
+    names_(unk.size())
 {
   TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
@@ -181,8 +186,10 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         {
           Expr z = new ZeroExpr();
           zero[j] = z;
+          names_[i].append(u[i][j].toString());
         }
       u0[i] = new ListExpr(zero);
+
     }
 
   Expr unkParams;
@@ -212,7 +219,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   : assembler_(),
     A_(),
     rhs_(),
-    status_()
+    status_(),
+    names_(unk.size())
 {
   TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
@@ -236,6 +244,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         {
           Expr z = new ZeroExpr();
           zero[j] = z;
+          names_[i].append(u[i][j].toString());
         }
       u0[i] = new ListExpr(zero);
     }
@@ -257,7 +266,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
 LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler) 
   : assembler_(assembler),
     A_(),
-    rhs_()
+    rhs_(),
+    names_()
 {  
   TimeMonitor timer(lpCtorTimer());
 }
@@ -367,10 +377,10 @@ Expr LinearProblem::formSolutionExpr(const Vector<double>& solnVector) const
 
   for (unsigned int i=0; i<rtn.size(); i++)
     {
-      string name = "soln";
+      string name = "Soln";
       if ((int)rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
       rtn[i] = new DiscreteFunction(*(assembler_->solutionSpace()[i]),
-                                    solnVector.getBlock(i), name);
+                                    solnVector.getBlock(i), names_[i]);
     }
   if ((int) rtn.size() > 1)
     {
