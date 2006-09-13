@@ -28,7 +28,7 @@ if test -n "$PYTHON"; then
   CPPFLAGS="$save_CPPFLAGS"
 
   # Check for Numeric
-  AC_PYTHON_MODULE(Numeric,yes)
+  #AC_PYTHON_MODULE(Numeric,yes)
 
   # If user specifies prefix, use it for the PYTHON_PREFIX
   if test "$prefix" != "$ac_default_prefix"; then
