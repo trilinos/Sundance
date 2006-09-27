@@ -29,7 +29,6 @@
 /* @HEADER@ */
 
 #include "SundanceDiscreteFunction.hpp"
-#include "SundanceHomogeneousDOFMap.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceMaximalCellFilter.hpp"

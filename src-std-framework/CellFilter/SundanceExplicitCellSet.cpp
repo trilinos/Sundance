@@ -41,6 +41,13 @@ ExplicitCellSet::ExplicitCellSet(const Mesh& mesh, int cellDim,
     cells_()
 {;}
 
+ExplicitCellSet::ExplicitCellSet(const Mesh& mesh, int cellDim,
+                                 const CellType& cellType,
+                                 const Set<int>& cells)
+  : CellSetBase(mesh, cellDim, cellType),
+    cells_(cells)
+{;}
+
 CellIterator ExplicitCellSet::begin() const
 {
   return CellIterator(&cells_, CellIterator::Begin);

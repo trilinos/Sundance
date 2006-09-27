@@ -201,6 +201,11 @@ namespace SundanceStdFwk
      * at startup. */
     static bool& showStartupMessage();
 
+    /** Decide whether to skip timing outputs to work around
+     * a trilinos 6.0.x bug */
+    static bool& skipTimingOutput()
+    {static bool rtn=false; return rtn;}
+
   private:
     static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}

@@ -16,6 +16,8 @@ class LeftPointPredicate :
     return (math.fabs(pt) < 1.0e-10);
 
 def main():
+  
+  skipTimingOutput();
 
   vecType = EpetraVectorType()
   pi = 4.0*math.atan(1.0)
@@ -56,9 +58,9 @@ def main():
   tol = 1.0e-8
   passFailTest(error, tol)
 
-  mpiSynchronize()
-  print "proc ", getRank(), " is done"
-  mpiSynchronize()
+#  mpiSynchronize()
+# print "proc ", getRank(), " is done"
+#  mpiSynchronize()
 
   
 # This is a standard Python construct.  Put the code to be executed in a

@@ -28,70 +28,87 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_EXPLICITCELLSET_H
-#define SUNDANCE_EXPLICITCELLSET_H
+#ifndef SUNDANCE_NODALDOFMAP_H
+#define SUNDANCE_NODALDOFMAP_H
+
+#include "SundanceDefs.hpp"
+#include "SundanceDOFMapBase.hpp"
+#include "SundanceCellSet.hpp"
+#include "SundanceCellFilter.hpp"
+#include "SundanceBasisFamily.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-#include "SundanceDefs.hpp"
-#include "SundanceCellSetBase.hpp"
-
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
   namespace Internal
   {
     using namespace Teuchos;
 
     /** 
-     * ExplicitCellSet is a cell set subtype where the cell LIDs
-     * are stored explicitly in an STL set. 
      * 
-     * @see CellFilter, CellSet, CellSetBase, CellIterator 
-     **/
-    class ExplicitCellSet : public CellSetBase
+     */
+    class NodalDOFMap : public DOFMapBase
     {
     public:
-
-      /** Construct with a mesh, initializing to an empty set */
-      ExplicitCellSet(const Mesh& mesh, int cellDim,
-                      const CellType& cellType);
-
-      /** Construct with a set of cells */
-      ExplicitCellSet(const Mesh& mesh, int cellDim,
-                      const CellType& cellType,
-                      const Set<int>& cellLIDs);
-
-      /** Returns an iterator pointing to the first element
-       * in the set. */
-      virtual CellIterator begin() const ;
-
-      /** Returns a past-the-end iterator */
-      virtual CellIterator end() const ;
-
-      /** Returns a modifiable reference to the set of cells */
-      Set<int>& cells() {return cells_;}
-
-      /** \name Printable interface */
-      //@{
-      /** Print to a stream */
-      virtual void print(ostream& os) const ;
-      //@}
-
-      /* Handleable interface */
-      GET_RCP(CellSetBase);
-
-    private:
-
-      /** The set of cell LIDs */
-      Set<int> cells_;
-
+      /** */
+      NodalDOFMap(const Mesh& mesh, int nFuncs,
+                  const CellFilter& maxCellFilter);
       
+      /** */
+      virtual ~NodalDOFMap(){;}
+
+      /** 
+       *
+       */
+      void getDOFsForCellBatch(int cellDim, 
+                               const Array<int>& cellLID,
+                               Array<Array<int> >& dofs,
+                               Array<int>& nNodes) const ;
+
+      /** */
+      int chunkForFuncID(int funcID) const ;
+
+      /** */
+      int indexForFuncID(int funcID) const ;
+
+      /** */
+      int nFuncs(int chunk) const ;
+
+      /** */
+      int nChunks() const {return 1;}
+
+      /** */
+      const BasisFamily& basis(int chunk) const ;
+
+      /** */
+      const Array<int>& funcID(int chunk) const ;
+
+
+    protected:
+
+      void init();
+
+      void computeOffsets(int localCount)  ;
+
+      void shareRemoteDOFs(const Array<Array<int> >& remoteNodes);
+
+      CellFilter maxCellFilter_;
+      int dim_;
+      int nFuncs_;
+      int nElems_;
+      int nNodes_;
+      int nNodesPerElem_;
+      Array<int> elemDofs_;
+      Array<int> nodeDofs_;
+      BasisFamily basis_;
+      Array<int> funcIDs_;
     };
   }
-
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

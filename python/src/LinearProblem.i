@@ -115,6 +115,8 @@ class Block
 
 namespace SundanceStdFwk
 {
+  
+  typedef RefCountPtr<DOFMapBase> DOFMap;
 
   class LinearProblem
   {
@@ -138,7 +140,6 @@ namespace SundanceStdFwk
 
     SundanceCore::Expr solve(const TSFExtended::LinearSolver<double>& solver) const ;
 
-    
   };
 
   %extend LinearProblem {

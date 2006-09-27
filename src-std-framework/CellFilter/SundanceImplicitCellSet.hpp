@@ -83,7 +83,7 @@ using namespace SundanceStdMesh::Internal;
 
 
     private:
-      
+      int maxLID_;
     };
   }
 

@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceCellSet.hpp"
+#include "SundanceCellFilter.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
@@ -56,8 +57,7 @@ namespace SundanceStdFwk
     {
     public:
       /** */
-      DOFMapBase(const Mesh& mesh,
-                 const BasisArray& basis);
+      DOFMapBase(const Mesh& mesh);
 
       
       /** */
@@ -81,36 +81,22 @@ namespace SundanceStdFwk
                                        Array<int>& nNodes) const = 0 ;
 
       /** */
-      int chunkForFuncID(int funcID) const {return funcIDToChunkMap_[funcID];}
+      virtual int chunkForFuncID(int funcID) const = 0 ;
 
       /** */
-      int indexForFuncID(int funcID) const {return funcIDToIndexMap_[funcID];}
+      virtual int indexForFuncID(int funcID) const = 0 ;
 
       /** */
-      int nFuncs(int chunk) const {return chunkFuncIDs_[chunk].size();}
+      virtual int nFuncs(int chunk) const = 0 ;
 
       /** */
-      int nChunks() const {return chunkFuncIDs_.size();}
+      virtual int nChunks() const = 0 ;
 
       /** */
-      const BasisFamily& basis(int chunk) const {return chunkBasis_[chunk];}
+      virtual const BasisFamily& basis(int chunk) const = 0 ;
 
       /** */
-      const Array<int>& funcID(int chunk) const {return chunkFuncIDs_[chunk];}
-
-      /** */
-      const CellSet& cellSet(int i) const {return cellSets_[i];}
-
-      /** */
-      int numCellSets() const {return cellSets_.size();}
-
-      /** */
-      const Array<int>& funcIDOnCellSet(int i) const 
-      {return funcIDOnCellSets_[i];}
-
-      /** */
-      int cellDimOnCellSet(int i) const 
-      {return cellDimOnCellSets_[i];}
+      virtual const Array<int>& funcID(int chunk) const = 0 ;
 
       /** */
       int lowestLocalDOF() const {return lowestLocalDOF_;}
@@ -129,6 +115,9 @@ namespace SundanceStdFwk
       const RefCountPtr<Array<int> >& ghostIndices() const 
       {return ghostIndices_;}
 
+      /** */
+      virtual void print(ostream& os) const ;
+
 
     protected:
 
@@ -142,24 +131,16 @@ namespace SundanceStdFwk
 
       const MPIComm& comm() const {return mesh().comm();}
 
-      Array<CellSet>& cellSets() {return cellSets_;}
-
-      Array<Array<int> >& funcIDOnCellSets() {return funcIDOnCellSets_;}
-
-      Array<int>& cellDimOnCellSets() {return cellDimOnCellSets_;}
-
       void addGhostIndex(int dof) {ghostIndices_->append(dof);}
+
+      static Time& dofLookupTimer() ;
+
+      static Time& batchedDofLookupTimer() ;
 
     private:
       int localProcID_;
 
       Mesh mesh_;
-
-      Array<CellSet> cellSets_;
-
-      Array<Array<int> > funcIDOnCellSets_;
-
-      Array<int> cellDimOnCellSets_;
 
       int lowestLocalDOF_;
 
@@ -168,21 +149,6 @@ namespace SundanceStdFwk
       int numDOFs_;
 
       RefCountPtr<Array<int> > ghostIndices_;
-
-      Array<Array<int> > dofsHaveBeenAssigned_;
-
-      /** Table of bases for each chunk */
-      Array<BasisFamily> chunkBasis_;
-
-      /** Table of lists of funcID for each chunk */
-      Array<Array<int> > chunkFuncIDs_;
-
-      /** Map for lookup of chunk number given a function ID */
-      Array<int> funcIDToChunkMap_;
-
-      /** Map for lookup of index into chunk given a function ID */
-      Array<int> funcIDToIndexMap_;
-      
     };
   }
 }

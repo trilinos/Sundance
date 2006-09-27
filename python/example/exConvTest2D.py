@@ -45,7 +45,9 @@ def runtest(nMesh, order):
 
   prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
+
   solver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
+
 
   soln = prob.solve(solver)
 
@@ -82,18 +84,20 @@ def linefit(data) :
 def main() :
 
   ok = 1
-
-  sizes = (8, 16, 32, 48, 64)
+  
+  sizes = (4, 8, 16, 24, 32, 48, 64, 96, 128)
 
   print sizes
 
-  for order in range(1, 3):
+  for order in range(1,2):
 
     data = []
 
     for n in sizes:
 
+      print 'order=%d n=%d' % (order,n)
       err = runtest(n, order)
+      print 'error = ' , err
       data = data + [(math.log(1.0/n), math.log(err))] 
 
     (intercept, slope) = linefit(data)

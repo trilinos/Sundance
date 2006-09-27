@@ -91,6 +91,7 @@ using namespace SundanceStdMesh::Internal;
       /** The type of the cells contained in this set */
       const CellType& cellType() const {return cellType_;}
 
+
     private:
 
       /** the mesh in which the set exists */

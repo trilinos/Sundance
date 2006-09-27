@@ -161,6 +161,11 @@ namespace SundanceStdFwk
     /** Indicate whether this is a null cell filter */
     bool isNullCellFilter() const ;
 
+
+    /** Determine whether all cells identified by this filter are
+     * facets of cells identified by the other filter */
+    bool areFacetsOf(const CellFilter& other, const Mesh& mesh) const ;
+
     /** */
     XMLObject toXML() const ;
 

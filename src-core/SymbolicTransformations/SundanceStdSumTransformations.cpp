@@ -60,13 +60,13 @@ StdSumTransformations::StdSumTransformations()
 {
   append(rcp(new RemoveZeroFromSum()));
   append(rcp(new RemoveUnaryMinusFromSum()));
-  append(rcp(new ReorderSum()));
+  //  append(rcp(new ReorderSum()));
 
   append(rcp(new SumConstants()));
 
-  //  append(rcp(new MoveConstantsToLeftOfSum()));
-  //  append(rcp(new RearrangeRightSumWithConstant()));
-  //  append(rcp(new RearrangeLeftSumWithConstant()));
+    append(rcp(new MoveConstantsToLeftOfSum()));
+    append(rcp(new RearrangeRightSumWithConstant()));
+    append(rcp(new RearrangeLeftSumWithConstant()));
   append(rcp(new IdentifyPolynomialSum()));
   append(rcp(new SumIntegrals()));
 }

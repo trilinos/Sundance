@@ -59,7 +59,7 @@ int main(int argc, void** argv)
 
       Time stopwatch("test");
 
-      for (int n=1; n<20; n++)
+      for (int n=1; n<10; n++)
         {
           double t0 = stopwatch.wallTime();
           stopwatch.start();
@@ -74,6 +74,41 @@ int main(int argc, void** argv)
           for (int i=0; i<depth; i++)
             {
               expr = expr * expr;
+            }
+
+          EvaluationTester tester(expr);
+          Array<double> df;
+          Array<Array<double> > df2;
+          tester.evaluate(df, df2);
+          stopwatch.stop();
+          double t1 = stopwatch.wallTime();
+          cerr << n << "   "  << tester.numNodes() << "    " << t1-t0 << endl;
+
+        }
+
+      for (int n=2; n<40; n+=4)
+        {
+          double t0 = stopwatch.wallTime();
+          stopwatch.start();
+          int depth = n;
+
+          ADField U(ADBasis(1), sqrt(2.0));
+          Array<Expr> unks(n);
+          Array<ADField> Unks(n);
+          for (int i=0; i<n; i++) 
+            {
+              Unks[i] = ADField(ADBasis(1), sqrt(1+i));
+              unks[i] = new TestUnknownFunction(Unks[i], "u" + Teuchos::toString(i));
+            }
+          Expr x = new CoordExpr(0);
+
+          Expr expr = x;
+          for (int i=0; i<depth; i++)
+            {
+              for (int j=0; j<depth; j++)
+                {
+                  expr = expr + unks[i]*unks[j];
+                }
             }
 
           EvaluationTester tester(expr);

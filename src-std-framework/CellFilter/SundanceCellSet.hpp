@@ -63,6 +63,12 @@ using namespace SundanceStdMesh::Internal;
       /* handle boilerplate */
       HANDLE_CTORS(CellSet, CellSetBase);
 
+      /** Construct from an explicit set of cells */
+      CellSet(const Mesh& mesh, int cellDim,
+              const CellType& cellType,
+              const Set<int>& cellLIDs);
+      
+
       /** The ID number of the mesh in which these cells exist */
       int meshID() const {return ptr()->meshID();}
       
@@ -94,7 +100,12 @@ using namespace SundanceStdMesh::Internal;
 
       /** */
       CellSet subset(const RefCountPtr<CellPredicate>& test) const ;
-      
+
+
+      /** Determine whether all cells in this set are
+       * facets of cells in the other set */
+      bool areFacetsOf(const CellSet& other) const ;
+
     private:
       void checkCompatibility(const string& op, const CellSet& other) const ;
     };

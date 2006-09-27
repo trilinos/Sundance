@@ -43,6 +43,7 @@
 #include "SundanceGrouperBase.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceDefaultPath.hpp"
+#include "SundanceDOFMapBuilder.hpp"
 #include "SundanceVersionString.hpp"
 #include "SundanceProductTransformation.hpp"
 #include <unistd.h>
@@ -235,7 +236,8 @@ int Sundance::finalize()
           cout << tab << "cell jacobian batch flops: " << CellJacobianBatch::totalFlops() << endl;
           cout << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
         }
-      TimeMonitor::summarize();
+      /* we may need to skip timing summaries because of a Trilinos 6.0.x bug */
+      if (!(MPIComm::world().getNProc() > 1 && skipTimingOutput())) TimeMonitor::summarize();
       MPISession::finalize();
     }
   catch(std::exception& e)
@@ -323,6 +325,10 @@ void Sundance::setSettings(const XMLObject& xml)
           else if (name=="Check for Floating Point Errors")
             {
               UnaryFunctor::checkResults() = child.getRequiredBool("value");
+            }
+          else if (name=="Allow Specialized Nodal DOF Map")
+            {
+              DOFMapBuilder::allowNodalMap() = child.getRequiredBool("value");
             }
           else if (name=="Matrix Library Eliminates Repeated Graph Entries")
             {

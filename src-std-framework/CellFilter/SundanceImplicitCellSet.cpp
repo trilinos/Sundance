@@ -37,7 +37,8 @@ using namespace Teuchos;
 
 ImplicitCellSet::ImplicitCellSet(const Mesh& mesh, int cellDim,
                                  const CellType& cellType)
-  : CellSetBase(mesh, cellDim, cellType)
+  : CellSetBase(mesh, cellDim, cellType),
+    maxLID_(mesh.numCells(cellDim))
 {;}
 
 CellIterator ImplicitCellSet::begin() const

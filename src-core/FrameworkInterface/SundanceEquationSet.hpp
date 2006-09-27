@@ -140,6 +140,13 @@ namespace SundanceCore
       /** Indicate whether the given region has an essential BC expression */
       bool isBCRegion(int d) const ;
 
+      /** Return the set of regions on which the specified test func appears */
+      const Set<OrderedHandle<CellFilterStub> >& regionsForTestFunc(int testID) const ;
+      
+      /** Return the set of regions on which the specified unknown func appears */
+      const Set<OrderedHandle<CellFilterStub> >& regionsForUnkFunc(int unkID) const ;
+      
+
       /** Returns the number of variational function blocks */
       unsigned int numVarBlocks() const {return varFuncs_.size();}
 
@@ -217,13 +224,16 @@ namespace SundanceCore
       int reducedUnkParamID(int unkID) const ;
 
       /** get the unreduced variational ID for the given reduced ID */
-      int unreducedVarID(int block, int reducedVarID) const ;
+      int unreducedVarID(int block, int reducedVarID) const 
+      {return unreducedVarID_[block][reducedVarID];}
 
       /** get the unreduced unknown ID for the given reduced ID */
-      int unreducedUnkID(int block, int reducedUnkID) const ;
+      int unreducedUnkID(int block, int reducedUnkID) const 
+      {return unreducedUnkID_[block][reducedUnkID];}
 
       /** get the unreduced unknown param ID for the given reduced ID */
-      int unreducedUnkParamID(int reducedUnkParamID) const ;
+      int unreducedUnkParamID(int reducedUnkParamID) const 
+      {return unreducedUnkParamID_[reducedUnkParamID];}
       //@}
 
 
@@ -371,6 +381,12 @@ namespace SundanceCore
       /** */
       Map<RegionQuadCombo, Expr> bcRegionQuadComboExprs_;
 
+      /** */
+      Map<int, Set<OrderedHandle<CellFilterStub> > > testToRegionsMap_;
+
+      /** */
+      Map<int, Set<OrderedHandle<CellFilterStub> > > unkToRegionsMap_;
+
       /** List of the sets of nonzero functional derivatives at 
        * each regionQuadCombo */
       Map<ComputationType, Map<RegionQuadCombo, DerivSet> > regionQuadComboNonzeroDerivs_;
@@ -431,6 +447,15 @@ namespace SundanceCore
 
       /** Map from unreduced unk ID to reduced ID */
       Array<int> reducedUnkParamID_;
+
+      /** Map from (block, reduced varID) to unreduced varID */
+      Array<Array<int> > unreducedVarID_;
+
+      /** Map from (block, reduced unkID) to unreduced unkID */
+      Array<Array<int> > unreducedUnkID_;
+
+      /** Map from reduced unkParamID to unreduced unkParamID */
+      Array<int> unreducedUnkParamID_;
 
       /** Set of the computation types supported here */
       Set<ComputationType> compTypes_;

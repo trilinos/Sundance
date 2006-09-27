@@ -24,6 +24,13 @@
 
 
 
+<!-- Whether to allow optimized handling of DOF maps for Lagrange(1).   -->
+<!-- Should normally be set to true.                                    -->
+
+<Parameter name="Allow Specialized Nodal DOF Map" value="true"/>
+
+
+
 
 <!-- Whether the matrix library can efficiently eliminate duplicate      -->
 <!-- entries in a sparsity graph. If false, Sundance can do this, though -->

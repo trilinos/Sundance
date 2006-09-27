@@ -43,17 +43,28 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 
-
-static Time& dofBatchLookupTimer() 
+static Time& mixedDOFCtorTimer() 
 {
   static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("batched dof lookup"); 
+    = TimeMonitor::getNewTimer("mixed DOF map init"); 
+  return *rtn;
+}
+static Time& maxDOFBuildTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("max-cell dof table init"); 
   return *rtn;
 }
 
 MixedDOFMap::MixedDOFMap(const Mesh& mesh, 
-                         const BasisArray& basis)
-  : DOFMapBase(mesh, basis), 
+                         const BasisArray& basis,
+                         const CellFilter& maxCells)
+  : DOFMapBase(mesh), 
+    maxCells_(maxCells),
+    chunkBasis_(),
+    chunkFuncIDs_(),
+    funcIDToChunkIndexMap_(basis.size()),
+    funcIDToFuncIndexMap_(basis.size()),
     dim_(mesh.spatialDim()),
     dofs_(mesh.spatialDim()+1),
     maximalDofs_(),
@@ -66,11 +77,32 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
     originalFacetOrientation_(2),
     hasBeenAssigned_(mesh.spatialDim()+1)
 {
+  TimeMonitor timer(mixedDOFCtorTimer());
   verbosity() = DOFMapBase::classVerbosity();
+
+  SundanceUtils::Map<BasisFamily, int> basisToChunkMap;
   
-  CellFilter maximalCells = new MaximalCellFilter();
-  cellSets().append(maximalCells.getCells(mesh));
-  cellDimOnCellSets().append(mesh.spatialDim());
+  int nBasis = basis.size();
+  int chunk = 0;
+  for (int i=0; i<nBasis; i++)
+    {
+      if (!basisToChunkMap.containsKey(basis[i]))
+        {
+          chunkBasis_.append(basis[i]);
+          basisToChunkMap.put(basis[i], chunk);
+          chunkFuncIDs_.append(tuple(i));
+          chunk++;
+        }
+      else
+        {
+          int b = basisToChunkMap.get(basis[i]);
+          chunkFuncIDs_[b].append(i);
+        }
+
+      funcIDToChunkIndexMap_[i] = basisToChunkMap.get(basis[i]);
+      funcIDToFuncIndexMap_[i] = chunkFuncIDs_[funcIDToChunkIndexMap_[i]].size()-1;
+    }
+
   
   allocate(mesh);
 
@@ -229,83 +261,80 @@ void MixedDOFMap::initMap()
   Array<Array<Array<int> > > remoteCells(mesh().spatialDim()+1,
                                          mesh().comm().getNProc());
   
-  for (int r=0; r<numCellSets(); r++)
+  /* Loop over maximal cells in the order specified by the cell iterator.
+   * This might be reordered relative to the mesh. 
+   *
+   * At each maximal cell, we'll run through the facets and 
+   * assign DOFs. That will take somewhat more work, but gives much 
+   * better cache locality for the matrix because all the DOFs for
+   * each maximal element and its facets are grouped together. */
+  
+  CellSet cells = maxCells_.getCells(mesh());
+  CellIterator iter;
+  for (iter=cells.begin(); iter != cells.end(); iter++)
     {
-      /* Loop over maximal cells in the order specified by the cell iterator.
-       * This might be reordered relative to the mesh. 
-       *
-       * At each maximal cell, we'll run through the facets and 
-       * assign DOFs. That will take somewhat more work, but gives much 
-       * better cache locality for the matrix because all the DOFs for
-       * each maximal element and its facets are grouped together. */
-
-      CellSet cells = cellSet(r);
-      CellIterator iter;
-      for (iter=cells.begin(); iter != cells.end(); iter++)
-        {
-          /* first assign any DOFs associated with the maximal cell */
-          int cellLID = *iter;
-          int owner;
+      /* first assign any DOFs associated with the maximal cell */
+      int cellLID = *iter;
+      int owner;
       
-          if (cellHasAnyDOFs_[dim_])
+      if (cellHasAnyDOFs_[dim_])
+        {
+          /* if the maximal cell is owned by another processor,
+           * put it in the list of cells for which we need to request 
+           * DOF information from another processor */
+          if (isRemote(dim_, cellLID, owner))
             {
-              /* if the maximal cell is owned by another processor,
-               * put it in the list of cells for which we need to request 
-               * DOF information from another processor */
-              if (isRemote(dim_, cellLID, owner))
+              int cellGID = mesh().mapLIDToGID(dim_, cellLID);
+              remoteCells[dim_][owner].append(cellGID); 
+            }
+          else /* the cell is locally owned, so we can 
+                * set its DOF numbers now */
+            {
+              for (int b=0; b<nChunks(); b++)
                 {
-                  int cellGID = mesh().mapLIDToGID(dim_, cellLID);
-                  remoteCells[dim_][owner].append(cellGID); 
-                }
-              else /* the cell is locally owned, so we can 
-                    * set its DOF numbers now */
-                {
-                  for (int b=0; b<nChunks(); b++)
-                    {
-                      setDOFs(b, dim_, cellLID, nextDOF);
-                    }
+                  setDOFs(b, dim_, cellLID, nextDOF);
                 }
             }
+        }
 
-          /* Now assign any DOFs associated with the facets. */
-          for (int d=0; d<dim_; d++)
+      /* Now assign any DOFs associated with the facets. */
+      for (int d=0; d<dim_; d++)
+        {
+          if (cellHasAnyDOFs_[d])
             {
-              if (cellHasAnyDOFs_[d])
+              int nf = numFacets_[dim_][d];
+              Array<int> facetLID(nf);
+              Array<int> facetOrientations(nf);
+              /* look up the LIDs of the facets */
+              mesh().getFacetArray(dim_, cellLID, d, 
+                                   facetLID, facetOrientations);
+              /* for each facet, process its DOFs */
+              for (int f=0; f<nf; f++)
                 {
-                  int nf = numFacets_[dim_][d];
-                  Array<int> facetLID(nf);
-                  Array<int> facetOrientations(nf);
-                  /* look up the LIDs of the facets */
-                  mesh().getFacetArray(dim_, cellLID, d, 
-                                       facetLID, facetOrientations);
-                  /* for each facet, process its DOFs */
-                  for (int f=0; f<nf; f++)
+                  /* if the facet's DOFs have been assigned already,
+                   * we're done */
+                  if (!hasBeenAssigned(d, facetLID[f]))
                     {
-                      /* if the facet's DOFs have been assigned already,
-                       * we're done */
-                      if (!hasBeenAssigned(d, facetLID[f]))
+                      markAsAssigned(d, facetLID[f]);
+                      /* the facet may be owned by another processor */
+                      if (isRemote(d, facetLID[f], owner))
                         {
-                          markAsAssigned(d, facetLID[f]);
-                          /* the facet may be owned by another processor */
-                          if (isRemote(d, facetLID[f], owner))
+                          int facetGID 
+                            = mesh().mapLIDToGID(d, facetLID[f]);
+                          remoteCells[d][owner].append(facetGID);
+                        }
+                      else /* we can assign a DOF locally */
+                        {
+                          /* assign DOF */
+                          for (int b=0; b<nChunks(); b++)
                             {
-                              int facetGID 
-                                = mesh().mapLIDToGID(d, facetLID[f]);
-                              remoteCells[d][owner].append(facetGID);
+                              setDOFs(b, d, facetLID[f], nextDOF);
                             }
-                          else /* we can assign a DOF locally */
+                          /* record the orientation wrt the maximal cell */
+                          if (d > 0) 
                             {
-                              /* assign DOF */
-                              for (int b=0; b<nChunks(); b++)
-                                {
-                                  setDOFs(b, d, facetLID[f], nextDOF);
-                                }
-                              /* record the orientation wrt the maximal cell */
-                              if (d > 0) 
-                                {
-                                  originalFacetOrientation_[d-1][facetLID[f]] 
-                                    = facetOrientations[f];
-                                }
+                              originalFacetOrientation_[d-1][facetLID[f]] 
+                                = facetOrientations[f];
                             }
                         }
                     }
@@ -313,6 +342,7 @@ void MixedDOFMap::initMap()
             }
         }
     }
+    
 
   /* Done with first pass, in which we have assigned DOFs for all
    * local processors. We now have to share DOF information between
@@ -506,7 +536,7 @@ void MixedDOFMap::getDOFsForCellBatch(int cellDim,
                                       Array<Array<int> >& dofs,
                                       Array<int>& nNodes) const 
 {
-  TimeMonitor timer(dofBatchLookupTimer());
+  TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
   SUNDANCE_OUT(this->verbosity() > VerbHigh, 
@@ -645,7 +675,7 @@ void MixedDOFMap::getDOFsForCellBatch(int cellDim,
                                 {
                                   int ptr = nodePtr[n];
                                   toPtr1[func*nNodes[b] + ptr] //= fromPtr[func*nNodes[b] + n];
-                                  = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
+                                    = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
                                 }
                             }
                           else /* orientation-dependent */
@@ -659,7 +689,7 @@ void MixedDOFMap::getDOFsForCellBatch(int cellDim,
                                   int ptr = nodePtr[n];
                                   toPtr1[func*nNodes[b]+ptr] 
                                     = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-                                    //                                    = fromPtr[func*nNodes[b]+n];
+                                  //                                    = fromPtr[func*nNodes[b]+n];
                                 }
                             }
                         }
@@ -672,6 +702,7 @@ void MixedDOFMap::getDOFsForCellBatch(int cellDim,
 
 void MixedDOFMap::buildMaximalDofTable() const
 {
+  TimeMonitor timer(maxDOFBuildTimer());
   Tabs tab;
   int cellDim = dim_;
   int nCells = mesh().numCells(dim_);
@@ -775,7 +806,7 @@ void MixedDOFMap::buildMaximalDofTable() const
                               int ptr = nodePtr[m];
                               toPtr[func*nNodes[b]+ptr] 
                                 = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-                                //= fromPtr[func*nNodes[b]+n];
+                              //= fromPtr[func*nNodes[b]+n];
                             }
                         }
                     }
@@ -850,78 +881,3 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
     }
 
 }                           
-
-
-
-void MixedDOFMap::print(ostream& os) const
-{
-  int myRank = mesh().comm().getRank();
-
-  Tabs tabs;
-
-
-
-  os << "DOFS = " << dofs_ << endl;
-
-  for (int p=0; p<mesh().comm().getNProc(); p++)
-    {
-      mesh().comm().synchronize();
-      mesh().comm().synchronize();
-      if (p == myRank)
-        {
-          os << tabs << 
-            "========= DOFMap on proc p=" << p << " =============" << endl;
-          for (int d=dim_; d>=0; d--)
-            {
-              Tabs tabs1;
-              os << tabs1 << "dimension = " << d << endl;
-              for (int c=0; c<mesh().numCells(d); c++)
-                {
-                  Tabs tabs2;
-                  os << tabs2 << "Cell LID=" << c << " GID=" 
-                     << mesh().mapLIDToGID(d, c);
-                  if (d==0) 
-                    {
-                      os << " x=" << mesh().nodePosition(c) << endl;
-                    }
-                  else 
-                    {
-                      Array<int> facetLIDs;
-                      Array<int> facetDirs;
-                      mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
-                      Array<int> facetGIDs(facetLIDs.size());
-                      for (unsigned int v=0; v<facetLIDs.size(); v++)
-                        {
-                          facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
-                        }
-                      os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
-                         << endl;
-                    }
-                  for (unsigned int f=0; f<funcIDList().size(); f++)
-                    {
-                      Tabs tabs3;
-                      Array<int> dofs;
-                      getDOFsForCell(d, c, funcIDList()[f], dofs);
-                      os << tabs3 << "f=" << funcIDList()[f] << " " 
-                         << dofs << endl;
-                      if (false)
-                        {
-                          os << tabs3 << "{";
-                          for (unsigned int i=0; i<dofs.size(); i++)
-                            {
-                              if (i != 0) os << ", ";
-                              if (isLocalDOF(dofs[i])) os << "L";
-                              else os << "R";
-                            }
-                          os << "}" << endl;
-                        }
-                    }
-                }
-            }
-        }
-      mesh().comm().synchronize();
-      mesh().comm().synchronize();
-    }
-}
-
-

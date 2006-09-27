@@ -35,6 +35,7 @@
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceBasisFamily.hpp"
+#include "SundanceCellFilter.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -75,9 +76,32 @@ namespace SundanceStdFwk
 
       Array<Array<BasisFamily> > unkBasisArray() const ;
 
+      Array<Array<Set<CellFilter> > > testCellFilters() const ;
+
+      Array<Array<Set<CellFilter> > > unkCellFilters() const ;
+
       const Mesh& mesh() const {return mesh_;}
 
+      static RefCountPtr<DOFMapBase> makeMap(const Mesh& mesh,
+                                               const Array<BasisFamily>& basis,
+                                             const Array<Set<CellFilter> >& filters) ;
+
+      static bool hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
+                                  const Array<Set<CellFilter> >& filters) ;
+
+      static bool hasHomogeneousBasis(const Array<BasisFamily>& basis) ;
+
+      static bool hasNodalBasis(const Array<BasisFamily>& basis) ;
+
+      static bool allFuncsAreOmnipresent(const Array<Set<CellFilter> >& filters);
+
+      static CellFilter getMaxCellFilter(const Array<Set<CellFilter> >& filters);
+
+      static bool& allowNodalMap() {static bool rtn=true; return rtn;}
+        
     private:
+
+      Set<CellFilter> reduceCellFilters(const Set<CellFilter>& inputSet) const ;
 
       bool hasUnks() const ;
 

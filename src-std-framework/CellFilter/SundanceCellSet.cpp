@@ -42,6 +42,12 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+CellSet::CellSet(const Mesh& mesh, int cellDim,
+                 const CellType& cellType,
+                 const Set<int>& cellLIDs)
+  : Handle<CellSetBase>(rcp(new ExplicitCellSet(mesh, cellDim, cellType, cellLIDs)))
+{}
+
 CellSet CellSet::setUnion(const CellSet& other) const
 {
   if (ptr().get()==0) return other;
@@ -110,6 +116,34 @@ void CellSet::checkCompatibility(const string& op, const CellSet& other) const
                << "LHS cells: " << *this << endl
                << "RHS cells: " << other);
                
+}
+
+
+bool CellSet::areFacetsOf(const CellSet& other) const
+{
+  Array<int> cofacetLIDs;
+  int myDim = dimension();
+  int cofacetDim = other.dimension();
+  CellType cofacetType = other.cellType();
+  if (myDim >= cofacetDim) return false;
+
+  for (CellIterator i=begin(); i!=end(); i++)
+    {
+      int cellLID = *i;
+      mesh().getCofacets(myDim, cellLID, cofacetDim, cofacetLIDs);
+      Set<int> cofacetSet;
+      for (unsigned int c=0; c<cofacetLIDs.size(); c++)
+        {
+          int cf = cofacetLIDs[c];
+          cofacetSet.put(cf);
+        }
+      CellSet myCofacetSet(mesh(), cofacetDim, cofacetType, cofacetSet); 
+      CellSet intersection = myCofacetSet.setIntersection(other);      
+      /* if the intersection is empty, then we have found a cell
+       * that is not a facet of one of the other cells */
+      if (intersection.begin()==intersection.end()) return false;
+    }
+  return true;
 }
 
 

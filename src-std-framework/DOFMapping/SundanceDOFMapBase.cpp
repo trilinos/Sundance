@@ -29,6 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceMap.hpp"
+#include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
+#include "SundanceOrderedTuple.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
@@ -38,57 +41,16 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 
-static Time& dofLookupTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("unbatched dof lookup"); 
-  return *rtn;
-}
 
-DOFMapBase::DOFMapBase(const Mesh& mesh,
-                       const BasisArray& basis)
+
+DOFMapBase::DOFMapBase(const Mesh& mesh)
   : localProcID_(mesh.comm().getRank()),
     mesh_(mesh),
-    cellSets_(),
-    funcIDOnCellSets_(),
-    cellDimOnCellSets_(),
     lowestLocalDOF_(),
+    numLocalDOFs_(),
     numDOFs_(),
-    ghostIndices_(rcp(new Array<int>())),
-    dofsHaveBeenAssigned_(),
-    chunkBasis_(),
-    chunkFuncIDs_(),
-    funcIDToChunkMap_(basis.size()),
-    funcIDToIndexMap_(basis.size())
-{
-  SundanceUtils::Map<BasisFamily, int> basisToChunkMap;
-  
-  int nBasis = basis.size();
-  int chunk = 0;
-  for (int i=0; i<nBasis; i++)
-    {
-      if (!basisToChunkMap.containsKey(basis[i]))
-        {
-          chunkBasis_.append(basis[i]);
-          basisToChunkMap.put(basis[i], chunk);
-          chunkFuncIDs_.append(tuple(i));
-          chunk++;
-        }
-      else
-        {
-          int b = basisToChunkMap.get(basis[i]);
-          chunkFuncIDs_[b].append(i);
-        }
-
-      funcIDToChunkMap_[i] = basisToChunkMap.get(basis[i]);
-      funcIDToIndexMap_[i] = chunkFuncIDs_[funcIDToChunkMap_[i]].size()-1;
-    }
-
-  /* identify all functions as existing on the maximal cell set */
-  Array<int> fid(basis.size());
-  for (int f=0; f<nBasis; f++) fid[f] = f;
-  funcIDOnCellSets().append(fid);
-}
+    ghostIndices_(rcp(new Array<int>()))
+{}
 
 void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
                                 int funcID,
@@ -108,3 +70,92 @@ void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
       dofs[i] = allDofs[chunkNumber][nNodes[chunkNumber]*funcIndex + i];
     }
 }
+
+Time& DOFMapBase::dofLookupTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("unbatched dof lookup"); 
+  return *rtn;
+}
+
+Time& DOFMapBase::batchedDofLookupTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("batched dof lookup"); 
+  return *rtn;
+}
+
+
+
+void DOFMapBase::print(ostream& os) const
+{
+  int myRank = mesh().comm().getRank();
+
+  Tabs tabs;
+  int dim = mesh().spatialDim();
+
+  for (int p=0; p<mesh().comm().getNProc(); p++)
+    {
+      mesh().comm().synchronize();
+      mesh().comm().synchronize();
+      if (p == myRank)
+        {
+          os << tabs << 
+            "========= DOFMap on proc p=" << p << " =============" << endl;
+          for (int d=dim; d>=0; d--)
+            {
+              Tabs tabs1;
+              os << tabs1 << "dimension = " << d << endl;
+              for (int c=0; c<mesh().numCells(d); c++)
+                {
+                  Tabs tabs2;
+                  os << tabs2 << "Cell d=" << d << " LID=" << c << " GID=" 
+                     << mesh().mapLIDToGID(d, c);
+                  if (d==0) 
+                    {
+                      os << " x=" << mesh().nodePosition(c) << endl;
+                    }
+                  else 
+                    {
+                      Array<int> facetLIDs;
+                      Array<int> facetDirs;
+                      mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
+                      Array<int> facetGIDs(facetLIDs.size());
+                      for (unsigned int v=0; v<facetLIDs.size(); v++)
+                        {
+                          facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
+                        }
+                      os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
+                         << endl;
+                    }
+                  for (int b=0; b<nChunks(); b++)
+                    {
+                      for (unsigned int f=0; f<funcID(b).size(); f++)
+                        {
+                          Tabs tabs3;
+                          Array<int> dofs;
+                          getDOFsForCell(d, c, funcID(b)[f], dofs);
+                          os << tabs3 << "f=" << funcID(b)[f] << " " 
+                             << dofs << endl;
+                          if (false)
+                            {
+                              os << tabs3 << "{";
+                              for (unsigned int i=0; i<dofs.size(); i++)
+                                {
+                                  if (i != 0) os << ", ";
+                                  if (isLocalDOF(dofs[i])) os << "L";
+                                  else os << "R";
+                                }
+                              os << "}" << endl;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+      mesh().comm().synchronize();
+      mesh().comm().synchronize();
+    }
+}
+
+

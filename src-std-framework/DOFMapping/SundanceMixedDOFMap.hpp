@@ -61,25 +61,43 @@ namespace SundanceStdFwk
     public:
       /** */
       MixedDOFMap(const Mesh& mesh, 
-                  const BasisArray& basis);
+                  const BasisArray& basis,
+                  const CellFilter& maxCells);
                         
       /** */
       virtual ~MixedDOFMap(){;}
 
-
-     
-
-      
 
       /** */
       virtual void getDOFsForCellBatch(int cellDim, 
                                        const Array<int>& cellLID,
                                        Array<Array<int> >& dofs,
                                        Array<int>& nNodes) const ;
-      
 
       /** */
-      virtual void print(ostream& os) const ;
+      int chunkForFuncID(int funcID) const 
+      {return funcIDToChunkIndexMap_[funcID];}
+
+      /** */
+      int indexForFuncID(int funcID) const 
+      {return funcIDToFuncIndexMap_[funcID];}
+      
+      /** */
+      int nFuncs(int chunk) const 
+      {return chunkFuncIDs_[chunk].size();}
+
+      /** */
+      int nChunks() const 
+      {return chunkFuncIDs_.size();}
+
+      /** */
+      const BasisFamily& basis(int chunk) const 
+      {return chunkBasis_[chunk];}
+
+      /** */
+      const Array<int>& funcID(int chunk) const 
+      {return chunkFuncIDs_[chunk];}
+      
 
     private:
 
@@ -127,10 +145,10 @@ namespace SundanceStdFwk
       void computeOffsets(int dim, int localCount);
 
       /** */
-      const Array<int>& funcIDList() const {return funcIDOnCellSet(0);}
+      static int uninitializedVal() {return -1;}
 
       /** */
-      static int uninitializedVal() {return -1;}
+      CellFilter maxCells_;
 
       /** Table of bases for each chunk */
       Array<BasisFamily> chunkBasis_;
@@ -139,7 +157,10 @@ namespace SundanceStdFwk
       Array<Array<int> > chunkFuncIDs_;
 
       /** Map for lookup of chunk number given a function ID */
-      Array<int> funcIDToChunkMap_;
+      Array<int> funcIDToChunkIndexMap_;
+
+      /** Map for lookup of index into chunk given a function ID */
+      Array<int> funcIDToFuncIndexMap_;
 
       /** spatial dimension */
       int dim_;

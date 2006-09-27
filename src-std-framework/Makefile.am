@@ -138,12 +138,14 @@ SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceBlock.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.hpp\
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.hpp 
 
 SUNDANCE_DOFMAPPING = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp 
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \

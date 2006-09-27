@@ -133,7 +133,6 @@ DIST_COMMON = $(include_HEADERS) $(srcdir)/Makefile.am \
 subdir = src-std-framework
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
-	$(top_srcdir)/config/ac_python_module.m4 \
 	$(top_srcdir)/config/az_python.m4 \
 	$(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
@@ -189,7 +188,8 @@ am__objects_2 = SundanceBasisFamilyBase.$(OBJEXT) \
 	SundanceUnknownFunction.$(OBJEXT) \
 	SundanceUnknownFunctionData.$(OBJEXT)
 am__objects_3 = SundanceDOFMapBase.$(OBJEXT) \
-	SundanceDOFMapBuilder.$(OBJEXT) SundanceMixedDOFMap.$(OBJEXT)
+	SundanceDOFMapBuilder.$(OBJEXT) SundanceMixedDOFMap.$(OBJEXT) \
+	SundanceNodalDOFMap.$(OBJEXT)
 am__objects_4 = SundanceAssembler.$(OBJEXT) \
 	SundanceElementIntegral.$(OBJEXT) \
 	SundanceFunctionalEvaluator.$(OBJEXT) \
@@ -255,6 +255,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceMixedDOFMap.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceModelEvaluatorBase.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceNLPModelEvaluator.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceNodalDOFMap.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceNonlinearProblem.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceP1NC.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundancePositionalCellPredicate.Po \
@@ -526,12 +527,14 @@ SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceBlock.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.hpp\
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.hpp 
 
 SUNDANCE_DOFMAPPING = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp 
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
@@ -909,6 +912,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMixedDOFMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceModelEvaluatorBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNLPModelEvaluator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNodalDOFMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNonlinearProblem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceP1NC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePositionalCellPredicate.Po@am__quote@
@@ -1599,6 +1603,22 @@ SundanceMixedDOFMap.obj: $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixe
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceMixedDOFMap.Po' tmpdepfile='$(DEPDIR)/SundanceMixedDOFMap.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMixedDOFMap.obj `if test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp'; fi`
+
+SundanceNodalDOFMap.o: $(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceNodalDOFMap.o -MD -MP -MF "$(DEPDIR)/SundanceNodalDOFMap.Tpo" -c -o SundanceNodalDOFMap.o `test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceNodalDOFMap.Tpo" "$(DEPDIR)/SundanceNodalDOFMap.Po"; else rm -f "$(DEPDIR)/SundanceNodalDOFMap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp' object='SundanceNodalDOFMap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceNodalDOFMap.Po' tmpdepfile='$(DEPDIR)/SundanceNodalDOFMap.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceNodalDOFMap.o `test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp
+
+SundanceNodalDOFMap.obj: $(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceNodalDOFMap.obj -MD -MP -MF "$(DEPDIR)/SundanceNodalDOFMap.Tpo" -c -o SundanceNodalDOFMap.obj `if test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceNodalDOFMap.Tpo" "$(DEPDIR)/SundanceNodalDOFMap.Po"; else rm -f "$(DEPDIR)/SundanceNodalDOFMap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp' object='SundanceNodalDOFMap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceNodalDOFMap.Po' tmpdepfile='$(DEPDIR)/SundanceNodalDOFMap.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceNodalDOFMap.obj `if test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; fi`
 
 SundanceAssembler.o: $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceAssembler.o -MD -MP -MF "$(DEPDIR)/SundanceAssembler.Tpo" -c -o SundanceAssembler.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp; \

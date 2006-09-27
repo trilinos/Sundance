@@ -28,12 +28,14 @@ class TopPointPredicate :
       return (math.fabs(y-1.0) < 1.0e-10);
 
 def main():
-
+  
+  skipTimingOutput();
+  
   vecType = EpetraVectorType()
   npx = 1
   npy = getNProc()
-  ny = 16
-  nx = 16
+  ny = 4
+  nx = 4
   mesher  = PartitionedRectangleMesher(0.0, 1.0, nx, npx,
                                        0.0, 1.0, ny/npy, npy);
   mesh = mesher.getMesh();
@@ -71,6 +73,7 @@ def main():
   prob = LinearProblem(mesh, eqn, bc, List(vPsi, vOmega), 
                        List(psi, omega), vecType)
 
+  
   solver = readSolver("../../../tests-std-framework/Problem/bicgstab.xml");
 
   soln = prob.solve(solver)
@@ -89,6 +92,7 @@ def main():
   totalVorticity = soln[1].integral(interior, mesh, quad2)
   error = math.fabs(1.0 - totalVorticity)
 
+  
   
   tol = 1.0e-10
   passFailTest(error, tol)

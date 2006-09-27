@@ -29,7 +29,8 @@
 /* @HEADER@ */
 
 #include "SundanceDiscreteSpace.hpp"
-#include "SundanceMixedDOFMap.hpp"
+#include "SundanceDOFMapBuilder.hpp"
+#include "SundanceMaximalCellFilter.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
@@ -42,7 +43,8 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                              const VectorType<double>& vecType)
   : map_(),
     mesh_(mesh), 
-    basis_(tuple(basis)), 
+    basis_(tuple(basis)),
+    regions_(maximalRegions(basis_.size())),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
@@ -52,7 +54,27 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const VectorType<double>& vecType)
-  : map_(), mesh_(mesh), basis_(basis), vecSpace_(), vecType_(vecType),
+  : map_(), 
+    mesh_(mesh), 
+    basis_(basis), 
+    regions_(maximalRegions(basis_.size())),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  init();
+}
+
+
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+                             const Array<Set<CellFilter> >& regions,
+                             const VectorType<double>& vecType)
+  : map_(), 
+    mesh_(mesh), 
+    basis_(basis), 
+    regions_(regions),
+    vecSpace_(), 
+    vecType_(vecType),
     ghostImporter_()
 {
   init();
@@ -62,8 +84,12 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const RefCountPtr<DOFMapBase>& map,
                              const VectorType<double>& vecType)
-  : map_(map), mesh_(mesh), basis_(basis), 
-    vecSpace_(), vecType_(vecType),
+  : map_(map), 
+    mesh_(mesh), 
+    basis_(basis), 
+    regions_(maximalRegions(basis_.size())),
+    vecSpace_(), 
+    vecType_(vecType),
     ghostImporter_()
 {
   init();
@@ -75,7 +101,7 @@ void DiscreteSpace::init()
 {
   if (map_.get()==0) 
     {
-      map_ = rcp(new MixedDOFMap(mesh(), basis_));
+      map_ = DOFMapBuilder::makeMap(mesh_, basis_, regions_);
     }
   int nDof = map_->numLocalDOFs();
   int lowDof = map_->lowestLocalDOF();
@@ -94,6 +120,19 @@ void DiscreteSpace::init()
   if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
   
   ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
+}
+
+Array<Set<CellFilter> > DiscreteSpace::maximalRegions(int n) const
+{
+  CellFilter cf = new MaximalCellFilter();
+  Array<Set<CellFilter> > rtn(n);
+  for (int i=0; i<n; i++) 
+    {
+      Set<CellFilter> s;
+      s.put(cf);
+      rtn[i] = s;
+    }
+  return rtn;
 }
 
 

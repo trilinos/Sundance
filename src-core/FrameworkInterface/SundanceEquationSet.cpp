@@ -63,6 +63,8 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
+    testToRegionsMap_(),
+    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
@@ -77,6 +79,9 @@ EquationSet::EquationSet(const Expr& eqns,
     unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
+    unreducedVarID_(),
+    unreducedUnkID_(),
+    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -128,6 +133,8 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
+    testToRegionsMap_(),
+    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
@@ -142,6 +149,9 @@ EquationSet::EquationSet(const Expr& eqns,
     unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
+    unreducedVarID_(),
+    unreducedUnkID_(),
+    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(false),
@@ -209,6 +219,8 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
+    testToRegionsMap_(),
+    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
@@ -223,6 +235,9 @@ EquationSet::EquationSet(const Expr& eqns,
     unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
+    unreducedVarID_(),
+    unreducedUnkID_(),
+    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -275,6 +290,8 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
+    testToRegionsMap_(),
+    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
@@ -289,6 +306,9 @@ EquationSet::EquationSet(const Expr& eqns,
     unkParamIDToReducedUnkParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
+    unreducedVarID_(),
+    unreducedUnkID_(),
+    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -399,8 +419,10 @@ void EquationSet::init(const Expr& eqns,
   Set<int> unkFuncSet;
   Set<int> unkParamSet;
   varIDToReducedIDMap_.resize(vars.size());
+  unreducedVarID_.resize(vars.size());
   for (unsigned int b=0; b<vars.size(); b++)
     {
+      unreducedVarID_[b].resize(vars[b].size());
       for (unsigned int i=0; i<vars[b].size(); i++)
         {
           const FuncElementBase* t 
@@ -409,6 +431,7 @@ void EquationSet::init(const Expr& eqns,
           varFuncSet.put(fid);
           varIDToBlockMap_.put(fid, b);
           varIDToReducedIDMap_[b].put(fid, i);
+          unreducedVarID_[b][i] = fid;
         }
     }
 
@@ -419,8 +442,10 @@ void EquationSet::init(const Expr& eqns,
 
   /* set up func ID maps for unks */
   unkIDToReducedIDMap_.resize(unks.size());
+  unreducedUnkID_.resize(unks.size());
   for (unsigned int b=0; b<unks.size(); b++)
     {
+      unreducedUnkID_[b].resize(unks[b].size());
       for (unsigned int i=0; i<unks[b].size(); i++)
         {
           const UnknownFuncElement* u 
@@ -433,10 +458,12 @@ void EquationSet::init(const Expr& eqns,
           unkFuncSet.put(fid);
           unkIDToBlockMap_.put(fid, b);
           unkIDToReducedIDMap_[b].put(fid, i);
+          unreducedUnkID_[b][i] = fid;
         }
     }
 
   /* set up func ID maps for unk parameters */
+  unreducedUnkParamID_.resize(unkParams.size());
   for (unsigned int i=0; i<unkParams.size(); i++)
     {
       const UnknownParameterElement* u 
@@ -448,6 +475,7 @@ void EquationSet::init(const Expr& eqns,
       int fid = u->funcID();
       unkParamSet.put(fid);
       unkParamIDToReducedUnkParamIDMap_.put(fid, i);
+      unreducedUnkParamID_[i] = fid;
     }
 
 
@@ -915,8 +943,6 @@ void EquationSet::init(const Expr& eqns,
         }
     }
 
-  
-
   SUNDANCE_OUT(this->verbosity() > VerbSilent,
                "Vars appearing on each region: " << endl << varsOnRegions_);
 
@@ -936,6 +962,47 @@ void EquationSet::init(const Expr& eqns,
   regions_ = regionSet.elements();
   regionQuadCombos_ = rqcSet.elements();
   bcRegionQuadCombos_ = rqcBCSet.elements();
+
+  for (unsigned int r=0; r<regions_.size(); r++)
+    {
+      OrderedHandle<CellFilterStub> cf = regions_[r];
+      const Set<int>& v = this->varsOnRegion(r);
+      const Set<int>& u = this->unksOnRegion(r);
+      const Set<int>& bv = this->varsOnRegion(r);
+      const Set<int>& bu = this->unksOnRegion(r);
+      Set<int> vf = v;
+      Set<int> uf = u;
+      vf.merge(bv);
+      uf.merge(bu);
+      for (Set<int>::const_iterator i=vf.begin(); i!=vf.end(); i++)
+        {
+          int fid = *i;
+          if (testToRegionsMap_.containsKey(fid))
+            {
+              testToRegionsMap_[fid].put(cf);
+            }
+          else
+            {
+              Set<OrderedHandle<CellFilterStub> > s;
+              s.put(cf);
+              testToRegionsMap_.put(fid, s);
+            }
+        }
+      for (Set<int>::const_iterator i=uf.begin(); i!=uf.end(); i++)
+        {
+          int fid = *i;
+          if (unkToRegionsMap_.containsKey(fid))
+            {
+              unkToRegionsMap_[fid].put(cf);
+            }
+          else
+            {
+              Set<OrderedHandle<CellFilterStub> > s;
+              s.put(cf);
+              unkToRegionsMap_.put(fid, s);
+            }
+        }
+    }
 
 
 }
@@ -1123,4 +1190,20 @@ int EquationSet::blockForUnkID(int unkID) const
                      "key " << unkID << " not found in map "
                      << unkIDToBlockMap_);
   return unkIDToBlockMap_.get(unkID);
+}
+
+const Set<OrderedHandle<CellFilterStub> >&  EquationSet::regionsForTestFunc(int testID) const
+{
+  TEST_FOR_EXCEPTION(!testToRegionsMap_.containsKey(testID), RuntimeError,
+                     "key " << testID << " not found in map "
+                     << testToRegionsMap_);
+  return testToRegionsMap_.get(testID);
+}
+
+const Set<OrderedHandle<CellFilterStub> >&  EquationSet::regionsForUnkFunc(int unkID) const
+{
+  TEST_FOR_EXCEPTION(!unkToRegionsMap_.containsKey(unkID), RuntimeError,
+                     "key " << unkID << " not found in map "
+                     << testToRegionsMap_);
+  return unkToRegionsMap_.get(unkID);
 }

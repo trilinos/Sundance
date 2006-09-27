@@ -27,6 +27,9 @@
   {
     return SundanceStdFwk::Sundance::passFailTest(err, tol);
   }
+
+
+  void skipTimingOutput() {Sundance::skipTimingOutput()=true;}
   %}
 
 
