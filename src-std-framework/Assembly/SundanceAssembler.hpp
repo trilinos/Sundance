@@ -152,6 +152,10 @@ namespace SundanceStdFwk
 
       /** */
       static bool& matrixEliminatesRepeatedCols() {static bool x = false; return x;}
+
+      /** */
+      const RefCountPtr<EquationSet>& eqnSet() const 
+      {return eqn_;}
       
     private:
 

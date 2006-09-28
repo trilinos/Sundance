@@ -72,6 +72,18 @@ namespace SundanceCore
 
           /** Ordering operator for use in transforming exprs to standard form */
           virtual bool lessThan(const ScalarExpr* other) const ;
+
+          /** */
+          virtual Set<MultipleDeriv> 
+          internalFindW(int order, const EvalContext& context) const ;
+
+          /** Find spatially-constant functional derivatives */
+          virtual Set<MultipleDeriv> 
+          internalFindC(int order, const EvalContext& context) const ;
+
+          /** Find spatially-variable functional derivatives */
+          virtual Set<MultipleDeriv> 
+          internalFindV(int order, const EvalContext& context) const ;
           
 
 

@@ -31,7 +31,6 @@
 #ifndef SUNDANCE_SPATIALLYCONSTANTEXPR_H
 #define SUNDANCE_SPATIALLYCONSTANTEXPR_H
 
-#include "SundanceLeafExpr.hpp"
 #include "SundanceConstantEvaluator.hpp"
 #include "SundanceDiscreteFuncDataStub.hpp"
 
@@ -44,8 +43,9 @@ namespace SundanceCore
   namespace Internal
     {
       /** */
-      class SpatiallyConstantExpr : public virtual LeafExpr,
-                                    public GenericEvaluatorFactory<SpatiallyConstantExpr, ConstantEvaluator>
+      class SpatiallyConstantExpr : public virtual EvaluatableExpr,
+                                    public virtual GenericEvaluatorFactory<SpatiallyConstantExpr, ConstantEvaluator>
+        
         {
         public:
           /** */
@@ -61,20 +61,7 @@ namespace SundanceCore
           virtual void setValue(const double& value) = 0 ;
 
           /** */
-          virtual bool isConstant() const {return true;}
-
-          /** */
-          virtual Set<MultipleDeriv> 
-          internalFindW(int order, const EvalContext& context) const ;
-
-          /** Find spatially-constant functional derivatives */
-          virtual Set<MultipleDeriv> 
-          internalFindC(int order, const EvalContext& context) const ;
-
-          /** Find spatially-variable functional derivatives */
-          virtual Set<MultipleDeriv> 
-          internalFindV(int order, const EvalContext& context) const ;
-          
+          bool isConstant() const {return true;}
         private:
         };
     }

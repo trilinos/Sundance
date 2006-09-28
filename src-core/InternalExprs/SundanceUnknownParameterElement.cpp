@@ -95,7 +95,7 @@ UnknownParameterElement::internalFindC(int order, const EvalContext& context) co
       md.put(d);
       rtn.put(md);
     }
-  return rtn.intersection(findR(order, context));
+  return rtn.intersection(UnknownFuncElement::findR(order, context));
 }
 
 

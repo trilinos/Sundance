@@ -43,28 +43,3 @@ SpatiallyConstantExpr::SpatiallyConstantExpr()
 {}
 
 
-Set<MultipleDeriv> 
-SpatiallyConstantExpr::internalFindW(int order, const EvalContext& context) const
-{
-  Set<MultipleDeriv> rtn;
-
-  if (order==0) rtn.put(MultipleDeriv());
-
-  return rtn;
-}
-
-Set<MultipleDeriv> 
-SpatiallyConstantExpr::internalFindV(int order, const EvalContext& context) const
-{
-  Set<MultipleDeriv> rtn;
-
-  return rtn;
-}
-
-
-Set<MultipleDeriv> 
-SpatiallyConstantExpr::internalFindC(int order, const EvalContext& context) const
-{
-  return findR(order, context);
-}
-

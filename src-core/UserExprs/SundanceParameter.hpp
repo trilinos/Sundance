@@ -35,7 +35,6 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
-#include "SundanceLeafExpr.hpp"
 #include "SundanceParameterData.hpp"
 
 
@@ -58,8 +57,8 @@ namespace SundanceCore
    * When a constant's value may need to be changed, use a Parameter rather
    * than a simple double.
    */
-  class Parameter : public Internal::DiscreteFuncElement,
-                    public Internal::SpatiallyConstantExpr
+  class Parameter : public virtual Internal::DiscreteFuncElement,
+                    public virtual Internal::SpatiallyConstantExpr
   {
   public:
     /** */
@@ -77,40 +76,38 @@ namespace SundanceCore
     /** */
     virtual void setValue(const double& value) ;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
+    //@{
+    /** \name Functions for internal use */
     /** */
-    virtual Set<MultipleDeriv> 
+    Set<MultipleDeriv> 
     internalFindW(int order, const EvalContext& context) const ;
           
     /** */
-    virtual Set<MultipleDeriv> 
-    internalFindV(int order, const EvalContext& context) const 
-    {return SpatiallyConstantExpr::internalFindV(order, context);}
+    Set<MultipleDeriv> 
+    internalFindV(int order, const EvalContext& context) const ;
     
     /** */
-    virtual Set<MultipleDeriv> 
-    internalFindC(int order, const EvalContext& context) const 
-    {return SpatiallyConstantExpr::internalFindC(order, context);}
+    Set<MultipleDeriv> 
+    internalFindC(int order, const EvalContext& context) const ;
 
     /** */
-    virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+    RefCountPtr<Array<Set<MultipleDeriv> > > 
     internalDetermineR(const EvalContext& context,
-                       const Array<Set<MultipleDeriv> >& RInput) const 
-    {return EvaluatableExpr::internalDetermineR(context, RInput);}
+                       const Array<Set<MultipleDeriv> >& RInput) const ;
 
 
     /** */
     virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
                                        const EvalContext& context) const ;
-    
+
+    /** */
+    virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+    //@}
 
     /** Write self in text form */
     virtual ostream& toText(ostream& os, bool paren) const 
     {os << "Parameter[" << name() << " = " << value() << "]"; return os;}
 
-    /** */
-    virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
 
   protected:
     /** */
@@ -119,7 +116,6 @@ namespace SundanceCore
     /** */
     Internal::ParameterData* data();
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
   };
 }

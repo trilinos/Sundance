@@ -40,7 +40,7 @@
 #include "SundancePartitionedLineMesher.hpp"
 #include "SundanceFieldWriter.hpp"
 #include "SundanceVerboseFieldWriter.hpp"
-#include "SundanceHomogeneousDOFMap.hpp"
+#include "SundanceExpr.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceDimensionalCellFilter.hpp"

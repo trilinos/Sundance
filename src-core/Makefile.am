@@ -88,7 +88,6 @@ $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFunctionalPolynomial.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.hpp \
@@ -123,7 +122,6 @@ $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFunctionalPolynomial.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.cpp \

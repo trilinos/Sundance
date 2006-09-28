@@ -71,8 +71,8 @@ namespace SundanceCore
 
       
       /** */
-      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
-                                         const EvalContext& context) const ;
+      Evaluator* createEvaluator(const EvaluatableExpr* expr,
+                                 const EvalContext& context) const ;
 
       
 
@@ -84,21 +84,21 @@ namespace SundanceCore
 
           
       /** */
-      virtual Set<MultipleDeriv> 
+      Set<MultipleDeriv> 
       internalFindW(int order, const EvalContext& context) const ;
       /** */
-      virtual Set<MultipleDeriv> 
+      Set<MultipleDeriv> 
       internalFindC(int order, const EvalContext& context) const ;
       /** */
-      virtual Set<MultipleDeriv> 
+      Set<MultipleDeriv> 
       internalFindV(int order, const EvalContext& context) const ;
 
 
       /** */
-      virtual XMLObject toXML() const ;
+      XMLObject toXML() const ;
 
       /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+      RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
       
     private:
 

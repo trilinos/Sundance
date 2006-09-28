@@ -42,7 +42,7 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 CellDiameterExpr::CellDiameterExpr(const string& name)
-  : LeafExpr(), name_(name)
+  : EvaluatableExpr(), name_(name)
 {}
 
 bool CellDiameterExpr::lessThan(const ScalarExpr* other) const

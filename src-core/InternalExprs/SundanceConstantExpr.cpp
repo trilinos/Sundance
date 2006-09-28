@@ -40,6 +40,34 @@ ConstantExpr::ConstantExpr(const double& value)
 	: SpatiallyConstantExpr(), value_(value)
 {}
 
+
+
+Set<MultipleDeriv> 
+ConstantExpr::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) rtn.put(MultipleDeriv());
+
+  return rtn;
+}
+
+Set<MultipleDeriv> 
+ConstantExpr::internalFindV(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+ConstantExpr::internalFindC(int order, const EvalContext& context) const
+{
+  return findR(order, context);
+}
+
+
 bool ConstantExpr::lessThan(const ScalarExpr* other) const
 {
   const ConstantExpr* c = dynamic_cast<const ConstantExpr*>(other);

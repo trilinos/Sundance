@@ -35,7 +35,6 @@
 #include "SundanceDefs.hpp"
 #include "SundanceFuncElementBase.hpp"
 #include "SundanceDiscreteFuncEvaluator.hpp"
-#include "SundanceLeafExpr.hpp"
 #include "SundanceDiscreteFuncDataStub.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -60,9 +59,9 @@ namespace SundanceCore
      * The DiscreteFuncDataStub object can be accessed through the
      * <tt>master()</tt> method of this class.
      */
-    class DiscreteFuncElement : public virtual LeafExpr,
-                                public virtual FuncElementBase,
-                                public GenericEvaluatorFactory<DiscreteFuncElement, DiscreteFuncElementEvaluator>
+    class DiscreteFuncElement : public virtual EvaluatableExpr,
+                                public FuncElementBase,
+                                public virtual GenericEvaluatorFactory<DiscreteFuncElement, DiscreteFuncElementEvaluator>
     {
     public:
       /** */

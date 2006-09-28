@@ -46,7 +46,7 @@ DiscreteFuncElement
                       const string& name,
                       const string& suffix,
                       int myIndex)
-	: LeafExpr(), 
+	: EvaluatableExpr(), 
     FuncElementBase(name, suffix),
     commonData_(data),
     myIndex_(myIndex),

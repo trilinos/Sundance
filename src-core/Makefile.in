@@ -168,8 +168,7 @@ am__objects_2 = SundanceBinaryExpr.$(OBJEXT) \
 	SundanceExprWithChildren.$(OBJEXT) \
 	SundanceFuncElementBase.$(OBJEXT) \
 	SundanceFunctionalPolynomial.$(OBJEXT) \
-	SundanceLeafExpr.$(OBJEXT) SundanceListExpr.$(OBJEXT) \
-	SundanceNonlinearExpr.$(OBJEXT) \
+	SundanceListExpr.$(OBJEXT) SundanceNonlinearExpr.$(OBJEXT) \
 	SundanceNonlinearUnaryOp.$(OBJEXT) \
 	SundanceProductExpr.$(OBJEXT) SundanceScalarExpr.$(OBJEXT) \
 	SundanceSparsitySubset.$(OBJEXT) \
@@ -279,7 +278,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceFunctionalDeriv.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceFunctionalPolynomial.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceIntegral.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/SundanceLeafExpr.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceListExpr.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceLoadableVector.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceMultiIndex.Po \
@@ -534,7 +532,6 @@ $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFunctionalPolynomial.hpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.hpp \
@@ -569,7 +566,6 @@ $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFunctionalPolynomial.cpp \
-$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceNonlinearUnaryOp.cpp \
@@ -1051,7 +1047,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctionalDeriv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctionalPolynomial.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceIntegral.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLeafExpr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceListExpr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLoadableVector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMultiIndex.Po@am__quote@
@@ -1489,22 +1484,6 @@ SundanceFunctionalPolynomial.obj: $(top_srcdir)/src-core/InternalExprs/SundanceF
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceFunctionalPolynomial.Po' tmpdepfile='$(DEPDIR)/SundanceFunctionalPolynomial.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFunctionalPolynomial.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceFunctionalPolynomial.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceFunctionalPolynomial.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceFunctionalPolynomial.cpp'; fi`
-
-SundanceLeafExpr.o: $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLeafExpr.o -MD -MP -MF "$(DEPDIR)/SundanceLeafExpr.Tpo" -c -o SundanceLeafExpr.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceLeafExpr.Tpo" "$(DEPDIR)/SundanceLeafExpr.Po"; else rm -f "$(DEPDIR)/SundanceLeafExpr.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp' object='SundanceLeafExpr.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceLeafExpr.Po' tmpdepfile='$(DEPDIR)/SundanceLeafExpr.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLeafExpr.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp
-
-SundanceLeafExpr.obj: $(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLeafExpr.obj -MD -MP -MF "$(DEPDIR)/SundanceLeafExpr.Tpo" -c -o SundanceLeafExpr.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceLeafExpr.Tpo" "$(DEPDIR)/SundanceLeafExpr.Po"; else rm -f "$(DEPDIR)/SundanceLeafExpr.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp' object='SundanceLeafExpr.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceLeafExpr.Po' tmpdepfile='$(DEPDIR)/SundanceLeafExpr.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLeafExpr.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceLeafExpr.cpp'; fi`
 
 SundanceListExpr.o: $(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceListExpr.o -MD -MP -MF "$(DEPDIR)/SundanceListExpr.Tpo" -c -o SundanceListExpr.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceListExpr.cpp; \

@@ -32,7 +32,6 @@
 #define SUNDANCE_COORDEXPR_H
 
 #include "SundanceFuncElementBase.hpp"
-#include "SundanceLeafExpr.hpp"
 #include "SundanceEvaluatorFactory.hpp"
 #include "SundanceCoordExprEvaluator.hpp"
 
@@ -49,8 +48,8 @@ namespace SundanceCore
    * argement to the constructor. 
    */
   class CoordExpr : public FuncElementBase,
-                    public GenericEvaluatorFactory<CoordExpr, CoordExprEvaluator>,
-                    virtual public LeafExpr
+                    public EvaluatableExpr,
+                    public GenericEvaluatorFactory<CoordExpr, CoordExprEvaluator>
     {
     public:
       /** */

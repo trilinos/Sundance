@@ -37,30 +37,58 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 Parameter::Parameter(const double& value, const string& name)
-	: FuncElementBase(name, ""),
-    DiscreteFuncElement(rcp(new ParameterData(value)), name, "", 0), 
+	: DiscreteFuncElement(rcp(new ParameterData(value)), name, "", 0),  
     SpatiallyConstantExpr()
 {;}
 
 void Parameter::setValue(const double& value)
 {
-  
   data()->setValue(value);
 }
 
 const double& Parameter::value() const {return data()->value();}
 
 
-
-Set<MultipleDeriv> Parameter::internalFindW(int order, const EvalContext& context) const 
+RefCountPtr<Array<Set<MultipleDeriv> > > Parameter
+::internalDetermineR(const EvalContext& context,
+                     const Array<Set<MultipleDeriv> >& RInput) const
 {
-  return SpatiallyConstantExpr::internalFindW(order, context);
+  Tabs tab;
+  SUNDANCE_VERB_HIGH(tab << "Parameter::internalDetermineR() for "
+                     << toString());
+  return EvaluatableExpr::internalDetermineR(context, RInput);
 }
+
+Set<MultipleDeriv> 
+Parameter::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  if (order==0) rtn.put(MultipleDeriv());
+
+  return rtn;
+}
+
+Set<MultipleDeriv> 
+Parameter::internalFindV(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  return rtn;
+}
+
+
+Set<MultipleDeriv> 
+Parameter::internalFindC(int order, const EvalContext& context) const
+{
+  return findR(order, context);
+}
+
 
 Evaluator* Parameter::createEvaluator(const EvaluatableExpr* expr,
                                       const EvalContext& context) const 
 {
-  return SpatiallyConstantExpr::createEvaluator(expr, context);
+  return new ConstantEvaluator(this, context);
 }
 
 

@@ -43,7 +43,8 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 CoordExpr::CoordExpr(int dir, const string& name)
-  : LeafExpr(), FuncElementBase(coordName(dir, name), ""), 
+  : FuncElementBase(coordName(dir, name), ""), 
+    EvaluatableExpr(),
     dir_(dir)
 {}
 

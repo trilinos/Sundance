@@ -31,7 +31,6 @@
 #ifndef SUNDANCE_CELLDIAMETEREXPR_H
 #define SUNDANCE_CELLDIAMETEREXPR_H
 
-#include "SundanceLeafExpr.hpp"
 #include "SundanceEvaluatorFactory.hpp"
 #include "SundanceCellDiameterEvaluator.hpp"
 
@@ -44,9 +43,9 @@ namespace SundanceCore
    * Expression that returns a characteristic size for each cell on 
    * which it is evaluated. 
    */
-  class CellDiameterExpr 
-    : public GenericEvaluatorFactory<CellDiameterExpr, CellDiameterExprEvaluator>,
-      virtual public LeafExpr
+  class CellDiameterExpr
+    : public EvaluatableExpr,
+      public GenericEvaluatorFactory<CellDiameterExpr, CellDiameterExprEvaluator>
   {
   public:
     /** */

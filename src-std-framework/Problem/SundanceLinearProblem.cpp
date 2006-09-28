@@ -270,6 +270,15 @@ LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler)
     names_()
 {  
   TimeMonitor timer(lpCtorTimer());
+  const RefCountPtr<EquationSet>& eqn = assembler->eqnSet();
+  names_.resize(eqn->numUnkBlocks());
+  for (unsigned int i=0; i<eqn->numUnkBlocks(); i++)
+    {
+      for (unsigned int j=0; j<eqn->numUnks(i); j++) 
+        {
+          names_[i].append(eqn->unkFunc(i,j).toString());
+        }
+    }
 }
 
 

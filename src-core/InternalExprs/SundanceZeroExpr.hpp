@@ -49,6 +49,8 @@ namespace SundanceCore
           /** */
           virtual ~ZeroExpr() {;}
 
+          
+
           /** */
           virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
         protected:
