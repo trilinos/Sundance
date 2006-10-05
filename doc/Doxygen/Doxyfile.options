@@ -17,7 +17,7 @@ PROJECT_NUMBER         = "Version of the Day"
 #
 # What and how documentation is extracted
 #
-SUBGROUPING            = NO
+SUBGROUPING            = YES
 EXTRACT_ALL            = NO
 EXTRACT_PRIVATE        = NO
 EXTRACT_STATIC         = YES
@@ -27,8 +27,8 @@ HIDE_UNDOC_CLASSES     = YES
 BRIEF_MEMBER_DESC      = YES
 REPEAT_BRIEF           = YES
 ALWAYS_DETAILED_SEC    = YES
-#DETAILS_AT_TOP         = YES
-DETAILS_AT_TOP         = NO
+DETAILS_AT_TOP         = YES
+#DETAILS_AT_TOP         = NO
 FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        = 
 SHOW_DIRECTORIES       = YES

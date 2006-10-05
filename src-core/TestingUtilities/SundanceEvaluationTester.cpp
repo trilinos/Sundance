@@ -66,13 +66,16 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
 
   SUNDANCE_VERB_LOW(tabs << "creating tester for expression " << e.toString());
 
+  /* ------------------------------------------------------ */
+  /* create a dummy cell filter and quadrature rule         */
+  /* ------------------------------------------------------ */
   rqc_ = RegionQuadCombo(rcp(new CellFilterStub()), 
                          rcp(new QuadratureFamilyStub(1)));
 
 
-  
-
-
+  /* ------------------------------------------------------ */
+  /* find the unknown functions in the expression           */
+  /* ------------------------------------------------------ */
   Array<Expr> unks;
   RefCountPtr<Set<int> > unkID = rcp(new Set<int>());
 
@@ -90,10 +93,31 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
       ev_->getUnknowns(*unkID, unks);
     }
 
-  context_ = EvalContext(rqc_, maxDiffOrder, EvalContext::nextID());  
+
+ 
+  /* ------------------------------------------------------ */
+  /* create a context object                                */
+  /* ------------------------------------------------------ */ 
+  context_ = EvalContext(rqc_, maxDiffOrder, EvalContext::nextID()); 
+ 
+
+
+  /* ------------------------------------------------------ 
+   * tell the evaluation manager which context we're using  
+   * ------------------------------------------------------ */  
   mgr_.setRegion(context_);
 
 
+  /* ------------------------------------------------------ *
+   * We next create a "TestEvalMediator" that knows how to 
+   * compute phony "discrete functions" defined in terms of
+   * AD objects. This evaluation mediator is a stand-in for
+   * a simulation framework with real discrete function.
+   * 
+   * In this loop we are creating phony discrete functions
+   * and associating them with the unknown functions in the
+   * problem. 
+  /* ------------------------------------------------------ */  
   Array<Expr> u0;
 
   for (unsigned int i=0; i<unks.size(); i++)
@@ -132,13 +156,21 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
 
   SUNDANCE_VERB_LOW(tabs << "creating test eval mediator...");
   
+  /* ------------------------------------------------------------- 
+   * register the evaluator mediator with the evaluation manager
+   * ------------------------------------------------------------- */  
   tem_ = new TestEvalMediator(discList);
   mediator_ = rcp(tem_);
-
   mgr_.setMediator(mediator_);
 
   SUNDANCE_VERB_LOW(tabs << "setting up evaluation...");
   Expr dummy;
+  
+  /* ------------------------------------------------------------- 
+   * do preprocessing for this expression
+   * - compute sparsity sets
+   * - create evaluators 
+   * ------------------------------------------------------------- */  
 
   if (maxDiffOrder_ > 0)
     {
@@ -182,8 +214,29 @@ double EvaluationTester::evaluate() const
   SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
 
   tem_->setEvalPoint(ADField::evalPoint());
+
+  
+  /* ------------------------------------------------------------- 
+   * Reset the number of calls to zero; this will flush all
+   * cached evaluation vectors. This needs to be done before
+   * any top-level evaluation call.
+   * ------------------------------------------------------------- */ 
+  
   ev_->evaluator(context_)->resetNumCalls();
+
+
+  /* ------------------------------------------------------------- 
+   * Do the evaluation!
+   * Return constant results and vector results in different arrays
+   * ------------------------------------------------------------- */ 
+
   ev_->evaluate(mgr_, constantResults, vectorResults);
+
+
+
+  /* ------------------------------------------------------------- 
+   * Print results if asked to
+   * ------------------------------------------------------------- */ 
 
   if (verbosity() > VerbLow)
     {
@@ -191,6 +244,9 @@ double EvaluationTester::evaluate() const
                                              constantResults);
     }
 
+  /* ------------------------------------------------------------- 
+   * Sum results to compute functional value
+   * ------------------------------------------------------------- */ 
   int vectorCount=0;
   int constantCount=0;
   double rtn = 0.0;

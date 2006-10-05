@@ -43,7 +43,10 @@ namespace SundanceUtils
 {
   using namespace Teuchos;
 
-  /** */
+  /** 
+   * Extension of STL set, adding some nicer syntax 
+   * and an iostream insertion operator.
+   */
   template<class Key, class Compare = less<Key> >
   class Set : public std::set<Key, Compare>
   {
@@ -51,13 +54,13 @@ namespace SundanceUtils
     /** */
     Set() : std::set<Key, Compare>() {;}
 
-    /** */
+    /** Test whether the specified key is present in the set */
     bool contains(const Key& key) const {return this->find(key) != this->end();}
 
-    /** */
+    /** Put a new entry in the set */
     void put(const Key& key) {insert(key);}
 
-    /** */
+    /** Write into an array */
     Array<Key> elements() const ;
 
     /** */
@@ -182,7 +185,7 @@ namespace SundanceUtils
     return os.str();
   }
 
-
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k)
   {
@@ -191,6 +194,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k1, const Key& k2)
   {
@@ -199,6 +203,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3)
   {
@@ -207,6 +212,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4)
   {
@@ -215,6 +221,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
                    const Key& k5)
@@ -224,6 +231,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
                    const Key& k5, const Key& k6)
@@ -233,6 +241,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
                    const Key& k5, const Key& k6, const Key& k7)
@@ -242,6 +251,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates Set Creates a set */
   template<class Key> inline
   Set<Key> makeSet(const Key& k1, const Key& k2, const Key& k3, const Key& k4,
                    const Key& k5, const Key& k6, const Key& k7, const Key& k8)
@@ -255,7 +265,7 @@ namespace SundanceUtils
 
 namespace std
 {
-  /** \relates Set */
+  /** \relates SundanceUtils::Set */
   template<class Key, class Compare> inline
   ostream& operator<<(ostream& os, const SundanceUtils::Set<Key, Compare>& m)
   {return m.toStream(os);}

@@ -46,11 +46,17 @@ namespace SundanceCore
   using namespace Internal;
   using namespace Teuchos;
 
-  /** \relates Expr */
+  /** 
+   * \relates Expr 
+   * \relates EquationSet
+   */
   Expr Integral(const Handle<CellFilterStub>& domain,
                 const Expr& integrand);
 
-  /** \relates Expr */
+  /**
+   * \relates Expr 
+   * \relates EquationSet
+   */
   Expr Integral(const Handle<CellFilterStub>& domain,
                 const Expr& integrand,
                 const Handle<QuadratureFamilyStub>& quad);

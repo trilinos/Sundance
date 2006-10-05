@@ -40,7 +40,10 @@ namespace SundanceUtils
 {
   using namespace Teuchos;
 
-  /** */
+  /**
+   * Extension of STL map, adding some nicer put/get/contains syntax 
+   * and an iostream insertion operator.
+   */
   template<class Key, class Value, class Compare = less<Key> >
     class Map : public std::map<Key, Value, Compare>
     {
@@ -48,18 +51,18 @@ namespace SundanceUtils
       /** */
       Map() : std::map<Key,Value,Compare>() {;}
 
-      /** */
+      /** Test whether the specified key is present in the map */
       inline bool containsKey(const Key& key) const {return this->find(key) != this->end();}
 
-      /** */
+      /** Put a new (key, value) entry in the map */
       inline void put(const Key& key, const Value& value)
         {operator[](key) = value;}
 
-      /** */
+      /** Look up value and return a read-only reference */
       inline const Value& get(const Key& key) const
         {return (*(this->find)(key)).second;}
 
-      /** */
+      /** Look up value and return a modifiable reference */
       inline Value& get(const Key& key) 
         {return (*(this->find)(key)).second;}
     };
@@ -68,7 +71,9 @@ namespace SundanceUtils
 
 namespace std
 {
-   /** \relates Map */
+   /** \relates SundanceUtils::Map 
+    * Write to a stream
+    */
   template<class Key, class Value, class Compare> inline
     std::ostream& operator<<(std::ostream& os, const SundanceUtils::Map<Key, Value, Compare>& m)
     {

@@ -43,7 +43,10 @@ namespace SundanceUtils
 {
   using namespace Teuchos;
 
-  /** */
+  /** 
+   * Extension of STL multiset, adding some nicer syntax 
+   * and an iostream insertion operator.
+   */
   template<class Key>
     class MultiSet : public std::multiset<Key>
     {
@@ -51,28 +54,29 @@ namespace SundanceUtils
       /** */
       MultiSet() : std::multiset<Key>() {;}
 
-      /** */
+      /** Test whether the specified key is present in the set */
       bool contains(const Key& key) const {return this->find(key) != this->end();}
 
-      /** */
+      /** Put a new entry in the map */
       void put(const Key& key) {insert(key);}
 
-      /** */
+      /** Write into an array */
       Array<Key> elements() const ;
 
-      /** */
+      /** Write to stream */
       ostream& toStream(ostream& os) const ;
 
-      /** */
+      /** Merge with another multiset, returning the merged set */
       MultiSet<Key> merge(const MultiSet<Key>& other) const ;
 
-      /** */
+      /** Take another set and merge into this one, overwriting the original
+       * with the merged set */
       void mergeFrom(const MultiSet<Key>& other) ;
 
-      /** */
+      /** Write into a set, i.e., collapsing repeated entries */
       Set<Key> toSet() const ;
 
-      /** */
+      /** Write to a string */
       string toString() const ;
     };
 
@@ -158,6 +162,7 @@ namespace SundanceUtils
     }
 
 
+  /** \relates MultiSet Create a multiset */
   template<class Key> inline
   MultiSet<Key> makeMultiSet(const Key& k)
   {
@@ -166,6 +171,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates MultiSet Create a multiset */
   template<class Key> inline
   MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2)
   {
@@ -174,6 +180,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates MultiSet Create a multiset */
   template<class Key> inline
   MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2, const Key& k3)
   {
@@ -182,6 +189,7 @@ namespace SundanceUtils
     return rtn;
   }
 
+  /** \relates MultiSet Create a multiset */
   template<class Key> inline
   MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2, 
                              const Key& k3, const Key& k4)
@@ -195,7 +203,9 @@ namespace SundanceUtils
 
 namespace std
 {
-/** \relates MultiSet */
+/** \relates SundanceUtils::MultiSet 
+ * Write to a stream
+ */
   template<class Key> inline
     ostream& operator<<(ostream& os, const SundanceUtils::MultiSet<Key>& m)
     {return m.toStream(os);}
