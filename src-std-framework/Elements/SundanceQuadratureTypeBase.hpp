@@ -28,17 +28,16 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_QUADRATUREFAMILYBASE_H
-#define SUNDANCE_QUADRATUREFAMILYBASE_H
+#ifndef SUNDANCE_QUADRATURETYPEBASE_H
+#define SUNDANCE_QUADRATURETYPEBASE_H
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_Array.hpp"
-#include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceCellType.hpp"
-#include "SundancePoint.hpp"
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
+#include "SundanceQuadratureFamily.hpp"
+#include "TSFHandleable.hpp"
+#include "Teuchos_XMLObject.hpp"
 
 
 namespace SundanceStdFwk
@@ -50,55 +49,44 @@ namespace SundanceStdFwk
   using namespace SundanceStdMesh::Internal;
   using namespace Teuchos;
 
-  namespace Internal
+  /** 
+   * QuadratureTypeBase 
+   */
+  class QuadratureTypeBase 
+    : public TSFExtended::Handleable<QuadratureTypeBase>
   {
-    /** 
-     * QuadratureFamilyBase extends QuadratureFamilyStub to provide
-     * an interface for getting quadrature points for a given cell type. 
-     */
-    class QuadratureFamilyBase : public QuadratureFamilyStub 
-    {
-    public:
-      /** */
-      QuadratureFamilyBase(int order) : QuadratureFamilyStub(order) {;}
+  public:
+    /** */
+    QuadratureTypeBase() {;}
 
-      /** */
-      virtual ~QuadratureFamilyBase(){;}
+    /** */
+    virtual ~QuadratureTypeBase(){;}
 
-      /** Get the quadrature points and weights for the given cell type */
-      virtual void getPoints(const CellType& cellType, 
-                     Array<Point>& quadPoints,
-                     Array<double>& quadWeights) const ;
+    /** */
+    virtual XMLObject toXML() const = 0 ;
+
+    /** Indicate whether the given cell type is supported at any order */
+    virtual bool supportsCellType(const CellType& cellType) const = 0 ;
+
+    /** Indicate whether the given cell type is supported at the
+     * specified order */
+    virtual bool supports(const CellType& cellType, int order) const = 0 ;
+
+    /** Indicate whether there is a maximum order for quadrature rules
+     * available on the given cell type. */
+    virtual bool hasLimitedOrder(const CellType& cellType) const = 0 ;
+
+    /** Return the max quadrature order available on the given cell type */
+    virtual int maxOrder(const CellType& cellType) const {return -1;}
+
+    /** Create a quadrature family of the specified order */
+    virtual QuadratureFamily createQuadFamily(int order) const = 0 ;
       
-    protected:
-
-      /** compute a rule for the reference line cell */
-      virtual void getLineRule(Array<Point>& quadPoints,
-                               Array<double>& quadWeights) const ;
-
-      /** compute a rule for the reference triangle cell */
-      virtual void getTriangleRule(Array<Point>& quadPoints,
-                                   Array<double>& quadWeights) const ;
-
-      /** compute a rule for the reference quad cell */
-      virtual void getQuadRule(Array<Point>& quadPoints,
-                               Array<double>& quadWeights) const ;
-
-      /** compute a rule for the reference tet cell */
-      virtual void getTetRule(Array<Point>& quadPoints,
-                              Array<double>& quadWeights) const ;
-
-
-      /** compute a rule for the reference brick cell */
-      virtual void getBrickRule(Array<Point>& quadPoints,
-                                Array<double>& quadWeights) const ;
-    private:
-    };
-  }
+  private:
+  };
 }
 
                   
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 #endif
 

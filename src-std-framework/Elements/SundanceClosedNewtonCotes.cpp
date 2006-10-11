@@ -50,6 +50,7 @@ XMLObject ClosedNewtonCotes::toXML() const
   return rtn;
 }
 
+
 void ClosedNewtonCotes::getLineRule(Array<Point>& quadPoints,
                                      Array<double>& quadWeights) const 
 {

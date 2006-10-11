@@ -46,10 +46,14 @@ bool LabelCellPredicate::lessThan(const CellPredicateBase* other) const
   return labelIndex_ < dynamic_cast<const LabelCellPredicate*>(other)->labelIndex_;
 }
 
-bool LabelCellPredicate::test(int cellLID) const 
+void LabelCellPredicate::testBatch(const Array<int>& cellLID,
+                                   Array<int>& results) const
 {
-  
-  return mesh().label(cellDim(), cellLID) == labelIndex_;
+  mesh().getLabels(cellDim(), cellLID, results);
+  for (unsigned int i=0; i<cellLID.size(); i++)
+    {
+      results[i] = (results[i] == labelIndex_);
+    }
 }
 
 XMLObject LabelCellPredicate::toXML() const 

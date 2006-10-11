@@ -202,7 +202,9 @@ namespace SundanceStdMesh
       /** Get the label of the given cell */
       virtual int label(int cellDim, int cellLID) const ;
 
-
+      /** Get the labels for a batch of cells */
+      virtual void getLabels(int cellDim, const Array<int>& cellLID, 
+                             Array<int>& labels) const ;
 
       /** \name Incremental creation methods */
       //@{

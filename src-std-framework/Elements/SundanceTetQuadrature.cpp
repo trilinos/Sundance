@@ -71,8 +71,12 @@ void TetQuadrature::getPoints(int order, Array<double>& wgt,
 					wgt.append(w[i]);
 				}
 		}
-	
-	
+}
+
+bool TetQuadrature::supportsOrder(int order)
+{
+  if (order==1 || order==2 || order==4 || order==6) return true;
+  return false;
 }
 
 void TetQuadrature::permute(int m, const Array<double>& q,

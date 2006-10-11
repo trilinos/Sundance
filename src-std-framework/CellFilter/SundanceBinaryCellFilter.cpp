@@ -42,8 +42,21 @@ using namespace Teuchos;
 BinaryCellFilter::BinaryCellFilter(const CellFilter& left,
                                    const CellFilter& right,
                                    const CellFilterOpType& op)
-  : CellFilterBase(), op_(), left_(left), right_(right)
-{;}
+  : CellFilterBase(), op_(op), left_(left), right_(right)
+{
+  string str;
+  switch(op)
+    {
+    case Union:
+      str = "Union(";
+    case Intersection:
+      str = "Intersection(";
+    default:
+      str = "SetDifference(";
+    }
+
+  setName(str + left.toString() + ", " + right.toString() + ")");
+}
 
 int BinaryCellFilter::dimension(const Mesh& mesh) const
 {

@@ -35,6 +35,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellFilter.hpp"
+#include "SundanceCellFilterBase.hpp"
 
 namespace SundanceStdFwk
 {

@@ -73,8 +73,9 @@ using namespace SundanceStdMesh::Internal;
       /** virtual dtor */
       virtual ~CellPredicateBase(){;}
       
-      /** Test whether the cell with the given LID satisfies the condition */
-      virtual bool test(int cellLID) const = 0 ;
+      /** Test the predicate on a batch of cells */
+      virtual void testBatch(const Array<int>& cellLID,
+                             Array<int>& results) const = 0 ;
 
       
       /** Set the current mesh and dimension on which cells are to be tested */
@@ -88,7 +89,7 @@ using namespace SundanceStdMesh::Internal;
       virtual bool lessThan(const CellPredicateBase* other) const = 0 ;
 
       /** */
-      virtual string description() const {return typeName();}
+      virtual string description() const = 0 ;
 
 
       /** */

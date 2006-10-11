@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceCellFilter.hpp"
+#include "SundanceCellFilterBase.hpp"
 #include "SundanceCellPredicate.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY

@@ -216,6 +216,10 @@ using namespace SundanceUtils;
       /** Get the label of the given cell */
       virtual int label(int cellDim, int cellLID) const = 0 ;
 
+      /** Get the labels for a batch of cells */
+      virtual void getLabels(int cellDim, const Array<int>& cellLID, 
+                             Array<int>& labels) const = 0 ;
+
       /** Set the label for the given cell */
       virtual void setLabel(int cellDim, int cellLID, int label) = 0 ;
 

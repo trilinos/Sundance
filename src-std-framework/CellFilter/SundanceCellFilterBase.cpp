@@ -40,7 +40,7 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 CellFilterBase::CellFilterBase()
-  : CellFilterStub(), cellSetCache_()
+  : CellFilterStub(), cellSetCache_(), subsets_(), disjoints_(), name_()
 {;}
 
 CellSet CellFilterBase::getCells(const Mesh& mesh) const
@@ -52,5 +52,35 @@ CellSet CellFilterBase::getCells(const Mesh& mesh) const
   return cellSetCache_;
 }
 
+void CellFilterBase::registerSubset(const CellFilter& sub) const
+{
+  subsets_.put(sub);
+  for (Set<CellFilter>::const_iterator 
+         i=sub.knownSubsets().begin(); i!=sub.knownSubsets().end(); i++)
+    {
+      subsets_.put(*i);
+    }
+}
 
+void CellFilterBase::registerLabeledSubset(int label, const CellFilter& sub) const
+{
+  labeledSubsets_.put(label, sub);
+  for (SundanceUtils::Map<int, CellFilter>::const_iterator 
+         iter=labeledSubsets_.begin(); iter != labeledSubsets_.end(); iter++)
+    {
+      if (iter->first == label) continue;
+      sub.cfbPtr()->registerDisjoint(iter->second);
+      iter->second.cfbPtr()->registerDisjoint(sub);
+    }
+}
+
+void CellFilterBase::registerDisjoint(const CellFilter& sub) const
+{
+  disjoints_.put(sub);
+  for (Set<CellFilter>::const_iterator 
+         i=sub.knownSubsets().begin(); i!=sub.knownSubsets().end(); i++)
+    {
+      disjoints_.put(*i);
+    }
+}
 

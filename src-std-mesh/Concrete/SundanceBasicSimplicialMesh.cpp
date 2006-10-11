@@ -889,6 +889,17 @@ int BasicSimplicialMesh::label(int cellDim,
   return labels_[cellDim][cellLID];
 }
 
+void BasicSimplicialMesh::getLabels(int cellDim, const Array<int>& cellLID, 
+                                    Array<int>& labels) const
+{
+  labels.resize(cellLID.size());
+  const Array<int>& ld = labels_[cellDim];
+  for (unsigned int i=0; i<cellLID.size(); i++)
+    {
+      labels[i] = ld[cellLID[i]];
+    }
+}
+
 int BasicSimplicialMesh::addVertex(int globalIndex, const Point& x,
                                    int ownerProcID, int label)
 {

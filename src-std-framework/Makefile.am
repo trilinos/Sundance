@@ -57,6 +57,7 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicateBase.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicate.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellSetBase.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellSet.hpp\
+$(top_srcdir)/src-std-framework/CellFilter/SundanceCFMeshPair.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceDimensionalCellFilter.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellIterator.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellSet.hpp\
@@ -77,6 +78,7 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicateBase.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicate.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellSetBase.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellSet.cpp\
+$(top_srcdir)/src-std-framework/CellFilter/SundanceCFMeshPair.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceDimensionalCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellSet.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceImplicitCellSet.cpp\
@@ -90,6 +92,7 @@ SUNDANCE_ELEMENTS_H = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.hpp \
@@ -99,10 +102,13 @@ $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFuncWithBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadratureType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceP1NC.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureType.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureTypeBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.hpp \
@@ -115,6 +121,7 @@ SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp \
@@ -123,10 +130,12 @@ $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadratureType.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceQuadratureType.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp \

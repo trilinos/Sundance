@@ -232,6 +232,10 @@ using namespace SundanceUtils;
     int label(int cellDim, int cellLID) const 
     {return ptr()->label(cellDim, cellLID);}
 
+    /** Get the labels for a batch of cells */
+    void getLabels(int cellDim, const Array<int>& cellLID, Array<int>& labels) const 
+    {ptr()->getLabels(cellDim, cellLID, labels);}
+
     /** Set the label for the given cell */
     void setLabel(int cellDim, int cellLID, int label)
     {ptr()->setLabel(cellDim, cellLID, label);}

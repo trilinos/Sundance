@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceCellSetBase.hpp"
+#include "SundanceTabs.hpp"
 
 
 using namespace SundanceStdFwk;
@@ -40,4 +41,17 @@ CellSetBase::CellSetBase(const Mesh& mesh, int cellDim,
                          const CellType& cellType)
   : mesh_(mesh), cellType_(cellType), dim_(cellDim)
 {}
+
+bool CellSetBase::lessThan(const CellSetBase* other) const 
+{
+  Tabs tab;
+
+  if (dim_ < other->dim_) return true;
+  if (dim_ > other->dim_) return false;
+
+  if (cellType_ < other->cellType_) return true;
+  if (cellType_ > other->cellType_) return false;
+
+  return internalLessThan(other);
+}
 

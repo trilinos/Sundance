@@ -39,7 +39,9 @@ using namespace Teuchos;
 
 MaximalCellFilter::MaximalCellFilter()
   : CellFilterBase()
-{;}
+{
+  setName("MaximalCells");
+}
 
 CellSet MaximalCellFilter::internalGetCells(const Mesh& mesh) const
 {

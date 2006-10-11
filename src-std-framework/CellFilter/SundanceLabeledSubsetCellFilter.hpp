@@ -40,8 +40,8 @@
 namespace SundanceStdFwk
 {
  using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
   namespace Internal {}
   using namespace Internal;
   using namespace Teuchos;
@@ -71,8 +71,12 @@ using namespace SundanceStdMesh::Internal;
 
     /** */
     virtual string description() const 
-    {return "LabeledSubset(label=" + label_ + ", super=" + superset.description()+")";}
+    {return "LabeledSubset(label=" + label_ + ", super=" + superset_.description()+")";}
     
+
+
+    /** */
+    string label() const {return label_;}
 
   protected:
     /** */

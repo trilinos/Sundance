@@ -39,7 +39,9 @@ using namespace Teuchos;
 
 DimensionalCellFilter::DimensionalCellFilter(int dim)
   : CellFilterBase(), dim_(dim)
-{;}
+{
+  setName(Teuchos::toString(dim) + "-cells");
+}
 
 XMLObject DimensionalCellFilter::toXML() const 
 {

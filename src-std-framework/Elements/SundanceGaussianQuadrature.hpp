@@ -56,6 +56,7 @@ namespace SundanceStdFwk
     /** */
     virtual ~GaussianQuadrature(){;}
 
+
     /** */
     virtual XMLObject toXML() const ;
 

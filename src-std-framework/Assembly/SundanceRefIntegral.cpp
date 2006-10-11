@@ -30,6 +30,8 @@
 
 #include "SundanceRefIntegral.hpp"
 #include "SundanceGaussianQuadrature.hpp"
+#include "SundanceGaussianQuadratureType.hpp"
+#include "SundanceQuadratureType.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
@@ -108,6 +110,11 @@ RefIntegral::RefIntegral(int spatialDim,
 
   CellType evalCellType = cellType;
   if (nFacetCases() > 1) evalCellType = maxCellType;
+
+  QuadratureType qType = new GaussianQuadratureType();
+  int reqOrder = qType.findValidOrder(cellType, max(1, testBasis.order()));
+  QuadratureFamily quad = qType.createQuadFamily(reqOrder);
+  
   
   for (int fc=0; fc<nFacetCases(); fc++)
     {
@@ -116,7 +123,6 @@ RefIntegral::RefIntegral(int spatialDim,
 
       Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
   
-      QuadratureFamily quad = new GaussianQuadrature(max(1, testBasis.order()));
       Array<Point> quadPts;
       Array<double> quadWeights;
       if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
@@ -212,6 +218,10 @@ RefIntegral::RefIntegral(int spatialDim,
   CellType evalCellType = cellType;
   if (nFacetCases() > 1) evalCellType = maxCellType;
 
+  QuadratureType qType = new GaussianQuadratureType();
+  int reqOrder = qType.findValidOrder(cellType, max(1, unkBasis.order() + testBasis.order()));
+  QuadratureFamily quad = qType.createQuadFamily(reqOrder);
+
   for (int fc=0; fc<nFacetCases(); fc++)
     {
       W_[fc].resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
@@ -220,8 +230,6 @@ RefIntegral::RefIntegral(int spatialDim,
       Array<Array<Array<double> > > testBasisVals(nRefDerivTest());
       Array<Array<Array<double> > > unkBasisVals(nRefDerivUnk());
         
-      QuadratureFamily quad 
-        = new GaussianQuadrature(max(testBasis.order() + unkBasis.order(), 1));
       Array<Point> quadPts;
       Array<double> quadWeights;
       if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);

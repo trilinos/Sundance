@@ -46,23 +46,37 @@ bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
   return func_.get() < dynamic_cast<const PositionalCellPredicate*>(other)->func_.get();
 }
 
-bool PositionalCellPredicate::test(int cellLID) const 
+void PositionalCellPredicate::testBatch(const Array<int>& cellLID,
+                                        Array<int>& results) const
 {
+  results.resize(cellLID.size());
+
   if (cellDim()==0)
     {
-      return (*func_)(mesh().nodePosition(cellLID));
+      for (unsigned int i=0; i<cellLID.size(); i++)
+        {
+          results[i] = (*func_)(mesh().nodePosition(cellLID[i]));
+        }
     }
   else
     {
-      Array<int> facets;
+      Array<int> facetLIDs;
       Array<int> facetSigns;
-      mesh().getFacetArray(cellDim(), cellLID, 0, facets, facetSigns);
-
-      for (unsigned int i=0; i<facets.size(); i++)
+      int nf = mesh().numFacets(cellDim(), cellLID[0], 0);
+      mesh().getFacetLIDs(cellDim(), cellLID, 0, facetLIDs, facetSigns);
+      for (unsigned int c=0; c<cellLID.size(); c++)
         {
-          if ((*func_)(mesh().nodePosition(facets[i])) == false) return false;
+          results[c] = true;
+          for (unsigned int f=0; f<nf; f++)
+            {
+              int fLID = facetLIDs[c*nf + f];
+              if ((*func_)(mesh().nodePosition(fLID)) == false)
+                {
+                  results[c] = false;
+                  continue;
+                }
+            }
         }
-      return true;
     }
 }
 

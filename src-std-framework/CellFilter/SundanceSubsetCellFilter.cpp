@@ -42,7 +42,11 @@ using namespace Teuchos;
 SubsetCellFilter::SubsetCellFilter(const CellFilter& superset,
                                    const CellPredicate& predicate)
   : CellFilterBase(), superset_(superset), predicate_(predicate)
-{;}
+{
+  cout << "creating subset cell filter: [" << predicate.description()
+       << "]" << endl;
+  setName(predicate.description());
+}
 
 
 XMLObject SubsetCellFilter::toXML() const 
@@ -86,22 +90,33 @@ CellSet SubsetCellFilter::internalGetCells(const Mesh& mesh) const
 
   const CellPredicateBase* pred = predicate_.ptr().get();
 
-  
+
+  Array<int> cellLID;
+
+  cellLID.reserve(mesh.numCells(dim));
+
   for (CellIterator i=super.begin(); i != super.end(); i++)
     {
-      int LID = *i;
+      cellLID.append(*i);
+    }
+
+  Array<int> testResults(cellLID.size());
+  pred->testBatch(cellLID, testResults);
+
+  for (unsigned int i=0; i<cellLID.size(); i++)
+    {
       SUNDANCE_OUT(this->verbosity() > VerbMedium,
-                   "SubsetCellFilter is testing " << LID);
-      if (pred->test(LID)) 
+                   "SubsetCellFilter is testing " << cellLID[i]);
+      if (testResults[i]) 
         {
           SUNDANCE_OUT(this->verbosity() > VerbMedium,
-                       "accepted " << LID);
-          cells.insert(LID);
+                       "accepted " << cellLID[i]);
+          cells.insert(cellLID[i]);
         }
       else
         {
           SUNDANCE_OUT(this->verbosity() > VerbMedium,
-                       "rejected " << LID);
+                       "rejected " << cellLID[i]);
         }
     }
 

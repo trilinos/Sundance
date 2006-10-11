@@ -32,7 +32,10 @@
 #define SUNDANCE_CELLFILTER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceCellFilterBase.hpp"
+#include "SundanceSet.hpp"
+#include "SundanceCellSet.hpp"
+#include "SundanceCellPredicate.hpp"
+#include "SundanceCellFilterStub.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 #include "SundanceOrderedHandle.hpp"
 #include "TSFHandle.hpp"
@@ -46,6 +49,11 @@ namespace SundanceStdFwk
   using namespace SundanceCore::Internal;
   using namespace Teuchos;
   using namespace TSFExtended;
+
+  namespace Internal
+  {
+    class CellFilterBase;
+  }
   
   /** 
    * CellFilter is a user-level object representing a 
@@ -157,6 +165,37 @@ namespace SundanceStdFwk
      * the given predicate is true */
     CellFilter subset(const RefCountPtr<CellPredicateFunctorBase>& test) const ;
 
+    /** Return a compilation of all registered subsets of this filter */
+    const Set<CellFilter>& knownSubsets() const ;
+
+    /** Return a compilation of all filters registered as disjoint with
+     * this filter */
+    const Set<CellFilter>& knownDisjoints() const ;
+
+    /** Indicate whether this filter is known to be a subset of
+     * the specified filter. Note that a negative answer here does NOT
+     * mean that it is not a subset, only that it can't be determined
+     * to be one through structural properties alone. If this function
+     * returns false, then to get a definitive answer one must do a test
+     * using an actual realization on a mesh. */
+    bool isKnownSubsetOf(const CellFilter& other) const ;
+
+    /** Indicate whether this filter is known to be disjoint with
+     * the specified filter. Note that a negative answer here does NOT
+     * mean that it is not disjoint, only that it can't be determined
+     * to be one through structural properties alone. If this function
+     * returns false, then to get a definitive answer one must do a test
+     * using an actual realization on a mesh. */
+    bool isKnownDisjointWith(const CellFilter& other) const ;
+
+    /** Do a brute-force check of whether this filter is a subset of
+     * the specified filter. */
+    bool isSubsetOf(const CellFilter& other, const Mesh& mesh) const ;
+
+    /** Do a brute-force check of whether this filter is disjoint with
+     * the specified filter. */
+    bool isDisjointWith(const CellFilter& other, const Mesh& mesh) const ;
+
     
     /** Indicate whether this is a null cell filter */
     bool isNullCellFilter() const ;
@@ -166,15 +205,33 @@ namespace SundanceStdFwk
      * facets of cells identified by the other filter */
     bool areFacetsOf(const CellFilter& other, const Mesh& mesh) const ;
 
+    /** Indicate whether this cell set is null */
+    bool isNull() const ;
+
+    /** */
+    bool operator==(const CellFilter& other) const ;
+
+    /** */
+    bool operator!=(const CellFilter& other) const ;
+    
+
     /** */
     XMLObject toXML() const ;
 
+    /** */
+    string toString() const ;
+
+    /** */
+    void setName(const string& name) ;
+
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-  protected:
     /** */
     const CellFilterBase* cfbPtr() const ;
+    /** */
+    CellFilterBase* nonConstCfbPtr();
     
+  private:
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
 
   };
@@ -338,6 +395,16 @@ namespace SundanceStdFwk
     rtn[8] = i;
     rtn[9] = j;
     return rtn;
+  }
+
+}
+
+namespace std
+{
+  inline std::ostream& operator<<(std::ostream& os, const SundanceStdFwk::CellFilter& f)
+  {
+    os << f.toString();
+    return os;
   }
 }
 

@@ -28,41 +28,34 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceImplicitCellSet.hpp"
-#include "SundanceTabs.hpp"
+#include "SundanceQuadratureType.hpp"
+#include "SundanceExceptions.hpp"
 
 using namespace SundanceStdFwk;
+using namespace SundanceUtils;
 using namespace SundanceStdFwk::Internal;
+using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-ImplicitCellSet::ImplicitCellSet(const Mesh& mesh, int cellDim,
-                                 const CellType& cellType)
-  : CellSetBase(mesh, cellDim, cellType),
-    maxLID_(mesh.numCells(cellDim))
-{;}
-
-CellIterator ImplicitCellSet::begin() const
+int QuadratureType::findValidOrder(const CellType& cellType, int requestedOrder) const 
 {
-  return CellIterator(mesh(), dimension(), CellIterator::Begin);
-}
+  TEST_FOR_EXCEPTION(hasLimitedOrder(cellType) 
+                     && requestedOrder > maxOrder(cellType),
+                     RuntimeError,
+                     "order=" << requestedOrder << " not available on cell type "
+                     << cellType);
 
-CellIterator ImplicitCellSet::end() const
-{
-  return CellIterator(mesh(), dimension(), CellIterator::End);
-}
+  
+  int big = 100;
+  if (hasLimitedOrder(cellType)) big = maxOrder(cellType);
 
-void ImplicitCellSet::print(ostream& os) const 
-{
-  os << "ImplicitCellSet[dim=" << dimension() << ", type=" << cellType() << "]";
-}
-
-bool ImplicitCellSet::internalLessThan(const CellSetBase* other) const
-{
-  const ImplicitCellSet* e = dynamic_cast<const ImplicitCellSet*>(other);
-
-  if (e==0) return false;
-
-  bool rtn = maxLID_ < e->maxLID_;
-  return rtn;
+  for (int r=requestedOrder; r<=big; r++) 
+    {
+      if (supports(cellType, r)) return r; 
+    }
+  TEST_FOR_EXCEPTION(true, RuntimeError, "Could not find valid quadrature order "
+                     "greater than " << requestedOrder << " for cell type "
+                     << cellType);
+  return -1; // -Wall
 }

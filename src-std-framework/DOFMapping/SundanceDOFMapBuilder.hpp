@@ -36,6 +36,7 @@
 #include "SundanceEquationSet.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceCellFilter.hpp"
+#include "SundanceMap.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -98,10 +99,27 @@ namespace SundanceStdFwk
       static CellFilter getMaxCellFilter(const Array<Set<CellFilter> >& filters);
 
       static bool& allowNodalMap() {static bool rtn=true; return rtn;}
+
+      /** */
+      static void extractUnkSetsFromEqnSet(const EquationSet& eqn,
+                                           Array<Set<int> >& funcSets,
+                                           Array<CellFilter>& regions);
+
+      /** */
+      static void extractVarSetsFromEqnSet(const EquationSet& eqn,
+                                           Array<Set<int> >& funcSets,
+                                           Array<CellFilter>& regions);
+
+      /** */
+      static SundanceUtils::Map<Set<int>, Set<CellFilter> > 
+      buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
+                             const Array<CellFilter>& regions,
+                                      const Mesh& mesh);
         
     private:
 
-      Set<CellFilter> reduceCellFilters(const Set<CellFilter>& inputSet) const ;
+      static Set<CellFilter> reduceCellFilters(const Mesh& mesh,
+                                               const Set<CellFilter>& inputSet) ;
 
       bool hasUnks() const ;
 

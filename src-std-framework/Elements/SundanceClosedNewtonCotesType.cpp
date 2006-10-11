@@ -28,41 +28,65 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceImplicitCellSet.hpp"
-#include "SundanceTabs.hpp"
+#include "SundanceClosedNewtonCotes.hpp"
+#include "SundanceClosedNewtonCotesType.hpp"
+#include "SundanceTriangleQuadrature.hpp"
+#include "SundanceTetQuadrature.hpp"
 
 using namespace SundanceStdFwk;
+using namespace SundanceUtils;
 using namespace SundanceStdFwk::Internal;
+using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-ImplicitCellSet::ImplicitCellSet(const Mesh& mesh, int cellDim,
-                                 const CellType& cellType)
-  : CellSetBase(mesh, cellDim, cellType),
-    maxLID_(mesh.numCells(cellDim))
+ClosedNewtonCotesType::ClosedNewtonCotesType()
+  : QuadratureTypeBase()
 {;}
 
-CellIterator ImplicitCellSet::begin() const
+XMLObject ClosedNewtonCotesType::toXML() const 
 {
-  return CellIterator(mesh(), dimension(), CellIterator::Begin);
-}
-
-CellIterator ImplicitCellSet::end() const
-{
-  return CellIterator(mesh(), dimension(), CellIterator::End);
-}
-
-void ImplicitCellSet::print(ostream& os) const 
-{
-  os << "ImplicitCellSet[dim=" << dimension() << ", type=" << cellType() << "]";
-}
-
-bool ImplicitCellSet::internalLessThan(const CellSetBase* other) const
-{
-  const ImplicitCellSet* e = dynamic_cast<const ImplicitCellSet*>(other);
-
-  if (e==0) return false;
-
-  bool rtn = maxLID_ < e->maxLID_;
+  XMLObject rtn("ClosedNewtonCotes");
   return rtn;
+}
+
+bool ClosedNewtonCotesType::supportsCellType(const CellType& cellType) const
+{
+  switch(cellType)
+    {
+    case PointCell:
+    case LineCell:
+    case TriangleCell:
+      return true;
+    default:
+      return false;
+    }
+}
+
+int ClosedNewtonCotesType::maxOrder(const CellType& cellType) const
+{
+  return 2;
+}
+
+bool ClosedNewtonCotesType::supports(const CellType& cellType, int order) const
+{
+  if (order != 2) return false;
+  switch(cellType)
+    {
+    case PointCell:
+    case LineCell:
+    case TriangleCell:
+      return true;
+    default:
+      return false;
+    }
+}
+
+
+
+QuadratureFamily ClosedNewtonCotesType::createQuadFamily(int order) const
+{
+  TEST_FOR_EXCEPTION(order != 2, RuntimeError,
+                     "order=" << order << " not supported");
+  return new ClosedNewtonCotes();
 }

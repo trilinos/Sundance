@@ -28,43 +28,56 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_BOUNDARYCELLFILTER_H
-#define SUNDANCE_BOUNDARYCELLFILTER_H
+#ifndef SUNDANCE_CLOSEDNEWTONCOTESTYPE_H
+#define SUNDANCE_CLOSEDNEWTONCOTESTYPE_H
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceSubsetCellFilter.hpp"
-#include "SundanceSideCellFilter.hpp"
-#include "SundanceBoundaryCellPredicate.hpp"
-
+#include "SundanceQuadratureFamily.hpp"
+#include "SundanceQuadratureTypeBase.hpp"
 
 namespace SundanceStdFwk
 {
   using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace TSFExtended;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
   using namespace Teuchos;
+  using namespace Internal;
 
   /** 
-   * BoundaryCellFilter identifies all cells of dimension \f$D-1\f$
-   on the boundary. The boundary cells can be identified topologically
-   as those cells of \f$D-1\f$ having only one cofacet.
-  */
-  class BoundaryCellFilter : public SubsetCellFilter
+   * Generates closed Newton-Cotes quadrature rules
+   */
+  class ClosedNewtonCotesType : public QuadratureTypeBase
   {
   public:
     /** */
-    BoundaryCellFilter() 
-      : SubsetCellFilter(new SideCellFilter(),
-                         new BoundaryCellPredicate())
-    {setName("Boundary");}
+    ClosedNewtonCotesType();
 
     /** */
-    virtual ~BoundaryCellFilter(){;}
+    virtual ~ClosedNewtonCotesType(){;}
 
-    /* */
-    GET_RCP(CellFilterStub);
+    /** */
+    virtual XMLObject toXML() const ;
+
+    /** Indicate whether the given cell type is supported at any order */
+    virtual bool supportsCellType(const CellType& cellType) const ;
+    
+    /** Indicate whether the given cell type is supported at the
+     * specified order */
+    virtual bool supports(const CellType& cellType, int order) const ;
+    
+    /** Return the max quadrature order available on the given cell type */
+    virtual int maxOrder(const CellType& cellType) const ;
+
+    /** Create a quadrature family of the specified order */
+    virtual QuadratureFamily createQuadFamily(int order) const ;
+
+    /** Indicate whether there is a maximum order for quadrature rules
+     * available on the given cell type. */
+    virtual bool hasLimitedOrder(const CellType& cellType) const {return true;}
+
+    /* handleable boilerplate */
+    GET_RCP(QuadratureTypeBase);
 
   };
 }

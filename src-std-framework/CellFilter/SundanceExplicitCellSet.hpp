@@ -74,6 +74,9 @@ using namespace SundanceStdMesh::Internal;
       /** Returns a modifiable reference to the set of cells */
       Set<int>& cells() {return cells_;}
 
+      /** */
+      bool internalLessThan(const CellSetBase* other) const ;
+
       /** \name Printable interface */
       //@{
       /** Print to a stream */

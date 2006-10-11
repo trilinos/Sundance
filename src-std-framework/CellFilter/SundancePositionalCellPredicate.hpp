@@ -43,7 +43,7 @@ class name : public CellPredicateFunctorBase, \
   public Handleable<CellPredicateFunctorBase> \
 { \
 public:\
-  name() : CellPredicateFunctorBase(){;}            \
+  name() : CellPredicateFunctorBase(#name){;}            \
   virtual ~name(){;}\
   virtual bool operator()(const Point& x) const code \
   GET_RCP(CellPredicateFunctorBase);\
@@ -60,7 +60,9 @@ public:\
   {
   public:
     /** */
-    CellPredicateFunctorBase(){;}
+    CellPredicateFunctorBase(const string& name="Functor(" + Teuchos::toString(topID()) + ")")
+      : name_(name) {;}
+
     /** */
     virtual ~CellPredicateFunctorBase(){;}
 
@@ -68,7 +70,10 @@ public:\
     virtual bool operator()(const Point& x) const = 0 ;
 
     /** */
-    virtual string description() const {return typeid(*this).name();}
+    virtual string description() const {return name_;}
+  private:
+    static int& topID() {static int rtn=0; rtn++; return rtn;}
+    string name_;
   };
 
   
@@ -82,13 +87,15 @@ public:\
       
     /** Construct with a function of positions */
     PositionalCellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func) 
-      : CellPredicateBase(), func_(func) {;}
+      : CellPredicateBase(), func_(func) 
+    {;}
 
     /** virtual dtor */
     virtual ~PositionalCellPredicate(){;}
       
-    /** Test whether the cell with the given LID satisfies the condition */
-    virtual bool test(int cellLID) const ;
+    /** Test the predicate on a batch of cells */
+    virtual void testBatch(const Array<int>& cellLID,
+                           Array<int>& results) const ;
 
     /** Write to XML */
     virtual XMLObject toXML() const ;

@@ -28,46 +28,91 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_BOUNDARYCELLFILTER_H
-#define SUNDANCE_BOUNDARYCELLFILTER_H
+#ifndef SUNDANCE_CFMESHPAIR_H
+#define SUNDANCE_CFMESHPAIR_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "SundanceSubsetCellFilter.hpp"
-#include "SundanceSideCellFilter.hpp"
-#include "SundanceBoundaryCellPredicate.hpp"
-
+#include "SundanceCellFilter.hpp"
+#include "SundanceCellSet.hpp"
+#include "SundanceCellFilterBase.hpp"
 
 namespace SundanceStdFwk
 {
   using namespace SundanceUtils;
   using namespace SundanceStdMesh;
   using namespace SundanceStdMesh::Internal;
-  using namespace TSFExtended;
+  using namespace SundanceCore::Internal;
   using namespace Teuchos;
+  using namespace TSFExtended;
 
   /** 
-   * BoundaryCellFilter identifies all cells of dimension \f$D-1\f$
-   on the boundary. The boundary cells can be identified topologically
-   as those cells of \f$D-1\f$ having only one cofacet.
-  */
-  class BoundaryCellFilter : public SubsetCellFilter
+   * 
+   */
+  class CFMeshPair 
   {
   public:
     /** */
-    BoundaryCellFilter() 
-      : SubsetCellFilter(new SideCellFilter(),
-                         new BoundaryCellPredicate())
-    {setName("Boundary");}
+    CFMeshPair();
+    /** */
+    CFMeshPair(const CellFilter& cf,
+               const Mesh& mesh,
+               const Set<int>& funcs);
 
     /** */
-    virtual ~BoundaryCellFilter(){;}
+    bool operator<(const CFMeshPair& other) const ;
 
-    /* */
-    GET_RCP(CellFilterStub);
+    /** */
+    bool isEmpty() const ;
 
+    /** */
+    const CellFilter& filter() const {return filter_;}
+
+    /** */
+    const Mesh& mesh() const {return mesh_;}
+
+    /** */
+    const CellSet& cellSet() const {return cellSet_;}
+
+    /** */
+    const Set<int>& funcs() const {return funcs_;}
+
+    /** */
+    CFMeshPair setMinus(const CFMeshPair& other) const ;
+
+    /** */
+    CFMeshPair intersection(const CFMeshPair& other) const ;
+
+  private:
+    CellFilter filter_;
+    Mesh mesh_;
+    CellSet cellSet_;
+    Set<int> funcs_;
   };
+
+  /** */
+  Array<CFMeshPair> resolvePair(const CFMeshPair& a, 
+                                const CFMeshPair& b);
+  /** */
+  Array<CFMeshPair> resolveSets(const Array<CFMeshPair>& s);
+
+  /** */
+  Array<CFMeshPair>
+  findDisjointFilters(const Array<CellFilter>& filters,
+                      const Array<Set<int> >& filters,
+                      const Mesh& mesh);
 }
+
+
+namespace std
+{
+  inline ostream& operator<<(ostream& os, 
+                             const SundanceStdFwk::CFMeshPair& c)
+  {
+    os << c.filter().getCells(c.mesh());
+    return os;
+  }
+}
+
 
 
 #endif

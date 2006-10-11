@@ -46,9 +46,14 @@ bool BoundaryCellPredicate::lessThan(const CellPredicateBase* other) const
   return false;
 }
 
-bool BoundaryCellPredicate::test(int cellLID) const 
+void BoundaryCellPredicate::testBatch(const Array<int>& cellLID,
+                                        Array<int>& results) const
 {
-  return mesh().numMaxCofacets(cellDim(), cellLID) == 1;
+  results.resize(cellLID.size());
+  for (unsigned int c=0; c<cellLID.size(); c++)
+    {
+      results[c] = (mesh().numMaxCofacets(cellDim(), cellLID[c]) == 1);
+    }
 }
 
 XMLObject BoundaryCellPredicate::toXML() const 

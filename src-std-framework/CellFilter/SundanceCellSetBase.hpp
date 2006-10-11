@@ -91,6 +91,11 @@ using namespace SundanceStdMesh::Internal;
       /** The type of the cells contained in this set */
       const CellType& cellType() const {return cellType_;}
 
+      /** */
+      bool lessThan(const CellSetBase* other) const ;
+
+      /** */
+      virtual bool internalLessThan(const CellSetBase* other) const = 0 ;
 
     private:
 

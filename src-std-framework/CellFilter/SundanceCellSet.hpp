@@ -106,6 +106,9 @@ using namespace SundanceStdMesh::Internal;
        * facets of cells in the other set */
       bool areFacetsOf(const CellSet& other) const ;
 
+      /** */
+      bool operator<(const CellSet& other) const ;
+
     private:
       void checkCompatibility(const string& op, const CellSet& other) const ;
     };
@@ -113,7 +116,16 @@ using namespace SundanceStdMesh::Internal;
 
   }
 
-  STREAM_OUT(Internal::CellSet)
+}
+
+namespace std
+{
+  inline ostream& operator<<(ostream& os, 
+                             const SundanceStdFwk::Internal::CellSet& c)
+  {
+    c.print(os);
+    return os;
+  }
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

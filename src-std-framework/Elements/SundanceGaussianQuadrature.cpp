@@ -53,6 +53,8 @@ XMLObject GaussianQuadrature::toXML() const
   return rtn;
 }
 
+
+
 void GaussianQuadrature::getLineRule(Array<Point>& quadPoints,
                                      Array<double>& quadWeights) const 
 {

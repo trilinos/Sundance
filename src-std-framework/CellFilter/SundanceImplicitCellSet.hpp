@@ -72,6 +72,9 @@ using namespace SundanceStdMesh::Internal;
       /** Returns a past-the-end iterator */
       virtual CellIterator end() const ;
 
+      /** */
+      bool internalLessThan(const CellSetBase* other) const ;
+
       /** \name Printable interface */
       //@{
       /** Print to a stream */

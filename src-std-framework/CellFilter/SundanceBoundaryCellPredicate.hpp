@@ -60,14 +60,19 @@ namespace SundanceStdFwk
       /** virtual dtor */
       virtual ~BoundaryCellPredicate(){;}
       
-      /** Test whether the cell with the given LID satisfies the condition */
-      virtual bool test(int cellLID) const ;
+      /** Test the predicate on a batch of cells */
+      virtual void testBatch(const Array<int>& cellLID,
+                             Array<int>& results) const ;
+
 
       /** Write to XML */
       virtual XMLObject toXML() const ;
 
       /** comparison */
       virtual bool lessThan(const CellPredicateBase* other) const ;
+
+      /** */
+      virtual string description() const {return "Boundary";}
 
       /* */
       GET_RCP(CellPredicateBase);

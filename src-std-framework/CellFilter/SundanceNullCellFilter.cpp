@@ -38,7 +38,7 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 NullCellFilter::NullCellFilter()
-  : CellFilterStub()
+  : NullCellFilterStub()
 {;}
 
 CellSet NullCellFilter::internalGetCells(const Mesh& mesh) const
@@ -60,6 +60,6 @@ XMLObject NullCellFilter::toXML() const
 
 bool NullCellFilter::lessThan(const CellFilterBase* /* other */) const
 {
-  /* Maximal cell sets always lose a comparison */
+  /* Null cell sets always lose a comparison */
   return true;
 }

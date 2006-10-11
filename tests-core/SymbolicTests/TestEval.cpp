@@ -142,6 +142,7 @@ int main(int argc, void** argv)
       Expr dz = new Derivative(2);
 
       ADField U(ADBasis(1), sqrt(2.0));
+      ADField V(ADBasis(2), sqrt(2.5));
       ADField W(ADBasis(2), sqrt(3.0));
 
       ADCoord X(0);
@@ -155,6 +156,7 @@ int main(int argc, void** argv)
       ADReal C_old = sin(X)*sin(Y);
 
 			Expr u = new TestUnknownFunction(U, "u");
+			Expr v = new TestUnknownFunction(V, "v");
 			Expr w = new TestUnknownFunction(W, "w");
 
       Expr x = new CoordExpr(0);
@@ -202,6 +204,9 @@ int main(int argc, void** argv)
 
       /* tests vec-vec and const-0 subtractions */
       TESTER( u - x, U - X );
+
+      /* tests vec-vec and const-0 subtractions */
+      TESTER( u - (w + v), U - (W + V) );
 
       /* tests vec-vec and 0-const sums */
       TESTER( x + u, X + U );

@@ -28,11 +28,11 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_QUADRATUREFAMILY_H
-#define SUNDANCE_QUADRATUREFAMILY_H
+#ifndef SUNDANCE_QUADRATURETYPE_H
+#define SUNDANCE_QUADRATURETYPE_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceQuadratureFamilyBase.hpp"
+#include "SundanceQuadratureTypeBase.hpp"
 #include "TSFHandle.hpp"
 
 namespace SundanceStdFwk
@@ -48,40 +48,40 @@ namespace SundanceStdFwk
    * a GaussianQuadrature family will generate Gaussian
    * quadrature points on any cell type.
    */
-  class QuadratureFamily : public Handle<QuadratureFamilyStub>
+  class QuadratureType : public Handle<QuadratureTypeBase>
   {
   public:
     /* */
-    HANDLE_CTORS(QuadratureFamily, QuadratureFamilyStub);
-    /** */
-    XMLObject toXML() const ;
+    HANDLE_CTORS(QuadratureType, QuadratureTypeBase);
 
     /** */
-    int order() const ;
+    XMLObject toXML() const {return ptr()->toXML();}
 
-    /** Get the quadrature points and weights for the given cell type */
-    void getPoints(const CellType& cellType, 
-                   Array<Point>& quadPoints,
-                   Array<double>& quadWeights) const ;
+    /** Indicate whether the given cell type is supported at any order */
+    bool supportsCellType(const CellType& cellType) const 
+    {return ptr()->supportsCellType(cellType);}
+    
+    /** Indicate whether the given cell type is supported at the
+     * specified order */
+    bool supports(const CellType& cellType, int order) const 
+    {return ptr()->supports(cellType, order);}
+    
+    /** Return the max quadrature order available on the given cell type */
+    int maxOrder(const CellType& cellType) const 
+    {return ptr()->maxOrder(cellType);}
 
-    /** Get quadrature points and weights for integration on a facet of a cell */
-    void getFacetPoints(const CellType& cellType, 
-                        int facetDim,
-                        int facetIndex,
-                        Array<Point>& quadPoints,
-                        Array<double>& quadWeights) const ;
+    /** Indicate whether there is a maximum order for quadrature rules
+     * available on the given cell type. */
+    bool hasLimitedOrder(const CellType& cellType) const 
+    {return ptr()->hasLimitedOrder(cellType);}
 
+    /** Create a quadrature family of the specified order */
+    QuadratureFamily createQuadFamily(int order) const 
+    {return ptr()->createQuadFamily(order);}
+
+    /** */
+    int findValidOrder(const CellType& cellType, int minReqOrder) const ;
   private:
-    /** Get quad points for a facet of a line */
-    void getLineFacetQuad(int facetDim,
-                          int facetIndex,
-                          Array<Point>& quadPoints,
-                          Array<double>& quadWeights) const ;
-    /** Get quad points for a facet of a triangle */
-    void getTriangleFacetQuad(int facetDim,
-                              int facetIndex,
-                              Array<Point>& quadPoints,
-                              Array<double>& quadWeights) const ;
   };
 }
 

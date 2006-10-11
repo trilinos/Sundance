@@ -35,7 +35,9 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellFilterStub.hpp"
+#include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
+#include "SundanceMap.hpp"
 #include "TSFHandleable.hpp"
 #include "TSFPrintable.hpp"
 #include "TSFDescribable.hpp"
@@ -85,6 +87,31 @@ namespace SundanceStdFwk
        * by this filter when acting on the given mesh */
       virtual int dimension(const Mesh& mesh) const = 0 ;
 
+      /** */
+      void registerSubset(const CellFilter& sub) const ;
+
+      /** */
+      void registerLabeledSubset(int label, const CellFilter& sub) const ;
+
+      /** */
+      void registerDisjoint(const CellFilter& sub) const ;
+
+      /** */
+      const Set<CellFilter>& knownSubsets() const {return subsets_;}
+
+      /** */
+      const Set<CellFilter>& knownDisjoints() const {return disjoints_;}
+
+      /** */
+      virtual string toString() const {return name_;}
+
+      /** Print to a stream */
+      virtual string description() const 
+      {return toString();}
+
+      /** */
+      void setName(const string& name) {name_ = name;}
+
     protected:
 
       /** */
@@ -93,7 +120,18 @@ namespace SundanceStdFwk
     private:
       /** cache of previously computed cell sets */
       mutable CellSet cellSetCache_;
-      //      mutable Map<int, CellSet> cellSetCache_;
+
+      /** */
+      mutable Set<CellFilter> subsets_;
+
+      /** */
+      mutable Set<CellFilter> disjoints_;
+
+      /** */
+      mutable SundanceUtils::Map<int, CellFilter> labeledSubsets_;
+
+      /** */
+      string name_;
 
     };
   }

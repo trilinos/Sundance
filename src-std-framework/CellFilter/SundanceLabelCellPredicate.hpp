@@ -58,8 +58,9 @@ using namespace SundanceStdMesh::Internal;
       /** virtual dtor */
       virtual ~LabelCellPredicate(){;}
       
-      /** Test whether the cell with the given LID satisfies the condition */
-      virtual bool test(int cellLID) const ;
+      /** Test the predicate on a batch of cells */
+      virtual void testBatch(const Array<int>& cellLID,
+                             Array<int>& results) const ;
 
       /** Write to XML */
       virtual XMLObject toXML() const ;
@@ -67,13 +68,19 @@ using namespace SundanceStdMesh::Internal;
       /** comparison */
       virtual bool lessThan(const CellPredicateBase* other) const ;
 
+      /** */
+      virtual string description() const 
+      {return "Label(" + Teuchos::toString(labelIndex_) + ")";}
+
+      /** */
+      int label() const {return labelIndex_;}
+
       /* */
       GET_RCP(CellPredicateBase);
 
     private:
-      string label_;
 
-      mutable int labelIndex_;
+      int labelIndex_;
 
     };
   }

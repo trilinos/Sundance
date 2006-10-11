@@ -32,6 +32,7 @@
 #include "SundanceExplicitCellSet.hpp"
 #include "SundanceImplicitCellSet.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
 #include "SundanceExceptions.hpp"
 #include <algorithm>
 #include <iterator>
@@ -146,5 +147,10 @@ bool CellSet::areFacetsOf(const CellSet& other) const
   return true;
 }
 
-
+bool CellSet::operator<(const CellSet& other) const
+{
+  Tabs tab;
+  bool rtn = ptr()->lessThan(other.ptr().get());
+  return rtn;
+}
 

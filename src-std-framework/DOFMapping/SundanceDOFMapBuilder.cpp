@@ -117,6 +117,7 @@ void DOFMapBuilder::init()
 
   Array<Array<BasisFamily> > testBasis = testBasisArray();
   Array<Array<Set<CellFilter> > > testRegions = testCellFilters();
+
   for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
     {
       rowMap_[br] = makeMap(mesh_, testBasis[br], testRegions[br]);
@@ -138,6 +139,60 @@ void DOFMapBuilder::init()
           colMap_[bc] = makeMap(mesh_, unkBasis[bc], unkRegions[bc]);
         }
     }
+}
+
+void DOFMapBuilder::extractUnkSetsFromEqnSet(const EquationSet& eqn,
+                                             Array<Set<int> >& funcSets,
+                                             Array<CellFilter>& regions)
+{
+  funcSets.resize(eqn.numRegions());
+  regions.resize(eqn.numRegions());
+  for (unsigned int r=0; r<eqn.numRegions(); r++)
+    {
+      regions[r] = eqn.region(r);
+      funcSets[r] = eqn.unksOnRegion(r).setUnion(eqn.bcUnksOnRegion(r));
+    }
+}
+
+void DOFMapBuilder::extractVarSetsFromEqnSet(const EquationSet& eqn,
+                                             Array<Set<int> >& funcSets,
+                                             Array<CellFilter>& regions)
+{
+  funcSets.resize(eqn.numRegions());
+  regions.resize(eqn.numRegions());
+  for (unsigned int r=0; r<eqn.numRegions(); r++)
+    {
+      regions[r] = eqn.region(r);
+      funcSets[r] = eqn.varsOnRegion(r).setUnion(eqn.bcVarsOnRegion(r));
+    }
+}
+
+SundanceUtils::Map<Set<int>, Set<CellFilter> > 
+DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
+                                      const Array<CellFilter>& regions,
+                                      const Mesh& mesh)
+{
+  SundanceUtils::Map<Set<int>, Set<CellFilter> > tmp;
+  
+  for (unsigned int r=0; r<regions.size(); r++)
+    {
+      const CellFilter& reg = regions[r];
+      if (!tmp.containsKey(funcSets[r]))
+        {
+          tmp.put(funcSets[r], Set<CellFilter>());
+        }
+      tmp[funcSets[r]].put(reg);
+    }
+  
+  /* eliminate overlap between cell filters */
+  SundanceUtils::Map<Set<int>, Set<CellFilter> > rtn;
+  for (SundanceUtils::Map<Set<int>, Set<CellFilter> >::const_iterator 
+         i=tmp.begin(); i!=tmp.end(); i++)
+    {
+      rtn.put(i->first, reduceCellFilters(mesh, i->second));
+    }
+
+  return rtn;
 }
 
 bool DOFMapBuilder::hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
@@ -217,7 +272,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
               CellFilter cf = j->ptr();
               s.put(cf);
             }
-          Set<CellFilter> reducedS = reduceCellFilters(s);
+          Set<CellFilter> reducedS = reduceCellFilters(mesh(), s);
           rtn[b].append(reducedS);
         }
     }
@@ -245,7 +300,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
               CellFilter cf = j->ptr();
               s.put(cf);
             }
-          Set<CellFilter> reducedS = reduceCellFilters(s);
+          Set<CellFilter> reducedS = reduceCellFilters(mesh(), s);
           rtn[b].append(reducedS);
         }
     }
@@ -280,7 +335,8 @@ Array<Array<BasisFamily> > DOFMapBuilder::unkBasisArray() const
 
 
 Set<CellFilter> DOFMapBuilder
-::reduceCellFilters(const Set<CellFilter>& inputSet) const 
+::reduceCellFilters(const Mesh& mesh, 
+                    const Set<CellFilter>& inputSet)  
 {
   TimeMonitor timer(cellFilterReductionTimer());
   Set<CellFilter> rtn;
@@ -299,11 +355,11 @@ Set<CellFilter> DOFMapBuilder
          i=inputSet.begin(); i!=inputSet.end(); i++)
     {
       CellFilter f = *i;
-      if (f.dimension(mesh()) != mesh().spatialDim()) continue;
+      if (f.dimension(mesh) != mesh.spatialDim()) continue;
       myMaxFilters = myMaxFilters + f;
     }
-  CellSet allMax = m.getCells(mesh());
-  CellSet myMax = myMaxFilters.getCells(mesh());
+  CellSet allMax = m.getCells(mesh);
+  CellSet myMax = myMaxFilters.getCells(mesh);
   CellSet diff = allMax.setDifference(myMax);
   /* if the difference between the collected max cell set and the known
    * set of all max cells is empty, then we're done */
@@ -325,8 +381,8 @@ Set<CellFilter> DOFMapBuilder
          i=inputSet.begin(); i!=inputSet.end(); i++)
     {
       CellFilter f = *i;
-      if (f.dimension(mesh()) == mesh().spatialDim()) continue;
-      CellSet s = f.getCells(mesh());
+      if (f.dimension(mesh) == mesh.spatialDim()) continue;
+      CellSet s = f.getCells(mesh);
       if (s.areFacetsOf(myMax)) continue;
       /* if we're here, then we have a lower-dimensional cell filter
        * whose cells are not facets of cells in our maximal cell filters.

@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceExplicitCellSet.hpp"
+#include "SundanceTabs.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -61,4 +62,16 @@ CellIterator ExplicitCellSet::end() const
 void ExplicitCellSet::print(ostream& os) const 
 {
   os << "ExplicitCellSet[cells=" << cells_ << "]";
+}
+
+bool ExplicitCellSet::internalLessThan(const CellSetBase* other) const
+{
+  Tabs tab;
+
+  const ExplicitCellSet* e = dynamic_cast<const ExplicitCellSet*>(other);
+
+  if (e == 0) return true;
+
+  bool rtn = cells_ < e->cells_;
+  return rtn;
 }

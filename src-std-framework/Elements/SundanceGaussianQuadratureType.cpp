@@ -28,41 +28,89 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceImplicitCellSet.hpp"
-#include "SundanceTabs.hpp"
+#include "SundanceGaussianQuadratureType.hpp"
+#include "SundanceGaussianQuadrature.hpp"
+#include "SundanceGauss1D.hpp"
+#include "SundanceTriangleQuadrature.hpp"
+#include "SundanceTetQuadrature.hpp"
 
 using namespace SundanceStdFwk;
+using namespace SundanceUtils;
 using namespace SundanceStdFwk::Internal;
+using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-ImplicitCellSet::ImplicitCellSet(const Mesh& mesh, int cellDim,
-                                 const CellType& cellType)
-  : CellSetBase(mesh, cellDim, cellType),
-    maxLID_(mesh.numCells(cellDim))
-{;}
-
-CellIterator ImplicitCellSet::begin() const
+GaussianQuadratureType::GaussianQuadratureType()
+  : QuadratureTypeBase()
 {
-  return CellIterator(mesh(), dimension(), CellIterator::Begin);
+  
 }
 
-CellIterator ImplicitCellSet::end() const
+XMLObject GaussianQuadratureType::toXML() const 
 {
-  return CellIterator(mesh(), dimension(), CellIterator::End);
-}
-
-void ImplicitCellSet::print(ostream& os) const 
-{
-  os << "ImplicitCellSet[dim=" << dimension() << ", type=" << cellType() << "]";
-}
-
-bool ImplicitCellSet::internalLessThan(const CellSetBase* other) const
-{
-  const ImplicitCellSet* e = dynamic_cast<const ImplicitCellSet*>(other);
-
-  if (e==0) return false;
-
-  bool rtn = maxLID_ < e->maxLID_;
+  XMLObject rtn("GaussianQuadratureType");
   return rtn;
+}
+
+
+bool GaussianQuadratureType::supportsCellType(const CellType& cellType) const
+{
+  switch(cellType)
+    {
+    case PointCell:
+    case LineCell:
+    case TriangleCell:
+    case TetCell:
+      return true;
+    default:
+      return false;
+    }
+}
+
+int GaussianQuadratureType::maxOrder(const CellType& cellType) const
+{
+  switch(cellType)
+    {
+    case TetCell:
+      return TetQuadrature::maxOrder();
+    default:
+      return -1;
+    }
+}
+
+
+bool GaussianQuadratureType::hasLimitedOrder(const CellType& cellType) const
+{
+  switch(cellType)
+    {
+    case TetCell:
+      return true;
+    default:
+      return false;
+    }
+}
+
+bool GaussianQuadratureType::supports(const CellType& cellType, int order) const
+{
+  if (order <= 0) return false;
+
+  switch(cellType)
+    {
+    case PointCell:
+      return true;
+    case LineCell:
+      return true;
+    case TriangleCell:
+      return true;
+    case TetCell:
+      return TetQuadrature::supportsOrder(order);
+    default:
+      return false;
+    }
+}
+
+QuadratureFamily GaussianQuadratureType::createQuadFamily(int order) const
+{
+  return new GaussianQuadrature(order);
 }

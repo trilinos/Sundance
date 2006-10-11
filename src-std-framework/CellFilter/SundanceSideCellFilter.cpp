@@ -39,7 +39,9 @@ using namespace Teuchos;
 
 SideCellFilter::SideCellFilter()
   : CellFilterBase()
-{;}
+{
+  setName("SideCells");
+}
 
 CellSet SideCellFilter::internalGetCells(const Mesh& mesh) const
 {

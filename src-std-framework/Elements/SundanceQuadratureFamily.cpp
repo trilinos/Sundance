@@ -60,6 +60,7 @@ int QuadratureFamily::order() const
 }
 
 
+
 void QuadratureFamily::getFacetPoints(const CellType& cellType, 
                                       int facetDim,
                                       int facetIndex,

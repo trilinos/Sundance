@@ -53,6 +53,10 @@ namespace SundanceStdFwk
                             Array<double>& y,
                             Array<double>& z);
 
+      static int maxOrder() {return 6;}
+
+      static bool supportsOrder(int order);
+
 
 
       static bool test(int p);

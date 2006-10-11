@@ -72,6 +72,13 @@ void MeshBase::getFacetArray(int cellDim, int cellLID, int facetDim,
 }
 
 
+void MeshBase::getLabels(int cellDim, const Array<int>& cellLID, 
+                         Array<int>& labels) const
+{
+  labels.resize(cellLID.size());
+  for (unsigned int i=0; i<cellLID.size(); i++) labels[i] = label(cellDim, cellLID[i]);
+}
+
 
 
 
