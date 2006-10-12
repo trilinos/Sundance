@@ -67,10 +67,39 @@ Expr SpectralExpr::getCoeff(int i) const
   return coeffs_[i];
 }
 
+bool SpectralExpr::hasTestFunctions() const
+{
+  bool rtn = coeffs_[0].ptr()->hasTestFunctions();
+  for (unsigned int i=1; i<coeffs_.size(); i++)
+    {
+      TEST_FOR_EXCEPTION(coeffs_[i].ptr()->hasTestFunctions() != rtn,
+                         InternalError,
+                         "expr " << toString() << " has a mix of test and "
+                         "non-test coefficients");
+    }
+  return rtn;
+}
+
+bool SpectralExpr::hasHungryDiffOp() const
+{
+  for (unsigned int i=0; i<coeffs_.size(); i++)
+    {
+      Expr re = coeffs_[i].real();
+      Expr im = coeffs_[i].imag();
+      const ScalarExpr* sr = dynamic_cast<const ScalarExpr*>(re.ptr().get());
+      const ScalarExpr* si = dynamic_cast<const ScalarExpr*>(im.ptr().get());
+      TEST_FOR_EXCEPTON(sr == 0 || si == 0, InternalExpr,
+                        "spectral expr " << toString() << " contains a "
+                        "non-scalar coefficient");
+      if (re->hasHungryDiffOp() || im->hasHungryDiffOp()) return true;
+    }
+  return false;
+}
+
 
 ostream& SpectralExpr::toText(ostream& os, bool paren) const
 {
-  os << "{";
+  os << "SpectralExpr{";
   for (unsigned int i=0; i<coeffs_.size(); i++)
     {
       coeffs_[i].ptr()->toText(os, paren);

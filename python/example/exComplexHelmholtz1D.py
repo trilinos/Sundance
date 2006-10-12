@@ -48,7 +48,8 @@ def main():
   points = DimensionalCellFilter(0)
   leftPt = points.subset(LeftPointPredicate())
   rightPt = points.subset(RightPointPredicate())
-  
+
+  print 'forming bcs'
   bc = EssentialBC(leftPt, v*(u-1.0), quad) \
        + EssentialBC(rightPt, v*(u+cosh(x)), quad)
   
