@@ -80,6 +80,12 @@ namespace SundanceCore
     /** Write self in text form */
     virtual ostream& toLatex(ostream& os, bool paren) const; 
     
+
+    /** */
+    bool hasTestFunctions() const ;
+
+    /** */
+    bool hasHungryDiffOp() const ;
     /** */
     virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
     

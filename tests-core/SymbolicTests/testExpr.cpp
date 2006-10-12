@@ -1,5 +1,6 @@
 #include "SundanceExpr.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceDerivative.hpp"
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
@@ -16,6 +17,8 @@ int main(int argc, void** argv)
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
       Expr z = new CoordExpr(2);
+
+      Expr dx = new Derivative(0);
 
       int ndim = 2;
       int order = 2;
@@ -48,7 +51,7 @@ int main(int argc, void** argv)
 
       Expr G = x*x;
 
-      Expr Sum  = w * u * z ;
+      Expr Sum  = w * (dx*u) * z ;
 
       const SpectralExpr* se = dynamic_cast<const SpectralExpr*>(Sum.ptr().get());
       SpectralBasis basis = se->getSpectralBasis();

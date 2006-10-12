@@ -128,7 +128,6 @@ namespace SundanceUtils
   Set<Key, Compare> Set<Key, Compare>::intersection(const Set<Key, Compare>& other) const
   {
     Set<Key, Compare> rtn;
-    typename Set<Key, Compare>::const_iterator iter;
 
     set_intersection(this->begin(), this->end(),
                      other.begin(), other.end(), 
@@ -140,7 +139,6 @@ namespace SundanceUtils
   Set<Key, Compare> Set<Key, Compare>::setUnion(const Set<Key, Compare>& other) const
   {
     Set<Key, Compare> rtn;
-    typename Set<Key, Compare>::const_iterator iter;
 
     set_union(this->begin(), this->end(),
               other.begin(), other.end(), 
@@ -152,7 +150,6 @@ namespace SundanceUtils
   Set<Key, Compare> Set<Key, Compare>::setDifference(const Set<Key, Compare>& other) const
   {
     Set<Key, Compare> rtn;
-    typename Set<Key, Compare>::const_iterator iter;
 
     set_difference(this->begin(), this->end(),
                    other.begin(), other.end(), 

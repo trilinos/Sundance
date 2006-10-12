@@ -28,9 +28,12 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#include "SundanceDefs.hpp"
 #include "SundanceSpectralExpr.hpp"
 #include "SundanceSpectralBasis.hpp"
-#include "SundanceDefs.hpp"
+#include "SundanceScalarExpr.hpp"
+#include "SundanceComplexExpr.hpp"
+#include "SundanceExceptions.hpp"
 #include "Teuchos_Array.hpp"
 
 
@@ -88,10 +91,10 @@ bool SpectralExpr::hasHungryDiffOp() const
       Expr im = coeffs_[i].imag();
       const ScalarExpr* sr = dynamic_cast<const ScalarExpr*>(re.ptr().get());
       const ScalarExpr* si = dynamic_cast<const ScalarExpr*>(im.ptr().get());
-      TEST_FOR_EXCEPTON(sr == 0 || si == 0, InternalExpr,
-                        "spectral expr " << toString() << " contains a "
-                        "non-scalar coefficient");
-      if (re->hasHungryDiffOp() || im->hasHungryDiffOp()) return true;
+      TEST_FOR_EXCEPTION(sr == 0 || si == 0, InternalError,
+                         "spectral expr " << toString() << " contains a "
+                         "non-scalar coefficient");
+      if (sr->isHungryDiffOp() || si->isHungryDiffOp()) return true;
     }
   return false;
 }

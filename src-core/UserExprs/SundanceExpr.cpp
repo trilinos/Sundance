@@ -368,7 +368,7 @@ bool Expr::tryMultiplySpectral(const Expr& L, const Expr& R,
   else if (rse != 0) /* scalar * spectral */
     {
 
-      SpectralBasis basis = lse->getSpectralBasis();
+      SpectralBasis basis = rse->getSpectralBasis();
       Array<Expr> coeff(basis.nterms());
       for (int i=0; i<basis.nterms(); i++) 
         {
