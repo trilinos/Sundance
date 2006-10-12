@@ -254,6 +254,9 @@ $(top_srcdir)/src-core/SymbolicTransformations/SundanceProductTransformationSequ
 $(top_srcdir)/src-core/SymbolicTransformations/SundanceStdProductTransformations.cpp
 
 SUNDANCE_SPECTRAL_H = \
+$(top_srcdir)/src-core/Spectral/chaos.h \
+$(top_srcdir)/src-core/Spectral/VECMAT.h \
+$(top_srcdir)/src-core/Spectral/cijk.h \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralBasis.hpp \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.hpp 
 

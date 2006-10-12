@@ -159,6 +159,22 @@ namespace SundanceStdFwk
     return tuple(a,b,c,d,e,f,g,h,i,j);
   }
 
+  /** */
+  inline Array<BasisFamily> replicate(const BasisFamily& b, int n)
+  {
+    Array<BasisFamily> rtn(n);
+    for (int i=0; i<n; i++) rtn[i] = b;
+    return rtn;
+  }
+
+
+  /** */
+  inline Array<BasisFamily> replicate(const Array<BasisFamily>& b, int n)
+  {
+    Array<BasisFamily> rtn(n*b.size());
+    for (unsigned int i=0; i<n*b.size(); i++) rtn[i] = b[0];
+    return rtn;
+  }
 
   class BasisArray : public Array<BasisFamily>
   {

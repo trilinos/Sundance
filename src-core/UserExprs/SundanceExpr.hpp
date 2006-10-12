@@ -254,6 +254,9 @@ namespace SundanceCore
       /** Flatten this list */
       Expr flatten() const ;
 
+      /** Flatten list and spectral structure */
+      Expr flattenSpectral() const ;
+
       /** */
       string toLatex() const ;
 

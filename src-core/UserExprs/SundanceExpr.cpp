@@ -828,6 +828,39 @@ Expr Expr::flatten() const
   return *this;
 }
 
+Expr Expr::flattenSpectral() const
+{
+  Array<Expr> rtn(size());
+  for (unsigned int i=0; i<size(); i++)
+    {
+      if ((*this)[i].size() == 1)
+        {
+          const SpectralExpr* se 
+            = dynamic_cast<const SpectralExpr*>((*this)[i][0].ptr().get());
+          if (se != 0)
+            {
+              int nt = se->getSpectralBasis().nterms();
+              Array<Expr> e(nt);
+              for (int j=0; j<nt; j++)
+                {
+                  e[j] = se->getCoeff(j);
+                }
+              rtn[i] = new ListExpr(e);
+            }
+          else
+            {
+              rtn[i] = (*this)[i];
+            }
+        }
+      else
+        {
+          rtn[i] = (*this)[i].flattenSpectral();
+        }
+    }
+  Expr r = new ListExpr(rtn);
+  return r.flatten();
+}
+
 unsigned int Expr::size() const
 {
   if (ptr().get()==0) return 0;

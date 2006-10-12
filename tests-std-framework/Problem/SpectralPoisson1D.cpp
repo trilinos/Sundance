@@ -111,7 +111,7 @@ int main(int argc, void** argv)
 
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-      ParameterXMLFileReader reader("bicgstab.xml");
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
       cout << "params = " << solverParams << endl;
 
@@ -149,9 +149,15 @@ int main(int argc, void** argv)
       cerr << "total vorticity = " << totalU << endl;
 
       Expr exactSoln = x*(x-2.0);
+      Expr err = pow(soln[0] - exactSoln, 2.0);
+      for (int i=1; i<sbasis.nterms(); i++)
+        {
+          err = err + pow(soln[i], 2.0);
+        }
+        
 
       Expr errExpr = Integral(interior, 
-                              pow(soln[0]-exactSoln, 2),
+                              err,
                               new GaussianQuadrature(4));
 
       Expr derivErr = dx*(exactSoln-soln[0]);

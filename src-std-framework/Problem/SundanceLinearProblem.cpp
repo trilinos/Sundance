@@ -80,8 +80,9 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     names_(1)
 {
   TimeMonitor timer(lpCtorTimer());
-  Expr u = unk.flatten();
-  Expr v = test.flatten();
+  Expr u = unk.flattenSpectral();
+  Expr v = test.flattenSpectral();
+
   Array<Expr> zero(u.size());
   for (unsigned int i=0; i<u.size(); i++) 
     {
@@ -124,10 +125,10 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     names_(1)
 {
   TimeMonitor timer(lpCtorTimer());
-  Expr u = unk.flatten();
-  Expr v = test.flatten();
-  Expr alpha = unkParams.flatten();
-  Expr alpha0 = unkParamVals.flatten();
+  Expr u = unk.flattenSpectral();
+  Expr v = test.flattenSpectral();
+  Expr alpha = unkParams.flattenSpectral();
+  Expr alpha0 = unkParamVals.flattenSpectral();
   Array<Expr> zero(u.size());
   for (unsigned int i=0; i<u.size(); i++) 
     {
@@ -173,13 +174,13 @@ LinearProblem::LinearProblem(const Mesh& mesh,
 
   for (unsigned int i=0; i<test.size(); i++)
     {
-      v[i] = test[i].expr().flatten();
+      v[i] = test[i].expr().flattenSpectral();
       testVecType[i] = test[i].vecType();
     }
 
   for (unsigned int i=0; i<unk.size(); i++)
     {
-      u[i] = unk[i].expr().flatten();
+      u[i] = unk[i].expr().flattenSpectral();
       unkVecType[i] = unk[i].vecType();
       Array<Expr> zero(u[i].size());
       for (unsigned int j=0; j<u[i].size(); j++) 
@@ -231,13 +232,13 @@ LinearProblem::LinearProblem(const Mesh& mesh,
 
   for (unsigned int i=0; i<test.size(); i++)
     {
-      v[i] = test[i].expr().flatten();
+      v[i] = test[i].expr().flattenSpectral();
       testVecType[i] = test[i].vecType();
     }
 
   for (unsigned int i=0; i<unk.size(); i++)
     {
-      u[i] = unk[i].expr().flatten();
+      u[i] = unk[i].expr().flattenSpectral();
       unkVecType[i] = unk[i].vecType();
       Array<Expr> zero(u[i].size());
       for (unsigned int j=0; j<u[i].size(); j++) 
@@ -256,7 +257,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0,
-                          unkParams.flatten(), unkParamVals.flatten(),
+                          unkParams.flattenSpectral(), 
+                          unkParamVals.flattenSpectral(),
                           fixedParams, fixedParamValues,
                           fixedFields, fixedFieldValues));
 

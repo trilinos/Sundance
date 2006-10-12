@@ -40,11 +40,25 @@ HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic UserDefAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
 FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D \
-CellFilterTest
+CellFilterTest SpectralPoisson1D
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 
 
+
+
+
+SpectralPoisson1D_SOURCES = $(srcdir)/SpectralPoisson1D.cpp
+
+SpectralPoisson1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+SpectralPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+SpectralPoisson1D_LDADD = $(STD_FWK_LIBS) 
 
 
 
