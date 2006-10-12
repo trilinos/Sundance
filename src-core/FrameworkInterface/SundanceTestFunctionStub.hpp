@@ -35,7 +35,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSymbolicFunc.hpp"
 #include "SundanceTestFuncDataStub.hpp"
-
+#include "SundanceSpectralBasis.hpp"
+#include "SundanceSpectralExpr.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -78,6 +79,9 @@ namespace SundanceCore
     public:
       /** Construct a scalar-valued test function */
       TestFunctionStub(const string& name, int nElems=1,
+                       const RefCountPtr<const TestFuncDataStub>& data=RefCountPtr<const TestFuncDataStub>());
+
+      TestFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems=1,
                        const RefCountPtr<const TestFuncDataStub>& data=RefCountPtr<const TestFuncDataStub>());
 
       /** */

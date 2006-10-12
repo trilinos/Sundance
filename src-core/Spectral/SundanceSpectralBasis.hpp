@@ -28,55 +28,61 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceUnknownFunctionStub.hpp"
-#include "SundanceUnknownFuncElement.hpp"
-#include "SundanceSpectralBasis.hpp"
-#include "SundanceSpectralExpr.hpp"
+#ifndef SUNDANCE_SPECTRALBASIS_H
+#define SUNDANCE_SPECTRALBASIS_H
 
+#include "/auto/rcf-15/gsaad/C++sfem_pol/cijk.h"
+#include "/auto/rcf-15/gsaad/C++sfem_pol/chaos.h"
+#include "SundanceDefs.hpp"
+#include "Teuchos_Array.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+#include "SundanceMap.hpp"
 
-using namespace SundanceCore;
+using namespace std;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-
-
-UnknownFunctionStub::UnknownFunctionStub(const string& name, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
+namespace SundanceCore
 {
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      if (nElems > 1) suffix = "[" + Teuchos::toString(i) + "]";
-      append(new UnknownFuncElement(data, name, suffix, i));
-    }
+  /** Doxygen doc for SpectralBasis */
+  class SpectralBasis
+  {
+  private:
+    Array<int> basis_;
+    int dim_;
+    int order_;
+    int maxterms_;
+    RefCountPtr<cijk> cijk_;
+    
+  public:
+    /** Construct a full order basis */
+    SpectralBasis(int dim, int order);
+    
+    /** Construct a truncated basis */
+    SpectralBasis(int dim, int order, int nterms); 
+    
+    /** Construct a basis using the specified subset of elements */
+    SpectralBasis(int dim, int order, const Array<int>& basisarray); 
+    
+
+    /** */
+    SpectralBasis(const SpectralBasis& SB);
+
+
+    /** Return the dim of the Spectral Basis */
+    int getDim() const;
+
+    /** Return the order of the Spectral Basis */
+    int getOrder() const;
+
+    /** Return the maximum number of terms */
+    int nterms() const ;
+    
+    /** Return the basis element stored in the basis array index */
+    int getElement(int i) const;
+    
+    /** expectation operator */
+    double expectation(int i, int j, int k); 
+  };
 }
 
-
-
-UnknownFunctionStub::UnknownFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
-{
-  int counter = 0;
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      Array<Expr> Coeffs(sbasis.nterms());
-
-      for(int n=0; n< sbasis.nterms(); n++)
-	{
-	  suffix = "[" + Teuchos::toString(counter) + "]";
-	  Coeffs[n] = new UnknownFuncElement(data, name, suffix, counter);
-	  counter++;
-	}
-
-      append(new SpectralExpr(sbasis, Coeffs));
-    }
-}
-
-
-
+#endif

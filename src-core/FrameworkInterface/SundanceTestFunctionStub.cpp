@@ -30,6 +30,8 @@
 
 #include "SundanceTestFunctionStub.hpp"
 #include "SundanceTestFuncElement.hpp"
+#include "SundanceSpectralBasis.hpp"
+#include "SundanceSpectralExpr.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -51,3 +53,24 @@ TestFunctionStub::TestFunctionStub(const string& name, int nElems,
 
 
 
+
+TestFunctionStub::TestFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems,
+                                         const RefCountPtr<const TestFuncDataStub>& data)
+  : SymbolicFunc(), data_(data)
+{
+  int counter = 0;
+  for (int i=0; i<nElems; i++)
+    {
+      string suffix;
+      Array<Expr> Coeffs(sbasis.nterms());
+
+      for(int n=0; n< sbasis.nterms(); n++)
+	{
+	  suffix = "[" + Teuchos::toString(counter) + "]";
+	  Coeffs[n] = new TestFuncElement(data, name, suffix, counter);
+	  counter++;
+	}
+
+      append(new SpectralExpr(sbasis, Coeffs));
+    }
+}

@@ -28,55 +28,63 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceUnknownFunctionStub.hpp"
-#include "SundanceUnknownFuncElement.hpp"
+#ifndef SUNDANCE_SPECTRALEXPR_H
+#define SUNDANCE_SPECTRALEXPR_H
+
+#include "SundanceDefs.hpp"
+#include "SundanceExpr.hpp"
 #include "SundanceSpectralBasis.hpp"
-#include "SundanceSpectralExpr.hpp"
 
-
-using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-
-
-UnknownFunctionStub::UnknownFunctionStub(const string& name, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
+namespace SundanceCore
 {
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      if (nElems > 1) suffix = "[" + Teuchos::toString(i) + "]";
-      append(new UnknownFuncElement(data, name, suffix, i));
-    }
+
+  using namespace SundanceUtils;
+  using namespace Teuchos;
+  using namespace Internal;
+  
+  using std::string;
+  using std::ostream;
+
+  /**
+   * Spectral Expression 
+   */
+
+  class SpectralExpr : public Internal::ExprBase
+  {
+  private:
+    Array<Expr> coeffs_;
+    RefCountPtr<SpectralBasis> sbasis_;
+
+  public:
+    /** Constructor*/
+    SpectralExpr (const SpectralBasis& sbasis, const Array<Expr>& coeffs);
+    
+    /** virtual destructor */
+    virtual ~SpectralExpr() {;}
+
+
+    /** Return the Spectral Basis */
+    SpectralBasis getSpectralBasis() const;
+
+
+    /** Return the coefficient of the nth basis term */
+    Expr getCoeff(int n) const;
+
+
+    /** */
+    virtual XMLObject toXML() const ;
+
+    /** Write self in text form */
+    virtual ostream& toText(ostream& os, bool paren) const;
+ 
+    /** Write self in text form */
+    virtual ostream& toLatex(ostream& os, bool paren) const; 
+    
+    /** */
+    virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+    
+
+  };
 }
 
-
-
-UnknownFunctionStub::UnknownFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
-{
-  int counter = 0;
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      Array<Expr> Coeffs(sbasis.nterms());
-
-      for(int n=0; n< sbasis.nterms(); n++)
-	{
-	  suffix = "[" + Teuchos::toString(counter) + "]";
-	  Coeffs[n] = new UnknownFuncElement(data, name, suffix, counter);
-	  counter++;
-	}
-
-      append(new SpectralExpr(sbasis, Coeffs));
-    }
-}
-
-
-
+#endif

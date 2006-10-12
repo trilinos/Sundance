@@ -28,55 +28,76 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceUnknownFunctionStub.hpp"
-#include "SundanceUnknownFuncElement.hpp"
-#include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
+#include "SundanceSpectralBasis.hpp"
+#include "SundanceDefs.hpp"
+#include "Teuchos_Array.hpp"
+
 
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 
+SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Array<Expr>& coeffs)
+  : ExprBase(), 
+    coeffs_(),
+    sbasis_()
 
-UnknownFunctionStub::UnknownFunctionStub(const string& name, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
 {
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      if (nElems > 1) suffix = "[" + Teuchos::toString(i) + "]";
-      append(new UnknownFuncElement(data, name, suffix, i));
-    }
+  int nterms = sbasis.nterms();
+  coeffs_.resize(nterms);
+  for (int i=0; i<nterms; i++)
+    coeffs_[i] = coeffs[i];
+  sbasis_ = rcp(new SpectralBasis(sbasis));
+}
+
+SpectralBasis SpectralExpr::getSpectralBasis() const
+{ 
+  return *sbasis_;
 }
 
 
-
-UnknownFunctionStub::UnknownFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
+Expr SpectralExpr::getCoeff(int i) const
 {
-  int counter = 0;
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      Array<Expr> Coeffs(sbasis.nterms());
-
-      for(int n=0; n< sbasis.nterms(); n++)
-	{
-	  suffix = "[" + Teuchos::toString(counter) + "]";
-	  Coeffs[n] = new UnknownFuncElement(data, name, suffix, counter);
-	  counter++;
-	}
-
-      append(new SpectralExpr(sbasis, Coeffs));
-    }
+  return coeffs_[i];
 }
 
 
+ostream& SpectralExpr::toText(ostream& os, bool paren) const
+{
+  os << "{";
+  for (unsigned int i=0; i<coeffs_.size(); i++)
+    {
+      coeffs_[i].ptr()->toText(os, paren);
+      if (i < coeffs_.size()-1) os << ", ";
+    }
+  os << "}";
+  return os;
+}
 
+ostream& SpectralExpr::toLatex(ostream& os, bool paren) const
+{
+  os << "\\{";
+  for (unsigned int i=0; i<coeffs_.size(); i++)
+    {
+      coeffs_[i].ptr()->toLatex(os, paren);
+      if (i < coeffs_.size()-1) os << ", ";
+    }
+  os << "\\}";
+  return os;
+}
+
+XMLObject SpectralExpr::toXML() const 
+{
+  XMLObject rtn("SpectralExpr");
+  for (int i=0; i<coeffs_.length(); i++)
+    {
+      rtn.addChild(coeffs_[i].toXML());
+    }
+  return rtn;
+}

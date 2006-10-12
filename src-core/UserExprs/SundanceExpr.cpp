@@ -42,11 +42,14 @@
 #include "SundanceZeroExpr.hpp"
 #include "SundanceComplexExpr.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
 #include "SundanceStdSumTransformations.hpp"
 #include "SundanceStdProductTransformations.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
 #include "SundanceStdMathOps.hpp"
 #include "SundanceParameter.hpp"
+#include "SundanceSpectralBasis.hpp"
+#include "SundanceSpectralExpr.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -67,6 +70,16 @@ bool Expr::isComplex() const
 {
   return dynamic_cast<const ComplexExpr*>(ptr().get()) != 0;
 }
+
+/*****************************************************************************************************************************************/
+
+bool Expr::isSpectral() const
+{
+  return dynamic_cast<const SpectralExpr*>(ptr().get()) != 0;
+}
+/****************************************************************************************************************************************/
+
+
 
 XMLObject Expr::toXML() const
 {
@@ -182,10 +195,70 @@ Expr Expr::operator+(const Expr& other) const
   /* if both operands are simple scalars, add them */
   if (this->size() == 1 && other.size()==1)
     {
-      if (!(*this)[0].isComplex() && !other[0].isComplex())
+      if ((!(*this)[0].isComplex() && !other[0].isComplex())&& (!(*this)[0].isSpectral() && !other[0].isSpectral()))
         {
           return (*this)[0].sum(other[0], 1);
         }
+      else if ((*this)[0].isSpectral() && !other[0].isSpectral() && !other[0].isComplex())
+	{
+	  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+	  SpectralBasis basis = se->getSpectralBasis();
+	  
+	  Array<Expr> coeff(basis.nterms());
+	  coeff[0] = se->getCoeff(0) + other[0];
+	  for(int i=1; i<basis.nterms(); i++)
+	    {
+	      coeff[i] = se->getCoeff(i);
+	    }
+	  
+	  
+	  Expr rtn = new SpectralExpr( basis, coeff);
+
+	  return rtn;
+	}
+      else if (!(*this)[0].isSpectral() && !(*this)[0].isComplex() && other[0].isSpectral())
+	{
+	  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>(other[0].ptr().get());
+	  SpectralBasis basis = se->getSpectralBasis();
+	  
+	  Array<Expr> coeff(basis.nterms());
+	  coeff[0] = (*this)[0] + se->getCoeff(0);
+	 
+	  for(int i=1; i<basis.nterms(); i++)
+	    {
+	      coeff[i] = se->getCoeff(i);
+	    }
+
+
+	  Expr rtn = new SpectralExpr( basis, coeff);
+
+	  return rtn;
+	}
+
+      else if ((*this)[0].isSpectral() && other[0].isSpectral())
+	{
+	  const SpectralExpr* se1 = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+	  SpectralBasis basis1 = se1->getSpectralBasis();
+
+	  const SpectralExpr* se2 = dynamic_cast<const SpectralExpr*>(other[0].ptr().get());
+	  SpectralBasis basis2 = se2->getSpectralBasis();
+	  
+	  TEST_FOR_EXCEPTION((basis1.nterms() != basis2.nterms()) || (basis1.getDim() != basis2.getDim()) || (basis1.getOrder() != basis2.getOrder()), InternalError," The two spectral expressions should have the same basis ");
+
+	  
+	  Array<Expr> coeff(basis1.nterms());
+    
+	  for(int i=0; i<basis1.nterms(); i++)
+	    {
+	      coeff[i] = se1->getCoeff(i) + se2->getCoeff(i);
+	    }
+
+
+	  Expr rtn = new SpectralExpr( basis1, coeff);
+
+	  return rtn;
+	}
+
       else 
         {
           Expr rtn = new ComplexExpr((*this)[0].real() + other[0].real(),
@@ -213,14 +286,75 @@ Expr Expr::operator-(const Expr& other) const
   /* if both operands are simple scalars, subtract them */
   if (this->size() == 1 && other.size()==1)
     {
-      if (!(*this)[0].isComplex() && !other[0].isComplex())
+      if ((!(*this)[0].isComplex() && !other[0].isComplex())&& (!(*this)[0].isSpectral() && !other[0].isSpectral()))
         {
           return (*this)[0].sum(other[0], -1);
         }
+
+      else if ((*this)[0].isSpectral() && !other[0].isSpectral() && !other[0].isComplex())
+	{
+	  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+	  SpectralBasis basis = se->getSpectralBasis();
+
+	  Array<Expr> coeff(basis.nterms());
+	  coeff[0] = se->getCoeff(0) - other[0];
+
+
+	  for(int i=1; i<basis.nterms(); i++)
+	    {
+	      coeff[i] = se->getCoeff(i);
+	    }
+	  
+	  Expr rtn = new SpectralExpr( basis, coeff);
+
+	  return rtn;
+	}
+      else if (!(*this)[0].isSpectral() && !(*this)[0].isComplex() && other[0].isSpectral())
+	{
+	  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>(other[0].ptr().get());
+	  SpectralBasis basis = se->getSpectralBasis();
+
+
+	  Array<Expr> coeff(basis.nterms());
+	  coeff[0] = (*this)[0] - se->getCoeff(0);
+
+	  for(int i=1; i<basis.nterms(); i++)
+	    {
+	      coeff[i] = 0 - se->getCoeff(i);
+	    }
+
+
+	  Expr rtn = new SpectralExpr( basis, coeff);
+
+	  return rtn;
+	}
+      
+      else if ((*this)[0].isSpectral() && other[0].isSpectral())
+	{
+	  const SpectralExpr* se1 = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+	  SpectralBasis basis1 = se1->getSpectralBasis();
+	  
+	  const SpectralExpr* se2 = dynamic_cast<const SpectralExpr*>(other[0].ptr().get());
+	  SpectralBasis basis2 = se2->getSpectralBasis();
+	  
+	  TEST_FOR_EXCEPTION((basis1.nterms() != basis2.nterms()) || (basis1.getDim() != basis2.getDim()) || (basis1.getOrder() != basis2.getOrder()), InternalError," The two spectral expressions should have the same basis ");
+
+	  Array<Expr> coeff(basis1.nterms());
+    
+	  for(int i=0; i<basis1.nterms(); i++)
+	    {
+	      coeff[i] = se1->getCoeff(i) - se2->getCoeff(i);
+	    }
+	  
+
+	  Expr rtn = new SpectralExpr( basis1, coeff);
+
+	  return rtn;
+	}
       else return new ComplexExpr((*this)[0].real() - other[0].real(),
                                   (*this)[0].imag() - other[0].imag());
     }
-
+  
   /* otherwise, create a list of the sums */
   Array<Expr> rtn(this->size());
   if (this->size() == other.size())
@@ -279,10 +413,76 @@ Expr Expr::operator*(const Expr& other) const
   /* if both operands are simple scalars, multiply them */
   if (this->size() == 1 && other.size()==1)
     {
-      if (!(*this)[0].isComplex() && !other[0].isComplex())
+      if ( (!(*this)[0].isComplex() && !other[0].isComplex()) &&  (!(*this)[0].isSpectral() && !other[0].isSpectral()))
         {
           return (*this)[0].multiply(other[0]);
         }
+      else if ((*this)[0].isSpectral() && !other[0].isSpectral() && !other[0].isComplex())
+	{
+	  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+	  SpectralBasis basis = se->getSpectralBasis();
+	  
+	  Array<Expr> coeff(basis.nterms());
+	  
+	  for(int i=0; i<basis.nterms(); i++)
+	    {
+	      coeff[i] = se->getCoeff(i) * other[0];
+	    }
+	  
+	  Expr rtn = new SpectralExpr( basis, coeff);
+
+	  return rtn;
+	}
+      else if (!(*this)[0].isSpectral() && !(*this)[0].isComplex()  && other[0].isSpectral())
+	{
+	  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>(other[0].ptr().get());
+	  SpectralBasis basis = se->getSpectralBasis();
+
+	  
+	  Array<Expr> coeff(basis.nterms());
+	  
+	  for(int i=0; i<basis.nterms(); i++)
+	    {
+	      coeff[i] = (*this)[0]*se->getCoeff(i);
+	    }
+
+
+	  Expr rtn = new SpectralExpr( basis, coeff);
+
+	  return rtn;
+	}
+
+      else if ((*this)[0].isSpectral() && other[0].isSpectral())
+	{
+
+	  /* By default the size of the resultant basis is the same as that of the initial ones
+	     this could be modified later if needed */
+	  const SpectralExpr* se1 = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+	  SpectralBasis basis1 = se1->getSpectralBasis();
+
+	  const SpectralExpr* se2 = dynamic_cast<const SpectralExpr*>(other[0].ptr().get());
+	  SpectralBasis basis2 = se2->getSpectralBasis();
+	  
+	  TEST_FOR_EXCEPTION((basis1.nterms() != basis2.nterms()) || (basis1.getDim() != basis2.getDim()) || (basis1.getOrder() != basis2.getOrder()), InternalError," The two spectral expressions should have the same basis ");
+	  
+	  Array<Expr> coeff(basis1.nterms());
+    
+	  for(int i=0; i<basis1.nterms(); i++)
+	    {
+	      coeff[i] = 0.0;
+	      for (int n=0; n<basis1.nterms(); n++)
+		for(int m=0; m<basis1.nterms(); m++)
+		  coeff[i] = coeff[i] + se1->getCoeff(n)* se2->getCoeff(m)* basis1.expectation(basis1.getElement(n), basis1.getElement(m), i)/basis1.expectation(0,i,i);
+	      
+	    }
+
+
+	  Expr rtn = new SpectralExpr( basis1, coeff);
+
+	  return rtn;
+	}
+
+
       else 
         {
           Expr me = (*this)[0];
@@ -405,15 +605,34 @@ Expr Expr::multiply(const Expr& other) const
 Expr Expr::operator-() const 
 {
   TimeMonitor t(opTimer());
+  Tabs tabs;
 
   if (this->isComplex())
     {
       return new ComplexExpr(-real(), -imag());
     }
 
+
   /* if we are a scalar, process the unary minus here */
   if (this->size()==1)
     {
+      const SpectralExpr* se = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+      if (se != 0)
+      {
+	SpectralBasis basis = se->getSpectralBasis();
+	
+	Array<Expr> coeff(basis.nterms());
+	
+	for(int i=0; i<basis.nterms(); i++)
+	  {
+	    coeff[i] = - se->getCoeff(i);
+	  }
+	
+	Expr rtn = new SpectralExpr( basis, coeff);
+	
+	return rtn;
+      }
+
       const ConstantExpr* c = dynamic_cast<const ConstantExpr*>((*this)[0].ptr().get());
       const UnaryMinus* u = dynamic_cast<const UnaryMinus*>((*this)[0].ptr().get());
       /* if we are a constant, just modify the constant */
@@ -465,6 +684,8 @@ Expr Expr::operator/(const Expr& other) const
                      "Expr::operator/ detected division by a non-scalar "
                      "expression " << toString());
 
+  TEST_FOR_EXCEPTION(other.isSpectral(), InternalError, "Division by a Spectral Expr is not yet defined");
+
   /* If other is complex, transform to make the denominator real */
   if (other.isComplex())
     {
@@ -476,6 +697,25 @@ Expr Expr::operator/(const Expr& other) const
   if (isComplex() && !other.isComplex())
     {
       return new ComplexExpr(real()/other, imag()/other);
+    }
+
+  /* If I'm spectral and the other is not, distribute division over coefficients */
+  if (isSpectral() && !other.isSpectral()  && !other.isComplex())
+    {
+      
+      const SpectralExpr* se = dynamic_cast<const SpectralExpr*>((*this)[0].ptr().get());
+      SpectralBasis basis = se->getSpectralBasis();
+      
+      Array<Expr> coeff(basis.nterms());
+	  
+      for(int i=0; i<basis.nterms(); i++)
+	{
+	  coeff[i] = se->getCoeff(i)/ other[0];
+	}
+	  
+      Expr rtn = new SpectralExpr( basis, coeff);
+
+      return rtn;
     }
 
   /* if we are a scalar, do simple scalar division */

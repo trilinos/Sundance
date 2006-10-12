@@ -253,6 +253,15 @@ $(top_srcdir)/src-core/SymbolicTransformations/SundanceProductTransformation.cpp
 $(top_srcdir)/src-core/SymbolicTransformations/SundanceProductTransformationSequence.cpp \
 $(top_srcdir)/src-core/SymbolicTransformations/SundanceStdProductTransformations.cpp
 
+SUNDANCE_SPECTRAL_H = \
+$(top_srcdir)/src-core/Spectral/SundanceDummy.hpp \
+$(top_srcdir)/src-core/Spectral/SundanceSpectralBasis.hpp \
+$(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.hpp 
+
+SUNDANCE_SPECTRAL = \
+$(top_srcdir)/src-core/Spectral/SundanceDummy.cpp \
+$(top_srcdir)/src-core/Spectral/SundanceSpectralBasis.cpp \
+ $(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.cpp 
 
 SUNDANCE_TESTUTILITIES_H = \
 $(top_srcdir)/src-core/TestingUtilities/SundanceADBasis.hpp \
@@ -286,6 +295,7 @@ $(SUNDANCE_INTERNALEXPRS) \
 $(SUNDANCE_EVALUATION) \
 $(SUNDANCE_FRAMEWORKINTERFACE) \
 $(SUNDANCE_TRANSFORMATIONS) \
+$(SUNDANCE_SPECTRAL) \
 $(SUNDANCE_TESTUTILITIES)
 
 CORE_SOURCES_H = \
@@ -294,6 +304,7 @@ $(SUNDANCE_INTERNALEXPRS_H) \
 $(SUNDANCE_EVALUATION_H) \
 $(SUNDANCE_FRAMEWORKINTERFACE_H) \
 $(SUNDANCE_TRANSFORMATIONS_H) \
+$(SUNDANCE_SPECTRAL_H) \
 $(SUNDANCE_TESTUTILITIES_H) 
 
 include $(top_srcdir)/Makefile.common

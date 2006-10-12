@@ -66,7 +66,7 @@ ostream& BinaryExpr:: toText(ostream& os, bool paren) const
 		}
 	else
 		{
-			rightScalar()->toText(os, opChar()=="-" || parenthesizeOperands());
+			rightScalar()->toText(os, parenthesizeOperands() || opChar() == "-");
 		}
 	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << ")";
 

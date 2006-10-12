@@ -36,6 +36,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceListExpr.hpp"
 #include "SundanceDiscreteFuncDataStub.hpp"
+#include "SundanceSpectralBasis.hpp"
 
 namespace SundanceCore
 {
@@ -72,9 +73,19 @@ namespace SundanceCore
       /** */
       DiscreteFunctionStub(const string& name, int nElems=1,
                           const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+     
+      /** */
+      DiscreteFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems=1,
+                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+
       /** */
       DiscreteFunctionStub(const Array<string>& names, int nElems=1,
                           const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+     
+      /** */
+      DiscreteFunctionStub(const Array<string>& names, const SpectralBasis& sbasis, int nElems=1,
+                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+
 
       /** virtual destructor */
       virtual ~DiscreteFunctionStub() {;}

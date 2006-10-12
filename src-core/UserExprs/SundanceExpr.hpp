@@ -266,13 +266,14 @@ namespace SundanceCore
       /** */
       bool isComplex() const ;
 
-
-      
+      /** */
+      bool isSpectral() const;
 
       /** */
       void setParameterValue(const double& value);
       /** */
       double getParameterValue() const ;
+
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -435,6 +436,7 @@ namespace SundanceCore
             const Expr& j);
 
   
+
 }
 
 #endif

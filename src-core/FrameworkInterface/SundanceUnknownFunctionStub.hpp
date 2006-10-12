@@ -36,6 +36,8 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSymbolicFunc.hpp"
 #include "SundanceUnknownFuncDataStub.hpp"
+#include "SundanceSpectralBasis.hpp"
+#include "SundanceSpectralExpr.hpp"
 
 namespace SundanceCore
 {
@@ -73,6 +75,10 @@ namespace SundanceCore
     public:
       /** */
       UnknownFunctionStub(const string& name, int nElems=1,
+                          const RefCountPtr<const UnknownFuncDataStub>& data=RefCountPtr<const UnknownFuncDataStub>());
+
+      /** */
+      UnknownFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems=1,
                           const RefCountPtr<const UnknownFuncDataStub>& data=RefCountPtr<const UnknownFuncDataStub>());
 
       /** virtual destructor */
