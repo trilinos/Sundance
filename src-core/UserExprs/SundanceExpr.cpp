@@ -287,7 +287,7 @@ bool Expr::tryAddSpectral(const Expr& L, const Expr& R, int sign,
   else if (rse != 0) /* scalar + spectral */
     {
 
-      SpectralBasis basis = lse->getSpectralBasis();
+      SpectralBasis basis = rse->getSpectralBasis();
       Array<Expr> coeff(basis.nterms());
       if (sign > 0) coeff[0] = L + rse->getCoeff(0);
       else coeff[0] = L - rse->getCoeff(0);
@@ -325,6 +325,19 @@ bool Expr::tryMultiplySpectral(const Expr& L, const Expr& R,
   
   if (lse != 0 && rse != 0) /* spectral * spectral */
     {
+      TEST_FOR_EXCEPTION(lse->hasTestFunctions() && rse->hasTestFunctions(),
+                         RuntimeError,
+                         "product of two test functions detected: L=" << L
+                         << ", R=" << R);
+      if (rse->hasTestFunctions()) /* move test function to left */
+        {
+          return tryMultiplySpectral(R, L, rtn);
+        }
+      if (lse->hasTestFunctions()) /* if left has a test function, do dot product */
+        {
+          rtn = lse->spectralDotProduct(rse);
+          return true;
+        }
       SpectralBasis basis1 = lse->getSpectralBasis();
       SpectralBasis basis2 = rse->getSpectralBasis();
       Array<Expr> coeff(basis1.nterms());
@@ -367,7 +380,6 @@ bool Expr::tryMultiplySpectral(const Expr& L, const Expr& R,
     }
   else if (rse != 0) /* scalar * spectral */
     {
-
       SpectralBasis basis = rse->getSpectralBasis();
       Array<Expr> coeff(basis.nterms());
       for (int i=0; i<basis.nterms(); i++) 

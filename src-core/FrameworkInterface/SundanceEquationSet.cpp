@@ -31,6 +31,7 @@
 #include "SundanceEquationSet.hpp"
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceUnknownFuncElement.hpp"
+#include "SundanceSpectralExpr.hpp"
 #include "SundanceUnknownParameterElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceFunctionalDeriv.hpp"
@@ -139,9 +140,9 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
     bcRqcToContext_(),
-    varFuncs_(vars),
-    unkFuncs_(unks),
-    unkLinearizationPts_(unkLinearizationPts),
+    varFuncs_(flattenSpectral(vars)),
+    unkFuncs_(flattenSpectral(unks)),
+    unkLinearizationPts_(flattenSpectral(unkLinearizationPts)),
     unkParams_(unkParams),
     unkParamEvalPts_(unkParamEvalPts),
     varIDToReducedIDMap_(),
@@ -190,8 +191,8 @@ EquationSet::EquationSet(const Expr& eqns,
     }
 
   Array<Expr> zero;
-  init(eqns, bcs, vars, zero,
-       unks, unkLinearizationPts,
+  init(eqns, bcs, flattenSpectral(vars), zero,
+       flattenSpectral(unks), flattenSpectral(unkLinearizationPts),
        unkParams_, unkParamEvalPts_,
        params, paramEvalPts,
        fixedFields, fixedFieldValues);
@@ -225,9 +226,9 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
     bcRqcToContext_(),
-    varFuncs_(vars),
-    unkFuncs_(unks),
-    unkLinearizationPts_(unkLinearizationPts),
+    varFuncs_(flattenSpectral(vars)),
+    unkFuncs_(flattenSpectral(unks)),
+    unkLinearizationPts_(flattenSpectral(unkLinearizationPts)),
     unkParams_(),
     unkParamEvalPts_(),
     varIDToReducedIDMap_(),
@@ -264,8 +265,8 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadComboNonzeroDerivs_.put(VectorOnly, 
                                       Map<RegionQuadCombo, DerivSet>());
 
-  init(eqns, bcs, vars, varLinearizationPts, 
-       unks, unkLinearizationPts,
+  init(eqns, bcs, flattenSpectral(vars), flattenSpectral(varLinearizationPts), 
+       flattenSpectral(unks), flattenSpectral(unkLinearizationPts),
        unkParams_, unkParamEvalPts_,
        params, paramEvalPts,
        fixedFields, fixedFieldValues);
@@ -334,8 +335,8 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadComboNonzeroDerivs_.put(FunctionalOnly, 
                                       Map<RegionQuadCombo, DerivSet>());
 
-  init(eqns, bcs, vars, varLinearizationPts, 
-       unkFuncs_, unkLinearizationPts_,
+  init(eqns, bcs, flattenSpectral(vars), flattenSpectral(varLinearizationPts), 
+       flattenSpectral(unkFuncs_), flattenSpectral(unkLinearizationPts_),
        unkParams_, unkParamEvalPts_,   
        params, paramEvalPts, 
        fixedFields, fixedFieldValues);
@@ -1077,6 +1078,51 @@ void EquationSet
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium, tab << "found " << *funcPairs);
   
+}
+
+Array<Expr> EquationSet::flattenSpectral(const Array<Expr>& expr) const
+{
+  Array<Expr> rtn(expr.size());
+  for (unsigned int i=0; i<expr.size(); i++)
+    {
+      const Expr& e = expr[i];
+      rtn[i] = flattenSpectral(e);
+    }
+  return rtn;
+}
+
+Expr EquationSet::flattenSpectral(const Expr& expr) const
+{
+  Array<Expr> rtn(expr.size());
+  for (unsigned int i=0; i<expr.size(); i++)
+    {
+      if (expr[i].size() == 1)
+        {
+          const SpectralExpr* se 
+            = dynamic_cast<const SpectralExpr*>(expr[i][0].ptr().get());
+          if (se != 0)
+            {
+              int nt = se->getSpectralBasis().nterms();
+              Array<Expr> e(nt);
+              for (int j=0; j<nt; j++)
+                {
+                  e[j] = se->getCoeff(j);
+                }
+              rtn[i] = new ListExpr(e);
+            }
+          else
+            {
+              rtn[i] = expr[i];
+            }
+        }
+      else
+        {
+          rtn[i] = flattenSpectral(expr[i]);
+        }
+    }
+  Expr r = new ListExpr(rtn);
+  return r.flatten();
+                  
 }
 
 const RefCountPtr<Set<OrderedPair<int, int> > >& EquationSet::

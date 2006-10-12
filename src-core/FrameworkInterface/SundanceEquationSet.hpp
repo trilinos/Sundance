@@ -571,6 +571,15 @@ namespace SundanceCore
 
     private:
 
+      /**
+       * Flatten a spectral expression into a list of its coefficients
+       */
+      Expr flattenSpectral(const Expr& input) const ;
+      /**
+       * Flatten a spectral expression into a list of its coefficients
+       */
+      Array<Expr> flattenSpectral(const Array<Expr>& input) const ;
+
       /** 
        * Common initialization function called by all constructors
        */

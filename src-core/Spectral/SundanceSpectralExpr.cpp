@@ -70,6 +70,13 @@ Expr SpectralExpr::getCoeff(int i) const
   return coeffs_[i];
 }
 
+Expr SpectralExpr::spectralDotProduct(const SpectralExpr* other) const
+{
+  Expr rtn = coeffs_[0] * other->coeffs_[0];
+  for (unsigned int i=1; i<coeffs_.size(); i++) rtn = rtn + coeffs_[i]*other->coeffs_[i];
+  return rtn;
+}
+
 bool SpectralExpr::hasTestFunctions() const
 {
   bool rtn = coeffs_[0].ptr()->hasTestFunctions();

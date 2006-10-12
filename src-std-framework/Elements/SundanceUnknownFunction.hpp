@@ -35,6 +35,7 @@
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceUnknownFunctionData.hpp"
 #include "SundanceFuncWithBasis.hpp"
+#include "SundanceSpectralBasis.hpp"
 
 namespace SundanceStdFwk
 {
@@ -61,6 +62,16 @@ namespace SundanceStdFwk
 
     /** */
     UnknownFunction(const Array<BasisFamily>& basis, const string& name="");
+
+    /** */
+    UnknownFunction(const BasisFamily& basis, 
+                    const SpectralBasis& spBasis,
+                    const string& name="");
+
+    /** */
+    UnknownFunction(const Array<BasisFamily>& basis,  
+                    const SpectralBasis& spBasis,
+                    const string& name="");
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */

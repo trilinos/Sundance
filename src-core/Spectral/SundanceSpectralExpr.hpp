@@ -70,6 +70,8 @@ namespace SundanceCore
     /** Return the coefficient of the nth basis term */
     Expr getCoeff(int n) const;
 
+    /** */
+    Expr spectralDotProduct(const SpectralExpr* other) const ;
 
     /** */
     virtual XMLObject toXML() const ;

@@ -141,7 +141,11 @@ namespace SundanceCore
           /** Ordering operator for use in transforming exprs to standard form */
           virtual bool lessThan(const ScalarExpr* other) const ;
 
+        protected:
+          /** */
+          Expr filterSpectral(const Expr& ex) const ;
         private:
+          
           Array<OrderedHandle<CellFilterStub> > regions_;
 
           Array<Array<OrderedHandle<QuadratureFamilyStub> > > quad_;

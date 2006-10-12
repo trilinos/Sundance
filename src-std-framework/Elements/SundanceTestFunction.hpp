@@ -35,6 +35,7 @@
 #include "SundanceTestFunctionStub.hpp"
 #include "SundanceTestFunctionData.hpp"
 #include "SundanceFuncWithBasis.hpp"
+#include "SundanceSpectralBasis.hpp"
 
 namespace SundanceStdFwk
 {
@@ -61,6 +62,16 @@ namespace SundanceStdFwk
      * 
      */
     TestFunction(const Array<BasisFamily>& basis, const string& name="");
+
+    /** */
+    TestFunction(const BasisFamily& basis, 
+                 const SpectralBasis& spBasis,
+                 const string& name="");
+    
+    /** */
+    TestFunction(const Array<BasisFamily>& basis,  
+                 const SpectralBasis& spBasis,
+                 const string& name="");
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */

@@ -52,3 +52,21 @@ TestFunction::TestFunction(const Array<BasisFamily>& basis, const string& name)
                         rcp(new TestFunctionData(basis))), 
     FuncWithBasis(basis)
 {;}
+
+
+TestFunction::TestFunction(const BasisFamily& basis, 
+                                 const SpectralBasis& spBasis,
+                                 const string& name)
+  : TestFunctionStub(name, spBasis, basis.dim(),
+                        rcp(new TestFunctionData(tuple(basis)))), 
+    FuncWithBasis(basis)
+{;}
+
+
+TestFunction::TestFunction(const Array<BasisFamily>& basis, 
+                                 const SpectralBasis& spBasis,
+                                 const string& name)
+  : TestFunctionStub(name, spBasis, BasisFamily::size(basis),
+                        rcp(new TestFunctionData(basis))), 
+    FuncWithBasis(basis)
+{;}

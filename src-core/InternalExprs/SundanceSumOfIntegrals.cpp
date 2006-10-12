@@ -30,6 +30,7 @@
 
 #include "SundanceSumOfIntegrals.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
+#include "SundanceSpectralExpr.hpp"
 #include "SundanceTabs.hpp"
 
 using namespace SundanceCore;
@@ -52,12 +53,23 @@ SumOfIntegrals::SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
 }
 
 
+Expr SumOfIntegrals::filterSpectral(const Expr& expr) const 
+{
+  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>(expr.ptr().get());
+  if (se != 0) return se->getCoeff(0);
+  return expr;
+}
+
+
+
 void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
                              const Expr& expr,
                              const RefCountPtr<QuadratureFamilyStub>& quadPtr, 
                              int sign)
 {
   int d = regions_.length();
+
+  Expr ex = filterSpectral(expr);
 
   OrderedHandle<CellFilterStub> region(regionPtr);
   OrderedHandle<QuadratureFamilyStub> quad(quadPtr);
@@ -81,11 +93,11 @@ void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
       q = quadToIndexMap_[d].get(quad);
       if (sign > 0)
         {
-          expr_[d][q] = expr_[d][q] + expr;
+          expr_[d][q] = expr_[d][q] + ex;
         }
       else
         {
-          expr_[d][q] = expr_[d][q] - expr;
+          expr_[d][q] = expr_[d][q] - ex;
         }
     }
   else
@@ -93,11 +105,11 @@ void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
       quad_[d].append(quad);
       if (sign > 0)
         {
-          expr_[d].append(expr);
+          expr_[d].append(ex);
         }
       else
         {
-          expr_[d].append(-expr);
+          expr_[d].append(-ex);
         }
       quadToIndexMap_[d].put(quad, q);
     }

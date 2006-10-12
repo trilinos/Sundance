@@ -1,9 +1,13 @@
 #include "SundanceExpr.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceIntegral.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
+#include "SundanceTestFunctionStub.hpp"
+#include "SundanceCellFilterStub.hpp"
+#include "SundanceQuadratureFamilyStub.hpp"
 
 int main(int argc, void** argv)
 {
@@ -26,6 +30,7 @@ int main(int argc, void** argv)
       SpectralBasis SB(ndim, order);
 
       Expr u = new UnknownFunctionStub("u", SB);
+      Expr v = new TestFunctionStub("v", SB);
       Expr w = new UnknownFunctionStub("w", SB);
      
       Array<Expr> Ex1(6);
@@ -51,17 +56,26 @@ int main(int argc, void** argv)
 
       Expr G = x*x;
 
-      Expr Sum  = w * (dx*u) * z ;
+      Expr Sum  = (dx*v) * (dx*u) + v*x;
+
+      Handle<CellFilterStub> domain = rcp(new CellFilterStub());
+      Handle<QuadratureFamilyStub> quad = rcp(new QuadratureFamilyStub(1));
+
+      Expr eqn = Integral(domain, Sum, quad);
 
       const SpectralExpr* se = dynamic_cast<const SpectralExpr*>(Sum.ptr().get());
-      SpectralBasis basis = se->getSpectralBasis();
+      if (se != 0)
+        {
+          SpectralBasis basis = se->getSpectralBasis();
 
-      for(int i=0; i< basis.nterms(); i++)
-        cout << se->getCoeff(i) << endl;
+          for(int i=0; i< basis.nterms(); i++)
+            cout << se->getCoeff(i) << endl;
+        }
 
+      cout << Sum << endl << endl; 
 
-      Expr J = Sum + SE1; 
-      cout << J << endl; 
+      cout << eqn << endl << endl; 
+
 
     }
   
