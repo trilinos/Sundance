@@ -29,8 +29,6 @@
 /* @HEADER@ */
 
 #include "SundanceSpectralBasis.hpp"
-#include "/auto/rcf-15/gsaad/C++sfem_pol/cijk.h"
-#include "/auto/rcf-15/gsaad/C++sfem_pol/chaos.h"
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"

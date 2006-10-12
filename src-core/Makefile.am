@@ -254,14 +254,12 @@ $(top_srcdir)/src-core/SymbolicTransformations/SundanceProductTransformationSequ
 $(top_srcdir)/src-core/SymbolicTransformations/SundanceStdProductTransformations.cpp
 
 SUNDANCE_SPECTRAL_H = \
-$(top_srcdir)/src-core/Spectral/SundanceDummy.hpp \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralBasis.hpp \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.hpp 
 
 SUNDANCE_SPECTRAL = \
-$(top_srcdir)/src-core/Spectral/SundanceDummy.cpp \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralBasis.cpp \
- $(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.cpp 
+$(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.cpp 
 
 SUNDANCE_TESTUTILITIES_H = \
 $(top_srcdir)/src-core/TestingUtilities/SundanceADBasis.hpp \

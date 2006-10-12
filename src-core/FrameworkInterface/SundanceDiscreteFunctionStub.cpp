@@ -30,6 +30,7 @@
 
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceSpectralExpr.hpp"
 
 
 using namespace SundanceCore::Internal;
@@ -37,7 +38,7 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 DiscreteFunctionStub::DiscreteFunctionStub(const string& name, int nElems,
-                          const RefCountPtr<DiscreteFuncDataStub>& data)
+                                           const RefCountPtr<DiscreteFuncDataStub>& data)
 	: ListExpr(), data_(data)
 {
   for (int i=0; i<nElems; i++)
@@ -51,7 +52,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name, int nElems,
 
 
 DiscreteFunctionStub::DiscreteFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems,
-                                         const RefCountPtr<const DiscreteFuncDataStub>& data)
+                                           const RefCountPtr<DiscreteFuncDataStub>& data)
   : ListExpr(), data_(data)
 {
   int counter = 0;
@@ -61,11 +62,11 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name, const SpectralBas
       Array<Expr> Coeffs(sbasis.nterms());
 
       for(int n=0; n< sbasis.nterms(); n++)
-	{
-	  suffix = "[" + Teuchos::toString(counter) + "]";
-	  Coeffs[n] = new DiscreteFuncElement(data, name, suffix, counter);
-	  counter++;
-	}
+        {
+          suffix = "[" + Teuchos::toString(counter) + "]";
+          Coeffs[n] = new DiscreteFuncElement(data, name, suffix, counter);
+          counter++;
+        }
 
       append(new SpectralExpr(sbasis, Coeffs));
     }
@@ -73,7 +74,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name, const SpectralBas
 
 
 DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& names, int nElems,
-                          const RefCountPtr<DiscreteFuncDataStub>& data)
+                                           const RefCountPtr<DiscreteFuncDataStub>& data)
 	: ListExpr(), data_(data)
 {
   TEST_FOR_EXCEPTION(names.size() != nElems,
@@ -88,8 +89,9 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& names, int nElem
 }
 
 
-DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name, const SpectralBasis& sbasis, int nElems,
-                                         const RefCountPtr<const DiscreteFuncDataStub>& data)
+DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& names, 
+                                           const SpectralBasis& sbasis, int nElems,
+                                           const RefCountPtr<DiscreteFuncDataStub>& data)
   : ListExpr(), data_(data)
 {
 
@@ -97,20 +99,20 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name, const Spec
   for (int i=0; i<nElems; i++)
     {
       TEST_FOR_EXCEPTION(names.size() != nElems,
-			 RuntimeError,
-			 "mismatch between size of names array=" << names 
-			 << " and specified size=" << nElems);
-
+                         RuntimeError,
+                         "mismatch between size of names array=" << names 
+                         << " and specified size=" << nElems);
+      
       string suffix;
       Array<Expr> Coeffs(sbasis.nterms());
-
+      
       for(int n=0; n< sbasis.nterms(); n++)
-	{
-	  suffix = "[" + Teuchos::toString(n) + "]";
-	  Coeffs[n] = new DiscreteFuncElement(data, name, suffix, elemCounter);
-	  elemCounter++;
-	}
-
+        {
+          suffix = "[" + Teuchos::toString(n) + "]";
+          Coeffs[n] = new DiscreteFuncElement(data, names[i], suffix, elemCounter);
+          elemCounter++;
+        }
+            
       append(new SpectralExpr(sbasis, Coeffs));
     }
 }

@@ -31,12 +31,15 @@
 #ifndef SUNDANCE_SPECTRALBASIS_H
 #define SUNDANCE_SPECTRALBASIS_H
 
-#include "/auto/rcf-15/gsaad/C++sfem_pol/cijk.h"
-#include "/auto/rcf-15/gsaad/C++sfem_pol/chaos.h"
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceMap.hpp"
+
+#include "cijk.h"
+#include "chaos.h"
+
+
 
 using namespace std;
 using namespace SundanceUtils;
@@ -52,7 +55,6 @@ namespace SundanceCore
     int order_;
     int maxterms_;
     RefCountPtr<cijk> cijk_;
-    
   public:
     /** Construct a full order basis */
     SpectralBasis(int dim, int order);

@@ -41,7 +41,7 @@ BUILD_DIR=`pwd`
 CXXFLAGS="-Wall -O0 -g" \
 --with-trilinos=$HOME/Software/Math/trilinos-6.0.18/LINUX-DEBUG \
 --with-install="/usr/bin/install -c -p" \
---disable-python \
+--enable-python \
 --disable-cxxtests \
 --disable-cxxexamples \
 --disable-lowleveltests \

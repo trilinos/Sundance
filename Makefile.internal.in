@@ -145,6 +145,7 @@ CORE_INCLUDE_PATH =  \
 -I@abs_top_srcdir@/src-core/InternalExprs \
 -I@abs_top_srcdir@/src-core/Evaluation \
 -I@abs_top_srcdir@/src-core/FrameworkInterface \
+-I@abs_top_srcdir@/src-core/Spectral \
 -I@abs_top_srcdir@/src-core/SymbolicTransformations \
 -I@abs_top_srcdir@/src-core/TestingUtilities 
 
