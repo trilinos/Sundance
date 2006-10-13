@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(CellFilterTest_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) $(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) $(SpectralPoisson1D_SOURCES) $(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
+SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(CellFilterTest_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) $(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) $(LinearVariationalTest_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) $(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) $(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -141,7 +141,7 @@ am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
 	OptPoisson1D$(EXEEXT) FunctionalTest$(EXEEXT) \
 	SimpleModelEvalTest$(EXEEXT) VorticityStokes2D$(EXEEXT) \
 	VorticityNavierStokes2D$(EXEEXT) CellFilterTest$(EXEEXT) \
-	SpectralPoisson1D$(EXEEXT)
+	SpectralPoisson1D$(EXEEXT) SpectralSqrt$(EXEEXT)
 am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) Kepler$(EXEEXT) \
 	Stokes2D$(EXEEXT)
@@ -210,6 +210,8 @@ SimpleModelEvalTest_OBJECTS = $(am_SimpleModelEvalTest_OBJECTS)
 am_SpectralPoisson1D_OBJECTS =  \
 	SpectralPoisson1D-SpectralPoisson1D.$(OBJEXT)
 SpectralPoisson1D_OBJECTS = $(am_SpectralPoisson1D_OBJECTS)
+am_SpectralSqrt_OBJECTS = SpectralSqrt-SpectralSqrt.$(OBJEXT)
+SpectralSqrt_OBJECTS = $(am_SpectralSqrt_OBJECTS)
 am_Stokes2D_OBJECTS = Stokes2D-Stokes2D.$(OBJEXT)
 Stokes2D_OBJECTS = $(am_Stokes2D_OBJECTS)
 am_TaylorHoodStokes2D_OBJECTS =  \
@@ -253,6 +255,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/RadDiff1D-RadDiff1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SpectralPoisson1D-SpectralPoisson1D.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SpectralSqrt-SpectralSqrt.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Stokes2D-Stokes2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/TaylorHoodStokes2D-TaylorHoodStokes2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/UserDefAlgebraic-UserDefAlgebraic.Po \
@@ -279,9 +282,9 @@ SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
 	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
-	$(SpectralPoisson1D_SOURCES) $(Stokes2D_SOURCES) \
-	$(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) \
-	$(VorticityNavierStokes2D_SOURCES) \
+	$(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) \
+	$(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) \
+	$(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 DIST_SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(CellFilterTest_SOURCES) $(Coupled1D_SOURCES) \
@@ -295,9 +298,9 @@ DIST_SOURCES = $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
 	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
-	$(SpectralPoisson1D_SOURCES) $(Stokes2D_SOURCES) \
-	$(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) \
-	$(VorticityNavierStokes2D_SOURCES) \
+	$(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) \
+	$(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) \
+	$(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -454,7 +457,7 @@ HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic UserDefAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
 FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D \
-CellFilterTest SpectralPoisson1D
+CellFilterTest SpectralPoisson1D SpectralSqrt
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 SpectralPoisson1D_SOURCES = $(srcdir)/SpectralPoisson1D.cpp
@@ -466,6 +469,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 SpectralPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 SpectralPoisson1D_LDADD = $(STD_FWK_LIBS) 
+SpectralSqrt_SOURCES = $(srcdir)/SpectralSqrt.cpp
+SpectralSqrt_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+SpectralSqrt_CXXFLAGS = $(STD_FWK_INCLUDES)
+SpectralSqrt_LDADD = $(STD_FWK_LIBS) 
 Poisson1D_SOURCES = $(srcdir)/Poisson1D.cpp
 Poisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -984,6 +996,9 @@ SimpleModelEvalTest$(EXEEXT): $(SimpleModelEvalTest_OBJECTS) $(SimpleModelEvalTe
 SpectralPoisson1D$(EXEEXT): $(SpectralPoisson1D_OBJECTS) $(SpectralPoisson1D_DEPENDENCIES) 
 	@rm -f SpectralPoisson1D$(EXEEXT)
 	$(CXXLINK) $(SpectralPoisson1D_LDFLAGS) $(SpectralPoisson1D_OBJECTS) $(SpectralPoisson1D_LDADD) $(LIBS)
+SpectralSqrt$(EXEEXT): $(SpectralSqrt_OBJECTS) $(SpectralSqrt_DEPENDENCIES) 
+	@rm -f SpectralSqrt$(EXEEXT)
+	$(CXXLINK) $(SpectralSqrt_LDFLAGS) $(SpectralSqrt_OBJECTS) $(SpectralSqrt_LDADD) $(LIBS)
 Stokes2D$(EXEEXT): $(Stokes2D_OBJECTS) $(Stokes2D_DEPENDENCIES) 
 	@rm -f Stokes2D$(EXEEXT)
 	$(CXXLINK) $(Stokes2D_LDFLAGS) $(Stokes2D_OBJECTS) $(Stokes2D_LDADD) $(LIBS)
@@ -1031,6 +1046,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadDiff1D-RadDiff1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpectralPoisson1D-SpectralPoisson1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpectralSqrt-SpectralSqrt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Stokes2D-Stokes2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TaylorHoodStokes2D-TaylorHoodStokes2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UserDefAlgebraic-UserDefAlgebraic.Po@am__quote@
@@ -1452,6 +1468,22 @@ SpectralPoisson1D-SpectralPoisson1D.obj: $(srcdir)/SpectralPoisson1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SpectralPoisson1D-SpectralPoisson1D.Po' tmpdepfile='$(DEPDIR)/SpectralPoisson1D-SpectralPoisson1D.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SpectralPoisson1D_CXXFLAGS) $(CXXFLAGS) -c -o SpectralPoisson1D-SpectralPoisson1D.obj `if test -f '$(srcdir)/SpectralPoisson1D.cpp'; then $(CYGPATH_W) '$(srcdir)/SpectralPoisson1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SpectralPoisson1D.cpp'; fi`
+
+SpectralSqrt-SpectralSqrt.o: $(srcdir)/SpectralSqrt.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SpectralSqrt_CXXFLAGS) $(CXXFLAGS) -MT SpectralSqrt-SpectralSqrt.o -MD -MP -MF "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Tpo" -c -o SpectralSqrt-SpectralSqrt.o `test -f '$(srcdir)/SpectralSqrt.cpp' || echo '$(srcdir)/'`$(srcdir)/SpectralSqrt.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Tpo" "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Po"; else rm -f "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SpectralSqrt.cpp' object='SpectralSqrt-SpectralSqrt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SpectralSqrt-SpectralSqrt.Po' tmpdepfile='$(DEPDIR)/SpectralSqrt-SpectralSqrt.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SpectralSqrt_CXXFLAGS) $(CXXFLAGS) -c -o SpectralSqrt-SpectralSqrt.o `test -f '$(srcdir)/SpectralSqrt.cpp' || echo '$(srcdir)/'`$(srcdir)/SpectralSqrt.cpp
+
+SpectralSqrt-SpectralSqrt.obj: $(srcdir)/SpectralSqrt.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SpectralSqrt_CXXFLAGS) $(CXXFLAGS) -MT SpectralSqrt-SpectralSqrt.obj -MD -MP -MF "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Tpo" -c -o SpectralSqrt-SpectralSqrt.obj `if test -f '$(srcdir)/SpectralSqrt.cpp'; then $(CYGPATH_W) '$(srcdir)/SpectralSqrt.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SpectralSqrt.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Tpo" "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Po"; else rm -f "$(DEPDIR)/SpectralSqrt-SpectralSqrt.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/SpectralSqrt.cpp' object='SpectralSqrt-SpectralSqrt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SpectralSqrt-SpectralSqrt.Po' tmpdepfile='$(DEPDIR)/SpectralSqrt-SpectralSqrt.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SpectralSqrt_CXXFLAGS) $(CXXFLAGS) -c -o SpectralSqrt-SpectralSqrt.obj `if test -f '$(srcdir)/SpectralSqrt.cpp'; then $(CYGPATH_W) '$(srcdir)/SpectralSqrt.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/SpectralSqrt.cpp'; fi`
 
 Stokes2D-Stokes2D.o: $(srcdir)/Stokes2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Stokes2D_CXXFLAGS) $(CXXFLAGS) -MT Stokes2D-Stokes2D.o -MD -MP -MF "$(DEPDIR)/Stokes2D-Stokes2D.Tpo" -c -o Stokes2D-Stokes2D.o `test -f '$(srcdir)/Stokes2D.cpp' || echo '$(srcdir)/'`$(srcdir)/Stokes2D.cpp; \

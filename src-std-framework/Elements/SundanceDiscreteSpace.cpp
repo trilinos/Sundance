@@ -96,6 +96,51 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 }
 
 
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
+                             const SpectralBasis& spBasis,
+                             const VectorType<double>& vecType)
+  : map_(),
+    mesh_(mesh), 
+    basis_(replicate(basis, spBasis.nterms())),
+    regions_(maximalRegions(basis_.size())),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  init();
+}
+
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+                             const SpectralBasis& spBasis,
+                             const VectorType<double>& vecType)
+  : map_(), 
+    mesh_(mesh), 
+    basis_(replicate(basis, spBasis.nterms())),
+    regions_(maximalRegions(basis_.size())),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  init();
+}
+
+
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+                             const SpectralBasis& spBasis,
+                             const Array<Set<CellFilter> >& regions,
+                             const VectorType<double>& vecType)
+  : map_(), 
+    mesh_(mesh), 
+    basis_(replicate(basis, spBasis.nterms())),
+    regions_(regions),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  init();
+}
+
+
 
 void DiscreteSpace::init()
 {

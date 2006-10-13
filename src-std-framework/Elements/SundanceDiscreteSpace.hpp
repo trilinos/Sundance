@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceBasisFamily.hpp"
+#include "SundanceSpectralBasis.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFVectorSpace.hpp"
@@ -74,6 +75,19 @@ namespace SundanceStdFwk
                   const RefCountPtr<DOFMapBase>& map,
                   const VectorType<double>& vecType);
 
+    /** */
+    DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
+                  const SpectralBasis& spBasis,
+                  const VectorType<double>& vecType);
+    /** */
+    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+                  const SpectralBasis& spBasis,
+                  const VectorType<double>& vecType);
+    /** */
+    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+                  const SpectralBasis& spBasis,
+                  const Array<Set<CellFilter> >& regions,
+                  const VectorType<double>& vecType);
     /** */
     const RefCountPtr<DOFMapBase>& map() const {return map_;}
 

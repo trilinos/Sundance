@@ -88,7 +88,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
   Expr fixedFieldValues;
 
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0),
+    = rcp(new EquationSet(eqn, bc, tuple(test.flattenSpectral()), tuple(unk.flattenSpectral()), tuple(u0),
                           unkParams, unkParamValues,
                           fixedParams, fixedParamValues,
                           tuple(fixedFields), tuple(fixedFieldValues)));
@@ -130,7 +130,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
   Expr fixedFieldValues;
 
   RefCountPtr<EquationSet> eqnSet 
-    = rcp(new EquationSet(eqn, bc, tuple(test), tuple(unk), tuple(u0), 
+    = rcp(new EquationSet(eqn, bc, tuple(test.flattenSpectral()), tuple(unk.flattenSpectral()), tuple(u0), 
                           params, paramVals,
                           fixedParams, fixedParamValues,
                           tuple(fixedFields), tuple(fixedFieldValues)));
