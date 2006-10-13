@@ -7,6 +7,7 @@
   // Sundance includes
 #include "SundanceExpr.hpp"
 #include "SundanceUnknownFunction.hpp"
+#include "SundanceSpectralBasis.hpp"
 #include "SundanceTestFunction.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceDerivative.hpp"
@@ -56,6 +57,7 @@ namespace SundanceCore
     
     /** Return complex conjugate */
     Expr conj() const ;
+
   };
 
   %extend Expr
@@ -72,7 +74,17 @@ namespace SundanceCore
       return self->toXML().toString();
     }
 
-   
+    /* Return the Spectral Basis */
+    SpectralBasis getSpectralBasis() const
+    {
+      return SundanceCore::getSpectralBasis(*self);
+    }
+
+    /* Return the coefficient of the nth spectral basis term */
+    Expr getSpectralCoeff(int n) const
+    {
+      return SundanceCore::getSpectralCoeff(n, *self);
+    }
 
     double integral(const SundanceStdFwk::CellFilter& domain,
                     const SundanceStdMesh::Mesh& mesh,
@@ -328,13 +340,21 @@ namespace SundanceCore
     return new SundanceStdFwk::UnknownFunction(b, name);
   }
   %}
-
 %inline %{
-  /* Create a test function */
-  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b,
-                                      const std::string& name)
+  /* Create an unknown function */
+  SundanceCore::Expr makeUnknownFunction(const SundanceStdFwk::BasisFamily& b,
+                                         const SundanceCore::SpectralBasis& sb,
+                                         const std::string& name)
   {
-    return new SundanceStdFwk::TestFunction(b, name);
+    return new SundanceStdFwk::UnknownFunction(b, sb, name);
+  }
+  %}
+%inline %{
+  /* Create an unknown function */
+  SundanceCore::Expr makeUnknownFunction(const SundanceStdFwk::BasisFamily& b,
+                                         const SundanceCore::SpectralBasis& sb)
+  {
+    return new SundanceStdFwk::UnknownFunction(b, sb);
   }
   %}
 
@@ -346,6 +366,17 @@ namespace SundanceCore
   }
   %}
 
+
+%inline %{
+  /* Create a test function */
+  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b,
+                                      const std::string& name)
+  {
+    return new SundanceStdFwk::TestFunction(b, name);
+  }
+  %}
+
+
 %inline %{
   /* Create a test function */
   SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b)
@@ -354,6 +385,23 @@ namespace SundanceCore
   }
   %}
 
+%inline %{
+  /* Create an unknown function */
+  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b,
+                                      const SundanceCore::SpectralBasis& sb,
+                                      const std::string& name)
+  {
+    return new SundanceStdFwk::TestFunction(b, sb, name);
+  }
+  %}
+%inline %{
+  /* Create an unknown function */
+  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b,
+                                      const SundanceCore::SpectralBasis& sb)
+  {
+    return new SundanceStdFwk::TestFunction(b, sb);
+  }
+  %}
 
 %inline %{
   /* Create a coordinate expression */

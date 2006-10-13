@@ -118,6 +118,16 @@ namespace SundanceStdFwk
                   const SundanceStdFwk::BasisArray& basis,
                   const TSFExtended::VectorType<double>& vecType);
     /* */
+    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
+                  const BasisFamily& basis,
+                  const SpectralBasis& sb,
+                  const TSFExtended::VectorType<double>& vecType);
+    /* */
+    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
+                  const SundanceStdFwk::BasisArray& basis,
+                  const SpectralBasis& sb,
+                  const TSFExtended::VectorType<double>& vecType);
+    /* */
     ~DiscreteSpace();
 
     /* */

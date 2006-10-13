@@ -3,6 +3,7 @@
 #include "SundanceIntegral.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceSpectralBasis.hpp"
+#include "SundanceHermiteSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceTestFunctionStub.hpp"
@@ -27,7 +28,7 @@ int main(int argc, void** argv)
       int ndim = 2;
       int order = 2;
 
-      SpectralBasis SB(ndim, order);
+      SpectralBasis SB = new HermiteSpectralBasis(ndim, order);
 
       Expr u = new UnknownFunctionStub("u", SB);
       Expr v = new TestFunctionStub("v", SB);

@@ -94,6 +94,9 @@
 #include "SundanceP1NC.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 
+/* Spectral */
+#include "SundanceHermiteSpectralBasis.hpp"
+
 /* Problem level classes */
 #include "SundanceLinearProblem.hpp"
 #include "SundanceL2Projector.hpp"

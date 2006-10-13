@@ -58,6 +58,8 @@ namespace SundanceCore
   public:
     /** Constructor*/
     SpectralExpr (const SpectralBasis& sbasis, const Array<Expr>& coeffs);
+    /** Constructor*/
+    SpectralExpr (const SpectralBasis& sbasis, const Expr& coeffs);
     
     /** virtual destructor */
     virtual ~SpectralExpr() {;}
@@ -93,6 +95,13 @@ namespace SundanceCore
     
 
   };
+
+  /** \relates Expr */
+  Expr getSpectralCoeff(int i, const Expr& e);
+
+  /** */
+  SpectralBasis getSpectralBasis(const Expr& e) ;
+
 }
 
 #endif

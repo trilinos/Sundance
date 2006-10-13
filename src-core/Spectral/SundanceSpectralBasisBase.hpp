@@ -28,15 +28,14 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SPECTRALBASIS_H
-#define SUNDANCE_SPECTRALBASIS_H
+#ifndef SUNDANCE_SPECTRALBASISBASE_H
+#define SUNDANCE_SPECTRALBASISBASE_H
 
 #include "SundanceDefs.hpp"
-#include "TSFHandle.hpp"
-#include "TSFHandleable.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceSpectralBasisBase.hpp"
+#include "TSFHandleable.hpp"
+#include "SundanceMap.hpp"
 
 
 
@@ -45,42 +44,34 @@ using namespace SundanceUtils;
 
 namespace SundanceCore
 {
-  /** Doxygen doc for SpectralBasis */
-  class SpectralBasis : public TSFExtended::Handle<SpectralBasisBase>
+  /** Base class for spectral bases. */
+  class SpectralBasisBase : public TSFExtended::Handleable<SpectralBasisBase>
   {
   public:
-    /* boilerplate handle ctors */
-    HANDLE_CTORS(SpectralBasis, SpectralBasisBase);
+    /** Construct a basis */
+    SpectralBasisBase() {;}
+    
+    /** virtual dtor */
+    virtual ~SpectralBasisBase() {;}
 
-    /** Return the dim of the Spectral Basis */
-    int getDim() const {return ptr()->getDim();}
+    /** Return the dimension of the Spectral Basis */
+    virtual int getDim() const = 0 ;
 
     /** Return the order of the Spectral Basis */
-    int getOrder() const {return ptr()->getOrder();}
+    virtual int getOrder() const = 0 ;
 
     /** Return the maximum number of terms */
-    int nterms() const {return ptr()->nterms();}
+    virtual int nterms() const = 0 ;
     
     /** Return the basis element stored in the basis array index */
-    int getElement(int i) const {return ptr()->getElement(i);}
-    
+    virtual int getElement(int i) const = 0 ;
+
+    /** Write a description to a string */
+    virtual string toString() const = 0 ;
+
     /** expectation operator */
-    double expectation(int i, int j, int k) const 
-    {return ptr()->expectation(i,j,k);}
-
-    /** Write to a string */
-    string toString() const {return ptr()->toString();}
+    virtual double expectation(int i, int j, int k) = 0 ; 
   };
-}
-
-namespace std
-{
-  /** \relates  SundanceCore::SpectralBasis */
-  inline ostream& operator<<(ostream& os, const SundanceCore::SpectralBasis& s)
-  {
-    os << s.toString();
-    return os;
-  }
 }
 
 #endif

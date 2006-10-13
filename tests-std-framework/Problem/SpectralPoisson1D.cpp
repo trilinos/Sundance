@@ -64,7 +64,7 @@ int main(int argc, void** argv)
       int ndim = 2;
       int order = 2;
 
-      SpectralBasis sbasis(ndim, order); 
+      SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
 
       cout << "created the spectral basis" << endl;
 
@@ -119,25 +119,6 @@ int main(int argc, void** argv)
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-
-#ifdef BLARF      
-      cout << "row map = " << endl;
-      prob.rowMap(0)->print(cout);
-
-
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      cout << "rhs = " << endl << prob.getRHS() << endl;
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      cout << "matrix = " << endl << prob.getOperator() << endl;
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-      MPIComm::world().synchronize();
-#endif
-
       Expr soln = prob.solve(solver);
 
       TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
@@ -146,7 +127,7 @@ int main(int argc, void** argv)
 
       Expr zz = Integral(interior, soln[0], quad);
       double totalU = evaluateIntegral(mesh, zz);
-      cerr << "total vorticity = " << totalU << endl;
+      cerr << "integral(u[0]) = " << totalU << endl;
 
       Expr exactSoln = x*(x-2.0);
       Expr err = pow(soln[0] - exactSoln, 2.0);

@@ -59,6 +59,20 @@ SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Array<Expr>& coeff
   sbasis_ = rcp(new SpectralBasis(sbasis));
 }
 
+
+SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Expr& coeffs)
+  : ExprBase(), 
+    coeffs_(),
+    sbasis_()
+
+{
+  int nterms = sbasis.nterms();
+  coeffs_.resize(nterms);
+  for (int i=0; i<nterms; i++)
+    coeffs_[i] = coeffs[i];
+  sbasis_ = rcp(new SpectralBasis(sbasis));
+}
+
 SpectralBasis SpectralExpr::getSpectralBasis() const
 { 
   return *sbasis_;
@@ -139,4 +153,30 @@ XMLObject SpectralExpr::toXML() const
       rtn.addChild(coeffs_[i].toXML());
     }
   return rtn;
+}
+
+
+namespace SundanceCore
+{
+  /** */
+  Expr getSpectralCoeff(int i, const Expr& e)
+  {
+    const SpectralExpr* s 
+      = dynamic_cast<const SpectralExpr*>(e[0].ptr().get());
+    TEST_FOR_EXCEPTION(s!=0, RuntimeError,
+                       "getSpectralCoeff() called on non-spectral expr "
+                       << e.toString());
+    return s->getCoeff(i);
+  }
+
+  /** */
+  SpectralBasis getSpectralBasis(const Expr& e) 
+  {
+    const SpectralExpr* s 
+      = dynamic_cast<const SpectralExpr*>(e[0].ptr().get());
+    TEST_FOR_EXCEPTION(s!=0, RuntimeError,
+                       "getSpectralBasis() called on non-spectral expr "
+                       << e.toString());
+    return s->getSpectralBasis();
+  }
 }

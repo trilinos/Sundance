@@ -49,6 +49,8 @@
 
 %include Basis.i
 
+%include Spectral.i
+
 %include Symbolics.i
 
 %include Integral.i

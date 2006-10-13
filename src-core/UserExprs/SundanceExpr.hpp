@@ -277,8 +277,6 @@ namespace SundanceCore
       /** */
       double getParameterValue() const ;
 
-
-
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
      

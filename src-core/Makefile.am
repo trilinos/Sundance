@@ -257,11 +257,13 @@ SUNDANCE_SPECTRAL_H = \
 $(top_srcdir)/src-core/Spectral/chaos.h \
 $(top_srcdir)/src-core/Spectral/VECMAT.h \
 $(top_srcdir)/src-core/Spectral/cijk.h \
+$(top_srcdir)/src-core/Spectral/SundanceHermiteSpectralBasis.hpp \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralBasis.hpp \
+$(top_srcdir)/src-core/Spectral/SundanceSpectralBasisBase.hpp \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.hpp 
 
 SUNDANCE_SPECTRAL = \
-$(top_srcdir)/src-core/Spectral/SundanceSpectralBasis.cpp \
+$(top_srcdir)/src-core/Spectral/SundanceHermiteSpectralBasis.cpp \
 $(top_srcdir)/src-core/Spectral/SundanceSpectralExpr.cpp 
 
 SUNDANCE_TESTUTILITIES_H = \

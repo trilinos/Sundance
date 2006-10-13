@@ -68,7 +68,7 @@ int main(int argc, void** argv)
       /* Create the Spectral Basis */
       int ndim = 1;
       int order = 2;
-      SpectralBasis sbasis(ndim, order); 
+      SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
