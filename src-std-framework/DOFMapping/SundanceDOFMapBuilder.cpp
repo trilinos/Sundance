@@ -38,6 +38,7 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
+#include "SundanceCFMeshPair.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -62,6 +63,13 @@ static Time& cellFilterReductionTimer()
 {
   static RefCountPtr<Time> rtn 
     = TimeMonitor::getNewTimer("cell filter reduction"); 
+  return *rtn;
+}
+
+static Time& findFuncDomainTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("finding func domains"); 
   return *rtn;
 }
 
@@ -91,12 +99,12 @@ RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   TimeMonitor timer(DOFBuilderCtorTimer());
   RefCountPtr<DOFMapBase> rtn;
 
-  if (allowNodalMap() && hasOmnipresentNodalMap(basis, filters))
+  if (allowNodalMap() && hasOmnipresentNodalMap(basis, mesh, filters))
     {
       CellFilter maxCells = getMaxCellFilter(filters);
       rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells));
     }
-  else if (allFuncsAreOmnipresent(filters))
+  else if (allFuncsAreOmnipresent(mesh, filters))
     {
       CellFilter maxCells = getMaxCellFilter(filters);
       rtn = rcp(new MixedDOFMap(mesh, basis, maxCells));
@@ -105,6 +113,136 @@ RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
     {
       TEST_FOR_EXCEPT(true);
     }
+  return rtn;
+}
+
+
+
+
+void DOFMapBuilder
+::getSubdomainUnkFuncMatches(const EquationSet& eqn,
+                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap)
+{
+  fmap.resize(eqn.numUnkBlocks());
+  
+  for (unsigned int r=0; r<eqn.numRegions(); r++)
+    {
+      CellFilter subreg = eqn.region(r);
+      Set<int> funcs = eqn.unksOnRegion(r).setUnion(eqn.bcUnksOnRegion(r));
+      for (Set<int>::const_iterator i=funcs.begin(); i!=funcs.end(); i++)
+        {
+          int block = eqn.blockForUnkID(*i);
+          if (fmap[block].containsKey(subreg))
+            {
+              fmap[block][subreg].put(*i);
+            }
+          else
+            {
+              fmap[block].put(subreg, makeSet(*i));
+            }
+        }
+    }
+}
+
+void DOFMapBuilder
+::getSubdomainVarFuncMatches(const EquationSet& eqn,
+                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap)
+{
+  fmap.resize(eqn.numVarBlocks());
+  
+  for (unsigned int r=0; r<eqn.numRegions(); r++)
+    {
+      CellFilter subreg = eqn.region(r);
+      Set<int> funcs = eqn.varsOnRegion(r).setUnion(eqn.bcVarsOnRegion(r));
+      for (Set<int>::const_iterator i=funcs.begin(); i!=funcs.end(); i++)
+        {
+          int block = eqn.blockForVarID(*i);
+          if (fmap[block].containsKey(subreg))
+            {
+              fmap[block][subreg].put(*i);
+            }
+          else
+            {
+              fmap[block].put(subreg, makeSet(*i));
+            }
+        }
+    }
+}
+
+Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
+::funcDomains(const Mesh& mesh,
+              const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
+              SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap)
+{
+  TimeMonitor timer(findFuncDomainTimer());
+  Array<Array<CellFilter> > filters(mesh.spatialDim()+1);
+  Array<Array<Set<int> > > funcs(mesh.spatialDim()+1);
+
+  for (SundanceUtils::Map<CellFilter, Set<int> >::const_iterator 
+         i=fmap.begin(); i!=fmap.end(); i++)
+    {
+      int d = i->first.dimension(mesh);
+      filters[d].append(i->first);
+      funcs[d].append(i->second);
+    }
+  Array<Array<CFMeshPair> > tmp(mesh.spatialDim()+1);
+  for (unsigned int d=0; d<tmp.size(); d++)
+    {
+      if (filters[d].size() != 0U)
+        tmp[d] = findDisjointFilters(filters[d], funcs[d], mesh);
+    }
+
+  for (unsigned int d=0; d<tmp.size(); d++)
+    {
+      for (unsigned int r=0; r<tmp[d].size(); r++)
+        {
+          for (unsigned int p=0; p<filters[d].size(); p++)
+            {
+              if (tmp[d][r].filter().isSubsetOf(filters[d][p], mesh)) 
+                {
+                  if (inputToChildrenMap.containsKey(filters[d][p]))
+                    {
+                      SundanceUtils::Map<Set<int>, CellSet>& m 
+                        = inputToChildrenMap[filters[d][p]];
+                      if (m.containsKey(tmp[d][r].funcs()))
+                        {
+                          m.put(tmp[d][r].funcs(), m[tmp[d][r].funcs()].setUnion(tmp[d][r].cellSet())); 
+                        }
+                      else
+                        {
+                          m.put(tmp[d][r].funcs(), tmp[d][r].cellSet()); 
+                        }
+                    }
+                  else
+                    {
+                      SundanceUtils::Map<Set<int>, CellSet> m;
+                      m.put(tmp[d][r].funcs(), tmp[d][r].cellSet());
+                      inputToChildrenMap.put(filters[d][p], m);
+                    }
+                }
+            }
+        }
+    }
+
+  Array<SundanceUtils::Map<Set<int>, CellFilter> > rtn(mesh.spatialDim()+1);
+  for (unsigned int d=0; d<tmp.size(); d++)
+    {
+      if (tmp[d].size() == 0U) continue;
+      for (unsigned int i=0; i<tmp[d].size(); i++)
+        {
+          const Set<int>& f = tmp[d][i].funcs();
+          const CellFilter& cf = tmp[d][i].filter();
+          if (rtn[d].containsKey(f))
+            {
+              rtn[d].put(f, rtn[d][f] + cf);
+            }
+          else
+            {
+              rtn[d].put(f, cf);
+            }
+        }
+    }
+
   return rtn;
 }
 
@@ -196,9 +334,10 @@ DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
 }
 
 bool DOFMapBuilder::hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
+                                           const Mesh& mesh,
                                            const Array<Set<CellFilter> >& filters)
 {
-  return hasNodalBasis(basis) && allFuncsAreOmnipresent(filters);
+  return hasNodalBasis(basis) && allFuncsAreOmnipresent(mesh, filters);
 }
                                            
 bool DOFMapBuilder::hasHomogeneousBasis(const Array<BasisFamily>& basis) 
@@ -221,18 +360,48 @@ bool DOFMapBuilder::hasNodalBasis(const Array<BasisFamily>& basis)
   return false;
 }
 
-bool DOFMapBuilder::allFuncsAreOmnipresent(const Array<Set<CellFilter> >& filters) 
+bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh, 
+                                           const Array<Set<CellFilter> >& filters) 
 {
+  Set<Set<CellFilter> > distinctSets;
   for (unsigned int i=0; i<filters.size(); i++)
     {
-      const Set<CellFilter>& cfs = filters[i];
-      if (cfs.size() != 1U) return false;
-      const CellFilter& cf = *cfs.begin();
-      if (0 == dynamic_cast<const MaximalCellFilter*>(cf.ptr().get()))
-        return false;
+      distinctSets.put(filters[i]);
+
     }
+  for (Set<Set<CellFilter> >::const_iterator 
+         iter=distinctSets.begin(); iter != distinctSets.end(); iter++)
+    {
+      if (!isWholeDomain(mesh, *iter)) return false;
+    }
+
+  cout << "all funcs are omnipresent" << endl;
   return true;
 }
+
+bool DOFMapBuilder::isWholeDomain(const Mesh& mesh, 
+                                  const Set<CellFilter>& filters) 
+{
+  CellFilter allMax = new MaximalCellFilter();
+  CellSet remainder = allMax.getCells(mesh);
+
+  for (Set<CellFilter>::const_iterator 
+         i=filters.begin(); i!=filters.end(); i++)
+    {
+      const CellFilter& cf = *i;
+      if (0 != dynamic_cast<const MaximalCellFilter*>(cf.ptr().get()))
+        {
+          return true;
+        }
+      if (cf.dimension(mesh) != mesh.spatialDim()) continue;
+      CellSet cells = cf.getCells(mesh);
+      remainder = remainder.setDifference(cells);
+      if (remainder.begin() == remainder.end()) return true;
+    }
+
+  return false;
+}
+
 
 
 CellFilter DOFMapBuilder::getMaxCellFilter(const Array<Set<CellFilter> >& filters) 
@@ -421,9 +590,11 @@ void DOFMapBuilder::markBCRows(int block)
   int ndof = rowMap_[block]->numLocalDOFs();
   Array<int>& isBC = *isBCRow_[block];
   for (int i=0; i<ndof; i++) isBC[i] = false;
-  Array<Array<int> > dofs(rowMap_[block]->nChunks());
-  Array<int> cellLID;
+
+  RefCountPtr<Array<int> > cellLID = rcp(new Array<int>());
+  Array<RefCountPtr<Array<int> > > cellBatches;
   const RefCountPtr<DOFMapBase>& rowMap = rowMap_[block];
+  Array<int> batchSubregionIndices;
 
   for (unsigned int r=0; r<eqn_->numRegions(); r++)
     {
@@ -434,11 +605,14 @@ void DOFMapBuilder::markBCRows(int block)
 
       int dim = region.dimension(mesh_);
       CellSet cells = region.getCells(mesh_);
-      cellLID.resize(0);
+      cellLID->resize(0);
       for (CellIterator c=cells.begin(); c != cells.end(); c++)
         {
-          cellLID.append(*c);
+          cellLID->append(*c);
         }
+      
+      rowMap->getHomogeneousCellBatches(cellLID, cellBatches,
+                                        batchSubregionIndices);
 
       /* find the functions that appear in BCs on this region */
       const Set<int>& allBcFuncs = eqn_->bcVarsOnRegion(r);
@@ -455,26 +629,32 @@ void DOFMapBuilder::markBCRows(int block)
           bcFuncID[f] = eqn_->reducedVarID(bcFuncID[f]);
         }
 
-      Array<int> nNodes;
-      rowMap->getDOFsForCellBatch(dim, cellLID, dofs, nNodes);
-      int offset = rowMap->lowestLocalDOF();
-      int high = offset + rowMap->numLocalDOFs();
-      if (cellLID.size()==0) continue;
-      for (unsigned int c=0; c<cellLID.size(); c++)
+      for (unsigned int s=0; s<cellBatches.size(); s++)
         {
-          for (int b=0; b<rowMap->nChunks(); b++)
+          int sub = batchSubregionIndices[s];
+          Array<Array<int> > dofs(rowMap->nBasisChunks(sub));
+          Array<int> nNodes;
+          if (cellBatches[s]->size()==0) continue;
+          rowMap->getDOFsForCellBatch(dim, *cellBatches[s], dofs, nNodes);
+          int offset = rowMap->lowestLocalDOF();
+          int high = offset + rowMap->numLocalDOFs();
+
+          for (unsigned int c=0; c<cellBatches[s]->size(); c++)
             {
-              int nFuncs = rowMap->nFuncs(b);
-              for (int n=0; n<nNodes[b]; n++)
+              for (int b=0; b<rowMap->nBasisChunks(sub); b++)
                 {
-                  for (unsigned int f=0; f<bcFuncID.size(); f++)
+                  int nFuncs = rowMap->nFuncs(sub, b);
+                  for (int n=0; n<nNodes[b]; n++)
                     {
-                      int chunk = rowMap->chunkForFuncID(bcFuncID[f]);
-                      if (chunk != b) continue;
-                      int funcOffset = rowMap->indexForFuncID(bcFuncID[f]);
-                      int dof = dofs[b][(c*nFuncs + funcOffset)*nNodes[b]+n];
-                      if (dof < offset || dof >= high) continue;
-                      (*isBCRow_[block])[dof-offset]=true;
+                      for (unsigned int f=0; f<bcFuncID.size(); f++)
+                        {
+                          int chunk = rowMap->chunkForFuncID(sub, bcFuncID[f]);
+                          if (chunk != b) continue;
+                          int funcOffset = rowMap->indexForFuncID(sub, b, bcFuncID[f]);
+                          int dof = dofs[b][(c*nFuncs + funcOffset)*nNodes[b]+n];
+                          if (dof < offset || dof >= high) continue;
+                          (*isBCRow_[block])[dof-offset]=true;
+                        }
                     }
                 }
             }

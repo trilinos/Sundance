@@ -70,10 +70,10 @@ def main():
   print 'exact solution = ', exactSoln
 
   diff = (uSoln-exactSoln).conj() * (uSoln - exactSoln)
+  errSq = diff.integral(interior, mesh, quad8)
 
-  print 'diff norm = ', diff
-
-  error = math.sqrt(diff.integral(interior, mesh, quad8))
+  print "errorSq = " , errSq
+  error = math.sqrt(errSq)
   print "error = " , error
 
   tol = 1.0e-8

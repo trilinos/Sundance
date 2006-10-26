@@ -52,18 +52,49 @@ DOFMapBase::DOFMapBase(const Mesh& mesh)
     ghostIndices_(rcp(new Array<int>()))
 {}
 
+void DOFMapBase::verifySubregionIndex(int subregionIndex) const
+{
+  TEST_FOR_EXCEPTION(subregionIndex < 0 
+                     || subregionIndex >= numHomogeneousSubregions(),
+                     RuntimeError,
+                     "Subregion index=" << subregionIndex
+                     << " out of range [0, " << numHomogeneousSubregions()
+                     << ")");
+}
+
+void DOFMapBase::verifyBasisChunkIndex(int subregionIndex,
+                                       int basisChunk) const
+{
+  verifySubregionIndex(subregionIndex);
+  TEST_FOR_EXCEPTION(basisChunk < 0 
+                     || basisChunk >= nBasisChunks(subregionIndex), 
+                     RuntimeError, 
+                     "Basis chunk index=" << basisChunk
+                     << " out of range [0, " << nBasisChunks(subregionIndex)
+                     << ") on subregion=" << subregionIndex);
+}
+
+
+
 void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
                                 int funcID,
                                 Array<int>& dofs) const
 {
   TimeMonitor timer(dofLookupTimer());
   
+  Array<int> tmp = tuple(cellLID);
+  RefCountPtr<Array<int> > cellLIDs = rcp(&tmp, false);
+  Array<RefCountPtr<Array<int> > > batches;
+  Array<int> subregionIndices;
+
+  getHomogeneousCellBatches(cellLIDs, batches, subregionIndices);
+  
   Array<Array<int> > allDofs;
   Array<int> nNodes;
-  getDOFsForCellBatch(cellDim, tuple(cellLID), allDofs, nNodes);
+  getDOFsForCellBatch(cellDim, *batches[0], allDofs, nNodes);
 
-  int chunkNumber = chunkForFuncID(funcID);
-  int funcIndex = indexForFuncID(funcID);
+  int chunkNumber = chunkForFuncID(subregionIndices[0], funcID);
+  int funcIndex = indexForFuncID(subregionIndices[0], chunkNumber, funcID);
   dofs.resize(nNodes[chunkNumber]);
   for (int i=0; i<nNodes[chunkNumber]; i++)
     {
@@ -84,78 +115,4 @@ Time& DOFMapBase::batchedDofLookupTimer()
     = TimeMonitor::getNewTimer("batched dof lookup"); 
   return *rtn;
 }
-
-
-
-void DOFMapBase::print(ostream& os) const
-{
-  int myRank = mesh().comm().getRank();
-
-  Tabs tabs;
-  int dim = mesh().spatialDim();
-
-  for (int p=0; p<mesh().comm().getNProc(); p++)
-    {
-      mesh().comm().synchronize();
-      mesh().comm().synchronize();
-      if (p == myRank)
-        {
-          os << tabs << 
-            "========= DOFMap on proc p=" << p << " =============" << endl;
-          for (int d=dim; d>=0; d--)
-            {
-              Tabs tabs1;
-              os << tabs1 << "dimension = " << d << endl;
-              for (int c=0; c<mesh().numCells(d); c++)
-                {
-                  Tabs tabs2;
-                  os << tabs2 << "Cell d=" << d << " LID=" << c << " GID=" 
-                     << mesh().mapLIDToGID(d, c);
-                  if (d==0) 
-                    {
-                      os << " x=" << mesh().nodePosition(c) << endl;
-                    }
-                  else 
-                    {
-                      Array<int> facetLIDs;
-                      Array<int> facetDirs;
-                      mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
-                      Array<int> facetGIDs(facetLIDs.size());
-                      for (unsigned int v=0; v<facetLIDs.size(); v++)
-                        {
-                          facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
-                        }
-                      os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
-                         << endl;
-                    }
-                  for (int b=0; b<nChunks(); b++)
-                    {
-                      for (unsigned int f=0; f<funcID(b).size(); f++)
-                        {
-                          Tabs tabs3;
-                          Array<int> dofs;
-                          getDOFsForCell(d, c, funcID(b)[f], dofs);
-                          os << tabs3 << "f=" << funcID(b)[f] << " " 
-                             << dofs << endl;
-                          if (false)
-                            {
-                              os << tabs3 << "{";
-                              for (unsigned int i=0; i<dofs.size(); i++)
-                                {
-                                  if (i != 0) os << ", ";
-                                  if (isLocalDOF(dofs[i])) os << "L";
-                                  else os << "R";
-                                }
-                              os << "}" << endl;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-      mesh().comm().synchronize();
-      mesh().comm().synchronize();
-    }
-}
-
 

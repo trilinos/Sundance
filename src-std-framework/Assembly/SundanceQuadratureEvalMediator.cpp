@@ -234,9 +234,10 @@ void QuadratureEvalMediator
 
    int nQuad = quadWgts().size();
    int myIndex = expr->myIndex();
-   int chunk = dofMap->chunkForFuncID(myIndex);
-   int funcIndex = dofMap->indexForFuncID(myIndex);
-   int nFuncs = dofMap->nFuncs(chunk);
+   int sub = 0;
+   int chunk = dofMap->chunkForFuncID(sub, myIndex);
+   int funcIndex = dofMap->indexForFuncID(sub, chunk, myIndex);
+   int nFuncs = dofMap->nFuncs(sub, chunk);
 
 
    for (unsigned int i=0; i<multiIndices.size(); i++)
@@ -323,6 +324,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
   double jFlops = CellJacobianBatch::totalFlops();
 
   RefCountPtr<Array<Array<double> > > cacheVals;
+  int sub = 0;
   if (mi.order()==0)
     {
       if (fCache().containsKey(f))
@@ -331,7 +333,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         }
       else
         {
-          cacheVals = rcp(new Array<Array<double> >(dofMap->nChunks()));
+          cacheVals = rcp(new Array<Array<double> >(dofMap->nBasisChunks(sub)));
           fCache().put(f, cacheVals);
         }
       fCacheIsValid().put(f, true);
@@ -344,7 +346,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         }
       else
         {
-          cacheVals = rcp(new Array<Array<double> >(dofMap->nChunks()));
+          cacheVals = rcp(new Array<Array<double> >(dofMap->nBasisChunks(sub)));
           dfCache().put(f, cacheVals);
         }
       dfCacheIsValid().put(f, true);
@@ -365,10 +367,10 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     }
 
   
-  for (int chunk=0; chunk<dofMap->nChunks(); chunk++)
+  for (int chunk=0; chunk<dofMap->nBasisChunks(sub); chunk++)
     {
-      const BasisFamily& basis = dofMap->basis(chunk);
-      int nFuncs = dofMap->nFuncs(chunk);
+      const BasisFamily& basis = dofMap->basis(sub, chunk);
+      int nFuncs = dofMap->nFuncs(sub, chunk);
 
       RefCountPtr<Array<double> > refBasisValues 
         = getRefBasisVals(basis, diffOrder);

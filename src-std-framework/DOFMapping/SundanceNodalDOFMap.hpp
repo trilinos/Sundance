@@ -32,7 +32,7 @@
 #define SUNDANCE_NODALDOFMAP_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceDOFMapBase.hpp"
+#include "SundanceSpatiallyHomogeneousDOFMapBase.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceBasisFamily.hpp"
@@ -52,7 +52,7 @@ namespace SundanceStdFwk
     /** 
      * 
      */
-    class NodalDOFMap : public DOFMapBase
+    class NodalDOFMap : public SpatiallyHomogeneousDOFMapBase
     {
     public:
       /** */
@@ -71,22 +71,36 @@ namespace SundanceStdFwk
                                Array<int>& nNodes) const ;
 
       /** */
-      int chunkForFuncID(int funcID) const ;
+      void 
+      getHomogeneousCellBatches(const RefCountPtr<Array<int> >& inputCells,
+                                Array<RefCountPtr<Array<int> > >& cellBatches,
+                                Array<int>& homogSubregionIndices) const ;
 
       /** */
-      int indexForFuncID(int funcID) const ;
+      int numHomogeneousSubregions() const {return 1;}
 
       /** */
-      int nFuncs(int chunk) const ;
+      const Set<int>& getFuncSet(int homogSubregionIndex) const ;
 
       /** */
-      int nChunks() const {return 1;}
+      int chunkForFuncID(int homogSubregionIndex, int funcID) const ;
 
       /** */
-      const BasisFamily& basis(int chunk) const ;
+      int indexForFuncID(int homogSubregionIndex, int basisChunk, int funcID) const ;
 
       /** */
-      const Array<int>& funcID(int chunk) const ;
+      int nFuncs(int homogSubregionIndex, int basisChunk) const ;
+
+      /** */
+      int nBasisChunks(int homogSubregionIndex) const {return 1;}
+
+      /** */
+      const BasisFamily& basis(int homogSubregionIndex, 
+                                       int basisChunk) const ;
+
+      /** */
+      const Array<int>& funcID(int homogSubregionIndex,
+                                       int basisChunk) const ;
 
 
     protected:
@@ -107,6 +121,7 @@ namespace SundanceStdFwk
       Array<int> nodeDofs_;
       BasisFamily basis_;
       Array<int> funcIDs_;
+      Set<int> funcSet_;
     };
   }
 }

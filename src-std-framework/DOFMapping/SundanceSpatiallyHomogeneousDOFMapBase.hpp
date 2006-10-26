@@ -28,91 +28,47 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_CFMESHPAIR_H
-#define SUNDANCE_CFMESHPAIR_H
+#ifndef SUNDANCE_SPATIALLYHOMOGENEOUSDOFMAP_H
+#define SUNDANCE_SPATIALLYHOMOGENEOUSDOFMAP_H
+
 
 #include "SundanceDefs.hpp"
-#include "SundanceCellFilter.hpp"
-#include "SundanceCellSet.hpp"
-#include "SundanceCellFilterBase.hpp"
+#include "SundanceDOFMapBase.hpp"
 
 namespace SundanceStdFwk
 {
   using namespace SundanceUtils;
   using namespace SundanceStdMesh;
   using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore::Internal;
-  using namespace Teuchos;
-  using namespace TSFExtended;
-
-  /** 
-   * 
-   */
-  class CFMeshPair 
+  namespace Internal
   {
-  public:
-    /** */
-    CFMeshPair();
-    /** */
-    CFMeshPair(const CellFilter& cf,
-               const Mesh& mesh,
-               const Set<int>& funcs);
+    using namespace Teuchos;
 
-    /** */
-    bool operator<(const CFMeshPair& other) const ;
+    /** 
+     * 
+     */
+    class SpatiallyHomogeneousDOFMapBase : public DOFMapBase
+    {
+    public:
+      /** */
+      SpatiallyHomogeneousDOFMapBase(const Mesh& mesh) ;
 
-    /** */
-    bool isEmpty() const ;
+      /** */
+      virtual ~SpatiallyHomogeneousDOFMapBase() {;}
 
-    /** */
-    const CellFilter& filter() const {return filter_;}
+      /** */
+      int numHomogeneousSubregions() const {return 1;}
 
-    /** */
-    const Mesh& mesh() const {return mesh_;}
+      /** */
+      void 
+      getHomogeneousCellBatches(const RefCountPtr<Array<int> >& inputCells,
+                                Array<RefCountPtr<Array<int> > >& cellBatches,
+                                Array<int>& homogSubregionIndices) const ;
 
-    /** */
-    const CellSet& cellSet() const {return cellSet_;}
-
-    /** */
-    const Set<int>& funcs() const {return funcs_;}
-
-    /** */
-    CFMeshPair setMinus(const CFMeshPair& other) const ;
-
-    /** */
-    CFMeshPair intersection(const CFMeshPair& other) const ;
-
-  private:
-    CellFilter filter_;
-    Mesh mesh_;
-    CellSet cellSet_;
-    Set<int> funcs_;
-  };
-
-  /** */
-  Array<CFMeshPair> resolvePair(const CFMeshPair& a, 
-                                const CFMeshPair& b);
-  /** */
-  Array<CFMeshPair> resolveSets(const Array<CFMeshPair>& s);
-
-  /** */
-  Array<CFMeshPair>
-  findDisjointFilters(const Array<CellFilter>& filters,
-                      const Array<Set<int> >& funcs,
-                      const Mesh& mesh);
-}
-
-
-namespace std
-{
-  inline ostream& operator<<(ostream& os, 
-                             const SundanceStdFwk::CFMeshPair& c)
-  {
-    os << c.filter().getCells(c.mesh());
-    return os;
+      /** */
+      void print(ostream& os) const ;
+    };
   }
 }
-
-
 
 #endif

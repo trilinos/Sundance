@@ -41,7 +41,6 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-
 static Time& nodalDOFCtorTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -52,7 +51,7 @@ static Time& nodalDOFCtorTimer()
 NodalDOFMap::NodalDOFMap(const Mesh& mesh, 
                          int nFuncs, 
                          const CellFilter& maxCellFilter)
-  : DOFMapBase(mesh),
+  : SpatiallyHomogeneousDOFMapBase(mesh),
     maxCellFilter_(maxCellFilter),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),
@@ -62,47 +61,74 @@ NodalDOFMap::NodalDOFMap(const Mesh& mesh,
     elemDofs_(nElems_ * nFuncs * nNodesPerElem_),
     nodeDofs_(mesh.numCells(0)*nFuncs_, -1),
     basis_(new Lagrange(1)),
-    funcIDs_(nFuncs)
+    funcIDs_(nFuncs),
+    funcSet_()
 {
-  for (int i=0; i<nFuncs_; i++) funcIDs_[i] = i;
+  for (int i=0; i<nFuncs_; i++) 
+    {
+      funcSet_.put(i);
+      funcIDs_[i] = i;
+    }
 
   init();
 }
 
-int NodalDOFMap::chunkForFuncID(int funcID) const 
+const Set<int>& NodalDOFMap::getFuncSet(int homogSubregionIndex) const 
 {
+  verifySubregionIndex(homogSubregionIndex);
+  return funcSet_;
+}
+
+void NodalDOFMap::getHomogeneousCellBatches(const RefCountPtr<Array<int> >& inputCells,
+                                            Array<RefCountPtr<Array<int> > >& cellBatches,
+                                            Array<int>& homogSubregionIndices) const
+{
+  homogSubregionIndices.resize(1);
+  cellBatches.resize(1);
+  homogSubregionIndices[0] = 0;
+  cellBatches[0] = inputCells;
+}
+
+int NodalDOFMap::chunkForFuncID(int homogSubregionIndex, int funcID) const
+{
+  verifySubregionIndex(homogSubregionIndex);
+
   TEST_FOR_EXCEPTION(funcID < 0 || funcID >=nFuncs_, RuntimeError,
                      "Invalid function ID = " << funcID << ". NFuncs="
                      << nFuncs_);
   return 0;
 }
 
-int NodalDOFMap::indexForFuncID(int funcID) const 
+int NodalDOFMap::indexForFuncID(int homogSubregionIndex, int basisChunk, int funcID) const
 {
+  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
+
   TEST_FOR_EXCEPTION(funcID < 0 || funcID >=nFuncs_, RuntimeError,
                      "Invalid function ID = " << funcID << ". NFuncs="
                      << nFuncs_);
   return funcID;
 }
 
-int NodalDOFMap::nFuncs(int chunk) const
+int NodalDOFMap::nFuncs(int homogSubregionIndex, int basisChunk) const
 {
-  TEST_FOR_EXCEPTION(chunk != 0, RuntimeError, 
-                     "Invalid chunk index " << chunk);
+  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
+
   return nFuncs_;
 } 
 
-const BasisFamily& NodalDOFMap::basis(int chunk) const
+const BasisFamily& NodalDOFMap::basis(int homogSubregionIndex, 
+                                      int basisChunk) const
 {
-  TEST_FOR_EXCEPTION(chunk != 0, RuntimeError, 
-                     "Invalid chunk index " << chunk);
+  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
+
   return basis_;
 }
 
-const Array<int>& NodalDOFMap::funcID(int chunk) const
+const Array<int>& NodalDOFMap::funcID(int homogSubregionIndex,
+                                      int basisChunk) const 
 {
-  TEST_FOR_EXCEPTION(chunk != 0, RuntimeError, 
-                     "Invalid chunk index " << chunk);
+  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
+
   return funcIDs_;
 }
 

@@ -118,12 +118,12 @@ void DiscreteFunctionData
   static Array<Array<int> > dofs;
   Array<int> nNodes;
 
-  localValues.resize(map->nChunks());
+  localValues.resize(map->nBasisChunks(0));
   map->getDOFsForCellBatch(cellDim, cellLID, dofs, nNodes);
 
   for (unsigned int b=0; b<nNodes.size(); b++)
     {
-      int nFuncs = map->nFuncs(b);
+      int nFuncs = map->nFuncs(0, b);
       localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
       ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
     }

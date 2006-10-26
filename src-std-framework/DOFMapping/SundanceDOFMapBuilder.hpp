@@ -36,6 +36,7 @@
 #include "SundanceEquationSet.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceCellFilter.hpp"
+#include "SundanceCFMeshPair.hpp"
 #include "SundanceMap.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
@@ -88,13 +89,18 @@ namespace SundanceStdFwk
                                              const Array<Set<CellFilter> >& filters) ;
 
       static bool hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
-                                  const Array<Set<CellFilter> >& filters) ;
+                                         const Mesh& mesh,
+                                         const Array<Set<CellFilter> >& filters) ;
 
       static bool hasHomogeneousBasis(const Array<BasisFamily>& basis) ;
 
       static bool hasNodalBasis(const Array<BasisFamily>& basis) ;
 
-      static bool allFuncsAreOmnipresent(const Array<Set<CellFilter> >& filters);
+      static bool allFuncsAreOmnipresent(const Mesh& mesh,
+                                         const Array<Set<CellFilter> >& filters);
+
+      static bool isWholeDomain(const Mesh& mesh,
+                                const Set<CellFilter>& filters);
 
       static CellFilter getMaxCellFilter(const Array<Set<CellFilter> >& filters);
 
@@ -116,6 +122,18 @@ namespace SundanceStdFwk
                              const Array<CellFilter>& regions,
                                       const Mesh& mesh);
         
+      static void getSubdomainUnkFuncMatches(const EquationSet& eqn,
+                                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap);
+        
+      static void getSubdomainVarFuncMatches(const EquationSet& eqn,
+                                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap);
+
+      static Array<SundanceUtils::Map<Set<int>, CellFilter> > 
+      funcDomains(const Mesh& mesh,
+                  const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
+                  SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap);
+
+
     private:
 
       static Set<CellFilter> reduceCellFilters(const Mesh& mesh,

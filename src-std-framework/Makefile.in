@@ -192,7 +192,8 @@ am__objects_2 = SundanceBasisFamilyBase.$(OBJEXT) \
 	SundanceUnknownFunctionData.$(OBJEXT)
 am__objects_3 = SundanceDOFMapBase.$(OBJEXT) \
 	SundanceDOFMapBuilder.$(OBJEXT) SundanceMixedDOFMap.$(OBJEXT) \
-	SundanceNodalDOFMap.$(OBJEXT)
+	SundanceNodalDOFMap.$(OBJEXT) \
+	SundanceSpatiallyHomogeneousDOFMapBase.$(OBJEXT)
 am__objects_4 = SundanceAssembler.$(OBJEXT) \
 	SundanceElementIntegral.$(OBJEXT) \
 	SundanceFunctionalEvaluator.$(OBJEXT) \
@@ -272,6 +273,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceQuadratureType.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceRefIntegral.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceSideCellFilter.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceStdFwkEvalMediator.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceSubsetCellFilter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceTestFunction.Po \
@@ -544,13 +546,15 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceBlock.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp \
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.hpp 
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.hpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.hpp 
 
 SUNDANCE_DOFMAPPING = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp \
-$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp 
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp 
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
@@ -944,6 +948,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceQuadratureType.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRefIntegral.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSideCellFilter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceStdFwkEvalMediator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSubsetCellFilter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTestFunction.Po@am__quote@
@@ -1705,6 +1710,22 @@ SundanceNodalDOFMap.obj: $(top_srcdir)/src-std-framework/DOFMapping/SundanceNoda
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceNodalDOFMap.Po' tmpdepfile='$(DEPDIR)/SundanceNodalDOFMap.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceNodalDOFMap.obj `if test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp'; fi`
+
+SundanceSpatiallyHomogeneousDOFMapBase.o: $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceSpatiallyHomogeneousDOFMapBase.o -MD -MP -MF "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Tpo" -c -o SundanceSpatiallyHomogeneousDOFMapBase.o `test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Tpo" "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Po"; else rm -f "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp' object='SundanceSpatiallyHomogeneousDOFMapBase.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Po' tmpdepfile='$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceSpatiallyHomogeneousDOFMapBase.o `test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp
+
+SundanceSpatiallyHomogeneousDOFMapBase.obj: $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceSpatiallyHomogeneousDOFMapBase.obj -MD -MP -MF "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Tpo" -c -o SundanceSpatiallyHomogeneousDOFMapBase.obj `if test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Tpo" "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Po"; else rm -f "$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp' object='SundanceSpatiallyHomogeneousDOFMapBase.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Po' tmpdepfile='$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceSpatiallyHomogeneousDOFMapBase.obj `if test -f '$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp'; fi`
 
 SundanceAssembler.o: $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceAssembler.o -MD -MP -MF "$(DEPDIR)/SundanceAssembler.Tpo" -c -o SundanceAssembler.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp; \

@@ -37,7 +37,7 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
-#include "SundanceDOFMapBase.hpp"
+#include "SundanceSpatiallyHomogeneousDOFMapBase.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -56,7 +56,7 @@ namespace SundanceStdFwk
      * every function is defined
      * on every cell in the mesh, but where functions may have different bases. 
      */
-    class MixedDOFMap : public DOFMapBase
+    class MixedDOFMap : public SpatiallyHomogeneousDOFMapBase
     {
     public:
       /** */
@@ -75,27 +75,33 @@ namespace SundanceStdFwk
                                        Array<int>& nNodes) const ;
 
       /** */
-      int chunkForFuncID(int funcID) const 
+      const Set<int>& getFuncSet(int homogSubregionIndex) const ;
+
+      /** */
+      int chunkForFuncID(int homogSubregionIndex, int funcID) const
       {return funcIDToChunkIndexMap_[funcID];}
 
       /** */
-      int indexForFuncID(int funcID) const 
+      int indexForFuncID(int homogSubregionIndex, int basisChunk, 
+                         int funcID) const 
       {return funcIDToFuncIndexMap_[funcID];}
       
       /** */
-      int nFuncs(int chunk) const 
-      {return chunkFuncIDs_[chunk].size();}
+      int nFuncs(int homogSubregionIndex, int basisChunk) const
+      {return chunkFuncIDs_[basisChunk].size();}
 
       /** */
-      int nChunks() const 
+      int nBasisChunks(int homogSubregionIndex) const 
       {return chunkFuncIDs_.size();}
 
       /** */
-      const BasisFamily& basis(int chunk) const 
-      {return chunkBasis_[chunk];}
+      const BasisFamily& basis(int homogSubregionIndex, 
+                               int basisChunk) const
+      {return chunkBasis_[basisChunk];}
 
       /** */
-      const Array<int>& funcID(int chunk) const 
+      const Array<int>& funcID(int subregionIndex, 
+                               int chunk) const 
       {return chunkFuncIDs_[chunk];}
       
 
@@ -223,6 +229,8 @@ namespace SundanceStdFwk
       /** */
       Array<Array<int> > hasBeenAssigned_;
 
+      /** */
+      Set<int> funcSet_;
     };
   }
 }

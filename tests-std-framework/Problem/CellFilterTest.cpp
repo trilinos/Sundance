@@ -30,6 +30,7 @@
 
 #include "Sundance.hpp"
 #include "SundanceCFMeshPair.hpp"
+#include "SundanceDOFMapBuilder.hpp"
 
 
 /** 
@@ -62,7 +63,7 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 100000;
+      int nx = 20;
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx, meshType);
       Mesh mesh = mesher.getMesh();
       for (int i=nx/3; i<nx/2; i++)
@@ -92,24 +93,44 @@ int main(int argc, void** argv)
       Set<int> fI = makeSet(0,1,2);
       Set<int> fA = makeSet(1);
       Set<int> fB = makeSet(2);
-      Set<int> fC = makeSet(3);
+      Set<int> fC = makeSet(2);
       Set<int> fD = makeSet(1);
       Set<int> fE = makeSet(2);
-      Set<int> fP = makeSet(4);
+      Set<int> fP = makeSet(0, 4);
 
-      Array<CFMeshPair> djf 
-        = findDisjointFilters(tuple(interior, C, D, E, A, B), 
-                              tuple(fI, fC, fD, fE, fA, fB), mesh);
+      SundanceUtils::Map<CellFilter, Set<int> > fmap;
+      fmap.put(interior, fI);
+      fmap.put(B, fB);
+      fmap.put(C, fC);
+      fmap.put(D, fD);
+      fmap.put(E, fE);
+      fmap.put(leftPoint, fP);
+      SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> > inputChildren;
+
+      Array<SundanceUtils::Map<Set<int>, CellFilter> >djf = DOFMapBuilder::funcDomains(mesh, fmap, inputChildren);
 
       cout << "disjoint filters: " << endl;
       if (mesh.numCells(1) < 1000)
         {
-          for (Array<CFMeshPair>::const_iterator i=djf.begin(); i!=djf.end(); i++)
+          for (int d=0; d<=mesh.spatialDim(); d++)
             {
-              cout << "cells = " << i->cellSet() 
-                   << ", funcs=" << i->funcs() << endl << endl;
+              cout << "dimension = " << d << endl;
+              for (SundanceUtils::Map<Set<int>, CellFilter>::const_iterator
+                     i=djf[d].begin(); i!=djf[d].end(); i++)
+                {
+                  cout << "cells = " << i->second.getCells(mesh)
+                       << ", funcs=" << i->first << endl << endl;
+                }
+            }
+
+          for (SundanceUtils::Map<CellFilter,SundanceUtils::Map<Set<int>, CellSet> >::const_iterator
+                 i=inputChildren.begin(); i!=inputChildren.end(); i++)
+            {
+              cout << "input filter = " << i->first
+                   << ", children = " << i->second << endl;
             }
         }
+
       
     }
 	catch(exception& e)

@@ -1377,6 +1377,9 @@ void Assembler::insertLocalMatrixBatch(int nCells,
   static Array<int> rows;
   static Array<int> cols;
 
+  int testSubregion = 0;
+  int unkSubregion = 0;
+
 
   if (verbosity() > VerbHigh)
     {
@@ -1396,11 +1399,11 @@ void Assembler::insertLocalMatrixBatch(int nCells,
       const RefCountPtr<DOFMapBase>& rowMap = rowMap_[br];
       int highestIndex = lowestRow_[br] + rowMap->numLocalDOFs();
       int lowestLocalRow = rowMap->lowestLocalDOF();
-      int testChunk = rowMap->chunkForFuncID(testID[t]);
-      int testFuncIndex = rowMap->indexForFuncID(testID[t]);
+      int testChunk = rowMap->chunkForFuncID(testSubregion, testID[t]);
+      int testFuncIndex = rowMap->indexForFuncID(testSubregion, testChunk, testID[t]);
       const Array<int>& testDOFs = testIndices[br][testChunk];
       SUNDANCE_VERB_EXTREME(tab1 << "test DOFs = " << testDOFs);
-      int nTestFuncs = rowMap->nFuncs(testChunk);
+      int nTestFuncs = rowMap->nFuncs(testSubregion, testChunk);
       int numTestNodes = nTestNodes[br][testChunk];
       int numRows = nCells * numTestNodes;
       const Array<int>& isBCRow = *(isBCRow_[br]);
@@ -1439,11 +1442,11 @@ void Assembler::insertLocalMatrixBatch(int nCells,
         {      
           int bc = unkBlock[u];
           const RefCountPtr<DOFMapBase>& colMap = colMap_[bc];
-          int unkChunk = colMap->chunkForFuncID(unkID[u]);
-          int unkFuncIndex = colMap->indexForFuncID(unkID[u]);
+          int unkChunk = colMap->chunkForFuncID(unkSubregion, unkID[u]);
+          int unkFuncIndex = colMap->indexForFuncID(unkSubregion, unkChunk,unkID[u]);
           const Array<int>& unkDOFs = unkIndices[bc][unkChunk];
           SUNDANCE_VERB_EXTREME(tab1 << "unk DOFs = " << unkDOFs);
-          int nUnkFuncs = colMap->nFuncs(unkChunk);
+          int nUnkFuncs = colMap->nFuncs(unkSubregion, unkChunk);
           int numUnkNodes = nUnkNodes[bc][unkChunk];
           cols.resize(nCells*numUnkNodes);
           int j=0;
@@ -1489,6 +1492,7 @@ void Assembler
   SUNDANCE_VERB_HIGH(tab << "inserting local vector values...");
   SUNDANCE_VERB_EXTREME(tab << "values are " << localValues);
 
+  int testSubregion = 0;
 
   for (unsigned int i=0; i<testID.size(); i++)
     {
@@ -1498,10 +1502,10 @@ void Assembler
       int br = testBlock[i];
       const RefCountPtr<DOFMapBase>& rowMap = rowMap_[br];
       int lowestLocalRow = rowMap->lowestLocalDOF();
-      int chunk = rowMap->chunkForFuncID(testID[i]);
-      int funcIndex = rowMap->indexForFuncID(testID[i]);
+      int chunk = rowMap->chunkForFuncID(testSubregion, testID[i]);
+      int funcIndex = rowMap->indexForFuncID(testSubregion, chunk, testID[i]);
       const Array<int>& dofs = testIndices[br][chunk];
-      int nFuncs = rowMap->nFuncs(chunk);
+      int nFuncs = rowMap->nFuncs(testSubregion, chunk);
       int nNodes = nTestNodes[br][chunk];
       const Array<int>& isBCRow = *(isBCRow_[br]);
       int r=0;
@@ -1650,6 +1654,8 @@ void Assembler::getGraph(int br, int bc,
         int highestRow = lowestRow_[br] + rowMap_[br]->numLocalDOFs();
 
         int nt = eqn_->numVars(br);
+        int testSubregion = 0;
+        int unkSubregion = 0;
         CellIterator iter=cells.begin();
         while (iter != cells.end())
           {
@@ -1681,18 +1687,18 @@ void Assembler::getGraph(int br, int bc,
                   {
                     for (int t=0; t<nt; t++)
                       {
-                        int tChunk = rowMap_[br]->chunkForFuncID(t);
-                        int nTestFuncs = rowMap_[br]->nFuncs(tChunk);
-                        int testFuncIndex = rowMap_[br]->indexForFuncID(t);
+                        int tChunk = rowMap_[br]->chunkForFuncID(testSubregion, t);
+                        int nTestFuncs = rowMap_[br]->nFuncs(testSubregion, tChunk);
+                        int testFuncIndex = rowMap_[br]->indexForFuncID(testSubregion, tChunk, t);
                         int nTestNodes = numTestNodes[tChunk];
                         const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                         for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = unksForTests[t][uit];
-                            int uChunk = colMap_[bc]->chunkForFuncID(u);
-                            int nUnkFuncs = colMap_[bc]->nFuncs(uChunk);
-                            int unkFuncIndex = colMap_[bc]->indexForFuncID(u);
+                            int uChunk = colMap_[bc]->chunkForFuncID(unkSubregion, u);
+                            int nUnkFuncs = colMap_[bc]->nFuncs(unkSubregion, uChunk);
+                            int unkFuncIndex = colMap_[bc]->indexForFuncID(unkSubregion, uChunk, u);
                             const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                             int nUnkNodes = numUnkNodes[uChunk];
                             for (int n=0; n<nTestNodes; n++)
@@ -1719,18 +1725,18 @@ void Assembler::getGraph(int br, int bc,
                   {
                     for (int t=0; t<nt; t++)
                       {
-                        int tChunk = rowMap_[br]->chunkForFuncID(t);
-                        int nTestFuncs = rowMap_[br]->nFuncs(tChunk);
-                        int testFuncIndex = rowMap_[br]->indexForFuncID(t);
+                        int tChunk = rowMap_[br]->chunkForFuncID(testSubregion, t);
+                        int nTestFuncs = rowMap_[br]->nFuncs(testSubregion, tChunk);
+                        int testFuncIndex = rowMap_[br]->indexForFuncID(testSubregion, tChunk,t);
                         int nTestNodes = numTestNodes[tChunk];
                         const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                         for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = bcUnksForTests[t][uit];
-                            int uChunk = colMap_[bc]->chunkForFuncID(u);
-                            int nUnkFuncs = colMap_[bc]->nFuncs(uChunk);
-                            int unkFuncIndex = colMap_[bc]->indexForFuncID(u);
+                            int uChunk = colMap_[bc]->chunkForFuncID(unkSubregion, u);
+                            int nUnkFuncs = colMap_[bc]->nFuncs(unkSubregion, uChunk);
+                            int unkFuncIndex = colMap_[bc]->indexForFuncID(unkSubregion, uChunk, u);
                             const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                             int nUnkNodes = numUnkNodes[uChunk];
                             for (int n=0; n<nTestNodes; n++)
@@ -1902,6 +1908,8 @@ void Assembler
 
       int nt = eqn_->numVars(br);
       CellIterator iter=cells.begin();
+      int uSub = 0;
+      int tSub = 0;
       while (iter != cells.end())
         {
           /* build a work set */
@@ -1933,18 +1941,18 @@ void Assembler
                 {
                   for (int t=0; t<nt; t++)
                     {
-                      int tChunk = rowMap_[br]->chunkForFuncID(t);
-                      int nTestFuncs = rowMap_[br]->nFuncs(tChunk);
-                      int testFuncIndex = rowMap_[br]->indexForFuncID(t);
+                      int tChunk = rowMap_[br]->chunkForFuncID(tSub, t);
+                      int nTestFuncs = rowMap_[br]->nFuncs(tSub, tChunk);
+                      int testFuncIndex = rowMap_[br]->indexForFuncID(tSub, tChunk, t);
                       int nTestNodes = numTestNodes[tChunk];
                       const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                       for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
                         {
                           Tabs tab2;
                           int u = unksForTests[t][uit];
-                          int uChunk = colMap_[bc]->chunkForFuncID(u);
-                          int nUnkFuncs = colMap_[bc]->nFuncs(uChunk);
-                          int unkFuncIndex = colMap_[bc]->indexForFuncID(u);
+                          int uChunk = colMap_[bc]->chunkForFuncID(uSub, u);
+                          int nUnkFuncs = colMap_[bc]->nFuncs(uSub, uChunk);
+                          int unkFuncIndex = colMap_[bc]->indexForFuncID(uSub, uChunk, u);
                           const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                           int nUnkNodes = numUnkNodes[uChunk];
                           for (int n=0; n<nTestNodes; n++)
@@ -1966,18 +1974,18 @@ void Assembler
                 {
                   for (int t=0; t<nt; t++)
                     {
-                      int tChunk = rowMap_[br]->chunkForFuncID(t);
-                      int nTestFuncs = rowMap_[br]->nFuncs(tChunk);
-                      int testFuncIndex = rowMap_[br]->indexForFuncID(t);
+                      int tChunk = rowMap_[br]->chunkForFuncID(tSub, t);
+                      int nTestFuncs = rowMap_[br]->nFuncs(tSub, tChunk);
+                      int testFuncIndex = rowMap_[br]->indexForFuncID(tSub, tChunk, t);
                       int nTestNodes = numTestNodes[tChunk];
                       const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                       for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
                         {
                           Tabs tab2;
                           int u = bcUnksForTests[t][uit];
-                          int uChunk = colMap_[bc]->chunkForFuncID(u);
-                          int nUnkFuncs = colMap_[bc]->nFuncs(uChunk);
-                          int unkFuncIndex = colMap_[bc]->indexForFuncID(u);
+                          int uChunk = colMap_[bc]->chunkForFuncID(uSub, u);
+                          int nUnkFuncs = colMap_[bc]->nFuncs(uSub, uChunk);
+                          int unkFuncIndex = colMap_[bc]->indexForFuncID(uSub, uChunk, u);
                           const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                           int nUnkNodes = numUnkNodes[uChunk];
                           for (int n=0; n<nTestNodes; n++)

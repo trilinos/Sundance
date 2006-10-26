@@ -229,7 +229,7 @@ bool Expr::tryMultiplyComplex(const Expr& L, const Expr& R,
     {
       if (Re(L).sameAs(Re(R)) && Im(L).sameAs(-Im(R)))
         {
-          rtn = Re(L)*Re(R) + Im(L)*Im(R);
+          rtn = Re(R)*Re(R) + Im(R)*Im(R);
         }
       else
         {

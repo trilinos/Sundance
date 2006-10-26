@@ -36,6 +36,7 @@
 #include "SundanceLabelCellPredicate.hpp"
 #include "SundanceNullCellFilterStub.hpp"
 #include "SundanceNullCellFilter.hpp"
+#include "SundanceTabs.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -218,6 +219,23 @@ bool CellFilter::isKnownDisjointWith(const CellFilter& other) const
   return false;
 }
 
+bool CellFilter::isSubsetOf(const CellFilter& other,
+                            const Mesh& mesh) const
+{
+  if (isKnownSubsetOf(other)) 
+    {
+      return true;
+    }
+  else
+    {
+      CellSet myCells = getCells(mesh);
+      CellSet yourCells = other.getCells(mesh);
+      CellSet inter = myCells.setIntersection(yourCells);
+      if (inter.begin() == inter.end()) return false;
+      CellSet diff = myCells.setDifference(inter);
+      return (diff.begin() == diff.end());
+    }
+}
 
 
 

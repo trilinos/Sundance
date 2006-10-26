@@ -73,30 +73,62 @@ namespace SundanceStdFwk
                                   Array<int>& dofs) const ;
 
       /** 
-       *
+       * 
        */
       virtual void getDOFsForCellBatch(int cellDim, 
                                        const Array<int>& cellLID,
                                        Array<Array<int> >& dofs,
                                        Array<int>& nNodes) const = 0 ;
 
-      /** */
-      virtual int chunkForFuncID(int funcID) const = 0 ;
+      /**
+       * Given an input cell set, partition it into batches of cells
+       * each having a homogeneous set of functions.
+       *
+       * \param inputCells [in] set of cells to be partitioned into batches
+       * \param cellBatches [out] array of batches of cell indices.
+       * \param homogSubregionIndices [out] indices to the function sets 
+       * corresponding to each cell batch.
+       *
+       * Example: suppose the map has functions {0,1,2} on cells
+       * 0 through 9, and functions {0,3} on cells 10 through 19.
+       * Suppose the map stores function set {0,3} at index 0 and
+       * function set {0,1,2} at index 1.
+       * Calling this method with cellLID=[1,3,11,7,14] will result
+       * in 
+       * cellBatches = [[11,14], [1,3,7]]
+       * homogSubregionIndices = [0,1]
+       */
+      virtual void 
+      getHomogeneousCellBatches(const RefCountPtr<Array<int> >& inputCells,
+                                Array<RefCountPtr<Array<int> > >& cellBatches,
+                                Array<int>& homogSubregionIndices) const = 0 ;
 
       /** */
-      virtual int indexForFuncID(int funcID) const = 0 ;
+      virtual int numHomogeneousSubregions() const = 0 ;
 
       /** */
-      virtual int nFuncs(int chunk) const = 0 ;
+      virtual const Set<int>& getFuncSet(int homogSubregionIndex) const = 0 ;
 
       /** */
-      virtual int nChunks() const = 0 ;
+      virtual int chunkForFuncID(int homogSubregionIndex, int funcID) const = 0 ;
 
       /** */
-      virtual const BasisFamily& basis(int chunk) const = 0 ;
+      virtual int indexForFuncID(int homogSubregionIndex, int basisChunk, 
+                                 int funcID) const = 0 ;
 
       /** */
-      virtual const Array<int>& funcID(int chunk) const = 0 ;
+      virtual int nFuncs(int homogSubregionIndex, int basisChunk) const = 0 ;
+
+      /** */
+      virtual int nBasisChunks(int homogSubregionIndex) const = 0 ;
+
+      /** */
+      virtual const BasisFamily& basis(int homogSubregionIndex, 
+                                       int basisChunk) const = 0 ;
+
+      /** */
+      virtual const Array<int>& funcID(int homogSubregionIndex,
+                                       int basisChunk) const = 0 ;
 
       /** */
       int lowestLocalDOF() const {return lowestLocalDOF_;}
@@ -116,10 +148,15 @@ namespace SundanceStdFwk
       {return ghostIndices_;}
 
       /** */
-      virtual void print(ostream& os) const ;
+      virtual void print(ostream& os) const = 0 ;
 
 
     protected:
+      
+      void verifySubregionIndex(int subregionIndex) const ;
+
+      void verifyBasisChunkIndex(int subregionIndex,
+                                 int basisChunk) const ;
 
       void setLowestLocalDOF(int low) {lowestLocalDOF_ = low;}
 
