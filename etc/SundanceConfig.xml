@@ -48,7 +48,7 @@
 
 <Verbosity context="Assembly" value="Silent"/>
 
-<Verbosity context="Evaluation" value="Extreme/>
+<Verbosity context="Evaluation" value="Silent"/>
 
 <Verbosity context="Integration Management" value="Silent"/>
 

@@ -65,9 +65,10 @@ namespace SundanceStdFwk
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const VectorType<double>& vecType);
+
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                  const Array<Set<CellFilter> >& regions,
+                  const Array<CellFilter>& regions,
                   const VectorType<double>& vecType);
 
     /** */
@@ -83,11 +84,7 @@ namespace SundanceStdFwk
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const SpectralBasis& spBasis,
                   const VectorType<double>& vecType);
-    /** */
-    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                  const SpectralBasis& spBasis,
-                  const Array<Set<CellFilter> >& regions,
-                  const VectorType<double>& vecType);
+
     /** */
     const RefCountPtr<DOFMapBase>& map() const {return map_;}
 
@@ -112,14 +109,18 @@ namespace SundanceStdFwk
     /** */
     void importGhosts(const Vector<double>& x,
                       RefCountPtr<GhostView<double> >& ghostView) const ;
+
+    /** */
+    void getAllowedFuncs(const CellFilter& cf, Set<int>& funcs) const ;
   private:
 
     /** */
-    void init();
+    void init(const Array<CellFilter>& regions,
+              const BasisArray& basis);
 
     /** */
-    Array<Set<CellFilter> > maximalRegions(int n) const ;
-    
+    Array<CellFilter> maximalRegions(int n) const ;
+
     /** */
     RefCountPtr<DOFMapBase> map_;
 
@@ -128,9 +129,6 @@ namespace SundanceStdFwk
 
     /** */
     BasisArray basis_;
-
-    /** */
-    Array<Set<CellFilter> > regions_;
 
     /** */
     VectorSpace<double> vecSpace_;

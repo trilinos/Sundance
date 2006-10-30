@@ -356,6 +356,9 @@ namespace SundanceCore
       const RefCountPtr<CellFilterStub>& region(int d) const 
       {return regions_[d].ptr();}
 
+      /** Returns the index of the given region */
+      int indexForRegion(const OrderedHandle<CellFilterStub>& region) const ;
+
       /** Indicate whether the given region has an essential BC expression */
       bool isBCRegion(int d) const ;
 
@@ -498,6 +501,16 @@ namespace SundanceCore
        * columns in the event we're doing symmetrized BC application */
       const Set<int>& bcUnksOnRegion(int d) const 
       {return bcUnksOnRegions_.get(regions_[d]);}
+
+      /** Returns the reduced variational functions that appear explicitly
+       * on the d-th region */
+      const Array<Set<int> >& reducedVarsOnRegion(const OrderedHandle<CellFilterStub>& r) const 
+      {return reducedVarsOnRegions_[indexForRegion(r)];}
+
+      /** Returns the reduced unknown functions that appear explicitly on the
+       * d-th region. */
+      const Array<Set<int> >& reducedUnksOnRegion(const OrderedHandle<CellFilterStub>& r) const 
+      {return reducedUnksOnRegions_[indexForRegion(r)];}
       //@}
 
       
@@ -610,10 +623,19 @@ namespace SundanceCore
       Array<OrderedHandle<CellFilterStub> > regions_;
 
       /** */
+      Map<OrderedHandle<CellFilterStub>, int> regionToIndexMap_;
+
+      /** */
       Map<OrderedHandle<CellFilterStub>, Set<int> > varsOnRegions_;
 
       /** */
       Map<OrderedHandle<CellFilterStub>, Set<int> > unksOnRegions_;
+
+      /** */
+      Array<Array<Set<int> > > reducedVarsOnRegions_;
+
+      /** */
+      Array<Array<Set<int> > > reducedUnksOnRegions_;
 
       /** Map from cell filter to pairs of (varID, unkID) appearing
        * on those cells. This is needed to construct the sparsity pattern

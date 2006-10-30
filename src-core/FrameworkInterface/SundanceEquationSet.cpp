@@ -526,8 +526,10 @@ void EquationSet::init(const Expr& eqns,
       if (!regionSet.contains(reg)) 
         {
           regionSet.put(reg);
-          varsOnRegions_.put(reg, integralSum->funcsOnRegion(d, varFuncSet));
-          unksOnRegions_.put(reg, integralSum->funcsOnRegion(d, unkFuncSet));
+          Set<int> vf = integralSum->funcsOnRegion(d, varFuncSet);
+          Set<int> uf = integralSum->funcsOnRegion(d, unkFuncSet);
+          varsOnRegions_.put(reg, vf);
+          unksOnRegions_.put(reg, uf);
         }
       else
         {
@@ -964,8 +966,13 @@ void EquationSet::init(const Expr& eqns,
   regionQuadCombos_ = rqcSet.elements();
   bcRegionQuadCombos_ = rqcBCSet.elements();
 
+  reducedVarsOnRegions_.resize(regions_.size());
+  reducedUnksOnRegions_.resize(regions_.size());
   for (unsigned int r=0; r<regions_.size(); r++)
     {
+      regionToIndexMap_.put(regions_[r], r);
+      reducedVarsOnRegions_[r].resize(numVarBlocks());
+      reducedUnksOnRegions_[r].resize(numUnkBlocks());
       OrderedHandle<CellFilterStub> cf = regions_[r];
       const Set<int>& v = this->varsOnRegion(r);
       const Set<int>& u = this->unksOnRegion(r);
@@ -988,6 +995,9 @@ void EquationSet::init(const Expr& eqns,
               s.put(cf);
               testToRegionsMap_.put(fid, s);
             }
+          int rv = reducedVarID(fid);
+          int br = blockForVarID(fid);
+          reducedVarsOnRegions_[r][br].put(rv);
         }
       for (Set<int>::const_iterator i=uf.begin(); i!=uf.end(); i++)
         {
@@ -1002,6 +1012,9 @@ void EquationSet::init(const Expr& eqns,
               s.put(cf);
               unkToRegionsMap_.put(fid, s);
             }
+          int ru = reducedUnkID(fid);
+          int bc = blockForUnkID(fid);
+          reducedUnksOnRegions_[r][bc].put(ru);
         }
     }
 
@@ -1252,4 +1265,12 @@ const Set<OrderedHandle<CellFilterStub> >&  EquationSet::regionsForUnkFunc(int u
                      "key " << unkID << " not found in map "
                      << testToRegionsMap_);
   return unkToRegionsMap_.get(unkID);
+}
+
+int EquationSet::indexForRegion(const OrderedHandle<CellFilterStub>& region) const
+{
+  TEST_FOR_EXCEPTION(!regionToIndexMap_.containsKey(region), RuntimeError,
+                     "key " << region << " not found in map "
+                     << regionToIndexMap_);
+  return regionToIndexMap_.get(region);
 }

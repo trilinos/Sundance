@@ -87,9 +87,9 @@ namespace SundanceStdFwk
       const RefCountPtr<DOFMapBase>& map() const {return space_.map();}
 
       /** */
-      void getLocalValues(int cellDim, 
-                          const Array<int>& cellLID,
-                          Array<Array<double> >& localValues) const ;
+      RefCountPtr<const MapStructure> getLocalValues(int cellDim, 
+                                                     const Array<int>& cellLID,
+                                                     Array<Array<double> >& localValues) const ;
 
 
       /** */

@@ -147,6 +147,8 @@ SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceBlock.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.hpp\
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceInhomogeneousNodalDOFMap.hpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMapStructure.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.hpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.hpp 
@@ -154,6 +156,8 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBas
 SUNDANCE_DOFMAPPING = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBase.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceDOFMapBuilder.cpp\
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceInhomogeneousNodalDOFMap.cpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundanceMapStructure.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp 

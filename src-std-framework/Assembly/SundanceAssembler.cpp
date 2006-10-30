@@ -631,6 +631,8 @@ void Assembler::assemble(LinearOperator<double>& A,
       int cellDim = filter.dimension(mesh_);
       CellType cellType = mesh_.cellType(cellDim);
       CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
+      const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
+      const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(filter);
       mediators_[r]->setCellType(cellType, maxCellType);      
 
       SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
@@ -659,28 +661,9 @@ void Assembler::assemble(LinearOperator<double>& A,
 
           workSetCounter++;
 
+          /* look up DOFs */
           bool useMaximalCellsForTransformations 
             = rqcRequiresMaximalCofacets_.get(MatrixAndVector)[r];
-          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, 
-                                      workSet);
-
-          const CellJacobianBatch& JVol = mediators_[r]->JVol();
-          const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
-          const Array<int>& facetIndices = mediators_[r]->facetIndices();
-
-          evaluator->resetNumCalls();
-          evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
-
-          if (verbosity() > VerbHigh)
-            {
-              Tabs tab2;
-              cerr << tab2 << "evaluation results: " << endl;
-              const EvalContext& context = contexts[r];
-              const RefCountPtr<SparsitySuperset>& sparsity 
-                = evalExprs[r]->sparsitySuperset(context);
-              sparsity->print(cerr, vectorCoeffs, constantCoeffs);
-            }
-
           Array<Array<int> > nTestNodes(numRowBlocks);
           Array<Array<int> > nUnkNodes(numColBlocks);
           /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
@@ -690,12 +673,18 @@ void Assembler::assemble(LinearOperator<double>& A,
           int dofCellDim = cellDim;
           if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
 
+          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, 
+                                      workSet);
+              
+          Array<RefCountPtr<const MapStructure> > rowMapStruct(numRowBlocks);
+          Array<RefCountPtr<const MapStructure> > colMapStruct(numColBlocks);
           for (int br=0; br<numRowBlocks; br++)
             {   
-              rowMap_[br]->getDOFsForCellBatch(dofCellDim, 
-                                               mediators_[r]->dofCellLIDs(),
-                                               (*testLocalDOFs)[br], 
-                                               nTestNodes[br]);
+              rowMapStruct[br] = rowMap_[br]->getDOFsForCellBatch(dofCellDim,
+                                                                  mediators_[r]->dofCellLIDs(),
+                                                                  requiredVars[br],
+                                                                  (*testLocalDOFs)[br], 
+                                                                  nTestNodes[br]);
             }
           SUNDANCE_VERB_EXTREME(tab1 << "local test DOF values " << *testLocalDOFs);
           for (int bc=0; bc<numColBlocks; bc++)
@@ -705,19 +694,41 @@ void Assembler::assemble(LinearOperator<double>& A,
                 {
                   (*unkLocalDOFs)[bc] = (*testLocalDOFs)[bc];
                   nUnkNodes[bc] = nTestNodes[bc];
+                  colMapStruct[bc] = rowMapStruct[bc];
                 }
               else
                 {
-                  colMap_[bc]->getDOFsForCellBatch(dofCellDim, 
-                                                   mediators_[r]->dofCellLIDs(),
-                                                   (*unkLocalDOFs)[bc],
-                                                   nUnkNodes[bc]);
+                  colMapStruct[bc] 
+                    = colMap_[bc]->getDOFsForCellBatch(dofCellDim,
+                                                       mediators_[r]->dofCellLIDs(),
+                                                       requiredUnks[bc],
+                                                       (*unkLocalDOFs)[bc],
+                                                       nUnkNodes[bc]);
                 }
             }
           SUNDANCE_VERB_EXTREME(tab1 << "local unk DOF values " << *unkLocalDOFs);
-          
-          ElementIntegral::invalidateTransformationMatrices();
 
+          const CellJacobianBatch& JVol = mediators_[r]->JVol();
+          const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
+          const Array<int>& facetIndices = mediators_[r]->facetIndices();
+              
+          evaluator->resetNumCalls();
+          evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
+              
+          if (verbosity() > VerbHigh)
+            {
+              Tabs tab2;
+              cerr << tab2 << "evaluation results: " << endl;
+              const EvalContext& context = contexts[r];
+              const RefCountPtr<SparsitySuperset>& sparsity 
+                = evalExprs[r]->sparsitySuperset(context);
+              sparsity->print(cerr, vectorCoeffs, constantCoeffs);
+            }
+              
+          
+              
+          ElementIntegral::invalidateTransformationMatrices();
+              
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
               Tabs tab2;
@@ -725,7 +736,7 @@ void Assembler::assemble(LinearOperator<double>& A,
               if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, vectorCoeffs,
                                   constantCoeffs, 
                                   localValues)) continue;
-
+                  
               if (verbosity() > VerbHigh)
                 {
                   cerr << tab2 << endl << tab2 << endl 
@@ -739,6 +750,8 @@ void Assembler::assemble(LinearOperator<double>& A,
               if (group.isTwoForm())
                 {
                   insertLocalMatrixBatch(workSet->size(), isBCRqc_[r],
+                                         rowMapStruct,
+                                         colMapStruct,
                                          *testLocalDOFs,
                                          *unkLocalDOFs,
                                          nTestNodes,
@@ -750,6 +763,7 @@ void Assembler::assemble(LinearOperator<double>& A,
               else
                 {
                   insertLocalVectorBatch(workSet->size(), isBCRqc_[r], 
+                                         rowMapStruct,
                                          *testLocalDOFs,
                                          nTestNodes,
                                          group.testID(),group.testBlock(),
@@ -759,6 +773,7 @@ void Assembler::assemble(LinearOperator<double>& A,
         }
     }
 
+  
   SUNDANCE_VERB_LOW(tab << "Assembler: done assembling matrix & vector");
 
   if (verbosity() > VerbHigh)
@@ -852,6 +867,7 @@ void Assembler::assemble(Vector<double>& b) const
 
       /* get the cells for the current domain */
       CellFilter filter = rqc_[r].domain();
+      const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
       CellSet cells = filter.getCells(mesh_);
       int cellDim = filter.dimension(mesh_);
       CellType cellType = mesh_.cellType(cellDim);
@@ -885,10 +901,33 @@ void Assembler::assemble(Vector<double>& b) const
 
 
           workSetCounter++;
+
+          /* set up DOF tables */
           bool useMaximalCellsForTransformations 
             = rqcRequiresMaximalCofacets_.get(VectorOnly)[r];
-          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
 
+          mediators_[r]->setCellBatch(useMaximalCellsForTransformations, 
+                                      workSet);
+
+          /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
+           * which isn't necessarily the same as the dim of the cells on which the 
+           * integrations are done. They will differ in the case where evaluations
+           * must be refered to a maximal cell */
+          int dofCellDim = cellDim;
+          if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
+
+          Array<Array<int> > nTestNodes(numRowBlocks);
+          Array<RefCountPtr<const MapStructure> > rowMapStruct(numRowBlocks);
+          for (int br=0; br<numRowBlocks; br++)
+            {
+              rowMapStruct[br] = rowMap_[br]->getDOFsForCellBatch(dofCellDim,
+                                                                  mediators_[r]->dofCellLIDs(),
+                                                                  requiredVars[br],
+                                                                  (*testLocalDOFs)[br],
+                                                                  nTestNodes[br]);
+            }
+          
+          /* set up evaluation */
           const CellJacobianBatch& JVol = mediators_[r]->JVol();
           const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
           const Array<int>& facetIndices = mediators_[r]->facetIndices();
@@ -908,21 +947,6 @@ void Assembler::assemble(Vector<double>& b) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
-           * which isn't necessarily the same as the dim of the cells on which the 
-           * integrations are done. They will differ in the case where evaluations
-           * must be refered to a maximal cell */
-          int dofCellDim = cellDim;
-          if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
-
-          Array<Array<int> > nTestNodes(numRowBlocks);
-          for (int br=0; br<numRowBlocks; br++)
-            {
-              rowMap_[br]->getDOFsForCellBatch(dofCellDim, 
-                                               mediators_[r]->dofCellLIDs(),
-                                               (*testLocalDOFs)[br],
-                                               nTestNodes[br]);
-            }
 
           ElementIntegral::invalidateTransformationMatrices();
           for (unsigned int g=0; g<groups[r].size(); g++)
@@ -947,7 +971,8 @@ void Assembler::assemble(Vector<double>& b) const
                   cerr << tab3 << "values to be inserted = " << *localValues << endl;
                 }
 
-              insertLocalVectorBatch(workSet->size(), isBCRqc_[r], 
+              insertLocalVectorBatch(workSet->size(), isBCRqc_[r],  
+                                     rowMapStruct,
                                      *testLocalDOFs,
                                      nTestNodes,
                                      group.testID(), group.testBlock(), *localValues, vec);
@@ -1044,6 +1069,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
       /* get the cells for the current domain */
       CellFilter filter = rqc_[r].domain();
+      const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
       CellSet cells = filter.getCells(mesh_);
       int cellDim = filter.dimension(mesh_);
       CellType cellType = mesh_.cellType(cellDim);
@@ -1082,9 +1108,30 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 
           workSetCounter++;
 
+          /* set up DOF tables */
           bool useMaximalCellsForTransformations 
             = rqcRequiresMaximalCofacets_.get(FunctionalAndGradient)[r];
+
+          /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
+           * which isn't necessarily the same as the dim of the cells on which the 
+           * integrations are done. They will differ in the case where evaluations
+           * must be refered to a maximal cell */
+          int dofCellDim = cellDim;
+          if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
           mediators_[r]->setCellBatch(useMaximalCellsForTransformations, workSet);
+
+          Array<Array<int> > nTestNodes(numRowBlocks);
+          Array<RefCountPtr<const MapStructure> > rowMapStruct(numRowBlocks);
+          for (int br=0; br<numRowBlocks; br++)
+            {
+              rowMapStruct[br] 
+                = rowMap_[br]->getDOFsForCellBatch(dofCellDim,
+                                                   mediators_[r]->dofCellLIDs(),
+                                                   requiredVars[br],
+                                                   (*testLocalDOFs)[br],
+                                                   nTestNodes[br]);
+            }
+
 
           const CellJacobianBatch& JVol = mediators_[r]->JVol();
           const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
@@ -1106,21 +1153,6 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          /* dofCellDim is the dimension of the cells from which the DOFs are assigned,
-           * which isn't necessarily the same as the dim of the cells on which the 
-           * integrations are done. They will differ in the case where evaluations
-           * must be refered to a maximal cell */
-          int dofCellDim = cellDim;
-          if (useMaximalCellsForTransformations) dofCellDim = mesh_.spatialDim();
-
-          Array<Array<int> > nTestNodes(numRowBlocks);
-          for (int br=0; br<numRowBlocks; br++)
-            {
-              rowMap_[br]->getDOFsForCellBatch(dofCellDim, 
-                                               mediators_[r]->dofCellLIDs(),
-                                               (*testLocalDOFs)[br],
-                                               nTestNodes[br]);
-            }
 
           ElementIntegral::invalidateTransformationMatrices();
 
@@ -1148,7 +1180,8 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
               
               if (group.isOneForm())
                 {
-                  insertLocalVectorBatch(workSet->size(), isBCRqc_[r], 
+                  insertLocalVectorBatch(workSet->size(), isBCRqc_[r],  
+                                         rowMapStruct,
                                          *testLocalDOFs,
                                          nTestNodes,
                                          group.testID(), group.testBlock(), 
@@ -1161,7 +1194,6 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
             }
         }
     }
-
   value = localSum;
 
   mesh_.comm().allReduce((void*) &localSum, (void*) &value, 1, 
@@ -1357,6 +1389,8 @@ void Assembler::evaluate(double& value) const
 
 void Assembler::insertLocalMatrixBatch(int nCells,
                                        bool isBCRqc,
+                                       const Array<RefCountPtr<const MapStructure> >& rowMapStruct,
+                                       const Array<RefCountPtr<const MapStructure> >& colMapStruct,
                                        const Array<Array<Array<int> > >& testIndices,
                                        const Array<Array<Array<int> > >& unkIndices,
                                        const Array<Array<int> >& nTestNodes, 
@@ -1377,10 +1411,6 @@ void Assembler::insertLocalMatrixBatch(int nCells,
   static Array<int> rows;
   static Array<int> cols;
 
-  int testSubregion = 0;
-  int unkSubregion = 0;
-
-
   if (verbosity() > VerbHigh)
     {
       cerr << "isBC " << isBCRqc << endl;
@@ -1399,11 +1429,11 @@ void Assembler::insertLocalMatrixBatch(int nCells,
       const RefCountPtr<DOFMapBase>& rowMap = rowMap_[br];
       int highestIndex = lowestRow_[br] + rowMap->numLocalDOFs();
       int lowestLocalRow = rowMap->lowestLocalDOF();
-      int testChunk = rowMap->chunkForFuncID(testSubregion, testID[t]);
-      int testFuncIndex = rowMap->indexForFuncID(testSubregion, testChunk, testID[t]);
+      int testChunk = rowMapStruct[br]->chunkForFuncID(testID[t]);
+      int testFuncIndex = rowMapStruct[br]->indexForFuncID(testID[t]);
       const Array<int>& testDOFs = testIndices[br][testChunk];
       SUNDANCE_VERB_EXTREME(tab1 << "test DOFs = " << testDOFs);
-      int nTestFuncs = rowMap->nFuncs(testSubregion, testChunk);
+      int nTestFuncs = rowMapStruct[br]->numFuncs(testChunk);
       int numTestNodes = nTestNodes[br][testChunk];
       int numRows = nCells * numTestNodes;
       const Array<int>& isBCRow = *(isBCRow_[br]);
@@ -1441,12 +1471,12 @@ void Assembler::insertLocalMatrixBatch(int nCells,
       for (unsigned int u=0; u<unkID.size(); u++)
         {      
           int bc = unkBlock[u];
-          const RefCountPtr<DOFMapBase>& colMap = colMap_[bc];
-          int unkChunk = colMap->chunkForFuncID(unkSubregion, unkID[u]);
-          int unkFuncIndex = colMap->indexForFuncID(unkSubregion, unkChunk,unkID[u]);
+          //          const RefCountPtr<DOFMapBase>& colMap = colMap_[bc];
+          int unkChunk = colMapStruct[bc]->chunkForFuncID(unkID[u]);
+          int unkFuncIndex = colMapStruct[bc]->indexForFuncID(unkID[u]);
           const Array<int>& unkDOFs = unkIndices[bc][unkChunk];
           SUNDANCE_VERB_EXTREME(tab1 << "unk DOFs = " << unkDOFs);
-          int nUnkFuncs = colMap->nFuncs(unkSubregion, unkChunk);
+          int nUnkFuncs = colMapStruct[bc]->numFuncs(unkChunk);
           int numUnkNodes = nUnkNodes[bc][unkChunk];
           cols.resize(nCells*numUnkNodes);
           int j=0;
@@ -1480,6 +1510,7 @@ void Assembler::insertLocalMatrixBatch(int nCells,
 void Assembler
 ::insertLocalVectorBatch(int nCells, 
                          bool isBCRqc,
+                         const Array<RefCountPtr<const MapStructure> >& rowMapStruct,
                          const Array<Array<Array<int> > >& testIndices,
                          const Array<Array<int> >& nTestNodes, 
                          const Array<int>& testID,  
@@ -1492,8 +1523,6 @@ void Assembler
   SUNDANCE_VERB_HIGH(tab << "inserting local vector values...");
   SUNDANCE_VERB_EXTREME(tab << "values are " << localValues);
 
-  int testSubregion = 0;
-
   for (unsigned int i=0; i<testID.size(); i++)
     {
       Tabs tab1;
@@ -1502,10 +1531,10 @@ void Assembler
       int br = testBlock[i];
       const RefCountPtr<DOFMapBase>& rowMap = rowMap_[br];
       int lowestLocalRow = rowMap->lowestLocalDOF();
-      int chunk = rowMap->chunkForFuncID(testSubregion, testID[i]);
-      int funcIndex = rowMap->indexForFuncID(testSubregion, chunk, testID[i]);
+      int chunk = rowMapStruct[br]->chunkForFuncID(testID[i]);
+      int funcIndex = rowMapStruct[br]->indexForFuncID(testID[i]);
       const Array<int>& dofs = testIndices[br][chunk];
-      int nFuncs = rowMap->nFuncs(testSubregion, chunk);
+      int nFuncs = rowMapStruct[br]->numFuncs(chunk);
       int nNodes = nTestNodes[br][chunk];
       const Array<int>& isBCRow = *(isBCRow_[br]);
       int r=0;
@@ -1567,6 +1596,8 @@ void Assembler::getGraph(int br, int bc,
       {
         Tabs tab0;
         CellFilter domain = eqn_->region(d);
+        const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(domain);
+        const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(domain);
         SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                      tab0 << "cell set " << domain
                      << " isBCRegion=" << eqn_->isBCRegion(d));
@@ -1654,8 +1685,7 @@ void Assembler::getGraph(int br, int bc,
         int highestRow = lowestRow_[br] + rowMap_[br]->numLocalDOFs();
 
         int nt = eqn_->numVars(br);
-        int testSubregion = 0;
-        int unkSubregion = 0;
+
         CellIterator iter=cells.begin();
         while (iter != cells.end())
           {
@@ -1668,17 +1698,22 @@ void Assembler::getGraph(int br, int bc,
 
             int nCells = workSet->size();
 
-            rowMap_[br]->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
-                                             numTestNodes);
+            RefCountPtr<const MapStructure> colMapStruct; 
+            RefCountPtr<const MapStructure> rowMapStruct 
+              = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
+                                                 requiredVars[br], *testLocalDOFs,
+                                                 numTestNodes);
             if (rowMap_[br].get()==colMap_[bc].get())
               {
                 unkLocalDOFs = testLocalDOFs;
                 numUnkNodes = numTestNodes;
+                colMapStruct = rowMapStruct;
               }
             else
               {
-                colMap_[br]->getDOFsForCellBatch(dim, *workSet, 
-                                                 *unkLocalDOFs, numUnkNodes);
+                colMapStruct = colMap_[br]->getDOFsForCellBatch(dim, *workSet, 
+                                                                requiredUnks[bc], 
+                                                                *unkLocalDOFs, numUnkNodes);
               }
 
             if (pairs.get() != 0)
@@ -1687,18 +1722,18 @@ void Assembler::getGraph(int br, int bc,
                   {
                     for (int t=0; t<nt; t++)
                       {
-                        int tChunk = rowMap_[br]->chunkForFuncID(testSubregion, t);
-                        int nTestFuncs = rowMap_[br]->nFuncs(testSubregion, tChunk);
-                        int testFuncIndex = rowMap_[br]->indexForFuncID(testSubregion, tChunk, t);
+                        int tChunk = rowMapStruct->chunkForFuncID(t);
+                        int nTestFuncs = rowMapStruct->numFuncs(tChunk);
+                        int testFuncIndex = rowMapStruct->indexForFuncID(t);
                         int nTestNodes = numTestNodes[tChunk];
                         const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                         for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = unksForTests[t][uit];
-                            int uChunk = colMap_[bc]->chunkForFuncID(unkSubregion, u);
-                            int nUnkFuncs = colMap_[bc]->nFuncs(unkSubregion, uChunk);
-                            int unkFuncIndex = colMap_[bc]->indexForFuncID(unkSubregion, uChunk, u);
+                            int uChunk = colMapStruct->chunkForFuncID(u);
+                            int nUnkFuncs = colMapStruct->numFuncs(uChunk);
+                            int unkFuncIndex = colMapStruct->indexForFuncID(u);
                             const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                             int nUnkNodes = numUnkNodes[uChunk];
                             for (int n=0; n<nTestNodes; n++)
@@ -1725,18 +1760,18 @@ void Assembler::getGraph(int br, int bc,
                   {
                     for (int t=0; t<nt; t++)
                       {
-                        int tChunk = rowMap_[br]->chunkForFuncID(testSubregion, t);
-                        int nTestFuncs = rowMap_[br]->nFuncs(testSubregion, tChunk);
-                        int testFuncIndex = rowMap_[br]->indexForFuncID(testSubregion, tChunk,t);
+                        int tChunk = rowMapStruct->chunkForFuncID(t);
+                        int nTestFuncs = rowMapStruct->numFuncs(tChunk);
+                        int testFuncIndex = rowMapStruct->indexForFuncID(t);
                         int nTestNodes = numTestNodes[tChunk];
                         const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                         for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
                           {
                             Tabs tab2;
                             int u = bcUnksForTests[t][uit];
-                            int uChunk = colMap_[bc]->chunkForFuncID(unkSubregion, u);
-                            int nUnkFuncs = colMap_[bc]->nFuncs(unkSubregion, uChunk);
-                            int unkFuncIndex = colMap_[bc]->indexForFuncID(unkSubregion, uChunk, u);
+                            int uChunk = colMapStruct->chunkForFuncID(u);
+                            int nUnkFuncs = colMapStruct->numFuncs(uChunk);
+                            int unkFuncIndex = colMapStruct->indexForFuncID(u);
                             const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                             int nUnkNodes = numUnkNodes[uChunk];
                             for (int n=0; n<nTestNodes; n++)
@@ -1797,8 +1832,8 @@ void Assembler::getGraph(int br, int bc,
                        
                        
 void Assembler
-  ::incrementalGetGraph(int br, int bc,
-                        IncrementallyConfigurableMatrixFactory* icmf) const 
+::incrementalGetGraph(int br, int bc,
+                      IncrementallyConfigurableMatrixFactory* icmf) const 
 {
   TimeMonitor timer(graphBuildTimer());
   Tabs tab;
@@ -1821,6 +1856,10 @@ void Assembler
     {
       Tabs tab0;
       CellFilter domain = eqn_->region(d);
+      const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(domain);
+      const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(domain);
+      Array<int> localVars = requiredVars[br].elements();
+      Array<int> localUnks = requiredUnks[bc].elements();
       SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                    tab0 << "cell set " << domain
                    << " isBCRegion=" << eqn_->isBCRegion(d));
@@ -1906,10 +1945,8 @@ void Assembler
       
       int highestRow = lowestRow_[br] + rowMap_[br]->numLocalDOFs();
 
-      int nt = eqn_->numVars(br);
       CellIterator iter=cells.begin();
-      int uSub = 0;
-      int tSub = 0;
+
       while (iter != cells.end())
         {
           /* build a work set */
@@ -1921,17 +1958,24 @@ void Assembler
 
           int nCells = workSet->size();
 
-          rowMap_[br]->getDOFsForCellBatch(dim, *workSet, *testLocalDOFs,
-                                       numTestNodes);
+          RefCountPtr<const MapStructure> colMapStruct; 
+          RefCountPtr<const MapStructure> rowMapStruct 
+            = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
+                                               requiredVars[br],
+                                               *testLocalDOFs,
+                                               numTestNodes);
+
           if (rowMap_[br].get()==colMap_[bc].get())
             {
               unkLocalDOFs = testLocalDOFs;
               numUnkNodes = numTestNodes;
+              colMapStruct = rowMapStruct;
             }
           else
             {
-              colMap_[bc]->getDOFsForCellBatch(dim, *workSet, 
-                                           *unkLocalDOFs, numUnkNodes);
+              colMapStruct = colMap_[bc]->getDOFsForCellBatch(dim, *workSet, 
+                                                              requiredUnks[bc],
+                                                              *unkLocalDOFs, numUnkNodes);
             }
 
           
@@ -1939,20 +1983,21 @@ void Assembler
             {
               for (int c=0; c<nCells; c++)
                 {
-                  for (int t=0; t<nt; t++)
+                  for (unsigned int tIndex=0; tIndex<localVars.size(); tIndex++)
                     {
-                      int tChunk = rowMap_[br]->chunkForFuncID(tSub, t);
-                      int nTestFuncs = rowMap_[br]->nFuncs(tSub, tChunk);
-                      int testFuncIndex = rowMap_[br]->indexForFuncID(tSub, tChunk, t);
+                      int t = localVars[tIndex];
+                      int tChunk = rowMapStruct->chunkForFuncID(t);
+                      int nTestFuncs = rowMapStruct->numFuncs(tChunk);
+                      int testFuncIndex = rowMapStruct->indexForFuncID(t);
                       int nTestNodes = numTestNodes[tChunk];
                       const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                       for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
                         {
                           Tabs tab2;
                           int u = unksForTests[t][uit];
-                          int uChunk = colMap_[bc]->chunkForFuncID(uSub, u);
-                          int nUnkFuncs = colMap_[bc]->nFuncs(uSub, uChunk);
-                          int unkFuncIndex = colMap_[bc]->indexForFuncID(uSub, uChunk, u);
+                          int uChunk = colMapStruct->chunkForFuncID(u);
+                          int nUnkFuncs = colMapStruct->numFuncs(uChunk);
+                          int unkFuncIndex = colMapStruct->indexForFuncID(u);
                           const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                           int nUnkNodes = numUnkNodes[uChunk];
                           for (int n=0; n<nTestNodes; n++)
@@ -1972,20 +2017,21 @@ void Assembler
             {
               for (int c=0; c<nCells; c++)
                 {
-                  for (int t=0; t<nt; t++)
+                  for (unsigned int tIndex=0; tIndex<localVars.size(); tIndex++)
                     {
-                      int tChunk = rowMap_[br]->chunkForFuncID(tSub, t);
-                      int nTestFuncs = rowMap_[br]->nFuncs(tSub, tChunk);
-                      int testFuncIndex = rowMap_[br]->indexForFuncID(tSub, tChunk, t);
+                      int t = localVars[tIndex];
+                      int tChunk = rowMapStruct->chunkForFuncID(t);
+                      int nTestFuncs = rowMapStruct->numFuncs(tChunk);
+                      int testFuncIndex = rowMapStruct->indexForFuncID(t);
                       int nTestNodes = numTestNodes[tChunk];
                       const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
                       for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
                         {
                           Tabs tab2;
                           int u = bcUnksForTests[t][uit];
-                          int uChunk = colMap_[bc]->chunkForFuncID(uSub, u);
-                          int nUnkFuncs = colMap_[bc]->nFuncs(uSub, uChunk);
-                          int unkFuncIndex = colMap_[bc]->indexForFuncID(uSub, uChunk, u);
+                          int uChunk = colMapStruct->chunkForFuncID(u);
+                          int nUnkFuncs = colMapStruct->numFuncs(uChunk);
+                          int unkFuncIndex = colMapStruct->indexForFuncID(u);
                           const Array<int>& unkDOFs = (*unkLocalDOFs)[uChunk];
                           int nUnkNodes = numUnkNodes[uChunk];
                           for (int n=0; n<nTestNodes; n++)
@@ -2089,7 +2135,6 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
 
   return rtn;
 }
-
 
 VectorSpace<double> Assembler::solnVecSpace() const
 {

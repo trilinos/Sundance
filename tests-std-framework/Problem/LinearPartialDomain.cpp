@@ -89,13 +89,6 @@ int main(int argc, void** argv)
 
       LinearProblem prob(mesh, eqn, bc, List(v1, v2), List(u1, u2), vecType);
 
-
-      cout << "-------- ROW MAP --------------------------" << endl;
-      prob.rowMap(0)->print(cout);
-
-      cout << "-------- COL MAP --------------------------" << endl;
-      prob.colMap(0)->print(cout);
-
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
       ParameterList solverParams = reader.getParameters();
       cout << "params = " << solverParams << endl;
@@ -104,15 +97,20 @@ int main(int argc, void** argv)
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      cout << "matrix = " << endl << prob.getOperator() << endl;
-      cout << "RHS = " << endl << prob.getRHS() << endl;
-
       Expr soln = prob.solve(solver);
 
       Vector<double> vec = DiscreteFunction::discFunc(soln)->getVector();
 
-      cout << "solution = " << vec << endl;
-      
+
+      Expr err = Integral(interior, pow(soln[0] - 2.0, 2.0), quad)
+        + Integral(A, pow(soln[1] - x*soln[0], 2.0), quad)
+        + Integral(B, pow(soln[1] - 0.4*soln[0], 2.0), quad);
+
+      FunctionalEvaluator errInt(mesh, err);
+      double errorSq = errInt.evaluate();
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      Sundance::passFailTest(sqrt(errorSq), 1.0e-8);
     }
 	catch(exception& e)
 		{

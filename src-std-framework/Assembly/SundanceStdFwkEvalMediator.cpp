@@ -63,6 +63,7 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
     fCache_(),
     dfCache_(),
     localValueCache_(),
+    mapStructCache_(),
     fCacheIsValid_(),
     dfCacheIsValid_(),
     localValueCacheIsValid_()
@@ -78,7 +79,7 @@ void StdFwkEvalMediator::setCellType(const CellType& cellType,
 }
 
 void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
-                                      const RefCountPtr<Array<int> >& cellLID) 
+                                      const RefCountPtr<const Array<int> >& cellLID) 
 {
   cellLID_ = cellLID; 
   cacheIsValid() = false; 

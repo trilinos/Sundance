@@ -101,7 +101,7 @@ void DiscreteFunctionData::updateGhosts() const
 }
 
 
-void DiscreteFunctionData
+RefCountPtr<const MapStructure> DiscreteFunctionData
 ::getLocalValues(int cellDim, 
                  const Array<int>& cellLID,
                  Array<Array<double> >& localValues) const 
@@ -118,15 +118,21 @@ void DiscreteFunctionData
   static Array<Array<int> > dofs;
   Array<int> nNodes;
 
-  localValues.resize(map->nBasisChunks(0));
-  map->getDOFsForCellBatch(cellDim, cellLID, dofs, nNodes);
+  RefCountPtr<const Set<int> > requestedFuncs = map->allowedFuncsOnCellBatch(cellDim,
+                                                                             cellLID);
 
+  RefCountPtr<const MapStructure> s = map->getDOFsForCellBatch(cellDim, cellLID,
+                                                               *requestedFuncs,
+                                                               dofs, nNodes);
+  localValues.resize(s->numBasisChunks());
   for (unsigned int b=0; b<nNodes.size(); b++)
     {
-      int nFuncs = map->nFuncs(0, b);
+      int nFuncs = s->numFuncs(b);
       localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
       ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
     }
+
+  return s;
 }
 
 

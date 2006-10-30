@@ -133,6 +133,7 @@ namespace SundanceStdFwk
                   const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
                   SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap);
 
+      static SundanceUtils::Map<CellFilter, Set<int> > domainToFuncSetMap(const Array<Set<CellFilter> >& filters) ;
 
     private:
 

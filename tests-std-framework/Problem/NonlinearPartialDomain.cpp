@@ -60,8 +60,11 @@ int main(int argc, void** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 10;
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx, meshType);
+      int nx = 200;
+      int ny = 4;
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
+                                                         0.0, 2.0, ny, 1,
+                                                         meshType);
       Mesh mesh = mesher.getMesh();
 
       Expr x = new CoordExpr(0);
@@ -81,37 +84,43 @@ int main(int argc, void** argv)
       Expr v1 = new TestFunction(new Lagrange(1));
       Expr v2 = new TestFunction(new Lagrange(1));
 
-      QuadratureFamily quad = new GaussianQuadrature(2);
+      QuadratureFamily quad = new GaussianQuadrature(4);
       Expr eqn = Integral(interior, v1*(u1 - 2.0), quad) 
-        + Integral(A, v2*(u2 - x*u1), quad) 
-        + Integral(B, v2*(u2 - 0.4*u1), quad) ;
+        + Integral(A, v2*(u2*u2 - x*u1), quad) 
+        + Integral(B, v2*(u2*u2 - 0.4*u1), quad) ;
       Expr bc;
 
-      LinearProblem prob(mesh, eqn, bc, List(v1, v2), List(u1, u2), vecType);
 
+      /* Create a discrete space, and discretize the function 1.0 on it */
+      Array<CellFilter> funcDomains = tuple(interior, A+B);
+      BasisFamily L1 = new Lagrange(1);
+      DiscreteSpace discSpace(mesh, tuple(L1, L1), funcDomains, vecType);
+      Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
-      cout << "-------- ROW MAP --------------------------" << endl;
-      prob.rowMap(0)->print(cout);
+      /* We can now set up the nonlinear problem! */
+      NonlinearOperator<double> F 
+        = new NonlinearProblem(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
 
-      cout << "-------- COL MAP --------------------------" << endl;
-      prob.colMap(0)->print(cout);
+      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterList noxParams = reader.getParameters();
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
-      ParameterList solverParams = reader.getParameters();
-      cout << "params = " << solverParams << endl;
+      cerr << "solver params = " << noxParams << endl;
 
+      NOXSolver solver(noxParams, F);
 
-      LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(solverParams);
+      solver.solve();
 
-      cout << "matrix = " << endl << prob.getOperator() << endl;
-      cout << "RHS = " << endl << prob.getRHS() << endl;
+      Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
 
-      Expr soln = prob.solve(solver);
+      Expr err = Integral(interior, pow(u0[0] - 2.0, 2.0), quad)
+        + Integral(A, pow(u0[1]*u0[1] - x*u0[0], 2.0), quad)
+        + Integral(B, pow(u0[1]*u0[1] - 0.4*u0[0], 2.0), quad);
 
-      Vector<double> vec = DiscreteFunction::discFunc(soln)->getVector();
+      FunctionalEvaluator errInt(mesh, err);
+      double errorSq = errInt.evaluate();
+      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
-      cout << "solution = " << vec << endl;
+      Sundance::passFailTest(sqrt(errorSq), 1.0e-4);
       
     }
 	catch(exception& e)

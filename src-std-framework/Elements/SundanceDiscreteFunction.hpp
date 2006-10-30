@@ -119,9 +119,9 @@ namespace SundanceStdFwk
 
 
     /** */
-    void getLocalValues(int cellDim, 
-                        const Array<int>& cellLID,
-                        Array<Array<double> >& localValues) const ;
+    RefCountPtr<const MapStructure> getLocalValues(int cellDim, 
+                                                   const Array<int>& cellLID,
+                                                   Array<Array<double> >& localValues) const ;
 
 
   private:

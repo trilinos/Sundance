@@ -28,12 +28,12 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SPATIALLYHOMOGENEOUSDOFMAP_H
-#define SUNDANCE_SPATIALLYHOMOGENEOUSDOFMAP_H
+#ifndef SUNDANCE_MAPSTRUCTURE_H
+#define SUNDANCE_MAPSTRUCTURE_H
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceDOFMapBase.hpp"
+#include "SundanceBasisFamily.hpp"
 
 namespace SundanceStdFwk
 {
@@ -44,40 +44,54 @@ namespace SundanceStdFwk
   {
     using namespace Teuchos;
 
-    /** 
-     * 
-     */
-    class SpatiallyHomogeneousDOFMapBase : public DOFMapBase
+    class MapStructure
     {
     public:
       /** */
-      SpatiallyHomogeneousDOFMapBase(const Mesh& mesh, int nTotalFuncs) ;
+      MapStructure(int nTotalFuncs,
+                   const Array<BasisFamily>& bases,
+                   const Array<Array<int> >& funcs);
+      /** */
+      MapStructure(int nTotalFuncs,
+                   const BasisFamily& basis,
+                   const Array<Array<int> >& funcs);
+      /** */
+      MapStructure(int nTotalFuncs,
+                   const BasisFamily& basis);
 
       /** */
-      virtual ~SpatiallyHomogeneousDOFMapBase() {;}
+      int numBasisChunks() const {return bases_.size();}
 
       /** */
-      virtual RefCountPtr<const MapStructure> mapStruct() const = 0 ;
+      const BasisFamily& basis(int basisChunk) const
+      {return bases_[basisChunk];}
 
       /** */
-      virtual RefCountPtr<const Set<int> >
-      allowedFuncsOnCellBatch(int cellDim,
-                              const Array<int>& cellLID) const 
-      {return allowedFuncs_;}
+      int numFuncs(int basisChunk) const 
+      {return funcs_[basisChunk].size();}
 
       /** */
-      bool isHomogeneous() const {return true;}
+      const Array<int>& funcs(int basisChunk) const 
+      {return funcs_[basisChunk];}
 
       /** */
-      void print(ostream& os) const ;
+      int chunkForFuncID(int funcID) const ;
 
       /** */
-      const Array<CellFilter>& funcDomains() const {return funcDomains_;}
+      int indexForFuncID(int funcID) const ;
 
     private:
-      RefCountPtr<const Set<int> > allowedFuncs_;
-      Array<CellFilter> funcDomains_;
+      /** */
+      void init(int nTotalFuncs,
+                const Array<BasisFamily>& bases,
+                const Array<Array<int> >& funcs);
+
+      Array<BasisFamily> bases_;
+      Array<Array<int> > funcs_;
+      Array<int> chunkForFuncID_;
+      Array<int> indexForFuncID_;
     };
+
   }
 }
 

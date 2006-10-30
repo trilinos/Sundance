@@ -12,7 +12,7 @@
 # it under the terms of the GNU Lesser General Public License as
 # published by the Free Software Foundation; either version 2.1 of the
 # License, or (at your option) any later version.
-#  
+# 
 # This library is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -33,14 +33,15 @@ EXEEXT = .exe
 
 noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
 
-SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D 
+SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D \
+LinearPartialDomain NonlinearPartialDomain
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic UserDefAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
 FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D \
-CellFilterTest SpectralPoisson1D SpectralSqrt
+SpectralPoisson1D SpectralSqrt
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 
@@ -61,6 +62,33 @@ SpectralPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 SpectralPoisson1D_LDADD = $(STD_FWK_LIBS) 
 
 
+
+
+LinearPartialDomain_SOURCES = $(srcdir)/LinearPartialDomain.cpp
+
+LinearPartialDomain_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+LinearPartialDomain_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+LinearPartialDomain_LDADD = $(STD_FWK_LIBS) 
+
+
+
+NonlinearPartialDomain_SOURCES = $(srcdir)/NonlinearPartialDomain.cpp
+
+NonlinearPartialDomain_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+NonlinearPartialDomain_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+NonlinearPartialDomain_LDADD = $(STD_FWK_LIBS) 
 
 
 
@@ -152,21 +180,6 @@ HighOrderPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 HighOrderPoisson1D_LDADD = $(STD_FWK_LIBS) 
 
 
-
-
-
-
-CellFilterTest_SOURCES = $(srcdir)/CellFilterTest.cpp
-
-CellFilterTest_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
-
-CellFilterTest_CXXFLAGS = $(STD_FWK_INCLUDES)
-
-CellFilterTest_LDADD = $(STD_FWK_LIBS) 
 
 
 

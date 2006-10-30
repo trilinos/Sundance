@@ -28,11 +28,11 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_NODALDOFMAP_H
-#define SUNDANCE_NODALDOFMAP_H
+#ifndef SUNDANCE_INHOMOGENEOUSNODALDOFMAP_H
+#define SUNDANCE_INHOMOGENEOUSNODALDOFMAP_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSpatiallyHomogeneousDOFMapBase.hpp"
+#include "SundanceDOFMapBase.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceBasisFamily.hpp"
@@ -43,6 +43,7 @@
 namespace SundanceStdFwk
 {
   using namespace SundanceUtils;
+  using SundanceUtils::Map;
   using namespace SundanceStdMesh;
   using namespace SundanceStdMesh::Internal;
   namespace Internal
@@ -52,15 +53,15 @@ namespace SundanceStdFwk
     /** 
      * 
      */
-    class NodalDOFMap : public SpatiallyHomogeneousDOFMapBase
+    class InhomogeneousNodalDOFMap : public DOFMapBase
     {
     public:
       /** */
-      NodalDOFMap(const Mesh& mesh, int nFuncs,
-                  const CellFilter& maxCellFilter);
+      InhomogeneousNodalDOFMap(const Mesh& mesh, 
+                               const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap);
       
       /** */
-      virtual ~NodalDOFMap(){;}
+      virtual ~InhomogeneousNodalDOFMap(){;}
 
       /** */
       RefCountPtr<const MapStructure> 
@@ -71,13 +72,29 @@ namespace SundanceStdFwk
                           Array<int>& nNodes) const ;
 
       /** */
-      RefCountPtr<const MapStructure> mapStruct() const 
-      {return structure_;}
+      void getFunctionDofs(int cellDim,
+                           const Array<int>& cellLID,
+                           const Array<int>& facetLID,
+                           const Array<int>& funcs,
+                           Array<Array<int> >& dofs) const ;
 
       /** */
-      int nFuncs() const {return nFuncs_;}
+      RefCountPtr<const Set<int> >
+      allowedFuncsOnCellBatch(int cellDim,
+                              const Array<int>& cellLID) const ;
+
+      /** */
+      const Array<CellFilter>& funcDomains() const {return funcDomains_;}
+
+      /** */
+      virtual void print(ostream& os) const ;
+
 
     protected:
+
+      /** */
+      Array<int> dofsOnCell(int cellDim, int cellLID, const Set<int>& reqFuncs) const ;
+                              
 
       void init();
 
@@ -85,15 +102,32 @@ namespace SundanceStdFwk
 
       void shareRemoteDOFs(const Array<Array<int> >& remoteNodes);
 
-      CellFilter maxCellFilter_;
+      void assignNode(int fLID,
+                      int funcComboIndex,
+                      int dofOffset,
+                      int nFuncs,
+                      Array<Array<int> >& remoteNodes,
+                      Array<int>& hasProcessedCell,
+                      int& nextDOF) ;
+
       int dim_;
-      int nFuncs_;
-      int nElems_;
-      int nNodes_;
-      int nNodesPerElem_;
-      Array<int> elemDofs_;
-      Array<int> nodeDofs_;
-      RefCountPtr<const MapStructure> structure_;
+      BasisFamily basis_;
+      int nTotalFuncs_;
+      Array<CellFilter> funcDomains_;
+
+      Array<Array<int> > nodeDofs_;
+      Array<Array<int> > elemDofs_;
+      Array<int> nodeToFuncSetIndexMap_;
+      Array<int> elemToFuncSetIndexMap_;
+      Array<Set<int> > elemFuncSets_;
+      Array<Set<int> > nodalFuncSets_;
+      Array<int> nodeToOffsetMap_;
+      Array<int> elemToOffsetMap_;
+
+      Array<Array<int> > funcIndexWithinNodeFuncSet_;
+
+      Array<RefCountPtr<const MapStructure> > elemStructure_;
+      Array<RefCountPtr<const MapStructure> > nodeStructure_;
     };
   }
 }

@@ -52,29 +52,6 @@ DOFMapBase::DOFMapBase(const Mesh& mesh)
     ghostIndices_(rcp(new Array<int>()))
 {}
 
-void DOFMapBase::verifySubregionIndex(int subregionIndex) const
-{
-  TEST_FOR_EXCEPTION(subregionIndex < 0 
-                     || subregionIndex >= numHomogeneousSubregions(),
-                     RuntimeError,
-                     "Subregion index=" << subregionIndex
-                     << " out of range [0, " << numHomogeneousSubregions()
-                     << ")");
-}
-
-void DOFMapBase::verifyBasisChunkIndex(int subregionIndex,
-                                       int basisChunk) const
-{
-  verifySubregionIndex(subregionIndex);
-  TEST_FOR_EXCEPTION(basisChunk < 0 
-                     || basisChunk >= nBasisChunks(subregionIndex), 
-                     RuntimeError, 
-                     "Basis chunk index=" << basisChunk
-                     << " out of range [0, " << nBasisChunks(subregionIndex)
-                     << ") on subregion=" << subregionIndex);
-}
-
-
 
 void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
                                 int funcID,
@@ -82,19 +59,14 @@ void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
 {
   TimeMonitor timer(dofLookupTimer());
   
-  Array<int> tmp = tuple(cellLID);
-  RefCountPtr<Array<int> > cellLIDs = rcp(&tmp, false);
-  Array<RefCountPtr<Array<int> > > batches;
-  Array<int> subregionIndices;
-
-  getHomogeneousCellBatches(cellLIDs, batches, subregionIndices);
-  
   Array<Array<int> > allDofs;
   Array<int> nNodes;
-  getDOFsForCellBatch(cellDim, *batches[0], allDofs, nNodes);
+  RefCountPtr<const MapStructure> s 
+    = getDOFsForCellBatch(cellDim, tuple(cellLID), makeSet(funcID), allDofs, nNodes);
 
-  int chunkNumber = chunkForFuncID(subregionIndices[0], funcID);
-  int funcIndex = indexForFuncID(subregionIndices[0], chunkNumber, funcID);
+
+  int chunkNumber = s->chunkForFuncID(funcID);
+  int funcIndex = s->indexForFuncID(funcID);
   dofs.resize(nNodes[chunkNumber]);
   for (int i=0; i<nNodes[chunkNumber]; i++)
     {

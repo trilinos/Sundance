@@ -51,7 +51,7 @@ static Time& nodalDOFCtorTimer()
 NodalDOFMap::NodalDOFMap(const Mesh& mesh, 
                          int nFuncs, 
                          const CellFilter& maxCellFilter)
-  : SpatiallyHomogeneousDOFMapBase(mesh),
+  : SpatiallyHomogeneousDOFMapBase(mesh, nFuncs),
     maxCellFilter_(maxCellFilter),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),
@@ -60,82 +60,18 @@ NodalDOFMap::NodalDOFMap(const Mesh& mesh,
     nNodesPerElem_(mesh.numFacets(mesh.spatialDim(),0,0)),
     elemDofs_(nElems_ * nFuncs * nNodesPerElem_),
     nodeDofs_(mesh.numCells(0)*nFuncs_, -1),
-    basis_(new Lagrange(1)),
-    funcIDs_(nFuncs),
-    funcSet_()
+    structure_(rcp(new MapStructure(nFuncs_, new Lagrange(1))))
 {
-  for (int i=0; i<nFuncs_; i++) 
-    {
-      funcSet_.put(i);
-      funcIDs_[i] = i;
-    }
-
   init();
 }
 
-const Set<int>& NodalDOFMap::getFuncSet(int homogSubregionIndex) const 
-{
-  verifySubregionIndex(homogSubregionIndex);
-  return funcSet_;
-}
 
-void NodalDOFMap::getHomogeneousCellBatches(const RefCountPtr<Array<int> >& inputCells,
-                                            Array<RefCountPtr<Array<int> > >& cellBatches,
-                                            Array<int>& homogSubregionIndices) const
-{
-  homogSubregionIndices.resize(1);
-  cellBatches.resize(1);
-  homogSubregionIndices[0] = 0;
-  cellBatches[0] = inputCells;
-}
-
-int NodalDOFMap::chunkForFuncID(int homogSubregionIndex, int funcID) const
-{
-  verifySubregionIndex(homogSubregionIndex);
-
-  TEST_FOR_EXCEPTION(funcID < 0 || funcID >=nFuncs_, RuntimeError,
-                     "Invalid function ID = " << funcID << ". NFuncs="
-                     << nFuncs_);
-  return 0;
-}
-
-int NodalDOFMap::indexForFuncID(int homogSubregionIndex, int basisChunk, int funcID) const
-{
-  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
-
-  TEST_FOR_EXCEPTION(funcID < 0 || funcID >=nFuncs_, RuntimeError,
-                     "Invalid function ID = " << funcID << ". NFuncs="
-                     << nFuncs_);
-  return funcID;
-}
-
-int NodalDOFMap::nFuncs(int homogSubregionIndex, int basisChunk) const
-{
-  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
-
-  return nFuncs_;
-} 
-
-const BasisFamily& NodalDOFMap::basis(int homogSubregionIndex, 
-                                      int basisChunk) const
-{
-  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
-
-  return basis_;
-}
-
-const Array<int>& NodalDOFMap::funcID(int homogSubregionIndex,
-                                      int basisChunk) const 
-{
-  verifyBasisChunkIndex(homogSubregionIndex, basisChunk);
-
-  return funcIDs_;
-}
-
-void NodalDOFMap::getDOFsForCellBatch(int cellDim, 
-                                      const Array<int>& cellLID,
-                                      Array<Array<int> >& dofs,
-                                      Array<int>& nNodes) const
+RefCountPtr<const MapStructure> 
+NodalDOFMap::getDOFsForCellBatch(int cellDim,
+                                 const Array<int>& cellLID,
+                                 const Set<int>& requestedFuncSet,
+                                 Array<Array<int> >& dofs,
+                                 Array<int>& nNodes) const
 {
   TimeMonitor timer(batchedDofLookupTimer());
 
@@ -144,8 +80,6 @@ void NodalDOFMap::getDOFsForCellBatch(int cellDim,
                tab << "NodalDOFMap::getDOFsForCellBatch(): cellDim=" << cellDim
                << " cellLID=" << cellLID);
 
-
-  if (cellLID.size()==0) return;
 
   dofs.resize(1);
   nNodes.resize(1);
@@ -206,6 +140,8 @@ void NodalDOFMap::getDOFsForCellBatch(int cellDim,
             }
         }
     }
+
+  return structure_;
 }
 
 

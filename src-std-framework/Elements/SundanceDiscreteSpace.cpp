@@ -43,56 +43,52 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                              const VectorType<double>& vecType)
   : map_(),
     mesh_(mesh), 
-    basis_(tuple(basis)),
-    regions_(maximalRegions(basis_.size())),
+    basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
 {
-  init();
+  init(maximalRegions(1), tuple(basis));
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const VectorType<double>& vecType)
   : map_(), 
     mesh_(mesh), 
-    basis_(basis), 
-    regions_(maximalRegions(basis_.size())),
+    basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
 {
-  init();
+  init(maximalRegions(basis.size()), basis);
 }
 
-
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const Array<Set<CellFilter> >& regions,
+                             const Array<CellFilter>& funcDomains,
                              const VectorType<double>& vecType)
   : map_(), 
     mesh_(mesh), 
-    basis_(basis), 
-    regions_(regions),
+    basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
 {
-  init();
+  init(funcDomains, basis);
 }
+
 
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const RefCountPtr<DOFMapBase>& map,
                              const VectorType<double>& vecType)
   : map_(map), 
-    mesh_(mesh), 
-    basis_(basis), 
-    regions_(maximalRegions(basis_.size())),
+    mesh_(mesh),
+    basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
 {
-  init();
+  init(map->funcDomains(), basis);
 }
 
 
@@ -101,13 +97,13 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                              const VectorType<double>& vecType)
   : map_(),
     mesh_(mesh), 
-    basis_(replicate(basis, spBasis.nterms())),
-    regions_(maximalRegions(basis_.size())),
+    basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
 {
-  init();
+  init(maximalRegions(spBasis.nterms()), 
+       replicate(basis, spBasis.nterms()));
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
@@ -115,39 +111,28 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const VectorType<double>& vecType)
   : map_(), 
     mesh_(mesh), 
-    basis_(replicate(basis, spBasis.nterms())),
-    regions_(maximalRegions(basis_.size())),
+    basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
 {
-  init();
-}
-
-
-DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const SpectralBasis& spBasis,
-                             const Array<Set<CellFilter> >& regions,
-                             const VectorType<double>& vecType)
-  : map_(), 
-    mesh_(mesh), 
-    basis_(replicate(basis, spBasis.nterms())),
-    regions_(regions),
-    vecSpace_(), 
-    vecType_(vecType),
-    ghostImporter_()
-{
-  init();
+  init(maximalRegions(basis.size() * spBasis.nterms()), 
+       replicate(basis, spBasis.nterms()));
 }
 
 
 
-void DiscreteSpace::init()
+void DiscreteSpace::init(const Array<CellFilter>& regions,
+                         const BasisArray& basis)
 {
+  basis_ = basis;
   if (map_.get()==0) 
     {
-      map_ = DOFMapBuilder::makeMap(mesh_, basis_, regions_);
+      Array<Set<CellFilter> > cf(regions.size());
+      for (unsigned int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
+      map_ = DOFMapBuilder::makeMap(mesh_, basis, cf);
     }
+  
   int nDof = map_->numLocalDOFs();
   int lowDof = map_->lowestLocalDOF();
   
@@ -167,16 +152,10 @@ void DiscreteSpace::init()
   ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
 }
 
-Array<Set<CellFilter> > DiscreteSpace::maximalRegions(int n) const
+Array<CellFilter> DiscreteSpace::maximalRegions(int n) const
 {
   CellFilter cf = new MaximalCellFilter();
-  Array<Set<CellFilter> > rtn(n);
-  for (int i=0; i<n; i++) 
-    {
-      Set<CellFilter> s;
-      s.put(cf);
-      rtn[i] = s;
-    }
+  Array<CellFilter> rtn(n, cf);
   return rtn;
 }
 

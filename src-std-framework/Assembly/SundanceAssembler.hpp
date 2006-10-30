@@ -166,6 +166,8 @@ namespace SundanceStdFwk
       /** */
       void insertLocalMatrixBatch(int nCells, 
                                   bool isBCRqc,
+                                  const Array<RefCountPtr<const MapStructure> >& rowMapStruct,
+                                  const Array<RefCountPtr<const MapStructure> >& colMapStruct,
                                   const Array<Array<Array<int> > >& testIndices,
                                   const Array<Array<Array<int> > >& unkIndices,
                                   const Array<Array<int> >& nTestNodes, 
@@ -180,6 +182,7 @@ namespace SundanceStdFwk
       /** */
       void insertLocalVectorBatch(int nCells, 
                                   bool isBCRqc,
+                                  const Array<RefCountPtr<const MapStructure> >& rowMapStruct,
                                   const Array<Array<Array<int> > >& testIndices,
                                   const Array<Array<int> >& nTestNodes, 
                                   const Array<int>& testID, 

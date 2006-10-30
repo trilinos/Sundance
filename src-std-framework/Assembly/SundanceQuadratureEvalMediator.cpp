@@ -230,15 +230,8 @@ void QuadratureEvalMediator
        cerr << tab << "evaluting DF " << expr->name() << endl;
      }
 
-   const RefCountPtr<DOFMapBase>& dofMap = f->map(); 
-
    int nQuad = quadWgts().size();
    int myIndex = expr->myIndex();
-   int sub = 0;
-   int chunk = dofMap->chunkForFuncID(sub, myIndex);
-   int funcIndex = dofMap->indexForFuncID(sub, chunk, myIndex);
-   int nFuncs = dofMap->nFuncs(sub, chunk);
-
 
    for (unsigned int i=0; i<multiIndices.size(); i++)
     {
@@ -263,6 +256,11 @@ void QuadratureEvalMediator
           else
             {
             }
+
+          const RefCountPtr<const MapStructure>& mapStruct = mapStructCache()[f];
+          int chunk = mapStruct->chunkForFuncID(myIndex);
+          int funcIndex = mapStruct->indexForFuncID(myIndex);
+          int nFuncs = mapStruct->numFuncs(chunk);
 
           const RefCountPtr<Array<Array<double> > >& cacheVals 
             = fCache()[f];
@@ -291,6 +289,11 @@ void QuadratureEvalMediator
             {
             }
 
+          const RefCountPtr<const MapStructure>& mapStruct = mapStructCache()[f];
+          int chunk = mapStruct->chunkForFuncID(myIndex);
+          int funcIndex = mapStruct->indexForFuncID(myIndex);
+          int nFuncs = mapStruct->numFuncs(chunk);
+
           const RefCountPtr<Array<Array<double> > >& cacheVals 
             = dfCache()[f];
 
@@ -300,7 +303,7 @@ void QuadratureEvalMediator
           double* vecPtr = vec[i]->start();
 
           int cellSize = nQuad*nFuncs*dim;
-          int offset = myIndex * nQuad * dim;
+          int offset = funcIndex * nQuad * dim;
           int k = 0;
 
           for (unsigned int c=0; c<cellLID()->size(); c++)
@@ -317,14 +320,30 @@ void QuadratureEvalMediator
 void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
                                                const MultiIndex& mi) const 
 {
-  const RefCountPtr<DOFMapBase>& dofMap = f->discreteSpace().map();
   int diffOrder = mi.order();
 
   int flops = 0;
   double jFlops = CellJacobianBatch::totalFlops();
 
+  RefCountPtr<Array<Array<double> > > localValues;
+  RefCountPtr<const MapStructure> mapStruct;
+  if (!localValueCacheIsValid().containsKey(f) 
+      || !localValueCacheIsValid().get(f))
+    {
+      localValues = rcp(new Array<Array<double> >());
+      mapStruct = f->getLocalValues(cellDim(), *cellLID(), *localValues);
+      localValueCache().put(f, localValues);
+      mapStructCache().put(f, mapStruct);
+      localValueCacheIsValid().put(f, true);
+    }
+  else
+    {
+      localValues = localValueCache().get(f);
+      mapStruct = mapStructCache().get(f);
+    }
+
   RefCountPtr<Array<Array<double> > > cacheVals;
-  int sub = 0;
+
   if (mi.order()==0)
     {
       if (fCache().containsKey(f))
@@ -333,7 +352,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         }
       else
         {
-          cacheVals = rcp(new Array<Array<double> >(dofMap->nBasisChunks(sub)));
+          cacheVals = rcp(new Array<Array<double> >(mapStruct->numBasisChunks()));
           fCache().put(f, cacheVals);
         }
       fCacheIsValid().put(f, true);
@@ -346,31 +365,18 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         }
       else
         {
-          cacheVals = rcp(new Array<Array<double> >(dofMap->nBasisChunks(sub)));
+          cacheVals = rcp(new Array<Array<double> >(mapStruct->numBasisChunks()));
           dfCache().put(f, cacheVals);
         }
       dfCacheIsValid().put(f, true);
     }
 
-  RefCountPtr<Array<Array<double> > > localValues;
-  if (!localValueCacheIsValid().containsKey(f) 
-      || !localValueCacheIsValid().get(f))
-    {
-      localValues = rcp(new Array<Array<double> >());
-      f->getLocalValues(cellDim(), *cellLID(), *localValues);
-      localValueCache().put(f, localValues);
-      localValueCacheIsValid().put(f, true);
-    }
-  else
-    {
-      localValues = localValueCache().get(f);
-    }
 
   
-  for (int chunk=0; chunk<dofMap->nBasisChunks(sub); chunk++)
+  for (int chunk=0; chunk<mapStruct->numBasisChunks(); chunk++)
     {
-      const BasisFamily& basis = dofMap->basis(sub, chunk);
-      int nFuncs = dofMap->nFuncs(sub, chunk);
+      const BasisFamily& basis = mapStruct->basis(chunk);
+      int nFuncs = mapStruct->numFuncs(chunk);
 
       RefCountPtr<Array<double> > refBasisValues 
         = getRefBasisVals(basis, diffOrder);

@@ -67,43 +67,42 @@ namespace SundanceStdFwk
       /** */
       virtual ~MixedDOFMap(){;}
 
+      /** */
+      RefCountPtr<const MapStructure> 
+      getDOFsForCellBatch(int cellDim,
+                          const Array<int>& cellLID,
+                          const Set<int>& requestedFuncSet,
+                          Array<Array<int> >& dofs,
+                          Array<int>& nNodes) const ;
 
       /** */
-      virtual void getDOFsForCellBatch(int cellDim, 
-                                       const Array<int>& cellLID,
-                                       Array<Array<int> >& dofs,
-                                       Array<int>& nNodes) const ;
+      RefCountPtr<const MapStructure> mapStruct() const 
+      {return structure_;}
 
       /** */
-      const Set<int>& getFuncSet(int homogSubregionIndex) const ;
+      int chunkForFuncID(int funcID) const
+      {return structure_->chunkForFuncID(funcID);}
 
       /** */
-      int chunkForFuncID(int homogSubregionIndex, int funcID) const
-      {return funcIDToChunkIndexMap_[funcID];}
-
-      /** */
-      int indexForFuncID(int homogSubregionIndex, int basisChunk, 
-                         int funcID) const 
-      {return funcIDToFuncIndexMap_[funcID];}
+      int indexForFuncID(int funcID) const 
+      {return structure_->indexForFuncID(funcID);}
       
       /** */
-      int nFuncs(int homogSubregionIndex, int basisChunk) const
-      {return chunkFuncIDs_[basisChunk].size();}
+      int nFuncs(int basisChunk) const
+      {return nFuncs_[basisChunk];}
 
       /** */
-      int nBasisChunks(int homogSubregionIndex) const 
-      {return chunkFuncIDs_.size();}
+      int nBasisChunks() const 
+      {return nFuncs_.size();}
 
       /** */
-      const BasisFamily& basis(int homogSubregionIndex, 
-                               int basisChunk) const
-      {return chunkBasis_[basisChunk];}
+      const BasisFamily& basis(int basisChunk) const
+      {return structure_->basis(basisChunk);}
 
       /** */
-      const Array<int>& funcID(int subregionIndex, 
-                               int chunk) const 
-      {return chunkFuncIDs_[chunk];}
-      
+      const Array<int>& funcID(int basisChunk) const 
+      {return structure_->funcs(basisChunk);}
+
 
     private:
 
@@ -155,18 +154,6 @@ namespace SundanceStdFwk
 
       /** */
       CellFilter maxCells_;
-
-      /** Table of bases for each chunk */
-      Array<BasisFamily> chunkBasis_;
-
-      /** Table of lists of funcID for each chunk */
-      Array<Array<int> > chunkFuncIDs_;
-
-      /** Map for lookup of chunk number given a function ID */
-      Array<int> funcIDToChunkIndexMap_;
-
-      /** Map for lookup of index into chunk given a function ID */
-      Array<int> funcIDToFuncIndexMap_;
 
       /** spatial dimension */
       int dim_;
@@ -230,7 +217,10 @@ namespace SundanceStdFwk
       Array<Array<int> > hasBeenAssigned_;
 
       /** */
-      Set<int> funcSet_;
+      RefCountPtr<const MapStructure> structure_;
+
+      /** */
+      Array<int> nFuncs_;
     };
   }
 }

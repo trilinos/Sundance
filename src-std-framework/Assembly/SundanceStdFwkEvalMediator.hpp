@@ -74,7 +74,7 @@ namespace SundanceStdFwk
 
       /** */
       void setCellBatch(bool useMaximalCellsForTransformations,
-                        const RefCountPtr<Array<int> >& cellLID);
+                        const RefCountPtr<const Array<int> >& cellLID);
 
 
       /** Update the cell type */
@@ -122,7 +122,7 @@ namespace SundanceStdFwk
 
       const CellType& maxCellType() const {return maxCellType_;}
 
-      const RefCountPtr<Array<int> >& cellLID() const {return cellLID_;}
+      const RefCountPtr<const Array<int> >& cellLID() const {return cellLID_;}
 
       bool& cacheIsValid() const {return cacheIsValid_;}
 
@@ -132,6 +132,10 @@ namespace SundanceStdFwk
       Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& dfCache() const {return dfCache_;}
       /** */
       Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& localValueCache() const {return localValueCache_;}
+
+      Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> >& mapStructCache() const
+      {return mapStructCache_;}
+
       /** */
       Map<const DiscreteFunctionData*, bool>& fCacheIsValid() const {return fCacheIsValid_;}
       /** */
@@ -148,7 +152,7 @@ namespace SundanceStdFwk
 
       CellType maxCellType_;
 
-      RefCountPtr<Array<int> > cellLID_;
+      RefCountPtr<const Array<int> > cellLID_;
 
       bool useMaximalCells_;
 
@@ -170,6 +174,8 @@ namespace SundanceStdFwk
       mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > dfCache_; 
       /** */
       mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > localValueCache_;
+      /** */
+      mutable Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> > mapStructCache_;
 
       /** */
       mutable Map<const DiscreteFunctionData*, bool> fCacheIsValid_;

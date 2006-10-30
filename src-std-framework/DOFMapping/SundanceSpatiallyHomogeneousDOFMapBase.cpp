@@ -31,6 +31,7 @@
 #include "SundanceSpatiallyHomogeneousDOFMapBase.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceMaximalCellFilter.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -38,18 +39,15 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 
-SpatiallyHomogeneousDOFMapBase::SpatiallyHomogeneousDOFMapBase(const Mesh& mesh)
-  : DOFMapBase(mesh)
-{}
-
-void SpatiallyHomogeneousDOFMapBase::getHomogeneousCellBatches(const RefCountPtr<Array<int> >& inputCells,
-                                                           Array<RefCountPtr<Array<int> > >& cellBatches,
-                                                           Array<int>& homogSubregionIndices) const
+SpatiallyHomogeneousDOFMapBase::SpatiallyHomogeneousDOFMapBase(const Mesh& mesh,
+                                                               int nTotalFuncs)
+  : DOFMapBase(mesh), allowedFuncs_(), funcDomains_()
 {
-  homogSubregionIndices.resize(1);
-  cellBatches.resize(1);
-  homogSubregionIndices[0] = 0;
-  cellBatches[0] = inputCells;
+  RefCountPtr<Set<int> > f = rcp(new Set<int>());
+  for (int i=0; i<nTotalFuncs; i++) f->put(i);
+  allowedFuncs_ = f;
+  CellFilter cf = new MaximalCellFilter();
+  funcDomains_ = Array<CellFilter>(nTotalFuncs, cf);
 }
 
 
@@ -59,6 +57,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
 
   Tabs tabs;
   int dim = mesh().spatialDim();
+  RefCountPtr<const MapStructure> s = mapStruct();
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
     {
@@ -94,14 +93,14 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                       os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
                          << endl;
                     }
-                  for (int b=0; b<nBasisChunks(0); b++)
+                  for (int b=0; b<s->numBasisChunks(); b++)
                     {
-                      for (unsigned int f=0; f<funcID(0,b).size(); f++)
+                      for (unsigned int f=0; f<s->funcs(b).size(); f++)
                         {
                           Tabs tabs3;
                           Array<int> dofs;
-                          getDOFsForCell(d, c, funcID(0,b)[f], dofs);
-                          os << tabs3 << "f=" << funcID(0,b)[f] << " " 
+                          getDOFsForCell(d, c, s->funcs(b)[f], dofs);
+                          os << tabs3 << "f=" << s->funcs(b)[f] << " " 
                              << dofs << endl;
                           if (false)
                             {
