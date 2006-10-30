@@ -397,6 +397,9 @@ namespace SundanceStdFwk
     return rtn;
   }
 
+  /** \relates CellFilter */
+  typedef Array<CellFilter> CellFilterArray;
+
 }
 
 namespace std

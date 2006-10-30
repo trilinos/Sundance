@@ -113,6 +113,18 @@ namespace SundanceStdFwk
     }
   }
 
+
+  class CellFilterArray
+  {
+  public:
+    CellFilterArray();
+    ~CellFilterArray();
+
+    unsigned int size() const ;
+
+    void append(const CellFilter& x);
+  };
+
 }
 
 %rename(MaximalCellFilter) makeMaximalCellFilter;
@@ -154,3 +166,50 @@ namespace SundanceStdFwk
     return new SundanceStdFwk::PositionalCellPredicate(f);
   }
   %}
+
+
+
+%inline %{
+  /*  */
+  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a)
+  {
+    return SundanceStdFwk::List(a);
+  }
+
+  /*  */
+  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
+                                 const SundanceStdFwk::CellFilter& b)
+  {
+    return SundanceStdFwk::List(a, b);
+  }
+
+  /*  */
+  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
+                                 const SundanceStdFwk::CellFilter& b,
+                                 const SundanceStdFwk::CellFilter& c)
+  {
+    return SundanceStdFwk::List(a, b, c);
+  }
+
+  /*  */
+  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
+                                 const SundanceStdFwk::CellFilter& b,
+                                 const SundanceStdFwk::CellFilter& c,
+                                 const SundanceStdFwk::CellFilter& d)
+  {
+    return SundanceStdFwk::List(a, b, c, d);
+  }
+
+  /*  */
+  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
+                                 const SundanceStdFwk::CellFilter& b,
+                                 const SundanceStdFwk::CellFilter& c,
+                                 const SundanceStdFwk::CellFilter& d,
+                                 const SundanceStdFwk::CellFilter& e)
+  {
+    return SundanceStdFwk::List(a, b, c, d, e);
+  }
+
+  %}
+
+
