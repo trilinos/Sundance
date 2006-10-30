@@ -55,9 +55,12 @@ def main():
   A = interior.subset(APredicate())
   B = interior.subset(BPredicate())
 
-  # Now we define a discrete space for two field variables
-  # such that one field is defined
-  # everywhere and another field is defined only on the subset A+B
+  # Now we define a discrete space for two field variables, one of
+  # which is defined only on a subset of the domain.
+  # To specify the domains of the functions, create a CellFilterList
+  # containing the domains for each function. In the present
+  # example, the first field is discretized on the whole interior
+  # and the second on the union of A and B. 
   funcDomains = CellFilterList(interior, A+B)
   basisList = BasisList(basis, basis)
   discSpace = DiscreteSpace(mesh, basisList, funcDomains, vecType)
