@@ -110,6 +110,7 @@ int main(int argc, void** argv)
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
+
       Sundance::passFailTest(sqrt(errorSq), 1.0e-8);
     }
 	catch(exception& e)

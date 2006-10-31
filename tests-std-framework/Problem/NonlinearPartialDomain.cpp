@@ -120,6 +120,13 @@ int main(int argc, void** argv)
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
 
+      /* Write the field in VTK format */
+      FieldWriter w = new VTKWriter("PartialDomain2d");
+      w.addMesh(mesh);
+      w.addField("u1", new ExprFieldWrapper(u0[0]));
+      w.addField("u2", new ExprFieldWrapper(u0[1]));
+      w.write();
+
       Sundance::passFailTest(sqrt(errorSq), 1.0e-4);
       
     }

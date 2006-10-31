@@ -92,6 +92,9 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
 double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
 {
   Array<int> dofs;
+  RefCountPtr<const Set<int> > allowedFuncs 
+    = map_->allowedFuncsOnCellBatch(cellDim, tuple(cellID));
+  if (!allowedFuncs->contains(indices_[elem])) return 0.0;
   map_->getDOFsForCell(cellDim, cellID, indices_[elem], dofs);
   TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
                      "too many DOFs found in ExprFieldWrapper::getData()");

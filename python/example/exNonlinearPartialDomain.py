@@ -91,6 +91,12 @@ def main():
   error = math.sqrt(err2)
   print "error = " , error
 
+  writer = VTKWriter("PartialDomain2D");
+  writer.addMesh(mesh)
+  writer.addField("u0", u0[0])
+  writer.addField("u1", u0[1])
+  writer.write()
+
   tol = 1.0e-4
   passFailTest(error, tol)
   
