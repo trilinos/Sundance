@@ -41,13 +41,6 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-static Time& nodalDOFCtorTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("nodal DOF map init"); 
-  return *rtn;
-}
-
 NodalDOFMap::NodalDOFMap(const Mesh& mesh, 
                          int nFuncs, 
                          const CellFilter& maxCellFilter)
@@ -148,7 +141,6 @@ NodalDOFMap::getDOFsForCellBatch(int cellDim,
 
 void NodalDOFMap::init() 
 { 
-  TimeMonitor timer(nodalDOFCtorTimer());
   Tabs tab;
 
   SUNDANCE_VERB_LOW(tab << "initializing nodal DOF map");

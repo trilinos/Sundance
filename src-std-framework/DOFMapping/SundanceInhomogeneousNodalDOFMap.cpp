@@ -41,12 +41,6 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-static Time& DOFBuilderCtorTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("inhomog dof map"); 
-  return *rtn;
-}
 
 InhomogeneousNodalDOFMap
 ::InhomogeneousNodalDOFMap(const Mesh& mesh, 
@@ -68,7 +62,6 @@ InhomogeneousNodalDOFMap
     elemStructure_(),
     nodeStructure_()
 {
-  TimeMonitor timer(DOFBuilderCtorTimer());
 
   /* count the total number of functions across all subdomains */
   Set<int> allFuncs;
@@ -441,6 +434,8 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
                                               Array<Array<int> >& dofs,
                                               Array<int>& nNodes) const 
 {
+  TimeMonitor timer(batchedDofLookupTimer());
+
   if (cellDim==0)
     {
       bool isHomogeneous = true;
