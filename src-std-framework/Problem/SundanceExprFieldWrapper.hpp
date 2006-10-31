@@ -66,6 +66,9 @@ namespace SundanceStdFwk
       /** */
       virtual double getData(int cellDim, int cellID, int elem) const ;
 
+      /** */
+      virtual bool isDefined(int cellDim, int cellID, int elem) const ;
+
       /* */
       GET_RCP(FieldBase);
 

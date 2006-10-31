@@ -68,6 +68,10 @@ namespace SundanceStdMesh
     /** add a field, tagging it with the given string as a name */
     void addField(const string& name, 
                   const Handle<FieldBase>& field) ;
+
+    /** set the numerical value to be written at cells on which
+     * a field is undefined. Default value is 0.0. */
+    void setUndefinedValue(const double& x);
     
 
     /** write to stream */

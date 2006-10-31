@@ -73,7 +73,14 @@ namespace SundanceStdMesh
       /**  */
       virtual void impersonateParallelProc(int nProc, int rank) ;
 
+      /** set the numerical value to be written at cells on which
+       * a field is undefined. */
+      void setUndefinedValue(const double& x) {undefinedValue_ = x;}
+
     protected:
+
+      /** */
+      double undefinedValue() const {return undefinedValue_;}
       /** */
       int nProc() const ;
 
@@ -142,6 +149,8 @@ namespace SundanceStdMesh
       Array<string> cellScalarNames_;
       Array<string> pointVectorNames_;
       Array<string> cellVectorNames_;
+
+      double undefinedValue_;
     };
   }
 }

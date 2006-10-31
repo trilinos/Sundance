@@ -42,6 +42,8 @@ namespace SundanceStdMesh
 
     void write();
 
+    void setUndefinedValue(const double& x);
+
   };
 
 }

@@ -92,6 +92,7 @@ def main():
   print "error = " , error
 
   writer = VTKWriter("PartialDomain2D");
+  writer.setUndefinedValue(-1.0)
   writer.addMesh(mesh)
   writer.addField("u0", u0[0])
   writer.addField("u1", u0[1])

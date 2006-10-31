@@ -59,6 +59,11 @@ void FieldWriter::write() const
   ptr()->write();
 }
 
+void FieldWriter::setUndefinedValue(const double& x) 
+{
+  ptr()->setUndefinedValue(x);
+}
+
 void FieldWriter::addField(const string& name, 
                            const Handle<FieldBase>& field)
 {

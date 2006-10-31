@@ -54,7 +54,8 @@ FieldWriterBase::FieldWriterBase(const string& filename)
     pointScalarNames_(),
     cellScalarNames_(),
     pointVectorNames_(),
-    cellVectorNames_()
+    cellVectorNames_(),
+    undefinedValue_(0.0)
 {;}
 
 

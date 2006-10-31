@@ -324,7 +324,10 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
             {
               for (int j=0; j<expr->numElems(); j++)
                 {
-                  os << (float) expr->getData(0, i, j) << endl;
+                  if (expr->isDefined(0,i,j))
+                    os << (float) expr->getData(0, i, j) << endl;
+                  else
+                    os << undefinedValue() << endl;
                 }
             }
         }
@@ -337,7 +340,10 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
             {
               for (int j=0; j<expr->numElems(); j++)
                 {
-                  os << (float) expr->getData(dim, c, j) << endl;
+                  if (expr->isDefined(0,c,j))
+                    os << (float) expr->getData(0, c, j) << endl;
+                  else
+                    os << undefinedValue() << endl;
                 }
             }
         }
