@@ -71,6 +71,18 @@ namespace SundanceStdFwk
                   const Array<CellFilter>& regions,
                   const VectorType<double>& vecType);
 
+
+    /** */
+    DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
+                  const CellFilter& regions,
+                  const VectorType<double>& vecType);
+
+
+    /** */
+    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+                  const CellFilter& regions,
+                  const VectorType<double>& vecType);
+
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const RefCountPtr<DOFMapBase>& map,
@@ -112,6 +124,9 @@ namespace SundanceStdFwk
 
     /** */
     void getAllowedFuncs(const CellFilter& cf, Set<int>& funcs) const ;
+
+    /** */
+    const CellFilter& cellFilters(int i) const {return subdomains_[i];}
   private:
 
     /** */
@@ -121,11 +136,15 @@ namespace SundanceStdFwk
     /** */
     Array<CellFilter> maximalRegions(int n) const ;
 
+
     /** */
     RefCountPtr<DOFMapBase> map_;
 
     /** */
     Mesh mesh_;
+
+    /** */
+    Array<CellFilter> subdomains_;
 
     /** */
     BasisArray basis_;

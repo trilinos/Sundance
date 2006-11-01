@@ -102,7 +102,9 @@ int MapStructure::chunkForFuncID(int funcID) const
   TEST_FOR_EXCEPTION(rtn < 0, InternalError,
                      "funcID=" << funcID << " not defined in map chunk."
                      " The functions defined there are " 
-                     << funcs_);
+                     << funcs_ << ". The most likely cause of this error is "
+                     "that you are trying to access a discrete function on "
+                     "subdomain for which it is not defined.");
   return rtn;
 }
 
@@ -112,7 +114,9 @@ int MapStructure::indexForFuncID(int funcID) const
   TEST_FOR_EXCEPTION(rtn < 0, InternalError,
                      "funcID=" << funcID << " not defined in map chunk."
                      " The functions defined there are " 
-                     << funcs_);
+                     << funcs_ << ". The most likely cause of this error is "
+                     "that you are trying to access a discrete function on "
+                     "subdomain for which it is not defined.");
 
   return rtn;
 }

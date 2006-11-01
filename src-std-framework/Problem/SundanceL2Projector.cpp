@@ -79,22 +79,20 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   CellFilter interior = new MaximalCellFilter();
 
   int dim = space.mesh().spatialDim();
-  Expr smoothingTerm = 0.0;
-  if (smoothing > 0.0)
-    {
-      for (int i=0; i<dim; i++)
-        {
-          Expr dx_i = new Derivative(i);
-          for (unsigned int j=0; j<v.size(); j++)
-            {
-              smoothingTerm = smoothingTerm 
-                + smoothing*(dx_i*v[j])*(dx_i*u[j]);
-            }
-        }
-    }
+  Expr eqn = 0.0;
 
-  Expr eqn = Integral(interior, smoothingTerm + v*(u-expr), 
-                      new GaussianQuadrature(4));
+  for (unsigned int i=0; i<space.basis().size(); i++)
+    {
+      Expr smoothingTerm = 0.0;
+      for (int j=0; j<dim; j++)
+        {
+          Expr dx_j = new Derivative(j);
+          smoothingTerm = smoothingTerm + smoothing*(dx_j*v[i])*(dx_j*u[i]);
+        }
+      eqn = eqn + Integral(space.cellFilters(i), 
+                           smoothingTerm + v[i]*(u[i]-expr[i]), 
+                           new GaussianQuadrature(4));
+    }
   Expr bc;
 
   prob_ = LinearProblem(space.mesh(), eqn, bc, v, u, space.vecType());

@@ -408,7 +408,6 @@ bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh,
       if (!isWholeDomain(mesh, *iter)) return false;
     }
 
-  cout << "all funcs are omnipresent" << endl;
   return true;
 }
 

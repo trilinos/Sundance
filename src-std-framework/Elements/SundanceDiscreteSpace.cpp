@@ -43,6 +43,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                              const VectorType<double>& vecType)
   : map_(),
     mesh_(mesh), 
+    subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
@@ -55,6 +56,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const VectorType<double>& vecType)
   : map_(), 
     mesh_(mesh), 
+    subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
@@ -68,6 +70,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const VectorType<double>& vecType)
   : map_(), 
     mesh_(mesh), 
+    subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
@@ -77,12 +80,43 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 }
 
 
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
+                             const CellFilter& funcDomains,
+                             const VectorType<double>& vecType)
+  : map_(), 
+    mesh_(mesh), 
+    subdomains_(),
+    basis_(),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  init(tuple(funcDomains), tuple(basis));
+}
+
+
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+                             const CellFilter& funcDomains,
+                             const VectorType<double>& vecType)
+  : map_(), 
+    mesh_(mesh), 
+    subdomains_(),
+    basis_(),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  init(Array<CellFilter>(basis.size(), funcDomains), basis);
+}
+
+
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const RefCountPtr<DOFMapBase>& map,
                              const VectorType<double>& vecType)
   : map_(map), 
     mesh_(mesh),
+    subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
@@ -97,6 +131,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                              const VectorType<double>& vecType)
   : map_(),
     mesh_(mesh), 
+    subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
@@ -111,6 +146,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const VectorType<double>& vecType)
   : map_(), 
     mesh_(mesh), 
+    subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
@@ -126,6 +162,7 @@ void DiscreteSpace::init(const Array<CellFilter>& regions,
                          const BasisArray& basis)
 {
   basis_ = basis;
+  subdomains_ = regions;
   if (map_.get()==0) 
     {
       Array<Set<CellFilter> > cf(regions.size());

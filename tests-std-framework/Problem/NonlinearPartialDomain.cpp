@@ -96,14 +96,16 @@ int main(int argc, void** argv)
         + EssentialBC(right, v1*(u1-1.0), quad);
 
       /* Create a discrete space, and discretize the function 1.0 on it */
-      Array<CellFilter> funcDomains = tuple(A+B, interior);
+      Array<CellFilter> funcDomains = tuple(interior, A+B);
       BasisFamily L1 = new Lagrange(1);
       DiscreteSpace discSpace(mesh, tuple(L1, L1), funcDomains, vecType);
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
+
+
       /* We can now set up the nonlinear problem! */
       NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, List(v2, v1), List(u2, u1), u0, vecType);
+        = new NonlinearProblem(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
 
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
       ParameterList noxParams = reader.getParameters();
@@ -114,11 +116,15 @@ int main(int argc, void** argv)
 
       solver.solve();
 
+      DiscreteSpace ds2(mesh, L1, A+B, vecType);
+      L2Projector proj(ds2, 3.0*u0[1]);
+      Expr uDisc = proj.project();
+
       Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
 
-      Expr err = Integral(interior, pow(u0[1] - x, 2.0), quad)
-        + Integral(A, pow(u0[0] - u0[1]*u0[1], 2.0), quad)
-        + Integral(B, pow(u0[0] - 0.4*u0[1], 2.0), quad);
+      Expr err = Integral(interior, pow(u0[0] - x, 2.0), quad)
+        + Integral(A, pow(u0[1] - u0[0]*u0[0], 2.0), quad)
+        + Integral(B, pow(u0[1] - 0.4*u0[0], 2.0), quad);
 
       FunctionalEvaluator errInt(mesh, err);
       double errorSq = errInt.evaluate();

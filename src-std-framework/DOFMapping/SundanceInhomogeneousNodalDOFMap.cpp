@@ -158,6 +158,7 @@ InhomogeneousNodalDOFMap
   for (int n=0; n<nNodes; n++)
     {
       const Set<int>& f = nodeToFuncSetMap[n];
+      if (f.size()==0) continue;
       int funcComboIndex;
       if (!fsToFSIndexMap.containsKey(f)) 
         {
