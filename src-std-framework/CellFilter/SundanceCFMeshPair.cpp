@@ -143,7 +143,6 @@ namespace SundanceStdFwk
     
     for (unsigned int i=0; i<s.size(); i++)
       {
-        cout << "adding CF #" << i << endl;
         CFMeshPair A = s[i];
         Array<CFMeshPair> TN;
         for (unsigned int j=0; j<T.size(); j++)
@@ -164,7 +163,6 @@ namespace SundanceStdFwk
             TN.append(A);
           }
         T = TN;
-        cout << "done" << endl;
       }
     return T;
   }

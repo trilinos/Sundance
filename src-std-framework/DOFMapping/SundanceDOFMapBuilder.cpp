@@ -645,24 +645,24 @@ void DOFMapBuilder::markBCRows(int block)
       
       /* find the functions that appear in BCs on this region */
       const Set<int>& allBcFuncs = eqn_->bcVarsOnRegion(r);
+
       Set<int> bcFuncs;
       for (Set<int>::const_iterator 
              i=allBcFuncs.begin(); i != allBcFuncs.end(); i++)
         {
-          if (block == eqn_->blockForVarID(*i)) bcFuncs.put(*i);
+          if (block == eqn_->blockForVarID(*i)) 
+            {
+              bcFuncs.put(eqn_->reducedVarID(*i));
+            }
         }
       if (bcFuncs.size()==0) continue;
       Array<int> bcFuncID = bcFuncs.elements();
-      for (unsigned int f=0; f<bcFuncID.size(); f++) 
-        {
-          bcFuncID[f] = eqn_->reducedVarID(bcFuncID[f]);
-        }
 
       Array<Array<int> > dofs;
       Array<int> nNodes;
 
       RefCountPtr<const MapStructure> s 
-        = rowMap->getDOFsForCellBatch(dim, *cellLID, allBcFuncs, dofs, nNodes);
+        = rowMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes);
       int offset = rowMap->lowestLocalDOF();
       int high = offset + rowMap->numLocalDOFs();
       

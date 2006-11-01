@@ -12,6 +12,7 @@
 #include "SundanceTriangleMeshReader.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
+#include "SundanceGeomUtils.hpp"
 
   %}
 
@@ -23,6 +24,30 @@
 %include "std_vector.i"
 %include "exception.i"
 
+
+namespace SundanceUtils
+{
+  class Point
+  {
+  public:
+    Point(const double& x);
+    Point(const double& x, const double& y);
+    Point(const double& x, const double& y, const double& z);
+
+    int dim();
+
+    
+  };
+
+  %extend Point
+  {
+    using namespace std;
+    string __str__() 
+    {
+      return self->toString();
+    }
+  }
+}
 
 namespace SundanceStdMesh
 {
@@ -55,6 +80,16 @@ namespace SundanceStdMesh
     ~MeshSource();
     Mesh getMesh() const ;
   };
+
+  int findEnclosingCell(const Mesh& mesh, int initialGuessLID,
+                        const SundanceUtils::Point& x);
+
+  bool cellContainsPoint(const Mesh& mesh, int cellLID, const SundanceUtils::Point& x);
+
+  double orient2D(const SundanceUtils::Point& a, const SundanceUtils::Point& b, const SundanceUtils::Point& x);
+
+  SundanceUtils::Point pullback(const Mesh& mesh, int cellLID, const SundanceUtils::Point& x);
+  void printCell(const Mesh& mesh, int cellLID);
 }
 
 %rename(PartitionedLineMesher) makePartitionedLineMesher;

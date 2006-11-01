@@ -52,6 +52,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellType.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererImplemBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.hpp \
+$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIncrementallyCreatableMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.hpp \
@@ -66,6 +67,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellJacobianBatch.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellType.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererImplemBase.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.cpp \
+$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.cpp \

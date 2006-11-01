@@ -40,6 +40,7 @@
 
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 
 CELL_PREDICATE(ATest, {return x[0] <= 0.4;});
 
@@ -68,12 +69,15 @@ int main(int argc, void** argv)
       Mesh mesh = mesher.getMesh();
 
       Expr x = new CoordExpr(0);
+      Expr dx = new Derivative(0);
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
-      CellFilter points = new DimensionalCellFilter(0);
-      CellFilter leftPoint = points.subset(new LeftPointTest());
+      CellFilter bdry = new BoundaryCellFilter();
+      CellFilter left = bdry.subset(new LeftPointTest());
+      CellFilter right = bdry.subset(new RightPointTest());
+
       CellFilter A = interior.subset(new ATest());
       CellFilter B = interior.subset(new BTest());
       CellFilter C = interior.subset(new CTest());
@@ -85,21 +89,21 @@ int main(int argc, void** argv)
       Expr v2 = new TestFunction(new Lagrange(1));
 
       QuadratureFamily quad = new GaussianQuadrature(4);
-      Expr eqn = Integral(interior, v1*(u1 - 2.0), quad) 
-        + Integral(A, v2*(u2*u2 - x*u1), quad) 
-        + Integral(B, v2*(u2*u2 - 0.4*u1), quad) ;
-      Expr bc;
-
+      Expr eqn = Integral(interior, (dx*u1)*(dx*v1), quad) 
+        + Integral(A, v2*(u2 - u1*u1), quad) 
+        + Integral(B, v2*(u2 - 0.4*u1), quad) ;
+      Expr bc = EssentialBC(left, v1*u1, quad) 
+        + EssentialBC(right, v1*(u1-1.0), quad);
 
       /* Create a discrete space, and discretize the function 1.0 on it */
-      Array<CellFilter> funcDomains = tuple(interior, A+B);
+      Array<CellFilter> funcDomains = tuple(A+B, interior);
       BasisFamily L1 = new Lagrange(1);
       DiscreteSpace discSpace(mesh, tuple(L1, L1), funcDomains, vecType);
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
       /* We can now set up the nonlinear problem! */
       NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
+        = new NonlinearProblem(mesh, eqn, bc, List(v2, v1), List(u2, u1), u0, vecType);
 
       ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
       ParameterList noxParams = reader.getParameters();
@@ -112,9 +116,9 @@ int main(int argc, void** argv)
 
       Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
 
-      Expr err = Integral(interior, pow(u0[0] - 2.0, 2.0), quad)
-        + Integral(A, pow(u0[1]*u0[1] - x*u0[0], 2.0), quad)
-        + Integral(B, pow(u0[1]*u0[1] - 0.4*u0[0], 2.0), quad);
+      Expr err = Integral(interior, pow(u0[1] - x, 2.0), quad)
+        + Integral(A, pow(u0[0] - u0[1]*u0[1], 2.0), quad)
+        + Integral(B, pow(u0[0] - 0.4*u0[1], 2.0), quad);
 
       FunctionalEvaluator errInt(mesh, err);
       double errorSq = errInt.evaluate();

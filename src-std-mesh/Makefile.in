@@ -156,7 +156,7 @@ libsundanceStdMesh_a_DEPENDENCIES =
 am__objects_1 = SundanceCellJacobianBatch.$(OBJEXT) \
 	SundanceCellType.$(OBJEXT) \
 	SundanceCellReordererImplemBase.$(OBJEXT) \
-	SundanceCellReorderer.$(OBJEXT) \
+	SundanceCellReorderer.$(OBJEXT) SundanceGeomUtils.$(OBJEXT) \
 	SundanceIdentityReorderer.$(OBJEXT) SundanceMesh.$(OBJEXT) \
 	SundanceMeshBase.$(OBJEXT) SundanceMeshType.$(OBJEXT)
 am__objects_2 = SundanceBasicSimplicialMesh.$(OBJEXT) \
@@ -195,6 +195,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceExtrusionMeshTransformation.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceFieldWriter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceFieldWriterBase.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceGeomUtils.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceIdentityReorderer.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceMatlabWriter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceMesh.Po \
@@ -379,6 +380,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellType.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererImplemBase.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.hpp \
+$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIncrementallyCreatableMesh.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.hpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.hpp \
@@ -391,6 +393,7 @@ $(top_srcdir)/src-std-mesh/Interface/SundanceCellJacobianBatch.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellType.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReordererImplemBase.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.cpp \
+$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMesh.cpp \
 $(top_srcdir)/src-std-mesh/Interface/SundanceMeshBase.cpp \
@@ -753,6 +756,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceExtrusionMeshTransformation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFieldWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFieldWriterBase.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceGeomUtils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceIdentityReorderer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMatlabWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMesh.Po@am__quote@
@@ -850,6 +854,22 @@ SundanceCellReorderer.obj: $(top_srcdir)/src-std-mesh/Interface/SundanceCellReor
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceCellReorderer.Po' tmpdepfile='$(DEPDIR)/SundanceCellReorderer.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCellReorderer.obj `if test -f '$(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Interface/SundanceCellReorderer.cpp'; fi`
+
+SundanceGeomUtils.o: $(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceGeomUtils.o -MD -MP -MF "$(DEPDIR)/SundanceGeomUtils.Tpo" -c -o SundanceGeomUtils.o `test -f '$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceGeomUtils.Tpo" "$(DEPDIR)/SundanceGeomUtils.Po"; else rm -f "$(DEPDIR)/SundanceGeomUtils.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp' object='SundanceGeomUtils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceGeomUtils.Po' tmpdepfile='$(DEPDIR)/SundanceGeomUtils.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceGeomUtils.o `test -f '$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp
+
+SundanceGeomUtils.obj: $(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceGeomUtils.obj -MD -MP -MF "$(DEPDIR)/SundanceGeomUtils.Tpo" -c -o SundanceGeomUtils.obj `if test -f '$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceGeomUtils.Tpo" "$(DEPDIR)/SundanceGeomUtils.Po"; else rm -f "$(DEPDIR)/SundanceGeomUtils.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp' object='SundanceGeomUtils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceGeomUtils.Po' tmpdepfile='$(DEPDIR)/SundanceGeomUtils.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceGeomUtils.obj `if test -f '$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Interface/SundanceGeomUtils.cpp'; fi`
 
 SundanceIdentityReorderer.o: $(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceIdentityReorderer.o -MD -MP -MF "$(DEPDIR)/SundanceIdentityReorderer.Tpo" -c -o SundanceIdentityReorderer.o `test -f '$(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Interface/SundanceIdentityReorderer.cpp; \

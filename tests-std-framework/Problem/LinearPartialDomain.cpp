@@ -40,6 +40,7 @@
 
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
 
 CELL_PREDICATE(ATest, {return x[0] <= 0.4;});
 
@@ -61,16 +62,21 @@ int main(int argc, void** argv)
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
       int nx = 10;
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx, meshType);
+      int ny = 10;
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
+                                                         0.0, 1.0, ny, 1,
+                                                         meshType);
       Mesh mesh = mesher.getMesh();
 
       Expr x = new CoordExpr(0);
+      Expr dx = new Derivative(0);
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
-      CellFilter points = new DimensionalCellFilter(0);
-      CellFilter leftPoint = points.subset(new LeftPointTest());
+      CellFilter bdry = new BoundaryCellFilter();
+      CellFilter left = bdry.subset(new LeftPointTest());
+      CellFilter right = bdry.subset(new RightPointTest());
       CellFilter A = interior.subset(new ATest());
       CellFilter B = interior.subset(new BTest());
       CellFilter C = interior.subset(new CTest());
@@ -82,10 +88,11 @@ int main(int argc, void** argv)
       Expr v2 = new TestFunction(new Lagrange(1));
 
       QuadratureFamily quad = new GaussianQuadrature(2);
-      Expr eqn = Integral(interior, v1*(u1 - 2.0), quad) 
-        + Integral(A, v2*(u2 - x*u1), quad) 
-        + Integral(B, v2*(u2 - 0.4*u1), quad) ;
-      Expr bc;
+      Expr eqn = Integral(interior, (dx*u1)*(dx*v1), quad) 
+        + Integral(A, v2*(u2 - u1), quad) 
+        + Integral(B, v2*(u2 - 0.4), quad) ;
+      Expr bc = EssentialBC(left, v1*u1, quad) 
+        + EssentialBC(right, v1*(u1-1.0), quad);
 
       LinearProblem prob(mesh, eqn, bc, List(v1, v2), List(u1, u2), vecType);
 
@@ -102,13 +109,21 @@ int main(int argc, void** argv)
       Vector<double> vec = DiscreteFunction::discFunc(soln)->getVector();
 
 
-      Expr err = Integral(interior, pow(soln[0] - 2.0, 2.0), quad)
-        + Integral(A, pow(soln[1] - x*soln[0], 2.0), quad)
-        + Integral(B, pow(soln[1] - 0.4*soln[0], 2.0), quad);
+      Expr err = Integral(interior, pow(soln[0] - x, 2.0), quad)
+        + Integral(A, pow(soln[1] - soln[0], 2.0), quad)
+        + Integral(B, pow(soln[1] - 0.4, 2.0), quad);
 
       FunctionalEvaluator errInt(mesh, err);
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      /* Write the field in VTK format */
+      FieldWriter w = new VTKWriter("PartialDomain2d");
+      w.addMesh(mesh);
+      w.addField("u1", new ExprFieldWrapper(soln[0]));
+      w.addField("u2", new ExprFieldWrapper(soln[1]));
+      w.write();
+
 
 
       Sundance::passFailTest(sqrt(errorSq), 1.0e-8);

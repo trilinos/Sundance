@@ -521,6 +521,7 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
       nNodes[0] = mesh().numFacets(cellDim, cellLID[0], 0);
 
       Array<int> funcs = requestedFuncSet.elements();
+
       getFunctionDofs(cellDim, cellLID, facetLID, funcs, dofs);
       RefCountPtr<const MapStructure> rtn 
         = rcp(new MapStructure(nTotalFuncs_, basis_, tuple(funcs)));
