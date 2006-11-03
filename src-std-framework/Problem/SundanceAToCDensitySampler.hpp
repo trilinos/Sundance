@@ -28,62 +28,55 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_GEOMUTILS_H
-#define SUNDANCE_GEOMUTILS_H
+#ifndef SUNDANCE_ATOCDENSITYSAMPLER_H
+#define SUNDANCE_ATOCDENSITYSAMPLER_H
 
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
-#include <list>
+#include "SundanceExpr.hpp"
+#include "SundanceDiscreteFunction.hpp"
+#include "SundanceDiscreteSpace.hpp"
+#include "SundanceAToCPointLocator.hpp"
 
-namespace SundanceStdMesh
+namespace SundanceStdFwk
 {
-  /** \relates Mesh 
-   * Return the LID of the maximal cell that contains the point x.
-   * If the point lays on an edge between two or more
-   * cells, this will return the first of the those cells encountered
-   * on a breadth-first search starting at the initial guess.
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
+  using namespace Teuchos;
+  using namespace Thyra;
+
+  /**
+   * AToCDensitySampler samples a distribution of particles to compute a
+   * density function on a discrete space. 
+   *
+   * Note: not tested in parallel.
    */
-  int findEnclosingCell(const Mesh& mesh, 
-                        int cellDim,
-                        int initialGuessLID, 
-                        const double* x);
+  class AToCDensitySampler
+  {
+  public:
+    /** */
+    AToCDensitySampler(const AToCPointLocator& locator,
+                       const VectorType<double>& vecType);
 
-  /** \relates Mesh
-   * Test whether a point is enclosed in a cell. The cell is assumed
-   * to be simplicial.
-   */
-  bool cellContainsPoint(const Mesh& mesh, 
-                         int cellDim,
-                         int cellLID, const double* x,
-                         Array<int>& facetLID);
+    /** */
+    Expr sample(const std::vector<double>& positions,
+                const double& particleWeight) const ;
 
-  /** \relates Mesh
-   * Tests orientation of a point relative to a line.
-   */
-  double orient2D(const double* a, const double* b, const double* x);
 
-  /** \relates Mesh 
-   * Get the list of maximal neighbors of a cell 
-   */
-  void maximalNeighbors(const Mesh& mesh, int cellDim,
-                        int cellLID, const Array<int>& facetLID,
-                        std::list<int>& rtn);
+  private:
 
-  /** \relates Mesh 
-   * Pullback a point to local coordinates within a cell
-   */
-  Point pullback(const Mesh& mesh, int cellDim, int cellLID, const double* x);
-
-  /** */
-  void printCell(const Mesh& mesh, int cellLID);
-
-  /** */
-  double volume(const Mesh& mesh, int cellDim, int cellLID);
-  
-
+    DiscreteSpace discSpace_;
+    int dim_;
+    Mesh mesh_;
+    RefCountPtr<Array<int> > elemToVecIndexMap_;
+    Expr elemVolumes_;
+    Vector<double> elemVolumeVec_;
+    AToCPointLocator locator_;
+  };
 }
 
 
 #endif
-
-

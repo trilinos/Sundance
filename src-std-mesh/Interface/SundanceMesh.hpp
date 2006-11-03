@@ -75,6 +75,18 @@ using namespace SundanceUtils;
     Point nodePosition(int i) const {return ptr()->nodePosition(i);}
 
     /** 
+     * Return a view of the i-th node's position
+     */
+    const double* nodePositionView(int i) const {return ptr()->nodePositionView(i);}
+
+    /** 
+     * Return the centroid position of the cellLID-th cell of dimension
+     * cellDim.
+     */
+    Point centroid(int cellDim, int cellLID) const 
+    {return ptr()->centroid(cellDim, cellLID);}
+
+    /** 
      * Compute the jacobians of a batch of cells, returning the 
      * result via reference argument
      *
@@ -154,6 +166,12 @@ using namespace SundanceUtils;
     {ptr()->getFacetArray(cellDim, cellLID, 
                           facetDim, facetLIDs,
                           facetOrientations);}
+
+    /** 
+     * Return a view of an element's zero-dimensional facets
+     */
+    const int* elemZeroFacetView(int cellLID) const 
+    {return ptr()->elemZeroFacetView(cellLID);}
 
     /** 
      * Return by reference argument an array containing

@@ -71,6 +71,13 @@ namespace SundanceStdMesh
       virtual Point nodePosition(int i) const {return points_[i];}
 
       /** 
+       * Return a view of the i-th node's position
+       */
+      const double* nodePositionView(int i) const {return &(points_[i][0]);}
+
+     
+
+      /** 
        * Compute the jacobians of a batch of cells, returning the 
        * result via reference argument
        *
@@ -145,6 +152,12 @@ namespace SundanceStdMesh
                                 int facetDim,
                                 Array<int>& facetLID,
                                 Array<int>& facetOrientations) const ;
+
+      /** 
+       * Return a view of an element's zero-dimensional facets
+       */
+      const int* elemZeroFacetView(int cellLID) const 
+      {return &(elemVerts_.value(cellLID, 0));}
 
       /** 
        * Return the number of maximal cofacets of the given cell

@@ -41,26 +41,26 @@ using namespace SundanceUtils;
 
 namespace SundanceStdMesh
 {
-  bool cellContainsPoint(const Mesh& mesh, int cellLID, const Point& x)
+  bool cellContainsPoint(const Mesh& mesh, int cellDim, int cellLID, 
+                         const double* x, Array<int>& facetLID)
   {
-    if (x.dim()==1)
+    if (cellDim==1)
       {
         static Array<int> facetLID(2);
         static Array<int> tmp(2);
-        mesh.getFacetArray(x.dim(), cellLID, 0, facetLID, tmp);
+        mesh.getFacetArray(cellDim, cellLID, 0, facetLID, tmp);
         Point A = mesh.nodePosition(facetLID[0]);
         Point B = mesh.nodePosition(facetLID[1]);
         if (A[0] < B[0]) return (x[0] >= A[0] && x[0] <= B[0]);
         else return (x[0] <= A[0] && x[0] >= B[0]);
       }
-    else if (x.dim()==2)
+    else if (cellDim==2)
       {
-        static Array<int> facetLID(3);
         static Array<int> tmp(3);
-        mesh.getFacetArray(x.dim(), cellLID, 0, facetLID, tmp);
-        Point A = mesh.nodePosition(facetLID[0]);
-        Point B = mesh.nodePosition(facetLID[1]);
-        Point C = mesh.nodePosition(facetLID[2]);
+        mesh.getFacetArray(cellDim, cellLID, 0, facetLID, tmp);
+        const double* A = mesh.nodePositionView(facetLID[0]);
+        const double* B = mesh.nodePositionView(facetLID[1]);
+        const double* C = mesh.nodePositionView(facetLID[2]);
         /* first determine whether the three points of the triangle
          * are in ccw or cw order. */
         double sign = orient2D(A, B, C);
@@ -81,21 +81,45 @@ namespace SundanceStdMesh
             return false;
           }
       }
-    else if (x.dim()==3)
+    else if (cellDim==3)
       {
         TEST_FOR_EXCEPT(true);
         return false; // -Wall
       }
     else
       {
-        TEST_FOR_EXCEPTION(x.dim()<=0 || x.dim()>3, RuntimeError,
-                           "invalid point dimension " << x.dim());
+        TEST_FOR_EXCEPTION(cellDim<=0 || cellDim>3, RuntimeError,
+                           "invalid point dimension " << cellDim);
         return false; // -Wall
       }
   }
 
+  double volume(const Mesh& mesh, int cellDim, int cellLID)
+  {
+    if (cellDim==1)
+      {
+        static Array<int> facetLID(2);
+        static Array<int> tmp(2);
+        mesh.getFacetArray(cellDim, cellLID, 0, facetLID, tmp);
+        Point A = mesh.nodePosition(facetLID[0]);
+        Point B = mesh.nodePosition(facetLID[1]);
+        return fabs(A[0] - B[0]);
+      }
+    else if (cellDim==2)
+      {
+        static Array<int> facetLID(3);
+        static Array<int> tmp(3);
+        mesh.getFacetArray(cellDim, cellLID, 0, facetLID, tmp);
+        const double* A = mesh.nodePositionView(facetLID[0]);
+        const double* B = mesh.nodePositionView(facetLID[1]);
+        const double* C = mesh.nodePositionView(facetLID[2]);
+        return fabs(0.5*orient2D(A, B, C));
+      }
+    TEST_FOR_EXCEPT(true);
+  }
 
-  double orient2D(const Point& A, const Point& B, const Point& x)
+
+  double orient2D(const double* A, const double* B, const double* x)
   {
     double acx, bcx, acy, bcy;
 
@@ -106,23 +130,29 @@ namespace SundanceStdMesh
     return acx * bcy - acy * bcx;
   }
 
-  int findEnclosingCell(const Mesh& mesh, int initialGuessLID,
-                        const Point& x)
+  int findEnclosingCell(const Mesh& mesh, int cellDim,
+                        int initialGuessLID,
+                        const double* x)
   {
     std::queue<int> Q;
     Set<int> repeats;
+    static Array<int> facets;
 
     Q.push(initialGuessLID);
+
+    
 
     while (!Q.empty())
       {
         int next = Q.front();
         Q.pop();
         if (repeats.contains(next)) continue;
-        cout << "testing cell " << next << endl;
-        if (cellContainsPoint(mesh, next, x)) return next;
+
+        if (cellContainsPoint(mesh, cellDim, next, x, facets)) return next;
         repeats.put(next);
-        std::list<int> neighbors = maximalNeighbors(mesh, next);
+        
+        std::list<int> neighbors;
+        maximalNeighbors(mesh, cellDim, next, facets, neighbors);
         for (std::list<int>::const_iterator 
                i=neighbors.begin(); i!=neighbors.end(); i++)
           {
@@ -132,25 +162,17 @@ namespace SundanceStdMesh
     return -1; // no containing cell found
   }
 
-  Point pullback(const Mesh& mesh, int cellLID, const Point& x)
+  Point pullback(const Mesh& mesh, int cellDim, int cellLID, const double* x)
   {
-    int dim = x.dim();
+    int dim = cellDim;
     if (dim==2)
       {
         static Array<int> facetLID(3);
         static Array<int> tmp(3);
-        mesh.getFacetArray(x.dim(), cellLID, 0, facetLID, tmp);
-        Point A = mesh.nodePosition(facetLID[0]);
-        Point B = mesh.nodePosition(facetLID[1]);
-        Point C = mesh.nodePosition(facetLID[2]);
-
-        double sign = orient2D(A, B, C);
-        if (sign < 0.0)
-          {
-            Point swap = B;
-            B = C;
-            C = B;
-          }
+        mesh.getFacetArray(cellDim, cellLID, 0, facetLID, tmp);
+        const double* A = mesh.nodePositionView(facetLID[0]);
+        const double* B = mesh.nodePositionView(facetLID[1]);
+        const double* C = mesh.nodePositionView(facetLID[2]);
 
         double bax = B[0] - A[0];
         double bay = B[1] - A[1];
@@ -167,8 +189,8 @@ namespace SundanceStdMesh
       }
     else
       {
-        TEST_FOR_EXCEPTION(x.dim() != 2, RuntimeError,
-                           "invalid point dimension " << x.dim());
+        TEST_FOR_EXCEPTION(cellDim != 2, RuntimeError,
+                           "invalid point dimension " << cellDim);
         return Point(); // -Wall
       }
   }
@@ -187,25 +209,19 @@ namespace SundanceStdMesh
       }
   }
 
-  std::list<int> maximalNeighbors(const Mesh& mesh, int cellLID)
+  void maximalNeighbors(const Mesh& mesh, int cellDim, int cellLID, 
+                        const Array<int>& facetLID,
+                        std::list<int>& rtn)
   {
-    std::list<int> rtn;
-
-    int dim = mesh.spatialDim();
-    int numFacets = mesh.numFacets(dim, cellLID, 0);
-    Array<int> facets(numFacets);
-    Array<int> ori(numFacets);
-    mesh.getFacetArray(dim, cellLID, 0, facets, ori);
-    for (unsigned int f=0; f<facets.size(); f++)
+    for (unsigned int f=0; f<facetLID.size(); f++)
       {
         Array<int> cofacets;
-        mesh.getCofacets(0, facets[f], dim, cofacets);
+        mesh.getCofacets(0, facetLID[f], cellDim, cofacets);
         for (unsigned int c=0; c<cofacets.size(); c++)
           {
             if (cofacets[c] != cellLID) rtn.push_back(cofacets[c]);
           }
       }
-    return rtn;
   }
 
   

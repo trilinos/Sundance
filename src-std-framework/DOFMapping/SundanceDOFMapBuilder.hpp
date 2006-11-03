@@ -84,6 +84,8 @@ namespace SundanceStdFwk
 
       const Mesh& mesh() const {return mesh_;}
 
+
+
       static RefCountPtr<DOFMapBase> makeMap(const Mesh& mesh,
                                                const Array<BasisFamily>& basis,
                                              const Array<Set<CellFilter> >& filters) ;
@@ -92,9 +94,13 @@ namespace SundanceStdFwk
                                          const Mesh& mesh,
                                          const Array<Set<CellFilter> >& filters) ;
 
+      static bool hasCommonDomain(const Array<Set<CellFilter> >& filters) ;
+
       static bool hasHomogeneousBasis(const Array<BasisFamily>& basis) ;
 
       static bool hasNodalBasis(const Array<BasisFamily>& basis) ;
+
+      static bool hasCellBasis(const Array<BasisFamily>& basis) ;
 
       static bool allFuncsAreOmnipresent(const Mesh& mesh,
                                          const Array<Set<CellFilter> >& filters);

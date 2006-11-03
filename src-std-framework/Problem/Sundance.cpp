@@ -135,7 +135,7 @@ int Sundance::init(int* argc, void*** argv)
           cout << tab << endl;
         }
 
-
+      //      debugWait = true;
       if (debugWait)
         {
           int wait=1;

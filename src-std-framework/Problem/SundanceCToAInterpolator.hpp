@@ -28,62 +28,55 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_GEOMUTILS_H
-#define SUNDANCE_GEOMUTILS_H
+#ifndef SUNDANCE_CTOAINTERPOLATOR_H
+#define SUNDANCE_CTOAINTERPOLATOR_H
 
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
-#include <list>
+#include "SundanceExpr.hpp"
+#include "SundanceDiscreteFunction.hpp"
+#include "SundanceDiscreteSpace.hpp"
+#include "SundanceAToCPointLocator.hpp"
 
-namespace SundanceStdMesh
+namespace SundanceStdFwk
 {
-  /** \relates Mesh 
-   * Return the LID of the maximal cell that contains the point x.
-   * If the point lays on an edge between two or more
-   * cells, this will return the first of the those cells encountered
-   * on a breadth-first search starting at the initial guess.
+  using namespace SundanceUtils;
+  using namespace SundanceStdMesh;
+  using namespace SundanceStdMesh::Internal;
+  using namespace SundanceCore;
+  using namespace SundanceCore::Internal;
+  using namespace Teuchos;
+  using namespace Thyra;
+
+  /**
+   * CToAInterpolator interpolates a discrete function at particle positions
+   *
+   * Note: not tested in parallel.
    */
-  int findEnclosingCell(const Mesh& mesh, 
-                        int cellDim,
-                        int initialGuessLID, 
-                        const double* x);
+  class CToAInterpolator
+  {
+  public:
+    /** */
+    CToAInterpolator(const AToCPointLocator& locator,
+                     const Expr& field);
 
-  /** \relates Mesh
-   * Test whether a point is enclosed in a cell. The cell is assumed
-   * to be simplicial.
-   */
-  bool cellContainsPoint(const Mesh& mesh, 
-                         int cellDim,
-                         int cellLID, const double* x,
-                         Array<int>& facetLID);
+    /** */
+    void interpolate(const std::vector<double>& positions,
+                     std::vector<double>& results) const ;
 
-  /** \relates Mesh
-   * Tests orientation of a point relative to a line.
-   */
-  double orient2D(const double* a, const double* b, const double* x);
+    /** */
+    void updateField(const Expr& field) ;
 
-  /** \relates Mesh 
-   * Get the list of maximal neighbors of a cell 
-   */
-  void maximalNeighbors(const Mesh& mesh, int cellDim,
-                        int cellLID, const Array<int>& facetLID,
-                        std::list<int>& rtn);
 
-  /** \relates Mesh 
-   * Pullback a point to local coordinates within a cell
-   */
-  Point pullback(const Mesh& mesh, int cellDim, int cellLID, const double* x);
+  private:
 
-  /** */
-  void printCell(const Mesh& mesh, int cellLID);
-
-  /** */
-  double volume(const Mesh& mesh, int cellDim, int cellLID);
-  
-
+    int dim_;
+    int nFacets_;
+    int rangeDim_;
+    RefCountPtr<Array<double> > elemToVecValuesMap_;
+    AToCPointLocator locator_;
+  };
 }
 
 
 #endif
-
-

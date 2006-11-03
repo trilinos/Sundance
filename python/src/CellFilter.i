@@ -171,6 +171,11 @@ namespace SundanceStdFwk
 
 %inline %{
   /*  */
+  SundanceStdFwk::CellFilterArray CellFilterList()
+  {
+    return CellFilterArray();
+  }
+  /*  */
   SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a)
   {
     return SundanceStdFwk::List(a);

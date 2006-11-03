@@ -82,6 +82,18 @@ using namespace SundanceUtils;
       virtual Point nodePosition(int i) const = 0 ;
 
       /** 
+       * Return a view of the i-th node's position
+       */
+      virtual const double* nodePositionView(int i) const = 0 ;
+
+      /** 
+       * Return the centroid position of the cellLID-th cell of dimension
+       * cellDim. The default implementation averages the positions of 
+       * the zero-facets.
+       */
+      virtual Point centroid(int cellDim, int cellLID) const ;
+
+      /** 
        * Compute the jacobians of a batch of cells, returning the 
        * result via reference argument
        *
@@ -161,6 +173,11 @@ using namespace SundanceUtils;
       void getFacetArray(int cellDim, int cellLID, int facetDim, 
                          Array<int>& facetLIDs,
                          Array<int>& facetOrientations) const ;
+
+      /** 
+       * Return a view of an element's zero-dimensional facets
+       */
+      virtual const int* elemZeroFacetView(int cellLID) const = 0 ;
 
 
       /** 

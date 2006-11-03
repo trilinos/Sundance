@@ -104,15 +104,19 @@ void FieldWriterBase::addField(const string& name,
     {
       TEST_FOR_EXCEPTION(expr->numElems() > 1, RuntimeError,
                          "FieldWriterBase::addField not ready for vector fields");
-    }
-  else 
+    } 
+  else if (expr->isPointData()) 
     {
-      /* expr is a single scalar field */
-      
+      /* expr is a single scalar field defined at points */
       pointScalarFields_.append(expr);
       pointScalarNames_.append(fieldName);
     }
-  
+  else if (expr->isCellData())
+    {
+      /* expr is a single scalar field defined on cells */
+      cellScalarFields_.append(expr);
+      cellScalarNames_.append(fieldName);
+    }
 }
 
 void FieldWriterBase::addCommentLine(const string& line) 

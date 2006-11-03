@@ -55,11 +55,22 @@ static Time& facetGrabTimer()
   return *rtn;
 }
 
+Point MeshBase::centroid(int cellDim, int cellLID) const
+{
+  if (cellDim==0) return nodePosition(cellLID);
+  int dummy;
+  Point x = nodePosition(facetLID(cellDim, cellLID, 0, 0, dummy));
+  int nf = numFacets(cellDim, cellLID, 0);
+  for (int f=1; f<nf; f++) 
+    x += nodePosition(facetLID(cellDim, cellLID, 0, f, dummy));
+  return x / ((double) nf);
+}
+
 void MeshBase::getFacetArray(int cellDim, int cellLID, int facetDim, 
                              Array<int>& facetLIDs,
                              Array<int>& facetOrientations) const
 {
-  TimeMonitor timer(facetGrabTimer());
+  // TimeMonitor timer(facetGrabTimer());
 
   int nf = numFacets(cellDim, cellLID, facetDim);
   facetLIDs.resize(nf);

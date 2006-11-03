@@ -32,6 +32,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceDiscreteFunction.hpp"
+#include "SundanceLagrange.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
 using namespace SundanceStdFwk;
@@ -50,22 +51,26 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
     df_(),
     discreteSpace_(),
     map_(),
-    indices_()
+    indices_(),
+    isPointData_(true)
 {
   if (expr.size()==1)
     {
       const DiscreteFunction* df 
         = dynamic_cast<const DiscreteFunction*>(expr[0].ptr().get());
+      const DiscreteFuncElement* dfe 
+        = dynamic_cast<const DiscreteFuncElement*>(expr[0].ptr().get());
       if (df != 0)
         {
           discreteSpace_ = df->discreteSpace();
           map_ = df->map();
           indices_ = tuple(0);
+          BasisFamily basis = discreteSpace_.basis()[0];
+          const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
+          if (lagr != 0 && lagr->order()==0) isPointData_ = false;
           df_ = df->data();
         }
-      const DiscreteFuncElement* dfe 
-        = dynamic_cast<const DiscreteFuncElement*>(expr[0].ptr().get());
-      if (dfe != 0)
+      else if (dfe != 0)
         {
           const DiscreteFunctionData* f = DiscreteFunctionData::getData(dfe);
 
@@ -75,24 +80,34 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
           discreteSpace_ = f->discreteSpace();
           map_ = f->map();
           indices_ = tuple(dfe->myIndex());
+          BasisFamily basis = discreteSpace_.basis()[indices_[0]];
+          const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
+          if (lagr != 0 && lagr->order()==0) isPointData_ = false;
           df_ = f;
+          
         }
-
-      TEST_FOR_EXCEPTION(df == 0 && dfe == 0, RuntimeError,
-                         "ExprFieldWrapper ctor argument is not a discrete function");
+      else
+        {
+          TEST_FOR_EXCEPTION(df == 0 && dfe == 0, RuntimeError,
+                             "ExprFieldWrapper ctor argument is not a discrete "
+                             "function");
+        }
     }
   else
     {
       TEST_FOR_EXCEPTION(expr.size() != 1, RuntimeError,
                          "non-scalar expr given to ExprFieldWrapper ctor");
     }
+
 }
 
 
 double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
 {
   Array<int> dofs;
+
   map_->getDOFsForCell(cellDim, cellID, indices_[elem], dofs);
+
   TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
                      "too many DOFs found in ExprFieldWrapper::getData()");
 

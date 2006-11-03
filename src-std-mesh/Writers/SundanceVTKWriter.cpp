@@ -109,6 +109,7 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
       writePoints(os, false);
       writeCells(os);
       writePointData(os, false);
+      writeCellData(os, false);
 
       os << pc.footer() << endl;
     }
@@ -284,7 +285,7 @@ void VTKWriter::writeCellData(ostream& os, bool isPHeader) const
       writeDataArray(os, cellScalarNames()[i], cellScalarFields()[i], isPHeader, false);
     }
 
-  for (int i=0; i<pointVectorNames().length(); i++)
+  for (int i=0; i<cellVectorNames().length(); i++)
     {
       writeDataArray(os, cellVectorNames()[i], cellVectorFields()[i], isPHeader, false);
     }
@@ -340,8 +341,8 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
             {
               for (int j=0; j<expr->numElems(); j++)
                 {
-                  if (expr->isDefined(0,c,j))
-                    os << (float) expr->getData(0, c, j) << endl;
+                  if (expr->isDefined(dim,c,j))
+                    os << (float) expr->getData(dim, c, j) << endl;
                   else
                     os << undefinedValue() << endl;
                 }

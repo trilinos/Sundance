@@ -7,10 +7,6 @@
 import setpath
 import PySundance
 
-class RootOnly :
-  def write(self, str) :
-    if getRank()==0 : print str,
-
 
 import math
 from PySundance import *
@@ -43,7 +39,6 @@ def main():
   mesh = mesher.getMesh();
 
   check = mesh.checkConsistency('meshCheck')
-  root = RootOnly()
 
 
   if check==0 :
@@ -95,12 +90,12 @@ def main():
   
   error = math.sqrt(diff.integral(interior, mesh, quad4))
   derivError = math.sqrt(diffDeriv.integral(interior, mesh, quad4))
-  print >> root, "error = " , error
-  print >> root, "deriv error = " , derivError
+  print "error = " , error
+  print "deriv error = " , derivError
 
   error = max(error, derivError)
 
-  print >> root, "max err = ", error
+  print "max err = ", error
 
   tol = 1.0e-10
   passFailTest(error, tol)

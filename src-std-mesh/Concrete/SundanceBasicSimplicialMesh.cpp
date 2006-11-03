@@ -54,6 +54,14 @@ static Time& batchedFacetGrabTimer()
   return *rtn;
 }
 
+
+static Time& cofacetGrabTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("cofacet grabbing"); 
+  return *rtn;
+}
+
 static Time& getJacobianTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -810,6 +818,7 @@ int BasicSimplicialMesh::maxCofacetLID(int cellDim, int cellLID,
 void BasicSimplicialMesh::getCofacets(int cellDim, int cellLID,
                                       int cofacetDim, Array<int>& cofacetLIDs) const 
 {
+  //  TimeMonitor timer(cofacetGrabTimer());
   TEST_FOR_EXCEPTION(cofacetDim > spatialDim() || cofacetDim < 0, RuntimeError,
                      "invalid cofacet dimension=" << cofacetDim);
   TEST_FOR_EXCEPTION( cofacetDim <= cellDim, RuntimeError,

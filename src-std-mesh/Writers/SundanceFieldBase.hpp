@@ -63,6 +63,12 @@ namespace SundanceStdMesh
       /** */
       virtual bool isDefined(int cellDim, int cellID, int elem) const = 0 ;
 
+      /** */
+      virtual bool isPointData() const = 0 ;
+
+      /** */
+      virtual bool isCellData() const {return !isPointData();}
+
     };
   }
 }

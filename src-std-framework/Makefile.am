@@ -151,6 +151,7 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceInhomogeneousNodalDOFMap.hpp 
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMapStructure.hpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.hpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.hpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundancePartialElementDOFMap.hpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.hpp 
 
 SUNDANCE_DOFMAPPING = \
@@ -160,6 +161,7 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceInhomogeneousNodalDOFMap.cpp 
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMapStructure.cpp\
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceMixedDOFMap.cpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceNodalDOFMap.cpp \
+$(top_srcdir)/src-std-framework/DOFMapping/SundancePartialElementDOFMap.cpp \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBase.cpp 
 
 SUNDANCE_ASSEMBLY_H = \
@@ -190,6 +192,9 @@ $(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp
 
 SUNDANCE_PROBLEM_H = \
 $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.hpp \
@@ -201,6 +206,9 @@ $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.hpp
 
 SUNDANCE_PROBLEM = \
 $(top_srcdir)/src-std-framework/Problem/Sundance.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp \

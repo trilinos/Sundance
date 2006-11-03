@@ -63,4 +63,4 @@
 
 %include Discrete.i
 
-  
+%include AToC.i  

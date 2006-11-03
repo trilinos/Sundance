@@ -33,6 +33,9 @@
 %include "std_vector.i"
 %include "exception.i"
 
+
+%template(doubleVector) std::vector<double>;
+
 %rename(Vector) Vec;
 %rename(VectorType) VecType;
 %rename(VectorSpace) VecSpace;

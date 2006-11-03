@@ -34,7 +34,7 @@ EXEEXT = .exe
 noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
 
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D \
-LinearPartialDomain NonlinearPartialDomain
+LinearPartialDomain NonlinearPartialDomain AToCDensitySample
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
@@ -60,6 +60,20 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 SpectralPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 SpectralPoisson1D_LDADD = $(STD_FWK_LIBS) 
+
+
+
+AToCDensitySample_SOURCES = $(srcdir)/AToCDensitySample.cpp
+
+AToCDensitySample_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+AToCDensitySample_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+AToCDensitySample_LDADD = $(STD_FWK_LIBS) 
 
 
 

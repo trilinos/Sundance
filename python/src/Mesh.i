@@ -81,15 +81,6 @@ namespace SundanceStdMesh
     Mesh getMesh() const ;
   };
 
-  int findEnclosingCell(const Mesh& mesh, int initialGuessLID,
-                        const SundanceUtils::Point& x);
-
-  bool cellContainsPoint(const Mesh& mesh, int cellLID, const SundanceUtils::Point& x);
-
-  double orient2D(const SundanceUtils::Point& a, const SundanceUtils::Point& b, const SundanceUtils::Point& x);
-
-  SundanceUtils::Point pullback(const Mesh& mesh, int cellLID, const SundanceUtils::Point& x);
-  void printCell(const Mesh& mesh, int cellLID);
 }
 
 %rename(PartitionedLineMesher) makePartitionedLineMesher;

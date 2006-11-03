@@ -69,6 +69,9 @@ namespace SundanceStdFwk
       /** */
       virtual bool isDefined(int cellDim, int cellID, int elem) const ;
 
+      /** */
+      virtual bool isPointData() const {return isPointData_;}
+
       /* */
       GET_RCP(FieldBase);
 
@@ -82,6 +85,8 @@ namespace SundanceStdFwk
       RefCountPtr<DOFMapBase> map_;
       
       Array<int> indices_;
+
+      bool isPointData_;
 
     };
   }

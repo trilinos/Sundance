@@ -63,7 +63,8 @@ MAINTAINERCLEANFILES = Makefile.in
 PARALLEL_SRC = exPoisson1D exPoisson2D exHelmholtz1D exRadDiff1D exConvTest2D exBlockTest \
 exVorticityStokes2D exComplexHelmholtz1D 
 
-SERIAL_SRC = exPoisson3D exCylPoisson3D exTwoZoneLaplace1D exNonlinearPartialDomain
+SERIAL_SRC = exPoisson3D exCylPoisson3D exTwoZoneLaplace1D exNonlinearPartialDomain \
+exAToC
 
 ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
 

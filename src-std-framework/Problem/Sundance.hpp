@@ -120,6 +120,9 @@
 #include "NOX_Utils.H"
 #include "TSFNOXSolver.H"
 
+/* Atomistic/continuum */
+#include "SundanceAToCDensitySampler.hpp"
+#include "SundanceCToAInterpolator.hpp"
 
 using namespace TSFExtended;
 using namespace TSFExtendedOps;

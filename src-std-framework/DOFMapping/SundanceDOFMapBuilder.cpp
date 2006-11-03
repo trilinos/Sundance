@@ -35,6 +35,7 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceMixedDOFMap.hpp"
 #include "SundanceNodalDOFMap.hpp"
+#include "SundancePartialElementDOFMap.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceInhomogeneousNodalDOFMap.hpp"
 #include "SundanceCellFilter.hpp"
@@ -104,6 +105,13 @@ RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
     {
       CellFilter maxCells = getMaxCellFilter(filters);
       rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells));
+    }
+  else if (hasCellBasis(basis) && hasCommonDomain(filters))
+    {
+      TEST_FOR_EXCEPTION(filters[0].size() != 1, RuntimeError,
+                         "only a single domain expected in construction of an element "
+                         "DOF map");
+      rtn = rcp(new PartialElementDOFMap(mesh, *filters[0].begin(), basis.size()));
     }
   else if (allFuncsAreOmnipresent(mesh, filters))
     {
@@ -382,6 +390,17 @@ bool DOFMapBuilder::hasHomogeneousBasis(const Array<BasisFamily>& basis)
   return true;
 }
 
+                                           
+bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters) 
+{
+  Set<CellFilter> first = filters[0];
+  for (unsigned int i=1; i<filters.size(); i++) 
+    {
+      if (! (filters[i] == first) ) return false;
+    }
+  return true;
+}                           
+
 bool DOFMapBuilder::hasNodalBasis(const Array<BasisFamily>& basis)
 {
   for (unsigned int i=0; i<basis.size(); i++)
@@ -389,6 +408,18 @@ bool DOFMapBuilder::hasNodalBasis(const Array<BasisFamily>& basis)
       const Lagrange* lagr 
         = dynamic_cast<const Lagrange*>(basis[0].ptr().get());
       if (lagr==0 || basis[0].order()!=1) return false;
+    }
+  return true;
+}
+
+
+bool DOFMapBuilder::hasCellBasis(const Array<BasisFamily>& basis)
+{
+  for (unsigned int i=0; i<basis.size(); i++)
+    {
+      const Lagrange* lagr 
+        = dynamic_cast<const Lagrange*>(basis[0].ptr().get());
+      if (lagr==0 || basis[0].order()!=0) return false;
     }
   return true;
 }
@@ -641,6 +672,7 @@ void DOFMapBuilder::markBCRows(int block)
         {
           cellLID->append(*c);
         }
+      if (cellLID->size() == 0U) continue;
       
       /* find the functions that appear in BCs on this region */
       const Set<int>& allBcFuncs = eqn_->bcVarsOnRegion(r);
