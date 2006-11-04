@@ -105,7 +105,7 @@ def main():
       if df > maxError: maxError = df
 
   
-  # Finally, we sample the density of points. First, create a sampler
+  # Next we sample the density of points. First, create a sampler
   # object using the same locator defined above. A VectorType argument
   # is also necessary, because we'll be creating a new DiscreteSpace
   # of piecewise-constant functions (i.e., Lagrange(0)).
@@ -117,18 +117,52 @@ def main():
   # to moles per liter.
   density = sampler.sample(points, 1.0/nPts)
 
-  # Write the density field
-
-  writer = VTKWriter("Density2D");
-  writer.addMesh(mesh)
-  writer.addField("rho0", density)
-  writer.write()
-
   # Compute the total mass. This should be 1.0.
   mass = density[0].integral(interior, mesh, GaussianQuadrature(2))
   massErr = math.fabs(mass - 1.0)
   if massErr > maxError: maxError = massErr
-  
+
+  # Write the density field
+
+  writer = VTKWriter("Density2D");
+  writer.addMesh(mesh)
+#  writer.addField("rho0", density[0])
+
+  # ----------------------------------------------------------------------------
+  # Finally, we will sample the points with weighting appropriate to axisymmetric
+  # geometry, and in multiple sample steps. We will do several outer steps, resetting
+  # the count to zero between each. In each outer step there are nInnerSteps inner steps,
+  # during which we add into the density field.
+
+  # Specify axis of rotation for the coordinate system
+  origin = [0.0, 0.0]
+  axisOfRotation = [1.0, 0.0]
+  # Create a sampler for this coordinate system
+  sampler = AToCDensitySampler(locator, origin, axisOfRotation, vecType)
+
+
+
+  # Do the run over outer and inner steps
+  for outerStep in range(3):
+    print 'outer step=', outerStep
+    # reset the counts to zero
+    density2 = sampler.resetCounts()
+    
+    # do the inner timesteps, sampling at each step
+    nInnerStep = 20
+    for innerStep in range(nInnerStep) :
+      # sample points uniformly from a cylinder, projecting to the (z,r) plane
+      for i in range(nPts):
+        points[2*i] = random()
+        points[2*i+1] = math.sqrt(random())
+      sampler.addToCounts(points, 1.0/(nPts*nInnerStep), density2)
+
+    # write the current sample
+    writer.addField('rhoStep%d' % outerStep, density2[0])
+    
+
+  # Write the results
+  writer.write()
 
   # all done!  Check the error and quit.
   tol = 1.0e-10

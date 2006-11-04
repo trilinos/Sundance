@@ -43,10 +43,23 @@ namespace SundanceStdFwk
     /** */
     AToCDensitySampler(const AToCPointLocator& locator,
                        const TSFExtended::VectorType<double>& vecType);
+    /** */
+    AToCDensitySampler(const AToCPointLocator& locator,
+                       const std::vector<double>& origin,
+                       const std::vector<double>& rotationalAxis,
+                       const TSFExtended::VectorType<double>& vecType);
 
     /** */
     SundanceCore::Expr sample(const std::vector<double>& positions,
                               const double& particleWeight) const ;
+
+    /** */
+    SundanceCore::Expr resetCounts() const ;
+
+    /** */
+    void addToCounts(const std::vector<double>& positions,
+                     const double& particleWeight,
+                     SundanceCore::Expr density) const ;
   };
 
 

@@ -60,21 +60,40 @@ namespace SundanceStdFwk
     /** */
     AToCDensitySampler(const AToCPointLocator& locator,
                        const VectorType<double>& vecType);
+    /** */
+    AToCDensitySampler(const AToCPointLocator& locator,
+                       const std::vector<double>& origin,
+                       const std::vector<double>& rotationalAxis,
+                       const VectorType<double>& vecType);
 
     /** */
     Expr sample(const std::vector<double>& positions,
                 const double& particleWeight) const ;
 
+    /** */
+    Expr resetCounts() const ;
+
+    /** */
+    void addToCounts(const std::vector<double>& positions,
+                     const double& particleWeight,
+                     Expr density) const ;
+
 
   private:
+    void init();
+    Point vec2point(const std::vector<double>& x) const ;
+    Point normPoint(const Point& x) const ;
 
     DiscreteSpace discSpace_;
     int dim_;
     Mesh mesh_;
     RefCountPtr<Array<int> > elemToVecIndexMap_;
-    Expr elemVolumes_;
-    Vector<double> elemVolumeVec_;
+    Expr elemWeights_;
+    Vector<double> elemWeightVec_;
     AToCPointLocator locator_;
+    bool isAxisymmetric_;
+    Point origin_;
+    Point axis_;
   };
 }
 

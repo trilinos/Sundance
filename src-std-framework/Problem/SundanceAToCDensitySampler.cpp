@@ -60,13 +60,42 @@ AToCDensitySampler::AToCDensitySampler(const AToCPointLocator& locator,
     dim_(locator.mesh().spatialDim()),
     mesh_(locator.mesh()),
     elemToVecIndexMap_(),
-    elemVolumes_(new DiscreteFunction(discSpace_, 0.0)),
-    elemVolumeVec_(),
-    locator_(locator)
+    elemWeights_(new DiscreteFunction(discSpace_, 0.0)),
+    elemWeightVec_(),
+    locator_(locator),
+    isAxisymmetric_(false),
+    origin_(),
+    axis_()
+{
+  init();
+}
+
+
+AToCDensitySampler::AToCDensitySampler(const AToCPointLocator& locator,
+                                       const std::vector<double>& origin,
+                                       const std::vector<double>& rotationalAxis,
+                                       const VectorType<double>& vecType)
+  : discSpace_(locator.mesh(), new Lagrange(0), locator.subdomain(), vecType),
+    dim_(locator.mesh().spatialDim()),
+    mesh_(locator.mesh()),
+    elemToVecIndexMap_(),
+    elemWeights_(new DiscreteFunction(discSpace_, 0.0)),
+    elemWeightVec_(),
+    locator_(locator),
+    isAxisymmetric_(true),
+    origin_(vec2point(origin)),
+    axis_(normPoint(vec2point(rotationalAxis)))
+{
+  init();
+}
+
+
+
+void AToCDensitySampler::init()
 {
   const CellFilter& domain = discSpace_.cellFilters(0);
 
-  elemVolumeVec_ = DiscreteFunction::discFunc(elemVolumes_)->getVector();
+  elemWeightVec_ = DiscreteFunction::discFunc(elemWeights_)->getVector();
 
   elemToVecIndexMap_ = rcp(new Array<int>(mesh_.numCells(dim_), -1));
 
@@ -95,10 +124,30 @@ AToCDensitySampler::AToCDensitySampler(const AToCPointLocator& locator,
       int vecIndex = dofs0[c];
       int lid = cellLID[c];
       a[lid] = vecIndex;
-      elemVolumeVec_.setElement(vecIndex, volume(mesh_, dim_, lid));
+      double vol = volume(mesh_, dim_, lid);
+      if (isAxisymmetric_)
+        {
+          Point xCell = mesh_.centroid(dim_, lid) - origin_;
+          double dPerp = ::sqrt(xCell*xCell - (xCell*axis_)*(xCell*axis_));
+          vol = vol * dPerp;
+        }
+      elemWeightVec_.setElement(vecIndex, vol);
     }
 }
 
+Point AToCDensitySampler::vec2point(const std::vector<double>& x) const
+{
+  if (x.size()==1U) return Point(x[0]);
+  else if (x.size()==2U) return Point(x[0], x[1]);
+  else if (x.size()==3U) return Point(x[0], x[1], x[2]);
+  TEST_FOR_EXCEPT(x.size() < 1U || x.size() > 3U);
+  return Point();
+}
+
+Point AToCDensitySampler::normPoint(const Point& x) const
+{
+  return x/sqrt(x*x);
+}
 
 
 Expr AToCDensitySampler::sample(const std::vector<double>& positions,
@@ -128,10 +177,51 @@ Expr AToCDensitySampler::sample(const std::vector<double>& positions,
       int cellLID = locator_.findEnclosingCell(guess, x);
 
       int vecIndex = (*elemToVecIndexMap_)[cellLID];
-      double vol = elemVolumeVec_.getElement(vecIndex);
+      double vol = elemWeightVec_.getElement(vecIndex);
       density.addToElement(vecIndex, particleWeight/vol);
     }
 
   return rtn;
 }
+
+
+Expr AToCDensitySampler::resetCounts() const 
+{
+  Expr rtn = new DiscreteFunction(discSpace_, 0.0);
+
+  return rtn;
+}
+
+void AToCDensitySampler::addToCounts(const std::vector<double>& positions,
+                                     const double& particleWeight,
+                                     Expr density) const 
+{
+  TimeMonitor timer(densitySamplingTimer());
+
+  TEST_FOR_EXCEPTION(positions.size() % dim_ != 0, RuntimeError,
+                     "vector of coordinates should by an integer multiple "
+                     "of the spatial dimension");
+
+  Vector<double> vec = DiscreteFunction::discFunc(density)->getVector();
+
+  int nPts = positions.size() / dim_;
+
+  for (int i=0; i<nPts; i++)
+    {
+      const double* x = &(positions[dim_*i]);
+
+      int guess = locator_.guessCell(x);
+
+      TEST_FOR_EXCEPTION(guess < 0, RuntimeError, "particle #" << i << " position="
+                         << AToCPointLocator::makePoint(dim_, x) 
+                         << " is out of search grid");
+
+      int cellLID = locator_.findEnclosingCell(guess, x);
+
+      int vecIndex = (*elemToVecIndexMap_)[cellLID];
+      double vol = elemWeightVec_.getElement(vecIndex);
+      vec.addToElement(vecIndex, particleWeight/vol);
+    }
+}
+
 
