@@ -27,13 +27,21 @@ class BPredicate :
   def evalOp(self, x, y) :
     return (x >= 0.4 and x <= 0.6);
 
+class CPredicate :
+  def evalOp(self, x, y) :
+    return (x >= 0.3 and x <= 0.4);
+
+class DPredicate :
+  def evalOp(self, x, y) :
+    return math.fabs(x-1.0) < 1.0e-10
+
 from noxSolver import solverParams
 
 def main():
 
   vecType = EpetraVectorType()
-  nx = 200
-  ny = 10
+  nx = 4000
+  ny = 3
   mesher  = PartitionedRectangleMesher(0.0, 1.0, nx, 1,
                                        0.0, 2.0, ny, 1);
   mesh = mesher.getMesh();
@@ -54,6 +62,10 @@ def main():
   interior = MaximalCellFilter()
   A = interior.subset(APredicate())
   B = interior.subset(BPredicate())
+  C = interior.subset(CPredicate())
+  bdry = BoundaryCellFilter()
+  D = bdry.subset(DPredicate())
+  
 
   # Now we define a discrete space for two field variables, one of
   # which is defined only on a subset of the domain.
@@ -89,7 +101,40 @@ def main():
         + ((u0[1]*u0[1] - 0.4*u0[0])**2.0).integral(B, mesh, quad)
 
   error = math.sqrt(err2)
-  print "error = " , error
+  print "value error = " , error
+
+  # project the gradient of the solution onto a Lagrange(0) basis
+  # on subdomain C only.
+
+  L0Space = DiscreteSpace(mesh, Lagrange(0), C, vecType)
+  dx = Derivative(0)
+  proj = L2Projector(L0Space, dx*u0[1]);
+  dU2_dx = proj.project();
+
+  err2 = ((2.0*u0[1]*dU2_dx - u0[0])**2).integral(C, mesh, quad)
+
+  error = error + math.sqrt(err2)
+  print "C deriv error = " , math.sqrt(err2)
+
+  # project the gradient of the solution onto a Lagrange(0) basis
+  # on subdomain B only.
+
+  L0Space = DiscreteSpace(mesh, Lagrange(0), B, vecType)
+  dx = Derivative(0)
+  proj = L2Projector(L0Space, dx*u0[0]);
+  dU1_dx = proj.project();
+
+  err2 = ((dU1_dx)**2).integral(B, mesh, quad)
+
+  error = error + math.sqrt(err2)
+  print "B deriv error = " , math.sqrt(err2)
+
+  # Integrate the x derivative over the boundary surface D
+
+  err2 = ((dU1_dx)**2).integral(D, mesh, quad)
+
+  error = error + math.sqrt(err2)
+  print "D deriv error = " , math.sqrt(err2)
 
   writer = VTKWriter("PartialDomain2D");
   writer.setUndefinedValue(-1.0)

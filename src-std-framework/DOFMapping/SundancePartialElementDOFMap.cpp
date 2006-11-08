@@ -100,8 +100,24 @@ PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
     }
   else
     {
-      TEST_FOR_EXCEPTION(cellDim != dim_, RuntimeError,
-                         "traces not yet implemented for PartialElementDOFMap");
+      dofs[0].resize(nCells * nFuncs_);
+      Array<int>& dof0 = dofs[0];
+      Array<int> cofacetLIDs(nCells);
+      
+      for (int c=0; c<nCells; c++)
+        {
+          TEST_FOR_EXCEPTION(mesh().numMaxCofacets(cellDim, cellLID[c]) > 1,
+                             RuntimeError,
+                             "Attempt to do a trace of a L0 basis on a "
+                             "lower-dimensional cell having more than one "
+                             "maximal cofacets");
+          int myFacetIndex = -1;
+          cofacetLIDs[c] = mesh().maxCofacetLID(cellDim, cellLID[c],
+                                                0, myFacetIndex);
+        }
+
+      getDOFsForCellBatch(dim_, cofacetLIDs, requestedFuncSet, dofs,
+                          nNodes);
     }
 
   return structure_;
