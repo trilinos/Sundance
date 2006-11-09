@@ -36,8 +36,9 @@
 <li> \ref conf_doc
 <li> \ref conf_trilinos
 <li> \ref conf_sundance
+<ul> <li> \ref conf_pysundance </ul>
 <li> \ref conf_test
-<li> \ref conf_py_app
+<li> \ref conf_py_env
 <li> \ref conf_app
 </ul>
 
@@ -189,6 +190,19 @@ command line. If you have installed
 Trilinos somewhere else, you should change your 
 <tt>configure</tt> line accordingly.
 
+\subsection conf_pysundance Enabling python wrappers
+
+Be sure to see \ref conf_soft_py for the versions of Python and SWIG you will need.
+
+By default, only the C++ libraries are built. To enable python
+wrappers, add
+<pre>
+--enable-python
+</pre>
+to the configure command line.
+
+\subsection conf_scripts Example configuration 
+
 There are several sample configuration script in the <tt>build-scripts</tt>
 subdirectory of Sundance. 
 <ul>
@@ -196,8 +210,20 @@ subdirectory of Sundance.
 on Linux with debugging flags set and array bounds checking. This
 script assumes that you have installed Trilinos in
 <tt>HOME/Software/Math/trilinos-6.0.18/LINUX-DEBUG.</tt>
+<li> <tt>build-scripts/linux-python-mpi-debug</tt> configures 
+parallel Sundance
+on Linux with the Python wrappers and
+with debugging flags set and array bounds checking. This
+script assumes that you have installed Trilinos in
+<tt>HOME/Software/Math/trilinos-6.0.18/LINUX-DEBUG.</tt>
 <li> <tt>build-scripts/linux-mpi-opt</tt> configures parallel Sundance
 on Linux with compile-time optimization and no debugging information
+or array bounds checking. This
+script assumes that you have installed Trilinos in
+<tt>HOME/Software/Math/trilinos-6.0.18/LINUX-OPT.</tt>
+<li> <tt>build-scripts/linux-python-mpi</tt> configures parallel Sundance
+on Linux with the Python wrappers and
+with compile-time optimization and no debugging information
 or array bounds checking. This
 script assumes that you have installed Trilinos in
 <tt>HOME/Software/Math/trilinos-6.0.18/LINUX-OPT.</tt>
@@ -205,11 +231,13 @@ script assumes that you have installed Trilinos in
 These scripts can be used as a starting 
 point for other modes of building Sundance. 
 
-An example installation process is listed below. 
+An example installation process is listed below. We use the script 
+<t>linux-python-mpi</T> which builds the Python wrappers and parallel
+capabilities using optimized compiler flags.
 \code
 <kevin@rusalka:Projects/Sundance> mkdir LINUX-OPT 
 <kevin@rusalka:Projects/Sundance> cd LINUX-OPT 
-<kevin@rusalka:Projects/Sundance/LINUX-OPT> ../build-scripts/linux-mpi-opt
+<kevin@rusalka:Projects/Sundance/LINUX-OPT> ../build-scripts/linux-python-mpi
 <kevin@rusalka:Projects/Sundance/LINUX-OPT> make
 <kevin@rusalka:Projects/Sundance/LINUX-OPT> make install
 \endcode

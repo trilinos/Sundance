@@ -46,6 +46,15 @@ you have downloaded.
 </ul>
 
 
+<H2> Version 2.2 </H2>
+
+<ul>
+<li> <A HREF="http://software.sandia.gov/sundance/sundance-2.2.0.tar.gz"> Sundance 2.2.0 </a> (9 November 2006)
+</ul>
+Version 2.2.0 should be built against
+<A HREF="http://software.sandia.gov/trilinos/downloads/trilinos-6.0.html">
+Release 6.0 </A> of Trilinos, minor version 6.0.18 or later.
+
 <H2> Version 2.1 </H2>
 
 <ul>

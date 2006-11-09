@@ -66,6 +66,12 @@ incomplet, inackurate, and is
 very much a work in progress trying to keep up with 
 a rapidly-evolving project.</b>
 
+<H2> PySundance </H2>
+
+Python wrappers for most Sundance capabilities are now available. These
+greatly simplify simulator development. See the \ref installation_page
+page for information on how to set up PySundance.
+
 <H2> Getting Started </H2>
 <ul>
 <li> \ref downloads_page
