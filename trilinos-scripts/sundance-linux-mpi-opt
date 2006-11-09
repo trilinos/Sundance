@@ -11,7 +11,7 @@ BUILD_DIR=`pwd`
 
 ../configure --enable-mpi --with-mpi-compilers \
 CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
---with-libs="-lumfpack -lamd -lexpat" \
+--with-libs="-lumfpack -lamd -lexpat -llapack -lblas" \
 --disable-default-packages \
 --enable-teuchos --enable-teuchos-extended \
 --enable-teuchos-complex --enable-teuchos-expat \
@@ -33,6 +33,7 @@ CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
 --enable-amesos-umfpack \
 --with-gnumake \
 --with-install="/usr/bin/install -c -p" \
+--config-cache \
 --prefix=$BUILD_DIR
 
 

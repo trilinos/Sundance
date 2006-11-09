@@ -115,6 +115,18 @@ AC_PROG_F77(f77 g77 f90 xlf90)
 AC_PROG_RANLIB
 
 
+# ------------------------------------------------------------------------
+# Checks for extra flags
+# #np# - You can pull flag checks for languages not used in package 
+# ------------------------------------------------------------------------
+# Check if --with-flags present, prepend any specs to FLAGS
+
+TAC_ARG_WITH_FLAGS(ccflags, CCFLAGS)
+TAC_ARG_WITH_FLAGS(cxxflags, CXXFLAGS)
+TAC_ARG_WITH_FLAGS(cflags, CFLAGS)
+TAC_ARG_WITH_FLAGS(fflags, FFLAGS)
+TAC_ARG_WITH_LIBS
+TAC_ARG_WITH_FLAGS(ldflags, LDFLAGS)
 
 # ------------------------------------------------------------------------
 # Alternate archiver

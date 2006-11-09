@@ -905,6 +905,16 @@ Optional Packages:
                           use -I
   --with-mpi-libdir=DIR   MPI library directory [MPIROOT/lib] Do not use
                           -L
+  --with-ccflags          additional CCFLAGS flags to be added: will prepend
+                          to CCFLAGS
+  --with-cxxflags         additional CXXFLAGS flags to be added: will
+                          prepend to CXXFLAGS
+  --with-cflags           additional CFLAGS flags to be added: will prepend
+                          to CFLAGS
+  --with-fflags           additional FFLAGS flags to be added: will prepend
+                          to FFLAGS
+  --with-ldflags          additional LDFLAGS flags to be added: will prepend
+                          to LDFLAGS
   --with-ar               override archiver command (default is "ar cru")
   --with-chaco-libs="LIBS"
                           Chaco libraries ["-lchaco"]
@@ -3751,7 +3761,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:3754:" \
+echo "$as_me:3764:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -3976,6 +3986,103 @@ else
 fi
 
 
+
+# ------------------------------------------------------------------------
+# Checks for extra flags
+# #np# - You can pull flag checks for languages not used in package
+# ------------------------------------------------------------------------
+# Check if --with-flags present, prepend any specs to FLAGS
+
+
+echo "$as_me:$LINENO: checking whether additional CCFLAGS flags should be added" >&5
+echo $ECHO_N "checking whether additional CCFLAGS flags should be added... $ECHO_C" >&6
+
+# Check whether --with-ccflags or --without-ccflags was given.
+if test "${with_ccflags+set}" = set; then
+  withval="$with_ccflags"
+
+CCFLAGS="${withval} ${CCFLAGS}"
+echo "$as_me:$LINENO: result: CCFLAGS = ${CCFLAGS}" >&5
+echo "${ECHO_T}CCFLAGS = ${CCFLAGS}" >&6
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi;
+
+
+echo "$as_me:$LINENO: checking whether additional CXXFLAGS flags should be added" >&5
+echo $ECHO_N "checking whether additional CXXFLAGS flags should be added... $ECHO_C" >&6
+
+# Check whether --with-cxxflags or --without-cxxflags was given.
+if test "${with_cxxflags+set}" = set; then
+  withval="$with_cxxflags"
+
+CXXFLAGS="${withval} ${CXXFLAGS}"
+echo "$as_me:$LINENO: result: CXXFLAGS = ${CXXFLAGS}" >&5
+echo "${ECHO_T}CXXFLAGS = ${CXXFLAGS}" >&6
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi;
+
+
+echo "$as_me:$LINENO: checking whether additional CFLAGS flags should be added" >&5
+echo $ECHO_N "checking whether additional CFLAGS flags should be added... $ECHO_C" >&6
+
+# Check whether --with-cflags or --without-cflags was given.
+if test "${with_cflags+set}" = set; then
+  withval="$with_cflags"
+
+CFLAGS="${withval} ${CFLAGS}"
+echo "$as_me:$LINENO: result: CFLAGS = ${CFLAGS}" >&5
+echo "${ECHO_T}CFLAGS = ${CFLAGS}" >&6
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi;
+
+
+echo "$as_me:$LINENO: checking whether additional FFLAGS flags should be added" >&5
+echo $ECHO_N "checking whether additional FFLAGS flags should be added... $ECHO_C" >&6
+
+# Check whether --with-fflags or --without-fflags was given.
+if test "${with_fflags+set}" = set; then
+  withval="$with_fflags"
+
+FFLAGS="${withval} ${FFLAGS}"
+echo "$as_me:$LINENO: result: FFLAGS = ${FFLAGS}" >&5
+echo "${ECHO_T}FFLAGS = ${FFLAGS}" >&6
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi;
+
+TAC_ARG_WITH_LIBS
+
+echo "$as_me:$LINENO: checking whether additional LDFLAGS flags should be added" >&5
+echo $ECHO_N "checking whether additional LDFLAGS flags should be added... $ECHO_C" >&6
+
+# Check whether --with-ldflags or --without-ldflags was given.
+if test "${with_ldflags+set}" = set; then
+  withval="$with_ldflags"
+
+LDFLAGS="${withval} ${LDFLAGS}"
+echo "$as_me:$LINENO: result: LDFLAGS = ${LDFLAGS}" >&5
+echo "${ECHO_T}LDFLAGS = ${LDFLAGS}" >&6
+
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi;
 
 
 # ------------------------------------------------------------------------

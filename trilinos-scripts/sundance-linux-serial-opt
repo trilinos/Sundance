@@ -9,11 +9,11 @@
 
 BUILD_DIR=`pwd`
 
-../configure --enable-mpi --with-mpi-compilers \
-CXXFLAGS="-O0 -g -Wall" \
+../configure \
+CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
 --with-libs="-lumfpack -lamd -lexpat -llapack -lblas" \
 --disable-default-packages \
---enable-teuchos --enable-teuchos-extended --enable-teuchos-abc\
+--enable-teuchos --enable-teuchos-extended \
 --enable-teuchos-complex --enable-teuchos-expat \
 --enable-thyra \
 --disable-thyra-tests \

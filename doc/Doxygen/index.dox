@@ -82,15 +82,6 @@ Prebuilt shared libraries for PySundance
 are available for some platforms.
 <li> There is a short <b><A HREF="Tutorial.pdf"> tutorial </A></b>
 on setting up linear and nonlinear PDE simulations.
-<li> %Sundance is powerful, but can't do everything. Even
-among those things it can do in principle there are some things 
-that just haven't been added yet. Here is a listing
-of some of the \ref limits_page of %Sundance. 
-<li> This version is the result of 
-a complete rewrite of %Sundance. If you have used
-version 1.0, <b> do not unpack this into your old distribution directory.
-</b> You may also want to read about some of the 
-\ref diff_page.
 <li> \ref contrib_page
 <li> \ref DevelopersGuidePage
 </ul>
@@ -115,11 +106,17 @@ Sandia math software server. </A>
 <li> <A HREF="http://csmr.ca.sandia.gov/~ptboggs/"> Paul Boggs </A>
 --  Sandia National Laboratories, Livermore. 
 <li> <A HREF="http://people.cs.uchicago.edu/~kirby/"> Robert Kirby </A>
--- University of Chicago. 
+-- Texas Tech University. 
 <li> <A HREF="http://csmr.ca.sandia.gov/~margoli/"> Steve Margolis </A>
 --  Sandia National Laboratories, Livermore. 
 <li> <A HREF="http://www4.ncsu.edu/~jpreese/"> Jill Reese </A>
 -- North Carolina State University. 
+<li> <A HREF="http://www.usc.edu/dept/civil_eng/dept/faculty-staff/student-directory/"> George Saad </A>
+-- University of Southern California. 
+<li> <A HREF="http://people.cs.uchicago.edu/~aterrel/"> Andy Terrel </A>
+-- University of Chicago. 
+<li> <A HREF="http://www.cs.sandia.gov/~bartv/"> Bart van Bloemen Waanders </A>
+-- Sandia National Laboratories, Albuquerque. 
 </ul>
 
 

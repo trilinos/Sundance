@@ -37,16 +37,16 @@ running on Linux, the easiest
 solution is to copy one of my \ref canned_scripts that call configure.
 
 <ul>
-<li> \ref comp_flags
+<li> \ref pytrilinos
 <li> \ref opt_v_debug
 <li> \ref canned_scripts
 <li> \ref conf_packages 
 </ul>
 
-\section comp_flags Reuse of Compiler Flags
+\section pytrilinos Do I need PyTrilinos?
 
-Whichever compiler flags you specify for Trilinos will be automatically
-reused for Sundance.
+PyTrilinos is not required by PySundance. There is probably no 
+harm in building PyTrilinos, but it is not used by PySundance.
 
 \section opt_v_debug Optimized vs Debug Configurations
 
@@ -105,6 +105,10 @@ you should always enable the following packages:
 <pre>
 --enable-epetra
 </pre>
+<li> Epetraext (various sparse matrix utilities)
+<pre>
+--enable-epetraext
+</pre>
 <li> IFPack (incomplete factorization preconditioners)
 <pre>
 </pre>
@@ -124,7 +128,10 @@ you should always enable the following packages:
 <pre>
 --enable-thyra
 </pre>
-
+<li> Amesos (direct solvers)
+<pre>
+--enable-amesos --enable-amesos-umfpack
+</pre>
 </ul>
 
 

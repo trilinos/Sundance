@@ -9,7 +9,7 @@
 
 BUILD_DIR=`pwd`
 
-../configure --enable-mpi --with-mpi-compilers \
+../configure \
 CXXFLAGS="-O0 -g -Wall" \
 --with-libs="-lumfpack -lamd -lexpat -llapack -lblas" \
 --disable-default-packages \
