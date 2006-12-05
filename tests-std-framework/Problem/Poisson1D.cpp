@@ -118,10 +118,6 @@ int main(int argc, void** argv)
                          RuntimeError,
                          "solve failed");
 
-      Expr zz = Integral(interior, soln[0], quad);
-      double totalU = evaluateIntegral(mesh, zz);
-      cerr << "total vorticity = " << totalU << endl;
-
       Expr exactSoln = x*(x-2.0);
 
       Expr errExpr = Integral(interior, 
@@ -133,6 +129,10 @@ int main(int argc, void** argv)
                                    pow(dx*(soln-exactSoln), 2),
                                    new GaussianQuadrature(2));
 
+      Expr fluxErrExpr = Integral(leftPoint, 
+                                  pow(dx*(soln-exactSoln), 2),
+                                  new GaussianQuadrature(2));
+
       double errorSq = evaluateIntegral(mesh, errExpr);
       cout << "error norm = " << sqrt(errorSq) << endl << endl;
 
@@ -141,8 +141,22 @@ int main(int argc, void** argv)
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
       cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
+      double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
+      cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
+
+      Expr exactFluxExpr = Integral(leftPoint, 
+                                    dx*exactSoln,
+                                    new GaussianQuadrature(2));
+
+      Expr numFluxExpr = Integral(leftPoint, 
+                                  dx*soln,
+                                  new GaussianQuadrature(2));
+
+      cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
+      cout << "computed flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;
+
       double tol = 1.0e-12;
-      Sundance::passFailTest(sqrt(errorSq + derivErrorSq), tol);
+      Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), tol);
     }
 	catch(exception& e)
 		{

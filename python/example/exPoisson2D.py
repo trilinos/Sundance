@@ -87,13 +87,17 @@ def main():
 
   diff = (soln - exactSoln)**2.0
   diffDeriv = (dx*(soln - exactSoln))**2.0
+  diffFlux = (dy*(soln - exactSoln))**2.0
   
   error = math.sqrt(diff.integral(interior, mesh, quad4))
   derivError = math.sqrt(diffDeriv.integral(interior, mesh, quad4))
+  fluxError = math.sqrt(diffFlux.integral(top, mesh, quad4))
   print "error = " , error
   print "deriv error = " , derivError
+  print "flux error = " , fluxError
 
   error = max(error, derivError)
+  error = max(error, fluxError)
 
   print "max err = ", error
 

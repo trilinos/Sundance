@@ -47,8 +47,8 @@ int main(int argc, void** argv)
   
   try
 		{
-      int nx = 10;
-      int ny = 10;
+      int nx = 4;
+      int ny = 4;
       string solverFile = "aztec.xml";
       string path = "../../../tests-std-framework/Problem/";
       Sundance::setOption("nx", nx, "number of elements in x");
@@ -102,7 +102,7 @@ int main(int argc, void** argv)
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       Expr one = new Parameter(1.0);
       Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  + one*v, quad2)
-        + Integral(top, -v/3.0, quad2) 
+        + Integral(top, -v/3.0, quad2)
         + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);
       //        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
       /* Define the Dirichlet BC */
@@ -124,10 +124,10 @@ int main(int argc, void** argv)
       Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
 
       /* Write the field in VTK format */
-      // FieldWriter w = new VTKWriter("Poisson2d");
-//       w.addMesh(mesh);
-//       w.addField("soln", new ExprFieldWrapper(soln[0]));
-//       w.write();
+      FieldWriter w = new VTKWriter("Poisson2d");
+      w.addMesh(mesh);
+      w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.write();
 
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
@@ -139,6 +139,26 @@ int main(int argc, void** argv)
                                    derivErr*derivErr, 
                                    quad2);
 
+      
+
+      Expr fluxErrExpr = Integral(top, 
+                                  pow(dy*(soln-exactSoln), 2),
+                                  new GaussianQuadrature(2));
+
+      
+
+      Expr exactFluxExpr = Integral(top, 
+                                    dy*exactSoln,
+                                    new GaussianQuadrature(2));
+
+      Expr numFluxExpr = Integral(top, 
+                                  dy*soln,
+                                  new GaussianQuadrature(2));
+      //        + Integral(top+bottom, 
+      //                   pow(dy*(soln-exactSoln), 2),
+      //                   new GaussianQuadrature(2));
+
+
       FunctionalEvaluator errInt(mesh, errExpr);
       FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
 
@@ -148,7 +168,13 @@ int main(int argc, void** argv)
       double derivErrorSq = derivErrInt.evaluate();
       cerr << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
-      Sundance::passFailTest(errorSq + derivErrorSq, 1.0e-11);
+      double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
+      cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
+
+      cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
+      cout << "numerical flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;
+
+      Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), 1.0e-11);
 
     }
 	catch(exception& e)

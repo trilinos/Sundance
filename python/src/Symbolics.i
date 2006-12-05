@@ -302,7 +302,7 @@ namespace SundanceCore
   Expr fabs(const Expr& x);
   Expr sign(const Expr& x);
 
-  Expr exp(const Expr& x);
+  SundanceCore::Expr SundanceCore::exp(const SundanceCore::Expr& x);
   Expr log(const Expr& x);
   Expr sqrt(const Expr& x);
 

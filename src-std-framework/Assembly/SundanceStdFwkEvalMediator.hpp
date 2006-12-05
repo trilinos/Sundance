@@ -127,14 +127,22 @@ namespace SundanceStdFwk
       bool& cacheIsValid() const {return cacheIsValid_;}
 
       /** */
+      void setupFacetTransformations() const ;
+
+      /** */
       Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& fCache() const {return fCache_;}
       /** */
       Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& dfCache() const {return dfCache_;}
       /** */
       Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& localValueCache() const {return localValueCache_;}
+      /** */
+      Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& facetLocalValueCache() const {return facetLocalValueCache_;}
 
       Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> >& mapStructCache() const
       {return mapStructCache_;}
+
+      Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> >& facetMapStructCache() const
+      {return facetMapStructCache_;}
 
       /** */
       Map<const DiscreteFunctionData*, bool>& fCacheIsValid() const {return fCacheIsValid_;}
@@ -142,6 +150,8 @@ namespace SundanceStdFwk
       Map<const DiscreteFunctionData*, bool>& dfCacheIsValid() const {return dfCacheIsValid_;}
       /** */
       Map<const DiscreteFunctionData*, bool>& localValueCacheIsValid() const {return localValueCacheIsValid_;}
+      /** */
+      Map<const DiscreteFunctionData*, bool>& facetLocalValueCacheIsValid() const {return facetLocalValueCacheIsValid_;}
       
     private:
       Mesh mesh_;
@@ -154,7 +164,7 @@ namespace SundanceStdFwk
 
       RefCountPtr<const Array<int> > cellLID_;
 
-      bool useMaximalCells_;
+      mutable bool useMaximalCells_;
 
       mutable RefCountPtr<CellJacobianBatch> JVol_;
 
@@ -175,7 +185,11 @@ namespace SundanceStdFwk
       /** */
       mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > localValueCache_;
       /** */
+      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > facetLocalValueCache_;
+      /** */
       mutable Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> > mapStructCache_;
+      /** */
+      mutable Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> > facetMapStructCache_;
 
       /** */
       mutable Map<const DiscreteFunctionData*, bool> fCacheIsValid_;
@@ -183,6 +197,8 @@ namespace SundanceStdFwk
       mutable Map<const DiscreteFunctionData*, bool> dfCacheIsValid_;
       /** */
       mutable Map<const DiscreteFunctionData*, bool> localValueCacheIsValid_;
+      /** */
+      mutable Map<const DiscreteFunctionData*, bool> facetLocalValueCacheIsValid_;
     };
   }
 }

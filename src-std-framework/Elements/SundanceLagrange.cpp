@@ -202,7 +202,9 @@ void Lagrange::refEval(int /* spatialDim */,
         }
       return;
     default:
-      SUNDANCE_ERROR("Lagrange::refEval() unimplemented for cell type ");
+      TEST_FOR_EXCEPTION(true, RuntimeError,
+                         "Lagrange::refEval() unimplemented for cell type "
+                         << cellType);
 
     }
 }

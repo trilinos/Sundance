@@ -82,6 +82,11 @@ namespace SundanceStdFwk
                               int facetIndex,
                               Array<Point>& quadPoints,
                               Array<double>& quadWeights) const ;
+    /** Get quad points for a facet of a tet */
+    void getTetFacetQuad(int facetDim,
+                         int facetIndex,
+                         Array<Point>& quadPoints,
+                         Array<double>& quadWeights) const ;
   };
 }
 

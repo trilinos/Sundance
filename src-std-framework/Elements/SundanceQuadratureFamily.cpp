@@ -75,9 +75,9 @@ void QuadratureFamily::getFacetPoints(const CellType& cellType,
     case TriangleCell:
       getTriangleFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
       break;
-      //    case TetCell:
-      // getTetFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
-      //break;
+    case TetCell:
+      getTetFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
+      break;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError,
                          "getFacetPoints() not implemented for cell type "
@@ -114,10 +114,10 @@ void QuadratureFamily::getTriangleFacetQuad(int facetDim,
 {
   TEST_FOR_EXCEPTION(facetDim > 1, RuntimeError,
                      "Invalid facet dimension " << facetDim 
-                     << " in getLineFacetQuad()");
+                     << " in getTriangleFacetQuad()");
   TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 2, RuntimeError,
                      "Invalid facet index " << facetIndex  
-                     << " in getLineFacetQuad()");
+                     << " in getTriangleFacetQuad()");
   if (facetDim==1)
     {
       Array<Point> facetPts;
@@ -151,6 +151,72 @@ void QuadratureFamily::getTriangleFacetQuad(int facetDim,
       quadWeights[0] = 1.0;  
       if (facetIndex==0) quadPoints[0] = Point(0.0, 0.0);
       else if (facetIndex==1) quadPoints[0] = Point(1.0, 0.0);
+      else quadPoints[0] = Point(0.0, 1.0);
+    }
+}
+
+
+
+void QuadratureFamily::getTetFacetQuad(int facetDim,
+                                       int facetIndex,
+                                       Array<Point>& quadPoints,
+                                       Array<double>& quadWeights) const
+{
+  TEST_FOR_EXCEPTION(facetDim > 2, RuntimeError,
+                     "Invalid facet dimension " << facetDim 
+                     << " in getTetFacetQuad()");
+  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 4, RuntimeError,
+                     "Invalid facet index " << facetIndex  
+                     << " in getTetFacetQuad()");
+  if (facetDim==2)
+    {
+      Array<Point> facetPts;
+      Array<double> facetWts;
+      getPoints(TriangleCell, facetPts, facetWts);
+      quadPoints.resize(facetPts.size());
+      quadWeights.resize(facetWts.size());
+      for (unsigned int i=0; i<facetPts.size(); i++)
+        {
+          double s = facetPts[i][0];
+          double t = facetPts[i][1];
+          double x,y,z;
+          if (facetIndex==0)
+            {
+              x = 1.0-s;
+              y = 1.0-s-t;
+              z = t;
+            }
+          else if (facetIndex==1)
+            {
+              x = 1.0-s;
+              y = 0.0;
+              z = t;
+            }
+          else if (facetIndex==2) 
+            {
+              x = 0.0;
+              y = 1.0-s;
+              z = t;
+            }
+          else
+            {
+              x = s;
+              y = t;
+              z = 0.0;
+            }
+          quadPoints[i] = Point(x, y, z);
+          quadWeights[i] = facetWts[i];
+
+        }
+    }
+  else if (facetDim==0)
+    {
+      quadPoints.resize(1);
+      quadWeights.resize(1);
+      quadWeights[0] = 1.0;  
+      if (facetIndex==0) quadPoints[0] = Point(0.0, 0.0);
+      else if (facetIndex==1) quadPoints[0] = Point(1.0, 0.0);
+      else if (facetIndex==2) quadPoints[0] = Point(1.0, 0.0);
       else quadPoints[0] = Point(0.0, 1.0);
     }
 }

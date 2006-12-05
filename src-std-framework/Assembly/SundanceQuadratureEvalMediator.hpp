@@ -97,6 +97,9 @@ namespace SundanceStdFwk
                                                    int diffOrder) const ;
 
       /** */
+      RefCountPtr<Array<Array<double> >  > getFacetRefBasisVals(const BasisFamily& basis) const ;
+
+      /** */
       const Array<double>& quadWgts() const 
       {return *(refQuadWeights_.get(cellType()));}
 
@@ -105,6 +108,9 @@ namespace SundanceStdFwk
       
 
       static void addFlops(const double& flops) {totalFlops() += flops;}
+
+      /** */
+      int numFacetCases() const {return numFacetCases_;}
 
     private:
 
@@ -116,6 +122,9 @@ namespace SundanceStdFwk
      
       /** */
       void computePhysQuadPts() const ;
+
+      /** */
+      int numFacetCases_;
 
       /** */
       QuadratureFamily quad_;
@@ -135,7 +144,7 @@ namespace SundanceStdFwk
       /** */
       mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<double> > > > refBasisVals_;
 
-      mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<double> > > > > refFacetBasisVals_;
+      mutable Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<double> > > > refFacetBasisVals_;
       
     };
   }

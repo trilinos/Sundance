@@ -62,26 +62,42 @@ QuadratureEvalMediator
     refQuadWeights_(),
     physQuadPts_(),
     refBasisVals_(2),
-    refFacetBasisVals_(2)
+    refFacetBasisVals_()
 {}
 
 void QuadratureEvalMediator::setCellType(const CellType& cellType,
                                          const CellType& maxCellType) 
 {
   StdFwkEvalMediator::setCellType(cellType, maxCellType);
+
+  if (cellType != maxCellType)
+    {
+      numFacetCases_ = numFacets(maxCellType, cellDim());
+    }
   
   if (refQuadPts_.containsKey(cellType)) return;
 
   
   RefCountPtr<Array<Point> > pts = rcp(new Array<Point>());
   RefCountPtr<Array<double> > wgts = rcp(new Array<double>());
-  RefCountPtr<Array<Array<Point> > > facetPts = rcp(new Array<Array<Point> >());
 
   quad_.getPoints(cellType, *pts, *wgts);
   refQuadPts_.put(cellType, pts);
-  refFacetQuadPts_.put(cellType, facetPts);
   refQuadWeights_.put(cellType, wgts);
-  
+
+  if (cellType != maxCellType)
+    {
+      RefCountPtr<Array<Array<Point> > > facetPts 
+        = rcp(new Array<Array<Point> >(numFacetCases()));
+      RefCountPtr<Array<Array<double> > > facetWgts 
+        = rcp(new Array<Array<double> >(numFacetCases()));
+      for (int fc=0; fc<numFacetCases(); fc++)
+        {
+          quad_.getFacetPoints(maxCellType, cellDim(), fc, 
+                               (*facetPts)[fc], (*facetWgts)[fc]);
+        }
+      refFacetQuadPts_.put(cellType, facetPts);
+    }
 }
 
 void QuadratureEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
@@ -134,6 +150,65 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
     }
 }
 
+RefCountPtr<Array<Array<double> > > QuadratureEvalMediator
+::getFacetRefBasisVals(const BasisFamily& basis) const
+{
+  Tabs tab;
+  RefCountPtr<Array<Array<double> > > rtn ;
+
+  if (!useMaximalCells()) setupFacetTransformations();
+
+  typedef OrderedPair<BasisFamily, CellType> key;
+
+  if (!refFacetBasisVals_.containsKey(key(basis, cellType())))
+    {
+      SUNDANCE_OUT(this->verbosity() > VerbMedium,
+                   tab << "computing basis values on facet quad pts");
+      rtn = rcp(new Array<Array<double> >(numFacetCases()));
+
+      for (int fc=0; fc<numFacetCases(); fc++)
+        {
+          Array<Array<Array<double> > > tmp(maxCellDim());          
+          for (int r=0; r<maxCellDim(); r++)
+            {
+              MultiIndex mi;
+              mi[r]=1;
+              basis.ptr()->refEval(mesh().spatialDim(), maxCellType(), 
+                                   (*(refFacetQuadPts_.get(cellType())))[fc], 
+                                   mi, tmp[r]);
+            }
+          /* the tmp array contains values indexed as [quad][node]. 
+           * We need to put this into fortran order with quad index running
+           * fastest */
+          int dim = maxCellDim();
+          int nQuad = tmp[0].size();
+          int nNodes = tmp[0][0].size();
+          int nTot = dim * nQuad * nNodes;
+          (*rtn)[fc].resize(nTot);
+          
+          for (int r=0; r<dim; r++)
+            {
+              for (int q=0; q<nQuad; q++)
+                {
+                  for (int n=0; n<nNodes; n++)
+                    {
+                      (*rtn)[fc][(n*nQuad + q)*dim + r] = tmp[r][q][n];
+                    }
+                }
+            }
+        }
+      refFacetBasisVals_.put(key(basis, cellType()), rtn);
+    }
+  else
+    {
+      SUNDANCE_OUT(this->verbosity() > VerbMedium,
+                   tab << "reusing facet basis values on quad pts");
+      rtn = refFacetBasisVals_.get(key(basis, cellType()));
+    }
+
+  return rtn;
+}
+
 RefCountPtr<Array<double> > QuadratureEvalMediator
 ::getRefBasisVals(const BasisFamily& basis, int diffOrder) const
 {
@@ -153,7 +228,7 @@ RefCountPtr<Array<double> > QuadratureEvalMediator
       if (diffOrder==0)
         {
           Array<Array<double> > tmp;
-          basis.ptr()->refEval(mesh().spatialDim(), cellType(), 
+          basis.ptr()->refEval(cellDim(), cellType(), 
                                *(refQuadPts_.get(cellType())), 
                                MultiIndex(), tmp);
           /* the tmp array contains values indexed as [quad][node]. 
@@ -179,7 +254,7 @@ RefCountPtr<Array<double> > QuadratureEvalMediator
             {
               MultiIndex mi;
               mi[r]=1;
-              basis.ptr()->refEval(mesh().spatialDim(), cellType(), 
+              basis.ptr()->refEval(cellDim(), cellType(), 
                                    *(refQuadPts_.get(cellType())), 
                                    mi, tmp[r]);
             }
@@ -249,12 +324,14 @@ void QuadratureEvalMediator
   
       if (mi.order() == 0)
         {
+          Tabs tab2;
           if (!fCache().containsKey(f) || !fCacheIsValid()[f])
             {
               fillFunctionCache(f, mi);
             }
           else
             {
+              SUNDANCE_VERB_HIGH(tab2 << "reusing function cache");
             }
 
           const RefCountPtr<const MapStructure>& mapStruct = mapStructCache()[f];
@@ -281,15 +358,19 @@ void QuadratureEvalMediator
         }
       else
         {
+          Tabs tab2;
           if (!dfCache().containsKey(f) || !dfCacheIsValid()[f])
             {
               fillFunctionCache(f, mi);
             }
           else
             {
+              SUNDANCE_VERB_HIGH(tab2 << "reusing function cache");
             }
 
-          const RefCountPtr<const MapStructure>& mapStruct = mapStructCache()[f];
+          RefCountPtr<const MapStructure> mapStruct;
+          if (cellDim() == maxCellDim()) mapStruct = mapStructCache()[f];
+          else mapStruct = facetMapStructCache()[f];
           int chunk = mapStruct->chunkForFuncID(myIndex);
           int funcIndex = mapStruct->indexForFuncID(myIndex);
           int nFuncs = mapStruct->numFuncs(chunk);
@@ -297,7 +378,7 @@ void QuadratureEvalMediator
           const RefCountPtr<Array<Array<double> > >& cacheVals 
             = dfCache()[f];
 
-          int dim = cellDim();
+          int dim = maxCellDim();
           int pDir = mi.firstOrderDirection();
           const double* cachePtr = &((*cacheVals)[chunk][0]);
           double* vecPtr = vec[i]->start();
@@ -327,19 +408,43 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
   RefCountPtr<Array<Array<double> > > localValues;
   RefCountPtr<const MapStructure> mapStruct;
-  if (!localValueCacheIsValid().containsKey(f) 
-      || !localValueCacheIsValid().get(f))
+  if (mi.order() == 1 && cellDim() != maxCellDim())
     {
-      localValues = rcp(new Array<Array<double> >());
-      mapStruct = f->getLocalValues(cellDim(), *cellLID(), *localValues);
-      localValueCache().put(f, localValues);
-      mapStructCache().put(f, mapStruct);
-      localValueCacheIsValid().put(f, true);
+      if (!useMaximalCells()) setupFacetTransformations();
+
+      if (!facetLocalValueCacheIsValid().containsKey(f) 
+          || !facetLocalValueCacheIsValid().get(f))
+        {
+          localValues = rcp(new Array<Array<double> >());
+          mapStruct = f->getLocalValues(maxCellDim(), maxCellLIDs(), *localValues);
+          TEST_FOR_EXCEPT(mapStruct.get() == 0);
+          facetLocalValueCache().put(f, localValues);
+          facetMapStructCache().put(f, mapStruct);
+          facetLocalValueCacheIsValid().put(f, true);
+        }
+      else
+        {
+          localValues = facetLocalValueCache().get(f);
+          mapStruct = facetMapStructCache().get(f);
+        }
     }
   else
     {
-      localValues = localValueCache().get(f);
-      mapStruct = mapStructCache().get(f);
+      if (!localValueCacheIsValid().containsKey(f) 
+          || !localValueCacheIsValid().get(f))
+        {
+          localValues = rcp(new Array<Array<double> >());
+          mapStruct = f->getLocalValues(cellDim(), *cellLID(), *localValues);
+          TEST_FOR_EXCEPT(mapStruct.get() == 0);
+          localValueCache().put(f, localValues);
+          mapStructCache().put(f, mapStruct);
+          localValueCacheIsValid().put(f, true);
+        }
+      else
+        {
+          localValues = localValueCache().get(f);
+          mapStruct = mapStructCache().get(f);
+        }
     }
 
   RefCountPtr<Array<Array<double> > > cacheVals;
@@ -378,49 +483,101 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       const BasisFamily& basis = mapStruct->basis(chunk);
       int nFuncs = mapStruct->numFuncs(chunk);
 
-      RefCountPtr<Array<double> > refBasisValues 
-        = getRefBasisVals(basis, diffOrder);
-
       Array<double>& cache = (*cacheVals)[chunk];
 
       int nQuad = quadWgts().size();
       int nCells = cellLID()->size();
-      int nNodes = basis.nNodes(mesh().spatialDim(), cellType());
+
       int nDir;
 
       if (mi.order()==1)
         {
-          nDir = cellDim();
-          cache.resize(cellLID()->size() * nQuad * cellDim() * nFuncs);
+          nDir = maxCellDim();
         }
       else
         {
           nDir = 1;
-          cache.resize(cellLID()->size() * nQuad * nFuncs);
         }
+      cache.resize(cellLID()->size() * nQuad * nDir * nFuncs);
 
+      
       /* 
        * Sum over nodal values, which we can do with a matrix-matrix multiply
        * between the ref basis values and the local function values.
+       *
+       * There are two cases: 
+       * (1) When we are evaluating spatial derivatives on a facet, we
+       * will a different sets of reference function values on the different
+       * facets. We must therefore loop over the evaluation cells, using a vector
+       * of reference values chosen according to the facet number of the
+       * current cell.
+       * Let A be the (nQuad*nDir)-by-(nNode) matrix of reference basis values
+       * for the current cell's facet index and B be the (nNode)-by-(nFuncs) 
+       * matrix of function coefficient values for the current cell. Then 
+       * C = A * B is the (nQuad*nDir)-by-(nFunc) matrix of the function's derivative
+       * values at the quadrature points in the current cell. 
+       * Each matrix-matrix multiplication is done with a call to dgemm.
+       *
+       * (2) In other cases, we're either evaluating spatial derivatives on a maximal
+       * cell or evaluating 0-order derivatives on a submaximal cell. In these cases,
+       * all cells in the workset have the same reference values. This lets us
+       * reuse the same matrix A on all matrix multiplications, so that we can
+       * assemble one big (nNode)-by-(nFuncs*nCells) matrix B and do all
+       * cells with a single dgemm call to multiply A*B. The result C is then
+       * a single (nQuad*nDir)-by-(nFuncs*nCells) matrix. 
        */
-      int nRowsA = nQuad*nDir;
-      int nColsA = nNodes;
-      int nColsB = nFuncs*nCells; 
-      int lda = nRowsA;
-      int ldb = nNodes;
-      int ldc = lda;
-      double alpha = 1.0;
-      double beta = 0.0;
-      double* A = &((*refBasisValues)[0]);
-      double* B = &((*localValues)[chunk][0]);
-      double* C = &((*cacheVals)[chunk][0]);
-      
-      dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
-             B, &ldb, &beta, C, &ldc);
-      
-      
+      if (mi.order() == 1 && cellDim() != maxCellDim())
+        {
+          RefCountPtr<Array<Array<double> > > refFacetBasisValues 
+            = getFacetRefBasisVals(basis);
+          int nNodes = basis.nNodes(mesh().spatialDim(), maxCellType());
+          int nRowsA = nQuad*nDir;
+          int nColsA = nNodes;
+          int nColsB = nFuncs; 
+          int lda = nRowsA;
+          int ldb = nNodes;
+          int ldc = lda;
+          double alpha = 1.0;
+          double beta = 0.0;
+
+          for (int c=0; c<nCells; c++)
+            {
+              int facetIndex = facetIndices()[c];
+              double* A = &((*refFacetBasisValues)[facetIndex][0]);
+              double* B = &((*localValues)[chunk][c*nNodes*nFuncs]);
+              double* C = &((*cacheVals)[chunk][c*nRowsA*nColsB]);
+              dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
+                 B, &ldb, &beta, C, &ldc);
+            }
+        }
+      else 
+        {
+          /* 
+           * Sum over nodal values, which we can do with a matrix-matrix multiply
+           * between the ref basis values and the local function values.
+           */
+          RefCountPtr<Array<double> > refBasisValues 
+            = getRefBasisVals(basis, diffOrder);
+          int nNodes = basis.nNodes(mesh().spatialDim(), cellType());
+          int nRowsA = nQuad*nDir;
+          int nColsA = nNodes;
+          int nColsB = nFuncs*nCells; 
+          int lda = nRowsA;
+          int ldb = nNodes;
+          int ldc = lda;
+          double alpha = 1.0;
+          double beta = 0.0;
+          double* A = &((*refBasisValues)[0]);
+          double* B = &((*localValues)[chunk][0]);
+          double* C = &((*cacheVals)[chunk][0]);
+          
+          dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
+                 B, &ldb, &beta, C, &ldc);
+        }
+
       /* Transform derivatives to physical coordinates */
       const CellJacobianBatch& J = JTrans();
+      double* C = &((*cacheVals)[chunk][0]);
       if (mi.order()==1)
         {
           int nRhs = nQuad * nFuncs;

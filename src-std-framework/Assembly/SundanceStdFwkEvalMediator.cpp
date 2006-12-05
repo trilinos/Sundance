@@ -52,6 +52,7 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
   : mesh_(mesh),
     cellDim_(cellDim),
     cellType_(NullCell),
+    maxCellType_(NullCell),
     cellLID_(),
     useMaximalCells_(false),
     JVol_(rcp(new CellJacobianBatch())),
@@ -63,17 +64,20 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
     fCache_(),
     dfCache_(),
     localValueCache_(),
+    facetLocalValueCache_(),
     mapStructCache_(),
+    facetMapStructCache_(),
     fCacheIsValid_(),
     dfCacheIsValid_(),
-    localValueCacheIsValid_()
+    localValueCacheIsValid_(),
+    facetLocalValueCacheIsValid_()
 {;}
 
 void StdFwkEvalMediator::setCellType(const CellType& cellType,
                                const CellType& maxCellType) 
 {
   cellType_=cellType; 
-  maxCellType_ = maxCellType_;
+  maxCellType_ = maxCellType;
   cacheIsValid() = false; 
   jCacheIsValid_=false;
 }
@@ -86,21 +90,7 @@ void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
   jCacheIsValid_=false;
   mesh_.getJacobians(cellDim(), *cellLID, *JVol_);
   useMaximalCells_ = useMaximalCells;
-
-  if (useMaximalCells_)
-    {
-      const Array<int>& cells = *cellLID;
-      facetIndices_->resize(cells.size());
-      maxCellLIDs_->resize(cells.size());
-      for (unsigned int c=0; c<cells.size(); c++)
-        {
-          (*maxCellLIDs_)[c] 
-            = mesh_.maxCofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
-          cout << "max cellLID=" << (*maxCellLIDs_)[c] 
-               << ", facetIndex=" << (*facetIndices_)[c] << endl;
-        }
-      mesh_.getJacobians(mesh_.spatialDim(), *maxCellLIDs_, *JTrans_);
-    }
+  if (useMaximalCells_) setupFacetTransformations();
 
   /* mark the function caches as invalid */
   Map<const DiscreteFunctionData*, bool>::iterator iter;
@@ -116,6 +106,24 @@ void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
     {
       iter->second = false;
     }
+  for (iter = facetLocalValueCacheIsValid_.begin(); iter != facetLocalValueCacheIsValid_.end(); iter++)
+    {
+      iter->second = false;
+    }
+}
+
+void StdFwkEvalMediator::setupFacetTransformations() const 
+{
+  useMaximalCells_ = true;
+  const Array<int>& cells = *cellLID_;
+  facetIndices_->resize(cells.size());
+  maxCellLIDs_->resize(cells.size());
+  for (unsigned int c=0; c<cells.size(); c++)
+    {
+      (*maxCellLIDs_)[c] 
+        = mesh_.maxCofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
+    }
+  mesh_.getJacobians(mesh_.spatialDim(), *maxCellLIDs_, *JTrans_);
 }
 
 
