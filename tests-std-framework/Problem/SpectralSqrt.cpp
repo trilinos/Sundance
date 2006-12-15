@@ -42,7 +42,7 @@
  * variable.
  */
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
@@ -76,9 +76,9 @@ int main(int argc, void** argv)
       Expr v = new TestFunction(new Lagrange(1), sbasis, "v");
 
       /* Create the stochastic input function. */
-      Expr a0 = new Parameter(1.0);
-      Expr a1 = new Parameter(0.1);
-      Expr a2 = new Parameter(0.0);
+      Expr a0 = new SundanceCore::Parameter(1.0);
+      Expr a1 = new SundanceCore::Parameter(0.1);
+      Expr a2 = new SundanceCore::Parameter(0.0);
       Expr alpha = new SpectralExpr(sbasis, tuple(a0, a1, a2));
 
       /* Create a discrete space, and discretize the function 1.0 on it */
@@ -117,7 +117,7 @@ int main(int argc, void** argv)
 
       for (int i=0; i<sbasis.nterms(); i++)
         {
-          cout << "u[" << i << "] = " << vec[i] << endl;
+          cout << "u[" << i << "] = " << const_cast<const Vector<double>&>(vec)[i] << endl;
         }
       
       double tol = 1.0e-12;

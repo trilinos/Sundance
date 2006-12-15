@@ -43,12 +43,12 @@ CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       //      DOFMapBase::classVerbosity() = VerbExtreme;
@@ -92,7 +92,7 @@ int main(int argc, void** argv)
       Expr y = new CoordExpr(1);
 
       /* A parameter expression for the Reynolds number */
-      Expr reynolds = new Parameter(20.0);
+      Expr reynolds = new SundanceCore::Parameter(20.0);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad1 = new GaussianQuadrature(1);
@@ -161,11 +161,12 @@ int main(int argc, void** argv)
       cerr << "number of assemble calls: " << Assembler::numAssembleCalls() << endl;
       double tol = 1.0e-4;
       Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
+      TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+
+  
 }

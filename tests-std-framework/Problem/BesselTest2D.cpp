@@ -130,7 +130,7 @@ Expr DrumFunc(int n, double A, const Expr& x, const Expr& y)
     verbosity<AbstractEvalMediator>() = VerbExtreme;    \
   }
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   try
 		{

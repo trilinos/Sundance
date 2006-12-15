@@ -61,7 +61,7 @@ namespace SundanceStdMesh
     MeshSource();
 
     /** Construct from a raw pointer to a mesh source subtype */
-    MeshSource(Handleable<MeshSourceBase>* rawPtr);
+    MeshSource(TSFExtended::Handleable<MeshSourceBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh source subtype */
     MeshSource(const RefCountPtr<MeshSourceBase>& smartPtr);

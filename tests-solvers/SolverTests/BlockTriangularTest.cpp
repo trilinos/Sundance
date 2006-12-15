@@ -26,7 +26,7 @@
 // ***********************************************************************
 //@HEADER
 
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearOperator.hpp"
@@ -50,15 +50,15 @@ using namespace TSFExtended;
 using namespace TSFExtendedOps;
 
 
-int main(int argc, void *argv[]) 
+int main(int argc, char *argv[]) 
 {
   typedef Teuchos::ScalarTraits<double> ST;
 
   try
     {
       int verbosity = 1;
-
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
+      
 
       MPIComm::world().synchronize();
 
@@ -132,6 +132,5 @@ int main(int argc, void *argv[])
     {
       cerr << "Caught exception: " << e.what() << endl;
     }
-  MPISession::finalize();
 }
 

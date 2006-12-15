@@ -72,7 +72,7 @@ Expr BesselI0(const Expr& x)
   return  new UserDefOp(x, rcp(new BesselI0Func()));
 }
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try

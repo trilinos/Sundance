@@ -13,7 +13,7 @@
 #include "SundanceParameter.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
@@ -113,11 +113,11 @@ static Time& totalTimer()
 
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
       Tabs tabs;
       TimeMonitor timer(totalTimer());
 
@@ -536,12 +536,11 @@ int main(int argc, void** argv)
             }
           cerr << endl;
         }
+      TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
       cerr << "overall test FAILED!" << endl;
       cerr << "detected exception: " << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
 }

@@ -26,7 +26,7 @@
 // ***********************************************************************
 //@HEADER
 
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFVectorType.hpp"
@@ -145,8 +145,8 @@ IDAHeat::IDAHeat(int nLocal, const VectorType<double>& vecType
   int n = vecSpace_.dim();
   h_ = pi/(n - 1.0);
   
-  int rank = MPISession::getRank();
-  int nProc = MPISession::getNProc();
+  int rank = MPIComm::world().getRank();
+  int nProc = MPIComm::world().getNProc();
   int low = vecSpace_.lowestLocallyOwnedIndex();
 
   Array<int> ghosts;  
@@ -219,8 +219,9 @@ void IDAHeat::initialConditions(Vector<double>& u,
                                 Vector<double>& uDot,
                                 Vector<double>& resid) const
 {
-  int rank = MPISession::getRank();
-  int nProc = MPISession::getNProc();
+  
+  int rank = MPIComm::world().getRank();
+  int nProc = MPIComm::world().getNProc();
 
   int low = vecSpace_.lowestLocallyOwnedIndex();
   int nLocal = vecSpace_.numLocalElements();
@@ -285,17 +286,18 @@ Vector<double> IDAHeat::exactSoln(const double& t) const
   return rtn;
 }
 
-int main(int argc, void *argv[]) 
+int main(int argc, char *argv[]) 
 {
   try
     {
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       int n = 201;
       
 
-      int rank = MPISession::getRank();
-      int nProc = MPISession::getNProc();
+
+      int rank = MPIComm::world().getRank();
+      int nProc = MPIComm::world().getNProc();
 #ifndef HAVE_SUNDIALS
       cout << "sundials not present... test INACTIVE" << endl;
 #else
@@ -403,7 +405,6 @@ int main(int argc, void *argv[])
     {
       cout << "Caught exception: " << e.what() << endl;
     }
-  MPISession::finalize();
 }
 
 

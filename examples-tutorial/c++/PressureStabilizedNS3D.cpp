@@ -10,7 +10,7 @@ using SundanceCore::List;
  */
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
@@ -90,7 +90,7 @@ int main(int argc, void** argv)
       double beta = 4.0 * 0.02;
 
       /* A parameter expression for the Reynolds number */
-      Expr reynolds = new Parameter(150.0);
+      Expr reynolds = new SundanceCore::Parameter(150.0);
 
       Expr eqn = Integral(interior, (grad*vx)*(grad*ux)  
                           + (grad*vy)*(grad*uy) + (grad*vz)*(grad*uz) 

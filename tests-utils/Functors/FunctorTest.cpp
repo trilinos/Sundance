@@ -1,5 +1,5 @@
 #include "SundanceStdMathFunctors.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 
 using namespace SundanceUtils;
 using namespace Teuchos;
@@ -12,13 +12,13 @@ template <class F> bool functorTest(int nx, double tol)
 }
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
 
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       int nx = 5;
       double tol = 1.0e-6;
@@ -80,5 +80,5 @@ int main(int argc, void** argv)
       cerr << "detected exception " << e.what() << endl;
 		}
 
-  MPISession::finalize();
+  
 }

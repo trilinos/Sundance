@@ -45,7 +45,7 @@
 
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
  
   try
@@ -84,7 +84,7 @@ int main(int argc, void** argv)
 
      
       /* Define the weak form */
-      Expr ecc = new Parameter(0.5, "e");
+      Expr ecc = new SundanceCore::Parameter(0.5, "e");
       Expr eqn = Integral(interior, v*(u - ecc*sin(u) - x), quad);
       Expr bc;
 

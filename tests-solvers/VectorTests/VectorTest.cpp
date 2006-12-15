@@ -26,7 +26,7 @@
 // ***********************************************************************
 //@HEADER
 
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFVectorType.hpp"
@@ -40,18 +40,23 @@ using namespace TSFExtended;
 using namespace TSFExtendedOps;
 
 
-int main(int argc, void *argv[]) 
+int main(int argc, char *argv[]) 
 {
   try
     {
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       VectorType<double> type = new EpetraVectorType();
 
       int n = 4;
 
-      int rank = MPISession::getRank();
-      int nProc = MPISession::getNProc();
+      int rank = session.getRank();
+      int nProc = session.getNProc();
+
+      unsigned int seed = 12345;
+      for (int i=0; i<rank; i++) seed = (seed * 371761) % 5476181;
+      cout << "seed = " << seed << endl;
+      srand48(seed);
 
       int dimension = nProc*n;
       int low = n*rank;
@@ -73,7 +78,5 @@ int main(int argc, void *argv[])
     {
       cerr << "Caught exception: " << e.what() << endl;
     }
-  MPISession::finalize();
-
 }
 

@@ -5,11 +5,11 @@ using SundanceCore::List;
  * Solves the Navier-Stokes equations on the lid-driven cavity
  */
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -47,7 +47,7 @@ int main(int argc, void** argv)
       Expr y = new CoordExpr(1);
 
       /* A parameter expression for the Reynolds number */
-      Expr reynolds = new Parameter(1.0);
+      Expr reynolds = new SundanceCore::Parameter(1.0);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad1 = new GaussianQuadrature(1);
@@ -110,5 +110,5 @@ int main(int argc, void** argv)
       cerr << e.what() << endl;
 		}
   TimeMonitor::summarize();
-  MPISession::finalize();
+  
 }

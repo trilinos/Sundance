@@ -42,7 +42,7 @@ CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-2.0) < 1.0e-10;})
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
@@ -100,7 +100,7 @@ int main(int argc, void** argv)
 
       /* Define the weak form */
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-      Expr one = new Parameter(1.0);
+      Expr one = new SundanceCore::Parameter(1.0);
       Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  + one*v, quad2)
         + Integral(top, -v/3.0, quad2)
         + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);

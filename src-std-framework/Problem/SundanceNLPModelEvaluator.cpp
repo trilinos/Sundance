@@ -67,7 +67,7 @@ void SundanceNLPModelEvaluator::initialize(const Expr& paramExpr,
   obj_ = objective;
   objEval_ = obj_.evaluator(stateExpr, stateExprVal);
   RefCountPtr<const Thyra::VectorSpaceBase<double> > pSpace
-    = rcp(new Thyra::DefaultSerialVectorSpace<double>(paramExpr_.size()));
+    = rcp(new Thyra::DefaultSpmdVectorSpace<double>(paramExpr_.size()));
   paramSpace_ = pSpace;
 }
 
@@ -86,10 +86,14 @@ Vector<double> SundanceNLPModelEvaluator::getInitialParameters() const
     }
   else
     {
+      double tempinitParams;
       TEST_FOR_EXCEPT(initParams_.size() != rtn.space().dim());
-      for (unsigned int i=0; i<initParams_.size(); i++)
+      //      for (unsigned int i=0; i<initParams_.size(); i++)
+      for (int i=0; i<initParams_.size(); i++)
         {
-          rtn[i] = initParams_[i];
+          tempinitParams = initParams_[i];
+	  Thyra::set_ele(i, tempinitParams, rtn.ptr().get()); 
+	  //bvbw	  rtn[i] = initParams_[i];
         }
     }
   return rtn;

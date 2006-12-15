@@ -8,12 +8,12 @@ using namespace Teuchos;
 using namespace TSFExtended;
 using SundanceCore::List;
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
 			Expr u = new UnknownFunctionStub("u");
 			Expr v = new UnknownFunctionStub("v");
@@ -70,13 +70,13 @@ int main(int argc, void** argv)
       cout << "uvw/012 = " 
            << ChainRuleEvaluator::chainRuleBins(uvw, Q012) << endl;
 
-      
+      TimeMonitor::summarize();      
     }
 	catch(exception& e)
 		{
 			Out::println(e.what());
 		}
-  TimeMonitor::summarize();
 
-  MPISession::finalize();
+
+  
 }

@@ -57,7 +57,7 @@ namespace SundanceStdFwk
     /** 
      * 
      */
-    class BasisFamilyBase : public Handleable<BasisFamilyBase>,
+    class BasisFamilyBase : public TSFExtended::Handleable<BasisFamilyBase>,
                             public TSFExtended::Printable,
                             public TSFExtended::ObjectWithVerbosity<BasisFamilyBase>
     {

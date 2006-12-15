@@ -53,7 +53,7 @@ static Time& linSolveBuilderTimer()
   return *rtn;
 }
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
@@ -225,8 +225,8 @@ int main(int argc, void** argv)
       /* Create parameter expressions for alpha and beta. These will be
        * modified during the continuation loop, and thus must be
        * parameter exprs rather than constants. */
-      Expr alpha = new Parameter(alpha0);
-      Expr beta = new Parameter(beta0);
+      Expr alpha = new SundanceCore::Parameter(alpha0);
+      Expr beta = new SundanceCore::Parameter(beta0);
 
       /* Define the Ginzburg-Landau equations with an advection term added.
        * We have integrated the advection term by parts. In its present for it

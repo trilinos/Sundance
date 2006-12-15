@@ -43,7 +43,7 @@ CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 CELL_PREDICATE(PeggedPointTest, {return fabs(x[1]+1.0) < 1.0e-10 
                   && fabs(x[0]+1.0) < 1.0e-10 ;})
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try

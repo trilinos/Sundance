@@ -1,6 +1,6 @@
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceMeshType.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
@@ -31,12 +31,12 @@ static Time& totalTimer()
 
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       TimeMonitor t(totalTimer());
 
@@ -52,13 +52,11 @@ int main(int argc, void** argv)
       FieldWriter w = new VTKWriter("wheel");
       w.addMesh(mesh);
       w.write();
+      TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
       cerr << "Detected exception: " << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-
-  MPISession::finalize();
 }
 

@@ -10,7 +10,7 @@
 #include "SundanceParameter.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
@@ -39,12 +39,12 @@ RefCountPtr<FunctionalPolynomial> expr2poly(const Expr& e)
   return FunctionalPolynomial::toPoly(expr2scalar(e));
 }
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       Expr::showAllParens() = true; 
       ProductTransformation::optimizeFunctionDiffOps() = true;
@@ -79,12 +79,13 @@ int main(int argc, void** argv)
           
       cerr << "p = " << p->toXML() << endl;
       p->toText(cerr, false) << endl;
-      
+
+      TimeMonitor::summarize();      
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+
+  
 }

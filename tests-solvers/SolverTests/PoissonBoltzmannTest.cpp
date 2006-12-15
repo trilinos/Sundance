@@ -26,7 +26,7 @@
 // ***********************************************************************
 //@HEADER
 
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "TSFPoissonBoltzmannOp.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_ParameterList.hpp"
@@ -40,19 +40,19 @@ using namespace TSFExtendedOps;
 
 
 
-int main(int argc, void *argv[]) 
+int main(int argc, char *argv[]) 
 {
   try
     {
       int verbosity = 1;
+      GlobalMPISession session(&argc, &argv);
 
-      MPISession::init(&argc, &argv);
 
       MPIComm::world().synchronize();
 
       /* create the nonlinear operator */
       VectorType<double> type = new EpetraVectorType();
-      int nProc = MPISession::getNProc();
+      int nProc = MPIComm::world().getNProc();
       int nLocalRows = 128/nProc;
       PoissonBoltzmannOp* prob = new PoissonBoltzmannOp(nLocalRows, type);
       NonlinearOperator<double> F = prob;
@@ -95,6 +95,5 @@ int main(int argc, void *argv[])
     {
       cerr << "Caught exception: " << e.what() << endl;
     }
-  MPISession::finalize();
 }
 

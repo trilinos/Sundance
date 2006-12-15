@@ -7,7 +7,7 @@
 #include "SundanceDeriv.hpp"
 #include "SundanceParameter.hpp"
 #include "SundanceOut.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 
 using namespace SundanceUtils;
 using namespace SundanceCore;
@@ -25,13 +25,13 @@ bool checkStringForms(const Expr& e1, const Expr& e2)
   return s1==s2;
 }
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
 
   try
 		{
       /* initialize MPI */
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       
       //      verbosity<SymbolicTransformation>() = VerbExtreme;
@@ -145,17 +145,13 @@ int main(int argc, void** argv)
       if (ok) cerr << "All are OK" << endl;
       else cerr << "failures detected!" << endl;
 
+      TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
 			Out::println(e.what());
 		}
 
-  /* summarize timings. This must be done before finalizing MPI  */
-  TimeMonitor::summarize();
-
-  /* clean up MPI */
-  MPISession::finalize();
 
   return 0;
 }

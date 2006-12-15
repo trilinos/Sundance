@@ -28,7 +28,7 @@
 
 
 #include <cstdlib>
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearOperator.hpp"
@@ -64,11 +64,12 @@ using namespace TSFExtended;
 using namespace TSFExtendedOps;
 using Thyra::TestSpecifier;
 
-int main(int argc, void *argv[]) 
+int main(int argc, char *argv[]) 
 {
   try
     {
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
+ 
 
       VectorType<double> type = new EpetraVectorType();
 
@@ -99,7 +100,6 @@ int main(int argc, void *argv[])
     {
       cerr << "Caught exception: " << e.what() << endl;
     }
-  MPISession::finalize();
 }
 
 

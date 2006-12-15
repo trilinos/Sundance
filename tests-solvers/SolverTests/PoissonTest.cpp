@@ -26,7 +26,7 @@
 // ***********************************************************************
 //@HEADER
 
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearOperator.hpp"
@@ -48,7 +48,7 @@ using namespace TSFExtended;
 using namespace TSFExtendedOps;
 
 
-int main(int argc, void *argv[]) 
+int main(int argc, char *argv[]) 
 {
   typedef Teuchos::ScalarTraits<double> ST;
 
@@ -56,7 +56,7 @@ int main(int argc, void *argv[])
     {
       int verbosity = 1;
 
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       MPIComm::world().synchronize();
 
@@ -83,9 +83,14 @@ int main(int argc, void *argv[])
       
 
       Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
+#ifdef TRILINOS_6
       if (myRank==0) x[0] = 0.0;
       if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;
-
+      // need to fix operator[] routine
+#else
+      if (myRank==0) x.setElement(0, 0);
+      if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
+#endif
       Vector<double> y = A*x;
       Vector<double> ans = A.range().createMember();
 
@@ -124,6 +129,5 @@ int main(int argc, void *argv[])
     {
       cout << "Caught exception: " << e.what() << endl;
     }
-  MPISession::finalize();
 }
 

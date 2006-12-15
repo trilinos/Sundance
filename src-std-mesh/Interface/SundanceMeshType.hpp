@@ -38,7 +38,7 @@
 
 namespace SundanceStdMesh
 {
-  using namespace Teuchos;
+  //  using namespace Teuchos;
   using namespace SundanceUtils;
   using namespace TSFExtended;
 
@@ -61,7 +61,7 @@ namespace SundanceStdMesh
     MeshType();
 
     /** Construct from a raw pointer to a mesh type subtype */
-    MeshType(Handleable<Internal::MeshTypeBase>* rawPtr);
+    MeshType(TSFExtended::Handleable<Internal::MeshTypeBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh type subtype */
     MeshType(const RefCountPtr<Internal::MeshTypeBase>& smartPtr);

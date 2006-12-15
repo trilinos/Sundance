@@ -39,7 +39,7 @@ using SundanceCore::List;
  */
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try

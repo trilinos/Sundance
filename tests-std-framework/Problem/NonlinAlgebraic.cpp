@@ -40,12 +40,12 @@
     verbosity<AbstractEvalMediator>() = VerbExtreme;    \
   }
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
@@ -144,5 +144,5 @@ int main(int argc, void** argv)
 		{
       cerr << e.what() << endl;
 		}
-  MPISession::finalize();
+  
 }

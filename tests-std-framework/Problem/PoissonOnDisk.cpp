@@ -36,7 +36,7 @@ using SundanceCore::List;
  * Solves the Poisson equation in 2D on the unit disk
  */
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try

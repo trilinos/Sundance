@@ -63,7 +63,7 @@ using namespace SundanceStdMesh::Internal;
     CellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func);
 
     /** construct from a positional cell predicate functor */
-    CellPredicate(Handleable<CellPredicateFunctorBase>* func);
+    CellPredicate(TSFExtended::Handleable<CellPredicateFunctorBase>* func);
 
     /** write to XML */
     XMLObject toXML() const {return ptr()->toXML();}

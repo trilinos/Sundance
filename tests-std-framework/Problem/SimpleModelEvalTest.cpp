@@ -46,10 +46,13 @@ int main()
 #include "NLPInterfacePack_NLPFirstOrderThyraModelEvaluator.hpp"
 #include "Thyra_DefaultModelEvaluatorWithSolveFactory.hpp"
 #include "Thyra_AmesosLinearOpWithSolveFactory.hpp"
+//bvbw quick fix, need to ifdef out if belos is disabled
+#ifdef TRILINOS_6
 #include "Thyra_BelosLinearOpWithSolveFactory.hpp"
+#endif
 #include "Thyra_AztecOOLinearOpWithSolveFactory.hpp"
 #include "Thyra_IfpackPreconditionerFactory.hpp"
-#include "Thyra_DefaultSerialVectorSpace.hpp"
+#include "Thyra_DefaultSpmdVectorSpace.hpp"
 
 #include "SundanceNLPModelEvaluator.hpp"
 #include "Sundance.hpp"
@@ -79,7 +82,7 @@ namespace Thyra
 }
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   using MoochoPack::MoochoSolver;
 	using NLPInterfacePack::NLPFirstOrderThyraModelEvaluator;
@@ -106,11 +109,14 @@ int main(int argc, void** argv)
           lowsFactory = rcp(new Thyra::AztecOOLinearOpWithSolveFactory());
           lowsFactory->setPreconditionerFactory(rcp(new Thyra::IfpackPreconditionerFactory()),"");
         }
+      //bvbw quick fix
+#ifdef TRILINOS_6
       else if (solverSpec=="belos")
         {
           lowsFactory = rcp(new Thyra::BelosLinearOpWithSolveFactory<double>());
           lowsFactory->setPreconditionerFactory(rcp(new Thyra::IfpackPreconditionerFactory()),"");
         }
+#endif
       else
         {
           lowsFactory = rcp(new Thyra::AmesosLinearOpWithSolveFactory());
@@ -189,7 +195,7 @@ namespace Thyra
 
     for (unsigned int i=1; i<=a.size(); i++) 
       {
-        a[i-1] = new Parameter(1.0);
+        a[i-1] = new SundanceCore::Parameter(1.0);
         source = source + pi*pi*i*i* a[i-1] * sin(i*pi*x);
       }
     Expr alpha = new ListExpr(a);

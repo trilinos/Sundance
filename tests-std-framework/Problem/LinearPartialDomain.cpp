@@ -48,7 +48,7 @@ CELL_PREDICATE(BTest, {return x[0] >= 0.4 && x[0] <= 0.6;});
 
 CELL_PREDICATE(CTest, {return x[0] >= 0.6;});
   
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   try
 		{

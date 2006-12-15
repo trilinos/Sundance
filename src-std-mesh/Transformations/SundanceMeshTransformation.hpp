@@ -64,7 +64,7 @@ namespace SundanceStdMesh
     MeshTransformation();
 
     /** Construct from a raw pointer to a mesh filter subtype */
-    MeshTransformation(Handleable<MeshTransformationBase>* rawPtr);
+    MeshTransformation(TSFExtended::Handleable<MeshTransformationBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh filter subtype */
     MeshTransformation(const RefCountPtr<MeshTransformationBase>& smartPtr);

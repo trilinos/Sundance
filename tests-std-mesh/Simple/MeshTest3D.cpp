@@ -1,6 +1,6 @@
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceMeshType.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
@@ -30,12 +30,12 @@ static Time& totalTimer()
 
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       TimeMonitor t(totalTimer());
 
@@ -60,12 +60,10 @@ int main(int argc, void** argv)
       cout << "num elements = " << mesh3D.numCells(3) << endl;
       cout << "num nodes = " << mesh3D.numCells(0) << endl;
 
+      TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
 		}
-  TimeMonitor::summarize();
-
-  MPISession::finalize();
 }

@@ -35,7 +35,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "Teuchos_ParameterList.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
@@ -171,13 +171,13 @@ namespace SundanceStdFwk
      * Do initialization steps such as starting MPI (if necessary), 
      * parsing the Unix command
      * line, and reading runtime options from the configuration file.
-     * MPI is initialized through a call to Teuchos::MPISession::init(), 
+     * MPI is initialized through a call to Teuchos::GlobalMPISession, 
      * which in turn checks whether MPI needs initialization and calls
      * MPI_Init() if necessary. If some other library you're using has
      * its own MPI initialization system, it is thus perfectly safe to
      * call Sundance::init() as well.
      */
-    static int init(int* argc, void*** argv);
+    static int init(int* argc, char*** argv);
     
     /** 
      * Do finalization steps such as calling MPI_finalize() (if necessary),
@@ -226,6 +226,13 @@ namespace SundanceStdFwk
     static string getPathStr();
 
     static Array<string> parsePathStr();
+
+    static RefCountPtr<GlobalMPISession> globalMPISession(int* argc, char*** argv)
+    {
+      static RefCountPtr<GlobalMPISession> rtn 
+        = rcp(new GlobalMPISession(argc, argv, &std::cerr)); 
+      return rtn;
+    }
   };
 
 }

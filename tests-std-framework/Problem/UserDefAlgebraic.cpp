@@ -101,7 +101,7 @@ double F2::eval0(const Array<double>& vars) const
 
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try

@@ -36,13 +36,13 @@
 #include "SundanceModelEvaluatorBase.hpp"
 
 #ifdef HAVE_ENABLED_MOOCHO
-#include "Thyra_DefaultSerialVectorSpace.hpp"
+#include "Thyra_DefaultSpmdVectorSpace.hpp"
 
 
 SundanceModelEvaluator
 ::SundanceModelEvaluator(const VectorType<double>& vecType)
   : vecType_(vecType), 
-    objectiveSpace_(rcp(new Thyra::DefaultSerialVectorSpace<double>(1)))
+    objectiveSpace_(rcp(new Thyra::DefaultSpmdVectorSpace<double>(1)))
 {;}
 
 
@@ -194,7 +194,8 @@ void SundanceModelEvaluator
   /* Fill in objective function value */
   if ( g.ptr().get() != 0 )
     {
-      g[0] = gVal;
+      Thyra::set_ele(0,gVal,g.ptr().get());
+      // bvbw g[0] = gVal;
     }
   /* f, g, and df_dx are already in the right form. 
    * We need to fill in the multivectors df_dp, dg_dp, and dg_dx */

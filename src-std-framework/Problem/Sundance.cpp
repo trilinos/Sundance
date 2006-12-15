@@ -58,13 +58,14 @@ static Time& totalTimer()
   return *rtn;
 }
 
-int Sundance::init(int* argc, void*** argv)
+int Sundance::init(int* argc, char*** argv)
 {
 
   try
     {
       /* start up MPI. In a serial run, this will be a no-op */
-      MPISession::init(argc, argv);
+      //      MPISession::init(argc, argv);
+      globalMPISession(argc, (char***) argv);
 
       /* Start a stopwatch. It will be stopped upon a call to finalize() */
       totalTimer().start();
@@ -239,7 +240,7 @@ int Sundance::finalize()
         }
       /* we may need to skip timing summaries because of a Trilinos 6.0.x bug */
       if (!(MPIComm::world().getNProc() > 1 && skipTimingOutput())) TimeMonitor::summarize();
-      MPISession::finalize();
+      //  MPISession::finalize();
     }
   catch(std::exception& e)
     {

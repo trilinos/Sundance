@@ -40,7 +40,7 @@
 /** Empty ctor */ \
 handle() : OrderedHandle<contents >() {;} \
 /** Construct a #handle with a raw pointer to a #contents */ \
-handle(Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
+handle(TSFExtended::Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
 /** Construct a #handle with a smart pointer to a #contents */ \
 handle(const RefCountPtr<contents >& smartPtr) : OrderedHandle<contents >(smartPtr){;}
 

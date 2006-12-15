@@ -30,7 +30,7 @@
 
 #include "SundanceOut.hpp"
 #include "Teuchos_Time.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceMeshType.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
@@ -93,12 +93,12 @@ unsigned int iPow(unsigned int base, unsigned int exponent)
   return rtn;
 }
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
 
       TimeMonitor t(totalTimer());
       Tabs tab0;
@@ -219,12 +219,13 @@ int main(int argc, void** argv)
         {
           cerr << "BasisCheck FAILED" << endl;
         }
+      TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
       cerr << e.what() << endl;
       cerr << "BasisCheck FAILED" << endl;
 		}
-  TimeMonitor::summarize();
-  MPISession::finalize();
+
+  
 }

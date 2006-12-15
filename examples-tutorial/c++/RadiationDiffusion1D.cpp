@@ -38,12 +38,12 @@
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
  
   try
 		{
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */

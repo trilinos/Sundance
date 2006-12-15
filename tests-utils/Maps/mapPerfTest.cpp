@@ -1,16 +1,16 @@
 #include "SundanceIntHashSet.hpp"
 #include "SundanceSet.hpp"
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_Time.hpp"
 
 using namespace SundanceUtils;
 using namespace Teuchos;
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   try
     {
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
       
       int nRow = 40000;
       int nReps = 4;
@@ -77,5 +77,5 @@ int main(int argc, void** argv)
     {
       cerr << "caught exception " << e.what() << endl;
     }
-  MPISession::finalize();
+  
 }

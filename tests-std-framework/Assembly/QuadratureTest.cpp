@@ -41,11 +41,11 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
 	try
 		{
-			MPISession::init(&argc, &argv);
+			GlobalMPISession session(&argc, &argv);
 
       Array<int> validTetOrders = tuple(1, 2, 4, 6);
       int maxorder = 15;
@@ -110,5 +110,5 @@ int main(int argc, void** argv)
 		}
 
 
-  MPISession::finalize();
+  
 }

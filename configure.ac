@@ -164,7 +164,7 @@ AC_MSG_RESULT([yes])
 [
 AC_MSG_CHECKING(Whether to use development version of Trilinos)
 AC_MSG_RESULT([no])
-AC_DEFINE(TRILINOS_6,,[define if we are using Trilinos 6.0.x])
+AC_DEFINE(TRILINOS_7,,[define if we are using Trilinos 6.0.x])
 ]
 )
 

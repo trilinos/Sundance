@@ -45,7 +45,7 @@ int main()
 #include "MoochoPack_MoochoSolver.hpp"
 #include "NLPInterfacePack_NLPFirstOrderThyraModelEvaluator.hpp"
 #include "Thyra_LOWSFactoryBuilder.hpp"
-#include "Thyra_DefaultSerialVectorSpace.hpp"
+#include "Thyra_DefaultSpmdVectorSpace.hpp"
 #include "Thyra_DefaultModelEvaluatorWithSolveFactory.hpp"
 
 #include "SundanceNLPModelEvaluator.hpp"
@@ -115,7 +115,7 @@ namespace Thyra
 }
 
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   using MoochoPack::MoochoSolver;
 	using NLPInterfacePack::NLPFirstOrderThyraModelEvaluator;
@@ -266,8 +266,8 @@ namespace Thyra
       }
 
     /* register alpha and beta as continuation parameters */
-    Expr ab = List(new Parameter(alpha0), new Parameter(beta0));
-    Expr abFinal = List(new Parameter(alpha0), new Parameter(beta0));
+    Expr ab = List(new SundanceCore::Parameter(alpha0), new SundanceCore::Parameter(beta0));
+    Expr abFinal = List(new SundanceCore::Parameter(alpha0), new SundanceCore::Parameter(beta0));
     setContinuationParameters(ab);
     setFinalContinuationValues(abFinal);
     Expr alpha = ab[0];
@@ -361,7 +361,7 @@ namespace Thyra
     Array<Expr> p(numControls);
     for (unsigned int i=1; i<=p.size(); i++) 
       {
-        p[i-1] = new Parameter(1.0);
+        p[i-1] = new SundanceCore::Parameter(1.0);
         control = control + p[i-1]*sin(i*pi*y);
       }
     Expr param = new ListExpr(p);

@@ -28,7 +28,7 @@
 
 
 #include <cstdlib>
-#include "Teuchos_MPISession.hpp"
+#include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearOperator.hpp"
@@ -66,11 +66,11 @@ using namespace TSFExtended;
 using namespace TSFExtendedOps;
 using Thyra::TestSpecifier;
 
-int main(int argc, void *argv[]) 
+int main(int argc, char *argv[]) 
 {
   try
     {
-      MPISession::init(&argc, &argv);
+      GlobalMPISession session(&argc, &argv);
       MPIComm::world().synchronize();
 
       cerr << "go!" << endl;
@@ -84,12 +84,14 @@ int main(int argc, void *argv[])
 
       for (unsigned int i=0; i<domainBlocks.size(); i++)
         {
-          domainBlocks[i] = type.createEvenlyPartitionedSpace(domainBlockSizes[i]);
+          domainBlocks[i] = type.createEvenlyPartitionedSpace(MPIComm::world(),
+                                                              domainBlockSizes[i]);
         }
 
       for (unsigned int i=0; i<rangeBlocks.size(); i++)
         {
-          rangeBlocks[i] = type.createEvenlyPartitionedSpace(rangeBlockSizes[i]);
+          rangeBlocks[i] = type.createEvenlyPartitionedSpace(MPIComm::world(),
+                                                             rangeBlockSizes[i]);
         }
       
       VectorSpace<double> domain = productSpace(domainBlocks);
@@ -181,7 +183,6 @@ int main(int argc, void *argv[])
     {
       cerr << "Caught exception: " << e.what() << endl;
     }
-  MPISession::finalize();
 }
 
 

@@ -36,7 +36,7 @@
 #include "NOX_Utils.H"
 #include "NOX_TSF_Group.H"
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   
   try
