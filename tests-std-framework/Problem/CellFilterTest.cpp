@@ -96,7 +96,7 @@ int main(int argc, void** argv)
       cout << "-------- COL MAP --------------------------" << endl;
       prob.colMap(0)->print(cout);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec.xml"));
       ParameterList solverParams = reader.getParameters();
       cout << "params = " << solverParams << endl;
 

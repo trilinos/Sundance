@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
       /* Get a mesh */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource meshReader = new ExodusNetCDFMeshReader("../../../tests-std-framework/Problem/disk.ncdf", meshType);
+      MeshSource meshReader = new ExodusNetCDFMeshReader("disk.ncdf", meshType);
       Mesh mesh = meshReader.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 

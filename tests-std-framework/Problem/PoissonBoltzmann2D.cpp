@@ -109,7 +109,7 @@ int main(int argc, char** argv)
       NonlinearOperator<double> F 
         = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
       
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;

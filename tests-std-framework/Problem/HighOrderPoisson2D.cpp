@@ -110,7 +110,7 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/aztec.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec.xml"));
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
       LinearSolver<double> solver 

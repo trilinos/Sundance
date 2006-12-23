@@ -72,7 +72,7 @@ int main(int argc, char** argv)
       cerr << "setting up linear problem" << endl;
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 

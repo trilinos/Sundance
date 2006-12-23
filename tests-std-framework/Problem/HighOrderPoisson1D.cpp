@@ -97,7 +97,7 @@ int main(int argc, char** argv)
       cerr << "matrix = " << endl << prob.getOperator() << endl;
       cerr << "rhs = " << endl << prob.getRHS() << endl;
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 

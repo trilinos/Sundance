@@ -34,6 +34,7 @@
 /* Utilities */
 #include "SundanceDefs.hpp"
 #include "SundanceOut.hpp"
+#include "SundancePathUtils.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_TimeMonitor.hpp"
@@ -195,8 +196,6 @@ namespace SundanceStdFwk
     static bool passFailTest(const string& statusMsg,
                              bool status, double error, double tol);
 
-    /** */
-    static string searchForFile(const string& name);    
 
     static VerbositySetting verbosity(const string& str);
 
@@ -221,11 +220,6 @@ namespace SundanceStdFwk
     static void setSettings(const string& settingsFile);
 
 
-
-
-    static string getPathStr();
-
-    static Array<string> parsePathStr();
 
     static RefCountPtr<GlobalMPISession> globalMPISession(int* argc, char*** argv)
     {

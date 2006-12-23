@@ -451,8 +451,14 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
       string line;  
       Array<string> tokens;
       /* Open the side file */
-      RefCountPtr<ifstream> sideStream 
-        = rcp(new ifstream(sideFilename_.c_str()));
+      RefCountPtr<ifstream> sideStream;
+
+      try
+        {
+          sideStream = openFile(sideFilename_, "side info");
+        }
+      catch(std::exception& e) {;}
+
       /* Not all meshes will have sides files.
        * If the sides file doesn't exist, return. */
       if (sideStream.get()==0 || *sideStream==0) 

@@ -89,7 +89,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       /* read the mesh from the file disk.1*/
-      MeshSource meshReader = new TriangleMeshReader("../../../tests-std-framework/Problem/disk.1", meshType);
+      MeshSource meshReader = new TriangleMeshReader("disk.1", meshType);
 
       Mesh mesh = meshReader.getMesh();
 
@@ -131,7 +131,7 @@ int main(int argc, char** argv)
       /* Create a TSF NonlinearOperator object */
       NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;

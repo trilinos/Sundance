@@ -109,7 +109,7 @@ int main(int argc, char** argv)
       LinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega), 
                          List(psi, omega), vecType);
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
       ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);

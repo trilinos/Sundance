@@ -146,7 +146,7 @@ int main(int argc, char** argv)
 #endif
      
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 

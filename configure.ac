@@ -302,7 +302,7 @@ AC_CONFIG_FILES([
   src-std-mesh/Makefile
   src-std-framework/Makefile
   src-solvers/Makefile
-  src-std-framework/SundanceDefaultPath.hpp
+  src-solvers/SundanceDefaultPath.hpp
   src-xml/Makefile
   python/Makefile
   python/src/Makefile

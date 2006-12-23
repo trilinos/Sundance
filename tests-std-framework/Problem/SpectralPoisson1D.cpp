@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/bicgstab.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
       ParameterList solverParams = reader.getParameters();
       cout << "params = " << solverParams << endl;
 

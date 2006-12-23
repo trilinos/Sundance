@@ -31,6 +31,7 @@
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_ParameterList.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
+#include "SundancePathUtils.hpp"
 #include "TSFNOXSolver.H"
 
 using namespace Teuchos;
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
       NonlinearOperator<double> F = prob;
 
       /* create the nox solver */
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterXMLFileReader reader(SundanceUtils::searchForFile("SolverParameters/nox.xml"));
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;

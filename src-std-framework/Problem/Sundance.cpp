@@ -36,6 +36,7 @@
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceDiscreteFuncEvaluator.hpp"
 #include "SundanceRefIntegral.hpp"
+#include "SundancePathUtils.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceCellJacobianBatch.hpp"
@@ -250,65 +251,6 @@ int Sundance::finalize()
   return 0;
 }
 
-string Sundance::searchForFile(const string& name)
-{
-  string pathSep = "/";
-  Array<string> path = parsePathStr();
-
-  if (name.length() && name[0]=='/') return name; // Use absolute path!
-  for (unsigned int i=0; i<path.size(); i++)
-    {
-      ifstream fileToTry((path[i] + pathSep + name).c_str());
-      if (!fileToTry) continue;
-      return path[i] + pathSep + name;
-    }
-
-  TEST_FOR_EXCEPTION(true, RuntimeError, "could not find file "
-                     << name << " in path " << path);
-}
-
-string Sundance::getPathStr() 
-{
-  char* pathEnvStr = getenv("SUNDANCE_PATH");
-  char* pyPathEnvStr = getenv("PYTHONPATH");
-  string path;
-  
-  if (pathEnvStr == NULL) 
-    {
-      path = defaultSundancePath();
-    }
-  else
-    {
-      path = pathEnvStr;
-    }
-  if (pyPathEnvStr!=NULL)
-    {
-      path = string(pyPathEnvStr) + ":" + path; 
-    }
-  return path;
-}
-
-Array<string> Sundance::parsePathStr() 
-{
-  string pathStr = getPathStr();
-  
-  Array<string> rtn;
-
-  unsigned int begin;
-  unsigned int end;
-  
-  begin = pathStr.find_first_not_of(":");
-  
-  while (begin < pathStr.length())
-    {
-      end = pathStr.find_first_of(":", begin);
-
-      rtn.append(pathStr.substr(begin, end-begin));
-      begin = pathStr.find_first_not_of(":", end);
-    }
-
-  return rtn;
-}
 
 
 void Sundance::setSettings(const XMLObject& xml)

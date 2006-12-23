@@ -93,7 +93,7 @@ int main(int argc, char** argv)
       F.verbosity() = VerbLow;
       NOX::TSF::Group::classVerbosity() = VerbLow;
 
-      ParameterXMLFileReader reader("../../../tests-std-framework/Problem/nox.xml");
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;

@@ -41,6 +41,7 @@
 #include "TSFAztecSolver.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFLinearSolverBuilder.hpp"
+#include "SundancePathUtils.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
 
 using namespace Teuchos;
@@ -62,10 +63,9 @@ int main(int argc, char *argv[])
 
       VectorType<double> type = new EpetraVectorType();
 
-      string solverFile = "poissonParams.xml";
-      string path = "../../../tests-solvers/SolverTests/";
+      string solverFile = SundanceUtils::searchForFile("SolverParameters/poissonParams.xml");
 
-      ParameterXMLFileReader reader(path + solverFile);
+      ParameterXMLFileReader reader(solverFile);
       ParameterList solverParams = reader.getParameters();
 
       /* create the range space  */

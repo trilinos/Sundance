@@ -1,5 +1,6 @@
 #include "SundanceMeshReaderBase.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundancePathUtils.hpp"
 #include "SundanceOut.hpp"
 
 
@@ -63,14 +64,15 @@ bool MeshReaderBase::getNextLine(istream& is, string& line,
 RefCountPtr<ifstream> MeshReaderBase::openFile(const string& fname, 
                                                const string& description) const
 {
-  RefCountPtr<ifstream> rtn = rcp(new ifstream(fname.c_str()));
+  string f = searchForFile(fname);
+  RefCountPtr<ifstream> rtn = rcp(new ifstream(f.c_str()));
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,
-               "trying to open " << description << " file " << fname);
+               "trying to open " << description << " file " << f);
 
   TEST_FOR_EXCEPTION(rtn.get()==0 || *rtn==0, RuntimeError, 
                      "MeshReaderBase::openFile() unable to open "
-                     << description << " file " << fname);
+                     << description << " file " << f);
 
   SUNDANCE_OUT(this->verbosity() > VerbSilent,
                "reading " << description << " from " << fname);
