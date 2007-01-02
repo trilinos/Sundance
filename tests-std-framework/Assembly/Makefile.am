@@ -28,6 +28,7 @@
 # ************************************************************************
 #@HEADER
 
+include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
