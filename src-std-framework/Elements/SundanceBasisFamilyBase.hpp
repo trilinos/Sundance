@@ -108,7 +108,7 @@ namespace Internal {
  * </ul>
  */
 class BasisFamilyBase
-  : public Handleable<BasisFamilyBase>,
+  : public TSFExtended::Handleable<BasisFamilyBase>,
     public TSFExtended::Printable,
     public TSFExtended::ObjectWithVerbosity<BasisFamilyBase>
 {
