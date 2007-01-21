@@ -104,7 +104,7 @@ void GaussianQuadrature::getTetRule(Array<Point>& quadPoints,
   quadWeights.resize(w.length());
   for (int i=0; i<w.length(); i++)
     {
-      quadWeights[i] = 0.5*w[i];
+      quadWeights[i] = w[i]/6.0;
       quadPoints[i] = Point(x[i], y[i], z[i]);
     }  
 }

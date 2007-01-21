@@ -109,9 +109,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-noinst_PROGRAMS = $(am__EXEEXT_1) QuadratureIntegral2D$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
+noinst_PROGRAMS = $(am__EXEEXT_1) QuadratureIntegral2D$(EXEEXT)
 subdir = tests-std-framework/Assembly
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
@@ -309,46 +309,6 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-TEST_SRC = BasisCheck TransformedIntegral2D  QuadratureTest
-BasisCheck_SOURCES = $(srcdir)/BasisCheck.cpp
-BasisCheck_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-BasisCheck_CXXFLAGS = $(STD_FWK_INCLUDES)
-BasisCheck_LDADD = $(STD_FWK_LIBS) 
-TransformedIntegral2D_SOURCES = $(srcdir)/TransformedIntegral2D.cpp
-TransformedIntegral2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-TransformedIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-TransformedIntegral2D_LDADD = $(STD_FWK_LIBS) 
-QuadratureIntegral2D_SOURCES = $(srcdir)/QuadratureIntegral2D.cpp
-QuadratureIntegral2D_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-QuadratureIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
-QuadratureIntegral2D_LDADD = $(STD_FWK_LIBS) 
-QuadratureTest_SOURCES = $(srcdir)/QuadratureTest.cpp
-QuadratureTest_DEPENDENCIES = \
-$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
-$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
-$(top_builddir)/src-core/libsundanceCore.a \
-$(top_builddir)/src-utils/libsundanceUtils.a
-
-QuadratureTest_CXXFLAGS = $(STD_FWK_INCLUDES)
-QuadratureTest_LDADD = $(STD_FWK_LIBS) 
-TEST_EXE = $(TEST_SRC:%=%.exe)
-CHECKTEST_ARGS = $(TESTS)
-TESTS = $(TEST_EXE:%.exe=%.tst)
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -482,6 +442,46 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
+TEST_SRC = BasisCheck TransformedIntegral2D  QuadratureTest
+BasisCheck_SOURCES = $(srcdir)/BasisCheck.cpp
+BasisCheck_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+BasisCheck_CXXFLAGS = $(STD_FWK_INCLUDES)
+BasisCheck_LDADD = $(STD_FWK_LIBS) 
+TransformedIntegral2D_SOURCES = $(srcdir)/TransformedIntegral2D.cpp
+TransformedIntegral2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+TransformedIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+TransformedIntegral2D_LDADD = $(STD_FWK_LIBS) 
+QuadratureIntegral2D_SOURCES = $(srcdir)/QuadratureIntegral2D.cpp
+QuadratureIntegral2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+QuadratureIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+QuadratureIntegral2D_LDADD = $(STD_FWK_LIBS) 
+QuadratureTest_SOURCES = $(srcdir)/QuadratureTest.cpp
+QuadratureTest_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a
+
+QuadratureTest_CXXFLAGS = $(STD_FWK_INCLUDES)
+QuadratureTest_LDADD = $(STD_FWK_LIBS) 
+TEST_EXE = $(TEST_SRC:%=%.exe)
+CHECKTEST_ARGS = $(TESTS)
+TESTS = $(TEST_EXE:%.exe=%.tst)
 all: all-am
 
 .SUFFIXES:
@@ -860,6 +860,14 @@ uninstall-am: uninstall-info-am
 	uninstall-am uninstall-info-am
 
 
+# ------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------
+
+include $(top_builddir)/Makefile.site.sundance
+include $(top_builddir)/Makefile.export.TSFExtended
+include $(TRILINOS_DIR)/packages/teuchos/Makefile.export
+
 %.tst : %.exe
 	./$< > $@ 2>&1 
 	echo "done" $@
@@ -871,14 +879,6 @@ tests:
 serialtests:
 	$(MAKE) $(TESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
-
-# ------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------
-
-include $(top_builddir)/Makefile.site.sundance
-include $(top_builddir)/Makefile.export.TSFExtended
-include $(TRILINOS_DIR)/packages/teuchos/Makefile.export
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

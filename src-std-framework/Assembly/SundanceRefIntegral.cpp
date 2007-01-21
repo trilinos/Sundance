@@ -76,6 +76,20 @@ RefIntegral::RefIntegral(int spatialDim,
   SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << "************* computing reference 0-form integrals ********" 
                << endl << tab0 << "cell type=" << cellType);
+
+  /* we need to sum the quadrature weights 
+     to compute the volume of the reference cell */
+  QuadratureFamily quad = new GaussianQuadrature(2);
+  Array<Point> quadPts;
+  Array<double> quadWeights;
+
+  W_.resize(1);
+  W_[0].resize(1);
+
+  quad.getPoints(cellType, quadPts, quadWeights);  
+
+  for (unsigned int q=0; q<quadWeights.size(); q++) W_[0][0] += quadWeights[q];
+  cerr << "master cell volume=" << W_[0][0] << endl;
 }
 
 RefIntegral::RefIntegral(int spatialDim,
@@ -442,11 +456,12 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
   /* if we don't need to check whether elements are local, we
    * can streamline the loop. This will be the case when
    * we are evaluating a functional but not its gradient */
+  double w = coeff * W_[0][0];
   if ((int) isLocalFlag.size()==0)
     {
       for (int c=0; c<JVol.numCells(); c++)
         {
-          a += coeff * fabs(JVol.detJ()[c]);
+          a += w * fabs(JVol.detJ()[c]);
         }
       flops = 2*JVol.numCells();
     }
@@ -463,7 +478,7 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
           if (isLocalFlag[c]) 
             {
               flops+=2; 
-              a += coeff * fabs(JVol.detJ()[c]);
+              a += w * fabs(JVol.detJ()[c]);
             }
         }
     }

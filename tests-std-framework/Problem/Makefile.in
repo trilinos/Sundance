@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) $(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) $(LinearPartialDomain_SOURCES) $(LinearVariationalTest_SOURCES) $(NonlinearPartialDomain_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) $(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) $(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
+SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) $(FunctionalTest_SOURCES) $(FunctionalTest3D_SOURCES) $(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) $(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) $(LinearPartialDomain_SOURCES) $(LinearVariationalTest_SOURCES) $(NonlinearPartialDomain_SOURCES) $(NoxAlgebraic_SOURCES) $(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) $(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) $(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) $(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) $(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) $(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) $(VorticityStokes2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -147,7 +147,8 @@ am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
 am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) Kepler$(EXEEXT) \
 	Stokes2D$(EXEEXT) LinearPartialDomain$(EXEEXT) \
-	NonlinearPartialDomain$(EXEEXT) AToCDensitySample$(EXEEXT)
+	NonlinearPartialDomain$(EXEEXT) AToCDensitySample$(EXEEXT) \
+	FunctionalTest3D$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_AToCDensitySample_OBJECTS =  \
 	AToCDensitySample-AToCDensitySample.$(OBJEXT)
@@ -170,6 +171,9 @@ am_Eikonal2D_OBJECTS = Eikonal2D-Eikonal2D.$(OBJEXT) bessi0.$(OBJEXT)
 Eikonal2D_OBJECTS = $(am_Eikonal2D_OBJECTS)
 am_FunctionalTest_OBJECTS = FunctionalTest-FunctionalTest.$(OBJEXT)
 FunctionalTest_OBJECTS = $(am_FunctionalTest_OBJECTS)
+am_FunctionalTest3D_OBJECTS =  \
+	FunctionalTest3D-FunctionalTest3D.$(OBJEXT)
+FunctionalTest3D_OBJECTS = $(am_FunctionalTest3D_OBJECTS)
 am_Helmholtz1D_OBJECTS = Helmholtz1D-Helmholtz1D.$(OBJEXT)
 Helmholtz1D_OBJECTS = $(am_Helmholtz1D_OBJECTS)
 am_HighOrderPoisson1D_OBJECTS =  \
@@ -247,6 +251,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/Coupled2D-Coupled2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Eikonal2D-Eikonal2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/FunctionalTest-FunctionalTest.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Helmholtz1D-Helmholtz1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/HighOrderPoisson1D-HighOrderPoisson1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Po \
@@ -285,9 +290,9 @@ F77LINK = $(F77LD) $(AM_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o \
 SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) \
 	$(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) \
 	$(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
-	$(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) \
-	$(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) \
-	$(HighOrderProjection1D_SOURCES) \
+	$(FunctionalTest_SOURCES) $(FunctionalTest3D_SOURCES) \
+	$(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) \
+	$(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) \
 	$(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) \
 	$(LinearPartialDomain_SOURCES) \
 	$(LinearVariationalTest_SOURCES) \
@@ -303,9 +308,9 @@ SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) \
 DIST_SOURCES = $(AToCDensitySample_SOURCES) \
 	$(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
-	$(FunctionalTest_SOURCES) $(Helmholtz1D_SOURCES) \
-	$(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) \
-	$(HighOrderProjection1D_SOURCES) \
+	$(FunctionalTest_SOURCES) $(FunctionalTest3D_SOURCES) \
+	$(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) \
+	$(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) \
 	$(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) \
 	$(LinearPartialDomain_SOURCES) \
 	$(LinearVariationalTest_SOURCES) \
@@ -462,7 +467,7 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D \
-LinearPartialDomain NonlinearPartialDomain AToCDensitySample
+LinearPartialDomain NonlinearPartialDomain AToCDensitySample FunctionalTest3D
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
@@ -754,6 +759,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 FunctionalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 FunctionalTest_LDADD = $(STD_FWK_LIBS) 
+FunctionalTest3D_SOURCES = $(srcdir)/FunctionalTest3D.cpp 
+FunctionalTest3D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+FunctionalTest3D_CXXFLAGS = $(STD_FWK_INCLUDES)
+FunctionalTest3D_LDADD = $(STD_FWK_LIBS) 
 LinearVariationalTest_SOURCES = $(srcdir)/LinearVariationalTest.cpp 
 LinearVariationalTest_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -978,6 +992,9 @@ Eikonal2D$(EXEEXT): $(Eikonal2D_OBJECTS) $(Eikonal2D_DEPENDENCIES)
 FunctionalTest$(EXEEXT): $(FunctionalTest_OBJECTS) $(FunctionalTest_DEPENDENCIES) 
 	@rm -f FunctionalTest$(EXEEXT)
 	$(CXXLINK) $(FunctionalTest_LDFLAGS) $(FunctionalTest_OBJECTS) $(FunctionalTest_LDADD) $(LIBS)
+FunctionalTest3D$(EXEEXT): $(FunctionalTest3D_OBJECTS) $(FunctionalTest3D_DEPENDENCIES) 
+	@rm -f FunctionalTest3D$(EXEEXT)
+	$(CXXLINK) $(FunctionalTest3D_LDFLAGS) $(FunctionalTest3D_OBJECTS) $(FunctionalTest3D_LDADD) $(LIBS)
 Helmholtz1D$(EXEEXT): $(Helmholtz1D_OBJECTS) $(Helmholtz1D_DEPENDENCIES) 
 	@rm -f Helmholtz1D$(EXEEXT)
 	$(CXXLINK) $(Helmholtz1D_LDFLAGS) $(Helmholtz1D_OBJECTS) $(Helmholtz1D_LDADD) $(LIBS)
@@ -1070,6 +1087,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Coupled2D-Coupled2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Eikonal2D-Eikonal2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionalTest-FunctionalTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Helmholtz1D-Helmholtz1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HighOrderPoisson1D-HighOrderPoisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Po@am__quote@
@@ -1224,6 +1242,22 @@ FunctionalTest-FunctionalTest.obj: $(srcdir)/FunctionalTest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/FunctionalTest-FunctionalTest.Po' tmpdepfile='$(DEPDIR)/FunctionalTest-FunctionalTest.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(FunctionalTest_CXXFLAGS) $(CXXFLAGS) -c -o FunctionalTest-FunctionalTest.obj `if test -f '$(srcdir)/FunctionalTest.cpp'; then $(CYGPATH_W) '$(srcdir)/FunctionalTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/FunctionalTest.cpp'; fi`
+
+FunctionalTest3D-FunctionalTest3D.o: $(srcdir)/FunctionalTest3D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(FunctionalTest3D_CXXFLAGS) $(CXXFLAGS) -MT FunctionalTest3D-FunctionalTest3D.o -MD -MP -MF "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Tpo" -c -o FunctionalTest3D-FunctionalTest3D.o `test -f '$(srcdir)/FunctionalTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/FunctionalTest3D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Tpo" "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Po"; else rm -f "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/FunctionalTest3D.cpp' object='FunctionalTest3D-FunctionalTest3D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Po' tmpdepfile='$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(FunctionalTest3D_CXXFLAGS) $(CXXFLAGS) -c -o FunctionalTest3D-FunctionalTest3D.o `test -f '$(srcdir)/FunctionalTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/FunctionalTest3D.cpp
+
+FunctionalTest3D-FunctionalTest3D.obj: $(srcdir)/FunctionalTest3D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(FunctionalTest3D_CXXFLAGS) $(CXXFLAGS) -MT FunctionalTest3D-FunctionalTest3D.obj -MD -MP -MF "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Tpo" -c -o FunctionalTest3D-FunctionalTest3D.obj `if test -f '$(srcdir)/FunctionalTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/FunctionalTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/FunctionalTest3D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Tpo" "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Po"; else rm -f "$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/FunctionalTest3D.cpp' object='FunctionalTest3D-FunctionalTest3D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Po' tmpdepfile='$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(FunctionalTest3D_CXXFLAGS) $(CXXFLAGS) -c -o FunctionalTest3D-FunctionalTest3D.obj `if test -f '$(srcdir)/FunctionalTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/FunctionalTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/FunctionalTest3D.cpp'; fi`
 
 Helmholtz1D-Helmholtz1D.o: $(srcdir)/Helmholtz1D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Helmholtz1D_CXXFLAGS) $(CXXFLAGS) -MT Helmholtz1D-Helmholtz1D.o -MD -MP -MF "$(DEPDIR)/Helmholtz1D-Helmholtz1D.Tpo" -c -o Helmholtz1D-Helmholtz1D.o `test -f '$(srcdir)/Helmholtz1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Helmholtz1D.cpp; \

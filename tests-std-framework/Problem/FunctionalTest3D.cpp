@@ -49,16 +49,20 @@ int main(int argc, char** argv)
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
+      /* Read the mesh */
       int nx = 4;
       int ny = 2;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 1.0, ny, 1,
                                                          meshType);
+      Mesh mesh2D = mesher.getMesh();
 
-      Mesh mesh = mesher.getMesh();
+      MeshTransformation extruder = new ExtrusionMeshTransformation(0.0, 1.0, 2, meshType);
+
+      Mesh mesh = extruder.apply(mesh2D);
+
+
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -123,15 +127,11 @@ int main(int argc, char** argv)
       MPIComm::world().synchronize();
 
 
-      GrouperBase::classVerbosity() = VerbExtreme;
-      Evaluator::classVerbosity() = VerbExtreme;
       Expr I5 = Integral(interior, 1.0, quad4);
       double f5 = evaluateIntegral(mesh, I5);
       cout << "integral of 1.0 = " << f5 << endl;
       double I5Exact = 1.0;
       cout << "exact: " << I5Exact << endl;
-      GrouperBase::classVerbosity() = VerbSilent;
-      Evaluator::classVerbosity() = VerbSilent;
 
       error = max(error, fabs(f5 - I5Exact));
       cout << "error = " << fabs(f5 - I5Exact) << endl;

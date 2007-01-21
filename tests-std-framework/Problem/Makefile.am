@@ -34,7 +34,7 @@ EXEEXT = .exe
 noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
 
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D \
-LinearPartialDomain NonlinearPartialDomain AToCDensitySample
+LinearPartialDomain NonlinearPartialDomain AToCDensitySample FunctionalTest3D
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
@@ -534,6 +534,20 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 FunctionalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 FunctionalTest_LDADD = $(STD_FWK_LIBS) 
+
+
+
+FunctionalTest3D_SOURCES = $(srcdir)/FunctionalTest3D.cpp 
+
+FunctionalTest3D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+FunctionalTest3D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+FunctionalTest3D_LDADD = $(STD_FWK_LIBS) 
 
 
 
