@@ -259,8 +259,6 @@ namespace TSFExtended
     VectorType();
     ~VectorType();
 
-    VectorSpace<Scalar> createEvenlyPartitionedSpace(int nLocal) const ;
-
     %extend
     {
       std::string __str__() 
@@ -270,6 +268,14 @@ namespace TSFExtended
         self->print(os);
         rtn = os.str();
         return rtn;
+      }
+    }
+
+    %extend
+    {
+      VectorSpace<Scalar> createEvenlyPartitionedSpace(int nLocal) const 
+      {
+        return self->createEvenlyPartitionedSpace(MPIComm::world(), nLocal);
       }
     }
   };

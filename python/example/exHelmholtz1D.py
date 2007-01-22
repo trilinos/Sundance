@@ -44,7 +44,7 @@ def main():
   
   prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
-  solver = readSolver("../../../tests-std-framework/Problem/bicgstab.xml");
+  solver = readSolver(searchForFile("bicgstab.xml"));
 
   soln = prob.solve(solver)
 

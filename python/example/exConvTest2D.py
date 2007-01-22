@@ -46,7 +46,7 @@ def runtest(nMesh, order):
   prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
 
-  solver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
+  solver = readSolver(searchForFile("aztec.xml"));
 
 
   soln = prob.solve(solver)

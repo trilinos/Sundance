@@ -23,7 +23,7 @@
     
       argv[i] = NULL; //Lam 7.0 requires last arg to be NULL  
   
-      int error = SundanceStdFwk::Sundance::init(&argc, (void***) &argv);
+      int error = SundanceStdFwk::Sundance::init(&argc, &argv);
       if (error != 0) {
         PyErr_SetString(PyExc_RuntimeError, "error");   
         return NULL;
@@ -58,6 +58,7 @@
   {
     MPIComm::world().synchronize();
   }
+
   
   %}
 

@@ -20,7 +20,9 @@
 
 %{
 #include "Sundance.hpp"
+#include "SundancePathUtils.hpp"
   %}
+
 
 %inline %{
   bool passFailTest(double err, double tol)
@@ -30,9 +32,15 @@
 
 
   void skipTimingOutput() {Sundance::skipTimingOutput()=true;}
+
   %}
 
 
+%include "std_string.i"
+namespace SundanceUtils
+{
+  std::string searchForFile(const std::string& name);
+}
 
 
 %include Mesh.i

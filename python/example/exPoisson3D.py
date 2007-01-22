@@ -14,8 +14,7 @@ from PySundance import *
 def main():
 
     vecType = EpetraVectorType()
-    mesher  = ExodusNetCDFMeshReader("../../../tests-std-framework/Problem"
-                                     "/cube-coarse.ncdf");
+    mesher  = ExodusNetCDFMeshReader("cube-coarse.ncdf");
     mesh = mesher.getMesh();
     basis = Lagrange(2)
 
@@ -49,7 +48,7 @@ def main():
 
     prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
-    solver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
+    solver = readSolver(searchForFile("aztec.xml"));
 
     soln = prob.solve(solver)
 
@@ -83,7 +82,7 @@ def main():
 
     print "max err = ", error
 
-    tol = 1.0e-13
+    tol = 1.0e-12
     passFailTest(error, tol)
 
 

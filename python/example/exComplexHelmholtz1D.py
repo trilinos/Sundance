@@ -57,7 +57,7 @@ def main():
   
   prob = LinearProblem(mesh, eqn, bc, List(vr, vi), List(ur, ui), vecType)
 
-  solver = readSolver("../../../tests-std-framework/Problem/aztec.xml");
+  solver = readSolver(searchForFile("aztec.xml"))
 
   uSolnRI = prob.solve(solver)
 

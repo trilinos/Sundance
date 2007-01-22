@@ -34,7 +34,7 @@ solverParams = ParameterList(aztecSolverDict);
 def main():
 
     vecType = EpetraVectorType()
-    mesher  = TriangleMeshReader("../../../tests-std-framework/Problem/ring3D-0.008a");
+    mesher  = TriangleMeshReader("ring3D-0.008a");
 
     print 'reading mesh...'
     mesh = mesher.getMesh();

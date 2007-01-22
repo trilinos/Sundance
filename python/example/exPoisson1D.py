@@ -47,7 +47,7 @@ def main():
   
   prob = LinearProblem(mesh, eqn, bc, v, u, vecType)
 
-  solver = readSolver("../../../tests-std-framework/Problem/aztec-ml.xml");
+  solver = readSolver(searchForFile("aztec-ml.xml"));
   
   soln = prob.solve(solver)
 

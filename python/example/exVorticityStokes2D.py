@@ -74,7 +74,7 @@ def main():
                        List(psi, omega), vecType)
 
   
-  solver = readSolver("../../../tests-std-framework/Problem/bicgstab.xml");
+  solver = readSolver(searchForFile("bicgstab.xml"));
 
   soln = prob.solve(solver)
 
