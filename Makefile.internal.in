@@ -65,10 +65,12 @@ include $(TRILINOS_DIR)/packages/ifpack/Makefile.export.ifpack
 include $(TRILINOS_DIR)/packages/nox/Makefile.export.nox
 include $(TRILINOS_DIR)/packages/ml/Makefile.export.ml
 include $(TRILINOS_DIR)/packages/amesos/Makefile.export.amesos
+include $(TRILINOS_DIR)/packages/stratimikos/Makefile.export.stratimikos
 
 TRILINOS_INCLUDES = -I$(TRILINOS_DIR)/include
 
 TMP_TRILINOS_LIBS = @LDFLAGS@ \
+  $(STRATIMIKOS_LIBS) \
   $(NOX_LIBS) \
   $(ML_LIBS) \
   $(AMESOS_LIBS) \

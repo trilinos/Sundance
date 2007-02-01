@@ -44,9 +44,14 @@ int main()
 
 #include "MoochoPack_MoochoSolver.hpp"
 #include "NLPInterfacePack_NLPFirstOrderThyraModelEvaluator.hpp"
-#include "Thyra_LOWSFactoryBuilder.hpp"
+//#include "Thyra_LOWSFactoryBuilder.hpp"
 #include "Thyra_DefaultSpmdVectorSpace.hpp"
 #include "Thyra_DefaultModelEvaluatorWithSolveFactory.hpp"
+
+#include "Thyra_DefaultRealLinearSolverBuilder.hpp"
+#include "Thyra_LinearOpWithSolveFactoryHelpers.hpp"
+#include "Thyra_EpetraThyraWrappers.hpp"
+#include "Thyra_EpetraLinearOp.hpp"
 
 #include "SundanceNLPModelEvaluator.hpp"
 #include "Sundance.hpp"
@@ -80,6 +85,7 @@ namespace Thyra
 {
   class CDRControlModel : public SundanceNLPModelEvaluator
   {
+    //bvbw todo add SundanceNLPModelEvaluator to Doxygen
   public:
     /** */
     CDRControlModel(const ParameterList& params,
@@ -120,8 +126,11 @@ int main(int argc, char** argv)
   using MoochoPack::MoochoSolver;
 	using NLPInterfacePack::NLPFirstOrderThyraModelEvaluator;
 
-  try
-		{
+  try 
+    {
+      //bvbw
+      Thyra::DefaultRealLinearSolverBuilder lowsfCreator;
+
       /* We will read input parameters from an XML file. The name of
        * the file is read from the command line:
        * --input=<filename>. The default is CDR.xml. */
@@ -129,45 +138,51 @@ int main(int argc, char** argv)
       string filename = "CDR_control.xml";
       Sundance::setOption("input", filename, "name of XML input file");
       Sundance::setOption("path", path, "path to XML input file");
-
+      
       /* Initialize everything, reading command-line arguments */
       Sundance::init(&argc, &argv);
-
+      
       /* Get the processor rank. We will only write output if we 
        * are on processor 0 */
       int myRank = MPIComm::world().getRank();
-
+      
       /* Read the parameters from the input file given on the command line */
       if (myRank==0) cout << "reading input file..." << endl;
       FileInputSource fis(path + filename);
       XMLObject xml = fis.getObject();
       XMLParameterListReader paramsReader;
       ParameterList params = paramsReader.toParameterList(xml);
-
+      
       if (myRank==0) cout << " CDR input parameters = " << endl << params << endl;
-
+      
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
-
+      
       /* create an object for the physics model */
       RefCountPtr<Thyra::CDRControlModel> cdrModel 
-        = rcp(new Thyra::CDRControlModel(params, vecType));
-
-
+	= rcp(new Thyra::CDRControlModel(params, vecType));
+      
+      
       RefCountPtr<Thyra::ModelEvaluator<double> > model = cdrModel;
-
+      
       
       /* specify the linear solver to be used in Moocho */
-
-      RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> > lowsFactory
-        = LOWSFactoryBuilder::createLOWSFactory(params.sublist("Linear Solver"));
-
-      RefCountPtr<Thyra::ModelEvaluator<double> > modelWithLOWS
-        = rcp(new Thyra::DefaultModelEvaluatorWithSolveFactory<double>(model,
-                                                                       lowsFactory));
-
       
+      //bvbw      RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> > lowsFactory
+      //	= LOWSFactoryBuilder::createLOWSFactory(params.sublist("Linear Solver"));
 
+ 
+      lowsfCreator.setParameterList(Teuchos::sublist(Teuchos::rcp(&params,false),
+                                                                      "Moocho Linear Solver"));
+
+      Teuchos::RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> > lowsFactory =
+      lowsfCreator.createLinearSolveStrategy("AztecOO");
+      
+      Teuchos::RefCountPtr<Thyra::ModelEvaluator<double> > modelWithLOWS
+	= rcp(new Thyra::DefaultModelEvaluatorWithSolveFactory<double>(model,
+								       lowsFactory));
+           
+      
       /* set up the solution of the forward problem to obtain a target */
       TEST_FOR_EXCEPT(!params.isSublist("Forward Problem"));
       ParameterList fwdParams = params.sublist("Forward Problem");
@@ -222,7 +237,7 @@ int main(int argc, char** argv)
       w2.addMesh(cdrModel->mesh());
       w2.addField("Target", new ExprFieldWrapper(fwdSoln[0]));
       w2.addField("Optimal Psi", new ExprFieldWrapper(uFinal[0]));
-      w2.write();
+      //      w2.write();
     }
 	catch(exception& e)
 		{
