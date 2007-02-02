@@ -165,12 +165,19 @@ namespace SundanceStdFwk
     /* */
     L2Projector(const DiscreteSpace& space, 
                 const SundanceCore::Expr& expr);
+    /* */
+    L2Projector(const DiscreteSpace& space, 
+                const SundanceCore::Expr& expr,
+                const TSFExtended::LinearSolver<double>& solver);
 
     /* */
     ~L2Projector();
 
     /* */
     SundanceCore::Expr project() const ;
+
+    /* */
+    const LinearProblem& prob() const ;
     
   };
 }

@@ -62,12 +62,24 @@ namespace SundanceStdFwk
     L2Projector(){;}
     /** */
     L2Projector(const DiscreteSpace& space, 
-                const Expr& expr, const double& smoothing = 0.0);
+                const Expr& expr);
+    /** */
+    L2Projector(const DiscreteSpace& space, 
+                const Expr& expr,
+                const LinearSolver<double>& solver);
 
     /** */
     Expr project() const {return prob_.solve(solver_);}
 
+    /** */
+    const LinearProblem& prob() const {return prob_;}
+
   private:
+
+    void init(const DiscreteSpace& space, 
+              const Expr& expr,
+              const LinearSolver<double>& solver);
+
     LinearProblem prob_;
 
     LinearSolver<double> solver_;
