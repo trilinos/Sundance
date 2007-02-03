@@ -209,6 +209,7 @@ void Assembler::init(const Mesh& mesh,
   if (compTypes.contains(VectorOnly) 
       || compTypes.contains(FunctionalAndGradient))
     {
+      Tabs tab1;
       mapBuilder = DOFMapBuilder(mesh, eqn);
 
       rowMap_ = mapBuilder.rowMap();
@@ -217,8 +218,11 @@ void Assembler::init(const Mesh& mesh,
       for (unsigned int b=0; b<lowestRow_.size(); b++) 
         {
           lowestRow_[b] = rowMap_[b]->lowestLocalDOF();
+          SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": lowest row="
+                             << lowestRow_[b]);
           rowSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray()[b], 
                                                rowMap_[b], rowVecType_[b]));
+          SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": done forming row space");
         }
     }
 
@@ -229,6 +233,7 @@ void Assembler::init(const Mesh& mesh,
         {
           colSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray()[b], 
                                                colMap_[b], colVecType_[b]));
+          SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": done forming col space");
         }
       groups_.put(MatrixAndVector, Array<Array<IntegralGroup> >());
       rqcRequiresMaximalCofacets_.put(MatrixAndVector, Array<int>());

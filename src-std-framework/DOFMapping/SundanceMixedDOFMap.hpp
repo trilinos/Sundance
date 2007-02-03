@@ -107,6 +107,9 @@ namespace SundanceStdFwk
     private:
 
       /** */
+      void checkTable() const ;
+
+      /** */
       inline int getInitialDOFForCell(int cellDim, int cellLID, int basisChunk) const
       {
         return dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]];

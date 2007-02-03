@@ -48,10 +48,12 @@ int main(int argc, char** argv)
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
+      //      PartitionedLineMesher::classVerbosity() = VerbExtreme;
+
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -82,7 +84,8 @@ int main(int argc, char** argv)
       
 
       /* We can now set up the linear problem! */
-
+      //Assembler::classVerbosity() = VerbExtreme;
+      //DOFMapBase::classVerbosity() = VerbExtreme;
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
       ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));

@@ -175,17 +175,16 @@ void DiscreteSpace::init(const Array<CellFilter>& regions,
   
   Array<int> dofs(nDof);
   for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
-  
+
   vecSpace_ = vecType_.createSpace(map_->numDOFs(),
                                    map_->numLocalDOFs(),
                                    &(dofs[0]));
-  
-  
+
+
   RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
   int nGhost = ghostIndices->size();
   int* ghosts = 0;
   if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
-  
   ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
 }
 

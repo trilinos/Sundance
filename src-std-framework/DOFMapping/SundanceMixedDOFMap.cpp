@@ -77,6 +77,8 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
 {
   TimeMonitor timer(mixedDOFCtorTimer());
   verbosity() = DOFMapBase::classVerbosity();
+  Tabs tab;
+  SUNDANCE_VERB_LOW(tab << "building mixed DOF map");
 
   SundanceUtils::Map<BasisFamily, int> basisToChunkMap;
   Array<BasisFamily> chunkBases;
@@ -113,6 +115,10 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
 
   buildMaximalDofTable();
 
+  /* do a sanity check */
+  checkTable();
+
+  SUNDANCE_VERB_LOW(tab << "done building mixed DOF map");
 }
 
 
@@ -289,6 +295,11 @@ void MixedDOFMap::initMap()
           if (isRemote(dim_, cellLID, owner))
             {
               int cellGID = mesh().mapLIDToGID(dim_, cellLID);
+              SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
+                                    << " thinks d-" << dim_ 
+                                    << " cell GID=" << cellGID
+                                    << " is owned remotely by p=" 
+                                    << owner);
               remoteCells[dim_][owner].append(cellGID); 
             }
           else /* the cell is locally owned, so we can 
@@ -325,6 +336,10 @@ void MixedDOFMap::initMap()
                         {
                           int facetGID 
                             = mesh().mapLIDToGID(d, facetLID[f]);
+                          SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
+                                                << " thinks d-" << d 
+                                                << " cell GID=" << facetGID
+                                                << " is owned remotely by p=" << owner);
                           remoteCells[d][owner].append(facetGID);
                         }
                       else /* we can assign a DOF locally */
@@ -886,3 +901,26 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
     }
 
 }                           
+
+
+
+void MixedDOFMap::checkTable() const 
+{
+  int bad = 0;
+  for (unsigned int d=0; d<dofs_.size(); d++)
+    {
+      for (unsigned int chunk=0; chunk<dofs_[d].size(); chunk++)
+        {
+          const Array<int>& dofs = dofs_[d][chunk];
+          for (unsigned int n=0; n<dofs.size(); n++)
+            {
+              if (dofs[n] < 0) bad = 1;
+            }
+        }
+    }
+  
+  int anyBad = bad;
+  comm().allReduce((void*) &bad, (void*) &anyBad, 1, 
+                   MPIComm::INT, MPIComm::SUM);
+  TEST_FOR_EXCEPTION(anyBad > 0, RuntimeError, "invalid DOF map");
+}
