@@ -1,0 +1,20 @@
+#
+# FRAMEWORK group
+#
+
+(FRAMEWORK) {
+  DIRS = SymbolicTests,
+         ../tests-solvers/OperatorTests,
+         ../tests-solvers/SolverTests,
+         ../tests-solvers/VectorTests,
+         ../tests-std-framework/Assembly,
+         ../tests-std-framework/Problem,
+         ../tests-std-mesh/Readers,
+         ../tests-std-mesh/Simple,
+         ../tests-utils/Combinatorics,
+         ../tests-utils/Functors,
+         ../tests-utils/Maps;
+  ARGS = -v;
+  COMM = SERIAL, MPI;
+}
+
