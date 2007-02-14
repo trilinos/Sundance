@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdlib>
 #include "VECMAT.h"
+#include "Teuchos_Array.hpp"
 
 #ifndef CHAOS_H
 #define CHAOS_H
@@ -119,8 +120,9 @@ inline void Chaos::OrthoOrder(George::matrix &D){
   int nterms;
   int  maxterms = nterm(order, ndim);
 
-  int c[maxterms+1][order+1];
-  int c1[maxterms+1][ndim+1];
+  /* KL - changed from C to Teuchos arrays to be Ansi C++ compliant */
+  Teuchos::Array<Teuchos::Array<int> > c(maxterms+1, order+1);
+  Teuchos::Array<Teuchos::Array<int> > c1(maxterms+1, ndim+1);
 
 
   int count = 0;

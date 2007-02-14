@@ -320,7 +320,21 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
       if (isPointData)
         {
           int numNodes = mesh().numCells(0);
+
+          /*
+          Array<int> cellLID(numNodes);
+          Array<int> vals;
+
+          for (int c=0; c<numNodes; c++) cellLID[c] = c;
+
+          expr->getData(0, cellLID, vals, undefinedVal);
+
+          for (unsigned int i=0; i<vals.size(); i++)
+            {
+              os << (float) vals[i] << endl;
+            }
           
+           */ 
           for (int i=0; i<numNodes; i++)
             {
               for (int j=0; j<expr->numElems(); j++)

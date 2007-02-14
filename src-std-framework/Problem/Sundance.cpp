@@ -49,7 +49,9 @@
 #include "SundanceProductTransformation.hpp"
 #include <unistd.h>
 #include <sys/unistd.h>
+#ifdef HAVE_MPI
 #include "mpi.h"
+#endif
 
 
 static Time& totalTimer() 

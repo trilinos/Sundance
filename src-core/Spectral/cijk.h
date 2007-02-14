@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include "VECMAT.h"
 #include "chaos.h"
+#include "Teuchos_Array.hpp"
 
 #ifndef CIJK_H
 #define CIJK_H
@@ -86,8 +87,8 @@ inline double cijk::expectation(int i, int j, int k){
 
   double prod = 1;
 
-  double Mu[ndim+1];
-  double Sigma[ndim+1];
+  Teuchos::Array<double> Mu(ndim+1);
+  Teuchos::Array<double> Sigma(ndim+1);
 
   for(int in=1; in<=ndim; in++)
     {
@@ -173,8 +174,8 @@ inline double cijk::expectation4(int i, int j, int k, int l){
 
   double prod = 1;
 
-  double Mu[ndim+1];
-  double Sigma[ndim+1];
+  Teuchos::Array<double> Mu(ndim+1);
+  Teuchos::Array<double> Sigma(ndim+1);
 
   for(int in=1; in<=ndim; in++)
     {
@@ -269,8 +270,8 @@ inline double cijk::expectation5(int i, int j, int k, int l,int m){
 
   double prod = 1;
 
-  double Mu[ndim+1];
-  double Sigma[ndim+1];
+  Teuchos::Array<double> Mu(ndim+1);
+  Teuchos::Array<double> Sigma(ndim+1);
 
   for(int in=1; in<=ndim; in++)
     {

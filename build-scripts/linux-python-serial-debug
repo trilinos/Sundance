@@ -30,12 +30,19 @@
 # ************************************************************************
 # @HEADER
 
-###--with-fiat=$HOME/Projects/FIAT/BUILD \
+
 
 BUILD_DIR=`pwd`
 
-../configure CXXFLAGS="-g -O0 -Wall -ansi -pedantic"  \
+../configure \
+CXXFLAGS="-Wall -O0 -g -ansi -pedantic" \
 --with-trilinos=$HOME/Software/Math/trilinos-7.0.3/LINUX-4.1.0 \
 --with-install="/usr/bin/install -c -p" \
+--enable-python \
+--disable-cxxtests \
+--disable-cxxexamples \
+--disable-lowleveltests \
 --prefix=$BUILD_DIR
 
+#--with-fiat=$HOME/Projects/fiat++/BUILD \
+##--with-sundials=$HOME/Software/Math/sundials/LINUX-OPT \

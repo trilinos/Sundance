@@ -113,6 +113,35 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
 
   return df_->ghostView()->getElement(dofs[0]);
 }
+
+/*
+void ExprFieldWrapper::getData(int cellDim, const Array<int>& cellLID, 
+                               const double& undefinedVal,
+                               std::vector<double>& vals) const 
+{
+  Array<Array<int> > dofs;
+  Array<int> nNodes;
+  Set<int> reqFuncs;
+  for (int i=0; i<indices_.size(); i++) funcs.put(indices_[i]);
+
+  RefCountPtr<const Set<int> > allowedFuncs 
+    = map_->allowedFuncsOnCellBatch(cellDim, cellLID);
+
+  if (reqFuncs.set
+
+  
+
+  vals.resize(cellLID.size() * indices_.size());
+
+  RefCountPtr<const MapStructure> ms 
+    = map_->getDOFsForCellBatch(cellDim, cellLID, funcs, dofs, nNodes);
+
+  const int* globalIndices = &(dofs[0][0]);
+  df_->ghostView()->getElements(globalIndices, 
+
+  return df_->ghostView()->getElement(dofs[0]);
+}
+*/
     
 bool ExprFieldWrapper::isDefined(int cellDim, int cellID, int elem) const
 {
