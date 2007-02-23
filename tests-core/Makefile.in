@@ -43,6 +43,9 @@
 # 
 # ************************************************************************
 #@HEADER
+
+SOURCES = $(makeSerialTestsDriver_SOURCES) $(makeTestsDriver_SOURCES)
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -64,6 +67,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
+noinst_PROGRAMS = makeSerialTestsDriver$(EXEEXT) $(am__EXEEXT_1)
 subdir = tests-core
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -85,8 +89,23 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
-SOURCES =
-DIST_SOURCES =
+@HAVE_MPI_TRUE@am__EXEEXT_1 = makeTestsDriver$(EXEEXT)
+PROGRAMS = $(noinst_PROGRAMS)
+am_makeSerialTestsDriver_OBJECTS =
+makeSerialTestsDriver_OBJECTS = $(am_makeSerialTestsDriver_OBJECTS)
+makeSerialTestsDriver_LDADD = $(LDADD)
+am__makeTestsDriver_SOURCES_DIST = $(srcdir)/makeTestsDriver.sh
+am_makeTestsDriver_OBJECTS =
+makeTestsDriver_OBJECTS = $(am_makeTestsDriver_OBJECTS)
+makeTestsDriver_LDADD = $(LDADD)
+DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-solvers -I$(top_builddir)/src-utils
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+SOURCES = $(makeSerialTestsDriver_SOURCES) $(makeTestsDriver_SOURCES)
+DIST_SOURCES = $(makeSerialTestsDriver_SOURCES) \
+	$(am__makeTestsDriver_SOURCES_DIST)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -132,7 +151,7 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
-EXEEXT = @EXEEXT@
+EXEEXT = .exe
 F77 = @F77@
 FFLAGS = @FFLAGS@
 FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
@@ -240,6 +259,14 @@ target_vendor = @target_vendor@
 @BUILD_LOW_LEVEL_TESTS_TRUE@SUBDIRS = SymbolicTests
 @BUILD_LOW_LEVEL_TESTS_TRUE@LL_TESTS = (cd SymbolicTests; $(MAKE) tests)
 @BUILD_LOW_LEVEL_TESTS_TRUE@LL_SERIALTESTS = (cd SymbolicTests; $(MAKE) serialtests)
+
+#The next several lines allow us to run the make tests make targets
+#through the testing phase of the test harness
+EXTRA_DIST = makeTestsDriver.sh makeSerialTestsDriver.sh
+@HAVE_MPI_FALSE@MAKETESTSDRIVER = 
+@HAVE_MPI_TRUE@MAKETESTSDRIVER = makeTestsDriver
+@HAVE_MPI_TRUE@makeTestsDriver_SOURCES = $(srcdir)/makeTestsDriver.sh
+makeSerialTestsDriver_SOURCES = $(srcdir)/makeSerialTestsDriver.sh
 all: all-recursive
 
 .SUFFIXES:
@@ -272,6 +299,18 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+@HAVE_MPI_FALSE@makeTestsDriver$(EXEEXT): $(makeTestsDriver_OBJECTS) $(makeTestsDriver_DEPENDENCIES) 
+@HAVE_MPI_FALSE@	@rm -f makeTestsDriver$(EXEEXT)
+@HAVE_MPI_FALSE@	$(LINK) $(makeTestsDriver_LDFLAGS) $(makeTestsDriver_OBJECTS) $(makeTestsDriver_LDADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+
+distclean-compile:
+	-rm -f *.tab.c
 uninstall-info-am:
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -432,7 +471,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile
+all-am: Makefile $(PROGRAMS)
 installdirs: installdirs-recursive
 installdirs-am:
 install: install-recursive
@@ -461,11 +500,12 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-tags
 
 dvi: dvi-recursive
 
@@ -493,7 +533,7 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-recursive
 
@@ -508,17 +548,22 @@ uninstall-am: uninstall-info-am
 uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
-	clean clean-generic clean-recursive ctags ctags-recursive \
-	distclean distclean-generic distclean-recursive distclean-tags \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	maintainer-clean-recursive mostlyclean mostlyclean-generic \
+	clean clean-generic clean-noinstPROGRAMS clean-recursive ctags \
+	ctags-recursive distclean distclean-compile distclean-generic \
+	distclean-recursive distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
 	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-info-am
 
+@HAVE_MPI_TRUE@makeTestsDriver$(EXEEXT): ${makeTestsDriver_SOURCES}
+@HAVE_MPI_TRUE@	cp  $(srcdir)/makeTestsDriver.sh makeTestsDriver$(EXEEXT)
+makeSerialTestsDriver$(EXEEXT): ${makeSerialTestsDriver_SOURCES}
+	cp  $(srcdir)/makeSerialTestsDriver.sh makeSerialTestsDriver$(EXEEXT)
 
 tests:
 	$(LL_TESTS)

@@ -34,6 +34,31 @@ LL_TESTS = (cd SymbolicTests; $(MAKE) tests)
 LL_SERIALTESTS = (cd SymbolicTests; $(MAKE) serialtests)
 endif
 
+#The next several lines allow us to run the make tests make targets
+#through the testing phase of the test harness
+
+EXTRA_DIST = makeTestsDriver.sh makeSerialTestsDriver.sh
+
+EXEEXT = .exe
+
+if  HAVE_MPI
+
+MAKETESTSDRIVER = makeTestsDriver
+makeTestsDriver_SOURCES = $(srcdir)/makeTestsDriver.sh
+makeTestsDriver$(EXEEXT): ${makeTestsDriver_SOURCES}
+	cp  $(srcdir)/makeTestsDriver.sh makeTestsDriver$(EXEEXT)
+
+else
+
+MAKETESTSDRIVER =
+
+endif
+
+makeSerialTestsDriver_SOURCES = $(srcdir)/makeSerialTestsDriver.sh
+makeSerialTestsDriver$(EXEEXT): ${makeSerialTestsDriver_SOURCES}
+	cp  $(srcdir)/makeSerialTestsDriver.sh makeSerialTestsDriver$(EXEEXT)
+
+noinst_PROGRAMS = makeSerialTestsDriver $(MAKETESTSDRIVER)
 
 tests:
 	$(LL_TESTS)

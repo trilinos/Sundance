@@ -3,18 +3,42 @@
 #
 
 (FRAMEWORK) {
-  DIRS = SymbolicTests,
-         ../tests-solvers/OperatorTests,
-         ../tests-solvers/SolverTests,
-         ../tests-solvers/VectorTests,
-         ../tests-std-framework/Assembly,
-         ../tests-std-framework/Problem,
-         ../tests-std-mesh/Readers,
-         ../tests-std-mesh/Simple,
-         ../tests-utils/Combinatorics,
-         ../tests-utils/Functors,
-         ../tests-utils/Maps;
-  ARGS = -v;
-  COMM = SERIAL, MPI;
+  TESTS = makeTestsDriver.exe;
+  COMM = CUSTOM-MPI;
 }
+
+(FRAMEWORK) {
+  TESTS = makeSerialTestsDriver.exe;
+  COMM = SERIAL;
+}
+
+(FRAMEWORK) {
+  TESTS = ../../../../packages/Sundance/etc/checkTests.pl;
+  ARGS = ../tests-solvers/VectorTests/VectorTest.ptst ../tests-solvers/OperatorTests/CompoundOpTest.ptst ../tests-solvers/OperatorTests/BlockOpTest.ptst ../tests-solvers/OperatorTests/LinearCombinationTest.ptst ../tests-solvers/SolverTests/IDAHeat.ptst ../tests-solvers/SolverTests/PoissonTest.ptst ../tests-solvers/SolverTests/PoissonBoltzmannTest.ptst ../tests-solvers/SolverTests/BlockTriangularTest.ptst ../tests-std-framework/Problem/Poisson1D.ptst ../tests-std-framework/Problem/Poisson2D.ptst ../tests-std-framework/Problem/HighOrderPoisson1D.ptst ../tests-std-framework/Problem/HighOrderPoisson2D.ptst ../tests-std-framework/Problem/HighOrderProjection1D.ptst ../tests-std-framework/Problem/HighOrderProjection2D.ptst ../tests-std-framework/Problem/NoxPoisson1D.ptst ../tests-std-framework/Problem/PoissonBoltzmann2D.ptst ../tests-std-framework/Problem/RadDiff1D.ptst ../tests-std-framework/Problem/NoxAlgebraic.ptst ../tests-std-framework/Problem/UserDefAlgebraic.ptst ../tests-std-framework/Problem/TaylorHoodStokes2D.ptst ../tests-std-framework/Problem/Coupled1D.ptst ../tests-std-framework/Problem/Coupled2D.ptst ../tests-std-framework/Problem/Helmholtz1D.ptst ../tests-std-framework/Problem/AdvectionDiffusion2D.ptst ../tests-std-framework/Problem/LinearVariationalTest.ptst ../tests-std-framework/Problem/OptPoisson1D.ptst ../tests-std-framework/Problem/FunctionalTest.ptst ../tests-std-framework/Problem/SimpleModelEvalTest.ptst ../tests-std-framework/Problem/VorticityStokes2D.ptst ../tests-std-framework/Problem/VorticityNavierStokes2D.ptst ../tests-std-framework/Problem/SpectralPoisson1D.ptst ../tests-std-framework/Problem/SpectralSqrt.ptst;
+  EXIT-STATUS = STRING-COMPARISON(All tests PASSED);
+  COMM = CUSTOM-MPI;
+} 
+
+(FRAMEWORK) {
+  TESTS = ../../../../packages/Sundance/etc/checkTests.pl;
+  ARGS = SymbolicTests/TestEval.tst SymbolicTests/VecOpTest.tst SymbolicTests/UserDefTest.tst ../tests-solvers/VectorTests/VectorTest.tst ../tests-solvers/OperatorTests/CompoundOpTest.tst ../tests-solvers/OperatorTests/BlockOpTest.tst ../tests-solvers/OperatorTests/LinearCombinationTest.tst ../tests-solvers/SolverTests/IDAHeat.tst ../tests-solvers/PoissonTest.tst ../tests-solvers/SolverTests/PoissonBoltzmannTest.tst ../tests-solvers/SolverTests/BlockTriangularTest.tst ../tests-std-framework/Assembly/BasisCheck.tst ../tests-std-framework/Assembly/TransformedIntegral2D.tst ../tests-std-framework/Assembly/QuadratureTest.tst ../tests-std-framework/Problem/Poisson1D.tst ../tests-std-framework/Problem/Poisson2D.tst ../tests-std-framework/Problem/HighOrderPoisson1D.tst ../tests-std-framework/Problem/HighOrderPoisson2D.tst ../tests-std-framework/Problem/HighOrderProjection1D.tst ../tests-std-framework/Problem/HighOrderProjection2D.tst ../tests-std-framework/Problem/NoxPoisson1D.tst ../tests-std-framework/Problem/PoissonBoltzmann2D.tst ../tests-std-framework/Problem/RadDiff1D.tst ../tests-std-framework/Problem/NoxAlgebraic.tst ../tests-std-framework/Problem/UserDefAlgebraic.tst ../tests-std-framework/Problem/TaylorHoodStokes2D.tst ../tests-std-framework/Problem/Coupled1D.tst ../tests-std-framework/Problem/Coupled2D.tst ../tests-std-framework/Problem/Helmholtz1D.tst ../tests-std-framework/Problem/AdvectionDiffusion2D.tst ../tests-std-framework/Problem/LinearVariationalTest.tst ../tests-std-framework/Problem/OptPoisson1D.tst ../tests-std-framework/Problem/FunctionalTest.tst ../tests-std-framework/Problem/SimpleModelEvalTest.tst ../tests-std-framework/Problem/VorticityStokes2D.tst ../tests-std-framework/Problem/VorticityNavierStokes2D.tst ../tests-std-framework/Problem/SpectralPoisson1D.tst ../tests-std-framework/Problem/SpectralSqrt.tst ../tests-std-framework/Problem/Poisson3D.tst ../tests-std-framework/Problem/PoissonOnDisk.tst ../tests-std-framework/Problem/Eikonal2D.tst ../tests-std-framework/Problem/BesselTest2D.tst ../tests-std-framework/Problem/Kepler.tst ../tests-std-framework/Problem/Stokes2D.tst ../tests-std-framework/Problem/LinearPartialDomain.tst ../tests-std-framework/Problem/NonlinearPartialDomain.tst ../tests-std-framework/Problem/AToCDensitySample.tst ../tests-std-framework/Problem/FunctionalTest3D.tst;
+  EXIT-STATUS = STRING-COMPARISON(All tests PASSED);
+  COMM = CUSTOM-MPI, CUSTOM-SERIAL;
+}
+
+#(FRAMEWORK) {
+#  DIRS = SymbolicTests,
+#         ../tests-solvers/OperatorTests,
+#         ../tests-solvers/SolverTests,
+#         ../tests-solvers/VectorTests,
+#         ../tests-std-framework/Assembly,
+#         ../tests-std-framework/Problem,
+#         ../tests-std-mesh/Readers,
+#         ../tests-std-mesh/Simple,
+#         ../tests-utils/Combinatorics,
+#         ../tests-utils/Functors,
+#         ../tests-utils/Maps;
+#  ARGS = -v;
+#  COMM = SERIAL, MPI;
+#}
 
