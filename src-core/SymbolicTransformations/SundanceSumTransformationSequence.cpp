@@ -43,9 +43,10 @@ SumTransformationSequence::SumTransformationSequence()
     Array<RefCountPtr<SumTransformation> >()
 {;}
 
-bool SumTransformationSequence::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                            const RefCountPtr<ScalarExpr>& right,
-                                            int sign, RefCountPtr<ScalarExpr>& rtn) const
+bool SumTransformationSequence
+::doTransform(const RefCountPtr<ScalarExpr>& left, 
+  const RefCountPtr<ScalarExpr>& right,
+  int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
   for (unsigned int i=0; i<this->size(); i++)
     {

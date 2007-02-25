@@ -110,7 +110,8 @@ namespace SundanceCore
     {
     public:
       /** */
-      ChainRuleSum(int resultIndex,
+      ChainRuleSum(const MultipleDeriv& md, 
+                   int resultIndex,
                    bool resultIsConstant);
 
       /** */
@@ -151,7 +152,11 @@ namespace SundanceCore
       /** */
       const Array<DerivProduct>& terms(int i) const {return terms_[i];}
 
+      /** */
+      const MultipleDeriv& deriv() const {return md_;}
+
     private:
+      MultipleDeriv md_;
       int resultIndex_;
       bool resultIsConstant_;
 

@@ -330,5 +330,30 @@ namespace SundanceCore
         }
       return rtn;
     }
+
+
+    
+  int factorial(const MultipleDeriv& ms)
+  {
+    SundanceUtils::Map<Deriv, int> counts;
+    
+    for (MultipleDeriv::const_iterator i=ms.begin(); i!=ms.end(); i++)
+      {
+        if (counts.containsKey(*i)) counts[*i]++;
+        else counts.put(*i, 1);
+      }
+
+    int rtn = 1;
+    for (SundanceUtils::Map<Deriv, int>::const_iterator
+           i=counts.begin(); i!=counts.end(); i++)
+      {
+        int f = 1;
+        for (int j=1; j<=i->second; j++) f *= j;
+        rtn *= f;
+      }
+    return rtn;
+  }
+
+
   }
 }

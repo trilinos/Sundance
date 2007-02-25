@@ -33,7 +33,9 @@
 #define SUNDANCE_USERDEFOPEVALUATOR_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceUserDefFunctor.hpp"
+
+#include "SundanceUserDefFunctorElement.hpp"
+#include "SundanceUserDefOpCommonEvaluator.hpp"
 #include "SundanceChainRuleEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
@@ -41,13 +43,13 @@
 
 namespace SundanceCore 
 {
-  class UserDefOp;
+
 
   namespace Internal 
   {
-
+    class UserDefOpElement;
     class SymbolicFuncElementEvaluator;
-    
+    class UserDefOpCommonEvaluator;
     /**
      *
      */
@@ -55,7 +57,8 @@ namespace SundanceCore
     {
     public:
       /** */
-      UserDefOpEvaluator(const UserDefOp* expr,
+      UserDefOpEvaluator(const UserDefOpElement* expr,
+                         const RefCountPtr<const UserDefOpCommonEvaluator>& commonEval,
                          const EvalContext& context);
 
       /** */
@@ -69,23 +72,36 @@ namespace SundanceCore
                     const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
                     Array<double>& constArgDerivs,
                     Array<RefCountPtr<EvalVector> >& varArgDerivs) const ;
+
+     
         
       /** */
       TEUCHOS_TIMER(evalTimer, "user defined nonlinear op evaluation");
 
+      /** */
+      void resetNumCalls() const ;
+
     protected:
-      
+
       Array<int> findRequiredOrders(const ExprWithChildren* expr, 
                                     const EvalContext& context) ;
 
-      const UserDefFunctor* functor() const {return functor_;}
+      const UserDefFunctorElement* functor() const {return functor_;}
+
+      const UserDefOpCommonEvaluator* commonEval() const 
+      {return commonEval_.get();}
+
+      int myIndex() const {return functor_->myIndex();}
+
     private:
       Array<int> argValueIndex_;
       Array<int> argValueIsConstant_;
-      const UserDefFunctor* functor_;
+      const UserDefFunctorElement* functor_;
+      RefCountPtr<const UserDefOpCommonEvaluator> commonEval_;
       int maxOrder_;
       int numVarArgDerivs_;
       int numConstArgDerivs_;
+      bool allArgsAreConstant_;
     }; 
   }
 }

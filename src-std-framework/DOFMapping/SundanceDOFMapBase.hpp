@@ -154,8 +154,7 @@ namespace SundanceStdFwk
        * ToDo: Change name to <tt>isRemoteCell()</tt>? 
        */
       bool isRemote(int cellDim, int cellLID, int& ownerProcID) const 
-      {
-      return (ownerProcID=mesh_.ownerProcID(cellDim, cellLID)) != localProcID_;}
+      {return (ownerProcID=mesh_.ownerProcID(cellDim, cellLID)) != localProcID_;}
       
       /** \brief Get the global DOFs for a single function on a single
        * cell.

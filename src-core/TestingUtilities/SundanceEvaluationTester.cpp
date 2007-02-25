@@ -627,6 +627,7 @@ double EvaluationTester
         }
       cerr << tab2 << endl;
 
+      if (maxDiffOrder_ < 2) continue;
       /* second deriv wrt this field by finite differences 
       * on the AFD first derivs*/
       fdSecond[i][i] = (firstPlus[i] - firstMinus[i])/2.0/step;

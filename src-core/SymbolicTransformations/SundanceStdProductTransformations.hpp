@@ -77,8 +77,9 @@ namespace SundanceCore
       virtual ~RemoveZeroFromProduct(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     
@@ -101,8 +102,9 @@ namespace SundanceCore
       virtual ~RemoveOneFromProduct(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -124,8 +126,9 @@ namespace SundanceCore
       virtual ~RemoveMinusOneFromProduct(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -141,8 +144,9 @@ namespace SundanceCore
       virtual ~MultiplyConstants(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -161,8 +165,9 @@ namespace SundanceCore
       virtual ~MoveConstantsToLeftOfProduct(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -188,8 +193,9 @@ namespace SundanceCore
       virtual ~MoveUnaryMinusOutsideProduct(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /**
@@ -209,8 +215,9 @@ namespace SundanceCore
       virtual ~AssociateHungryDiffOpWithOperand(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /**
@@ -232,8 +239,9 @@ namespace SundanceCore
       virtual ~KillDiffOpOnConstant(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /**
@@ -252,8 +260,9 @@ namespace SundanceCore
       virtual ~BringConstantOutsideDiffOp(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
     
     /**
@@ -272,8 +281,9 @@ namespace SundanceCore
       virtual ~DistributeSumOfDiffOps(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /**
@@ -289,8 +299,9 @@ namespace SundanceCore
       virtual ~ApplySimpleDiffOp(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -314,8 +325,9 @@ namespace SundanceCore
       virtual ~RearrangeRightProductWithConstant(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -338,8 +350,9 @@ namespace SundanceCore
       virtual ~RearrangeLeftProductWithConstant(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -359,8 +372,9 @@ namespace SundanceCore
       virtual ~TakeConstantUnderIntegralSign(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        RefCountPtr<ScalarExpr>& rtn) const ;
     };
   }
 }

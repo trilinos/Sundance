@@ -45,7 +45,7 @@ using namespace Teuchos;
 
 
 SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
-                 const RefCountPtr<ScalarExpr>& right, int sign)
+  const RefCountPtr<ScalarExpr>& right, int sign)
 	: BinaryExpr(left, right, sign), sumTree_()
 {
   Expr L = Expr::handle(left);

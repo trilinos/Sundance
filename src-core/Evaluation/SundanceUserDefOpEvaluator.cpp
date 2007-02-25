@@ -29,6 +29,8 @@
 /* @HEADER@ */
 
 #include "SundanceUserDefOpEvaluator.hpp"
+#include "SundanceUserDefOpCommonEvaluator.hpp"
+#include "SundanceUserDefOpElement.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceTabs.hpp"
@@ -45,20 +47,29 @@ using namespace TSFExtended;
 
 
 UserDefOpEvaluator
-::UserDefOpEvaluator(const UserDefOp* expr,
+::UserDefOpEvaluator(const UserDefOpElement* expr,
+                     const RefCountPtr<const UserDefOpCommonEvaluator>& commonEval,
                      const EvalContext& context)
   : ChainRuleEvaluator(expr, context),
     argValueIndex_(expr->numChildren()),
     argValueIsConstant_(expr->numChildren()),
-    functor_(expr->op()),
+    functor_(expr->functorElement()),
+    commonEval_(commonEval),
     maxOrder_(0),
     numVarArgDerivs_(0),
-    numConstArgDerivs_(0)
+    numConstArgDerivs_(0),
+    allArgsAreConstant_(true)
 {
   Tabs tab1;
   SUNDANCE_VERB_LOW(tab1 << "initializing user defined op evaluator for " 
                     << expr->toString());
   Array<int> orders = findRequiredOrders(expr, context);
+
+  for (unsigned int i=0; i<orders.size(); i++) 
+    {
+      if (orders[i] > maxOrder_) maxOrder_ = orders[i];
+    }
+  commonEval->updateMaxOrder(maxOrder_);
 
   SUNDANCE_VERB_HIGH(tab1 << "setting arg deriv indices");
   
@@ -67,27 +78,30 @@ UserDefOpEvaluator
    * functor's vector of return values */
   Map<MultiSet<int>, int> varArgDerivs;
   Map<MultiSet<int>, int> constArgDerivs;
-  functor()->getArgDerivIndices(orders, varArgDerivs, constArgDerivs);
+  expr->getArgDerivIndices(orders, varArgDerivs, constArgDerivs);
   numVarArgDerivs_ = varArgDerivs.size();
   numConstArgDerivs_ = constArgDerivs.size();
   typedef Map<MultiSet<int>, int>::const_iterator iter;
   for (iter i=varArgDerivs.begin(); i!=varArgDerivs.end(); i++)
     {
       Tabs tab2;
-      SUNDANCE_VERB_EXTREME(tab2 << "variable arg deriv " << i->first << " will be at index "
-                              << i->second);
+      SUNDANCE_VERB_EXTREME(tab2 << "variable arg deriv " << i->first 
+                            << " will be at index "
+                            << i->second);
       addVarArgDeriv(i->first, i->second);
     }
   
   for (iter i=constArgDerivs.begin(); i!=constArgDerivs.end(); i++)
     {
       Tabs tab2;
-      SUNDANCE_VERB_EXTREME(tab2 << "constant arg deriv " << i->first << " will be at index "
+      SUNDANCE_VERB_EXTREME(tab2 << "constant arg deriv " << i->first 
+                            << " will be at index "
                             << i->second);
       addConstArgDeriv(i->first, i->second);
     }
 
   /* Find the indices to the zeroth derivative of each argument */
+  
   for (int i=0; i<expr->numChildren(); i++)
     {
       const SparsitySuperset* sArg = childSparsity(i);
@@ -100,6 +114,7 @@ UserDefOpEvaluator
               if (sArg->state(j)==VectorDeriv)
                 {
                   argValueIndex_[i] = numVec;              
+                  allArgsAreConstant_ = false;
                 }
               else
                 {
@@ -121,6 +136,17 @@ UserDefOpEvaluator
   /* Call init() at the base class to set up chain rule evaluation */
   init(expr, context);
 }
+
+
+
+
+void UserDefOpEvaluator::resetNumCalls() const
+{
+  commonEval()->markCacheAsInvalid();
+  ChainRuleEvaluator::resetNumCalls();
+}
+
+
 
 
 Array<int> UserDefOpEvaluator::findRequiredOrders(const ExprWithChildren* expr, 
@@ -155,66 +181,26 @@ Array<int> UserDefOpEvaluator::findRequiredOrders(const ExprWithChildren* expr,
 }
 
 
+
+
 void UserDefOpEvaluator
 ::evalArgDerivs(const EvalManager& mgr,
                 const Array<RefCountPtr<Array<double> > >& constArgVals,
-                const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgVals,
+                const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& varArgVals,
                 Array<double>& constArgDerivs,
                 Array<RefCountPtr<EvalVector> >& varArgDerivs) const
 {
-  Array<double> argPoint(argValueIndex_.size());
-
-  int numPoints = EvalManager::stack().vecSize();
-
-  TEST_FOR_EXCEPTION(numPoints==0, InternalError,
-                     "Empty vector detected in evalArgDerivs()");
-
-
-  varArgDerivs.resize(numVarArgDerivs_);
-  for (unsigned int i=0; i<varArgDerivs.size(); i++)
+  if (!commonEval()->cacheIsValid())
     {
-      varArgDerivs[i] = mgr.popVector();
-      varArgDerivs[i]->resize(numPoints);
-      string str;
-      if (i==0)
-        {
-          str = functor()->name() + "()";
-        }
-      else
-        {
-          str = functor()->name() + "_" + Teuchos::toString(i) + "()";
-        }
-      varArgDerivs[i]->setString(str);
+      commonEval()->evalAllComponents(mgr, constArgVals, varArgVals);
     }
-  
-  Array<double> argDerivsAtPoint(varArgDerivs.size());
-
-  for (int p=0; p<numPoints; p++)
+  if (allArgsAreConstant_)
     {
-      Tabs tab1;
-      /* get the argument value at the p-th point */
-      for (unsigned int q=0; q<argValueIndex_.size(); q++)
-        {
-          Tabs tab2;
-          if (argValueIsConstant_[q]) 
-            {
-              argPoint[q] = (*(constArgVals[q]))[argValueIndex_[q]];
-            }
-          else
-            {
-              argPoint[q] = (*(vArgVals[q]))[argValueIndex_[q]]->start()[p];
-            }
-        }
-
-      /* evaluate the function at the point */      
-      functor()->evalArgDerivs(maxOrder_, argPoint, argDerivsAtPoint);
-
-
-      /* Put the results of the functor call into the arg deriv array */
-      for (unsigned int i=0; i<varArgDerivs.size(); i++)
-        {
-          varArgDerivs[i]->start()[p] = argDerivsAtPoint[i];
-        }
+      constArgDerivs = commonEval()->constArgDerivCache(myIndex());
+    }
+  else
+    {
+      varArgDerivs = commonEval()->varArgDerivCache(myIndex());
     }
 }
 

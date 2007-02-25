@@ -853,3 +853,241 @@ void ExprWithChildren::displayNonzeros(ostream& os, const EvalContext& context) 
     }
 }
 
+
+namespace SundanceCore {
+  namespace Internal {
+ 
+    Array<Array<std::pair<int, Array<MultipleDeriv> > > >  
+    chainRuleDerivsOfArgs(int nArgs,
+                          const MultiSet<int>& bSet,
+                          const MultipleDeriv& c)
+    {
+      Array<Array<std::pair<int, Array<MultipleDeriv> > > > rtn;
+
+      /* convert to tuple representation of b */
+      Array<int> b(nArgs, 0);
+      int J = 0;
+      for (MultiSet<int>::const_iterator i=bSet.begin(); i!=bSet.end(); i++)
+        {
+          b[*i]++;
+          J++;
+        }
+      
+      /* count orders of each functional deriv in c */
+      SundanceUtils::Map<Deriv, int> counts;
+      Array<Deriv> d;
+      typedef SundanceUtils::Map<Deriv, int>::const_iterator iter;
+      for (MultipleDeriv::const_iterator i=c.begin(); i!=c.end(); i++)
+        {
+          if (!counts.containsKey(*i)) counts.put(*i, 1);
+          else counts[*i]++;
+          d.append(*i);
+        }
+
+      Array<Array<Array<Array<int> > > > a;
+      Array<int> s;
+      for (iter i=counts.begin(); i!=counts.end(); i++)
+        {
+          Array<Array<int> > tmp = nonNegCompositions(i->second, J);
+          Array<Array<Array<int> > > ai = bStructure(b, tmp);
+          a.append(ai);
+          s.append(ai.size());
+        }
+
+      Array<Array<int> > ic = indexCombinations(s);
+
+
+
+      Array<Array<Array<Array<int> > > > all;
+      for (unsigned int i=0; i<ic.size(); i++)
+        {
+          bool good = true;
+          int numFuncs = ic[i].size();
+          Array<Array<Array<int> > > tmp;
+
+          Array<Array<int> > aTot(nArgs);
+          for (int j=0; j<nArgs; j++)
+            {
+              if (b[j] > 0) aTot[j].resize(b[j]);
+              for (int k=0; k<b[j]; k++) aTot[j][k] = 0;
+            }
+          for (int f=0; f<numFuncs; f++)
+            {
+              bool skip = false;
+              const Array<Array<int> >& e = a[f][ic[i][f]];
+              for (int j=0; j<nArgs; j++)
+                {
+                  for (int k=0; k<b[j]; k++)
+                    {
+                      aTot[j][k] += e[j][k];
+                    }
+                }
+              if (!skip) tmp.append(e);
+            }
+
+          for (int j=0; j<nArgs; j++)
+            {
+              for (int k=0; k<b[j]; k++)
+                {
+                  if (aTot[j][k] == 0) good = false;
+                }
+            }
+          if (good) all.append(tmp);
+        }
+
+      
+      for (unsigned int p=0; p<all.size(); p++)
+        {
+          Array<std::pair<int, Array<MultipleDeriv> > > terms;
+          for (int j=0; j<nArgs; j++)
+            {
+              pair<int, Array<MultipleDeriv> > factors;
+              factors.first = j;
+              for (int k=0; k<b[j]; k++)
+                {
+                  MultipleDeriv md;
+                  for (unsigned int i=0; i<all[p].size(); i++)
+                    {
+                      int order = all[p][i][j][k];
+                      if (order > 0)
+                        {
+                          md.put(d[i]);
+                        }
+                    }
+                  if (md.order() > 0) factors.second.append(md);
+                }
+              if (factors.second.size() > 0U) terms.append(factors);
+            }
+          rtn.append(terms);
+        }
+
+      return rtn;
+    }
+
+
+    Array<Array<Array<int> > > bStructure(const Array<int>& b,
+                                          const Array<Array<int> >& tmp)
+    {
+      Array<Array<Array<int> > > rtn(tmp.size(), b.size());
+      
+      for (unsigned int p=0; p<tmp.size(); p++)
+        {
+          int count=0;
+          for (unsigned int j=0; j<b.size(); j++)
+            {
+              rtn[p][j].resize(b[j]);
+              for (int k=0; k<b[j]; k++, count++)
+                {
+                  rtn[p][j][k] = tmp[p][count];
+                }
+            }
+        }
+      return rtn;
+    }
+    
+  Array<OrderedPair<Array<MultiSet<int> >, Array<MultipleDeriv> > >
+  chainRuleTerms(int s, 
+                 const MultiSet<int>& lambda,
+                 const MultipleDeriv& nu)
+  {
+    Array<Array<MultiSet<int> > > allK = multisetCompositions(s, lambda);
+
+    Array<MultipleDeriv> allL = multisetSubsets(nu).elements();
+
+    Array<Array<int> > indexTuples = distinctIndexTuples(s, allL.size());
+
+    Array<Array<MultipleDeriv> > allLTuples;
+    for (unsigned int i=0; i<indexTuples.size(); i++)
+      {
+        Array<MultipleDeriv> t(s);
+        for (int p=0; p<s; p++) t[p] = allL[indexTuples[i][p]];
+        allLTuples.append(t);
+      }
+
+    Array<OrderedPair<Array<MultiSet<int> >, Array<MultipleDeriv> > > rtn;
+    for (unsigned int i=0; i<allLTuples.size(); i++)
+      {
+        for (unsigned int j=0; j<allK.size(); j++)
+          {
+            MultipleDeriv result;
+            for (int p=0; p<s; p++)
+              {
+                for (unsigned int q=0; q<allK[j][p].size(); q++)
+                  {
+                    result = result.product(allLTuples[i][p]);
+                  }
+              }
+            if (result==nu) 
+              {
+                OrderedPair<Array<MultiSet<int> >, Array<MultipleDeriv> >
+                  kl(allK[j], allLTuples[i]);
+                rtn.append(kl);
+              }
+          }
+      }
+    return rtn;
+  }
+
+  Set<MultipleDeriv> multisetSubsets(const MultipleDeriv& nu)
+  {
+    /* We'll generate the subsets by traversing them in bitwise order.
+     * For a multiset having N elements, there are up to 2^N subsets each
+     * of which can be described by a N-bit number with the i-th
+     * bit indicating whether the i-th element is in the subset. Note that
+     * with a multiset, repetitions can occur so we need to record the
+     * results in a Set object to eliminate duplicates. 
+     */
+
+    /* Make an indexable array of the elements. This will be convenient
+     * because we'll need to access the i-th element after reading
+     * the i-th bit. */
+    Array<Deriv> elements = nu.elements();
+
+    /* Compute the maximum number of subsets. This number will be reached
+    * only in the case of no repetitions. */
+    int n = elements.size();
+    int maxNumSubsets = pow2(n);
+    
+    Set<MultipleDeriv> rtn;
+    
+    
+    /* Loop over subsets in bitwise order. We start the count at 1 
+       to avoid including the empty subset */
+    for (int i=1; i<maxNumSubsets; i++)
+      {
+        Array<int> bits = bitsOfAnInteger(i, n);
+        MultipleDeriv md;
+        for (int j=0; j<n; j++) 
+          {
+            if (bits[j] == 1) md.put(elements[j]);
+          }
+        rtn.put(md);
+      }
+    return rtn;
+  }
+
+
+  
+  int chainRuleMultiplicity(const MultipleDeriv& nu,
+                            const Array<MultiSet<int> >& K,
+                            const Array<MultipleDeriv>& L)
+  {
+    int rtn = factorial(nu);
+    for (unsigned int i=0; i<K.size(); i++)
+      {
+        rtn = rtn/factorial(K[i]);
+        int lFact = factorial(L[i]);
+        int lPow = 1;
+        int kNorm = K[i].size();
+        for (int j=0; j<kNorm; j++) lPow *= lFact;
+        TEST_FOR_EXCEPT(rtn % lPow != 0);
+        rtn = rtn/lPow;
+      }
+    return rtn;
+  }
+  }
+
+}
+
+
+

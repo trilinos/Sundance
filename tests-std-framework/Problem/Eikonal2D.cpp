@@ -50,26 +50,24 @@ CELL_PREDICATE(BdryPointTest,
 
 extern "C" {double besi0_(double* x);}
 
-class BesselI0Func : public UserDefFunctor
+class BesselI0Func : public PointwiseUserDefFunctor0
 {
 public: 
   /** */
-  BesselI0Func() : UserDefFunctor("I0") {;}
+  BesselI0Func() : PointwiseUserDefFunctor0("I0", 1, 1) {;}
 
   /** */
-  virtual double eval0(const Array<double>& vars) const 
+  void eval0(const double* vars, double* f) const 
   {
-    double* x = const_cast<double*>(&(vars[0]));
-    return besi0_(x);
+    double* x = const_cast<double*>(vars);
+    f[0] = besi0_(x);
   }
-  /** */
-  int numArgs() const {return 1;}
-
 };
 
 Expr BesselI0(const Expr& x)
 {
-  return  new UserDefOp(x, rcp(new BesselI0Func()));
+  Expr rtn = new UserDefOp(x, rcp(new BesselI0Func()));
+  return rtn;
 }
 
 int main(int argc, char** argv)
@@ -151,7 +149,10 @@ int main(int argc, char** argv)
       double pi = 4.0*atan(1.0);
       double I0 = besi0_(&z);
       Expr r = sqrt(x*x + y*y);
+
+//      Expr I0r = new UserDefOp(r/epsilon, rcp(new BesselI0Func()));
       Expr exactSoln = epsilon * (log(I0) - log(BesselI0(r/epsilon)));
+//      Expr exactSoln = epsilon * (log(I0) - log(I0r));
       Expr exactDisc = L2Projector(discSpace, exactSoln).project();
 
       //      Evaluator::classVerbosity() = VerbExtreme;

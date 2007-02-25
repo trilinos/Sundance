@@ -71,8 +71,9 @@ namespace SundanceCore
       virtual ~IdentifyPolynomialSum(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -88,8 +89,9 @@ namespace SundanceCore
       virtual ~ReorderSum(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
     
 
@@ -115,8 +117,9 @@ namespace SundanceCore
       virtual ~RemoveUnaryMinusFromSum(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
     
     /** 
@@ -135,8 +138,9 @@ namespace SundanceCore
       virtual ~RemoveZeroFromSum(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -152,8 +156,9 @@ namespace SundanceCore
       virtual ~SumConstants(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -172,8 +177,9 @@ namespace SundanceCore
       virtual ~MoveConstantsToLeftOfSum(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
 
@@ -197,8 +203,9 @@ namespace SundanceCore
       virtual ~RearrangeRightSumWithConstant(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
     /** 
@@ -221,8 +228,9 @@ namespace SundanceCore
       virtual ~RearrangeLeftSumWithConstant(){;}
 
       /** */
-      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                               int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+      virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+        const RefCountPtr<ScalarExpr>& right,
+        int sign, RefCountPtr<ScalarExpr>& rtn) const ;
     };
 
 

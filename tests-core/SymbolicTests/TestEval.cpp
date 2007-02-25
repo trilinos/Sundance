@@ -1,5 +1,7 @@
 #include "SundanceExpr.hpp"
 #include "SundanceStdMathOps.hpp"
+#include "SundanceUserDefOp.hpp"
+#include "SundancePointwiseUserDefFunctor.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceTestFunctionStub.hpp"
@@ -39,6 +41,48 @@ static Time& totalTimer()
 }
 
 
+
+class MyScalarFunc : public PointwiseUserDefFunctor1
+{
+public:
+  MyScalarFunc() : PointwiseUserDefFunctor1("MyScalarFunc", 3, 1){;}
+  virtual ~MyScalarFunc(){;}
+  void eval1(const double* vars, double* f, double* df) const ;
+  void eval0(const double* vars, double* f) const ;
+};
+
+
+
+
+class MyVectorFunc1 : public PointwiseUserDefFunctor1
+{
+public:
+  MyVectorFunc1() : PointwiseUserDefFunctor1("MyVectorFunc1", 3, 2){;}
+  virtual ~MyVectorFunc1(){;}
+  void eval1(const double* vars, double* f, double* df) const ;
+  void eval0(const double* vars, double* f) const ;
+};
+
+
+class MyVectorFunc2 : public PointwiseUserDefFunctor2
+{
+public:
+  MyVectorFunc2() : PointwiseUserDefFunctor2("MyVectorFunc2", 3, 2){;}
+  virtual ~MyVectorFunc2(){;}
+  void eval2(const double* vars, double* f, double* df, double* d2f) const ;
+};
+
+class MyScalarFunc2 : public PointwiseUserDefFunctor2
+{
+public:
+  MyScalarFunc2() : PointwiseUserDefFunctor2("F", 3, 1){;}
+  virtual ~MyScalarFunc2(){;}
+  void eval2(const double* vars, double* f, double* df, double* d2f) const ;
+};
+
+
+
+
 #define LOUD()                                          \
   {                                                     \
     verbosity<EvaluationTester>() = VerbExtreme;        \
@@ -59,7 +103,10 @@ static Time& totalTimer()
     verbosity<AbstractEvalMediator>() = VerbSilent;     \
   }
 
-#define TESTER(expr, adExpr)                                            \
+
+
+
+#define TESTER_N(expr, adExpr, order)                                   \
   {                                                                     \
     Tabs tabs1;                                                         \
     cerr << tabs1 << endl << tabs1                                      \
@@ -68,7 +115,7 @@ static Time& totalTimer()
     bool thisTestIsOK = true;                                           \
     try                                                                 \
       {                                                                 \
-      EvaluationTester tester((expr));                                  \
+        EvaluationTester tester((expr), order);                               \
       double f = tester.fdEvaluate(fdStep, tol1, tol2, thisTestIsOK);   \
       if (!thisTestIsOK)                                                \
         {                                                               \
@@ -101,6 +148,10 @@ static Time& totalTimer()
         cerr << "test " << (expr).toString() << " PASSED" << endl << endl; \
       }\
   }
+
+#define TESTER(expr, adExpr) TESTER_N(expr, adExpr, 2)
+#define TESTER1(expr, adExpr) TESTER_N(expr, adExpr, 1)
+
 
 
 #define XTESTER(X,Y)                            \
@@ -167,6 +218,8 @@ int main(int argc, char** argv)
       Expr h = x+y;
       Expr c_old = sin(x)*sin(y);
       double dt = 0.01;
+
+     
 
       Expr grad = List(dx, dy);
 
@@ -433,6 +486,8 @@ int main(int argc, char** argv)
       /* Unary operators */
       TESTER(sin(u), sin(U));
 
+      TESTER(sin(u*u + w*w + w*u), sin(U*U + W*W + W*U));
+
       TESTER(sin(0.5*u), sin(0.5*U));
 
       TESTER(sin(u+w), sin(U+W));
@@ -520,6 +575,50 @@ int main(int argc, char** argv)
              
 
 
+      /* ------ user-defined operators ---------- */
+      Expr p = 2.0*(dx*u) + w;
+      Expr q = 2.0*u*w + x*w;
+
+      Expr r = 3.0*u + x*w;
+      Expr s = sin(x)*u + w;
+
+      /* a singly-differentiable scalar-valued user-def function */
+      Expr sfA = new UserDefOp(List(p,q,x), rcp(new MyScalarFunc()));
+      Expr sfB = new UserDefOp(List(r,s,y), rcp(new MyScalarFunc()));
+
+      /* a singly-differentiable vector-valued user-def function */
+      Expr vfA = new UserDefOp(List(p,q,x), rcp(new MyVectorFunc1()));
+      Expr vfB = new UserDefOp(List(r,s,y), rcp(new MyVectorFunc1()));
+
+      /* a twice-differentiable vector-valued user-def function */
+      Expr vfC = new UserDefOp(List(r,s,y), rcp(new MyVectorFunc2()));
+
+      /* a twice-differentiable scalar-valued user-def function */
+      Expr sf2 = new UserDefOp(List(r,s,y), rcp(new MyScalarFunc2()));
+
+      ADReal P = 2.0*(Dx*U) + W;
+      ADReal Q = 2.0*U*W + X*W;
+      ADReal R = 3.0*U + X*W;
+      ADReal S = sin(X)*U + W;
+      ADReal adSF_PQ = P*sin(Q) + 2.0*P*X;
+      ADReal adSF_RS = R*sin(S) + 2.0*R*Y;
+      ADReal adVF_PQ = (P*sin(Q) + 2.0*P*X)*X + (P*Q*X)*Y;
+      ADReal adVF_RS = (R*sin(S) + 2.0*R*Y)*X + (R*S*Y)*Y;
+
+      ADReal adSF2 = R*S + S*S + Y*Y;
+
+      TESTER1(sfA, adSF_PQ);
+
+      TESTER1(sfB, adSF_RS);
+
+      TESTER1(vfA*List(x,y), adVF_PQ);
+
+      TESTER1(vfB*List(x,y), adVF_RS);
+
+      TESTER1(vfC*List(x,y), adVF_RS);
+
+      TESTER(sf2, adSF2);
+
     finish:
       if (isOK)
         {
@@ -544,3 +643,83 @@ int main(int argc, char** argv)
       cerr << "detected exception: " << e.what() << endl;
 		}
 }
+
+
+
+void MyScalarFunc::eval1(const double* vars, double* f, double* df) const
+{
+  f[0] = vars[0]*sin(vars[1]) + 2.0*vars[2]*vars[0];
+  df[0] = sin(vars[1]) + 2.0*vars[2];
+  df[1] = vars[0]*cos(vars[1]);
+  df[2] = 2.0*vars[0];
+}
+
+void MyScalarFunc::eval0(const double* vars, double* f) const
+{
+  f[0] = vars[0]*sin(vars[1]) + 2.0*vars[2]*vars[0];
+}
+
+void MyVectorFunc1::eval1(const double* vars, double* f, double* df) const
+{
+  f[0] = vars[0]*sin(vars[1]) + 2.0*vars[2]*vars[0];
+  f[1] = vars[0]*vars[1]*vars[2];
+  df[0] = sin(vars[1]) + 2.0*vars[2];
+  df[1] = vars[0]*cos(vars[1]);
+  df[2] = 2.0*vars[0];
+  df[3] = vars[1]*vars[2];
+  df[4] = vars[0]*vars[2];
+  df[5] = vars[0]*vars[1];
+}
+
+void MyVectorFunc1::eval0(const double* vars, double* f) const
+{
+  f[0] = vars[0]*sin(vars[1]) + 2.0*vars[2]*vars[0];
+  f[1] = vars[0]*vars[1]*vars[2];
+}
+
+void MyVectorFunc2::eval2(const double* vars, double* f, double* df,
+                    double* d2f) const
+{
+  f[0] = vars[0]*sin(vars[1]) + 2.0*vars[2]*vars[0];
+  f[1] = vars[0]*vars[1]*vars[2];
+
+  df[0] = sin(vars[1]) + 2.0*vars[2];
+  df[1] = vars[0]*cos(vars[1]);
+  df[2] = 2.0*vars[0];
+
+  df[3] = vars[1]*vars[2];
+  df[4] = vars[0]*vars[2];
+  df[5] = vars[0]*vars[1];
+
+  d2f[0] = 0.0;                          // (0,0)
+  d2f[1] = cos(vars[1]);                 // (1,0)  
+  d2f[2] = -vars[0]*sin(vars[1]);        // (1,1)
+  d2f[3] = 2.0;                          // (2,0)
+  d2f[4] = 0.0;                          // (2,1)
+  d2f[5] = 0.0;                          // (2,2)
+
+  d2f[6] = 0.0;                          // (0,0)
+  d2f[7] = vars[2];                      // (1,0)  
+  d2f[8] = 0.0;                          // (1,1)
+  d2f[9] = vars[1];                     // (2,0)
+  d2f[10] = vars[0];                     // (2,1)
+  d2f[11] = 0.0;                         // (2,2)
+}
+
+void MyScalarFunc2::eval2(const double* vars, double* f, double* df,
+                    double* d2f) const
+{
+  f[0] = vars[0]*vars[1] + vars[1]*vars[1] + vars[2]*vars[2];
+
+  df[0] = vars[1];
+  df[1] = vars[0] + 2.0*vars[1];
+  df[2] = 2.0*vars[2];
+
+  d2f[0] = 0.0;                          // (0,0)
+  d2f[1] = 1.0;                          // (1,0)  
+  d2f[2] = 2.0;                          // (1,1)
+  d2f[3] = 0.0;                          // (2,0)
+  d2f[4] = 0.0;                          // (2,1)
+  d2f[5] = 2.0;                          // (2,2)
+}
+

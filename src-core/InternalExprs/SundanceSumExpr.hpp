@@ -54,7 +54,7 @@ namespace SundanceCore
         public:
           /** */
           SumExpr(const RefCountPtr<ScalarExpr>& a, 
-                  const RefCountPtr<ScalarExpr>& b, int sign);
+            const RefCountPtr<ScalarExpr>& b, int sign);
 
           /** virtual dtor */
           virtual ~SumExpr() {;}

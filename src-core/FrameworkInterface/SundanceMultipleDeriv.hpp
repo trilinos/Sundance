@@ -197,6 +197,10 @@ namespace SundanceCore
     /** */
     Set<MultipleDeriv> Xx(const MultiIndex& x) ;
 
+    /** */
+    int factorial(const MultipleDeriv& ms);
+
+
     /**
      *
      */

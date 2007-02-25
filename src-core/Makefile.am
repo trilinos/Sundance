@@ -55,6 +55,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp \
+$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUnknownParameter.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.hpp \
@@ -70,6 +71,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
+$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUnknownParameter.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.cpp \
@@ -108,6 +110,8 @@ $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.hpp 
 
 SUNDANCE_INTERNALEXPRS = \
@@ -141,6 +145,8 @@ $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp 
 
 SUNDANCE_EVALUATION_H = \
@@ -166,6 +172,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceSymbolicFuncEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUnaryEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.hpp 
 
 
@@ -188,6 +195,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceSumEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceSymbolicFuncEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp 
 
 

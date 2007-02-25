@@ -70,8 +70,9 @@ namespace SundanceCore
            * the transformed expression. 
            * 
            */
-          virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                                   int sign, RefCountPtr<ScalarExpr>& rtn) const = 0 ;
+          virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+            const RefCountPtr<ScalarExpr>& right,
+            int sign, RefCountPtr<ScalarExpr>& rtn) const = 0 ;
         };
   }
 }

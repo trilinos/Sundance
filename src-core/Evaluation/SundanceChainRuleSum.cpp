@@ -43,9 +43,11 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-ChainRuleSum::ChainRuleSum(int resultIndex,
+ChainRuleSum::ChainRuleSum(const MultipleDeriv& md,
+                           int resultIndex,
                            bool resultIsConstant)
-  : resultIndex_(resultIndex),
+  : md_(md),
+    resultIndex_(resultIndex),
     resultIsConstant_(resultIsConstant),
     argDerivIndex_(),
     argDerivIsConstant_(),
@@ -136,8 +138,11 @@ void ChainRuleSum
       RefCountPtr<EvalVector> innerSum = mgr.popVector();
       innerSum->resize(vecSize);
       innerSum->setToConstant(0.0);
-      SUNDANCE_VERB_HIGH(tab1 << "inner sum init = " << *innerSum);
       const Array<DerivProduct>& sumOfDerivProducts = terms(i);
+
+      SUNDANCE_VERB_HIGH(tab1 << "inner sum init = " << *innerSum
+                         << ", num terms = " << terms(i).size());
+
       for (unsigned int j=0; j<sumOfDerivProducts.size(); j++)
         {
           Tabs tab2;

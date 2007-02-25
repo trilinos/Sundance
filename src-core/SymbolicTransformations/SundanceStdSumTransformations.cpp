@@ -95,12 +95,10 @@ bool IdentifyPolynomialSum::doTransform(const RefCountPtr<ScalarExpr>& left,
 }
 
 
-bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& l, 
-                             const RefCountPtr<ScalarExpr>& r,
+bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& left, 
+                             const RefCountPtr<ScalarExpr>& right,
                              int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
-  Expr L = Expr::handle(l);
-  Expr R = Expr::handle(r);
 
   /* first we check to see whether the terms are already in order.
    * The left and right trees are already ordered, so that if the
@@ -108,6 +106,8 @@ bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& l,
    * combination of both is already ordered. In that case, nothing more needs
    * to be done. 
    */
+  Expr L = Expr::handle(left);
+  Expr R = Expr::handle(right);
   SundanceUtils::Map<Expr, int> tree = L.getSumTree();
   SundanceUtils::Map<Expr, int>::const_reverse_iterator iL = tree.rbegin();
   Expr endOfLeft = iL->first;
@@ -159,12 +159,13 @@ bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& l,
 
 #ifdef OLD_CODE
 
-bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& l, 
-                             const RefCountPtr<ScalarExpr>& r,
+bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& left, 
+                             const RefCountPtr<ScalarExpr>& right,
                              int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "trying ReorderSum");
+
   Tabs tab0;
   SUNDANCE_VERB_MEDIUM(tab0 << "L=" << l->toString());
   SUNDANCE_VERB_MEDIUM(tab0 << "R=" << r->toString());
@@ -308,6 +309,7 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying RemoveZeroFromSum");
+
   /* Check for the trivial case of operation with zero */
   
   /* If I'm constant and my value is zero, return other */
@@ -343,6 +345,7 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
 bool MoveConstantsToLeftOfSum::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                       int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+
   /* if the right operand is a constant, 
    * transform u +/- alpha --> +/- alpha + u */
   if (right->isConstant())
@@ -353,7 +356,7 @@ bool MoveConstantsToLeftOfSum::doTransform(const RefCountPtr<ScalarExpr>& left, 
                        "operand as constant.");
         }
       rtn = getScalar(Expr::handle(chooseSign(sign, right)) 
-                      + Expr::handle(left));
+        + Expr::handle(left));
       return true;
     }
 
@@ -368,6 +371,7 @@ bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying RemoveUnaryMinusFromSum");
+
   /* if the right operand is a unary minus, 
    * transform u +/- (-v) --> u -/+ v */
   const UnaryMinus* ul = dynamic_cast<const UnaryMinus*>(left.get());
@@ -426,6 +430,7 @@ bool SumConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCou
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying SumConstants");
+
   /* Check to see if both are constant. If so, sum them and return */
   if (left->isConstant() && right->isConstant())
     {
@@ -444,6 +449,7 @@ bool RearrangeRightSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& l
                                                 const RefCountPtr<ScalarExpr>& right,
                                                 int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+
   const SumExpr* sRight = dynamic_cast<const SumExpr*>(right.get());
 
   if (sRight != 0)
@@ -510,6 +516,7 @@ bool RearrangeLeftSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& le
                                                 const RefCountPtr<ScalarExpr>& right,
                                                 int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+
   const SumExpr* sLeft = dynamic_cast<const SumExpr*>(left.get());
 
   if (sLeft != 0 && !left->isConstant())
@@ -580,6 +587,7 @@ bool SumIntegrals::doTransform(const RefCountPtr<ScalarExpr>& left,
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying SumIntegrals");
+
   const SumOfIntegrals* sLeft 
     = dynamic_cast<const SumOfIntegrals*>(left.get());
   const SumOfIntegrals* sRight 

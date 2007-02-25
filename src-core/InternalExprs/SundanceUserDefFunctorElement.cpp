@@ -28,77 +28,23 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceBinaryExpr.hpp"
-#include "SundanceExpr.hpp"
+#include "SundanceUserDefFunctorElement.hpp"
+#include "SundanceTabs.hpp"
+#include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using namespace TSFExtended;
 
-
-BinaryExpr::BinaryExpr(const RefCountPtr<ScalarExpr>& left,
-  const RefCountPtr<ScalarExpr>& right, int sign)
-	: ExprWithChildren(tuple(left, right)), 
-    sign_(sign)
+UserDefFunctorElement
+::UserDefFunctorElement(const RefCountPtr<const UserDefFunctor>& master,
+                        int myIndex)
+  : master_(master), myIndex_(myIndex)
 {}
 
 
-bool BinaryExpr::lessThan(const ScalarExpr* other) const
-{
-  const BinaryExpr* b = dynamic_cast<const BinaryExpr*>(other);
-  TEST_FOR_EXCEPTION(b==0, InternalError, "cast should never fail at this point");
-  
-  if (sign_ < b->sign_) return true;
-  if (sign_ > b->sign_) return false;
-  return ExprWithChildren::lessThan(other);
-}
-
-ostream& BinaryExpr:: toText(ostream& os, bool paren) const 
-{
-	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << "(";
-	leftScalar()->toText(os, parenthesizeOperands()) ;
-	os	 << opChar();
-	if (leftScalar()->isHungryDiffOp())
-		{
-			rightScalar()->toText(os, true);
-		}
-	else
-		{
-			rightScalar()->toText(os, parenthesizeOperands() || opChar() == "-");
-		}
-	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << ")";
-
-	return os;
-}
-
-ostream& BinaryExpr:: toLatex(ostream& os, bool paren) const 
-{
-	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << "(";
-	leftScalar()->toLatex(os, parenthesizeOperands()) ;
-	os	 << opChar();
-
-	if (leftScalar()->isHungryDiffOp())
-		{
-			rightScalar()->toText(os, true);
-		}
-	else
-		{
-			rightScalar()->toText(os, parenthesizeOperands());
-		}
-	if (Expr::showAllParens() || (paren && parenthesizeSelf())) os << ")";
-
-	return os;
-}
-
-XMLObject BinaryExpr::toXML() const 
-{
-	XMLObject rtn(xmlTag());
-	rtn.addChild(left().toXML());
-	rtn.addChild(right().toXML());
-
-	return rtn;
-}
 
 

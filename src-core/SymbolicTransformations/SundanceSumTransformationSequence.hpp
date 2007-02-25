@@ -72,8 +72,9 @@ namespace SundanceCore
            * trying to apply all transformations in sequence. If one
            * succeeds, we exit immediately with true.
            */
-          virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                                   int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+          virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
+            const RefCountPtr<ScalarExpr>& right,
+            int sign, RefCountPtr<ScalarExpr>& rtn) const ;
 
         
         };

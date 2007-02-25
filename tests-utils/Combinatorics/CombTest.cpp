@@ -7,6 +7,54 @@ using namespace Teuchos;
 
 
 
+#define TEST_MS(x) \
+  {\
+    Set<MultiSet<int> > subs = multisetSubsets(x);\
+    write(x, subs);                                                \
+    Set<MultiSet<MultiSet<int> > > parts = multisetPartitions(x);\
+    write(x, parts);                                                 \
+    Array<Array<MultiSet<int> > > comps = multisetCompositions(x);\
+    write(x, comps);                                               \
+  }
+
+
+
+void write(const MultiSet<int>& x, 
+           const Set<MultiSet<MultiSet<int> > >& y)
+{
+  cout << "---- Partitions of " << x << " ------------------"
+       << endl;
+  for (Set<MultiSet<MultiSet<int> > >::const_iterator 
+         i=y.begin(); i!=y.end(); i++)
+    {
+      cout << *i << endl;
+    }
+}
+
+void write(const MultiSet<int>& x, 
+           const Array<Array<MultiSet<int> > >& y)
+{
+  cout << "---- Compositions of " << x << " ------------------"
+       << endl;
+  for (unsigned int i=0; i<y.size(); i++)
+    {
+      cout << y[i] << endl;
+    }
+}
+
+void write(const MultiSet<int>& x, 
+           const Set<MultiSet<int> >& y)
+{
+  cout << "---- Subsets of " << x << " ------------------"
+       << endl;
+  for (Set<MultiSet<int> >::const_iterator 
+         i=y.begin(); i!=y.end(); i++)
+    {
+      cout << *i << endl;
+    }
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -34,26 +82,52 @@ int main(int argc, char** argv)
               cout << "binnings = " << b << endl;
             }
 
-          /*
-
-          for (unsigned int i=0; i<x.size(); i++)
+          cout << "--------- non-neg compositions" << endl;
+          for (int m=1; m<=n; m++)
             {
-              for (unsigned int j=0; j<x[i].size(); j++)
+              for (int k=1; k<=n; k++)
                 {
-                  int sum=0;
-                  for (unsigned int k=0; k<x[i][j].size(); k++)
+                  Array<Array<int> > a = nonNegCompositions(m, k);
+                  cout << m << " " << k << " " << endl;
+                  for (unsigned int l=0; l<a.size(); l++)
                     {
-                      sum += x[i][j][k];
+                      cout << "         " << a[l] << endl;
                     }
-                  if (sum != n) bad = true;
-                  cout << "arrangements(" << x[i][j] << " = " 
-                       << indexArrangements(x[i][j]) << endl;
                 }
             }
-
-          */
+          
+          cout << "-------- index combs ---- " << endl;
+          Array<int> s = tuple(2,3,2);
+          Array<Array<int> > C = indexCombinations(s);
+          for (unsigned int m=0; m<C.size(); m++)
+            {
+              cout << C[m] << endl;
+            }
         }
 
+      cout << "--------- index tuples ----------------" << endl;
+
+      Array<Array<int> > x = distinctIndexTuples(2, 6);
+
+      cout << "num choices = " << x.size() << endl;
+
+      for (unsigned int i=0; i<x.size(); i++) 
+        {
+          if ((i % 5)==0) cout << endl;
+          cout << x[i] << endl;
+        }
+      
+#ifdef BLAH
+      TEST_MS(makeMultiSet(1));
+      TEST_MS(makeMultiSet(1, 1));
+      TEST_MS(makeMultiSet(1, 2));
+      TEST_MS(makeMultiSet(1, 1, 2));
+      TEST_MS(makeMultiSet(1, 1, 2, 2));
+      TEST_MS(makeMultiSet(1, 2, 3));
+      TEST_MS(makeMultiSet(1, 2, 2, 3));
+      TEST_MS(makeMultiSet(1, 2, 2, 3, 3));
+      TEST_MS(makeMultiSet(1, 2, 2, 3, 3, 3));
+#endif BLAH
 
       if (!bad) 
         {

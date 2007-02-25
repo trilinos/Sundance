@@ -75,8 +75,8 @@ namespace SundanceUtils
       const B& second() const {return b_;}
 
     private:
-      const A a_;
-      const B b_;
+      A a_;
+      B b_;
     };
 
   /** Lexigraphically-comparable triple of objects. */

@@ -36,6 +36,7 @@
 #include "SundanceUserDefOpEvaluator.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceUnaryExpr.hpp"
+#include "SundanceListExpr.hpp"
 #include "SundanceNonlinearExpr.hpp"
 #include "SundanceDeriv.hpp"
 #include "SundanceMap.hpp"
@@ -56,44 +57,25 @@ namespace SundanceCore
      * UserDefOp provides a hook for inserting a user-defined nonlinear
      * function into the Sundance Expr system.
      */
-  class UserDefOp : public ExprWithChildren,
-                    public GenericEvaluatorFactory<UserDefOp, UserDefOpEvaluator>
+  class UserDefOp : public ListExpr
     {
     public:
       /** construct with an argument and the functor defining the operation */
-      UserDefOp(const Expr& arg,
-                const RefCountPtr<UserDefFunctor>& op);
+      UserDefOp(const Expr& args,
+                const RefCountPtr<const UserDefFunctor>& functor);
 
       /** virtual destructor */
       virtual ~UserDefOp() {;}
-
-      /** Write a simple text description suitable
-       * for output to a terminal */
-      virtual ostream& toText(ostream& os, bool paren) const ;
-
-      /** Write in a form suitable for LaTeX formatting */
-      virtual ostream& toLatex(ostream& os, bool paren) const ;
-
-      /** Write in XML */
-      virtual XMLObject toXML() const ;
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
 
-      /** Access to the operator */
-      const UserDefFunctor* op() const {return op_.get();}
-
-      /** Ordering operator for use in transforming exprs to standard form */
-      virtual bool lessThan(const ScalarExpr* other) const ;
     private:
     
       /** */
-      RefCountPtr<UserDefFunctor> op_;
-
-      /** */
       static Array<RefCountPtr<ScalarExpr> > getScalarArgs(const Expr& args);
-
+    
     };
 }
 

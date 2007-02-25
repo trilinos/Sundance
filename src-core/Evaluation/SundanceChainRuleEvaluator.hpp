@@ -80,10 +80,32 @@ namespace SundanceCore
       /** */
       void resetNumCalls() const ;
 
-      /** */
+      /** 
+       * Evaluate the derivatives of the expression with respect to
+       * the arguments.
+       *
+       * \param mgr Manager for this evaluation step
+       *
+       * \param constDerivsOfArgs Constant values and functional
+       * derivatives of arguments.  The outer array index is over
+       * arguments. The inner array index is over functional
+       * derivatives of that argument.
+       *
+       * \param varDerivsOfArgs Variable values and functional
+       * derivatives of arguments.  The outer array index is over
+       * arguments. The inner array index is over functional
+       * derivatives of that argument.
+       *
+       * \param constArgDerivs Constant-valued derivatives of expr wrt
+       * arguments.
+       *
+       * \param varArgDerivs Variable-valued derivatives of expr wrt
+       * arguments.
+       */
+
       virtual void evalArgDerivs(const EvalManager& mgr,
-                                 const Array<RefCountPtr<Array<double> > >& constArgRes,
-                                 const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
+                                 const Array<RefCountPtr<Array<double> > >& constDerivsOfArgs,
+                                 const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& varDerivOfArgs,
                                  Array<double>& constArgDerivs,
                                  Array<RefCountPtr<EvalVector> >& varArgDerivs) const = 0 ;
 

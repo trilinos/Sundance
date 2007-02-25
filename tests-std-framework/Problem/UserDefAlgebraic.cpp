@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include "SundanceUserDefFunctor.hpp"
+#include "SundancePointwiseUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
 #include "NOX.H"
 #include "NOX_Common.H"
@@ -46,54 +46,50 @@
   }
 
 /** Evaluate u*v - 6.0 */
-class F1 : public UserDefFunctor
+class F1 : public PointwiseUserDefFunctor1
 {
 public:
-  F1() : UserDefFunctor("F1"){;}
+  F1() : PointwiseUserDefFunctor1("F1", 2, 1){;}
   virtual ~F1(){;}
-  double eval1(const Array<double>& vars, double* df) const ;
-  double eval0(const Array<double>& vars) const ;
-  int numArgs() const {return 2;}
+  void eval1(const double* vars, double* f, double* df) const ;
+  void eval0(const double* vars, double* f) const ;
 };
 
 
-double F1::eval1(const Array<double>& vars, double* df) const
+void F1::eval1(const double* vars, double* f, double* df) const
 {
-  double rtn = vars[0]*vars[1] - 6.0;
+  f[0] = vars[0]*vars[1] - 6.0;
   df[0] = vars[1];
   df[1] = vars[0];
-  return rtn;
 }
 
-double F1::eval0(const Array<double>& vars) const
+void F1::eval0(const double* vars, double* f) const
 {
-  return vars[0]*vars[1] - 6.0;
+  f[0] = vars[0]*vars[1] - 6.0;
 }
 
 
 /** Evaluate u^2 - v - 1.0 */
-class F2 : public UserDefFunctor
+class F2 : public PointwiseUserDefFunctor1
 {
 public:
-  F2() : UserDefFunctor("F2"){;}
+  F2() : PointwiseUserDefFunctor1("F2", 2, 1){;}
   virtual ~F2(){;}
-  double eval1(const Array<double>& vars, double* df) const ;
-  double eval0(const Array<double>& vars) const ;
-  int numArgs() const {return 2;}
+  void eval1(const double* vars, double* f, double* df) const ;
+  void eval0(const double* vars, double* f) const ;
 };
 
 
-double F2::eval1(const Array<double>& vars, double* df) const
+void F2::eval1(const double* vars, double* f, double* df) const
 {
-  double rtn = vars[0]*vars[0] - vars[1] - 1.0;
+  f[0] = vars[0]*vars[0] - vars[1] - 1.0;
   df[0] = 2.0*vars[0];
   df[1] = -1.0;
-  return rtn;
 }
 
-double F2::eval0(const Array<double>& vars) const
+void F2::eval0(const double* vars, double* f) const
 {
-  return vars[0]*vars[0] - vars[1] - 1.0;
+  f[0] = vars[0]*vars[0] - vars[1] - 1.0;
 }
 
 

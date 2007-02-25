@@ -54,8 +54,8 @@ namespace SundanceCore
     {
     public:
       /** */
-      ProductExpr(const RefCountPtr<ScalarExpr>& left,
-                  const RefCountPtr<ScalarExpr>& right);
+      ProductExpr(const RefCountPtr<ScalarExpr>& a, 
+        const RefCountPtr<ScalarExpr>& b);
 
       /** virtual dtor */
       virtual ~ProductExpr() {;}

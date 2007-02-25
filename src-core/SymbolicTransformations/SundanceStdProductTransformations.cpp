@@ -121,6 +121,7 @@ bool RemoveOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying RemoveOnefromProduct");
+
   /* Check for the trivial case of multiplication by one */
   const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
   const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
@@ -163,6 +164,7 @@ bool RemoveMinusOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying RemoveOnefromProduct");
+
   /* Check for the trivial case of multiplication by minus one */
   const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
   const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
@@ -204,6 +206,7 @@ bool MoveConstantsToLeftOfProduct::doTransform(const RefCountPtr<ScalarExpr>& le
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying MoveConstantsToLeftOfProduct");
+
   /* If the left operand is non-constant and
    * the right operand is a constant, 
    * transform u*constant --> constant*u */
@@ -228,6 +231,7 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying MoveUnaryMinusOutsideProduct");
+
   /* If one of the operands is a unary minus, apply it to the whole
    * product. If both are unary minuses, multiply the operands, removing
    * the unary minuses. */
@@ -254,7 +258,8 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
                        "as a unary minus. Applying transformation x*(-y) "
                        "--> -(x*y).");
         }
-      rtn = rcp(new UnaryMinus(getScalar(Expr::handle(left) * ur->arg())));
+      Expr prod = Expr::handle(left) * ur->arg();
+      rtn = rcp(new UnaryMinus(getScalar(prod)));
       return true;
     }
   else if (ul != 0)
@@ -266,17 +271,20 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
                        "as a unary minus. Applying transformation (-x)*y "
                        "--> -(x*y).");
         }
-      rtn = rcp(new UnaryMinus(getScalar(ul->arg() *Expr::handle(right))));
+      Expr prod = ul->arg() * Expr::handle(right);
+      rtn = rcp(new UnaryMinus(getScalar(prod)));
       return true;
     }
   return false;
 }
 
-bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
-                                    RefCountPtr<ScalarExpr>& rtn) const
+bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left, 
+  const RefCountPtr<ScalarExpr>& right,
+  RefCountPtr<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying MultiplyConstants");
+
   /* If both operands are constant, just multiply them */
   if (left->isConstant() && right->isConstant())
     {
@@ -305,11 +313,12 @@ bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const R
 }
 
 bool AssociateHungryDiffOpWithOperand::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                                   const RefCountPtr<ScalarExpr>& right,
-                                                   RefCountPtr<ScalarExpr>& rtn) const
+  const RefCountPtr<ScalarExpr>& right,
+  RefCountPtr<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying AssociateHungryDiffOpWithOperand");
+
   if (left->isHungryDiffOp())
     {
       /* if the left operand is a product including 
@@ -341,6 +350,7 @@ bool KillDiffOpOnConstant::doTransform(const RefCountPtr<ScalarExpr>& left,
                                        RefCountPtr<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, "trying KillDiffOpOnConstant");
+
   if (left->isHungryDiffOp())
     {
       /* first check that the operand is not a constant, in case someone
@@ -381,6 +391,7 @@ bool BringConstantOutsideDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left
 {
   
   SUNDANCE_OUT(this->verbosity() > VerbLow,  "trying BringConstantOutsideDiffOp");
+
   if (left->isHungryDiffOp())
     {
       /* transform op*(constant*u) --> constant*op*u */
@@ -407,6 +418,7 @@ bool DistributeSumOfDiffOps::doTransform(const RefCountPtr<ScalarExpr>& left,
                                          RefCountPtr<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow,"trying DistributeSumOfDiffOps");
+
   if (left->isHungryDiffOp())
     {
       /* if the left operand is a sum of hungry diff ops, distribute this
@@ -435,6 +447,7 @@ bool ApplySimpleDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left,
                                     RefCountPtr<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verbosity() > VerbLow, "trying ApplySimpleDiffOp");
+
   if (left->isHungryDiffOp())
     {
       const Derivative* dLeft 
@@ -528,7 +541,6 @@ bool RearrangeLeftProductWithConstant::doTransform(const RefCountPtr<ScalarExpr>
    * one of whose operands is a constant. Because of the preceding 
    * transformation rules,
    * the constant should be on the left */
-
   const ProductExpr* pLeft 
     = dynamic_cast<const ProductExpr*>(left.get());
 

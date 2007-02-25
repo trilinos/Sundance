@@ -45,7 +45,7 @@ using namespace TSFExtended;
 
 
 ProductExpr::ProductExpr(const RefCountPtr<ScalarExpr>& left,
-                         const RefCountPtr<ScalarExpr>& right)
+  const RefCountPtr<ScalarExpr>& right)
 	: BinaryExpr(left, right, 1)
 {}
 

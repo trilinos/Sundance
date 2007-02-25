@@ -36,6 +36,7 @@
 #include "SundanceMultiSet.hpp"
 #include "SundanceExceptions.hpp"
 #include "Teuchos_Array.hpp"
+#include "Teuchos_RefCountPtr.hpp"
 
 
 
@@ -47,45 +48,73 @@ namespace SundanceCore
   using std::string;
   using std::ostream;
 
+  namespace Internal
+  {
+    class EvalVector;
+    class EvalManager;
+  }
+  using Internal::EvalVector;
+  using Internal::EvalManager;
+
+  /**
+   * UserDefFunctor defines an interface for callbacks used to implement
+   * user-defined nonlinear operators in the Sundance Expr system.
+   */
+  class UserDefFunctor
+  {
+  public:
+    /** ctor */
+    UserDefFunctor(const string& name, int domainDim, int rangeDim) ;
+
+    /** */
+    virtual ~UserDefFunctor(){;}
+
+    /** */
+    const string& name(int elemIndex) const {return elemNames_[elemIndex];}
+
+    /** */
+    const string& name() const {return name_;}
+
+
+    /** */
+    virtual void evaluationCallback(int nPoints, int maxDiffOrder,
+                                    const double** in,
+                                    double** out) const = 0 ;
+
+    /** */
+    virtual void eval0(const Array<double>& in, double* outVals) const ;
+
     /**
-     * UserDefFunctor defines an interface for callbacks used to implement
-     * user-defined nonlinear operators in the Sundance Expr system.
+     * Evaluate the expression and its derivative. The values should be put into
+     * the outVals array. The derivatives should be put into the outDerivs array,
+     * ordered with the domain index running fastest. That is, 
+     * \f[
+     * outDerivs[i*N_R + j] = \frac{\partial F_i}{\partial q_j}
+     * \f]
      */
-    class UserDefFunctor
-    {
-    public:
-      /** ctor */
-      UserDefFunctor(const string& name) ;
+    virtual void eval1(const Array<double>& in, double* outVals, 
+                       double* outDerivs) const ;
 
-      /** */
-      virtual ~UserDefFunctor(){;}
+    
 
-      /** */
-      const string& name() const {return name_;}
+    /** */
+    int domainDim() const {return domainDim_;}
 
-      /** */
-      virtual double eval0(const Array<double>& vars) const ;
+    /** */
+    int rangeDim() const {return rangeDim_;}
 
-      /** */
-      virtual double eval1(const Array<double>& vars, double* derivs) const ;
+    /** */
+    virtual int maxOrder() const = 0 ;
 
-      /** */
-      virtual void evalArgDerivs(int maxOrder, 
-                                 const Array<double>& vars,
-                                 Array<double>& argDerivs) const ;
+    /** */
+    void reset() const ;
 
-      /** */
-      virtual void getArgDerivIndices(const Array<int>& orders,
-                                      SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
-                                      SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
-
-      /** */
-      virtual int numArgs() const = 0 ;
-                        
-
-    private:
-      string name_;
-    };
+  private:
+    const string name_;
+    Array<string> elemNames_;
+    const int domainDim_;
+    const int rangeDim_;
+  };
 
 
 }

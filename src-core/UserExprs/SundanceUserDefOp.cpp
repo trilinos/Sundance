@@ -29,6 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceUserDefOp.hpp"
+#include "SundanceUserDefOpElement.hpp"
+#include "SundanceUserDefFunctor.hpp"
+#include "SundanceUserDefFunctorElement.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
@@ -39,54 +42,23 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-UserDefOp::UserDefOp(const Expr& arg,
-                     const RefCountPtr<UserDefFunctor>& op)
-  : ExprWithChildren(getScalarArgs(arg)), op_(op)
-{}
-
-
-
-
-bool UserDefOp::lessThan(const ScalarExpr* other) const
+UserDefOp::UserDefOp(const Expr& args,
+                     const RefCountPtr<const UserDefFunctor>& functor)
+  : ListExpr()
 {
-  const UserDefOp* f = dynamic_cast<const UserDefOp*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  int nElems = functor->rangeDim();
+  Array<RefCountPtr<ScalarExpr> > scalarArgs = getScalarArgs(args);
+
+  RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > > 
+    commonEvaluatorsMap = rcp(new SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> >());
   
-  if (op() < f->op()) return true;
-  if (op() > f->op()) return false;
-
-  return ExprWithChildren::lessThan(other);
-}
-
-
-ostream& UserDefOp::toText(ostream& os, bool paren) const 
-{
-  os << op_->name() << "(";
-  for (int i=0; i<numChildren(); i++)
+  for (int i=0; i<nElems; i++)
     {
-      os << child(i).toString();
-      if (i < numChildren()-1) os << ",";
+      RefCountPtr<UserDefFunctorElement> e 
+        = rcp(new UserDefFunctorElement(functor, i));
+      Expr elem = new UserDefOpElement(scalarArgs, commonEvaluatorsMap, e);
+      append(elem);
     }
-  os << ")";
-  return os;
-}
-
-ostream& UserDefOp::toLatex(ostream& os, bool paren) const 
-{
-  return toText(os, paren);
-}
-
-XMLObject UserDefOp::toXML() const
-{
-  XMLObject rtn("UserDefOp");
-  XMLObject args("Arguments");
-  for (int i=0; i<numChildren(); i++)
-    {
-      args.addChild(child(i).toXML());
-    }
-  rtn.addChild(args);
-  rtn.addAttribute("op", op_->name());
-  return rtn;
 }
 
 
@@ -98,7 +70,8 @@ Array<RefCountPtr<ScalarExpr> > UserDefOp::getScalarArgs(const Expr& args)
   
   for (unsigned int i=0; i<fargs.size(); i++)
     {
-      sargs[i] = rcp_dynamic_cast<ScalarExpr>(args[i].ptr());
+      sargs[i] = rcp_dynamic_cast<ScalarExpr>(fargs[i].ptr());
     }
   return sargs;
 }
+

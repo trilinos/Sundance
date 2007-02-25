@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceEvaluatableExpr.hpp"
+#include "SundanceCombinatorialUtils.hpp"
 #include "SundanceScalarExpr.hpp"
 #include "SundanceExpr.hpp"
 
@@ -203,6 +204,38 @@ namespace SundanceCore
           mutable Array<Map<EvalContext, Set<MultiSet<int> > > > contextToQCMap_;
       };          
 
+      
+
+      /** \relates ExprWithChildren */
+      Array<Array<std::pair<int, Array<MultipleDeriv> > > > chainRuleDerivsOfArgs(int nArgs,
+                                                         const MultiSet<int>& bSet,
+                                                         const MultipleDeriv& c);
+
+      /**  \relates ExprWithChildren */
+      Array<Array<Array<int> > > bStructure(const Array<int>& b,
+                                            const Array<Array<int> >& tmp);
+
+      /**  \relates ExprWithChildren 
+       * Return the set of (k,l) tuples appearing in the Constantine
+       * and Savits formulation of the multivariable, multiargument
+       * chain rule. 
+       * \param s 
+       * \param lambda
+       * \param nu
+       */
+      Array<OrderedPair<Array<MultiSet<int> >, Array<MultipleDeriv> > >
+      chainRuleTerms(int s, 
+                     const MultiSet<int>& lambda,
+                     const MultipleDeriv& nu) ;
+      
+
+      /** Return all subsets of a multiset. */
+      Set<MultipleDeriv> multisetSubsets(const MultipleDeriv& x);
+
+      /** Return the multiplicity of a chain rule term */
+      int chainRuleMultiplicity(const MultipleDeriv& nu,
+                                const Array<MultiSet<int> >& K,
+                                const Array<MultipleDeriv>& L);
     }
 }
 

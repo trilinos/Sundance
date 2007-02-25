@@ -54,7 +54,7 @@ namespace SundanceCore
         public:
           /** construct with left and right operands */
           BinaryExpr(const RefCountPtr<ScalarExpr>& left,
-                     const RefCountPtr<ScalarExpr>& right, int sign);
+            const RefCountPtr<ScalarExpr>& right, int sign);
 
           /** virtual dtor */
           virtual ~BinaryExpr() {;}

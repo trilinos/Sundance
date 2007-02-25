@@ -64,7 +64,7 @@ namespace SundanceCore
     public:
       /** construct with an argument and the functor defining the operation */
       NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg, 
-                       const RefCountPtr<UnaryFunctor>& op);
+        const RefCountPtr<UnaryFunctor>& op);
 
       /** virtual destructor */
       virtual ~NonlinearUnaryOp() {;}

@@ -159,7 +159,9 @@ am__objects_1 = SundanceCellDiameterExpr.$(OBJEXT) \
 	SundanceComplexExpr.$(OBJEXT) SundanceCoordExpr.$(OBJEXT) \
 	SundanceDerivative.$(OBJEXT) SundanceEssentialBC.$(OBJEXT) \
 	SundanceExpr.$(OBJEXT) SundanceIntegral.$(OBJEXT) \
-	SundanceParameter.$(OBJEXT) SundanceStdMathOps.$(OBJEXT) \
+	SundanceParameter.$(OBJEXT) \
+	SundancePointwiseUserDefFunctor.$(OBJEXT) \
+	SundanceStdMathOps.$(OBJEXT) \
 	SundanceUnknownParameter.$(OBJEXT) \
 	SundanceUserDefFunctor.$(OBJEXT) SundanceUserDefOp.$(OBJEXT)
 am__objects_2 = SundanceBinaryExpr.$(OBJEXT) \
@@ -185,7 +187,8 @@ am__objects_2 = SundanceBinaryExpr.$(OBJEXT) \
 	SundanceUnaryMinus.$(OBJEXT) \
 	SundanceUnknownFuncElement.$(OBJEXT) \
 	SundanceUnknownParameterElement.$(OBJEXT) \
-	SundanceZeroExpr.$(OBJEXT)
+	SundanceUserDefFunctorElement.$(OBJEXT) \
+	SundanceUserDefOpElement.$(OBJEXT) SundanceZeroExpr.$(OBJEXT)
 am__objects_3 = SundanceCellDiameterEvaluator.$(OBJEXT) \
 	SundanceChainRuleEvaluator.$(OBJEXT) \
 	SundanceChainRuleSum.$(OBJEXT) \
@@ -203,6 +206,7 @@ am__objects_3 = SundanceCellDiameterEvaluator.$(OBJEXT) \
 	SundanceSymbolicFuncEvaluator.$(OBJEXT) \
 	SundanceTempStack.$(OBJEXT) \
 	SundanceUnaryMinusEvaluator.$(OBJEXT) \
+	SundanceUserDefOpCommonEvaluator.$(OBJEXT) \
 	SundanceUserDefOpEvaluator.$(OBJEXT)
 am__objects_4 = SundanceAbstractEvalMediator.$(OBJEXT) \
 	SundanceCellFilterStub.$(OBJEXT) SundanceDerivBase.$(OBJEXT) \
@@ -294,6 +298,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceNullCellFilterStub.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceNullEvaluator.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceParameter.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundancePointwiseUserDefFunctor.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceProductEvaluator.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceProductExpr.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceProductTransformation.Po \
@@ -335,7 +340,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUnknownParameter.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUnknownParameterElement.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUserDefFunctor.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceUserDefFunctorElement.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUserDefOp.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceUserDefOpElement.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceUserDefOpEvaluator.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceZeroExpr.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -502,6 +510,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp \
+$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUnknownParameter.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.hpp \
@@ -516,6 +525,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
+$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUnknownParameter.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceUserDefFunctor.cpp \
@@ -553,6 +563,8 @@ $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.hpp 
 
 SUNDANCE_INTERNALEXPRS = \
@@ -586,6 +598,8 @@ $(top_srcdir)/src-core/InternalExprs/SundanceUnaryExpr.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnaryMinus.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp 
 
 SUNDANCE_EVALUATION_H = \
@@ -611,6 +625,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceSymbolicFuncEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUnaryEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.hpp 
 
 SUNDANCE_EVALUATION = \
@@ -632,6 +647,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceSumEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceSymbolicFuncEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceTempStack.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp 
 
 SUNDANCE_FRAMEWORKINTERFACE_H = \
@@ -1082,6 +1098,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNullCellFilterStub.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNullEvaluator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceParameter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePointwiseUserDefFunctor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceProductEvaluator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceProductExpr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceProductTransformation.Po@am__quote@
@@ -1123,7 +1140,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownParameter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownParameterElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUserDefFunctor.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUserDefFunctorElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUserDefOp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUserDefOpElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUserDefOpEvaluator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceZeroExpr.Po@am__quote@
 
@@ -1270,6 +1290,22 @@ SundanceParameter.obj: $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceParameter.Po' tmpdepfile='$(DEPDIR)/SundanceParameter.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceParameter.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp'; fi`
+
+SundancePointwiseUserDefFunctor.o: $(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundancePointwiseUserDefFunctor.o -MD -MP -MF "$(DEPDIR)/SundancePointwiseUserDefFunctor.Tpo" -c -o SundancePointwiseUserDefFunctor.o `test -f '$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundancePointwiseUserDefFunctor.Tpo" "$(DEPDIR)/SundancePointwiseUserDefFunctor.Po"; else rm -f "$(DEPDIR)/SundancePointwiseUserDefFunctor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp' object='SundancePointwiseUserDefFunctor.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundancePointwiseUserDefFunctor.Po' tmpdepfile='$(DEPDIR)/SundancePointwiseUserDefFunctor.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundancePointwiseUserDefFunctor.o `test -f '$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp
+
+SundancePointwiseUserDefFunctor.obj: $(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundancePointwiseUserDefFunctor.obj -MD -MP -MF "$(DEPDIR)/SundancePointwiseUserDefFunctor.Tpo" -c -o SundancePointwiseUserDefFunctor.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundancePointwiseUserDefFunctor.Tpo" "$(DEPDIR)/SundancePointwiseUserDefFunctor.Po"; else rm -f "$(DEPDIR)/SundancePointwiseUserDefFunctor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp' object='SundancePointwiseUserDefFunctor.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundancePointwiseUserDefFunctor.Po' tmpdepfile='$(DEPDIR)/SundancePointwiseUserDefFunctor.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundancePointwiseUserDefFunctor.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp'; fi`
 
 SundanceStdMathOps.o: $(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceStdMathOps.o -MD -MP -MF "$(DEPDIR)/SundanceStdMathOps.Tpo" -c -o SundanceStdMathOps.o `test -f '$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundanceStdMathOps.cpp; \
@@ -1815,6 +1851,38 @@ SundanceUnknownParameterElement.obj: $(top_srcdir)/src-core/InternalExprs/Sundan
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnknownParameterElement.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceUnknownParameterElement.cpp'; fi`
 
+SundanceUserDefFunctorElement.o: $(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefFunctorElement.o -MD -MP -MF "$(DEPDIR)/SundanceUserDefFunctorElement.Tpo" -c -o SundanceUserDefFunctorElement.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefFunctorElement.Tpo" "$(DEPDIR)/SundanceUserDefFunctorElement.Po"; else rm -f "$(DEPDIR)/SundanceUserDefFunctorElement.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp' object='SundanceUserDefFunctorElement.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefFunctorElement.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefFunctorElement.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefFunctorElement.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp
+
+SundanceUserDefFunctorElement.obj: $(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefFunctorElement.obj -MD -MP -MF "$(DEPDIR)/SundanceUserDefFunctorElement.Tpo" -c -o SundanceUserDefFunctorElement.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefFunctorElement.Tpo" "$(DEPDIR)/SundanceUserDefFunctorElement.Po"; else rm -f "$(DEPDIR)/SundanceUserDefFunctorElement.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp' object='SundanceUserDefFunctorElement.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefFunctorElement.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefFunctorElement.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefFunctorElement.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceUserDefFunctorElement.cpp'; fi`
+
+SundanceUserDefOpElement.o: $(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefOpElement.o -MD -MP -MF "$(DEPDIR)/SundanceUserDefOpElement.Tpo" -c -o SundanceUserDefOpElement.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefOpElement.Tpo" "$(DEPDIR)/SundanceUserDefOpElement.Po"; else rm -f "$(DEPDIR)/SundanceUserDefOpElement.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp' object='SundanceUserDefOpElement.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefOpElement.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefOpElement.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefOpElement.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp
+
+SundanceUserDefOpElement.obj: $(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefOpElement.obj -MD -MP -MF "$(DEPDIR)/SundanceUserDefOpElement.Tpo" -c -o SundanceUserDefOpElement.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefOpElement.Tpo" "$(DEPDIR)/SundanceUserDefOpElement.Po"; else rm -f "$(DEPDIR)/SundanceUserDefOpElement.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp' object='SundanceUserDefOpElement.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefOpElement.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefOpElement.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefOpElement.obj `if test -f '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/InternalExprs/SundanceUserDefOpElement.cpp'; fi`
+
 SundanceZeroExpr.o: $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceZeroExpr.o -MD -MP -MF "$(DEPDIR)/SundanceZeroExpr.Tpo" -c -o SundanceZeroExpr.o `test -f '$(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceZeroExpr.Tpo" "$(DEPDIR)/SundanceZeroExpr.Po"; else rm -f "$(DEPDIR)/SundanceZeroExpr.Tpo"; exit 1; fi
@@ -2118,6 +2186,22 @@ SundanceUnaryMinusEvaluator.obj: $(top_srcdir)/src-core/Evaluation/SundanceUnary
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUnaryMinusEvaluator.Po' tmpdepfile='$(DEPDIR)/SundanceUnaryMinusEvaluator.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUnaryMinusEvaluator.obj `if test -f '$(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/Evaluation/SundanceUnaryMinusEvaluator.cpp'; fi`
+
+SundanceUserDefOpCommonEvaluator.o: $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefOpCommonEvaluator.o -MD -MP -MF "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Tpo" -c -o SundanceUserDefOpCommonEvaluator.o `test -f '$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Tpo" "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Po"; else rm -f "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp' object='SundanceUserDefOpCommonEvaluator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefOpCommonEvaluator.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefOpCommonEvaluator.o `test -f '$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp
+
+SundanceUserDefOpCommonEvaluator.obj: $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefOpCommonEvaluator.obj -MD -MP -MF "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Tpo" -c -o SundanceUserDefOpCommonEvaluator.obj `if test -f '$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Tpo" "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Po"; else rm -f "$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp' object='SundanceUserDefOpCommonEvaluator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceUserDefOpCommonEvaluator.Po' tmpdepfile='$(DEPDIR)/SundanceUserDefOpCommonEvaluator.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceUserDefOpCommonEvaluator.obj `if test -f '$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpCommonEvaluator.cpp'; fi`
 
 SundanceUserDefOpEvaluator.o: $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceUserDefOpEvaluator.o -MD -MP -MF "$(DEPDIR)/SundanceUserDefOpEvaluator.Tpo" -c -o SundanceUserDefOpEvaluator.o `test -f '$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp; \

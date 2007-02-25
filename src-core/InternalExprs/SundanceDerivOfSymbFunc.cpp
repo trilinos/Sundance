@@ -43,7 +43,8 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg)
+DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op, 
+  const RefCountPtr<ScalarExpr>& arg)
   : DiffOp(op, arg), funcID_(-1)
 {
   const SymbolicFuncElement* f 

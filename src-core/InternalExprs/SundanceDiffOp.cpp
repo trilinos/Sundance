@@ -44,7 +44,8 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-DiffOp::DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg)
+DiffOp::DiffOp(const MultiIndex& op, 
+  const RefCountPtr<ScalarExpr>& arg)
   : UnaryExpr(arg), mi_(op), myCoordDeriv_(), requiredFunctions_(),
     ignoreFuncTerms_(false)
 {

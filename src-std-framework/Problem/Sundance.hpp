@@ -54,6 +54,7 @@
 #include "SundanceCellDiameterExpr.hpp"
 #include "SundanceStdMathOps.hpp"
 #include "SundanceParameter.hpp"
+#include "SundancePointwiseUserDefFunctor.hpp"
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
 

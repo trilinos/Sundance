@@ -28,13 +28,18 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_PRODUCTTRANSFORMATION_H
-#define SUNDANCE_PRODUCTTRANSFORMATION_H
+#ifndef SUNDANCE_USERDEFFUNCTORELEMENT_H
+#define SUNDANCE_USERDEFFUNCTORELEMENT_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSymbolicTransformation.hpp"
+#include "SundanceMap.hpp"
+#include "SundanceMultiSet.hpp"
+#include "SundanceExceptions.hpp"
+#include "SundanceUserDefFunctor.hpp"
+#include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY 
+
+
 
 namespace SundanceCore
 {
@@ -45,41 +50,62 @@ namespace SundanceCore
   using std::ostream;
 
   namespace Internal
+  {
+    /**
+     * Scalar-valued element of a vector-valued functor
+     */
+    class UserDefFunctorElement
     {
-      /** 
-       * ProductTransformation is a base class for any transformation
-       * which takes the two operands of a product (left, right) and produces
-       * a new expression mathematically equivalent to the original
-       * product. This will be used to effect simplification
-       * transformations on product expressions.
-       */
-      class ProductTransformation : public SymbolicTransformation
-        {
-        public:
-          /** */
-          ProductTransformation();
+    public:
+      /** ctor */
+      UserDefFunctorElement(const RefCountPtr<const UserDefFunctor>& functor,
+                            int myIndex);
 
-          /** */
-          virtual ~ProductTransformation(){;}
+      /** */
+      virtual ~UserDefFunctorElement(){;}
 
-          /** */
-          static bool& optimizeFunctionDiffOps() 
-          {static bool rtn=false; return rtn;}
+      /** */
+      const string& name() const {return master_->name(myIndex());}
 
-          /** 
-           * Test whether the transform is applicable in this case,
-           * and if it is, apply it. The return value is true is the
-           * transformation was applied, otherwise false. 
-           * Returns by non-const reference
-           * the transformed expression. 
-           * 
-           */
-          virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-            const RefCountPtr<ScalarExpr>& right,
-            RefCountPtr<ScalarExpr>& rtn) const = 0 ;
-        };
+      /** */
+      const string& masterName() const {return master_->name();}
+
+      /** */
+      void evalArgDerivs(int maxOrder, 
+                         const Array<double>& in,
+                         Array<double>& outDerivs) const ;
+
+      /** */
+      void getArgDerivIndices(const Array<int>& orders,
+                              SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
+                              SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
+
+      /** */
+      int numArgs() const {return master_->domainDim();}
+
+      /** */
+      void reset() const {master_->reset();}
+
+      /** Return the index of this element into the list-valued 
+       * user defined op */
+      int myIndex() const {return myIndex_;}
+
+      /** */
+      const UserDefFunctor* master() const 
+      {return master_.get();}
+
+      /** */
+      int maxOrder() const {return master_->maxOrder();}
+
+
+    private:
+      const RefCountPtr<const UserDefFunctor> master_;
+      const int myIndex_;
+    };
+
   }
+
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

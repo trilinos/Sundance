@@ -41,16 +41,15 @@
  * 
  */
 
-class BesselJFunc : public UserDefFunctor
+class BesselJFunc : public PointwiseUserDefFunctor0
 {
 public: 
   /** */
-  BesselJFunc(int n) : UserDefFunctor("J_" + Teuchos::toString(n)), n_(n) {;}
+  BesselJFunc(int n) : PointwiseUserDefFunctor0("J_" + Teuchos::toString(n), 1, 1), 
+                       n_(n) {;}
 
   /** */
-  virtual double eval0(const Array<double>& vars) const ;
-  /** */
-  int numArgs() const {return 1;}
+  void eval0(const double* vars, double* f) const ;
 
 private:
   int n_;
@@ -79,17 +78,15 @@ Expr BesselJ(int n, const Expr& r)
  * of which are the values of the user-level argument Expr at
  * the current evaluation point. 
  */
-class DrumFuncFunctor : public UserDefFunctor
+class DrumFuncFunctor : public PointwiseUserDefFunctor0
 {
 public:
   /** */
   DrumFuncFunctor(const double& A, int n) 
-    : UserDefFunctor("Drum_" + Teuchos::toString(n)), A_(A), n_(n) {;}
+    : PointwiseUserDefFunctor0("Drum_" + Teuchos::toString(n), 2, 1), A_(A), n_(n) {;}
 
   /** */
-  virtual double eval0(const Array<double>& vars) const ;
-  /** */
-  int numArgs() const {return 2;}
+  void eval0(const double* vars, double* f) const ;
 
 private:
   double A_;
@@ -99,7 +96,7 @@ private:
 
 /* Definition of eval() function. This is where the "meat" is. */
 
-double DrumFuncFunctor::eval0(const Array<double>& vars) const
+void DrumFuncFunctor::eval0(const double* vars, double* f) const
 {
   double x = vars[0];
   double y = vars[1];
@@ -107,7 +104,7 @@ double DrumFuncFunctor::eval0(const Array<double>& vars) const
   double theta = atan2(y,x);
   double r = sqrt(x*x + y*y);
 
-  return A_*cos(n_*theta)*jn(n_, r);
+  f[0] = A_*cos(n_*theta)*jn(n_, r);
 }
 
 
@@ -194,9 +191,9 @@ int main(int argc, char** argv)
 
 /* Definition of BesselJFunc::eval() */
 
-double BesselJFunc::eval0(const Array<double>& vars) const
+void BesselJFunc::eval0(const double* vars, double* f) const
 {
-  return jn(n_, vars[0]);
+  f[0] = jn(n_, vars[0]);
 }
 
 

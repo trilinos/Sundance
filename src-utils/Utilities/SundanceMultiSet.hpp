@@ -78,6 +78,12 @@ namespace SundanceUtils
 
       /** Write to a string */
       string toString() const ;
+
+      /** */
+      bool operator==(const MultiSet<int>& other) const 
+      {
+        return !((*this) < other || other < (*this));
+      }
     };
 
 
@@ -196,6 +202,37 @@ namespace SundanceUtils
   {
     MultiSet<Key> rtn = makeMultiSet<Key>(k1, k2, k3);
     rtn.put(k4);
+    return rtn;
+  }
+
+  /** \relates MultiSet Create a multiset */
+  template<class Key> inline
+  MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2, 
+                             const Key& k3, const Key& k4,
+                             const Key& k5)
+  {
+    MultiSet<Key> rtn = makeMultiSet<Key>(k1, k2, k3, k4);
+    rtn.put(k5);
+    return rtn;
+  }
+
+  /** \relates MultiSet Create a multiset */
+  template<class Key> inline
+  MultiSet<Key> makeMultiSet(const Key& k1, const Key& k2, 
+                             const Key& k3, const Key& k4,
+                             const Key& k5, const Key& k6)
+  {
+    MultiSet<Key> rtn = makeMultiSet<Key>(k1, k2, k3, k4, k5);
+    rtn.put(k6);
+    return rtn;
+  }
+
+  /** \relates MultiSet Create a multiset */
+  template<class Key> inline
+  MultiSet<Key> makeMultiSet(const Array<Key>& k)
+  {
+    MultiSet<Key> rtn;
+    for (unsigned int i=0; i<k.size(); i++) rtn.put(k[i]);
     return rtn;
   }
 

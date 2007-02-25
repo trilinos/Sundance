@@ -29,6 +29,8 @@
 /* @HEADER@ */
 
 #include "SundanceUserDefFunctor.hpp"
+#include "SundanceEvalManager.hpp"
+#include "SundanceEvalVector.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
@@ -39,86 +41,45 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-UserDefFunctor::UserDefFunctor(const string& name)
-  :  name_(name) 
-{;}
-
-void UserDefFunctor::getArgDerivIndices(const Array<int>& orders,
-                                        Map<MultiSet<int>, int>& varArgDerivs,
-                                        Map<MultiSet<int>, int>& constArgDerivs) const
+UserDefFunctor::UserDefFunctor(const string& name, 
+                               int domainDim, 
+                               int rangeDim)
+  :  name_(name), 
+     elemNames_(), 
+     domainDim_(domainDim), 
+     rangeDim_(rangeDim)
 {
-  int n = numArgs();
+  TEST_FOR_EXCEPT(domainDim_ <= 0);
+  TEST_FOR_EXCEPT(rangeDim_ <= 0);
 
-  int k = 0;
+  elemNames_.resize(rangeDim_);
 
-  for (unsigned int o=0; o<orders.size(); o++)
+  if (rangeDim_==1) 
     {
-      int order = orders[o];
-
-      if (order==0)
-        {
-          varArgDerivs.put(MultiSet<int>(), k++);
-        }
-      else if (order==1)
-        {
-          for (int i=0; i<n; i++)
-            {
-              varArgDerivs.put(makeMultiSet<int>(i), k++);
-            }
-        }
-      else if (order==2)
-        {
-          for (int i=0; i<n; i++)
-            {
-              for (int j=0; j<n; j++)
-                {
-                  varArgDerivs.put(makeMultiSet<int>(i,j), k++);
-                }
-            }
-        }
-      else
-        {
-          TEST_FOR_EXCEPTION(order > 2 || order < 0, RuntimeError,
-                             "order " << order << " not supported by functor " << name());
-        }
-    }
-}
-
-
-
-void UserDefFunctor::evalArgDerivs(int maxOrder,
-                                   const Array<double>& args,
-                                   Array<double>& argDerivs) const
-{
-  if (maxOrder==0)
-    {
-      argDerivs.resize(1);
-      argDerivs[0] = eval0(args);
-    }
-  else if (maxOrder==1)
-    {
-      argDerivs.resize(args.size()+1);
-      argDerivs[0] = eval1(args, &(argDerivs[1]));
+      elemNames_[0] = name_;
     }
   else
     {
-      TEST_FOR_EXCEPTION(true, RuntimeError,
-                         "deriv order=" << maxOrder 
-                         << " not supported for function " << name());
+      for (int i=0; i<rangeDim_; i++)
+        {
+          elemNames_[i] = name_ + "[" + Teuchos::toString(i) + "]";
+        }
     }
 }
 
 
-double UserDefFunctor::eval0(const Array<double>& vars) const
+
+
+
+void UserDefFunctor::eval0(const Array<double>& in, double* out) const
 {
   TEST_FOR_EXCEPTION(true, RuntimeError,
-                     "eval0() function not supported for functor " << name());
-  return 0.0; // -Wall
+                     "eval0() function not supported for functor " << name_);
 }
 
-double UserDefFunctor::eval1(const Array<double>& vars, double* derivs) const
+void UserDefFunctor::eval1(const Array<double>& in, double* out, double* outDerivs) const
 {
   TEST_FOR_EXCEPTION(true, RuntimeError,
-                     "eval1() function not supported for functor " << name());
-  return 0.0; // -Wall
+                     "eval1() function not supported for functor " << name_);
 }
+
