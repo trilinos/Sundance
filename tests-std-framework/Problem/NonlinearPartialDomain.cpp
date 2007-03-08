@@ -39,14 +39,14 @@
  */
 
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 
-CELL_PREDICATE(ATest, {return x[0] <= 0.4;});
+CELL_PREDICATE(ATest, {return x[0] <= 0.4;})
 
-CELL_PREDICATE(BTest, {return x[0] >= 0.4 && x[0] <= 0.6;});
+CELL_PREDICATE(BTest, {return x[0] >= 0.4 && x[0] <= 0.6;})
 
-CELL_PREDICATE(CTest, {return x[0] >= 0.6;});
+CELL_PREDICATE(CTest, {return x[0] >= 0.6;})
   
 int main(int argc, char** argv)
 {
