@@ -34,10 +34,44 @@
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
 using namespace Teuchos;
+using namespace TSFExtended;
 
+
+bool P1NC::supportsCellTypePair(
+  const CellType& maximalCellType,
+  const CellType& cellType
+  ) const
+{
+  switch(maximalCellType)
+  {
+    case TriangleCell:
+      switch(cellType)
+      {
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    case TetCell:
+      switch(cellType)
+      {
+        case TetCell:
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    default:
+      return false;
+  }
+}
 
 
 void P1NC::print(ostream& os) const 
@@ -45,8 +79,10 @@ void P1NC::print(ostream& os) const
   os << "P1NC()";
 }
 
-int P1NC::nNodes(int spatialDim, 
-                 const CellType& cellType) const
+int P1NC::nReferenceDOFs(
+  const CellType& maximalCellType,
+  const CellType& cellType
+  ) const
 {
   switch(cellType)
     {
@@ -63,8 +99,10 @@ int P1NC::nNodes(int spatialDim,
     }
 }
 
-void P1NC::getLocalDOFs(const CellType& cellType,
-                            Array<Array<Array<int> > >& dofs) const 
+void P1NC::getReferenceDOFs(
+  const CellType& maximalCellType,
+  const CellType& cellType,
+  Array<Array<Array<int> > > &dofs ) const
 {
   switch(cellType)
     {
@@ -90,26 +128,28 @@ void P1NC::getLocalDOFs(const CellType& cellType,
 
 
 
-void P1NC::refEval(int spatialDim, 
-                   const CellType& cellType,
-                   const Array<Point>& pts,
-                   const MultiIndex& deriv,
-                   Array<Array<double> >& result) const
+void P1NC::refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const MultiIndex& deriv,
+    Array<Array<Array<double> > >& result) const
 {
-  result.resize(pts.length());
+  result.resize(1);
+  result[0].resize(pts.length());
 
   switch(cellType)
     {
     case LineCell:
       for (int i=0; i<pts.length(); i++)
         {
-          evalOnLine(pts[i], deriv, result[i]);
+          evalOnLine(pts[i], deriv, result[0][i]);
         }
       return;
     case TriangleCell:
       for (int i=0; i<pts.length(); i++)
         {
-          evalOnTriangle(pts[i], deriv, result[i]);
+          evalOnTriangle(pts[i], deriv, result[0][i]);
         }
       return;
     default:

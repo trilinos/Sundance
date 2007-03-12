@@ -32,8 +32,6 @@
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 #ifdef HAVE_FIAT
@@ -81,23 +79,74 @@ static CellType sdim_to_cellType[] = { PointCell ,
 // the same number of nodes as belong to the Lagrange element
 // of the lower topological dimension.
 
-FIATLagrange::FIATLagrange( int order ) :
-  order_( order )
+FIATLagrange::FIATLagrange( int order ) 
+  : order_( order )
 {
+  TEST_FOR_EXCEPTION(order < 0, RuntimeError,
+    "invalid polynomial orde r=" << order
+    << " in  FIATLagrange ctor");
   fiatElems_[ LineCell ] = new FIAT::LagrangeElement( 1 , order );
   fiatElems_[ TriangleCell ] = new FIAT::LagrangeElement( 2 , order );
   fiatElems_[ TetCell ] = new FIAT::LagrangeElement( 3 , order );
 }
 
-int FIATLagrange::nNodes( int spatialDim ,
-                          const CellType& cellType ) const
+
+bool FIATLagrange::supportsCellTypePair(
+  const CellType& maximalCellType,
+  const CellType& cellType
+  ) const
+{
+  switch(maxCellType)
+  {
+    case LineCell:
+      switch(cellType)
+      {
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    case TriangleCell:
+      switch(cellType)
+      {
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    case TetCell:
+      switch(cellType)
+      {
+        case TetCell:
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    default:
+      return false;
+  }
+}
+
+
+int FIATLagrange::nReferenceDOFs(
+  const CellType& maximalCellType, 
+  const CellType& cellType
+  ) const 
 {
   if (PointCell == cellType) return 1;
   else return fiatElems_[ cellType ]->getPolynomialSet()->size();
 }
 
-void FIATLagrange::getLocalDOFs( const CellType &cellType ,
-                                 Array<Array<Array<int> > > &dofs ) const
+void FIATLagrange::getReferenceDOFs(
+  const CellType& maximalCellType, 
+  const CellType& cellType,
+  Array<Array<Array<int> > > &dofs ) const
 {
   if (PointCell == cellType) {
     dofs.resize(1);
@@ -125,20 +174,22 @@ void FIATLagrange::getLocalDOFs( const CellType &cellType ,
   return;
 }
 
-void FIATLagrange::refEval( int spatialDim ,
-                            const CellType& cellType ,
-                            const Array<Point>& pts ,
-                            const MultiIndex& deriv ,
-                            Array<Array<double> >& result ) const
+void FIATLagrange::refEval( 
+  const CellType& maximalCellType, 
+  const CellType& cellType,
+  const Array<Point>& pts ,
+  const MultiIndex& deriv ,
+  Array<Array<Array<double> > >& result ) const
 {
+  result.resize(1);
   int nbf = nNodes( spatialDim , cellType );
-  result.resize(pts.length());
+  result[0].resize(pts.length());
   for (int i=0;i<pts.length();i++) {
-    result[i].resize(nbf);
+    result[0][i].resize(nbf);
   }
 
   if (PointCell == cellType) {
-    result = tuple(tuple(1.0));
+    result[0] = tuple(tuple(1.0));
     return;
   }
   else {
@@ -190,7 +241,7 @@ void FIATLagrange::refEval( int spatialDim ,
 	int fiat_e = sd_to_fiat_spd_d[e];
 	for (int n=0;n<(int)eids[d][e].size();n++) {
 	  for (int p=0;p<(int)pts.length();p++) {
-	    result[p][cur] = fiat_results( eids[d][fiat_e][n] , p );
+	    result[0][p][cur] = fiat_results( eids[d][fiat_e][n] , p );
 	  }
 	  cur++;
 	}

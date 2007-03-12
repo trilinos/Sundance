@@ -29,33 +29,21 @@
 /* @HEADER@ */
 
 
-// <-------- CHANGED INCLUDE GUARDS TO FIATLAGRANGE_H
 #ifndef SUNDANCE_FIATLAGRANGE_H
 #define SUNDANCE_FIATLAGRANGE_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "SundanceScalarBasis.hpp"
+#include "SundanceBasisFamilyBase.hpp"
 #include "SundanceMap.hpp"
 
 #ifdef HAVE_FIAT
 #include "FIAT.hpp"
 #endif
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
-  using namespace Teuchos;
-
   /** 
-   * Lagrange basis 
+   * Lagrange basis, implemented through the FIAT element library
    */
   class FIATLagrange : public ScalarBasis
   {
@@ -63,8 +51,13 @@ namespace SundanceStdFwk
     /** */
     FIATLagrange(int order);
 
-    /** */
-    virtual ~FIATLagrange(){;}
+    /**     
+     * \brief   Inform caller as to whether a given cell type is supported 
+     */
+    bool supportsCellTypePair(
+      const CellType& maximalCellType,
+      const CellType& cellType
+      ) const ;
 
     /** */
     virtual void print(ostream& os) const ;
@@ -73,19 +66,24 @@ namespace SundanceStdFwk
     virtual int order() const {return order_;}
 
     /** return the number of nodes for this basis on the given cell type */
-    virtual int nNodes(int spatialDim,
-                       const CellType& cellType) const ;
+    virtual int nReferenceDOFs(
+      const CellType& maximalCellType,
+      const CellType& cellType
+      ) const ;
 
     /** */
-    virtual void getLocalDOFs(const CellType& cellType,
-                              Array<Array<Array<int> > >& dofs) const ;
+    virtual void getReferenceDOFs(
+      const CellType& maximalCellType,
+      const CellType& cellType,
+      Array<Array<Array<int> > >& dofs) const ;
 
     /** */
-    virtual void refEval(int dim, 
-                         const CellType& cellType,
-                         const Array<Point>& pts,
-                         const MultiIndex& deriv,
-                         Array<Array<double> >& result) const ;
+    virtual void refEval(
+      const CellType& maximalCellType,
+      const CellType& cellType,
+      const Array<Point>& pts,
+      const MultiIndex& deriv,
+      Array<Array<Array<double> > >& result) const ;
 
 
 
@@ -106,8 +104,6 @@ namespace SundanceStdFwk
 
 
 }
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif
 

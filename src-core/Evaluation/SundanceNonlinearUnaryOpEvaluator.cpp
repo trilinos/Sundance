@@ -98,6 +98,8 @@ NonlinearUnaryOpEvaluator
   else argValueIndex_ = argEv->vectorIndexMap().get(d0Index);
 
 
+  SUNDANCE_VERB_HIGH(tabs << "arg is constant: " << argIsConstant_);
+  SUNDANCE_VERB_HIGH(tabs << "arg value index: " << argValueIndex_);
   /* Call init() at the base class to set up chain rule evaluation */
   init(expr, context);
 }
@@ -113,6 +115,7 @@ void NonlinearUnaryOpEvaluator
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "NonlinearUnaryOpEvaluator::evalArgDerivs() for " 
                     << expr()->toString());
+  
   if (argIsConstant_)
     {
       double argValue = (*(constArgRes[0]))[argValueIndex_];
@@ -139,9 +142,10 @@ void NonlinearUnaryOpEvaluator
     }
   else
     {
-      const double* argValue = (*(vArgResults[0]))[argValueIndex_]->start();
+      const Array<RefCountPtr<EvalVector> >& av = *(vArgResults[0]);
+      const double* argValue = av[argValueIndex_]->start();
       varArgDerivs.resize(maxOrder_+1);
-      varArgDerivs[0] = mgr.stack().popVector();//(*(vArgResults[0]))[argValueIndex_]->clone();
+      varArgDerivs[0] = mgr.stack().popVector();
       int nx = varArgDerivs[0]->length();
 
       const string& argStr = (*(vArgResults[0]))[argValueIndex_]->str();
@@ -154,7 +158,7 @@ void NonlinearUnaryOpEvaluator
       double* df_dArg = 0 ;
       if (maxOrder_ >= 1) 
         {
-          varArgDerivs[1] = mgr.stack().popVector();//varArgDerivs[0]->clone();
+          varArgDerivs[1] = mgr.stack().popVector();
           if (EvalVector::shadowOps())
             {
               varArgDerivs[1]->setString(op_->name() + "'(" + argStr + ")");
@@ -164,7 +168,7 @@ void NonlinearUnaryOpEvaluator
       double* d2f_dArg2 = 0 ;
       if (maxOrder_ >= 2) 
         {
-          varArgDerivs[2] =mgr.stack().popVector();// varArgDerivs[0]->clone();
+          varArgDerivs[2] =mgr.stack().popVector();
           if (EvalVector::shadowOps())
             {
               varArgDerivs[2]->setString(op_->name() + "''(" + argStr + ")");
@@ -175,7 +179,7 @@ void NonlinearUnaryOpEvaluator
       if (maxOrder_ >= 3) 
         {
           UnaryFunctor::fdStep()=1.0e-3;
-          varArgDerivs[3] = mgr.stack().popVector();//varArgDerivs[0]->clone();
+          varArgDerivs[3] = mgr.stack().popVector();
           if (EvalVector::shadowOps())
             {
               varArgDerivs[3]->setString(op_->name() + "'''(" + argStr + ")");

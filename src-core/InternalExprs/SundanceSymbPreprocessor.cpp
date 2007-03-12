@@ -133,7 +133,7 @@ DerivSet SymbPreprocessor::setupFunctional(const Expr& expr,
                          unks, unkEvalPts,
                          unkParams, unkParamEvalPts,
                          fixedFields, fixedFieldEvalPts,
-                         fixedParams, fixedFieldEvalPts,
+                         fixedParams, fixedParamEvalPts,
                          context);
 }
 
@@ -160,7 +160,7 @@ DerivSet SymbPreprocessor::setupGradient(const Expr& expr,
                          unks, unkEvalPts,
                          unkParams, unkParamEvalPts,
                          fixedFields, fixedFieldEvalPts,
-                         fixedParams, fixedFieldEvalPts,
+                         fixedParams, fixedParamEvalPts,
                          context);
 }
 

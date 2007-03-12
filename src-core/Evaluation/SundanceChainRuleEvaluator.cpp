@@ -456,6 +456,19 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
     varArgResults[i] = rcp(new Array<RefCountPtr<EvalVector> >());
     childEvaluators_[i]->eval(mgr, *(constantArgResults[i]), 
       *(varArgResults[i]));
+    if (verbosity() > VerbMedium)
+    {
+      cout << tabs << "constant arg #" << i << 
+        " results:" << *(constantArgResults[i]) << endl;
+      cout << tabs << "variable arg # " << i << " derivs:" << endl;
+      for (unsigned int j=0; j<varArgResults[i]->size(); j++)
+      {
+        Tabs tab1;
+        cout << tab1 << j << " ";
+        (*(varArgResults[i]))[j]->print(cout);
+        cout << endl;
+      }
+    }
   }
 
   evalArgDerivs(mgr, constantArgResults, varArgResults,

@@ -155,7 +155,8 @@ am__installdirs = $(DESTDIR)$(libdir) $(DESTDIR)$(includedir) $(DESTDIR)$(execin
 libLIBRARIES_INSTALL = $(INSTALL_DATA)
 LIBRARIES = $(lib_LIBRARIES)
 libsundanceStdFwk_a_DEPENDENCIES =
-am__objects_1 = SundanceBinaryCellFilter.$(OBJEXT) \
+am__objects_1 = SundanceBasisFamilyBase.$(OBJEXT) \
+	SundanceBinaryCellFilter.$(OBJEXT) \
 	SundanceBoundaryCellPredicate.$(OBJEXT) \
 	SundanceCellFilterBase.$(OBJEXT) SundanceCellFilter.$(OBJEXT) \
 	SundanceCellIterator.$(OBJEXT) \
@@ -170,8 +171,7 @@ am__objects_1 = SundanceBinaryCellFilter.$(OBJEXT) \
 	SundancePositionalCellPredicate.$(OBJEXT) \
 	SundanceSideCellFilter.$(OBJEXT) \
 	SundanceSubsetCellFilter.$(OBJEXT)
-am__objects_2 = SundanceBasisFamilyBase.$(OBJEXT) \
-	SundanceBasisFamily.$(OBJEXT) \
+am__objects_2 = SundanceBasisFamily.$(OBJEXT) \
 	SundanceClosedNewtonCotes.$(OBJEXT) \
 	SundanceClosedNewtonCotesType.$(OBJEXT) \
 	SundanceDiscreteFunction.$(OBJEXT) \
@@ -475,6 +475,7 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceSideCellFilter.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.hpp
 
 SUNDANCE_CELLFILTERS = \
+$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp \
 $(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellPredicate.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilterBase.cpp\
@@ -515,7 +516,6 @@ $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureTypeBase.hpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.hpp \
@@ -524,7 +524,6 @@ $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.hpp
 
 SUNDANCE_ELEMENTS = \
-$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.cpp \
@@ -1005,6 +1004,22 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
+SundanceBasisFamilyBase.o: $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasisFamilyBase.o -MD -MP -MF "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" -c -o SundanceBasisFamilyBase.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" "$(DEPDIR)/SundanceBasisFamilyBase.Po"; else rm -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' object='SundanceBasisFamilyBase.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceBasisFamilyBase.Po' tmpdepfile='$(DEPDIR)/SundanceBasisFamilyBase.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasisFamilyBase.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp
+
+SundanceBasisFamilyBase.obj: $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasisFamilyBase.obj -MD -MP -MF "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" -c -o SundanceBasisFamilyBase.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" "$(DEPDIR)/SundanceBasisFamilyBase.Po"; else rm -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' object='SundanceBasisFamilyBase.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceBasisFamilyBase.Po' tmpdepfile='$(DEPDIR)/SundanceBasisFamilyBase.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasisFamilyBase.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; fi`
+
 SundanceBinaryCellFilter.o: $(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBinaryCellFilter.o -MD -MP -MF "$(DEPDIR)/SundanceBinaryCellFilter.Tpo" -c -o SundanceBinaryCellFilter.o `test -f '$(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.cpp; \
 @am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBinaryCellFilter.Tpo" "$(DEPDIR)/SundanceBinaryCellFilter.Po"; else rm -f "$(DEPDIR)/SundanceBinaryCellFilter.Tpo"; exit 1; fi
@@ -1292,22 +1307,6 @@ SundanceSubsetCellFilter.obj: $(top_srcdir)/src-std-framework/CellFilter/Sundanc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceSubsetCellFilter.Po' tmpdepfile='$(DEPDIR)/SundanceSubsetCellFilter.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceSubsetCellFilter.obj `if test -f '$(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp'; fi`
-
-SundanceBasisFamilyBase.o: $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasisFamilyBase.o -MD -MP -MF "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" -c -o SundanceBasisFamilyBase.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" "$(DEPDIR)/SundanceBasisFamilyBase.Po"; else rm -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' object='SundanceBasisFamilyBase.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceBasisFamilyBase.Po' tmpdepfile='$(DEPDIR)/SundanceBasisFamilyBase.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasisFamilyBase.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp
-
-SundanceBasisFamilyBase.obj: $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasisFamilyBase.obj -MD -MP -MF "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" -c -o SundanceBasisFamilyBase.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo" "$(DEPDIR)/SundanceBasisFamilyBase.Po"; else rm -f "$(DEPDIR)/SundanceBasisFamilyBase.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' object='SundanceBasisFamilyBase.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceBasisFamilyBase.Po' tmpdepfile='$(DEPDIR)/SundanceBasisFamilyBase.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasisFamilyBase.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; fi`
 
 SundanceBasisFamily.o: $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBasisFamily.o -MD -MP -MF "$(DEPDIR)/SundanceBasisFamily.Tpo" -c -o SundanceBasisFamily.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp; \

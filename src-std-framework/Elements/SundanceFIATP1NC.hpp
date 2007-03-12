@@ -29,85 +29,82 @@
 /* @HEADER@ */
 
 
-// <-------- CHANGED INCLUDE GUARDS TO FIATLAGRANGE_H
 #ifndef SUNDANCE_FIATP1NC_H
 #define SUNDANCE_FIATP1NC_H
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceScalarBasis.hpp"
+#include "SundanceBasisFamilyBase.hpp"
 #include "SundanceMap.hpp"
 
 #ifdef HAVE_FIAT
 #include "FIAT.hpp"
 #endif
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
-  using namespace Teuchos;
 
-  /** 
-   * Lagrange basis 
+/** 
+ * P1 Nonconforming basis implemented with FIAT
+ */
+class FIATP1NC : public ScalarBasis
+{
+public:
+  /** */
+  FIATP1NC();
+
+  /**   
+   * \brief Inform caller as to whether a given cell type is supported 
    */
-  class FIATP1NC : public ScalarBasis
-  {
-  public:
-    /** */
-    FIATP1NC();
+  bool supportsCellTypePair(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
 
-    /** */
-    virtual ~FIATP1NC(){;}
+  /** */
+  void print(ostream& os) const ;
 
-    /** */
-    virtual void print(ostream& os) const ;
+  /** */
+  int order() const {return order_;}
 
-    /** */
-    virtual int order() const {return 1;}
+  /** return the number of nodes for this basis on the given cell type */
+  int nReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
 
-    /** return the number of nodes for this basis on the given cell type */
-    virtual int nNodes(int spatialDim,
-                       const CellType& cellType) const ;
+  /** */
+  void getReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    Array<Array<Array<int> > >& dofs) const ;
 
-    /** */
-    virtual void getLocalDOFs(const CellType& cellType,
-                              Array<Array<Array<int> > >& dofs) const ;
-
-    /** */
-    virtual void refEval(int dim, 
-                         const CellType& cellType,
-                         const Array<Point>& pts,
-                         const MultiIndex& deriv,
-                         Array<Array<double> >& result) const ;
-
+  /** */
+  void refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const MultiIndex& deriv,
+    Array<Array<Array<double> > >& result) const ;
 
 
+  /* Handleable boilerplate */
+  GET_RCP(BasisFamilyBase);
 
-    /* Handleable boilerplate */
-    GET_RCP(BasisFamilyBase);
-
-  private:
-    int order_;
+private:
+  int order_;
 #ifdef HAVE_FIAT
-    // RCK
-    // this has to be mutable because lookups on maps
-    // are non-const :/ and otherwise seemingly const methods
-    // like tabulation and nNodes die at compile-time
-    mutable SundanceUtils::Map<CellType,FIAT::RCP<FIAT::P1NCElement> > fiatElems_;
+  // RCK
+  // this has to be mutable because lookups on maps
+  // are non-const :/ and otherwise seemingly const methods
+  // like tabulation and nNodes die at compile-time
+  mutable SundanceUtils::Map<CellType,FIAT::RCP<FIAT::P1NCElement> > fiatElems_;
 #endif
-  };
+};
 
 
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif
 

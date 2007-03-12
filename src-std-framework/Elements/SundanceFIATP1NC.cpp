@@ -32,8 +32,6 @@
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 #ifdef HAVE_FIAT
@@ -89,15 +87,53 @@ FIATP1NC::FIATP1NC( )
   fiatElems_[ TetCell ] = new FIAT::P1NCElement( 3 );
 }
 
-int FIATP1NC::nNodes( int spatialDim ,
-                      const CellType& cellType ) const
+
+bool FIATP1NC::supportsCellTypePair(
+  const CellType& maximalCellType,
+  const CellType& cellType
+  ) const
+{
+  switch(maximalCellType)
+  {
+    case TriangleCell:
+      switch(cellType)
+      {
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    case TetCell:
+      switch(cellType)
+      {
+        case TetCell:
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    default:
+      return false;
+  }
+}
+
+int FIATP1NC::nReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const
 {
   if (PointCell == cellType) return 1;
   else return fiatElems_[ cellType ]->getPolynomialSet()->size();
 }
 
-void FIATP1NC::getLocalDOFs( const CellType &cellType ,
-                             Array<Array<Array<int> > > &dofs ) const
+void FIATP1NC::getReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    Array<Array<Array<int> > > &dofs ) const
 {
   try
     {
@@ -134,11 +170,12 @@ void FIATP1NC::getLocalDOFs( const CellType &cellType ,
   return;
 }
 
-void FIATP1NC::refEval( int spatialDim ,
-                        const CellType& cellType ,
-                        const Array<Point>& pts ,
-                        const MultiIndex& deriv ,
-                        Array<Array<double> >& result ) const
+void FIATP1NC::refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType ,
+    const Array<Point>& pts ,
+    const MultiIndex& deriv ,
+    Array<Array<double> >& result ) const
 {
   try
     {

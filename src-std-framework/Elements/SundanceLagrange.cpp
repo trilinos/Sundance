@@ -31,19 +31,63 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
 using namespace Teuchos;
+using namespace TSFExtended;
 
 Lagrange::Lagrange(int order)
-  : ScalarBasis(), order_(order)
+  : order_(order)
 {
 TEST_FOR_EXCEPTION(order < 0, RuntimeError,
                      "invalid polynomial order=" << order
                      << " in Lagrange ctor");
+}
+
+bool Lagrange::supportsCellTypePair(
+  const CellType& maximalCellType,
+  const CellType& cellType
+  ) const
+{
+  switch(maximalCellType)
+  {
+    case LineCell:
+      switch(cellType)
+      {
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    case TriangleCell:
+      switch(cellType)
+      {
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    case TetCell:
+      switch(cellType)
+      {
+        case TetCell:
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
+    default:
+      return false;
+  }
 }
 
 void Lagrange::print(ostream& os) const 
@@ -51,8 +95,10 @@ void Lagrange::print(ostream& os) const
   os << "Lagrange(" << order_ << ")";
 }
 
-int Lagrange::nNodes(int /* spatialDim */, 
-                     const CellType& cellType) const
+int Lagrange::nReferenceDOFs(
+  const CellType& maximalCellType,
+  const CellType& cellType
+  ) const
 {
   switch(cellType)
     {
@@ -101,8 +147,10 @@ int Lagrange::nNodes(int /* spatialDim */,
     }
 }
 
-void Lagrange::getLocalDOFs(const CellType& cellType,
-                            Array<Array<Array<int> > >& dofs) const 
+void Lagrange::getReferenceDOFs(
+  const CellType& maximalCellType,
+  const CellType& cellType,
+  Array<Array<Array<int> > >& dofs) const 
 {
   switch(cellType)
     {
@@ -170,35 +218,37 @@ Array<int> Lagrange::makeRange(int low, int high)
   return rtn;
 }
 
-void Lagrange::refEval(int /* spatialDim */, 
-                       const CellType& cellType,
-                       const Array<Point>& pts,
-                       const MultiIndex& deriv,
-                       Array<Array<double> >& result) const
+void Lagrange::refEval(
+  const CellType& maximalCellType,
+  const CellType& cellType,
+  const Array<Point>& pts,
+  const MultiIndex& deriv,
+  Array<Array<Array<double> > >& result) const
 {
-  result.resize(pts.length());
+  result.resize(1);
+  result[0].resize(pts.length());
 
   switch(cellType)
     {
     case PointCell:
-      result = tuple(tuple(1.0));
+      result[0] = tuple(tuple(1.0));
       return;
     case LineCell:
       for (int i=0; i<pts.length(); i++)
         {
-          evalOnLine(pts[i], deriv, result[i]);
+          evalOnLine(pts[i], deriv, result[0][i]);
         }
       return;
     case TriangleCell:
       for (int i=0; i<pts.length(); i++)
         {
-          evalOnTriangle(pts[i], deriv, result[i]);
+          evalOnTriangle(pts[i], deriv, result[0][i]);
         }
       return;
     case TetCell:
       for (int i=0; i<pts.length(); i++)
         {
-          evalOnTet(pts[i], deriv, result[i]);
+          evalOnTet(pts[i], deriv, result[0][i]);
         }
       return;
     default:

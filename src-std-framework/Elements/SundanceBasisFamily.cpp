@@ -68,9 +68,10 @@ unsigned int BasisFamily::size(const Array<BasisFamily>& b)
   return rtn;
 }
 
-int BasisFamily::nNodes(int spatialDim, const CellType& cellType) const 
+int BasisFamily::nReferenceDOFs(const CellType& maximalCellType,
+  const CellType& cellType) const 
 {
-  return ptr()->nNodes(spatialDim, cellType);
+  return ptr()->nReferenceDOFs(maximalCellType, cellType);
 }
 
 BasisFamily BasisFamily::getBasis(const Expr& expr)

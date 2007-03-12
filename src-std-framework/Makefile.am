@@ -69,6 +69,7 @@ $(top_srcdir)/src-std-framework/CellFilter/SundanceSideCellFilter.hpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.hpp
 
 SUNDANCE_CELLFILTERS = \
+$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp \
 $(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellPredicate.cpp\
 $(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilterBase.cpp\
@@ -109,7 +110,6 @@ $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureTypeBase.hpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceScalarBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.hpp \
@@ -118,7 +118,6 @@ $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.hpp
 
 SUNDANCE_ELEMENTS = \
-$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.cpp \

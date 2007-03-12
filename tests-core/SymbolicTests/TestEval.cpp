@@ -560,6 +560,8 @@ int main(int argc, char** argv)
 
       TESTER(dx*(pow(u, 4.0)), Dx*(pow(U, 4.0)));
 
+      TESTER(pow(u-x, 2.0), pow(U-X, 2.0));
+
       TESTER(log(u), log(U));
 
       TESTER(dx*(log(u)), Dx*(log(U)));

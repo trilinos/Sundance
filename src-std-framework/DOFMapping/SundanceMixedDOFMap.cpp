@@ -172,7 +172,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
 
       for (int b=0; b<nBasisChunks(); b++)
         {
-          int nNodes = basis(b).ptr()->nNodes(dim_, mesh.cellType(d));
+          int nNodes = basis(b).ptr()->nReferenceDOFs(mesh.cellType(dim_), mesh.cellType(d));
           if (nNodes == 0)
             {
               nNodesPerCell_[b][d] = 0;
@@ -182,8 +182,9 @@ void MixedDOFMap::allocate(const Mesh& mesh)
             {
               /* look up the node pointer for this cell and for all of its
                * facets */
-              basis(b).ptr()->getLocalDOFs(mesh.cellType(d), 
-                                           localNodePtrs_[b][d]);
+              basis(b).ptr()->getReferenceDOFs(mesh.cellType(dim_),
+                mesh.cellType(d), 
+                localNodePtrs_[b][d]);
               
               
               SUNDANCE_VERB_HIGH(tab1 << "node ptrs for basis " << basis(b)

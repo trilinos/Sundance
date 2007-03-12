@@ -80,7 +80,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
     nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
-    nNodesTest_(testBasis.nNodes(spatialDim, cellType)),
+    nNodesTest_(testBasis.nReferenceDOFs(maxCellType, cellType)),
     unkDerivOrder_(-1), 
     nRefDerivUnk_(-1),
     nNodesUnk_(-1),
@@ -94,7 +94,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
   if (testDerivOrder >= 1 && dim != spatialDim)
     {
       nFacetCases_ = numFacets(maxCellType, dim);
-      nNodesTest_ = testBasis.nNodes(spatialDim, maxCellType);
+      nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
       nNodes_ = nNodesTest_;
     }
 }
@@ -116,10 +116,10 @@ ElementIntegral::ElementIntegral(int spatialDim,
     nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
-    nNodesTest_(testBasis.nNodes(spatialDim, cellType)), 
+    nNodesTest_(testBasis.nReferenceDOFs(maxCellType, cellType)), 
     unkDerivOrder_(unkDerivOrder), 
     nRefDerivUnk_(ipow(spatialDim, unkDerivOrder)),
-    nNodesUnk_(unkBasis.nNodes(spatialDim, cellType)), 
+    nNodesUnk_(unkBasis.nReferenceDOFs(maxCellType, cellType)), 
     nNodes_(nNodesTest_*nNodesUnk_),
     order_(2),
     alpha_(alpha),
@@ -130,8 +130,8 @@ ElementIntegral::ElementIntegral(int spatialDim,
   if ((testDerivOrder >= 1 || unkDerivOrder >= 1)  && dim != spatialDim) 
     {
       nFacetCases_ = numFacets(maxCellType, dim);
-      nNodesTest_ = testBasis.nNodes(spatialDim, maxCellType);
-      nNodesUnk_ = unkBasis.nNodes(spatialDim, maxCellType);
+      nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
+      nNodesUnk_ = unkBasis.nReferenceDOFs(maxCellType, maxCellType);
       nNodes_ = nNodesTest_ * nNodesUnk_;
     }
 }

@@ -33,68 +33,68 @@
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceScalarBasis.hpp"
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
+#include "SundanceBasisFamilyBase.hpp"
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+/** 
+ * P1 Nonconforming basis 
+ */
+class P1NC : public ScalarBasis
+{
+public:
+  /** */
+  P1NC(){;}
 
-  /** 
-   * P1 Nonconforming basis 
+  /**   
+   * \brief Inform caller as to whether a given cell type is supported 
    */
-  class P1NC : public ScalarBasis
-  {
-  public:
-    /** */
-    P1NC(){;}
+  bool supportsCellTypePair(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
 
-    /** */
-    virtual ~P1NC(){;}
+  /** */
+  void print(ostream& os) const ;
 
-    /** */
-    virtual void print(ostream& os) const ;
+  /** */
+  int order() const {return 1;}
 
-    /** */
-    virtual int order() const {return 1;}
+  /** return the number of nodes for this basis on the given cell type */
+  int nReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
 
-    /** return the number of nodes for this basis on the given cell type */
-    virtual int nNodes(int spatialDim, 
-                       const CellType& cellType) const ;
+  /** */
+  void getReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    Array<Array<Array<int> > >& dofs) const ;
 
-    /** */
-    virtual void getLocalDOFs(const CellType& cellType,
-                              Array<Array<Array<int> > >& dofs) const ;
+  /** */
+  void refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const MultiIndex& deriv,
+    Array<Array<Array<double> > >& result) const ;
 
-    /** */
-    virtual void refEval(int spatialDim, 
-                         const CellType& cellType,
-                         const Array<Point>& pts,
-                         const MultiIndex& deriv,
-                         Array<Array<double> >& result) const ;
 
-    /* Handleable boilerplate */
-    GET_RCP(BasisFamilyBase);
+  /* Handleable boilerplate */
+  GET_RCP(BasisFamilyBase);
 
-  private:
-    /** evaluate on a line cell  */
-    void evalOnLine(const Point& pt,
-                    const MultiIndex& deriv,
-                    Array<double>& result) const ;
+private:
+  /** evaluate on a line cell  */
+  void evalOnLine(const Point& pt,
+    const MultiIndex& deriv,
+    Array<double>& result) const ;
     
-    /** evaluate on a triangle cell  */
-    void evalOnTriangle(const Point& pt,
-                        const MultiIndex& deriv,
-                        Array<double>& result) const ;
-  };
+  /** evaluate on a triangle cell  */
+  void evalOnTriangle(const Point& pt,
+    const MultiIndex& deriv,
+    Array<double>& result) const ;
+};
 }
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

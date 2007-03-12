@@ -32,9 +32,20 @@
 
 
 using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
 using namespace Teuchos;
 
-BasisFamilyBase::BasisFamilyBase()
-{;}
+bool BasisFamilyBase::lessThan(const BasisFamilyBase* other) const 
+{
+  TEST_FOR_EXCEPTION(
+    (typeid(*this).before(typeid(*other)) 
+      || typeid(*other).before(typeid(*this))),
+    InternalError,
+    "mismatched types: this=" << typeid(*this).name()
+    << " and other=" << typeid(*other).name() 
+    << " in BasisFamilyBase::lessThan(). This is most likely "
+    "an internal bug, because the case of distinct types should have "
+    "been dealt with before this point.");
+
+  return order() < other->order();
+}

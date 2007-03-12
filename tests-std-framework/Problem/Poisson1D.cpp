@@ -87,6 +87,7 @@ int main(int argc, char** argv)
       //Assembler::classVerbosity() = VerbExtreme;
       //DOFMapBase::classVerbosity() = VerbExtreme;
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
+      cout << prob.getOperator();
 
       ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-ifpack.xml"));
       ParameterList solverParams = reader.getParameters();

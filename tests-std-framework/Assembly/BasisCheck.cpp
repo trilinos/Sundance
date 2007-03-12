@@ -87,9 +87,9 @@ unsigned int iPow(unsigned int base, unsigned int exponent)
 {
   int rtn = 1;
   for (unsigned int i=0; i<exponent; i++)
-    {
-      rtn *= base;
-    }
+  {
+    rtn *= base;
+  }
   return rtn;
 }
 
@@ -97,135 +97,135 @@ int main(int argc, char** argv)
 {
   
   try
-		{
-      GlobalMPISession session(&argc, &argv);
+  {
+    GlobalMPISession session(&argc, &argv);
 
-      TimeMonitor t(totalTimer());
-      Tabs tab0;
+    TimeMonitor t(totalTimer());
+    Tabs tab0;
 
-      unsigned int pMax = 3;
-      unsigned int maxDim=2;
-      double tol = 1.0e-13;
-      int maxDiffOrder = 0;
-      int numErrors = 0;
+    unsigned int pMax = 3;
+    unsigned int maxDim=2;
+    double tol = 1.0e-13;
+    int maxDiffOrder = 0;
+    int numErrors = 0;
       
-      QuadratureFamily quad = new GaussianQuadrature(4);
+    QuadratureFamily quad = new GaussianQuadrature(4);
 
-      for (unsigned int p=1; p<=pMax; p++)
-        {
-          Tabs tab1;
-          cerr << tab1 << "Polynomial order p=" << p << endl;
-          for (unsigned int spatialDim=0; spatialDim<=maxDim; spatialDim++)
-            {
-              Tabs tab2;
-              cerr << tab2 << "spatial dimension =" << spatialDim << endl;
-              for (unsigned int cellDim=0; cellDim<=spatialDim; cellDim++)
-                {   
-                  Tabs tab3;
-                  cerr << tab3 << "cell dimension =" << cellDim << endl;
-                  CellType cellType;
-                  if (cellDim==0) cellType=PointCell;
-                  if (cellDim==1) cellType=LineCell;
-                  if (cellDim==2) cellType=TriangleCell;
-                  if (cellDim==3) cellType=TetCell;
+    for (unsigned int p=1; p<=pMax; p++)
+    {
+      Tabs tab1;
+      cerr << tab1 << "Polynomial order p=" << p << endl;
+      for (unsigned int spatialDim=0; spatialDim<=maxDim; spatialDim++)
+      {
+        Tabs tab2;
+        cerr << tab2 << "spatial dimension =" << spatialDim << endl;
+        for (unsigned int cellDim=0; cellDim<=spatialDim; cellDim++)
+        {   
+          Tabs tab3;
+          cerr << tab3 << "cell dimension =" << cellDim << endl;
+          CellType cellType;
+          if (cellDim==0) cellType=PointCell;
+          if (cellDim==1) cellType=LineCell;
+          if (cellDim==2) cellType=TriangleCell;
+          if (cellDim==3) cellType=TetCell;
                   
-                  Array<Point> qPts;
-                  Array<double> qWts;
-                  quad.getPoints(cellType, qPts, qWts);
+          Array<Point> qPts;
+          Array<double> qWts;
+          quad.getPoints(cellType, qPts, qWts);
 
-                  BasisFamily b1 = new Lagrange(p);
+          BasisFamily b1 = new Lagrange(p);
 #ifdef HAVE_FIAT
-                  BasisFamily b2 = new FIATLagrange(p);
+          BasisFamily b2 = new FIATLagrange(p);
 #else
-                  BasisFamily b2 = new Lagrange(p);
+          BasisFamily b2 = new Lagrange(p);
 #endif
-                  for (int d=0; d<=maxDiffOrder; d++)
-                    {
-                      if (cellDim==0 && d>0) continue;
-                      Tabs tab4;
-                      cerr << tab4 << "differentiation order = " << d << endl;
+          for (int d=0; d<=maxDiffOrder; d++)
+          {
+            if (cellDim==0 && d>0) continue;
+            Tabs tab4;
+            cerr << tab4 << "differentiation order = " << d << endl;
                       
-                      for (unsigned int dir=0; dir<iPow(cellDim, d); dir++)
-                        {
-                          Tabs tab5;
-                          cerr << tab5 << "direction = " << dir << endl;
-                          MultiIndex mi;
-                          mi[dir]=d;
-                          Array<Array<double> > values1;
-                          Array<Array<double> > values2;
-                          cerr << tab5 << "computing basis1...";
-                          b1.ptr()->refEval(spatialDim, cellType, qPts, mi, values1);
-                          cerr << "done" << endl;
-                          cerr << tab5 << "computing basis2...";
-                          b2.ptr()->refEval(spatialDim, cellType, qPts, mi, values2);
-                          cerr << "done" << endl;
-                          int nNodes1 = b1.ptr()->nNodes(spatialDim, cellType);
-                          int nNodes2 = b2.ptr()->nNodes(spatialDim, cellType);
-                          cerr << tab5 << "num nodes: basis1=" << nNodes1
-                               << " basis2=" << nNodes2 << endl;
-                          if (nNodes1 != nNodes2) 
-                            {
-                              cerr << "******** ERROR: node counts should be equal" << endl;
-                              numErrors++;
-                              continue;
-                            }
-                          if (values1.size() != values2.size())
-                            {
-                              cerr << "******** ERROR: value array outer sizes should be equal" << endl;
-                              numErrors++;
-                              continue;
-                            }
-                          if (values1.size() != qPts.size())
-                            {
-                              cerr << "******** ERROR: value array outer size should be equal to number of quad points" << endl;
-                              numErrors++;
-                              continue;
-                            }
-                          for (int q=0; q<qPts.length(); q++)
-                            {
-                              if (values1[q].length() != nNodes1)
-                                {
-                                  cerr << "******** ERROR: value array inner size should be equal to number of nodes" << endl;
-                                  numErrors++;
-                                  continue;
-                                }
-                              Tabs tab6;
-                              cerr << tab6 << "quad point q=" << q << " pt=" << qPts[q]
-                                   << endl;
-                              for (int n=0; n<nNodes1; n++)
-                                {
-                                  Tabs tab7;
-                                  cerr << tab7 << "node n=" << n << " phi1=" 
-                                       << values1[q][n] 
-                                       << " phi2=" << values2[q][n] 
-                                       << " |phi1-phi2|=" << fabs(values1[q][n]-values2[q][n]) 
-                                       << endl;
-                                  if (fabs(values1[q][n]-values2[q][n]) > tol) { cout << "ERROR" << endl; numErrors++; }
-                                }
-                            }
-                        }
-                    }
+            for (unsigned int dir=0; dir<iPow(cellDim, d); dir++)
+            {
+              Tabs tab5;
+              cerr << tab5 << "direction = " << dir << endl;
+              MultiIndex mi;
+              mi[dir]=d;
+              Array<Array<Array<double> > > values1;
+              Array<Array<Array<double> > > values2;
+              cerr << tab5 << "computing basis1...";
+              b1.ptr()->refEval(cellType, cellType, qPts, mi, values1);
+              cerr << "done" << endl;
+              cerr << tab5 << "computing basis2...";
+              b2.ptr()->refEval(cellType, cellType, qPts, mi, values2);
+              cerr << "done" << endl;
+              int nNodes1 = b1.ptr()->nReferenceDOFs(cellType, cellType);
+              int nNodes2 = b2.ptr()->nReferenceDOFs(cellType, cellType);
+              cerr << tab5 << "num nodes: basis1=" << nNodes1
+                   << " basis2=" << nNodes2 << endl;
+              if (nNodes1 != nNodes2) 
+              {
+                cerr << "******** ERROR: node counts should be equal" << endl;
+                numErrors++;
+                continue;
+              }
+              if (values1.size() != values2.size())
+              {
+                cerr << "******** ERROR: value array outer sizes should be equal" << endl;
+                numErrors++;
+                continue;
+              }
+              if (values1[0].size() != qPts.size())
+              {
+                cerr << "******** ERROR: value array outer size should be equal to number of quad points" << endl;
+                numErrors++;
+                continue;
+              }
+              for (int q=0; q<qPts.length(); q++)
+              {
+                if (values1[0][q].length() != nNodes1)
+                {
+                  cerr << "******** ERROR: value array inner size should be equal to number of nodes" << endl;
+                  numErrors++;
+                  continue;
                 }
+                Tabs tab6;
+                cerr << tab6 << "quad point q=" << q << " pt=" << qPts[q]
+                     << endl;
+                for (int n=0; n<nNodes1; n++)
+                {
+                  Tabs tab7;
+                  cerr << tab7 << "node n=" << n << " phi1=" 
+                       << values1[0][q][n] 
+                       << " phi2=" << values2[0][q][n] 
+                       << " |phi1-phi2|=" << fabs(values1[0][q][n]-values2[0][q][n]) 
+                       << endl;
+                  if (fabs(values1[0][q][n]-values2[0][q][n]) > tol) { cout << "ERROR" << endl; numErrors++; }
+                }
+              }
             }
+          }
         }
-
-      cerr << endl << endl << "Summary: detected " << numErrors << " errors " << endl;
-      
-      if (numErrors == 0)
-        {
-          cerr << "BasisCheck PASSED" << endl;
-        }
-      else
-        {
-          cerr << "BasisCheck FAILED" << endl;
-        }
-      TimeMonitor::summarize();
+      }
     }
-	catch(exception& e)
-		{
-      cerr << e.what() << endl;
+
+    cerr << endl << endl << "Summary: detected " << numErrors << " errors " << endl;
+      
+    if (numErrors == 0)
+    {
+      cerr << "BasisCheck PASSED" << endl;
+    }
+    else
+    {
       cerr << "BasisCheck FAILED" << endl;
-		}
+    }
+    TimeMonitor::summarize();
+  }
+	catch(exception& e)
+  {
+    cerr << e.what() << endl;
+    cerr << "BasisCheck FAILED" << endl;
+  }
 
   
 }
