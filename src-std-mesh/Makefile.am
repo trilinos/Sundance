@@ -45,6 +45,47 @@
 #
 #np# Make sure to list all source files in one of the following categories.
 
+SUNDANCE_CELLFILTERS_H = \
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceBinaryCellFilter.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceBoundaryCellFilter.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceBoundaryCellPredicate.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellFilterBase.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellFilter.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellIterator.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellPredicateBase.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellPredicate.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellSetBase.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellSet.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCFMeshPair.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceDimensionalCellFilter.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceExplicitCellIterator.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceExplicitCellSet.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceImplicitCellSet.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceLabelCellPredicate.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceMaximalCellFilter.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundancePositionalCellPredicate.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceSideCellFilter.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceSubsetCellFilter.hpp
+
+SUNDANCE_CELLFILTERS = \
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceBinaryCellFilter.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceBoundaryCellPredicate.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellFilterBase.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellFilter.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellIterator.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellPredicateBase.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellPredicate.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellSetBase.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCellSet.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceCFMeshPair.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceDimensionalCellFilter.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceExplicitCellSet.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceImplicitCellSet.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceLabelCellPredicate.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceMaximalCellFilter.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundancePositionalCellPredicate.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceSideCellFilter.cpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceSubsetCellFilter.cpp
 
 SUNDANCE_MESHINTERFACE_H = \
 $(top_srcdir)/src-std-mesh/Interface/SundanceCellJacobianBatch.hpp \
@@ -136,6 +177,7 @@ $(SUNDANCE_MESHINTERFACE) \
 $(SUNDANCE_CONCRETEMESHES) \
 $(SUNDANCE_MESHTRANSFORMATIONS) \
 $(SUNDANCE_MESHSOURCES) \
+$(SUNDANCE_CELLFILTERS) \
 $(SUNDANCE_MESHWRITERS) 
 
 STD_MESH_SOURCES_H = \
@@ -143,6 +185,7 @@ $(SUNDANCE_MESHINTERFACE_H) \
 $(SUNDANCE_CONCRETEMESHES_H) \
 $(SUNDANCE_MESHTRANSFORMATIONS_H) \
 $(SUNDANCE_MESHSOURCES_H)  \
+$(SUNDANCE_CELLFILTERS_H) \
 $(SUNDANCE_MESHWRITERS_H) 
 
 include $(top_srcdir)/Makefile.common

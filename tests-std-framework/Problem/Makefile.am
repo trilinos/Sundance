@@ -55,6 +55,7 @@ SpectralPoisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 SpectralPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -69,6 +70,7 @@ AToCDensitySample_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 AToCDensitySample_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -84,6 +86,7 @@ LinearPartialDomain_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 LinearPartialDomain_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -98,6 +101,7 @@ NonlinearPartialDomain_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 NonlinearPartialDomain_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -112,6 +116,7 @@ SpectralSqrt_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 SpectralSqrt_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -127,6 +132,7 @@ Poisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Poisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -141,6 +147,7 @@ OptPoisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 OptPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -157,6 +164,7 @@ Poisson2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Poisson2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -173,6 +181,7 @@ HighOrderPoisson2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 HighOrderPoisson2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -187,6 +196,7 @@ HighOrderPoisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 HighOrderPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -203,6 +213,7 @@ Poisson3D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Poisson3D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -218,6 +229,7 @@ HighOrderProjection1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 HighOrderProjection1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -231,6 +243,7 @@ HighOrderProjection2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 HighOrderProjection2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -245,6 +258,7 @@ Stokes2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Stokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -260,6 +274,7 @@ TaylorHoodStokes2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 TaylorHoodStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -281,6 +296,7 @@ Coupled1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Coupled1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -296,6 +312,7 @@ Coupled2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Coupled2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -309,6 +326,7 @@ RadDiff1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 RadDiff1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -325,6 +343,7 @@ NoxAlgebraic_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 NoxAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -340,6 +359,7 @@ UserDefAlgebraic_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 UserDefAlgebraic_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -354,6 +374,7 @@ NoxPoisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 NoxPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -368,6 +389,7 @@ Kepler_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Kepler_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -380,6 +402,7 @@ PoissonOnDisk_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 PoissonOnDisk_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -401,6 +424,7 @@ Eikonal2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Eikonal2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -442,6 +466,7 @@ VorticityStokes2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 VorticityStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -464,6 +489,7 @@ Helmholtz1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 Helmholtz1D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -485,6 +511,7 @@ VorticityNavierStokes2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 VorticityNavierStokes2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -502,6 +529,7 @@ BesselTest2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 BesselTest2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -516,6 +544,7 @@ AdvectionDiffusion2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 AdvectionDiffusion2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -529,6 +558,7 @@ FunctionalTest_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 FunctionalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -543,6 +573,7 @@ FunctionalTest3D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 FunctionalTest3D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -559,6 +590,7 @@ LinearVariationalTest_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 LinearVariationalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -574,6 +606,7 @@ PoissonBoltzmann2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 PoissonBoltzmann2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -590,6 +623,7 @@ SimpleModelEvalTest_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 SimpleModelEvalTest_CXXFLAGS = $(STD_FWK_INCLUDES)

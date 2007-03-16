@@ -89,14 +89,14 @@ TRILINOS_LIBS = $(shell $(PERL_EXE) @abs_top_srcdir@/config/strip_dup_libs.pl $(
 #-------------------------------------------------------------------------
 
 SUNDANCE_LIBS = \
-  $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(UTIL_LIBS) $(SOLVERS_LIBS) 
+  $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(INTEROP_LIBS) $(UTILS_LIBS) $(SOLVERS_LIBS) 
 
 
 #-------------------------------------------------------------------------
 # Set macros for including and linking from the Sundance source subdirectories
 #-------------------------------------------------------------------------
 
-SUNDANCE_INCLUDES = $(SOLVERS_INCLUDES) $(UTIL_INCLUDES) $(CORE_INCLUDES) \
+SUNDANCE_INCLUDES = $(SOLVERS_INCLUDES) $(UTIL_INCLUDES) $(INTEROP_INCLUDES) $(CORE_INCLUDES) \
   $(STD_MESH_INCLUDES) $(STD_FWK_INCLUDES) -I$(TRILINOS_DIR)/include
 
 # --------- solvers
@@ -132,6 +132,19 @@ UTIL_INCLUDES =  \
 
 
 
+# --------- interoperability stubs
+
+INTEROP_LIB_PATH = -L@abs_top_builddir@/src-interop $(UTIL_LIB_PATH) 
+
+INTEROP_LIBS = $(INTEROP_LIB_PATH) -lsundanceInterop 
+
+
+
+INTEROP_INCLUDES =  \
+-I@abs_top_builddir@/src-interop \
+-I@abs_top_srcdir@/src-interop/Stubs 
+
+
 # --------- symbolics
 
 CORE_LIBS = $(CORE_LIB_PATH) -lsundanceCore 
@@ -165,6 +178,7 @@ STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh
 
 STD_MESH_INCLUDE_PATH =  \
 -I@abs_top_builddir@/src-std-mesh \
+-I@abs_top_srcdir@/src-std-mesh/CellFilter \
 -I@abs_top_srcdir@/src-std-mesh/Concrete \
 -I@abs_top_srcdir@/src-std-mesh/Interface \
 -I@abs_top_srcdir@/src-std-mesh/Sources \
@@ -183,7 +197,6 @@ $(FIAT_LIB_PATH)
 
 STD_FWK_INCLUDE_PATH = \
 -I@abs_top_builddir@/src-std-framework \
--I@abs_top_srcdir@/src-std-framework/CellFilter \
 -I@abs_top_srcdir@/src-std-framework/Elements \
 -I@abs_top_srcdir@/src-std-framework/DOFMapping \
 -I@abs_top_srcdir@/src-std-framework/Assembly \

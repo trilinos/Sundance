@@ -98,6 +98,7 @@ if BUILD_CXXTESTS
 
 SUBDIRS = src-solvers tests-solvers \
 src-utils tests-utils \
+src-interop \
 src-core tests-core \
 src-std-mesh tests-std-mesh \
 src-std-framework tests-std-framework \
@@ -115,7 +116,7 @@ CXX_FWK_SERIALTESTS = (cd tests-std-framework; $(MAKE) serialtests)
 CXX_TESTS_TO_CHECK=tests-*/*/*.tst
 CXX_PTESTS_TO_CHECK=tests-*/*/*.ptst
 else
-SUBDIRS = src-solvers src-utils src-core src-std-mesh src-std-framework \
+SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework \
 $(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR)
 endif
 
@@ -128,6 +129,7 @@ endif
 libonly:
 	(cd src-solvers; $(MAKE) install)
 	(cd src-utils; $(MAKE) install)
+	(cd src-interop; $(MAKE) install)
 	(cd src-core; $(MAKE) install)
 	(cd src-std-mesh; $(MAKE) install)
 	(cd src-std-framework; $(MAKE) install)

@@ -43,6 +43,7 @@ BasisCheck_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a
 
 BasisCheck_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -57,6 +58,7 @@ TransformedIntegral2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a
 
 TransformedIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -72,6 +74,7 @@ QuadratureIntegral2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a
 
 QuadratureIntegral2D_CXXFLAGS = $(STD_FWK_INCLUDES)
@@ -87,6 +90,7 @@ QuadratureTest_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a
 
 QuadratureTest_CXXFLAGS = $(STD_FWK_INCLUDES)

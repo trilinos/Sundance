@@ -46,48 +46,7 @@
 #np# Make sure to list all source files in one of the following categories.
 
 
-SUNDANCE_CELLFILTERS_H = \
-$(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellFilter.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellPredicate.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilterBase.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilter.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellIterator.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicateBase.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicate.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellSetBase.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellSet.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCFMeshPair.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceDimensionalCellFilter.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellIterator.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellSet.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceImplicitCellSet.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceLabelCellPredicate.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceMaximalCellFilter.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundancePositionalCellPredicate.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceSideCellFilter.hpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.hpp
 
-SUNDANCE_CELLFILTERS = \
-$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp \
-$(top_srcdir)/src-std-framework/CellFilter/SundanceBinaryCellFilter.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceBoundaryCellPredicate.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilterBase.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellFilter.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellIterator.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicateBase.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellPredicate.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellSetBase.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCellSet.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceCFMeshPair.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceDimensionalCellFilter.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceExplicitCellSet.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceImplicitCellSet.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceLabelCellPredicate.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceMaximalCellFilter.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundancePositionalCellPredicate.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceSideCellFilter.cpp\
-$(top_srcdir)/src-std-framework/CellFilter/SundanceSubsetCellFilter.cpp
 
 SUNDANCE_ELEMENTS_H = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
@@ -219,14 +178,12 @@ $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp
 
 
 STD_FWK_SOURCES = \
-$(SUNDANCE_CELLFILTERS) \
 $(SUNDANCE_ELEMENTS) \
 $(SUNDANCE_DOFMAPPING) \
 $(SUNDANCE_ASSEMBLY)  \
 $(SUNDANCE_PROBLEM)  
 
 STD_FWK_SOURCES_H = \
-$(SUNDANCE_CELLFILTERS_H) \
 $(SUNDANCE_ELEMENTS_H) \
 $(SUNDANCE_DOFMAPPING_H)  \
 $(SUNDANCE_ASSEMBLY_H) \

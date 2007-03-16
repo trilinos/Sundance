@@ -94,7 +94,20 @@ UTIL_INCLUDES =  \
 -I$(top_builddir)/src-utils/Utilities \
 $(SOLVERS_INCLUDES)
 
-CORE_LIBS = $(CORE_LIB_PATH) -lsundanceCore $(UTIL_LIBS)
+
+INTEROP_LIB_PATH = -L$(top_builddir)/src-interop $(UTIL_LIB_PATH) 
+
+INTEROP_LIBS = $(INTEROP_LIB_PATH) -lsundanceInterop $(UTIL_LIBS) $(SOLVERS_LIBS)
+
+
+
+INTEROP_INCLUDES =  \
+-I$(top_builddir)/src-interop \
+-I$(top_srcdir)/src-interop/Stubs \
+-I$(top_builddir)/src-interop/Stubs \
+$(UTIL_INCLUDES) $(SOLVERS_INCLUDES)
+
+CORE_LIBS = $(CORE_LIB_PATH) -lsundanceCore $(INTEROP_LIBS)
 
 CORE_LIB_PATH = \
 -L$(top_builddir)/src-core 
@@ -118,40 +131,40 @@ CORE_INCLUDE_PATH =  \
 -I$(top_builddir)/src-core/Spectral \
 -I$(top_builddir)/src-core/SymbolicTransformations 
 
-CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) 
+CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) 
 
 STD_MESH_LIB_PATH = \
 -L$(top_builddir)/src-std-mesh 
 
 
-STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(UTIL_LIBS)
+STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(INTEROP_LIBS)
 
 STD_MESH_INCLUDE_PATH =  \
 -I$(top_builddir)/src-std-mesh \
+-I$(top_srcdir)/src-std-mesh/CellFilter \
 -I$(top_srcdir)/src-std-mesh/Concrete \
 -I$(top_srcdir)/src-std-mesh/Interface \
 -I$(top_srcdir)/src-std-mesh/Sources \
 -I$(top_srcdir)/src-std-mesh/Transformations \
 -I$(top_srcdir)/src-std-mesh/Writers \
+-I$(top_builddir)/src-std-mesh/CellFilter \
 -I$(top_builddir)/src-std-mesh/Concrete \
 -I$(top_builddir)/src-std-mesh/Interface \
 -I$(top_builddir)/src-std-mesh/Sources \
 -I$(top_builddir)/src-std-mesh/Transformations \
 -I$(top_builddir)/src-std-mesh/Writers 
 
-STD_MESH_INCLUDES = $(STD_MESH_INCLUDE_PATH) $(UTIL_INCLUDES)
+STD_MESH_INCLUDES = $(STD_MESH_INCLUDE_PATH) $(INTEROP_INCLUDES)
 
 STD_FWK_LIB_PATH =  \
 -L$(top_builddir)/src-std-framework 
 
 STD_FWK_INCLUDE_PATH =  \
 -I$(top_builddir)/src-std-framework \
--I$(top_srcdir)/src-std-framework/CellFilter \
 -I$(top_srcdir)/src-std-framework/Elements \
 -I$(top_srcdir)/src-std-framework/DOFMapping \
 -I$(top_srcdir)/src-std-framework/Assembly \
 -I$(top_srcdir)/src-std-framework/Problem \
--I$(top_builddir)/src-std-framework/CellFilter \
 -I$(top_builddir)/src-std-framework/Elements \
 -I$(top_builddir)/src-std-framework/DOFMapping \
 -I$(top_builddir)/src-std-framework/Assembly \
@@ -159,10 +172,11 @@ STD_FWK_INCLUDE_PATH =  \
 
 
 STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(STD_MESH_INCLUDE_PATH) \
-$(CORE_INCLUDE_PATH) $(UTIL_INCLUDES) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
+$(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
+
 
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
--lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(UTIL_LIBS) 
+-lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(INTEROP_LIBS) 
 
 
 

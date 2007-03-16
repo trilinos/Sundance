@@ -201,7 +201,6 @@ $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.cpp
 
 SUNDANCE_FRAMEWORKINTERFACE_H = \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceAbstractEvalMediator.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceCommonFuncDataStub.hpp\
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivBase.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.hpp \
@@ -215,7 +214,6 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultipleDeriv.hpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceNullCellFilterStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceQuadratureFamilyStub.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceRegionQuadCombo.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceTestFuncDataStub.hpp \
@@ -225,7 +223,6 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceUnknownFunctionStub.hpp
 
 SUNDANCE_FRAMEWORKINTERFACE = \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceAbstractEvalMediator.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceCellFilterStub.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivBase.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDeriv.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceDerivSet.cpp \
@@ -236,7 +233,6 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultipleDeriv.cpp \
-$(top_srcdir)/src-core/FrameworkInterface/SundanceNullCellFilterStub.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceQuadratureFamilyStub.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceRegionQuadCombo.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceTestFunctionStub.cpp \

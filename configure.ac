@@ -298,6 +298,7 @@ AC_CONFIG_FILES([
   examples-tutorial/c++/Makefile
   examples-tutorial/python/Makefile
   src-utils/Makefile
+  src-interop/Makefile
   src-core/Makefile
   src-std-mesh/Makefile
   src-std-framework/Makefile
