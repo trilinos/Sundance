@@ -67,6 +67,7 @@ PROXIES    = $(INTERFACES:.i=.py      )
 LIBDEPENDENCIES = $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
 build: $(WRAPPERS) $(tempdir) $(LIBDEPENDENCIES)

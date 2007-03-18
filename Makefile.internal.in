@@ -89,7 +89,7 @@ TRILINOS_LIBS = $(shell $(PERL_EXE) @abs_top_srcdir@/config/strip_dup_libs.pl $(
 #-------------------------------------------------------------------------
 
 SUNDANCE_LIBS = \
-  $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(INTEROP_LIBS) $(UTILS_LIBS) $(SOLVERS_LIBS) 
+  $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(INTEROP_LIBS) $(UTIL_LIBS) $(SOLVERS_LIBS) 
 
 
 #-------------------------------------------------------------------------

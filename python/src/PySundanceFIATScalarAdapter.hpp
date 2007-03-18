@@ -1,7 +1,7 @@
 #ifndef PYSUNDANCE_FIATSCALARADAPTER_H
 #define PYSUNDANCE_FIATSCALARADAPTER_H
 #include "Python.h"
-#include "SundanceScalarBasis.hpp"
+#include "SundanceBasisFamilyBase.hpp"
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include <stack>
@@ -22,19 +22,29 @@ namespace SundanceStdFwk
   public:
     FIATScalarAdapter( PyObject *pyfamilyclass , int order );
     
-    ~FIATScalarAdapter();
+    ~FIATScalarAdapter(); 
+
+    bool supportsCellTypePair(
+      const CellType& maximalCellType,
+      const CellType& cellType
+      ) const ;
+      
+    void getReferenceDOFs(
+      const CellType& maximalCellType,
+      const CellType& cellType,
+      Array<Array<Array<int> > >& dofs) const;
     
-    void getLocalDOFs(const CellType& cellType,
-		      Array<Array<Array<int> > >& dofs) const;
+    int nReferenceDOFs(
+      const CellType& maximalCellType,
+      const CellType& cellType
+      ) const ;
     
-    int nNodes(int spatialDim ,
-	       const CellType& cellType ) const;
-    
-    void refEval(int spatialDim,
-		 const CellType& cellType,
-		 const Array<Point>& pts,
-		 const MultiIndex& deriv,
-		 Array<Array<double> >& result) const;
+    void refEval(
+      const CellType& maximalCellType,
+      const CellType& cellType,
+      const Array<Point>& pts,
+      const MultiIndex& deriv,
+      Array<Array<Array<double> > >& result) const ;
     
     int order() const { return order_; }
 
