@@ -78,6 +78,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.hpp
 
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
