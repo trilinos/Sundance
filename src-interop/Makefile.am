@@ -63,7 +63,7 @@ $(SUNDANCE_STUBS)
 
 
 INTEROP_SOURCES_H = \
-$(SUNDANCE_INTEROP_H) 
+$(SUNDANCE_STUBS_H) 
 
 include $(top_srcdir)/Makefile.common
 

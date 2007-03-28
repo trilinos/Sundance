@@ -49,8 +49,10 @@
 
 
 SUNDANCE_ELEMENTS_H = \
+$(top_srcdir)/src-std-framework/Elements/SundanceBasisDOFTopologyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceBasisReferenceEvaluationBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
