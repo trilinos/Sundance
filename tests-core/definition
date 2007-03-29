@@ -35,7 +35,7 @@
           ../tests-std-framework/Problem/VorticityNavierStokes2D.exe,
           ../tests-std-framework/Problem/SpectralPoisson1D.exe,
           ../tests-std-framework/Problem/SpectralSqrt.exe;
-  EXIT-STATUS = STRING-COMPARISON(test PASSED);
+  EXIT-STATUS = STRING-COMPARISON(PASSED);
   COMM = SERIAL, MPI;
 } 
 
@@ -88,7 +88,7 @@
          ../tests-std-framework/Problem/NonlinearPartialDomain.exe,
          ../tests-std-framework/Problem/AToCDensitySample.exe,
          ../tests-std-framework/Problem/FunctionalTest3D.exe;
-  EXIT-STATUS = STRING-COMPARISON(test PASSED);
+  EXIT-STATUS = STRING-COMPARISON(PASSED);
   COMM = CUSTOM-MPI, CUSTOM-SERIAL;
 }
 
