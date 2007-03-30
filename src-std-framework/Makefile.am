@@ -66,6 +66,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadratureType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceNedelec.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceP1NC.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.hpp \
@@ -76,7 +77,8 @@ $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.hpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.hpp
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceVectorBasisComponent.hpp
 
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
@@ -93,6 +95,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceGauss1D.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadrature.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceGaussianQuadratureType.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceLagrange.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceNedelec.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceP1NC.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamily.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceQuadratureFamilyBase.cpp \
@@ -102,7 +105,8 @@ $(top_srcdir)/src-std-framework/Elements/SundanceTestFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTetQuadrature.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceTriangleQuadrature.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunction.cpp \
-$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp 
+$(top_srcdir)/src-std-framework/Elements/SundanceUnknownFunctionData.cpp  \
+$(top_srcdir)/src-std-framework/Elements/SundanceVectorBasisComponent.cpp
 
 SUNDANCE_DOFMAPPING_H = \
 $(top_srcdir)/src-std-framework/DOFMapping/SundanceBlock.hpp\

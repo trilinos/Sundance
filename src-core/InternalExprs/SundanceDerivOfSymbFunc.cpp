@@ -51,7 +51,7 @@ DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op,
     = dynamic_cast<const SymbolicFuncElement*>(evaluatableArg());
   TEST_FOR_EXCEPTION(f==0, InternalError, "argument to DerivOfSymbFunc ctor "
                      "is not a symbolic function");
-  funcID_ = f->funcID();
+  funcID_ = f->funcComponentID();
 }
 
 

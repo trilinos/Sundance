@@ -66,9 +66,11 @@ FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 # Linker command flags
 #-------------------------------------------------------------------------
 
-SUNDANCE_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/lib $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(UTIL_LIBS) 
+SUNDANCE_LIBS = -L$(SUNDANCE_BUILD_DIRECTORY)/lib $(STD_FWK_LIBS) $(STD_MESH_LIBS) $(CORE_LIBS) $(INTEROP_LIBS) $(UTIL_LIBS) 
 
 UTIL_LIBS = -lsundanceUtils $(TRILINOS_LIBS)
+
+INTEROP_LIBS = -lsundanceInterop 
 
 CORE_LIBS = -lsundanceCore
 

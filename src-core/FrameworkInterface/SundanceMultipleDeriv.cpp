@@ -89,7 +89,7 @@ MultiSet<int> MultipleDeriv::funcIDs() const
     {
       if (i->isFunctionalDeriv())
         {
-          int f = i->funcDeriv()->funcID();
+          int f = i->funcDeriv()->funcComponentID();
           rtn.put(f);
         }
       TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,

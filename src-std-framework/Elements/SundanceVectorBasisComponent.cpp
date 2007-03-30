@@ -28,54 +28,41 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceFuncElementBase.hpp"
-#include "SundanceFunctionalDeriv.hpp"
-#include "SundanceCoordDeriv.hpp"
+#include "SundanceVectorBasisComponent.hpp"
+#include "SundanceExceptions.hpp"
 
-using namespace SundanceCore;
 using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
+using namespace SundanceStdFwk;
 using namespace Teuchos;
 
-FuncElementBase::FuncElementBase(const string& rootName,
-                                 const string& suffix)
-	: ScalarExpr(), name_(rootName + suffix), rootName_(rootName),
-    suffix_(suffix), id_(nextID()++)
-{}
-
-FuncElementBase::FuncElementBase(const string& rootName)
-	: ScalarExpr(), name_(rootName), rootName_(rootName),
-    suffix_(), id_(nextID()++)
-{}
-
-
-void FuncElementBase::accumulateFuncSet(Set<int>& funcIDs, 
-                                        const Set<int>& activeSet) const
+VectorBasisComponent::VectorBasisComponent(const BasisFamily& master, 
+  int direction)
+  : master_(master),
+    direction_(direction)
 {
-  if (activeSet.contains(funcComponentID())) funcIDs.put(funcComponentID());
+  TEST_FOR_EXCEPTION(master_.ptr()->isScalarBasis(), RuntimeError,
+    "scalar-valued basis " << master << " given as master argument to "
+    "a vector basis component object. The master object must be a "
+    "vector-valued basis");
 }
 
-ostream& FuncElementBase::toText(ostream& os, bool /* paren */) const 
+bool VectorBasisComponent::lessThan(const BasisFamilyBase* other) const 
 {
-	os << name_;
-	return os;
+  TEST_FOR_EXCEPTION(
+    (typeid(*this).before(typeid(*other)) 
+      || typeid(*other).before(typeid(*this))),
+    InternalError,
+    "mismatched types: this=" << typeid(*this).name()
+    << " and other=" << typeid(*other).name() 
+    << " in BasisFamilyBase::lessThan(). This is most likely "
+    "an internal bug, because the case of distinct types should have "
+    "been dealt with before this point.");
+
+  const VectorBasisComponent* p
+    = dynamic_cast<const VectorBasisComponent*>(other);
+
+  if (direction_ < p->direction_) return true;
+  if (direction_ > p->direction_) return false;
+
+  return (master_ < p->master_);
 }
-
-ostream& FuncElementBase::toLatex(ostream& os, bool /* paren */) const 
-{
-	os << name_;
-	return os;
-}
-
-
-
-bool FuncElementBase::lessThan(const ScalarExpr* other) const
-{
-  const FuncElementBase* f = dynamic_cast<const FuncElementBase*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
-  
-  return (funcComponentID() < f->funcComponentID());
-}
-
-  

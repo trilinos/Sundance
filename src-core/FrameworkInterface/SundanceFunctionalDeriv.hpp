@@ -54,7 +54,7 @@ namespace SundanceCore
        * A functional derivative is fully specified with two quantities:
        * the funcID of the function \f$u_i\f$, and the MultiIndex
        * \f$\alpha\f$ which specifies the spatial derivative \f$D_\alpha\f$.
-       * These can be accessed by the funcID() and multiIndex() methods,
+       * These can be accessed by the funcComponentID() and multiIndex() methods,
        * respectively. 
        * @see Deriv
        */
@@ -71,7 +71,7 @@ namespace SundanceCore
 
           /** Return the funcID that specifies which function was used in
            * the definition of this functional derivative */
-          virtual int funcID() const {return func_->funcID();}
+          virtual int funcComponentID() const {return func_->funcComponentID();}
 
           /** Return the multiindex that specifies which spatial derivative
            *  was used in

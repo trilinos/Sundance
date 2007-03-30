@@ -63,7 +63,7 @@ namespace SundanceCore
       virtual ~DerivOfSymbFunc() {;}
 
       /** */
-      int funcID() const {return funcID_;}
+      int funcComponentID() const {return funcID_;}
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}

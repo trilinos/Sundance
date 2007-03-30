@@ -235,7 +235,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
         = dynamic_cast<const SymbolicFuncElement*>(v[i].ptr().get());
       TEST_FOR_EXCEPTION(vPtr==0, RuntimeError, "list of variational funcs "
                          "contains a non-symbolic function " << v[i].toString());
-      int fid = vPtr->funcID();
+      int fid = vPtr->funcComponentID();
       TEST_FOR_EXCEPTION(varID.contains(fid), RuntimeError,
                          "duplicate variational function in list "
                          << vars.toString());
@@ -268,7 +268,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                          "list of purported unknown funcs "
                          "contains a non-unknown function "
                          << u[i].toString());
-      int fid = uPtr->funcID();
+      int fid = uPtr->funcComponentID();
       TEST_FOR_EXCEPTION(unkID.contains(fid), RuntimeError,
                          "duplicate unknown function in list "
                          << u.toString());
@@ -300,7 +300,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                          "list of purported unknown parameters "
                          "contains a function that is not an unknown parameter"
                          << alpha[i].toString());
-      int fid = aPtr->funcID();
+      int fid = aPtr->funcComponentID();
       TEST_FOR_EXCEPTION(unkParamID.contains(fid), RuntimeError,
                          "duplicate unknown parameter in list "
                          << alpha.toString());
@@ -323,7 +323,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                          "list of purported fixed unknown parameters "
                          "contains a function that is not an unknown parameter"
                          << beta[i].toString());
-      int fid = bPtr->funcID();
+      int fid = bPtr->funcComponentID();
       TEST_FOR_EXCEPTION(fixedParamID.contains(fid), RuntimeError,
                          "duplicate fixed parameter in list "
                          << beta.toString());
@@ -346,7 +346,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
                          "list of purported fixed funcs "
                          "contains a non-unknown function "
                          << f[i].toString());
-      int fid = fPtr->funcID();
+      int fid = fPtr->funcComponentID();
       TEST_FOR_EXCEPTION(fixedID.contains(fid), RuntimeError,
                          "duplicate unknown function in list "
                          << f.toString());

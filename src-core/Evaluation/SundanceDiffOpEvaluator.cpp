@@ -363,13 +363,13 @@ Set<MultipleDeriv> DiffOpEvaluator
           TEST_FOR_EXCEPT(md.order() != 1);
           Deriv lambda = *(md.begin());
           if (lambda.isCoordDeriv()) continue;
-          int lambda_fid = lambda.funcDeriv()->funcID();
+          int lambda_fid = lambda.funcDeriv()->funcComponentID();
           const MultiIndex& lambda_mi = lambda.funcDeriv()->multiIndex(); 
           for (MultipleDeriv::const_iterator j=mu.begin(); j!=mu.end(); j++)
             {
               const Deriv& d = *j;
               if (d.isCoordDeriv()) continue;
-              int d_fid = d.funcDeriv()->funcID();
+              int d_fid = d.funcDeriv()->funcComponentID();
               const MultiIndex& d_mi = d.funcDeriv()->multiIndex(); 
               if (d_fid != lambda_fid) continue;
               if (!(alpha + lambda_mi == d_mi)) continue;

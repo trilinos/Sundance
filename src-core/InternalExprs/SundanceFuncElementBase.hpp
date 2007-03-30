@@ -82,7 +82,7 @@ namespace SundanceCore
           virtual ~FuncElementBase() {;}
 
           /** Return an integer ID which uniquely identifies this function */
-          int funcID() const {return id_;}
+          int funcComponentID() const {return id_;}
 
           /** Append to the set of func IDs present in this expression. */
           virtual void accumulateFuncSet(Set<int>& funcIDs, 

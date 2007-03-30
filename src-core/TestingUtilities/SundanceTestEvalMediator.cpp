@@ -73,7 +73,7 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
       TEST_FOR_EXCEPTION(u0 == 0, InternalError,
                          "TestEvalMediator ctor: field argument "
                          << f[i] << " is not a discrete function");
-      funcIdToFieldNumberMap_.put(u0->funcID(), i);
+      funcIdToFieldNumberMap_.put(u0->funcComponentID(), i);
 
       const DiscreteFuncDataStub* data = u0->commonData();
       const TestDiscreteFuncData* tdfd  
@@ -152,12 +152,12 @@ void TestEvalMediator
 
   string funcName = expr->name();
   
-  TEST_FOR_EXCEPTION(!funcIdToFieldNumberMap_.containsKey(expr->funcID()),
-                     InternalError, "funcID " << expr->funcID()
+  TEST_FOR_EXCEPTION(!funcIdToFieldNumberMap_.containsKey(expr->funcComponentID()),
+                     InternalError, "funcID " << expr->funcComponentID()
                      << " not found in TestEvalMediator funcID to field "
                      "map" << funcIdToFieldNumberMap_);
 
-  int fieldIndex = funcIdToFieldNumberMap_.get(expr->funcID());
+  int fieldIndex = funcIdToFieldNumberMap_.get(expr->funcComponentID());
   
   for (unsigned int i=0; i<mi.size(); i++)
     {

@@ -55,8 +55,8 @@ bool FunctionalDeriv::lessThan(const Deriv& other) const
 
   const FunctionalDeriv* f = other.funcDeriv();
 
-  if (funcID() < f->funcID()) return true;
-  if (funcID() > f->funcID()) return false;
+  if (funcComponentID() < f->funcComponentID()) return true;
+  if (funcComponentID() > f->funcComponentID()) return false;
   if (multiIndex() < f->multiIndex()) return true;
   return false;
 }

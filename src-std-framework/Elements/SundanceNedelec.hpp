@@ -28,54 +28,71 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceFuncElementBase.hpp"
-#include "SundanceFunctionalDeriv.hpp"
-#include "SundanceCoordDeriv.hpp"
+#ifndef SUNDANCE_LAGRANGE_H
+#define SUNDANCE_LAGRANGE_H
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+#include "SundanceDefs.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+#include "SundanceBasisFamilyBase.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-FuncElementBase::FuncElementBase(const string& rootName,
-                                 const string& suffix)
-	: ScalarExpr(), name_(rootName + suffix), rootName_(rootName),
-    suffix_(suffix), id_(nextID()++)
-{}
-
-FuncElementBase::FuncElementBase(const string& rootName)
-	: ScalarExpr(), name_(rootName), rootName_(rootName),
-    suffix_(), id_(nextID()++)
-{}
-
-
-void FuncElementBase::accumulateFuncSet(Set<int>& funcIDs, 
-                                        const Set<int>& activeSet) const
+namespace SundanceStdFwk 
 {
-  if (activeSet.contains(funcComponentID())) funcIDs.put(funcComponentID());
+/** 
+ * Lowest-order Nedelec basis 
+ */
+class Nedelec : public ContravariantVectorBasis
+{
+public:
+  /** */
+  Nedelec();
+
+  /**   
+   * \brief Inform caller as to whether a given cell type is supported 
+   */
+  bool supportsCellTypePair(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
+
+  /** */
+  void print(ostream& os) const ;
+
+  /** */
+  int order() const {return 1;}
+
+  /** return the number of nodes for this basis on the given cell type */
+  int nReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
+
+  /** */
+  void getReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    Array<Array<Array<int> > >& dofs) const ;
+
+  /** */
+  void refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const MultiIndex& deriv,
+    Array<Array<Array<double> > >& result) const ;
+
+
+  /* Handleable boilerplate */
+  GET_RCP(BasisFamilyBase);
+
+private:
+
+    
+  /** evaluate on a triangle cell  */
+  void evalOnTriangle(int dir, const Point& pt,
+    const MultiIndex& deriv,
+    Array<double>& result) const ;
+    
+};
 }
 
-ostream& FuncElementBase::toText(ostream& os, bool /* paren */) const 
-{
-	os << name_;
-	return os;
-}
-
-ostream& FuncElementBase::toLatex(ostream& os, bool /* paren */) const 
-{
-	os << name_;
-	return os;
-}
-
-
-
-bool FuncElementBase::lessThan(const ScalarExpr* other) const
-{
-  const FuncElementBase* f = dynamic_cast<const FuncElementBase*>(other);
-  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
-  
-  return (funcComponentID() < f->funcComponentID());
-}
-
-  
+#endif

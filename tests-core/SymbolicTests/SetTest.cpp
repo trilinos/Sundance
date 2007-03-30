@@ -108,7 +108,7 @@ void doit(const Expr& e,
           TEST_FOR_EXCEPT(true);
         }
       
-      int vid = vPtr->funcID();
+      int vid = vPtr->funcComponentID();
       
       funcDerivs[1].put(makeMultiSet<int>(vid));
 
@@ -132,7 +132,7 @@ void doit(const Expr& e,
             {
               TEST_FOR_EXCEPT(true);
             }
-          int uid = uPtr->funcID();
+          int uid = uPtr->funcComponentID();
           funcDerivs[2].put(makeMultiSet<int>(vid, uid));
         }
     }

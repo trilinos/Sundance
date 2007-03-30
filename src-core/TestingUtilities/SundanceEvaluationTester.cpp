@@ -85,7 +85,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     = dynamic_cast<const UnknownFuncElement*>(e[0].ptr().get());
   if (ue!=0)
     {
-      unkID->put(ue->funcID());
+      unkID->put(ue->funcComponentID());
       unks.append(e[0]);
     }
   else
@@ -148,7 +148,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
                         << " disc=" << discFunc);
 
       u0.append(discFunc);
-      unkIDToDiscreteIDMap_.put(fe->funcID(), df->funcID());
+      unkIDToDiscreteIDMap_.put(fe->funcComponentID(), df->funcComponentID());
     }
 
   Expr unkList = new ListExpr(unks);
@@ -268,7 +268,7 @@ double EvaluationTester::evaluate() const
                              "coordinate deriv found in TestEvalMediator::"
                              "sumFunctionalChainRule");
           const FunctionalDeriv* f = d.funcDeriv();
-          int uid = f->funcID();
+          int uid = f->funcComponentID();
           SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
           TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
                              InternalError,
@@ -373,7 +373,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
                              "coordinate deriv found in TestEvalMediator::"
                              "sumFunctionalChainRule");
           const FunctionalDeriv* f = d.funcDeriv();
-          int uid = f->funcID();
+          int uid = f->funcComponentID();
           SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
           TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
                              InternalError,
@@ -493,7 +493,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
                              "coordinate deriv found in TestEvalMediator::"
                              "sumFunctionalChainRule");
           const FunctionalDeriv* f = d.funcDeriv();
-          int uid = f->funcID();
+          int uid = f->funcComponentID();
           SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
           TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
                              InternalError,

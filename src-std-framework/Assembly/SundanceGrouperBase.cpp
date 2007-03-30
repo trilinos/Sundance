@@ -94,7 +94,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
                          "function to SymbolicFuncElement");
       
 
-      int funcID = f->funcID();
+      int funcID = f->funcComponentID();
       int myIndex = s->myIndex();
 
       if (eqn.hasUnkID(funcID))

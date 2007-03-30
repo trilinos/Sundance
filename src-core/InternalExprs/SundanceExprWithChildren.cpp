@@ -198,10 +198,10 @@ void ExprWithChildren::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
       if (u != 0)
         {
           Expr expr(e);
-          if (!unkID.contains(u->funcID())) 
+          if (!unkID.contains(u->funcComponentID())) 
             {
               unks.append(expr);
-              unkID.put(u->funcID());
+              unkID.put(u->funcComponentID());
             }
         }
       evaluatableChild(i)->getUnknowns(unkID, unks);

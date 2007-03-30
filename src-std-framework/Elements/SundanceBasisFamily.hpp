@@ -96,6 +96,17 @@ public:
   /** */
   bool operator==(const BasisFamily& other) const ;
 
+  
+
+  /** \brief Inform caller as to whether I am a scalar basis. */
+  bool isScalarBasis() const {return ptr()->isScalarBasis();}
+
+  /** \brief Inform caller as to whether I am a covariant basis. */
+  bool isCovariantBasis() const {return ptr()->isCovariantBasis();}
+
+  /** \brief Inform caller as to whether I am a contravariant basis. */
+  bool isContravariantBasis() const {return ptr()->isContravariantBasis();}
+
   /** Sum up the dim() values for array of bases. */
   static unsigned int size(const Array<BasisFamily>& b) ;
 

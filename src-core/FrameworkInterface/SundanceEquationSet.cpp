@@ -428,7 +428,7 @@ void EquationSet::init(const Expr& eqns,
         {
           const FuncElementBase* t 
             = dynamic_cast<const FuncElementBase*>(vars[b][i].ptr().get());
-          int fid = t->funcID();
+          int fid = t->funcComponentID();
           varFuncSet.put(fid);
           varIDToBlockMap_.put(fid, b);
           varIDToReducedIDMap_[b].put(fid, i);
@@ -455,7 +455,7 @@ void EquationSet::init(const Expr& eqns,
                              "EquationSet ctor input unk function "
                              << unks[b][i] 
                              << " does not appear to be a unk function");
-          int fid = u->funcID();
+          int fid = u->funcComponentID();
           unkFuncSet.put(fid);
           unkIDToBlockMap_.put(fid, b);
           unkIDToReducedIDMap_[b].put(fid, i);
@@ -473,7 +473,7 @@ void EquationSet::init(const Expr& eqns,
                          "EquationSet ctor input unk parameter "
                          << unkParams[i] 
                          << " does not appear to be a unk parameter");
-      int fid = u->funcID();
+      int fid = u->funcComponentID();
       unkParamSet.put(fid);
       unkParamIDToReducedUnkParamIDMap_.put(fid, i);
       unreducedUnkParamID_[i] = fid;
@@ -1072,14 +1072,14 @@ void EquationSet
           TEST_FOR_EXCEPTION(fd==0, InternalError, "non-functional deriv "
                              << d << " detected in EquationSet::"
                              "addToVarUnkPairs()");
-          if (unks.contains(fd->funcID()))
+          if (unks.contains(fd->funcComponentID()))
             {
-              unkID = fd->funcID();
+              unkID = fd->funcComponentID();
               continue;
             }
-          if (vars.contains(fd->funcID()))
+          if (vars.contains(fd->funcComponentID()))
             {
-              varID = fd->funcID();
+              varID = fd->funcComponentID();
               continue;
             }
         }

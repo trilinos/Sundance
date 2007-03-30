@@ -64,7 +64,7 @@ FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
     = dynamic_cast<const SymbolicFuncElement*>(expr.get());
   if (s != 0)
     {
-      funcID = s->funcID();
+      funcID = s->funcComponentID();
       mi = MultiIndex();
       const FuncElementBase* f 
         = dynamic_cast<const SymbolicFuncElement*>(s);
@@ -75,7 +75,7 @@ FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
     = dynamic_cast<const DerivOfSymbFunc*>(expr.get());
   if (d != 0)
     {
-      funcID = d->funcID();
+      funcID = d->funcComponentID();
       mi = d->mi();
       deriv = d->representMeAsFunctionalDeriv();
     }
