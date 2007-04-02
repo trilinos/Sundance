@@ -37,9 +37,9 @@ noinst_PROGRAMS = $(TESTS_SRC:%=%.exe)
 
 TESTS_SRC = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
 VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D \
-ReadField CubicCDR ControlCDR
+ReadField CubicCDR ControlCDR MixedOrderPrec
 
-
+#  get_matrices_for_ross
 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 
@@ -199,6 +199,36 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 ControlCDR_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 ControlCDR_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+# get_matrices_for_ross_SOURCES = $(srcdir)/get_matrices_for_ross.cpp
+# 
+# get_matrices_for_ross_DEPENDENCIES = \
+# $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+# $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+# $(top_builddir)/src-core/libsundanceCore.a \
+# $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+# 
+# get_matrices_for_ross_CXXFLAGS = $(STD_FWK_INCLUDES)
+# 
+# get_matrices_for_ross_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+MixedOrderPrec_SOURCES = $(srcdir)/MixedOrderPrec.cpp
+
+MixedOrderPrec_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+MixedOrderPrec_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+MixedOrderPrec_LDADD = $(STD_FWK_LIBS) 
 
 
 

@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) $(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) $(VSNS2D_SOURCES)
+SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) $(Exo2Triangle_SOURCES) $(MixedOrderPrec_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) $(VSNS2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -137,7 +137,7 @@ am__EXEEXT_1 = PostPotentialFlow$(EXEEXT) \
 	VSNS2D$(EXEEXT) Exo2Triangle$(EXEEXT) \
 	PressureStabilizedNS2D$(EXEEXT) \
 	PressureStabilizedNS3D$(EXEEXT) ReadField$(EXEEXT) \
-	CubicCDR$(EXEEXT) ControlCDR$(EXEEXT)
+	CubicCDR$(EXEEXT) ControlCDR$(EXEEXT) MixedOrderPrec$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_ControlCDR_OBJECTS = ControlCDR-ControlCDR.$(OBJEXT)
 ControlCDR_OBJECTS = $(am_ControlCDR_OBJECTS)
@@ -153,6 +153,8 @@ am_CubicCDR_OBJECTS = CubicCDR-CubicCDR.$(OBJEXT)
 CubicCDR_OBJECTS = $(am_CubicCDR_OBJECTS)
 am_Exo2Triangle_OBJECTS = Exo2Triangle-Exo2Triangle.$(OBJEXT)
 Exo2Triangle_OBJECTS = $(am_Exo2Triangle_OBJECTS)
+am_MixedOrderPrec_OBJECTS = MixedOrderPrec-MixedOrderPrec.$(OBJEXT)
+MixedOrderPrec_OBJECTS = $(am_MixedOrderPrec_OBJECTS)
 am_PostPotentialFlow_OBJECTS =  \
 	PostPotentialFlow-PostPotentialFlow.$(OBJEXT)
 PostPotentialFlow_OBJECTS = $(am_PostPotentialFlow_OBJECTS)
@@ -178,6 +180,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ControlCDR-ControlCDR.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/CubicCDR-CubicCDR.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po \
@@ -191,14 +194,14 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) \
-	$(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) \
+	$(Exo2Triangle_SOURCES) $(MixedOrderPrec_SOURCES) \
+	$(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) \
 	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
 	$(VSNS2D_SOURCES)
 DIST_SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) \
-	$(Exo2Triangle_SOURCES) $(PostPotentialFlow_SOURCES) \
-	$(PressureStabilizedNS2D_SOURCES) \
+	$(Exo2Triangle_SOURCES) $(MixedOrderPrec_SOURCES) \
+	$(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) \
 	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
 	$(VSNS2D_SOURCES)
@@ -347,8 +350,10 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 TESTS_SRC = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
 VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D \
-ReadField CubicCDR ControlCDR
+ReadField CubicCDR ControlCDR MixedOrderPrec
 
+
+#  get_matrices_for_ross
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 REQUIREMENTS = $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
 $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
@@ -446,6 +451,27 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 ControlCDR_CXXFLAGS = $(STD_FWK_INCLUDES)
 ControlCDR_LDADD = $(STD_FWK_LIBS) 
+
+# get_matrices_for_ross_SOURCES = $(srcdir)/get_matrices_for_ross.cpp
+# 
+# get_matrices_for_ross_DEPENDENCIES = \
+# $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+# $(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+# $(top_builddir)/src-core/libsundanceCore.a \
+# $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+# 
+# get_matrices_for_ross_CXXFLAGS = $(STD_FWK_INCLUDES)
+# 
+# get_matrices_for_ross_LDADD = $(STD_FWK_LIBS) 
+MixedOrderPrec_SOURCES = $(srcdir)/MixedOrderPrec.cpp
+MixedOrderPrec_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+MixedOrderPrec_CXXFLAGS = $(STD_FWK_INCLUDES)
+MixedOrderPrec_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -632,6 +658,9 @@ CubicCDR$(EXEEXT): $(CubicCDR_OBJECTS) $(CubicCDR_DEPENDENCIES)
 Exo2Triangle$(EXEEXT): $(Exo2Triangle_OBJECTS) $(Exo2Triangle_DEPENDENCIES) 
 	@rm -f Exo2Triangle$(EXEEXT)
 	$(CXXLINK) $(Exo2Triangle_LDFLAGS) $(Exo2Triangle_OBJECTS) $(Exo2Triangle_LDADD) $(LIBS)
+MixedOrderPrec$(EXEEXT): $(MixedOrderPrec_OBJECTS) $(MixedOrderPrec_DEPENDENCIES) 
+	@rm -f MixedOrderPrec$(EXEEXT)
+	$(CXXLINK) $(MixedOrderPrec_LDFLAGS) $(MixedOrderPrec_OBJECTS) $(MixedOrderPrec_LDADD) $(LIBS)
 PostPotentialFlow$(EXEEXT): $(PostPotentialFlow_OBJECTS) $(PostPotentialFlow_DEPENDENCIES) 
 	@rm -f PostPotentialFlow$(EXEEXT)
 	$(CXXLINK) $(PostPotentialFlow_LDFLAGS) $(PostPotentialFlow_OBJECTS) $(PostPotentialFlow_LDADD) $(LIBS)
@@ -663,6 +692,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ControlCDR-ControlCDR.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CubicCDR-CubicCDR.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureStabilizedNS2D-PressureStabilizedNS2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureStabilizedNS3D-PressureStabilizedNS3D.Po@am__quote@
@@ -734,6 +764,22 @@ Exo2Triangle-Exo2Triangle.obj: $(srcdir)/Exo2Triangle.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/Exo2Triangle-Exo2Triangle.Po' tmpdepfile='$(DEPDIR)/Exo2Triangle-Exo2Triangle.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Exo2Triangle_CXXFLAGS) $(CXXFLAGS) -c -o Exo2Triangle-Exo2Triangle.obj `if test -f '$(srcdir)/Exo2Triangle.cpp'; then $(CYGPATH_W) '$(srcdir)/Exo2Triangle.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Exo2Triangle.cpp'; fi`
+
+MixedOrderPrec-MixedOrderPrec.o: $(srcdir)/MixedOrderPrec.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MixedOrderPrec_CXXFLAGS) $(CXXFLAGS) -MT MixedOrderPrec-MixedOrderPrec.o -MD -MP -MF "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Tpo" -c -o MixedOrderPrec-MixedOrderPrec.o `test -f '$(srcdir)/MixedOrderPrec.cpp' || echo '$(srcdir)/'`$(srcdir)/MixedOrderPrec.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Tpo" "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Po"; else rm -f "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MixedOrderPrec.cpp' object='MixedOrderPrec-MixedOrderPrec.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Po' tmpdepfile='$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MixedOrderPrec_CXXFLAGS) $(CXXFLAGS) -c -o MixedOrderPrec-MixedOrderPrec.o `test -f '$(srcdir)/MixedOrderPrec.cpp' || echo '$(srcdir)/'`$(srcdir)/MixedOrderPrec.cpp
+
+MixedOrderPrec-MixedOrderPrec.obj: $(srcdir)/MixedOrderPrec.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MixedOrderPrec_CXXFLAGS) $(CXXFLAGS) -MT MixedOrderPrec-MixedOrderPrec.obj -MD -MP -MF "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Tpo" -c -o MixedOrderPrec-MixedOrderPrec.obj `if test -f '$(srcdir)/MixedOrderPrec.cpp'; then $(CYGPATH_W) '$(srcdir)/MixedOrderPrec.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MixedOrderPrec.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Tpo" "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Po"; else rm -f "$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/MixedOrderPrec.cpp' object='MixedOrderPrec-MixedOrderPrec.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.Po' tmpdepfile='$(DEPDIR)/MixedOrderPrec-MixedOrderPrec.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(MixedOrderPrec_CXXFLAGS) $(CXXFLAGS) -c -o MixedOrderPrec-MixedOrderPrec.obj `if test -f '$(srcdir)/MixedOrderPrec.cpp'; then $(CYGPATH_W) '$(srcdir)/MixedOrderPrec.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/MixedOrderPrec.cpp'; fi`
 
 PostPotentialFlow-PostPotentialFlow.o: $(srcdir)/PostPotentialFlow.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PostPotentialFlow_CXXFLAGS) $(CXXFLAGS) -MT PostPotentialFlow-PostPotentialFlow.o -MD -MP -MF "$(DEPDIR)/PostPotentialFlow-PostPotentialFlow.Tpo" -c -o PostPotentialFlow-PostPotentialFlow.o `test -f '$(srcdir)/PostPotentialFlow.cpp' || echo '$(srcdir)/'`$(srcdir)/PostPotentialFlow.cpp; \

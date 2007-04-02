@@ -21,8 +21,7 @@
 #include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_VerboseObject.hpp"
 #include "Teuchos_XMLParameterListHelpers.hpp"
-#include "Teuchos_CommandLineProcessor.hpp"
-#include "Teuchos_StandardCatchMacros.hpp"
+#include "Teuchos_getConst.hpp"
 #ifdef HAVE_MPI
 #  include "Epetra_MpiComm.h"
 #else
@@ -276,24 +275,36 @@ void MultiOrderPC::applyTranspose(
 
 int main(int argc, char** argv)
 {
+
   using Teuchos::describe;
   using Teuchos::rcp;
   using Teuchos::rcp_dynamic_cast;
   using Teuchos::rcp_const_cast;
   using Teuchos::RefCountPtr;
+  using Teuchos::getConst;
   using Teuchos::CommandLineProcessor;
   using Teuchos::ParameterList;
+  typedef ParameterList::PrintOptions PLPrintOptions;
   using Teuchos::sublist;
   using Thyra::inverse;
   using Thyra::prec;
   typedef RefCountPtr<const Thyra::LinearOpBase<double> > LinearOpPtr;
   typedef RefCountPtr<Thyra::VectorBase<double> > VectorPtr;
+
+  bool success = true;
+
   try {
+
     Sundance::init(&argc, &argv);
+
+    Teuchos::RefCountPtr<Teuchos::FancyOStream>
+      out = Teuchos::VerboseObjectBase::getDefaultOStream();
+
+    *out << "\nA) Setting up the basic operators using Sundance ...\n";
 
     // needed for Sundance
     VectorType<double> vecType = new EpetraVectorType();
-
+    
     Teuchos::EVerbosityLevel verbLevel = Teuchos::VERB_MEDIUM;
 
     // get the mesh
@@ -313,7 +324,6 @@ int main(int argc, char** argv)
     DiscreteSpace P1Space( mesh , L1 , vecType );
     DiscreteSpace P2Space( mesh , L2 , vecType );
 
-
     // these will be the test and trial functions for two
     // LinearProblem objects for the same equation but different
     // orders of discretization.
@@ -330,52 +340,106 @@ int main(int argc, char** argv)
     Teuchos::RefCountPtr<LinearProblem> LP1 = LPM.getProblem( v1 , u1 , Q1 );
     Teuchos::RefCountPtr<LinearProblem> LP2 = LPM.getProblem( v2 , u2 , Q2 );
 
-
     // extract the matrices from each LinearProblem
-    RefCountPtr<Thyra::LinearOpBase<double> > P1Operator = 
-      LP1->getOperator().ptr();
 
-    RefCountPtr<Thyra::LinearOpBase<double> > P2Operator = 
-      LP2->getOperator().ptr();
+    LinearOpPtr P1 = LP1->getOperator().ptr();
+    LinearOpPtr P2 = LP2->getOperator().ptr();
 
+    // now, set up a preconditioner for P1
 
-    // now, set up a preconditioner for P1Operator
     RefCountPtr<ParameterList> paramList = rcp(new ParameterList);
     Teuchos::updateParametersFromXmlFile( "solver.xml", &*paramList );
 
-    Thyra::DefaultRealLinearSolverBuilder P1_linsolve_strategy_builder;
-    P1_linsolve_strategy_builder.setParameterList( paramList );
+    const double solveTol =
+      getParameter<double>(getConst(*paramList),"Solve Tol");
 
-    Teuchos::RefCountPtr<Teuchos::FancyOStream>
-      out = Teuchos::VerboseObjectBase::getDefaultOStream();
+    Thyra::DefaultRealLinearSolverBuilder P1_linsolve_strategy_builder;
+    P1_linsolve_strategy_builder.setParameterList(
+      sublist(paramList,"P1 Solver",true) );
+
+    Thyra::DefaultRealLinearSolverBuilder P2_linsolve_strategy_builder;
+    P2_linsolve_strategy_builder.setParameterList(
+      sublist(paramList,"P2 Solver",true) );
+
+    *out << "\nB) Creating prec(P1) as just an algebraic preconditioner ...\n";
 
     RefCountPtr<Thyra::PreconditionerFactoryBase<double> > P1_prec_strategy;
     P1_prec_strategy = P1_linsolve_strategy_builder.createPreconditioningStrategy("");
-    *out << "\nCreating prec(P1) as just an algebraic preconditioner ...\n";
     RefCountPtr<Thyra::PreconditionerBase<double> >
-      precP1 = prec<double>(*P1_prec_strategy,P1Operator);
+      precP1 = prec<double>(*P1_prec_strategy,P1);
     *out << "\nprecP1 = " << describe(*precP1,verbLevel) << "\n"; 
     LinearOpPtr precP1Op = precP1->getUnspecifiedPrecOp();
 
-    LinearOpPtr mopc = rcp(
-      new MultiOrderPC( P1Space, P2Space, P2Operator, precP1Op )
+    *out << "\nC) Creating the physics-based precondtioiner for P2 ...\n";
+    LinearOpPtr precP2Op = rcp(
+      new MultiOrderPC( P1Space, P2Space, P2, precP1Op )
       );
+    *out << "\nprecP2Op = " << describe(*precP2Op,verbLevel) << "\n"; 
 
-    // now I need to create some vectors to test
-    Teuchos::RefCountPtr<Thyra::VectorBase<double> > x = Thyra::createMember(mopc->domain());
-    Teuchos::RefCountPtr<Thyra::VectorBase<double> > b = Thyra::createMember(mopc->range());
+    *out << "\nD) Setting up the solver P2 ...\n";
+
+    RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> >
+      P2_linsolve_strategy
+      = P2_linsolve_strategy_builder.createLinearSolveStrategy("");
+    RefCountPtr<Thyra::LinearOpWithSolveBase<double> >
+      P2_lows = P2_linsolve_strategy->createOp();
+    Thyra::initializePreconditionedOp<double>(
+      *P2_linsolve_strategy,
+      P2,
+      Thyra::unspecifiedPrec(precP2Op),
+      &*P2_lows
+      );
+    
+    *out << "\nE) Solve P2 for a random RHS ...\n";
+
+    VectorPtr x = createMember(P2->domain());
+    VectorPtr b = createMember(P2->range());
     Thyra::randomize(-1.0,+1.0,&*b);
-    Thyra::assign(&*x,0.0);
+    Thyra::assign(&*x,0.0); // Must give an initial guess!
 
-    Thyra::apply( *mopc, Thyra::NOTRANS, *x, &*b );
+    Thyra::SolveStatus<double>
+      solveStatus = Thyra::solve( *P2_lows, Thyra::NOTRANS, *b, &*x );
+
+    *out << "\nSolve status:\n" << solveStatus;
+
+    *out << "\nSolution ||x|| = " << Thyra::norm(*x) << "\n";
+    //
+    *out << "\nF) Checking the error in the solution of r=b-P2*x ...\n";
+    //
+    
+    VectorPtr P2x = Thyra::createMember(b->space());
+    Thyra::apply( *P2, Thyra::NOTRANS, *x, &*P2x );
+    VectorPtr r = Thyra::createMember(b->space());
+    Thyra::V_VmV(&*r,*b,*P2x);
+    
+    double
+      P2x_nrm = Thyra::norm(*P2x),
+      r_nrm = Thyra::norm(*r),
+      b_nrm = Thyra::norm(*b),
+      r_nrm_over_b_nrm = r_nrm / b_nrm;
+
+    bool result = r_nrm_over_b_nrm <= solveTol;
+    if(!result) success = false;
+    
+    *out
+      << "\n||P2*x|| = " << P2x_nrm << "\n";
+    
+    *out
+      << "\n||P2*x-b||/||b|| = " << r_nrm << "/" << b_nrm
+      << " = " << r_nrm_over_b_nrm << " <= " << solveTol
+      << " : " << Thyra::passfail(result) << "\n";
+
+    *out << "\nParameter list after use:\n\n";
+    paramList->print(*out,PLPrintOptions().indent(2).showTypes(true));
     
   }
   catch(exception &e) {
     Sundance::handleException(e);
+    success = false;
   }
 
   Sundance::finalize();
 
-  return 0;
+  return ( success ? 0 : 1 );
 
 }
