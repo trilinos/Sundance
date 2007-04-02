@@ -6,6 +6,7 @@
 
 
 #include "Sundance.hpp"
+#include "Thyra_SingleRhsLinearOpBase.hpp"
 #include "Thyra_DefaultRealLinearSolverBuilder.hpp"
 #include "Thyra_LinearOpWithSolveFactoryHelpers.hpp"
 #include "Thyra_PreconditionerFactoryHelpers.hpp"
@@ -119,62 +120,101 @@ private:
 };
 
 
-// abstract class takes two BasisFamily object
-// and implements the correct interface to use the
-// lower order method to precondition the higher one
-// Ross will need to turn this somehow into a Thyra::LinearOpBase.
-// so we can use it as a preconditioner.
-// I also need to fill in how to apply the transpose of the operator.
-class MultiOrderPC 
+//
+// Abstract class takes two BasisFamily object and implements the correct
+// interface to use the lower order method to precondition the higher one Ross
+// will need to turn this somehow into a Thyra::LinearOpBase.  so we can use
+// it as a preconditioner.  I also need to fill in how to apply the transpose
+// of the operator.
+//
+// The PC is an approximation to the inverse of the high order operator, so
+// its domain and range are the range and domain of the high order operator,
+// respectively These two will be needed to make this a
+// Thyra::LinearOpBase<double>
+//
+class MultiOrderPC : public Thyra::SingleRhsLinearOpBase<double>
 {
 public:
-  MultiOrderPC( DiscreteSpace &lowOrder , DiscreteSpace &highOrder ,
-                Teuchos::RefCountPtr<Thyra::LinearOpBase<double> > highOrderOp ,
-                Teuchos::RefCountPtr<Thyra::LinearOpBase<double> > lowOrderPC ) :
-    lowOrderSpace_( lowOrder ) , highOrderSpace_( highOrder ) ,
-    highOrderOp_( highOrderOp ) , lowOrderPC_( lowOrderPC ) {}
 
-  ~MultiOrderPC() {}
+  // 
 
-  // the PC is an approximation to the inverse of the high order
-  // operator, so its domain and range are the range and domain of
-  // the high order operator, respectively
-  // These two will be needed to make this a Thyra::LinearOpBase<double>
-  Teuchos::RefCountPtr<const Thyra::VectorSpaceBase<double> > range() const {
-    return highOrderOp_->domain(); }
+  MultiOrderPC(
+    DiscreteSpace &lowOrder, DiscreteSpace &highOrder,
+    const Teuchos::RefCountPtr<const Thyra::LinearOpBase<double> > &highOrderOp,
+    const Teuchos::RefCountPtr<const Thyra::LinearOpBase<double> > &lowOrderPC
+    )
+    : lowOrderSpace_(lowOrder), highOrderSpace_(highOrder),
+      highOrderOp_(highOrderOp) , lowOrderPC_(lowOrderPC)
+    {}
 
-  Teuchos::RefCountPtr<const Thyra::VectorSpaceBase<double> > domain() const {
-    return highOrderOp_->range(); }
+  // Overridden from SingeRhsLinearOpBase
 
-  // this will need to be modified to make it a Thyra::LinearOpBase<double>
-  void apply( const Thyra::VectorBase<double> &x_in ,
-              Thyra::VectorBase<double> &y_out ,
-              bool doTranspose = false ) const
+  Teuchos::RefCountPtr<const Thyra::VectorSpaceBase<double> >
+  range() const
+    {
+      return highOrderOp_->domain();
+    }
+
+  Teuchos::RefCountPtr<const Thyra::VectorSpaceBase<double> >
+  domain() const {
+    return highOrderOp_->range();
+  }
+
+  bool opSupported(Thyra::ETransp M_trans) const
+    {
+      return ( real_trans(M_trans) == Thyra::NOTRANS );
+      // Can't handle transpose yet!
+    }
+
+  void apply(
+    const Thyra::ETransp M_trans,
+    const Thyra::VectorBase<double> &x_in,
+    Thyra::VectorBase<double> *y_out,
+    const double alpha,
+    const double beta
+    ) const
   {
-    if (doTranspose) applyTranspose( x_in , y_out ); else applyNoTranspose( x_in, y_out );
+    typedef Teuchos::ScalarTraits<double> ST;
+    TEST_FOR_EXCEPT( 0 == y_out );
+    TEST_FOR_EXCEPT( alpha != ST::one() ); // Can't handle yet!
+    TEST_FOR_EXCEPT( beta != ST::zero() ); // Can't handle yet!
+    if ( real_trans(M_trans) != Thyra::NOTRANS )
+      applyTranspose( x_in , *y_out );
+    else
+      applyNoTranspose( x_in, *y_out );
   }
 
 private:
+
   DiscreteSpace &lowOrderSpace_ , &highOrderSpace_;
 
-  Teuchos::RefCountPtr<Thyra::LinearOpBase<double> > highOrderOp_, lowOrderPC_;
+  Teuchos::RefCountPtr<const Thyra::LinearOpBase<double> > highOrderOp_;
+  Teuchos::RefCountPtr<const Thyra::LinearOpBase<double> > lowOrderPC_;
 
-  void applyNoTranspose( const Thyra::VectorBase<double> &x_in ,
-                         Thyra::VectorBase<double> &y_out ) const;
+  void applyNoTranspose(
+    const Thyra::VectorBase<double> &x_in,
+    Thyra::VectorBase<double> &y_out
+    ) const;
 
-  void applyTranspose( const Thyra::VectorBase<double> &x_in ,
-                       Thyra::VectorBase<double> &y_out ) const;
+  void applyTranspose(
+    const Thyra::VectorBase<double> &x_in,
+    Thyra::VectorBase<double> &y_out
+    ) const;
+
 };
 
-void MultiOrderPC::applyTranspose( const Thyra::VectorBase<double> &x_in,
-                                   Thyra::VectorBase<double> &y_out ) const
-{
-  return;
-}
 
-void MultiOrderPC::applyNoTranspose( const Thyra::VectorBase<double> &x_in,
-                                     Thyra::VectorBase<double> &y_out ) const
+//
+// Implementations
+//
+
+
+void MultiOrderPC::applyNoTranspose(
+  const Thyra::VectorBase<double> &x_in,
+  Thyra::VectorBase<double> &y_out
+  ) const
 {
+
   // Cast the input vector to TSFExtended::Vector<double> to put
   // inside a Sundance DiscreteFunction
   const TSFExtended::Vector<double> x_in_tsf( 
@@ -198,10 +238,12 @@ void MultiOrderPC::applyNoTranspose( const Thyra::VectorBase<double> &x_in,
   // order PC 
   Vector<double> projXVec = DiscreteFunction::discFunc( projX )->getVector();
 
-  lowOrderPC_->apply( NONCONJ_ELE , 
-		     *(projXVec.ptr()) , 
-		     &*(DiscreteFunction::discFunc( dfLow_ )->getVector().ptr()) );
-
+  Thyra::apply(
+    *lowOrderPC_, NONCONJ_ELE, 
+    *(projXVec.ptr()), 
+    &*(DiscreteFunction::discFunc(dfLow_)->getVector().ptr())
+    );
+  
   // put the result back into the high order space.
   // this corresponds to applying the identity to the part orthogonal
   // to the low order space and the preconditioner to the projection
@@ -215,13 +257,23 @@ void MultiOrderPC::applyNoTranspose( const Thyra::VectorBase<double> &x_in,
   Expr projResult = proj2.project();
   y_out_tsf.acceptCopyOf( DiscreteFunction::discFunc( projResult)->getVector() );
 
-  return;
-
 }
 
-// most of this is borrowed from
-// Trilinos/packages/stratimikos/example/MixedOrderPhysicsBasedPreconditioner.cpp
-// by Ross Bartlett 
+
+void MultiOrderPC::applyTranspose(
+  const Thyra::VectorBase<double> &x_in,
+  Thyra::VectorBase<double> &y_out
+  ) const
+{
+  TEST_FOR_EXCEPT("MultiOrderPC::applyTranspose(...) not implemented yet!");
+}
+
+
+//
+// Main program that creates the physics-based preconditioner and solves the
+// lienar system.
+//
+
 int main(int argc, char** argv)
 {
   using Teuchos::describe;
@@ -231,7 +283,6 @@ int main(int argc, char** argv)
   using Teuchos::RefCountPtr;
   using Teuchos::CommandLineProcessor;
   using Teuchos::ParameterList;
-//  typedef ParameterList::PrintOptions PLPrintOptions;
   using Teuchos::sublist;
   using Thyra::inverse;
   using Thyra::prec;
@@ -305,19 +356,19 @@ int main(int argc, char** argv)
       precP1 = prec<double>(*P1_prec_strategy,P1Operator);
     *out << "\nprecP1 = " << describe(*precP1,verbLevel) << "\n"; 
     LinearOpPtr precP1Op = precP1->getUnspecifiedPrecOp();
-    RefCountPtr<Thyra::LinearOpBase<double> > p1pc =
-      rcp_const_cast<Thyra::LinearOpBase<double> >( precP1Op );
 
-    MultiOrderPC mopc( P1Space , P2Space , P2Operator , p1pc );
+    LinearOpPtr mopc = rcp(
+      new MultiOrderPC( P1Space, P2Space, P2Operator, precP1Op )
+      );
 
     // now I need to create some vectors to test
-    Teuchos::RefCountPtr<Thyra::VectorBase<double> > x = Thyra::createMember(mopc.domain());
-    Teuchos::RefCountPtr<Thyra::VectorBase<double> > b = Thyra::createMember(mopc.range());
+    Teuchos::RefCountPtr<Thyra::VectorBase<double> > x = Thyra::createMember(mopc->domain());
+    Teuchos::RefCountPtr<Thyra::VectorBase<double> > b = Thyra::createMember(mopc->range());
     Thyra::randomize(-1.0,+1.0,&*b);
     Thyra::assign(&*x,0.0);
 
-    mopc.apply( *x , *b , false );
-
+    Thyra::apply( *mopc, Thyra::NOTRANS, *x, &*b );
+    
   }
   catch(exception &e) {
     Sundance::handleException(e);
@@ -325,7 +376,6 @@ int main(int argc, char** argv)
 
   Sundance::finalize();
 
-
-
   return 0;
+
 }
