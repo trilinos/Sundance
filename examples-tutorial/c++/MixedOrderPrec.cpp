@@ -129,10 +129,24 @@ class MultiOrderPC
 {
 public:
   MultiOrderPC( DiscreteSpace &lowOrder , DiscreteSpace &highOrder ,
-                Thyra::LinearOpBase<double> &highOrderOp ,
-                Thyra::LinearOpBase<double> &lowOrderPC );
+                Teuchos::RefCountPtr<Thyra::LinearOpBase<double> > highOrderOp ,
+                Teuchos::RefCountPtr<Thyra::LinearOpBase<double> > lowOrderPC ) :
+    lowOrderSpace_( lowOrder ) , highOrderSpace_( highOrder ) ,
+    highOrderOp_( highOrderOp ) , lowOrderPC_( lowOrderPC ) {}
+
   ~MultiOrderPC() {}
 
+  // the PC is an approximation to the inverse of the high order
+  // operator, so its domain and range are the range and domain of
+  // the high order operator, respectively
+  // These two will be needed to make this a Thyra::LinearOpBase<double>
+  Teuchos::RefCountPtr<const Thyra::VectorSpaceBase<double> > range() const {
+    return highOrderOp_->domain(); }
+
+  Teuchos::RefCountPtr<const Thyra::VectorSpaceBase<double> > domain() const {
+    return highOrderOp_->range(); }
+
+  // this will need to be modified to make it a Thyra::LinearOpBase<double>
   void apply( const Thyra::VectorBase<double> &x_in ,
               Thyra::VectorBase<double> &y_out ,
               bool doTranspose = false ) const
@@ -142,7 +156,8 @@ public:
 
 private:
   DiscreteSpace &lowOrderSpace_ , &highOrderSpace_;
-  Thyra::LinearOpBase<double> &highOrderOp_, &lowOrderPC_;
+
+  Teuchos::RefCountPtr<Thyra::LinearOpBase<double> > highOrderOp_, lowOrderPC_;
 
   void applyNoTranspose( const Thyra::VectorBase<double> &x_in ,
                          Thyra::VectorBase<double> &y_out ) const;
@@ -150,14 +165,6 @@ private:
   void applyTranspose( const Thyra::VectorBase<double> &x_in ,
                        Thyra::VectorBase<double> &y_out ) const;
 };
-
-MultiOrderPC::MultiOrderPC( DiscreteSpace &lowOrder , DiscreteSpace &highOrder ,
-                            Thyra::LinearOpBase<double> &highOrderOp ,
-                            Thyra::LinearOpBase<double> &lowOrderPC) : 
-  lowOrderSpace_( lowOrder ), highOrderSpace_( highOrder ), 
-  highOrderOp_( highOrderOp ), lowOrderPC_( lowOrderPC )
-{
-}
 
 void MultiOrderPC::applyTranspose( const Thyra::VectorBase<double> &x_in,
                                    Thyra::VectorBase<double> &y_out ) const
@@ -168,14 +175,15 @@ void MultiOrderPC::applyTranspose( const Thyra::VectorBase<double> &x_in,
 void MultiOrderPC::applyNoTranspose( const Thyra::VectorBase<double> &x_in,
                                      Thyra::VectorBase<double> &y_out ) const
 {
-  // Cast the input vector to TSFExtended::Vector<double> to put inside a Sundance DiscreteFunction
+  // Cast the input vector to TSFExtended::Vector<double> to put
+  // inside a Sundance DiscreteFunction
   const TSFExtended::Vector<double> x_in_tsf( 
     Teuchos::rcp( const_cast<Thyra::VectorBase<double> * >(&x_in) , false) );
 
   TSFExtended::Vector<double> y_out_tsf( Teuchos::rcp( &y_out , false ) );
 
-  // Later, these could be moved to member variables to avoid the allocation/deallocation at
-  // each application
+  // Later, these could be moved to member variables to avoid the
+  // allocation/deallocation at each application
   Expr dfHigh_ = new DiscreteFunction( highOrderSpace_ , 0.0 , "dfhigh" );
   Expr dfLow_ = new DiscreteFunction( lowOrderSpace_ , 0.0 , "dflow" );
 
@@ -186,17 +194,18 @@ void MultiOrderPC::applyNoTranspose( const Thyra::VectorBase<double> &x_in,
   L2Projector proj1( lowOrderSpace_ , dfHigh_ );
   Expr projX = proj1.project();
 
-  // turn the projected input function into a vector and apply the low order PC
+  // turn the projected input function into a vector and apply the low
+  // order PC 
   Vector<double> projXVec = DiscreteFunction::discFunc( projX )->getVector();
 
-  lowOrderPC_.apply( NONCONJ_ELE , 
+  lowOrderPC_->apply( NONCONJ_ELE , 
 		     *(projXVec.ptr()) , 
 		     &*(DiscreteFunction::discFunc( dfLow_ )->getVector().ptr()) );
 
   // put the result back into the high order space.
-  // this corresponds to applying the identity to the part orthogonal to the low order space
-  // and the preconditioner to the projection into the low order space.
-  // If PC is the low order preconditioner 
+  // this corresponds to applying the identity to the part orthogonal
+  // to the low order space and the preconditioner to the projection
+  // into the low order space.  If PC is the low order preconditioner 
   // u is the input function
   // P1 is the projection into the low order space, 
   // P2 is the projection into the high order space
@@ -286,7 +295,6 @@ int main(int argc, char** argv)
     Thyra::DefaultRealLinearSolverBuilder P1_linsolve_strategy_builder;
     P1_linsolve_strategy_builder.setParameterList( paramList );
 
-
     Teuchos::RefCountPtr<Teuchos::FancyOStream>
       out = Teuchos::VerboseObjectBase::getDefaultOStream();
 
@@ -297,10 +305,18 @@ int main(int argc, char** argv)
       precP1 = prec<double>(*P1_prec_strategy,P1Operator);
     *out << "\nprecP1 = " << describe(*precP1,verbLevel) << "\n"; 
     LinearOpPtr precP1Op = precP1->getUnspecifiedPrecOp();
-    RefCountPtr<Thyra::LinearOpBase<double> > p1pc = rcp_const_cast<Thyra::LinearOpBase<double> >( precP1Op );
+    RefCountPtr<Thyra::LinearOpBase<double> > p1pc =
+      rcp_const_cast<Thyra::LinearOpBase<double> >( precP1Op );
 
-    MultiOrderPC mopc( P1Space , P2Space , *P2Operator , *p1pc );
+    MultiOrderPC mopc( P1Space , P2Space , P2Operator , p1pc );
 
+    // now I need to create some vectors to test
+    Teuchos::RefCountPtr<Thyra::VectorBase<double> > x = Thyra::createMember(mopc.domain());
+    Teuchos::RefCountPtr<Thyra::VectorBase<double> > b = Thyra::createMember(mopc.range());
+    Thyra::randomize(-1.0,+1.0,&*b);
+    Thyra::assign(&*x,0.0);
+
+    mopc.apply( *x , *b , false );
 
   }
   catch(exception &e) {
