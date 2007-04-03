@@ -381,15 +381,28 @@ int main(int argc, char** argv)
     RefCountPtr<Thyra::LinearOpWithSolveFactoryBase<double> >
       P2_linsolve_strategy
       = P2_linsolve_strategy_builder.createLinearSolveStrategy("");
+
+    const double usePhysicsPrec = getParameter<bool>(getConst(*paramList),"Use Physics Prec");
+
     RefCountPtr<Thyra::LinearOpWithSolveBase<double> >
       P2_lows = P2_linsolve_strategy->createOp();
-    Thyra::initializePreconditionedOp<double>(
-      *P2_linsolve_strategy,
-      P2,
-      Thyra::unspecifiedPrec(precP2Op),
-      &*P2_lows
-      );
-    
+
+    if (usePhysicsPrec) {
+      Thyra::initializePreconditionedOp<double>(
+	*P2_linsolve_strategy,
+	P2,
+	Thyra::unspecifiedPrec(precP2Op),
+	&*P2_lows
+	);
+    }
+    else {
+      Thyra::initializeOp<double>(
+	*P2_linsolve_strategy,
+	P2,
+        &*P2_lows
+	);
+    }
+
     *out << "\nE) Solve P2 for a random RHS ...\n";
 
     VectorPtr x = createMember(P2->domain());
