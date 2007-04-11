@@ -78,11 +78,13 @@ namespace SundanceCore
     {
     public:
       /** Construct a scalar-valued test function */
-      TestFunctionStub(const string& name, int nElems=1,
+      TestFunctionStub(const string& name, const Array<int>& dims = tuple(1),
                        const RefCountPtr<const TestFuncDataStub>& data=RefCountPtr<const TestFuncDataStub>());
 
-      TestFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems=1,
-                       const RefCountPtr<const TestFuncDataStub>& data=RefCountPtr<const TestFuncDataStub>());
+      TestFunctionStub(const string& name, 
+        const SpectralBasis& sbasis, 
+        const Array<int>& dims = tuple(1),
+        const RefCountPtr<const TestFuncDataStub>& data=RefCountPtr<const TestFuncDataStub>());
 
       /** */
       virtual ~TestFunctionStub() {;}

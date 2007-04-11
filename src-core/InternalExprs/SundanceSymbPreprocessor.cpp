@@ -409,12 +409,17 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   Array<Set<MultipleDeriv> > RInput 
     = e->computeInputR(context, activeFuncIDs, spatialDerivs);
 
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+               << " ************* Top-level required funcs are " << RInput << endl);
+
+
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+               tab << endl << tab 
+               << " ************* Calling determineR()");
+  
   e->determineR(context, RInput);
 
-  if (verbosity<Evaluator>() > VerbMedium)
-    {
-      e->displayNonzeros(cout, context);
-    }
 
   SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
                tab << endl << tab 
@@ -422,7 +427,20 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
 
   e->setupEval(context);
 
+  if (verbosity<Evaluator>() > VerbMedium)
+    { 
+      SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+        tab << endl << tab 
+        << " ************* Nonzeros are:");
+      e->displayNonzeros(cout, context);
+    }
+
   DerivSet derivs = e->sparsitySuperset(context)->derivSet();
+
+
+  SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
+    tab << endl << tab 
+    << "Nonzero deriv set = " << derivs);
 
   return derivs;
 }

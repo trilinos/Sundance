@@ -84,6 +84,9 @@ namespace SundanceCore
        */
       void substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const ;
 
+      /** Generate */
+      static int nextCommonID() {static int rtn=0; rtn++; return rtn;}
+
     };
   }
 }

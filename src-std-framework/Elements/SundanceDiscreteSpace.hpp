@@ -107,6 +107,9 @@ namespace SundanceStdFwk
     const BasisArray& basis() const {return basis_;}
 
     /** */
+    Array<int> dimStructure() const {return vectorDimStructure(basis());}
+
+    /** */
     Vector<double> createVector() const {return vecSpace_.createMember();}
 
     /** */

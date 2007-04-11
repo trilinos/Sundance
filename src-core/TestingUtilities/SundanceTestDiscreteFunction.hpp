@@ -54,7 +54,7 @@ namespace SundanceTesting
     /** */
     TestDiscreteFunction(const ADField& field, 
                          const string& name="")
-      :  DiscreteFunctionStub(name, 1, rcp(new TestDiscreteFuncData(field))) {;}
+      :  DiscreteFunctionStub(name, tuple(1), rcp(new TestDiscreteFuncData(field))) {;}
    
     /** virtual destructor */
     virtual ~TestDiscreteFunction() {;}

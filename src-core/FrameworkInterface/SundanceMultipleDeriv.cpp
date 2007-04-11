@@ -82,7 +82,23 @@ MultiIndex MultipleDeriv::spatialDeriv() const
   return rtn;
 }
 
-MultiSet<int> MultipleDeriv::funcIDs() const
+MultiSet<int> MultipleDeriv::funcComponentIDs() const
+{
+  MultiSet<int> rtn;
+  for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
+    {
+      if (i->isFunctionalDeriv())
+        {
+          int f = i->funcDeriv()->funcComponentID();
+          rtn.put(f);
+        }
+      TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
+                         "MultipleDeriv::funcIDs() found spatial deriv");
+    }
+  return rtn;
+}
+
+MultiSet<int> MultipleDeriv::sharedFuncIDs() const
 {
   MultiSet<int> rtn;
   for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
@@ -159,7 +175,7 @@ bool MultipleDeriv
 {
   if (spatialOrder() == 0)
     {
-      return funcCombinations.contains(funcIDs());
+      return funcCombinations.contains(funcComponentIDs());
     }
   else
     {

@@ -74,13 +74,22 @@ int main(int argc, char** argv)
       /* Compute an integral over a fixed integrand */
       const double pi = 4.0*atan(1.0);
 
+      Expr I0 = Integral(interior, x, quad4);
+      double f0 = evaluateIntegral(mesh, I0);
+      cout << "integral of x = " << f0 << endl;
+      double I0Exact = 0.5;
+      cout << "exact: " << I0Exact << endl;
+
+      double error = fabs(f0 - I0Exact);
+      cout << "error = " << fabs(f0 - I0Exact) << endl;
+
       Expr I1 = Integral(interior, x*sin(pi*x), quad4);
       double f1 = evaluateIntegral(mesh, I1);
       cout << "integral of x sin(pi*x) = " << f1 << endl;
       double I1Exact = 1.0/pi;
       cout << "exact: " << I1Exact << endl;
 
-      double error = fabs(f1 - I1Exact);
+      error = max(error, fabs(f1 - I1Exact));
       cout << "error = " << fabs(f1 - I1Exact) << endl;
 
       MPIComm::world().synchronize();
@@ -123,8 +132,10 @@ int main(int argc, char** argv)
       MPIComm::world().synchronize();
 
 
+#ifdef LOUD
       GrouperBase::classVerbosity() = VerbExtreme;
       Evaluator::classVerbosity() = VerbExtreme;
+#endif
       Expr I5 = Integral(interior, 1.0, quad4);
       double f5 = evaluateIntegral(mesh, I5);
       cout << "integral of 1.0 = " << f5 << endl;
@@ -151,7 +162,7 @@ int main(int argc, char** argv)
       cout << "computing Integral(0.5*pow(alpha-sin(pi*x), 2)) at alpha0=x*(pi-x)"
            << endl;
       //#define BLAHBLAH 1
-#ifdef BLAHBLAH
+#ifdef LOUD
       verbosity<Evaluator>() = VerbExtreme;
       verbosity<SparsitySuperset>() = VerbExtreme;
       verbosity<EvaluatableExpr>() = VerbExtreme;

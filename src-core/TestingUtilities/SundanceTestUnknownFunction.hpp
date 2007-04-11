@@ -51,7 +51,7 @@ namespace SundanceTesting
   public:
     /** */
     TestUnknownFunction(const ADField& field, const string& name="")
-      : UnknownFunctionStub(name, 1, rcp(new TestUnknownFuncData(field)))
+      : UnknownFunctionStub(name, tuple(1), rcp(new TestUnknownFuncData(field)))
     {;}
     
     /** virtual destructor */

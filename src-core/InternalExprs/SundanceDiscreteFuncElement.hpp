@@ -66,9 +66,10 @@ namespace SundanceCore
     public:
       /** */
       DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
-                          const string& name,
-                          const string& suffix,
-                          int myIndex);
+        const string& name,
+        const string& suffix,
+        int commonFuncID,
+        int myIndex);
 
       /** virtual destructor */
       virtual ~DiscreteFuncElement() {;}

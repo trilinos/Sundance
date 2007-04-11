@@ -63,8 +63,9 @@ namespace SundanceCore
     public:
       /** */
       UnknownParameterElement(const string& name,
-                              const string& suffix,
-                              int myIndex);
+        const string& suffix,
+        int commonFuncID,
+        int myIndex);
 
       /** virtual destructor */
       virtual ~UnknownParameterElement() {;}

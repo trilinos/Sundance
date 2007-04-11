@@ -159,7 +159,10 @@ namespace SundanceCore
                            const Set<MultiIndex>& multiIndices) const ;
 
       /** */
-      MultiSet<int> funcIDs() const ;
+      MultiSet<int> funcComponentIDs() const ;
+
+      /** */
+      MultiSet<int> sharedFuncIDs() const ;
 
       /** \name Utilities used in computing product rule permutations */
       //@

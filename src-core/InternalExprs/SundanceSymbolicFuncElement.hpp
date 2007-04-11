@@ -62,8 +62,10 @@ namespace SundanceCore
     {
     public:
       /** */
-      SymbolicFuncElement(const string& name, const string& suffix,
-                          int myIndex);
+      SymbolicFuncElement(const string& name, 
+        const string& suffix,
+        int commonFuncID,
+        int myIndex);
       
       /** virtual destructor */
       virtual ~SymbolicFuncElement() {;}

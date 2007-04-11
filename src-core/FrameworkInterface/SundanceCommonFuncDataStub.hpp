@@ -52,7 +52,7 @@ namespace SundanceCore
     {
     public:
       /** */
-      CommonFuncDataStub() {;}
+      CommonFuncDataStub(){;}
 
       /** */
       virtual ~CommonFuncDataStub(){;}

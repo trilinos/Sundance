@@ -30,6 +30,7 @@
 
 #include "SundanceUnknownParameter.hpp"
 #include "SundanceUnknownParameterElement.hpp"
+#include "SundanceSymbolicFunc.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -43,5 +44,5 @@ using namespace Teuchos;
 UnknownParameter::UnknownParameter(const string& name)
 	: SymbolicFunc()
 {
-  append(new UnknownParameterElement(name, "", 0));
+  append(new UnknownParameterElement(name, "", SymbolicFunc::nextCommonID(), 0));
 }

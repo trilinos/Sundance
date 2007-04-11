@@ -44,9 +44,11 @@ using namespace Teuchos;
 
 UnknownParameterElement
 ::UnknownParameterElement(const string& name,
-                          const string& suffix,
-                          int myIndex)
-	: UnknownFuncElement(rcp(new UnknownFuncDataStub()), name, suffix, myIndex),
+  const string& suffix,
+  int commonFuncID,
+  int myIndex)
+	: UnknownFuncElement(rcp(new UnknownFuncDataStub()), name, 
+    suffix, commonFuncID, myIndex),
     SpatiallyConstantExpr()
 {}
 

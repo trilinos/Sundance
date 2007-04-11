@@ -69,9 +69,15 @@ namespace SundanceCore
           /** virtual dtor */
           virtual ~FunctionalDeriv(){;}
 
-          /** Return the funcID that specifies which function was used in
+          /** Return the funcID that specifies which function and
+           * vector components were used in
            * the definition of this functional derivative */
           virtual int funcComponentID() const {return func_->funcComponentID();}
+
+          /** Return the funcID of the vector-valued function used in
+           * the definition of this functional derivative */
+          virtual int sharedFuncID() const 
+            {return func_->sharedFuncID();}
 
           /** Return the multiindex that specifies which spatial derivative
            *  was used in

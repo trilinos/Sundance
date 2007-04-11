@@ -43,11 +43,12 @@ using namespace TSFExtended;
 
 DiscreteFuncElement
 ::DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
-                      const string& name,
-                      const string& suffix,
-                      int myIndex)
+  const string& name,
+  const string& suffix,
+  int commonFuncID,
+  int myIndex)
 	: EvaluatableExpr(), 
-    FuncElementBase(name, suffix),
+    FuncElementBase(name, suffix, commonFuncID),
     commonData_(data),
     myIndex_(myIndex),
     miSet_()

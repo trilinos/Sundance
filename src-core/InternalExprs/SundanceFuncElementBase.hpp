@@ -74,15 +74,22 @@ namespace SundanceCore
         public:
           /** */
           FuncElementBase(const string& rootName,
-                          const string& suffix);
+            const string& suffix,
+            int sharedID);
           /** */
-          FuncElementBase(const string& rootName);
+          FuncElementBase(const string& rootName,
+            int sharedID);
 
           /** virtual destructor */
           virtual ~FuncElementBase() {;}
 
-          /** Return an integer ID which uniquely identifies this function */
-          int funcComponentID() const {return id_;}
+          /** Return an integer ID which uniquely identifies this
+           * vector component of this function */
+          int funcComponentID() const {return componentID_;}
+
+          /** Return an integer ID shared by all components of a vector-valued
+           * function. */
+          int sharedFuncID() const {return sharedID_;}
 
           /** Append to the set of func IDs present in this expression. */
           virtual void accumulateFuncSet(Set<int>& funcIDs, 
@@ -119,9 +126,11 @@ namespace SundanceCore
 
           string suffix_;
 
-          int id_;
+          int componentID_;
 
-          static int& nextID() {static int rtn = 0; return rtn;}
+          int sharedID_;
+
+          static int nextComponentID() {static int rtn = 0; rtn++; return rtn;}
 
         };
     }

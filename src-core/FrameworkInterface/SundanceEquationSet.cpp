@@ -748,8 +748,6 @@ void EquationSet::init(const Expr& eqns,
                 }
               Set<int>& t = varsOnRegions_.get(reg);
               t.merge(bcSum->funcsOnRegion(d, varFuncSet));
-              cout << "added vars " << bcSum->funcsOnRegion(d, varFuncSet)
-                   << " to region " << reg << endl;
               Set<int>& u = unksOnRegions_.get(reg);
               u.merge(bcSum->funcsOnRegion(d, unkFuncSet));
             }

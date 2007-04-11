@@ -31,6 +31,7 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCoordDeriv.hpp"
 #include "SundanceEvalManager.hpp"
+#include "SundanceSymbolicFunc.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceOut.hpp"
 #include "TSFObjectWithVerbosity.hpp"
@@ -43,7 +44,7 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 CoordExpr::CoordExpr(int dir, const string& name)
-  : FuncElementBase(coordName(dir, name), ""), 
+  : FuncElementBase(coordName(dir, name), "", SymbolicFunc::nextCommonID()), 
     EvaluatableExpr(),
     dir_(dir)
 {}

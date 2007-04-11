@@ -110,3 +110,24 @@ BasisFamily BasisFamily::getBasis(const Expr& expr)
   return BasisFamily();
   
 }
+
+
+
+
+namespace SundanceStdFwk
+{
+
+Array<int> vectorDimStructure(const Array<BasisFamily>& basis)
+{
+  Array<int> rtn;
+  for (unsigned int i=0; i<basis.size(); i++) rtn.append(basis[i].dim());
+  return rtn;
+}
+
+
+Array<int> vectorDimStructure(const BasisFamily& basis)
+{
+  return vectorDimStructure(tuple(basis));
+}
+
+}

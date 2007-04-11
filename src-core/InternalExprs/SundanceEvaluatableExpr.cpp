@@ -109,7 +109,11 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
     }
   else
     {
-      rtn = rcp(new SparsitySuperset(findC(context), findV(context)));
+      const Set<MultipleDeriv>& R = findR(context);
+      const Set<MultipleDeriv>& C = findC(context);
+      const Set<MultipleDeriv>& V = findV(context);
+      rtn = rcp(new SparsitySuperset(C.intersection(R), V.intersection(R)));
+//      rtn = rcp(new SparsitySuperset(findC(context), findV(context)));
       sparsity_.put(context, rtn);
     }
   return rtn;

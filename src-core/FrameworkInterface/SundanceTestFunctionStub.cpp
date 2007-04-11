@@ -33,44 +33,66 @@
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
 
+
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore::Internal;
+using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
-TestFunctionStub::TestFunctionStub(const string& name, int nElems,
-                                   const RefCountPtr<const TestFuncDataStub>& data)
-	: SymbolicFunc(), data_(data)
-{
-  for (int i=0; i<nElems; i++)
-    {
-      string suffix;
-      if (nElems > 1) suffix = "[" + Teuchos::toString(i) + "]";
-      append(new TestFuncElement(data, name, suffix, i));
-    }
-}
 
 
-
-
-TestFunctionStub::TestFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems,
-                                         const RefCountPtr<const TestFuncDataStub>& data)
+TestFunctionStub::TestFunctionStub(const string& name, 
+  const Array<int>& dims,
+  const RefCountPtr<const TestFuncDataStub>& data)
   : SymbolicFunc(), data_(data)
 {
-  int counter = 0;
-  for (int i=0; i<nElems; i++)
+  string funcSuffix;
+  int count = 0;
+  for (unsigned int f=0; f<dims.size(); f++)
+  {
+    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
+    int commonFuncID = nextCommonID();
+    for (int d=0; d<dims[f]; d++, count++)
     {
-      string suffix;
-      Array<Expr> Coeffs(sbasis.nterms());
-
-      for(int n=0; n< sbasis.nterms(); n++)
-	{
-	  suffix = "[" + Teuchos::toString(counter) + "]";
-	  Coeffs[n] = new TestFuncElement(data, name, suffix, counter);
-	  counter++;
-	}
-
-      append(new SpectralExpr(sbasis, Coeffs));
+      string componentSuffix;
+      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
+      string suffix = funcSuffix + componentSuffix;
+      append(new TestFuncElement(data, name, suffix, commonFuncID, count));
     }
+  }
 }
+
+
+
+TestFunctionStub::TestFunctionStub(const string& name, 
+  const SpectralBasis& sbasis, const Array<int>& dims,
+  const RefCountPtr<const TestFuncDataStub>& data)
+  : SymbolicFunc(), data_(data)
+{
+  string funcSuffix;
+  int count = 0;
+  for (unsigned int f=0; f<dims.size(); f++)
+  {
+    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
+    Array<int> cfid(sbasis.nterms());
+    for (int n=0; n<sbasis.nterms(); n++)
+    {
+      cfid[n] = nextCommonID();
+    }
+    for (int d=0; d<dims[f]; d++)
+    {
+      string componentSuffix;
+      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
+      string suffix = funcSuffix + componentSuffix;
+      Array<Expr> coeffs(sbasis.nterms());
+      for (int n=0; n<sbasis.nterms(); n++, count++)
+      {
+        coeffs[n] = new TestFuncElement(data, name, suffix, cfid[n], count);
+      }
+      append(new SpectralExpr(sbasis, coeffs));
+    }
+  }
+}
+

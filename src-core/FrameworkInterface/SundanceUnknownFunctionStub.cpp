@@ -43,39 +43,57 @@ using namespace Teuchos;
 
 
 
-UnknownFunctionStub::UnknownFunctionStub(const string& name, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
+UnknownFunctionStub::UnknownFunctionStub(const string& name, 
+  const Array<int>& dims,
+  const RefCountPtr<const UnknownFuncDataStub>& data)
   : SymbolicFunc(), data_(data)
 {
-  for (int i=0; i<nElems; i++)
+  string funcSuffix;
+  int count = 0;
+  for (unsigned int f=0; f<dims.size(); f++)
+  {
+    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
+    int commonFuncID = nextCommonID();
+    for (int d=0; d<dims[f]; d++, count++)
     {
-      string suffix;
-      if (nElems > 1) suffix = "[" + Teuchos::toString(i) + "]";
-      append(new UnknownFuncElement(data, name, suffix, i));
+      string componentSuffix;
+      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
+      string suffix = funcSuffix + componentSuffix;
+      append(new UnknownFuncElement(data, name, suffix, commonFuncID, count));
     }
+  }
 }
 
 
 
-UnknownFunctionStub::UnknownFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems,
-                                         const RefCountPtr<const UnknownFuncDataStub>& data)
+UnknownFunctionStub::UnknownFunctionStub(const string& name, 
+  const SpectralBasis& sbasis, const Array<int>& dims,
+  const RefCountPtr<const UnknownFuncDataStub>& data)
   : SymbolicFunc(), data_(data)
 {
-  int counter = 0;
-  for (int i=0; i<nElems; i++)
+  string funcSuffix;
+  int count = 0;
+  for (unsigned int f=0; f<dims.size(); f++)
+  {
+    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
+    Array<int> cfid(sbasis.nterms());
+    for (int n=0; n<sbasis.nterms(); n++)
     {
-      string suffix;
-      Array<Expr> Coeffs(sbasis.nterms());
-
-      for(int n=0; n< sbasis.nterms(); n++)
-	{
-	  suffix = "[" + Teuchos::toString(counter) + "]";
-	  Coeffs[n] = new UnknownFuncElement(data, name, suffix, counter);
-	  counter++;
-	}
-
-      append(new SpectralExpr(sbasis, Coeffs));
+      cfid[n] = nextCommonID();
     }
+    for (int d=0; d<dims[f]; d++)
+    {
+      string componentSuffix;
+      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
+      string suffix = funcSuffix + componentSuffix;
+      Array<Expr> coeffs(sbasis.nterms());
+      for (int n=0; n<sbasis.nterms(); n++, count++)
+      {
+        coeffs[n] = new UnknownFuncElement(data, name, suffix, cfid[n], count);
+      }
+      append(new SpectralExpr(sbasis, coeffs));
+    }
+  }
 }
 
 

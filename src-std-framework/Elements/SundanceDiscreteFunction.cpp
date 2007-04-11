@@ -59,7 +59,7 @@ static Time& dfCtorTimer()
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const string& name)
-  : DiscreteFunctionStub(name, space.nFunc(),
+  : DiscreteFunctionStub(name, space.dimStructure(),
                          rcp(new DiscreteFunctionData(space))), 
     FuncWithBasis(space.basis()),
     data_()
@@ -70,7 +70,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const Array<string>& name)
-  : DiscreteFunctionStub(name, space.nFunc(),
+  : DiscreteFunctionStub(name, space.dimStructure(),
                          rcp(new DiscreteFunctionData(space))), 
     FuncWithBasis(space.basis()),
     data_()
@@ -82,7 +82,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const double& constantValue,
                                    const string& name)
-  : DiscreteFunctionStub(name, space.nFunc(),
+  : DiscreteFunctionStub(name, space.dimStructure(),
                          rcp(new DiscreteFunctionData(space, constantValue))), 
     FuncWithBasis(space.basis()),
     data_()
@@ -97,7 +97,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const double& constantValue,
                                    const Array<string>& name)
-  : DiscreteFunctionStub(name, space.nFunc(),
+  : DiscreteFunctionStub(name, space.dimStructure(),
                          rcp(new DiscreteFunctionData(space, constantValue))), 
     FuncWithBasis(space.basis()),
     data_()
@@ -112,7 +112,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const Vector<double>& vec,
                                    const string& name)
-  : DiscreteFunctionStub(name, space.nFunc(),
+  : DiscreteFunctionStub(name, space.dimStructure(),
                          rcp(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),
     data_()
@@ -124,7 +124,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const Vector<double>& vec,
                                    const Array<string>& name)
-  : DiscreteFunctionStub(name, space.nFunc(),
+  : DiscreteFunctionStub(name, space.dimStructure(),
                          rcp(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),
     data_()

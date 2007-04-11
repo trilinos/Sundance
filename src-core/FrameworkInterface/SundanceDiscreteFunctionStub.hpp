@@ -71,20 +71,26 @@ namespace SundanceCore
     {
     public:
       /** */
-      DiscreteFunctionStub(const string& name, int nElems=1,
-                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+      DiscreteFunctionStub(const string& name, 
+        const Array<int>& dims=tuple(1), 
+        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
      
       /** */
-      DiscreteFunctionStub(const string& name, const SpectralBasis& sbasis, int nElems=1,
-                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+      DiscreteFunctionStub(const string& name, 
+        const SpectralBasis& sbasis, 
+        const Array<int>& dims=tuple(1), 
+        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
 
       /** */
-      DiscreteFunctionStub(const Array<string>& names, int nElems=1,
-                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+      DiscreteFunctionStub(const Array<string>& names, 
+        const Array<int>& dims=tuple(1), 
+        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
      
       /** */
-      DiscreteFunctionStub(const Array<string>& names, const SpectralBasis& sbasis, int nElems=1,
-                          const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+      DiscreteFunctionStub(const Array<string>& names, 
+        const SpectralBasis& sbasis, 
+        const Array<int>& dims=tuple(1), 
+        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
 
 
       /** virtual destructor */

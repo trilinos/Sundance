@@ -217,6 +217,17 @@ public:
     : Array<BasisFamily>(a) 
     {;}
 };
+
+
+/** \relates BasisFamily */
+Array<int> vectorDimStructure(const Array<BasisFamily>& basis);
+
+
+/** \relates BasisFamily */
+Array<int> vectorDimStructure(const BasisFamily& basis);
+
+
+
 }
 
 #endif

@@ -41,14 +41,14 @@ using namespace Teuchos;
 
 
 TestFunction::TestFunction(const BasisFamily& basis, const string& name)
-  : TestFunctionStub(name, basis.dim(),
+  : TestFunctionStub(name, vectorDimStructure(basis),
                         rcp(new TestFunctionData(tuple(basis)))), 
     FuncWithBasis(basis)
 {;}
 
 
 TestFunction::TestFunction(const Array<BasisFamily>& basis, const string& name)
-  : TestFunctionStub(name, BasisFamily::size(basis),
+  : TestFunctionStub(name, vectorDimStructure(basis),
                         rcp(new TestFunctionData(basis))), 
     FuncWithBasis(basis)
 {;}
@@ -57,7 +57,7 @@ TestFunction::TestFunction(const Array<BasisFamily>& basis, const string& name)
 TestFunction::TestFunction(const BasisFamily& basis, 
                                  const SpectralBasis& spBasis,
                                  const string& name)
-  : TestFunctionStub(name, spBasis, basis.dim(),
+  : TestFunctionStub(name, spBasis, vectorDimStructure(basis),
                      rcp(new TestFunctionData(replicate(basis, spBasis.nterms())))), 
     FuncWithBasis(replicate(basis, spBasis.nterms()))
 {;}
@@ -66,7 +66,7 @@ TestFunction::TestFunction(const BasisFamily& basis,
 TestFunction::TestFunction(const Array<BasisFamily>& basis, 
                                  const SpectralBasis& spBasis,
                                  const string& name)
-  : TestFunctionStub(name, spBasis, BasisFamily::size(basis),
+  : TestFunctionStub(name, spBasis, vectorDimStructure(basis),
                      rcp(new TestFunctionData(replicate(basis, spBasis.nterms())))), 
     FuncWithBasis(replicate(basis, spBasis.nterms()))
 {;}

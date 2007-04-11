@@ -41,14 +41,14 @@ using namespace Teuchos;
 
 
 UnknownFunction::UnknownFunction(const BasisFamily& basis, const string& name)
-  : UnknownFunctionStub(name, basis.dim(),
+  : UnknownFunctionStub(name, vectorDimStructure(basis),
                         rcp(new UnknownFunctionData(tuple(basis)))), 
     FuncWithBasis(basis)
 {;}
 
 
 UnknownFunction::UnknownFunction(const Array<BasisFamily>& basis, const string& name)
-  : UnknownFunctionStub(name, BasisFamily::size(basis),
+  : UnknownFunctionStub(name, vectorDimStructure(basis),
                         rcp(new UnknownFunctionData(basis))), 
     FuncWithBasis(basis)
 {;}
@@ -57,7 +57,7 @@ UnknownFunction::UnknownFunction(const Array<BasisFamily>& basis, const string& 
 UnknownFunction::UnknownFunction(const BasisFamily& basis, 
                                  const SpectralBasis& spBasis,
                                  const string& name)
-  : UnknownFunctionStub(name, spBasis, basis.dim(),
+  : UnknownFunctionStub(name, spBasis, vectorDimStructure(basis),
                         rcp(new UnknownFunctionData(replicate(basis, spBasis.nterms())))), 
     FuncWithBasis(replicate(basis, spBasis.nterms()))
 {;}
@@ -66,7 +66,7 @@ UnknownFunction::UnknownFunction(const BasisFamily& basis,
 UnknownFunction::UnknownFunction(const Array<BasisFamily>& basis, 
                                  const SpectralBasis& spBasis,
                                  const string& name)
-  : UnknownFunctionStub(name, spBasis, BasisFamily::size(basis),
+  : UnknownFunctionStub(name, spBasis, vectorDimStructure(basis),
                         rcp(new UnknownFunctionData(replicate(basis, spBasis.nterms())))), 
     FuncWithBasis(replicate(basis, spBasis.nterms()))
 {;}

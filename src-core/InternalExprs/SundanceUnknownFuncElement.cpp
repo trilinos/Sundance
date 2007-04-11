@@ -40,10 +40,11 @@ using namespace Teuchos;
 
 UnknownFuncElement
 ::UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
-                     const string& name,
-                     const string& suffix,
-                     int myIndex)
-	: SymbolicFuncElement(name, suffix, myIndex), commonData_(data)
+  const string& name,
+  const string& suffix,
+  int commonFuncID,
+  int myIndex)
+	: SymbolicFuncElement(name, suffix, commonFuncID, myIndex), commonData_(data)
 {}
 
 

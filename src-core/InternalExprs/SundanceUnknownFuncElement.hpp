@@ -61,9 +61,10 @@ namespace SundanceCore
     public:
       /** */
       UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
-                         const string& name,
-                         const string& suffix,
-                         int myIndex);
+        const string& name,
+        const string& suffix,
+        int commonFuncID,
+        int myIndex);
 
       /** virtual destructor */
       virtual ~UnknownFuncElement() {;}
@@ -71,7 +72,6 @@ namespace SundanceCore
       /** Get the data associated with the vector-valued function 
        * that contains this function element. */
       const UnknownFuncDataStub* commonData() const {return commonData_.get();}
-
 
       /** */
       virtual XMLObject toXML() const ;

@@ -39,14 +39,16 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 FuncElementBase::FuncElementBase(const string& rootName,
-                                 const string& suffix)
+  const string& suffix,
+  int sharedID)
 	: ScalarExpr(), name_(rootName + suffix), rootName_(rootName),
-    suffix_(suffix), id_(nextID()++)
+    suffix_(suffix), componentID_(nextComponentID()), sharedID_(sharedID)
 {}
 
-FuncElementBase::FuncElementBase(const string& rootName)
+FuncElementBase::FuncElementBase(const string& rootName,
+  int sharedID)
 	: ScalarExpr(), name_(rootName), rootName_(rootName),
-    suffix_(), id_(nextID()++)
+    suffix_(), componentID_(nextComponentID()), sharedID_(sharedID)
 {}
 
 

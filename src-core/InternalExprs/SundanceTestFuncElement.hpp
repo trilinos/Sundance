@@ -59,9 +59,10 @@ namespace SundanceCore
     public:
       /** */
       TestFuncElement(const RefCountPtr<const TestFuncDataStub>& master,
-                      const string& name,
-                      const string& suffix,
-                      int myIndex);
+        const string& name,
+        const string& suffix,
+        int commonFuncID,
+        int myIndex);
 
       /** virtual destructor */
       virtual ~TestFuncElement() {;}

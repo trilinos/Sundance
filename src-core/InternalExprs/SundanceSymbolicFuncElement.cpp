@@ -47,9 +47,10 @@ using namespace TSFExtended;
 
 
 SymbolicFuncElement::SymbolicFuncElement(const string& name,
-                                         const string& suffix,
-                                         int myIndex)
-	: EvaluatableExpr(), FuncElementBase(name, suffix),
+  const string& suffix,
+  int commonFuncID,
+  int myIndex)
+	: EvaluatableExpr(), FuncElementBase(name, suffix, commonFuncID),
     evalPt_(),
     evalPtDerivSetIndices_(),
     myIndex_(myIndex)

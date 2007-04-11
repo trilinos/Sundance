@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceParameter.hpp"
+#include "SundanceSymbolicFunc.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -37,7 +38,9 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 Parameter::Parameter(const double& value, const string& name)
-	: DiscreteFuncElement(rcp(new ParameterData(value)), name, "", 0),  
+	: DiscreteFuncElement(rcp(new ParameterData(value)), 
+    name, "", 
+    SymbolicFunc::nextCommonID(), 0),  
     SpatiallyConstantExpr()
 {;}
 
