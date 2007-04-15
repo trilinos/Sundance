@@ -86,7 +86,7 @@
 #
 # ------------------------------------------------------------------------
 
-SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) $(Exo2Triangle_SOURCES) $(MixedOrderPrec_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) $(VSNS2D_SOURCES)
+SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) $(Exo2Triangle_SOURCES) $(MixedOrderPrec_SOURCES) $(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) $(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) $(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) $(ThermalLTI_SOURCES) $(VSNS2D_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -137,7 +137,8 @@ am__EXEEXT_1 = PostPotentialFlow$(EXEEXT) \
 	VSNS2D$(EXEEXT) Exo2Triangle$(EXEEXT) \
 	PressureStabilizedNS2D$(EXEEXT) \
 	PressureStabilizedNS3D$(EXEEXT) ReadField$(EXEEXT) \
-	CubicCDR$(EXEEXT) ControlCDR$(EXEEXT) MixedOrderPrec$(EXEEXT)
+	CubicCDR$(EXEEXT) ControlCDR$(EXEEXT) MixedOrderPrec$(EXEEXT) \
+	ThermalLTI$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_ControlCDR_OBJECTS = ControlCDR-ControlCDR.$(OBJEXT)
 ControlCDR_OBJECTS = $(am_ControlCDR_OBJECTS)
@@ -172,6 +173,8 @@ am_RadiationDiffusion1D_OBJECTS =  \
 RadiationDiffusion1D_OBJECTS = $(am_RadiationDiffusion1D_OBJECTS)
 am_ReadField_OBJECTS = ReadField-ReadField.$(OBJEXT)
 ReadField_OBJECTS = $(am_ReadField_OBJECTS)
+am_ThermalLTI_OBJECTS = ThermalLTI-ThermalLTI.$(OBJEXT)
+ThermalLTI_OBJECTS = $(am_ThermalLTI_OBJECTS)
 am_VSNS2D_OBJECTS = VSNS2D-VSNS2D.$(OBJEXT)
 VSNS2D_OBJECTS = $(am_VSNS2D_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src-solvers -I$(top_builddir)/src-utils
@@ -187,6 +190,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/PressureVessel2D-PressureVessel2D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ReadField-ReadField.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ThermalLTI-ThermalLTI.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/VSNS2D-VSNS2D.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -198,13 +202,13 @@ SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) \
 	$(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) \
 	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
-	$(VSNS2D_SOURCES)
+	$(ThermalLTI_SOURCES) $(VSNS2D_SOURCES)
 DIST_SOURCES = $(ControlCDR_SOURCES) $(CubicCDR_SOURCES) \
 	$(Exo2Triangle_SOURCES) $(MixedOrderPrec_SOURCES) \
 	$(PostPotentialFlow_SOURCES) $(PressureStabilizedNS2D_SOURCES) \
 	$(PressureStabilizedNS3D_SOURCES) $(PressureVessel2D_SOURCES) \
 	$(RadiationDiffusion1D_SOURCES) $(ReadField_SOURCES) \
-	$(VSNS2D_SOURCES)
+	$(ThermalLTI_SOURCES) $(VSNS2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -350,7 +354,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 TESTS_SRC = PostPotentialFlow RadiationDiffusion1D PressureVessel2D \
 VSNS2D Exo2Triangle PressureStabilizedNS2D PressureStabilizedNS3D \
-ReadField CubicCDR ControlCDR MixedOrderPrec
+ReadField CubicCDR ControlCDR MixedOrderPrec ThermalLTI
 
 
 #  get_matrices_for_ross
@@ -472,6 +476,15 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 MixedOrderPrec_CXXFLAGS = $(STD_FWK_INCLUDES)
 MixedOrderPrec_LDADD = $(STD_FWK_LIBS) 
+ThermalLTI_SOURCES = $(srcdir)/ThermalLTI.cpp
+ThermalLTI_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+ThermalLTI_CXXFLAGS = $(STD_FWK_INCLUDES)
+ThermalLTI_LDADD = $(STD_FWK_LIBS) 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -679,6 +692,9 @@ RadiationDiffusion1D$(EXEEXT): $(RadiationDiffusion1D_OBJECTS) $(RadiationDiffus
 ReadField$(EXEEXT): $(ReadField_OBJECTS) $(ReadField_DEPENDENCIES) 
 	@rm -f ReadField$(EXEEXT)
 	$(CXXLINK) $(ReadField_LDFLAGS) $(ReadField_OBJECTS) $(ReadField_LDADD) $(LIBS)
+ThermalLTI$(EXEEXT): $(ThermalLTI_OBJECTS) $(ThermalLTI_DEPENDENCIES) 
+	@rm -f ThermalLTI$(EXEEXT)
+	$(CXXLINK) $(ThermalLTI_LDFLAGS) $(ThermalLTI_OBJECTS) $(ThermalLTI_LDADD) $(LIBS)
 VSNS2D$(EXEEXT): $(VSNS2D_OBJECTS) $(VSNS2D_DEPENDENCIES) 
 	@rm -f VSNS2D$(EXEEXT)
 	$(CXXLINK) $(VSNS2D_LDFLAGS) $(VSNS2D_OBJECTS) $(VSNS2D_LDADD) $(LIBS)
@@ -699,6 +715,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PressureVessel2D-PressureVessel2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadiationDiffusion1D-RadiationDiffusion1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReadField-ReadField.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThermalLTI-ThermalLTI.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VSNS2D-VSNS2D.Po@am__quote@
 
 .cpp.o:
@@ -876,6 +893,22 @@ ReadField-ReadField.obj: $(srcdir)/ReadField.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ReadField-ReadField.Po' tmpdepfile='$(DEPDIR)/ReadField-ReadField.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ReadField_CXXFLAGS) $(CXXFLAGS) -c -o ReadField-ReadField.obj `if test -f '$(srcdir)/ReadField.cpp'; then $(CYGPATH_W) '$(srcdir)/ReadField.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ReadField.cpp'; fi`
+
+ThermalLTI-ThermalLTI.o: $(srcdir)/ThermalLTI.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ThermalLTI_CXXFLAGS) $(CXXFLAGS) -MT ThermalLTI-ThermalLTI.o -MD -MP -MF "$(DEPDIR)/ThermalLTI-ThermalLTI.Tpo" -c -o ThermalLTI-ThermalLTI.o `test -f '$(srcdir)/ThermalLTI.cpp' || echo '$(srcdir)/'`$(srcdir)/ThermalLTI.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ThermalLTI-ThermalLTI.Tpo" "$(DEPDIR)/ThermalLTI-ThermalLTI.Po"; else rm -f "$(DEPDIR)/ThermalLTI-ThermalLTI.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ThermalLTI.cpp' object='ThermalLTI-ThermalLTI.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ThermalLTI-ThermalLTI.Po' tmpdepfile='$(DEPDIR)/ThermalLTI-ThermalLTI.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ThermalLTI_CXXFLAGS) $(CXXFLAGS) -c -o ThermalLTI-ThermalLTI.o `test -f '$(srcdir)/ThermalLTI.cpp' || echo '$(srcdir)/'`$(srcdir)/ThermalLTI.cpp
+
+ThermalLTI-ThermalLTI.obj: $(srcdir)/ThermalLTI.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ThermalLTI_CXXFLAGS) $(CXXFLAGS) -MT ThermalLTI-ThermalLTI.obj -MD -MP -MF "$(DEPDIR)/ThermalLTI-ThermalLTI.Tpo" -c -o ThermalLTI-ThermalLTI.obj `if test -f '$(srcdir)/ThermalLTI.cpp'; then $(CYGPATH_W) '$(srcdir)/ThermalLTI.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ThermalLTI.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/ThermalLTI-ThermalLTI.Tpo" "$(DEPDIR)/ThermalLTI-ThermalLTI.Po"; else rm -f "$(DEPDIR)/ThermalLTI-ThermalLTI.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/ThermalLTI.cpp' object='ThermalLTI-ThermalLTI.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/ThermalLTI-ThermalLTI.Po' tmpdepfile='$(DEPDIR)/ThermalLTI-ThermalLTI.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ThermalLTI_CXXFLAGS) $(CXXFLAGS) -c -o ThermalLTI-ThermalLTI.obj `if test -f '$(srcdir)/ThermalLTI.cpp'; then $(CYGPATH_W) '$(srcdir)/ThermalLTI.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/ThermalLTI.cpp'; fi`
 
 VSNS2D-VSNS2D.o: $(srcdir)/VSNS2D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(VSNS2D_CXXFLAGS) $(CXXFLAGS) -MT VSNS2D-VSNS2D.o -MD -MP -MF "$(DEPDIR)/VSNS2D-VSNS2D.Tpo" -c -o VSNS2D-VSNS2D.o `test -f '$(srcdir)/VSNS2D.cpp' || echo '$(srcdir)/'`$(srcdir)/VSNS2D.cpp; \

@@ -113,6 +113,10 @@ namespace SundanceStdFwk
     /** Return the map from cells and functions to column indices */
     const RefCountPtr<DOFMapBase>& colMap(int blockCol) const 
     {return assembler_->colMap()[blockCol];}
+
+    /** Return the discrete space in which solutions live */
+    const Array<RefCountPtr<DiscreteSpace> >& solnSpace() const 
+      {return assembler_->solutionSpace();}
     
     /** Return the set of row indices marked as 
      * essential boundary conditions */

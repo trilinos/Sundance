@@ -155,6 +155,18 @@ int main(int argc, char *argv[])
       double errAdj = (y-x0).norm2();
 
       cout << "adjoint solve err = " << errAdj << endl;
+
+
+      /* ----------------------------------------------------------- 
+       *
+       * Apply the Hessian 
+       *
+       * ----------------------------------------------------------- */
+      LinearOperator<double> H = fact->getH();
+      Vector<double> u0 = bigF.domain().createMember();
+      Thyra::randomize(-1.0, 1.0, x0.ptr().get());
+
+      Vector<double> z = H*u0;
       
       double tol = 1.0e-13;
       if (max(errAdj, errFwd) < tol)
