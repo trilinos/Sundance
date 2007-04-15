@@ -5,6 +5,9 @@
 // and Trilinos.
 
 
+#define BROKEN_ON_MY_SYSTEM
+#ifndef BROKEN_ON_MY_SYSTEM
+
 #include "Sundance.hpp"
 #include "Thyra_SingleRhsLinearOpBase.hpp"
 #include "Thyra_DefaultRealLinearSolverBuilder.hpp"
@@ -456,3 +459,7 @@ int main(int argc, char** argv)
   return ( success ? 0 : 1 );
 
 }
+
+#else
+int main() {return 1;}
+#endif

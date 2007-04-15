@@ -30,7 +30,7 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-PARALLEL_SRC = CompoundOpTest BlockOpTest LinearCombinationTest
+PARALLEL_SRC = CompoundOpTest BlockOpTest LinearCombinationTest LTITest
 
 SERIAL_SRC =
 
@@ -69,6 +69,17 @@ LinearCombinationTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.
 LinearCombinationTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
 
 LinearCombinationTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+
+
+
+
+LTITest_SOURCES = $(srcdir)/LTITest.cpp 
+
+LTITest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+
+LTITest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+
+LTITest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
 
 
 
