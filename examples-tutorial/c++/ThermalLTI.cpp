@@ -29,10 +29,11 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include "TSFDefaultLTIProblemFactory.hpp"
+#include "TSFExplicitlyTransposedLTIProblemFactory.hpp"
 
 
-class ThermalLTIProblemFactory : public DefaultLTIProblemFactory<double>
+class ThermalLTIProblemFactory 
+  : public ExplicitlyTransposedLTIProblemFactory<double>
 {
 public:
   /** */
@@ -126,7 +127,9 @@ int main(int argc, char** argv)
     /* Do the Hessian application */
     /* Note: this doesn't work yet. I need to get transpose solves working
      * with the aztec adapters. */
-    //   Vector<double> Hx = H * x0;
+
+    cerr << "applying Hessian" << endl;
+    Vector<double> Hx = H * x0;
     
   }
 	catch(exception& e)
@@ -139,7 +142,7 @@ int main(int argc, char** argv)
 
 
 ThermalLTIProblemFactory::ThermalLTIProblemFactory(int nSteps, double deltaT) 
-  : DefaultLTIProblemFactory<double>(nSteps),
+  : ExplicitlyTransposedLTIProblemFactory<double>(nSteps),
     mesh_(),
     timestepProb_(),
     massProb_()
@@ -209,13 +212,24 @@ void ThermalLTIProblemFactory::setup(double deltaT)
   LinearSolver<double> solver 
     = LinearSolverBuilder::createSolver(solverParams);
 
+  /* BE is (M - deltaT * K), the matrix that is solved upon each Backwards
+   * Euler timestep */
   LinearOperator<double> BE = timestepProb_.getOperator();
+  /* Lacking a transpose solve in AztecOO, we form the transpose of BE
+   * explicitly */
+  LinearOperator<double> BEt = formExplicitTranspose(BE);
+
+  /* M is the mass matrix */
   LinearOperator<double> M = massProb_.getOperator();
 
+  /* Form A = BE*M */
   LinearOperator<double> A = BE.inverse(solver) * M;
+  /* Form A^T = M^T * BE^{-T}, where we have used the explicit
+   * transpose of BE.  */
+  LinearOperator<double> At = M.transpose() * BEt.inverse(solver);
 
   LinearOperator<double> C = new IdentityOperator<double>(BE.range());
 
-  this->init(A, C);
+  this->init(A, At, C);
 }
 
