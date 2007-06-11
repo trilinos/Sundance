@@ -706,6 +706,7 @@ RefCountPtr<Array<Set<MultipleDeriv> > > ExprWithChildren
 
   for (unsigned int i=0; i<RInput.size(); i++)
     {
+      if (RInput[i].size()==0U) continue;
       const Set<MultipleDeriv>& Wi = findW(i, context);
       (*rtn)[i] = RInput[i].intersection(Wi);
     }

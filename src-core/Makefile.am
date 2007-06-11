@@ -53,6 +53,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceFunctionalDerivative.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.hpp \
 $(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.hpp \
@@ -69,6 +70,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceEssentialBC.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceExpr.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceFunctionalDerivative.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceIntegral.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceParameter.cpp \
 $(top_srcdir)/src-core/UserExprs/SundancePointwiseUserDefFunctor.cpp \
@@ -86,6 +88,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceDerivOfSymbFunc.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiffOp.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiscreteFuncElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceEvaluatableExpr.hpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceExplicitFunctionalDerivativeElement.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.hpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.hpp \
@@ -122,6 +125,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceDerivOfSymbFunc.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiffOp.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceDiscreteFuncElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceEvaluatableExpr.cpp \
+$(top_srcdir)/src-core/InternalExprs/SundanceExplicitFunctionalDerivativeElement.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprBase.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceExprWithChildren.cpp \
 $(top_srcdir)/src-core/InternalExprs/SundanceFuncElementBase.cpp \
@@ -159,6 +163,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDerivOfSymbFuncEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiffOpEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceEFDEEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluatorFactory.hpp \
@@ -185,6 +190,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceCoordExprEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDerivOfSymbFuncEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiscreteFuncEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceDiffOpEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceEFDEEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvalManager.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceNonlinearUnaryOpEvaluator.cpp \

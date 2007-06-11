@@ -3,6 +3,7 @@
 #include "SundanceUserDefOp.hpp"
 #include "SundancePointwiseUserDefFunctor.hpp"
 #include "SundanceDerivative.hpp"
+#include "SundanceFunctionalDerivative.hpp"
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceTestFunctionStub.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
@@ -81,6 +82,9 @@ public:
 };
 
 
+inline Expr FD(const Expr& f, const Expr& u) 
+{return FunctionalDerivative(f, u);}
+
 
 
 #define LOUD()                                          \
@@ -157,6 +161,12 @@ public:
 #define XTESTER(X,Y)                            \
   LOUD();                                       \
   TESTER(X,Y);                                   \
+  QUIET();                                      \
+  goto finish;
+
+#define XTESTER1(X,Y)                            \
+  LOUD();                                       \
+  TESTER1(X,Y);                                   \
   QUIET();                                      \
   goto finish;
 
@@ -620,6 +630,25 @@ int main(int argc, char** argv)
       TESTER1(vfC*List(x,y), adVF_RS);
 
       TESTER(sf2, adSF2);
+
+      TESTER( FD(u*u, u), (2.0*U) );
+
+      TESTER( FD(List(u*u, u), u)*List(1.0, 1.0), ((2.0*U)+1.0) );
+
+      TESTER( 
+        (List(1.0, 1.0) * (FD(List(sin(u)*v, v*v+u*u*u), List(u, v)) * List(1.0, 1.0))), 
+        (V*cos(U) + 3.0*U*U + sin(U) + 2.0*V)
+        );
+
+      TESTER( FD(0.5*u*u, u), U );
+
+      TESTER( FD(0.5*u*v, v), 0.5*U );
+
+      TESTER( FD(sin(u), u), cos(U) );
+
+      TESTER( cos(FD(sin(u), u)), cos(cos(U)) );
+
+      TESTER1( dx*FD(0.5*u*u, u), Dx*U );
 
     finish:
       if (isOK)

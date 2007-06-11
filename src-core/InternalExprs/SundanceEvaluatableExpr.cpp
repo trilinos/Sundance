@@ -350,6 +350,7 @@ void EvaluatableExpr::determineR(const EvalContext& context,
   
   for (unsigned int i=0; i<RInput.size(); i++)
     {
+      if ((*additionToR)[i].size()==0U) continue;
       if (!contextToDSSMap_[RequiredNonzeros][i].containsKey(context))
         {
           contextToDSSMap_[RequiredNonzeros][i].put(context, (*additionToR)[i]); 
@@ -377,6 +378,7 @@ RefCountPtr<Array<Set<MultipleDeriv> > > EvaluatableExpr
   for (unsigned int i=0; i<RInput.size(); i++)
     {
       Tabs tab1;
+      if (RInput[i].size()==0U) continue;
       const Set<MultipleDeriv>& Wi = findW(i, context);
       SUNDANCE_VERB_EXTREME( tab1 << "W[" << i << "] = " << Wi );
       (*rtn)[i] = RInput[i].intersection(Wi);
