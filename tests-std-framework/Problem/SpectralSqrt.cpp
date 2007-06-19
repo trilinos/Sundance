@@ -115,9 +115,10 @@ int main(int argc, char** argv)
        * so we can simply take the first NTerms entries in the vector */
       Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
 
-      for (int i=0; i<sbasis.nterms(); i++)
+      int k=0;
+      for (SequentialIterator<double> i=vec.space().begin(); i!=vec.space().end(); i++, k++)
         {
-          cout << "u[" << i << "] = " << const_cast<const Vector<double>&>(vec)[i] << endl;
+          cout << "u[" << k << "] = " << vec[i] << endl;
         }
       
       double tol = 1.0e-12;

@@ -181,6 +181,8 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   DiscreteFunction* df = DiscreteFunction::discFunc(varValues_);
   DiscreteFunction* dg = DiscreteFunction::discFunc(gradF0);
   Vector<double> x = df->getVector();
+  Vector<double> x0 = x.copy();
+  Vector<double> gf = dg->getVector();
 
   RefCountPtr<GhostView<double> > xView = df->ghostView();
   RefCountPtr<GhostView<double> > gradF0View = dg->ghostView();
@@ -209,18 +211,24 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
           tmp = xView->getElement(globalIndex);
           x.setElement(globalIndex, tmp + h);
         }
+
       df->setVector(x);
       fPlus = evaluate();
       if (isLocal)
         {
           x.setElement(globalIndex, tmp - h);
         }
+
       df->setVector(x);
       fMinus = evaluate();
       
       if (isLocal)
         {
           df_dx[localIndex] = (fPlus - fMinus)/2.0/h;
+          cout << "g=" << globalIndex << ", l=" << localIndex << " f0="
+               << f0 
+               << " fPlus=" << fPlus << " fMinus=" << fMinus << " df_dx="
+               << df_dx[localIndex] << endl;
           if (showAll)
             {
               cerr << "i " << globalIndex << " x_i=" << tmp 
@@ -237,18 +245,19 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   double localMaxErr = 0.0;
 
   showAll = true;
-  for (int i=0; i<n; i++)
+  int k=0;
+  VectorSpace<double> space = x.space();
+  for (SequentialIterator<double> i=space.begin(); i!=space.end(); i++, k++)
     {
-      int globalIndex = lowestIndex + i;
-      double num =  fabs(df_dx[i]-gradF0View->getElement(globalIndex));
-      double den = fabs(df_dx[i]) + fabs(gradF0View->getElement(globalIndex));
+      double num =  fabs(df_dx[k]-gf[i]);
+      double den = fabs(df_dx[k]) + fabs(gf[i]);
       double r = 0.0;
       if (fabs(den) > 1.0e-10) r = num/den;
       else r = 1.0;
       if (showAll)
         {
-          cerr << "i " << i << " g=" << globalIndex << " FD=" << df_dx[i] 
-               << " grad=" << gradF0View->getElement(globalIndex)
+          cerr << "i " << i << " FD=" << df_dx[k] 
+               << " grad=" << gf[i]
                << " r=" << r << endl;
         }
       if (localMaxErr < r) localMaxErr = r;
