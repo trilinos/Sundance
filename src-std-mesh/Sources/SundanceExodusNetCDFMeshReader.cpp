@@ -448,7 +448,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
     {
       for (unsigned int n=0; n<nodeSetSizes[s]; n++)
         {
-          int nodeNum = nodeSetNodes[s][n];
+          int nodeNum = nodeSetNodes[s][n]-1;
           mesh.setLabel(0, nodeNum, s+1);
         }
     }
