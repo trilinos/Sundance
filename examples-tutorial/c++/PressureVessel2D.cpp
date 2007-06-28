@@ -52,7 +52,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../../../tests-std-framework/Problem/vessel2D.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/vessel2D.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
 
@@ -68,10 +68,11 @@ int main(int argc, char** argv)
 
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-			Expr vx = new TestFunction(new Lagrange(2), "vx");
-			Expr vy = new TestFunction(new Lagrange(2), "vy");
-			Expr ux = new UnknownFunction(new Lagrange(2), "ux");
-			Expr uy = new UnknownFunction(new Lagrange(2), "uy");
+      BasisFamily basis = new Lagrange(1);
+			Expr vx = new TestFunction(basis, "vx");
+			Expr vy = new TestFunction(basis, "vy");
+			Expr ux = new UnknownFunction(basis, "ux");
+			Expr uy = new UnknownFunction(basis, "uy");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
@@ -83,7 +84,7 @@ int main(int argc, char** argv)
       /* Young's modulus */
       double E = 1.0;
       /* Poisson's ratio */
-      double nu = 0.25;
+      double nu = 0.48;
 
       double lambda = E*nu/(1.0 + nu)/(1.0 - 2.0*nu);
       double mu = E/2.0/(1.0 + nu);
@@ -113,19 +114,13 @@ int main(int argc, char** argv)
       LinearProblem prob(mesh, eqn, bc, List(vx, vy), 
                          List(ux, uy), vecType);
 
-      /* Create an Aztec solver */
-      std::map<int,int> azOptions;
-      std::map<int,double> azParams;
 
-      azOptions[AZ_solver] = AZ_gmres;
-      azOptions[AZ_precond] = AZ_dom_decomp;
-      azOptions[AZ_subdomain_solve] = AZ_ilu;
-      azOptions[AZ_graph_fill] = 1;
-      azOptions[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-10;
+      /* Read the parameters for the linear solver from an XML file */
+      ParameterXMLFileReader reader("../../../etc/SolverParameters/amesos.xml");
+      ParameterList solverParams = reader.getParameters();
 
-      LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
-
+      LinearSolver<double> solver 
+        = LinearSolverBuilder::createSolver(solverParams);
       Expr soln = prob.solve(solver);
 
       /* Write the field in VTK format */
