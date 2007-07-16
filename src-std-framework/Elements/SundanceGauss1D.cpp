@@ -61,8 +61,8 @@ void Gauss1D::computeWeights(int n, double a, double b)
 	
 bool Gauss1D::unitTest()
 {
-	cerr << "------------------ Gauss1D unit test ----------------------" 
-			 << endl;
+	std::cerr << "------------------ Gauss1D unit test ----------------------" 
+			 << std::endl;
 
 	Gauss1D q(20, 0.0, M_PI);
 
@@ -71,14 +71,14 @@ bool Gauss1D::unitTest()
 		{
 			sum += q.weights()[i]*sin(q.nodes()[i]);
 		}
-	cerr << "integral of sin(x) over [0, pi] = " << sum << endl;
+	std::cerr << "integral of sin(x) over [0, pi] = " << sum << std::endl;
 	double sumErr = fabs(sum - 2.0);
 	bool sumPass = sumErr < 1.0e-10;
-	cerr << "error = " << sumErr << endl;
-	if (sumPass) cerr << "Gauss1D sine test PASSED" << endl;
-	else cerr << "Gauss1D sine test FAILED" << endl;
-	cerr << "------------------ End Gauss1D unit test ----------------------" 
-			 << endl;
+	std::cerr << "error = " << sumErr << std::endl;
+	if (sumPass) std::cerr << "Gauss1D sine test PASSED" << std::endl;
+	else std::cerr << "Gauss1D sine test FAILED" << std::endl;
+	std::cerr << "------------------ End Gauss1D unit test ----------------------" 
+			 << std::endl;
 	return sumPass;
 }
 

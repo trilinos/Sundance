@@ -63,21 +63,21 @@ int main(int argc, char** argv)
 
       isOK = functorTest<StdATanh>(nx, tol) && isOK ;
 
-      cerr << "done with all tests!" << endl;
+      std::cerr << "done with all tests!" << std::endl;
 
       if (isOK) 
         {
-          cerr << "all tests PASSED" << endl;
+          std::cerr << "all tests PASSED" << std::endl;
         }
       else
         {
-          cerr << "a test has FAILED" << endl;
+          std::cerr << "a test has FAILED" << std::endl;
         }
 
     }
 	catch(std::exception& e)
 		{
-      cerr << "detected exception " << e.what() << endl;
+      std::cerr << "detected exception " << e.what() << std::endl;
 		}
 
   

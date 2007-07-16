@@ -32,15 +32,15 @@
 
 using namespace SundanceUtils;
 
-InternalError::InternalError(const string& msg)
+InternalError::InternalError(const std::string& msg)
   : std::logic_error(msg)
 {;}
 
-RuntimeError::RuntimeError(const string& msg)
+RuntimeError::RuntimeError(const std::string& msg)
   : std::runtime_error(msg)
 {;}
 
-BadSymbolicsError::BadSymbolicsError(const string& msg)
+BadSymbolicsError::BadSymbolicsError(const std::string& msg)
   : RuntimeError(msg)
 {;}
 

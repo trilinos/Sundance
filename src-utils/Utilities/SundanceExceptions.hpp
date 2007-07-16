@@ -36,7 +36,6 @@
 #include "Teuchos_TestForException.hpp"
 #include <stdexcept>
 
-
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 #define SUNDANCE_ERROR(msg) \
@@ -85,7 +84,7 @@ namespace SundanceUtils
     {
     public:
       /** */
-      InternalError(const string& msg);
+      InternalError(const std::string& msg);
     };
 
   /**
@@ -96,7 +95,7 @@ namespace SundanceUtils
     {
     public:
       /** */
-      RuntimeError(const string& msg);
+      RuntimeError(const std::string& msg);
     };
 
   /**
@@ -114,7 +113,7 @@ namespace SundanceUtils
     {
     public:
       /** */
-      BadSymbolicsError(const string& msg);
+      BadSymbolicsError(const std::string& msg);
     };
 }
 
