@@ -86,6 +86,48 @@ using namespace SundanceUtils;
     Point centroid(int cellDim, int cellLID) const 
     {return ptr()->centroid(cellDim, cellLID);}
 
+
+    /** 
+     * Get the outward normals for the batch of cells of dimension
+     * spatialDim()-1. If any cell in the batch is not on the boundary,
+     * an exception is thrown. 
+     *
+     * \param cellLIDs [in] LIDs for the cells whose normals are to be
+     * computed. 
+     * \param outwardNormals [out] Outward normal unit vectors for each
+     * cell in the batch.
+     */
+    void outwardNormals(
+      const Array<int>& cellLIDs,
+      Array<Point>& outwardNormals
+      ) const 
+    {ptr()->outwardNormals(cellLIDs, outwardNormals);}
+
+    /** 
+     * Get a basis for the tangent space for each spatialDim()-1-dimensional
+     * cell in a batch. The basis will be a set of spatialDim()-1 
+     * spatialDim()-dimensional vectors represented as Point objects. 
+     * The definition of the tangent basis is arbitrary up to a sign
+     * in 2D or a rotation in 3D. In 2D, we will follow the sign convention
+     * that cross(normal, tangent) = 1. In 3D, there is no simple
+     * convention so the basis is chosen arbitrarily. Thus, in 3D it
+     * is not a good idea to use the tangent basis in any way other than 
+     * for specifying that both tangential components of some expression are
+     * to be zero. 
+     *
+     * \param cellLIDs [in] LIDs for the cells whose tangent bases are to be
+     * computed. 
+     * \param tangentBasisVectors [out] Unit vectors spanning the tangent
+     * space for each cell in the batch.
+     */
+    void tangentBasis(
+      const Array<int>& cellLIDs,
+      Array<Point>& tangentBasisVectors
+      ) const ;
+      
+      
+      
+
     /** 
      * Compute the jacobians of a batch of cells, returning the 
      * result via reference argument
@@ -198,15 +240,32 @@ using namespace SundanceUtils;
      * @param cellDim dimension of the cell whose cofacets are being obtained
      * @param cellLID local index of the cell whose
      * cofacets are being obtained
-     * @param cofacetIndex index of the maximal cell 
+     * @param cofacetIndex [in] index of the maximal cell 
      * into the list of the cell's cofacets
-     * @param facetIndex index of the calling cell
+     * @param facetIndex [out] index of the calling cell
      * into the list of the maximal cell's facets
      */
     int maxCofacetLID(int cellDim, int cellLID,
                    int cofacetIndex,
                    int& facetIndex) const 
     {return ptr()->maxCofacetLID(cellDim, cellLID, cofacetIndex, facetIndex);}
+
+    /** 
+     * Get the LIDs of the maximal cofacets for a batch of cells. 
+     *
+     * \param cellDim [in] dimension of the cells whose cofacets 
+     * are being obtained
+     * \param cellLIDs [in] array of LIDs of the cells whose cofacets are 
+     * being obtained
+     * \param cofacetLIDs [out] array of LIDs for the maximal cofacets
+     * \param facetIndex [out] index of each calling cell
+     * into the list of its maximal cofacet's facets
+     */
+    void getMaxCofacetLIDs(int cellDim, const Array<int>& cellLIDs,
+      Array<int>& cofacetLIDs, Array<int>& facetIndices) const 
+      {ptr()->getMaxCofacetLIDs(cellDim, cellLIDs, cofacetLIDs, facetIndices);}
+
+
 
     /** 
      * Find the cofacets of the given cell
@@ -257,6 +316,18 @@ using namespace SundanceUtils;
     /** Set the label for the given cell */
     void setLabel(int cellDim, int cellLID, int label)
     {ptr()->setLabel(cellDim, cellLID, label);}
+
+    /** Get the list of all labels defined for cells of the given dimension */
+    Set<int> getAllLabelsForDimension(int cellDim) const 
+      {return ptr()->getAllLabelsForDimension(cellDim);}
+
+    /** 
+     * Get the cells associated with a specified label. The array 
+     * cellLID will be filled with those cells of dimension cellDim
+     * having the given label.
+     */
+    void getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const 
+      {ptr()->getLIDsForLabel(cellDim, label, cellLIDs);}
 
     /** Get the MPI communicator over which the mesh is distributed */
     const MPIComm& comm() const {return ptr()->comm();}

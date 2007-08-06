@@ -173,8 +173,9 @@ CORE_INCLUDES = $(CORE_INCLUDE_PATH)
 STD_MESH_LIB_PATH = \
 -L@abs_top_builddir@/src-std-mesh 
 
+@EXODUS_STR@EXODUS_LIBS= -lexoII -lnetcdf
 
-STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh 
+STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(EXODUS_LIBS)
 
 STD_MESH_INCLUDE_PATH =  \
 -I@abs_top_builddir@/src-std-mesh \
@@ -213,6 +214,8 @@ FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 @FIAT_STR@FIAT_INCLUDE_PATH=-I$(FIAT_BUILD_DIR)/include
 
 @FIAT_STR@FIAT_LIBS=-L$(FIAT_BUILD_DIR)/lib -lfiat -lblitz
+
+
 
 
 

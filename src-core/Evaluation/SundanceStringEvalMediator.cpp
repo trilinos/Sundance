@@ -32,6 +32,7 @@
 #include "SundanceStringEvalMediator.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCellDiameterExpr.hpp"
+#include "SundanceCellVectorExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
@@ -63,6 +64,14 @@ void StringEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
                                               RefCountPtr<EvalVector>& vec) const
 {
   SUNDANCE_OUT(this->verbosity() > VerbSilent, "evaluating cell diameter expr " << expr->toXML().toString());
+  
+  vec->setString(expr->name());
+}
+
+void StringEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
+                                              RefCountPtr<EvalVector>& vec) const
+{
+  SUNDANCE_OUT(this->verbosity() > VerbSilent, "evaluating cell vector expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
 }

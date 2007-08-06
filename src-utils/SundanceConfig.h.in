@@ -9,6 +9,9 @@
 /* define if we want to use FIAT */
 #undef HAVE_FIAT
 
+/* define if we want to use Exodus */
+#undef HAVE_EXODUS
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

@@ -225,6 +225,25 @@ AC_ARG_WITH(sundials,
 ]
 )
 
+# ---------------0--------------------------------------------------------
+# Check for Exodus
+# ------------------------------------------------------------------------
+
+AC_ARG_ENABLE(exodus,
+[AC_HELP_STRING([--enable-exodus],[use Exodus (enables Exodus)])],
+[
+  EXODUS_STR=""
+  AC_DEFINE(HAVE_EXODUS,,[define if we want to use EXODUS])
+  AC_MSG_CHECKING(have EXODUS)
+  AC_MSG_RESULT([yes])
+],
+[
+  EXODUS_STR="#"
+  AC_MSG_CHECKING(have EXODUS)
+  AC_MSG_RESULT([no])
+]
+)
+
 
 # ------------------------------------------------------------------------
 # Get the absolute path to the build directory.  
@@ -282,6 +301,7 @@ AC_SUBST(FIAT_STR)
 AC_SUBST(FIAT_BUILD_DIR)
 AC_SUBST(SUNDIALS_STR)
 AC_SUBST(SUNDIALS_BUILD_DIR)
+AC_SUBST(EXODUS_STR)
 
 
 # ------------------------------------------------------------------------

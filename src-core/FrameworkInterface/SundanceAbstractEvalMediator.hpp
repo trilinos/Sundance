@@ -42,6 +42,7 @@ namespace SundanceCore
   using namespace SundanceUtils;
   class CoordExpr;
   class CellDiameterExpr;
+  class CellVectorExpr;
 
   
   namespace Internal 
@@ -87,6 +88,11 @@ namespace SundanceCore
            * its numerical values in the given EvalVector. */
           virtual void evalCellDiameterExpr(const CellDiameterExpr* expr,
                                             RefCountPtr<EvalVector>& vec) const = 0 ;
+
+          /** Evaluate the given cell vector expression, putting
+           * its numerical values in the given EvalVector. */
+          virtual void evalCellVectorExpr(const CellVectorExpr* expr,
+					  RefCountPtr<EvalVector>& vec) const = 0 ;
         private:
         };
     }

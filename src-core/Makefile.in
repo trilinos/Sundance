@@ -156,9 +156,10 @@ libLIBRARIES_INSTALL = $(INSTALL_DATA)
 LIBRARIES = $(lib_LIBRARIES)
 libsundanceCore_a_DEPENDENCIES =
 am__objects_1 = SundanceCellDiameterExpr.$(OBJEXT) \
-	SundanceComplexExpr.$(OBJEXT) SundanceCoordExpr.$(OBJEXT) \
-	SundanceDerivative.$(OBJEXT) SundanceEssentialBC.$(OBJEXT) \
-	SundanceExpr.$(OBJEXT) SundanceFunctionalDerivative.$(OBJEXT) \
+	SundanceCellVectorExpr.$(OBJEXT) SundanceComplexExpr.$(OBJEXT) \
+	SundanceCoordExpr.$(OBJEXT) SundanceDerivative.$(OBJEXT) \
+	SundanceEssentialBC.$(OBJEXT) SundanceExpr.$(OBJEXT) \
+	SundanceFunctionalDerivative.$(OBJEXT) \
 	SundanceIntegral.$(OBJEXT) SundanceParameter.$(OBJEXT) \
 	SundancePointwiseUserDefFunctor.$(OBJEXT) \
 	SundanceStdMathOps.$(OBJEXT) \
@@ -191,6 +192,7 @@ am__objects_2 = SundanceBinaryExpr.$(OBJEXT) \
 	SundanceUserDefFunctorElement.$(OBJEXT) \
 	SundanceUserDefOpElement.$(OBJEXT) SundanceZeroExpr.$(OBJEXT)
 am__objects_3 = SundanceCellDiameterEvaluator.$(OBJEXT) \
+	SundanceCellVectorEvaluator.$(OBJEXT) \
 	SundanceChainRuleEvaluator.$(OBJEXT) \
 	SundanceChainRuleSum.$(OBJEXT) \
 	SundanceConstantEvaluator.$(OBJEXT) \
@@ -254,6 +256,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceBinaryExpr.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceCellDiameterEvaluator.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceCellDiameterExpr.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceCellVectorEvaluator.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/SundanceCellVectorExpr.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceChainRuleEvaluator.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceChainRuleSum.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/SundanceComplexExpr.Po \
@@ -399,11 +403,13 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXODUS_STR = @EXODUS_STR@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 FIAT_STR = @FIAT_STR@
 GNU_HAVE_SWIG = @GNU_HAVE_SWIG@
+GREP = @GREP@
 HAVE_CHACO_FALSE = @HAVE_CHACO_FALSE@
 HAVE_CHACO_TRUE = @HAVE_CHACO_TRUE@
 HAVE_MPI_FALSE = @HAVE_MPI_FALSE@
@@ -462,8 +468,6 @@ ac_aux_dir = @ac_aux_dir@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -478,23 +482,30 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
@@ -505,6 +516,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 SUNDANCE_USEREXPRS_H = \
 $(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.hpp \
+$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceComplexExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.hpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.hpp \
@@ -521,6 +533,7 @@ $(top_srcdir)/src-core/UserExprs/SundanceUserDefOp.hpp
 
 SUNDANCE_USEREXPRS = \
 $(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.cpp \
+$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceComplexExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceCoordExpr.cpp \
 $(top_srcdir)/src-core/UserExprs/SundanceDerivative.cpp \
@@ -611,6 +624,7 @@ $(top_srcdir)/src-core/InternalExprs/SundanceZeroExpr.cpp
 SUNDANCE_EVALUATION_H = \
 $(top_srcdir)/src-core/Evaluation/SundanceBinaryEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.hpp \
+$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceChainRuleEvaluator.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceChainRuleSum.hpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.hpp \
@@ -637,6 +651,7 @@ $(top_srcdir)/src-core/Evaluation/SundanceUserDefOpEvaluator.hpp
 
 SUNDANCE_EVALUATION = \
 $(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.cpp \
+$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceChainRuleEvaluator.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceChainRuleSum.cpp \
 $(top_srcdir)/src-core/Evaluation/SundanceConstantEvaluator.cpp \
@@ -844,9 +859,9 @@ CORE_INCLUDE_PATH = \
 
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) 
 STD_MESH_LIB_PATH = \
--L$(top_builddir)/src-std-mesh 
+-L$(top_builddir)/src-std-mesh
 
-STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(INTEROP_LIBS)
+STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(EXODUS_LIBS) $(INTEROP_LIBS) 
 STD_MESH_INCLUDE_PATH = \
 -I$(top_builddir)/src-std-mesh \
 -I$(top_srcdir)/src-std-mesh/CellFilter \
@@ -881,7 +896,7 @@ STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(STD_MESH_INCLUDE_PATH) \
 $(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
 
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
--lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(INTEROP_LIBS) 
+-lsundanceStdFwk -lsundanceStdMesh $(EXODUS_LIBS) -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(INTEROP_LIBS) 
 
 XML_LIB_PATH = \
 -L$(top_builddir)/src-xml 
@@ -1065,6 +1080,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBinaryExpr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellDiameterEvaluator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellDiameterExpr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellVectorEvaluator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCellVectorExpr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceChainRuleEvaluator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceChainRuleSum.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceComplexExpr.Po@am__quote@
@@ -1191,6 +1208,22 @@ SundanceCellDiameterExpr.obj: $(top_srcdir)/src-core/UserExprs/SundanceCellDiame
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceCellDiameterExpr.Po' tmpdepfile='$(DEPDIR)/SundanceCellDiameterExpr.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCellDiameterExpr.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundanceCellDiameterExpr.cpp'; fi`
+
+SundanceCellVectorExpr.o: $(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCellVectorExpr.o -MD -MP -MF "$(DEPDIR)/SundanceCellVectorExpr.Tpo" -c -o SundanceCellVectorExpr.o `test -f '$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceCellVectorExpr.Tpo" "$(DEPDIR)/SundanceCellVectorExpr.Po"; else rm -f "$(DEPDIR)/SundanceCellVectorExpr.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp' object='SundanceCellVectorExpr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceCellVectorExpr.Po' tmpdepfile='$(DEPDIR)/SundanceCellVectorExpr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCellVectorExpr.o `test -f '$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp
+
+SundanceCellVectorExpr.obj: $(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCellVectorExpr.obj -MD -MP -MF "$(DEPDIR)/SundanceCellVectorExpr.Tpo" -c -o SundanceCellVectorExpr.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceCellVectorExpr.Tpo" "$(DEPDIR)/SundanceCellVectorExpr.Po"; else rm -f "$(DEPDIR)/SundanceCellVectorExpr.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp' object='SundanceCellVectorExpr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceCellVectorExpr.Po' tmpdepfile='$(DEPDIR)/SundanceCellVectorExpr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCellVectorExpr.obj `if test -f '$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/UserExprs/SundanceCellVectorExpr.cpp'; fi`
 
 SundanceComplexExpr.o: $(top_srcdir)/src-core/UserExprs/SundanceComplexExpr.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceComplexExpr.o -MD -MP -MF "$(DEPDIR)/SundanceComplexExpr.Tpo" -c -o SundanceComplexExpr.o `test -f '$(top_srcdir)/src-core/UserExprs/SundanceComplexExpr.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/UserExprs/SundanceComplexExpr.cpp; \
@@ -1959,6 +1992,22 @@ SundanceCellDiameterEvaluator.obj: $(top_srcdir)/src-core/Evaluation/SundanceCel
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceCellDiameterEvaluator.Po' tmpdepfile='$(DEPDIR)/SundanceCellDiameterEvaluator.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCellDiameterEvaluator.obj `if test -f '$(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/Evaluation/SundanceCellDiameterEvaluator.cpp'; fi`
+
+SundanceCellVectorEvaluator.o: $(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCellVectorEvaluator.o -MD -MP -MF "$(DEPDIR)/SundanceCellVectorEvaluator.Tpo" -c -o SundanceCellVectorEvaluator.o `test -f '$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceCellVectorEvaluator.Tpo" "$(DEPDIR)/SundanceCellVectorEvaluator.Po"; else rm -f "$(DEPDIR)/SundanceCellVectorEvaluator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp' object='SundanceCellVectorEvaluator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceCellVectorEvaluator.Po' tmpdepfile='$(DEPDIR)/SundanceCellVectorEvaluator.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCellVectorEvaluator.o `test -f '$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp
+
+SundanceCellVectorEvaluator.obj: $(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCellVectorEvaluator.obj -MD -MP -MF "$(DEPDIR)/SundanceCellVectorEvaluator.Tpo" -c -o SundanceCellVectorEvaluator.obj `if test -f '$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/SundanceCellVectorEvaluator.Tpo" "$(DEPDIR)/SundanceCellVectorEvaluator.Po"; else rm -f "$(DEPDIR)/SundanceCellVectorEvaluator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp' object='SundanceCellVectorEvaluator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/SundanceCellVectorEvaluator.Po' tmpdepfile='$(DEPDIR)/SundanceCellVectorEvaluator.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCellVectorEvaluator.obj `if test -f '$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-core/Evaluation/SundanceCellVectorEvaluator.cpp'; fi`
 
 SundanceChainRuleEvaluator.o: $(top_srcdir)/src-core/Evaluation/SundanceChainRuleEvaluator.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceChainRuleEvaluator.o -MD -MP -MF "$(DEPDIR)/SundanceChainRuleEvaluator.Tpo" -c -o SundanceChainRuleEvaluator.o `test -f '$(top_srcdir)/src-core/Evaluation/SundanceChainRuleEvaluator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-core/Evaluation/SundanceChainRuleEvaluator.cpp; \

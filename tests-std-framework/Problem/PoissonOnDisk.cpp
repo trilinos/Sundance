@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
+#include "SundanceCellVectorExpr.hpp"
 #include "SundanceEvaluator.hpp"
 
 using SundanceCore::List;
@@ -116,10 +117,23 @@ int main(int argc, char** argv)
                               new GaussianQuadrature(4));
 
       double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      cerr << "soln error norm = " << sqrt(errorSq) << endl << endl;
+
+
+      /* Check error in automatically-computed cell normals */
+      /* Create a cell normal expression. Note that this is NOT a constructor
+       * call, hence no "new" before the CellNormalExpr() function. The
+       * argument "2" is the spatial dimension (mandatory), and 
+       * the "n" is the name of the expression (optional). 
+       */
+      Expr n = CellNormalExpr(2, "n");
+      Expr nExact = List(x, y)/sqrt(x*x + y*y);
+      Expr nErrExpr = Integral(bdry, pow(n-nExact, 2.0), new GaussianQuadrature(1));
+      double nErrorSq = evaluateIntegral(mesh, nErrExpr);
+      cerr << "normalVector error norm = " << sqrt(nErrorSq) << endl << endl;
 
       double tol = 1.0e-4;
-      Sundance::passFailTest(sqrt(errorSq), tol);
+      Sundance::passFailTest(sqrt(errorSq + nErrorSq), tol);
 
     }
 	catch(exception& e)

@@ -69,6 +69,7 @@
 #include "SundancePartitionedRectangleMesher.hpp"
 #include "SundanceTriangleMeshReader.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
+#include "SundanceExodusMeshReader.hpp"
 #include "SundanceMeshBuilder.hpp"
 #include "SundanceBamgMeshReader.hpp"
 

@@ -32,6 +32,7 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceTempStack.hpp"
 #include "SundanceCellDiameterExpr.hpp"
+#include "SundanceCellVectorExpr.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceCellJacobianBatch.hpp"
@@ -124,6 +125,35 @@ void QuadratureEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
     for (int q=0; q<nQuad; q++, k++) 
     {
       xx[k] = h;
+    }
+  }
+}
+
+void QuadratureEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
+  RefCountPtr<EvalVector>& vec) const 
+{
+  Tabs tabs;
+  SUNDANCE_VERB_MEDIUM(tabs 
+    << "QuadratureEvalMediator evaluating cell normal expr " 
+    << expr->toString());
+
+  int nQuad = quadWgts().size();
+  int nCells = cellLID()->size();
+
+  SUNDANCE_VERB_HIGH(tabs << "number of quad pts=" << nQuad);
+  Array<Point> normals;
+  mesh().outwardNormals(*cellLID(), normals);
+  int dir = expr->componentIndex();
+
+  vec->resize(nQuad*nCells);
+  double * const xx = vec->start();
+  int k=0;
+  for (int c=0; c<nCells; c++)
+  {
+    double n = normals[c][dir];
+    for (int q=0; q<nQuad; q++, k++) 
+    {
+      xx[k] = n;
     }
   }
 }

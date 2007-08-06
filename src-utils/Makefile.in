@@ -222,11 +222,13 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXODUS_STR = @EXODUS_STR@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 FIAT_STR = @FIAT_STR@
 GNU_HAVE_SWIG = @GNU_HAVE_SWIG@
+GREP = @GREP@
 HAVE_CHACO_FALSE = @HAVE_CHACO_FALSE@
 HAVE_CHACO_TRUE = @HAVE_CHACO_TRUE@
 HAVE_MPI_FALSE = @HAVE_MPI_FALSE@
@@ -285,8 +287,6 @@ ac_aux_dir = @ac_aux_dir@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -301,23 +301,30 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
@@ -452,9 +459,9 @@ CORE_INCLUDE_PATH = \
 
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) 
 STD_MESH_LIB_PATH = \
--L$(top_builddir)/src-std-mesh 
+-L$(top_builddir)/src-std-mesh
 
-STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(INTEROP_LIBS)
+STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(EXODUS_LIBS) $(INTEROP_LIBS) 
 STD_MESH_INCLUDE_PATH = \
 -I$(top_builddir)/src-std-mesh \
 -I$(top_srcdir)/src-std-mesh/CellFilter \
@@ -489,7 +496,7 @@ STD_FWK_INCLUDES = $(STD_FWK_INCLUDE_PATH) $(STD_MESH_INCLUDE_PATH) \
 $(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
 
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
--lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(INTEROP_LIBS) 
+-lsundanceStdFwk -lsundanceStdMesh $(EXODUS_LIBS) -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(INTEROP_LIBS) 
 
 XML_LIB_PATH = \
 -L$(top_builddir)/src-xml 

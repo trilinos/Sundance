@@ -134,10 +134,10 @@ CORE_INCLUDE_PATH =  \
 CORE_INCLUDES = $(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) 
 
 STD_MESH_LIB_PATH = \
--L$(top_builddir)/src-std-mesh 
+-L$(top_builddir)/src-std-mesh
 
 
-STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(INTEROP_LIBS)
+STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(EXODUS_LIBS) $(INTEROP_LIBS) 
 
 STD_MESH_INCLUDE_PATH =  \
 -I$(top_builddir)/src-std-mesh \
@@ -176,7 +176,7 @@ $(CORE_INCLUDE_PATH) $(INTEROP_INCLUDES) $(FIAT_INCLUDE) $(FIAT_BLITZ_INCLUDE)
 
 
 STD_FWK_LIBS = $(STD_FWK_LIB_PATH) $(STD_MESH_LIB_PATH) $(CORE_LIB_PATH) \
--lsundanceStdFwk -lsundanceStdMesh -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(INTEROP_LIBS) 
+-lsundanceStdFwk -lsundanceStdMesh $(EXODUS_LIBS) -lsundanceCore $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(INTEROP_LIBS) 
 
 
 

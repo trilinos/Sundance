@@ -63,6 +63,13 @@ FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 
 
 #-------------------------------------------------------------------------
+# Exodus stuff
+#-------------------------------------------------------------------------
+
+@EXODUS_STR@EXODUS_LIBS= -lexoII -lnetcdf
+
+
+#-------------------------------------------------------------------------
 # Linker command flags
 #-------------------------------------------------------------------------
 
@@ -74,9 +81,9 @@ INTEROP_LIBS = -lsundanceInterop
 
 CORE_LIBS = -lsundanceCore
 
-STD_MESH_LIBS = -lsundanceStdMesh
+STD_MESH_LIBS = -lsundanceStdMesh $(EXODUS_LIBS)
 
-STD_FWK_LIBS = -lsundanceStdFwk $(FIAT_LIB_PATH) $(FIAT_LIBS) $(FIAT_BLITZ_LIBS)
+STD_FWK_LIBS = -lsundanceStdFwk $(FIAT_LIB_PATH) $(FIAT_LIBS) $(FIAT_BLITZ_LIBS) $(EXODUS_LIBS)
 
 
 #-------------------------------------------------------------------------

@@ -815,6 +815,20 @@ int BasicSimplicialMesh::maxCofacetLID(int cellDim, int cellLID,
 }
 
 
+void BasicSimplicialMesh::getMaxCofacetLIDs(int cellDim, 
+  const Array<int>& cellLIDs,
+  Array<int>& cofacetLIDs, 
+  Array<int>& facetIndices) const
+{
+  cofacetLIDs.resize(cellLIDs.size());
+  facetIndices.resize(cellLIDs.size());
+
+  for (unsigned int i=0; i<cellLIDs.size(); i++) 
+  {
+    cofacetLIDs[i] = maxCofacetLID(cellDim, cellLIDs[i], 0, facetIndices[i]);
+  }
+}
+
 void BasicSimplicialMesh::getCofacets(int cellDim, int cellLID,
                                       int cofacetDim, Array<int>& cofacetLIDs) const 
 {
@@ -908,6 +922,33 @@ void BasicSimplicialMesh::getLabels(int cellDim, const Array<int>& cellLID,
       labels[i] = ld[cellLID[i]];
     }
 }
+
+
+Set<int> BasicSimplicialMesh::getAllLabelsForDimension(int cellDim) const
+{
+  Set<int> rtn;
+
+  const Array<int>& ld = labels_[cellDim];
+  for (unsigned int i=0; i<ld.size(); i++)
+    {
+      rtn.put(ld[i]);
+    }
+  
+  return rtn;
+}
+
+void BasicSimplicialMesh::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const
+{
+  cellLIDs.resize(0);
+  const Array<int>& ld = labels_[cellDim];
+  for (unsigned int i=0; i<ld.size(); i++)
+    {
+      if (ld[i] == label) cellLIDs.append(i);
+    }
+}
+
+
+
 
 int BasicSimplicialMesh::addVertex(int globalIndex, const Point& x,
                                    int ownerProcID, int label)

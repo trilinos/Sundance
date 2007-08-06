@@ -85,6 +85,12 @@ namespace SundanceStdFwk
       virtual void evalCellDiameterExpr(const CellDiameterExpr* expr,
                                         RefCountPtr<EvalVector>& vec) const ;
 
+
+      /** Evaluate the given cell vector expression, putting
+       * its numerical values in the given EvalVector. */
+      virtual void evalCellVectorExpr(const CellVectorExpr* expr,
+				      RefCountPtr<EvalVector>& vec) const ;
+            
       /** */
       virtual void setCellType(const CellType& cellType,
                                const CellType& maxCellType) ;

@@ -52,9 +52,8 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/vessel2D.ncdf", meshType);
+        = new ExodusMeshReader("../../../examples-tutorial/meshes/vessel2D.exo", meshType);
       Mesh mesh = mesher.getMesh();
-
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */

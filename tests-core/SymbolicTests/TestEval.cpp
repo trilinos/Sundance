@@ -9,6 +9,7 @@
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceZeroExpr.hpp"
+#include "SundanceCellVectorExpr.hpp"
 #include "SundanceListExpr.hpp"
 #include "SundanceSymbolicTransformation.hpp"
 #include "SundanceProductTransformation.hpp"
@@ -216,9 +217,9 @@ int main(int argc, char** argv)
 
       ADReal C_old = sin(X)*sin(Y);
 
-			Expr u = new TestUnknownFunction(U, "u");
-			Expr v = new TestUnknownFunction(V, "v");
-			Expr w = new TestUnknownFunction(W, "w");
+      Expr u = new TestUnknownFunction(U, "u");
+      Expr v = new TestUnknownFunction(V, "v");
+      Expr w = new TestUnknownFunction(W, "w");
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -649,6 +650,12 @@ int main(int argc, char** argv)
       TESTER( cos(FD(sin(u), u)), cos(cos(U)) );
 
       TESTER1( dx*FD(0.5*u*u, u), Dx*U );
+
+      Expr n = CellNormalExpr(2, "n");
+      double Nx = 0.5;
+      double Ny = ::sqrt(3.0)/2.0;
+
+      TESTER( List(u, v)*n, U*Nx + V*Ny );
 
     finish:
       if (isOK)

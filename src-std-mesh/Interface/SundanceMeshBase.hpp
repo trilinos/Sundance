@@ -36,6 +36,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundancePoint.hpp"
+#include "SundanceSet.hpp"
 #include "SundanceCellType.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceObjectWithInstanceID.hpp"
@@ -594,6 +595,19 @@ public:
   virtual int maxCofacetLID(int cellDim, int cellLID,
                             int cofacetIndex, 
                             int& facetIndex) const = 0 ;
+    /** 
+     * Get the LIDs of the maximal cofacets for a batch of cells.
+     *
+     * \param cellDim [in] dimension of the cells whose cofacets 
+     * are being obtained
+     * \param cellLIDs [in] array of LIDs of the cells whose cofacets are 
+     * being obtained
+     * \param cofacetLIDs [out] array of LIDs for the maximal cofacets
+     * \param facetIndex [out] index of each calling cell
+     * into the list of its maximal cofacet's facets 
+     */
+  virtual void getMaxCofacetLIDs(int cellDim, const Array<int>& cellLIDs,
+    Array<int>& cofacetLIDs, Array<int>& facetIndices) const = 0 ;
 
   /** \brief Return an array of the LIDs of all of the co-facets for a
    * given relative cell.
@@ -650,6 +664,17 @@ public:
    * interface?
    */
   virtual void setLabel(int cellDim, int cellLID, int label) = 0 ;
+
+  /** Get the list of all labels defined for cells of the given dimension */
+  virtual Set<int> getAllLabelsForDimension(int cellDim) const = 0 ;
+
+  /** 
+   * Get the cells associated with a specified label. The array 
+   * cellLID will be filled with those cells of dimension cellDim
+   * having the given label.
+   */
+  virtual void getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const = 0 ;
+
 
   //@}
 
@@ -712,8 +737,8 @@ public:
    * add a precondition based on this query function!
    */
 
-      virtual void getJacobians(int cellDim, const Array<int>& cellLID,
-                                CellJacobianBatch& jBatch) const { ; }
+  virtual void getJacobians(int cellDim, const Array<int>& cellLID,
+    CellJacobianBatch& jBatch) const { ; }
 
   //bvbw  virtual void getJacobians(
   //  int cellDim, const Array<int>& cellLID,
@@ -732,12 +757,33 @@ public:
    *
    * Warning! The default implementation returns an empty array of cell
    * diameters!
+   * ToDo: Change the default implementation to compute diameters based on
+   * calls to the node position accessors. Going through the Mesh interface in
+   * that way will be less efficient than a low-level implementation, but
+   * would be a reasonable intermediate step for mesh developers. 
+   * - KL 5 Aug 2007. 
    */
   virtual void getCellDiameters(
     int cellDim, const Array<int>& cellLIDs,
     Array<double>& diameters
     ) const
     { diameters.resize(0); }
+
+
+    /** 
+     * Get the outward normals for the batch of cells of dimension
+     * spatialDim()-1. If any cell in the batch is not on the boundary,
+     * an exception is thrown. 
+     *
+     * \param cellLIDs [in] LIDs for the cells whose normals are to be
+     * computed. 
+     * \param outwardNormals [out] Outward normal unit vectors for each
+     * cell in the batch.
+     */
+    virtual void outwardNormals(
+      const Array<int>& cellLIDs,
+      Array<Point>& outwardNormals
+      ) const ;
   
   /** \brief Map points from a reference cell to physical points for a batch
    * of cells.

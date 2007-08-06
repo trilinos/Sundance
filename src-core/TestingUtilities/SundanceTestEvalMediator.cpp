@@ -32,6 +32,7 @@
 #include "SundanceTestEvalMediator.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCellDiameterExpr.hpp"
+#include "SundanceCellVectorExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceEvalManager.hpp"
@@ -125,6 +126,45 @@ void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 
   SUNDANCE_VERB_LOW(tabs << "results: " << *vec);
 }
+
+
+void TestEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
+                                     RefCountPtr<EvalVector>& vec) const
+{
+  Tabs tabs;
+
+  SUNDANCE_OUT(this->verbosity() > VerbSilent,
+               tabs << "evaluating cell vector expr " << expr->toXML().toString());
+  
+  vec->setString(expr->name());
+
+  int dim = expr->dimension();
+  double * const xx = vec->start();
+
+  if (expr->isNormal())
+    {
+      int c = expr->componentIndex();
+      if (dim==1)
+	{
+	  xx[0] = 1.0;
+	}
+      else if (dim==2)
+	{
+	  if (c==0) xx[0] = 0.5;
+	  else xx[0] = ::sqrt(3.0)/2.0;
+	}
+      else 
+	{
+	  if (c==0) xx[0] = 0.5;
+	  else if (c==1) xx[0] = ::sqrt(3.0)/2.0 * 0.5;
+	  else xx[0] = ::sqrt(3.0)/2.0 * ::sqrt(3.0)/2.0;
+	}
+    }
+  TEST_FOR_EXCEPT(expr->isTangent());
+  SUNDANCE_VERB_LOW(tabs << "results: " << *vec);
+}
+
+
 
 void TestEvalMediator
 ::evalDiscreteFuncElement(const DiscreteFuncElement* expr,

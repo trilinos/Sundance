@@ -82,7 +82,7 @@ int main(int argc, char** argv)
       /* Young's modulus */
       double E = 1.0;
       /* Poisson's ratio */
-      double nu = 0.25;
+      double nu = 0.495;
 
       double lambda = E*nu/(1.0 + nu)/(1.0 - 2.0*nu);
       double mu = E/2.0/(1.0 + nu);

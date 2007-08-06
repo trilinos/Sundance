@@ -176,6 +176,19 @@ namespace SundanceStdMesh
       virtual int maxCofacetLID(int cellDim, int cellLID,
                              int cofacetIndex,
                              int& facetIndex) const  ;
+    /** 
+     * Get the LIDs of the maximal cofacets for a batch of cells.
+     *
+     * \param cellDim [in] dimension of the cells whose cofacets 
+     * are being obtained
+     * \param cellLIDs [in] array of LIDs of the cells whose cofacets are 
+     * being obtained
+     * \param cofacetLIDs [out] array of LIDs for the maximal cofacets
+     * \param facetIndex [out] index of each calling cell
+     * into the list of its maximal cofacet's facets 
+     */
+      virtual void getMaxCofacetLIDs(int cellDim, const Array<int>& cellLIDs,
+    Array<int>& cofacetLIDs, Array<int>& facetIndices) const ;
 
       
       /** 
@@ -218,6 +231,16 @@ namespace SundanceStdMesh
       /** Get the labels for a batch of cells */
       virtual void getLabels(int cellDim, const Array<int>& cellLID, 
                              Array<int>& labels) const ;
+
+      /** Get the list of all labels defined for cells of the given dimension */
+      virtual Set<int> getAllLabelsForDimension(int cellDim) const ;
+
+      /** 
+       * Get the cells associated with a specified label. The array 
+       * cellLID will be filled with those cells of dimension cellDim
+       * having the given label.
+       */
+      virtual void getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const ;
 
       /** \name Incremental creation methods */
       //@{

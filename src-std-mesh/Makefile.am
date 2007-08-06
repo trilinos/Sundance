@@ -124,6 +124,7 @@ $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicSimplicialMesh.cpp \
 $(top_srcdir)/src-std-mesh/Concrete/SundanceBasicVertexView.cpp 
 
 SUNDANCE_MESHSOURCES_H = \
+$(top_srcdir)/src-std-mesh/Sources/SundanceExodusMeshReader.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshBuilder.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.hpp \
@@ -135,6 +136,7 @@ $(top_srcdir)/src-std-mesh/Sources/SundanceTriangleMeshReader.hpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceBamgMeshReader.hpp 
 
 SUNDANCE_MESHSOURCES = \
+$(top_srcdir)/src-std-mesh/Sources/SundanceExodusMeshReader.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceExodusNetCDFMeshReader.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshBuilder.cpp \
 $(top_srcdir)/src-std-mesh/Sources/SundanceMeshReaderBase.cpp \
@@ -156,6 +158,7 @@ $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformationBase.cpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp 
 
 SUNDANCE_MESHWRITERS_H = \
+$(top_srcdir)/src-std-mesh/Writers/SundanceExodusWriter.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldBase.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriterBase.hpp \
@@ -165,6 +168,7 @@ $(top_srcdir)/src-std-mesh/Writers/SundanceVerboseFieldWriter.hpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceVTKWriter.hpp 
 
 SUNDANCE_MESHWRITERS = \
+$(top_srcdir)/src-std-mesh/Writers/SundanceExodusWriter.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriterBase.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceMatlabWriter.cpp \
