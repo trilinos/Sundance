@@ -30,7 +30,7 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest
+PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest UserDefPrecondTest
 
 SERIAL_SRC =
 
@@ -81,6 +81,16 @@ BlockTriangularTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES)
 
 BlockTriangularTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS) 
 
+
+
+
+UserDefPrecondTest_SOURCES = $(srcdir)/UserDefPrecondTest.cpp 
+
+UserDefPrecondTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+
+UserDefPrecondTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+
+UserDefPrecondTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS) 
 
 
 

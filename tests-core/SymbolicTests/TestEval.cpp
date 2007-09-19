@@ -35,6 +35,12 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+/* a^b */
+Expr myPow( Expr a , Expr b )
+{
+  return exp( log( a ) * b );
+}
+
 static Time& totalTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -656,6 +662,11 @@ int main(int argc, char** argv)
       double Ny = ::sqrt(3.0)/2.0;
 
       TESTER( List(u, v)*n, U*Nx + V*Ny );
+
+      TESTER(exp(log(u) * 2.3/(1.0 + 0.0*v/100.0)), 
+	     exp(log(U) * 2.3/(1.0 + 0.0*V/100.0)));
+      
+
 
     finish:
       if (isOK)

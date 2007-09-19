@@ -50,7 +50,7 @@ NonlinearUnaryOpEvaluator
   : ChainRuleEvaluator(expr, context),
     op_(expr->op()),
     maxOrder_(-1),
-    argIsConstant_(false),
+    argIsConstant_(true),
     argValueIndex_(-1)
 {
   Tabs tabs;
