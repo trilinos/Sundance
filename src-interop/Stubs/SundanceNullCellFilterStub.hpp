@@ -40,7 +40,7 @@ namespace SundanceCore
       /** \name Printable interface */
       //@{
       /** Print to a stream */
-      virtual void print(ostream& os) const {os << toXML();}
+      virtual void print(std::ostream& os) const {os << toXML();}
       //@}
 
       /** \name Describable interface */

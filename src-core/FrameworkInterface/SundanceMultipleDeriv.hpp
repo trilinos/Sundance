@@ -208,7 +208,7 @@ namespace SundanceCore
      *
      */
     template <class T> class increasingOrder
-    : binary_function<T, T, bool>
+    : std::binary_function<T, T, bool>
     {
     public:
       bool operator()(const MultipleDeriv& a,

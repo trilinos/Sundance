@@ -205,7 +205,7 @@ namespace SundanceStdMesh
         Point A = mesh.nodePosition(facetLID[0]);
         Point B = mesh.nodePosition(facetLID[1]);
         Point C = mesh.nodePosition(facetLID[2]);
-        cout << "{" << A << ", " << B << ", " << C << "}" << endl;
+        std::cout << "{" << A << ", " << B << ", " << C << "}" << std::endl;
       }
   }
 

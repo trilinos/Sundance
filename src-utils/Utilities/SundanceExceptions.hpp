@@ -38,7 +38,10 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-#define SUNDANCE_ERROR(msg) \
+//bvbw for backard compatibility reasons
+//     I could not get this to work with ifdefs hence the hack
+
+#define SUNDANCE_ERROR7(msg) \
 { \
   TestForException_break(); \
   TeuchosOStringStream omsg; \
@@ -47,20 +50,31 @@
   throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
+#define SUNDANCE_ERROR(msg) \
+{ \
+  TeuchosOStringStream omsg; \
+	omsg << __FILE__ << ":" << __LINE__ << ": " \
+       << ": " << msg; \
+  const std::string &omsgstr = omsg.str(); \
+  TestForException_break(omsgstr); \
+  throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+}
+
+
 #define SUNDANCE_TRACE(e) \
 { \
   TeuchosOStringStream omsg; \
-	omsg << e.what() << endl \
-  << "caught in " << __FILE__ << ":" << __LINE__ << endl ; \
+	omsg << e.what() << std::endl \
+  << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
   throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 #define SUNDANCE_TRACE_MSG(e, msg)                      \
 { \
   TeuchosOStringStream omsg; \
-	omsg << e.what() << endl \
-  << "caught in " << __FILE__ << ":" << __LINE__ << endl ; \
-  omsg << msg << endl; \
+	omsg << e.what() << std::endl \
+  << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
+  omsg << msg << std::endl; \
   throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 

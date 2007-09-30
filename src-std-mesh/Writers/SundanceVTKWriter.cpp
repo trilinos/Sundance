@@ -69,21 +69,21 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
   
   SUNDANCE_OUT(this->verbosity() > VerbSilent, "writing VTK file " << f);
 
-  ofstream os(f.c_str());
+  std::ofstream os(f.c_str());
 
   XMLObject head("VTKFile");
   head.addAttribute("type", PHeader + "UnstructuredGrid");
   head.addAttribute("version", "0.1");
   
-  os << head.header() << endl;
+  os << head.header() << std::endl;
 
 	for (int i=0; i<comments().length(); i++)
 		{
-			os << "<!-- " << comments()[i] << " -->" << endl;
+			os << "<!-- " << comments()[i] << " -->" << std::endl;
 		}
 
   XMLObject ug(PHeader + "UnstructuredGrid");
-  os << ug.header() << endl;
+  os << ug.header() << std::endl;
 
   if (isPHeader)
     {
@@ -95,7 +95,7 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
           XMLObject pc("Piece");
           string pfile = filename + Teuchos::toString(p) + ".vtu";
           pc.addAttribute("Source", pfile);
-          os << pc << endl;
+          os << pc << std::endl;
         }
     }
   else
@@ -104,18 +104,18 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
       pc.addAttribute("NumberOfPoints", Teuchos::toString(mesh().numCells(0)));
       pc.addAttribute("NumberOfCells", Teuchos::toString(mesh().numCells(mesh().spatialDim())));
 
-      os << pc.header() << endl;
+      os << pc.header() << std::endl;
 
       writePoints(os, false);
       writeCells(os);
       writePointData(os, false);
       writeCellData(os, false);
 
-      os << pc.footer() << endl;
+      os << pc.footer() << std::endl;
     }
 
-	os << ug.footer() << endl;
-	os << head.footer() << endl;
+	os << ug.footer() << std::endl;
+	os << head.footer() << std::endl;
 }
 
 void VTKWriter::writePoints(ostream& os, bool isPHeader) const 
@@ -124,14 +124,14 @@ void VTKWriter::writePoints(ostream& os, bool isPHeader) const
   if (isPHeader) PHeader="P";
   XMLObject pts(PHeader + "Points");
 
-  os << pts.header() << endl;
+  os << pts.header() << std::endl;
 
   XMLObject xml(PHeader + "DataArray");
   xml.addAttribute("NumberOfComponents", "3");
   xml.addAttribute("type", "Float32");
   xml.addAttribute("format", "ascii");
 
-  os << xml.header() << endl;
+  os << xml.header() << std::endl;
 
   /* write the points, unless this call is for the dummy header on the root proc */
   if (!isPHeader)
@@ -151,20 +151,20 @@ void VTKWriter::writePoints(ostream& os, bool isPHeader) const
             {
               os << "0.0 ";
             }
-          os << endl;
+          os << std::endl;
         }
     }
 
-  os << xml.footer() << endl;
+  os << xml.footer() << std::endl;
 
-  os << pts.footer() << endl;
+  os << pts.footer() << std::endl;
 }
 
 
 void VTKWriter::writeCells(ostream& os) const 
 {
   XMLObject cells("Cells");
-  os << cells.header() << endl;
+  os << cells.header() << std::endl;
 
   XMLObject conn("DataArray");
   conn.addAttribute("type", "Int32");
@@ -175,7 +175,7 @@ void VTKWriter::writeCells(ostream& os) const
   int nc = mesh().numCells(dim);
   int dummySign;
 
-  os << conn.header() << endl;
+  os << conn.header() << std::endl;
   
   for (int c=0; c<nc; c++)
     {
@@ -185,10 +185,10 @@ void VTKWriter::writeCells(ostream& os) const
         {
           os << " " << mesh().facetLID(dim,c,0,i,dummySign);
         }
-      os << endl;
+      os << std::endl;
     }
   
-  os << conn.footer() << endl;
+  os << conn.footer() << std::endl;
 
 
   XMLObject offsets("DataArray");
@@ -196,23 +196,23 @@ void VTKWriter::writeCells(ostream& os) const
   offsets.addAttribute("Name", "offsets");
   offsets.addAttribute("format", "ascii");
   
-  os << offsets.header() << endl;
+  os << offsets.header() << std::endl;
 
   int count = 0;
   for (int c=0; c<nc; c++)
     {
 			count += mesh().numFacets(dim, c, 0);
-      os << count << endl;
+      os << count << std::endl;
     }
 
-  os << offsets.footer() << endl;
+  os << offsets.footer() << std::endl;
 
   XMLObject types("DataArray");
   types.addAttribute("type", "UInt8");
   types.addAttribute("Name", "types");
   types.addAttribute("format", "ascii");
 
-  os << types.header() << endl;
+  os << types.header() << std::endl;
 
   CellType cellType = mesh().cellType(dim);
   for (int c=0; c<nc; c++)
@@ -235,12 +235,12 @@ void VTKWriter::writeCells(ostream& os) const
                              "call type " << cellType << " not handled "
                              "in VTKWriter::writeCells()");
 				}
-			os << vtkCode << endl;
+			os << vtkCode << std::endl;
     }
 
-  os << types.footer() << endl;
+  os << types.footer() << std::endl;
 
-  os << cells.footer() << endl;
+  os << cells.footer() << std::endl;
 }
 
 void VTKWriter::writePointData(ostream& os, bool isPHeader) const 
@@ -253,7 +253,7 @@ void VTKWriter::writePointData(ostream& os, bool isPHeader) const
   if (pointVectorNames().length() > 0) xml.addAttribute("Vectors", pointVectorNames()[0]);
   if (pointScalarNames().length() > 0) xml.addAttribute("Scalars", pointScalarNames()[0]);
 
-  os << xml.header() << endl;
+  os << xml.header() << std::endl;
 
   for (int i=0; i<pointScalarNames().length(); i++)
     {
@@ -265,7 +265,7 @@ void VTKWriter::writePointData(ostream& os, bool isPHeader) const
       writeDataArray(os, pointVectorNames()[i], pointVectorFields()[i], isPHeader, true);
     }
 
-  os << xml.footer() << endl;
+  os << xml.footer() << std::endl;
 }
 
 void VTKWriter::writeCellData(ostream& os, bool isPHeader) const 
@@ -278,7 +278,7 @@ void VTKWriter::writeCellData(ostream& os, bool isPHeader) const
   if (cellVectorNames().length() > 0) xml.addAttribute("Vectors", cellVectorNames()[0]);
   if (cellScalarNames().length() > 0) xml.addAttribute("Scalars", cellScalarNames()[0]);
 
-  os << xml.header() << endl;
+  os << xml.header() << std::endl;
 
   for (int i=0; i<cellScalarNames().length(); i++)
     {
@@ -290,7 +290,7 @@ void VTKWriter::writeCellData(ostream& os, bool isPHeader) const
       writeDataArray(os, cellVectorNames()[i], cellVectorFields()[i], isPHeader, false);
     }
 
-  os << xml.footer() << endl;
+  os << xml.footer() << std::endl;
 }
 
 
@@ -311,7 +311,7 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
                        Teuchos::toString(expr->numElems()));
     }
   
-  os << xml.header() << endl;
+  os << xml.header() << std::endl;
 
   /* write the point|cell data, unless this is a parallel header */
   if (!isPHeader)
@@ -331,7 +331,7 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
 
           for (unsigned int i=0; i<vals.size(); i++)
             {
-              os << (float) vals[i] << endl;
+              os << (float) vals[i] << std::endl;
             }
           
            */ 
@@ -340,9 +340,9 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
               for (int j=0; j<expr->numElems(); j++)
                 {
                   if (expr->isDefined(0,i,j))
-                    os << (float) expr->getData(0, i, j) << endl;
+                    os << (float) expr->getData(0, i, j) << std::endl;
                   else
-                    os << undefinedValue() << endl;
+                    os << undefinedValue() << std::endl;
                 }
             }
         }
@@ -356,14 +356,14 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
               for (int j=0; j<expr->numElems(); j++)
                 {
                   if (expr->isDefined(dim,c,j))
-                    os << (float) expr->getData(dim, c, j) << endl;
+                    os << (float) expr->getData(dim, c, j) << std::endl;
                   else
-                    os << undefinedValue() << endl;
+                    os << undefinedValue() << std::endl;
                 }
             }
         }
     }
 
-  os << xml.footer() << endl;
+  os << xml.footer() << std::endl;
 }
 

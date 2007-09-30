@@ -60,7 +60,7 @@ namespace SundanceStdFwk
       ) const ;
 
     /** */
-    virtual void print(ostream& os) const ;
+    virtual void print(std::ostream& os) const ;
 
     /** */
     virtual int order() const {return order_;}

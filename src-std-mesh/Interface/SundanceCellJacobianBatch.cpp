@@ -261,7 +261,7 @@ void CellJacobianBatch::print(ostream& os) const
 
   for (int c=0; c<numCells_; c++)
     {
-      os << "cell " << c << endl;
+      os << "cell " << c << std::endl;
       for (int q=0; q<numQuad_; q++)
         {
           int start = (c*numQuad_ + q)*jSize_;
@@ -278,7 +278,7 @@ void CellJacobianBatch::print(ostream& os) const
                 }
               os << "}";
             }
-          os << "}" << endl;
+          os << "}" << std::endl;
         }
       
     }

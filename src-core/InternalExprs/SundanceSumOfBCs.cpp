@@ -50,19 +50,19 @@ SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterStub>& region,
 
 ostream& SumOfBCs::toText(ostream& os, bool paren) const
 {
-  os << "Sum of BCs[" << endl;
+  os << "Sum of BCs[" << std::endl;
   for (int d=0; d<numRegions(); d++)
     {
       for (int t=0; t<numTerms(d); t++)
         {
-          os << "BC[" << endl;
-          os << region(d)->toXML() << endl;
-          os << "quad rule: " << quad(d,t)->toXML() << endl;
-          os << "expr: " << expr(d,t).toString() << endl;
-          os << "]" << endl;
+          os << "BC[" << std::endl;
+          os << region(d)->toXML() << std::endl;
+          os << "quad rule: " << quad(d,t)->toXML() << std::endl;
+          os << "expr: " << expr(d,t).toString() << std::endl;
+          os << "]" << std::endl;
         }
     }
-  os << "]" << endl;
+  os << "]" << std::endl;
 
   return os;
 }

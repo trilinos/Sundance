@@ -54,7 +54,7 @@ EFDEEvaluator::EFDEEvaluator(
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "initializing EFDE evaluator for " 
                     << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << *(this->sparsity)());
 
   /* 
    * This evaluator requires no calculations. All that is done is to
@@ -118,7 +118,7 @@ EFDEEvaluator::EFDEEvaluator(
   
   SUNDANCE_VERB_HIGH(tabs 
     << " constant index map " 
-    << constValIndexToArgIndexMap_ << endl 
+    << constValIndexToArgIndexMap_ << std::endl 
     << " vector index map " 
     << varValIndexToArgIndexMap_
     );
@@ -138,7 +138,7 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
   {
-    cerr << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
+    std::cerr << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
   }
 
   constantResults.resize(constValIndexToArgIndexMap_.size());
@@ -154,8 +154,8 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbLow)
     {
       Tabs tab1;
-      cerr << tab1 << "EFDE operand results" << endl;
-      argSparsitySuperset()->print(cerr, argVectorResults,
+      std::cerr << tab1 << "EFDE operand results" << std::endl;
+      argSparsitySuperset()->print(std::cerr, argVectorResults,
                                    argConstantResults);
     }
 
@@ -179,8 +179,8 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
   {
     Tabs tab1;
-    cerr << tab1 << "results " << endl;
-    this->sparsity()->print(cerr, vectorResults,
+    std::cerr << tab1 << "results " << std::endl;
+    this->sparsity()->print(std::cerr, vectorResults,
       constantResults);
   }
 }

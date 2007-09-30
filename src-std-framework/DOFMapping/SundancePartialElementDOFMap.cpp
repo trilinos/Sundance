@@ -309,7 +309,7 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
 }
 
 
-void PartialElementDOFMap::print(ostream& os) const
+void PartialElementDOFMap::print(std::ostream& os) const
 {
-  os << elemDofs_ << endl;
+  os << elemDofs_ << std::endl;
 }

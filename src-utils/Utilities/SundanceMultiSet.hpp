@@ -64,7 +64,7 @@ namespace SundanceUtils
       Array<Key> elements() const ;
 
       /** Write to stream */
-      ostream& toStream(ostream& os) const ;
+      std::ostream& toStream(std::ostream& os) const ;
 
       /** Merge with another multiset, returning the merged set */
       MultiSet<Key> merge(const MultiSet<Key>& other) const ;
@@ -143,7 +143,7 @@ namespace SundanceUtils
   
 
   template<class Key> inline
-    ostream& MultiSet<Key>::toStream(ostream& os) const
+    std::ostream& MultiSet<Key>::toStream(std::ostream& os) const
     {
       typename MultiSet<Key>::const_iterator iter;
 
@@ -162,7 +162,7 @@ namespace SundanceUtils
   template<class Key> inline
     string MultiSet<Key>::toString() const
     {
-      ostringstream os;
+      std::ostringstream os;
       os << *this;
       return os.str();
     }

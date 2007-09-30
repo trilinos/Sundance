@@ -65,37 +65,62 @@ void QuadratureFamilyBase::getPoints(const CellType& cellType,
       getBrickRule(quadPoints, quadWeights);
       break;
     default:
+#ifndef TRILINOS_7
       SUNDANCE_ERROR("cell type " << cellType << " not handled in "
                      "QuadratureFamilyBase::getPoints()");
+#else
+      SUNDANCE_ERROR7("cell type " << cellType << " not handled in "
+                     "QuadratureFamilyBase::getPoints()");
+#endif
     }
 }
 
 void QuadratureFamilyBase::getLineRule(Array<Point>& /* quadPoints */,
                                        Array<double>& /* quadWeights */) const 
 {
+#ifndef TRILINOS_7
   SUNDANCE_ERROR("Line rule not available for " << toXML());
+#else
+  SUNDANCE_ERROR7("Line rule not available for " << toXML());
+#endif
 }
 
 void QuadratureFamilyBase::getTriangleRule(Array<Point>& /* quadPoints */,
                                            Array<double>& /* quadWeights */) const 
 {
+#ifndef TRILINOS_7
   SUNDANCE_ERROR("Triangle rule not available for " << toXML());
+#else
+  SUNDANCE_ERROR7("Triangle rule not available for " << toXML());
+#endif
 }
 
 void QuadratureFamilyBase::getQuadRule(Array<Point>& /* quadPoints */,
                                            Array<double>& /* quadWeights */) const 
 {
+#ifndef TRILINOS_7
   SUNDANCE_ERROR("Quad cell rule not available for " << toXML());
+#else
+  SUNDANCE_ERROR7("Quad cell rule not available for " << toXML());
+#endif
 }
 
 void QuadratureFamilyBase::getTetRule(Array<Point>& /* quadPoints */,
                                            Array<double>& /* quadWeights */) const 
 {
+#ifndef TRILINOS_7
   SUNDANCE_ERROR("Tet cell rule not available for " << toXML());
+#else
+  SUNDANCE_ERROR7("Tet cell rule not available for " << toXML());
+#endif
 }
 
 void QuadratureFamilyBase::getBrickRule(Array<Point>& /* quadPoints */,
                                            Array<double>& /* quadWeights */) const 
 {
+#ifndef TRILINOS_7
   SUNDANCE_ERROR("Brick rule not available for " << toXML());
+#else
+  SUNDANCE_ERROR7("Brick rule not available for " << toXML());
+#endif
 }

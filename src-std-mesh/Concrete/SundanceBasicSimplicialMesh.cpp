@@ -47,6 +47,8 @@ using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace SundanceUtils;
 
+using std::endl;
+
 static Time& batchedFacetGrabTimer() 
 {
   static RefCountPtr<Time> rtn 
@@ -2284,11 +2286,11 @@ string BasicSimplicialMesh::cellToStr(int cellDim, int cellLID) const
           if (j!=0) os << ", ";
           os << mapLIDToGID(0, cellVerts->value(cellLID,j));
         }
-      os << ")" << endl;
+      os << ")" << std::endl;
     }
   else
     {
-      os << LIDToGIDMap_[0][cellLID] << endl;
+      os << LIDToGIDMap_[0][cellLID] << std::endl;
     }
   return os.str();
 }
@@ -2310,7 +2312,7 @@ string BasicSimplicialMesh::printCells(int cellDim) const
           else cellVerts = &(edgeVerts_);
         }
 
-      os << "printing cells for processor " << comm().getRank() << endl;
+      os << "printing cells for processor " << comm().getRank() << std::endl;
       for (int i=0; i<cellVerts->length(); i++)
         {
           os << i << " (";
@@ -2319,12 +2321,12 @@ string BasicSimplicialMesh::printCells(int cellDim) const
               if (j!=0) os << ", ";
               os << mapLIDToGID(0, cellVerts->value(i,j));
             }
-          os << ")" << endl;
+          os << ")" << std::endl;
         }
     }
   else
     {
-      os << LIDToGIDMap_[0] << endl;
+      os << LIDToGIDMap_[0] << std::endl;
     }
   
   return os.str();

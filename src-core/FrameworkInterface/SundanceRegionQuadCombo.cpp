@@ -65,10 +65,10 @@ string RegionQuadCombo::toString() const
   TeuchosOStringStream oss;
   Tabs tabs;
 
-  oss << "Integration Region" << endl;
+  oss << "Integration Region" << std::endl;
   {
-    oss << tabs << "cell filter=" << domain_->description() << endl;
-    oss << tabs << "quadrature rule=" << quad_->description() << endl;
+    oss << tabs << "cell filter=" << domain_->description() << std::endl;
+    oss << tabs << "quadrature rule=" << quad_->description() << std::endl;
   }
   return oss.str();
 }

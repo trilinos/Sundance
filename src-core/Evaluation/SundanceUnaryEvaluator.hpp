@@ -81,8 +81,8 @@ namespace SundanceCore
           {
             TEST_FOR_EXCEPTION(true, RuntimeError, 
                                "exception detected in UnaryEvaluator: expr="
-                               << expr->toString() << endl
-                               << "arg=" << expr->evaluatableArg()->toString() << endl
+                               << expr->toString() << std::endl
+                               << "arg=" << expr->evaluatableArg()->toString() << std::endl
                                << "exception=" << e.what());
           }
       }

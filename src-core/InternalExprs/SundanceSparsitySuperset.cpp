@@ -72,7 +72,7 @@ SparsitySuperset::SparsitySuperset(const Set<MultipleDeriv>& C,
 void SparsitySuperset::addDeriv(const MultipleDeriv& d, 
                                const DerivState& state)
 {
-  maxOrder_ = max(d.order(), maxOrder_);
+  maxOrder_ = std::max(d.order(), maxOrder_);
 
   if (containsDeriv(d))
     {
@@ -150,20 +150,20 @@ void SparsitySuperset::print(ostream& os,
 
   int vecIndex=0;
   int constIndex = 0;
-  os << tabs << "Results Superset" << endl;
+  os << tabs << "Results Superset" << std::endl;
   for (unsigned int i=0; i<derivs_.size(); i++)
     {
       os << tabs << i << "\t\t";
       os.width(maxlen);
-      os.setf(ios_base::left, ios_base::adjustfield);
+      os.setf(std::ios_base::left, std::ios_base::adjustfield);
       os << derivs_[i].toString() << "\t\t" ;
       switch(states_[i])
         {
         case ZeroDeriv:
-          os  << "Zero" << endl;
+          os  << "Zero" << std::endl;
           break;
         case ConstantDeriv:
-          os << constantResults[constIndex++] << endl;
+          os << constantResults[constIndex++] << std::endl;
           break;
         case VectorDeriv:
           if (vecResults[vecIndex].get()==0)
@@ -175,7 +175,7 @@ void SparsitySuperset::print(ostream& os,
               vecResults[vecIndex]->print(os);
             }
           vecIndex++;
-          os << endl;
+          os << std::endl;
           break;
         }
     }
@@ -197,23 +197,23 @@ void SparsitySuperset::print(ostream& os) const
     }
 
 
-  os << tabs << "SparsitySuperset" << endl;
+  os << tabs << "SparsitySuperset" << std::endl;
   for (unsigned int i=0; i<derivs_.size(); i++)
     {
       os << tabs << i << "\tderiv=\t";
       os.width(maxlen);
-      os.setf(ios_base::left, ios_base::adjustfield);
+      os.setf(std::ios_base::left, std::ios_base::adjustfield);
       os << derivs_[i].toString() << "\tstate=\t" ;
       switch(states_[i])
         {
         case ZeroDeriv:
-          os  << "Zero" << endl;
+          os  << "Zero" << std::endl;
           break;
         case ConstantDeriv:
-          os << "Constant" << endl;
+          os << "Constant" << std::endl;
           break;
         case VectorDeriv:
-          os << "Vector" << endl;
+          os << "Vector" << std::endl;
           break;
         }
     }
@@ -221,7 +221,7 @@ void SparsitySuperset::print(ostream& os) const
 
 string SparsitySuperset::toString() const 
 {
-	ostringstream ss;
+	std::ostringstream ss;
 	print(ss);
 	return ss.str();
 }

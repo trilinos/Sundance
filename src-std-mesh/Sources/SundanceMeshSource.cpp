@@ -13,7 +13,6 @@ using namespace Teuchos;
 using namespace SundanceUtils;
 
 
-
 static Time& getMeshTimer() 
 {
   static RefCountPtr<Time> rtn 

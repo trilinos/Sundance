@@ -43,7 +43,7 @@ bool MeshReaderBase::isEmptyLine(const std::string& x) const
   return x.length()==0 || StrUtils::isWhite(x);
 }
 
-bool MeshReaderBase::getNextLine(istream& is, string& line,
+bool MeshReaderBase::getNextLine(std::istream& is, string& line,
                                          Array<string>& tokens,
                                          char comment) const 
 {
@@ -61,11 +61,11 @@ bool MeshReaderBase::getNextLine(istream& is, string& line,
   return rtn;
 }
 
-RefCountPtr<ifstream> MeshReaderBase::openFile(const string& fname, 
+RefCountPtr<std::ifstream> MeshReaderBase::openFile(const string& fname, 
                                                const string& description) const
 {
   string f = searchForFile(fname);
-  RefCountPtr<ifstream> rtn = rcp(new ifstream(f.c_str()));
+  RefCountPtr<std::ifstream> rtn = rcp(new std::ifstream(f.c_str()));
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,
                "trying to open " << description << " file " << f);

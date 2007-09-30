@@ -116,7 +116,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
        * distribution */
       if (nProc() > 1)
         {
-          RefCountPtr<ifstream> parStream 
+          RefCountPtr<std::ifstream> parStream 
             = openFile(parFilename_, "parallel info");
      
           /* read the number of processors and the processor rank in 
@@ -230,7 +230,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
 
   /* Open the node file so we can read in the nodes */
 	
-	RefCountPtr<ifstream> nodeStream = openFile(nodeFilename_, "node info");
+	RefCountPtr<std::ifstream> nodeStream = openFile(nodeFilename_, "node info");
 	
   /* read the header line */
   getNextLine(*nodeStream, line, tokens, '#');
@@ -352,7 +352,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
       Array<string> tokens;
       /* Open the element file */
 	
-      RefCountPtr<ifstream> elemStream = openFile(elemFilename_, "element info");
+      RefCountPtr<std::ifstream> elemStream = openFile(elemFilename_, "element info");
 
       getNextLine(*elemStream, line, tokens, '#');
 
@@ -451,7 +451,7 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
       string line;  
       Array<string> tokens;
       /* Open the side file */
-      RefCountPtr<ifstream> sideStream;
+      RefCountPtr<std::ifstream> sideStream;
 
       try
         {

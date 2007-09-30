@@ -121,10 +121,10 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 
                << "******** computing basis functions on quad pts *******"
-               << endl << tab0 << "test basis=" 
+               << std::endl << tab0 << "test basis=" 
                << testBasis 
-               << endl << tab0 << "cell type=" << cellType
-               << endl << tab0 << "differentiation order="
+               << std::endl << tab0 << "cell type=" << cellType
+               << std::endl << tab0 << "differentiation order="
                << testDerivOrder);
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
@@ -194,7 +194,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
     }
   if (verbosity() > VerbMedium)
     {
-      print(cerr);
+      print(std::cerr);
     }
 }
 
@@ -223,11 +223,11 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   verbosity() = classVerbosity();
   SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << " ************* computing basis func products on quad pts ***************" 
-               << endl << tab0 << "test basis=" 
+               << std::endl << tab0 << "test basis=" 
                << testBasis 
-               << endl << tab0 << "unk basis=" << unkBasis
-               << endl << tab0 << "cell type=" << cellType
-               << endl << tab0 <<"differentiation order t=" 
+               << std::endl << tab0 << "unk basis=" << unkBasis
+               << std::endl << tab0 << "cell type=" << cellType
+               << std::endl << tab0 <<"differentiation order t=" 
                << testDerivOrder << ", u=" << unkDerivOrder);
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
@@ -331,7 +331,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
     }
   if (verbosity() > VerbMedium)
     {
-      print(cerr);
+      print(std::cerr);
     }
 
 }
@@ -585,10 +585,10 @@ void QuadratureIntegral
 
   if (false)
     {
-      cerr << "nCells = " << nCells << endl;
-      cerr << "nNodes = " << nNodes() << endl;
-      cerr << "nQuad = " << nQuad() << endl;
-      cerr << "transSize = " << transSize << endl;
+      std::cerr << "nCells = " << nCells << std::endl;
+      std::cerr << "nNodes = " << nNodes() << std::endl;
+      std::cerr << "nQuad = " << nQuad() << std::endl;
+      std::cerr << "transSize = " << transSize << std::endl;
     }
   /* The sum workspace is used to store the sum of untransformed quantities */
   static Array<double> sumWorkspace;

@@ -22,35 +22,35 @@ using namespace Teuchos;
 void write(const MultiSet<int>& x, 
            const Set<MultiSet<MultiSet<int> > >& y)
 {
-  cout << "---- Partitions of " << x << " ------------------"
-       << endl;
+  std::cout << "---- Partitions of " << x << " ------------------"
+       << std::endl;
   for (Set<MultiSet<MultiSet<int> > >::const_iterator 
          i=y.begin(); i!=y.end(); i++)
     {
-      cout << *i << endl;
+      std::cout << *i << std::endl;
     }
 }
 
 void write(const MultiSet<int>& x, 
            const Array<Array<MultiSet<int> > >& y)
 {
-  cout << "---- Compositions of " << x << " ------------------"
-       << endl;
+  std::cout << "---- Compositions of " << x << " ------------------"
+       << std::endl;
   for (unsigned int i=0; i<y.size(); i++)
     {
-      cout << y[i] << endl;
+      std::cout << y[i] << std::endl;
     }
 }
 
 void write(const MultiSet<int>& x, 
            const Set<MultiSet<int> >& y)
 {
-  cout << "---- Subsets of " << x << " ------------------"
-       << endl;
+  std::cout << "---- Subsets of " << x << " ------------------"
+       << std::endl;
   for (Set<MultiSet<int> >::const_iterator 
          i=y.begin(); i!=y.end(); i++)
     {
-      cout << *i << endl;
+      std::cout << *i << std::endl;
     }
 }
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv)
       for (int n=1; n<=4; n++)
         {
           Array<Array<Array<int> > > c = compositions(n);
-          cout << "N=" << n << " compositions=" << c << endl;
+          std::cout << "N=" << n << " compositions=" << c << std::endl;
 
           MultiSet<int> mu;
           for (int m=1; m<=n; m++)
@@ -79,42 +79,42 @@ int main(int argc, char** argv)
           for (int m=1; m<=n; m++)
             {
               Array<Array<Array<int> > > b = binnings(mu, m);
-              cout << "binnings = " << b << endl;
+              std::cout << "binnings = " << b << std::endl;
             }
 
-          cout << "--------- non-neg compositions" << endl;
+          std::cout << "--------- non-neg compositions" << std::endl;
           for (int m=1; m<=n; m++)
             {
               for (int k=1; k<=n; k++)
                 {
                   Array<Array<int> > a = nonNegCompositions(m, k);
-                  cout << m << " " << k << " " << endl;
+                  std::cout << m << " " << k << " " << std::endl;
                   for (unsigned int l=0; l<a.size(); l++)
                     {
-                      cout << "         " << a[l] << endl;
+                      std::cout << "         " << a[l] << std::endl;
                     }
                 }
             }
           
-          cout << "-------- index combs ---- " << endl;
+          std::cout << "-------- index combs ---- " << std::endl;
           Array<int> s = tuple(2,3,2);
           Array<Array<int> > C = indexCombinations(s);
           for (unsigned int m=0; m<C.size(); m++)
             {
-              cout << C[m] << endl;
+              std::cout << C[m] << std::endl;
             }
         }
 
-      cout << "--------- index tuples ----------------" << endl;
+      std::cout << "--------- index tuples ----------------" << std::endl;
 
       Array<Array<int> > x = distinctIndexTuples(2, 6);
 
-      cout << "num choices = " << x.size() << endl;
+      std::cout << "num choices = " << x.size() << std::endl;
 
       for (unsigned int i=0; i<x.size(); i++) 
         {
-          if ((i % 5)==0) cout << endl;
-          cout << x[i] << endl;
+          if ((i % 5)==0) std::cout << std::endl;
+          std::cout << x[i] << std::endl;
         }
       
 #ifdef BLAH
@@ -131,16 +131,16 @@ int main(int argc, char** argv)
 
       if (!bad) 
         {
-          cerr << "all tests PASSED" << endl;
+          std::cerr << "all tests PASSED" << std::endl;
         }
       else
         {
-          cerr << "a test has FAILED" << endl;
+          std::cerr << "a test has FAILED" << std::endl;
         }
     }
 	catch(std::exception& e)
 		{
-      cerr << "detected exception " << e.what() << endl;
+      std::cerr << "detected exception " << e.what() << std::endl;
 		}
 
   

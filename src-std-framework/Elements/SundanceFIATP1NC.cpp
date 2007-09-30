@@ -254,7 +254,7 @@ void FIATP1NC::refEval(
 }
 
 
-void FIATP1NC::print(ostream& os) const
+void FIATP1NC::print(std::ostream& os) const
 {
   os << "FIATP1NC(" << order() << ")";
 }

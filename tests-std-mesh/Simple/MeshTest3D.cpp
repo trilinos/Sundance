@@ -57,13 +57,13 @@ int main(int argc, char** argv)
 
       w3.write();
 
-      cout << "num elements = " << mesh3D.numCells(3) << endl;
-      cout << "num nodes = " << mesh3D.numCells(0) << endl;
+      std::cout << "num elements = " << mesh3D.numCells(3) << std::endl;
+      std::cout << "num nodes = " << mesh3D.numCells(0) << std::endl;
 
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << e.what() << endl;
+      std::cerr << e.what() << std::endl;
 		}
 }

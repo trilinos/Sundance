@@ -133,7 +133,7 @@ void BamgMeshReader::readParallelInfo(Array<int>& ptGID,
        * distribution */
       if (nProc() > 1)
         {
-          RefCountPtr<ifstream> parStream 
+          RefCountPtr<std::ifstream> parStream 
             = openFile(parFilename_, "parallel info");
      
           /* read the number of processors and the processor rank in 
@@ -257,7 +257,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 
     /*
 
-    RefCountPtr<ifstream> nodeStream = openFile(nodeFilename_, "node info");
+    RefCountPtr<std::ifstream> nodeStream = openFile(nodeFilename_, "node info");
     // read the header line //
     getNextLine(*nodeStream, line, tokens, '#');
     TEST_FOR_EXCEPTION(tokens.length() != 4, RuntimeError,
@@ -341,14 +341,14 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
     */
 
     /////////// here's the Bamg reader for reading nodes /////////////
-    cerr << "starting to read meshFile" << endl;
+    std::cerr << "starting to read meshFile" << std::endl;
 
-    RefCountPtr<ifstream> meshStream = openFile(meshFilename_, 
+    RefCountPtr<std::ifstream> meshStream = openFile(meshFilename_, 
                                                 "node & elem info");
     //Array<string> liners = StrUtils::readFile(meshStream, '#');
     Array<string> liners = StrUtils::readFile(*meshStream, '#');
     
-    cerr << "defined liners" << endl;
+    std::cerr << "defined liners" << std::endl;
     //nodeStream.close(); //old
 
     SUNDANCE_OUT(this->verbosity() > VerbHigh, 
@@ -362,40 +362,40 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
     unsigned int edgesIndex = 0;
     unsigned int triangleIndex = 0;
     unsigned int nCells=0;
-    cerr << "DimensionIndex = " << dimensionIndex << endl;
+    std::cerr << "DimensionIndex = " << dimensionIndex << std::endl;
 
     //int linerssize = liners.size();
     unsigned int linerssize = liners.length();
-    cerr << "number of lines in liners = " << linerssize << endl;
+    std::cerr << "number of lines in liners = " << linerssize << std::endl;
 
     for (unsigned int i = lineIndex; i < linerssize; i++)
       {
         tokens = StrUtils::stringTokenizer(liners[i]);
-        cerr << "test: i = " << i << "tokens[0] = " << tokens[0] << endl;
+        std::cerr << "test: i = " << i << "tokens[0] = " << tokens[0] << std::endl;
         if (i < 20)
           {
-            cerr << "i = " << i << ": number of tokens = " << tokens.length() 
-                 << endl;
+            std::cerr << "i = " << i << ": number of tokens = " << tokens.length() 
+                 << std::endl;
             for(int j = 0; j < tokens.length();j++)
               {
-                cerr << "     token " << j << "  = " << tokens[j] << endl;
-                cerr << "     length of token[" << j << "] = " 
-                     << tokens[j].length() << endl;
+                std::cerr << "     token " << j << "  = " << tokens[j] << std::endl;
+                std::cerr << "     length of token[" << j << "] = " 
+                     << tokens[j].length() << std::endl;
               }
           }
         if (tokens[0] == "Dimension") 
           {
             dimensionIndex = i;
-            cerr << "token[0] = Dimension" << endl;
+            std::cerr << "token[0] = Dimension" << std::endl;
             break;
           }
       }
-    cerr << "DimensionIndex = " << dimensionIndex << endl;
+    std::cerr << "DimensionIndex = " << dimensionIndex << std::endl;
     if (dimensionIndex > 0)
       {
         tokens = StrUtils::stringTokenizer(liners[dimensionIndex + 1]);
         dimension = atoi(tokens[0]);
-        cerr << "dimension = " << dimension << endl;
+        std::cerr << "dimension = " << dimension << std::endl;
         lineIndex = dimensionIndex + 2;
       }
 
@@ -409,7 +409,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
       {
         tokens = StrUtils::stringTokenizer(liners[verticesIndex + 1]);
         nPoints = atoi(tokens[0]);
-        cerr << "nPoints = " << nPoints << endl;
+        std::cerr << "nPoints = " << nPoints << std::endl;
         ptGID.resize(nPoints);
         ptOwner.resize(nPoints);
         for (unsigned int i=0; i<nPoints; i++)
@@ -431,7 +431,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
     ///// read the velocity data from bb file if bbAttr_ = true ////////////
       if (bbAttr_)
         {
-          RefCountPtr<ifstream> bbStream = openFile(bbFilename_, 
+          RefCountPtr<std::ifstream> bbStream = openFile(bbFilename_, 
                                                     "velocity info");
           Array<string> bbliners = StrUtils::readFile(*bbStream, '#');
 
@@ -445,10 +445,10 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
           unsigned int bbdimensionIndex = 0;
           unsigned int bblineIndex = 0;
           //          int bbverticesIndex = 0;
-          cerr << "bbDimensionIndex = " << bbdimensionIndex << endl;
+          std::cerr << "bbDimensionIndex = " << bbdimensionIndex << std::endl;
 
           unsigned int bblinerssize = bbliners.size();
-          cerr << "number of lines in bbliners = " << bblinerssize << endl;
+          std::cerr << "number of lines in bbliners = " << bblinerssize << std::endl;
 
           for (unsigned int i = bblineIndex; i < bblinerssize; i++)
             {
@@ -457,38 +457,38 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                 {
                   if(bbtokens.length() != 4)
                     {
-                      cerr << 
+                      std::cerr << 
                         "warning: .bb header line should have 4 tokens, read " 
-                           << bbtokens.length() << endl;
+                           << bbtokens.length() << std::endl;
                     }				   
-                  cerr << "bbline " << i << ": read bbtokens " << bbtokens[0] 
+                  std::cerr << "bbline " << i << ": read bbtokens " << bbtokens[0] 
                        << " " << bbtokens[1] << " " << bbtokens[2] << " " 
-                       << bbtokens[3] << endl;
+                       << bbtokens[3] << std::endl;
                   bbdimensionIndex = i;
                   break;
                 }
             }
           bblineIndex = bbdimensionIndex + 1;
-          cerr << "bblineIndex = " << bblineIndex << endl;
+          std::cerr << "bblineIndex = " << bblineIndex << std::endl;
           if (bblineIndex > 0)
             {
               Array<string> bbtokens = 
                 StrUtils::stringTokenizer(bbliners[bbdimensionIndex]);
               bbdimension = StrUtils::atoi(bbtokens[0]);
-              cerr << "bbdimension = " << bbdimension << endl;
+              std::cerr << "bbdimension = " << bbdimension << std::endl;
               if (bbdimension != 2) 
-                cerr << "Error! bbdimension should be 2" << endl;
+                std::cerr << "Error! bbdimension should be 2" << std::endl;
               bbnumSolns = StrUtils::atoi(bbtokens[1]);
               numbbAttr = bbnumSolns; //sets the number of attributes
-              cerr << "number of solutions per vertex = " << bbnumSolns << endl;
+              std::cerr << "number of solutions per vertex = " << bbnumSolns << std::endl;
               //if (bbnumSolns != nAttributes) 
-              //  cerr << "Error: bbnumSolns not equal to nAttributes!" << endl;
+              //  std::cerr << "Error: bbnumSolns not equal to nAttributes!" << std::endl;
               bbnumPoints = StrUtils::atoi(bbtokens[2]);
-              cerr << "number of vertices = " << bbnumPoints << endl;
+              std::cerr << "number of vertices = " << bbnumPoints << std::endl;
               if (bbnumPoints != nPoints) 
-                cerr << "Error!! number of bb points != nPoints" << endl;
+                std::cerr << "Error!! number of bb points != nPoints" << std::endl;
               bbsolnType = StrUtils::atoi(bbtokens[3]);
-              cerr << "bbsolution type = " << bbsolnType  << endl;
+              std::cerr << "bbsolution type = " << bbsolnType  << std::endl;
             }
 
           //assume solution data starts immediately below header 
@@ -497,7 +497,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
             {
               Array<string> bbtokens = StrUtils::stringTokenizer(bbliners[i]);
               if (bbtokens.length() == 0) 
-                cerr << "warning: encountered a blank soln line" << endl;
+                std::cerr << "warning: encountered a blank soln line" << std::endl;
               int ii = i - bblineIndex;
               //pointAttributes_[ii].resize(nAttributes);
               velVector[ii] = StrUtils::atof(bbtokens[0]);
@@ -507,13 +507,13 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
       
               if( i < 5 || i > bbnumPoints - 5) //check velocities
                 {
-                  //cerr << "vel0[" << ii << "] = " 
-                  //     << pointAttributes_[ii][0] << endl;
-                  //cerr << "vel1[" << ii << "] = " << pointAttributes_[ii][1] 
-                  //     << endl;
-                  cerr << "vel0[" << ii << "] = " << velVector[ii] << endl;
-                  cerr << "vel1[" << ii << "] = " << velVector[ii+bbnumPoints] 
-                       << endl;
+                  //std::cerr << "vel0[" << ii << "] = " 
+                  //     << pointAttributes_[ii][0] << std::endl;
+                  //std::cerr << "vel1[" << ii << "] = " << pointAttributes_[ii][1] 
+                  //     << std::endl;
+                  std::cerr << "vel0[" << ii << "] = " << velVector[ii] << std::endl;
+                  std::cerr << "vel1[" << ii << "] = " << velVector[ii+bbnumPoints] 
+                       << std::endl;
                 }
 	    
             }
@@ -523,7 +523,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 
       unsigned int nAttributes = 0; // value from Triangle .node file
       if (bbAttr_) nAttributes = numbbAttr; // expect two velocities per node
-      cerr << "nAttributes = " << nAttributes << endl;
+      std::cerr << "nAttributes = " << nAttributes << std::endl;
       //      int nBdryMarkers = 1; // unused - commented out - KL
       //value from Triangle .node file; consistent with Bamg .mesh file
 
@@ -553,9 +553,9 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
               if ((i == lineIndex) || (i == lineIndex + 1) || 
                   (i > lineIndex + nPoints - 2))
                 {
-                  cerr << "i = " << i << ";  node = (" << x << "," << y << ")" 
-                       << endl;
-                  cerr << "count = " << count << endl;
+                  std::cerr << "i = " << i << ";  node = (" << x << "," << y << ")" 
+                       << std::endl;
+                  std::cerr << "count = " << count << std::endl;
                 }
 
               double z = 0.0;
@@ -591,18 +591,18 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
               break;
             }
         }
-      cerr << "edgesIndex = " << edgesIndex << endl;
-      cerr << "count = " << count << "; npoints - 1 = " << nPoints - 1 << endl;
+      std::cerr << "edgesIndex = " << edgesIndex << std::endl;
+      std::cerr << "count = " << count << "; npoints - 1 = " << nPoints - 1 << std::endl;
   
-      if (count != nPoints - 1) cout << "error: # of nodes != # of vertices" 
-                                     << endl;
-      else cerr << "successfully read node data" << endl;
+      if (count != nPoints - 1) std::cout << "error: # of nodes != # of vertices" 
+                                     << std::endl;
+      else std::cerr << "successfully read node data" << std::endl;
       lineIndex = edgesIndex + 1;
 
       // done reading nodes; now read connectivity data.
 
-      cerr << "lineIndex = " << lineIndex << "; triangleIndex = " 
-           << triangleIndex << endl;
+      std::cerr << "lineIndex = " << lineIndex << "; triangleIndex = " 
+           << triangleIndex << std::endl;
       for (unsigned int i = lineIndex; i < liners.size(); i++)
         {
           tokens = StrUtils::stringTokenizer(liners[i]);
@@ -610,9 +610,9 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
           if (tokens[0] == "CrackedEdges") {triangleIndex = i+2; break;} 
           //skip over CrackedEdges info 
         }
-      cerr << "lineIndex = " << lineIndex << "; triangleIndex = " 
-           << triangleIndex << endl;
-      cerr << "tokens[0] = " << tokens[0] << endl;
+      std::cerr << "lineIndex = " << lineIndex << "; triangleIndex = " 
+           << triangleIndex << std::endl;
+      std::cerr << "tokens[0] = " << tokens[0] << std::endl;
     
       lineIndex = triangleIndex + 1;
 
@@ -622,12 +622,12 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
       if (triangleIndex > 0)
         {
           tokens = StrUtils::stringTokenizer(liners[lineIndex]);
-          cerr << "lineIndex = " << lineIndex << "; tokens[0] = " << tokens[0] 
-               << endl;
+          std::cerr << "lineIndex = " << lineIndex << "; tokens[0] = " << tokens[0] 
+               << std::endl;
           nCells = atoi(tokens[0]);
           elemGID.resize(nCells);
           elemOwner.resize(nCells);
-          cerr << "nCells = " << nCells << endl;
+          std::cerr << "nCells = " << nCells << std::endl;
           for (unsigned int i=0; i<nCells; i++)
             {
               elemGID[i] = i;
@@ -655,7 +655,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         /*
    
         // Open the element file //
-        RefCountPtr<ifstream> elemStream = openFile(elemFilename_, "element info");
+        RefCountPtr<std::ifstream> elemStream = openFile(elemFilename_, "element info");
 
         getNextLine(*elemStream, line, tokens, '#');
      
@@ -734,8 +734,8 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         */
 
         //////// here's the Bamg code for reading triangles (elements) ////////
-        cerr << "# of triangles = " << nCells 
-             << "; starting to read triangle data" << endl;
+        std::cerr << "# of triangles = " << nCells 
+             << "; starting to read triangle data" << std::endl;
         SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                      "done reading nodes, ready to read elements from " + meshFilename_);
 
@@ -757,25 +757,25 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 
         unsigned int dim = mesh.spatialDim(); //should equal dimension
         Array<int> nodes(dim+1); 
-        if (dim != dimension) cerr << "ERROR: dim = " << dim << "!= dimension = "
-                                   << dimension << endl;
+        if (dim != dimension) std::cerr << "ERROR: dim = " << dim << "!= dimension = "
+                                   << dimension << std::endl;
       
-        cerr << "lineIndex = " << lineIndex << endl;
-        cerr << "size of liners = " << liners.size() << endl;
-        cerr << "lineIndex+nCells-1 = " << lineIndex+nCells-1 << endl;
+        std::cerr << "lineIndex = " << lineIndex << std::endl;
+        std::cerr << "size of liners = " << liners.size() << std::endl;
+        std::cerr << "lineIndex+nCells-1 = " << lineIndex+nCells-1 << std::endl;
         for (unsigned int i = lineIndex; i < liners.size();i++) 
           //proceed to read elements, forget bdry markers
           {
             tokens = StrUtils::stringTokenizer(liners[i]);
             if (tokens.length() > 1)
               {
-                if (i < lineIndex + 5) cerr << "i = " << i << " first triangles: " 
+                if (i < lineIndex + 5) std::cerr << "i = " << i << " first triangles: " 
                                             << tokens[0] << " " << tokens[1] 
-                                            << " " << tokens[2] << endl;
-                if (i == lineIndex+nCells-1) cerr << "i = " << i 
+                                            << " " << tokens[2] << std::endl;
+                if (i == lineIndex+nCells-1) std::cerr << "i = " << i 
                                                   << " last triangle: " << tokens[0] 
                                                   << " " << tokens[1] << " " 
-                                                  << tokens[2] << endl;
+                                                  << tokens[2] << std::endl;
 
                 for (unsigned int d=0; d<=dim; d++)
                   {
@@ -805,8 +805,8 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
             if (tokens[0] == "SubDomainFromMesh") break; //we're done
           }
   
-        cerr << "# of cells read = " << count + 1 << endl;
-        if (count != nCells - 1) cerr << "error: # of cells read != nCells" << endl;
+        std::cerr << "# of cells read = " << count + 1 << std::endl;
+        if (count != nCells - 1) std::cerr << "error: # of cells read != nCells" << std::endl;
 
         // done reading elements
 
@@ -820,7 +820,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 Array<Array<double> > BamgMeshReader::getVelocityField(const string& bbFilename) const
 // read .bb file for 2-D velocity field & return a ListExpr for the field //
 {
-RefCountPtr<ifstream> bbStream = openFile(bbFilename_, "velocity info");
+RefCountPtr<std::ifstream> bbStream = openFile(bbFilename_, "velocity info");
 Array<string> liners = StrUtils::readFile(*bbStream, '#');
 
 //extract dimension, # solutions, # vertices, solution type from first line
@@ -832,10 +832,10 @@ int solnType;
 int dimensionIndex = 0;
 int lineIndex = 0;
 int verticesIndex = 0;
-cerr << "DimensionIndex = " << dimensionIndex << endl;
+std::cerr << "DimensionIndex = " << dimensionIndex << std::endl;
 
 int linerssize = liners.size();
-cerr << "number of lines in liners = " << linerssize << endl;
+std::cerr << "number of lines in liners = " << linerssize << std::endl;
 
 for (int i = lineIndex; i < linerssize; i++)
 {
@@ -845,32 +845,32 @@ if(tokens.length() > 0) //read first nonblank line
 {
 if(tokens.length() != 4)
 {
-cerr << "warning: .bb header line should have 4 tokens, read " 
-<< tokens.length() << endl;
+std::cerr << "warning: .bb header line should have 4 tokens, read " 
+<< tokens.length() << std::endl;
 }				   
-cerr << "line " << i << ": read tokens " << tokens[0] << " " 
-<< tokens[1] << " " << tokens[2] << " " << tokens[3] << endl;
+std::cerr << "line " << i << ": read tokens " << tokens[0] << " " 
+<< tokens[1] << " " << tokens[2] << " " << tokens[3] << std::endl;
 dimensionIndex = i;
 break;
 }
 }
 lineIndex = dimensionIndex + 1;
-cerr << "lineIndex = " << lineIndex << endl;
+std::cerr << "lineIndex = " << lineIndex << std::endl;
 if (lineIndex > 0)
 {
 Array<string> tokens = StrUtils::stringTokenizer(liners[dimensionIndex]);
 //replaced 'TSFArray' with 'Array'
 dimension = StrUtils::atoi(tokens[0]);
-cerr << "dimension = " << dimension << endl;
-if (dimension != 2) cerr << "Error! dimension should be 2" << endl;
+std::cerr << "dimension = " << dimension << std::endl;
+if (dimension != 2) std::cerr << "Error! dimension should be 2" << std::endl;
 numSolns = StrUtils::atoi(tokens[1]);
-cerr << "number of solutions per vertex = " << numSolns << endl;
+std::cerr << "number of solutions per vertex = " << numSolns << std::endl;
 //if (numSolns != nAttributes) 
-//  cerr << "Error: numSolns not equal to nAttributes!" << endl;
+//  std::cerr << "Error: numSolns not equal to nAttributes!" << std::endl;
 numPoints = StrUtils::atoi(tokens[2]);
-cerr << "number of vetices = " << numPoints << endl;
+std::cerr << "number of vetices = " << numPoints << std::endl;
 solnType = StrUtils::atoi(tokens[3]);
-cerr << "solution type = " << solnType  << endl;
+std::cerr << "solution type = " << solnType  << std::endl;
 }
 
 //BasisFamily lagr = new Lagrange(1);
@@ -889,7 +889,7 @@ for (int i = lineIndex; i < numPoints + lineIndex; i++)
 {
 Array<string> tokens = StrUtils::stringTokenizer(liners[i]);
 if (tokens.length() == 0) 
-cerr << "warning: encountered a blank soln line" << endl;
+std::cerr << "warning: encountered a blank soln line" << std::endl;
 int ii = i - lineIndex;
 //pointAttributes_[ii].resize(nAttributes);
 vel[ii] = StrUtils::atof(tokens[0]);
@@ -899,8 +899,8 @@ vel[ii+numPoints] = StrUtils::atof(tokens[1]);
       
 if( i < 5 || i > numPoints - 5) //check to see if we got velocities
 {
-cerr << "vel0[" << ii << "] = " << pointAttributes_[ii][0] << endl;
-cerr << "vel1[" << ii << "] = " << pointAttributes_[ii][1] << endl;
+std::cerr << "vel0[" << ii << "] = " << pointAttributes_[ii][0] << std::endl;
+std::cerr << "vel1[" << ii << "] = " << pointAttributes_[ii][1] << std::endl;
 }
  
 }

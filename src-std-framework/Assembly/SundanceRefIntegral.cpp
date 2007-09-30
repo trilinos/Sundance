@@ -75,7 +75,7 @@ RefIntegral::RefIntegral(int spatialDim,
   verbosity() = classVerbosity();
   SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << "************* computing reference 0-form integrals ********" 
-               << endl << tab0 << "cell type=" << cellType);
+               << std::endl << tab0 << "cell type=" << cellType);
 
   /* we need to sum the quadrature weights 
      to compute the volume of the reference cell */
@@ -89,7 +89,7 @@ RefIntegral::RefIntegral(int spatialDim,
   quad.getPoints(cellType, quadPts, quadWeights);  
 
   for (unsigned int q=0; q<quadWeights.size(); q++) W_[0][0] += quadWeights[q];
-  cerr << "master cell volume=" << W_[0][0] << endl;
+  std::cerr << "master cell volume=" << W_[0][0] << std::endl;
 }
 
 RefIntegral::RefIntegral(int spatialDim,
@@ -106,10 +106,10 @@ RefIntegral::RefIntegral(int spatialDim,
   verbosity() = classVerbosity();
   SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << "************* computing reference 1-form integrals ********" 
-               << endl << tab0 << "test basis=" 
+               << std::endl << tab0 << "test basis=" 
                << testBasis 
-               << endl << tab0 << "cell type=" << cellType
-               << endl << tab0 <<"differentiation order="
+               << std::endl << tab0 << "cell type=" << cellType
+               << std::endl << tab0 <<"differentiation order="
                << testDerivOrder);
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
@@ -126,7 +126,7 @@ RefIntegral::RefIntegral(int spatialDim,
   if (nFacetCases() > 1) evalCellType = maxCellType;
 
   QuadratureType qType = new GaussianQuadratureType();
-  int reqOrder = qType.findValidOrder(cellType, max(1, testBasis.order()));
+  int reqOrder = qType.findValidOrder(cellType, std::max(1, testBasis.order()));
   QuadratureFamily quad = qType.createQuadFamily(reqOrder);
   
   
@@ -181,7 +181,7 @@ RefIntegral::RefIntegral(int spatialDim,
     }
   if (verbosity() > VerbMedium)
     {
-      print(cerr);
+      print(std::cerr);
     }
 }
 
@@ -207,11 +207,11 @@ RefIntegral::RefIntegral(int spatialDim,
   verbosity() = classVerbosity();
   SUNDANCE_OUT(this->verbosity() > VerbSilent, 
                tab0 << " ************* computing reference 2-form integrals ***************" 
-               << endl << tab0 << "test basis=" 
+               << std::endl << tab0 << "test basis=" 
                << testBasis 
-               << endl << tab0 << "unk basis=" << unkBasis
-               << endl << tab0 << "cell type=" << cellType
-               << endl << tab0 <<"differentiation order t=" 
+               << std::endl << tab0 << "unk basis=" << unkBasis
+               << std::endl << tab0 << "cell type=" << cellType
+               << std::endl << tab0 <<"differentiation order t=" 
                << testDerivOrder << ", u=" << unkDerivOrder);
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
                tab0 << "num test derivative components=" 
@@ -233,7 +233,7 @@ RefIntegral::RefIntegral(int spatialDim,
   if (nFacetCases() > 1) evalCellType = maxCellType;
 
   QuadratureType qType = new GaussianQuadratureType();
-  int reqOrder = qType.findValidOrder(cellType, max(1, unkBasis.order() + testBasis.order()));
+  int reqOrder = qType.findValidOrder(cellType, std::max(1, unkBasis.order() + testBasis.order()));
   QuadratureFamily quad = qType.createQuadFamily(reqOrder);
 
   for (int fc=0; fc<nFacetCases(); fc++)
@@ -304,7 +304,7 @@ RefIntegral::RefIntegral(int spatialDim,
     }
   if (verbosity() > VerbMedium)
     {
-      print(cerr);
+      print(std::cerr);
     }
 
 }
@@ -317,11 +317,11 @@ void RefIntegral::print(ostream& os) const
       if (order()==1)
         {
           Tabs tab1;
-          os << tab1 << "reference one-form values" << endl;
+          os << tab1 << "reference one-form values" << std::endl;
           if (testDerivOrder()==0)
             {
               Tabs tab2;
-              os << tab2 << W_[fc] << endl;
+              os << tab2 << W_[fc] << std::endl;
             }
           else
             {
@@ -334,15 +334,15 @@ void RefIntegral::print(ostream& os) const
                       if (n != 0) os << ", ";
                       os << value(fc, r, n);
                     }
-                  os << "}" << endl;
+                  os << "}" << std::endl;
                 }
             }
-          os << tab1 << endl << tab1 << endl;
+          os << tab1 << std::endl << tab1 << std::endl;
         }
       else if (order()==2)
         {
           Tabs tab1;
-          os << tab1 << "reference two-form values" << endl;
+          os << tab1 << "reference two-form values" << std::endl;
           if (testDerivOrder()==0 && unkDerivOrder()==0)
             {
               Tabs tab2;
@@ -358,7 +358,7 @@ void RefIntegral::print(ostream& os) const
                     }
                   os << "}";
                 }
-              os << "}" << endl;
+              os << "}" << std::endl;
             }
           else if (testDerivOrder()==1 && unkDerivOrder()==1)
             {
@@ -368,7 +368,7 @@ void RefIntegral::print(ostream& os) const
                   for (int u=0; u<dim(); u++)
                     {
                       os << tab2 << "test dir=" << t 
-                         << ", unk dir=" << u << endl;
+                         << ", unk dir=" << u << std::endl;
                       Tabs tab3;
                       os << tab3 << "{";
                       for (int nt=0; nt<nNodesTest(); nt++) 
@@ -382,7 +382,7 @@ void RefIntegral::print(ostream& os) const
                             }
                           os << "}";
                         }
-                      os << "}" << endl;
+                      os << "}" << std::endl;
                     }
                 }
             }
@@ -391,7 +391,7 @@ void RefIntegral::print(ostream& os) const
               Tabs tab2;
               for (int t=0; t<dim(); t++)
                 {
-                  os << tab2 << "test dir=" << t << endl;
+                  os << tab2 << "test dir=" << t << std::endl;
                   Tabs tab3;
                   os << tab3 << "{";
                   for (int nt=0; nt<nNodesTest(); nt++) 
@@ -405,7 +405,7 @@ void RefIntegral::print(ostream& os) const
                         }
                       os << "}";
                     }
-                  os << "}" << endl;
+                  os << "}" << std::endl;
                 }
             }
           else /* if (testDerivOrder()==1 && unkDerivOrder()==0) */
@@ -413,7 +413,7 @@ void RefIntegral::print(ostream& os) const
               Tabs tab2;
               for (int u=0; u<dim(); u++)
                 {
-                  os << tab2 << "unk dir=" << u << endl;
+                  os << tab2 << "unk dir=" << u << std::endl;
                   Tabs tab3;
                   os << tab3 << "{";
                   for (int nt=0; nt<nNodesTest(); nt++) 
@@ -427,11 +427,11 @@ void RefIntegral::print(ostream& os) const
                         }
                       os << "}";
                     }
-                  os << "}" << endl;
+                  os << "}" << std::endl;
                 }
             }
-          os << tab1 << endl << tab1 << endl;
-          os << tab1 << endl << tab1 << endl;
+          os << tab1 << std::endl << tab1 << std::endl;
+          os << tab1 << std::endl << tab1 << std::endl;
         }
     }
 }

@@ -90,7 +90,7 @@ bool Lagrange::supportsCellTypePair(
   }
 }
 
-void Lagrange::print(ostream& os) const 
+void Lagrange::print(std::ostream& os) const 
 {
   os << "Lagrange(" << order_ << ")";
 }
@@ -389,7 +389,11 @@ void Lagrange::evalOnTriangle(const Point& pt,
       }
       break;
 		default:
+#ifndef TRILINOS_7
 			SUNDANCE_ERROR("Lagrange::evalOnTriangle poly order > 2");
+#else
+			SUNDANCE_ERROR7("Lagrange::evalOnTriangle poly order > 2");
+#endif
 		}
 
 	for (int i=0; i<tmp.length(); i++)
@@ -446,7 +450,11 @@ void Lagrange::evalOnTet(const Point& pt,
 			tmp[9] = 4.0*y*z;
 			break;
 		default:
+#ifndef TRILINOS_7
 			SUNDANCE_ERROR("Lagrange::evalOnTet poly order > 2");
+#else
+			SUNDANCE_ERROR7("Lagrange::evalOnTet poly order > 2");
+#endif
 		}
 
 	for (int i=0; i<tmp.length(); i++)

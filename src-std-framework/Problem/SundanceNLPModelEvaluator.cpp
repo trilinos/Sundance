@@ -123,15 +123,17 @@ void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec
 
   /* set the symbolic parameter values to the input parameters */
   if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tabs << "parameters are: ")
-    for (unsigned int i=0; i<paramExpr_.size(); i++)
-      {
-        Tabs tab2;
-        Expr p_i = paramExpr_[i];
-        p_i.setParameterValue(params[i]);
-        if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << i << " " << paramExpr_[i]);
-      }
-
-      
+    {
+      for (unsigned int i=0; i<paramExpr_.size(); i++)
+	{
+	  Tabs tab2;
+	  Expr p_i = paramExpr_[i];
+	  //bvbw	  p_i.setParameterValue(params[i]);
+	  p_i.setParameterValue(params.getElement(i));
+	  if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << i << " " << paramExpr_[i]);
+	}
+    }
+  
 
   /* set the symbolic state function value to the input state */
 

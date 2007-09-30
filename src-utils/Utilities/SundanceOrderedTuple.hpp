@@ -114,7 +114,7 @@ namespace SundanceUtils
 
   /** */
   template <class A, class B>
-  inline ostream& operator<<(ostream& os, const OrderedPair<A,B>& p)
+  inline std::ostream& operator<<(std::ostream& os, const OrderedPair<A,B>& p)
   {
     os << "{" << p.first() << ", " << p.second() << "}";
     return os;

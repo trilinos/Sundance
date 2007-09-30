@@ -79,7 +79,7 @@ namespace SundanceStdMesh
       virtual ~CellReordererImplemBase(){;}
 
       /** return a descriptive string */
-      virtual string typeName() const {return typeid(*this).name();}
+      virtual std::string typeName() const {return typeid(*this).name();}
     
       /** */
       virtual int advance(int currentLID) const = 0 ;

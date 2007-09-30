@@ -42,9 +42,9 @@ Mesh MeshSourceBase::getMesh() const
       Mesh rtn =  fillMesh();
       if (verbosity() > VerbSilent)
         {
-          cerr << tabs << "got a mesh with " << rtn.numCells(0)
+          std::cerr << tabs << "got a mesh with " << rtn.numCells(0)
                << " nodes and " << rtn.numCells(rtn.spatialDim())
-               << " maximal cells" << endl;
+               << " maximal cells" << std::endl;
         }
       return rtn;
     }

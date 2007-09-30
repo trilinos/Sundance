@@ -78,7 +78,7 @@ bool Nedelec::supportsCellTypePair(
   }
 }
 
-void Nedelec::print(ostream& os) const 
+void Nedelec::print(std::ostream& os) const 
 {
   os << "Nedelec()";
 }

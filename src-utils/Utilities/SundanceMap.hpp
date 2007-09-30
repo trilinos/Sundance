@@ -44,7 +44,7 @@ namespace SundanceUtils
    * Extension of STL map, adding some nicer put/get/contains syntax 
    * and an iostream insertion operator.
    */
-  template<class Key, class Value, class Compare = less<Key> >
+  template<class Key, class Value, class Compare = std::less<Key> >
     class Map : public std::map<Key, Value, Compare>
     {
     public:

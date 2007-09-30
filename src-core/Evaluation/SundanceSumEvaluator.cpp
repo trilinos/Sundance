@@ -61,8 +61,8 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
 
   if (verbosity() > VerbLow)
     {
-      cerr << tabs << "initializing sum evaluator for " 
-           << se->toString() << endl;
+      std::cerr << tabs << "initializing sum evaluator for " 
+           << se->toString() << std::endl;
     }
 
   int constantCounter = 0;
@@ -70,19 +70,19 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
 
   if (verbosity() > VerbMedium)
     {
-      cerr << endl << tabs << "return sparsity ";
-      this->sparsity()->print(cerr);
-      cerr << endl << "left sparsity ";
-      leftSparsity()->print(cerr);
-      cerr << endl << "right sparsity " ;
-      rightSparsity()->print(cerr);
-      cerr << endl;
+      std::cerr << std::endl << tabs << "return sparsity ";
+      this->sparsity()->print(std::cerr);
+      std::cerr << std::endl << "left sparsity ";
+      leftSparsity()->print(std::cerr);
+      std::cerr << std::endl << "right sparsity " ;
+      rightSparsity()->print(std::cerr);
+      std::cerr << std::endl;
       
-      cerr << "left vector index map " << leftEval()->vectorIndexMap() << endl;
-      cerr << "right vector index map " << rightEval()->vectorIndexMap() << endl;
+      std::cerr << "left vector index map " << leftEval()->vectorIndexMap() << std::endl;
+      std::cerr << "right vector index map " << rightEval()->vectorIndexMap() << std::endl;
       
-      cerr << "left constant index map " << leftEval()->constantIndexMap() << endl;
-      cerr << "right constant index map " << rightEval()->constantIndexMap() << endl;
+      std::cerr << "left constant index map " << leftEval()->constantIndexMap() << std::endl;
+      std::cerr << "right constant index map " << rightEval()->constantIndexMap() << std::endl;
     }
 
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
@@ -217,11 +217,11 @@ void SumEvaluator
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "left operand " << endl;
-      leftSparsity()->print(cerr, leftVectorResults,
+      std::cerr << tabs << "left operand " << std::endl;
+      leftSparsity()->print(std::cerr, leftVectorResults,
                             leftConstResults);
-      cerr << tabs << "right operand " << endl;
-      rightSparsity()->print(cerr, rightVectorResults,
+      std::cerr << tabs << "right operand " << std::endl;
+      rightSparsity()->print(std::cerr, rightVectorResults,
                              rightConstResults);
     }
   
@@ -352,8 +352,8 @@ void SumEvaluator
   
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "sum result " << endl;
-      this->sparsity()->print(cerr, vectorResults,
+      std::cerr << tabs << "sum result " << std::endl;
+      this->sparsity()->print(std::cerr, vectorResults,
                         constantResults);
     }
 }

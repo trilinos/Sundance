@@ -74,7 +74,7 @@ bool P1NC::supportsCellTypePair(
 }
 
 
-void P1NC::print(ostream& os) const 
+void P1NC::print(std::ostream& os) const 
 {
   os << "P1NC()";
 }
@@ -153,9 +153,13 @@ void P1NC::refEval(
         }
       return;
     default:
+#ifndef TRILINOS_7
       SUNDANCE_ERROR("P1NC::refEval() unimplemented for cell type "
                      << cellType);
-
+#else
+      SUNDANCE_ERROR7("P1NC::refEval() unimplemented for cell type "
+                     << cellType);
+#endif
     }
 }
 

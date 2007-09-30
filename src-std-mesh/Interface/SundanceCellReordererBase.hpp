@@ -65,10 +65,10 @@ using namespace SundanceUtils;
       virtual ~CellReordererFactoryBase(){;}
 
       /** */
-      virtual string description() const {return typeid(*this).name();}
+      virtual std::string description() const {return typeid(*this).name();}
 
       /** */
-      virtual void print(ostream& os) const {os << description();}
+      virtual void print(std::ostream& os) const {os << description();}
 
       /** Instantiate a factory */
       virtual RefCountPtr<CellReordererImplemBase> 

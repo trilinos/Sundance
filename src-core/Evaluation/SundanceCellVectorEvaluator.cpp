@@ -57,7 +57,7 @@ CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr,
   SUNDANCE_VERB_LOW(tabs << "initializing cell vector evaluator for " 
                     << expr->toString());
   SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " 
-		       << endl << *(this->sparsity)());
+		       << std::endl << *(this->sparsity)());
 
   TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() >1 , InternalError,
                      "CellVectorEvaluator ctor found a sparsity table "
@@ -95,7 +95,7 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
+      std::cerr << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
     }
 
   vectorResults.resize(1);
@@ -107,8 +107,8 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
     {
       Tabs tab1;
-      cerr << tab1 << "results " << endl;
-      this->sparsity()->print(cerr, vectorResults,
+      std::cerr << tab1 << "results " << std::endl;
+      this->sparsity()->print(std::cerr, vectorResults,
                             constantResults);
     }
 

@@ -64,18 +64,18 @@ int main(int argc, char** argv)
         }
 
         
-        cerr << nData << "\t set=" << tSet.totalElapsedTime()
+        std::cerr << nData << "\t set=" << tSet.totalElapsedTime()
              << "\t hash=" << tHash.totalElapsedTime() 
              << "\t ratio=" 
              << tHash.totalElapsedTime()/tSet.totalElapsedTime()
-             << endl;
+             << std::endl;
       }
 
       
     }
   catch(std::exception& e)
     {
-      cerr << "caught exception " << e.what() << endl;
+      std::cerr << "caught exception " << e.what() << std::endl;
     }
   
 }

@@ -46,7 +46,7 @@ using namespace TSFExtended;
 
 void MatlabWriter::write() const 
 {
-  ofstream os(filename().c_str());
+  std::ofstream os(filename().c_str());
   int numNodes = mesh().numCells(0);
           
   for (int i=0; i<numNodes; i++)
@@ -57,6 +57,6 @@ void MatlabWriter::write() const
           const RefCountPtr<FieldBase>& expr = pointScalarFields()[j];
           os << " " << expr->getData(0, i, 0);
         }
-      os << endl;
+      os << std::endl;
     }
 }

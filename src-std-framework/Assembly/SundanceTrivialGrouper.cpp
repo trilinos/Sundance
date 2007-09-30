@@ -57,12 +57,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   Tabs tab;
   VerbositySetting verb = GrouperBase::classVerbosity();
   SUNDANCE_OUT(verb > VerbLow, 
-               tab << "trivial grouper num derivs = " << sparsity->numDerivs() << endl);
+               tab << "trivial grouper num derivs = " << sparsity->numDerivs() << std::endl);
   SUNDANCE_OUT(verb > VerbLow, 
                tab << "cell type = " << cellType);
 
   SUNDANCE_OUT(verb > VerbMedium,  
-               tab << "sparsity = " << endl << *sparsity << endl);
+               tab << "sparsity = " << std::endl << *sparsity << std::endl);
 
   int vecCount=0;
   int constCount=0;
@@ -295,9 +295,9 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = twoFormResultIndices.get(i->first);
-          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating two-form integral group" << endl
-                               << tab3 << "testID=" << testID << endl
-                               << tab3 << "unkID=" << unkID << endl
+          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating two-form integral group" << std::endl
+                               << tab3 << "testID=" << testID << std::endl
+                               << tab3 << "unkID=" << unkID << std::endl
                                << tab3 << "resultIndices=" << resultIndices);
           for (unsigned int j=0; j<resultIndices.size(); j++)
             {
@@ -320,8 +320,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = oneFormResultIndices.get(i->first);
-          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating one-form integral group" << endl
-                               << tab3 << "testID=" << testID << endl
+          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating one-form integral group" << std::endl
+                               << tab3 << "testID=" << testID << std::endl
                                << tab3 << "resultIndices=" << resultIndices);
           for (unsigned int j=0; j<resultIndices.size(); j++)
             {

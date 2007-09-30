@@ -198,7 +198,7 @@ namespace SundanceCore
       Expr(const double& c);
 
       /** Construct with a complex constant. Creates a ComplexExpr. */
-      Expr(const complex<double>& c);
+      Expr(const std::complex<double>& c);
 
       /** Add two expressions. The operands must have identical list
        * structures.
@@ -223,7 +223,7 @@ namespace SundanceCore
       {return operator*(1.0/other);}
 
       /** Divide an expression by a complex. */
-      Expr operator/(const complex<double>& other) const 
+      Expr operator/(const std::complex<double>& other) const 
       {return operator*(1.0/other);}
 
       /** Unary minus operator */
@@ -385,19 +385,19 @@ namespace SundanceCore
     {return Expr(a) / x;}
 
   /** \relates Expr */
-  inline Expr operator+(const complex<double>& a, const Expr& x)
+  inline Expr operator+(const std::complex<double>& a, const Expr& x)
     {return Expr(a) + x;}
 
   /** \relates Expr */
-  inline Expr operator-(const complex<double>& a, const Expr& x)
+  inline Expr operator-(const std::complex<double>& a, const Expr& x)
     {return Expr(a) - x;}
 
   /** \relates Expr */
-  inline Expr operator*(const complex<double>& a, const Expr& x)
+  inline Expr operator*(const std::complex<double>& a, const Expr& x)
     {return Expr(a) * x;}
 
   /** \relates Expr */
-  inline Expr operator/(const complex<double>& a, const Expr& x)
+  inline Expr operator/(const std::complex<double>& a, const Expr& x)
     {return Expr(a) / x;}
 
   /** \relates Expr */

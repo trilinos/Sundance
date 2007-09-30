@@ -69,7 +69,7 @@ using namespace SundanceStdMesh::Internal;
      * 
      * \see CellSet, CellFilter, CellIteratorPos
      */
-    class CellIterator : public std::iterator<input_iterator_tag, int>
+    class CellIterator : public std::iterator<std::input_iterator_tag, int>
     {
     public:
 

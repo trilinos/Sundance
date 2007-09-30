@@ -82,7 +82,7 @@ namespace SundanceStdMesh
        * @param description a description of the file, e.g., "node file",
        * to be included in any error messages generated.  
        **/
-      RefCountPtr<ifstream> openFile(const string& fname, 
+      RefCountPtr<std::ifstream> openFile(const string& fname, 
                                      const string& description) const ;
 
       /** 
@@ -93,7 +93,7 @@ namespace SundanceStdMesh
        * @param comment a character indicating that everything after it
        * is a comment
        */
-      bool getNextLine(istream& is, string& line,
+      bool getNextLine(std::istream& is, string& line,
                        Array<string>& tokens,
                        char comment) const ;
     private:

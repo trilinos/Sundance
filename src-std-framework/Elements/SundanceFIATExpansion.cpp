@@ -139,12 +139,22 @@ namespace SundanceStdFwk
       int n_rows_c = C.length();
       int n_cols_c = C[0].length();
       /* bounds checking */
+      //bvbw temporary hack
+#ifndef TRILINOS_7
       if (n_cols_a != n_rows_b) {
         SUNDANCE_ERROR("Nonconforming matrices");
       }
       if (n_rows_a != n_rows_c || n_cols_b != n_cols_c ) {
         SUNDANCE_ERROR("Nonconforming matrices");
       }
+#else
+      if (n_cols_a != n_rows_b) {
+        SUNDANCE_ERROR7("Nonconforming matrices");
+      }
+      if (n_rows_a != n_rows_c || n_cols_b != n_cols_c ) {
+        SUNDANCE_ERROR7("Nonconforming matrices");
+      }
+#endif
       for (i=0;i<n_rows_a;i++) {
         for (j=0;j<n_cols_b;j++) {
           C[i][j] = 0.0;

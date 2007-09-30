@@ -252,7 +252,7 @@ void FIATLagrange::refEval(
 }
 
 
-void FIATLagrange::print(ostream& os) const
+void FIATLagrange::print(std::ostream& os) const
 {
   os << "FIATLagrange(" << order() << ")";
 }

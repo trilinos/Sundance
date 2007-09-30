@@ -49,15 +49,15 @@ namespace SundanceUtils
     {
     public:
       
-      static void println(const string& str) 
+      static void println(const std::string& str) 
       {
-        if (hasLogFile()) *logFile() << str << endl;
-        if (!suppressStdout()) cout << str << endl;
+        if (hasLogFile()) *logFile() << str << std::endl;
+        if (!suppressStdout()) std::cout << str << std::endl;
       }
 
-      static void setLogFile(const string& filename)
+      static void setLogFile(const std::string& filename)
       {
-        logFile() = rcp(new ofstream(filename.c_str()));
+        logFile() = rcp(new std::ofstream(filename.c_str()));
         hasLogFile() = true;
       }
 
@@ -65,7 +65,7 @@ namespace SundanceUtils
 
     private:
       static bool& hasLogFile() {static bool rtn=false; return rtn;}
-      static RefCountPtr<ostream>& logFile() {static RefCountPtr<ostream> rtn; return rtn;}
+      static RefCountPtr<std::ostream>& logFile() {static RefCountPtr<std::ostream> rtn; return rtn;}
       
     };
 

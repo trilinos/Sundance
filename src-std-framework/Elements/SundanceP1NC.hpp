@@ -55,7 +55,7 @@ public:
     ) const ;
 
   /** */
-  void print(ostream& os) const ;
+  void print(std::ostream& os) const ;
 
   /** */
   int order() const {return 1;}

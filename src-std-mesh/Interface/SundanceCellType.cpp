@@ -37,7 +37,7 @@ using namespace SundanceUtils;
 namespace SundanceStdMesh
 {
 
-  string toString(const CellType& cellType)
+  std::string toString(const CellType& cellType)
   {
     switch(cellType)
       {

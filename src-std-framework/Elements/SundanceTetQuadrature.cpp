@@ -54,9 +54,15 @@ void TetQuadrature::getPoints(int order, Array<double>& wgt,
     }
 	else
 		{
+#ifndef TRILINOS_7
 			SUNDANCE_ERROR("symmetric quadrature rule order " 
                      << order << 
                      " not available for triangles");
+#else
+			SUNDANCE_ERROR7("symmetric quadrature rule order " 
+                     << order << 
+                     " not available for triangles");
+#endif
 		}
 
 	for (int i=0; i<q.length(); i++)
@@ -111,9 +117,15 @@ void TetQuadrature::permute(int m, const Array<double>& q,
 		}
 	else
 		{
+#ifndef TRILINOS_7
 			SUNDANCE_ERROR("invalid multiplicity " 
                      << m <<
                      " in TetQuadrature::permute()");
+#else
+			SUNDANCE_ERROR7("invalid multiplicity " 
+                     << m <<
+                     " in TetQuadrature::permute()");
+#endif
 		}
 }
 
@@ -150,7 +162,7 @@ bool TetQuadrature::test(int p)
                   if (!localPass)
                     {
                       fprintf(stderr, "order=%d m (%d, %d, %d %d) q=%22.15g exact=%22.15g\n", p, a, b, c, d, sum, exact(a, b, c, d));
-                      cerr << "error = " << err << endl;
+                      std::cerr << "error = " << err << std::endl;
                     }
                 }
             }

@@ -535,22 +535,22 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
 void InhomogeneousNodalDOFMap::print(ostream& os) const
 {
   Tabs tab0;
-  cout << tab0 << "dof map: " << endl;
+  std::cout << tab0 << "dof map: " << std::endl;
   for (int d=0; d<=dim_; d++)
     {
       Tabs tab1;
-      cout << tab1 << d << "-cells: " << endl;
+      std::cout << tab1 << d << "-cells: " << std::endl;
       for (int n=0; n<mesh().numCells(d); n++)
         {
           Tabs tab2;
-          cout << tab2 << "d=" << d << " cell=" << n << endl;
+          std::cout << tab2 << "d=" << d << " cell=" << n << std::endl;
           RefCountPtr<const Set<int> > funcs = allowedFuncsOnCellBatch(d, tuple(n));
           for (Set<int>::const_iterator f=funcs->begin(); f!=funcs->end(); f++)
             {
               Tabs tab3;
               Array<int> dofs;
               getDOFsForCell(d, n, *f, dofs);
-              cout << tab3 << " f=" << *f << " dofs=" << dofs << endl;
+              std::cout << tab3 << " f=" << *f << " dofs=" << dofs << std::endl;
             }
         }
     }

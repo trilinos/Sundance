@@ -66,7 +66,7 @@ enum CellType {
  *
  * \ingroup Sundance_CellType_grp
  */
-string toString(const CellType& c) ;
+std::string toString(const CellType& c) ;
 
 /** \brief Return the dimension of the cell type.
  *
@@ -111,7 +111,7 @@ CellType facetType(const CellType& c, int facetDim, int facetIndex);
  *
  * \ingroup Sundance_CellType_grp
  */
-inline ostream& operator<<(ostream& os, const CellType& c)
+inline std::ostream& operator<<(std::ostream& os, const CellType& c)
 {
   os << toString(c);
   return os;

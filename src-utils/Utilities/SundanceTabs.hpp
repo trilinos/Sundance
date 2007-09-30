@@ -104,7 +104,7 @@ namespace SundanceUtils
        * Print to stream. This method is usually not called directly, as
        * tabs will usually be written with the insertion operator
        */
-      void print(ostream& os) const ;
+      void print(std::ostream& os) const ;
 
       /** Change the tab size. Default is 2.  */
       static void setTabSize(int ts) {tabSize() = ts;}

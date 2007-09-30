@@ -52,7 +52,7 @@ CellDiameterExprEvaluator::CellDiameterExprEvaluator(const CellDiameterExpr* exp
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "initializing cell diameter expr evaluator for " 
                     << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << *(this->sparsity)());
 
   TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, InternalError,
                      "CellDiameterExprEvaluator ctor found a sparsity table "
@@ -91,7 +91,7 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > 1)
     {
-      cerr << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
+      std::cerr << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
     }
 
   if (this->sparsity()->numDerivs() > 0)
@@ -105,8 +105,8 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "results " << endl;
-      this->sparsity()->print(cerr, vectorResults,
+      std::cerr << tabs << "results " << std::endl;
+      this->sparsity()->print(std::cerr, vectorResults,
                             constantResults);
     }
 }

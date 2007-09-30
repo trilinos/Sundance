@@ -66,7 +66,7 @@ namespace SundanceCore
           virtual bool lessThan(const Deriv& other) const = 0 ;
 
           /** */
-          virtual string toString() const = 0 ;
+          virtual std::string toString() const = 0 ;
 
         private:
 

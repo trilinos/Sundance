@@ -54,9 +54,9 @@ int main(int argc, char** argv)
       w.write();
       TimeMonitor::summarize();
     }
-	catch(exception& e)
+	catch(std::exception& e)
 		{
-      cerr << "Detected exception: " << e.what() << endl;
+      std::cerr << "Detected exception: " << e.what() << std::endl;
 		}
 }
 

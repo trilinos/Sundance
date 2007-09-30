@@ -294,7 +294,7 @@ bool AToCPointLocator::cellContainsPoint(int cellLID,
           if (s1 >= 0.0 && s2 >= 0.0 && s3 >= 0.0) 
             {
               /* swap B and C if cell is CW oriented */
-              cout << "swapping!" << endl;
+              std::cout << "swapping!" << std::endl;
               double bax = C[0] - A[0];
               double bay = C[1] - A[1];
               double cax = B[0] - A[0];

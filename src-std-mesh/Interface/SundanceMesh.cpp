@@ -72,7 +72,7 @@ bool Mesh::checkConsistency(const string& filename) const
     {
       f = f + "." + Teuchos::toString(comm().getRank());
     }
-  ofstream os(f.c_str());
+  std::ofstream os(f.c_str());
   return checkConsistency(os);
 }
 
@@ -81,7 +81,7 @@ bool Mesh::checkConsistency(ostream& os) const
   /* eliminate the trivial serial case */
   if (comm().getNProc()==1) 
     {
-      os << "Mesh is serial, thus it is consistent across processors" << endl;
+      os << "Mesh is serial, thus it is consistent across processors" << std::endl;
       return true;
     }
 
@@ -174,7 +174,7 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
       if (p==myRank) continue;
 
       os << tab1 << "p=" << myRank << " testing " << dim 
-           << "-cells from remote p=" << p << endl;
+           << "-cells from remote p=" << p << std::endl;
       
       const Array<int>& remoteData = inData[p];
       int nRemote = remoteData.size()/dataSize;
@@ -195,7 +195,7 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
                 {
                   Tabs tab3;
                   int dir;
-                  os << tab3 << "checking " << d << "-facets" << endl;
+                  os << tab3 << "checking " << d << "-facets" << std::endl;
                   /* The facets may be stored in permuted order on the
                    * different processors. We can get a common ordering
                    * by sorting them. We define a STL map from facet GID to
@@ -251,7 +251,7 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
                       os << tab4 << " local facet GID=" << lfGID
                          << " remote GID=" << rfGID 
                          << " local Own=" << lfOwner 
-                         << " remote Own=" << rfOwner << endl;
+                         << " remote Own=" << rfOwner << std::endl;
                       elemIsOK = testIdentity(os, rfGID, lfGID, 
                                               "facet GIDs") && elemIsOK;
                       elemIsOK = testIdentity(os, rfOwner, 
@@ -271,7 +271,7 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
                                                   "facet nodes") && elemIsOK;
                           os << tab5 << "facet node GIDs: local=" 
                              << localNodes << " remote=" 
-                             << remoteNodes << endl;
+                             << remoteNodes << std::endl;
                         }
                     }
                 }
@@ -289,7 +289,7 @@ bool Mesh::testIdentity(ostream& os, int a, int b, const string& msg) const
   Tabs tab;
   if (a != b)
     {
-      os << tab << "CONFLICT in " << msg << endl;
+      os << tab << "CONFLICT in " << msg << std::endl;
       return false;
     }
   return true;
@@ -307,7 +307,7 @@ bool Mesh::testIdentity(ostream& os,
     }
   if (!ok)
     {
-      os << tab << "CONFLICT in " << msg << endl;
+      os << tab << "CONFLICT in " << msg << std::endl;
     }
   return ok;
 }
@@ -326,12 +326,12 @@ bool Mesh::checkRemoteEntity(ostream& os, int p, int dim, int gid, int owner,
       lid = mapGIDToLID(dim, gid); 
       os << tab << "p=" << myRank << " got " 
            << dim << "-cell GID=" << gid << " from proc=" << p 
-           << ", is LID=" << lid << " locally" << endl;
+           << ", is LID=" << lid << " locally" << std::endl;
     }
   else
     {
       os << tab << "p=" << myRank << " got " << dim << "-cell GID=" << gid 
-           << " from proc=" << p << ", doesn't exist locally" << endl;
+           << " from proc=" << p << ", doesn't exist locally" << std::endl;
       if (mustExist) isOK = false;
     }
 
@@ -340,13 +340,13 @@ bool Mesh::checkRemoteEntity(ostream& os, int p, int dim, int gid, int owner,
       int localOwner = ownerProcID(dim, lid);
       os << tab << dim << "-cell GID=" << gid 
            << " is locally LID=" << lid << " and owned by "
-           << localOwner << endl;
+           << localOwner << std::endl;
       if (localOwner != owner)
         {
           os << tab << "OWNERSHIP CONFLICT: local p=" << myRank
                << " thinks " << dim << "-cell GID=" << gid << " is owned by "
                << localOwner << " but remote proc=" << p
-               << " says it's owned by " << owner << endl;
+               << " says it's owned by " << owner << std::endl;
           isOK = false;
         }
     }
@@ -411,7 +411,7 @@ bool Mesh::checkVertexConsistency(ostream& os) const
       if (p==myRank) continue;
 
       os << tab1 << "p=" << myRank << " testing vertices from remote p="
-           << p << endl;
+           << p << std::endl;
 
       int nVerts = inData[p].size()/dataSize;
 
@@ -436,8 +436,8 @@ bool Mesh::checkVertexConsistency(ostream& os) const
                   os << tab2 << "POSITION CONFLICT: local p=" << myRank
                        << " thinks GID=" << vertGID << " is at xLocal="
                        << localX << " but remote proc=" << p
-                       << " says it's at xRemote" << remoteX << endl;
-                  os << tab2 << "distance = " << dx << endl;
+                       << " says it's at xRemote" << remoteX << std::endl;
+                  os << tab2 << "distance = " << dx << std::endl;
                   vertIsOK = false;
                 }
             }
@@ -445,18 +445,18 @@ bool Mesh::checkVertexConsistency(ostream& os) const
           if (vertIsOK) 
             {
               os << tab2 << "p=" << myRank 
-                   << " says vertex GID=" << vertGID << " is OK" << endl;
+                   << " says vertex GID=" << vertGID << " is OK" << std::endl;
             }
         }
     }
 
   if (allVertsOK)
     {
-      os << "p=" << myRank << " found all vertex data is OK" << endl;
+      os << "p=" << myRank << " found all vertex data is OK" << std::endl;
     }
   else
     {
-      os << "p=" << myRank << " detected conflicts in vertex data" << endl;
+      os << "p=" << myRank << " detected conflicts in vertex data" << std::endl;
     }
 
   ok = allVertsOK && ok;

@@ -158,9 +158,9 @@ void UnaryFunctor::evalFDDerivs3(const double* const x,
 bool UnaryFunctor::testDerivs(const double& x, const double& tol) const
 {
   Tabs tabs;
-  cerr << tabs << endl << tabs 
+  std::cerr << tabs << std::endl << tabs 
        << "comparing exact derivs to FD derivs for functor " 
-       << name() << endl;
+       << name() << std::endl;
 
   double fExact;
   double fxExact;
@@ -173,79 +173,79 @@ bool UnaryFunctor::testDerivs(const double& x, const double& tol) const
   bool isOK = true;
 
   /* test first differentiation */
-  cerr << tabs << "computing first derivatives at x=" << x << endl;
+  std::cerr << tabs << "computing first derivatives at x=" << x << std::endl;
   {
     Tabs tabs1;
 
     eval1(&x, 1, &fExact, &fxExact);
-    cerr << tabs1 << "Exact: f=" << fExact << " df_dx=" << fxExact << endl; 
+    std::cerr << tabs1 << "Exact: f=" << fExact << " df_dx=" << fxExact << std::endl; 
     evalFDDerivs1(&x, 1, &fFD, &fxFD);
-    cerr << tabs1 << "FD:    f=" << fFD << " df_dx=" << fxFD << endl; 
+    std::cerr << tabs1 << "FD:    f=" << fFD << " df_dx=" << fxFD << std::endl; 
 
     double fError = fabs(fFD - fExact)/(fabs(fExact) + h_);
     double fxError = fabs(fxFD - fxExact)/(fabs(fxExact)+h_);
     {
       Tabs tabs2;
-      cerr << tabs2 << "| f-f_FD |=" << fError 
-           << " | df-df_FD |=" << fxError << endl;
+      std::cerr << tabs2 << "| f-f_FD |=" << fError 
+           << " | df-df_FD |=" << fxError << std::endl;
       if (fError > tol) 
         {
-          cerr << tabs << "ERROR: function value mismatch!" << endl;
+          std::cerr << tabs << "ERROR: function value mismatch!" << std::endl;
           isOK = false;
         }
       if (fxError > tol) 
         {
-          cerr << tabs << "ERROR: first derivative mismatch!" << endl;
+          std::cerr << tabs << "ERROR: first derivative mismatch!" << std::endl;
           isOK = false;
         }
     }
   }
   
-  cerr << tabs << endl;
+  std::cerr << tabs << std::endl;
 
   
   /* test first and second differentiation */
-  cerr << tabs << "computing first and second derivatives at x=" << x << endl;
+  std::cerr << tabs << "computing first and second derivatives at x=" << x << std::endl;
   {
     Tabs tabs1;
 
     eval2(&x, 1, &fExact, &fxExact, &fxxExact);
-    cerr << tabs1 << "Exact: f=" << fExact 
+    std::cerr << tabs1 << "Exact: f=" << fExact 
          << " df_dx=" << fxExact 
          << " d2f_dx2=" << fxxExact 
-         << endl; 
+         << std::endl; 
 
     evalFDDerivs2(&x, 1, &fFD, &fxFD, &fxxFD);
-    cerr << tabs1 << "FD:    f=" << fFD << " df_dx=" << fxFD  
-         << " d2f_dx2=" << fxxFD << endl; 
+    std::cerr << tabs1 << "FD:    f=" << fFD << " df_dx=" << fxFD  
+         << " d2f_dx2=" << fxxFD << std::endl; 
 
     double fError = fabs(fFD - fExact)/(fabs(fExact) + h_);
     double fxError = fabs(fxFD - fxExact)/(fabs(fxExact)+h_);
     double fxxError = fabs(fxxFD - fxxExact)/(fabs(fxxExact)+h_);
     {
       Tabs tabs2;
-      cerr << tabs2 << "| f-f_FD |=" << fError 
+      std::cerr << tabs2 << "| f-f_FD |=" << fError 
            << " | df-df_FD |=" << fxError 
-           << " | d2f-d2f_FD |=" << fxxError << endl;
+           << " | d2f-d2f_FD |=" << fxxError << std::endl;
       if (fError > tol) 
         {
-          cerr << tabs << "ERROR: function value mismatch!" << endl;
+          std::cerr << tabs << "ERROR: function value mismatch!" << std::endl;
           isOK = false;
         }
       if (fxError > tol) 
         {
-          cerr << tabs << "ERROR: first derivative mismatch!" << endl;
+          std::cerr << tabs << "ERROR: first derivative mismatch!" << std::endl;
           isOK = false;
         }
       if (fxxError > tol) 
         {
-          cerr << tabs << "ERROR: second derivative mismatch!" << endl;
+          std::cerr << tabs << "ERROR: second derivative mismatch!" << std::endl;
           isOK = false;
         }
     }
   }
 
-  cerr << tabs << endl;
+  std::cerr << tabs << std::endl;
   return isOK;
 }
 
@@ -254,9 +254,9 @@ bool UnaryFunctor::testInvalidValue(const double& badValue) const
   Tabs tabs;
   bool detectedError = false;
 
-  cerr << endl << tabs 
+  std::cerr << std::endl << tabs 
        << "testing exception detection for bad value x=" << badValue
-       << " for function  " << name() << endl;
+       << " for function  " << name() << std::endl;
   try
     {
       testDerivs(badValue, 1.0);
@@ -268,12 +268,12 @@ bool UnaryFunctor::testInvalidValue(const double& badValue) const
 
   if (!detectedError) 
     {
-      cerr << tabs << "ERROR: missed detection of an exception at x=" << badValue
-           << " for function " << name() << endl;
+      std::cerr << tabs << "ERROR: missed detection of an exception at x=" << badValue
+           << " for function " << name() << std::endl;
     }
   else
     {
-      cerr << tabs << "the error was detected!" << endl;
+      std::cerr << tabs << "the error was detected!" << std::endl;
     }
   return detectedError;
 }

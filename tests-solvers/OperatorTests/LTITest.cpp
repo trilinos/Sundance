@@ -110,16 +110,16 @@ int main(int argc, char *argv[])
         {
           y = A*y;
         }
-        cout << "i=" << i << endl 
-             << " y=" << y << endl
-             << " bigY=" << bigY.getBlock(i) << endl;
+        std::cout << "i=" << i << std::endl 
+             << " y=" << y << std::endl
+             << " bigY=" << bigY.getBlock(i) << std::endl;
       }
 
       /* Compare results of operator-notation and hand-coded procedures.
        * These should be the same.*/
       double errFwd = (y-xf).norm2();
       
-      cout << "forward solve err = " << errFwd << endl;
+      std::cout << "forward solve err = " << errFwd << std::endl;
 
       /* --------------------------------------------------------------- 
        *                      Compute adjoint solve        
@@ -146,15 +146,15 @@ int main(int argc, char *argv[])
         {
           y = A.transpose()*y;
         }
-        cout << "i=" << i << endl 
-             << " y=" << y << endl
-             << " bigY=" << bigY.getBlock(i) << endl;
+        std::cout << "i=" << i << std::endl 
+             << " y=" << y << std::endl
+             << " bigY=" << bigY.getBlock(i) << std::endl;
       }
 
       x0 = bigY.getBlock(0);
       double errAdj = (y-x0).norm2();
 
-      cout << "adjoint solve err = " << errAdj << endl;
+      std::cout << "adjoint solve err = " << errAdj << std::endl;
 
 
       /* ----------------------------------------------------------- 
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
       Vector<double> z = H*u0;
       
       double tol = 1.0e-13;
-      if (max(errAdj, errFwd) < tol)
+      if (std::max(errAdj, errFwd) < tol)
         {
           cerr << "LTI test PASSED" << endl;
         }

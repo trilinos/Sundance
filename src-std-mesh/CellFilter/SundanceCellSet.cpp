@@ -113,8 +113,8 @@ void CellSet::checkCompatibility(const string& op, const CellSet& other) const
                      << other.cellType());
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,
-               "Set operation: " << op << endl
-               << "LHS cells: " << *this << endl
+               "Set operation: " << op << std::endl
+               << "LHS cells: " << *this << std::endl
                << "RHS cells: " << other);
                
 }

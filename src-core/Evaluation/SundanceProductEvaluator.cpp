@@ -71,17 +71,17 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
 
       SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << *(this->sparsity)());
 
-      SUNDANCE_VERB_MEDIUM(tabs << "left sparsity " << endl 
-                           << *(leftSparsity()) << endl
+      SUNDANCE_VERB_MEDIUM(tabs << "left sparsity " << std::endl 
+                           << *(leftSparsity()) << std::endl
                            << tabs << "right sparsity " 
-                           << endl << *(rightSparsity()));
+                           << std::endl << *(rightSparsity()));
   
       SUNDANCE_VERB_HIGH(tabs << "left vector index map " 
-                         << leftEval()->vectorIndexMap() << endl
+                         << leftEval()->vectorIndexMap() << std::endl
                          << tabs << "right vector index map " 
-                         << rightEval()->vectorIndexMap() << endl
+                         << rightEval()->vectorIndexMap() << std::endl
                          << tabs << "left constant index map " 
-                         << leftEval()->constantIndexMap() << endl
+                         << leftEval()->constantIndexMap() << std::endl
                          << tabs << "right constant index map " 
                          << rightEval()->constantIndexMap());
                      
@@ -93,7 +93,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           Tabs tab0;
           const MultipleDeriv& d = this->sparsity()->deriv(i);
 
-          SUNDANCE_VERB_MEDIUM(tabs << endl << "finding rules for deriv " << d);
+          SUNDANCE_VERB_MEDIUM(tabs << std::endl << "finding rules for deriv " << d);
 
           int order = d.order();
 
@@ -102,7 +102,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           resultIsConstant_[order].append(resultIsConstant);
           if (resultIsConstant)
             {
-              SUNDANCE_VERB_HIGH(tab0 << endl 
+              SUNDANCE_VERB_HIGH(tab0 << std::endl 
                                  << "result will be in constant index " << constResultIndex);
               resultIndex_[order].append(constResultIndex);
               addConstantIndex(i, constResultIndex);
@@ -110,7 +110,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
             }
           else
             {
-              SUNDANCE_VERB_HIGH(tab0 << endl 
+              SUNDANCE_VERB_HIGH(tab0 << std::endl 
                                  << "result will be in constant index " << vecResultIndex);
               resultIndex_[order].append(vecResultIndex);
               addVectorIndex(i, vecResultIndex);
@@ -348,42 +348,42 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           if (verbosity() > VerbMedium)
             {
               Tabs tab0;
-              cerr << tab0 << "deriv " << i << " order=" << order ;
+              std::cerr << tab0 << "deriv " << i << " order=" << order ;
               if (resultIsConstant)
                 {
-                  cerr << " constant result ";
+                  std::cerr << " constant result ";
                 }
               else
                 {
-                  cerr << " vector result ";
+                  std::cerr << " vector result ";
                 }
-              cerr << resultIndex_[order] << endl;
+              std::cerr << resultIndex_[order] << std::endl;
               {
                 Tabs tab1;
                 if (hasStartingVector) 
                   {
-                    cerr << tab1 << "starting vector " << startingVector << endl;
+                    std::cerr << tab1 << "starting vector " << startingVector << std::endl;
                   }
-                cerr << tab1 << "c-c terms " << ccTerms << endl;
-                cerr << tab1 << "c-v terms " << cvTerms << endl;
-                cerr << tab1 << "v-c terms " << vcTerms << endl;
-                cerr << tab1 << "v-v terms " << vvTerms << endl;
+                std::cerr << tab1 << "c-c terms " << ccTerms << std::endl;
+                std::cerr << tab1 << "c-v terms " << cvTerms << std::endl;
+                std::cerr << tab1 << "v-c terms " << vcTerms << std::endl;
+                std::cerr << tab1 << "v-v terms " << vvTerms << std::endl;
               }
             }
         }
 
       if (verbosity() > VerbMedium)
         {
-          cerr << tabs << "maps: " << endl;
-          cerr << tabs << "vector index map " << vectorIndexMap() << endl;
-          cerr << tabs << "constant index map " << constantIndexMap() << endl;
+          std::cerr << tabs << "maps: " << std::endl;
+          std::cerr << tabs << "vector index map " << vectorIndexMap() << std::endl;
+          std::cerr << tabs << "constant index map " << constantIndexMap() << std::endl;
         }
     }
   catch(std::exception& e)
     {
       TEST_FOR_EXCEPTION(true, RuntimeError, 
                          "exception detected in ProductEvaluator: expr="
-                         << expr->toString() << endl
+                         << expr->toString() << std::endl
                          << "exception=" << e.what());
     }
 }
@@ -409,11 +409,11 @@ void ProductEvaluator
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "left operand results" << endl;
-      leftSparsity()->print(cerr, leftVectorResults,
+      std::cerr << tabs << "left operand results" << std::endl;
+      leftSparsity()->print(std::cerr, leftVectorResults,
                             leftConstantResults);
-      cerr << tabs << "right operand results" << endl;
-      rightSparsity()->print(cerr, rightVectorResults,
+      std::cerr << tabs << "right operand results" << std::endl;
+      rightSparsity()->print(std::cerr, rightVectorResults,
                              rightConstantResults);
     }
   
@@ -669,8 +669,8 @@ void ProductEvaluator
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "product result " << endl;
-      this->sparsity()->print(cerr, vectorResults,
+      std::cerr << tabs << "product result " << std::endl;
+      this->sparsity()->print(std::cerr, vectorResults,
                               constantResults);
     }
 }

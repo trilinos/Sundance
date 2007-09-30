@@ -48,17 +48,17 @@ void VerboseFieldWriter::write() const
   RefCountPtr<ostream> osp;
   if (filename().length()==0)
     {
-      osp = rcp(&cout, false);
+      osp = rcp(&std::cout, false);
     }
   else 
     {
       string f = filename() + ".txt";
       if (nProc > 1) f = f + "." + Teuchos::toString(myRank);
-      osp = rcp(new ofstream(f.c_str()));
+      osp = rcp(new std::ofstream(f.c_str()));
     }
   ostream& os = *osp;
 
-  if (myRank==0) os << "VerboseFieldWriter output" << endl;
+  if (myRank==0) os << "VerboseFieldWriter output" << std::endl;
   for (int p=0; p<nProc; p++)
     {
       mesh().comm().synchronize();
@@ -66,15 +66,15 @@ void VerboseFieldWriter::write() const
       mesh().comm().synchronize();
       if (p != myRank) continue;
       os << "======== processor " << p << " ============================ "
-         << endl;
+         << std::endl;
       Tabs tab0;
       int dim = mesh().spatialDim();
       int nPts = mesh().numCells(0);
       int nElems = mesh().numCells(dim);
-      os << tab0 << "spatial dimension = " << dim << endl;
-      os << tab0 << "num points = " << nPts << endl;
-      os << tab0 << "num elements = " << nElems << endl;
-      os << tab0 << "Point list: " << endl;
+      os << tab0 << "spatial dimension = " << dim << std::endl;
+      os << tab0 << "num points = " << nPts << std::endl;
+      os << tab0 << "num elements = " << nElems << std::endl;
+      os << tab0 << "Point list: " << std::endl;
 
       int dummy;
       for (int i=0; i<nPts; i++)
@@ -84,7 +84,7 @@ void VerboseFieldWriter::write() const
              << " G=" << mesh().mapLIDToGID(0, i) 
              << " x=" << mesh().nodePosition(i) 
              << " owner=" << mesh().ownerProcID(0,i) 
-             << " label=" << mesh().label(0,i) << endl;
+             << " label=" << mesh().label(0,i) << std::endl;
           int nc = mesh().numMaxCofacets(0,i);
           Tabs tab2;
           os << tab2 << "num cofacets=" << nc << " cofs = {";
@@ -94,11 +94,11 @@ void VerboseFieldWriter::write() const
               else os << ", ";
               os << mesh().mapLIDToGID(dim, mesh().maxCofacetLID(0,i,c,dummy));
             }
-          os << "}" << endl;
+          os << "}" << std::endl;
         }
 
       
-      os << tab0 << "Element list: " << endl;
+      os << tab0 << "Element list: " << std::endl;
 
       for (int i=0; i<nElems; i++)
         {
@@ -120,11 +120,11 @@ void VerboseFieldWriter::write() const
               os << mesh().mapLIDToGID(0, mesh().facetLID(dim, i, 0, j, facetSign));
             }
           os << "}, owner=" << mesh().ownerProcID(dim,i)
-             << ", label=" << mesh().label(dim,i) << endl;
+             << ", label=" << mesh().label(dim,i) << std::endl;
           for (int fd=1; fd<dim; fd++)
             {
               Tabs tab2;
-              os << tab2 << "facets of dimension " << fd << endl;
+              os << tab2 << "facets of dimension " << fd << std::endl;
               int nf = mesh().numFacets(dim, i, fd);
               for (int f=0; f<nf; f++)
                 {
@@ -147,7 +147,7 @@ void VerboseFieldWriter::write() const
                       if (fn != 0) os << ", ";
                       os << mesh().facetLID(fd, flid, 0, fn, facetSign);
                     }
-                  os << "} sign=" << facetSign << endl;
+                  os << "} sign=" << facetSign << std::endl;
                 }
               
             }

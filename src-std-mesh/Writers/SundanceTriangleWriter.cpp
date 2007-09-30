@@ -62,28 +62,28 @@ void TriangleWriter::write() const
 void TriangleWriter::writeHeader(const string& filename) const 
 {
   string hdrfile = filename + ".hdr";
-  ofstream os(hdrfile.c_str());
+  std::ofstream os(hdrfile.c_str());
 
-  os << nProc() << endl;
+  os << nProc() << std::endl;
   for (int p=0; p<nProc(); p++) 
     {
-      os << filename + Teuchos::toString(p) << endl;
+      os << filename + Teuchos::toString(p) << std::endl;
     }
 
-  os << pointScalarNames().length() << endl;
+  os << pointScalarNames().length() << std::endl;
   for (int i=0; i<pointScalarNames().length(); i++)
     {
-      os << i << " " << pointScalarNames()[i] << endl;
+      os << i << " " << pointScalarNames()[i] << std::endl;
     }
-  os << cellScalarNames().length() << endl;
+  os << cellScalarNames().length() << std::endl;
   for (int i=0; i<cellScalarNames().length(); i++)
     {
-      os << i << " " << cellScalarNames()[i] << endl;
+      os << i << " " << cellScalarNames()[i] << std::endl;
     }
   
   for (int i=0; i<comments().length(); i++)
     {
-      os << "# " << comments()[i] << endl;
+      os << "# " << comments()[i] << std::endl;
     }
 }
 
@@ -96,9 +96,9 @@ void TriangleWriter::writePoints(const string& filename) const
   int nBdryMarkers = 0;
 
   string nodefile = filename + ".node";
-  ofstream os(nodefile.c_str());
+  std::ofstream os(nodefile.c_str());
 
-  os << nPts << " " << dim << " " << nAttr << " " << nBdryMarkers << endl;
+  os << nPts << " " << dim << " " << nAttr << " " << nBdryMarkers << std::endl;
 
   for (int i=0; i<nPts; i++)
     {
@@ -117,27 +117,28 @@ void TriangleWriter::writePoints(const string& filename) const
       */
       for (int b=0; b<nBdryMarkers; b++)
         {
-          SUNDANCE_ERROR("Boundary markers not supported yet");
+	  //bvbw          SUNDANCE_ERROR("Boundary markers not supported yet");
+	  assert(0);
         }
-      os << endl;
+      os << std::endl;
     }
   
   for (int i=0; i<comments().length(); i++)
     {
-      os << "# " << comments()[i] << endl;
+      os << "# " << comments()[i] << std::endl;
     }
 }
 
 void TriangleWriter::writeFaces(const string& filename) const 
 {
   string facefile = filename + ".face";
-  ofstream os(facefile.c_str());
+  std::ofstream os(facefile.c_str());
 
   int dim = 2;
   int nFaces = mesh().numCells(dim);
   int dummySign;
 
-  os << nFaces << " 0" << endl;
+  os << nFaces << " 0" << std::endl;
 
   for (int c=0; c<nFaces; c++)
     {
@@ -148,26 +149,26 @@ void TriangleWriter::writeFaces(const string& filename) const
         {
           os << " " << mesh().facetLID(2,c,0,i,dummySign) + indexOffset_;
         }
-      os << endl;
+      os << std::endl;
     }
   
   for (int i=0; i<comments().length(); i++)
     {
-      os << "# " << comments()[i] << endl;
+      os << "# " << comments()[i] << std::endl;
     }
 }
 
 void TriangleWriter::writeEdges(const string& filename) const 
 {
   string edgefile = filename + ".edge";
-  ofstream os(edgefile.c_str());
+  std::ofstream os(edgefile.c_str());
 
   int dim = 1;
   int nEdges = mesh().numCells(dim);
   int nNodes = 2;
   int dummySign;
 
-  os << nEdges << " 0" << endl;
+  os << nEdges << " 0" << std::endl;
 
   for (int c=0; c<nEdges; c++)
     {
@@ -176,26 +177,26 @@ void TriangleWriter::writeEdges(const string& filename) const
         {
           os << " " << mesh().facetLID(1,c,0,i,dummySign) + indexOffset_;
         }
-      os << endl;
+      os << std::endl;
     }
   
   for (int i=0; i<comments().length(); i++)
     {
-      os << "# " << comments()[i] << endl;
+      os << "# " << comments()[i] << std::endl;
     }
 }
 
 void TriangleWriter::writeCells(const string& filename) const 
 {
   string elefile = filename + ".ele";
-  ofstream os(elefile.c_str());
+  std::ofstream os(elefile.c_str());
 
   int dim = mesh().spatialDim();
   int nCells = mesh().numCells(dim);
   int nAttr = cellScalarFields().length();
   int dummySign;
 
-  os << nCells << " " << dim+1 << " " << nAttr << endl;
+  os << nCells << " " << dim+1 << " " << nAttr << std::endl;
 
   for (int c=0; c<nCells; c++)
     {
@@ -212,12 +213,12 @@ void TriangleWriter::writeCells(const string& filename) const
           os << " " << cellScalarFields()[f].average(cell).value();
         }
       */
-      os << endl;
+      os << std::endl;
     }
   
   for (int i=0; i<comments().length(); i++)
     {
-      os << "# " << comments()[i] << endl;
+      os << "# " << comments()[i] << std::endl;
     }
 }
 
@@ -225,50 +226,50 @@ void TriangleWriter::writeCells(const string& filename) const
 void TriangleWriter::writeParallelInfo(const string& filename) const 
 {
   string parfile = filename + ".par";
-  ofstream os(parfile.c_str());
+  std::ofstream os(parfile.c_str());
 
   int dim = mesh().spatialDim();
   int nCells = mesh().numCells(dim);
   int nEdges = mesh().numCells(1);
   int nPts = mesh().numCells(0);
 
-  os << myRank() << " " << nProc() << endl;
+  os << myRank() << " " << nProc() << std::endl;
 
-  os << nPts << endl;
+  os << nPts << std::endl;
   for (int i=0; i<nPts; i++)
     {
       os << i << " " << mesh().mapLIDToGID(0,i) 
-         << " " << mesh().ownerProcID(0,i) << endl;
+         << " " << mesh().ownerProcID(0,i) << std::endl;
     }
 
-  os << nCells << endl;
+  os << nCells << std::endl;
   for (int c=0; c<nCells; c++)
     {
       os << c << " " << mesh().mapLIDToGID(dim,c) 
-         << " " << mesh().ownerProcID(dim,c) << endl;
+         << " " << mesh().ownerProcID(dim,c) << std::endl;
     }
 
-  os << nEdges << endl;
+  os << nEdges << std::endl;
   for (int c=0; c<nEdges; c++)
     {
       os << c << " " << mesh().mapLIDToGID(1,c) 
-         << " " << mesh().ownerProcID(1,c) << endl;
+         << " " << mesh().ownerProcID(1,c) << std::endl;
     }
 
   if (dim > 2)
     {
       int nFaces = mesh().numCells(2);
-      os << nFaces << endl;
+      os << nFaces << std::endl;
       for (int c=0; c<nFaces; c++)
         {
           os << c << " " << mesh().mapLIDToGID(2,c) 
-             << " " << mesh().ownerProcID(2,c) << endl;
+             << " " << mesh().ownerProcID(2,c) << std::endl;
         }
     }
   
   for (int i=0; i<comments().length(); i++)
     {
-      os << "# " << comments()[i] << endl;
+      os << "# " << comments()[i] << std::endl;
     }
 }
 

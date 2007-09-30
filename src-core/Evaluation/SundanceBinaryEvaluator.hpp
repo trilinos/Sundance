@@ -115,8 +115,8 @@ namespace SundanceCore
         Tabs tabs;
         SUNDANCE_OUT(this->verbosity() > VerbLow, 
                      tabs << "Evaluating left and right children: "
-                     << endl << tabs << "left=" << leftExpr_->toString()
-                     << endl << tabs << "right=" << rightExpr_->toString());
+                     << std::endl << tabs << "left=" << leftExpr_->toString()
+                     << std::endl << tabs << "right=" << rightExpr_->toString());
         SUNDANCE_OUT(this->verbosity() > VerbLow, 
                      tabs << "Evaluating left=" << leftExpr_->toString());
         leftEval()->eval(mgr, leftConstResults, leftVecResults);

@@ -66,11 +66,11 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
       if (p == myRank)
         {
           os << tabs << 
-            "========= DOFMap on proc p=" << p << " =============" << endl;
+            "========= DOFMap on proc p=" << p << " =============" << std::endl;
           for (int d=dim; d>=0; d--)
             {
               Tabs tabs1;
-              os << tabs1 << "dimension = " << d << endl;
+              os << tabs1 << "dimension = " << d << std::endl;
               for (int c=0; c<mesh().numCells(d); c++)
                 {
                   Tabs tabs2;
@@ -78,7 +78,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                      << mesh().mapLIDToGID(d, c);
                   if (d==0) 
                     {
-                      os << " x=" << mesh().nodePosition(c) << endl;
+                      os << " x=" << mesh().nodePosition(c) << std::endl;
                     }
                   else 
                     {
@@ -91,7 +91,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                           facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
                         }
                       os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
-                         << endl;
+                         << std::endl;
                     }
                   for (int b=0; b<s->numBasisChunks(); b++)
                     {
@@ -101,7 +101,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                           Array<int> dofs;
                           getDOFsForCell(d, c, s->funcs(b)[f], dofs);
                           os << tabs3 << "f=" << s->funcs(b)[f] << " " 
-                             << dofs << endl;
+                             << dofs << std::endl;
                           if (false)
                             {
                               os << tabs3 << "{";
@@ -111,7 +111,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                                   if (isLocalDOF(dofs[i])) os << "L";
                                   else os << "R";
                                 }
-                              os << "}" << endl;
+                              os << "}" << std::endl;
                             }
                         }
                     }

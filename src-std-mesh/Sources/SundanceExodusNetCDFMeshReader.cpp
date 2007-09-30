@@ -32,7 +32,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
 {
   Mesh mesh;
 
-  RefCountPtr<ifstream> is = openFile(filename(), "NetCDF");
+  RefCountPtr<std::ifstream> is = openFile(filename(), "NetCDF");
 
   string line;
   Array<string> tokens;
@@ -100,13 +100,13 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         {
           nSideSets = val;
           sideSetSizes.resize(nSideSets);
-          cerr << "num side sets = " << nSideSets << endl;
+          std::cerr << "num side sets = " << nSideSets << std::endl;
         }
       else if (keyword=="num_node_sets")
         {
           nNodeSets = val;
           nodeSetSizes.resize(nNodeSets);
-          cerr << "num node sets = " << nNodeSets << endl;
+          std::cerr << "num node sets = " << nNodeSets << std::endl;
         }
       else
         {

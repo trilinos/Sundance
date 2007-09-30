@@ -47,7 +47,7 @@ namespace SundanceUtils
    * Extension of STL set, adding some nicer syntax 
    * and an iostream insertion operator.
    */
-  template<class Key, class Compare = less<Key> >
+  template<class Key, class Compare = std::less<Key> >
   class Set : public std::set<Key, Compare>
   {
   public:
@@ -79,7 +79,7 @@ namespace SundanceUtils
     Set<Key, Compare> setDifference(const Set<Key, Compare>& other) const ;
 
     /** */
-    ostream& toStream(ostream& os) const ;
+    std::ostream& toStream(std::ostream& os) const ;
 
     /** */
     string toString() const ;
@@ -131,7 +131,7 @@ namespace SundanceUtils
 
     set_intersection(this->begin(), this->end(),
                      other.begin(), other.end(), 
-                     insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
+                     std::insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
     return rtn;
   }
 
@@ -142,7 +142,7 @@ namespace SundanceUtils
 
     set_union(this->begin(), this->end(),
               other.begin(), other.end(), 
-              insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
+              std::insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
     return rtn;
   }
 
@@ -153,12 +153,12 @@ namespace SundanceUtils
 
     set_difference(this->begin(), this->end(),
                    other.begin(), other.end(), 
-                   insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
+                   std::insert_iterator<Set<Key, Compare> >(rtn, rtn.begin())); 
     return rtn;
   }
 
   template<class Key, class Compare> inline
-  ostream& Set<Key, Compare>::toStream(ostream& os) const
+  std::ostream& Set<Key, Compare>::toStream(std::ostream& os) const
   {
     typename Set<Key, Compare>::const_iterator iter;
 
@@ -177,7 +177,7 @@ namespace SundanceUtils
   template<class Key, class Compare> inline
   string Set<Key, Compare>::toString() const
   {
-    ostringstream os;
+    std::ostringstream os;
     os << *this;
     return os.str();
   }

@@ -164,9 +164,15 @@ void TriangleQuadrature::permute(int m, const Array<double>& q,
 		}
 	else
 		{
+#ifndef TRILINOS_7
 			SUNDANCE_ERROR("invalid multiplicity " 
                      << m <<
                      " in TriangleQuadrature::permute()");
+#else
+			SUNDANCE_ERROR7("invalid multiplicity " 
+                     << m <<
+                     " in TriangleQuadrature::permute()");
+#endif
 		}
 }
 
@@ -198,7 +204,7 @@ bool TriangleQuadrature::test(int p)
               if (!localPass)
                 {
                   fprintf(stderr, "order=%d m (%d, %d, %d) q=%22.15g exact=%22.15g\n", p, a, b, c, sum, exact(a, b, c));
-                  cerr << "error = " << err << endl;
+                  std::cerr << "error = " << err << std::endl;
                 }
 						}
 				}

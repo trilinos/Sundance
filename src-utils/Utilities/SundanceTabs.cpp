@@ -44,7 +44,7 @@ Tabs::~Tabs()
   tabLevel()--;
 }
 
-void Tabs::print(ostream& os) const
+void Tabs::print(std::ostream& os) const
 {
   if (showDepth()) 
     {

@@ -75,7 +75,7 @@ UnaryMinusEvaluator
     {
       TEST_FOR_EXCEPTION(true, RuntimeError, 
                          "exception detected in UnaryMinusEvaluator: expr="
-                         << expr->toString() << endl
+                         << expr->toString() << std::endl
                          << "exception=" << e.what());
     }
 }
@@ -100,8 +100,8 @@ void UnaryMinusEvaluator
 
   if (verbosity() > VerbLow)
     {
-      cerr << tab << "UnaryMinus operand results" << endl;
-      argSparsitySuperset()->print(cerr, vectorResults,
+      std::cerr << tab << "UnaryMinus operand results" << std::endl;
+      argSparsitySuperset()->print(std::cerr, vectorResults,
                            constantResults);
     }
 
