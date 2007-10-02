@@ -38,7 +38,7 @@
            <Parameter name="fact: level-of-fill" type="int" value="0"/>
          </ParameterList>
       </ParameterList> 
-      <Parameter name="Tolerance" type="double" value="1e-1"/>
+      <Parameter name="Tolerance" type="double" value="1e-4"/>
       <Parameter name="Type" type="string" value="Aztec"/>
       <Parameter name="Verbosity" type="int" value="4"/>
     </ParameterList>

@@ -93,11 +93,11 @@ namespace Thyra
     InArgs<double> createInArgs() const ;
 
     /** Create a container for the output arguments */
-    OutArgs<double> createOutArgs() const ;
+    OutArgs<double> createOutArgsImpl() const ;
 
     /** Wrapper to convert the Thyra arguments to/from Sundance arguments */
-    void evalModel(const InArgs<double>& inArgs,
-                   const OutArgs<double>& outArgs) const ;
+    void evalModelImpl(const InArgs<double>& inArgs,
+      const OutArgs<double>& outArgs) const ;
 
 
     /** Run the model  */
@@ -133,6 +133,8 @@ namespace Thyra
 
     /** */
     const VectorType<double>& vecType() const {return vecType_;}
+
+    
 
   private:
     VectorType<double> vecType_;

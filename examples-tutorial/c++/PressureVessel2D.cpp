@@ -52,7 +52,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusMeshReader("../../../examples-tutorial/meshes/vessel2D.exo", meshType);
+        = new ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/vessel-0.5.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
       /* Young's modulus */
       double E = 1.0;
       /* Poisson's ratio */
-      double nu = 0.48;
+      double nu = 0.4;
 
       double lambda = E*nu/(1.0 + nu)/(1.0 - 2.0*nu);
       double mu = E/2.0/(1.0 + nu);
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 
 
       /* Read the parameters for the linear solver from an XML file */
-      ParameterXMLFileReader reader("../../../etc/SolverParameters/amesos.xml");
+      ParameterXMLFileReader reader("../../../etc/SolverParameters/aztec-ifpack.xml");
       ParameterList solverParams = reader.getParameters();
 
       LinearSolver<double> solver 

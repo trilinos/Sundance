@@ -128,11 +128,11 @@ int main(int argc, char *argv[])
       double tol = 1.0e-10;
       if (err > tol)
         {
-          cout << "Poisson solve test FAILED" << endl;
+          cout << "User-defined preconditioner test FAILED" << endl;
         }
       else
         {
-          cout << "Poisson solve test PASSED" << endl;
+          cout << "User-defined preconditioner test PASSED" << endl;
         }
     }
   catch(std::exception& e)

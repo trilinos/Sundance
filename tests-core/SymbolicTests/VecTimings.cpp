@@ -77,6 +77,55 @@ double rawOps(const Array<Vec>& vecs, int nTrials, double alpha, double beta,
   return t.totalElapsedTime() - t0;
 }
 
+double blockOps(const Array<Vec>& vecs, int nTrials, 
+		  double alpha, double beta, 
+		  double gamma)
+{
+  int n = vecs[0]->length();
+  Array<double> data(4*n);
+  for (int i=0; i<4; i++)
+    {
+      for (int j=0; j<n; j++)
+	{
+	  data[j*4+i] = vecs[i]->start()[j];
+	}
+    }
+  
+  Time t("block");
+  double t0 = t.totalElapsedTime();
+  t.start();
+
+  for (int m=0; m<nTrials; m++)
+    {
+      for (int i=0; i<n; i++)
+        {
+	  double* p = &(data[4*i]);
+	  double& a = p[0];
+	  const double& b = p[1];
+	  const double& c = p[2];
+	  const double& d = p[3];
+          a = alpha*b + beta*c*d;
+          a = b*a + gamma*c*d;
+          a = b*a;
+          a = alpha*a + beta*c;
+          a = alpha*b + beta*c*d;
+          a = b*a + gamma*c*d;
+          a = b*a;
+          a = alpha*a + beta*c;
+          a = alpha*b + beta*c*d;
+          a = b*a + gamma*c*d;
+          a = b*a;
+          a = alpha*a + beta*c;
+          a = alpha*b + beta*c*d;
+          a = b*a + gamma*c*d;
+          a = b*a;
+          a = alpha*a + beta*c;
+        }
+    }
+  t.stop();
+  return t.totalElapsedTime() - t0;
+}
+
 double funcOps(const Array<Vec>& vecs, int nTrials, double alpha, double beta, 
                double gamma)
 {
@@ -201,7 +250,7 @@ int main(int argc, char** argv)
       EvalVector::shadowOps() = false;
       Array<string> failures;
       
-      int nSamples = 50000;
+      int nSamples = 5000;
 
       for (int n=1; n<32768; n*=2)
         {
@@ -222,34 +271,44 @@ int main(int argc, char** argv)
 
           Array<double> tRaw(nSamples);
           Array<double> tFunc(nSamples);
+          Array<double> tBlock(nSamples);
           Array<double> r(nSamples);
 
           double tRawMean = 0.0;
           double tFuncMean = 0.0;
+          double tBlockMean = 0.0;
 
           for (int i=0; i<nSamples; i++)
             {
               tRaw[i] = rawOps(vecs, nTests, alpha, beta, gamma);
               tFunc[i] = funcOps(vecs, nTests, alpha, beta, gamma);
+              tBlock[i] = blockOps(vecs, nTests, alpha, beta, gamma);
               tRawMean += tRaw[i];
               tFuncMean += tFunc[i];
+              tBlockMean += tBlock[i];
             }
 
           tRawMean /= ((double) nSamples);
           tFuncMean /= ((double) nSamples);
+          tBlockMean /= ((double) nSamples);
 
           double varRaw = 0.0;
           double varFunc = 0.0;
+          double varBlock = 0.0;
           for (int i=0; i<nSamples; i++)
             {
               varRaw += pow(tRaw[i] - tRawMean, 2.0);
               varFunc += pow(tFunc[i] - tFuncMean, 2.0);
+              varBlock += pow(tBlock[i] - tFuncMean, 2.0);
             }
 
-          double rms = sqrt((varRaw + varFunc)/((double) nSamples))/tRawMean;
-          double ratio = tFuncMean/tRawMean;
+          double rms1 = sqrt((varRaw + varFunc)/((double) nSamples))/tRawMean;
+          double rms2 = sqrt((varRaw + varBlock)/((double) nSamples))/tRawMean;
+          double ratio1 = tFuncMean/tRawMean;
+          double ratio2 = tBlockMean/tRawMean;
 
-          cerr << n << "    " << ratio << "       " << rms << endl;
+          cerr << n << "\t  " << ratio1 << "\t  " << rms1 << "\t  "
+	       << ratio2 << "\t  " << rms2 << endl;
         }
       TimeMonitor::summarize();
     }

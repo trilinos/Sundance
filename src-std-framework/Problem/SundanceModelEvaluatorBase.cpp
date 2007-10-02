@@ -62,7 +62,7 @@ ModelEvaluatorBase::InArgs<double> SundanceModelEvaluator::createInArgs() const
 
 
 
-ModelEvaluatorBase::OutArgs<double> SundanceModelEvaluator::createOutArgs() const
+ModelEvaluatorBase::OutArgs<double> SundanceModelEvaluator::createOutArgsImpl() const
 {
   ModelEvaluatorBase::OutArgsSetup<double> outArgs;
 
@@ -115,7 +115,7 @@ SundanceModelEvaluator::getNominalValues() const
 }
 
 void SundanceModelEvaluator
-::evalModel(const ModelEvaluatorBase::InArgs<double>& inArgs,
+::evalModelImpl(const ModelEvaluatorBase::InArgs<double>& inArgs,
             const ModelEvaluatorBase::OutArgs<double>& outArgs) const
 {
   Tabs tabs;
