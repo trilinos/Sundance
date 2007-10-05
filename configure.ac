@@ -155,18 +155,27 @@ AC_MSG_RESULT([${TRILINOS_DIR}])
 ]
 )
 
-AC_ARG_WITH(trilinos-devel,
-AC_HELP_STRING([--with-trilinos-devel],[whether to use development version of Trilinos]),
-[
-AC_MSG_CHECKING(Whether to use development version of Trilinos)
-AC_MSG_RESULT([yes])
-],
-[
-AC_MSG_CHECKING(Whether to use development version of Trilinos)
-AC_MSG_RESULT([no])
-AC_DEFINE(TRILINOS_8,,[define if we are using Trilinos 8.0.x])
-]
-)
+AC_ARG_WITH(trilinos_version,
+AC_HELP_STRING([--with-trilinos_version],[Which version of Trilinos to link against]),
+ac_cv_use_trilinos_version=$withval, ac_cv_use_trilinos_version=8)
+
+AC_MSG_CHECKING(which version of Trilinos to link against)
+
+if test "X$ac_cv_use_trilinos_version" = "Xdev"; then
+  AC_DEFINE(TRILINOS_DEV,,[define if we are using the development version of Trilinos])
+  AC_MSG_RESULT($ac_cv_use_trilinos_version)
+else if test "X$ac_cv_use_trilinos_version" = "X7"; then
+  AC_DEFINE(TRILINOS_7,,[define if we are using Trilinos 7.0.x])
+  AC_MSG_RESULT($ac_cv_use_trilinos_version)
+else 
+  AC_DEFINE(TRILINOS_8,,[define if we are using Trilinos 8.0.x])
+  if test "X$ac_cv_use_trilinos_version" = "X8"; then
+    AC_MSG_RESULT($ac_cv_use_trilinos_version)
+  else
+    AC_MSG_RESULT(unknown or no version specified.  Defaulting to Trilinos 8)
+  fi
+fi
+fi
 
 # ------------------------------------------------------------------------
 # Check for FIAT
