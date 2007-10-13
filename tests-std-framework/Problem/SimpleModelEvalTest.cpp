@@ -37,7 +37,7 @@
 
 int main()
 {
-  std::cout << "moocho not present: test INACTIVE" << endl;
+  std::cout << "moocho not present: test INACTIVE" << std::endl;
 }
 
 #else

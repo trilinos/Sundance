@@ -1394,7 +1394,7 @@ Optional Packages:
                           Chaco libraries ["-lchaco"]
   --with-chaco-libdir=DIR Chaco library directory. Do not use -L
   --with-trilinos         root directory of Trilinos installation
-  --with-trilinos-devel   whether to use development version of Trilinos
+  --with-trilinos_version Which version of Trilinos to link against
   --with-fiat=FIAT_BUILD_DIR
                           use FIAT build directory (enables FIAT)
   --with-moocho           whether to use MOOCHO
@@ -5057,29 +5057,48 @@ fi
 
 
 
-# Check whether --with-trilinos-devel was given.
-if test "${with_trilinos_devel+set}" = set; then
-  withval=$with_trilinos_devel;
-{ echo "$as_me:$LINENO: checking Whether to use development version of Trilinos" >&5
-echo $ECHO_N "checking Whether to use development version of Trilinos... $ECHO_C" >&6; }
-{ echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-
+# Check whether --with-trilinos_version was given.
+if test "${with_trilinos_version+set}" = set; then
+  withval=$with_trilinos_version; ac_cv_use_trilinos_version=$withval
 else
+  ac_cv_use_trilinos_version=8
+fi
 
-{ echo "$as_me:$LINENO: checking Whether to use development version of Trilinos" >&5
-echo $ECHO_N "checking Whether to use development version of Trilinos... $ECHO_C" >&6; }
-{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
+
+{ echo "$as_me:$LINENO: checking which version of Trilinos to link against" >&5
+echo $ECHO_N "checking which version of Trilinos to link against... $ECHO_C" >&6; }
+
+if test "X$ac_cv_use_trilinos_version" = "Xdev"; then
+
+cat >>confdefs.h <<\_ACEOF
+#define TRILINOS_DEV
+_ACEOF
+
+  { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
+echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
+else if test "X$ac_cv_use_trilinos_version" = "X7"; then
+
+cat >>confdefs.h <<\_ACEOF
+#define TRILINOS_7
+_ACEOF
+
+  { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
+echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
+else
 
 cat >>confdefs.h <<\_ACEOF
 #define TRILINOS_8
 _ACEOF
 
-
-
+  if test "X$ac_cv_use_trilinos_version" = "X8"; then
+    { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
+echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
+  else
+    { echo "$as_me:$LINENO: result: unknown or no version specified.  Defaulting to Trilinos 8" >&5
+echo "${ECHO_T}unknown or no version specified.  Defaulting to Trilinos 8" >&6; }
+  fi
 fi
-
+fi
 
 # ------------------------------------------------------------------------
 # Check for FIAT
