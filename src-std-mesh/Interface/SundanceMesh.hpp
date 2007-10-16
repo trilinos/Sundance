@@ -322,6 +322,12 @@ using namespace SundanceUtils;
       {return ptr()->getAllLabelsForDimension(cellDim);}
 
     /** 
+     * Return the number of labels associated with the given dimension.
+     */
+    virtual int numLabels(int cellDim) const 
+      {return getAllLabelsForDimension(cellDim).size();}
+
+    /** 
      * Get the cells associated with a specified label. The array 
      * cellLID will be filled with those cells of dimension cellDim
      * having the given label.

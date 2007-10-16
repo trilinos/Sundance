@@ -7,7 +7,6 @@ PySundanceCellPredicate::PySundanceCellPredicate(PyObject* functor)
   : py_functor_(functor), evalOpCallback_(), descrCallback_()
 
 {
-  cerr << "creating functor object" << endl;
   // Increment the reference count
   Py_XINCREF(py_functor_);
 
@@ -32,7 +31,6 @@ PySundanceCellPredicate::PySundanceCellPredicate(PyObject* functor)
     {
       setDescr(PyObject_GetAttrString(py_functor_, "description"));
     }
-  cerr << "done creating functor object" << endl;
 }
 
 PySundanceCellPredicate::~PySundanceCellPredicate() {
@@ -77,12 +75,10 @@ bool PySundanceCellPredicate::operator()(const Point& x) const
 
 string PySundanceCellPredicate::description() const 
 {
-  cerr << "doing Py descr" << endl;
   PyObject* result = 0 ;
 
   if (descrCallback_.get() != 0)
     {
-      cerr << "doing Py callback" << endl;
       PyObject* arglist;
       
       arglist = Py_BuildValue("()");

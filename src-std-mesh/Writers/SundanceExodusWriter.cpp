@@ -50,10 +50,10 @@ using namespace TSFExtended;
 void ExodusWriter::write() const 
 {
 #ifdef HAVE_EXODUS
-  int exoid = ex_create(filename().c_str(), EX_CLOBBER, sizeof(double),
-    sizeof(double));
+  int ws = 8;
+  int exoid = ex_create(filename().c_str(), EX_CLOBBER, &ws, &ws);
 
-  TEST_FOR_EXCEPTION(ierr < 0, RuntimeError, "failure to create file "
+  TEST_FOR_EXCEPTION(exoid < 0, RuntimeError, "failure to create file "
     << filename());
 
   writeMesh(exoid);
@@ -82,7 +82,7 @@ void ExodusWriter::writeMesh(int exoid) const
 
   ierr = ex_put_init(
     exoid, 
-    title, 
+    filename().c_str(), 
     dim,
     mesh().numCells(0), 
     nElems,
@@ -95,7 +95,7 @@ void ExodusWriter::writeMesh(int exoid) const
   qa_record[0][0] = "Sundance";
   qa_record[0][1] = "sundance";
   qa_record[0][2] = "date";
-  qa_record[0][2] = "time";
+  qa_record[0][3] = "time";
 
   ierr = ex_put_qa(exoid, 1, qa_record);
 
@@ -114,37 +114,37 @@ void ExodusWriter::writeMesh(int exoid) const
 
   if (dim==2)
   {
-    ierr = ex_put_coords(exoid, &(x[0]), &(y[0]), (void*) 0);
+    ierr = ex_put_coord(exoid, &(x[0]), &(y[0]), (void*) 0);
   }
   else
   {
-    ierr = ex_put_coords(exoid, &(x[0]), &(y[0]), &(z[0]));
+    ierr = ex_put_coord(exoid, &(x[0]), &(y[0]), &(z[0]));
   }
 
   if (dim==2)
   {
-    char** coordNames[2];
+    char* coordNames[2];
     coordNames[0] = "x";
     coordNames[1] = "y";
-    ierr = ex_put_coord_names(exiod, coordNames);
+    ierr = ex_put_coord_names(exoid, coordNames);
   }
   else
   {
-    char** coordNames[3];
+    char* coordNames[3];
     coordNames[0] = "x";
     coordNames[1] = "y";
     coordNames[2] = "z";
-    ierr = ex_put_coord_names(exiod, coordNames);
+    ierr = ex_put_coord_names(exoid, coordNames);
   }
 
 
   /* write the element blocks */
-  int nBlocks = mesh().numLabels(dim);
-
-  Array<int> blockLabels = mesh().getLabels(dim);
-  int nElemNodes = dim+1;
+  Array<int> blockLabels = mesh().getAllLabelsForDimension(dim).elements();
+  int nodesPerElem = dim+1;
+  std::string eType = elemType(mesh().cellType(dim));
   for (unsigned int b=0; b<blockLabels.size(); b++)
   {
+    int numBlockAttr = 0;
     Array<int> blockElemLIDs;
     Array<int> nodeLIDs;
     Array<int> orient;
@@ -152,8 +152,8 @@ void ExodusWriter::writeMesh(int exoid) const
     int numElemsThisBlock = blockElemLIDs.size();
     mesh().getFacetLIDs(dim, blockElemLIDs, 0, nodeLIDs, orient);
     ierr = ex_put_elem_block(
-      exoid, blockLabels[b], elemType.cStr(), 
-      numElemsThisBlock, nodePerElem, numBlockAttr
+      exoid, blockLabels[b], eType.c_str(), 
+      numElemsThisBlock, nodesPerElem, numBlockAttr
       );
 
     ierr = ex_put_elem_conn(exoid, blockLabels[b], &(nodeLIDs[0]));
@@ -161,8 +161,7 @@ void ExodusWriter::writeMesh(int exoid) const
 
   
   /* write the side sets */
-  int nSideSets = mesh().numLabels(dim-1);
-  Array<int> ssLabels = mesh().getLabels(dim-1);
+  Array<int> ssLabels = mesh().getAllLabelsForDimension(dim-1).elements();
 
   for (unsigned int ss=0; ss<ssLabels.size(); ss++)
   {
@@ -175,18 +174,17 @@ void ExodusWriter::writeMesh(int exoid) const
     int numSides = sideLIDs.size();
     int numDists = 0;
 
-    ierr = ex_put_side_set_params(exoid, ssLabels[ss], numSides, numDists);
+    ierr = ex_put_side_set_param(exoid, ssLabels[ss], numSides, numDists);
     
     mesh().getMaxCofacetLIDs(dim-1, sideLIDs, elemLIDs, facets);
 
-    ierr = ex_put_side_set(exoid, ssLabels[ss], &(elemLIDs[0]) &(facets[0]));
+    ierr = ex_put_side_set(exoid, ssLabels[ss], &(elemLIDs[0]), &(facets[0]));
   }
 
 
   
   /* write the node sets */
-  int nNodeSets = mesh().numLabels(0);
-  Array<int> nsLabels = mesh().getLabels(0);
+  Array<int> nsLabels = mesh().getAllLabelsForDimension(0).elements();
 
   for (unsigned int ns=0; ns<nsLabels.size(); ns++)
   {
@@ -197,12 +195,28 @@ void ExodusWriter::writeMesh(int exoid) const
     int numNodes = nodeLIDs.size();
     int numDists = 0;
 
-    ierr = ex_put_node_set_params(exoid, nsLabels[ns], numNodes, numDists);
+    ierr = ex_put_node_set_param(exoid, nsLabels[ns], numNodes, numDists);
     
     ierr = ex_put_node_set(exoid, nsLabels[ns], &(nodeLIDs[0]));
   }
 #else
   TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
 #endif
+}
+
+
+std::string ExodusWriter::elemType(const CellType& type) const
+{
+  switch(type)
+  {
+    case TriangleCell:
+      return "TRIANGLE";
+    case TetCell:
+      return "TETRA";
+    default:
+      TEST_FOR_EXCEPTION(true, RuntimeError, "cell type=" << type << " cannot be used as a "
+        "maximal-dimension cell in exodus");
+  }
+  return "NULL"; //-Wall
 }
 

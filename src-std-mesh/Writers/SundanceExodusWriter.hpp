@@ -34,6 +34,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceFieldWriterBase.hpp"
+#include "SundanceCellType.hpp"
 
 namespace SundanceStdMesh
 {
@@ -58,6 +59,8 @@ namespace SundanceStdMesh
 
 
   private:
+
+    std::string elemType(const CellType& type) const ;
 
     /** */
     void writeMesh(int exoID) const ;

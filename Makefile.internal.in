@@ -173,7 +173,7 @@ CORE_INCLUDES = $(CORE_INCLUDE_PATH)
 STD_MESH_LIB_PATH = \
 -L@abs_top_builddir@/src-std-mesh 
 
-@EXODUS_STR@EXODUS_LIBS= -lexoII -lnetcdf
+@EXODUS_STR@EXODUS_LIBS= -lexoIIv2c -lnetcdf
 
 STD_MESH_LIBS = $(STD_MESH_LIB_PATH) -lsundanceStdMesh $(EXODUS_LIBS)
 

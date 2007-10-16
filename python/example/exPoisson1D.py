@@ -72,7 +72,7 @@ def main():
 
   print "max err = ", error
 
-  tol = 1.0e-11
+  tol = 1.0e-10
   passFailTest(error, tol)
   
 # This is a standard Python construct.  Put the code to be executed in a

@@ -40,7 +40,7 @@ Teuchos::ParameterList dict2ParameterList(PyObject* obj)
         PyErr_SetString(PyExc_ValueError, "Dictionary keys must be strings");
         return List;
       }
-      string ParameterName = PyString_AsString(s);
+      std::string ParameterName = PyString_AsString(s);
 
       // now parse for the parameter value and type
       // This can be a "int", "double", "string", or a tuple
@@ -65,7 +65,7 @@ Teuchos::ParameterList dict2ParameterList(PyObject* obj)
         }
       else if (PyString_Check(t))
         {
-          string ParameterValue = PyString_AsString(t);
+          std::string ParameterValue = PyString_AsString(t);
           List.set(ParameterName, ParameterValue);
         }
       else if (PyTuple_Check(t))
@@ -75,8 +75,8 @@ Teuchos::ParameterList dict2ParameterList(PyObject* obj)
             PyErr_SetString(PyExc_ValueError, "tuples must contain strings");
             return List;
           }
-          string ParameterType = PyString_AsString(PyTuple_GetItem(t, 0));
-          string ParameterValue = PyString_AsString(PyTuple_GetItem(t, 1));
+          std::string ParameterType = PyString_AsString(PyTuple_GetItem(t, 0));
+          std::string ParameterValue = PyString_AsString(PyTuple_GetItem(t, 1));
           if (ParameterType == "bool")
             {
               if (ParameterValue == "true")
@@ -94,7 +94,7 @@ Teuchos::ParameterList dict2ParameterList(PyObject* obj)
             }
           else if (ParameterType == "string")
             {
-              List.set(ParameterName, string(ParameterValue));
+              List.set(ParameterName, std::string(ParameterValue));
             }
           else
             {

@@ -232,6 +232,8 @@ namespace SundanceStdMesh
       virtual void getLabels(int cellDim, const Array<int>& cellLID, 
                              Array<int>& labels) const ;
 
+      
+
       /** Get the list of all labels defined for cells of the given dimension */
       virtual Set<int> getAllLabelsForDimension(int cellDim) const ;
 

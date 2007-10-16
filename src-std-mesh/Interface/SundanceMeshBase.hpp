@@ -674,8 +674,6 @@ public:
    * having the given label.
    */
   virtual void getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const = 0 ;
-
-
   //@}
 
   /** \name Geometric Information */

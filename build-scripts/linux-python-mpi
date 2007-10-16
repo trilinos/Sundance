@@ -34,10 +34,10 @@
 BUILD_DIR=`pwd`
 
 # set this to the location of your Trilinos build
-TRILINOS_BUILD_DIR=$HOME/Software/Math/trilinos-7.0.3/LINUX-OPT
+TRILINOS_BUILD_DIR=$HOME/Software/Math/trilinos-8.0.2/LINUX-OPT
 
 ../configure --enable-mpi --with-mpi-compilers \
-CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops" \
+CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops -fPIC" \
 --with-trilinos=$TRILINOS_BUILD_DIR \
 --with-install="/usr/bin/install -c -p" \
 --enable-exodus \

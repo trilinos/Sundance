@@ -48,7 +48,7 @@ class MyBlockSolver :
     x.setBlock(0, x0)
     x.setBlock(1, x1)
 
-    return (x, state)
+    return x
 
 
 # ------------------------------------------------------------
@@ -86,8 +86,11 @@ def main():
 
   varBlock = BlockList(Block(du, vecType), Block(dv, vecType))
   unkBlock = BlockList(Block(u, vecType),  Block(v, vecType))
+
+  print 'setting up prob'
   prob = LinearProblem(mesh, eqn, bc, varBlock, unkBlock)
 
+  print 'setting up solver'
   solver = MyBlockSolver()
 
   soln = prob.solve(solver)
