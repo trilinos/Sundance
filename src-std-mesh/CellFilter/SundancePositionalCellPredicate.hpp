@@ -38,16 +38,21 @@
 
 namespace SundanceStdFwk
 {
-#define CELL_PREDICATE(name, code) \
-class name : public CellPredicateFunctorBase, \
-  public TSFExtended::Handleable<CellPredicateFunctorBase> \
-{ \
-public:\
-  name() : CellPredicateFunctorBase(#name){;}            \
-  virtual ~name(){;}\
-  virtual bool operator()(const Point& x) const code \
-  GET_RCP(CellPredicateFunctorBase);\
-};
+
+
+#define CELL_PREDICATE_(name, code) \
+  class name : public CellPredicateFunctorBase, \
+               public TSFExtended::Handleable<CellPredicateFunctorBase> \
+  { \
+  public:\
+    name() : CellPredicateFunctorBase(#name){;}            \
+      virtual ~name(){;}\
+      virtual bool operator()(const Point& x) const code \
+        GET_RCP(CellPredicateFunctorBase);\
+  }
+
+
+#define CELL_PREDICATE(name, code) CELL_PREDICATE_(name, code);
 
   using namespace SundanceUtils;
   using namespace SundanceStdMesh;

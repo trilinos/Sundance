@@ -30,6 +30,79 @@
 
 #include "Sundance.hpp"
 
+//
+// Send a TSFExtended::LinearOperator<double> to a file!
+//
+
+#include "EpetraExt_OperatorOut.h"
+#include "TSFEpetraMatrix.hpp"
+#include "Thyra_EpetraLinearOp.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+
+namespace {
+
+void printLinearOperatorType(
+  const TSFExtended::LinearOperator<double> &A,
+  std::ostream &out
+  )
+{
+  out
+    << "\nConcrete type of underlying LinearOperator is: "
+    << typeid(*A.ptr()).name() << "\n";
+}
+
+Teuchos::RefCountPtr<const Epetra_Operator>
+get_Epetra_Operator( const TSFExtended::LinearOperator<double> &A )
+{
+  // Dynamic cast to an interface where you can extract an Epetra_Operator
+  // view of the underlying linear operator.  Note that
+  // TSFExtended::EpetraMatrix derives from this interface when
+  // HAVE_THYRA_EPETRA is defined.  The actually matrix that
+  // TSFExtended::EpetraMatrix stores is an Epetra_CrsMatrix object so we
+  // actually loose information when we call this function.  However, a simple
+  // dynamic cast will get this back again.
+  Teuchos::RefCountPtr<const Thyra::EpetraLinearOpBase>
+    teA = Teuchos::rcp_dynamic_cast<const Thyra::EpetraLinearOpBase>(
+      A.ptr(), true
+      );
+  Teuchos::RefCountPtr<const Epetra_Operator> epetraOp;
+  Thyra::ETransp epetraOpTransp;
+  Thyra::EApplyEpetraOpAs epetraOpApplyAs;
+  Thyra::EAdjointEpetraOp epetraOpAdjointSupport;
+  teA->getEpetraOpView(
+    &epetraOp, &epetraOpTransp, &epetraOpApplyAs, &epetraOpAdjointSupport );
+  // Note, above the last argument 
+  TEST_FOR_EXCEPT(is_null(epetraOp));
+  TEST_FOR_EXCEPT(epetraOpTransp != Thyra::NOTRANS);
+  TEST_FOR_EXCEPT(epetraOpApplyAs != Thyra::EPETRA_OP_APPLY_APPLY);
+  TEST_FOR_EXCEPT(epetraOpAdjointSupport != Thyra::EPETRA_OP_ADJOINT_SUPPORTED);
+  // If we get here
+  return epetraOp;
+}
+
+void writeLinearOperatorMatrixMarketFile(
+  const std::string &fileName,
+  const TSFExtended::LinearOperator<double> &A,
+  const std::string &matrixName = "",
+  const std::string &matrixDescription = "",
+  bool writeHeader = 0
+  )
+{
+  printLinearOperatorType(A,std::cout);
+  TEST_FOR_EXCEPT(0==fileName.length());
+  EpetraExt::OperatorToMatrixMarketFile(
+    fileName.c_str(),
+    *Teuchos::rcp_dynamic_cast<const Epetra_CrsMatrix>(
+      get_Epetra_Operator(A)
+      ),
+    matrixName.length() ? matrixName.c_str() : 0,
+    matrixDescription.length() ? matrixDescription.c_str() : 0,
+    writeHeader
+    );
+}
+
+} // namespace
+
 /** 
  * Solves the advection-diffusion equation in 2D, with a velocity
  * field computed from a potential flow model.
@@ -39,6 +112,8 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
+
+
 
 int main(int argc, char** argv)
 {
@@ -109,6 +184,13 @@ int main(int argc, char** argv)
 
       /* solve the problem */
       Expr u0 = flowProb.solve(solver);
+
+      /* Write the operator to a matrix market file */
+      writeLinearOperatorMatrixMarketFile(
+        "AdvectionDiffusion2D.mtx",flowProb.getOperator(),
+        "AdvectionDiffusion2D","Just to show how to do this"
+        ,true
+        );
 
       /* Now set up and solve the advection-diffusion equation for r */
       Expr r = new UnknownFunction(new Lagrange(order), "u");
