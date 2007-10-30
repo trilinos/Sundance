@@ -65,17 +65,17 @@ AM_CONFIG_HEADER(src-utils/SundanceConfig.h:src-utils/SundanceConfig.h.in)
 
 # Allow users to specify their own "install" command.  If none is specified,
 # the default is install-sh found in the config subdirectory.
-                                                                                
+									
 AC_ARG_WITH(install,
- [AC_HELP_STRING([--with-install=INSTALL_PROGRAM],
- [Use the installation program INSTALL_PROGRAM rather the default that is provided.  For example --with-install="/path/install -p"])],
- [
-   INSTALL=$withval
-   INSTALL_PROGRAM=$withval
-   INSTALL_SCRIPT=$withval
-   INSTALL_DATA="$withval -m 644"
- ],)
-             
+[AC_HELP_STRING([--with-install=INSTALL_PROGRAM],
+[Use the installation program INSTALL_PROGRAM rather the default that is provided.  For example --with-install="/path/install -p"])],
+[
+INSTALL=$withval
+INSTALL_PROGRAM=$withval
+INSTALL_SCRIPT=$withval
+INSTALL_DATA="$withval -m 644"
+],)
+     
 # AM_MAINTAINER_MODE turns off maintainer-only makefile targets by
 # default, and changes configure to understand a
 # --enable-maintainer-mode option. --enable-maintainer-mode turns the
@@ -162,18 +162,18 @@ ac_cv_use_trilinos_version=$withval, ac_cv_use_trilinos_version=8)
 AC_MSG_CHECKING(which version of Trilinos to link against)
 
 if test "X$ac_cv_use_trilinos_version" = "Xdev"; then
-  AC_DEFINE(TRILINOS_DEV,,[define if we are using the development version of Trilinos])
-  AC_MSG_RESULT($ac_cv_use_trilinos_version)
+AC_DEFINE(TRILINOS_DEV,,[define if we are using the development version of Trilinos])
+AC_MSG_RESULT($ac_cv_use_trilinos_version)
 else if test "X$ac_cv_use_trilinos_version" = "X7"; then
-  AC_DEFINE(TRILINOS_7,,[define if we are using Trilinos 7.0.x])
-  AC_MSG_RESULT($ac_cv_use_trilinos_version)
+AC_DEFINE(TRILINOS_7,,[define if we are using Trilinos 7.0.x])
+AC_MSG_RESULT($ac_cv_use_trilinos_version)
 else 
-  AC_DEFINE(TRILINOS_8,,[define if we are using Trilinos 8.0.x])
-  if test "X$ac_cv_use_trilinos_version" = "X8"; then
-    AC_MSG_RESULT($ac_cv_use_trilinos_version)
-  else
-    AC_MSG_RESULT(unknown or no version specified.  Defaulting to Trilinos 8)
-  fi
+AC_DEFINE(TRILINOS_8,,[define if we are using Trilinos 8.0.x])
+if test "X$ac_cv_use_trilinos_version" = "X8"; then
+AC_MSG_RESULT($ac_cv_use_trilinos_version)
+else
+AC_MSG_RESULT(unknown or no version specified.  Defaulting to Trilinos 8)
+fi
 fi
 fi
 
@@ -184,16 +184,16 @@ fi
 AC_ARG_WITH(fiat,
 [AC_HELP_STRING([--with-fiat=FIAT_BUILD_DIR],[use FIAT build directory (enables FIAT)])],
 [
-  FIAT_STR=""
-  FIAT_BUILD_DIR=${withval}
-  AC_DEFINE(HAVE_FIAT,,[define if we want to use FIAT])
-  AC_MSG_CHECKING(FIAT directory)
-  AC_MSG_RESULT([${FIAT_BUILD_DIR}])
+FIAT_STR=""
+FIAT_BUILD_DIR=${withval}
+AC_DEFINE(HAVE_FIAT,,[define if we want to use FIAT])
+AC_MSG_CHECKING(FIAT directory)
+AC_MSG_RESULT([${FIAT_BUILD_DIR}])
 ],
 [
-  FIAT_STR="#"
-  AC_MSG_CHECKING(FIAT directory)
-  AC_MSG_RESULT([no])
+FIAT_STR="#"
+AC_MSG_CHECKING(FIAT directory)
+AC_MSG_RESULT([no])
 ]
 )
 
@@ -204,13 +204,13 @@ AC_ARG_WITH(fiat,
 AC_ARG_WITH(moocho, 
 [AC_HELP_STRING([--with-moocho],[whether to use MOOCHO])],
 [
-  MOOCHO_STR=""
-  AC_DEFINE(HAVE_ENABLED_MOOCHO,,[define if we want to use MOOCHO])
-  AC_MSG_RESULT([yes])
+MOOCHO_STR=""
+AC_DEFINE(HAVE_ENABLED_MOOCHO,,[define if we want to use MOOCHO])
+AC_MSG_RESULT([yes])
 ],
 [
-  MOOCHO_STR="#"
-  AC_MSG_RESULT([no])
+MOOCHO_STR="#"
+AC_MSG_RESULT([no])
 ]
 )
 
@@ -221,16 +221,16 @@ AC_ARG_WITH(moocho,
 AC_ARG_WITH(sundials,
 [AC_HELP_STRING([--with-sundials=SUNDIALS_BUILD_DIR],[use SUNDIALS build directory (enables SUNDIALS)])],
 [
-  SUNDIALS_STR=""
-  SUNDIALS_BUILD_DIR=${withval}
-  AC_DEFINE(HAVE_SUNDIALS,,[define if we want to use SUNDIALS])
-  AC_MSG_CHECKING(SUNDIALS directory)
-  AC_MSG_RESULT([${SUNDIALS_BUILD_DIR}])
+SUNDIALS_STR=""
+SUNDIALS_BUILD_DIR=${withval}
+AC_DEFINE(HAVE_SUNDIALS,,[define if we want to use SUNDIALS])
+AC_MSG_CHECKING(SUNDIALS directory)
+AC_MSG_RESULT([${SUNDIALS_BUILD_DIR}])
 ],
 [
-  SUNDIALS_STR="#"
-  AC_MSG_CHECKING(SUNDIALS directory)
-  AC_MSG_RESULT([no])
+SUNDIALS_STR="#"
+AC_MSG_CHECKING(SUNDIALS directory)
+AC_MSG_RESULT([no])
 ]
 )
 
@@ -241,15 +241,15 @@ AC_ARG_WITH(sundials,
 AC_ARG_ENABLE(exodus,
 [AC_HELP_STRING([--enable-exodus],[use Exodus (enables Exodus)])],
 [
-  EXODUS_STR=""
-  AC_DEFINE(HAVE_EXODUS,,[define if we want to use EXODUS])
-  AC_MSG_CHECKING(have EXODUS)
-  AC_MSG_RESULT([yes])
+EXODUS_STR=""
+AC_DEFINE(HAVE_EXODUS,,[define if we want to use EXODUS])
+AC_MSG_CHECKING(have EXODUS)
+AC_MSG_RESULT([yes])
 ],
 [
-  EXODUS_STR="#"
-  AC_MSG_CHECKING(have EXODUS)
-  AC_MSG_RESULT([no])
+EXODUS_STR="#"
+AC_MSG_CHECKING(have EXODUS)
+AC_MSG_RESULT([no])
 ]
 )
 
@@ -260,8 +260,8 @@ AC_ARG_ENABLE(exodus,
 
 AC_MSG_CHECKING([finding build directory])
 if test "X" = "X"; then
-  SUNDANCE_BUILD_DIRECTORY=`pwd`
-  AC_MSG_RESULT($SUNDANCE_BUILD_DIRECTORY)
+SUNDANCE_BUILD_DIRECTORY=`pwd`
+AC_MSG_RESULT($SUNDANCE_BUILD_DIRECTORY)
 fi
 
 # ------------------------------------------------------------------------
@@ -318,30 +318,30 @@ AC_SUBST(EXODUS_STR)
 # ------------------------------------------------------------------------
 
 AC_CONFIG_FILES([
-  Makefile  
-  Makefile.internal
-  Makefile.export
-  Makefile.export.TSFExtended
-  Makefile.site.sundance
-  examples-tutorial/Makefile
-  examples-tutorial/c++/Makefile
-  examples-tutorial/python/Makefile
-  src-utils/Makefile
-  src-interop/Makefile
-  src-core/Makefile
-  src-std-mesh/Makefile
-  src-std-framework/Makefile
-  src-solvers/Makefile
-  src-solvers/SundanceDefaultPath.hpp
-  src-xml/Makefile
-  python/Makefile
-  python/src/Makefile
-  python/src/SUNDANCE_HOME_DIR
-  python/src/__init__.py
-	python/src/.deps/dummy
-  python/example/Makefile
-  tests-utils/Makefile
-  tests-utils/Combinatorics/Makefile
+Makefile  
+Makefile.internal
+Makefile.export
+Makefile.export.TSFExtended
+Makefile.site.sundance
+examples-tutorial/Makefile
+examples-tutorial/c++/Makefile
+examples-tutorial/python/Makefile
+src-utils/Makefile
+src-interop/Makefile
+src-core/Makefile
+src-std-mesh/Makefile
+src-std-framework/Makefile
+src-solvers/Makefile
+src-solvers/SundanceDefaultPath.hpp
+src-xml/Makefile
+python/Makefile
+python/src/Makefile
+python/src/SUNDANCE_HOME_DIR
+python/src/__init__.py
+python/src/.deps/dummy
+python/example/Makefile
+tests-utils/Makefile
+tests-utils/Combinatorics/Makefile
   tests-utils/Functors/Makefile
   tests-utils/Maps/Makefile
   tests-core/Makefile
