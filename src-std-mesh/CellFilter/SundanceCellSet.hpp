@@ -75,6 +75,9 @@ using namespace SundanceStdMesh::Internal;
       /** The mesh in which these cells exist */
       const Mesh& mesh() const {return ptr()->mesh();}
 
+      /** Indicate whether the cells in this set are null cells */
+      bool isNull() const {return ptr().get()==0 || ptr()->dimension() < 0;}
+
       /** The dimension of the cells contained in this set */
       int dimension() const {return ptr()->dimension();}
 

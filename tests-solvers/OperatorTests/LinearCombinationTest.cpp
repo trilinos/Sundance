@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
       VectorType<double> type = new EpetraVectorType();
 
-      int nLocalRows = 1;
+      int nLocalRows = 10;
       
       double onProcDensity = 0.5;
       double offProcDensity = 0.1;

@@ -44,12 +44,10 @@
 
 int main(int argc, char** argv)
 {
-  
   try
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-
       EquationSet::classVerbosity() = VerbExtreme;
 
       /* We will do our linear algebra using Epetra */
@@ -78,11 +76,13 @@ int main(int argc, char** argv)
       /* Create the stochastic input function. */
       Expr a0 = new SundanceCore::Parameter(1.0);
       Expr a1 = new SundanceCore::Parameter(0.1);
-      Expr a2 = new SundanceCore::Parameter(0.0);
+      Expr a2 = new SundanceCore::Parameter(0.01);
       Expr alpha = new SpectralExpr(sbasis, tuple(a0, a1, a2));
 
       /* Create a discrete space, and discretize the function 1.0 on it */
+      cout << "forming discrete space" << endl;
       DiscreteSpace discSpace(mesh, new Lagrange(1), sbasis, vecType);
+      cout << "forming discrete func" << endl;
       Expr u0 = new DiscreteFunction(discSpace, 0.5, "u0");
 
       /* We need a quadrature rule for doing the integrations */
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
         {
           cout << "u[" << k << "] = " << vec[i] << endl;
         }
-      
+
       double tol = 1.0e-12;
       double errorSq = 0.0;
       Sundance::passFailTest(errorSq, tol);

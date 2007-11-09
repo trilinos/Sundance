@@ -30,9 +30,9 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest UserDefPrecondTest
+PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest 
 
-SERIAL_SRC =
+SERIAL_SRC =UserDefPrecondTest
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 

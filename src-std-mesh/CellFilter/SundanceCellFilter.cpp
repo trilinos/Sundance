@@ -60,7 +60,7 @@ void CellFilter::setName(const string& name)
 
 CellSet CellFilter::getCells(const Mesh& mesh) const
 {
-  if (isNullCellFilter())
+  if (isNull() || isNullCellFilter())
     {
       return new ExplicitCellSet(mesh, -1, 
                                  NullCell);

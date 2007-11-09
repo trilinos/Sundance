@@ -592,6 +592,7 @@ Set<CellFilter> DOFMapBuilder
     }
   CellSet allMax = m.getCells(mesh);
   CellSet myMax = myMaxFilters.getCells(mesh);
+
   CellSet diff = allMax.setDifference(myMax);
   /* if the difference between the collected max cell set and the known
    * set of all max cells is empty, then we're done */

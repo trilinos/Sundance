@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceListExpr.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -36,6 +37,12 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
+static Time& appendToListTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("append to list"); 
+  return *rtn;
+}
 
 ListExpr::ListExpr()
   : ExprBase(), elements_()
@@ -47,6 +54,7 @@ ListExpr::ListExpr(const Array<Expr>& elements)
 
 void ListExpr::append(const Expr& expr)
 {
+  TimeMonitor timer(appendToListTimer());
   elements_.append(expr);
 }
 

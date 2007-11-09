@@ -186,11 +186,11 @@ int main(int argc, char** argv)
       Expr u0 = flowProb.solve(solver);
 
       /* Write the operator to a matrix market file */
-      writeLinearOperatorMatrixMarketFile(
-        "AdvectionDiffusion2D.mtx",flowProb.getOperator(),
-        "AdvectionDiffusion2D","Just to show how to do this"
-        ,true
-        );
+// writeLinearOperatorMatrixMarketFile(
+      //      "AdvectionDiffusion2D.mtx",flowProb.getOperator(),
+      //"AdvectionDiffusion2D","Just to show how to do this"
+      // ,true
+      // );
 
       /* Now set up and solve the advection-diffusion equation for r */
       Expr r = new UnknownFunction(new Lagrange(order), "u");

@@ -85,10 +85,12 @@ TestFunctionStub::TestFunctionStub(const string& name,
     {
       string componentSuffix;
       if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
-      string suffix = funcSuffix + componentSuffix;
+
       Array<Expr> coeffs(sbasis.nterms());
       for (int n=0; n<sbasis.nterms(); n++, count++)
       {
+        if (sbasis.nterms()>1) componentSuffix = "[" + Teuchos::toString(n) + "]";
+      string suffix = funcSuffix + componentSuffix;
         coeffs[n] = new TestFuncElement(data, name, suffix, cfid[n], count);
       }
       append(new SpectralExpr(sbasis, coeffs));

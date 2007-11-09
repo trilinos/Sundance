@@ -89,6 +89,9 @@ UnknownFunctionStub::UnknownFunctionStub(const string& name,
       Array<Expr> coeffs(sbasis.nterms());
       for (int n=0; n<sbasis.nterms(); n++, count++)
       {
+
+        if (sbasis.nterms()>1) componentSuffix = "[" + Teuchos::toString(n) + "]";
+        string suffix = funcSuffix + componentSuffix;
         coeffs[n] = new UnknownFuncElement(data, name, suffix, cfid[n], count);
       }
       append(new SpectralExpr(sbasis, coeffs));

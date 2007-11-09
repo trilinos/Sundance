@@ -47,6 +47,7 @@
 #include "SundanceSumOfBCs.hpp"
 #include "SundanceNullCellFilterStub.hpp"
 #include "SundanceOut.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -54,12 +55,76 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace SundanceCore::Internal;
 
+static Time& polysumTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("IdentifyPolynomialSum"); 
+  return *rtn;
+}
+static Time& reorderSumTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("ReorderSum"); 
+  return *rtn;
+}
+
+static Time& removeUnaryMinusTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("RemoveUnaryMinusFromSum"); 
+  return *rtn;
+}
+
+static Time& removeZeroTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("RemoveZeroFromSum"); 
+  return *rtn;
+}
+
+static Time& sumConstantsTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("SumConstants"); 
+  return *rtn;
+}
+
+static Time& moveConstantsTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("MoveConstantsToLeftOfSum"); 
+  return *rtn;
+}
+
+static Time& rearrangeRightSumWithConstantTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("RearrangeRightSumWithConstant"); 
+  return *rtn;
+}
+
+static Time& rearrangeLeftSumWithConstantTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("RearrangeLeftSumWithConstant"); 
+  return *rtn;
+}
+
+static Time& sumIntegralsTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("SumIntegrals"); 
+  return *rtn;
+}
+
+
+
 
 StdSumTransformations::StdSumTransformations()
   : SumTransformationSequence()
 {
   append(rcp(new RemoveZeroFromSum()));
-  append(rcp(new RemoveUnaryMinusFromSum()));
+//  append(rcp(new RemoveUnaryMinusFromSum()));
   //  append(rcp(new ReorderSum()));
 
   append(rcp(new SumConstants()));
@@ -77,6 +142,7 @@ bool IdentifyPolynomialSum::doTransform(const RefCountPtr<ScalarExpr>& left,
                                         int sign, 
                                         RefCountPtr<ScalarExpr>& rtn) const
 {
+  TimeMonitor timer(polysumTimer());
   if (useOptimizedPolynomials())
     {
       /* see if this sum can be written as a polynomial in 
@@ -99,7 +165,7 @@ bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& left,
                              const RefCountPtr<ScalarExpr>& right,
                              int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
-
+  TimeMonitor timer(reorderSumTimer());
   /* first we check to see whether the terms are already in order.
    * The left and right trees are already ordered, so that if the
    * first term on the right is after the last term on the left, the
@@ -307,6 +373,7 @@ bool ReorderSum::doTransform(const RefCountPtr<ScalarExpr>& left,
 bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                     int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+  TimeMonitor timer(removeZeroTimer());
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying RemoveZeroFromSum");
 
@@ -345,6 +412,7 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
 bool MoveConstantsToLeftOfSum::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                       int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+  TimeMonitor timer(moveConstantsTimer());
 
   /* if the right operand is a constant, 
    * transform u +/- alpha --> +/- alpha + u */
@@ -369,6 +437,7 @@ bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
                                           int sign, 
                                           RefCountPtr<ScalarExpr>& rtn) const
 {
+  TimeMonitor timer(removeUnaryMinusTimer());
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying RemoveUnaryMinusFromSum");
 
@@ -428,6 +497,8 @@ bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
 bool SumConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCountPtr<ScalarExpr>& right,
                                int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+  
+  TimeMonitor timer(sumConstantsTimer());
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying SumConstants");
 
@@ -449,7 +520,7 @@ bool RearrangeRightSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& l
                                                 const RefCountPtr<ScalarExpr>& right,
                                                 int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
-
+  TimeMonitor timer(rearrangeRightSumWithConstantTimer());
   const SumExpr* sRight = dynamic_cast<const SumExpr*>(right.get());
 
   if (sRight != 0)
@@ -516,7 +587,7 @@ bool RearrangeLeftSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& le
                                                 const RefCountPtr<ScalarExpr>& right,
                                                 int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
-
+  TimeMonitor timer(rearrangeLeftSumWithConstantTimer());
   const SumExpr* sLeft = dynamic_cast<const SumExpr*>(left.get());
 
   if (sLeft != 0 && !left->isConstant())
@@ -585,6 +656,7 @@ bool SumIntegrals::doTransform(const RefCountPtr<ScalarExpr>& left,
                                const RefCountPtr<ScalarExpr>& right,
                                int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
+  TimeMonitor timer(sumIntegralsTimer());
   SUNDANCE_OUT(this->verbosity() > VerbLow, 
                "trying SumIntegrals");
 
@@ -667,5 +739,6 @@ bool SumIntegrals::doTransform(const RefCountPtr<ScalarExpr>& left,
     {
       return false;
     }
-  
+  TEST_FOR_EXCEPTION(true, InternalError, "this should not happen");
+  return false; // -Wall;
 }

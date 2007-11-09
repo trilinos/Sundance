@@ -94,7 +94,14 @@ int main(int argc, char *argv[])
       if (myRank==0) x.setElement(0, 0);
       if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
 #endif
+
+      cout << "x=" << endl;
+      x.print(cout);
+      
       Vector<double> y = A*x;
+      cout << "y=" << endl;
+      y.print(cout);
+
       Vector<double> ans = A.range().createMember();
 
       LinearSolver<double> innerSolver 

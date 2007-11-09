@@ -50,12 +50,64 @@
 #include "SundanceParameter.hpp"
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace Teuchos;
 using namespace SundanceCore::Internal;
+
+static Time& sumTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("symbolic sum"); 
+  return *rtn;
+}
+
+static Time& unaryMinusTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("symbolic unary minus"); 
+  return *rtn;
+}
+
+static Time& trySumSpectralTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("test for spectral sum"); 
+  return *rtn;
+}
+static Time& tryMultiplySpectralTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("test for spectral product"); 
+  return *rtn;
+}
+
+static Time& trySumComplexTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("test for complex sum"); 
+  return *rtn;
+}
+
+static Time& tryMultiplyComplexTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("test for complex product"); 
+  return *rtn;
+}
+
+
+
+static Time& prodTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("symbolic product"); 
+  return *rtn;
+}
+
 
 Expr::Expr(const double& c)
 	: TSFExtended::Handle<ExprBase>(new ConstantExpr(c))
@@ -191,6 +243,7 @@ SundanceUtils::Map<Expr, int> Expr::getSumTree() const
 bool Expr::tryAddComplex(const Expr& L, const Expr& R, int sign,
                          Expr& rtn) const
 {
+  TimeMonitor t(trySumComplexTimer());
   TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
                      "non-scalar exprs should have been reduced before "
                      "call to tryAddComplex(). Left=" << L << " right="
@@ -220,6 +273,7 @@ bool Expr::tryAddComplex(const Expr& L, const Expr& R, int sign,
 bool Expr::tryMultiplyComplex(const Expr& L, const Expr& R,
                               Expr& rtn) const
 {
+  TimeMonitor t(tryMultiplyComplexTimer());
   TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
                      "non-scalar exprs should have been reduced before "
                      "call to tryMultiplyComplex(). Left=" << L << " right="
@@ -248,6 +302,7 @@ bool Expr::tryMultiplyComplex(const Expr& L, const Expr& R,
 bool Expr::tryAddSpectral(const Expr& L, const Expr& R, int sign,
                           Expr& rtn) const
 {
+  TimeMonitor t(trySumSpectralTimer());
   TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
                      "non-scalar exprs should have been reduced before "
                      "call to tryAddSpectral(). Left=" << L << " right="
@@ -311,6 +366,7 @@ bool Expr::tryAddSpectral(const Expr& L, const Expr& R, int sign,
 bool Expr::tryMultiplySpectral(const Expr& L, const Expr& R, 
                                Expr& rtn) const
 {
+  TimeMonitor t(tryMultiplySpectralTimer());
   TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
                      "non-scalar exprs should have been reduced before "
                      "call to tryMultiplySpectral(). Left=" << L << " right="
@@ -402,10 +458,12 @@ bool Expr::tryMultiplySpectral(const Expr& L, const Expr& R,
 Expr Expr::operator+(const Expr& other) const 
 {
   TimeMonitor t(opTimer());
+  TimeMonitor ts(sumTimer());
 
   /* Thread addition over list elements */
   if (this->size()!=1 || other.size()!=1)
     {
+      TEUCHOS_FUNC_TIME_MONITOR("plus branch 1");
       Array<Expr> rtn(this->size());
       TEST_FOR_EXCEPTION(this->size() != other.size(), RuntimeError,
                          "mismatched list structures in operands L="
@@ -418,6 +476,7 @@ Expr Expr::operator+(const Expr& other) const
     }
   else
     {
+      TEUCHOS_FUNC_TIME_MONITOR("plus branch 2");
       Expr rtn;
       /* Try to thread addition over the coefficients of a spectral 
        * expansion */
@@ -432,10 +491,12 @@ Expr Expr::operator+(const Expr& other) const
 Expr Expr::operator-(const Expr& other) const 
 {
   TimeMonitor t(opTimer());
+  TimeMonitor ts(sumTimer());
 
   /* Thread subtraction over list elements */
   if (this->size()!=1 || other.size()!=1)
     {
+      TEUCHOS_FUNC_TIME_MONITOR("minus branch 1");
       Array<Expr> rtn(this->size());
       TEST_FOR_EXCEPTION(this->size() != other.size(), RuntimeError,
                          "mismatched list structures in operands L="
@@ -448,6 +509,7 @@ Expr Expr::operator-(const Expr& other) const
     }
   else
     {
+      TEUCHOS_FUNC_TIME_MONITOR("minus branch 2");
       Expr rtn;
       /* Try to thread subtraction over the coefficients of a spectral 
        * expansion */
@@ -462,6 +524,7 @@ Expr Expr::operator-(const Expr& other) const
 
 Expr Expr::sum(const Expr& other, int sign) const 
 {
+  TEUCHOS_FUNC_TIME_MONITOR("Expr::sum()");
   RefCountPtr<ScalarExpr> rtn;
   RefCountPtr<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
   RefCountPtr<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
@@ -500,6 +563,7 @@ Expr Expr::sum(const Expr& other, int sign) const
 Expr Expr::operator*(const Expr& other) const 
 {
   TimeMonitor t(opTimer());
+  TimeMonitor tp(prodTimer());
   Tabs tab1;
 
   /* if both operands are simple scalars, multiply them */
@@ -628,6 +692,7 @@ Expr Expr::multiply(const Expr& other) const
 Expr Expr::operator-() const 
 {
   TimeMonitor t(opTimer());
+  TimeMonitor t1(unaryMinusTimer());
   Tabs tabs;
 
   if (this->isComplex())

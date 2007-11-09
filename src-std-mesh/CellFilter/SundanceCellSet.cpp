@@ -51,7 +51,9 @@ CellSet::CellSet(const Mesh& mesh, int cellDim,
 
 CellSet CellSet::setUnion(const CellSet& other) const
 {
-  if (ptr().get()==0) return other;
+  if (isNull()) return other;
+  if (other.isNull()) return *this;
+
   ExplicitCellSet* rtn = new ExplicitCellSet(mesh(), dimension(), cellType());
 
   checkCompatibility("union", other);
@@ -66,6 +68,9 @@ CellSet CellSet::setUnion(const CellSet& other) const
 
 CellSet CellSet::setIntersection(const CellSet& other) const
 {
+  if (isNull()) return *this;
+  if (other.isNull()) return other;
+
   ExplicitCellSet* rtn = new ExplicitCellSet(mesh(), dimension(), cellType());
 
   checkCompatibility("intersection", other);
@@ -80,6 +85,9 @@ CellSet CellSet::setIntersection(const CellSet& other) const
 
 CellSet CellSet::setDifference(const CellSet& other) const
 {
+  if (isNull()) return *this;
+  if (other.isNull()) return *this;
+
   ExplicitCellSet* rtn = new ExplicitCellSet(mesh(), dimension(), cellType());
 
   checkCompatibility("difference", other);

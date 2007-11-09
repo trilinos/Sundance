@@ -1916,10 +1916,10 @@ ac_config_headers="$ac_config_headers src-utils/SundanceConfig.h:src-utils/Sunda
 # Check whether --with-install was given.
 if test "${with_install+set}" = set; then
   withval=$with_install;
-   INSTALL=$withval
-   INSTALL_PROGRAM=$withval
-   INSTALL_SCRIPT=$withval
-   INSTALL_DATA="$withval -m 644"
+INSTALL=$withval
+INSTALL_PROGRAM=$withval
+INSTALL_SCRIPT=$withval
+INSTALL_DATA="$withval -m 644"
 
 fi
 
@@ -5074,7 +5074,7 @@ cat >>confdefs.h <<\_ACEOF
 #define TRILINOS_DEV
 _ACEOF
 
-  { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
+{ echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
 echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
 else if test "X$ac_cv_use_trilinos_version" = "X7"; then
 
@@ -5082,7 +5082,7 @@ cat >>confdefs.h <<\_ACEOF
 #define TRILINOS_7
 _ACEOF
 
-  { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
+{ echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
 echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
 else
 
@@ -5090,13 +5090,13 @@ cat >>confdefs.h <<\_ACEOF
 #define TRILINOS_8
 _ACEOF
 
-  if test "X$ac_cv_use_trilinos_version" = "X8"; then
-    { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
+if test "X$ac_cv_use_trilinos_version" = "X8"; then
+{ echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
 echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
-  else
-    { echo "$as_me:$LINENO: result: unknown or no version specified.  Defaulting to Trilinos 8" >&5
+else
+{ echo "$as_me:$LINENO: result: unknown or no version specified.  Defaulting to Trilinos 8" >&5
 echo "${ECHO_T}unknown or no version specified.  Defaulting to Trilinos 8" >&6; }
-  fi
+fi
 fi
 fi
 
@@ -5108,24 +5108,24 @@ fi
 # Check whether --with-fiat was given.
 if test "${with_fiat+set}" = set; then
   withval=$with_fiat;
-  FIAT_STR=""
-  FIAT_BUILD_DIR=${withval}
+FIAT_STR=""
+FIAT_BUILD_DIR=${withval}
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_FIAT
 _ACEOF
 
-  { echo "$as_me:$LINENO: checking FIAT directory" >&5
+{ echo "$as_me:$LINENO: checking FIAT directory" >&5
 echo $ECHO_N "checking FIAT directory... $ECHO_C" >&6; }
-  { echo "$as_me:$LINENO: result: ${FIAT_BUILD_DIR}" >&5
+{ echo "$as_me:$LINENO: result: ${FIAT_BUILD_DIR}" >&5
 echo "${ECHO_T}${FIAT_BUILD_DIR}" >&6; }
 
 else
 
-  FIAT_STR="#"
-  { echo "$as_me:$LINENO: checking FIAT directory" >&5
+FIAT_STR="#"
+{ echo "$as_me:$LINENO: checking FIAT directory" >&5
 echo $ECHO_N "checking FIAT directory... $ECHO_C" >&6; }
-  { echo "$as_me:$LINENO: result: no" >&5
+{ echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 
 
@@ -5140,19 +5140,19 @@ fi
 # Check whether --with-moocho was given.
 if test "${with_moocho+set}" = set; then
   withval=$with_moocho;
-  MOOCHO_STR=""
+MOOCHO_STR=""
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_ENABLED_MOOCHO
 _ACEOF
 
-  { echo "$as_me:$LINENO: result: yes" >&5
+{ echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }
 
 else
 
-  MOOCHO_STR="#"
-  { echo "$as_me:$LINENO: result: no" >&5
+MOOCHO_STR="#"
+{ echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 
 
@@ -5167,24 +5167,24 @@ fi
 # Check whether --with-sundials was given.
 if test "${with_sundials+set}" = set; then
   withval=$with_sundials;
-  SUNDIALS_STR=""
-  SUNDIALS_BUILD_DIR=${withval}
+SUNDIALS_STR=""
+SUNDIALS_BUILD_DIR=${withval}
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_SUNDIALS
 _ACEOF
 
-  { echo "$as_me:$LINENO: checking SUNDIALS directory" >&5
+{ echo "$as_me:$LINENO: checking SUNDIALS directory" >&5
 echo $ECHO_N "checking SUNDIALS directory... $ECHO_C" >&6; }
-  { echo "$as_me:$LINENO: result: ${SUNDIALS_BUILD_DIR}" >&5
+{ echo "$as_me:$LINENO: result: ${SUNDIALS_BUILD_DIR}" >&5
 echo "${ECHO_T}${SUNDIALS_BUILD_DIR}" >&6; }
 
 else
 
-  SUNDIALS_STR="#"
-  { echo "$as_me:$LINENO: checking SUNDIALS directory" >&5
+SUNDIALS_STR="#"
+{ echo "$as_me:$LINENO: checking SUNDIALS directory" >&5
 echo $ECHO_N "checking SUNDIALS directory... $ECHO_C" >&6; }
-  { echo "$as_me:$LINENO: result: no" >&5
+{ echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 
 
@@ -5198,23 +5198,23 @@ fi
 # Check whether --enable-exodus was given.
 if test "${enable_exodus+set}" = set; then
   enableval=$enable_exodus;
-  EXODUS_STR=""
+EXODUS_STR=""
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_EXODUS
 _ACEOF
 
-  { echo "$as_me:$LINENO: checking have EXODUS" >&5
+{ echo "$as_me:$LINENO: checking have EXODUS" >&5
 echo $ECHO_N "checking have EXODUS... $ECHO_C" >&6; }
-  { echo "$as_me:$LINENO: result: yes" >&5
+{ echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }
 
 else
 
-  EXODUS_STR="#"
-  { echo "$as_me:$LINENO: checking have EXODUS" >&5
+EXODUS_STR="#"
+{ echo "$as_me:$LINENO: checking have EXODUS" >&5
 echo $ECHO_N "checking have EXODUS... $ECHO_C" >&6; }
-  { echo "$as_me:$LINENO: result: no" >&5
+{ echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 
 
@@ -5229,8 +5229,8 @@ fi
 { echo "$as_me:$LINENO: checking finding build directory" >&5
 echo $ECHO_N "checking finding build directory... $ECHO_C" >&6; }
 if test "X" = "X"; then
-  SUNDANCE_BUILD_DIRECTORY=`pwd`
-  { echo "$as_me:$LINENO: result: $SUNDANCE_BUILD_DIRECTORY" >&5
+SUNDANCE_BUILD_DIRECTORY=`pwd`
+{ echo "$as_me:$LINENO: result: $SUNDANCE_BUILD_DIRECTORY" >&5
 echo "${ECHO_T}$SUNDANCE_BUILD_DIRECTORY" >&6; }
 fi
 
