@@ -61,8 +61,8 @@ namespace SundanceStdFwk
                      const Expr& field);
 
     /** */
-    void interpolate(const std::vector<double>& positions,
-                     std::vector<double>& results) const ;
+    void interpolate(const Teuchos::Array<double>& positions,
+                     Teuchos::Array<double>& results) const ;
 
     /** */
     void updateField(const Expr& field) ;

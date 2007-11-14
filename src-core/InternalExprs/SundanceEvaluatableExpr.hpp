@@ -300,7 +300,8 @@ namespace SundanceCore
 
       mutable bool nodesHaveBeenCounted_; 
 
-      mutable Array<Array<Map<EvalContext, Set<MultipleDeriv> > > > contextToDSSMap_;
+      typedef Array<Map<EvalContext, Set<MultipleDeriv> > > contextToDSSMap_ele_t;
+      mutable Array<contextToDSSMap_ele_t> contextToDSSMap_;
 
       mutable bool rIsReady_;
 

@@ -78,7 +78,7 @@ int main(int argc, char** argv)
       
       /* create a sampler */
       cout << "making grid" << endl;
-      AToCPointLocator locator(mesh, interior, tuple(200, 200));
+      AToCPointLocator locator(mesh, interior, tuple(200, 200).toVector());
       
       AToCDensitySampler sampler(locator, vecType);
 
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
         }
 
       cout << "sampling..." << endl;
-      Expr density = sampler.sample(pos, 1.0);
+      Expr density = sampler.sample(pos.toVector(), 1.0);
 
       cout << "computing forces..." << endl;
       forceInterpolator.interpolate(pos, f);

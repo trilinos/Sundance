@@ -127,7 +127,7 @@ int main(int argc, char** argv)
       TEST_MS(makeMultiSet(1, 2, 2, 3));
       TEST_MS(makeMultiSet(1, 2, 2, 3, 3));
       TEST_MS(makeMultiSet(1, 2, 2, 3, 3, 3));
-#endif BLAH
+#endif // BLAH
 
       if (!bad) 
         {

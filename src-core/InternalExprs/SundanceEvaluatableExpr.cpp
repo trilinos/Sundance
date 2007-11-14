@@ -54,7 +54,7 @@ EvaluatableExpr::EvaluatableExpr()
     evaluators_(),
     sparsity_(),
     nodesHaveBeenCounted_(false),
-    contextToDSSMap_(numDerivSubsetTypes(), maxFuncDiffOrder()+1),
+    contextToDSSMap_(numDerivSubsetTypes(), contextToDSSMap_ele_t(maxFuncDiffOrder()+1)),
     rIsReady_(false),
     allOrdersMap_(numDerivSubsetTypes())
 {}

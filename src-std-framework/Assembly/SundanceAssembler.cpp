@@ -497,7 +497,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
       Array<int> rowPtrs;
 
       getGraph(br, bc, graphData, rowPtrs, nnzPerRow);
-      ccmf->configure(lowestRow_[br], rowPtrs, nnzPerRow, graphData);
+      ccmf->configure(lowestRow_[br], rowPtrs.toVector(), nnzPerRow.toVector(), graphData.toVector());
     }
   else
     {

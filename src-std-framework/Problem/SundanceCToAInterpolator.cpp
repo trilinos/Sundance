@@ -114,8 +114,8 @@ void CToAInterpolator::updateField(const Expr& field)
 }
 
 
-void CToAInterpolator::interpolate(const std::vector<double>& positions,
-                                   std::vector<double>& results) const
+void CToAInterpolator::interpolate(const Teuchos::Array<double>& positions,
+                                   Teuchos::Array<double>& results) const
 {
   TimeMonitor timer(particleInterpolationTimer());
 

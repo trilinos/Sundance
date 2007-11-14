@@ -38,15 +38,15 @@ namespace SundanceUtils
     for (unsigned int m=0; m<x.size(); m++)
       {
         Array<int> tmp;
-        std::vector<int> y = x[m];
+        Array<int> y = x[m];
         std::sort(y.begin(), y.end());
         tmp.resize(y.size());
-        copy(y.begin(), y.end(), tmp.begin());
+        std::copy(y.begin(), y.end(), tmp.begin());
         p.append(tmp);
         while (std::next_permutation(y.begin(), y.end())) 
           { 
             tmp.resize(y.size());
-            copy(y.begin(), y.end(), tmp.begin());
+            std::copy(y.begin(), y.end(), tmp.begin());
             p.append(tmp);
           }
       }
@@ -85,15 +85,15 @@ namespace SundanceUtils
     for (unsigned int i=0; i<jParts.size(); i++)
       {
         Array<int> tmp;
-        std::vector<int> y = jParts[i];
+        Array<int> y = jParts[i];
         std::sort(y.begin(), y.end());
         tmp.resize(y.size());
-        copy(y.begin(), y.end(), tmp.begin());
+        std::copy(y.begin(), y.end(), tmp.begin());
         all.append(tmp);
         while (std::next_permutation(y.begin(), y.end())) 
           { 
             tmp.resize(y.size());
-            copy(y.begin(), y.end(), tmp.begin());
+            std::copy(y.begin(), y.end(), tmp.begin());
             all.append(tmp);
           }
       }

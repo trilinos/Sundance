@@ -66,7 +66,7 @@ Mesh ExtrusionMeshTransformation::apply(const Mesh& inputMesh) const
 
       /* We sort the facets in order to get a consistent direction
        * for the edges at the different z-planes.  */
-      sort(facetNodes.begin(), facetNodes.end());
+      std::sort(facetNodes.begin(), facetNodes.end());
 
       SUNDANCE_OUT(this->verbosity()==VerbHigh,
                    "triangle=" << i << " sorted facet nodes are " 
