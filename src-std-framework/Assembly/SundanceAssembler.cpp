@@ -495,9 +495,11 @@ void Assembler::configureMatrixBlock(int br, int bc,
       Array<int> graphData;
       Array<int> nnzPerRow;
       Array<int> rowPtrs;
+      
+      using Teuchos::createVector;
 
       getGraph(br, bc, graphData, rowPtrs, nnzPerRow);
-      ccmf->configure(lowestRow_[br], rowPtrs.toVector(), nnzPerRow.toVector(), graphData.toVector());
+      ccmf->configure(lowestRow_[br], createVector(rowPtrs), createVector(nnzPerRow), createVector(graphData));
     }
   else
     {
