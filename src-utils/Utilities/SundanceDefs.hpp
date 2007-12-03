@@ -76,6 +76,7 @@
 #endif
 
 #include "SundanceConfig.h"
+#include "TSF_config.h"
 
 #ifdef PACKAGE
 #undef PACKAGE
@@ -131,7 +132,6 @@ std::vector<T>& createVector( Array<T> &a ) { return a; }
 
 template<typename T>
 const std::vector<T>& createVector( const Array<T> &a ) { return a; }
-
 
 } // namespace Teuchos
 
