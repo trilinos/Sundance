@@ -12,14 +12,16 @@ namespace SundanceUtils
 
   Array<Array<int> > partitionInteger(int n)
   {
-    static Array<Array<Array<int> > > rtn 
-      = tuple(
-              tuple(tuple(1)), 
-              tuple(tuple(2), tuple(1, 1)),
-              tuple(tuple(3), tuple(2, 1), tuple(1, 1, 1)),
-              tuple(tuple(4), tuple(3, 1), tuple(2, 2), tuple(2, 1, 1), tuple(1,1,1,1)));
+    typedef Array<int> Aint;
+    typedef Array<Array<int> > AAint;
+    static Array<Array<Array<int> > > rtn =
+      tuple<AAint>(
+        tuple<Aint>(tuple(1)), 
+        tuple<Aint>(tuple(2), tuple(1, 1)),
+        tuple<Aint>(tuple(3), tuple(2, 1), tuple(1, 1, 1)),
+        tuple<Aint>(tuple(4), tuple(3, 1), tuple(2, 2), tuple(2, 1, 1), tuple(1,1,1,1)));
     TEST_FOR_EXCEPTION(n<1 || n>4, RuntimeError, 
-                       "case n=" << n << " not implemented in partitionInteger()");
+      "case n=" << n << " not implemented in partitionInteger()");
     return rtn[n-1];
   }
 

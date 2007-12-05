@@ -152,23 +152,24 @@ void Lagrange::getReferenceDOFs(
   const CellType& cellType,
   Array<Array<Array<int> > >& dofs) const 
 {
+  typedef Array<int> Aint;
   switch(cellType)
     {
     case PointCell:
       dofs.resize(1);
-      dofs[0] = tuple(tuple(0));
+      dofs[0] = tuple<Aint>(tuple(0));
       return;
     case LineCell:
       dofs.resize(2);
-      dofs[0] = tuple(tuple(0), tuple(1));
-      dofs[1] = tuple(makeRange(2, order()));
+      dofs[0] = tuple<Aint>(tuple(0), tuple(1));
+      dofs[1] = tuple<Aint>(makeRange(2, order()));
       return;
     case TriangleCell:
       {
         int n = order()-1;
         dofs.resize(3);
-        dofs[0] = tuple(tuple(0), tuple(1), tuple(2));
-        dofs[1] = tuple(makeRange(3,2+n), 
+        dofs[0] = tuple<Aint>(tuple(0), tuple(1), tuple(2));
+        dofs[1] = tuple<Aint>(makeRange(3,2+n), 
                         makeRange(3+n, 2+2*n),
                         makeRange(3+2*n, 2+3*n));
         if (order()<3)
@@ -177,17 +178,17 @@ void Lagrange::getReferenceDOFs(
           }
         else 
           {
-            dofs[2] = tuple(makeRange(3+3*n, 3+3*n));
+            dofs[2] = tuple<Aint>(makeRange(3+3*n, 3+3*n));
           }
         return;
       }
     case TetCell:
       {
         dofs.resize(4);
-        dofs[0] = tuple(tuple(0), tuple(1), tuple(2), tuple(3));
+        dofs[0] = tuple<Aint>(tuple(0), tuple(1), tuple(2), tuple(3));
         if (order() == 2)
           {
-            dofs[1] = tuple(tuple(4), tuple(5), tuple(6), 
+            dofs[1] = tuple<Aint>(tuple(4), tuple(5), tuple(6), 
                             tuple(7), tuple(8), tuple(9));
           }
         else
@@ -225,13 +226,14 @@ void Lagrange::refEval(
   const MultiIndex& deriv,
   Array<Array<Array<double> > >& result) const
 {
+  typedef Array<double> Adouble;
   result.resize(1);
   result[0].resize(pts.length());
 
   switch(cellType)
     {
     case PointCell:
-      result[0] = tuple(tuple(1.0));
+      result[0] = tuple<Adouble>(tuple(1.0));
       return;
     case LineCell:
       for (int i=0; i<pts.length(); i++)

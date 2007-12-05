@@ -49,7 +49,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecType_(vecType),
     ghostImporter_()
 {
-  init(maximalRegions(1), tuple(basis));
+  init(maximalRegions(1), BasisArray(tuple(basis)));
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
@@ -91,7 +91,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecType_(vecType),
     ghostImporter_()
 {
-  init(tuple(funcDomains), tuple(basis));
+  init(tuple(funcDomains), BasisArray(tuple(basis)));
 }
 
 

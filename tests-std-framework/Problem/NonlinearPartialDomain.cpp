@@ -98,7 +98,7 @@ int main(int argc, char** argv)
       /* Create a discrete space, and discretize the function 1.0 on it */
       Array<CellFilter> funcDomains = tuple(interior, A+B);
       BasisFamily L1 = new Lagrange(1);
-      DiscreteSpace discSpace(mesh, tuple(L1, L1), funcDomains, vecType);
+      DiscreteSpace discSpace(mesh, BasisArray(tuple(L1, L1)), funcDomains, vecType);
       Expr u0 = new DiscreteFunction(discSpace, 1.0, "u0");
 
 

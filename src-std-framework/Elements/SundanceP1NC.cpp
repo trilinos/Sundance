@@ -112,12 +112,12 @@ void P1NC::getReferenceDOFs(
     case LineCell:
       dofs.resize(2);
       dofs[0] = tuple(Array<int>());
-      dofs[1] = tuple(tuple(0));
+      dofs[1] = tuple<Array<int> >(tuple(0));
       return;
     case TriangleCell:
       dofs.resize(3);
       dofs[0] = tuple(Array<int>());
-      dofs[1] = tuple(tuple(0), tuple(1), tuple(2));
+      dofs[1] = tuple<Array<int> >(tuple(0), tuple(1), tuple(2));
       dofs[2] = tuple(Array<int>());
       return;
     default:
