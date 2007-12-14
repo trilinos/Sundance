@@ -168,3 +168,27 @@ serialtests:
 	@echo "Summary of serial tests:"
 	@echo "====================================================================="
 	$(top_srcdir)/etc/checkTests.pl $(CXX_TESTS_TO_CHECK) $(PY_TESTS_TO_CHECK)
+
+
+
+## #######################################################################
+## hooks for putting data files (meshes, solver params, etc) in the
+## installation directory
+## #######################################################################
+
+install-data-hook:
+	mkdir -p $(prefix)/etc/SolverParameters
+	mkdir -p $(prefix)/examples-tutorial/meshes
+	mkdir -p $(prefix)/examples-tutorial/data
+	cp $(top_srcdir)/etc/SolverParameters/*.xml $(prefix)/etc/SolverParameters
+	cp $(top_srcdir)/etc/*.xml $(prefix)/etc
+	cp $(top_srcdir)/examples-tutorial/meshes/*.* $(prefix)/examples-tutorial/meshes
+	cp $(top_srcdir)/examples-tutorial/data/*.* $(prefix)/examples-tutorial/data
+
+
+
+
+
+
+
+
