@@ -72,7 +72,7 @@ namespace SundanceStdFwk
 
     /** */
     void interpolate(const std::vector<double>& positions,
-                     std::vector<double>& results) const ;
+      std::vector<double>& results) const ;
 
     /** */
     void updateField(const SundanceCore::Expr& field) ;

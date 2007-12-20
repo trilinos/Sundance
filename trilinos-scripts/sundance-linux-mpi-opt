@@ -8,19 +8,23 @@
 
 
 BUILD_DIR=`pwd`
+TRILINOS_DIR="/home/kevin/Software/Trilinos/trilinos-8.0.4"
 
-../configure --enable-mpi --with-mpi-compilers \
+$TRILINOS_DIR/configure --enable-mpi --with-mpi-compilers \
 CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
---with-libs="-lumfpack -lamd -lexpat -llapack -lblas" \
+--with-libs="-lumfpack -lamd" \
 --disable-default-packages \
 --enable-teuchos --enable-teuchos-extended \
---enable-teuchos-complex --enable-teuchos-expat \
+--enable-teuchos-complex \
 --enable-thyra \
 --disable-thyra-tests \
 --disable-thyra-examples \
---disable-aztecoo-thyra \
---disable-epetra-thyra \
---disable-amesos-thyra \
+--enable-aztecoo-thyra \
+--enable-epetra-thyra \
+--enable-amesos-thyra \
+--enable-ifpack-thyra \
+--enable-ml-thyra \
+--enable-stratimikos \
 --enable-epetra \
 --enable-epetraext \
 --enable-ml \
@@ -31,9 +35,10 @@ CXXFLAGS="-O3 -finline-functions -funroll-loops -Wall" \
 --disable-loca \
 --enable-amesos \
 --enable-amesos-umfpack \
+--enable-moocho \
+--enable-moocho-thyra \
 --with-gnumake \
 --with-install="/usr/bin/install -c -p" \
 --config-cache \
 --prefix=$BUILD_DIR
-
 
