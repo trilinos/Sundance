@@ -143,7 +143,7 @@ am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
 	OptPoisson1D$(EXEEXT) FunctionalTest$(EXEEXT) \
 	SimpleModelEvalTest$(EXEEXT) VorticityStokes2D$(EXEEXT) \
 	VorticityNavierStokes2D$(EXEEXT) SpectralPoisson1D$(EXEEXT) \
-	SpectralSqrt$(EXEEXT)
+	SpectralSqrt$(EXEEXT) PartitionedPoisson1D$(EXEEXT)
 am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) Kepler$(EXEEXT) \
 	Stokes2D$(EXEEXT) LinearPartialDomain$(EXEEXT) \
@@ -208,6 +208,9 @@ am_NoxPoisson1D_OBJECTS = NoxPoisson1D-NoxPoisson1D.$(OBJEXT)
 NoxPoisson1D_OBJECTS = $(am_NoxPoisson1D_OBJECTS)
 am_OptPoisson1D_OBJECTS = OptPoisson1D-OptPoisson1D.$(OBJEXT)
 OptPoisson1D_OBJECTS = $(am_OptPoisson1D_OBJECTS)
+am_PartitionedPoisson1D_OBJECTS =  \
+	PartitionedPoisson1D-PartitionedPoisson1D.$(OBJEXT)
+PartitionedPoisson1D_OBJECTS = $(am_PartitionedPoisson1D_OBJECTS)
 am_Poisson1D_OBJECTS = Poisson1D-Poisson1D.$(OBJEXT)
 Poisson1D_OBJECTS = $(am_Poisson1D_OBJECTS)
 am_Poisson2D_OBJECTS = Poisson2D-Poisson2D.$(OBJEXT)
@@ -267,7 +270,8 @@ SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) \
 	$(LinearVariationalTest_SOURCES) \
 	$(NonlinearPartialDomain_SOURCES) $(NoxAlgebraic_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
-	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(PartitionedPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
+	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
 	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
 	$(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) \
@@ -285,7 +289,8 @@ DIST_SOURCES = $(AToCDensitySample_SOURCES) \
 	$(LinearVariationalTest_SOURCES) \
 	$(NonlinearPartialDomain_SOURCES) $(NoxAlgebraic_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
-	$(Poisson1D_SOURCES) $(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
+	$(PartitionedPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
+	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
 	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
 	$(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) \
@@ -452,7 +457,7 @@ HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic UserDefAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
 FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D \
-SpectralPoisson1D SpectralSqrt
+SpectralPoisson1D SpectralSqrt PartitionedPoisson1D
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 SpectralPoisson1D_SOURCES = $(srcdir)/SpectralPoisson1D.cpp
@@ -465,6 +470,16 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 SpectralPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 SpectralPoisson1D_LDADD = $(STD_FWK_LIBS) 
+PartitionedPoisson1D_SOURCES = $(srcdir)/PartitionedPoisson1D.cpp
+PartitionedPoisson1D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+PartitionedPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
+PartitionedPoisson1D_LDADD = $(STD_FWK_LIBS) 
 AToCDensitySample_SOURCES = $(srcdir)/AToCDensitySample.cpp
 AToCDensitySample_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -1051,6 +1066,9 @@ NoxPoisson1D$(EXEEXT): $(NoxPoisson1D_OBJECTS) $(NoxPoisson1D_DEPENDENCIES)
 OptPoisson1D$(EXEEXT): $(OptPoisson1D_OBJECTS) $(OptPoisson1D_DEPENDENCIES) 
 	@rm -f OptPoisson1D$(EXEEXT)
 	$(CXXLINK) $(OptPoisson1D_LDFLAGS) $(OptPoisson1D_OBJECTS) $(OptPoisson1D_LDADD) $(LIBS)
+PartitionedPoisson1D$(EXEEXT): $(PartitionedPoisson1D_OBJECTS) $(PartitionedPoisson1D_DEPENDENCIES) 
+	@rm -f PartitionedPoisson1D$(EXEEXT)
+	$(CXXLINK) $(PartitionedPoisson1D_LDFLAGS) $(PartitionedPoisson1D_OBJECTS) $(PartitionedPoisson1D_LDADD) $(LIBS)
 Poisson1D$(EXEEXT): $(Poisson1D_OBJECTS) $(Poisson1D_DEPENDENCIES) 
 	@rm -f Poisson1D$(EXEEXT)
 	$(CXXLINK) $(Poisson1D_LDFLAGS) $(Poisson1D_OBJECTS) $(Poisson1D_LDADD) $(LIBS)
@@ -1120,6 +1138,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxAlgebraic-NoxAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxPoisson1D-NoxPoisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OptPoisson1D-OptPoisson1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson1D-Poisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson2D-Poisson2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Poisson3D-Poisson3D.Po@am__quote@
@@ -1428,6 +1447,20 @@ OptPoisson1D-OptPoisson1D.obj: $(srcdir)/OptPoisson1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/OptPoisson1D.cpp' object='OptPoisson1D-OptPoisson1D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(OptPoisson1D_CXXFLAGS) $(CXXFLAGS) -c -o OptPoisson1D-OptPoisson1D.obj `if test -f '$(srcdir)/OptPoisson1D.cpp'; then $(CYGPATH_W) '$(srcdir)/OptPoisson1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/OptPoisson1D.cpp'; fi`
+
+PartitionedPoisson1D-PartitionedPoisson1D.o: $(srcdir)/PartitionedPoisson1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoisson1D_CXXFLAGS) $(CXXFLAGS) -MT PartitionedPoisson1D-PartitionedPoisson1D.o -MD -MP -MF "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Tpo" -c -o PartitionedPoisson1D-PartitionedPoisson1D.o `test -f '$(srcdir)/PartitionedPoisson1D.cpp' || echo '$(srcdir)/'`$(srcdir)/PartitionedPoisson1D.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Tpo" "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Po"; else rm -f "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PartitionedPoisson1D.cpp' object='PartitionedPoisson1D-PartitionedPoisson1D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoisson1D_CXXFLAGS) $(CXXFLAGS) -c -o PartitionedPoisson1D-PartitionedPoisson1D.o `test -f '$(srcdir)/PartitionedPoisson1D.cpp' || echo '$(srcdir)/'`$(srcdir)/PartitionedPoisson1D.cpp
+
+PartitionedPoisson1D-PartitionedPoisson1D.obj: $(srcdir)/PartitionedPoisson1D.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoisson1D_CXXFLAGS) $(CXXFLAGS) -MT PartitionedPoisson1D-PartitionedPoisson1D.obj -MD -MP -MF "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Tpo" -c -o PartitionedPoisson1D-PartitionedPoisson1D.obj `if test -f '$(srcdir)/PartitionedPoisson1D.cpp'; then $(CYGPATH_W) '$(srcdir)/PartitionedPoisson1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PartitionedPoisson1D.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Tpo" "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Po"; else rm -f "$(DEPDIR)/PartitionedPoisson1D-PartitionedPoisson1D.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PartitionedPoisson1D.cpp' object='PartitionedPoisson1D-PartitionedPoisson1D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoisson1D_CXXFLAGS) $(CXXFLAGS) -c -o PartitionedPoisson1D-PartitionedPoisson1D.obj `if test -f '$(srcdir)/PartitionedPoisson1D.cpp'; then $(CYGPATH_W) '$(srcdir)/PartitionedPoisson1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PartitionedPoisson1D.cpp'; fi`
 
 Poisson1D-Poisson1D.o: $(srcdir)/Poisson1D.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Poisson1D_CXXFLAGS) $(CXXFLAGS) -MT Poisson1D-Poisson1D.o -MD -MP -MF "$(DEPDIR)/Poisson1D-Poisson1D.Tpo" -c -o Poisson1D-Poisson1D.o `test -f '$(srcdir)/Poisson1D.cpp' || echo '$(srcdir)/'`$(srcdir)/Poisson1D.cpp; \

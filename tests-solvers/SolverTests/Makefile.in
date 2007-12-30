@@ -131,7 +131,8 @@ CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 	$(top_builddir)/src-utils/SundanceConfig.h
 CONFIG_CLEAN_FILES =
 am__EXEEXT_1 = IDAHeat$(EXEEXT) PoissonTest$(EXEEXT) \
-	PoissonBoltzmannTest$(EXEEXT) BlockTriangularTest$(EXEEXT)
+	PoissonBoltzmannTest$(EXEEXT) BlockTriangularTest$(EXEEXT) \
+	PartitionedPoissonTest$(EXEEXT)
 am__EXEEXT_2 = UserDefPrecondTest$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_BlockTriangularTest_OBJECTS =  \
@@ -141,6 +142,9 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 am_IDAHeat_OBJECTS = IDAHeat-IDAHeat.$(OBJEXT)
 IDAHeat_OBJECTS = $(am_IDAHeat_OBJECTS)
+am_PartitionedPoissonTest_OBJECTS =  \
+	PartitionedPoissonTest-PartitionedPoissonTest.$(OBJEXT)
+PartitionedPoissonTest_OBJECTS = $(am_PartitionedPoissonTest_OBJECTS)
 am_PoissonBoltzmannTest_OBJECTS =  \
 	PoissonBoltzmannTest-PoissonBoltzmannTest.$(OBJEXT)
 PoissonBoltzmannTest_OBJECTS = $(am_PoissonBoltzmannTest_OBJECTS)
@@ -158,9 +162,11 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 SOURCES = $(BlockTriangularTest_SOURCES) $(IDAHeat_SOURCES) \
+	$(PartitionedPoissonTest_SOURCES) \
 	$(PoissonBoltzmannTest_SOURCES) $(PoissonTest_SOURCES) \
 	$(UserDefPrecondTest_SOURCES)
 DIST_SOURCES = $(BlockTriangularTest_SOURCES) $(IDAHeat_SOURCES) \
+	$(PartitionedPoissonTest_SOURCES) \
 	$(PoissonBoltzmannTest_SOURCES) $(PoissonTest_SOURCES) \
 	$(UserDefPrecondTest_SOURCES)
 ETAGS = etags
@@ -456,7 +462,7 @@ MPI_DIR = $(TEUCHOS_MPI_DIR)
 FLIBS = $(TEUCHOS_FLIBS)
 BLAS_LIBS = $(TEUCHOS_BLAS_LIBS)
 LAPACK_LIBS = $(TEUCHOS_LAPACK_LIBS)
-PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest 
+PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest PartitionedPoissonTest
 SERIAL_SRC = UserDefPrecondTest
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 IDAHeat_SOURCES = $(srcdir)/IDAHeat.cpp 
@@ -479,6 +485,10 @@ UserDefPrecondTest_SOURCES = $(srcdir)/UserDefPrecondTest.cpp
 UserDefPrecondTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
 UserDefPrecondTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
 UserDefPrecondTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
+PartitionedPoissonTest_SOURCES = $(srcdir)/PartitionedPoissonTest.cpp 
+PartitionedPoissonTest_DEPENDENCIES = $(top_builddir)/src-solvers/libTSFExtended.a
+PartitionedPoissonTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES) 
+PartitionedPoissonTest_LDADD = $(LDFLAGS) $(SOLVERS_LIBS) 
 TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
 @HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
@@ -528,6 +538,9 @@ BlockTriangularTest$(EXEEXT): $(BlockTriangularTest_OBJECTS) $(BlockTriangularTe
 IDAHeat$(EXEEXT): $(IDAHeat_OBJECTS) $(IDAHeat_DEPENDENCIES) 
 	@rm -f IDAHeat$(EXEEXT)
 	$(CXXLINK) $(IDAHeat_LDFLAGS) $(IDAHeat_OBJECTS) $(IDAHeat_LDADD) $(LIBS)
+PartitionedPoissonTest$(EXEEXT): $(PartitionedPoissonTest_OBJECTS) $(PartitionedPoissonTest_DEPENDENCIES) 
+	@rm -f PartitionedPoissonTest$(EXEEXT)
+	$(CXXLINK) $(PartitionedPoissonTest_LDFLAGS) $(PartitionedPoissonTest_OBJECTS) $(PartitionedPoissonTest_LDADD) $(LIBS)
 PoissonBoltzmannTest$(EXEEXT): $(PoissonBoltzmannTest_OBJECTS) $(PoissonBoltzmannTest_DEPENDENCIES) 
 	@rm -f PoissonBoltzmannTest$(EXEEXT)
 	$(CXXLINK) $(PoissonBoltzmannTest_LDFLAGS) $(PoissonBoltzmannTest_OBJECTS) $(PoissonBoltzmannTest_LDADD) $(LIBS)
@@ -546,6 +559,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlockTriangularTest-BlockTriangularTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IDAHeat-IDAHeat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonTest-PoissonTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UserDefPrecondTest-UserDefPrecondTest.Po@am__quote@
@@ -591,6 +605,20 @@ IDAHeat-IDAHeat.obj: $(srcdir)/IDAHeat.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/IDAHeat.cpp' object='IDAHeat-IDAHeat.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(IDAHeat_CXXFLAGS) $(CXXFLAGS) -c -o IDAHeat-IDAHeat.obj `if test -f '$(srcdir)/IDAHeat.cpp'; then $(CYGPATH_W) '$(srcdir)/IDAHeat.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/IDAHeat.cpp'; fi`
+
+PartitionedPoissonTest-PartitionedPoissonTest.o: $(srcdir)/PartitionedPoissonTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoissonTest_CXXFLAGS) $(CXXFLAGS) -MT PartitionedPoissonTest-PartitionedPoissonTest.o -MD -MP -MF "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Tpo" -c -o PartitionedPoissonTest-PartitionedPoissonTest.o `test -f '$(srcdir)/PartitionedPoissonTest.cpp' || echo '$(srcdir)/'`$(srcdir)/PartitionedPoissonTest.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Tpo" "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Po"; else rm -f "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PartitionedPoissonTest.cpp' object='PartitionedPoissonTest-PartitionedPoissonTest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoissonTest_CXXFLAGS) $(CXXFLAGS) -c -o PartitionedPoissonTest-PartitionedPoissonTest.o `test -f '$(srcdir)/PartitionedPoissonTest.cpp' || echo '$(srcdir)/'`$(srcdir)/PartitionedPoissonTest.cpp
+
+PartitionedPoissonTest-PartitionedPoissonTest.obj: $(srcdir)/PartitionedPoissonTest.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoissonTest_CXXFLAGS) $(CXXFLAGS) -MT PartitionedPoissonTest-PartitionedPoissonTest.obj -MD -MP -MF "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Tpo" -c -o PartitionedPoissonTest-PartitionedPoissonTest.obj `if test -f '$(srcdir)/PartitionedPoissonTest.cpp'; then $(CYGPATH_W) '$(srcdir)/PartitionedPoissonTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PartitionedPoissonTest.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Tpo" "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Po"; else rm -f "$(DEPDIR)/PartitionedPoissonTest-PartitionedPoissonTest.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/PartitionedPoissonTest.cpp' object='PartitionedPoissonTest-PartitionedPoissonTest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PartitionedPoissonTest_CXXFLAGS) $(CXXFLAGS) -c -o PartitionedPoissonTest-PartitionedPoissonTest.obj `if test -f '$(srcdir)/PartitionedPoissonTest.cpp'; then $(CYGPATH_W) '$(srcdir)/PartitionedPoissonTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/PartitionedPoissonTest.cpp'; fi`
 
 PoissonBoltzmannTest-PoissonBoltzmannTest.o: $(srcdir)/PoissonBoltzmannTest.cpp
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(PoissonBoltzmannTest_CXXFLAGS) $(CXXFLAGS) -MT PoissonBoltzmannTest-PoissonBoltzmannTest.o -MD -MP -MF "$(DEPDIR)/PoissonBoltzmannTest-PoissonBoltzmannTest.Tpo" -c -o PoissonBoltzmannTest-PoissonBoltzmannTest.o `test -f '$(srcdir)/PoissonBoltzmannTest.cpp' || echo '$(srcdir)/'`$(srcdir)/PoissonBoltzmannTest.cpp; \

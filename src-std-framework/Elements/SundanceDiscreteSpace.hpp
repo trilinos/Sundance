@@ -89,6 +89,12 @@ namespace SundanceStdFwk
                   const VectorType<double>& vecType);
 
     /** */
+    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+      const RefCountPtr<DOFMapBase>& map,
+      const RefCountPtr<Array<int> >& bcIndices,
+      const VectorType<double>& vecType);
+
+    /** */
     DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                   const SpectralBasis& spBasis,
                   const VectorType<double>& vecType);
@@ -135,6 +141,12 @@ namespace SundanceStdFwk
     /** */
     void init(const Array<CellFilter>& regions,
               const BasisArray& basis);
+
+    /** */
+    void init(const Array<CellFilter>& regions,
+      const BasisArray& basis,
+      const RefCountPtr<Array<int> >& isBCIndex, 
+      bool partitionBCs);
 
     /** */
     Array<CellFilter> maximalRegions(int n) const ;

@@ -83,8 +83,9 @@ int main(int argc, char *argv[])
         }
 
       VectorSpace<double> blockSpace = productSpace(space);
-      
-      LinearOperator<double> bigA = new BlockOperator<double>(blockSpace, blockSpace);
+
+      RefCountPtr<SingleScalarTypeOpBase<double> > op = rcp(new BlockOperator<double>(blockSpace, blockSpace));
+      LinearOperator<double> bigA = op;
       Vector<double> bigRHS = blockSpace.createMember();
       Vector<double> bigX = blockSpace.createMember();
       
@@ -98,6 +99,7 @@ int main(int argc, char *argv[])
               bigA.setBlock(i,j,Aij);
             }
         }
+      bigA.endBlockFill();
       
       bigRHS = bigA * bigX;
       Vector<double> bigSoln = blockSpace.createMember();

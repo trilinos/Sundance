@@ -192,6 +192,10 @@ namespace SundanceStdFwk
     static void handleException(std::exception& e);
 
     /** */
+    static Teuchos::FancyOStream& os() ;
+
+
+    /** */
     static bool passFailTest(double error, double tol);
 
     /** */
@@ -213,10 +217,10 @@ namespace SundanceStdFwk
     static bool& skipTimingOutput()
     {static bool rtn=false; return rtn;}
 
-  private:
+
     static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}
-
+  private:
     static bool checkTest(double error, double tol);
 
     static void setSettings(const string& settingsFile);

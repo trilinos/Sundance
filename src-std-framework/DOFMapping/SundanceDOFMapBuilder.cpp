@@ -76,14 +76,16 @@ static Time& findFuncDomainTimer()
 }
 
 DOFMapBuilder::DOFMapBuilder(const Mesh& mesh, 
-                             const RefCountPtr<EquationSet>& eqn)
+  const RefCountPtr<EquationSet>& eqn, bool findBCCols)
   : mesh_(mesh),
     eqn_(eqn),
     rowMap_(),
     colMap_(),
-    isBCRow_()
+    isBCRow_(),
+    isBCCol_(),
+    remoteBCCols_()
 {
-  init();
+  init(findBCCols);
 }
 
 DOFMapBuilder::DOFMapBuilder()
@@ -91,7 +93,9 @@ DOFMapBuilder::DOFMapBuilder()
     eqn_(),
     rowMap_(),
     colMap_(),
-    isBCRow_()
+    isBCRow_(),
+    isBCCol_(),
+    remoteBCCols_()
 {}
 
 RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
@@ -288,11 +292,12 @@ Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
 }
 
 
-void DOFMapBuilder::init()
+void DOFMapBuilder::init(bool findBCCols)
 {
   rowMap_.resize(eqn_->numVarBlocks());
   colMap_.resize(eqn_->numUnkBlocks());
   isBCRow_.resize(eqn_->numVarBlocks());
+  isBCCol_.resize(eqn_->numUnkBlocks());
 
   Array<Array<BasisFamily> > testBasis = testBasisArray();
   Array<Array<Set<CellFilter> > > testRegions = testCellFilters();
@@ -317,6 +322,7 @@ void DOFMapBuilder::init()
         {
           colMap_[bc] = makeMap(mesh_, unkBasis[bc], unkRegions[bc]);
         }
+      if (findBCCols) markBCCols(bc);
     }
 }
 
@@ -713,6 +719,86 @@ void DOFMapBuilder::markBCRows(int block)
                       int dof = dofs[b][(c*nFuncs + funcOffset)*nNodes[b]+n];
                       if (dof < offset || dof >= high) continue;
                       (*isBCRow_[block])[dof-offset]=true;
+                    }
+                }
+            }
+        }
+    }
+}
+        
+
+
+void DOFMapBuilder::markBCCols(int block)
+{
+  isBCCol_[block] = rcp(new Array<int>(colMap_[block]->numLocalDOFs()));
+  int ndof = colMap_[block]->numLocalDOFs();
+  Array<int>& isBC = *isBCCol_[block];
+  for (int i=0; i<ndof; i++) isBC[i] = false;
+
+  RefCountPtr<Array<int> > cellLID = rcp(new Array<int>());
+  Array<RefCountPtr<Array<int> > > cellBatches;
+  const RefCountPtr<DOFMapBase>& colMap = colMap_[block];
+
+  for (unsigned int r=0; r<eqn_->numRegions(); r++)
+    {
+      /* find the cells in this region */
+      CellFilter region = eqn_->region(r);
+
+      if (!eqn_->isBCRegion(r)) continue;
+
+      int dim = region.dimension(mesh_);
+      CellSet cells = region.getCells(mesh_);
+      cellLID->resize(0);
+      for (CellIterator c=cells.begin(); c != cells.end(); c++)
+        {
+          cellLID->append(*c);
+        }
+      if (cellLID->size() == 0U) continue;
+      
+      /* find the functions that appear in BCs on this region */
+      const Set<int>& allBcFuncs = eqn_->bcUnksOnRegion(r);
+
+      Set<int> bcFuncs;
+      for (Set<int>::const_iterator 
+             i=allBcFuncs.begin(); i != allBcFuncs.end(); i++)
+        {
+          if (block == eqn_->blockForUnkID(*i)) 
+            {
+              bcFuncs.put(eqn_->reducedUnkID(*i));
+            }
+        }
+      if (bcFuncs.size()==0) continue;
+      Array<int> bcFuncID = bcFuncs.elements();
+
+      Array<Array<int> > dofs;
+      Array<int> nNodes;
+
+      RefCountPtr<const MapStructure> s 
+        = colMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes);
+      int offset = colMap->lowestLocalDOF();
+      int high = offset + colMap->numLocalDOFs();
+      
+      for (unsigned int c=0; c<cellLID->size(); c++)
+        {
+          for (int b=0; b< s->numBasisChunks(); b++)
+            {
+              int nFuncs = s->numFuncs(b);
+              for (int n=0; n<nNodes[b]; n++)
+                {
+                  for (unsigned int f=0; f<bcFuncID.size(); f++)
+                    {
+                      int chunk = s->chunkForFuncID(bcFuncID[f]);
+                      if (chunk != b) continue;
+                      int funcOffset = s->indexForFuncID(bcFuncID[f]);
+                      int dof = dofs[b][(c*nFuncs + funcOffset)*nNodes[b]+n];
+                      if (dof < offset || dof >= high) 
+                      {
+                        remoteBCCols_[block]->insert(dof);
+                      }
+                      else
+                      {
+                        (*isBCCol_[block])[dof-offset]=true;
+                      }
                     }
                 }
             }

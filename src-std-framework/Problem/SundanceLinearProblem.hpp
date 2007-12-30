@@ -66,24 +66,29 @@ namespace SundanceStdFwk
     /** Construct with a mesh, equation set, bcs, test and unknown funcs,
      * and a vector type. */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-                  const Expr& test, const Expr& unk, 
-                  const TSFExtended::VectorType<double>& vecType);
+      const Expr& test, const Expr& unk, 
+      const TSFExtended::VectorType<double>& vecType,
+      bool partitionBCs = false
+      );
     
     /** Construct with a mesh, equation set, bcs, and blocks of variables */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-                  const BlockArray& test, const BlockArray& unk);
+                  const BlockArray& test, const BlockArray& unk,
+      bool partitionBCs = false);
     
     /** Construct with a mesh, equation set, bcs, test and unknown funcs,
      * parameters, and a vector type. */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
                   const Expr& test, const Expr& unk, 
                   const Expr& unkParams, const Expr& unkParamVals, 
-                  const TSFExtended::VectorType<double>& vecType);
+                  const TSFExtended::VectorType<double>& vecType,
+      bool partitionBCs = false);
     
     /** Construct with a mesh, equation set, bcs, parameters, and blocks of variables */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
                   const BlockArray& test, const BlockArray& unk, 
-                  const Expr& unkParams, const Expr& unkParamVals);
+                  const Expr& unkParams, const Expr& unkParamVals,
+      bool partitionBCs = false);
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** */
@@ -133,6 +138,13 @@ namespace SundanceStdFwk
      * solver */
     Expr formSolutionExpr(const Vector<double>& solnVector) const ;
 
+    /** Convert from a BC-partitioned solution vector to a 
+     * monolithic vector */
+    Vector<double> 
+    convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
+      const Array<Vector<double> >& bcBlock) const 
+      {return assembler_->convertToMonolithicVector(internalBlock, bcBlock);}
+
     /** Flag indicating whether to stop on a solve failure */
     static bool& stopOnSolveFailure() {static bool rtn = false; return rtn;}
 
@@ -147,6 +159,8 @@ namespace SundanceStdFwk
     /** Filename for dump of bad vector */
     static string& badVectorFilename() 
     {static string rtn = "badVector.dat"; return rtn;}
+
+    
 
 
   private:

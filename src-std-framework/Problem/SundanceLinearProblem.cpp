@@ -72,7 +72,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const Expr& bc,
                              const Expr& test, 
                              const Expr& unk, 
-                             const VectorType<double>& vecType)
+  const VectorType<double>& vecType,
+  bool partitionBCs)
   : assembler_(),
     A_(),
     rhs_(),
@@ -106,7 +107,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 }
 
 
@@ -117,7 +118,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const Expr& unk, 
                              const Expr& unkParams, 
                              const Expr& unkParamVals, 
-                             const VectorType<double>& vecType)
+  const VectorType<double>& vecType, bool partitionBCs)
   : assembler_(),
     A_(),
     rhs_(),
@@ -148,7 +149,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParams, 
                           fixedFields, fixedFields));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 }
 
 
@@ -157,7 +158,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const Expr& eqn, 
                              const Expr& bc,
                              const BlockArray& test, 
-                             const BlockArray& unk)
+  const BlockArray& unk, bool partitionBCs)
   : assembler_(),
     A_(),
     rhs_(),
@@ -206,7 +207,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs));
 }
 
 
@@ -216,7 +217,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const BlockArray& test, 
                              const BlockArray& unk,
                              const Expr& unkParams, 
-                             const Expr& unkParamVals)
+  const Expr& unkParamVals, bool partitionBCs)
   : assembler_(),
     A_(),
     rhs_(),
@@ -262,7 +263,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs));
 }
 
 LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler) 

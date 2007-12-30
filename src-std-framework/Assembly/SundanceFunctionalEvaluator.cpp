@@ -101,7 +101,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, fixed, fixed));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType)));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false));
 }
 
 
@@ -128,7 +128,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, f, f0));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType)));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false));
 }
 
 double FunctionalEvaluator::evaluate() const

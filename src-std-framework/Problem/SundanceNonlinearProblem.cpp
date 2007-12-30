@@ -71,7 +71,8 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
                                    const Expr& test, 
                                    const Expr& unk, 
                                    const Expr& u0, 
-                                   const VectorType<double>& vecType)
+  const VectorType<double>& vecType,
+  bool partitionBCs)
   : NonlinearOperatorBase<double>(),
     assembler_(),
     u0_(u0),
@@ -93,7 +94,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           tuple(fixedFields), tuple(fixedFieldValues)));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
@@ -115,7 +116,8 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
                                    const Expr& u0, 
                                    const Expr& params, 
                                    const Expr& paramVals,  
-                                   const VectorType<double>& vecType)
+  const VectorType<double>& vecType,
+  bool partitionBCs)
   : NonlinearOperatorBase<double>(),
     assembler_(),
     u0_(u0),
@@ -135,11 +137,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           tuple(fixedFields), tuple(fixedFieldValues)));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType)));
-  cout << "******** n local DOF=" << assembler_->colMap()[0]->numLocalDOFs() << endl;
-  cout << "******** n remote DOF=" << assembler_->colMap()[0]->ghostIndices()->size() << endl;
-  cout << "******** n local eqn=" << assembler_->rowMap()[0]->numLocalDOFs() << endl;
-  cout << "******** n remote eqn=" << assembler_->rowMap()[0]->ghostIndices()->size() << endl;
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 

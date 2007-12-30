@@ -35,6 +35,7 @@
 #include "Teuchos_TestForException.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
+#include "Teuchos_FancyOStream.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -52,7 +53,7 @@ namespace SundanceUtils
       static void println(const std::string& str) 
       {
         if (hasLogFile()) *logFile() << str << std::endl;
-        if (!suppressStdout()) std::cout << str << std::endl;
+        if (!suppressStdout()) os() << str << std::endl;
       }
 
       static void setLogFile(const std::string& filename)
@@ -60,6 +61,19 @@ namespace SundanceUtils
         logFile() = rcp(new std::ofstream(filename.c_str()));
         hasLogFile() = true;
       }
+
+      static FancyOStream& os()
+        {
+          static RefCountPtr<std::ostream> os = rcp(&std::cout, false);
+          static RefCountPtr<FancyOStream> rtn = fancyOStream(os);
+          static bool first = true;
+          if (first)
+          {
+            rtn->setShowProcRank(true);
+            first = false;
+          }
+          return *rtn;
+        }
 
       static bool& suppressStdout() {static bool rtn=false; return rtn;}
 

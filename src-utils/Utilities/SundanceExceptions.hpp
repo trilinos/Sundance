@@ -85,6 +85,14 @@
                       << #low << ", " << #high << "]") \
 }
 
+#define SUNDANCE_CHECK_ARRAY_SIZE_MATCH(a1, a2) \
+  {\
+    TEST_FOR_EXCEPTION(a1.size() != a2.size(), SundanceUtils::RuntimeError, \
+      "Mismatched array sizes: size(" << #a1 << ")=" << a1.size() \
+      << " size(" << #a2 << ")=" << a2.size() << ". Expected equal sizes");\
+  }
+
+
 
 namespace SundanceUtils
 {

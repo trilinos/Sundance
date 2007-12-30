@@ -67,14 +67,16 @@ namespace SundanceStdFwk
        * and a vector type */
       NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
                        const Expr& test, const Expr& unk, const Expr& u0, 
-                       const TSFExtended::VectorType<double>& vecType);
+        const TSFExtended::VectorType<double>& vecType,
+        bool partitionBCs = false);
 
       /** Construct with a mesh, equation set, bcs, test and unknown funcs,
        * parameters, and a vector type */
       NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
                        const Expr& test, const Expr& unk, const Expr& u0, 
                        const Expr& params, const Expr& paramVals,  
-                       const TSFExtended::VectorType<double>& vecType);
+        const TSFExtended::VectorType<double>& vecType,
+        bool partitionBCs = false);
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY

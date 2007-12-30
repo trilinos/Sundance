@@ -49,7 +49,8 @@
 #include "Teuchos_HashSet.hpp"
 #include "TSFIncrementallyConfigurableMatrixFactory.hpp"
 #include "TSFCollectivelyConfigurableMatrixFactory.hpp"
-
+#include "TSFPartitionedMatrixFactory.hpp"
+#include "TSFPartitionedToMonolithicConverter.hpp"
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
@@ -74,10 +75,11 @@ namespace SundanceStdFwk
     public:
       /** */
       Assembler(const Mesh& mesh, 
-                const RefCountPtr<EquationSet>& eqn,
-                const Array<VectorType<double> >& rowVectorType,
-                const Array<VectorType<double> >& colVectorType,
-                const VerbositySetting& verb = classVerbosity());
+        const RefCountPtr<EquationSet>& eqn,
+        const Array<VectorType<double> >& rowVectorType,
+        const Array<VectorType<double> >& colVectorType,
+        bool partitionBCs,
+        const VerbositySetting& verb = classVerbosity());
       /** */
       Assembler(const Mesh& mesh, 
                 const RefCountPtr<EquationSet>& eqn,
@@ -93,11 +95,11 @@ namespace SundanceStdFwk
 
       /** */
       const Array<RefCountPtr<DiscreteSpace> >& solutionSpace() const 
-      {return colSpace_;}
+      {return externalColSpace_;}
 
       /** */
       const Array<RefCountPtr<DiscreteSpace> >& rowSpace() const 
-      {return rowSpace_;}
+      {return externalRowSpace_;}
 
       /** */
       VectorSpace<double> solnVecSpace() const ;
@@ -148,6 +150,11 @@ namespace SundanceStdFwk
       }
 
       /** */
+      Vector<double> convertToMonolithicVector(
+        const Array<Vector<double> >& internalBlock,
+        const Array<Vector<double> >& bcBlock) const ;
+
+      /** */
       static int& numAssembleCalls() {static int rtn=0; return rtn;}
 
       /** */
@@ -161,7 +168,7 @@ namespace SundanceStdFwk
 
       /** */
       void init(const Mesh& mesh, 
-                const RefCountPtr<EquationSet>& eqn);
+        const RefCountPtr<EquationSet>& eqn);
 
       /** */
       void insertLocalMatrixBatch(int nCells, 
@@ -188,7 +195,7 @@ namespace SundanceStdFwk
                                   const Array<int>& testID, 
                                   const Array<int>& testBlock, 
                                   const Array<double>& localValues, 
-                                  Array<TSFExtended::LoadableVector<double>* >& vec) const ;
+                                  Array<RefCountPtr<TSFExtended::LoadableVector<double> > >& vec) const ;
 
       /** */
       void configureMatrix(LinearOperator<double>& A,
@@ -208,6 +215,9 @@ namespace SundanceStdFwk
 
       /** */
       static int defaultWorkSetSize() {static int rtn=100; return rtn;}
+
+
+      bool partitionBCs_;
       
       mutable bool matNeedsConfiguration_;
       
@@ -223,11 +233,17 @@ namespace SundanceStdFwk
 
       Array<RefCountPtr<DOFMapBase> > colMap_;
 
-      Array<RefCountPtr<DiscreteSpace> > rowSpace_;
+      Array<RefCountPtr<DiscreteSpace> > externalRowSpace_;
 
-      Array<RefCountPtr<DiscreteSpace> > colSpace_;
+      Array<RefCountPtr<DiscreteSpace> > externalColSpace_;
+
+      Array<RefCountPtr<DiscreteSpace> > privateRowSpace_;
+
+      Array<RefCountPtr<DiscreteSpace> > privateColSpace_;
 
       Array<RefCountPtr<Set<int> > > bcRows_;
+
+      Array<RefCountPtr<Set<int> > > bcCols_;
 
       Array<RegionQuadCombo> rqc_;
 
@@ -245,7 +261,13 @@ namespace SundanceStdFwk
 
       Array<RefCountPtr<Array<int> > > isBCRow_;
 
+      Array<RefCountPtr<Array<int> > > isBCCol_;
+
+      Array<RefCountPtr<std::set<int> > > remoteBCCols_;
+
       Array<int> lowestRow_;
+
+      Array<int> lowestCol_;
 
       Array<VectorType<double> > rowVecType_;
 
@@ -256,6 +278,8 @@ namespace SundanceStdFwk
       Map<int, int> unkIDToBlockMap_;
 
       Map<ComputationType, Array<int> > rqcRequiresMaximalCofacets_;
+
+      Array<RefCountPtr<PartitionedToMonolithicConverter> > converter_;
 
     };
   }

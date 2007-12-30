@@ -42,6 +42,8 @@
 #include "Epetra_HashTable.h"
 #include "SundanceIntHashSet.hpp"
 #include "TSFProductVectorSpace.hpp"
+#include "TSFLoadableBlockVector.hpp"
+#include "TSFPartitionedMatrixFactory.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -131,17 +133,22 @@ Assembler
             const RefCountPtr<EquationSet>& eqn,
             const Array<VectorType<double> >& rowVectorType,
             const Array<VectorType<double> >& colVectorType,
+  bool partitionBCs,
             const VerbositySetting& verb)
-  : matNeedsConfiguration_(true),
+  : partitionBCs_(partitionBCs),
+    matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
     vecNeedsConfiguration_(true),
     mesh_(mesh),
     eqn_(eqn),
     rowMap_(),
     colMap_(),
-    rowSpace_(eqn->numVarBlocks()),
-    colSpace_(eqn->numUnkBlocks()),
+    externalRowSpace_(eqn->numVarBlocks()),
+    externalColSpace_(eqn->numUnkBlocks()),
+    privateRowSpace_(eqn->numVarBlocks()),
+    privateColSpace_(eqn->numUnkBlocks()),
     bcRows_(eqn->numVarBlocks()),
+    bcCols_(eqn->numUnkBlocks()),
     rqc_(),
     contexts_(),
     isBCRqc_(),
@@ -150,11 +157,15 @@ Assembler
     evalExprs_(),
     evalMgr_(rcp(new EvalManager())),
     isBCRow_(eqn->numVarBlocks()),
+    isBCCol_(eqn->numUnkBlocks()),
+    remoteBCCols_(eqn->numUnkBlocks()),
     lowestRow_(eqn->numVarBlocks()),
+    lowestCol_(eqn->numUnkBlocks()),
     rowVecType_(rowVectorType),
     colVecType_(colVectorType),
     testIDToBlockMap_(),
-    unkIDToBlockMap_()
+    unkIDToBlockMap_(),
+    converter_(eqn->numUnkBlocks())
 {
   TimeMonitor timer(assemblerCtorTimer());
   verbosity() = verb;
@@ -165,16 +176,20 @@ Assembler
 ::Assembler(const Mesh& mesh, 
             const RefCountPtr<EquationSet>& eqn,
             const VerbositySetting& verb)
-  : matNeedsConfiguration_(true),
+  : partitionBCs_(false),
+    matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
     vecNeedsConfiguration_(true),
     mesh_(mesh),
     eqn_(eqn),
     rowMap_(),
     colMap_(),
-    rowSpace_(eqn->numVarBlocks()),
-    colSpace_(eqn->numUnkBlocks()),
+    externalRowSpace_(eqn->numVarBlocks()),
+    externalColSpace_(eqn->numUnkBlocks()),
+    privateRowSpace_(eqn->numVarBlocks()),
+    privateColSpace_(eqn->numUnkBlocks()),
     bcRows_(eqn->numVarBlocks()),
+    bcCols_(eqn->numUnkBlocks()),
     rqc_(),
     contexts_(),
     isBCRqc_(),
@@ -183,11 +198,15 @@ Assembler
     evalExprs_(),
     evalMgr_(rcp(new EvalManager())),
     isBCRow_(eqn->numVarBlocks()),
+    isBCCol_(eqn->numUnkBlocks()),
+    remoteBCCols_(eqn->numUnkBlocks()),
     lowestRow_(eqn->numVarBlocks()),
+    lowestCol_(eqn->numUnkBlocks()),
     rowVecType_(),
     colVecType_(),
     testIDToBlockMap_(),
-    unkIDToBlockMap_()
+    unkIDToBlockMap_(),
+    converter_(eqn->numUnkBlocks())
 {
   TimeMonitor timer(assemblerCtorTimer());
   verbosity() = verb;
@@ -210,18 +229,28 @@ void Assembler::init(const Mesh& mesh,
       || compTypes.contains(FunctionalAndGradient))
     {
       Tabs tab1;
-      mapBuilder = DOFMapBuilder(mesh, eqn);
+      mapBuilder = DOFMapBuilder(mesh, eqn, partitionBCs_);
 
       rowMap_ = mapBuilder.rowMap();
       isBCRow_ = mapBuilder.isBCRow();
+      isBCCol_ = mapBuilder.isBCCol();
       lowestRow_.resize(eqn_->numVarBlocks());
       for (unsigned int b=0; b<lowestRow_.size(); b++) 
         {
           lowestRow_[b] = rowMap_[b]->lowestLocalDOF();
           SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": lowest row="
                              << lowestRow_[b]);
-          rowSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray()[b], 
+          externalRowSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray()[b], 
                                                rowMap_[b], rowVecType_[b]));
+          if (partitionBCs_)
+          {
+            privateRowSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray()[b], 
+                rowMap_[b], isBCRow_[b], rowVecType_[b]));
+          }
+          else
+          {
+            privateRowSpace_[b] = externalRowSpace_[b];
+          }
           SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": done forming row space");
         }
     }
@@ -231,10 +260,21 @@ void Assembler::init(const Mesh& mesh,
       colMap_ = mapBuilder.colMap();
       for (unsigned int b=0; b<eqn_->numUnkBlocks(); b++) 
         {
-          colSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray()[b], 
+          externalColSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray()[b], 
                                                colMap_[b], colVecType_[b]));
+          if (partitionBCs_)
+          {
+            privateColSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray()[b], 
+                colMap_[b], isBCCol_[b], colVecType_[b]));
+            converter_[b] = rcp(new PartitionedToMonolithicConverter(privateColSpace_[b]->vecSpace(), isBCCol_[b], externalColSpace_[b]->vecSpace()));
+          }
+          else
+          {
+            privateColSpace_[b] = externalColSpace_[b];
+          }
           SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": done forming col space");
         }
+
       groups_.put(MatrixAndVector, Array<Array<IntegralGroup> >());
       rqcRequiresMaximalCofacets_.put(MatrixAndVector, Array<int>());
       contexts_.put(MatrixAndVector, Array<EvalContext>());
@@ -372,11 +412,11 @@ void Assembler::configureVector(Vector<double>& b) const
   Array<VectorSpace<double> > vs(eqn_->numVarBlocks());
   for (unsigned int i=0; i<eqn_->numVarBlocks(); i++)
     {
-      vs[i] = rowSpace_[i]->vecSpace();
+      vs[i] = privateRowSpace_[i]->vecSpace();
     }
   VectorSpace<double> rowSpace;
 
-  if ((int) vs.size() > 1)
+  if (eqn_->numVarBlocks() > 1)
     {
       rowSpace = TSFExtended::productSpace(vs);
     }
@@ -385,13 +425,17 @@ void Assembler::configureVector(Vector<double>& b) const
       rowSpace = vs[0];
     }
 
+//  cout << "row space=" <<rowSpace <<endl;
+
   b = rowSpace.createMember();
 
-  if (rowSpace.numBlocks() > 1)
+//  cout << "b = " << b << endl;
+
+  if (!partitionBCs_ && eqn_->numVarBlocks() > 1)
     {
       /* configure the blocks */
       Vector<double> vecBlock;
-      for (int br=0; br<rowSpace.numBlocks(); br++)
+      for (int br=0; br<eqn_->numVarBlocks(); br++)
         {
           configureVectorBlock(br, vecBlock);
           b.setBlock(br, vecBlock);
@@ -400,11 +444,14 @@ void Assembler::configureVector(Vector<double>& b) const
   else
     {
       /* nothing to do here except check that the vector is loadable */
-      TSFExtended::LoadableVector<double>* lv 
-        = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
-  
-      TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
-                         "vector is not loadable in Assembler::configureVector()");
+      if (!partitionBCs_)
+      {
+        TSFExtended::LoadableVector<double>* lv 
+          = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
+        
+        TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
+          "vector is not loadable in Assembler::configureVector()");
+      }
     }
   
   vecNeedsConfiguration_ = false;
@@ -412,16 +459,19 @@ void Assembler::configureVector(Vector<double>& b) const
 
 void Assembler::configureVectorBlock(int br, Vector<double>& b) const 
 {
-  VectorSpace<double> vecSpace = rowSpace_[br]->vecSpace();
+  VectorSpace<double> vecSpace = privateRowSpace_[br]->vecSpace();
 
   b = vecSpace.createMember();
   
-  TSFExtended::LoadableVector<double>* lv 
-    = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
-  
-  TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
-                     "vector block is not loadable "
-                     "in Assembler::configureVectorBlock()");
+  if (!partitionBCs_)
+  {
+    TSFExtended::LoadableVector<double>* lv 
+      = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
+    
+    TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
+      "vector block is not loadable "
+      "in Assembler::configureVectorBlock()");
+  }
 }
 
 
@@ -439,7 +489,7 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
     }
   else
     {
-      A = new BlockOperator<double>(solnVecSpace(), rowVecSpace());
+      A = makeLinearOperator(new BlockOperator<double>(solnVecSpace(), rowVecSpace()));
       for (int br=0; br<nRowBlocks; br++)
         {
           for (int bc=0; bc<nColBlocks; bc++)
@@ -469,11 +519,21 @@ void Assembler::configureMatrixBlock(int br, int bc,
   
   SUNDANCE_VERB_LOW(tab << "Assembler: num cols = " << colMap()[bc]->numDOFs());
 
-  VectorSpace<double> rowSpace = rowSpace_[br]->vecSpace();
-  VectorSpace<double> colSpace = colSpace_[bc]->vecSpace();
+  VectorSpace<double> rowSpace = privateRowSpace_[br]->vecSpace();
+  VectorSpace<double> colSpace = privateColSpace_[bc]->vecSpace();
 
-  RefCountPtr<MatrixFactory<double> > matFactory 
-    = rowVecType_[br].createMatrixFactory(colSpace, rowSpace);
+  RefCountPtr<MatrixFactory<double> > matFactory ;
+
+  if (partitionBCs_)
+  {
+    matFactory = rcp(new PartitionedMatrixFactory(colSpace, lowestCol_[bc],
+        isBCCol_[bc], remoteBCCols_[bc], colVecType_[bc], 
+        rowSpace, lowestRow_[br], isBCRow_[br], rowVecType_[br]));
+  }
+  else
+  {
+    matFactory = rowVecType_[br].createMatrixFactory(colSpace, rowSpace);
+  }
 
   IncrementallyConfigurableMatrixFactory* icmf 
     = dynamic_cast<IncrementallyConfigurableMatrixFactory*>(matFactory.get());
@@ -567,8 +627,8 @@ void Assembler::assemble(LinearOperator<double>& A,
       configureMatrix(A, b);
     }
   
-  int numRowBlocks = A.range().numBlocks();
-  int numColBlocks = A.domain().numBlocks();
+  int numRowBlocks = eqn_->numVarBlocks();
+  int numColBlocks = eqn_->numUnkBlocks();
 
   RefCountPtr<Array<Array<Array<int> > > > testLocalDOFs 
     = rcp(new Array<Array<Array<int> > >(numRowBlocks));
@@ -576,20 +636,41 @@ void Assembler::assemble(LinearOperator<double>& A,
   RefCountPtr<Array<Array<Array<int> > > > unkLocalDOFs
     = rcp(new Array<Array<Array<int> > >(numColBlocks));
 
-  Array<TSFExtended::LoadableVector<double>* > vec(numRowBlocks);
+  Array<RefCountPtr<TSFExtended::LoadableVector<double> > > vec(numRowBlocks);
   Array<Array<TSFExtended::LoadableMatrix<double>* > > mat(numRowBlocks, numColBlocks);
 
   for (int br=0; br<numRowBlocks; br++)
     {
-      Vector<double> vecBlock = b.getBlock(br);
-      vec[br] = dynamic_cast<TSFExtended::LoadableVector<double>* >(vecBlock.ptr().get());
-      TEST_FOR_EXCEPTION(vec[br]==0, RuntimeError,
+      Vector<double> vecBlock; 
+      if (partitionBCs_ && numRowBlocks == 1)
+      {
+        vecBlock = b;
+        int highestRow = lowestRow_[br] + rowMap_[br]->numLocalDOFs();
+        vec[br] = 
+          rcp(new LoadableBlockVector(vecBlock, lowestRow_[br],
+              highestRow, isBCRow_[br]));
+      }
+      else
+      {
+        vecBlock = b.getBlock(br);
+        vec[br] 
+          = rcp_dynamic_cast<TSFExtended::LoadableVector<double> >(vecBlock.ptr());
+      }
+      TEST_FOR_EXCEPTION(vec[br].get()==0, RuntimeError,
                          "vector block " << br 
                          << " is not loadable in Assembler::assemble()");
       vecBlock.zero();
       for (int bc=0; bc<numColBlocks; bc++)
         {
-          LinearOperator<double> matBlock = A.getBlock(br, bc);
+          LinearOperator<double> matBlock;
+          if (partitionBCs_ && numRowBlocks==1 && numColBlocks==1)
+          {
+            matBlock = A;
+          }
+          else
+          {
+            matBlock = A.getBlock(br, bc);
+          }
           if (matBlock.ptr().get() == 0) continue;
           mat[br][bc] 
             = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(matBlock.ptr().get());
@@ -833,18 +914,32 @@ void Assembler::assemble(Vector<double>& b) const
       b.print(cerr);
     }
   
-  int numRowBlocks = b.space().numBlocks();
+  int numRowBlocks = eqn_->numVarBlocks();
 
   RefCountPtr<Array<Array<Array<int> > > > testLocalDOFs 
     = rcp(new Array<Array<Array<int> > >(numRowBlocks));
 
-  Array<TSFExtended::LoadableVector<double>* > vec(numRowBlocks);
+  Array<RefCountPtr<TSFExtended::LoadableVector<double> > > vec(numRowBlocks);
 
   for (int br=0; br<numRowBlocks; br++)
     {
-      Vector<double> vecBlock = b.getBlock(br);
-      vec[br] = dynamic_cast<TSFExtended::LoadableVector<double>* >(vecBlock.ptr().get());
-      TEST_FOR_EXCEPTION(vec[br]==0, RuntimeError,
+      Vector<double> vecBlock; 
+      if (partitionBCs_ && numRowBlocks==1)
+      {
+        vecBlock = b;
+        int highestRow = lowestRow_[br] + rowMap_[br]->numLocalDOFs();
+        vec[br] = 
+          rcp(new LoadableBlockVector(vecBlock, lowestRow_[br],
+              highestRow, isBCRow_[br]));
+      }
+      else
+      {
+        vecBlock = b.getBlock(br);
+        vec[br] 
+          = rcp_dynamic_cast<TSFExtended::LoadableVector<double> >(vecBlock.ptr());
+      }
+
+      TEST_FOR_EXCEPTION(vec[br].get()==0, RuntimeError,
                          "vector block " << br 
                          << " is not loadable in Assembler::assemble()");
       vecBlock.zero();
@@ -983,6 +1078,8 @@ void Assembler::assemble(Vector<double>& b) const
                                      *testLocalDOFs,
                                      nTestNodes,
                                      group.testID(), group.testBlock(), *localValues, vec);
+//              cout << " bc vec = " << dynamic_cast<const LoadableBlockVector*>(vec[0].get())->bcBlock() << endl;
+//              cout << " in vec = " << dynamic_cast<const LoadableBlockVector*>(vec[0].get())->internalBlock() << endl;
             }
         }
     }
@@ -1038,13 +1135,13 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
   RefCountPtr<Array<Array<Array<int> > > > testLocalDOFs 
     = rcp(new Array<Array<Array<int> > >(numRowBlocks));
 
-  Array<TSFExtended::LoadableVector<double>* > vec(numRowBlocks);
+  Array<RefCountPtr<TSFExtended::LoadableVector<double> > > vec(numRowBlocks);
 
   for (int br=0; br<numRowBlocks; br++)
     {
       Vector<double> vecBlock = gradient.getBlock(br);
-      vec[br] = dynamic_cast<TSFExtended::LoadableVector<double>* >(vecBlock.ptr().get());
-      TEST_FOR_EXCEPTION(vec[br]==0, RuntimeError,
+      vec[br] = rcp_dynamic_cast<TSFExtended::LoadableVector<double> >(vecBlock.ptr());
+      TEST_FOR_EXCEPTION(vec[br].get()==0, RuntimeError,
                          "vector block " << br 
                          << " is not loadable in Assembler::assemble()");
       vecBlock.zero();
@@ -1523,7 +1620,7 @@ void Assembler
                          const Array<int>& testID,  
                          const Array<int>& testBlock, 
                          const Array<double>& localValues, 
-                         Array<TSFExtended::LoadableVector<double>* >& vec) const 
+                         Array<RefCountPtr<TSFExtended::LoadableVector<double> > >& vec) const 
 {
   TimeMonitor timer(vecInsertTimer());
   Tabs tab;
@@ -1545,7 +1642,7 @@ void Assembler
       int nNodes = nTestNodes[br][chunk];
       const Array<int>& isBCRow = *(isBCRow_[br]);
       int r=0;
-      TSFExtended::LoadableVector<double>* vecBlock = vec[br];
+      RefCountPtr<TSFExtended::LoadableVector<double> > vecBlock = vec[br];
 
       for (int c=0; c<nCells; c++)
         {
@@ -2175,6 +2272,48 @@ VectorSpace<double> Assembler::rowVecSpace() const
     }
   return productSpace(rtn);
 }
+
+
+Vector<double> Assembler
+::convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
+  const Array<Vector<double> >& bcBlock) const
+{
+
+  Array<VectorSpace<double> > spaces(bcBlock.size());
+  Array<Vector<double> > v(bcBlock.size());
+
+  SUNDANCE_CHECK_ARRAY_SIZE_MATCH(internalBlock, bcBlock);
+  SUNDANCE_CHECK_ARRAY_SIZE_MATCH(internalBlock, privateColSpace_);
+
+  for (unsigned int i=0; i<internalBlock.size(); i++)
+  {
+    VectorSpace<double> partSpace = privateColSpace_[i]->vecSpace();
+    Vector<double> in = partSpace.createMember();
+    in.setBlock(0, internalBlock[i]);
+    in.setBlock(1, bcBlock[i]);
+    Vector<double> out = externalColSpace_[i]->vecSpace().createMember();
+    spaces[i] = externalColSpace_[i]->vecSpace();
+    converter_[i]->convert(in, out);
+    v[i] = out;
+  }
+
+  if (spaces.size() > 1) 
+  {
+    VectorSpace<double> rtnSpace = productSpace(spaces);
+    Vector<double> rtn = rtnSpace.createMember();
+    for (unsigned int i=0; i<spaces.size(); i++)
+    {
+      rtn.setBlock(i, v[i]);
+    }
+    return rtn;
+  }
+  else
+  {
+    return v[0];
+  }
+  
+}
+
 
 
 unsigned int& Assembler::workSetSize()

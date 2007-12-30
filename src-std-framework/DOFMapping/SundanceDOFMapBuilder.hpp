@@ -63,7 +63,8 @@ namespace SundanceStdFwk
       /** */
       DOFMapBuilder();
       /** */
-      DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn);
+      DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn, 
+        bool findBCCols);
 
       /** */
       const Array<RefCountPtr<DOFMapBase> >& rowMap() const {return rowMap_;}
@@ -73,6 +74,14 @@ namespace SundanceStdFwk
 
       /** */
       const Array<RefCountPtr<Array<int> > >& isBCRow() const {return isBCRow_;}
+
+      /** */
+      const Array<RefCountPtr<Array<int> > >& isBCCol() const {return isBCCol_;}
+
+
+      /** */
+      const Array<RefCountPtr<std::set<int> > >& remoteBCCols() const 
+        {return remoteBCCols_;}
 
       Array<Array<BasisFamily> > testBasisArray() const ;
 
@@ -158,9 +167,11 @@ namespace SundanceStdFwk
 
       void markBCRows(int block) ;
 
+      void markBCCols(int block) ;
+
       const MPIComm& comm() const {return mesh().comm();}
 
-      void init();
+      void init(bool findBCCols);
 
       Mesh mesh_;
 
@@ -171,7 +182,10 @@ namespace SundanceStdFwk
       Array<RefCountPtr<DOFMapBase> > colMap_;
 
       Array<RefCountPtr<Array<int> > > isBCRow_;
-      
+
+      Array<RefCountPtr<Array<int> > > isBCCol_;
+
+      Array<RefCountPtr<std::set<int> > > remoteBCCols_;
     };
   }
 }

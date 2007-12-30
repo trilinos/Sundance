@@ -30,14 +30,25 @@
 
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceDOFMapBuilder.hpp"
+#include "SundanceOut.hpp"
 #include "SundanceMaximalCellFilter.hpp"
+#include "TSFProductVectorSpaceImpl.hpp"
+#include "Teuchos_MPIContainerComm.hpp"
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
+using namespace SundanceUtils;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+
+const int* vecPtr(const Array<int>& x)
+{
+  static const int* dum = 0;
+  if (x.size()==0) return dum;
+  else return &(x[0]);
+}
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                              const VectorType<double>& vecType)
@@ -112,6 +123,21 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+  const RefCountPtr<DOFMapBase>& map,
+  const RefCountPtr<Array<int> >& bcIndices,
+  const VectorType<double>& vecType)
+  : map_(map), 
+    mesh_(mesh),
+    subdomains_(),
+    basis_(),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  init(map->funcDomains(), basis, bcIndices, true);
+}
+
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                              const RefCountPtr<DOFMapBase>& map,
                              const VectorType<double>& vecType)
   : map_(map), 
@@ -158,8 +184,19 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 
 
 
-void DiscreteSpace::init(const Array<CellFilter>& regions,
-                         const BasisArray& basis)
+void DiscreteSpace::init(
+  const Array<CellFilter>& regions,
+  const BasisArray& basis)
+{
+  RefCountPtr<Array<int> > dummyBCIndices;
+  init(regions, basis, dummyBCIndices, false);
+}
+
+void DiscreteSpace::init(
+  const Array<CellFilter>& regions,
+  const BasisArray& basis,
+  const RefCountPtr<Array<int> >& isBCIndex, 
+  bool partitionBCs)
 {
   basis_ = basis;
   subdomains_ = regions;
@@ -169,23 +206,63 @@ void DiscreteSpace::init(const Array<CellFilter>& regions,
       for (unsigned int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
       map_ = DOFMapBuilder::makeMap(mesh_, basis, cf);
     }
-  
+
   int nDof = map_->numLocalDOFs();
   int lowDof = map_->lowestLocalDOF();
-  
-  Array<int> dofs(nDof);
-  for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
 
-  vecSpace_ = vecType_.createSpace(map_->numDOFs(),
-                                   map_->numLocalDOFs(),
-                                   &(dofs[0]));
+  if (partitionBCs)
+  {
+    TEST_FOR_EXCEPT(isBCIndex.get() == 0);
 
+    int nBCDofs = 0;
+    for (int i=0; i<nDof; i++)
+    {
+      if ((*isBCIndex)[i]) nBCDofs++;
+    }
+    
+    int nTotalBCDofs = nBCDofs;
+    mesh().comm().allReduce(&nBCDofs, &nTotalBCDofs, 1, MPIComm::INT, MPIComm::SUM);
+    int nTotalInteriorDofs = map_->numDOFs() - nTotalBCDofs;
 
-  RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
-  int nGhost = ghostIndices->size();
-  int* ghosts = 0;
-  if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
-  ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
+    Array<int> interiorDofs(nDof - nBCDofs);
+    Array<int> bcDofs(nBCDofs);
+    int iBC = 0;
+    int iIn = 0;
+    for (int i=0; i<nDof; i++)
+    {
+      if ((*isBCIndex)[i]) bcDofs[iBC++] = lowDof+i;
+      else interiorDofs[iIn++] = lowDof+i;
+    }
+    const int* bcDofPtr = vecPtr(bcDofs);
+    const int* intDofPtr = vecPtr(interiorDofs);
+    Out::os() << "creating BC space" << endl;
+    VectorSpace<double> bcSpace = vecType_.createSpace(nTotalBCDofs, nBCDofs,
+      bcDofPtr);
+    Out::os() << "bc space = " << bcSpace << endl;
+    VectorSpace<double> interiorSpace = vecType_.createSpace(nTotalInteriorDofs, nDof-nBCDofs,
+      intDofPtr);
+    Out::os() << "int space = " << interiorSpace << endl;
+
+    vecSpace_ = productSpace<double>(interiorSpace, bcSpace);
+  }
+  else
+  {
+    Array<int> dofs(nDof);
+    for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
+    
+    vecSpace_ = vecType_.createSpace(map_->numDOFs(),
+      map_->numLocalDOFs(),
+      &(dofs[0]));
+  }
+
+  if (!partitionBCs)
+  {
+    RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
+    int nGhost = ghostIndices->size();
+    int* ghosts = 0;
+    if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
+    ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
+  }
 }
 
 Array<CellFilter> DiscreteSpace::maximalRegions(int n) const
