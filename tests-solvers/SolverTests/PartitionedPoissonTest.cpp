@@ -62,9 +62,18 @@ int main(int argc, char *argv[])
 
   try
   {
-      int verbosity = 1;
+    int verbosity = 1;
 
-      GlobalMPISession session(&argc, &argv);
+    GlobalMPISession session(&argc, &argv);
+
+    int np = MPIComm::world().getNProc();
+
+    if (np > 1)
+    {
+      cout << "parallel partioned poisson test INACTIVE" << endl;
+    }
+    else
+    {
 
       int debugWait = 0;
       if (debugWait)
@@ -273,17 +282,18 @@ int main(int argc, char *argv[])
 
       
       if (err > tol)
-        {
-          cout << "Poisson solve test FAILED" << endl;
-        }
+      {
+        cout << "Poisson solve test FAILED" << endl;
+      }
       else
-        {
-          cout << "Poisson solve test PASSED" << endl;
-        }
+      {
+        cout << "Poisson solve test PASSED" << endl;
+      }
     }
+  }
   catch(std::exception& e)
-    {
-      cout << "Caught exception: " << e.what() << endl;
-    }
+  {
+    cout << "Caught exception: " << e.what() << endl;
+  }
 }
 

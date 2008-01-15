@@ -131,6 +131,7 @@ int main(int argc, char** argv)
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       
       Expr coeff = 1.0;
+#ifdef FOR_TIMING
       if (useCCode)
       {
         coeff = Poly(depth, x);
@@ -144,13 +145,14 @@ int main(int argc, char** argv)
           coeff = coeff + 2.0*t - t - t;
         }
       }
+#endif
       Expr eqn = Integral(interior, coeff*(grad*v)*(grad*u) +2.0*v, quad2);
 
       /* Define the Dirichlet BC */
       Expr exactSoln = (x + 1.0)*x - 1.0/4.0;
       Expr h = new CellDiameterExpr();
-      Expr bc = EssentialBC(side4, v*(u-exactSoln)/h/h, quad4)
-        + EssentialBC(side6, v*(u-exactSoln)/h/h, quad4);
+      Expr bc = EssentialBC(side4, v*(u-exactSoln)/h, quad4)
+        + EssentialBC(side6, v*(u-exactSoln)/h, quad4);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
@@ -165,7 +167,7 @@ int main(int argc, char** argv)
 
       Expr soln = prob.solve(solver);
 
-#ifdef BLARF
+#ifndef FOR_TIMING
       DiscreteSpace discSpace(mesh, new Lagrange(2), vecType);
       L2Projector proj1(discSpace, exactSoln);
       L2Projector proj2(discSpace, soln-exactSoln);
@@ -192,9 +194,10 @@ int main(int argc, char** argv)
 
       double errorSq = evaluateIntegral(mesh, errExpr);
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+#else
+      double errorSq = 1.0;
 #endif
-      double errorSq = 1.0e-14;
-      double tol = 1.0e-12;
+      double tol = 1.0e-10;
       Sundance::passFailTest(sqrt(errorSq), tol);
     }
 	catch(exception& e)
