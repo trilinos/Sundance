@@ -672,6 +672,9 @@ void Assembler::assemble(LinearOperator<double>& A,
             matBlock = A.getBlock(br, bc);
           }
           if (matBlock.ptr().get() == 0) continue;
+          const TSFExtended::ZeroOperator<double>* zp
+            = dynamic_cast<const TSFExtended::ZeroOperator<double>*>(matBlock.ptr().get());
+          if (zp) continue;
           mat[br][bc] 
             = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(matBlock.ptr().get());
           TEST_FOR_EXCEPTION(mat[br][bc]==0, RuntimeError,

@@ -442,7 +442,9 @@ namespace TSFExtended
     makeBlockOperator(const TSFExtended::VectorSpace<double>& domain,
                       const TSFExtended::VectorSpace<double>& range)
   {
-    return LinearOperator<double>(new TSFExtended::BlockOperator<double>(domain, range));
+    RefCountPtr<TSFExtended::BlockOperator<double> > b 
+      = rcp(new TSFExtended::BlockOperator<double>(domain, range));
+    return LinearOperator<double>(b);
   }
 
   %}
