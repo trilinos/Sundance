@@ -77,7 +77,14 @@ namespace SundanceStdFwk
   public:
     /** */
     BlockArray(const Array<Block>& a) : Array<Block>(a) {;}
-    
+    /** explicit conversion needed for python wrappers */
+    BlockArray(int n) : Array<Block>(n) {;}
+
+#ifdef TRILINOS_DEV
+    /** */
+    template <int n>
+    BlockArray(const Teuchos::Tuple<Block, n>& a) : Array<Block>(a) {;}
+#endif
   };
 
   /** \relates Block */

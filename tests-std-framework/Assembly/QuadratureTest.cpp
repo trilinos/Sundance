@@ -56,7 +56,7 @@ int main(int argc, char** argv)
       Array<int> tetFailures;
 
       cerr << "------------- testing triangle rules -------------------"  << endl;
-      for (int i=0; i<validTriOrders.size(); i++)
+      for (unsigned int i=0; i<validTriOrders.size(); i++)
 				{
           int p = validTriOrders[i];
 					bool pass = TriangleQuadrature::test(p);
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 				}
       cerr << "------------- testing tet rules -------------------"  << endl;
           
-      for (int i=0; i<validTetOrders.size(); i++)
+      for (unsigned int i=0; i<validTetOrders.size(); i++)
 				{
           int p = validTetOrders[i];
 					bool pass = TetQuadrature::test(p);

@@ -159,7 +159,7 @@ void FIATScalarAdapter::getReferenceDOFs(const CellType& maximalCellType,
 //		cout << "getting local dof" << endl;
   if (PointCell == cellType) {
     dofs.resize(1);
-    dofs[0] = tuple(tuple(0));
+    dofs[0] = tuple<Array<int> >(tuple(0));
   }
   else {
     int cd = dimension( cellType );
@@ -221,7 +221,7 @@ void FIATScalarAdapter::refEval(
 
   result.resize(1);
   if (PointCell == cellType) {
-    result[0] = tuple(tuple(1.0));
+    result[0] = tuple<Array<double> >(tuple(1.0));
   }
   else {
 // 			cout << "refevaling" << endl;
