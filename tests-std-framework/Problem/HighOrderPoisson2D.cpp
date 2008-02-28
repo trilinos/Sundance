@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int n = 4;
+      int n = 6;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
                                                          0.0, 1.0, n, 1,

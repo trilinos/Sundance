@@ -28,59 +28,57 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_EXODUSMESHREADER_H
-#define SUNDANCE_EXODUSMESHREADER_H
+#ifndef SUNDANCE_FILEIO_CHACOPARTITIONER_H
+#define SUNDANCE_FILEIO_CHACOPARTITIONER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceMeshReaderBase.hpp"
-#include "SundanceMap.hpp"
-#include "Teuchos_Array.hpp"
+#include "SundanceMesh.hpp"
+#include "SundanceSerialPartitionerBase.hpp"
+#include "TSFHandle.hpp"
 
 namespace SundanceStdMesh
 {
-  using namespace TSFExtended;
-  using namespace Teuchos;
-  using namespace SundanceUtils;
-  using namespace Internal;
   /**
-   * ExodusMeshReader reads a mesh from an ExodusII file.
+   * This partitioner makes a system call to run Chaco, passing partitioning
+   * information to it through file IO.
    */
-  class ExodusMeshReader : public MeshReaderBase
+class FileIOChacoPartitioner : public SerialPartitionerBase
   {
   public:
+
+    /** Construct an empty mesh filter object */
+    FileIOChacoPartitioner(const std::string& filename);
+
+
+
     /** */
-    ExodusMeshReader(const string& filename, 
-                           const MeshType& meshType,
-                           const MPIComm& comm = MPIComm::world());
+    virtual void getAssignments(const Mesh& mesh, int np, 
+      Array<int>& assignments) const ;
 
-    /** virtual dtor */
-    virtual ~ExodusMeshReader(){;}
-
-
-    /** Create a mesh */
-    virtual Mesh fillMesh() const ;
-
-    /** Print a short descriptive string */
-    virtual string description() const 
-    {return "ExodusMeshReader[file=" + filename() + "]";}
-
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-    /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshSourceBase> getRcp() {return rcp(this);}
+    /** */
+    void writeGraph(const Mesh& mesh) const ;
+    
+    /** */
+    void runChaco(int np) const ;
 
   private:
-    /** */
-    void readParallelInfo(Array<int>& ptGID, Array<int>& ptOwner,
-                          Array<int>& elemGID, Array<int>& elemOwner) const ;
-    
-    /** */
-    string exoFilename_;
-    /** */
-    string parFilename_;
-    
-                      
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
+
+  /** Determine whether a line is empty */
+  bool isEmptyLine(const std::string& x) const ;
+
+  /** 
+   * Read the next non-empty, non-comment line from a stream
+   * @param is the stream from which to get the line
+   * @param line upon return, filled in with the line that was read
+   * @param tokens array of space-separated tokens in the line
+   * @param comment a character indicating that everything after it
+   * is a comment
+   */
+  bool getNextLine(std::istream& is, string& line,
+    Array<string>& tokens,
+    char comment) const ;
+
+    std::string filename_;
   };
 }
 

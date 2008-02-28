@@ -444,6 +444,7 @@ namespace TSFExtended
   {
     RefCountPtr<TSFExtended::BlockOperator<double> > b 
       = rcp(new TSFExtended::BlockOperator<double>(domain, range));
+
     return LinearOperator<double>(b);
   }
 

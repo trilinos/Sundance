@@ -62,8 +62,8 @@ Mesh MeshSource::getMesh() const
           rtn = ptr()->getMesh();
         }
 
-      //      if (rtn.spatialDim() > 1) rtn.assignIntermediateCellOwners(1);
-      //      if (rtn.spatialDim() > 2) rtn.assignIntermediateCellOwners(2);
+      if (rtn.spatialDim() > 1) rtn.assignIntermediateCellGIDs(1);
+      if (rtn.spatialDim() > 2) rtn.assignIntermediateCellGIDs(2);
     }
   catch(std::exception& e)
     {

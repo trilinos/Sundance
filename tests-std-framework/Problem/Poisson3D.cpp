@@ -32,6 +32,7 @@
 #include "SundanceEvaluator.hpp"
 #include "SundanceLabelCellPredicate.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
+#include "SundanceExodusMeshReader.hpp"
 
 using SundanceCore::List;
 /** 
@@ -94,7 +95,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("cube.ncdf", meshType);
+        = new ExodusMeshReader("../../../examples-tutorial/meshes/cube-0.025", meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -111,8 +112,8 @@ int main(int argc, char** argv)
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(2), "u");
-      Expr v = new TestFunction(new Lagrange(2), "v");
+      Expr u = new UnknownFunction(new Lagrange(1), "u");
+      Expr v = new TestFunction(new Lagrange(1), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);
@@ -168,13 +169,14 @@ int main(int argc, char** argv)
       Expr soln = prob.solve(solver);
 
 #ifndef FOR_TIMING
-      DiscreteSpace discSpace(mesh, new Lagrange(2), vecType);
+
+      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
       L2Projector proj1(discSpace, exactSoln);
       L2Projector proj2(discSpace, soln-exactSoln);
       L2Projector proj3(discSpace, pow(soln-exactSoln, 2.0));
       Expr exactDisc = proj1.project();
       Expr errorDisc = proj2.project();
-      Expr errorSqDisc = proj3.project();
+//      Expr errorSqDisc = proj3.project();
 
       cerr << "writing fields" << endl;
       /* Write the field in VTK format */
@@ -183,7 +185,7 @@ int main(int argc, char** argv)
       w.addField("soln", new ExprFieldWrapper(soln[0]));
       w.addField("exact soln", new ExprFieldWrapper(exactDisc));
       w.addField("error", new ExprFieldWrapper(errorDisc));
-      w.addField("errorSq", new ExprFieldWrapper(errorSqDisc));
+//      w.addField("errorSq", new ExprFieldWrapper(errorSqDisc));
       w.write();
 
       cerr << "computing error" << endl;

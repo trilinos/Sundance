@@ -57,9 +57,16 @@ namespace SundanceStdMesh
     /** Return a ref count pointer to self */
     virtual RefCountPtr<FieldWriterBase> getRcp() {return rcp(this);}
 
+    /** */
+    void writeParallelInfo(const string& filename) const ;
+        
 
   private:
 
+    /** */
+    void offset(Array<int>& x) const ;
+
+    /** */
     std::string elemType(const CellType& type) const ;
 
     /** */

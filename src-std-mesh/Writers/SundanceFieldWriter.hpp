@@ -72,6 +72,16 @@ namespace SundanceStdMesh
     /** set the numerical value to be written at cells on which
      * a field is undefined. Default value is 0.0. */
     void setUndefinedValue(const double& x);
+
+    /** 
+     * Tell the writer to pretend that it is running as one of nProc processes
+     * with the given rank. This is used when partitioning meshes in serial.
+     */
+    void impersonateParallelProc(int nProc, int rank)
+      {
+        ptr()->impersonateParallelProc(nProc, rank);
+      }
+    
     
 
     /** write to stream */

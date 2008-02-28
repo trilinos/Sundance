@@ -30,6 +30,7 @@
 
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
+#include "SundanceExodusMeshReader.hpp"
 
 using SundanceCore::List;
 /** 
@@ -39,7 +40,7 @@ using SundanceCore::List;
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-2.0) < 1.0e-10;})
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 
 
 int main(int argc, char** argv)
@@ -47,9 +48,11 @@ int main(int argc, char** argv)
   
   try
 		{
-      int nx = 4;
-      int ny = 4;
-      string solverFile = "aztec.xml";
+      int nx = 2;
+      int ny = 2;
+      string meshFile="builtin";
+      string solverFile = "aztec-ml.xml";
+      Sundance::setOption("meshFile", meshFile, "mesh file");
       Sundance::setOption("nx", nx, "number of elements in x");
       Sundance::setOption("ny", ny, "number of elements in y");
       Sundance::setOption("solver", solverFile, "name of XML file for solver");
@@ -63,25 +66,59 @@ int main(int argc, char** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
-                                                         0.0, 2.0, ny, 1,
-                                                         meshType);
+      
+      MeshSource mesher;
+      if (meshFile != "builtin")
+      {
+        mesher = new ExodusMeshReader("../../../examples-tutorial/meshes/"+meshFile, meshType);
+      }
+      else
+      {
+        mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np, 
+          0.0,  1.0, ny, 1, meshType);
+      }
       Mesh mesh = mesher.getMesh();
+
+
+      bool meshOK = mesh.checkConsistency(meshFile+"-check");
+      if (meshOK) 
+      {
+        cout << "mesh is OK" << endl;
+      }
+      else
+      {
+        cout << "mesh is INCONSISTENT" << endl;
+      }
+      mesh.dump(meshFile+"-dump");
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter edges = new DimensionalCellFilter(1);
 
-      CellFilter left = edges.subset(new LeftPointTest());
-      CellFilter right = edges.subset(new RightPointTest());
-      CellFilter top = edges.subset(new TopPointTest());
-      CellFilter bottom = edges.subset(new BottomPointTest());
+      CellFilter left;
+      CellFilter right;
+      CellFilter top;
+      CellFilter bottom;
 
+      if (meshFile != "builtin")
+      {
+        left = edges.labeledSubset(1);
+        right = edges.labeledSubset(2);
+        top = edges.labeledSubset(3);
+        bottom = edges.labeledSubset(4);
+      }
+      else
+      {
+        left = edges.subset(new LeftPointTest());
+        right = edges.subset(new RightPointTest());
+        top = edges.subset(new TopPointTest());
+        bottom = edges.subset(new BottomPointTest());
+      }
       
       /* Create unknown and test functions, discretized using second-order
        * Lagrange interpolants */
-      BasisFamily basis = new Lagrange(2);
+      BasisFamily basis = new Lagrange(1);
       Expr u = new UnknownFunction(basis, "u");
       Expr v = new TestFunction(basis, "v");
 
@@ -99,12 +136,11 @@ int main(int argc, char** argv)
       /* Define the weak form */
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       Expr one = new SundanceCore::Parameter(1.0);
-      Expr eqn = Integral(interior, (dx*u)*(dx*v) + (dy*u)*(dy*v)  + one*v, quad2)
-        + Integral(top, -v/3.0, quad2)
-        + Integral(right, -v*(1.5 + (1.0/3.0)*y - u), quad4);
-      //        + Integral(bottom, 100.0*v*(u-0.5*x*x), quad);
+      Expr exactSoln = x+2.0*y;//0.5*x*x + (1.0/3.0)*y;
+      Expr eqn = Integral(interior, (grad*u)*(grad*v)  /* + one*v */, quad2);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(bottom, v*(u-0.5*x*x), quad4);
+      Expr h = new CellDiameterExpr();
+      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln)/h, quad4);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
@@ -119,12 +155,23 @@ int main(int argc, char** argv)
       //cout << endl;
       Expr soln = prob.solve(solver);
 
-      Expr exactSoln = 0.5*x*x + (1.0/3.0)*y;
+      DiscreteSpace discSpace2(mesh, new Lagrange(2), vecType);
+      DiscreteSpace discSpace0(mesh, new Lagrange(0), vecType);
+      L2Projector proj1(discSpace2, soln-exactSoln);
+      double pid = MPIComm::world().getRank();
+      L2Projector proj2(discSpace0, pid);
+      Expr errorDisc = proj1.project();
+      Expr pidDisc = proj2.project();
+
+
+
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("Poisson2d");
       w.addMesh(mesh);
       w.addField("soln", new ExprFieldWrapper(soln[0]));
+      w.addField("error", new ExprFieldWrapper(errorDisc));
+      w.addField("rank", new ExprFieldWrapper(pidDisc));
       w.write();
 
       Expr err = exactSoln - soln;
@@ -172,7 +219,7 @@ int main(int argc, char** argv)
       cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
       cout << "numerical flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;
 
-      Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), 1.0e-11);
+      Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), 1.0e-9);
 
     }
 	catch(exception& e)

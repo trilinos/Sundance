@@ -39,6 +39,7 @@ CXXFLAGS="-Wall -O3 -finline-functions -funroll-loops" \
 --with-trilinos=$HOME/Software/Math/trilinos-8.0.2/OPT-GCC-3.4.6 \
 --with-trilinos_version=8 \
 --enable-exodus \
+--enable-python \
 --with-install="/usr/bin/install -c -p" \
 --prefix=$BUILD_DIR
 

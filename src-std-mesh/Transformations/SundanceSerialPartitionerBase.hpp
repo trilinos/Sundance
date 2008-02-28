@@ -28,60 +28,75 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_EXODUSMESHREADER_H
-#define SUNDANCE_EXODUSMESHREADER_H
+#ifndef SUNDANCE_SERIALPARTITIONERBASE_H
+#define SUNDANCE_SERIALPARTITIONERBASE_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceMeshReaderBase.hpp"
-#include "SundanceMap.hpp"
-#include "Teuchos_Array.hpp"
+#include "SundanceMesh.hpp"
+#include "SundanceMeshType.hpp"
+#include "TSFHandle.hpp"
 
 namespace SundanceStdMesh
 {
-  using namespace TSFExtended;
-  using namespace Teuchos;
-  using namespace SundanceUtils;
-  using namespace Internal;
-  /**
-   * ExodusMeshReader reads a mesh from an ExodusII file.
+/**
+ * Base class for mesh partitioners that run in serial
+ */
+class SerialPartitionerBase
+{
+public:
+  
+  /** */
+  virtual ~SerialPartitionerBase(){;}
+
+  /** */
+  void getNeighbors(const Mesh& mesh, 
+    Array<Array<int> >& neighbors, int& nEdges) const ;
+
+  /** */
+  Set<int> arrayToSet(const Array<int>& a) const ;
+
+  /** */
+  virtual void getAssignments(const Mesh& mesh, int np, 
+    Array<int>& assignments) const = 0 ;
+
+  /** */
+  Array<Mesh> makeMeshParts(const Mesh& mesh, int np) const ;
+
+  /** */
+  void getOffProcData(int p, 
+    const Array<int>& elemAssignments,
+    const Array<int>& nodeAssignments,
+    Set<int>& offProcNodes,
+    Set<int>& offProcElems) const ;
+
+  /** 
+   * 
    */
-  class ExodusMeshReader : public MeshReaderBase
-  {
-  public:
-    /** */
-    ExodusMeshReader(const string& filename, 
-                           const MeshType& meshType,
-                           const MPIComm& comm = MPIComm::world());
+  void getNodeAssignments(int nProc, 
+    const Array<int>& elemAssignments,
+    Array<int>& nodeAssignments,
+    Array<int>& nodeOwnerElems,
+    Array<int>& nodesPerProc) const ;
 
-    /** virtual dtor */
-    virtual ~ExodusMeshReader(){;}
+  /** */
+  void getElemsPerProc(int nProc, 
+    const Array<int>& elemAssignments,
+    Array<int>& elemsPerProc) const ;
 
-
-    /** Create a mesh */
-    virtual Mesh fillMesh() const ;
-
-    /** Print a short descriptive string */
-    virtual string description() const 
-    {return "ExodusMeshReader[file=" + filename() + "]";}
+  /** Remap global element or node 
+   * numberings so that each processor owns sequentially-numbered
+   * global indexes. */
+  void remapEntities(const Array<int>& assignments, int nProc,
+    Array<int>& entityMap) const ;
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-    /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshSourceBase> getRcp() {return rcp(this);}
+private:
 
-  private:
-    /** */
-    void readParallelInfo(Array<int>& ptGID, Array<int>& ptOwner,
-                          Array<int>& elemGID, Array<int>& elemOwner) const ;
-    
-    /** */
-    string exoFilename_;
-    /** */
-    string parFilename_;
-    
-                      
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
-  };
+  
+  int max(const Set<int>& s) const ;
+  mutable Array<Set<int> > elemVerts_;
+  mutable Array<Set<int> > vertElems_;
+};
 }
 
 #endif

@@ -67,13 +67,13 @@ void FieldWriterBase::impersonateParallelProc(int nProc, int rank)
 
 int FieldWriterBase::nProc() const
 {
-  if (nProc_ < 1) return mesh().comm().getNProc();
+  if (nProc_ < 1) return mesh().comm().getNProc(); 
   return nProc_;
 }
 
 int FieldWriterBase::myRank() const
 {
-  if (myRank_ < 0) return mesh().comm().getRank();
+  if (myRank_ < 0) return mesh().comm().getRank(); 
   return myRank_;
 }
 

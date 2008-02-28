@@ -31,7 +31,9 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = ExodusNetCDFTest2D ExodusNetCDFTest3D
+noinst_PROGRAMS = ExodusNetCDFTest2D ExodusNetCDFTest3D ExodusTest3D 
+
+bin_PROGRAMS = partitionExo
 
 LIBDEPS =$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
 $(top_builddir)/src-interop/libsundanceInterop.a \
@@ -55,6 +57,26 @@ ExodusNetCDFTest3D_DEPENDENCIES = $(LIBDEPS)
 ExodusNetCDFTest3D_CXXFLAGS = $(STD_MESH_INCLUDES)
 
 ExodusNetCDFTest3D_LDADD = $(STD_MESH_LIBS) 
+
+
+
+ExodusTest3D_SOURCES = $(srcdir)/ExodusTest3D.cpp
+
+ExodusTest3D_DEPENDENCIES = $(LIBDEPS)
+
+ExodusTest3D_CXXFLAGS = $(STD_MESH_INCLUDES)
+
+ExodusTest3D_LDADD = $(STD_MESH_LIBS) 
+
+
+
+partitionExo_SOURCES = $(srcdir)/partitionExo.cpp
+
+partitionExo_DEPENDENCIES = $(LIBDEPS)
+
+partitionExo_CXXFLAGS = $(STD_MESH_INCLUDES)
+
+partitionExo_LDADD = $(STD_MESH_LIBS) 
 
 
 include $(top_srcdir)/Makefile.common
