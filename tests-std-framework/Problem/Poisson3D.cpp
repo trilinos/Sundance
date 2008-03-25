@@ -95,7 +95,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusMeshReader("../../../examples-tutorial/meshes/cube-0.025", meshType);
+        = new ExodusMeshReader("cube-0.025", meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -110,10 +110,10 @@ int main(int argc, char** argv)
       CellFilter side6 = faces.labeledSubset(6);
 
       
-      /* Create unknown and test functions, discretized using first-order
+      /* Create unknown and test functions, discretized using second-order
        * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr v = new TestFunction(new Lagrange(1), "v");
+      Expr u = new UnknownFunction(new Lagrange(2), "u");
+      Expr v = new TestFunction(new Lagrange(2), "v");
 
       /* Create differential operator and coordinate functions */
       Expr dx = new Derivative(0);

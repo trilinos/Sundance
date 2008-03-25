@@ -1,6 +1,7 @@
 #include "SundanceExodusMeshReader.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundancePathUtils.hpp"
 
 #ifdef HAVE_EXODUS
 #include "exodusII.h"
@@ -67,7 +68,8 @@ Mesh ExodusMeshReader::fillMesh() const
 
   if (verbosity() > VerbMedium) ex_opts(EX_DEBUG | EX_VERBOSE);
 
-  int exoID = ex_open(exoFilename_.c_str(), EX_READ, 
+  string resolvedName = searchForFile(exoFilename_);
+  int exoID = ex_open(resolvedName.c_str(), EX_READ, 
     &CPU_word_size, &IO_word_size, &version);
 
   TEST_FOR_EXCEPTION(exoID < 0, RuntimeError, "ExodusMeshReader unable to "

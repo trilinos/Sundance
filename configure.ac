@@ -149,15 +149,32 @@ TAC_ARG_CONFIG_CHACO
 AC_ARG_WITH(trilinos,
 AC_HELP_STRING([--with-trilinos],[root directory of Trilinos installation]),
 [
-TRILINOS_DIR=${withval}
+if test "X$withval" = "Xyes"; then
+  TRILINOS_DIR=`pwd`/../..
+else
+  TRILINOS_DIR=${withval}
+fi
 AC_MSG_CHECKING(Trilinos root directory)
 AC_MSG_RESULT([${TRILINOS_DIR}])
-]
-)
+])
+
+# -- Set path to Trilinos data
+
+
+AC_ARG_WITH(trilinosdatadir,
+AC_HELP_STRING([--with-trilinosdatadir],[location of Trilinos data]),
+[
+  TRILINOS_DATA_DIR=${withval}
+  AC_MSG_CHECKING(Trilinos data directory)
+  AC_MSG_RESULT([${TRILINOS_DATA_DIR}])
+])
+
+
+# -- Set Trilinos version
 
 AC_ARG_WITH(trilinos_version,
 AC_HELP_STRING([--with-trilinos_version],[Which version of Trilinos to link against]),
-ac_cv_use_trilinos_version=$withval, ac_cv_use_trilinos_version=8)
+ac_cv_use_trilinos_version=$withval, ac_cv_use_trilinos_version=dev)
 
 AC_MSG_CHECKING(which version of Trilinos to link against)
 
@@ -172,7 +189,7 @@ AC_DEFINE(TRILINOS_8,,[define if we are using Trilinos 8.0.x])
 if test "X$ac_cv_use_trilinos_version" = "X8"; then
 AC_MSG_RESULT($ac_cv_use_trilinos_version)
 else
-AC_MSG_RESULT(unknown or no version specified.  Defaulting to Trilinos 8)
+AC_MSG_RESULT(unknown or no version specified.  Defaulting to Trilinos Devel)
 fi
 fi
 fi
@@ -201,8 +218,8 @@ AC_MSG_RESULT([no])
 # Check for MOOCHO
 # ------------------------------------------------------------------------
 
-AC_ARG_WITH(moocho, 
-[AC_HELP_STRING([--with-moocho],[whether to use MOOCHO])],
+AC_ARG_ENABLE(moocho, 
+[AC_HELP_STRING([--enable-moocho],[whether to use MOOCHO])],
 [
 MOOCHO_STR=""
 AC_DEFINE(HAVE_ENABLED_MOOCHO,,[define if we want to use MOOCHO])
@@ -238,8 +255,8 @@ AC_MSG_RESULT([no])
 # Check for Exodus
 # ------------------------------------------------------------------------
 
-AC_ARG_ENABLE(exodus,
-[AC_HELP_STRING([--enable-exodus],[use Exodus (enables Exodus)])],
+AC_ARG_WITH(exodus,
+[AC_HELP_STRING([--with-exodus],[use Exodus (enables Exodus)])],
 [
 EXODUS_STR=""
 AC_DEFINE(HAVE_EXODUS,,[define if we want to use EXODUS])
@@ -360,6 +377,7 @@ tests-utils/Combinatorics/Makefile
 
 AC_SUBST(CHACO_LIB)
 AC_SUBST(TRILINOS_DIR)
+AC_SUBST(TRILINOS_DATA_DIR)
 
 AC_OUTPUT()
 
