@@ -357,6 +357,7 @@ python/src/SUNDANCE_HOME_DIR
 python/src/__init__.py
 python/src/.deps/dummy
 python/example/Makefile
+test/Makefile
 tests-utils/Makefile
 tests-utils/Combinatorics/Makefile
   tests-utils/Functors/Makefile

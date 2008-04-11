@@ -95,7 +95,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusMeshReader("cube-0.025", meshType);
+        = new ExodusMeshReader("cube-0.1", meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells

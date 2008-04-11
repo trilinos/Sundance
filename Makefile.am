@@ -75,6 +75,16 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 	src/common/config-h.in src/common/stamp-h.in \
 	$(AUX_DIST) 
 
+#The following line helps the test harness recover from build errors.
+
+all-local:
+	@echo ""
+	@echo "Trilinos package epetra built successfully."
+	@echo "To check the installation, simply type \"$(MAKE) run-examples\"."
+	@echo "For more details, please refer to the instructions"
+	@echo "contained in Trilinos/doc/check_installation.txt"
+	@echo ""
+
 ## #######################################################################
 ## Subdirectories to be make'd recursively
 ## #######################################################################
@@ -102,7 +112,7 @@ src-interop \
 src-core tests-core \
 src-std-mesh tests-std-mesh \
 src-std-framework tests-std-framework \
-$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR)
+$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR) test
 
 CXX_SOLVER_TESTS = (cd tests-solvers; $(MAKE) tests) 
 CXX_SOLVER_SERIALTESTS = (cd tests-solvers; $(MAKE) serialtests) 
@@ -117,7 +127,7 @@ CXX_TESTS_TO_CHECK=tests-*/*/*.tst
 CXX_PTESTS_TO_CHECK=tests-*/*/*.ptst
 else
 SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework \
-$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR)
+$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR) test
 endif
 
 
@@ -141,33 +151,32 @@ libonly:
 tags:
 	etags */*/*.hpp */*/*.cpp
 
-tests:
-	@echo "--------------------------------------------------------------------"
-	@echo "running all tests"
-	@echo "--------------------------------------------------------------------"
-	$(CXX_SOLVER_TESTS)
-	$(CXX_SYMBOLIC_TESTS)
-	$(CXX_FWK_TESTS)
-	$(PYTESTS)
-	@echo "====================================================================="
-	@echo "Summary of serial tests:"
-	@echo "====================================================================="
-	$(top_srcdir)/etc/checkTests.pl $(CXX_TESTS_TO_CHECK) $(PY_TESTS_TO_CHECK)
-	@echo "====================================================================="
-	@echo "Summary of parallel tests:"
-	@echo "====================================================================="
-	$(top_srcdir)/etc/checkTests.pl $(CXX_PTESTS_TO_CHECK) $(PY_PTESTS_TO_CHECK)
 
+
+
+
+## #######################################################################
+## test harness
+## #######################################################################
+
+if PYTHON_USE
+tests:
+	make runtests-mpi
+	make runtests-python-mpi
 
 serialtests:
-	$(CXX_SOLVER_SERIALTESTS)
-	$(CXX_SYMBOLIC_SERIALTESTS)
-	$(CXX_FWK_SERIALTESTS)
-	$(PYSERIALTESTS)
-	@echo "====================================================================="
-	@echo "Summary of serial tests:"
-	@echo "====================================================================="
-	$(top_srcdir)/etc/checkTests.pl $(CXX_TESTS_TO_CHECK) $(PY_TESTS_TO_CHECK)
+	make runtests-serial
+	make runtests-python-serial
+else
+tests:
+	make runtests-mpi
+	make runtests-python-mpi
+
+serialtests:
+	make runtests-serial
+	make runtests-python-serial
+endif
+
 
 
 
@@ -182,11 +191,73 @@ install-data-hook:
 	mkdir -p $(prefix)/examples-tutorial/data
 	cp $(top_srcdir)/etc/SolverParameters/*.xml $(prefix)/etc/SolverParameters
 	cp $(top_srcdir)/etc/*.xml $(prefix)/etc
-	cp $(top_srcdir)/examples-tutorial/meshes/*.* $(prefix)/examples-tutorial/meshes
+#	cp $(top_srcdir)/examples-tutorial/meshes/*.* $(prefix)/examples-tutorial/meshes
 	cp $(top_srcdir)/examples-tutorial/data/*.* $(prefix)/examples-tutorial/data
 
 
+## #######################################################################
+## The below targets allow you to use the new
+## testharness to run the test suite as make targets
+## #######################################################################
 
+TRILINOS_HOME_DIR=@abs_top_srcdir@/../..
+TRILINOS_BUILD_DIR=@abs_top_builddir@/../..
+TRILINOS_TEST_CATEGORY=INSTALL
+
+if HAVE_MPI
+TEUCHOS_CHECK_COMM=mpi
+else
+TEUCHOS_CHECK_COMM=serial
+endif
+
+
+runtests-serial :
+	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+  --comm=serial \
+  --build-dir=$(TRILINOS_BUILD_DIR) \
+  --category=$(TRILINOS_TEST_CATEGORY) \
+  --output-dir=@abs_top_builddir@/test/runtests-results \
+  --verbosity=1 \
+  --packages=Sundance
+	$(RUN_PYSUNDANCE_SERIAL_TESTS)
+
+runtests-mpi :
+	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+  --comm=mpi \
+  --mpi-go=$(TRILINOS_MPI_GO) \
+  --build-dir=$(TRILINOS_BUILD_DIR) \
+  --max-proc=$(TRILINOS_MPI_MAX_PROC) \
+  --category=$(TRILINOS_TEST_CATEGORY) \
+  --output-dir=@abs_top_builddir@/test/runtests-results \
+  --verbosity=1 \
+  --packages=Sundance
+	$(RUN_PYSUNDANCE_MPI_TESTS)
+
+
+runtests-python-serial:
+	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+  --comm=serial \
+  --build-dir=$(TRILINOS_BUILD_DIR) \
+  --category=PYSUNDANCE \
+  --output-dir=@abs_top_builddir@/test/runtests-results \
+  --verbosity=1 \
+  --packages=Sundance
+
+
+runtests-python-mpi:
+	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+  --comm=mpi \
+  --mpi-go=$(TRILINOS_MPI_GO) \
+  --build-dir=$(TRILINOS_BUILD_DIR) \
+  --max-proc=$(TRILINOS_MPI_MAX_PROC) \
+  --category=PYSUNDANCE \
+  --output-dir=@abs_top_builddir@/test/runtests-results \
+  --verbosity=1 \
+  --packages=Sundance
 
 
 

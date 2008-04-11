@@ -199,6 +199,7 @@ int main(int argc, char** argv)
                   int alpha = t;
                   Tabs tab;
                   QuadratureIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, quad);
+                  A->resize(ref.nNodesTest());
                   ref.transformOneForm(JBatch, JBatch, dummy, f, A);
                   cerr << tab << "test deriv direction =" << t << endl;
                   cerr << tab << "transformed local vector: " << endl;
@@ -246,6 +247,7 @@ int main(int argc, char** argv)
                               int beta = u;
                               QuadratureIntegral ref(dim, cellType, dim, cellType, P, alpha, 
                                                      dp, Q, beta, dq, quad);
+                              A->resize(ref.nNodesTest()*ref.nNodesUnk());
                               ref.transformTwoForm(JBatch, JBatch, dummy, f, A);
 
                               cerr << tab << "test deriv direction =" << 
