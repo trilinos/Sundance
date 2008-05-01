@@ -202,6 +202,7 @@ install-data-hook:
 
 TRILINOS_HOME_DIR=@abs_top_srcdir@/../..
 TRILINOS_BUILD_DIR=@abs_top_builddir@/../..
+
 TRILINOS_TEST_CATEGORY=INSTALL
 
 if HAVE_MPI

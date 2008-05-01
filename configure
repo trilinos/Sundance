@@ -762,8 +762,8 @@ FIAT_BUILD_DIR
 SUNDIALS_STR
 SUNDIALS_BUILD_DIR
 EXODUS_STR
-CHACO_LIB
 TRILINOS_DIR
+CHACO_LIB
 TRILINOS_DATA_DIR
 LIBOBJS
 LTLIBOBJS'
@@ -1413,7 +1413,7 @@ Optional Packages:
   --with-chaco-libdir=DIR Chaco library directory. Do not use -L
   --with-trilinos         root directory of Trilinos installation
   --with-trilinosdatadir  location of Trilinos data
-  --with-trilinos_version Which version of Trilinos to link against
+  --with-trilinos-version Which version of Trilinos to link against
   --with-fiat=FIAT_BUILD_DIR
                           use FIAT build directory (enables FIAT)
   --with-sundials=SUNDIALS_BUILD_DIR
@@ -6812,6 +6812,7 @@ fi
 
 
 
+
 # ------------------------------------------------------------------------
 # Output files
 # ------------------------------------------------------------------------
@@ -7846,8 +7847,8 @@ FIAT_BUILD_DIR!$FIAT_BUILD_DIR$ac_delim
 SUNDIALS_STR!$SUNDIALS_STR$ac_delim
 SUNDIALS_BUILD_DIR!$SUNDIALS_BUILD_DIR$ac_delim
 EXODUS_STR!$EXODUS_STR$ac_delim
-CHACO_LIB!$CHACO_LIB$ac_delim
 TRILINOS_DIR!$TRILINOS_DIR$ac_delim
+CHACO_LIB!$CHACO_LIB$ac_delim
 TRILINOS_DATA_DIR!$TRILINOS_DATA_DIR$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim

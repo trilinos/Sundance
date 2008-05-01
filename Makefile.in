@@ -313,8 +313,11 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 @BUILD_CXXTESTS_TRUE@CXX_FWK_SERIALTESTS = (cd tests-std-framework; $(MAKE) serialtests) 
 @BUILD_CXXTESTS_TRUE@CXX_TESTS_TO_CHECK = tests-*/*/*.tst
 @BUILD_CXXTESTS_TRUE@CXX_PTESTS_TO_CHECK = tests-*/*/*.ptst
-TRILINOS_HOME_DIR = @abs_top_srcdir@/../..
-TRILINOS_BUILD_DIR = @abs_top_builddir@/../..
+
+#TRILINOS_HOME_DIR=@abs_top_srcdir@/../..
+#TRILINOS_BUILD_DIR=@abs_top_builddir@/../..
+TRILINOS_HOME_DIR = @TRILINOS_DIR@/..
+TRILINOS_BUILD_DIR = @TRILINOS_DIR@
 TRILINOS_TEST_CATEGORY = INSTALL
 @HAVE_MPI_FALSE@TEUCHOS_CHECK_COMM = serial
 @HAVE_MPI_TRUE@TEUCHOS_CHECK_COMM = mpi

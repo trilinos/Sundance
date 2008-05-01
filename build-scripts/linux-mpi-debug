@@ -37,7 +37,9 @@ BUILD_DIR=`pwd`
 
 ../configure CXXFLAGS="-g -O0 -Wall" --enable-mpi --with-mpi-compilers \
 --with-trilinos=$HOME/Software/Math/trilinos-8.0.2/DEBUG-GCC-3.4.6 \
---enable-exodus \
+--with-trilinosdatadir=$HOME/Code/TrilinosData \
+--with-trilinos-version=8 \
+--with-exodus \
 --enable-python \
 --with-install="/usr/bin/install -c -p" \
 --prefix=$BUILD_DIR

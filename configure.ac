@@ -173,7 +173,7 @@ AC_HELP_STRING([--with-trilinosdatadir],[location of Trilinos data]),
 # -- Set Trilinos version
 
 AC_ARG_WITH(trilinos_version,
-AC_HELP_STRING([--with-trilinos_version],[Which version of Trilinos to link against]),
+AC_HELP_STRING([--with-trilinos-version],[Which version of Trilinos to link against]),
 ac_cv_use_trilinos_version=$withval, ac_cv_use_trilinos_version=dev)
 
 AC_MSG_CHECKING(which version of Trilinos to link against)
@@ -328,6 +328,7 @@ AC_SUBST(FIAT_BUILD_DIR)
 AC_SUBST(SUNDIALS_STR)
 AC_SUBST(SUNDIALS_BUILD_DIR)
 AC_SUBST(EXODUS_STR)
+AC_SUBST(TRILINOS_DIR)
 
 
 # ------------------------------------------------------------------------
