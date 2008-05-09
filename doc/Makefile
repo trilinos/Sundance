@@ -35,6 +35,6 @@
 dox: 
 	doxygen Doxygen/Doxyfile
 	mkdir -p html/images
-	cp ../../../doc/images/*.* html/images
-	cp ../trilinos-scripts/sundance-linux-* html
-	cp ../../../doc/Tutorial/Tutorial.pdf html
+	cp images/*.* html/images
+	#cp ../trilinos-scripts/sundance-linux-* html
+	#cp ../../../doc/Tutorial/Tutorial.pdf html

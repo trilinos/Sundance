@@ -435,7 +435,7 @@ void Assembler::configureVector(Vector<double>& b) const
     {
       /* configure the blocks */
       Vector<double> vecBlock;
-      for (int br=0; br<eqn_->numVarBlocks(); br++)
+      for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
         {
           configureVectorBlock(br, vecBlock);
           b.setBlock(br, vecBlock);
@@ -771,7 +771,10 @@ void Assembler::assemble(LinearOperator<double>& A,
           Array<RefCountPtr<const MapStructure> > colMapStruct(numColBlocks);
           for (int br=0; br<numRowBlocks; br++)
             {   
-              rowMapStruct[br] = rowMap_[br]->getDOFsForCellBatch(dofCellDim,
+              /* use cellDim instead of dofCellDim here, because we only add
+               * to row dofs located on the boundary even when we must use the
+               * maximal cell dim for column dofs and transformations */
+              rowMapStruct[br] = rowMap_[br]->getDOFsForCellBatch(cellDim,
                                                                   mediators_[r]->dofCellLIDs(),
                                                                   requiredVars[br],
                                                                   (*testLocalDOFs)[br], 
@@ -833,8 +836,29 @@ void Assembler::assemble(LinearOperator<double>& A,
                   cerr << tab2 << endl << tab2 << endl 
                        << tab2 << "--------------- doing integral group " << g 
                        << " on the current subregion" << endl;
-                  cerr << tab2 << "num test DOFs = " << testLocalDOFs->size() << endl;
-                  cerr << tab2 << "num unk DOFs = " << unkLocalDOFs->size() << endl;
+                  cerr << tab2 << "num cells=" << workSet->size() << endl;
+                  cerr << tab2 << "cell dim=" << cellDim << endl;
+                  cerr << tab2 << "num row blocks " << numRowBlocks << endl; 
+                  cerr << tab2 << "num col blocks " << numColBlocks << endl; 
+                  cerr << tab2 << "DOF cell dim=" << cellDim << endl;
+                  cerr << tab2 << "num test DOF blocks = " << (*testLocalDOFs).size() << endl;
+                  cerr << tab2 << "Blocks: " ;
+                  for (unsigned int br=0; br<(*testLocalDOFs).size(); br++)
+                  {
+                    Tabs tab3;
+                    cerr << tab3 << "block row=" << br << endl;
+                    for (unsigned int chunk=0; chunk<(*testLocalDOFs)[br].size(); chunk++)
+                    {
+                      Tabs tab4;
+                      cerr << "chunk=" << chunk << " num DOFs=" << (*testLocalDOFs)[br][chunk].size() << endl;
+                    }
+                  }
+                  cerr << tab2 << "num test nodes per block= " << nTestNodes << endl;
+                  if (group.isTwoForm())
+                  {
+                    cerr << tab2 << "unk DOFs = " << *unkLocalDOFs << endl;
+                    cerr << tab2 << "num unk nodes per block= " << nUnkNodes << endl;
+                  }
                   cerr << tab2 << "num entries = " << localValues->size() << endl;
                   cerr << tab2 << "values = " << *localValues << endl;
                 }
@@ -1635,14 +1659,19 @@ void Assembler
       Tabs tab1;
       SUNDANCE_VERB_EXTREME(tab1 << "test ID = " << testID[i]);
       SUNDANCE_VERB_EXTREME(tab1 << "is BC eqn = " << isBCRqc);
+      SUNDANCE_VERB_EXTREME(tab1 << "num cells = " << nCells);
       int br = testBlock[i];
       const RefCountPtr<DOFMapBase>& rowMap = rowMap_[br];
       int lowestLocalRow = rowMap->lowestLocalDOF();
       int chunk = rowMapStruct[br]->chunkForFuncID(testID[i]);
+      SUNDANCE_VERB_EXTREME(tab1 << "chunk = " << chunk);
       int funcIndex = rowMapStruct[br]->indexForFuncID(testID[i]);
+      SUNDANCE_VERB_EXTREME(tab1 << "func index = " << funcIndex);
       const Array<int>& dofs = testIndices[br][chunk];
       int nFuncs = rowMapStruct[br]->numFuncs(chunk);
+      SUNDANCE_VERB_EXTREME(tab1 << "num funcs in chunk = " << nFuncs);
       int nNodes = nTestNodes[br][chunk];
+      SUNDANCE_VERB_EXTREME(tab1 << "num nodes in chunk = " << nNodes);
       const Array<int>& isBCRow = *(isBCRow_[br]);
       int r=0;
       RefCountPtr<TSFExtended::LoadableVector<double> > vecBlock = vec[br];

@@ -31,13 +31,14 @@
 using SundanceStdFwk::CellFilter;
 using SundanceStdFwk::QuadratureFamily;
 
+
 /*! \mainpage Sundance 
 
 <H2> Introduction </H2>
 
 %Sundance is a system for rapid development of high-performance parallel finite-element 
 solutions of partial differential equations.  It is built on top of an engine
-for automatic differentiation of symbolic objects, thereby enabling
+for in-place Frechet differentiation of symbolic objects, thereby enabling
 differentiable simulations for use in optimization, uncertainty 
 quantification, and adaptive error control.
 
@@ -60,7 +61,7 @@ of a problem.
 <br>
 <br>
 Please send any questions or comments to 
-<A HREF="mailto:krlong@sandia.gov"> Kevin Long </A>
+<A HREF="mailto:kevin.long@ttu.edu"> Kevin Long </A>
 <br><br> <b>WARNING: This documentation is sometimes
 incomplet, inackurate, and is 
 very much a work in progress trying to keep up with 
@@ -105,8 +106,8 @@ Sandia math software server. </A>
 <H2> People </H2>
 
 <ul>
-<li> <A HREF="http://csmr.ca.sandia.gov/~krlong/"> Kevin Long </A>
--- Sandia National Laboratories, Livermore. Email <A HREF="mailto:krlong@sandia.gov"> krlong@sandia.gov </A>
+<li> <A HREF="http://www.math.ttu.edu/~klong/"> Kevin Long </A>
+-- Texas Tech University. Email <A HREF="mailto:kevin.long@ttu.edu"> kevin.long@ttu.edu </A>
 <li> <A HREF="http://www.acm.caltech.edu/people/students.shtml"> Catherine Beni </A>
 -- Caltech. 
 <li> <A HREF="http://csmr.ca.sandia.gov/~ptboggs/"> Paul Boggs </A>

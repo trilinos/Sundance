@@ -67,14 +67,17 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   int vecCount=0;
   int constCount=0;
 
+  /* turn off grouping for BCs. This works around a bug detected by Rob Kirby that
+   * shows up with Nitsche BCs in mixed-element discretizations */
   bool doGroups = true;
+  if (cellType != maxCellType) doGroups = false;
 
-  typedef SundanceUtils::Map<OrderedPair<int, int>, Array<RefCountPtr<ElementIntegral> > > twoFormMap;
-  typedef SundanceUtils::Map<int, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
-  SundanceUtils::Map<OrderedPair<int, int>, Array<RefCountPtr<ElementIntegral> > > twoForms;
-  SundanceUtils::Map<OrderedPair<int, int>, Array<int> > twoFormResultIndices;
-  SundanceUtils::Map<int, Array<RefCountPtr<ElementIntegral> > > oneForms;
-  SundanceUtils::Map<int, Array<int> > oneFormResultIndices;
+  typedef SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RefCountPtr<ElementIntegral> > > twoFormMap;
+  typedef SundanceUtils::Map<OrderedPair<int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
+  SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RefCountPtr<ElementIntegral> > > twoForms;
+  SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<int> > twoFormResultIndices;
+  SundanceUtils::Map<OrderedPair<int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneForms;
+  SundanceUtils::Map<OrderedPair<int,BasisFamily>, Array<int> > oneFormResultIndices;
 
   for (int i=0; i<sparsity->numDerivs(); i++)
     {
@@ -198,7 +201,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                       alpha = miTest.firstOrderDirection();
                     }
                   SUNDANCE_OUT(verb > VerbMedium,
-                               tab3 << "creating quadrature integral for two-form");
+                               tab3 << "creating quadrature integral for one-form");
                   integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                                                         cellDim, cellType,
                                                         testBasis, alpha, 
@@ -232,15 +235,16 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
             {
               if (doGroups)
                 {
-                  if (!oneForms.containsKey(rawTestID))
+                  OrderedPair<int,BasisFamily> testKey(rawTestID, testBasis);
+                  if (!oneForms.containsKey(testKey))
                     {
-                      oneForms.put(rawTestID, tuple(integral));
-                      oneFormResultIndices.put(rawTestID, tuple(resultIndex));
+                      oneForms.put(testKey, tuple(integral));
+                      oneFormResultIndices.put(testKey, tuple(resultIndex));
                     }
                   else
                     {
-                      oneForms[rawTestID].append(integral);
-                      oneFormResultIndices[rawTestID].append(resultIndex);
+                      oneForms[testKey].append(integral);
+                      oneFormResultIndices[testKey].append(resultIndex);
                     }
                 }
               else
@@ -261,16 +265,23 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 }
               else
                 {
-                  OrderedPair<int, int> testUnk(rawTestID, rawUnkID);
-                  if (!twoForms.containsKey(testUnk))
+                  Tabs tab3;
+                  OrderedQuartet<int, BasisFamily, int, BasisFamily> testUnkKey(rawTestID, testBasis, rawUnkID, unkBasis);
+
+                  SUNDANCE_OUT(verb > VerbLow, tab3 << "key=" << testUnkKey);
+                  if (!twoForms.containsKey(testUnkKey))
                     {
-                      twoForms.put(testUnk, tuple(integral));
-                      twoFormResultIndices.put(testUnk, tuple(resultIndex));
+                      Tabs tab4;
+                      SUNDANCE_OUT(verb > VerbLow, tab4 << "key not found");
+                      twoForms.put(testUnkKey, tuple(integral));
+                      twoFormResultIndices.put(testUnkKey, tuple(resultIndex));
                     }
                   else
                     {
-                      twoForms[testUnk].append(integral);
-                      twoFormResultIndices[testUnk].append(resultIndex);
+                      Tabs tab4;
+                      SUNDANCE_OUT(verb > VerbLow, tab4 << "key found");
+                      twoForms[testUnkKey].append(integral);
+                      twoFormResultIndices[testUnkKey].append(resultIndex);
                     }
                 }
             }
@@ -286,8 +297,10 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           Tabs tab3;
           SUNDANCE_OUT(verb > VerbLow, tab3 << "integral group number="
                        << groups.size());
-          int rawTestID = i->first.first();
-          int rawUnkID = i->first.second();
+          int rawTestID = i->first.a();
+          BasisFamily testBasis = i->first.b();
+          int rawUnkID = i->first.c();
+          BasisFamily unkBasis = i->first.d();
           int testID = eqn.reducedVarID(rawTestID);
           int unkID = eqn.reducedUnkID(rawUnkID);
           int testBlock = eqn.blockForVarID(rawTestID);
@@ -296,8 +309,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<int>& resultIndices 
             = twoFormResultIndices.get(i->first);
           SUNDANCE_OUT(verb > VerbLow, tab3 << "creating two-form integral group" << std::endl
-                               << tab3 << "testID=" << testID << std::endl
-                               << tab3 << "unkID=" << unkID << std::endl
+                               << tab3 << "testID=" << rawTestID << std::endl
+                               << tab3 << "unkID=" << rawUnkID << std::endl
+                               << tab3 << "testBlock=" << testBlock << std::endl
+                               << tab3 << "unkBlock=" << unkBlock << std::endl
+                               << tab3 << "testBasis=" << testBasis << std::endl
+                               << tab3 << "unkBasis=" << unkBasis << std::endl
                                << tab3 << "resultIndices=" << resultIndices);
           for (unsigned int j=0; j<resultIndices.size(); j++)
             {
@@ -314,7 +331,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           Tabs tab3;
           SUNDANCE_OUT(verb > VerbLow, tab3 << "integral group number="
                        << groups.size());
-          int rawTestID = i->first;
+          int rawTestID = i->first.first();
           int testID = eqn.reducedVarID(rawTestID);
           int testBlock = eqn.blockForVarID(rawTestID);
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
