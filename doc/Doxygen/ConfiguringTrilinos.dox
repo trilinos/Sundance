@@ -29,7 +29,7 @@
 # ************************************************************************
 /* @HEADER@ */
 
-/*! \page conf_trilinos_page Configuring Trilinos for Sundance
+/*! \page conf_trilinos_page Configuring Trilinos for an external build of Sundance
 
 Here we explain how to configure Trilinos for Sundance. The hard part is
 knowing the appropriate arguments for <tt>configure.</tt> If you are
@@ -77,14 +77,8 @@ can change sometimes the effective ordering of source lines.
 
 \section canned_scripts Canned Scripts
 
-Here are several scripts for configuring Trilinos for Sundance on Linux using
+In the directory Sundance/trilinos-scripts there are several scripts for configuring Trilinos for Sundance on Linux using
 the Gnu compilers. 
-<ul>
-<li> <A href="sundance-linux-mpi-debug"> sundance-linux-mpi-debug </A>
-<li> <A href="sundance-linux-mpi-opt"> sundance-linux-mpi-opt </A>
-<li> <A href="sundance-linux-serial-debug"> sundance-linux-serial-debug </A>
-<li> <A href="sundance-linux-serial-opt"> sundance-linux-serial-opt </A>
-</ul>
 You should be able to use these as a starting point for configuring on
 other platforms.
 
@@ -101,6 +95,15 @@ you should always enable the following packages:
 --enable-teuchos-complex 
 --enable-teuchos-expat
 </pre>
+<li> Thyra (abstract interfaces for linear algebra)
+<pre>
+--enable-thyra
+--enable-epetra-thyra
+--enable-amesos-thyra
+--enable-ifpack-thyra
+--enable-aztecoo-thyra
+--enable-ml-thyra
+</pre>
 <li> Epetra (core distributed sparse linear algebra objects)
 <pre>
 --enable-epetra
@@ -111,6 +114,7 @@ you should always enable the following packages:
 </pre>
 <li> IFPack (incomplete factorization preconditioners)
 <pre>
+--enable-ifpack
 </pre>
 <li> ML (algebraic multilevel preconditioners)
 <pre>
@@ -124,13 +128,10 @@ you should always enable the following packages:
 <pre>
 --enable-nox
 </pre>
-<li> Thyra (abstract interfaces)
-<pre>
---enable-thyra
-</pre>
 <li> Amesos (direct solvers)
 <pre>
---enable-amesos --enable-amesos-umfpack
+--enable-amesos 
+--enable-amesos-umfpack
 </pre>
 </ul>
 

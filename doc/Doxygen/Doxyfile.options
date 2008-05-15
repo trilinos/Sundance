@@ -6,9 +6,9 @@
 #
 # Set the paths in common/Doxyfile currectly!
 #
-HTML_HEADER            = $(TRILINOS_HOME)/packages/common/header.html
-HTML_FOOTER            = $(TRILINOS_HOME)/packages/common/footer.html
-HTML_STYLESHEET        = $(TRILINOS_HOME)/packages/common/styles.css
+HTML_HEADER            = Header.html
+HTML_FOOTER            = Footer.html
+HTML_STYLESHEET        = 
 #
 # Package options
 #
