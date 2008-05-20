@@ -228,7 +228,7 @@ void ThermalLTIProblemFactory::setup(double deltaT)
    * transpose of BE.  */
   LinearOperator<double> At = M.transpose() * BEt.inverse(solver);
 
-  LinearOperator<double> C = new IdentityOperator<double>(BE.range());
+  LinearOperator<double> C = identityOperator(BE.range());
 
   this->init(A, At, C);
 }

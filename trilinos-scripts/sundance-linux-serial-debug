@@ -11,16 +11,20 @@ BUILD_DIR=`pwd`
 
 ../configure \
 CXXFLAGS="-O0 -g -Wall" \
---with-libs="-lumfpack -lamd -lexpat -llapack -lblas" \
+--with-libs="-lumfpack -lamd" \
 --disable-default-packages \
---enable-teuchos --enable-teuchos-extended --enable-teuchos-abc\
---enable-teuchos-complex --enable-teuchos-expat \
+--enable-teuchos --enable-teuchos-extended --enable-teuchos-abc \
+--enable-teuchos-complex \
 --enable-thyra \
 --disable-thyra-tests \
 --disable-thyra-examples \
---disable-aztecoo-thyra \
---disable-epetra-thyra \
---disable-amesos-thyra \
+--enable-aztecoo-thyra \
+--enable-epetra-thyra \
+--enable-epetraext-thyra \
+--enable-amesos-thyra \
+--enable-ifpack-thyra \
+--enable-ml-thyra \
+--enable-stratimikos \
 --enable-epetra \
 --enable-epetraext \
 --enable-ml \
@@ -35,5 +39,4 @@ CXXFLAGS="-O0 -g -Wall" \
 --with-install="/usr/bin/install -c -p" \
 --config-cache \
 --prefix=$BUILD_DIR
-
 

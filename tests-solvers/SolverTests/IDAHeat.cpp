@@ -327,22 +327,22 @@ int main(int argc, char *argv[])
 
       void* mem = IDACreate();
       TEST_FOR_EXCEPTION(check_flag((void*) mem, "IDACreate", 0), 
-                         runtime_error,
+                         std::runtime_error,
                          "IDACreate returned null object");
 
       int ier = IDASetRdata(mem, &model);
-      TEST_FOR_EXCEPTION(check_flag(&ier, "IDASetRdata", 1), runtime_error,
+      TEST_FOR_EXCEPTION(check_flag(&ier, "IDASetRdata", 1), std::runtime_error,
                          "IDASetRdata returned error code " << ier);
 
   //     ier = IDASetConstraints(mem, constraints);
 //       TEST_FOR_EXCEPTION(check_flag(&ier, "IDASetConstraints", 1), 
-//                          runtime_error,
+//                          std::runtime_error,
 //                          "IDASetConstraints returned error code " << ier);
 
       N_VDestroy_Trilinos(constraints);
 
       ier = IDAMalloc(mem, resTrilinos, t0, uu, up, IDA_SS, rtol, &atol);
-      TEST_FOR_EXCEPTION(check_flag(&ier, "IDAMalloc", 1), runtime_error,
+      TEST_FOR_EXCEPTION(check_flag(&ier, "IDAMalloc", 1), std::runtime_error,
                          "IDAMalloc returned error code " << ier);
 
       /* Call IDASpgmr to specify the linear solver. */
@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
 
       int krylov = 1000;
       ier = IDASpgmr(mem, krylov);
-      TEST_FOR_EXCEPTION(check_flag(&ier, "IDASpgmr", 1), runtime_error,
+      TEST_FOR_EXCEPTION(check_flag(&ier, "IDASpgmr", 1), std::runtime_error,
                          "IDASpgmr returned error code " << ier);
 
       
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
            iout++, tout += 0.1) 
         {
           ier = IDASolve(mem, tout, &tret, uu, up, IDA_NORMAL);
-          TEST_FOR_EXCEPTION(check_flag(&ier, "IDASolve", 1), runtime_error,
+          TEST_FOR_EXCEPTION(check_flag(&ier, "IDASolve", 1), std::runtime_error,
                              "IDASolve returned error code " << ier);
 
           uMax = toTrilinos(uu).normInf();

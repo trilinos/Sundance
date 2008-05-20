@@ -43,17 +43,10 @@
 //#include "TSFLinearSolver.hpp"
 #include "TSFBICGSTABSolver.hpp"
 #include "TSFProductVectorSpace.hpp"
-#include "TSFTransposeOperator.hpp"
 //#include "TSFInverseOperator.hpp"
 #include "TSFLinearOperator.hpp"
 #include "TSFEpetraMatrix.hpp"
 //#include "Thyra_LinearOpBase.hpp"
-#include "TSFIdentityOperator.hpp"
-#include "TSFZeroOperator.hpp"
-#include "TSFDiagonalOperator.hpp"
-#include "TSFScaledOperator.hpp"
-#include "TSFSumOperator.hpp"
-#include "TSFComposedOperator.hpp"
 #include "TSFMultiVectorOperator.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFRandomSparseMatrix.hpp"
@@ -97,8 +90,7 @@ int main(int argc, char *argv[])
 
       /* Test multiplication by a multivector operator. We will compute
        * y1 by directly summing columns, and y2 by applying the operator */
-      LinearOperator<double> A 
-        = new MultiVectorOperator<double>(vecs, replSpace);
+      LinearOperator<double> A = multiVectorOperator<double>(vecs, replSpace);
 
       
       Vector<double> y1 = space.createMember();

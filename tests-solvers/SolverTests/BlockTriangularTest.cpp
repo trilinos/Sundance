@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
       VectorSpace<double> blockSpace = productSpace(space);
 
-      RefCountPtr<SingleScalarTypeOpBase<double> > op = rcp(new BlockOperator<double>(blockSpace, blockSpace));
+      RefCountPtr<LinearOpBase<double> > op = rcp(new BlockOperator<double>(blockSpace, blockSpace));
       LinearOperator<double> bigA = op;
       Vector<double> bigRHS = blockSpace.createMember();
       Vector<double> bigX = blockSpace.createMember();

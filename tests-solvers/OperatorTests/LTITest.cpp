@@ -33,7 +33,6 @@
 #include "TSFDefaultLTIProblemFactory.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFEpetraVectorType.hpp"
-#include "TSFIdentityOperator.hpp"
 #include "TSFRandomSparseMatrix.hpp"
 #include "TSFProductVectorSpace.hpp"
 
@@ -65,7 +64,7 @@ int main(int argc, char *argv[])
       LinearOperator<double> A = ABuilder.getOp();
       /* Create the operator that produces observables from a state.
       * For this test, we observe all states so C=I */
-      LinearOperator<double> C = new IdentityOperator<double>(A.domain());
+      LinearOperator<double> C = identityOperator<double>(A.domain());
 
       /* Create the factory for building the multi-timestep operators */
       RefCountPtr<DefaultLTIProblemFactory<double> > fact

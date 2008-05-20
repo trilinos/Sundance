@@ -30,7 +30,6 @@
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearOperator.hpp"
-#include "TSFInverseOperator.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFVectorSpace.hpp"
@@ -97,7 +96,7 @@ int main(int argc, char *argv[])
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      LinearOperator<double> AInv = new TSFExtended::InverseOperator<double>(A, solver);
+      LinearOperator<double> AInv = A.inverse(solver);
 
       ans = AInv * y;
 

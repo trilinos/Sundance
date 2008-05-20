@@ -252,8 +252,8 @@ int main(int argc, char *argv[])
       LinearOperator<double> A01 = A.getBlock(0,1);
       LinearOperator<double> A11 = A.getBlock(1,1);
 
-      LinearOperator<double> A11Inv = new TSFExtended::InverseOperator<double>(A11, solver);
-      LinearOperator<double> A00Inv = new TSFExtended::InverseOperator<double>(A00, solver);
+      LinearOperator<double> A11Inv = A11.inverse(solver);
+      LinearOperator<double> A00Inv = A00.inverse(solver);
 
       Vector<double> b0 = b.getBlock(0);
       Vector<double> b1 = b.getBlock(1);

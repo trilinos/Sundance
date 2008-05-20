@@ -114,8 +114,7 @@ int main(int argc, char *argv[])
        * to be used for preconditioning */
       outerSolver.setUserPrec(A, innerSolver);
 
-      LinearOperator<double> AInv 
-	= new TSFExtended::InverseOperator<double>(A, outerSolver);
+      LinearOperator<double> AInv = A.inverse(outerSolver);
       
 
       ans = AInv * y;

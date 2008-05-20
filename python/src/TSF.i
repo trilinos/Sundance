@@ -459,7 +459,7 @@ namespace TSFExtended
   TSFExtended::LinearOperator<double> 
     makeIdentityOperator(const TSFExtended::VectorSpace<double>& space)
   {
-    return LinearOperator<double>(new TSFExtended::IdentityOperator<double>(space));
+    return identityOperator(space);
   }
 
   %}

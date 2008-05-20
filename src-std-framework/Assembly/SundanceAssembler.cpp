@@ -672,8 +672,8 @@ void Assembler::assemble(LinearOperator<double>& A,
             matBlock = A.getBlock(br, bc);
           }
           if (matBlock.ptr().get() == 0) continue;
-          const TSFExtended::ZeroOperator<double>* zp
-            = dynamic_cast<const TSFExtended::ZeroOperator<double>*>(matBlock.ptr().get());
+          const Thyra::ZeroLinearOpBase<double>* zp
+            = dynamic_cast<const TSFExtended::ZeroLinearOpBase<double>*>(matBlock.ptr().get());
           if (zp) continue;
           mat[br][bc] 
             = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(matBlock.ptr().get());
