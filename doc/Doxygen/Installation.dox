@@ -197,9 +197,6 @@ against.
 </ul>
 <li> <tt>--with-exodus</tt>
 <li> <tt>--enable-python</tt>
-<li> <tt>--enable-cxxtests</tt>
-<li> <tt>--enable-cxxexamples</tt>
-<li> <tt>--enable-examples</tt>
 <li> <tt>--enable-lowleveltests</tt>
 </ul>
 
@@ -242,10 +239,14 @@ capabilities using optimized compiler flags.
 
 \section conf_test Testing your build
 
-The regression testing system has been changed to be part of the Trilinos test harness,
-and currently works only when Sundance is built as a Trilinos package. If you
-are building against an external Trilinos installation, you won't be able to run the
-tests.
+The regression system is currently being ported to the Trilinos test harness,
+and will soon have all the features of that system. In the meantime, you can
+run tests with
+<pre>
+make old-tests        # Runs all tests
+make old-serialtests  # Runs serial tests only
+</pre>
+
 
 \section conf_py_env Setting your environment to run a PySundance simulator
 

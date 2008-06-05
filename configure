@@ -726,14 +726,12 @@ USE_ALTERNATE_AR_FALSE
 ALTERNATE_AR
 HAVE_CHACO_TRUE
 HAVE_CHACO_FALSE
-BUILD_CXXTESTS_TRUE
-BUILD_CXXTESTS_FALSE
-BUILD_LOW_LEVEL_TESTS_TRUE
-BUILD_LOW_LEVEL_TESTS_FALSE
+TRILINOS_IS_EXTERNAL_TRUE
+TRILINOS_IS_EXTERNAL_FALSE
+BUILD_TESTS_TRUE
+BUILD_TESTS_FALSE
 BUILD_EXAMPLES_TRUE
 BUILD_EXAMPLES_FALSE
-BUILD_CXXEXAMPLES_TRUE
-BUILD_CXXEXAMPLES_FALSE
 PYTHON_USE_TRUE
 PYTHON_USE_FALSE
 PYTHON
@@ -756,6 +754,7 @@ HAVE_SWIG_FALSE
 GNU_HAVE_SWIG
 ac_aux_dir
 SUNDANCE_BUILD_DIRECTORY
+TRILINOS_SRC_DIR
 MOOCHO_STR
 FIAT_STR
 FIAT_BUILD_DIR
@@ -1369,12 +1368,10 @@ Optional Features:
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
   --enable-chaco          Chaco mesh partitioning
-  --enable-moocho         whether to use MOOCHO
-  --enable-cxxtests       Build C++ tests for Sundance (default is yes)
-  --enable-lowleveltests  Build low level C++ tests for Sundance (default is
-                          yes)
-  --enable-examples       Build examples for Sundance (default is yes)
-  --enable-cxxexamples    Build C++ examples for Sundance (default is yes)
+  --enable-sundance-tests whether to build Sundance tests
+  --enable-sundance-examples
+                          whether to build Sundance examples
+  --enable-moocho         whether to build moocho
   --enable-python[=PYTHON]
                           absolute path name of Python executable
 
@@ -1414,11 +1411,12 @@ Optional Packages:
   --with-trilinos         root directory of Trilinos installation
   --with-trilinosdatadir  location of Trilinos data
   --with-trilinos-version Which version of Trilinos to link against
+  --with-trilinossrcdir   location of Trilinos source code
   --with-fiat=FIAT_BUILD_DIR
                           use FIAT build directory (enables FIAT)
   --with-sundials=SUNDIALS_BUILD_DIR
                           use SUNDIALS build directory (enables SUNDIALS)
-  --with-exodus           use Exodus (enables Exodus)
+  --with-sundance-exodus  use Exodus (enables Exodus I/O in Sundance)
   --with-python[=PYTHON]  absolute path name of Python executable
   --with-swig[=SWIG]      enable swig and set swig binary
   --with-libdirs          additional directories containing libraries: will
@@ -4918,6 +4916,8 @@ fi
 
 
 
+
+
 # -- Set Trilinos version
 
 
@@ -4938,6 +4938,7 @@ cat >>confdefs.h <<\_ACEOF
 #define TRILINOS_DEV
 _ACEOF
 
+trilinosVersion=dev
 { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
 echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
 else if test "X$ac_cv_use_trilinos_version" = "X7"; then
@@ -4958,11 +4959,43 @@ if test "X$ac_cv_use_trilinos_version" = "X8"; then
 { echo "$as_me:$LINENO: result: $ac_cv_use_trilinos_version" >&5
 echo "${ECHO_T}$ac_cv_use_trilinos_version" >&6; }
 else
+trilinosVersion=dev
 { echo "$as_me:$LINENO: result: unknown or no version specified.  Defaulting to Trilinos Devel" >&5
 echo "${ECHO_T}unknown or no version specified.  Defaulting to Trilinos Devel" >&6; }
 fi
 fi
 fi
+
+ if test "X$trilinosVersion" != "Xdev" ; then
+  TRILINOS_IS_EXTERNAL_TRUE=
+  TRILINOS_IS_EXTERNAL_FALSE='#'
+else
+  TRILINOS_IS_EXTERNAL_TRUE='#'
+  TRILINOS_IS_EXTERNAL_FALSE=
+fi
+
+
+
+
+# -- Set path to Trilinos source
+
+
+# Check whether --with-trilinossrcdir was given.
+if test "${with_trilinossrcdir+set}" = set; then
+  withval=$with_trilinossrcdir;
+  TRILINOS_SRC_DIR=${withval}
+  { echo "$as_me:$LINENO: checking Trilinos src directory" >&5
+echo $ECHO_N "checking Trilinos src directory... $ECHO_C" >&6; }
+  { echo "$as_me:$LINENO: result: ${TRILINOS_SRC_DIR}" >&5
+echo "${ECHO_T}${TRILINOS_SRC_DIR}" >&6; }
+
+fi
+
+
+echo "trilinos src dir=(" $TRILINOS_SRC_DIR ")"
+echo "trilinos version=(" $trilinosVersion ")"
+
+
 
 # ------------------------------------------------------------------------
 # Check for FIAT
@@ -4996,30 +5029,119 @@ echo "${ECHO_T}no" >&6; }
 fi
 
 
+
 # ------------------------------------------------------------------------
-# Check for MOOCHO
+# Checks if tests and examples should be built
+# ------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------
+# Check for Sundance tests
+# ------------------------------------------------------------------------
+
+# Check whether --enable-sundance-tests was given.
+if test "${enable_sundance_tests+set}" = set; then
+  enableval=$enable_sundance_tests; case "${enableval}" in
+  yes) sundanceTests=yes ;;
+  no) sundanceTests=no;;
+  *) { { echo "$as_me:$LINENO: error: bad value for ${enableval} for --enable-sundance-tests" >&5
+echo "$as_me: error: bad value for ${enableval} for --enable-sundance-tests" >&2;}
+   { (exit 1); exit 1; }; };;
+esac
+else
+  sundanceTests=no
+fi
+
+
+{ echo "$as_me:$LINENO: checking whether to enable Sundance tests" >&5
+echo $ECHO_N "checking whether to enable Sundance tests... $ECHO_C" >&6; }
+{ echo "$as_me:$LINENO: result: $sundanceTests" >&5
+echo "${ECHO_T}$sundanceTests" >&6; }
+ if test "X$sundanceTests" = "Xyes"; then
+  BUILD_TESTS_TRUE=
+  BUILD_TESTS_FALSE='#'
+else
+  BUILD_TESTS_TRUE='#'
+  BUILD_TESTS_FALSE=
+fi
+
+
+
+
+
+# ------------------------------------------------------------------------
+# Check for Sundance examples
+# ------------------------------------------------------------------------
+
+# Check whether --enable-sundance-examples was given.
+if test "${enable_sundance_examples+set}" = set; then
+  enableval=$enable_sundance_examples; case "${enableval}" in
+  yes) sundanceExamples=yes ;;
+  no) sundanceExamples=no;;
+  *) { { echo "$as_me:$LINENO: error: bad value for ${enableval} for --enable-sundance-examples" >&5
+echo "$as_me: error: bad value for ${enableval} for --enable-sundance-examples" >&2;}
+   { (exit 1); exit 1; }; };;
+esac
+else
+  sundanceExamples=no
+fi
+
+
+{ echo "$as_me:$LINENO: checking whether to enable Sundance examples" >&5
+echo $ECHO_N "checking whether to enable Sundance examples... $ECHO_C" >&6; }
+{ echo "$as_me:$LINENO: result: $sundanceExamples" >&5
+echo "${ECHO_T}$sundanceExamples" >&6; }
+ if test "X$sundanceExamples" = "Xyes"; then
+  BUILD_EXAMPLES_TRUE=
+  BUILD_EXAMPLES_FALSE='#'
+else
+  BUILD_EXAMPLES_TRUE='#'
+  BUILD_EXAMPLES_FALSE=
+fi
+
+
+
+
+
+# ------------------------------------------------------------------------
+# Check for whether to enable moocho in Sundance
 # ------------------------------------------------------------------------
 
 # Check whether --enable-moocho was given.
 if test "${enable_moocho+set}" = set; then
-  enableval=$enable_moocho;
-MOOCHO_STR=""
+  enableval=$enable_moocho; case "${enableval}" in
+  yes) sundanceMoocho=yes ;;
+  no) sundanceMoocho=no;;
+  *) { { echo "$as_me:$LINENO: error: bad value for ${enableval} for --enable-moocho" >&5
+echo "$as_me: error: bad value for ${enableval} for --enable-moocho" >&2;}
+   { (exit 1); exit 1; }; };;
+esac
+else
+  sundanceMoocho=no
+fi
+
+
+{ echo "$as_me:$LINENO: checking whether to enable moocho" >&5
+echo $ECHO_N "checking whether to enable moocho... $ECHO_C" >&6; }
+{ echo "$as_me:$LINENO: result: $sundanceMoocho" >&5
+echo "${ECHO_T}$sundanceMoocho" >&6; }
+
+
+if test "X$sundanceMoocho" = "Xyes"  ; then
+  MOOCHO_STR=""
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_ENABLED_MOOCHO
 _ACEOF
 
-{ echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-
 else
-
-MOOCHO_STR="#"
-{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-
-
+  MOOCHO_STR="#"
 fi
+
+echo "sundanceMoocho=(" $sundanceMoocho ")"
+echo "moochoStr=(" $MOOCHO_STR ")"
+
+
 
 
 # ---------------0--------------------------------------------------------
@@ -5054,14 +5176,14 @@ echo "${ECHO_T}no" >&6; }
 fi
 
 
-# ---------------0--------------------------------------------------------
+# ------------------------------------------------------------------------
 # Check for Exodus
 # ------------------------------------------------------------------------
 
 
-# Check whether --with-exodus was given.
-if test "${with_exodus+set}" = set; then
-  withval=$with_exodus;
+# Check whether --with-sundance-exodus was given.
+if test "${with_sundance_exodus+set}" = set; then
+  withval=$with_sundance_exodus;
 EXODUS_STR=""
 
 cat >>confdefs.h <<\_ACEOF
@@ -5097,151 +5219,6 @@ SUNDANCE_BUILD_DIRECTORY=`pwd`
 { echo "$as_me:$LINENO: result: $SUNDANCE_BUILD_DIRECTORY" >&5
 echo "${ECHO_T}$SUNDANCE_BUILD_DIRECTORY" >&6; }
 fi
-
-# ------------------------------------------------------------------------
-# Checks if tests and examples should be built
-# ------------------------------------------------------------------------
-
-#  #np# - These options can disable the tests and examples of a package.
-#  #np# - Packages that do not have tests or examples should #-out the
-#  #np# - option(s) that does (do) not apply.
-
-
-# Check whether --enable-cxxtests was given.
-if test "${enable_cxxtests+set}" = set; then
-  enableval=$enable_cxxtests; ac_cv_use_cxxtests=$enableval
-else
-  ac_cv_use_cxxtests=yes
-fi
-
-
-{ echo "$as_me:$LINENO: checking whether to use cxxtests" >&5
-echo $ECHO_N "checking whether to use cxxtests... $ECHO_C" >&6; }
-
-if test "X$ac_cv_use_cxxtests" != "Xno"; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_CXXTESTS
-_ACEOF
-
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
- if test "X$ac_cv_use_cxxtests" != "Xno"; then
-  BUILD_CXXTESTS_TRUE=
-  BUILD_CXXTESTS_FALSE='#'
-else
-  BUILD_CXXTESTS_TRUE='#'
-  BUILD_CXXTESTS_FALSE=
-fi
-
-
-
-# Check whether --enable-lowleveltests was given.
-if test "${enable_lowleveltests+set}" = set; then
-  enableval=$enable_lowleveltests; ac_cv_use_lowleveltests=$enableval
-else
-  ac_cv_use_lowleveltests=yes
-fi
-
-
-{ echo "$as_me:$LINENO: checking whether to use lowleveltests" >&5
-echo $ECHO_N "checking whether to use lowleveltests... $ECHO_C" >&6; }
-
-if test "X$ac_cv_use_lowleveltests" != "Xno"; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_LOW_LEVEL_TESTS
-_ACEOF
-
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
- if test "X$ac_cv_use_lowleveltests" != "Xno"; then
-  BUILD_LOW_LEVEL_TESTS_TRUE=
-  BUILD_LOW_LEVEL_TESTS_FALSE='#'
-else
-  BUILD_LOW_LEVEL_TESTS_TRUE='#'
-  BUILD_LOW_LEVEL_TESTS_FALSE=
-fi
-
-
-
-# Check whether --enable-examples was given.
-if test "${enable_examples+set}" = set; then
-  enableval=$enable_examples; ac_cv_use_examples=$enableval
-else
-  ac_cv_use_examples=yes
-fi
-
-
-{ echo "$as_me:$LINENO: checking whether to use examples" >&5
-echo $ECHO_N "checking whether to use examples... $ECHO_C" >&6; }
-
-if test "X$ac_cv_use_examples" != "Xno"; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_EXAMPLES
-_ACEOF
-
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
- if test "X$ac_cv_use_examples" != "Xno"; then
-  BUILD_EXAMPLES_TRUE=
-  BUILD_EXAMPLES_FALSE='#'
-else
-  BUILD_EXAMPLES_TRUE='#'
-  BUILD_EXAMPLES_FALSE=
-fi
-
-
-
-# Check whether --enable-cxxexamples was given.
-if test "${enable_cxxexamples+set}" = set; then
-  enableval=$enable_cxxexamples; ac_cv_use_cxxexamples=$enableval
-else
-  ac_cv_use_cxxexamples=yes
-fi
-
-
-{ echo "$as_me:$LINENO: checking whether to use cxxexamples" >&5
-echo $ECHO_N "checking whether to use cxxexamples... $ECHO_C" >&6; }
-
-if test "X$ac_cv_use_cxxexamples" != "Xno"; then
-  { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_CXXEXAMPLES
-_ACEOF
-
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
- if test "X$ac_cv_use_cxxexamples" != "Xno"; then
-  BUILD_CXXEXAMPLES_TRUE=
-  BUILD_CXXEXAMPLES_FALSE='#'
-else
-  BUILD_CXXEXAMPLES_TRUE='#'
-  BUILD_CXXEXAMPLES_FALSE=
-fi
-
-
 
 # ------------------------------------------------------------------------
 # Enable optional python wrappers
@@ -6813,6 +6790,7 @@ fi
 
 
 
+
 # ------------------------------------------------------------------------
 # Output files
 # ------------------------------------------------------------------------
@@ -6976,17 +6954,17 @@ echo "$as_me: error: conditional \"HAVE_CHACO\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${BUILD_CXXTESTS_TRUE}" && test -z "${BUILD_CXXTESTS_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"BUILD_CXXTESTS\" was never defined.
+if test -z "${TRILINOS_IS_EXTERNAL_TRUE}" && test -z "${TRILINOS_IS_EXTERNAL_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"TRILINOS_IS_EXTERNAL\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"BUILD_CXXTESTS\" was never defined.
+echo "$as_me: error: conditional \"TRILINOS_IS_EXTERNAL\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${BUILD_LOW_LEVEL_TESTS_TRUE}" && test -z "${BUILD_LOW_LEVEL_TESTS_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"BUILD_LOW_LEVEL_TESTS\" was never defined.
+if test -z "${BUILD_TESTS_TRUE}" && test -z "${BUILD_TESTS_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"BUILD_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"BUILD_LOW_LEVEL_TESTS\" was never defined.
+echo "$as_me: error: conditional \"BUILD_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -6994,13 +6972,6 @@ if test -z "${BUILD_EXAMPLES_TRUE}" && test -z "${BUILD_EXAMPLES_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"BUILD_EXAMPLES\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"BUILD_EXAMPLES\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${BUILD_CXXEXAMPLES_TRUE}" && test -z "${BUILD_CXXEXAMPLES_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"BUILD_CXXEXAMPLES\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"BUILD_CXXEXAMPLES\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -7811,14 +7782,12 @@ USE_ALTERNATE_AR_FALSE!$USE_ALTERNATE_AR_FALSE$ac_delim
 ALTERNATE_AR!$ALTERNATE_AR$ac_delim
 HAVE_CHACO_TRUE!$HAVE_CHACO_TRUE$ac_delim
 HAVE_CHACO_FALSE!$HAVE_CHACO_FALSE$ac_delim
-BUILD_CXXTESTS_TRUE!$BUILD_CXXTESTS_TRUE$ac_delim
-BUILD_CXXTESTS_FALSE!$BUILD_CXXTESTS_FALSE$ac_delim
-BUILD_LOW_LEVEL_TESTS_TRUE!$BUILD_LOW_LEVEL_TESTS_TRUE$ac_delim
-BUILD_LOW_LEVEL_TESTS_FALSE!$BUILD_LOW_LEVEL_TESTS_FALSE$ac_delim
+TRILINOS_IS_EXTERNAL_TRUE!$TRILINOS_IS_EXTERNAL_TRUE$ac_delim
+TRILINOS_IS_EXTERNAL_FALSE!$TRILINOS_IS_EXTERNAL_FALSE$ac_delim
+BUILD_TESTS_TRUE!$BUILD_TESTS_TRUE$ac_delim
+BUILD_TESTS_FALSE!$BUILD_TESTS_FALSE$ac_delim
 BUILD_EXAMPLES_TRUE!$BUILD_EXAMPLES_TRUE$ac_delim
 BUILD_EXAMPLES_FALSE!$BUILD_EXAMPLES_FALSE$ac_delim
-BUILD_CXXEXAMPLES_TRUE!$BUILD_CXXEXAMPLES_TRUE$ac_delim
-BUILD_CXXEXAMPLES_FALSE!$BUILD_CXXEXAMPLES_FALSE$ac_delim
 PYTHON_USE_TRUE!$PYTHON_USE_TRUE$ac_delim
 PYTHON_USE_FALSE!$PYTHON_USE_FALSE$ac_delim
 PYTHON!$PYTHON$ac_delim
@@ -7841,6 +7810,7 @@ HAVE_SWIG_FALSE!$HAVE_SWIG_FALSE$ac_delim
 GNU_HAVE_SWIG!$GNU_HAVE_SWIG$ac_delim
 ac_aux_dir!$ac_aux_dir$ac_delim
 SUNDANCE_BUILD_DIRECTORY!$SUNDANCE_BUILD_DIRECTORY$ac_delim
+TRILINOS_SRC_DIR!$TRILINOS_SRC_DIR$ac_delim
 MOOCHO_STR!$MOOCHO_STR$ac_delim
 FIAT_STR!$FIAT_STR$ac_delim
 FIAT_BUILD_DIR!$FIAT_BUILD_DIR$ac_delim
@@ -7854,7 +7824,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 55; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 54; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

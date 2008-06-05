@@ -51,11 +51,6 @@ $(top_builddir)/src-solvers/libTSFExtended.a
 
 
 
-%.tst : %.exe $(REQUIREMENTS)
-	./$< > $@ 2>&1
-
-run: $(TESTS)
-
 PostPotentialFlow_SOURCES = $(srcdir)/PostPotentialFlow.cpp
 
 PostPotentialFlow_DEPENDENCIES = \

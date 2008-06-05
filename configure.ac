@@ -170,6 +170,8 @@ AC_HELP_STRING([--with-trilinosdatadir],[location of Trilinos data]),
 ])
 
 
+
+
 # -- Set Trilinos version
 
 AC_ARG_WITH(trilinos_version,
@@ -180,6 +182,7 @@ AC_MSG_CHECKING(which version of Trilinos to link against)
 
 if test "X$ac_cv_use_trilinos_version" = "Xdev"; then
 AC_DEFINE(TRILINOS_DEV,,[define if we are using the development version of Trilinos])
+trilinosVersion=dev
 AC_MSG_RESULT($ac_cv_use_trilinos_version)
 else if test "X$ac_cv_use_trilinos_version" = "X7"; then
 AC_DEFINE(TRILINOS_7,,[define if we are using Trilinos 7.0.x])
@@ -189,10 +192,30 @@ AC_DEFINE(TRILINOS_8,,[define if we are using Trilinos 8.0.x])
 if test "X$ac_cv_use_trilinos_version" = "X8"; then
 AC_MSG_RESULT($ac_cv_use_trilinos_version)
 else
+trilinosVersion=dev
 AC_MSG_RESULT(unknown or no version specified.  Defaulting to Trilinos Devel)
 fi
 fi
 fi
+
+AM_CONDITIONAL(TRILINOS_IS_EXTERNAL, test "X$trilinosVersion" != "Xdev" )
+
+
+
+# -- Set path to Trilinos source
+
+AC_ARG_WITH(trilinossrcdir,
+AC_HELP_STRING([--with-trilinossrcdir],[location of Trilinos source code]),
+[
+  TRILINOS_SRC_DIR=${withval}
+  AC_MSG_CHECKING(Trilinos src directory)
+  AC_MSG_RESULT([${TRILINOS_SRC_DIR}])
+])
+
+echo "trilinos src dir=(" $TRILINOS_SRC_DIR ")"
+echo "trilinos version=(" $trilinosVersion ")"
+
+
 
 # ------------------------------------------------------------------------
 # Check for FIAT
@@ -214,22 +237,78 @@ AC_MSG_RESULT([no])
 ]
 )
 
+
 # ------------------------------------------------------------------------
-# Check for MOOCHO
+# Checks if tests and examples should be built
+# ------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------
+# Check for Sundance tests
+# ------------------------------------------------------------------------
+
+AC_ARG_ENABLE(sundance-tests, 
+AC_HELP_STRING([--enable-sundance-tests],[whether to build Sundance tests]),
+[case "${enableval}" in
+  yes) sundanceTests=yes ;;
+  no) sundanceTests=no;;
+  *) AC_MSG_ERROR([bad value for ${enableval} for --enable-sundance-tests]);;
+esac],[sundanceTests=no])
+
+AC_MSG_CHECKING(whether to enable Sundance tests)
+AC_MSG_RESULT([$sundanceTests])
+AM_CONDITIONAL(BUILD_TESTS, test "X$sundanceTests" = "Xyes")
+
+
+
+
+# ------------------------------------------------------------------------
+# Check for Sundance examples
+# ------------------------------------------------------------------------
+
+AC_ARG_ENABLE(sundance-examples, 
+AC_HELP_STRING([--enable-sundance-examples],[whether to build Sundance examples]),
+[case "${enableval}" in
+  yes) sundanceExamples=yes ;;
+  no) sundanceExamples=no;;
+  *) AC_MSG_ERROR([bad value for ${enableval} for --enable-sundance-examples]);;
+esac],[sundanceExamples=no])
+
+AC_MSG_CHECKING(whether to enable Sundance examples)
+AC_MSG_RESULT([$sundanceExamples])
+AM_CONDITIONAL(BUILD_EXAMPLES, test "X$sundanceExamples" = "Xyes")
+
+
+
+
+# ------------------------------------------------------------------------
+# Check for whether to enable moocho in Sundance
 # ------------------------------------------------------------------------
 
 AC_ARG_ENABLE(moocho, 
-[AC_HELP_STRING([--enable-moocho],[whether to use MOOCHO])],
-[
-MOOCHO_STR=""
-AC_DEFINE(HAVE_ENABLED_MOOCHO,,[define if we want to use MOOCHO])
-AC_MSG_RESULT([yes])
-],
-[
-MOOCHO_STR="#"
-AC_MSG_RESULT([no])
-]
-)
+AC_HELP_STRING([--enable-moocho],[whether to build moocho]),
+[case "${enableval}" in
+  yes) sundanceMoocho=yes ;;
+  no) sundanceMoocho=no;;
+  *) AC_MSG_ERROR([bad value for ${enableval} for --enable-moocho]);;
+esac],[sundanceMoocho=no])
+
+AC_MSG_CHECKING(whether to enable moocho)
+AC_MSG_RESULT([$sundanceMoocho])
+
+
+if test "X$sundanceMoocho" = "Xyes"  ; then
+  MOOCHO_STR=""
+  AC_DEFINE(HAVE_ENABLED_MOOCHO,,[define if we want to use MOOCHO])
+else
+  MOOCHO_STR="#"
+fi
+
+echo "sundanceMoocho=(" $sundanceMoocho ")"
+echo "moochoStr=(" $MOOCHO_STR ")"
+
+
+
 
 # ---------------0--------------------------------------------------------
 # Check for SUNDIALS
@@ -251,15 +330,15 @@ AC_MSG_RESULT([no])
 ]
 )
 
-# ---------------0--------------------------------------------------------
+# ------------------------------------------------------------------------
 # Check for Exodus
 # ------------------------------------------------------------------------
 
-AC_ARG_WITH(exodus,
-[AC_HELP_STRING([--with-exodus],[use Exodus (enables Exodus)])],
+AC_ARG_WITH(sundance-exodus,
+[AC_HELP_STRING([--with-sundance-exodus],[use Exodus (enables Exodus I/O in Sundance)])],
 [
 EXODUS_STR=""
-AC_DEFINE(HAVE_EXODUS,,[define if we want to use EXODUS])
+AC_DEFINE(HAVE_EXODUS,,[define if we want to use EXODUS I/O in Sundance])
 AC_MSG_CHECKING(have EXODUS)
 AC_MSG_RESULT([yes])
 ],
@@ -282,27 +361,6 @@ AC_MSG_RESULT($SUNDANCE_BUILD_DIRECTORY)
 fi
 
 # ------------------------------------------------------------------------
-# Checks if tests and examples should be built
-# ------------------------------------------------------------------------
-
-#  #np# - These options can disable the tests and examples of a package.
-#  #np# - Packages that do not have tests or examples should #-out the 
-#  #np# - option(s) that does (do) not apply.
-
-TAC_ARG_ENABLE_FEATURE(cxxtests, [Build C++ tests for Sundance], CXXTESTS, yes)
-AM_CONDITIONAL(BUILD_CXXTESTS, test "X$ac_cv_use_cxxtests" != "Xno")
-
-TAC_ARG_ENABLE_FEATURE(lowleveltests, [Build low level C++ tests for Sundance], LOW_LEVEL_TESTS, yes)
-AM_CONDITIONAL(BUILD_LOW_LEVEL_TESTS, test "X$ac_cv_use_lowleveltests" != "Xno")
-
-TAC_ARG_ENABLE_FEATURE(examples, [Build examples for Sundance], EXAMPLES, yes)
-AM_CONDITIONAL(BUILD_EXAMPLES, test "X$ac_cv_use_examples" != "Xno")
-
-TAC_ARG_ENABLE_FEATURE(cxxexamples, [Build C++ examples for Sundance], CXXEXAMPLES, yes)
-AM_CONDITIONAL(BUILD_CXXEXAMPLES, test "X$ac_cv_use_cxxexamples" != "Xno")
-
-
-# ------------------------------------------------------------------------
 # Enable optional python wrappers
 # ------------------------------------------------------------------------
 TAC_ENABLE_PYTHON
@@ -322,6 +380,7 @@ TAC_ARG_WITH_INCDIRS
 
 AC_SUBST(ac_aux_dir)
 AC_SUBST(SUNDANCE_BUILD_DIRECTORY)
+AC_SUBST(TRILINOS_SRC_DIR)
 AC_SUBST(MOOCHO_STR)
 AC_SUBST(FIAT_STR)
 AC_SUBST(FIAT_BUILD_DIR)

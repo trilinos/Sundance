@@ -82,7 +82,6 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
 	$(top_srcdir)/config/az_python.m4 \
 	$(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
-	$(top_srcdir)/config/tac_arg_enable_feature.m4 \
 	$(top_srcdir)/config/tac_arg_with_ar.m4 \
 	$(top_srcdir)/config/tac_arg_with_flags.m4 \
 	$(top_srcdir)/config/tac_arg_with_incdirs.m4 \
@@ -114,8 +113,7 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh \
-	src-std-framework python examples-tutorial test tests-solvers \
-	tests-utils tests-core tests-std-mesh tests-std-framework
+	src-std-framework python
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -201,6 +199,7 @@ SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
 SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TRILINOS_DATA_DIR = @TRILINOS_DATA_DIR@
 TRILINOS_DIR = @TRILINOS_DIR@
+TRILINOS_SRC_DIR = @TRILINOS_SRC_DIR@
 VERSION = @VERSION@
 WITH_SWIG = @WITH_SWIG@
 abs_builddir = @abs_builddir@
@@ -289,35 +288,20 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 #  of tests.  At present, new_package only offers src and example.
 # SUBDIRS = src example test 
 @BUILD_EXAMPLES_TRUE@EXAMPLES_SUBDIR = examples-tutorial
+
+# ----------------------------------------------------------------------
+@BUILD_TESTS_TRUE@SOLVERS_TESTS = tests-solvers
+@BUILD_TESTS_TRUE@UTILS_TESTS = tests-utils
+@BUILD_TESTS_TRUE@CORE_TESTS = tests-core
+@BUILD_TESTS_TRUE@STD_MESH_TESTS = tests-std-mesh
+@BUILD_TESTS_TRUE@STD_FRAMEWORK_TESTS = tests-std-framework
 @PYTHON_USE_TRUE@PYTHON_SUBDIRS = python
-@PYTHON_USE_TRUE@PYTESTS = (cd python/example; $(MAKE) tests)
-@PYTHON_USE_TRUE@PYSERIALTESTS = (cd python/example; $(MAKE) serialtests)
-@PYTHON_USE_TRUE@PY_TESTS_TO_CHECK = python/example/*.tst
-@PYTHON_USE_TRUE@PY_PTESTS_TO_CHECK = python/example/*.ptst
-@BUILD_CXXTESTS_FALSE@SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework \
-@BUILD_CXXTESTS_FALSE@$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR) test
-
-@BUILD_CXXTESTS_TRUE@SUBDIRS = src-solvers tests-solvers \
-@BUILD_CXXTESTS_TRUE@src-utils tests-utils \
-@BUILD_CXXTESTS_TRUE@src-interop \
-@BUILD_CXXTESTS_TRUE@src-core tests-core \
-@BUILD_CXXTESTS_TRUE@src-std-mesh tests-std-mesh \
-@BUILD_CXXTESTS_TRUE@src-std-framework tests-std-framework \
-@BUILD_CXXTESTS_TRUE@$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR) test
-
-@BUILD_CXXTESTS_TRUE@CXX_SOLVER_TESTS = (cd tests-solvers; $(MAKE) tests) 
-@BUILD_CXXTESTS_TRUE@CXX_SOLVER_SERIALTESTS = (cd tests-solvers; $(MAKE) serialtests) 
-@BUILD_CXXTESTS_TRUE@CXX_SYMBOLIC_TESTS = (cd tests-core; $(MAKE) tests) 
-@BUILD_CXXTESTS_TRUE@CXX_SYMBOLIC_SERIALTESTS = (cd tests-core; $(MAKE) serialtests) 
-@BUILD_CXXTESTS_TRUE@CXX_FWK_TESTS = (cd tests-std-framework; $(MAKE) tests) 
-@BUILD_CXXTESTS_TRUE@CXX_FWK_SERIALTESTS = (cd tests-std-framework; $(MAKE) serialtests) 
-@BUILD_CXXTESTS_TRUE@CXX_TESTS_TO_CHECK = tests-*/*/*.tst
-@BUILD_CXXTESTS_TRUE@CXX_PTESTS_TO_CHECK = tests-*/*/*.ptst
-TRILINOS_HOME_DIR = @abs_top_srcdir@/../..
-TRILINOS_BUILD_DIR = @abs_top_builddir@/../..
-TRILINOS_TEST_CATEGORY = INSTALL
+SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) 
 @HAVE_MPI_FALSE@TEUCHOS_CHECK_COMM = serial
 @HAVE_MPI_TRUE@TEUCHOS_CHECK_COMM = mpi
+@TRILINOS_IS_EXTERNAL_FALSE@TRILINOS_HOME_DIR = @abs_top_srcdir@/../..
+@TRILINOS_IS_EXTERNAL_FALSE@TRILINOS_BUILD_DIR = @abs_top_builddir@/../..
+@TRILINOS_IS_EXTERNAL_FALSE@TRILINOS_TEST_CATEGORY = INSTALL
 all: all-recursive
 
 .SUFFIXES:
@@ -749,11 +733,22 @@ uninstall-am:
 
 all-local:
 	@echo ""
-	@echo "Trilinos package epetra built successfully."
-	@echo "To check the installation, simply type \"$(MAKE) run-examples\"."
-	@echo "For more details, please refer to the instructions"
-	@echo "contained in Trilinos/doc/check_installation.txt"
+	@echo "Trilinos package Sundance built successfully."
 	@echo ""
+
+@BUILD_TESTS_TRUE@tests: 
+@BUILD_TESTS_TRUE@	@echo ""
+@BUILD_TESTS_TRUE@	@echo "Now building Sundance tests"
+@BUILD_TESTS_TRUE@	@echo ""
+@BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-solvers && $(MAKE)
+@BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-utils && $(MAKE)
+@BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-core && $(MAKE)
+@BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-std-mesh && $(MAKE)
+@BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-std-framework && $(MAKE)
+@BUILD_TESTS_FALSE@tests:
+@BUILD_TESTS_FALSE@	@echo ""
+@BUILD_TESTS_FALSE@	@echo "Sundance tests disabled at configure time"
+@BUILD_TESTS_FALSE@	@echo ""
 
 libonly:
 	(cd src-solvers; $(MAKE) install)
@@ -766,75 +761,69 @@ libonly:
 tags:
 	etags */*/*.hpp */*/*.cpp
 
-@PYTHON_USE_TRUE@tests:
-@PYTHON_USE_TRUE@	make runtests-mpi
-@PYTHON_USE_TRUE@	make runtests-python-mpi
-
-@PYTHON_USE_TRUE@serialtests:
-@PYTHON_USE_TRUE@	make runtests-serial
-@PYTHON_USE_TRUE@	make runtests-python-serial
-@PYTHON_USE_FALSE@tests:
-@PYTHON_USE_FALSE@	make runtests-mpi
-@PYTHON_USE_FALSE@	make runtests-python-mpi
-
-@PYTHON_USE_FALSE@serialtests:
-@PYTHON_USE_FALSE@	make runtests-serial
-@PYTHON_USE_FALSE@	make runtests-python-serial
-
 install-data-hook:
 	mkdir -p $(prefix)/etc/SolverParameters
 	mkdir -p $(prefix)/examples-tutorial/meshes
 	mkdir -p $(prefix)/examples-tutorial/data
 	cp $(top_srcdir)/etc/SolverParameters/*.xml $(prefix)/etc/SolverParameters
 	cp $(top_srcdir)/etc/*.xml $(prefix)/etc
-#	cp $(top_srcdir)/examples-tutorial/meshes/*.* $(prefix)/examples-tutorial/meshes
 	cp $(top_srcdir)/examples-tutorial/data/*.* $(prefix)/examples-tutorial/data
 
-runtests-serial :
-	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
-  --trilinos-dir=$(TRILINOS_HOME_DIR) \
-  --comm=serial \
-  --build-dir=$(TRILINOS_BUILD_DIR) \
-  --category=$(TRILINOS_TEST_CATEGORY) \
-  --output-dir=@abs_top_builddir@/test/runtests-results \
-  --verbosity=1 \
-  --packages=Sundance
-	$(RUN_PYSUNDANCE_SERIAL_TESTS)
+old-tests:
+	(cd tests-solvers; $(MAKE) old-tests)
+	(cd tests-core; $(MAKE) old-tests)
+	(cd tests-std-framework; $(MAKE) old-tests)
 
-runtests-mpi :
-	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
-  --trilinos-dir=$(TRILINOS_HOME_DIR) \
-  --comm=mpi \
-  --mpi-go=$(TRILINOS_MPI_GO) \
-  --build-dir=$(TRILINOS_BUILD_DIR) \
-  --max-proc=$(TRILINOS_MPI_MAX_PROC) \
-  --category=$(TRILINOS_TEST_CATEGORY) \
-  --output-dir=@abs_top_builddir@/test/runtests-results \
-  --verbosity=1 \
-  --packages=Sundance
-	$(RUN_PYSUNDANCE_MPI_TESTS)
+old-serialtests:
+	(cd tests-solvers; $(MAKE) old-serialtests)
+	(cd tests-core; $(MAKE) old-serialtests)
+	(cd tests-std-framework; $(MAKE) old-serialtests)
 
-runtests-python-serial:
-	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
-  --trilinos-dir=$(TRILINOS_HOME_DIR) \
-  --comm=serial \
-  --build-dir=$(TRILINOS_BUILD_DIR) \
-  --category=PYSUNDANCE \
-  --output-dir=@abs_top_builddir@/test/runtests-results \
-  --verbosity=1 \
-  --packages=Sundance
+@TRILINOS_IS_EXTERNAL_FALSE@runtests-serial :
+@TRILINOS_IS_EXTERNAL_FALSE@	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+@TRILINOS_IS_EXTERNAL_FALSE@  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --comm=serial \
+@TRILINOS_IS_EXTERNAL_FALSE@  --build-dir=$(TRILINOS_BUILD_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --category=$(TRILINOS_TEST_CATEGORY) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --output-dir=@abs_top_builddir@/test/runtests-results \
+@TRILINOS_IS_EXTERNAL_FALSE@  --verbosity=1 \
+@TRILINOS_IS_EXTERNAL_FALSE@  --packages=Sundance
+@TRILINOS_IS_EXTERNAL_FALSE@	$(RUN_PYSUNDANCE_SERIAL_TESTS)
 
-runtests-python-mpi:
-	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
-  --trilinos-dir=$(TRILINOS_HOME_DIR) \
-  --comm=mpi \
-  --mpi-go=$(TRILINOS_MPI_GO) \
-  --build-dir=$(TRILINOS_BUILD_DIR) \
-  --max-proc=$(TRILINOS_MPI_MAX_PROC) \
-  --category=PYSUNDANCE \
-  --output-dir=@abs_top_builddir@/test/runtests-results \
-  --verbosity=1 \
-  --packages=Sundance
+@TRILINOS_IS_EXTERNAL_FALSE@runtests-mpi :
+@TRILINOS_IS_EXTERNAL_FALSE@	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+@TRILINOS_IS_EXTERNAL_FALSE@  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --comm=mpi \
+@TRILINOS_IS_EXTERNAL_FALSE@  --mpi-go=$(TRILINOS_MPI_GO) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --build-dir=$(TRILINOS_BUILD_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --max-proc=$(TRILINOS_MPI_MAX_PROC) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --category=$(TRILINOS_TEST_CATEGORY) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --output-dir=@abs_top_builddir@/test/runtests-results \
+@TRILINOS_IS_EXTERNAL_FALSE@  --verbosity=1 \
+@TRILINOS_IS_EXTERNAL_FALSE@  --packages=Sundance
+@TRILINOS_IS_EXTERNAL_FALSE@	$(RUN_PYSUNDANCE_MPI_TESTS)
+
+@TRILINOS_IS_EXTERNAL_FALSE@runtests-python-serial:
+@TRILINOS_IS_EXTERNAL_FALSE@	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+@TRILINOS_IS_EXTERNAL_FALSE@  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --comm=serial \
+@TRILINOS_IS_EXTERNAL_FALSE@  --build-dir=$(TRILINOS_BUILD_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --category=PYSUNDANCE \
+@TRILINOS_IS_EXTERNAL_FALSE@  --output-dir=@abs_top_builddir@/test/runtests-results \
+@TRILINOS_IS_EXTERNAL_FALSE@  --verbosity=1 \
+@TRILINOS_IS_EXTERNAL_FALSE@  --packages=Sundance
+
+@TRILINOS_IS_EXTERNAL_FALSE@runtests-python-mpi:
+@TRILINOS_IS_EXTERNAL_FALSE@	$(PERL_EXE) $(TRILINOS_HOME_DIR)/commonTools/test/utilities/runtests \
+@TRILINOS_IS_EXTERNAL_FALSE@  --trilinos-dir=$(TRILINOS_HOME_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --comm=mpi \
+@TRILINOS_IS_EXTERNAL_FALSE@  --mpi-go=$(TRILINOS_MPI_GO) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --build-dir=$(TRILINOS_BUILD_DIR) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --max-proc=$(TRILINOS_MPI_MAX_PROC) \
+@TRILINOS_IS_EXTERNAL_FALSE@  --category=PYSUNDANCE \
+@TRILINOS_IS_EXTERNAL_FALSE@  --output-dir=@abs_top_builddir@/test/runtests-results \
+@TRILINOS_IS_EXTERNAL_FALSE@  --verbosity=1 \
+@TRILINOS_IS_EXTERNAL_FALSE@  --packages=Sundance
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

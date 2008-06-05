@@ -79,10 +79,7 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 
 all-local:
 	@echo ""
-	@echo "Trilinos package epetra built successfully."
-	@echo "To check the installation, simply type \"$(MAKE) run-examples\"."
-	@echo "For more details, please refer to the instructions"
-	@echo "contained in Trilinos/doc/check_installation.txt"
+	@echo "Trilinos package Sundance built successfully."
 	@echo ""
 
 ## #######################################################################
@@ -96,39 +93,41 @@ if BUILD_EXAMPLES
 EXAMPLES_SUBDIR=examples-tutorial
 endif
 
+
+
+# ----------------------------------------------------------------------
+if BUILD_TESTS
+
+SOLVERS_TESTS = tests-solvers
+UTILS_TESTS = tests-utils
+CORE_TESTS = tests-core
+STD_MESH_TESTS = tests-std-mesh
+STD_FRAMEWORK_TESTS = tests-std-framework
+
+tests: 
+	@echo ""
+	@echo "Now building Sundance tests"
+	@echo ""
+	cd $(top_builddir)/tests-solvers && $(MAKE)
+	cd $(top_builddir)/tests-utils && $(MAKE)
+	cd $(top_builddir)/tests-core && $(MAKE)
+	cd $(top_builddir)/tests-std-mesh && $(MAKE)
+	cd $(top_builddir)/tests-std-framework && $(MAKE)
+else
+tests:
+	@echo ""
+	@echo "Sundance tests disabled at configure time"
+	@echo ""
+endif
+## --------------- end of BUILD_TESTS section --------------------------
+
+
 if PYTHON_USE
 PYTHON_SUBDIRS=python
-PYTESTS=(cd python/example; $(MAKE) tests)
-PYSERIALTESTS=(cd python/example; $(MAKE) serialtests)
-PY_TESTS_TO_CHECK=python/example/*.tst
-PY_PTESTS_TO_CHECK=python/example/*.ptst
 endif
 
-if BUILD_CXXTESTS
 
-SUBDIRS = src-solvers tests-solvers \
-src-utils tests-utils \
-src-interop \
-src-core tests-core \
-src-std-mesh tests-std-mesh \
-src-std-framework tests-std-framework \
-$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR) test
-
-CXX_SOLVER_TESTS = (cd tests-solvers; $(MAKE) tests) 
-CXX_SOLVER_SERIALTESTS = (cd tests-solvers; $(MAKE) serialtests) 
-
-CXX_SYMBOLIC_TESTS = (cd tests-core; $(MAKE) tests) 
-CXX_SYMBOLIC_SERIALTESTS = (cd tests-core; $(MAKE) serialtests) 
-
-CXX_FWK_TESTS = (cd tests-std-framework; $(MAKE) tests) 
-CXX_FWK_SERIALTESTS = (cd tests-std-framework; $(MAKE) serialtests) 
-
-CXX_TESTS_TO_CHECK=tests-*/*/*.tst
-CXX_PTESTS_TO_CHECK=tests-*/*/*.ptst
-else
-SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework \
-$(PYTHON_SUBDIRS) $(EXAMPLES_SUBDIR) test
-endif
+SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) 
 
 
 
@@ -144,39 +143,13 @@ libonly:
 	(cd src-std-mesh; $(MAKE) install)
 	(cd src-std-framework; $(MAKE) install)
 
+
 ## #######################################################################
 ## emacs tags
 ## #######################################################################
 
 tags:
 	etags */*/*.hpp */*/*.cpp
-
-
-
-
-
-## #######################################################################
-## test harness
-## #######################################################################
-
-if PYTHON_USE
-tests:
-	make runtests-mpi
-	make runtests-python-mpi
-
-serialtests:
-	make runtests-serial
-	make runtests-python-serial
-else
-tests:
-	make runtests-mpi
-	make runtests-python-mpi
-
-serialtests:
-	make runtests-serial
-	make runtests-python-serial
-endif
-
 
 
 
@@ -191,7 +164,6 @@ install-data-hook:
 	mkdir -p $(prefix)/examples-tutorial/data
 	cp $(top_srcdir)/etc/SolverParameters/*.xml $(prefix)/etc/SolverParameters
 	cp $(top_srcdir)/etc/*.xml $(prefix)/etc
-#	cp $(top_srcdir)/examples-tutorial/meshes/*.* $(prefix)/examples-tutorial/meshes
 	cp $(top_srcdir)/examples-tutorial/data/*.* $(prefix)/examples-tutorial/data
 
 
@@ -200,16 +172,33 @@ install-data-hook:
 ## testharness to run the test suite as make targets
 ## #######################################################################
 
-TRILINOS_HOME_DIR=@abs_top_srcdir@/../..
-TRILINOS_BUILD_DIR=@abs_top_builddir@/../..
-
-TRILINOS_TEST_CATEGORY=INSTALL
 
 if HAVE_MPI
 TEUCHOS_CHECK_COMM=mpi
 else
 TEUCHOS_CHECK_COMM=serial
 endif
+
+
+
+
+old-tests:
+	(cd tests-solvers; $(MAKE) old-tests)
+	(cd tests-core; $(MAKE) old-tests)
+	(cd tests-std-framework; $(MAKE) old-tests)
+
+old-serialtests:
+	(cd tests-solvers; $(MAKE) old-serialtests)
+	(cd tests-core; $(MAKE) old-serialtests)
+	(cd tests-std-framework; $(MAKE) old-serialtests)
+
+if TRILINOS_IS_EXTERNAL
+
+else
+TRILINOS_HOME_DIR=@abs_top_srcdir@/../..
+TRILINOS_BUILD_DIR=@abs_top_builddir@/../..
+
+TRILINOS_TEST_CATEGORY=INSTALL
 
 
 runtests-serial :
@@ -260,7 +249,7 @@ runtests-python-mpi:
   --verbosity=1 \
   --packages=Sundance
 
-
+endif
 
 
 

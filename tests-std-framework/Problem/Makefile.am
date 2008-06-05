@@ -31,7 +31,7 @@
 
 EXEEXT = .exe
 
-noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
+
 
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D \
 LinearPartialDomain NonlinearPartialDomain AToCDensitySample FunctionalTest3D
@@ -43,7 +43,15 @@ Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPo
 FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D \
 SpectralPoisson1D SpectralSqrt PartitionedPoisson1D
 
+
+ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
+
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
+
+SERIAL_PROGS = $(SERIAL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(ALL_SRC:%=%.exe)
+
 
 
 
@@ -647,12 +655,13 @@ SimpleModelEvalTest_LDADD = $(STD_FWK_LIBS)
 
 
 
-TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 
-PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
+STESTS = $(ALL_SRC:%=%.tst)
 
-@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
-@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+PTESTS = $(PARALLEL_SRC:%=%.ptst)
+
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(STESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(STESTS)
 
 
 NPROC = 2
@@ -668,14 +677,16 @@ NPROC = 2
 	$(MPI_COMMAND) ./$< > $@ 2>&1 
 	echo "done" $@
 
-tests:
-	$(MAKE) $(TESTS)
+old-tests:
+	$(MAKE) $(STESTS)
 	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
-serialtests:
-	$(MAKE) $(TESTS)
+old-serialtests:
+	$(MAKE) $(STESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
+
 
 
 include $(top_srcdir)/Makefile.common

@@ -105,12 +105,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-noinst_PROGRAMS = $(am__EXEEXT_1) SetTest$(EXEEXT) ChainRule$(EXEEXT) \
-	SimpleEval$(EXEEXT) SensitivityTest$(EXEEXT) \
-	PolynomialTest$(EXEEXT) StdTransformation$(EXEEXT) \
-	ScalabilityTest$(EXEEXT) DepthScalabilityTest$(EXEEXT) \
-	VecTimings$(EXEEXT) VariationTest$(EXEEXT) testExpr$(EXEEXT)
-TESTS = $(am__EXEEXT_2)
+noinst_PROGRAMS = $(am__EXEEXT_2)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/Makefile.common
 subdir = tests-core/SymbolicTests
@@ -119,7 +114,6 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
 	$(top_srcdir)/config/az_python.m4 \
 	$(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
-	$(top_srcdir)/config/tac_arg_enable_feature.m4 \
 	$(top_srcdir)/config/tac_arg_with_ar.m4 \
 	$(top_srcdir)/config/tac_arg_with_flags.m4 \
 	$(top_srcdir)/config/tac_arg_with_incdirs.m4 \
@@ -135,6 +129,11 @@ CONFIG_HEADER = $(top_builddir)/src-solvers/TSF_config.h \
 CONFIG_CLEAN_FILES =
 am__EXEEXT_1 = TestEval$(EXEEXT) VecOpTest$(EXEEXT) \
 	UserDefTest$(EXEEXT)
+am__EXEEXT_2 = $(am__EXEEXT_1) SetTest$(EXEEXT) ChainRule$(EXEEXT) \
+	SimpleEval$(EXEEXT) SensitivityTest$(EXEEXT) \
+	PolynomialTest$(EXEEXT) StdTransformation$(EXEEXT) \
+	ScalabilityTest$(EXEEXT) DepthScalabilityTest$(EXEEXT) \
+	VecTimings$(EXEEXT) VariationTest$(EXEEXT) testExpr$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_ChainRule_OBJECTS = ChainRule-ChainRule.$(OBJEXT)
 ChainRule_OBJECTS = $(am_ChainRule_OBJECTS)
@@ -227,7 +226,6 @@ DIST_SOURCES = $(ChainRule_SOURCES) $(DepthScalabilityTest_SOURCES) \
 	$(VecTimings_SOURCES) $(testExpr_SOURCES)
 ETAGS = etags
 CTAGS = ctags
-am__EXEEXT_2 = $(am__EXEEXT_1)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALTERNATE_AR = @ALTERNATE_AR@
@@ -303,6 +301,7 @@ SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
 SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TRILINOS_DATA_DIR = @TRILINOS_DATA_DIR@
 TRILINOS_DIR = @TRILINOS_DIR@
+TRILINOS_SRC_DIR = @TRILINOS_SRC_DIR@
 VERSION = @VERSION@
 WITH_SWIG = @WITH_SWIG@
 abs_builddir = @abs_builddir@
@@ -361,7 +360,13 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TEST_SRC = TestEval VecOpTest UserDefTest 
+SERIAL_SRC = TestEval VecOpTest UserDefTest 
+ALL_SRC = $(SERIAL_SRC) SetTest ChainRule SimpleEval SensitivityTest \
+PolynomialTest StdTransformation ScalabilityTest DepthScalabilityTest \
+VecTimings VariationTest testExpr
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
+SERIAL_PROGS = $(SERIAL_SRC:%=%.exe)
 LIBDEPS = $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a 
@@ -422,8 +427,13 @@ StdTransformation_SOURCES = $(srcdir)/StdTransformation.cpp
 StdTransformation_DEPENDENCIES = $(LIBDEPS)
 StdTransformation_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 StdTransformation_LDADD = $(CORE_LIBS) 
-TEST_EXE = $(TEST_SRC:%=%.exe)
-CHECKTEST_ARGS = $(TESTS)
+STESTS = $(SERIAL_SRC:%=%.tst)
+PTESTS = $(PARALLEL_SRC:%=%.ptst)
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(STESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(STESTS)
+NPROC = 2
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
 SUNDANCE_DIR = $(top_srcdir)
 
 # ------------------------------------------------------------------------
@@ -923,79 +933,6 @@ GTAGS:
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
-check-TESTS: $(TESTS)
-	@failed=0; all=0; xfail=0; xpass=0; skip=0; ws='[	 ]'; \
-	srcdir=$(srcdir); export srcdir; \
-	list=' $(TESTS) '; \
-	if test -n "$$list"; then \
-	  for tst in $$list; do \
-	    if test -f ./$$tst; then dir=./; \
-	    elif test -f $$tst; then dir=; \
-	    else dir="$(srcdir)/"; fi; \
-	    if $(TESTS_ENVIRONMENT) $${dir}$$tst; then \
-	      all=`expr $$all + 1`; \
-	      case " $(XFAIL_TESTS) " in \
-	      *$$ws$$tst$$ws*) \
-		xpass=`expr $$xpass + 1`; \
-		failed=`expr $$failed + 1`; \
-		echo "XPASS: $$tst"; \
-	      ;; \
-	      *) \
-		echo "PASS: $$tst"; \
-	      ;; \
-	      esac; \
-	    elif test $$? -ne 77; then \
-	      all=`expr $$all + 1`; \
-	      case " $(XFAIL_TESTS) " in \
-	      *$$ws$$tst$$ws*) \
-		xfail=`expr $$xfail + 1`; \
-		echo "XFAIL: $$tst"; \
-	      ;; \
-	      *) \
-		failed=`expr $$failed + 1`; \
-		echo "FAIL: $$tst"; \
-	      ;; \
-	      esac; \
-	    else \
-	      skip=`expr $$skip + 1`; \
-	      echo "SKIP: $$tst"; \
-	    fi; \
-	  done; \
-	  if test "$$failed" -eq 0; then \
-	    if test "$$xfail" -eq 0; then \
-	      banner="All $$all tests passed"; \
-	    else \
-	      banner="All $$all tests behaved as expected ($$xfail expected failures)"; \
-	    fi; \
-	  else \
-	    if test "$$xpass" -eq 0; then \
-	      banner="$$failed of $$all tests failed"; \
-	    else \
-	      banner="$$failed of $$all tests did not behave as expected ($$xpass unexpected passes)"; \
-	    fi; \
-	  fi; \
-	  dashes="$$banner"; \
-	  skipped=""; \
-	  if test "$$skip" -ne 0; then \
-	    skipped="($$skip tests were not run)"; \
-	    test `echo "$$skipped" | wc -c` -le `echo "$$banner" | wc -c` || \
-	      dashes="$$skipped"; \
-	  fi; \
-	  report=""; \
-	  if test "$$failed" -ne 0 && test -n "$(PACKAGE_BUGREPORT)"; then \
-	    report="Please report to $(PACKAGE_BUGREPORT)"; \
-	    test `echo "$$report" | wc -c` -le `echo "$$banner" | wc -c` || \
-	      dashes="$$report"; \
-	  fi; \
-	  dashes=`echo "$$dashes" | sed s/./=/g`; \
-	  echo "$$dashes"; \
-	  echo "$$banner"; \
-	  test -z "$$skipped" || echo "$$skipped"; \
-	  test -z "$$report" || echo "$$report"; \
-	  echo "$$dashes"; \
-	  test "$$failed" -eq 0; \
-	else :; fi
-
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -1023,7 +960,6 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 all-am: Makefile $(PROGRAMS)
 installdirs:
@@ -1110,15 +1046,15 @@ uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-generic clean-noinstPROGRAMS ctags distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	clean-noinstPROGRAMS ctags distclean distclean-compile \
+	distclean-generic distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am
@@ -1128,12 +1064,17 @@ uninstall-am:
 	./$< > $@ 2>&1 
 	echo "done" $@
 
-tests:
-	$(MAKE) $(TESTS)
+%.ptst : %.exe
+	$(MPI_COMMAND) ./$< > $@ 2>&1 
+	echo "done" $@
+
+old-tests:
+	$(MAKE) $(STESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
-serialtests:
-	$(MAKE) $(TESTS)
+old-serialtests:
+	$(MAKE) $(STESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 # ------------------------------------------------------------------------

@@ -163,6 +163,10 @@ int main(int argc, char *argv[])
        * ----------------------------------------------------------- */
       LinearOperator<double> H = fact->getH();
       Vector<double> u0 = bigF.domain().createMember();
+      std::cerr << "bigF.domain()=" << bigF.domain().description() << std::endl;
+      std::cerr << "bigF.range()=" << bigF.range().description() << std::endl;
+
+
       Thyra::randomize(-1.0, 1.0, x0.ptr().get());
 
       Vector<double> z = H*u0;

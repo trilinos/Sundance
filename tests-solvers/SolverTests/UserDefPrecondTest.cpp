@@ -56,6 +56,10 @@ int main(int argc, char *argv[])
   try
     {
       int verbosity = 1;
+#define INACTIVE
+#ifdef INACTIVE
+      cout << "test INACTIVE" << endl;
+#else
 
       GlobalMPISession session(&argc, &argv);
 
@@ -140,6 +144,7 @@ int main(int argc, char *argv[])
         {
           cout << "User-defined preconditioner test PASSED" << endl;
         }
+#endif
     }
   catch(std::exception& e)
     {

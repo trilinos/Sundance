@@ -69,7 +69,6 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
 	$(top_srcdir)/config/az_python.m4 \
 	$(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
-	$(top_srcdir)/config/tac_arg_enable_feature.m4 \
 	$(top_srcdir)/config/tac_arg_with_ar.m4 \
 	$(top_srcdir)/config/tac_arg_with_flags.m4 \
 	$(top_srcdir)/config/tac_arg_with_incdirs.m4 \
@@ -96,7 +95,7 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = python c++
+DIST_SUBDIRS = c++ python
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALTERNATE_AR = @ALTERNATE_AR@
@@ -172,6 +171,7 @@ SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
 SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TRILINOS_DATA_DIR = @TRILINOS_DATA_DIR@
 TRILINOS_DIR = @TRILINOS_DIR@
+TRILINOS_SRC_DIR = @TRILINOS_SRC_DIR@
 VERSION = @VERSION@
 WITH_SWIG = @WITH_SWIG@
 abs_builddir = @abs_builddir@
@@ -230,9 +230,8 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@BUILD_CXXEXAMPLES_TRUE@CXX_SUBDIR = c++
 @PYTHON_USE_TRUE@PYTHON_SUBDIR = python
-SUBDIRS = $(PYTHON_SUBDIR) $(CXX_SUBDIR)
+SUBDIRS = c++ $(PYTHON_SUBDIR) 
 all: all-recursive
 
 .SUFFIXES:

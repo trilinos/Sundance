@@ -131,7 +131,6 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
 	$(top_srcdir)/config/az_python.m4 \
 	$(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
-	$(top_srcdir)/config/tac_arg_enable_feature.m4 \
 	$(top_srcdir)/config/tac_arg_with_ar.m4 \
 	$(top_srcdir)/config/tac_arg_with_flags.m4 \
 	$(top_srcdir)/config/tac_arg_with_incdirs.m4 \
@@ -340,6 +339,7 @@ SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
 SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TRILINOS_DATA_DIR = @TRILINOS_DATA_DIR@
 TRILINOS_DIR = @TRILINOS_DIR@
+TRILINOS_SRC_DIR = @TRILINOS_SRC_DIR@
 VERSION = @VERSION@
 WITH_SWIG = @WITH_SWIG@
 abs_builddir = @abs_builddir@

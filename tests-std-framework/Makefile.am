@@ -28,18 +28,14 @@
 # ************************************************************************
 #@HEADER
 
-SUBDIRS = $(LL_SUB) Problem
 
-if BUILD_LOW_LEVEL_TESTS
-LL_SUB=Assembly
-LL_TESTS = (cd Assembly; $(MAKE) tests)
-LL_SERIALTESTS = (cd Assembly; $(MAKE) serialtests)
+if BUILD_TESTS
+SUBDIRS = Assembly Problem
+old-tests: 
+	(cd Assembly; $(MAKE) old-tests)
+	(cd Problem; $(MAKE) old-tests)
+else
+tests:
+
 endif
 
-tests:
-	$(LL_TESTS)
-	(cd Problem; $(MAKE) tests)
-
-serialtests:
-	$(LL_SERIALTESTS)
-	(cd Problem; $(MAKE) serialtests)

@@ -28,12 +28,12 @@
 
 SUBDIRS = VectorTests OperatorTests SolverTests
 
-tests:
-	(cd VectorTests; $(MAKE) tests)
-	(cd OperatorTests; $(MAKE) tests)
-	(cd SolverTests; $(MAKE) tests)
+old-tests:
+	(cd VectorTests; $(MAKE) old-tests)
+	(cd OperatorTests; $(MAKE) old-tests)
+	(cd SolverTests; $(MAKE) old-tests)
 
-serialtests:
-	(cd VectorTests; $(MAKE) serialtests)
-	(cd OperatorTests; $(MAKE) serialtests)
-	(cd SolverTests; $(MAKE) serialtests)
+old-serialtests:
+	(cd VectorTests; $(MAKE) old-serialtests)
+	(cd OperatorTests; $(MAKE) old-serialtests)
+	(cd SolverTests; $(MAKE) old-serialtests)

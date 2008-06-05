@@ -32,11 +32,18 @@ EXEEXT = .exe
 
 PARALLEL_SRC = IDAHeat PoissonTest PoissonBoltzmannTest BlockTriangularTest PartitionedPoissonTest
 
-SERIAL_SRC =UserDefPrecondTest
+SERIAL_SRC = UserDefPrecondTest
+
+ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
 
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 
-noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
+SERIAL_PROGS = $(SERIAL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(ALL_SRC:%=%.exe)
+
+
+
 
 
 
@@ -106,12 +113,16 @@ PartitionedPoissonTest_CXXFLAGS = $(CXXFLAGS) $(SOLVERS_INCLUDES)
 PartitionedPoissonTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS) 
 
 
-TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
 
-PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
 
-@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
-@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+
+
+STESTS = $(ALL_SRC:%=%.tst)
+
+PTESTS = $(PARALLEL_SRC:%=%.ptst)
+
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(STESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(STESTS)
 
 
 NPROC = 2
@@ -127,14 +138,11 @@ NPROC = 2
 	$(MPI_COMMAND) ./$< > $@ 2>&1 
 	echo "done" $@
 
-tests:
-	$(MAKE) $(TESTS)
+old-tests:
+	$(MAKE) $(STESTS)
 	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
-serialtests:
-	$(MAKE) $(TESTS)
+old-serialtests:
+	$(MAKE) $(STESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
-
-
-

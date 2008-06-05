@@ -69,7 +69,6 @@ am__aclocal_m4_deps = $(top_srcdir)/config/ac_pkg_swig.m4 \
 	$(top_srcdir)/config/az_python.m4 \
 	$(top_srcdir)/config/tac_arg_config_chaco.m4 \
 	$(top_srcdir)/config/tac_arg_config_mpi.m4 \
-	$(top_srcdir)/config/tac_arg_enable_feature.m4 \
 	$(top_srcdir)/config/tac_arg_with_ar.m4 \
 	$(top_srcdir)/config/tac_arg_with_flags.m4 \
 	$(top_srcdir)/config/tac_arg_with_incdirs.m4 \
@@ -172,6 +171,7 @@ SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
 SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TRILINOS_DATA_DIR = @TRILINOS_DATA_DIR@
 TRILINOS_DIR = @TRILINOS_DIR@
+TRILINOS_SRC_DIR = @TRILINOS_SRC_DIR@
 VERSION = @VERSION@
 WITH_SWIG = @WITH_SWIG@
 abs_builddir = @abs_builddir@
@@ -230,10 +230,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = $(LL_SUB) Problem
-@BUILD_LOW_LEVEL_TESTS_TRUE@LL_SUB = Assembly
-@BUILD_LOW_LEVEL_TESTS_TRUE@LL_TESTS = (cd Assembly; $(MAKE) tests)
-@BUILD_LOW_LEVEL_TESTS_TRUE@LL_SERIALTESTS = (cd Assembly; $(MAKE) serialtests)
+@BUILD_TESTS_TRUE@SUBDIRS = Assembly Problem
 all: all-recursive
 
 .SUFFIXES:
@@ -540,14 +537,10 @@ uninstall-am:
 	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
 	tags-recursive uninstall uninstall-am
 
-
-tests:
-	$(LL_TESTS)
-	(cd Problem; $(MAKE) tests)
-
-serialtests:
-	$(LL_SERIALTESTS)
-	(cd Problem; $(MAKE) serialtests)
+@BUILD_TESTS_TRUE@old-tests: 
+@BUILD_TESTS_TRUE@	(cd Assembly; $(MAKE) old-tests)
+@BUILD_TESTS_TRUE@	(cd Problem; $(MAKE) old-tests)
+@BUILD_TESTS_FALSE@tests:
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

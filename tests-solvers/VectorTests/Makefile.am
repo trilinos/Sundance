@@ -34,9 +34,13 @@ PARALLEL_SRC = VectorTest
 
 SERIAL_SRC =
 
+ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
+
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
 
-noinst_PROGRAMS = $(PARALLEL_SRC) $(SERIAL_SRC)
+SERIAL_PROGS = $(SERIAL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(ALL_SRC:%=%.exe)
 
 
 
@@ -51,12 +55,12 @@ VectorTest_LDADD =  $(LDFLAGS) $(SOLVERS_LIBS)
 
 
 
-TESTS = $(noinst_PROGRAMS:%.exe=%.tst)
+STESTS = $(ALL_SRC:%=%.tst) 
 
-PTESTS = $(PARALLEL_PROGS:%.exe=%.ptst)
+PTESTS = $(PARALLEL_SRC:%=%.ptst)
 
-@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(TESTS) $(PTESTS)
-@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(TESTS)
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(STESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(STESTS)
 
 
 NPROC = 2
@@ -72,13 +76,13 @@ NPROC = 2
 	$(MPI_COMMAND) ./$< > $@ 2>&1 
 	echo "done" $@
 
-tests:
-	$(MAKE) $(TESTS)
+old-tests:
+	$(MAKE) $(STESTS)
 	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
-serialtests:
-	$(MAKE) $(TESTS)
+old-serialtests:
+	$(MAKE) $(STESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 

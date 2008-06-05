@@ -32,9 +32,17 @@ include $(top_srcdir)/Makefile.common
 
 EXEEXT = .exe
 
-TEST_SRC = BasisCheck TransformedIntegral2D  QuadratureTest
+SERIAL_SRC = BasisCheck TransformedIntegral2D  QuadratureTest 
 
-noinst_PROGRAMS = $(TEST_SRC) QuadratureIntegral2D
+ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC) QuadratureIntegral2D
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
+
+SERIAL_PROGS = $(SERIAL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(ALL_SRC:%=%.exe)
+
+
 
 
 BasisCheck_SOURCES = $(srcdir)/BasisCheck.cpp
@@ -98,21 +106,36 @@ QuadratureTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 QuadratureTest_LDADD = $(STD_FWK_LIBS) 
 
 
-TEST_EXE = $(TEST_SRC:%=%.exe)
-CHECKTEST_ARGS = $(TESTS)
-TESTS = $(TEST_EXE:%.exe=%.tst)
+STESTS = $(SERIAL_SRC:%=%.tst)
+
+PTESTS = $(PARALLEL_SRC:%=%.ptst)
+
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(STESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(STESTS)
+
+
+NPROC = 2
+
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
 
 %.tst : %.exe
 	./$< > $@ 2>&1 
 	echo "done" $@
 
-tests:
-	$(MAKE) $(TESTS)
+%.ptst : %.exe
+	$(MPI_COMMAND) ./$< > $@ 2>&1 
+	echo "done" $@
+
+old-tests:
+	$(MAKE) $(STESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
-serialtests:
-	$(MAKE) $(TESTS)
+old-serialtests:
+	$(MAKE) $(STESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
+
 
 
 

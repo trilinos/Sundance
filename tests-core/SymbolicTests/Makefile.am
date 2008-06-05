@@ -31,11 +31,20 @@
 
 EXEEXT = .exe
 
-TEST_SRC = TestEval VecOpTest UserDefTest 
+SERIAL_SRC = TestEval VecOpTest UserDefTest 
 
-noinst_PROGRAMS = $(TEST_SRC) SetTest ChainRule SimpleEval SensitivityTest \
+ALL_SRC = $(SERIAL_SRC) SetTest ChainRule SimpleEval SensitivityTest \
 PolynomialTest StdTransformation ScalabilityTest DepthScalabilityTest \
 VecTimings VariationTest testExpr
+
+
+
+PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
+
+SERIAL_PROGS = $(SERIAL_SRC:%=%.exe)
+
+noinst_PROGRAMS = $(ALL_SRC:%=%.exe)
+
 
 
 LIBDEPS = $(top_builddir)/src-core/libsundanceCore.a \
@@ -185,21 +194,34 @@ StdTransformation_CXXFLAGS = $(CORE_INCLUDES) $(TRILINOS_CXXFLAGS)
 StdTransformation_LDADD = $(CORE_LIBS) 
 
 
-TEST_EXE = $(TEST_SRC:%=%.exe)
-TESTS = $(TEST_EXE:%.exe=%.tst)
+STESTS = $(SERIAL_SRC:%=%.tst)
 
-CHECKTEST_ARGS = $(TESTS)
+PTESTS = $(PARALLEL_SRC:%=%.ptst)
+
+@HAVE_MPI_TRUE@CHECKTEST_ARGS = $(STESTS) $(PTESTS)
+@HAVE_MPI_FALSE@CHECKTEST_ARGS = $(STESTS)
+
+
+NPROC = 2
+
+@HAVE_MPI_TRUE@MPI_COMMAND = mpirun -np $(NPROC)
+@HAVE_MPI_FALSE@MPI_COMMAND = 
 
 %.tst : %.exe
 	./$< > $@ 2>&1 
 	echo "done" $@
 
-tests:
-	$(MAKE) $(TESTS)
+%.ptst : %.exe
+	$(MPI_COMMAND) ./$< > $@ 2>&1 
+	echo "done" $@
+
+old-tests:
+	$(MAKE) $(STESTS)
+	@HAVE_MPI_TRUE@$(MAKE) $(PTESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
-serialtests:
-	$(MAKE) $(TESTS)
+old-serialtests:
+	$(MAKE) $(STESTS)
 	$(top_srcdir)/etc/checkTests.pl $(CHECKTEST_ARGS) 
 
 
