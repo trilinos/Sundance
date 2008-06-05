@@ -137,7 +137,7 @@ void SundanceModelEvaluator
 
   /* df/dx */
   TSFExtended::LinearOperator<double> df_dx = 
-    rcp_dynamic_cast<SingleScalarTypeOpBase<double> >(outArgs.get_W_op());
+    rcp_dynamic_cast<LinearOpBase<double> >(outArgs.get_W_op());
   
   if (outArgs.get_W_op().get()!=0) 
     {
