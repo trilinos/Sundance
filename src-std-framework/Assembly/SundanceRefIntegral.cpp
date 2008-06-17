@@ -135,7 +135,7 @@ RefIntegral::RefIntegral(int spatialDim,
       W_[fc].resize(nRefDerivTest() * nNodesTest());
       for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
-      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest(), testBasis.dim());
+      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
   
       Array<Point> quadPts;
       Array<double> quadWeights;
@@ -152,6 +152,7 @@ RefIntegral::RefIntegral(int spatialDim,
 
       for (int r=0; r<nRefDerivTest(); r++)
         {
+	  testBasisVals[r].resize(testBasis.dim());
           MultiIndex mi;
           if (testDerivOrder==1) mi[r] = 1;
           testBasis.ptr()->refEval(maxCellType, evalCellType, quadPts, mi, 
@@ -241,8 +242,8 @@ RefIntegral::RefIntegral(int spatialDim,
       W_[fc].resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
       for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
-      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest(), testBasis.dim());
-      Array<Array<Array<Array<double> > > > unkBasisVals(nRefDerivUnk(), unkBasis.dim());
+      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
+      Array<Array<Array<Array<double> > > > unkBasisVals(nRefDerivUnk());
         
       Array<Point> quadPts;
       Array<double> quadWeights;
@@ -258,6 +259,7 @@ RefIntegral::RefIntegral(int spatialDim,
 
       for (int r=0; r<nRefDerivTest(); r++)
         {
+	  testBasisVals[r].resize(testBasis.dim());
           MultiIndex mi;
           if (testDerivOrder==1) mi[r] = 1;
           testBasis.ptr()->refEval(maxCellType, evalCellType, quadPts, mi, 
@@ -269,6 +271,7 @@ RefIntegral::RefIntegral(int spatialDim,
 
       for (int r=0; r<nRefDerivUnk(); r++)
         {
+	  unkBasisVals[r].resize(unkBasis.dim());
           MultiIndex mi;
           if (unkDerivOrder==1) mi[r] = 1;
           unkBasis.ptr()->refEval(maxCellType, evalCellType, 

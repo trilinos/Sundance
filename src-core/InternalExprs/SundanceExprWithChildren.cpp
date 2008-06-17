@@ -969,11 +969,12 @@ namespace SundanceCore {
     Array<Array<Array<int> > > bStructure(const Array<int>& b,
                                           const Array<Array<int> >& tmp)
     {
-      Array<Array<Array<int> > > rtn(tmp.size(), b.size());
+      Array<Array<Array<int> > > rtn(tmp.size());
       
       for (unsigned int p=0; p<tmp.size(); p++)
         {
           int count=0;
+	  rtn[p].resize(b.size());
           for (unsigned int j=0; j<b.size(); j++)
             {
               rtn[p][j].resize(b[j]);

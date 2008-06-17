@@ -194,13 +194,15 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
   {
     SUNDANCE_OUT(this->verbosity() > VerbMedium,
       tab << "computing basis values on facet quad pts");
-    rtn = rcp(new Array<Array<Array<double> > >(numFacetCases(), basis.dim()));
+    rtn = rcp(new Array<Array<Array<double> > >(numFacetCases()));
 
     for (int fc=0; fc<numFacetCases(); fc++)
     {
-      Array<Array<Array<Array<double> > > > tmp(maxCellDim(), basis.dim());    
+      (*rtn)[fc].resize(basis.dim());
+      Array<Array<Array<Array<double> > > > tmp(maxCellDim());    
       for (int r=0; r<maxCellDim(); r++)
       {
+	tmp.resize(basis.dim());
         MultiIndex mi;
         mi[r]=1;
         basis.ptr()->refEval(maxCellType(), maxCellType(), 

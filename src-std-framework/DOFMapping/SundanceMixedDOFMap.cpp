@@ -269,8 +269,10 @@ void MixedDOFMap::initMap()
   /* Space in which to keep a list of remote cells needed by each processor
    * for each dimension. The first index is dimension, the second proc, the
    * third cell number. */
-  Array<Array<Array<int> > > remoteCells(mesh().spatialDim()+1,
-                                         mesh().comm().getNProc());
+  Array<Array<Array<int> > > remoteCells(mesh().spatialDim()+1);
+
+  for (int d=0; d<remoteCells.size(); d++) 
+    remoteCells[d].resize(mesh().comm().getNProc());
   
   /* Loop over maximal cells in the order specified by the cell iterator.
    * This might be reordered relative to the mesh. 

@@ -78,8 +78,9 @@ Mesh PartitionedRectangleMesher::fillMesh() const
 	if (highestVisiblePtY > nyTot) highestVisiblePtY = nyTot;
 
 
-	Array<Array<int> > pts(highestVisiblePtX-lowestVisiblePtX+1, 
-												 highestVisiblePtY-lowestVisiblePtY+1);
+	Array<Array<int> > pts(highestVisiblePtX-lowestVisiblePtX+1);
+	for (int i=0; i<pts.size(); i++) pts[i].resize(highestVisiblePtY-lowestVisiblePtY+1);
+
 	int globalIndex = 0;
 
 	/* add the visible points into the mesh */

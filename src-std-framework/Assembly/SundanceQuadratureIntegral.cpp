@@ -162,13 +162,13 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       SUNDANCE_OUT(this->verbosity() > VerbHigh, 
                    tab0 << "quad weights" << quadWeights);
 
-      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest(),
-        testBasis.dim());
+      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
 
 
       for (int r=0; r<nRefDerivTest(); r++)
         {
           MultiIndex mi;
+	  testBasisVals[r].resize(testBasis.dim());
           if (testDerivOrder==1) mi[r] = 1;
           testBasis.ptr()->refEval(maxCellType, cellType, quadPts, mi, 
                                    testBasisVals[r]);
@@ -274,13 +274,13 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
 
       /* compute the basis functions */
-      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest(), 
-        testBasis.dim());
-      Array<Array<Array<Array<double> > > > unkBasisVals(nRefDerivUnk(),
-        unkBasis.dim());
+      Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
+      Array<Array<Array<Array<double> > > > unkBasisVals(nRefDerivUnk());
+
 
       for (int r=0; r<nRefDerivTest(); r++)
         {
+	  testBasisVals.resize(testBasis.dim());
           MultiIndex mi;
           if (testDerivOrder==1) mi[r] = 1;
           testBasis.ptr()->refEval(maxCellType, evalCellType, quadPts, mi, 
@@ -292,6 +292,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
       for (int r=0; r<nRefDerivUnk(); r++)
         {
+	  unkBasisVals.resize(unkBasis.dim());
           MultiIndex mi;
           if (unkDerivOrder==1) mi[r] = 1;
           unkBasis.ptr()->refEval(maxCellType, evalCellType, 

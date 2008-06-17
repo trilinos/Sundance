@@ -10,11 +10,11 @@
 #include "SundanceCellFilterStub.hpp"
 #include "SundanceQuadratureFamilyStub.hpp"
 
-int main(int argc, void** argv)
+int main(int argc, char** argv)
 {
   try
     {
-      MPISession::init(&argc, &argv);
+      MPISession::init(&argc, (void***)&argv);
       
 
       Expr::showAllParens() = true;

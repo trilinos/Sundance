@@ -637,7 +637,7 @@ void Assembler::assemble(LinearOperator<double>& A,
     = rcp(new Array<Array<Array<int> > >(numColBlocks));
 
   Array<RefCountPtr<TSFExtended::LoadableVector<double> > > vec(numRowBlocks);
-  Array<Array<TSFExtended::LoadableMatrix<double>* > > mat(numRowBlocks, numColBlocks);
+  Array<Array<TSFExtended::LoadableMatrix<double>* > > mat(numRowBlocks);
 
   for (int br=0; br<numRowBlocks; br++)
     {
@@ -660,6 +660,7 @@ void Assembler::assemble(LinearOperator<double>& A,
                          "vector block " << br 
                          << " is not loadable in Assembler::assemble()");
       vecBlock.zero();
+      mat[br].resize(numColBlocks);
       for (int bc=0; bc<numColBlocks; bc++)
         {
           LinearOperator<double> matBlock;
@@ -2191,9 +2192,10 @@ void Assembler
 
 Array<Array<int> > Assembler::findNonzeroBlocks() const
 {
-  Array<Array<int> > rtn(eqn_->numVarBlocks(), eqn_->numUnkBlocks());
+  Array<Array<int> > rtn(eqn_->numVarBlocks());
   for (unsigned int br=0; br<rtn.size(); br++)
     {
+      rtn[br].resize(eqn_->numUnkBlocks());
       for (unsigned int bc=0; bc<rtn[br].size(); bc++)
         {
           rtn[br][bc] = 0 ;

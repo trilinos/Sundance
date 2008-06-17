@@ -121,8 +121,16 @@ inline void Chaos::OrthoOrder(George::matrix &D){
   int  maxterms = nterm(order, ndim);
 
   /* KL - changed from C to Teuchos arrays to be Ansi C++ compliant */
-  Teuchos::Array<Teuchos::Array<int> > c(maxterms+1, order+1);
-  Teuchos::Array<Teuchos::Array<int> > c1(maxterms+1, ndim+1);
+  /* KL 13 June 2008 -- removed two-argument ctors because of a compilation
+   * problem under gcc 4.3.0. */
+  //  Teuchos::Array<Teuchos::Array<int> > c(maxterms+1, order+1);
+  // Teuchos::Array<Teuchos::Array<int> > c1(maxterms+1, ndim+1);
+  Teuchos::Array<Teuchos::Array<int> > c(maxterms+1);
+  for (int i=0; i<=maxterms; i++) c[i].resize(order+1);
+
+  Teuchos::Array<Teuchos::Array<int> > c1(maxterms+1);
+  for (int i=0; i<=maxterms; i++) c1[i].resize(ndim+1);
+
 
 
   int count = 0;
