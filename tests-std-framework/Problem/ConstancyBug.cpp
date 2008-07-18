@@ -100,5 +100,5 @@ int main(int argc, char** argv)
 		{
       cerr << e.what() << endl;
 		}
-  Sundance::finalize();
+  Sundance::finalize(); return Sundance::testStatus(); 
 }

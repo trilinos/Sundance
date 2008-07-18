@@ -48,11 +48,11 @@ using namespace TSFExtended;
 
 namespace SundanceStdFwk
 {
-  double evaluateIntegral(const Mesh& mesh, const Expr& expr)
-  {
-    FunctionalEvaluator eval(mesh, expr);
-    return eval.evaluate();
-  }
+double evaluateIntegral(const Mesh& mesh, const Expr& expr)
+{
+  FunctionalEvaluator eval(mesh, expr);
+  return eval.evaluate();
+}
 }
 
 FunctionalEvaluator::FunctionalEvaluator()
@@ -63,8 +63,10 @@ FunctionalEvaluator::FunctionalEvaluator()
 {}
 
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
-                                         const Expr& integral)
-  : assembler_(),
+  const Expr& integral,
+  const ParameterList& verbParams)
+  : TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+    assembler_(),
     varValues_(),
     vecType_(),
     gradient_()
@@ -78,17 +80,19 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     = rcp(new EquationSet(integral, bcs, params, params, fields, fields));
   
   
-  assembler_ = rcp(new Assembler(mesh, eqnSet));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, verbSublist("Assembler")));
 }
 
 
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
-                                         const Expr& integral,
-                                         const Expr& bcs,
-                                         const Expr& var,
-                                         const Expr& varValues,
-                                         const VectorType<double>& vectorType)
-  : assembler_(),
+  const Expr& integral,
+  const Expr& bcs,
+  const Expr& var,
+  const Expr& varValues,
+  const VectorType<double>& vectorType,
+  const ParameterList& verbParams)
+  : TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+    assembler_(),
     varValues_(varValues),
     vecType_(vectorType),
     gradient_()
@@ -101,19 +105,21 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, fixed, fixed));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false, verbSublist("Assembler")));
 }
 
 
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
-                                         const Expr& integral,
-                                         const Expr& bcs,
-                                         const Expr& vars,
-                                         const Expr& varEvalPts,
-                                         const Expr& fields,
-                                         const Expr& fieldValues,
-                                         const VectorType<double>& vectorType)
-  : assembler_(),
+  const Expr& integral,
+  const Expr& bcs,
+  const Expr& vars,
+  const Expr& varEvalPts,
+  const Expr& fields,
+  const Expr& fieldValues,
+  const VectorType<double>& vectorType,
+  const ParameterList& verbParams)
+  : TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+    assembler_(),
     varValues_(varEvalPts),
     vecType_(vectorType),
     gradient_()
@@ -128,7 +134,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, f, f0));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false, verbSublist("Assembler")));
 }
 
 double FunctionalEvaluator::evaluate() const
@@ -152,20 +158,20 @@ Expr FunctionalEvaluator::evalGradient(double& value) const
 
   Array<Expr> rtn(assembler_->rowSpace().size());
   for (unsigned int i=0; i<rtn.size(); i++)
-    {
-      string name = "gradient";
-      if (rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
-      rtn[i] = new DiscreteFunction(*(assembler_->rowSpace()[i]),
-                                    g.getBlock(i), name);
-    }
+  {
+    string name = "gradient";
+    if (rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
+    rtn[i] = new DiscreteFunction(*(assembler_->rowSpace()[i]),
+      g.getBlock(i), name);
+  }
   if ((int)rtn.size()==1)
-    {
-      return rtn[0];
-    }
+  {
+    return rtn[0];
+  }
   else
-    {
-      return new ListExpr(rtn);
-    }
+  {
+    return new ListExpr(rtn);
+  }
 }
 
 
@@ -189,9 +195,9 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
 
 
   TEST_FOR_EXCEPTION(xView.get() == 0, RuntimeError, 
-                     "bad pointer in FunctionalEvaluator::fdGradientCheck");
+    "bad pointer in FunctionalEvaluator::fdGradientCheck");
   TEST_FOR_EXCEPTION(gradF0View.get() == 0, RuntimeError, 
-                     "bad pointer in FunctionalEvaluator::fdGradientCheck");
+    "bad pointer in FunctionalEvaluator::fdGradientCheck");
 
   int nTot = x.space().dim();
   int n = x.space().numLocalElements();
@@ -202,45 +208,45 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
 
   int localIndex = 0;
   for (int globalIndex=0; globalIndex<nTot; globalIndex++)
+  {
+    double tmp=0.0;
+    bool isLocal = globalIndex >= lowestIndex 
+      && globalIndex < (lowestIndex+n);
+    if (isLocal)
     {
-      double tmp=0.0;
-      bool isLocal = globalIndex >= lowestIndex 
-        && globalIndex < (lowestIndex+n);
-      if (isLocal)
-        {
-          tmp = xView->getElement(globalIndex);
-          x.setElement(globalIndex, tmp + h);
-        }
-
-      df->setVector(x);
-      fPlus = evaluate();
-      if (isLocal)
-        {
-          x.setElement(globalIndex, tmp - h);
-        }
-
-      df->setVector(x);
-      fMinus = evaluate();
-      
-      if (isLocal)
-        {
-          df_dx[localIndex] = (fPlus - fMinus)/2.0/h;
-          cout << "g=" << globalIndex << ", l=" << localIndex << " f0="
-               << f0 
-               << " fPlus=" << fPlus << " fMinus=" << fMinus << " df_dx="
-               << df_dx[localIndex] << endl;
-          if (showAll)
-            {
-              cerr << "i " << globalIndex << " x_i=" << tmp 
-                   << " f(x)=" << f0 
-                   << " f(x+h)=" << fPlus 
-                   << " f(x-h)=" << fMinus << endl;
-            }
-          x.setElement(globalIndex, tmp);
-          localIndex++;
-        }
-      df->setVector(x);
+      tmp = xView->getElement(globalIndex);
+      x.setElement(globalIndex, tmp + h);
     }
+
+    df->setVector(x);
+    fPlus = evaluate();
+    if (isLocal)
+    {
+      x.setElement(globalIndex, tmp - h);
+    }
+
+    df->setVector(x);
+    fMinus = evaluate();
+      
+    if (isLocal)
+    {
+      df_dx[localIndex] = (fPlus - fMinus)/2.0/h;
+      cout << "g=" << globalIndex << ", l=" << localIndex << " f0="
+           << f0 
+           << " fPlus=" << fPlus << " fMinus=" << fMinus << " df_dx="
+           << df_dx[localIndex] << endl;
+      if (showAll)
+      {
+        cerr << "i " << globalIndex << " x_i=" << tmp 
+             << " f(x)=" << f0 
+             << " f(x+h)=" << fPlus 
+             << " f(x-h)=" << fMinus << endl;
+      }
+      x.setElement(globalIndex, tmp);
+      localIndex++;
+    }
+    df->setVector(x);
+  }
   
   double localMaxErr = 0.0;
 
@@ -248,25 +254,25 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   int k=0;
   VectorSpace<double> space = x.space();
   for (SequentialIterator<double> i=space.begin(); i!=space.end(); i++, k++)
+  {
+    double num =  fabs(df_dx[k]-gf[i]);
+    double den = fabs(df_dx[k]) + fabs(gf[i]);
+    double r = 0.0;
+    if (fabs(den) > 1.0e-10) r = num/den;
+    else r = 1.0;
+    if (showAll)
     {
-      double num =  fabs(df_dx[k]-gf[i]);
-      double den = fabs(df_dx[k]) + fabs(gf[i]);
-      double r = 0.0;
-      if (fabs(den) > 1.0e-10) r = num/den;
-      else r = 1.0;
-      if (showAll)
-        {
-          cerr << "i " << i << " FD=" << df_dx[k] 
-               << " grad=" << gf[i]
-               << " r=" << r << endl;
-        }
-      if (localMaxErr < r) localMaxErr = r;
+      cerr << "i " << i << " FD=" << df_dx[k] 
+           << " grad=" << gf[i]
+           << " r=" << r << endl;
     }
+    if (localMaxErr < r) localMaxErr = r;
+  }
   cout << "local max error = " << localMaxErr << endl;
   
   double maxErr = localMaxErr;
   MPIComm::world().allReduce((void*) &localMaxErr, (void*) &maxErr, 1, 
-                             MPIComm::DOUBLE, MPIComm::MAX);
+    MPIComm::DOUBLE, MPIComm::MAX);
   cerr << tabs << "fd check: max error = " << maxErr << endl;
 
   return maxErr;

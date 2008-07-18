@@ -103,6 +103,17 @@ namespace SundanceUtils
 
 #define SUNDANCE_HEADER_LINE "\n------------------------------------------------------------------\n"
 
+#define SUNDANCE_MSG(context, level, msg) SUNDANCE_OUT(this->verbLevel(context) >= level, msg)
+
+#define SUNDANCE_LEVEL1(context, msg) SUNDANCE_MSG(context, 1, msg)
+
+#define SUNDANCE_LEVEL2(context, msg) SUNDANCE_MSG(context, 2, msg)
+
+#define SUNDANCE_LEVEL3(context, msg) SUNDANCE_MSG(context, 3, msg)
+
+#define SUNDANCE_LEVEL4(context, msg) SUNDANCE_MSG(context, 4, msg)
+
+#define SUNDANCE_LEVEL5(context, msg) SUNDANCE_MSG(context, 5, msg)
 
 
 #endif /* DOXYGEN_DEVELOPER_ONLY */

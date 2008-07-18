@@ -47,11 +47,11 @@
 #include "TSFVector.hpp"
 #include "TSFVectorType.hpp"
 #include "Teuchos_HashSet.hpp"
+#include "Teuchos_ParameterList.hpp"
 #include "TSFIncrementallyConfigurableMatrixFactory.hpp"
 #include "TSFCollectivelyConfigurableMatrixFactory.hpp"
 #include "TSFPartitionedMatrixFactory.hpp"
 #include "TSFPartitionedToMonolithicConverter.hpp"
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
@@ -70,20 +70,25 @@ namespace SundanceStdFwk
     /** 
      * 
      */
-    class Assembler : public TSFExtended::ObjectWithVerbosity<Assembler>
+    class Assembler 
+      : public TSFExtended::ParameterControlledObjectWithVerbosity<Assembler>
     {
     public:
       /** */
-      Assembler(const Mesh& mesh, 
+      Assembler(
+        const Mesh& mesh, 
         const RefCountPtr<EquationSet>& eqn,
         const Array<VectorType<double> >& rowVectorType,
         const Array<VectorType<double> >& colVectorType,
         bool partitionBCs,
-        const VerbositySetting& verb = classVerbosity());
+        const ParameterList& verbParams = *defaultVerbParams());
+
+
       /** */
-      Assembler(const Mesh& mesh, 
-                const RefCountPtr<EquationSet>& eqn,
-                const VerbositySetting& verb = classVerbosity());
+      Assembler(
+        const Mesh& mesh, 
+        const RefCountPtr<EquationSet>& eqn,
+        const ParameterList& verbParams= *defaultVerbParams());
       
       /** */
       const Array<RefCountPtr<DOFMapBase> >& rowMap() const 
@@ -163,7 +168,29 @@ namespace SundanceStdFwk
       /** */
       const RefCountPtr<EquationSet>& eqnSet() const 
       {return eqn_;}
-      
+
+      /** */
+      static RefCountPtr<ParameterList> defaultVerbParams()
+        {
+          static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Assembler"));
+          static int first = true;
+          if (first)
+          {
+            rtn->set<int>("global", 0);
+            rtn->set<int>("matrix config", 0);
+            rtn->set<int>("vector config", 0);
+            rtn->set<int>("matrix fill", 0);
+            rtn->set<int>("vector fill", 0);
+            rtn->set<int>("assembly loop", 0);
+            rtn->set<int>("evaluation", 0);
+            rtn->set("Grouper", *GrouperBase::defaultVerbParams());
+            rtn->set("DOF Map", *DOFMapBase::defaultVerbParams());
+            first = false;
+          }
+          return rtn;
+        }
+
+
     private:
 
       /** */
@@ -215,7 +242,6 @@ namespace SundanceStdFwk
 
       /** */
       static int defaultWorkSetSize() {static int rtn=100; return rtn;}
-
 
       bool partitionBCs_;
       
@@ -285,6 +311,6 @@ namespace SundanceStdFwk
   }
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

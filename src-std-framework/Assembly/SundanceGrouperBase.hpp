@@ -41,53 +41,71 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+namespace Internal
+{
+using namespace Teuchos;
+using TSFExtended::ObjectWithVerbosity;  
 
-    /** 
-     * Grouper
-     */
-    class GrouperBase
-      : public TSFExtended::ObjectWithVerbosity<GrouperBase>
-    {
-    public:
+/** 
+ * Grouper
+ */
+class GrouperBase
+  : public TSFExtended::ParameterControlledObjectWithVerbosity<GrouperBase>
+{
+public:
+  /** */
+  GrouperBase() {}
+
+  /** */
+  GrouperBase(const ParameterList& verbParams)
+    : ParameterControlledObjectWithVerbosity<GrouperBase>("Grouper", verbParams)
+    {}
+             /** */
+    virtual ~GrouperBase(){;}
+
+  /** */
+  virtual void findGroups(const EquationSet& eqn,
+    const CellType& maxCellType,
+    int spatialDim,
+    const CellType& cellType,
+    int cellDim,
+    const QuadratureFamily& quad,
+    const RefCountPtr<SparsitySuperset>& sparsity,
+    Array<IntegralGroup>& groups) const = 0 ;
+
       /** */
-      GrouperBase() {verbosity() = classVerbosity();}
+      static RefCountPtr<ParameterList> defaultVerbParams()
+        {
+          static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Grouper"));
+          static int first = true;
+          if (first)
+          {
+            rtn->set<int>("global", 0);
+            first = false;
+          }
+          return rtn;
+        }
 
-      /** */
-      virtual ~GrouperBase(){;}
-
-      /** */
-      virtual void findGroups(const EquationSet& eqn,
-                              const CellType& maxCellType,
-                              int spatialDim,
-                              const CellType& cellType,
-                              int cellDim,
-                              const QuadratureFamily& quad,
-                              const RefCountPtr<SparsitySuperset>& sparsity,
-                              Array<IntegralGroup>& groups) const = 0 ;
-
-    protected:
-      void extractWeakForm(const EquationSet& eqn,
-                           const MultipleDeriv& functionalDeriv,
-                           BasisFamily& testBasis, 
-                           BasisFamily& unkBasis,
-                           MultiIndex& miTest, MultiIndex& miUnk,
-                           int& rawVarID, int& rawUnkID,  
-                           int& reducedTestID, int& reducedUnkID, 
-                           int& testBlock, int& unkBlock, 
-                           bool& isOneForm) const ;
+protected:
+  void extractWeakForm(const EquationSet& eqn,
+    const MultipleDeriv& functionalDeriv,
+    BasisFamily& testBasis, 
+    BasisFamily& unkBasis,
+    MultiIndex& miTest, MultiIndex& miUnk,
+    int& rawVarID, int& rawUnkID,  
+    int& reducedTestID, int& reducedUnkID, 
+    int& testBlock, int& unkBlock, 
+    bool& isOneForm) const ;
                               
-    };
+};
 
-  }
+}
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

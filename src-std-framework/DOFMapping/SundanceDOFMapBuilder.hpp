@@ -57,14 +57,14 @@ namespace SundanceStdFwk
     /** 
      * 
      */
-    class DOFMapBuilder : public TSFExtended::ObjectWithVerbosity<DOFMapBase>
+    class DOFMapBuilder : public TSFExtended::ParameterControlledObjectWithVerbosity<DOFMapBase>
     {
     public:
       /** */
       DOFMapBuilder();
       /** */
       DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn, 
-        bool findBCCols);
+        bool findBCCols, const ParameterList& verbParams);
 
       /** */
       const Array<RefCountPtr<DOFMapBase> >& rowMap() const {return rowMap_;}

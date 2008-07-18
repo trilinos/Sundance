@@ -114,7 +114,7 @@ namespace SundanceStdFwk
      *
      * </ul>
      */
-    class DOFMapBase : public TSFExtended::ObjectWithVerbosity<DOFMapBase>,
+    class DOFMapBase : public TSFExtended::ParameterControlledObjectWithVerbosity<DOFMapBase>,
                        public TSFExtended::Printable
     {
     public:
@@ -321,6 +321,21 @@ namespace SundanceStdFwk
        * See above defintion for a "Homogeneous" map.
        */
       virtual bool isHomogeneous() const {return false;}
+
+      /** \brief Returns default values for verbosity control parameter list
+       * 
+       */
+      static RefCountPtr<ParameterList> defaultVerbParams()
+        {
+          static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("DOF Map"));
+          static int first = true;
+          if (first)
+          {
+            rtn->set<int>("global", 0);
+            first = false;
+          }
+          return rtn;
+        }
 
     protected:
 

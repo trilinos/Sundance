@@ -73,8 +73,10 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const Expr& test, 
                              const Expr& unk, 
   const VectorType<double>& vecType,
+  const ParameterList& verbParams,
   bool partitionBCs)
-  : assembler_(),
+  : TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+    assembler_(),
     A_(),
     rhs_(),
     status_(),
@@ -107,7 +109,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs, verbSublist("Assembler")));
 }
 
 
@@ -118,8 +120,11 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const Expr& unk, 
                              const Expr& unkParams, 
                              const Expr& unkParamVals, 
-  const VectorType<double>& vecType, bool partitionBCs)
-  : assembler_(),
+  const VectorType<double>& vecType, 
+  const ParameterList& verbParams,
+  bool partitionBCs)
+  : TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+    assembler_(),
     A_(),
     rhs_(),
     status_(),
@@ -149,7 +154,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParams, 
                           fixedFields, fixedFields));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs,
+      verbSublist("Assembler")));
 }
 
 
@@ -158,8 +164,11 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const Expr& eqn, 
                              const Expr& bc,
                              const BlockArray& test, 
-  const BlockArray& unk, bool partitionBCs)
-  : assembler_(),
+  const BlockArray& unk, 
+  const ParameterList& verbParams,
+  bool partitionBCs)
+  : TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+    assembler_(),
     A_(),
     rhs_(),
     status_(),
@@ -207,7 +216,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs, 
+      verbSublist("Assembler")));
 }
 
 
@@ -217,8 +227,11 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                              const BlockArray& test, 
                              const BlockArray& unk,
                              const Expr& unkParams, 
-  const Expr& unkParamVals, bool partitionBCs)
-  : assembler_(),
+  const Expr& unkParamVals,   
+  const ParameterList& verbParams,
+  bool partitionBCs)
+  : TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+    assembler_(),
     A_(),
     rhs_(),
     status_(),
@@ -263,11 +276,14 @@ LinearProblem::LinearProblem(const Mesh& mesh,
                           fixedParams, fixedParamValues,
                           fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs,
+      verbSublist("Assembler")));
 }
 
-LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler) 
-  : assembler_(assembler),
+LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler,
+  const ParameterList& verbParams) 
+  : TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+    assembler_(assembler),
     A_(),
     rhs_(),
     names_()

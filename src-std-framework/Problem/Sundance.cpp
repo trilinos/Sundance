@@ -222,6 +222,8 @@ void Sundance::handleException(std::exception& e)
 {
   cout << "Sundance detected exception: " << endl;
   cout << e.what() << endl;
+  cout << "test FAILED" << endl;
+  testStatus() = -1;
 }
 
 
@@ -422,6 +424,7 @@ bool Sundance:: passFailTest(double error, double tol)
           cout << "test FAILED" << endl;
         }
     }
+  testStatus() = pass!=true;
   return pass;
 }
 
@@ -451,6 +454,9 @@ bool Sundance:: passFailTest(const string& statusMsg,
           cout << "test FAILED" << endl;
         }
     }
+  testStatus() = pass!=true;
   return pass;
 }
+
+
 

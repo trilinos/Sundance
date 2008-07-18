@@ -217,6 +217,10 @@ namespace SundanceStdFwk
     static bool& skipTimingOutput()
     {static bool rtn=false; return rtn;}
 
+    /** */
+    static int& testStatus() {static int rtn = -1; return rtn;}
+
+
 
     static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}

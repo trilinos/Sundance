@@ -168,7 +168,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       for (int r=0; r<nRefDerivTest(); r++)
         {
           MultiIndex mi;
-	  testBasisVals[r].resize(testBasis.dim());
+          testBasisVals[r].resize(testBasis.dim());
           if (testDerivOrder==1) mi[r] = 1;
           testBasis.ptr()->refEval(maxCellType, cellType, quadPts, mi, 
                                    testBasisVals[r]);
@@ -280,7 +280,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
       for (int r=0; r<nRefDerivTest(); r++)
         {
-	  testBasisVals.resize(testBasis.dim());
+          testBasisVals[r].resize(testBasis.dim());
           MultiIndex mi;
           if (testDerivOrder==1) mi[r] = 1;
           testBasis.ptr()->refEval(maxCellType, evalCellType, quadPts, mi, 
@@ -292,7 +292,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
       for (int r=0; r<nRefDerivUnk(); r++)
         {
-	  unkBasisVals.resize(unkBasis.dim());
+          unkBasisVals[r].resize(unkBasis.dim());
           MultiIndex mi;
           if (unkDerivOrder==1) mi[r] = 1;
           unkBasis.ptr()->refEval(maxCellType, evalCellType, 

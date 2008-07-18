@@ -202,7 +202,7 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
       Array<Array<Array<Array<double> > > > tmp(maxCellDim());    
       for (int r=0; r<maxCellDim(); r++)
       {
-	tmp.resize(basis.dim());
+        tmp[r].resize(basis.dim());
         MultiIndex mi;
         mi[r]=1;
         basis.ptr()->refEval(maxCellType(), maxCellType(), 
@@ -341,10 +341,8 @@ void QuadratureEvalMediator
     "QuadratureEvalMediator::evalDiscreteFuncElement() called "
     "with expr that is not a discrete function");
   Tabs tab;
-  if (Evaluator::classVerbosity() > VerbHigh)
-  {
-    cerr << tab << "evaluting DF " << expr->name() << endl;
-  }
+
+  SUNDANCE_VERB_LOW(tab << "QuadEvalMed evaluating DF " << expr->name());
 
   int nQuad = quadWgts().size();
   int myIndex = expr->myIndex();
@@ -353,14 +351,13 @@ void QuadratureEvalMediator
   {
     Tabs tab1;
     const MultiIndex& mi = multiIndices[i];
-    if (Evaluator::classVerbosity() > VerbHigh)
-    {
-      cerr << tab1 << "evaluting DF for multiindex " << mi << endl;
-      cerr << tab1 << "num cells = " << cellLID()->size() << endl;
-      cerr << tab1 << "num quad points = " << quadWgts().size() << endl;
-      cerr << tab1 << "my index = " << expr->myIndex() << endl;
-      cerr << tab1 << "num funcs = " << f->discreteSpace().nFunc() << endl;
-    }
+    SUNDANCE_VERB_MEDIUM(
+      tab1 << "evaluating DF for multiindex " << mi << endl
+      << tab1 << "num cells = " << cellLID()->size() << endl
+      << tab1 << "num quad points = " << quadWgts().size() << endl
+      << tab1 << "my index = " << expr->myIndex() << endl
+      << tab1 << "num funcs = " << f->discreteSpace().nFunc());
+
     vec[i]->resize(cellLID()->size() * quadWgts().size());
   
     if (mi.order() == 0)
@@ -372,7 +369,7 @@ void QuadratureEvalMediator
       }
       else
       {
-        SUNDANCE_VERB_HIGH(tab2 << "reusing function cache");
+        SUNDANCE_VERB_MEDIUM(tab2 << "reusing function cache");
       }
 
       const RefCountPtr<const MapStructure>& mapStruct = mapStructCache()[f];
@@ -380,14 +377,22 @@ void QuadratureEvalMediator
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
 
+      SUNDANCE_VERB_HIGH(tab2 << "chunk number = " << chunk << endl
+        << tab2 << "function index=" << funcIndex << " of nFuncs=" 
+        << nFuncs);
+
       const RefCountPtr<Array<Array<double> > >& cacheVals 
         = fCache()[f];
+
+      SUNDANCE_VERB_EXTREME(tab2 << "cached function values=" << (*cacheVals)[chunk]);
 
       const double* cachePtr = &((*cacheVals)[chunk][0]);
       double* vecPtr = vec[i]->start();
           
       int cellSize = nQuad*nFuncs;
       int offset = funcIndex*nQuad;
+      SUNDANCE_VERB_HIGH(tab2 << "cell size=" << cellSize << ", offset=" 
+        << offset);
       int k = 0;
       for (unsigned int c=0; c<cellLID()->size(); c++)
       {
@@ -395,6 +400,11 @@ void QuadratureEvalMediator
         {
           vecPtr[k] = cachePtr[c*cellSize + offset + q];
         }
+      }
+      SUNDANCE_VERB_EXTREME(tab2 << "result vector=");
+      if (verbosity() >= VerbExtreme)
+      {
+        vec[i]->print(cerr);
       }
     }
     else
@@ -416,8 +426,15 @@ void QuadratureEvalMediator
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
 
+
+      SUNDANCE_VERB_HIGH(tab2 << "chunk number = " << chunk << endl
+        << tab2 << "function index=" << funcIndex << " of nFuncs=" 
+        << nFuncs);
+
       const RefCountPtr<Array<Array<double> > >& cacheVals 
         = dfCache()[f];
+
+      SUNDANCE_VERB_EXTREME(tab2 << "cached function values=" << (*cacheVals)[chunk]);
 
       int dim = maxCellDim();
       int pDir = mi.firstOrderDirection();
@@ -428,12 +445,20 @@ void QuadratureEvalMediator
       int offset = funcIndex * nQuad * dim;
       int k = 0;
 
+      SUNDANCE_VERB_HIGH(tab2 << "dim=" << dim << ", pDir=" << pDir
+        << ", cell size=" << cellSize << ", offset=" 
+        << offset);
       for (unsigned int c=0; c<cellLID()->size(); c++)
       {
         for (int q=0; q<nQuad; q++, k++)
         {
           vecPtr[k] = cachePtr[c*cellSize + offset + q*dim + pDir];
         }
+      }
+      SUNDANCE_VERB_EXTREME(tab2 << "result vector=");
+      if (verbosity() >= VerbExtreme)
+      {
+        vec[i]->print(cerr);
       }
     }
   }

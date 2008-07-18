@@ -56,6 +56,8 @@ namespace SundanceStdFwk
     public:
       /** */
       TrivialGrouper() : GrouperBase() {;}
+      /** */
+      TrivialGrouper(const ParameterList& verbParams) : GrouperBase(verbParams) {;}
 
       /** */
       virtual ~TrivialGrouper(){;}

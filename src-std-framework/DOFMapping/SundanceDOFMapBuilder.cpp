@@ -76,8 +76,10 @@ static Time& findFuncDomainTimer()
 }
 
 DOFMapBuilder::DOFMapBuilder(const Mesh& mesh, 
-  const RefCountPtr<EquationSet>& eqn, bool findBCCols)
-  : mesh_(mesh),
+  const RefCountPtr<EquationSet>& eqn, bool findBCCols,
+  const ParameterList& verbParams)
+  : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
+    mesh_(mesh),
     eqn_(eqn),
     rowMap_(),
     colMap_(),

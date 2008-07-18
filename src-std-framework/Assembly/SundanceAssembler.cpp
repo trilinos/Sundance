@@ -130,12 +130,13 @@ static Time& graphFlatteningTimer()
 
 Assembler
 ::Assembler(const Mesh& mesh, 
-            const RefCountPtr<EquationSet>& eqn,
-            const Array<VectorType<double> >& rowVectorType,
-            const Array<VectorType<double> >& colVectorType,
+  const RefCountPtr<EquationSet>& eqn,
+  const Array<VectorType<double> >& rowVectorType,
+  const Array<VectorType<double> >& colVectorType,
   bool partitionBCs,
-            const VerbositySetting& verb)
-  : partitionBCs_(partitionBCs),
+  const ParameterList& verbParams)
+  : ParameterControlledObjectWithVerbosity<Assembler>("Assembler", verbParams),
+    partitionBCs_(partitionBCs),
     matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
     vecNeedsConfiguration_(true),
@@ -168,15 +169,15 @@ Assembler
     converter_(eqn->numUnkBlocks())
 {
   TimeMonitor timer(assemblerCtorTimer());
-  verbosity() = verb;
   init(mesh, eqn);
 }
 
 Assembler
 ::Assembler(const Mesh& mesh, 
-            const RefCountPtr<EquationSet>& eqn,
-            const VerbositySetting& verb)
-  : partitionBCs_(false),
+  const RefCountPtr<EquationSet>& eqn,
+  const ParameterList& verbParams)
+  : ParameterControlledObjectWithVerbosity<Assembler>("Assembler", verbParams),
+    partitionBCs_(false),
     matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
     vecNeedsConfiguration_(true),
@@ -209,7 +210,6 @@ Assembler
     converter_(eqn->numUnkBlocks())
 {
   TimeMonitor timer(assemblerCtorTimer());
-  verbosity() = verb;
   init(mesh, eqn);
 }
 
@@ -217,9 +217,11 @@ void Assembler::init(const Mesh& mesh,
                      const RefCountPtr<EquationSet>& eqn)
 {
   Tabs tab0;
-  SUNDANCE_VERB_HIGH(tab0 << "starting Assembler::init()");
-  RefCountPtr<GrouperBase> grouper = rcp(new TrivialGrouper());
-  grouper->verbosity() = verbosity();
+
+  SUNDANCE_LEVEL1("global", tab0 << "starting Assembler::init()");
+  
+  RefCountPtr<GrouperBase> grouper 
+    = rcp(new TrivialGrouper(this->verbSublist("Grouper")));
 
   const Set<ComputationType>& compTypes = eqn->computationTypes();
 
@@ -229,7 +231,9 @@ void Assembler::init(const Mesh& mesh,
       || compTypes.contains(FunctionalAndGradient))
     {
       Tabs tab1;
-      mapBuilder = DOFMapBuilder(mesh, eqn, partitionBCs_);
+      SUNDANCE_LEVEL2("global", tab1 << "building row spaces");
+      mapBuilder = DOFMapBuilder(mesh, eqn, partitionBCs_, 
+        verbSublist("DOF Map"));
 
       rowMap_ = mapBuilder.rowMap();
       isBCRow_ = mapBuilder.isBCRow();
@@ -237,8 +241,9 @@ void Assembler::init(const Mesh& mesh,
       lowestRow_.resize(eqn_->numVarBlocks());
       for (unsigned int b=0; b<lowestRow_.size(); b++) 
         {
+          Tabs tab2;
           lowestRow_[b] = rowMap_[b]->lowestLocalDOF();
-          SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": lowest row="
+          SUNDANCE_LEVEL2("global", tab2 << "block " << b << ": lowest row="
                              << lowestRow_[b]);
           externalRowSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray()[b], 
                                                rowMap_[b], rowVecType_[b]));
@@ -251,15 +256,18 @@ void Assembler::init(const Mesh& mesh,
           {
             privateRowSpace_[b] = externalRowSpace_[b];
           }
-          SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": done forming row space");
+          SUNDANCE_LEVEL2("global", tab2 << "block " << b << ": done forming row space");
         }
     }
 
   if (!eqn->isFunctionalCalculator())
     {
+      Tabs tab1;
+      SUNDANCE_LEVEL2("global", tab1 << "building column spaces");
       colMap_ = mapBuilder.colMap();
       for (unsigned int b=0; b<eqn_->numUnkBlocks(); b++) 
         {
+          Tabs tab2;
           externalColSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray()[b], 
                                                colMap_[b], colVecType_[b]));
           if (partitionBCs_)
@@ -272,7 +280,7 @@ void Assembler::init(const Mesh& mesh,
           {
             privateColSpace_[b] = externalColSpace_[b];
           }
-          SUNDANCE_VERB_HIGH(tab0 << "block " << b << ": done forming col space");
+          SUNDANCE_LEVEL2("global", tab2 << "block " << b << ": done forming col space");
         }
 
       groups_.put(MatrixAndVector, Array<Array<IntegralGroup> >());
@@ -296,6 +304,8 @@ void Assembler::init(const Mesh& mesh,
       evalExprs_.put(FunctionalOnly, Array<const EvaluatableExpr*>());
     }
 
+  SUNDANCE_LEVEL1("global", tab0 << "setting up non-BC region-quadrature combinations");
+
   for (unsigned int r=0; r<eqn->regionQuadCombos().size(); r++)
     {
       Tabs tab1;
@@ -304,8 +314,8 @@ void Assembler::init(const Mesh& mesh,
       isBCRqc_.append(false);
       const Expr& expr = eqn->expr(rqc);
 
-      SUNDANCE_VERB_HIGH(tab1 << "creating integral groups for rqc=" 
-                         << rqc << endl << tab1 << "expr = " << expr);
+      SUNDANCE_LEVEL2("global", tab1 << "creating integral groups for rqc=" 
+        << rqc << endl << tab1 << "expr = " << expr);
 
       int cellDim = CellFilter(rqc.domain()).dimension(mesh);
       CellType cellType = mesh.cellType(cellDim);
@@ -319,17 +329,17 @@ void Assembler::init(const Mesh& mesh,
         {
           Tabs tab2;
           const ComputationType& compType = *i;
-          SUNDANCE_VERB_HIGH(tab2 << "computation type " << compType);
+          SUNDANCE_LEVEL2("global", tab2 << "computation type " << compType);
 
           EvalContext context = eqn->rqcToContext(compType, rqc);
 
-          SUNDANCE_VERB_HIGH(tab2 << "context " << context);
+          SUNDANCE_LEVEL2("global", tab2 << "context " << context);
           contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
           evalExprs_[compType].append(ee);
           const RefCountPtr<SparsitySuperset>& sparsity 
             = ee->sparsitySuperset(context);
-          SUNDANCE_VERB_EXTREME(tab2 << "sparsity pattern " << *sparsity);
+          SUNDANCE_LEVEL3("global", tab2 << "sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
           grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
@@ -346,10 +356,14 @@ void Assembler::init(const Mesh& mesh,
             }
           rqcRequiresMaximalCofacets_[compType].append(reqCofacets);
         }
+
+      SUNDANCE_LEVEL2("global", tab1 << "creating evaluation mediator for rqc=" 
+        << rqc << endl << tab1 << "expr = " << expr);
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
     }
 
+  SUNDANCE_LEVEL1("global", tab0 << "setting up BC region-quadrature combinations");
   
   for (unsigned int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
     {
@@ -359,7 +373,7 @@ void Assembler::init(const Mesh& mesh,
       isBCRqc_.append(true);
       const Expr& expr = eqn->bcExpr(rqc);
 
-      SUNDANCE_VERB_HIGH(tab1 << "creating integral groups for rqc=" 
+      SUNDANCE_LEVEL1("global", tab1 << "creating integral groups for BC rqc=" 
                          << rqc << endl << tab1 
                          << "expr = " << expr.toXML().toString());
       
@@ -375,15 +389,15 @@ void Assembler::init(const Mesh& mesh,
         {
           Tabs tab2;
           const ComputationType& compType = *i;
-          SUNDANCE_VERB_HIGH(tab2 << "computation type " << compType);
+          SUNDANCE_LEVEL2("global", tab2 << "computation type " << compType);
           EvalContext context = eqn->bcRqcToContext(compType, rqc);
-          SUNDANCE_VERB_HIGH(tab2 << "context " << context);
+          SUNDANCE_LEVEL2("global", tab2 << "context " << context);
           contexts_[compType].append(context);
           const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
           evalExprs_[compType].append(ee);
           const RefCountPtr<SparsitySuperset>& sparsity 
             = ee->sparsitySuperset(context);
-          SUNDANCE_VERB_EXTREME(tab2 << "sparsity pattern " << *sparsity);
+          SUNDANCE_LEVEL3("global", tab2 << "sparsity pattern " << *sparsity);
 
           Array<IntegralGroup> groups;
           grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
@@ -400,15 +414,27 @@ void Assembler::init(const Mesh& mesh,
             }
           rqcRequiresMaximalCofacets_[compType].append(reqCofacets);
         }
+
+      SUNDANCE_LEVEL2("global", tab1 << "creating evaluation mediator for BC rqc=" 
+        << rqc << endl << tab1 << "expr = " << expr);
       mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
                                                        quad)));
     }
 
+  for (unsigned int m=0; m<mediators_.size(); m++)
+  {
+    mediators_[m]->verbosity() = (VerbositySetting) verbLevel("evaluation");
+  }
+  
 }
 
 void Assembler::configureVector(Vector<double>& b) const 
 {
   TimeMonitor timer(configTimer());
+
+  Tabs tab0;
+  SUNDANCE_LEVEL1("vector config", tab0 << "in Assembler::configureVector()");
+
   Array<VectorSpace<double> > vs(eqn_->numVarBlocks());
   for (unsigned int i=0; i<eqn_->numVarBlocks(); i++)
     {
@@ -425,11 +451,8 @@ void Assembler::configureVector(Vector<double>& b) const
       rowSpace = vs[0];
     }
 
-//  cout << "row space=" <<rowSpace <<endl;
 
   b = rowSpace.createMember();
-
-//  cout << "b = " << b << endl;
 
   if (!partitionBCs_ && eqn_->numVarBlocks() > 1)
     {
@@ -459,6 +482,8 @@ void Assembler::configureVector(Vector<double>& b) const
 
 void Assembler::configureVectorBlock(int br, Vector<double>& b) const 
 {
+  Tabs tab0;
+  SUNDANCE_LEVEL2("vector config", tab0 << "in Assembler::configureVectorBlock()");
   VectorSpace<double> vecSpace = privateRowSpace_[br]->vecSpace();
 
   b = vecSpace.createMember();
@@ -479,6 +504,8 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
                                 Vector<double>& b) const
 {
   TimeMonitor timer(configTimer());
+  Tabs tab0;
+  SUNDANCE_LEVEL1("matrix config", tab0 << "in Assembler::configureMatrix()");
   int nRowBlocks = rowMap_.size();
   int nColBlocks = colMap_.size();
   Array<Array<int> > isNonzero = findNonzeroBlocks();
@@ -514,10 +541,11 @@ void Assembler::configureMatrixBlock(int br, int bc,
 {
   Tabs tab;
   TimeMonitor timer(configTimer());
+  SUNDANCE_LEVEL1("matrix config", tab << "in Assembler::configureMatrixBlock()");
   
-  SUNDANCE_VERB_LOW(tab << "Assembler: num rows = " << rowMap()[br]->numDOFs());
+  SUNDANCE_LEVEL2("matrix config", tab << "Assembler: num rows = " << rowMap()[br]->numDOFs());
   
-  SUNDANCE_VERB_LOW(tab << "Assembler: num cols = " << colMap()[bc]->numDOFs());
+  SUNDANCE_LEVEL2("matrix config", tab << "Assembler: num cols = " << colMap()[bc]->numDOFs());
 
   VectorSpace<double> rowSpace = privateRowSpace_[br]->vecSpace();
   VectorSpace<double> colSpace = privateColSpace_[bc]->vecSpace();
@@ -551,7 +579,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   if (false /* (icmf==0 || !matrixEliminatesRepeatedCols()) && ccmf != 0 */)
     {
       Tabs tab1;
-      SUNDANCE_VERB_MEDIUM(tab1 << "Assembler: doing collective matrix structuring...");
+      SUNDANCE_LEVEL2("matrix config", tab1 << "Assembler: doing collective matrix structuring...");
       Array<int> graphData;
       Array<int> nnzPerRow;
       Array<int> rowPtrs;
@@ -564,7 +592,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   else
     {
       Tabs tab1;
-      SUNDANCE_VERB_MEDIUM(tab << "Assembler: doing incremental matrix structuring...");
+      SUNDANCE_LEVEL2("matrix config", tab1 << "Assembler: doing incremental matrix structuring...");
       incrementalGetGraph(br, bc, icmf);
       {
         TimeMonitor timer1(matFinalizeTimer());
@@ -572,15 +600,11 @@ void Assembler::configureMatrixBlock(int br, int bc,
       }
     }
   
-  SUNDANCE_VERB_MEDIUM(tab << "Assembler: done");
-
-  SUNDANCE_VERB_MEDIUM(tab << "Assembler: constructing matrix...");
+  SUNDANCE_LEVEL3("matrix config", tab << "Assembler: allocating matrix...");
   {
     TimeMonitor timer1(matAllocTimer());
     A = matFactory->createMatrix();
   }
-
-  SUNDANCE_VERB_MEDIUM(tab << "...done");
 }
 
 TSFExtended::LinearOperator<double> Assembler::allocateMatrix() const
@@ -599,6 +623,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
+  SUNDANCE_LEVEL1("assembly loop", tab << "Assembling matrix and vector"); 
   numAssembleCalls()++;
 
   TEST_FOR_EXCEPTION(!contexts_.containsKey(MatrixAndVector),
@@ -614,9 +639,9 @@ void Assembler::assemble(LinearOperator<double>& A,
   RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
 
 
-  SUNDANCE_VERB_LOW(tab << "Assembling matrix and vector"); 
 
-  SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
+  SUNDANCE_LEVEL2("assembly loop", 
+    tab << "work set size is " << workSetSize()); 
 
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
@@ -704,14 +729,14 @@ void Assembler::assemble(LinearOperator<double>& A,
   for (unsigned int r=0; r<rqc_.size(); r++)
     {
       Tabs tab0;
-      SUNDANCE_VERB_MEDIUM(endl 
-                           << "================================================="
-                           << endl << tab0 << " doing subregion=" 
-                           << rqc_[r]);     
+      SUNDANCE_LEVEL2("assembly loop", tab0 << endl 
+        << "================================================="
+        << endl << tab0 << " doing subregion=" 
+        << rqc_[r]);     
 
 
-      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs[r]->toString());
-      SUNDANCE_VERB_MEDIUM(tab0 << "isBC= " << isBCRqc_[r]);
+      SUNDANCE_LEVEL2("assembly loop", tab0 << "expr is " << evalExprs[r]->toString());
+      SUNDANCE_LEVEL2("assembly loop", tab0 << "isBC= " << isBCRqc_[r]);
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
@@ -727,7 +752,7 @@ void Assembler::assemble(LinearOperator<double>& A,
       const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(filter);
       mediators_[r]->setCellType(cellType, maxCellType);      
 
-      SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
+      SUNDANCE_LEVEL2("assembly loop", tab0 << "cell type = " << cellType);
 
       const Evaluator* evaluator 
         = evalExprs[r]->evaluator(contexts[r]).get();
@@ -746,10 +771,10 @@ void Assembler::assemble(LinearOperator<double>& A,
             {
               workSet->append(*iter);
             }
-          SUNDANCE_VERB_MEDIUM(
-                               tab1 << "doing work set " << workSetCounter
-                               << " consisting of " << workSet->size() << " cells");
-          SUNDANCE_VERB_EXTREME("cells are " << *workSet);
+          SUNDANCE_LEVEL2("assembly loop",
+            tab1 << "doing work set " << workSetCounter
+            << " consisting of " << workSet->size() << " cells");
+          SUNDANCE_LEVEL4("assembly loop", tab1 << "cells are " << *workSet);
 
           workSetCounter++;
 
@@ -772,6 +797,8 @@ void Assembler::assemble(LinearOperator<double>& A,
           Array<RefCountPtr<const MapStructure> > colMapStruct(numColBlocks);
           for (int br=0; br<numRowBlocks; br++)
             {   
+              Tabs tab2;
+              SUNDANCE_LEVEL3("assembly loop", tab2 << "getting dofs for block row " << br);
               /* use cellDim instead of dofCellDim here, because we only add
                * to row dofs located on the boundary even when we must use the
                * maximal cell dim for column dofs and transformations */
@@ -781,9 +808,11 @@ void Assembler::assemble(LinearOperator<double>& A,
                                                                   (*testLocalDOFs)[br], 
                                                                   nTestNodes[br]);
             }
-          SUNDANCE_VERB_EXTREME(tab1 << "local test DOF values " << *testLocalDOFs);
+          SUNDANCE_LEVEL4("assembly loop", tab1 << "local test DOF values " << *testLocalDOFs);
           for (int bc=0; bc<numColBlocks; bc++)
-            {
+            {   
+              Tabs tab2;
+              SUNDANCE_LEVEL3("assembly loop", tab2 << "getting dofs for block col " << bc);
               if (bc < numRowBlocks && rowMap_[bc].get()==colMap_[bc].get()
                   && !useMaximalCellsForTransformations)
                 {
@@ -801,16 +830,24 @@ void Assembler::assemble(LinearOperator<double>& A,
                                                        nUnkNodes[bc]);
                 }
             }
-          SUNDANCE_VERB_EXTREME(tab1 << "local unk DOF values " << *unkLocalDOFs);
+
+          SUNDANCE_LEVEL4("assembly loop", 
+            tab1 << "local unk DOF values " << *unkLocalDOFs);
 
           const CellJacobianBatch& JVol = mediators_[r]->JVol();
           const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
           const Array<int>& facetIndices = mediators_[r]->facetIndices();
               
           evaluator->resetNumCalls();
+
+          SUNDANCE_LEVEL2("assembly loop", 
+            tab1 << "evaluating expression") ;
           evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
               
-          if (verbosity() > VerbHigh)
+          SUNDANCE_LEVEL2("assembly loop", 
+            tab1 << "done evaluating expression") ;
+
+          if (verbLevel("assembly loop") > 3)
             {
               Tabs tab2;
               cerr << tab2 << "evaluation results: " << endl;
@@ -1348,6 +1385,10 @@ void Assembler::evaluate(double& value) const
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
+  SUNDANCE_LEVEL1("assembly loop", 
+    tab << "----------------------------------------------------" 
+    << endl << tab << "      Computing functional " << endl
+    << tab << "----------------------------------------------------");
   numAssembleCalls()++;
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
@@ -1362,12 +1403,8 @@ void Assembler::evaluate(double& value) const
                      "does not support functional evaluation");
 
 
-  SUNDANCE_VERB_LOW("-----------------------------------------------------------------"); 
-  SUNDANCE_VERB_LOW("------- Computing functional"); 
-  SUNDANCE_VERB_LOW("-----------------------------------------------------------------"); 
 
-
-  SUNDANCE_VERB_MEDIUM(tab << "work set size is " << workSetSize()); 
+  SUNDANCE_LEVEL2("assembly loop", tab << "work set size is " << workSetSize()); 
 
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
 
@@ -1386,12 +1423,12 @@ void Assembler::evaluate(double& value) const
     {
       Tabs tab0;
 
-      SUNDANCE_VERB_MEDIUM(tab0 << "doing subregion=" 
+      SUNDANCE_LEVEL2("assembly loop", tab0 << "doing subregion=" 
                            << rqc_[r]);     
 
 
       
-      SUNDANCE_VERB_MEDIUM(tab0 << "expr is " << evalExprs[r]->toString());
+      SUNDANCE_LEVEL2("assembly loop", tab0 << "expr is " << evalExprs[r]->toString());
 
       /* specify the mediator for this RQC */
       evalMgr_->setMediator(mediators_[r]);
@@ -1406,7 +1443,7 @@ void Assembler::evaluate(double& value) const
       mediators_[r]->setCellType(cellType, maxCellType);      
 
 
-      SUNDANCE_VERB_MEDIUM(tab0 << "cell type = " << cellType);
+      SUNDANCE_LEVEL2("assembly loop", tab0 << "cell type = " << cellType);
 
       const Evaluator* evaluator 
         = evalExprs[r]->evaluator(contexts[r]).get();
@@ -1444,10 +1481,10 @@ void Assembler::evaluate(double& value) const
                 }
             }
 
-          SUNDANCE_VERB_MEDIUM(tab1 << "doing work set " << workSetCounter
+          SUNDANCE_LEVEL2("assembly loop", tab1 << "doing work set " << workSetCounter
                                << " consisting of " 
                                << workSet->size() << " cells");
-          SUNDANCE_VERB_EXTREME("cells are " << *workSet);
+          SUNDANCE_LEVEL2("assembly loop", "cells are " << *workSet);
 
 
 
@@ -1463,7 +1500,7 @@ void Assembler::evaluate(double& value) const
           evaluator->resetNumCalls();
           evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
-          if (verbosity() > VerbHigh)
+          if (verbLevel("assembly loop") > 2)
             {
               Tabs tab2;
               cerr << tab2 << " ----------- evaluation results: ------" << endl;
@@ -1474,7 +1511,7 @@ void Assembler::evaluate(double& value) const
               sparsity->print(cerr, vectorCoeffs, constantCoeffs);
             }
 
-          SUNDANCE_VERB_HIGH(tab1 << "doing integral groups");
+          SUNDANCE_LEVEL2("assembly loop", tab1 << "doing integral groups");
           ElementIntegral::invalidateTransformationMatrices();
           for (unsigned int g=0; g<groups[r].size(); g++)
             {
@@ -1486,7 +1523,7 @@ void Assembler::evaluate(double& value) const
                 {
                   continue;
                 }
-              if (verbosity() > VerbHigh)
+              if (verbLevel("assembly loop") > 2)
                 {
                   cerr << tab3 << endl << tab3 << endl 
                        << tab3 << "--------------- doing integral group " << g 
@@ -1494,7 +1531,7 @@ void Assembler::evaluate(double& value) const
                   cerr << tab3 << "num entries = " << localValues->size() << endl;
                   cerr << tab3 << "values = " << *localValues << endl;
                 }
-              SUNDANCE_VERB_HIGH(tab1 << "contribution from work set "
+              SUNDANCE_LEVEL3("assembly loop", tab1 << "contribution from work set "
                                  << workSetCounter << " is " 
                                  << (*localValues)[0]);
               localSum += (*localValues)[0];

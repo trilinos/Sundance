@@ -57,7 +57,7 @@ namespace SundanceStdFwk
    * a discrete linear problem. 
    */
   class LinearProblem 
-    : public TSFExtended::ObjectWithVerbosity<LinearProblem>
+    : public TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>
   {
   public:
     /** Empty ctor */
@@ -68,32 +68,35 @@ namespace SundanceStdFwk
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
       const Expr& test, const Expr& unk, 
       const TSFExtended::VectorType<double>& vecType,
+      const ParameterList& verbParams = *defaultVerbParams(),
       bool partitionBCs = false
       );
     
     /** Construct with a mesh, equation set, bcs, and blocks of variables */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-                  const BlockArray& test, const BlockArray& unk,
+      const BlockArray& test, const BlockArray& unk,
+      const ParameterList& verbParams = *defaultVerbParams(),
       bool partitionBCs = false);
     
     /** Construct with a mesh, equation set, bcs, test and unknown funcs,
      * parameters, and a vector type. */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-                  const Expr& test, const Expr& unk, 
-                  const Expr& unkParams, const Expr& unkParamVals, 
-                  const TSFExtended::VectorType<double>& vecType,
+      const Expr& test, const Expr& unk, 
+      const Expr& unkParams, const Expr& unkParamVals, 
+      const TSFExtended::VectorType<double>& vecType,
+      const ParameterList& verbParams = *defaultVerbParams(),
       bool partitionBCs = false);
     
     /** Construct with a mesh, equation set, bcs, parameters, and blocks of variables */
     LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-                  const BlockArray& test, const BlockArray& unk, 
-                  const Expr& unkParams, const Expr& unkParamVals,
+      const BlockArray& test, const BlockArray& unk, 
+      const Expr& unkParams, const Expr& unkParamVals,
+      const ParameterList& verbParams = *defaultVerbParams(),
       bool partitionBCs = false);
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
     /** */
-    LinearProblem(const RefCountPtr<Assembler>& assembler);
-#endif
+    LinearProblem(const RefCountPtr<Assembler>& assembler,
+      const ParameterList& verbParams = *defaultVerbParams());
 
     /** Solve the problem using the specified solver algorithm */
     Expr solve(const LinearSolver<double>& solver) const ;
@@ -161,6 +164,21 @@ namespace SundanceStdFwk
     {static string rtn = "badVector.dat"; return rtn;}
 
     
+    /** */
+    static RefCountPtr<ParameterList> defaultVerbParams()
+      {
+        static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Linear Problem"));
+        static int first = true;
+        if (first)
+        {
+          rtn->set<int>("global", 0);
+          rtn->set<int>("assembly", 0);
+          rtn->set<int>("solve control", 0);
+          rtn->set("Assembler", *Assembler::defaultVerbParams());
+          first = false;
+        }
+        return rtn;
+      }
 
 
   private:

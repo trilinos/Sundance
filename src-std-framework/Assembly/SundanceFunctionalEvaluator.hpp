@@ -39,78 +39,96 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
+
+/** */
+double evaluateIntegral(const Mesh& mesh, const Expr& expr);
+
+namespace Internal
+{
+using namespace Teuchos;
+
+/** 
+ * 
+ */
+class FunctionalEvaluator 
+  : public TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>
+{
+public:
+  /** */
+  FunctionalEvaluator();
 
   /** */
-  double evaluateIntegral(const Mesh& mesh, const Expr& expr);
+  FunctionalEvaluator(const Mesh& mesh, 
+    const Expr& integral,
+    const ParameterList& verbParams = *defaultVerbParams());
+  /** */
+  FunctionalEvaluator(const Mesh& mesh, 
+    const Expr& integral,
+    const Expr& bcs,
+    const Expr& var,
+    const Expr& varEvalPts,
+    const VectorType<double>& vectorType,
+    const ParameterList& verbParams = *defaultVerbParams());
+  /** */
+  FunctionalEvaluator(const Mesh& mesh, 
+    const Expr& integral,
+    const Expr& bcs,
+    const Expr& vars,
+    const Expr& varEvalPts,
+    const Expr& fields,
+    const Expr& fieldValues,
+    const VectorType<double>& vectorType,
+    const ParameterList& verbParams = *defaultVerbParams());
 
-  namespace Internal
-  {
-    using namespace Teuchos;
 
-    /** 
-     * 
-     */
-    class FunctionalEvaluator 
-      : public TSFExtended::ObjectWithVerbosity<FunctionalEvaluator>
+  /** */
+  double evaluate() const ;
+
+  /** */
+  Expr evalGradient(double& value) const ;
+
+  /** */
+  double fdGradientCheck(double h) const ;
+          
+  /** */
+  static RefCountPtr<ParameterList> defaultVerbParams()
     {
-    public:
-      /** */
-      FunctionalEvaluator();
+      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Functional Evaluator"));
+      static int first = true;
+      if (first)
+      {
+        rtn->set<int>("global", 0);
+        rtn->set<int>("assembly", 0);
+        rtn->set("Assembler", *Assembler::defaultVerbParams());
+        first = false;
+      }
+      return rtn;
+    }
 
-      /** */
-      FunctionalEvaluator(const Mesh& mesh, 
-                          const Expr& integral);
-      /** */
-      FunctionalEvaluator(const Mesh& mesh, 
-                          const Expr& integral,
-                          const Expr& bcs,
-                          const Expr& var,
-                          const Expr& varEvalPts,
-                          const VectorType<double>& vectorType);
-      /** */
-      FunctionalEvaluator(const Mesh& mesh, 
-                          const Expr& integral,
-                          const Expr& bcs,
-                          const Expr& vars,
-                          const Expr& varEvalPts,
-                          const Expr& fields,
-                          const Expr& fieldValues,
-                          const VectorType<double>& vectorType);
+private:
 
-
-      /** */
-      double evaluate() const ;
-
-      /** */
-      Expr evalGradient(double& value) const ;
-
-      /** */
-      double fdGradientCheck(double h) const ;
+  /** */
+  Vector<double> evalGradientVector(double& value) const ;
       
-    private:
+  /** */
+  RefCountPtr<Assembler> assembler_;
+      
+  /** */
+  mutable Expr varValues_;
 
-      /** */
-      Vector<double> evalGradientVector(double& value) const ;
+  /** */
+  VectorType<double> vecType_;
       
-      /** */
-      RefCountPtr<Assembler> assembler_;
+  /** */
+  mutable Vector<double> gradient_;
       
-      /** */
-      mutable Expr varValues_;
-
-      /** */
-      VectorType<double> vecType_;
-      
-      /** */
-      mutable Vector<double> gradient_;
-      
-    };
-  }
+};
+}
 
 }
 

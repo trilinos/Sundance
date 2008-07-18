@@ -203,5 +203,5 @@ int main(int argc, char** argv)
 		{
       Sundance::handleException(e);
 		}
-  Sundance::finalize();
+  Sundance::finalize(); return Sundance::testStatus(); 
 }

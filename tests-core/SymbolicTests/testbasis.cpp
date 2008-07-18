@@ -52,5 +52,6 @@ int main(int argc, void** argv)
       Sundance::handleException(e);
     }
   Sundance::finalize();
+  return Sundance::testStatus();
 }
 

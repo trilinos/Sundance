@@ -227,5 +227,5 @@ int main(int argc, char** argv)
 		{
       cout << e.what() << endl;
 		}
-  Sundance::finalize();
+  Sundance::finalize(); return Sundance::testStatus(); 
 }
