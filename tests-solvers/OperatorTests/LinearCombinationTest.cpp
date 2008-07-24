@@ -60,6 +60,8 @@ using Thyra::TestSpecifier;
 
 int main(int argc, char *argv[]) 
 {
+  int stat = 0;
+
   try
     {
       GlobalMPISession session(&argc, &argv);
@@ -77,13 +79,16 @@ int main(int argc, char *argv[])
                                              type,
                                              TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 
-
-      tester.runAllTests();
+      
+      bool allPass = tester.runAllTests();
+      if (!allPass) stat = -1;
     }
   catch(std::exception& e)
     {
+      stat = -1;
       cerr << "Caught exception: " << e.what() << endl;
     }
+  return stat;
 }
 
 

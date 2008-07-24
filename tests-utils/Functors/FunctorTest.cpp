@@ -14,7 +14,7 @@ template <class F> bool functorTest(int nx, double tol)
 
 int main(int argc, char** argv)
 {
-
+  int stat = 0;
   
   try
 		{
@@ -70,15 +70,17 @@ int main(int argc, char** argv)
           std::cerr << "all tests PASSED" << std::endl;
         }
       else
-        {
+      {
+        stat = -1;
           std::cerr << "a test has FAILED" << std::endl;
         }
 
     }
 	catch(std::exception& e)
 		{
+      stat = -1;
       std::cerr << "detected exception " << e.what() << std::endl;
 		}
 
-  
+  return stat;
 }

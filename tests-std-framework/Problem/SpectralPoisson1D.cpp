@@ -38,128 +38,128 @@
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
-int main(int argc, char** argv)
+  int main(int argc, char** argv)
 {
   try
-		{
-      Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
+  {
+    Sundance::init(&argc, &argv);
+    int np = MPIComm::world().getNProc();
 
-      /* We will do our linear algebra using Epetra */
-      VectorType<double> vecType = new EpetraVectorType();
+    /* We will do our linear algebra using Epetra */
+    VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedLineMesher. */
-      MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
-      Mesh mesh = mesher.getMesh();
+    /* Create a mesh. It will be of type BasisSimplicialMesh, and will
+     * be built using a PartitionedLineMesher. */
+    MeshType meshType = new BasicSimplicialMeshType();
+    MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
+    Mesh mesh = mesher.getMesh();
 
-      /* Create a cell filter that will identify the maximal cells
-       * in the interior of the domain */
-      CellFilter interior = new MaximalCellFilter();
-      CellFilter points = new DimensionalCellFilter(0);
-      CellFilter leftPoint = points.subset(new LeftPointTest());
+    /* Create a cell filter that will identify the maximal cells
+     * in the interior of the domain */
+    CellFilter interior = new MaximalCellFilter();
+    CellFilter points = new DimensionalCellFilter(0);
+    CellFilter leftPoint = points.subset(new LeftPointTest());
 
-      /* Create the Spectral Basis */
-      int ndim = 2;
-      int order = 2;
+    /* Create the Spectral Basis */
+    int ndim = 2;
+    int order = 2;
 
-      SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
+    SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
 
-      cout << "created the spectral basis" << endl;
+    cout << "created the spectral basis" << endl;
 
-      /* Create the Spectral Unknown and test functions */
+    /* Create the Spectral Unknown and test functions */
 
-      Expr u = new UnknownFunction(new Lagrange(2),sbasis, "u");
-      Expr v = new TestFunction(new Lagrange(2), sbasis, "v");
+    Expr u = new UnknownFunction(new Lagrange(2),sbasis, "u");
+    Expr v = new TestFunction(new Lagrange(2), sbasis, "v");
 
-      cout <<"Unknown and Test Functions " << endl; 
+    cout <<"Unknown and Test Functions " << endl; 
 
-      /* Create differential operator and coordinate function */
-      Expr dx = new Derivative(0);
-      Expr x = new CoordExpr(0);
+    /* Create differential operator and coordinate function */
+    Expr dx = new Derivative(0);
+    Expr x = new CoordExpr(0);
 
-      /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(2);
+    /* We need a quadrature rule for doing the integrations */
+    QuadratureFamily quad = new GaussianQuadrature(2);
 
 
-      /* Define the Stochastic RHS */
+    /* Define the Stochastic RHS */
 
-      Array<Expr> Coeff(sbasis.nterms());  /* array of coefficients for the spectra expression */
-      Coeff[0] = 2.0;
-      for(int i=1; i<sbasis.nterms(); i++)
-	{
+    Array<Expr> Coeff(sbasis.nterms());  /* array of coefficients for the spectra expression */
+    Coeff[0] = 2.0;
+    for(int i=1; i<sbasis.nterms(); i++)
+    {
 
-	  cout << i<< endl;
-	  Coeff[i] = 0.0;
-	}
+      cout << i<< endl;
+      Coeff[i] = 0.0;
+    }
 
-      Expr F = new SpectralExpr(sbasis, Coeff);
+    Expr F = new SpectralExpr(sbasis, Coeff);
 
-      cout << "created F" << endl ;
+    cout << "created F" << endl ;
 
-      /* Define the weak form */
-      Expr eqn = Integral(interior, -(dx*v)*(dx*u) - v*F, quad);
-      /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*u, quad);
+    /* Define the weak form */
+    Expr eqn = Integral(interior, -(dx*v)*(dx*u) - F*v, quad);
+    /* Define the Dirichlet BC */
+    Expr bc = EssentialBC(leftPoint, v*u, quad);
 
       
-      cout << "done eq and bc " << endl;
+    cout << "done eq and bc " << endl;
 
 
-      /* We can now set up the linear problem! */
+    /* We can now set up the linear problem! */
 
-      LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
+    LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
-      ParameterList solverParams = reader.getParameters();
-      cout << "params = " << solverParams << endl;
+    ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
+    ParameterList solverParams = reader.getParameters();
+    cout << "params = " << solverParams << endl;
 
 
-      LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(solverParams);
+    LinearSolver<double> solver 
+      = LinearSolverBuilder::createSolver(solverParams);
 
-      Expr soln = prob.solve(solver);
+    Expr soln = prob.solve(solver);
 
-      TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
-                         RuntimeError,
-                         "solve failed");
+    TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
+      RuntimeError,
+      "solve failed");
 
-      Expr zz = Integral(interior, soln[0], quad);
-      double totalU = evaluateIntegral(mesh, zz);
-      cerr << "integral(u[0]) = " << totalU << endl;
+    Expr zz = Integral(interior, soln[0], quad);
+    double totalU = evaluateIntegral(mesh, zz);
+    cerr << "integral(u[0]) = " << totalU << endl;
 
-      Expr exactSoln = x*(x-2.0);
-      Expr err = pow(soln[0] - exactSoln, 2.0);
-      for (int i=1; i<sbasis.nterms(); i++)
-        {
-          err = err + pow(soln[i], 2.0);
-        }
+    Expr exactSoln = x*(x-2.0);
+    Expr err = pow(soln[0] - exactSoln, 2.0);
+    for (int i=1; i<sbasis.nterms(); i++)
+    {
+      err = err + pow(soln[i], 2.0);
+    }
         
 
-      Expr errExpr = Integral(interior, 
-                              err,
-                              new GaussianQuadrature(4));
+    Expr errExpr = Integral(interior, 
+      err,
+      new GaussianQuadrature(4));
 
-      Expr derivErr = dx*(exactSoln-soln[0]);
-      Expr derivErrExpr = Integral(interior, 
-                                   pow(dx*(soln[0]-exactSoln), 2),
-                                   new GaussianQuadrature(2));
+    Expr derivErr = dx*(exactSoln-soln[0]);
+    Expr derivErrExpr = Integral(interior, 
+      pow(dx*(soln[0]-exactSoln), 2),
+      new GaussianQuadrature(2));
 
-      double errorSq = evaluateIntegral(mesh, errExpr);
-      cout << "error norm = " << sqrt(errorSq) << endl << endl;
+    double errorSq = evaluateIntegral(mesh, errExpr);
+    cout << "error norm = " << sqrt(errorSq) << endl << endl;
 
 
 
-      double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
-      cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+    double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
+    cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
-      double tol = 1.0e-12;
-      Sundance::passFailTest(sqrt(errorSq + derivErrorSq), tol);
-    }
+    double tol = 1.0e-12;
+    Sundance::passFailTest(sqrt(errorSq + derivErrorSq), tol);
+  }
 	catch(exception& e)
-		{
-      Sundance::handleException(e);
-		}
+  {
+    Sundance::handleException(e);
+  }
   Sundance::finalize(); return Sundance::testStatus(); 
 }

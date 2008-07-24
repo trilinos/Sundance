@@ -183,6 +183,7 @@ inline Expr FD(const Expr& f, const Expr& u)
 
 int main(int argc, char** argv)
 {
+  int stat = 0;
   try
 		{
       GlobalMPISession session(&argc, &argv);
@@ -675,6 +676,7 @@ int main(int argc, char** argv)
         }
       else
         {
+          stat = -1;
           cerr << "overall test FAILED!" << endl;
           cerr << endl << "failed exprs: " << endl
                << endl;
@@ -688,9 +690,11 @@ int main(int argc, char** argv)
     }
 	catch(exception& e)
 		{
+      stat = -1;
       cerr << "overall test FAILED!" << endl;
       cerr << "detected exception: " << e.what() << endl;
 		}
+  return stat;
 }
 
 

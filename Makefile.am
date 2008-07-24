@@ -180,6 +180,43 @@ TEUCHOS_CHECK_COMM=serial
 endif
 
 
+if BUILD_EXAMPLES
+examples:
+	@echo ""
+	@echo "Now building Sundance examples."
+	@echo ""
+	cd $(top_builddir)/examples-tutorial && $(MAKE)
+	@echo ""
+	@echo "Finished building Sundance examples."
+	@echo ""
+install-examples:
+	cd $(top_builddir)/examples-tutorial && $(MAKE) install
+else
+examples:
+	@echo "Sundance examples were disabled at configure time"
+
+install-examples:
+	@echo "Sundance examples were disabled at configure time"
+endif
+
+clean-tests:
+	cd $(top_builddir)/tests-solvers && $(MAKE) clean
+	cd $(top_builddir)/tests-core && $(MAKE) clean
+	cd $(top_builddir)/tests-std-framework && $(MAKE) clean
+
+clean-examples:
+	cd $(top_builddir)/examples-tutorial && $(MAKE) clean
+
+everything:
+	$(MAKE) && $(MAKE) examples && $(MAKE) tests
+
+clean-everything:
+	$(MAKE) clean-examples && $(MAKE) clean-tests && $(MAKE) clean
+
+install-everything:
+	$(MAKE) install && $(MAKE) install-examples
+
+
 
 
 old-tests:
@@ -250,6 +287,8 @@ runtests-python-mpi:
   --packages=Sundance
 
 endif
+
+
 
 
 

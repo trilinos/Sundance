@@ -58,6 +58,7 @@ void write(const MultiSet<int>& x,
 
 int main(int argc, char** argv)
 {
+  int stat = 0;
   try
 		{
       GlobalMPISession session(&argc, &argv);
@@ -135,13 +136,15 @@ int main(int argc, char** argv)
         }
       else
         {
+          stat = -1;
           std::cerr << "a test has FAILED" << std::endl;
         }
     }
 	catch(std::exception& e)
 		{
+      stat = -1;
       std::cerr << "detected exception " << e.what() << std::endl;
 		}
 
-  
+  return stat;
 }

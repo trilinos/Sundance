@@ -42,6 +42,7 @@ using namespace TSFExtendedOps;
 
 int main(int argc, char *argv[]) 
 {
+  int stat = 0;
   try
     {
       GlobalMPISession session(&argc, &argv);
@@ -71,12 +72,16 @@ int main(int argc, char *argv[])
 
       VectorTester<double> tester(space, TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 
-      tester.runAllTests();
+      bool allPass = tester.runAllTests();
       
+      if (!allPass) stat = -1;
+
     }
   catch(std::exception& e)
     {
       cerr << "Caught exception: " << e.what() << endl;
+      stat = -1;
     }
+  return stat;
 }
 

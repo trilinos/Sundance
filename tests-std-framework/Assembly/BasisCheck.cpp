@@ -95,7 +95,8 @@ unsigned int iPow(unsigned int base, unsigned int exponent)
 
 int main(int argc, char** argv)
 {
-  
+  int stat = 0;
+
   try
   {
     GlobalMPISession session(&argc, &argv);
@@ -218,6 +219,7 @@ int main(int argc, char** argv)
     else
     {
       cerr << "BasisCheck FAILED" << endl;
+      stat = -1;
     }
     TimeMonitor::summarize();
   }
@@ -225,7 +227,8 @@ int main(int argc, char** argv)
   {
     cerr << e.what() << endl;
     cerr << "BasisCheck FAILED" << endl;
+    stat = -1;
   }
 
-  
+  return stat;
 }

@@ -43,6 +43,7 @@ using namespace TSFExtended;
 
 int main(int argc, char** argv)
 {
+  int stat = 0 ;
 	try
 		{
 			GlobalMPISession session(&argc, &argv);
@@ -85,6 +86,7 @@ int main(int argc, char** argv)
         {
           cout << "failures detected for tets: orders " << tetFailures << endl;
           cout << "tet tests FAILED" << endl;
+          stat = -1;
         }
       else
         {
@@ -95,6 +97,7 @@ int main(int argc, char** argv)
         {
           cout << "failures detected for tris: orders " << triFailures << endl;
           cout << "tri tests FAILED" << endl;
+          stat = -1;
         }
       else
         {
@@ -107,8 +110,9 @@ int main(int argc, char** argv)
 		{
       cerr << "Detected exception: " << e.what() << endl;
       cerr << "Quadrature test FAILED" << endl;
+      stat = -1;
 		}
 
-
+  return stat;
   
 }

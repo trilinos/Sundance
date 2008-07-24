@@ -60,6 +60,7 @@ using Thyra::TestSpecifier;
 
 int main(int argc, char *argv[]) 
 {
+  int stat = 0;
   try
     {
       GlobalMPISession session(&argc, &argv);
@@ -144,13 +145,16 @@ int main(int argc, char *argv[])
         }
       else
         {
+          stat = -1;
           cerr << "multivector op test FAILED" << endl;
         }
     }
   catch(std::exception& e)
     {
+      stat = -1;
       cerr << "Caught exception: " << e.what() << endl;
     }
+  return stat;
 }
 
 

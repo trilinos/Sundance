@@ -179,6 +179,7 @@ void MyFunc3::eval0(const double* vars, double* f) const
 
 int main(int argc, char** argv)
 {
+  int stat = 0;
   try
 		{
       GlobalMPISession session(&argc, &argv);
@@ -312,15 +313,17 @@ int main(int argc, char** argv)
         }
       else
         {
+          stat = -1;
           cerr << "overall test FAILED!" << endl;
         }
       TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
+      stat = -1;
       cerr << "overall test FAILED!" << endl;
       cerr << "detected exception: " << e.what() << endl;
 		}
 
-  
+  return stat;
 }
