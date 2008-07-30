@@ -77,6 +77,7 @@ void PolyFunc::eval0(const double* vars, double* f) const
 
 
 
+#ifdef HAVE_EXODUS
 
 int main(int argc, char** argv)
 {
@@ -208,3 +209,16 @@ int main(int argc, char** argv)
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }
+
+
+#else
+
+
+int main(int argc, char** argv)
+{
+  std::cout << "dummy Poisson2D PASSED. Enable exodus to run the actual test" << std::endl;
+  return 0;
+}
+
+
+#endif

@@ -113,6 +113,10 @@ tests:
 	cd $(top_builddir)/tests-core && $(MAKE)
 	cd $(top_builddir)/tests-std-mesh && $(MAKE)
 	cd $(top_builddir)/tests-std-framework && $(MAKE)
+	@echo ""
+	@echo "Now copying data needed for Sundance tests to build directory"
+	@echo ""
+	$(MAKE) get-data-needed-for-tests
 else
 tests:
 	@echo ""
@@ -136,12 +140,16 @@ SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framew
 ## #######################################################################
 
 libonly:
-	(cd src-solvers; $(MAKE) install)
-	(cd src-utils; $(MAKE) install)
-	(cd src-interop; $(MAKE) install)
-	(cd src-core; $(MAKE) install)
-	(cd src-std-mesh; $(MAKE) install)
-	(cd src-std-framework; $(MAKE) install)
+	(cd src-solvers; $(MAKE))
+	(cd src-utils; $(MAKE))
+	(cd src-interop; $(MAKE))
+	(cd src-core; $(MAKE))
+	(cd src-std-mesh; $(MAKE))
+	(cd src-std-framework; $(MAKE))
+	@echo ""
+	@echo "Now copying data needed for Sundance tests to build directory"
+	@echo ""
+	$(MAKE) get-data-needed-for-tests
 
 
 ## #######################################################################
@@ -165,6 +173,21 @@ install-data-hook:
 	cp $(top_srcdir)/etc/SolverParameters/*.xml $(prefix)/etc/SolverParameters
 	cp $(top_srcdir)/etc/*.xml $(prefix)/etc
 	cp $(top_srcdir)/examples-tutorial/data/*.* $(prefix)/examples-tutorial/data
+
+
+
+## #######################################################################
+## hooks for putting data files (meshes, solver params, etc) in the
+## build directory
+## #######################################################################
+
+get-data-needed-for-tests:
+	mkdir -p $(abs_top_builddir)/etc/SolverParameters
+	mkdir -p $(abs_top_builddir)/examples-tutorial/meshes
+	mkdir -p $(abs_top_builddir)/examples-tutorial/data
+	cp $(top_srcdir)/etc/SolverParameters/*.xml $(abs_top_builddir)/etc/SolverParameters
+	cp $(top_srcdir)/etc/*.xml $(abs_top_builddir)/etc
+	cp $(top_srcdir)/examples-tutorial/data/*.* $(abs_top_builddir)/examples-tutorial/data
 
 
 ## #######################################################################

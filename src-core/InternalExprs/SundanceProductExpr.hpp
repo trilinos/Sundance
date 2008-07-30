@@ -81,7 +81,46 @@ namespace SundanceCore
       /** */
       virtual bool isProduct() const {return true;}
 
+      /** 
+       * Indicate whether the expression is linear 
+       * with respect to test functions */
+      virtual bool isLinearInTests() const 
+        {
+          bool leftIsLinear = leftScalar()->isLinearInTests() ;
+          bool rightIsLinear = rightScalar()->isLinearInTests() ;
+
+          bool leftHasTests = leftScalar()->hasTestFunctions() ;
+          bool rightHasTests = rightScalar()->hasTestFunctions() ;
+          
+          return (leftIsLinear && !rightHasTests) 
+            || (!leftHasTests && rightIsLinear);
+        }
       
+      /** Indicate whether the expression is linear in the given 
+       * functions */
+      virtual bool isLinearForm(const Expr& u) const 
+        {
+          bool L = leftScalar()->isLinearForm(u);
+          bool R = rightScalar()->isLinearForm(u);
+          return ( (L || R) && !(L==R) );
+        }
+      
+      /** Indicate whether the expression is a quadratic form in the given 
+       * functions */
+      virtual bool isQuadraticForm(const Expr& u) const
+        {
+          bool LQ = leftScalar()->isQuadraticForm(u);
+          bool RQ = rightScalar()->isQuadraticForm(u);
+          bool LL = leftScalar()->isLinearForm(u);
+          bool RL = leftScalar()->isLinearForm(u);
+          bool LI = leftScalar()->isIndependentOf(u);
+          bool RI = rightScalar()->isIndependentOf(u);
+
+          if (LI && RQ) return true;
+          if (RI && LQ) return true;
+          if (LL && RL) return true;
+          return false;
+        }
 
       /** */
       virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}

@@ -31,6 +31,7 @@
 #include "SundanceFuncElementBase.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceCoordDeriv.hpp"
+#include "SundanceExpr.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
@@ -69,7 +70,6 @@ ostream& FuncElementBase::toLatex(ostream& os, bool /* paren */) const
 	os << name_;
 	return os;
 }
-
 
 
 bool FuncElementBase::lessThan(const ScalarExpr* other) const

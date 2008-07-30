@@ -45,118 +45,144 @@
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace Internal;
-  using std::string;
-  using SundanceUtils::Map;
+using namespace SundanceUtils;
+using namespace Teuchos;
+using namespace Internal;
+using std::string;
+using SundanceUtils::Map;
 
-  namespace Internal
-    {
-      class SpatiallyConstantExpr;
+namespace Internal
+{
+class SpatiallyConstantExpr;
 
-      /** 
-       * SumOfIntegrals represents a sum of integrals,
-       * grouped by region and quadrature rule
-       *
-       * \f[
-       * \sum_{d=0}^{N_d-1} \left[\sum_{q=0}^{N_{q,d}-1} 
-       * \int_{\Omega_d,Q_{q,d}} g_{d,q}\right] 
-       * \f] 
-       *
-       * 
-       * 
-       */
-      class SumOfIntegrals : public ScalarExpr
-        {
-        public:
-          /** Construct given an integral over a single region */
-          SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
-                         const Expr& expr,
-                         const RefCountPtr<QuadratureFamilyStub>& quad);
+/** 
+ * SumOfIntegrals represents a sum of integrals,
+ * grouped by region and quadrature rule
+ *
+ * \f[
+ * \sum_{d=0}^{N_d-1} \left[\sum_{q=0}^{N_{q,d}-1} 
+ * \int_{\Omega_d,Q_{q,d}} g_{d,q}\right] 
+ * \f] 
+ *
+ * 
+ * 
+ */
+class SumOfIntegrals : public ScalarExpr
+{
+public:
+  /** Construct given an integral over a single region */
+  SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
+    const Expr& expr,
+    const RefCountPtr<QuadratureFamilyStub>& quad);
 
-          /** */
-          virtual ~SumOfIntegrals(){;}
+  /** */
+  virtual ~SumOfIntegrals(){;}
 
-          /** Add another term to this integral */
-          void addTerm(const RefCountPtr<CellFilterStub>& region,
-                       const Expr& expr,
-                       const RefCountPtr<QuadratureFamilyStub>& quad, 
-                       int sign) ;
+  /** Add another term to this integral */
+  void addTerm(const RefCountPtr<CellFilterStub>& region,
+    const Expr& expr,
+    const RefCountPtr<QuadratureFamilyStub>& quad, 
+    int sign) ;
 
-          /** Add this sum of integrals to another sum of integrals */
-          void merge(const SumOfIntegrals* other, int sign) ;
+  /** Add this sum of integrals to another sum of integrals */
+  void merge(const SumOfIntegrals* other, int sign) ;
 
-          /** Multiply all terms in the sum by a constant */
-          void multiplyByConstant(const SpatiallyConstantExpr* expr) ;
+  /** Multiply all terms in the sum by a constant */
+  void multiplyByConstant(const SpatiallyConstantExpr* expr) ;
 
-          /** Change the sign of all terms in the sum */
-          void changeSign() ;
+  /** Change the sign of all terms in the sum */
+  void changeSign() ;
 
-          /** Return the number of subregions */
-          int numRegions() const {return regions_.size();}
+  /** Return the number of subregions */
+  int numRegions() const {return regions_.size();}
 
-          /** Return the d-th region */
-          const RefCountPtr<CellFilterStub>& region(int d) const 
-          {return regions_[d].ptr();}
+  /** Return the d-th region */
+  const RefCountPtr<CellFilterStub>& region(int d) const 
+    {return regions_[d].ptr();}
 
-          /** Return the number of different quadrature rules used in the
-           * d-th region */
-          int numTerms(int d) const {return quad_[d].size();}
+  /** Return the number of different quadrature rules used in the
+   * d-th region */
+  int numTerms(int d) const {return quad_[d].size();}
 
-          /** Return the q-th quadrature rule used in the d-th region */
-          const RefCountPtr<QuadratureFamilyStub>& quad(int d, int q) const 
-          {return quad_[d][q].ptr();}
+  /** Return the q-th quadrature rule used in the d-th region */
+  const RefCountPtr<QuadratureFamilyStub>& quad(int d, int q) const 
+    {return quad_[d][q].ptr();}
 
-          /** Return the integrand for the q-th quadrature rule in the
-           * d-th region */
-          const Expr& expr(int d, int q) const 
-          {return expr_[d][q];}
+  /** Return the integrand for the q-th quadrature rule in the
+   * d-th region */
+  const Expr& expr(int d, int q) const 
+    {return expr_[d][q];}
 
-          /** Return the set of unknown or variational
-           * functions defined on the d-th region */
-          Set<int> funcsOnRegion(int d, const Set<int>& funcsSet) const ;
+  /** Return the set of unknown or variational
+   * functions defined on the d-th region */
+  Set<int> funcsOnRegion(int d, const Set<int>& funcsSet) const ;
 
-          /** Indicate whether the integral over the 
-           * d-th region contains any test functions */
-          bool integralHasTestFunctions(int d) const ;
+  /** Indicate whether the integral over the 
+   * d-th region contains any test functions */
+  bool integralHasTestFunctions(int d) const ;
 
-          /** Return a null cell filter of a type consistent with the
-           * other filters in this integral */
-          RefCountPtr<CellFilterStub> nullRegion() const ;
+  /** Return a null cell filter of a type consistent with the
+   * other filters in this integral */
+  RefCountPtr<CellFilterStub> nullRegion() const ;
 
-          /** Write a simple text description suitable 
-           * for output to a terminal */
-          virtual ostream& toText(ostream& os, bool paren) const ;
+  /** Indicate whether the expression is independent of the given 
+   * functions */
+  virtual bool isIndependentOf(const Expr& u) const ;
 
-          /** Write in a form suitable for LaTeX formatting */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
+  /** Indicate whether the expression is linear in the given 
+   * functions */
+  virtual bool isLinearForm(const Expr& u) const ;
 
-          /** Write in XML */
-          virtual XMLObject toXML() const ;
+  /** Indicate whether the expression is quadratic in the given 
+   * functions */
+  virtual bool isQuadraticForm(const Expr& u) const ;
 
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** 
+   * Indicate whether the expression is nonlinear 
+   * with respect to test functions */
+  virtual bool isLinearInTests() const ;
 
-          /** Ordering operator for use in transforming exprs to standard form */
-          virtual bool lessThan(const ScalarExpr* other) const ;
+  /** 
+   * Indicate whether every term in the expression contains test functions */
+  virtual bool everyTermHasTestFunctions() const ;
 
-        protected:
-          /** */
-          Expr filterSpectral(const Expr& ex) const ;
-        private:
+  /** 
+   * Indicate whether the expression contains test functions */
+  virtual bool hasTestFunctions() const ;
+  
+
+  /** Write a simple text description suitable 
+   * for output to a terminal */
+  virtual ostream& toText(ostream& os, bool paren) const ;
+
+  /** Write in a form suitable for LaTeX formatting */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
+
+  /** Write in XML */
+  virtual XMLObject toXML() const ;
+
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
+
+protected:
+  /** */
+  Expr filterSpectral(const Expr& ex) const ;
+private:
           
-          Array<OrderedHandle<CellFilterStub> > regions_;
+  Array<OrderedHandle<CellFilterStub> > regions_;
 
-          Array<Array<OrderedHandle<QuadratureFamilyStub> > > quad_;
+  Array<Array<OrderedHandle<QuadratureFamilyStub> > > quad_;
 
-          Array<Array<Expr> > expr_;
+  Array<Array<Expr> > expr_;
 
-          Map<OrderedHandle<CellFilterStub>, int>  cellSetToIndexMap_;
+  Map<OrderedHandle<CellFilterStub>, int>  cellSetToIndexMap_;
 
-          Array<Map<OrderedHandle<QuadratureFamilyStub>, int> > quadToIndexMap_;
-        };
-    }
+  Array<Map<OrderedHandle<QuadratureFamilyStub>, int> > quadToIndexMap_;
+};
+}
 }
 
 #endif /* DOXYGEN_DEVELOPER_ONLY */

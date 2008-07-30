@@ -51,7 +51,7 @@ ProductExpr::ProductExpr(const RefCountPtr<ScalarExpr>& left,
 
 
 Evaluator* ProductExpr::createEvaluator(const EvaluatableExpr* expr,
-					const EvalContext& context) const
+  const EvalContext& context) const
 {
   return new ProductEvaluator(dynamic_cast<const ProductExpr*>(expr), context);
 }
@@ -89,10 +89,10 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& c
   if (order > 2) return rtn;
 
   if (order==2)
-    {
-      rtn.put(makeMultiSet<int>(0,1));
-      return rtn;
-    }
+  {
+    rtn.put(makeMultiSet<int>(0,1));
+    return rtn;
+  }
 
   const Set<MultipleDeriv>& wLeft 
     = leftEvaluatable()->findW(0, context);
@@ -100,22 +100,22 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& c
     = rightEvaluatable()->findW(0, context);
   
   if (order==0)
+  {
+    if (wLeft.size() > 0)
     {
-      if (wLeft.size() > 0)
-        {
-          rtn.put(makeMultiSet<int>(0));
-        }
-      if (wRight.size() > 0)
-        {
-          rtn.put(makeMultiSet<int>(1));
-        }
+      rtn.put(makeMultiSet<int>(0));
     }
+    if (wRight.size() > 0)
+    {
+      rtn.put(makeMultiSet<int>(1));
+    }
+  }
   
   if (order==1)
-    {
-      if (wLeft.size() > 0) rtn.put(makeMultiSet<int>(1));
-      if (wRight.size() > 0) rtn.put(makeMultiSet<int>(0));
-    }
+  {
+    if (wLeft.size() > 0) rtn.put(makeMultiSet<int>(1));
+    if (wRight.size() > 0) rtn.put(makeMultiSet<int>(0));
+  }
   
   return rtn;
 }
@@ -134,23 +134,24 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_V(int order, const EvalContext& c
     = rightEvaluatable()->findV(0, context);
 
   if (order==0)
+  {
+    if (vLeft.size() > 0)
     {
-      if (vLeft.size() > 0)
-        {
-          rtn.put(makeMultiSet<int>(0));
-        }
-      if (vRight.size() > 0)
-        {
-          rtn.put(makeMultiSet<int>(1));
-        }
+      rtn.put(makeMultiSet<int>(0));
     }
+    if (vRight.size() > 0)
+    {
+      rtn.put(makeMultiSet<int>(1));
+    }
+  }
 
   if (order==1)
-    {
-      if (vLeft.size() > 0) rtn.put(makeMultiSet<int>(1));
-      if (vRight.size() > 0) rtn.put(makeMultiSet<int>(0));
-    }
+  {
+    if (vLeft.size() > 0) rtn.put(makeMultiSet<int>(1));
+    if (vRight.size() > 0) rtn.put(makeMultiSet<int>(0));
+  }
 
   
   return rtn;
 }
+

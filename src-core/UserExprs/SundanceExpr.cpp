@@ -50,6 +50,8 @@
 #include "SundanceParameter.hpp"
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
+#include "SundanceUnknownFuncElement.hpp"
+#include "SundanceTestFuncElement.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceCore;
@@ -1035,6 +1037,141 @@ double Expr::getParameterValue() const
                      "so getParameterValue() should not be called");
   return pe->value();
 }
+
+
+bool Expr::isIndependentOf(const Expr& u) const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+  
+  return scalarExpr()->isIndependentOf(u);
+}
+
+
+bool Expr::isLinearForm(const Expr& u) const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+
+  return scalarExpr()->isLinearForm(u);
+}
+
+
+
+bool Expr::isQuadraticForm(const Expr& u) const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+
+  return scalarExpr()->isQuadraticForm(u);
+}
+
+
+
+bool Expr::isLinearInTests() const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+
+  return scalarExpr()->isLinearInTests();
+}
+
+
+bool Expr::hasTestFunctions() const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+
+  return scalarExpr()->hasTestFunctions();
+}
+
+
+bool Expr::everyTermHasTestFunctions() const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+
+  return scalarExpr()->everyTermHasTestFunctions();
+}
+
+bool Expr::isTestElement() const
+{
+  const TestFuncElement* uPtr
+    = dynamic_cast<const TestFuncElement*>(ptr().get());
+  return uPtr != 0;
+}
+
+
+bool Expr::isUnknownElement() const
+{
+  const UnknownFuncElement* uPtr
+    = dynamic_cast<const UnknownFuncElement*>(ptr().get());
+  return uPtr != 0;
+}
+
+
+void Expr::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+
+  const UnknownFuncElement* u 
+    = dynamic_cast<const UnknownFuncElement*>(ptr().get());
+
+  if (u != 0) 
+  {
+    if (!unkID.contains(u->funcComponentID())) 
+    {
+      unks.append(*this);
+      unkID.put(u->funcComponentID());
+    }
+  }
+  else
+  {
+    scalarExpr()->getUnknowns(unkID, unks);
+  }
+}
+
+
+void Expr::getTests(Set<int>& varID, Array<Expr>& vars) const
+{
+  TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
+    "function called on null expression");
+
+  const TestFuncElement* u 
+    = dynamic_cast<const TestFuncElement*>(ptr().get());
+
+  if (u != 0) 
+  {
+    if (!varID.contains(u->funcComponentID())) 
+    {
+      vars.append(*this);
+      varID.put(u->funcComponentID());
+    }
+  }
+  else
+  {
+    scalarExpr()->getTests(varID, vars);
+  }
+}
+
+
+const ScalarExpr* Expr::scalarExpr() const 
+{
+  const ScalarExpr* se = dynamic_cast<const ScalarExpr*>(ptr().get());
+  TEST_FOR_EXCEPTION(se==0, InternalError, "ScalarExpr expected here");
+  return se;
+}
+
+const FuncElementBase* Expr::funcElement() const 
+{
+  const FuncElementBase* fe 
+    = dynamic_cast<const FuncElementBase*>(ptr().get());
+  return fe;
+}
+
+
+
 
 namespace SundanceCore
 {

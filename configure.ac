@@ -253,7 +253,7 @@ AC_HELP_STRING([--enable-sundance-tests],[whether to build Sundance tests]),
   yes) sundanceTests=yes ;;
   no) sundanceTests=no;;
   *) AC_MSG_ERROR([bad value for ${enableval} for --enable-sundance-tests]);;
-esac],[sundanceTests=no])
+esac],[sundanceTests=yes])
 
 AC_MSG_CHECKING(whether to enable Sundance tests)
 AC_MSG_RESULT([$sundanceTests])
@@ -272,7 +272,7 @@ AC_HELP_STRING([--enable-sundance-examples],[whether to build Sundance examples]
   yes) sundanceExamples=yes ;;
   no) sundanceExamples=no;;
   *) AC_MSG_ERROR([bad value for ${enableval} for --enable-sundance-examples]);;
-esac],[sundanceExamples=no])
+esac],[sundanceExamples=yes])
 
 AC_MSG_CHECKING(whether to enable Sundance examples)
 AC_MSG_RESULT([$sundanceExamples])
@@ -379,6 +379,7 @@ TAC_ARG_WITH_INCDIRS
 # ------------------------------------------------------------------------
 
 AC_SUBST(ac_aux_dir)
+AC_SUBST(prefix)
 AC_SUBST(SUNDANCE_BUILD_DIRECTORY)
 AC_SUBST(TRILINOS_SRC_DIR)
 AC_SUBST(MOOCHO_STR)

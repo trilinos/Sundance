@@ -200,5 +200,33 @@ void SymbolicFuncElement
 
 
 
+bool SymbolicFuncElement::isIndependentOf(const Expr& u) const 
+{
+  Expr uf = u.flatten();
+  for (unsigned int i=0; i<uf.size(); i++)
+  {
+    const ExprBase* p = uf[i].ptr().get();
+    const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);
+    TEST_FOR_EXCEPTION(f==0, InternalError, "expected a list of functions, "
+      " got " << u);
+    if (funcComponentID() == f->funcComponentID()) return false;
+  }
+  return true;
+}
+
+
+bool SymbolicFuncElement::isLinearForm(const Expr& u) const
+{
+  Expr uf = u.flatten();
+  for (unsigned int i=0; i<uf.size(); i++)
+  {
+    const ExprBase* p = uf[i].ptr().get();
+    const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);
+    TEST_FOR_EXCEPTION(f==0, InternalError, "expected a list of functions, "
+      " got " << u);
+    if (funcComponentID() == f->funcComponentID()) return true;
+  }
+  return false;
+}
 
 

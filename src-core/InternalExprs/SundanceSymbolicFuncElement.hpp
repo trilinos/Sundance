@@ -127,6 +127,15 @@ namespace SundanceCore
       //@}
       
 
+      /** Indicate whether the expression is independent of the given 
+       * functions */
+      virtual bool isIndependentOf(const Expr& u) const ;
+
+      
+      /** Indicate whether the expression is linear in the given 
+       * functions */
+      virtual bool isLinearForm(const Expr& u) const ;
+      
       /** */
       virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
       

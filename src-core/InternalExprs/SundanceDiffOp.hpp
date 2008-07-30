@@ -45,6 +45,8 @@
 
 namespace SundanceCore
 {
+class Expr;
+
   using namespace SundanceUtils;
   using namespace Teuchos;
 
@@ -64,6 +66,30 @@ namespace SundanceCore
 
       /** virtual destructor */
       virtual ~DiffOp() {;}
+
+
+      /** 
+       * Indicate whether the expression is linear 
+       * with respect to test functions 
+       */
+      virtual bool isLinearInTests() const 
+        {return evaluatableArg()->isLinearInTests();}
+      
+      
+      /** Indicate whether the expression is linear in the given 
+       * functions */
+      virtual bool isLinearForm(const Expr& u) const 
+        {
+          return evaluatableArg()->isLinearForm(u);
+        }
+      
+      /** Indicate whether the expression is at most 
+       * quadratic in the given functions */
+      virtual bool isQuadraticForm(const Expr& u) const
+        {
+          return evaluatableArg()->isQuadraticForm(u);
+        }
+
 
       /** Write a simple text description suitable
        * for output to a terminal */

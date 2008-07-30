@@ -74,11 +74,18 @@ namespace SundanceCore
 
       /** Test whether all terms have test functions. 
        * I'm a test function, so return true */
-      virtual bool allTermsHaveTestFunctions() const {return true;}
+      virtual bool everyTermHasTestFunctions() const {return true;}
 
       /** Test whether this expr contains a test function. 
        * I'm a test function, so return true. */
       virtual bool hasTestFunctions() const {return true;}
+
+
+      /** 
+       * Indicate whether the expression is linear 
+       * with respect to test functions */
+      virtual bool isLinearInTests() const {return true;}
+
 
       /** */
       virtual XMLObject toXML() const ;

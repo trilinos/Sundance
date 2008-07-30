@@ -745,18 +745,26 @@ all-local:
 @BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-core && $(MAKE)
 @BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-std-mesh && $(MAKE)
 @BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-std-framework && $(MAKE)
+@BUILD_TESTS_TRUE@	@echo ""
+@BUILD_TESTS_TRUE@	@echo "Now copying data needed for Sundance tests to build directory"
+@BUILD_TESTS_TRUE@	@echo ""
+@BUILD_TESTS_TRUE@	$(MAKE) get-data-needed-for-tests
 @BUILD_TESTS_FALSE@tests:
 @BUILD_TESTS_FALSE@	@echo ""
 @BUILD_TESTS_FALSE@	@echo "Sundance tests disabled at configure time"
 @BUILD_TESTS_FALSE@	@echo ""
 
 libonly:
-	(cd src-solvers; $(MAKE) install)
-	(cd src-utils; $(MAKE) install)
-	(cd src-interop; $(MAKE) install)
-	(cd src-core; $(MAKE) install)
-	(cd src-std-mesh; $(MAKE) install)
-	(cd src-std-framework; $(MAKE) install)
+	(cd src-solvers; $(MAKE))
+	(cd src-utils; $(MAKE))
+	(cd src-interop; $(MAKE))
+	(cd src-core; $(MAKE))
+	(cd src-std-mesh; $(MAKE))
+	(cd src-std-framework; $(MAKE))
+	@echo ""
+	@echo "Now copying data needed for Sundance tests to build directory"
+	@echo ""
+	$(MAKE) get-data-needed-for-tests
 
 tags:
 	etags */*/*.hpp */*/*.cpp
@@ -768,6 +776,14 @@ install-data-hook:
 	cp $(top_srcdir)/etc/SolverParameters/*.xml $(prefix)/etc/SolverParameters
 	cp $(top_srcdir)/etc/*.xml $(prefix)/etc
 	cp $(top_srcdir)/examples-tutorial/data/*.* $(prefix)/examples-tutorial/data
+
+get-data-needed-for-tests:
+	mkdir -p $(abs_top_builddir)/etc/SolverParameters
+	mkdir -p $(abs_top_builddir)/examples-tutorial/meshes
+	mkdir -p $(abs_top_builddir)/examples-tutorial/data
+	cp $(top_srcdir)/etc/SolverParameters/*.xml $(abs_top_builddir)/etc/SolverParameters
+	cp $(top_srcdir)/etc/*.xml $(abs_top_builddir)/etc
+	cp $(top_srcdir)/examples-tutorial/data/*.* $(abs_top_builddir)/examples-tutorial/data
 
 @BUILD_EXAMPLES_TRUE@examples:
 @BUILD_EXAMPLES_TRUE@	@echo ""

@@ -189,6 +189,80 @@ RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
   return RefCountPtr<CellFilterStub>();
 }
 
+bool SumOfIntegrals::isIndependentOf(const Expr& u) const
+{
+  for (unsigned int d=0; d<expr_.size(); d++)
+  {
+    for (unsigned int t=0; t<expr_[d].size(); t++)
+    {
+      if (!expr_[d][t].isIndependentOf(u)) return false;
+    }
+  }
+  return true;
+}
+
+bool SumOfIntegrals::isLinearForm(const Expr& u) const
+{
+  for (unsigned int d=0; d<expr_.size(); d++)
+  {
+    for (unsigned int t=0; t<expr_[d].size(); t++)
+    {
+      if (!expr_[d][t].isLinearForm(u)) return false;
+    }
+  }
+  return true;
+}
+
+bool SumOfIntegrals::isQuadraticForm(const Expr& u) const
+{
+  for (unsigned int d=0; d<expr_.size(); d++)
+  {
+    for (unsigned int t=0; t<expr_[d].size(); t++)
+    {
+      if (!expr_[d][t].isQuadraticForm(u)) return false;
+    }
+  }
+  return true;
+}
+
+
+bool SumOfIntegrals::everyTermHasTestFunctions() const
+{
+  for (unsigned int d=0; d<expr_.size(); d++)
+  {
+    for (unsigned int t=0; t<expr_[d].size(); t++)
+    {
+      if (!expr_[d][t].everyTermHasTestFunctions()) return false;
+    }
+  }
+  return true;
+}
+
+
+bool SumOfIntegrals::isLinearInTests() const
+{
+  for (unsigned int d=0; d<expr_.size(); d++)
+  {
+    for (unsigned int t=0; t<expr_[d].size(); t++)
+    {
+      if (!expr_[d][t].isLinearInTests()) return false;
+    }
+  }
+  return true;
+}
+
+bool SumOfIntegrals::hasTestFunctions() const
+{
+  for (unsigned int d=0; d<expr_.size(); d++)
+  {
+    for (unsigned int t=0; t<expr_[d].size(); t++)
+    {
+      if (expr_[d][t].hasTestFunctions()) return true;
+    }
+  }
+  return false;
+}
+
 
 
 ostream& SumOfIntegrals::toText(ostream& os, bool paren) const

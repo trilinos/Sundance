@@ -89,6 +89,8 @@ namespace SundanceCore
 
           /** */
           virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+
+
         protected:
         private:
           double value_;

@@ -37,6 +37,7 @@
 #include "SundanceEvaluator.hpp"
 #include "SundanceNullEvaluator.hpp"
 #include "SundanceUnknownFuncElement.hpp"
+#include "SundanceTestFuncElement.hpp"
 #include "SundanceUnaryExpr.hpp"
 
 using namespace SundanceCore;
@@ -81,6 +82,15 @@ bool ExprWithChildren::isConstant() const
   for (unsigned int i=0; i<children_.size(); i++) 
     {
       if (!children_[i]->isConstant()) return false;
+    }
+  return true;
+}
+
+bool ExprWithChildren::isIndependentOf(const Expr& u) const
+{
+  for (unsigned int i=0; i<children_.size(); i++) 
+    {
+      if (!children_[i]->isIndependentOf(u)) return false;
     }
   return true;
 }
@@ -169,11 +179,11 @@ void ExprWithChildren::showSparsity(ostream& os,
 }
 
 
-bool ExprWithChildren::allTermsHaveTestFunctions() const
+bool ExprWithChildren::everyTermHasTestFunctions() const
 {
   for (unsigned int i=0; i<children_.size(); i++)
     {
-      if (evaluatableChild(i)->allTermsHaveTestFunctions()) return true;
+      if (evaluatableChild(i)->everyTermHasTestFunctions()) return true;
     }
   return false;
 }
@@ -204,9 +214,34 @@ void ExprWithChildren::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
               unkID.put(u->funcComponentID());
             }
         }
-      evaluatableChild(i)->getUnknowns(unkID, unks);
+      else
+      {
+        evaluatableChild(i)->getUnknowns(unkID, unks);
+      }
     }
-  
+}
+
+void ExprWithChildren::getTests(Set<int>& varID, Array<Expr>& vars) const
+{
+  for (unsigned int i=0; i<children_.size(); i++)
+    {
+      const RefCountPtr<ExprBase>& e = children_[i];
+      const TestFuncElement* u 
+        = dynamic_cast<const TestFuncElement*>(e.get());
+      if (u != 0)
+        {
+          Expr expr(e);
+          if (!varID.contains(u->funcComponentID())) 
+            {
+              vars.append(expr);
+              varID.put(u->funcComponentID());
+            }
+        }
+      else
+      {
+        evaluatableChild(i)->getTests(varID, vars);
+      }
+    }
 }
 
 

@@ -121,12 +121,7 @@ namespace SundanceCore
 
       //@}
       
-      /** \name Error checking */
-      //@{
-      /** Test whether all terms have test functions. We'll use this
-       * to check the validity of weak forms */
-      virtual bool allTermsHaveTestFunctions() const {return false;}
-      //@}
+
 
 
       /** Utility to downcast an expression to an evaluatable expr. Throws
@@ -140,8 +135,6 @@ namespace SundanceCore
       virtual void showSparsity(ostream& os, 
                                 const EvalContext& context) const ;
 
-      /** */
-      virtual void getUnknowns(Set<int>& unkID, Array<Expr>& unks) const {;}
 
       /** */
       virtual int countNodes() const ;

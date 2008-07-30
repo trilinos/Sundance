@@ -49,21 +49,21 @@ SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
 	: BinaryExpr(left, right, sign), sumTree_()
 {
   /*
-  Expr L = Expr::handle(left);
-  Expr R = Expr::handle(right);
+    Expr L = Expr::handle(left);
+    Expr R = Expr::handle(right);
 
-  sumTree_ = L.getSumTree();
-  Map<Expr, int> rightTree = R.getSumTree();
+    sumTree_ = L.getSumTree();
+    Map<Expr, int> rightTree = R.getSumTree();
 
-  for (Map<Expr, int>::const_iterator i=rightTree.begin(); i!=rightTree.end(); i++)
+    for (Map<Expr, int>::const_iterator i=rightTree.begin(); i!=rightTree.end(); i++)
     {
-      int leftCount = 0;
-      if (sumTree_.containsKey(i->first))
-        {
-          leftCount = sumTree_[i->first];
-        }
-      int rightCount = sign * i->second;
-      sumTree_.put(i->first, leftCount + rightCount);
+    int leftCount = 0;
+    if (sumTree_.containsKey(i->first))
+    {
+    leftCount = sumTree_[i->first];
+    }
+    int rightCount = sign * i->second;
+    sumTree_.put(i->first, leftCount + rightCount);
     }
   */
 }
@@ -91,10 +91,42 @@ const string& SumExpr::opChar() const
 }
 
 
-bool SumExpr::allTermsHaveTestFunctions() const
+bool SumExpr::everyTermHasTestFunctions() const
 {
-  return leftEvaluatable()->allTermsHaveTestFunctions()
-    && rightEvaluatable()->allTermsHaveTestFunctions();
+  return leftEvaluatable()->everyTermHasTestFunctions()
+    && rightEvaluatable()->everyTermHasTestFunctions();
+}
+
+bool SumExpr::isLinearInTests() const
+{
+  bool leftHasTests = leftScalar()->hasTestFunctions();
+  bool rightHasTests = rightScalar()->hasTestFunctions();
+
+  bool leftIsLinear = leftScalar()->isLinearInTests();
+  bool rightIsLinear = rightScalar()->isLinearInTests();
+
+  return (!leftHasTests || leftIsLinear) && (!rightHasTests || rightIsLinear);
 }
 
 
+bool SumExpr::isLinearForm(const Expr& u) const 
+{
+  bool LL = leftScalar()->isLinearForm(u);
+  bool RL = rightScalar()->isLinearForm(u);
+  bool LI = leftScalar()->isIndependentOf(u);
+  bool RI = rightScalar()->isIndependentOf(u);
+
+  return ( (LL && (RL || RI)) || (RL && (LL || LI)) );
+}
+
+bool SumExpr::isQuadraticForm(const Expr& u) const
+{
+  bool LQ = leftScalar()->isQuadraticForm(u);
+  bool RQ = rightScalar()->isQuadraticForm(u);
+  bool LL = leftScalar()->isLinearForm(u);
+  bool RL = rightScalar()->isLinearForm(u);
+  bool LI = leftScalar()->isIndependentOf(u);
+  bool RI = rightScalar()->isIndependentOf(u);
+
+  return ( (LQ && (RQ || RL || RI)) || (RQ && (LQ || LL || LI))); 
+}

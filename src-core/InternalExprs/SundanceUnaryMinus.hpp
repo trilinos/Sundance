@@ -70,6 +70,28 @@ namespace SundanceCore
           /** */
           virtual bool isLinear() const {return true;}
 
+          /** 
+           * Indicate whether the expression is linear 
+           * with respect to test functions 
+           */
+          virtual bool isLinearInTests() const 
+            {return evaluatableArg()->isLinearInTests();}
+          
+
+          /** Indicate whether the expression is linear in the given 
+           * functions */
+          virtual bool isLinearForm(const Expr& u) const 
+            {
+              return evaluatableArg()->isLinearForm(u);
+            }
+
+          /** Indicate whether the expression is at most 
+           * quadratic in the given functions */
+          virtual bool isQuadraticForm(const Expr& u) const
+            {
+              return evaluatableArg()->isQuadraticForm(u);
+            }
+
           /** */
           virtual Set<MultiSet<int> > internalFindQ_W(int order, 
                                                    const EvalContext& context) const ;

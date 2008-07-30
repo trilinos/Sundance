@@ -38,59 +38,75 @@
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using std::string;
+using namespace SundanceUtils;
+using namespace Teuchos;
+using std::string;
 
-  namespace Internal
-    {
-      /**
-       * SumExpr is the internal representation of an addition or subtraction
-       * node in the expression tree.
-       */
-      class SumExpr : public BinaryExpr,
-                      public GenericEvaluatorFactory<SumExpr, SumEvaluator>
-        {
-        public:
-          /** */
-          SumExpr(const RefCountPtr<ScalarExpr>& a, 
-            const RefCountPtr<ScalarExpr>& b, int sign);
+namespace Internal
+{
+/**
+ * SumExpr is the internal representation of an addition or subtraction
+ * node in the expression tree.
+ */
+class SumExpr : public BinaryExpr,
+                public GenericEvaluatorFactory<SumExpr, SumEvaluator>
+{
+public:
+  /** */
+  SumExpr(const RefCountPtr<ScalarExpr>& a, 
+    const RefCountPtr<ScalarExpr>& b, int sign);
 
-          /** virtual dtor */
-          virtual ~SumExpr() {;}
+  /** virtual dtor */
+  virtual ~SumExpr() {;}
 
-          /** In order to return true, both left and right operands
-           * must contain test functions.  */
-          virtual bool allTermsHaveTestFunctions() const ;
+  /** */
+  virtual bool isHungryDiffOp() const ;
 
-          /** */
-          virtual bool isHungryDiffOp() const ;
+  /** */
+  virtual bool isLinear() const {return true;}
 
-          /** */
-          virtual bool isLinear() const {return true;}
-
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
           
-          /** */
-          const Map<Expr, int>& getSumTree() const {return sumTree_;}
 
-        protected:
-          /** */
-          virtual bool parenthesizeSelf() const {return true;}
-          /** */
-          virtual bool parenthesizeOperands() const {return false;}
-          /** */
-          virtual const string& xmlTag() const ;
-          /** */
-          virtual const string& opChar() const ;
+  /** 
+   * Indicate whether the expression is linear 
+   * with respect to test functions */
+  virtual bool isLinearInTests() const ;
 
-        private:
-          Map<Expr, int> sumTree_;
+  /** 
+   * Indicate whether every term in the expression contains test functions */
+  virtual bool everyTermHasTestFunctions() const ;
+          
+
+  /** Indicate whether the expression is linear in the given 
+   * functions */
+  virtual bool isLinearForm(const Expr& u) const ;
+
+  /** Indicate whether the expression is a 
+   * quadratic form in the given functions */
+  virtual bool isQuadraticForm(const Expr& u) const ;
+
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+          
+  /** */
+  const Map<Expr, int>& getSumTree() const {return sumTree_;}
+
+protected:
+  /** */
+  virtual bool parenthesizeSelf() const {return true;}
+  /** */
+  virtual bool parenthesizeOperands() const {return false;}
+  /** */
+  virtual const string& xmlTag() const ;
+  /** */
+  virtual const string& opChar() const ;
+
+private:
+  Map<Expr, int> sumTree_;
 
 
-        };
-    }
+};
+}
 }
 
 #endif /* DOXYGEN_DEVELOPER_ONLY */

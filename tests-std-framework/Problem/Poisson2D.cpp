@@ -37,10 +37,12 @@ using SundanceCore::List;
  * Solves the Poisson equation in 2D
  */
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;}) 
+CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;}) 
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;}) 
+
+#ifdef HAVE_EXODUS
 
 
 int main(int argc, char** argv)
@@ -236,3 +238,15 @@ int main(int argc, char** argv)
 
   return Sundance::testStatus();
 }
+
+#else
+
+
+int main(int argc, char** argv)
+{
+  std::cout << "dummy Poisson2D PASSED. Enable exodus to run the actual test" << std::endl;
+  return 0;
+}
+
+
+#endif

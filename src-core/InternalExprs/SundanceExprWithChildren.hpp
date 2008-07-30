@@ -137,7 +137,7 @@ namespace SundanceCore
           
           /** Return true if any child returns true. The sum expression
            * will override this requiring all children to return true */
-          virtual bool allTermsHaveTestFunctions() const ;
+          virtual bool everyTermHasTestFunctions() const ;
 
           /** Test whether this expr contains a test function. 
            * If any child contains a test, return true. */
@@ -150,6 +150,9 @@ namespace SundanceCore
           /** */
           virtual void getUnknowns(Set<int>& unkID, Array<Expr>& unks) const ;
 
+          /** */
+          virtual void getTests(Set<int>& varID, Array<Expr>& vars) const ;
+
           
           /** */
           virtual int countNodes() const ;
@@ -159,6 +162,10 @@ namespace SundanceCore
 
           /** */
           virtual bool isProduct() const {return false;}
+
+          /** Indicate whether the expression is independent of the given 
+           * functions */
+          virtual bool isIndependentOf(const Expr& u) const ;
 
 
           /** */

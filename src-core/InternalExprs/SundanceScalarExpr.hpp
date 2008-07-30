@@ -37,47 +37,81 @@
 #include "Teuchos_XMLObject.hpp"
 #include "Teuchos_RefCountPtrDecl.hpp"
 #include "SundanceExprBase.hpp"
+#include "SundanceExpr.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  namespace Internal
-    {
-      /** */
-      class ScalarExpr : public ExprBase
-        {
-        public:
-          /** empty ctor */
-          ScalarExpr();
+using std::string;
+using std::ostream;
 
-          /** virtual destructor */
-          virtual ~ScalarExpr() {;}
+namespace Internal
+{
+/** */
+class ScalarExpr : public ExprBase
+{
+public:
+  /** empty ctor */
+  ScalarExpr();
 
-
-          /** Indicate whether this expression is constant in space */
-          virtual bool isConstant() const {return false;}
+  /** virtual destructor */
+  virtual ~ScalarExpr() {;}
 
 
-          /** Indicate whether this expression is an immutable constant */
-          virtual bool isImmutable() const {return false;}
+  /** Indicate whether this expression is constant in space */
+  virtual bool isConstant() const {return false;}
 
-          /** Indicate whether this expression is a "hungry"
-           * differential operator that is awaiting an argument. */
-          virtual bool isHungryDiffOp() const {return false;}
 
-          /** Ordering operator for use in transforming exprs to standard form */
-          virtual bool lessThan(const ScalarExpr* other) const = 0 ;
+  /** Indicate whether this expression is an immutable constant */
+  virtual bool isImmutable() const {return false;}
 
-        protected:
-        };
-    }
+  /** Indicate whether this expression is a "hungry"
+   * differential operator that is awaiting an argument. */
+  virtual bool isHungryDiffOp() const {return false;}
+
+  /** Indicate whether the expression is independent of the given 
+   * functions */
+  virtual bool isIndependentOf(const Expr& u) const {return true;}
+
+  /** 
+   * Indicate whether the expression is nonlinear 
+   * with respect to test functions */
+  virtual bool isLinearInTests() const {return false;}
+
+  /** 
+   * Indicate whether every term in the expression contains test functions */
+  virtual bool everyTermHasTestFunctions() const {return hasTestFunctions();}
+
+  /** 
+   * Indicate whether the expression contains test functions */
+  virtual bool hasTestFunctions() const {return false;}
+
+  /** Indicate whether the expression is linear in the given 
+   * functions */
+  virtual bool isLinearForm(const Expr& u) const {return false;}
+
+  /** Indicate whether the expression is quadratic in the given 
+   * functions */
+  virtual bool isQuadraticForm(const Expr& u) const {return false;}
+
+  /** Find all the unknown functions in this expression. */
+  virtual void getUnknowns(Set<int>& unkID, Array<Expr>& unks) const {;}
+
+  /** Find all the test functions in this expression. */
+  virtual void getTests(Set<int>& varID, Array<Expr>& vars) const {;}
+
+  /** Ordering operator for use in transforming exprs 
+   * to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const = 0 ;
+
+protected:
+};
+}
 }
 
 #endif /* DOXYGEN_DEVELOPER_ONLY */

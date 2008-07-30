@@ -78,6 +78,7 @@ namespace SundanceCore
       /** Ordering operator for use in transforming exprs to standard form */
       virtual bool lessThan(const ScalarExpr* other) const ;
 
+
     private:
       int funcID_;
     };
