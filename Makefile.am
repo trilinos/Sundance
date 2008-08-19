@@ -85,25 +85,24 @@ all-local:
 ## #######################################################################
 ## Subdirectories to be make'd recursively
 ## #######################################################################
-#  #np# - Most packages should have an example and a full suite 
-#  of tests.  At present, new_package only offers src and example.
-# SUBDIRS = src example test 
+#  We now build tests and examples through separate make targets, rather 
+#  than during "make".  We still need to conditionally include the test
+#  and example subdirectories in SUBDIRS, even though SUB_TEST and 
+#  SUB_EXAMPLE will never be defined, so that the tests and examples
+#  are included in the distribution tarball. 
 
-if BUILD_EXAMPLES
-EXAMPLES_SUBDIR=examples-tutorial
+if SUB_EXAMPLE
+EXAMPLE_SUBDIR=examples-tutorial
 endif
 
 
 
 # ----------------------------------------------------------------------
+if SUB_TEST
+TEST_SUBDIR = tests-solvers tests-utils tests-core tests-std-mesh tests-std-framework
+endif
+
 if BUILD_TESTS
-
-SOLVERS_TESTS = tests-solvers
-UTILS_TESTS = tests-utils
-CORE_TESTS = tests-core
-STD_MESH_TESTS = tests-std-mesh
-STD_FRAMEWORK_TESTS = tests-std-framework
-
 tests: 
 	@echo ""
 	@echo "Now building Sundance tests"
@@ -131,7 +130,7 @@ PYTHON_SUBDIRS=python
 endif
 
 
-SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) 
+SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) $(TEST_SUBDIR) $(EXAMPLE_SUBDIR)
 
 
 

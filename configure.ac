@@ -41,6 +41,11 @@
 
 AC_INIT(Sundance, 2.0, krlong@sandia.gov)
 
+# Hello World!
+echo "----------------------------------------"
+echo "Running Sundance Configure Script"
+echo "----------------------------------------"
+
 # This is to protect against accidentally specifying the wrong
 # directory with --srcdir.
 
@@ -278,7 +283,9 @@ AC_MSG_CHECKING(whether to enable Sundance examples)
 AC_MSG_RESULT([$sundanceExamples])
 AM_CONDITIONAL(BUILD_EXAMPLES, test "X$sundanceExamples" = "Xyes")
 
-
+# These will never be defined, but are needed for building the tarball.
+AM_CONDITIONAL(SUB_TEST, test "X$ac_cv_use_sub_test" = "Xyes")
+AM_CONDITIONAL(SUB_EXAMPLE, test "X$ac_cv_use_sub_example" = "Xyes")
 
 
 # ------------------------------------------------------------------------
