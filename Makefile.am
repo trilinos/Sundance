@@ -117,6 +117,9 @@ tests:
 	@echo "Now copying data needed for Sundance tests to build directory"
 	@echo ""
 	$(MAKE) get-data-needed-for-tests
+	@echo ""
+	@echo "Finished building Sundance tests."
+	@echo ""
 else
 tests:
 	@echo ""
