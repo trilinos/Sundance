@@ -748,6 +748,10 @@ all-local:
 @BUILD_TESTS_TRUE@	@echo "Now copying data needed for Sundance tests to build directory"
 @BUILD_TESTS_TRUE@	@echo ""
 @BUILD_TESTS_TRUE@	$(MAKE) get-data-needed-for-tests
+@BUILD_TESTS_TRUE@	@echo ""
+@BUILD_TESTS_TRUE@	@echo "Finished building Sundance tests."
+@BUILD_TESTS_TRUE@	@echo ""
+
 @BUILD_TESTS_FALSE@tests:
 @BUILD_TESTS_FALSE@	@echo ""
 @BUILD_TESTS_FALSE@	@echo "Sundance tests disabled at configure time"
