@@ -40,6 +40,8 @@
 #include "SundanceTabs.hpp"
 #include "SundanceExceptions.hpp"
 
+#include "Teuchos_BLAS.hpp"
+
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -474,6 +476,9 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
   RefCountPtr<Array<Array<double> > > localValues;
   RefCountPtr<const MapStructure> mapStruct;
+
+  Teuchos::BLAS<int,double> blas;
+
   if (mi.order() == 1 && cellDim() != maxCellDim())
   {
     if (!useMaximalCells()) setupFacetTransformations();
@@ -620,8 +625,10 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         double* A = &((*refFacetBasisValues)[facetIndex][vecComp][0]);
         double* B = &((*localValues)[chunk][c*nNodes*nFuncs]);
         double* C = &((*cacheVals)[chunk][c*nRowsA*nColsB]);
-        dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
-          B, &ldb, &beta, C, &ldc);
+        blas.GEMM( Teuchos::NO_TRANS, Teuchos::NO_TRANS, nRowsA, nColsB, nColsA,
+          alpha, A, lda, B, ldb, beta, C, ldc);
+        //dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, B,
+        //  &ldb, &beta, C, &ldc);
       }
     }
     else 
@@ -645,9 +652,10 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       double* A = &((*refBasisValues)[vecComp][0]);
       double* B = &((*localValues)[chunk][0]);
       double* C = &((*cacheVals)[chunk][0]);
-          
-      dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
-        B, &ldb, &beta, C, &ldc);
+      blas.GEMM( Teuchos::NO_TRANS, Teuchos::NO_TRANS, nRowsA, nColsB, nColsA, alpha,
+        A, lda, B, ldb, beta, C, ldc );
+      //dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
+      //      B, &ldb, &beta, C, &ldc);
     }
 
     /* Transform derivatives to physical coordinates */
