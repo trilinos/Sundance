@@ -114,7 +114,7 @@ ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh \
 	src-std-framework python tests-solvers tests-utils tests-core \
-	tests-std-mesh tests-std-framework examples-tutorial
+	tests-std-mesh tests-std-framework test examples-tutorial
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -293,7 +293,7 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 @SUB_EXAMPLE_TRUE@EXAMPLE_SUBDIR = examples-tutorial
 
 # ----------------------------------------------------------------------
-@SUB_TEST_TRUE@TEST_SUBDIR = tests-solvers tests-utils tests-core tests-std-mesh tests-std-framework
+@SUB_TEST_TRUE@TEST_SUBDIR = tests-solvers tests-utils tests-core tests-std-mesh tests-std-framework test
 @PYTHON_USE_TRUE@PYTHON_SUBDIRS = python
 SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) $(TEST_SUBDIR) $(EXAMPLE_SUBDIR)
 @HAVE_MPI_FALSE@TEUCHOS_CHECK_COMM = serial

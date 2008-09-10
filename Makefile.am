@@ -99,7 +99,7 @@ endif
 
 # ----------------------------------------------------------------------
 if SUB_TEST
-TEST_SUBDIR = tests-solvers tests-utils tests-core tests-std-mesh tests-std-framework
+TEST_SUBDIR = tests-solvers tests-utils tests-core tests-std-mesh tests-std-framework test
 endif
 
 if BUILD_TESTS
