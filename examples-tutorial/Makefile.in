@@ -230,6 +230,9 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+EXTRA_DIST = data/aztec-ml.xml data/aztec.xml data/bicgstab.xml \
+data/fieldData.dat data/nox-aztec.xml data/nox-tsf.xml data/nox.xml
+
 @PYTHON_USE_TRUE@PYTHON_SUBDIR = python
 SUBDIRS = c++ $(PYTHON_SUBDIR) 
 all: all-recursive

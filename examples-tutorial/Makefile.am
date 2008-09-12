@@ -28,6 +28,8 @@
 # ************************************************************************
 #@HEADER
 
+EXTRA_DIST = data/aztec-ml.xml data/aztec.xml data/bicgstab.xml \
+data/fieldData.dat data/nox-aztec.xml data/nox-tsf.xml data/nox.xml
 
 if PYTHON_USE
 PYTHON_SUBDIR = python

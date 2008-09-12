@@ -54,7 +54,15 @@ EXTRA_DIST = bootstrap \
 	config/strip_dup_incl_paths.pl config/strip_dup_libs.pl \
 	config/ac_cxx_have_std.m4 config/ac_cxx_have_stl.m4 \
 	config/ac_cxx_namespaces.m4 config/ac_cxx_mutable.m4 \
-	config/depcomp
+	config/depcomp \
+	etc/SolverParameters/amesos.xml etc/SolverParameters/aztec-ifpack.xml \
+	etc/SolverParameters/aztec-ml.xml \
+	etc/SolverParameters/aztec-native.xml \
+	etc/SolverParameters/aztec.xml etc/SolverParameters/bicgstab.xml \
+	etc/SolverParameters/gmres.xml etc/SolverParameters/nox.xml \
+	etc/SolverParameters/poissonParams.xml \
+	etc/SolverParameters/userPrecParams.xml etc/SundanceConfig.xml \
+	etc/checkTests.pl
 
 #
 #       I believe that by switching to AUX_DIR(../../config) one 
