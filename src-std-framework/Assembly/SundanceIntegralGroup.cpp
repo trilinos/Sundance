@@ -54,8 +54,10 @@ static Time& integrationTimer()
 
 IntegralGroup
 ::IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
-                const Array<int>& resultIndices)
-  : order_(0),
+  const Array<int>& resultIndices,
+  const ParameterList& verbParams)
+  : ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
+    order_(0),
     nTestNodes_(0),
     nUnkNodes_(0),
     testID_(),
@@ -64,109 +66,177 @@ IntegralGroup
     unkBlock_(),
     integrals_(integrals),
     resultIndices_(resultIndices),
-    requiresMaximalCofacet_(false)
+    termUsesMaximalCofacets_(integrals_.size()),
+    requiresMaximalCofacet_(SomeTermsNeedCofacets),
+    derivs_()
 {
-  verbosity() = classVerbosity();
+  bool allReqMaximalCofacets = true;
+  bool noneReqMaximalCofacets = true;
+  bool someReqMaximalCofacets = false;
 
   for (unsigned int i=0; i<integrals_.size(); i++)
+  {
+    if (integrals[i]->nFacetCases() > 1) 
     {
-      if (integrals[i]->nFacetCases() > 1) 
-        {
-          requiresMaximalCofacet_ = true;
-        }
+      someReqMaximalCofacets = true;
+      noneReqMaximalCofacets = false;
+      termUsesMaximalCofacets_[i] = true;
     }
+    else
+    {
+      allReqMaximalCofacets = false;
+      termUsesMaximalCofacets_[i] = false;
+    }
+  }
+
+  if (allReqMaximalCofacets) 
+  {
+    requiresMaximalCofacet_ = AllTermsNeedCofacets;
+  }
+  else if (noneReqMaximalCofacets) 
+  {
+    requiresMaximalCofacet_ = NoTermsNeedCofacets;
+  }
+  
 }
 
 IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
-                const Array<int>& testBlock,
-                const Array<RefCountPtr<ElementIntegral> >& integrals,
-                const Array<int>& resultIndices)
-  : order_(1),
-    nTestNodes_(0),
-    nUnkNodes_(0),
-    testID_(testID),
-    unkID_(),
-    testBlock_(testBlock),
-    unkBlock_(),
-    integrals_(integrals),
-    resultIndices_(resultIndices),
-    requiresMaximalCofacet_(false)
+  const Array<int>& testBlock,
+  const Array<RefCountPtr<ElementIntegral> >& integrals,
+  const Array<int>& resultIndices,
+  const Array<MultipleDeriv>& derivs,
+  const ParameterList& verbParams)
+  :  ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
+     order_(1),
+     nTestNodes_(0),
+     nUnkNodes_(0),
+     testID_(testID),
+     unkID_(),
+     testBlock_(testBlock),
+     unkBlock_(),
+     integrals_(integrals),
+     resultIndices_(resultIndices),
+    termUsesMaximalCofacets_(integrals_.size()),
+     requiresMaximalCofacet_(SomeTermsNeedCofacets),
+    derivs_(derivs)
 {
-  verbosity() = classVerbosity();
+  bool allReqMaximalCofacets = true;
+  bool noneReqMaximalCofacets = true;
+  bool someReqMaximalCofacets = false;
 
   for (unsigned int i=0; i<integrals.size(); i++)
+  {
+    int nt = integrals[i]->nNodesTest();
+    if (i > 0) 
     {
-      int nt = integrals[i]->nNodesTest();
-      if (i > 0) 
-        {
-          TEST_FOR_EXCEPTION(nt != nTestNodes_, InternalError,
-                             "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
-        }
-      nTestNodes_ = nt;
-      if (integrals[i]->nFacetCases() > 1) 
-        {
-          requiresMaximalCofacet_ = true;
-        }
+      TEST_FOR_EXCEPTION(nt != nTestNodes_, InternalError,
+        "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
     }
+    nTestNodes_ = nt;
+    if (integrals[i]->nFacetCases() > 1) 
+    {
+      someReqMaximalCofacets = true;
+      noneReqMaximalCofacets = false;
+      termUsesMaximalCofacets_[i] = true;
+    }
+    else
+    {
+      allReqMaximalCofacets = false;
+      termUsesMaximalCofacets_[i] = false;
+    }
+  }
+
+  if (allReqMaximalCofacets) 
+  {
+    requiresMaximalCofacet_ = AllTermsNeedCofacets;
+  }
+  else if (noneReqMaximalCofacets) 
+  {
+    requiresMaximalCofacet_ = NoTermsNeedCofacets;
+  }
 }
 
 IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
-                const Array<int>& testBlock,
-                const Array<int>& unkID,
-                const Array<int>& unkBlock,
-                const Array<RefCountPtr<ElementIntegral> >& integrals,
-                const Array<int>& resultIndices)
-  : order_(2),
-    nTestNodes_(0),
-    nUnkNodes_(0),
-    testID_(testID),
-    unkID_(unkID),
-    testBlock_(testBlock),
-    unkBlock_(unkBlock),
-    integrals_(integrals),
-    resultIndices_(resultIndices),
-    requiresMaximalCofacet_(false)
+  const Array<int>& testBlock,
+  const Array<int>& unkID,
+  const Array<int>& unkBlock,
+  const Array<RefCountPtr<ElementIntegral> >& integrals,
+  const Array<int>& resultIndices,
+  const Array<MultipleDeriv>& derivs,
+  const ParameterList& verbParams)
+  :  ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
+     order_(2),
+     nTestNodes_(0),
+     nUnkNodes_(0),
+     testID_(testID),
+     unkID_(unkID),
+     testBlock_(testBlock),
+     unkBlock_(unkBlock),
+     integrals_(integrals),
+     resultIndices_(resultIndices),
+    termUsesMaximalCofacets_(integrals_.size()),
+     requiresMaximalCofacet_(SomeTermsNeedCofacets),
+    derivs_(derivs)
 {
-  verbosity() = classVerbosity();
+  bool allReqMaximalCofacets = true;
+  bool noneReqMaximalCofacets = true;
+  bool someReqMaximalCofacets = false;
 
   for (unsigned int i=0; i<integrals.size(); i++)
+  {
+    int nt = integrals[i]->nNodesTest();
+    int nu = integrals[i]->nNodesUnk();
+    if (i > 0) 
     {
-      int nt = integrals[i]->nNodesTest();
-      int nu = integrals[i]->nNodesUnk();
-      if (i > 0) 
-        {
-          TEST_FOR_EXCEPTION(nt != nTestNodes_, InternalError,
-                             "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
-          TEST_FOR_EXCEPTION(nu != nUnkNodes_, InternalError,
-                             "IntegralGroup ctor detected integrals with inconsistent numbers of unk nodes");
-        }
-      nTestNodes_ = nt;
-      nUnkNodes_ = nu;
-      if (integrals[i]->nFacetCases() > 1) 
-        {
-          requiresMaximalCofacet_ = true;
-        }
+      TEST_FOR_EXCEPTION(nt != nTestNodes_, InternalError,
+        "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
+      TEST_FOR_EXCEPTION(nu != nUnkNodes_, InternalError,
+        "IntegralGroup ctor detected integrals with inconsistent numbers of unk nodes");
     }
+    nTestNodes_ = nt;
+    nUnkNodes_ = nu;
+
+    if (integrals[i]->nFacetCases() > 1) 
+    {
+      someReqMaximalCofacets = true;
+      noneReqMaximalCofacets = false;
+      termUsesMaximalCofacets_[i] = true;
+    }
+    else
+    {
+      allReqMaximalCofacets = false;
+      termUsesMaximalCofacets_[i] = false;
+    }
+  }
+
+  if (allReqMaximalCofacets) 
+  {
+    requiresMaximalCofacet_ = AllTermsNeedCofacets;
+  }
+  else if (noneReqMaximalCofacets) 
+  {
+    requiresMaximalCofacet_ = NoTermsNeedCofacets;
+  }
 }
 
 bool IntegralGroup
 ::evaluate(const CellJacobianBatch& JTrans,
-           const CellJacobianBatch& JVol,
-           const Array<int>& isLocalFlag, 
-           const Array<int>& facetIndex, 
-           const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
-           const Array<double>& constantCoeffs,
-           RefCountPtr<Array<double> >& A) const
+  const CellJacobianBatch& JVol,
+  const Array<int>& isLocalFlag, 
+  const Array<int>& facetIndex, 
+  const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
+  const Array<double>& constantCoeffs,
+  RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(integrationTimer());
   Tabs tab0;
 
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-               tab0 << "----------------- evaluating an integral group of size "
-               << integrals_.size() << "----------------------");
+  SUNDANCE_LEVEL1("integration",
+    tab0 << "integral group has size "
+    << integrals_.size());
 
   /* initialize the return vector */
   if (integrals_[0]->nNodes() == -1) A->resize(1);
@@ -175,48 +245,63 @@ bool IntegralGroup
   int n = A->size();
   for (int i=0; i<n; i++) aPtr[i] = 0.0;
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, tab0 << "begin A=" << *A);
+  SUNDANCE_LEVEL4("integration", tab0 << "begin A=" << *A);
 
   /* do the integrals */
   for (unsigned int i=0; i<integrals_.size(); i++)
+  {
+    Tabs tab1;
+    SUNDANCE_LEVEL1("integration", tab1 << "group member i=" << i 
+      << " of " << integrals_.size());
+    Tabs tab2;
+
+    const RefIntegral* ref 
+      = dynamic_cast<const RefIntegral*>(integrals_[i].get());
+    const QuadratureIntegral* quad 
+      = dynamic_cast<const QuadratureIntegral*>(integrals_[i].get());
+
+    if (ref!=0)
     {
-      Tabs tab;
-      const RefIntegral* ref 
-        = dynamic_cast<const RefIntegral*>(integrals_[i].get());
-      const QuadratureIntegral* quad 
-        = dynamic_cast<const QuadratureIntegral*>(integrals_[i].get());
-
-      if (ref!=0)
-        {
-          SUNDANCE_OUT(this->verbosity() > VerbMedium,
-                       tab << "Integrating term group " << i 
-                       << " by transformed reference integral");
-          double f = constantCoeffs[resultIndices_[i]];
-          SUNDANCE_OUT(this->verbosity() > VerbSilent,
-                       tab << "Coefficient is " << f);
-          ref->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
-        }
-      else 
-        {
-          SUNDANCE_OUT(this->verbosity() > VerbMedium,
-                       tab << "Integrating term group " << i 
-                       << " by quadrature");
-          TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
-                             InternalError,
-                             "zero-length coeff vector detected in "
-                             "quadrature integration branch of "
-                             "IntegralGroup::evaluate(). String value is ["
-                             << vectorCoeffs[resultIndices_[i]]->str()
-                             << "]");
-
-          const double* const f = vectorCoeffs[resultIndices_[i]]->start();
-          quad->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
-        }
-      SUNDANCE_OUT(this->verbosity() > VerbHigh, tab << "i=" << i << " integral values=" << *A);
+      SUNDANCE_LEVEL2("integration",
+        tab2 << "Integrating term group " << i 
+        << " by transformed reference integral");
+      double f = constantCoeffs[resultIndices_[i]];
+      SUNDANCE_LEVEL2("integration", 
+        tab2 << "Coefficient is " << f);
+      ref->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
     }
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, tab0 << "done integral group evaluation");
+    else 
+    {
+      SUNDANCE_LEVEL2("integration",
+        tab2 << "Integrating term group " << i 
+        << " by quadrature");
+          
+      TEST_FOR_EXCEPTION(vectorCoeffs[resultIndices_[i]]->length()==0,
+        InternalError,
+        "zero-length coeff vector detected in "
+        "quadrature integration branch of "
+        "IntegralGroup::evaluate(). String value is ["
+        << vectorCoeffs[resultIndices_[i]]->str()
+        << "]");
+
+      Tabs tab3;
+      SUNDANCE_LEVEL4("integration",
+        tab3 << "coefficients are " <<  vectorCoeffs[resultIndices_[i]]->str());
+
+      const double* const f = vectorCoeffs[resultIndices_[i]]->start();
+      quad->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
+    }
+    SUNDANCE_LEVEL4("integration", 
+      tab1 << "i=" << i << " integral values=" << *A);
+  }
+  SUNDANCE_LEVEL1("integration", tab0 << "done integral group evaluation");
 
   return true;
 }
 
 
+
+std::ostream& IntegralGroup::print(std::ostream& os) const
+{
+  os << "IntegralGroup[derivs=" << derivs_ << "]";
+}

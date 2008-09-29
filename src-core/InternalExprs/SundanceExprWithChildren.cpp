@@ -108,6 +108,26 @@ const EvaluatableExpr* ExprWithChildren::evaluatableChild(int i) const
   return e;
 }
 
+int ExprWithChildren::maxDiffOrderOnDiscreteFunctions() const
+{
+  int biggest = -1;
+  for (int i=0; i<numChildren(); i++)
+  {
+    int x = evaluatableChild(i)->maxDiffOrderOnDiscreteFunctions();
+    if (x > biggest) biggest = x;
+  }
+  return biggest;
+}
+
+bool ExprWithChildren::hasDiscreteFunctions() const
+{
+  for (int i=0; i<numChildren(); i++)
+  {
+    if (evaluatableChild(i)->hasDiscreteFunctions()) return true;
+  }
+  return false;
+}
+
 
 void ExprWithChildren::accumulateFuncSet(Set<int>& funcIDs, 
                                          const Set<int>& activeSet) const

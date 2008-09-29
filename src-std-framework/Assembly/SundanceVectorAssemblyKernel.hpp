@@ -28,17 +28,61 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#ifndef SUNDANCE_VECTORASSEMBLYKERNEL_H
+#define SUNDANCE_VECTORASSEMBLYKERNEL_H
 
-#include "SundanceAbstractEvalMediator.hpp"
+#include "SundanceDefs.hpp"
+#include "SundanceVectorFillingAssemblyKernel.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace SundanceCore;
+namespace SundanceStdFwk
+{
 using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
+
+namespace Internal
+{
+using namespace Teuchos;
+
+
+/**
+ * VectorAssemblyKernel builds load vectors
+ */
+class VectorAssemblyKernel : public VectorFillingAssemblyKernel
+{
+public:
+  
+  /** */
+  VectorAssemblyKernel(
+  const Array<RefCountPtr<DOFMapBase> >& dofMap,
+  const Array<RefCountPtr<Array<int> > >& isBCIndex,
+  const Array<int>& lowestLocalIndex,
+  Vector<double>& b,
+  bool partitionBCs,
+  int verb
+    );
+
+  /** */
+  virtual ~VectorAssemblyKernel(){;}
+
+  /** */
+  virtual void prepareForWorkSet(
+    const Array<Set<int> >& requiredTests,
+    const Array<Set<int> >& requiredUnks,
+    RefCountPtr<StdFwkEvalMediator> mediator) ;
+
+  /** */
+  virtual void fill(bool isBC,
+    const IntegralGroup& group,
+    const RefCountPtr<Array<double> >& localValues) ;   
+
+};
+
+}
+}
 
 
 
-AbstractEvalMediator::AbstractEvalMediator(int verb)
-  : TSFExtended::ObjectWithVerbosity<AbstractEvalMediator>(verb)
-{}
-
+#endif

@@ -57,8 +57,9 @@ using namespace TSFExtended;
 QuadratureEvalMediator
 ::QuadratureEvalMediator(const Mesh& mesh, 
   int cellDim,
-  const QuadratureFamily& quad)
-  : StdFwkEvalMediator(mesh, cellDim),
+  const QuadratureFamily& quad, 
+  int verb)
+  : StdFwkEvalMediator(mesh, cellDim, verb),
     quad_(quad),
     refQuadPts_(),
     refFacetQuadPts_(),
@@ -188,7 +189,10 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
   Tabs tab;
   RefCountPtr<Array<Array<Array<double> > > > rtn ;
 
-  if (!useMaximalCells()) setupFacetTransformations();
+  if (!cofacetCellsAreReady()) setupFacetTransformations();
+
+  TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), RuntimeError, 
+    "cofacet cells not ready in getFacetRefBasisVals()");
 
   typedef OrderedPair<BasisFamily, CellType> key;
 
@@ -469,6 +473,12 @@ void QuadratureEvalMediator
 void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
   const MultiIndex& mi) const 
 {
+  Tabs tab0;
+  
+  SUNDANCE_MSG2(verb(), tab0 << "QuadratureEvalMediator::fillFunctionCache()");
+  SUNDANCE_MSG2(verb(), tab0 << "multiIndex=" << mi);
+  
+  
   int diffOrder = mi.order();
 
   int flops = 0;
@@ -481,11 +491,18 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
   if (mi.order() == 1 && cellDim() != maxCellDim())
   {
-    if (!useMaximalCells()) setupFacetTransformations();
+    Tabs tab1;
+    SUNDANCE_MSG2(verb(), tab1 << "referring to cofacets");
+    if (!cofacetCellsAreReady()) setupFacetTransformations();
+
+    TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), RuntimeError, 
+      "cofacet cells not ready in fillFunctionCache()");
 
     if (!facetLocalValueCacheIsValid().containsKey(f) 
       || !facetLocalValueCacheIsValid().get(f))
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), tab2 << "filling cache");
       localValues = rcp(new Array<Array<double> >());
       mapStruct = f->getLocalValues(maxCellDim(), maxCellLIDs(), *localValues);
       TEST_FOR_EXCEPT(mapStruct.get() == 0);
@@ -495,15 +512,21 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     }
     else
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), tab2 << "reusing cache");
       localValues = facetLocalValueCache().get(f);
       mapStruct = facetMapStructCache().get(f);
     }
   }
   else
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb(), tab1 << "using non-cofacet cells");
     if (!localValueCacheIsValid().containsKey(f) 
       || !localValueCacheIsValid().get(f))
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), tab2 << "filling cache");
       localValues = rcp(new Array<Array<double> >());
       mapStruct = f->getLocalValues(cellDim(), *cellLID(), *localValues);
       TEST_FOR_EXCEPT(mapStruct.get() == 0);
@@ -513,6 +536,8 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     }
     else
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), tab2 << "reusing cache");
       localValues = localValueCache().get(f);
       mapStruct = mapStructCache().get(f);
     }
@@ -551,13 +576,22 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
   
   for (int chunk=0; chunk<mapStruct->numBasisChunks(); chunk++)
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb(), tab1 << "processing dof map chunk=" << chunk
+      << " of " << mapStruct->numBasisChunks());
     const BasisFamily& basis = mapStruct->basis(chunk);
+    SUNDANCE_MSG4(verb(), tab1 << "basis=" << basis);
+
     int nFuncs = mapStruct->numFuncs(chunk);
+    SUNDANCE_MSG2(verb(), tab1 << "num funcs in this chunk=" << nFuncs);
+    
 
     Array<double>& cache = (*cacheVals)[chunk];
 
     int nQuad = quadWgts().size();
     int nCells = cellLID()->size();
+    SUNDANCE_MSG2(verb(), tab1 << "num quad points=" << nQuad);
+    SUNDANCE_MSG2(verb(), tab1 << "num cells=" << nCells);
 
     int nDir;
 
@@ -600,6 +634,12 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     */
     if (mi.order() == 1 && cellDim() != maxCellDim())
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), 
+        tab2 << "derivatives present on non-maximal cells, so referring "
+        << endl
+        << tab2 << "to maximal cells for transformations");
+      
       RefCountPtr<Array<Array<Array<double> > > > refFacetBasisValues 
         = getFacetRefBasisVals(basis);
       /* Note: even though we're ultimately not evaluating on 
@@ -618,6 +658,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       double alpha = 1.0;
       double beta = 0.0;
 
+      SUNDANCE_MSG2(verb(), tab2 << "building transformation matrices cell-by-cell");
       int vecComp = 0;
       for (int c=0; c<nCells; c++)
       {
@@ -637,6 +678,9 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
        * Sum over nodal values, which we can do with a matrix-matrix multiply
        * between the ref basis values and the local function values.
        */
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), tab2 << "building batch transformation matrix");
+
       RefCountPtr<Array<Array<double> > > refBasisValues 
         = getRefBasisVals(basis, diffOrder);
       int nNodes = basis.nReferenceDOFs(maxCellType(), cellType());
@@ -658,11 +702,17 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       //      B, &ldb, &beta, C, &ldc);
     }
 
+    SUNDANCE_MSG2(verb(), tab1 << "doing transformations via dgemm");
     /* Transform derivatives to physical coordinates */
     const CellJacobianBatch& J = JTrans();
     double* C = &((*cacheVals)[chunk][0]);
     if (mi.order()==1)
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), tab2 << "Jacobian batch nCells=" << J.numCells());
+      SUNDANCE_MSG2(verb(), tab2 << "Jacobian batch cell dim=" << J.cellDim());
+      SUNDANCE_MSG2(verb(), tab2 << "Jacobian batch spatial dim=" << J.spatialDim());
+    
       int nRhs = nQuad * nFuncs;
       for (unsigned int c=0; c<cellLID()->size(); c++)
       {
@@ -670,10 +720,14 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         J.applyInvJ(c, 0, rhsPtr, nRhs, false);
       }
     }
+    SUNDANCE_MSG2(verb(), tab1 << "done transformations");
   }
 
   jFlops = CellJacobianBatch::totalFlops() - jFlops;
   addFlops(flops + jFlops);
+
+  SUNDANCE_MSG2(verb(), 
+    tab0 << "done QuadratureEvalMediator::fillFunctionCache()");
 }
 
 void QuadratureEvalMediator::computePhysQuadPts() const 

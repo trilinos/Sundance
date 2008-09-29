@@ -48,17 +48,18 @@ using namespace TSFExtended;
 
 
 
-StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
-  : mesh_(mesh),
+StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim, int verb)
+  : AbstractEvalMediator(verb),
+    mesh_(mesh),
     cellDim_(cellDim),
     cellType_(NullCell),
     maxCellType_(NullCell),
     cellLID_(),
-    useMaximalCells_(false),
     JVol_(rcp(new CellJacobianBatch())),
     JTrans_(rcp(new CellJacobianBatch())),
     facetIndices_(rcp(new Array<int>())),
     maxCellLIDs_(rcp(new Array<int>())),
+    cofacetCellsAreReady_(false),
     cacheIsValid_(false),
     jCacheIsValid_(false),
     fCache_(),
@@ -80,17 +81,19 @@ void StdFwkEvalMediator::setCellType(const CellType& cellType,
   maxCellType_ = maxCellType;
   cacheIsValid() = false; 
   jCacheIsValid_=false;
+  cofacetCellsAreReady_ = false;
 }
 
-void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
+void StdFwkEvalMediator::setCellBatch(IntegrationCellSpecifier intCellSpec,
                                       const RefCountPtr<const Array<int> >& cellLID) 
 {
   cellLID_ = cellLID; 
   cacheIsValid() = false; 
   jCacheIsValid_=false;
+  cofacetCellsAreReady_ = false;
   mesh_.getJacobians(cellDim(), *cellLID, *JVol_);
-  useMaximalCells_ = useMaximalCells;
-  if (useMaximalCells_) setupFacetTransformations();
+  intCellSpec_ = intCellSpec;
+  if (intCellSpec_!=NoTermsNeedCofacets) setupFacetTransformations();
 
   /* mark the function caches as invalid */
   Map<const DiscreteFunctionData*, bool>::iterator iter;
@@ -114,16 +117,22 @@ void StdFwkEvalMediator::setCellBatch(bool useMaximalCells,
 
 void StdFwkEvalMediator::setupFacetTransformations() const 
 {
-  useMaximalCells_ = true;
+  Tabs tab;
+  SUNDANCE_MSG2(verb(), tab << "setting up facet transformations");
+
   const Array<int>& cells = *cellLID_;
   facetIndices_->resize(cells.size());
   maxCellLIDs_->resize(cells.size());
+  cofacetCellsAreReady_ = true;
+
   for (unsigned int c=0; c<cells.size(); c++)
     {
       (*maxCellLIDs_)[c] 
         = mesh_.maxCofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
     }
+
   mesh_.getJacobians(mesh_.spatialDim(), *maxCellLIDs_, *JTrans_);
+  SUNDANCE_MSG2(verb(), tab << "setting up facet transformations");
 }
 
 
@@ -133,18 +142,6 @@ const CellJacobianBatch& StdFwkEvalMediator::JTrans() const
   /* If we're integrating a derivative on a boundary, JVol and JTrans will be
    * different. Otherwise, they'll be the same, and we use JVol for both
    * volume computations and vector transformations */
-  if (useMaximalCells_) return *JTrans_;
+  if (intCellSpec_ != NoTermsNeedCofacets) return *JTrans_;
   return *JVol_;
-}
-
-const Array<int>& StdFwkEvalMediator::dofCellLIDs() const
-{
-  if (useMaximalCells_) return *maxCellLIDs_;
-  return *cellLID_;
-}
-
-const CellType& StdFwkEvalMediator::dofCellType() const 
-{
-  if (useMaximalCells_) return maxCellType_;
-  return cellType_;
 }

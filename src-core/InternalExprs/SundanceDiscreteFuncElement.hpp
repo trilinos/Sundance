@@ -89,7 +89,19 @@ namespace SundanceCore
       /** Inform this function that it will need to be evaluated using the specified
        * multiIndex*/
       void addMultiIndex(const MultiIndex& newMi) const ;
+
+       /**
+        * Find the maximum differentiation order acting on discrete
+        * functions in this expression. 
+        */
+      int maxDiffOrderOnDiscreteFunctions() const {return 0;}
       
+      /**
+       * Indicate whether this expression contains discrete functions.
+       * This object is a discrete function, so return true.
+       */
+      virtual bool hasDiscreteFunctions() const {return true;}
+
       /** */
       virtual Set<MultipleDeriv> 
       internalFindW(int order, const EvalContext& context) const ;

@@ -28,84 +28,85 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_MAPSTRUCTURE_H
-#define SUNDANCE_MAPSTRUCTURE_H
-
+#ifndef SUNDANCE_VECTORFILLINGASSEMBLYKERNEL_H
+#define SUNDANCE_VECTORFILLINGASSEMBLYKERNEL_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceBasisFamily.hpp"
+#include "SundanceAssemblyKernelBase.hpp"
+#include "TSFLoadableVector.hpp"
+#include "SundanceMapBundle.hpp"
 
 namespace SundanceStdFwk
 {
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
+
 namespace Internal
 {
 using namespace Teuchos;
 
-class MapStructure
+
+/**
+ * VectorFillingAssemblyKernel provides a common implementation of
+ * vector-filling capabilities needed by matrix-vector assembly, 
+ * vector assembly, and functional gradient evaluation. 
+ */
+class VectorFillingAssemblyKernel : public AssemblyKernelBase
 {
 public:
   /** */
-  MapStructure(int nTotalFuncs,
-    const Array<BasisFamily>& bases,
-    const Array<Array<int> >& funcs);
-  /** */
-  MapStructure(int nTotalFuncs,
-    const BasisFamily& basis,
-    const Array<Array<int> >& funcs);
-  /** */
-  MapStructure(int nTotalFuncs,
-    const BasisFamily& basis);
+  VectorFillingAssemblyKernel(
+  const Array<RefCountPtr<DOFMapBase> >& dofMap,
+  const Array<RefCountPtr<Array<int> > >& isBCIndex,
+  const Array<int>& lowestLocalIndex,
+  Vector<double>& b,
+  bool partitionBCs,
+  int verb
+    );
 
   /** */
-  int numBasisChunks() const {return bases_.size();}
+  virtual ~VectorFillingAssemblyKernel(){;}
 
-  /** */
-  const BasisFamily& basis(int basisChunk) const
-    {return bases_[basisChunk];}
+protected:
 
-  /** */
-  int numFuncs(int basisChunk) const 
-    {return funcs_[basisChunk].size();}
+  /** 
+   * Insert local vector values into a global vector
+   */
+  void insertLocalVectorBatch(bool isBCRqc,
+    bool useCofacetCells,
+    const Array<int>& funcID,  
+    const Array<int>& funcBlock, 
+    const Array<double>& localValues) const ;
 
-  /** */
-  const Array<int>& funcs(int basisChunk) const 
-    {return funcs_[basisChunk];}
+  /** 
+   * Build fast lookup tables of DOFs for local cells.
+   */
+  void buildLocalDOFMaps(
+    const RefCountPtr<StdFwkEvalMediator>& mediator,
+    IntegrationCellSpecifier intCellSpec,
+    const Array<Set<int> >& requiredFuncs)  ;
 
-  /** */
-  int chunkForFuncID(int funcID) const ;
+  
 
-  /** */
-  int indexForFuncID(int funcID) const ;
-
-  /** */
-  std::ostream& print(std::ostream& os) const ;
+protected:
+  const MapBundle& mapBundle() const {return mapBundle_;}
 
 private:
-  /** */
-  void init(int nTotalFuncs,
-    const Array<BasisFamily>& bases,
-    const Array<Array<int> >& funcs);
 
-  Array<BasisFamily> bases_;
-  Array<Array<int> > funcs_;
-  Array<int> chunkForFuncID_;
-  Array<int> indexForFuncID_;
+  Vector<double> b_;
+  Array<RefCountPtr<LoadableVector<double> > > vec_;
+  mutable MapBundle mapBundle_;
+
 };
 
+
+
 }
 }
 
 
-namespace SundanceStdFwk{
-namespace Internal
-{
-inline std::ostream& operator<<(std::ostream& os,
-  const MapStructure& m)
-{
-  return m.print(os);
-}
-}}
+
 #endif

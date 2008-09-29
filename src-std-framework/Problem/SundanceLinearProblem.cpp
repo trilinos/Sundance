@@ -103,6 +103,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr fixedParamValues;
   Array<Expr> fixedFieldValues;
 
+
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
                           unkParams, unkParamValues,

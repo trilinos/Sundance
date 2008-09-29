@@ -28,17 +28,51 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#ifndef SUNDANCE_FUNCTIONALASSEMBLYKERNEL_H
+#define SUNDANCE_FUNCTIONALASSEMBLYKERNEL_H
 
-#include "SundanceAbstractEvalMediator.hpp"
+#include "SundanceDefs.hpp"
+#include "SundanceAssemblyKernelBase.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace SundanceCore;
+namespace SundanceStdFwk
+{
 using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
+
+namespace Internal
+{
+using namespace Teuchos;
+
+/** 
+ * FunctionalAssemblyKernel does assembly of a functional value. 
+ */
+class FunctionalAssemblyKernel : public AssemblyKernelBase
+{
+public:
+  /** */
+  FunctionalAssemblyKernel(const MPIComm& comm,
+    double* value, int verb);
+
+  /** */
+  virtual void fill(bool isBC,
+    const IntegralGroup& group,
+    const RefCountPtr<Array<double> >& localValues) ;  
+
+  /** */
+  void postLoopFinalization();
+
+private:
+  MPIComm comm_;
+  double* value_;
+  double localValue_;
+};
+
+}
+}
 
 
 
-AbstractEvalMediator::AbstractEvalMediator(int verb)
-  : TSFExtended::ObjectWithVerbosity<AbstractEvalMediator>(verb)
-{}
-
+#endif

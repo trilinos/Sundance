@@ -34,9 +34,10 @@ using namespace SundanceUtils;
 
 
 Tabs::Tabs(char c)
-  : c_(c)
+  : c_(c), myLevel_(0)
 {
   tabLevel()++;
+  myLevel_ = tabLevel();
 }
 
 Tabs::~Tabs()
@@ -50,7 +51,7 @@ void Tabs::print(std::ostream& os) const
     {
       os << "[" << tabLevel() << "]";
     }
-  int n = tabLevel() * tabSize();
+  int n = myLevel_ * tabSize();
   for (int i=0; i<n; i++) os << c_;
 }
 

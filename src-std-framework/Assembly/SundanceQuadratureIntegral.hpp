@@ -38,172 +38,175 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+namespace Internal
+{
+using namespace Teuchos;
 
-    /** 
-     *  
-     *
-     */
-    class QuadratureIntegral 
-      : public ElementIntegral
+/** 
+ *  
+ *
+ */
+class QuadratureIntegral 
+  : public ElementIntegral
+{
+public:
+  /** Construct a zero-form to be computed by quadrature */
+  QuadratureIntegral(int spatialDim,
+    const CellType& maxCellType,
+    int dim, 
+    const CellType& cellType,
+    const QuadratureFamily& quad,
+    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+  /** Construct a one form to be computed by quadrature */
+  QuadratureIntegral(int spatialDim,
+    const CellType& maxCellType,
+    int dim, 
+    const CellType& cellType,
+    const BasisFamily& testBasis,
+    int alpha,
+    int testDerivOrder,
+    const QuadratureFamily& quad,
+    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+
+  /** Construct a two-form to be computed by quadrature */
+  QuadratureIntegral(int spatialDim,
+    const CellType& maxCellType,
+    int dim,
+    const CellType& cellType,
+    const BasisFamily& testBasis,
+    int alpha,
+    int testDerivOrder,
+    const BasisFamily& unkBasis,
+    int beta,
+    int unkDerivOrder,
+    const QuadratureFamily& quad,
+    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+
+  /** virtual dtor */
+  virtual ~QuadratureIntegral(){;}
+
+  /** */
+  void transform(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& isLocalFlag,
+    const Array<int>& facetNum,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const 
     {
-    public:
-      /** Construct a zero-form to be computed by quadrature */
-      QuadratureIntegral(int spatialDim,
-                         const CellType& maxCellType,
-                         int dim, 
-                         const CellType& cellType,
-                         const QuadratureFamily& quad);
-      /** Construct a one form to be computed by quadrature */
-      QuadratureIntegral(int spatialDim,
-                         const CellType& maxCellType,
-                         int dim, 
-                         const CellType& cellType,
-                         const BasisFamily& testBasis,
-                         int alpha,
-                         int testDerivOrder,
-                         const QuadratureFamily& quad);
-
-      /** Construct a two-form to be computed by quadrature */
-      QuadratureIntegral(int spatialDim,
-                         const CellType& maxCellType,
-                         int dim,
-                         const CellType& cellType,
-                         const BasisFamily& testBasis,
-                         int alpha,
-                         int testDerivOrder,
-                         const BasisFamily& unkBasis,
-                         int beta,
-                         int unkDerivOrder,
-                         const QuadratureFamily& quad);
-
-      /** virtual dtor */
-      virtual ~QuadratureIntegral(){;}
-
-      /** */
-      void transform(const CellJacobianBatch& JTrans,
-                     const CellJacobianBatch& JVol,
-                     const Array<int>& isLocalFlag,
-                     const Array<int>& facetNum,
-                     const double* const coeff,
-                     RefCountPtr<Array<double> >& A) const 
-      {
-        if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
-        else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
-        else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, coeff, A);
-      }
+      if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
+      else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
+      else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, coeff, A);
+    }
       
-      /** */
-      void transformZeroForm(const CellJacobianBatch& JTrans,
-                             const CellJacobianBatch& JVol,
-                             const Array<int>& isLocalFlag,
-                             const Array<int>& facetIndex,
-                             const double* const coeff,
-                             RefCountPtr<Array<double> >& A) const ;
+  /** */
+  void transformZeroForm(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& isLocalFlag,
+    const Array<int>& facetIndex,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const ;
       
-      /** */
-      void transformTwoForm(const CellJacobianBatch& JTrans,
-                            const CellJacobianBatch& JVol,
-                            const Array<int>& facetIndex,
-                            const double* const coeff,
-                            RefCountPtr<Array<double> >& A) const ;
+  /** */
+  void transformTwoForm(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& facetIndex,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const ;
       
-      /** */
-      void transformOneForm(const CellJacobianBatch& JTrans,
-                            const CellJacobianBatch& JVol,
-                            const Array<int>& facetIndex,
-                            const double* const coeff,
-                            RefCountPtr<Array<double> >& A) const ;
+  /** */
+  void transformOneForm(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& facetIndex,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const ;
 
-      /** */
-      void print(ostream& os) const ;
+  /** */
+  void print(ostream& os) const ;
       
 
 
-      /** */
-      int nQuad() const {return nQuad_;}
+  /** */
+  int nQuad() const {return nQuad_;}
 
-      static double& totalFlops() {static double rtn = 0; return rtn;}
+  static double& totalFlops() {static double rtn = 0; return rtn;}
 
-    private:
+private:
 
-      static void addFlops(const double& flops) {totalFlops() += flops;}
+  static void addFlops(const double& flops) {totalFlops() += flops;}
 
-      /** Do the integration by summing reference quantities over quadrature
-       * points and then transforming the sum to physical quantities.  */
-      void transformSummingFirst(int nCells,
-                                 const Array<int>& facetIndex,
-                                 const double* const GPtr,
-                                 const double* const coeff,
-                                 RefCountPtr<Array<double> >& A) const ;
+  /** Do the integration by summing reference quantities over quadrature
+   * points and then transforming the sum to physical quantities.  */
+  void transformSummingFirst(int nCells,
+    const Array<int>& facetIndex,
+    const double* const GPtr,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const ;
 
-      /** Do the integration by transforming to physical coordinates 
-       * at each quadrature point, and then summing */
-      void transformSummingLast(int nCells,
-                                const Array<int>& facetIndex,
-                                const double* const GPtr,
-                                const double* const coeff,
-                                RefCountPtr<Array<double> >& A) const ;
+  /** Do the integration by transforming to physical coordinates 
+   * at each quadrature point, and then summing */
+  void transformSummingLast(int nCells,
+    const Array<int>& facetIndex,
+    const double* const GPtr,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const ;
 
-      /** Determine whether to do this batch of integrals using the
-       * sum-first method or the sum-last method */
-      bool useSumFirstMethod() const {return useSumFirstMethod_;}
+  /** Determine whether to do this batch of integrals using the
+   * sum-first method or the sum-last method */
+  bool useSumFirstMethod() const {return useSumFirstMethod_;}
       
-      /** */
-      inline double& wValue(int facetCase, 
-                            int q, int testDerivDir, int testNode,
-                            int unkDerivDir, int unkNode)
-      {return W_[facetCase][unkNode
-                 + nNodesUnk()
-                 *(testNode + nNodesTest()
-                   *(unkDerivDir + nRefDerivUnk()
-                     *(testDerivDir + nRefDerivTest()*q)))];}
+  /** */
+  inline double& wValue(int facetCase, 
+    int q, int testDerivDir, int testNode,
+    int unkDerivDir, int unkNode)
+    {return W_[facetCase][unkNode
+        + nNodesUnk()
+        *(testNode + nNodesTest()
+          *(unkDerivDir + nRefDerivUnk()
+            *(testDerivDir + nRefDerivTest()*q)))];}
 
       
 
-      /** */
-      inline const double& wValue(int facetCase, 
-                                  int q, 
-                                  int testDerivDir, int testNode,
-                                  int unkDerivDir, int unkNode) const 
-      {
-        return W_[facetCase][unkNode
-                  + nNodesUnk()
-                  *(testNode + nNodesTest()
-                    *(unkDerivDir + nRefDerivUnk()
-                      *(testDerivDir + nRefDerivTest()*q)))];
-      }
+  /** */
+  inline const double& wValue(int facetCase, 
+    int q, 
+    int testDerivDir, int testNode,
+    int unkDerivDir, int unkNode) const 
+    {
+      return W_[facetCase][unkNode
+        + nNodesUnk()
+        *(testNode + nNodesTest()
+          *(unkDerivDir + nRefDerivUnk()
+            *(testDerivDir + nRefDerivTest()*q)))];
+    }
       
-      /** */
-      inline double& wValue(int facetCase, 
-                            int q, int testDerivDir, int testNode)
-      {return W_[facetCase][testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
+  /** */
+  inline double& wValue(int facetCase, 
+    int q, int testDerivDir, int testNode)
+    {return W_[facetCase][testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
 
 
-      /** */
-      inline const double& wValue(int facetCase, 
-                                  int q, int testDerivDir, int testNode) const 
-      {return W_[facetCase][testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
+  /** */
+  inline const double& wValue(int facetCase, 
+    int q, int testDerivDir, int testNode) const 
+    {return W_[facetCase][testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)];}
 
-      /* */
-      Array<Array<double> > W_;
+  /* */
+  Array<Array<double> > W_;
 
-      /* */
-      int nQuad_;
+  /* */
+  int nQuad_;
 
-      /* */
-      bool useSumFirstMethod_;
+  /* */
+  bool useSumFirstMethod_;
       
-    };
-  }
+};
+}
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

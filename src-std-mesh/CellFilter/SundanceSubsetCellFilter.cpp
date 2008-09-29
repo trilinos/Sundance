@@ -43,8 +43,10 @@ SubsetCellFilter::SubsetCellFilter(const CellFilter& superset,
                                    const CellPredicate& predicate)
   : CellFilterBase(), superset_(superset), predicate_(predicate)
 {
-  std::cout << "creating subset cell filter: [" << predicate.description()
-       << "]" << std::endl;
+  int verb=0;
+  SUNDANCE_MSG3(verb, "creating subset cell filter: [" 
+    << predicate.description()
+    << "]");
   setName(predicate.description());
 }
 

@@ -1,6 +1,6 @@
 <ParameterList>
   <ParameterList name="Linear Solver">
-    <Parameter name="Max Iterations" type="int" value="500"/>
+    <Parameter name="Max Iterations" type="int" value="2500"/>
     <Parameter name="Method" type="string" value="GMRES"/>
     <ParameterList name="Preconditioner">
        <Parameter name="Type" type="string" value="ML"/>

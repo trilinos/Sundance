@@ -188,14 +188,20 @@ am__objects_2 = SundanceDOFMapBase.$(OBJEXT) \
 	SundanceSpatiallyHomogeneousDOFMapBase.$(OBJEXT)
 am__objects_3 = SundanceAssembler.$(OBJEXT) \
 	SundanceElementIntegral.$(OBJEXT) \
+	SundanceFunctionalAssemblyKernel.$(OBJEXT) \
 	SundanceFunctionalEvaluator.$(OBJEXT) \
 	SundanceGrouperBase.$(OBJEXT) SundanceIntegralGroup.$(OBJEXT) \
+	SundanceLocalDOFMap.$(OBJEXT) \
 	SundanceLocalMatrixContainer.$(OBJEXT) \
+	SundanceMapBundle.$(OBJEXT) \
+	SundanceMatrixVectorAssemblyKernel.$(OBJEXT) \
 	SundanceQuadratureEvalMediator.$(OBJEXT) \
 	SundanceQuadratureIntegral.$(OBJEXT) \
 	SundanceRefIntegral.$(OBJEXT) \
 	SundanceStdFwkEvalMediator.$(OBJEXT) \
-	SundanceTrivialGrouper.$(OBJEXT)
+	SundanceTrivialGrouper.$(OBJEXT) \
+	SundanceVectorAssemblyKernel.$(OBJEXT) \
+	SundanceVectorFillingAssemblyKernel.$(OBJEXT)
 am__objects_4 = Sundance.$(OBJEXT) \
 	SundanceAToCDensitySampler.$(OBJEXT) \
 	SundanceAToCPointLocator.$(OBJEXT) \
@@ -444,29 +450,43 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBas
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceAssemblyKernelBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalGradientAssemblyKernel.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalEvaluator.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceGrouperBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.hpp 
+$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.hpp 
 
 SUNDANCE_ASSEMBLY = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalEvaluator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceGrouperBase.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp 
+$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp 
 
 SUNDANCE_PROBLEM_H = \
 $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
@@ -814,6 +834,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFIATLagrange.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFIATP1NC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctional.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctionalAssemblyKernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceFunctionalEvaluator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceGauss1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceGaussianQuadrature.Po@am__quote@
@@ -824,8 +845,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceL2Projector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLagrange.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLinearProblem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLocalDOFMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLocalMatrixContainer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMapBundle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMapStructure.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMatrixVectorAssemblyKernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceMixedDOFMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceModelEvaluatorBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceNLPModelEvaluator.Po@am__quote@
@@ -849,7 +873,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTrivialGrouper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownFunction.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceUnknownFunctionData.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceVectorAssemblyKernel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceVectorBasisComponent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceVectorFillingAssemblyKernel.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1369,6 +1395,20 @@ SundanceElementIntegral.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceEl
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceElementIntegral.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.cpp'; fi`
 
+SundanceFunctionalAssemblyKernel.o: $(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFunctionalAssemblyKernel.o -MD -MP -MF $(DEPDIR)/SundanceFunctionalAssemblyKernel.Tpo -c -o SundanceFunctionalAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceFunctionalAssemblyKernel.Tpo $(DEPDIR)/SundanceFunctionalAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp' object='SundanceFunctionalAssemblyKernel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFunctionalAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp
+
+SundanceFunctionalAssemblyKernel.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFunctionalAssemblyKernel.obj -MD -MP -MF $(DEPDIR)/SundanceFunctionalAssemblyKernel.Tpo -c -o SundanceFunctionalAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceFunctionalAssemblyKernel.Tpo $(DEPDIR)/SundanceFunctionalAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp' object='SundanceFunctionalAssemblyKernel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceFunctionalAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp'; fi`
+
 SundanceFunctionalEvaluator.o: $(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalEvaluator.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceFunctionalEvaluator.o -MD -MP -MF $(DEPDIR)/SundanceFunctionalEvaluator.Tpo -c -o SundanceFunctionalEvaluator.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalEvaluator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalEvaluator.cpp
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceFunctionalEvaluator.Tpo $(DEPDIR)/SundanceFunctionalEvaluator.Po
@@ -1411,6 +1451,20 @@ SundanceIntegralGroup.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceInte
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceIntegralGroup.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.cpp'; fi`
 
+SundanceLocalDOFMap.o: $(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLocalDOFMap.o -MD -MP -MF $(DEPDIR)/SundanceLocalDOFMap.Tpo -c -o SundanceLocalDOFMap.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceLocalDOFMap.Tpo $(DEPDIR)/SundanceLocalDOFMap.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp' object='SundanceLocalDOFMap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLocalDOFMap.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp
+
+SundanceLocalDOFMap.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLocalDOFMap.obj -MD -MP -MF $(DEPDIR)/SundanceLocalDOFMap.Tpo -c -o SundanceLocalDOFMap.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceLocalDOFMap.Tpo $(DEPDIR)/SundanceLocalDOFMap.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp' object='SundanceLocalDOFMap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLocalDOFMap.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp'; fi`
+
 SundanceLocalMatrixContainer.o: $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLocalMatrixContainer.o -MD -MP -MF $(DEPDIR)/SundanceLocalMatrixContainer.Tpo -c -o SundanceLocalMatrixContainer.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp
 @am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceLocalMatrixContainer.Tpo $(DEPDIR)/SundanceLocalMatrixContainer.Po
@@ -1424,6 +1478,34 @@ SundanceLocalMatrixContainer.obj: $(top_srcdir)/src-std-framework/Assembly/Sunda
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp' object='SundanceLocalMatrixContainer.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLocalMatrixContainer.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp'; fi`
+
+SundanceMapBundle.o: $(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceMapBundle.o -MD -MP -MF $(DEPDIR)/SundanceMapBundle.Tpo -c -o SundanceMapBundle.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceMapBundle.Tpo $(DEPDIR)/SundanceMapBundle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp' object='SundanceMapBundle.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMapBundle.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp
+
+SundanceMapBundle.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceMapBundle.obj -MD -MP -MF $(DEPDIR)/SundanceMapBundle.Tpo -c -o SundanceMapBundle.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceMapBundle.Tpo $(DEPDIR)/SundanceMapBundle.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp' object='SundanceMapBundle.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMapBundle.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp'; fi`
+
+SundanceMatrixVectorAssemblyKernel.o: $(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceMatrixVectorAssemblyKernel.o -MD -MP -MF $(DEPDIR)/SundanceMatrixVectorAssemblyKernel.Tpo -c -o SundanceMatrixVectorAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceMatrixVectorAssemblyKernel.Tpo $(DEPDIR)/SundanceMatrixVectorAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp' object='SundanceMatrixVectorAssemblyKernel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMatrixVectorAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp
+
+SundanceMatrixVectorAssemblyKernel.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceMatrixVectorAssemblyKernel.obj -MD -MP -MF $(DEPDIR)/SundanceMatrixVectorAssemblyKernel.Tpo -c -o SundanceMatrixVectorAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceMatrixVectorAssemblyKernel.Tpo $(DEPDIR)/SundanceMatrixVectorAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp' object='SundanceMatrixVectorAssemblyKernel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMatrixVectorAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp'; fi`
 
 SundanceQuadratureEvalMediator.o: $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceQuadratureEvalMediator.o -MD -MP -MF $(DEPDIR)/SundanceQuadratureEvalMediator.Tpo -c -o SundanceQuadratureEvalMediator.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp
@@ -1494,6 +1576,34 @@ SundanceTrivialGrouper.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceTri
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp' object='SundanceTrivialGrouper.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceTrivialGrouper.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp'; fi`
+
+SundanceVectorAssemblyKernel.o: $(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceVectorAssemblyKernel.o -MD -MP -MF $(DEPDIR)/SundanceVectorAssemblyKernel.Tpo -c -o SundanceVectorAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceVectorAssemblyKernel.Tpo $(DEPDIR)/SundanceVectorAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp' object='SundanceVectorAssemblyKernel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceVectorAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp
+
+SundanceVectorAssemblyKernel.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceVectorAssemblyKernel.obj -MD -MP -MF $(DEPDIR)/SundanceVectorAssemblyKernel.Tpo -c -o SundanceVectorAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceVectorAssemblyKernel.Tpo $(DEPDIR)/SundanceVectorAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp' object='SundanceVectorAssemblyKernel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceVectorAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp'; fi`
+
+SundanceVectorFillingAssemblyKernel.o: $(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceVectorFillingAssemblyKernel.o -MD -MP -MF $(DEPDIR)/SundanceVectorFillingAssemblyKernel.Tpo -c -o SundanceVectorFillingAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceVectorFillingAssemblyKernel.Tpo $(DEPDIR)/SundanceVectorFillingAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp' object='SundanceVectorFillingAssemblyKernel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceVectorFillingAssemblyKernel.o `test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp
+
+SundanceVectorFillingAssemblyKernel.obj: $(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceVectorFillingAssemblyKernel.obj -MD -MP -MF $(DEPDIR)/SundanceVectorFillingAssemblyKernel.Tpo -c -o SundanceVectorFillingAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceVectorFillingAssemblyKernel.Tpo $(DEPDIR)/SundanceVectorFillingAssemblyKernel.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp' object='SundanceVectorFillingAssemblyKernel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceVectorFillingAssemblyKernel.obj `if test -f '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp'; fi`
 
 Sundance.o: $(top_srcdir)/src-std-framework/Problem/Sundance.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Sundance.o -MD -MP -MF $(DEPDIR)/Sundance.Tpo -c -o Sundance.o `test -f '$(top_srcdir)/src-std-framework/Problem/Sundance.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/Sundance.cpp

@@ -45,9 +45,6 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 
-/** */
-double evaluateIntegral(const Mesh& mesh, const Expr& expr);
-
 namespace Internal
 {
 using namespace Teuchos;
@@ -129,6 +126,10 @@ private:
       
 };
 }
+/** */
+double evaluateIntegral(const Mesh& mesh, const Expr& expr,
+  const ParameterList& verbParams = *FunctionalEvaluator::defaultVerbParams());
+
 
 }
 

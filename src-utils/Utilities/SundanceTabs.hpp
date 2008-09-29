@@ -126,6 +126,8 @@ namespace SundanceUtils
       static char& tabChar() {static char rtn = ' '; return rtn;}
 
       char c_;
+
+      int myLevel_;
     };
 }
 

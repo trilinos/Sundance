@@ -60,7 +60,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
                                   int& testBlock, int& unkBlock, 
                                   bool& isOneForm) const
 {
-  Tabs tab;
+  Tabs tab0;
 
   MultipleDeriv::const_iterator iter;
 
@@ -75,8 +75,13 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
   bool foundUnk = false;
   bool foundVar = false;
 
+  SUNDANCE_LEVEL2("extract weak form",
+    tab0 << "extracting weak form for functional derivative " 
+    << functionalDeriv);
+
   for (iter = functionalDeriv.begin(); iter != functionalDeriv.end(); iter++)
     {
+      Tabs tab;
       const Deriv& d = *iter;
       
       TEST_FOR_EXCEPTION(!d.isFunctionalDeriv(), InternalError,
@@ -109,15 +114,15 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
           rawUnkID = funcID;
           unkBlock = eqn.blockForUnkID(funcID);
 
-          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-                       tab << "found reducedUnkID=" << reducedUnkID);
+          SUNDANCE_LEVEL2("extract weak form",
+            tab << "found reducedUnkID=" << reducedUnkID);
 
           unkBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
-          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-                       tab << "found unkBasis=" << unkBasis);
+          SUNDANCE_LEVEL2("extract weak form",
+            tab << "found unkBasis=" << unkBasis);
 
           miUnk = f->multiIndex();
-          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+          SUNDANCE_LEVEL2("extract weak form",
                        tab << "found unk multi index=" << miUnk.toString());
         }
       else
@@ -127,8 +132,8 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
           rawVarID = funcID;
           testBlock = eqn.blockForVarID(funcID);
 
-          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-                       tab << "found varID=" << reducedVarID);
+          SUNDANCE_LEVEL2("extract weak form",
+            tab << "found varID=" << reducedVarID);
 
           const UnknownFuncElement* u
             = dynamic_cast<const UnknownFuncElement*>(s);
@@ -149,12 +154,12 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
             {
               varBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
             }
-          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-                       tab << "found varBasis=" << varBasis);
+          SUNDANCE_LEVEL2("extract weak form", 
+            tab << "found varBasis=" << varBasis);
 
           miVar = f->multiIndex();
-          SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-                       tab << "found var multi index=" << miVar.toString());
+          SUNDANCE_LEVEL2("extract weak form", 
+            tab << "found var multi index=" << miVar.toString());
         }
     }
 

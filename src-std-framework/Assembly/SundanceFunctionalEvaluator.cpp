@@ -31,6 +31,7 @@
 #include "SundanceFunctionalEvaluator.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceSymbPreprocessor.hpp"
+#include "TSFSequentialIteratorImpl.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
@@ -44,13 +45,16 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+using std::endl;
+using std::setw;
 
 
 namespace SundanceStdFwk
 {
-double evaluateIntegral(const Mesh& mesh, const Expr& expr)
+double evaluateIntegral(const Mesh& mesh, const Expr& expr,
+  const ParameterList& verbParams)
 {
-  FunctionalEvaluator eval(mesh, expr);
+  FunctionalEvaluator eval(mesh, expr, verbParams);
   return eval.evaluate();
 }
 }
@@ -181,7 +185,8 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   Tabs tabs;
   double f0, fPlus, fMinus;
   Expr gradF0 = evalGradient(f0);
-  
+
+  FancyOStream& os = Out::os();
 
 
   DiscreteFunction* df = DiscreteFunction::discFunc(varValues_);
@@ -203,7 +208,7 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   int n = x.space().numLocalElements();
   int lowestIndex = x.space().lowestLocallyOwnedIndex();
 
-  cerr << tabs << "doing fd check:  h=" << h << endl;
+  os << tabs << "doing fd check:  h=" << h << endl;
   Array<double> df_dx(n);
 
   int localIndex = 0;
@@ -231,13 +236,13 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
     if (isLocal)
     {
       df_dx[localIndex] = (fPlus - fMinus)/2.0/h;
-      cout << "g=" << globalIndex << ", l=" << localIndex << " f0="
-           << f0 
-           << " fPlus=" << fPlus << " fMinus=" << fMinus << " df_dx="
-           << df_dx[localIndex] << endl;
+      os << "g=" << setw(5) << globalIndex << ", l=" << setw(5) << localIndex << " f0="
+         << setw(12) << f0 
+         << " fPlus=" << setw(12) << fPlus << " fMinus=" << setw(12) << fMinus << " df_dx="
+         << setw(12) << df_dx[localIndex] << endl;
       if (showAll)
       {
-        cerr << "i " << globalIndex << " x_i=" << tmp 
+        os << "i " << globalIndex << " x_i=" << tmp 
              << " f(x)=" << f0 
              << " f(x+h)=" << fPlus 
              << " f(x-h)=" << fMinus << endl;
@@ -262,18 +267,19 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
     else r = 1.0;
     if (showAll)
     {
-      cerr << "i " << i << " FD=" << df_dx[k] 
+      os << "i " << i;
+      os << " FD=" << df_dx[k] 
            << " grad=" << gf[i]
            << " r=" << r << endl;
     }
     if (localMaxErr < r) localMaxErr = r;
   }
-  cout << "local max error = " << localMaxErr << endl;
+  os << "local max error = " << localMaxErr << endl;
   
   double maxErr = localMaxErr;
   MPIComm::world().allReduce((void*) &localMaxErr, (void*) &maxErr, 1, 
     MPIComm::DOUBLE, MPIComm::MAX);
-  cerr << tabs << "fd check: max error = " << maxErr << endl;
+  os << tabs << "fd check: max error = " << maxErr << endl;
 
   return maxErr;
 }

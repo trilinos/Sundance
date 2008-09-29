@@ -94,6 +94,7 @@
         ../tests-std-framework/Problem/HighOrderProjection1D.exe,
         ../tests-std-framework/Problem/HighOrderProjection2D.exe,
         ../tests-std-framework/Problem/LinearVariationalTest.exe,
+        ../tests-std-framework/Problem/NitschePoisson2D.exe,
         ../tests-std-framework/Problem/NonlinAlgebraic.exe,
         ../tests-std-framework/Problem/NoxAlgebraic.exe,
         ../tests-std-framework/Problem/NoxPoisson1D.exe,

@@ -84,8 +84,8 @@ int main(int argc, char** argv)
       
 
       /* We can now set up the linear problem! */
-      //Assembler::classVerbosity() = VerbExtreme;
-      //DOFMapBase::classVerbosity() = VerbExtreme;
+
+
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
       cout << prob.getOperator();
 
@@ -145,7 +145,13 @@ int main(int argc, char** argv)
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
       cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
-      double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
+      ParameterList verbParams = *FunctionalEvaluator::defaultVerbParams();
+      verbParams.sublist("Assembler").set<int>("setup", 4);
+      verbParams.sublist("Assembler").set<int>("assembly loop", 3);
+      verbParams.sublist("Assembler").set<int>("evaluation mediator", 4);
+
+      Out::os() << verbParams << endl;
+      double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr, verbParams);
       cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
 
       Expr exactFluxExpr = Integral(leftPoint, 

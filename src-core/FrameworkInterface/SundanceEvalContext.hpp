@@ -91,6 +91,14 @@ namespace SundanceCore
              + ", id=" 
              + Teuchos::toString(data_->b())
              + ", " + data_->c().toString() + "]";}
+          
+          /** Write a short description to a string */
+          string brief() const
+          {return "EvalContext[diffOrder=" 
+             + Teuchos::toString(data_->a())
+             + ", id=" 
+             + Teuchos::toString(data_->b())
+             + "]";}
 
           /** */
           int topLevelDiffOrder() const {return data_->a();}

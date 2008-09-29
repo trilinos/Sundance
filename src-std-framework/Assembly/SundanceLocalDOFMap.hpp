@@ -28,84 +28,123 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_MAPSTRUCTURE_H
-#define SUNDANCE_MAPSTRUCTURE_H
 
+
+#ifndef SUNDANCE_LOCALDOFMAP_H
+#define SUNDANCE_LOCALDOFMAP_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceBasisFamily.hpp"
+#include "SundanceDOFMapBase.hpp"
+
 
 namespace SundanceStdFwk
 {
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
 namespace Internal
 {
-using namespace Teuchos;
-
-class MapStructure
+/** 
+ * LocalDOFMap bundles several tables used for fast lookup of
+ * local DOFs. 
+ */
+class LocalDOFMap
 {
 public:
   /** */
-  MapStructure(int nTotalFuncs,
-    const Array<BasisFamily>& bases,
-    const Array<Array<int> >& funcs);
-  /** */
-  MapStructure(int nTotalFuncs,
-    const BasisFamily& basis,
-    const Array<Array<int> >& funcs);
-  /** */
-  MapStructure(int nTotalFuncs,
-    const BasisFamily& basis);
+  LocalDOFMap(int numBlocks, int verb);
 
   /** */
-  int numBasisChunks() const {return bases_.size();}
+  void setCells(int cellDim, int maxCellDim,
+    const RefCountPtr<const Array<int> >& cellLID);
 
   /** */
-  const BasisFamily& basis(int basisChunk) const
-    {return bases_[basisChunk];}
+  int nCells() const ;
 
   /** */
-  int numFuncs(int basisChunk) const 
-    {return funcs_[basisChunk].size();}
+  bool isUsed(int b) const {return isUsed_[b];}
 
   /** */
-  const Array<int>& funcs(int basisChunk) const 
-    {return funcs_[basisChunk];}
+  bool isUnused(int b) const {return !isUsed(b);}
 
   /** */
-  int chunkForFuncID(int funcID) const ;
+  bool isUnused() const ;
 
   /** */
-  int indexForFuncID(int funcID) const ;
+  void markAsUnused() ;
+
+  /** */
+  bool hasCells() const {return hasCells_;}
+
+  /** */
+  const RefCountPtr<const Array<int> >& cellLIDs() const {return cellLID_;}
+
+  /** */
+  void markAsUsed(int b) {isUsed_[b] = true;}
+
+  /** */
+  int numBlocks() const {return mapStruct_->size();}
+
+  /** */
+  const Array<int>& nLocalNodesPerChunk(int b) const 
+    {return (*nLocalNodesPerChunk_)[b];}
+
+  /** */
+  const RefCountPtr<const MapStructure>& mapStruct(int b) const 
+    {return (*mapStruct_)[b];}
+
+  /** */
+  const Array<Array<int> >& localDOFs(int b) const 
+    {return (*localDOFs_)[b];}
 
   /** */
   std::ostream& print(std::ostream& os) const ;
 
-private:
   /** */
-  void init(int nTotalFuncs,
-    const Array<BasisFamily>& bases,
-    const Array<Array<int> >& funcs);
+  void fillBlock(int b, const RefCountPtr<DOFMapBase>& globalMap,
+    const Array<Set<int> >& requiredFunc);
 
-  Array<BasisFamily> bases_;
-  Array<Array<int> > funcs_;
-  Array<int> chunkForFuncID_;
-  Array<int> indexForFuncID_;
+private:
+
+
+  /** */
+  Array<int>& nLocalNodesPerChunk(int b)
+    {return (*nLocalNodesPerChunk_)[b];}
+
+  /** */
+  RefCountPtr<const MapStructure>& mapStruct(int b) 
+    {return (*mapStruct_)[b];}
+
+  /** */
+  Array<Array<int> >& localDOFs(int b) 
+    {return (*localDOFs_)[b];}
+
+  /** */
+  void verifyValidBlock(int b) const ;
+
+
+  int verb_;
+  Array<int> isUsed_;
+  bool hasCells_;
+  RefCountPtr<Array<Array<int> > > nLocalNodesPerChunk_;
+  RefCountPtr<Array<RefCountPtr<const MapStructure> > > mapStruct_;  
+  RefCountPtr<Array<Array<Array<int> > > > localDOFs_;
+  RefCountPtr<const Array<int> > cellLID_;
+  int activeCellDim_;
+  int maxCellDim_;
 };
 
 }
 }
 
-
 namespace SundanceStdFwk{
 namespace Internal
 {
 inline std::ostream& operator<<(std::ostream& os,
-  const MapStructure& m)
+  const LocalDOFMap& m)
 {
   return m.print(os);
 }
-}}
+}
+}
+
+
+
 #endif

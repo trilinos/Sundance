@@ -139,6 +139,21 @@ namespace SundanceCore
       /** */
       virtual int countNodes() const ;
 
+      /**
+       * Find the maximum differentiation order acting on discrete
+       * functions in this expression. This is needed to identify
+       * expressions where cofacet Jacobians are needed to transform  
+       * discrete function derivatives.
+       *
+       * The base class implementation is a no-op.
+       */
+      virtual int maxDiffOrderOnDiscreteFunctions() const {return 0;}
+
+      /**
+       * Indicate whether this expression contains discrete functions.
+       */
+      virtual bool hasDiscreteFunctions() const {return false;}
+
       /** */
       virtual bool nodesHaveBeenCounted() const {return nodesHaveBeenCounted_;}
 

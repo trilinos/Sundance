@@ -86,6 +86,7 @@ namespace SundanceStdMesh
 %rename(PartitionedLineMesher) makePartitionedLineMesher;
 %rename(PartitionedRectangleMesher) makePartitionedRectangleMesher;
 %rename(ExodusNetCDFMeshReader) makeExodusNetCDFMeshReader;
+%rename(ExodusMeshReader) makeExodusMeshReader;
 %rename(TriangleMeshReader) makeTriangleMeshReader;
 
 %inline %{
@@ -121,6 +122,17 @@ namespace SundanceStdMesh
     return new SundanceStdMesh
       ::ExodusNetCDFMeshReader(filename,
                                new SundanceStdMesh::BasicSimplicialMeshType());
+  }
+  %}
+
+
+%inline %{
+  /* Create an exodus reader */
+  SundanceStdMesh::MeshSource makeExodusMeshReader(const std::string& filename)
+  {
+    return new SundanceStdMesh
+      ::ExodusMeshReader(filename,
+        new SundanceStdMesh::BasicSimplicialMeshType());
   }
   %}
 

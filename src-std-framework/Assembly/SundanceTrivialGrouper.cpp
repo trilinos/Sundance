@@ -55,13 +55,14 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                 Array<IntegralGroup>& groups) const
 {
   Tabs tab;
-  VerbositySetting verb = GrouperBase::classVerbosity();
-  SUNDANCE_OUT(verb > VerbLow, 
-               tab << "trivial grouper num derivs = " << sparsity->numDerivs() << std::endl);
-  SUNDANCE_OUT(verb > VerbLow, 
-               tab << "cell type = " << cellType);
+  const ParameterList& verbParams = params();
 
-  SUNDANCE_OUT(verb > VerbMedium,  
+  SUNDANCE_LEVEL1("find groups",
+               tab << "in TrivialGrouper::findGroups(), num derivs = " 
+    << sparsity->numDerivs());
+  SUNDANCE_LEVEL2("find groups",
+               tab << "cell type = " << cellType);
+  SUNDANCE_LEVEL2("find groups",
                tab << "sparsity = " << std::endl << *sparsity << std::endl);
 
   int vecCount=0;
@@ -83,8 +84,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
     {
       Tabs tab1;
       const MultipleDeriv& d = sparsity->deriv(i);
-      SUNDANCE_VERB_MEDIUM(tab1 << "defining integration policy for "
-                           << d);
+      SUNDANCE_LEVEL3("find groups",
+        tab1 << "defining integration policy for " << d);
       
       if (d.order()==0) 
         {
@@ -94,18 +95,19 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           if (sparsity->isConstant(i))
             {
               integral = rcp(new RefIntegral(spatialDim, maxCellType, 
-                                             cellDim, cellType));
+                  cellDim, cellType, verbParams));
               resultIndex = constCount++;
             }
           else
             {
               integral = rcp(new QuadratureIntegral(spatialDim, maxCellType, 
-                                                    cellDim, cellType, quad));
+                  cellDim, cellType, quad,
+                  verbParams));
               resultIndex = vecCount++;
             }
-          SUNDANCE_VERB_MEDIUM(tab2 << "is zero-form");
+          SUNDANCE_LEVEL3("find groups", tab2 << "is zero-form");
           groups.append(IntegralGroup(tuple(integral),
-                                      tuple(resultIndex)));
+              tuple(resultIndex), verbParams));
         }
       else
         {
@@ -130,25 +132,30 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 
           if (isOneForm)
             {
-              SUNDANCE_VERB_MEDIUM(tab2 << "is one-form");
+              SUNDANCE_LEVEL3("find groups", tab2 << "is one-form");
             }
           else
             {
-              SUNDANCE_VERB_MEDIUM(tab2 << "is two-form");
+              SUNDANCE_LEVEL3("find groups", tab2 << "is two-form");
             }
 
-          SUNDANCE_VERB_MEDIUM(tab2 << "test ID: " << testID << " block=" << testBlock);
+          SUNDANCE_LEVEL3("find groups", 
+            tab2 << "test ID: " << testID << " block=" << testBlock);
 
           if (!isOneForm)
             {
-              SUNDANCE_VERB_MEDIUM(tab2 << "unk funcID: " << unkID << " block=" << unkBlock);
+              SUNDANCE_LEVEL3("find groups", tab2 << "unk funcID: " << unkID << " block=" << unkBlock);
             }
                    
-          SUNDANCE_OUT(verb > VerbMedium, tab2 << "deriv = " << d);
-          SUNDANCE_OUT(verb > VerbMedium && sparsity->isConstant(i), 
-                       tab2 << "coeff is constant");
-          SUNDANCE_OUT(verb > VerbMedium && !sparsity->isConstant(i), 
-                       tab2 << "coeff is non-constant");
+          SUNDANCE_LEVEL3("find groups", tab2 << "deriv = " << d);
+          if (sparsity->isConstant(i))
+          {
+            SUNDANCE_LEVEL3("find groups", tab2 << "coeff is constant");
+          }
+          else
+          {
+            SUNDANCE_LEVEL3("find groups", tab2 << "coeff is non-constant");
+          }
 
           RefCountPtr<ElementIntegral> integral;
           int resultIndex;
@@ -162,12 +169,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     {
                       alpha = miTest.firstOrderDirection();
                     }
-                  SUNDANCE_OUT(verb > VerbMedium,
+                  SUNDANCE_LEVEL3("find groups",
                                tab3 << "creating reference integral for one-form");
                   integral = rcp(new RefIntegral(spatialDim, maxCellType, 
                                                  cellDim, cellType,
                                                  testBasis, alpha, 
-                                                 miTest.order()));
+                      miTest.order(), verbParams));
                 }
               else
                 {
@@ -181,12 +188,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     {
                       beta = miUnk.firstOrderDirection();
                     }
-                  SUNDANCE_OUT(verb > VerbMedium,
+                  SUNDANCE_LEVEL3("find groups",
                                tab3 << "creating reference integral for two-form");
                   integral = rcp(new RefIntegral(spatialDim, maxCellType,
                                                  cellDim, cellType,
                                                  testBasis, alpha, miTest.order(),
-                                                 unkBasis, beta, miUnk.order()));
+                      unkBasis, beta, miUnk.order(), verbParams));
                 }
               resultIndex = constCount++;
             }
@@ -200,12 +207,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     {
                       alpha = miTest.firstOrderDirection();
                     }
-                  SUNDANCE_OUT(verb > VerbMedium,
+                  SUNDANCE_LEVEL3("find groups",
                                tab3 << "creating quadrature integral for one-form");
                   integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                                                         cellDim, cellType,
                                                         testBasis, alpha, 
-                                                        miTest.order(), quad));
+                      miTest.order(), quad, verbParams));
                 }
               else
                 {
@@ -219,14 +226,14 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                     {
                       beta = miUnk.firstOrderDirection();
                     }
-                  SUNDANCE_OUT(verb > VerbMedium,
+                  SUNDANCE_LEVEL3("find groups",
                                tab3 << "creating quadrature integral for two-form");
                   integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                                                         cellDim, cellType,
                                                         testBasis, alpha, 
                                                         miTest.order(),
                                                         unkBasis, beta, 
-                                                        miUnk.order(), quad));
+                      miUnk.order(), quad, verbParams));
                 }
               resultIndex = vecCount++;
             }
@@ -251,7 +258,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                 {
                   groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
                                               tuple(integral),
-                                              tuple(resultIndex)));
+                      tuple(resultIndex), tuple(d), verbParams));
                 }
             }
           else
@@ -261,25 +268,25 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                   groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
                                               tuple(unkID), tuple(unkBlock),
                                               tuple(integral),
-                                              tuple(resultIndex)));
+                      tuple(resultIndex), tuple(d), verbParams));
                 }
               else
                 {
                   Tabs tab3;
                   OrderedQuartet<int, BasisFamily, int, BasisFamily> testUnkKey(rawTestID, testBasis, rawUnkID, unkBasis);
 
-                  SUNDANCE_OUT(verb > VerbLow, tab3 << "key=" << testUnkKey);
+                  SUNDANCE_LEVEL1("find groups", tab3 << "key=" << testUnkKey);
                   if (!twoForms.containsKey(testUnkKey))
                     {
                       Tabs tab4;
-                      SUNDANCE_OUT(verb > VerbLow, tab4 << "key not found");
+                      SUNDANCE_LEVEL1("find groups", tab4 << "key not found");
                       twoForms.put(testUnkKey, tuple(integral));
                       twoFormResultIndices.put(testUnkKey, tuple(resultIndex));
                     }
                   else
                     {
                       Tabs tab4;
-                      SUNDANCE_OUT(verb > VerbLow, tab4 << "key found");
+                      SUNDANCE_LEVEL1("find groups", tab4 << "key found");
                       twoForms[testUnkKey].append(integral);
                       twoFormResultIndices[testUnkKey].append(resultIndex);
                     }
@@ -291,11 +298,11 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   if (doGroups)
     {
       Tabs tab2;
-      SUNDANCE_OUT(verb > VerbLow, tab2 << "creating integral groups");
+      SUNDANCE_LEVEL1("find groups", tab2 << "creating integral groups");
       for (twoFormMap::const_iterator i=twoForms.begin(); i!=twoForms.end(); i++)
         {
           Tabs tab3;
-          SUNDANCE_OUT(verb > VerbLow, tab3 << "integral group number="
+          SUNDANCE_LEVEL1("find groups", tab3 << "integral group number="
                        << groups.size());
           int rawTestID = i->first.a();
           BasisFamily testBasis = i->first.b();
@@ -308,7 +315,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = twoFormResultIndices.get(i->first);
-          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating two-form integral group" << std::endl
+          SUNDANCE_LEVEL1("find groups", tab3 << "creating two-form integral group" << std::endl
                                << tab3 << "testID=" << rawTestID << std::endl
                                << tab3 << "unkID=" << rawUnkID << std::endl
                                << tab3 << "testBlock=" << testBlock << std::endl
@@ -316,20 +323,23 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
                                << tab3 << "testBasis=" << testBasis << std::endl
                                << tab3 << "unkBasis=" << unkBasis << std::endl
                                << tab3 << "resultIndices=" << resultIndices);
+          Array<MultipleDeriv> grpDerivs;
           for (unsigned int j=0; j<resultIndices.size(); j++)
             {
-              SUNDANCE_OUT(verb > VerbLow, tab3 << "deriv " << j << " " 
-                           << sparsity->deriv(resultIndices[j]));
+              MultipleDeriv d = sparsity->deriv(resultIndices[j]);
+              SUNDANCE_LEVEL1("find groups", tab3 << "deriv " << j << " " 
+                           << d);
+              grpDerivs.append(d);
             }
           groups.append(IntegralGroup(tuple(testID), tuple(testBlock), tuple(unkID), 
                                       tuple(unkBlock),
-                                      integrals, resultIndices));
+              integrals, resultIndices, grpDerivs, verbParams));
         }
 
       for (oneFormMap::const_iterator i=oneForms.begin(); i!=oneForms.end(); i++)
         {
           Tabs tab3;
-          SUNDANCE_OUT(verb > VerbLow, tab3 << "integral group number="
+          SUNDANCE_LEVEL1("find groups", tab3 << "integral group number="
                        << groups.size());
           int rawTestID = i->first.first();
           int testID = eqn.reducedVarID(rawTestID);
@@ -337,16 +347,19 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
           const Array<int>& resultIndices 
             = oneFormResultIndices.get(i->first);
-          SUNDANCE_OUT(verb > VerbLow, tab3 << "creating one-form integral group" << std::endl
+          SUNDANCE_LEVEL1("find groups", tab3 << "creating one-form integral group" << std::endl
                                << tab3 << "testID=" << testID << std::endl
                                << tab3 << "resultIndices=" << resultIndices);
+          Array<MultipleDeriv> grpDerivs;
           for (unsigned int j=0; j<resultIndices.size(); j++)
             {
-              SUNDANCE_OUT(verb > VerbLow, tab3 << "deriv " << j << " " 
-                           << sparsity->deriv(resultIndices[j]));
+              MultipleDeriv d = sparsity->deriv(resultIndices[j]);
+              SUNDANCE_LEVEL1("find groups", tab3 << "deriv " << j << " " 
+                           << d);
+              grpDerivs.append(d);
             }
           groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
-                                      integrals, resultIndices));
+              integrals, resultIndices, grpDerivs, verbParams));
         }
     }
   

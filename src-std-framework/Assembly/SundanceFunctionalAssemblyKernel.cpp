@@ -28,17 +28,58 @@
 // ************************************************************************
 /* @HEADER@ */
 
+#include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
+#include "SundanceFunctionalAssemblyKernel.hpp"
+#include "Teuchos_Time.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
-#include "SundanceAbstractEvalMediator.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
-using namespace SundanceCore;
+using namespace SundanceStdFwk;
+using namespace SundanceStdFwk::Internal;
 using namespace SundanceUtils;
-
-
-
-AbstractEvalMediator::AbstractEvalMediator(int verb)
-  : TSFExtended::ObjectWithVerbosity<AbstractEvalMediator>(verb)
+using namespace Teuchos;
+using namespace TSFExtended;
+using std::setw;
+using std::endl;
+      
+FunctionalAssemblyKernel::FunctionalAssemblyKernel(
+  const MPIComm& comm,
+  double* value,
+  int verb
+  )
+  : AssemblyKernelBase(verb),
+    comm_(comm),
+    value_(value),
+    localValue_(0.0)
 {}
+
+void FunctionalAssemblyKernel::postLoopFinalization()
+{
+  Tabs tab;
+  SUNDANCE_MSG3(verb(), tab << "reducing functional values across processors");
+  SUNDANCE_MSG3(verb(), tab << "local value=" << localValue_);
+  double globalVal = localValue_;
+  
+  comm_.allReduce((void*) &localValue_, (void*) &globalVal, 1, 
+    MPIComm::DOUBLE, MPIComm::SUM);
+
+  *value_ = globalVal;
+
+  SUNDANCE_MSG3(verb(), tab << "reduced value = " << *value_);
+}
+
+void FunctionalAssemblyKernel::fill(
+  bool isBC, 
+  const IntegralGroup& group,
+  const RefCountPtr<Array<double> >& localValues) 
+{
+  Tabs tab;
+  SUNDANCE_MSG2(verb(), tab << "adding local increment " << (*localValues)[0]
+    << " to local value" << endl << tab << "Before: " << localValue_);
+  
+  localValue_ += (*localValues)[0];
+  SUNDANCE_MSG2(verb(), tab << "After: " << localValue_);
+}
+  
 

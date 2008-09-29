@@ -131,29 +131,43 @@ $(top_srcdir)/src-std-framework/DOFMapping/SundanceSpatiallyHomogeneousDOFMapBas
 
 SUNDANCE_ASSEMBLY_H = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceAssemblyKernelBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalGradientAssemblyKernel.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalEvaluator.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceGrouperBase.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.hpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.hpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.hpp 
+$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.hpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.hpp 
 
 SUNDANCE_ASSEMBLY = \
 $(top_srcdir)/src-std-framework/Assembly/SundanceAssembler.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceElementIntegral.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalAssemblyKernel.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceFunctionalEvaluator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceGrouperBase.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceIntegralGroup.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceLocalDOFMap.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceLocalMatrixContainer.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMapBundle.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceMatrixVectorAssemblyKernel.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureEvalMediator.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceQuadratureIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceRefIntegral.cpp \
 $(top_srcdir)/src-std-framework/Assembly/SundanceStdFwkEvalMediator.cpp \
-$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp 
+$(top_srcdir)/src-std-framework/Assembly/SundanceTrivialGrouper.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorAssemblyKernel.cpp \
+$(top_srcdir)/src-std-framework/Assembly/SundanceVectorFillingAssemblyKernel.cpp 
 
 SUNDANCE_PROBLEM_H = \
 $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \

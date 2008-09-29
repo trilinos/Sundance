@@ -171,6 +171,7 @@ namespace SundanceStdFwk
         static int first = true;
         if (first)
         {
+          rtn->setName("Linear Problem");
           rtn->set<int>("global", 0);
           rtn->set<int>("assembly", 0);
           rtn->set<int>("solve control", 0);

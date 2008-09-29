@@ -66,7 +66,7 @@ namespace SundanceCore
         {
         public:
           /** */
-          AbstractEvalMediator();
+          AbstractEvalMediator(int verb=0);
 
           /** */
           virtual ~AbstractEvalMediator(){;}

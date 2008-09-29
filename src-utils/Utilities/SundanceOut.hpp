@@ -116,5 +116,44 @@ namespace SundanceUtils
 #define SUNDANCE_LEVEL5(context, msg) SUNDANCE_MSG(context, 5, msg)
 
 
+#define SUNDANCE_MSG1(level, msg) SUNDANCE_OUT(level >= 1, msg)
+
+#define SUNDANCE_MSG2(level, msg) SUNDANCE_OUT(level >= 2, msg)
+
+#define SUNDANCE_MSG3(level, msg) SUNDANCE_OUT(level >= 3, msg)
+
+#define SUNDANCE_MSG4(level, msg) SUNDANCE_OUT(level >= 4, msg)
+
+#define SUNDANCE_MSG5(level, msg) SUNDANCE_OUT(level >= 5, msg)
+
+#define SUNDANCE_BANNER1(level, tab, msg) \
+  SUNDANCE_MSG1(level, tab \
+    << "===================================================================");\
+  SUNDANCE_MSG1(level, tab << endl << tab \
+    << msg); \
+  SUNDANCE_MSG1(level, tab << endl << tab\
+    << "===================================================================");
+
+
+#define SUNDANCE_BANNER2(level, tab, msg) \
+  SUNDANCE_MSG2(level, tab \
+    << "-------------------------------------------------------------------");\
+  SUNDANCE_MSG2(level, tab << msg); \
+  SUNDANCE_MSG2(level, tab\
+    << "-------------------------------------------------------------------");
+
+
+
+#define SUNDANCE_BANNER3(level, tab, msg) \
+  SUNDANCE_MSG3(level, tab \
+    << "-------------------------------------------------------------------");\
+  SUNDANCE_MSG3(level, tab << endl << tab \
+    << msg); \
+  SUNDANCE_MSG3(level, tab << endl << tab\
+    << "-------------------------------------------------------------------");
+
+
+
+
 #endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

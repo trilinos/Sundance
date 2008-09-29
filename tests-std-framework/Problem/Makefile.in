@@ -138,7 +138,8 @@ am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
 	OptPoisson1D$(EXEEXT) FunctionalTest$(EXEEXT) \
 	SimpleModelEvalTest$(EXEEXT) VorticityStokes2D$(EXEEXT) \
 	VorticityNavierStokes2D$(EXEEXT) SpectralPoisson1D$(EXEEXT) \
-	SpectralSqrt$(EXEEXT) PartitionedPoisson1D$(EXEEXT)
+	SpectralSqrt$(EXEEXT) PartitionedPoisson1D$(EXEEXT) \
+	NitschePoisson2D$(EXEEXT)
 am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) Kepler$(EXEEXT) \
 	Stokes2D$(EXEEXT) LinearPartialDomain$(EXEEXT) \
@@ -230,6 +231,11 @@ LinearVariationalTest_OBJECTS = $(am_LinearVariationalTest_OBJECTS)
 LinearVariationalTest_LINK = $(CXXLD) \
 	$(LinearVariationalTest_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_NitschePoisson2D_OBJECTS =  \
+	NitschePoisson2D-NitschePoisson2D.$(OBJEXT)
+NitschePoisson2D_OBJECTS = $(am_NitschePoisson2D_OBJECTS)
+NitschePoisson2D_LINK = $(CXXLD) $(NitschePoisson2D_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_NonlinearPartialDomain_OBJECTS =  \
 	NonlinearPartialDomain-NonlinearPartialDomain.$(OBJEXT)
 NonlinearPartialDomain_OBJECTS = $(am_NonlinearPartialDomain_OBJECTS)
@@ -338,7 +344,7 @@ SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) \
 	$(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) \
 	$(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) \
 	$(LinearPartialDomain_SOURCES) \
-	$(LinearVariationalTest_SOURCES) \
+	$(LinearVariationalTest_SOURCES) $(NitschePoisson2D_SOURCES) \
 	$(NonlinearPartialDomain_SOURCES) $(NoxAlgebraic_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(PartitionedPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
@@ -357,7 +363,7 @@ DIST_SOURCES = $(AToCDensitySample_SOURCES) \
 	$(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) \
 	$(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) \
 	$(LinearPartialDomain_SOURCES) \
-	$(LinearVariationalTest_SOURCES) \
+	$(LinearVariationalTest_SOURCES) $(NitschePoisson2D_SOURCES) \
 	$(NonlinearPartialDomain_SOURCES) $(NoxAlgebraic_SOURCES) \
 	$(NoxPoisson1D_SOURCES) $(OptPoisson1D_SOURCES) \
 	$(PartitionedPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
@@ -512,7 +518,7 @@ HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic UserDefAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
 FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D \
-SpectralPoisson1D SpectralSqrt PartitionedPoisson1D
+SpectralPoisson1D SpectralSqrt PartitionedPoisson1D NitschePoisson2D
 
 ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
@@ -527,6 +533,16 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 SpectralPoisson1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 SpectralPoisson1D_LDADD = $(STD_FWK_LIBS) 
+NitschePoisson2D_SOURCES = $(srcdir)/NitschePoisson2D.cpp
+NitschePoisson2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+NitschePoisson2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+NitschePoisson2D_LDADD = $(STD_FWK_LIBS) 
 PartitionedPoisson1D_SOURCES = $(srcdir)/PartitionedPoisson1D.cpp
 PartitionedPoisson1D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -1111,6 +1127,9 @@ LinearPartialDomain$(EXEEXT): $(LinearPartialDomain_OBJECTS) $(LinearPartialDoma
 LinearVariationalTest$(EXEEXT): $(LinearVariationalTest_OBJECTS) $(LinearVariationalTest_DEPENDENCIES) 
 	@rm -f LinearVariationalTest$(EXEEXT)
 	$(LinearVariationalTest_LINK) $(LinearVariationalTest_OBJECTS) $(LinearVariationalTest_LDADD) $(LIBS)
+NitschePoisson2D$(EXEEXT): $(NitschePoisson2D_OBJECTS) $(NitschePoisson2D_DEPENDENCIES) 
+	@rm -f NitschePoisson2D$(EXEEXT)
+	$(NitschePoisson2D_LINK) $(NitschePoisson2D_OBJECTS) $(NitschePoisson2D_LDADD) $(LIBS)
 NonlinearPartialDomain$(EXEEXT): $(NonlinearPartialDomain_OBJECTS) $(NonlinearPartialDomain_DEPENDENCIES) 
 	@rm -f NonlinearPartialDomain$(EXEEXT)
 	$(NonlinearPartialDomain_LINK) $(NonlinearPartialDomain_OBJECTS) $(NonlinearPartialDomain_LDADD) $(LIBS)
@@ -1191,6 +1210,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Kepler-Kepler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinearPartialDomain-LinearPartialDomain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinearVariationalTest-LinearVariationalTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NitschePoisson2D-NitschePoisson2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NonlinearPartialDomain-NonlinearPartialDomain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxAlgebraic-NoxAlgebraic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NoxPoisson1D-NoxPoisson1D.Po@am__quote@
@@ -1448,6 +1468,20 @@ LinearVariationalTest-LinearVariationalTest.obj: $(srcdir)/LinearVariationalTest
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/LinearVariationalTest.cpp' object='LinearVariationalTest-LinearVariationalTest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(LinearVariationalTest_CXXFLAGS) $(CXXFLAGS) -c -o LinearVariationalTest-LinearVariationalTest.obj `if test -f '$(srcdir)/LinearVariationalTest.cpp'; then $(CYGPATH_W) '$(srcdir)/LinearVariationalTest.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/LinearVariationalTest.cpp'; fi`
+
+NitschePoisson2D-NitschePoisson2D.o: $(srcdir)/NitschePoisson2D.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NitschePoisson2D_CXXFLAGS) $(CXXFLAGS) -MT NitschePoisson2D-NitschePoisson2D.o -MD -MP -MF $(DEPDIR)/NitschePoisson2D-NitschePoisson2D.Tpo -c -o NitschePoisson2D-NitschePoisson2D.o `test -f '$(srcdir)/NitschePoisson2D.cpp' || echo '$(srcdir)/'`$(srcdir)/NitschePoisson2D.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/NitschePoisson2D-NitschePoisson2D.Tpo $(DEPDIR)/NitschePoisson2D-NitschePoisson2D.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NitschePoisson2D.cpp' object='NitschePoisson2D-NitschePoisson2D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NitschePoisson2D_CXXFLAGS) $(CXXFLAGS) -c -o NitschePoisson2D-NitschePoisson2D.o `test -f '$(srcdir)/NitschePoisson2D.cpp' || echo '$(srcdir)/'`$(srcdir)/NitschePoisson2D.cpp
+
+NitschePoisson2D-NitschePoisson2D.obj: $(srcdir)/NitschePoisson2D.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NitschePoisson2D_CXXFLAGS) $(CXXFLAGS) -MT NitschePoisson2D-NitschePoisson2D.obj -MD -MP -MF $(DEPDIR)/NitschePoisson2D-NitschePoisson2D.Tpo -c -o NitschePoisson2D-NitschePoisson2D.obj `if test -f '$(srcdir)/NitschePoisson2D.cpp'; then $(CYGPATH_W) '$(srcdir)/NitschePoisson2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NitschePoisson2D.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/NitschePoisson2D-NitschePoisson2D.Tpo $(DEPDIR)/NitschePoisson2D-NitschePoisson2D.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/NitschePoisson2D.cpp' object='NitschePoisson2D-NitschePoisson2D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NitschePoisson2D_CXXFLAGS) $(CXXFLAGS) -c -o NitschePoisson2D-NitschePoisson2D.obj `if test -f '$(srcdir)/NitschePoisson2D.cpp'; then $(CYGPATH_W) '$(srcdir)/NitschePoisson2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/NitschePoisson2D.cpp'; fi`
 
 NonlinearPartialDomain-NonlinearPartialDomain.o: $(srcdir)/NonlinearPartialDomain.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NonlinearPartialDomain_CXXFLAGS) $(CXXFLAGS) -MT NonlinearPartialDomain-NonlinearPartialDomain.o -MD -MP -MF $(DEPDIR)/NonlinearPartialDomain-NonlinearPartialDomain.Tpo -c -o NonlinearPartialDomain-NonlinearPartialDomain.o `test -f '$(srcdir)/NonlinearPartialDomain.cpp' || echo '$(srcdir)/'`$(srcdir)/NonlinearPartialDomain.cpp

@@ -85,6 +85,18 @@ namespace SundanceCore
           /** Get a handle to the i-th child */
           Expr child(int i) const {return Expr::handle(children_[i]);}
 
+
+          /**
+           * Find the maximum differentiation order acting on discrete
+           * functions in this expression. 
+           */
+          virtual int maxDiffOrderOnDiscreteFunctions() const ;
+
+          /**
+           * Indicate whether this expression contains discrete functions.
+           */
+          virtual bool hasDiscreteFunctions() const ;
+
           /** */
           virtual Set<MultipleDeriv> 
           internalFindW(int order, const EvalContext& context) const ;

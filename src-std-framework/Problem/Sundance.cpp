@@ -134,9 +134,12 @@ int Sundance::init(int* argc, char*** argv)
                << VersionString::number() 
                << " (" << VersionString::date() << ")" << endl;
       
-          cout << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
+          cout << "Sundance is copyright" 
+               << endl << " (C) 2005-2008 Sandia National Laboratories " 
+               << endl
+               << " (C) 2007-2008 Texas Tech University"
                << endl;
-          cout << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
+          cout << "and is licensed under the GNU Lesser General Public License, version 2.1" << endl;
           cout << tab << endl;
         }
 

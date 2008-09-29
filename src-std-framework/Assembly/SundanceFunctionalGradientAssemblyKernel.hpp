@@ -28,16 +28,12 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_GROUPER_H
-#define SUNDANCE_GROUPER_H
+#ifndef SUNDANCE_FUNCTIONALGRADIENTASSEMBLYKERNEL_H
+#define SUNDANCE_FUNCTIONALGRADIENTASSEMBLYKERNEL_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSparsitySuperset.hpp"
-#include "SundanceIntegralGroup.hpp"
-#include "SundanceEquationSet.hpp"
-
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
+#include "SundanceVectorFillingAssemblyKernel.hpp"
+#include "SundanceFunctionalAssemblyKernel.hpp"
 
 namespace SundanceStdFwk
 {
@@ -50,53 +46,73 @@ using namespace SundanceCore::Internal;
 namespace Internal
 {
 using namespace Teuchos;
-using TSFExtended::ObjectWithVerbosity;  
 
 /** 
- * Grouper
+ * FunctionalGradientAssemblyKernel does assembly of a functional and
+ * its gradient. 
  */
-class GrouperBase
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<ElementIntegral>
+class FunctionalGradientAssemblyKernel : public AssemblyKernelBase
 {
 public:
   /** */
-  GrouperBase() {}
-
-  /** */
-  GrouperBase(const ParameterList& verbParams)
-    : ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams)
+  FunctionalGradientAssemblyKernel(const MPIComm& comm,
+    const Array<RefCountPtr<DOFMapBase> >& dofMap,
+    const Array<RefCountPtr<Array<int> > >& isBCIndex,
+    const Array<int>& lowestLocalIndex,
+    Vector<double>& grad,
+    bool partitionBCs,
+    double* value, 
+    int verb)
+    : AssemblyKernelBase(verb),
+      funcKernel_(rcp(new FunctionalAssemblyKernel(comm, value, verb))),
+      vecKernel_(rcp(new VectorAssemblyKernel(dofMap, isBCIndex,
+            lowestLocalIndex, grad, partitionBCs, verb)))
     {}
-  /** */
-  virtual ~GrouperBase(){;}
 
   /** */
-  virtual void findGroups(const EquationSet& eqn,
-    const CellType& maxCellType,
-    int spatialDim,
-    const CellType& cellType,
-    int cellDim,
-    const QuadratureFamily& quad,
-    const RefCountPtr<SparsitySuperset>& sparsity,
-    Array<IntegralGroup>& groups) const = 0 ;
+  void prepareForWorkSet(
+    const Array<Set<int> >& requiredTests,
+    const Array<Set<int> >& requiredUnks,
+    RefCountPtr<StdFwkEvalMediator> mediator) 
+    {
+      funcKernel_->prepareForWorkSet(requiredTests, requiredUnks, mediator);
+      vecKernel_->prepareForWorkSet(requiredTests, requiredUnks, mediator);
+    }
 
- 
+  /** */
+  void fill(bool isBC,
+    const IntegralGroup& group,
+    const RefCountPtr<Array<double> >& localValues) 
+    {
+      if (group.isOneForm())
+      {
+        vecKernel_->fill(isBC, group, localValues);
+      }
+      else if (group.isZeroForm())
+      {
+        funcKernel_->fill(isBC, group, localValues);
+      }
+      else
+      {
+        TEST_FOR_EXCEPT(group.isTwoForm());
+      }
+    }
 
-protected:
-  void extractWeakForm(const EquationSet& eqn,
-    const MultipleDeriv& functionalDeriv,
-    BasisFamily& testBasis, 
-    BasisFamily& unkBasis,
-    MultiIndex& miTest, MultiIndex& miUnk,
-    int& rawVarID, int& rawUnkID,  
-    int& reducedTestID, int& reducedUnkID, 
-    int& testBlock, int& unkBlock, 
-    bool& isOneForm) const ;
-                              
+  /** */
+  void postLoopFinalization()
+    {
+      funcKernel_->postLoopFinalization();
+      vecKernel_->postLoopFinalization();
+    }
+
+private:
+  RefCountPtr<FunctionalAssemblyKernel> funcKernel_;
+  RefCountPtr<VectorAssemblyKernel> vecKernel_;
 };
 
 }
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

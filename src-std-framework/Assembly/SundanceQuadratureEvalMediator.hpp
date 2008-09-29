@@ -62,8 +62,9 @@ namespace SundanceStdFwk
        * 
        */
       QuadratureEvalMediator(const Mesh& mesh, 
-                             int cellDim,
-                             const QuadratureFamily& quad);
+        int cellDim,
+        const QuadratureFamily& quad,
+        int verb);
 
       /** */
       virtual ~QuadratureEvalMediator(){;}

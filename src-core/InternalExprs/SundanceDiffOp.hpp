@@ -90,6 +90,21 @@ class Expr;
           return evaluatableArg()->isQuadraticForm(u);
         }
 
+      /** 
+      /**
+       * Find the maximum differentiation order acting on discrete
+       * functions in this expression. 
+       */
+      virtual int maxDiffOrderOnDiscreteFunctions() const 
+        {
+          int rtn = evaluatableArg()->maxDiffOrderOnDiscreteFunctions();
+          if (evaluatableArg()->hasDiscreteFunctions()) 
+          {
+            rtn += mi_.order();
+          }
+          return rtn;
+        }
+
 
       /** Write a simple text description suitable
        * for output to a terminal */

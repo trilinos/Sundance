@@ -35,6 +35,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceAbstractEvalMediator.hpp"
 #include "SundanceCellJacobianBatch.hpp"
+#include "SundanceIntegralGroup.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceDiscreteFunction.hpp"
 
@@ -55,25 +56,24 @@ namespace SundanceStdFwk
   {
     using namespace Teuchos;
 
-    /**
-
-     * StdFwkEvalMediator evaluates mesh-dependent functions in the
+    /** 
+     * StdFwkEvalMediator evaluates mesh-dependent functions in the 
      * standard framework. A number of subtypes are supported: 
-     * QuadratureEvalMediator, which does evaluation on quadrature points,
-     * and NodalEvalMediator, which does evaluation at nodal points. 
-     */
+     * QuadratureEvalMediator, which does evaluation on quadrature points,  
+     * and NodalEvalMediator, which does evaluation at nodal points.  */
+
     class StdFwkEvalMediator : public AbstractEvalMediator,
                                public TSFExtended::Printable
     {
     public:
       /** */
-      StdFwkEvalMediator(const Mesh& mesh, int cellDim);
+      StdFwkEvalMediator(const Mesh& mesh, int cellDim, int verb);
 
       /** */
       virtual ~StdFwkEvalMediator(){;}
 
       /** */
-      void setCellBatch(bool useMaximalCellsForTransformations,
+      void setCellBatch(IntegrationCellSpecifier intCellSpec,
                         const RefCountPtr<const Array<int> >& cellLID);
 
 
@@ -81,48 +81,52 @@ namespace SundanceStdFwk
       virtual void setCellType(const CellType& cellType,
                                const CellType& maxCellType) ;
 
-      /** Return the Jacobian to be used in computing the volume of cells being
-       * integrated. This will not necessarily be the same as the Jacobian used
-       * for transformations of vectors: when integrating derivatives over 
-       * boundaries, the volume is the volume of the facet, while the 
-       * transformations are computed on the maximal cofacets. */
+      /** Return the Jacobian to be used in computing the volume of cells
+      being integrated. This will not necessarily be the same as the
+      Jacobian used for transformations of vectors: when integrating
+      derivatives over boundaries, the volume is the volume of the facet,
+      while the transformations are computed on the maximal cofacets. */
       const CellJacobianBatch& JVol() const {return *JVol_;}
 
       /** Return the Jacobian to be used in derivative transformations. */
       const CellJacobianBatch& JTrans() const ;
 
-      /** When evaluating derivatives on boundaries, we evaluate basis functions
-       * on the maximal cofacets of the boundary cells. This function returns the
-       * facet index, relative to the maximal cofacet, of each boundary cell in the batch.
-       */
+      /** When evaluating derivatives on boundaries, we evaluate basis
+      functions on the maximal cofacets of the boundary cells. This function
+      returns the facet index, relative to the maximal cofacet, of each
+      boundary cell in the batch.  */
       const Array<int>& facetIndices() const {return *facetIndices_;}
-
-      /** Indicate whether transformations use maximal cells */
-      bool useMaximalCells() const {return useMaximalCells_;}
-
 
       /** */
       const Array<int>& maxCellLIDs() const {return *maxCellLIDs_;}
 
-      /** Return the cells used in determining the DOFs */
-      const Array<int>& dofCellLIDs() const ;
+      /** */
+      int cellDim() const {return cellDim_;}
 
-      /** Return the cell type used in determining the DOFs */
-      const CellType& dofCellType() const ;
+      /** */
+      int maxCellDim() const {return mesh_.spatialDim();}
+
+      /** */
+      const CellType& cellType() const {return cellType_;}
+
+      /** */
+      const CellType& maxCellType() const {return maxCellType_;}
+
+      /** */
+      const RefCountPtr<const Array<int> >& cellLID() const {return cellLID_;}
+
+      /** */
+      const RefCountPtr<Array<int> >& cofacetCellLID() const {return maxCellLIDs_;}
+
+      /** */
+      IntegrationCellSpecifier integrationCellSpec() const {return intCellSpec_;}
+
+      /** */
+      bool cofacetCellsAreReady() const {return cofacetCellsAreReady_;}
 
 
     protected:
       const Mesh& mesh() const {return mesh_;}
-
-      int cellDim() const {return cellDim_;}
-
-      int maxCellDim() const {return mesh_.spatialDim();}
-
-      const CellType& cellType() const {return cellType_;}
-
-      const CellType& maxCellType() const {return maxCellType_;}
-
-      const RefCountPtr<const Array<int> >& cellLID() const {return cellLID_;}
 
       bool& cacheIsValid() const {return cacheIsValid_;}
 
@@ -164,7 +168,7 @@ namespace SundanceStdFwk
 
       RefCountPtr<const Array<int> > cellLID_;
 
-      mutable bool useMaximalCells_;
+      mutable IntegrationCellSpecifier intCellSpec_;
 
       mutable RefCountPtr<CellJacobianBatch> JVol_;
 
@@ -174,9 +178,13 @@ namespace SundanceStdFwk
 
       mutable RefCountPtr<Array<int> > maxCellLIDs_;
 
+      mutable bool cofacetCellsAreReady_;
+
       mutable bool cacheIsValid_;
 
       mutable bool jCacheIsValid_;
+
+
 
       /** */
       mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > fCache_;

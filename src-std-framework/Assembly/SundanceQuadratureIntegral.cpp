@@ -66,8 +66,9 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                                        const CellType& maxCellType,
                                        int dim, 
                                        const CellType& cellType,
-                                       const QuadratureFamily& quad)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType),
+                                       const QuadratureFamily& quad,
+  const ParameterList& verbParams)
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verbParams),
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)
@@ -109,9 +110,10 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                                        const BasisFamily& testBasis,
                                        int alpha,
                                        int testDerivOrder,
-                                       const QuadratureFamily& quad)
+                                       const QuadratureFamily& quad,
+  const ParameterList& verbParams)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-                    testBasis, alpha, testDerivOrder),
+    testBasis, alpha, testDerivOrder, verbParams),
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)
@@ -211,10 +213,11 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                                        const BasisFamily& unkBasis,
                                        int beta,
                                        int unkDerivOrder,
-                                       const QuadratureFamily& quad)
+                                       const QuadratureFamily& quad,
+  const ParameterList& verbParams)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
                     testBasis, alpha, testDerivOrder, 
-                    unkBasis, beta, unkDerivOrder), 
+    unkBasis, beta, unkDerivOrder, verbParams), 
     W_(),
     nQuad_(0),
     useSumFirstMethod_(true)

@@ -34,119 +34,170 @@
 #include "SundanceDefs.hpp"
 #include "SundanceElementIntegral.hpp"
 #include "SundanceEvalVector.hpp"
+#include "SundanceMultipleDeriv.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
-  using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  namespace Internal
+using namespace Teuchos;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+namespace Internal
+{
+  
+
+/** */
+enum IntegrationCellSpecifier {NoTermsNeedCofacets, AllTermsNeedCofacets, SomeTermsNeedCofacets};
+
+/** */
+inline std::ostream& operator<<(
+  std::ostream& os, const IntegrationCellSpecifier& s)
+{
+  switch(s)
   {
-    /** 
-     *
-     */
-    class IntegralGroup : public TSFExtended::ObjectWithVerbosity<IntegralGroup>
-    {
-    public:
-      /** */
-      IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
-                    const Array<int>& resultIndices);
-      /** */
-      IntegralGroup(const Array<int>& testID,
-                    const Array<int>& testBlock,
-                    const Array<RefCountPtr<ElementIntegral> >& integrals,
-                    const Array<int>& resultIndices);
-      /** */
-      IntegralGroup(const Array<int>& testID,
-                    const Array<int>& testBlock,
-                    const Array<int>& unkID,
-                    const Array<int>& unkBlock,
-                    const Array<RefCountPtr<ElementIntegral> >& integrals,
-                    const Array<int>& resultIndices);
-
-
-      /** Indicate whether this is a group of two-forms */
-      bool isTwoForm() const {return order_==2;}
-
-      /** Indicate whether this is a group of one-forms */
-      bool isOneForm() const {return order_==1;}
-
-      /** Indicate whether this is a group of zero-forms */
-      bool isZeroForm() const {return order_==0;}
-
-      /** Return the number of rows in the local matrices or vectors
-       * computed by this integral group */
-      int nTestNodes() const {return nTestNodes_;}
-
-      /** Return the number of columns in the local matrices 
-       * computed by this integral group */
-      int nUnkNodes() const {return nUnkNodes_;}
-
-      /** Return the test functions using this integral group */
-      const Array<int>& testID() const {return testID_;}
-
-      /** Return the unknown functions using this integral group */
-      const Array<int>& unkID() const {return unkID_;}
-
-      /** Return the block numbers for the test functions */
-      const Array<int>& testBlock() const {return testBlock_;}
-
-      /** Return the block numbers for the unk functions */
-      const Array<int>& unkBlock() const {return unkBlock_;}
-
-      /** Whether the group requires transformations based on a maximal cofacet */
-      bool requiresMaximalCofacet() const {return requiresMaximalCofacet_;}
-
-
-
-      /** Evaluate this integral group */
-      bool evaluate(const CellJacobianBatch& JTrans,
-                    const CellJacobianBatch& JVol,
-                    const Array<int>& isLocalFlag,
-                    const Array<int>& facetNum, 
-                    const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
-                    const Array<double>& constantCoeffs,
-                    RefCountPtr<Array<double> >& A) const ;
-
-
-    private:
-      
-      /** */
-      int order_;
-
-      /** */
-      int nTestNodes_;
-
-      /** */
-      int nUnkNodes_;
-
-      /** */
-      Array<int> testID_;
-
-      /** */
-      Array<int> unkID_;
-
-      /** */
-      Array<int> testBlock_;
-
-      /** */
-      Array<int> unkBlock_;
-
-      /** */
-      Array<RefCountPtr<ElementIntegral> > integrals_;
-
-      /** */
-      Array<int> resultIndices_;
-
-      /** */
-      bool requiresMaximalCofacet_;
-    };
+    case NoTermsNeedCofacets:
+      os << "[No terms need cofacets]";
+      break;
+    case AllTermsNeedCofacets:
+      os << "[All terms need cofacets]";
+      break;
+    default:
+      os << "[Some terms need cofacets]";
   }
+  return os;
+}
+
+/** 
+ *
+ */
+class IntegralGroup : public TSFExtended::ParameterControlledObjectWithVerbosity<ElementIntegral>
+{
+public:
+  /** */
+  IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
+    const Array<int>& resultIndices,
+    const ParameterList& verbParams);
+  /** */
+  IntegralGroup(const Array<int>& testID,
+    const Array<int>& testBlock,
+    const Array<RefCountPtr<ElementIntegral> >& integrals,
+    const Array<int>& resultIndices,
+    const Array<MultipleDeriv>& derivs,
+    const ParameterList& verbParams);
+  /** */
+  IntegralGroup(const Array<int>& testID,
+    const Array<int>& testBlock,
+    const Array<int>& unkID,
+    const Array<int>& unkBlock,
+    const Array<RefCountPtr<ElementIntegral> >& integrals,
+    const Array<int>& resultIndices,
+    const Array<MultipleDeriv>& derivs,
+    const ParameterList& verbParams);
+
+
+  /** Indicate whether this is a group of two-forms */
+  bool isTwoForm() const {return order_==2;}
+
+  /** Indicate whether this is a group of one-forms */
+  bool isOneForm() const {return order_==1;}
+
+  /** Indicate whether this is a group of zero-forms */
+  bool isZeroForm() const {return order_==0;}
+
+  /** Return the number of rows in the local matrices or vectors
+   * computed by this integral group */
+  int nTestNodes() const {return nTestNodes_;}
+
+  /** Return the number of columns in the local matrices 
+   * computed by this integral group */
+  int nUnkNodes() const {return nUnkNodes_;}
+
+  /** Return the test functions using this integral group */
+  const Array<int>& testID() const {return testID_;}
+
+  /** Return the unknown functions using this integral group */
+  const Array<int>& unkID() const {return unkID_;}
+
+  /** Return the block numbers for the test functions */
+  const Array<int>& testBlock() const {return testBlock_;}
+
+  /** Return the block numbers for the unk functions */
+  const Array<int>& unkBlock() const {return unkBlock_;}
+
+  /** Whether the group requires transformations based on a maximal cofacet */
+  IntegrationCellSpecifier usesMaximalCofacets() const 
+    {return requiresMaximalCofacet_;}
+
+  /** Array specifying which terms need maximal cofacets */
+  const Array<int>& termUsesMaximalCofacets() const
+    {return termUsesMaximalCofacets_;}
+
+
+
+  /** Evaluate this integral group */
+  bool evaluate(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& isLocalFlag,
+    const Array<int>& facetNum, 
+    const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
+    const Array<double>& constantCoeffs,
+    RefCountPtr<Array<double> >& A) const ;
+
+
+  /** */
+  std::ostream& print(std::ostream& os) const ;
+
+
+
+private:
+      
+  /** */
+  int order_;
+
+  /** */
+  int nTestNodes_;
+
+  /** */
+  int nUnkNodes_;
+
+  /** */
+  Array<int> testID_;
+
+  /** */
+  Array<int> unkID_;
+
+  /** */
+  Array<int> testBlock_;
+
+  /** */
+  Array<int> unkBlock_;
+
+  /** */
+  Array<RefCountPtr<ElementIntegral> > integrals_;
+
+  /** */
+  Array<int> resultIndices_;
+
+  /** */
+  Array<int> termUsesMaximalCofacets_;
+
+  /** */
+  IntegrationCellSpecifier requiresMaximalCofacet_;
+
+  /** */
+  Array<MultipleDeriv> derivs_;
+};
+
+inline std::ostream& operator<<(std::ostream& os, const IntegralGroup& g)
+{
+  return g.print(os);
+}
+
+}
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

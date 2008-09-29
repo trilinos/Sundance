@@ -36,7 +36,8 @@ using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
-
+using std::endl;
+using std::setw;
 
 MapStructure::MapStructure(int nTotalFuncs,
                            const Array<BasisFamily>& bases,
@@ -119,6 +120,20 @@ int MapStructure::indexForFuncID(int funcID) const
                      "subdomain for which it is not defined.");
 
   return rtn;
+}
+
+
+std::ostream& MapStructure::print(std::ostream& os) const
+{
+  Tabs tab;
+  os << tab << "Map structure: nChunks=" << numBasisChunks() << endl;
+  for (int c=0; c<numBasisChunks(); c++) 
+  {
+    Tabs tab1;
+    os << tab1 << "chunk " << c << " funcIDs=" << funcs(c) << endl;
+  }
+  os << tab << "## end map structure" << endl;
+  return os;
 }
 
 
