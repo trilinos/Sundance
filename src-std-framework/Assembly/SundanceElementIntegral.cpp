@@ -68,7 +68,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
     order_(0),
     alpha_(),
     beta_()
-{;}
+{}
 
 ElementIntegral::ElementIntegral(int spatialDim,
   const CellType& maxCellType,

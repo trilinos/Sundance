@@ -63,10 +63,10 @@ static Time& quadratureTimer()
 
 
 QuadratureIntegral::QuadratureIntegral(int spatialDim,
-                                       const CellType& maxCellType,
-                                       int dim, 
-                                       const CellType& cellType,
-                                       const QuadratureFamily& quad,
+  const CellType& maxCellType,
+  int dim, 
+  const CellType& cellType,
+  const QuadratureFamily& quad,
   const ParameterList& verbParams)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, verbParams),
     W_(),
@@ -74,12 +74,22 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
     useSumFirstMethod_(true)
 {
   Tabs tab0;
-  verbosity() = classVerbosity();
+  int verb = verbLevel("setup");
+  SUNDANCE_MSG1(verb, tab0 << "QuadratureIntegral ctor for zero-form");
+  Tabs tab1;
+  SUNDANCE_MSG1(verb, tab1 << "cellDim=" << dim 
+    << ", spatialDim=" << spatialDim);
+  SUNDANCE_MSG1(verb, tab1 << "quadrature family=" << quad);  
+
 
   W_.resize(nFacetCases());
 
   for (int fc=0; fc<nFacetCases(); fc++)
     {
+      Tabs tab2;
+      SUNDANCE_MSG1(verb, tab2 << "facet case=" << fc
+        << " of " << nFacetCases());        
+      Tabs tab3;
       /* create the quad points and weights */
       Array<double> quadWeights;
       Array<Point> quadPts;
@@ -89,11 +99,9 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       
       W_[fc].resize(nQuad());
       
-      SUNDANCE_OUT(this->verbosity() > VerbLow, 
-                   tab0 << "num quad pts" << nQuad());
+      SUNDANCE_MSG1(verb, tab3 << "num quad pts" << nQuad());
       
-      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                   tab0 << "quad weights" << quadWeights);
+      SUNDANCE_MSG1(verb, tab3 << "quad weights" << quadWeights);
       
       for (int q=0; q<nQuad(); q++)
         {
@@ -119,17 +127,22 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
     useSumFirstMethod_(true)
 {
   Tabs tab0;
-  verbosity() = classVerbosity();
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
-               tab0 
+  int verb = verbLevel("setup");
+  SUNDANCE_MSG1(verb, tab0 << "QuadratureIntegral ctor for one-form");
+  Tabs tab1;
+  SUNDANCE_MSG1(verb, tab1 << "cellDim=" << dim 
+    << ", spatialDim=" << spatialDim);
+  SUNDANCE_MSG1(verb, tab1 << "quadrature family=" << quad);  
+  SUNDANCE_MSG1(verb,
+               tab1 
                << "******** computing basis functions on quad pts *******"
                << std::endl << tab0 << "test basis=" 
                << testBasis 
                << std::endl << tab0 << "cell type=" << cellType
                << std::endl << tab0 << "differentiation order="
                << testDerivOrder);
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-               tab0 << "num test derivative components=" 
+  SUNDANCE_MSG1(verb,
+               tab1 << "num test derivative components=" 
                << nRefDerivTest());
 
   TEST_FOR_EXCEPTION(testDerivOrder < 0 || testDerivOrder > 1,
@@ -143,8 +156,14 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   CellType evalCellType = cellType;
   if (nFacetCases() > 1) evalCellType = maxCellType;
 
+  SUNDANCE_MSG1(verb, "evaluation cell type is " << evalCellType);
+
   for (int fc=0; fc<nFacetCases(); fc++)
     {
+      Tabs tab2;
+
+      SUNDANCE_MSG1(verb, tab2 << "facet case=" << fc
+        << " of " << nFacetCases());        
 
       /* create the quad points and weights */
       Array<double> quadWeights;
@@ -155,29 +174,39 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       
       W_[fc].resize(nQuad() * nRefDerivTest() * nNodesTest());
 
-      SUNDANCE_OUT(this->verbosity() > VerbLow, 
-                   tab0 << "num quad pts" << nQuad());
-
-      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                   tab0 << "quad pts" << quadPts);
-
-      SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                   tab0 << "quad weights" << quadWeights);
+      SUNDANCE_MSG1(verb, tab2 << "num quad pts " << nQuad());
+      SUNDANCE_MSG1(verb, tab2 << "num nodes for test function " << nNodesTest());
 
       Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
 
 
       for (int r=0; r<nRefDerivTest(); r++)
         {
+          Tabs tab3;
+          SUNDANCE_MSG1(verb, tab3 
+            << "evaluating basis functions for ref deriv direction " << r);
           MultiIndex mi;
           testBasisVals[r].resize(testBasis.dim());
           if (testDerivOrder==1) mi[r] = 1;
-          testBasis.ptr()->refEval(maxCellType, cellType, quadPts, mi, 
+          testBasis.ptr()->refEval(maxCellType, evalCellType, quadPts, mi, 
                                    testBasisVals[r]);
+          for (unsigned int c=0; c<testBasisVals[r].size(); c++)
+          {
+            Tabs tab4;
+            SUNDANCE_MSG1(verb, tab4<< "vector component c=" << c 
+              << " of " << testBasisVals[r].size());
+            for (unsigned int q=0; q<testBasisVals[r][c].size(); q++)
+            {
+              Tabs tab5;
+              SUNDANCE_MSG1(verb, tab5<< "quad point=" << q 
+              << " basis values= " << testBasisVals[r][c][q]);
+            }
+          }
         }
 
+      
       SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-                   tab0 << "basis values" << testBasisVals);
+                   tab0 << "all basis values " << testBasisVals);
 
       int vecComp = 0;
       for (int q=0; q<nQuad(); q++)

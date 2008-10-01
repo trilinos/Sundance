@@ -134,6 +134,7 @@ public:
       static int first = true;
       if (first)
       {
+        rtn->set<int>("setup", 0);
         rtn->set<int>("transformation", 0);
         rtn->set<int>("integration", 0);
         rtn->set<int>("extract weak form", 0);
