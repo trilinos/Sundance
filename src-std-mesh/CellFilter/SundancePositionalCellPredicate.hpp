@@ -40,6 +40,20 @@ namespace SundanceStdFwk
 {
 
 
+#define NEW_CELL_PREDICATE(name)  \
+  class name : public CellPredicateFunctorBase,  \
+               public TSFExtended::Handleable<CellPredicateFunctorBase>  \
+  {  \
+  public:  \
+    name() : CellPredicateFunctorBase(#name) {} \
+      virtual ~name() {}  \
+      virtual bool operator()(const Point& x) const; \
+        GET_RCP(CellPredicateFunctorBase);  \
+  }; \
+  \
+  bool name::operator()(const Point& x) const
+
+
 #define CELL_PREDICATE_(name, code) \
   class name : public CellPredicateFunctorBase, \
                public TSFExtended::Handleable<CellPredicateFunctorBase> \

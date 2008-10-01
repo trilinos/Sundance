@@ -2,10 +2,19 @@
 #include "SundanceCellDiameterExpr.hpp"
 #include "SundanceEvaluator.hpp"
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
+
+NEW_CELL_PREDICATE(LeftPointTest)
+{return fabs(x[0]) < 1.0e-10;}
+
+NEW_CELL_PREDICATE(BottomPointTest)
+{return fabs(x[1]) < 1.0e-10;}
+
+NEW_CELL_PREDICATE(RightPointTest)
+{return fabs(x[0]-1.0) < 1.0e-10;}
+
+NEW_CELL_PREDICATE(TopPointTest)
+{return fabs(x[1]-1.0) < 1.0e-10;}
+
 
 void balanceXY(int n, int* npx, int* npy)
 {
