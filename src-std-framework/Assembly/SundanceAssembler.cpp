@@ -345,7 +345,10 @@ void Assembler::init(const Mesh& mesh,
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
         cellType, cellDim, quad, sparsity, groups);
       groups_[compType].append(groups);
-      rqcRequiresMaximalCofacets_[compType].append(whetherToUseCofacets(groups, ee, cellDim==mesh_.spatialDim()));
+      IntegrationCellSpecifier cellSpec 
+        = whetherToUseCofacets(groups, ee, cellDim==mesh_.spatialDim());
+      SUNDANCE_LEVEL2("setup", tab2 << "integration: " << cellSpec);
+      rqcRequiresMaximalCofacets_[compType].append(cellSpec);
     }
 
     SUNDANCE_LEVEL2("setup", tab1 << "creating evaluation mediator for rqc=" 
@@ -394,7 +397,10 @@ void Assembler::init(const Mesh& mesh,
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
         cellType, cellDim, quad, sparsity, groups);
       groups_[compType].append(groups);
-      rqcRequiresMaximalCofacets_[compType].append(whetherToUseCofacets(groups,ee, cellDim==mesh_.spatialDim()));
+      IntegrationCellSpecifier cellSpec 
+        = whetherToUseCofacets(groups, ee, cellDim==mesh_.spatialDim());
+      SUNDANCE_LEVEL2("setup", tab2 << "integration: " << cellSpec);
+      rqcRequiresMaximalCofacets_[compType].append(cellSpec);
     }
 
     SUNDANCE_LEVEL2("setup", tab1 << "creating evaluation mediator for BC rqc=" 
@@ -418,6 +424,13 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
   Tabs tab;
   SUNDANCE_LEVEL2("setup", tab << "deciding whether to use cofacet cells for some integrations");
 
+  if (isMaximalCell)
+  {
+    Tabs tab1;
+    SUNDANCE_LEVEL2("setup", tab1 << "cofacets not needed because cells are maximal");
+    return NoTermsNeedCofacets;
+  }
+  
   IntegrationCellSpecifier cellSpec = SomeTermsNeedCofacets;
 
   bool allTermsNeedCofacets = true;
@@ -429,12 +442,12 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
     {
       case NoTermsNeedCofacets:
         allTermsNeedCofacets = false;
-        SUNDANCE_LEVEL2("setup", tab1 << "integral group " << g << "does not need cofacets");
+        SUNDANCE_LEVEL2("setup", tab1 << "integral group " << g << " does not need cofacets");
         break;
       case AllTermsNeedCofacets:
       case SomeTermsNeedCofacets:
         noTermsNeedCofacets = false;
-        SUNDANCE_LEVEL2("setup", tab1 << "integral group " << g << "needs cofacets");
+        SUNDANCE_LEVEL2("setup", tab1 << "integral group " << g << " needs cofacets");
         break;
       default:
         TEST_FOR_EXCEPT(1);
