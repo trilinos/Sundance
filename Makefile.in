@@ -113,7 +113,8 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh \
-	src-std-framework python
+	src-std-framework python tests-solvers tests-utils tests-core \
+	tests-std-mesh tests-std-framework test examples-tutorial
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -265,9 +266,18 @@ AUTOMAKE_OPTIONS = foreign
 #       could get rid of these.
 #
 EXTRA_DIST = bootstrap \
+	config/strip_dup_incl_paths.pl config/strip_dup_libs.pl \
 	config/ac_cxx_have_std.m4 config/ac_cxx_have_stl.m4 \
 	config/ac_cxx_namespaces.m4 config/ac_cxx_mutable.m4 \
-	config/depcomp
+	config/depcomp \
+	etc/SolverParameters/amesos.xml etc/SolverParameters/aztec-ifpack.xml \
+	etc/SolverParameters/aztec-ml.xml \
+	etc/SolverParameters/aztec-native.xml \
+	etc/SolverParameters/aztec.xml etc/SolverParameters/bicgstab.xml \
+	etc/SolverParameters/gmres.xml etc/SolverParameters/nox.xml \
+	etc/SolverParameters/poissonParams.xml \
+	etc/SolverParameters/userPrecParams.xml etc/SundanceConfig.xml \
+	etc/checkTests.pl
 
 
 #
@@ -284,19 +294,17 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 autom4te.cache/* \
 	$(AUX_DIST) 
 
 
-#  #np# - Most packages should have an example and a full suite 
-#  of tests.  At present, new_package only offers src and example.
-# SUBDIRS = src example test 
-@BUILD_EXAMPLES_TRUE@EXAMPLES_SUBDIR = examples-tutorial
+#  We now build tests and examples through separate make targets, rather 
+#  than during "make".  We still need to conditionally include the test
+#  and example subdirectories in SUBDIRS, even though SUB_TEST and 
+#  SUB_EXAMPLE will never be defined, so that the tests and examples
+#  are included in the distribution tarball. 
+@SUB_EXAMPLE_TRUE@EXAMPLE_SUBDIR = examples-tutorial
 
 # ----------------------------------------------------------------------
-@BUILD_TESTS_TRUE@SOLVERS_TESTS = tests-solvers
-@BUILD_TESTS_TRUE@UTILS_TESTS = tests-utils
-@BUILD_TESTS_TRUE@CORE_TESTS = tests-core
-@BUILD_TESTS_TRUE@STD_MESH_TESTS = tests-std-mesh
-@BUILD_TESTS_TRUE@STD_FRAMEWORK_TESTS = tests-std-framework
+@SUB_TEST_TRUE@TEST_SUBDIR = tests-solvers tests-utils tests-core tests-std-mesh tests-std-framework test
 @PYTHON_USE_TRUE@PYTHON_SUBDIRS = python
-SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) 
+SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) $(TEST_SUBDIR) $(EXAMPLE_SUBDIR)
 @HAVE_MPI_FALSE@TEUCHOS_CHECK_COMM = serial
 @HAVE_MPI_TRUE@TEUCHOS_CHECK_COMM = mpi
 @TRILINOS_IS_EXTERNAL_FALSE@TRILINOS_HOME_DIR = @abs_top_srcdir@/../..

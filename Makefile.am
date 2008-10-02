@@ -51,9 +51,18 @@ ACLOCAL	= aclocal -I config
 ## Additional files to be included in distribution for 'make dist'
 ## #######################################################################
 EXTRA_DIST = bootstrap \
+	config/strip_dup_incl_paths.pl config/strip_dup_libs.pl \
 	config/ac_cxx_have_std.m4 config/ac_cxx_have_stl.m4 \
 	config/ac_cxx_namespaces.m4 config/ac_cxx_mutable.m4 \
-	config/depcomp
+	config/depcomp \
+	etc/SolverParameters/amesos.xml etc/SolverParameters/aztec-ifpack.xml \
+	etc/SolverParameters/aztec-ml.xml \
+	etc/SolverParameters/aztec-native.xml \
+	etc/SolverParameters/aztec.xml etc/SolverParameters/bicgstab.xml \
+	etc/SolverParameters/gmres.xml etc/SolverParameters/nox.xml \
+	etc/SolverParameters/poissonParams.xml \
+	etc/SolverParameters/userPrecParams.xml etc/SundanceConfig.xml \
+	etc/checkTests.pl
 
 #
 #       I believe that by switching to AUX_DIR(../../config) one 
@@ -85,25 +94,24 @@ all-local:
 ## #######################################################################
 ## Subdirectories to be make'd recursively
 ## #######################################################################
-#  #np# - Most packages should have an example and a full suite 
-#  of tests.  At present, new_package only offers src and example.
-# SUBDIRS = src example test 
+#  We now build tests and examples through separate make targets, rather 
+#  than during "make".  We still need to conditionally include the test
+#  and example subdirectories in SUBDIRS, even though SUB_TEST and 
+#  SUB_EXAMPLE will never be defined, so that the tests and examples
+#  are included in the distribution tarball. 
 
-if BUILD_EXAMPLES
-EXAMPLES_SUBDIR=examples-tutorial
+if SUB_EXAMPLE
+EXAMPLE_SUBDIR=examples-tutorial
 endif
 
 
 
 # ----------------------------------------------------------------------
+if SUB_TEST
+TEST_SUBDIR = tests-solvers tests-utils tests-core tests-std-mesh tests-std-framework test
+endif
+
 if BUILD_TESTS
-
-SOLVERS_TESTS = tests-solvers
-UTILS_TESTS = tests-utils
-CORE_TESTS = tests-core
-STD_MESH_TESTS = tests-std-mesh
-STD_FRAMEWORK_TESTS = tests-std-framework
-
 tests: 
 	@echo ""
 	@echo "Now building Sundance tests"
@@ -134,7 +142,7 @@ PYTHON_SUBDIRS=python
 endif
 
 
-SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) 
+SUBDIRS = src-solvers src-utils src-interop src-core src-std-mesh src-std-framework $(PYTHON_SUBDIRS) $(TEST_SUBDIR) $(EXAMPLE_SUBDIR)
 
 
 

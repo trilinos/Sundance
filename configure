@@ -732,6 +732,10 @@ BUILD_TESTS_TRUE
 BUILD_TESTS_FALSE
 BUILD_EXAMPLES_TRUE
 BUILD_EXAMPLES_FALSE
+SUB_TEST_TRUE
+SUB_TEST_FALSE
+SUB_EXAMPLE_TRUE
+SUB_EXAMPLE_FALSE
 PYTHON_USE_TRUE
 PYTHON_USE_FALSE
 PYTHON
@@ -1872,6 +1876,11 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+
+# Hello World!
+echo "----------------------------------------"
+echo "Running Sundance Configure Script"
+echo "----------------------------------------"
 
 # This is to protect against accidentally specifying the wrong
 # directory with --srcdir.
@@ -5100,6 +5109,22 @@ else
 fi
 
 
+# These will never be defined, but are needed for building the tarball.
+ if test "X$ac_cv_use_sub_test" = "Xyes"; then
+  SUB_TEST_TRUE=
+  SUB_TEST_FALSE='#'
+else
+  SUB_TEST_TRUE='#'
+  SUB_TEST_FALSE=
+fi
+
+ if test "X$ac_cv_use_sub_example" = "Xyes"; then
+  SUB_EXAMPLE_TRUE=
+  SUB_EXAMPLE_FALSE='#'
+else
+  SUB_EXAMPLE_TRUE='#'
+  SUB_EXAMPLE_FALSE=
+fi
 
 
 
@@ -6976,6 +7001,20 @@ echo "$as_me: error: conditional \"BUILD_EXAMPLES\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${SUB_TEST_TRUE}" && test -z "${SUB_TEST_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"SUB_TEST\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"SUB_TEST\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${SUB_EXAMPLE_TRUE}" && test -z "${SUB_EXAMPLE_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"SUB_EXAMPLE\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"SUB_EXAMPLE\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${PYTHON_USE_TRUE}" && test -z "${PYTHON_USE_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"PYTHON_USE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -7788,6 +7827,10 @@ BUILD_TESTS_TRUE!$BUILD_TESTS_TRUE$ac_delim
 BUILD_TESTS_FALSE!$BUILD_TESTS_FALSE$ac_delim
 BUILD_EXAMPLES_TRUE!$BUILD_EXAMPLES_TRUE$ac_delim
 BUILD_EXAMPLES_FALSE!$BUILD_EXAMPLES_FALSE$ac_delim
+SUB_TEST_TRUE!$SUB_TEST_TRUE$ac_delim
+SUB_TEST_FALSE!$SUB_TEST_FALSE$ac_delim
+SUB_EXAMPLE_TRUE!$SUB_EXAMPLE_TRUE$ac_delim
+SUB_EXAMPLE_FALSE!$SUB_EXAMPLE_FALSE$ac_delim
 PYTHON_USE_TRUE!$PYTHON_USE_TRUE$ac_delim
 PYTHON_USE_FALSE!$PYTHON_USE_FALSE$ac_delim
 PYTHON!$PYTHON$ac_delim
@@ -7824,7 +7867,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 54; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 58; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

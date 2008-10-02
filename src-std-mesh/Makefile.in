@@ -373,6 +373,7 @@ $(top_srcdir)/src-std-mesh/CellFilter/SundanceExplicitCellSet.hpp\
 $(top_srcdir)/src-std-mesh/CellFilter/SundanceImplicitCellSet.hpp\
 $(top_srcdir)/src-std-mesh/CellFilter/SundanceLabelCellPredicate.hpp\
 $(top_srcdir)/src-std-mesh/CellFilter/SundanceMaximalCellFilter.hpp\
+$(top_srcdir)/src-std-mesh/CellFilter/SundanceNullCellFilter.hpp\
 $(top_srcdir)/src-std-mesh/CellFilter/SundancePositionalCellPredicate.hpp\
 $(top_srcdir)/src-std-mesh/CellFilter/SundanceSideCellFilter.hpp\
 $(top_srcdir)/src-std-mesh/CellFilter/SundanceSubsetCellFilter.hpp
