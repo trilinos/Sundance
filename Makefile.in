@@ -782,12 +782,12 @@ tags:
 	etags */*/*.hpp */*/*.cpp
 
 install-data-hook:
-	mkdir -p $(prefix)/etc/SolverParameters
-	mkdir -p $(prefix)/examples-tutorial/meshes
-	mkdir -p $(prefix)/examples-tutorial/data
-	cp $(top_srcdir)/etc/SolverParameters/*.xml $(prefix)/etc/SolverParameters
-	cp $(top_srcdir)/etc/*.xml $(prefix)/etc
-	cp $(top_srcdir)/examples-tutorial/data/*.* $(prefix)/examples-tutorial/data
+	mkdir -p $(DESTDIR)$(sysconfdir)/SolverParameters
+	mkdir -p $(DESTDIR)$(datadir)/Sundance/examples-tutorial/meshes
+	mkdir -p $(DESTDIR)$(datadir)/Sundance/examples-tutorial/data
+	cp $(top_srcdir)/etc/SolverParameters/*.xml $(DESTDIR)$(sysconfdir)/SolverParameters
+	cp $(top_srcdir)/etc/*.xml $(DESTDIR)$(sysconfdir)
+	cp $(top_srcdir)/examples-tutorial/data/*.* $(DESTDIR)$(datadir)/Sundance/examples-tutorial/data
 
 get-data-needed-for-tests:
 	mkdir -p $(abs_top_builddir)/etc/SolverParameters

@@ -180,7 +180,7 @@ include_HEADERS = $(UTIL_SOURCES_H)
 # not a default installation directory, so we had to create it
 # special.
 
-execincludedir = $(exec_prefix)/include
+execincludedir = $(includedir)
 nodist_execinclude_HEADERS = SundanceConfig.h
 
 # ------------------------------------------------------------------------
