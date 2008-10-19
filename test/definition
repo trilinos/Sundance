@@ -90,6 +90,7 @@
         ../tests-std-framework/Problem/Coupled2D.exe,
         ../tests-std-framework/Problem/FunctionalTest.exe,
         ../tests-std-framework/Problem/Helmholtz1D.exe,
+        ../tests-std-framework/Problem/HelmholtzEigen2D.exe,
         ../tests-std-framework/Problem/HighOrderPoisson1D.exe,
         ../tests-std-framework/Problem/HighOrderPoisson2D.exe,
         ../tests-std-framework/Problem/HighOrderProjection1D.exe,

@@ -90,7 +90,6 @@ class Expr;
           return evaluatableArg()->isQuadraticForm(u);
         }
 
-      /** 
       /**
        * Find the maximum differentiation order acting on discrete
        * functions in this expression. 

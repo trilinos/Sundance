@@ -174,9 +174,11 @@ $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceEigensolution.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.hpp \
@@ -191,6 +193,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp \

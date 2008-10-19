@@ -208,6 +208,7 @@ am__objects_4 = Sundance.$(OBJEXT) \
 	SundanceCToAInterpolator.$(OBJEXT) \
 	SundanceExprFieldWrapper.$(OBJEXT) \
 	SundanceFunctional.$(OBJEXT) SundanceL2Projector.$(OBJEXT) \
+	SundanceLinearEigenproblem.$(OBJEXT) \
 	SundanceLinearProblem.$(OBJEXT) \
 	SundanceModelEvaluatorBase.$(OBJEXT) \
 	SundanceNLPModelEvaluator.$(OBJEXT) \
@@ -493,9 +494,11 @@ $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceEigensolution.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.hpp \
@@ -509,6 +512,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp \
@@ -844,6 +848,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceIntegralGroup.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceL2Projector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLagrange.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLinearEigenproblem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLinearProblem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLocalDOFMap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceLocalMatrixContainer.Po@am__quote@
@@ -1702,6 +1707,20 @@ SundanceL2Projector.obj: $(top_srcdir)/src-std-framework/Problem/SundanceL2Proje
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp' object='SundanceL2Projector.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceL2Projector.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp'; fi`
+
+SundanceLinearEigenproblem.o: $(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLinearEigenproblem.o -MD -MP -MF $(DEPDIR)/SundanceLinearEigenproblem.Tpo -c -o SundanceLinearEigenproblem.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceLinearEigenproblem.Tpo $(DEPDIR)/SundanceLinearEigenproblem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp' object='SundanceLinearEigenproblem.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLinearEigenproblem.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp
+
+SundanceLinearEigenproblem.obj: $(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLinearEigenproblem.obj -MD -MP -MF $(DEPDIR)/SundanceLinearEigenproblem.Tpo -c -o SundanceLinearEigenproblem.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceLinearEigenproblem.Tpo $(DEPDIR)/SundanceLinearEigenproblem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp' object='SundanceLinearEigenproblem.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceLinearEigenproblem.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp'; fi`
 
 SundanceLinearProblem.o: $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceLinearProblem.o -MD -MP -MF $(DEPDIR)/SundanceLinearProblem.Tpo -c -o SundanceLinearProblem.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp

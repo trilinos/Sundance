@@ -52,6 +52,7 @@
 #include "SundanceDerivative.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceCellDiameterExpr.hpp"
+#include "SundanceCellVectorExpr.hpp"
 #include "SundanceStdMathOps.hpp"
 #include "SundanceParameter.hpp"
 #include "SundancePointwiseUserDefFunctor.hpp"
@@ -102,6 +103,7 @@
 
 /* Problem level classes */
 #include "SundanceLinearProblem.hpp"
+#include "SundanceLinearEigenproblem.hpp"
 #include "SundanceL2Projector.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
@@ -116,12 +118,19 @@
 #include "TSFLinearSolver.hpp"
 #include "TSFLinearCombination.hpp"
 #include "TSFLinearSolverBuilder.hpp"
+#include "TSFMLOperator.hpp"
+#include "TSFParameterListPreconditionerFactory.hpp"
 
 /* Nonlinear solvers */
 #include "NOX.H"
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
 #include "TSFNOXSolver.H"
+
+/* Eigensolvers */
+#include "TSFAnasaziEigensolver.hpp"
+#include "TSFEigensolver.hpp"
+
 
 /* Atomistic/continuum */
 #include "SundanceAToCDensitySampler.hpp"

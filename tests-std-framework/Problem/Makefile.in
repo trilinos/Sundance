@@ -139,7 +139,7 @@ am__EXEEXT_1 = Poisson1D$(EXEEXT) Poisson2D$(EXEEXT) \
 	SimpleModelEvalTest$(EXEEXT) VorticityStokes2D$(EXEEXT) \
 	VorticityNavierStokes2D$(EXEEXT) SpectralPoisson1D$(EXEEXT) \
 	SpectralSqrt$(EXEEXT) PartitionedPoisson1D$(EXEEXT) \
-	NitschePoisson2D$(EXEEXT)
+	NitschePoisson2D$(EXEEXT) HelmholtzEigen2D$(EXEEXT)
 am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) Kepler$(EXEEXT) \
 	Stokes2D$(EXEEXT) LinearPartialDomain$(EXEEXT) \
@@ -194,6 +194,11 @@ am_Helmholtz1D_OBJECTS = Helmholtz1D-Helmholtz1D.$(OBJEXT)
 Helmholtz1D_OBJECTS = $(am_Helmholtz1D_OBJECTS)
 Helmholtz1D_LINK = $(CXXLD) $(Helmholtz1D_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_HelmholtzEigen2D_OBJECTS =  \
+	HelmholtzEigen2D-HelmholtzEigen2D.$(OBJEXT)
+HelmholtzEigen2D_OBJECTS = $(am_HelmholtzEigen2D_OBJECTS)
+HelmholtzEigen2D_LINK = $(CXXLD) $(HelmholtzEigen2D_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_HighOrderPoisson1D_OBJECTS =  \
 	HighOrderPoisson1D-HighOrderPoisson1D.$(OBJEXT)
 HighOrderPoisson1D_OBJECTS = $(am_HighOrderPoisson1D_OBJECTS)
@@ -340,8 +345,9 @@ SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) \
 	$(BesselTest2D_SOURCES) $(Coupled1D_SOURCES) \
 	$(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(FunctionalTest_SOURCES) $(FunctionalTest3D_SOURCES) \
-	$(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) \
-	$(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) \
+	$(Helmholtz1D_SOURCES) $(HelmholtzEigen2D_SOURCES) \
+	$(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) \
+	$(HighOrderProjection1D_SOURCES) \
 	$(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) \
 	$(LinearPartialDomain_SOURCES) \
 	$(LinearVariationalTest_SOURCES) $(NitschePoisson2D_SOURCES) \
@@ -359,8 +365,9 @@ DIST_SOURCES = $(AToCDensitySample_SOURCES) \
 	$(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
 	$(Coupled1D_SOURCES) $(Coupled2D_SOURCES) $(Eikonal2D_SOURCES) \
 	$(FunctionalTest_SOURCES) $(FunctionalTest3D_SOURCES) \
-	$(Helmholtz1D_SOURCES) $(HighOrderPoisson1D_SOURCES) \
-	$(HighOrderPoisson2D_SOURCES) $(HighOrderProjection1D_SOURCES) \
+	$(Helmholtz1D_SOURCES) $(HelmholtzEigen2D_SOURCES) \
+	$(HighOrderPoisson1D_SOURCES) $(HighOrderPoisson2D_SOURCES) \
+	$(HighOrderProjection1D_SOURCES) \
 	$(HighOrderProjection2D_SOURCES) $(Kepler_SOURCES) \
 	$(LinearPartialDomain_SOURCES) \
 	$(LinearVariationalTest_SOURCES) $(NitschePoisson2D_SOURCES) \
@@ -518,7 +525,7 @@ HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
 RadDiff1D NoxAlgebraic UserDefAlgebraic TaylorHoodStokes2D \
 Coupled1D Coupled2D Helmholtz1D AdvectionDiffusion2D LinearVariationalTest OptPoisson1D \
 FunctionalTest SimpleModelEvalTest VorticityStokes2D VorticityNavierStokes2D \
-SpectralPoisson1D SpectralSqrt PartitionedPoisson1D NitschePoisson2D
+SpectralPoisson1D SpectralSqrt PartitionedPoisson1D NitschePoisson2D HelmholtzEigen2D
 
 ALL_SRC = $(PARALLEL_SRC) $(SERIAL_SRC)
 PARALLEL_PROGS = $(PARALLEL_SRC:%=%.exe)
@@ -815,6 +822,16 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 Helmholtz1D_CXXFLAGS = $(STD_FWK_INCLUDES)
 Helmholtz1D_LDADD = $(STD_FWK_LIBS) 
+HelmholtzEigen2D_SOURCES = $(srcdir)/HelmholtzEigen2D.cpp
+HelmholtzEigen2D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+HelmholtzEigen2D_CXXFLAGS = $(STD_FWK_INCLUDES)
+HelmholtzEigen2D_LDADD = $(STD_FWK_LIBS) 
 VorticityNavierStokes2D_SOURCES = $(srcdir)/VorticityNavierStokes2D.cpp
 VorticityNavierStokes2D_DEPENDENCIES = \
 $(top_builddir)/src-std-framework/libsundanceStdFwk.a \
@@ -1106,6 +1123,9 @@ FunctionalTest3D$(EXEEXT): $(FunctionalTest3D_OBJECTS) $(FunctionalTest3D_DEPEND
 Helmholtz1D$(EXEEXT): $(Helmholtz1D_OBJECTS) $(Helmholtz1D_DEPENDENCIES) 
 	@rm -f Helmholtz1D$(EXEEXT)
 	$(Helmholtz1D_LINK) $(Helmholtz1D_OBJECTS) $(Helmholtz1D_LDADD) $(LIBS)
+HelmholtzEigen2D$(EXEEXT): $(HelmholtzEigen2D_OBJECTS) $(HelmholtzEigen2D_DEPENDENCIES) 
+	@rm -f HelmholtzEigen2D$(EXEEXT)
+	$(HelmholtzEigen2D_LINK) $(HelmholtzEigen2D_OBJECTS) $(HelmholtzEigen2D_LDADD) $(LIBS)
 HighOrderPoisson1D$(EXEEXT): $(HighOrderPoisson1D_OBJECTS) $(HighOrderPoisson1D_DEPENDENCIES) 
 	@rm -f HighOrderPoisson1D$(EXEEXT)
 	$(HighOrderPoisson1D_LINK) $(HighOrderPoisson1D_OBJECTS) $(HighOrderPoisson1D_LDADD) $(LIBS)
@@ -1203,6 +1223,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionalTest-FunctionalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FunctionalTest3D-FunctionalTest3D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Helmholtz1D-Helmholtz1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HelmholtzEigen2D-HelmholtzEigen2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HighOrderPoisson1D-HighOrderPoisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HighOrderPoisson2D-HighOrderPoisson2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HighOrderProjection1D-HighOrderProjection1D.Po@am__quote@
@@ -1370,6 +1391,20 @@ Helmholtz1D-Helmholtz1D.obj: $(srcdir)/Helmholtz1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/Helmholtz1D.cpp' object='Helmholtz1D-Helmholtz1D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Helmholtz1D_CXXFLAGS) $(CXXFLAGS) -c -o Helmholtz1D-Helmholtz1D.obj `if test -f '$(srcdir)/Helmholtz1D.cpp'; then $(CYGPATH_W) '$(srcdir)/Helmholtz1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/Helmholtz1D.cpp'; fi`
+
+HelmholtzEigen2D-HelmholtzEigen2D.o: $(srcdir)/HelmholtzEigen2D.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HelmholtzEigen2D_CXXFLAGS) $(CXXFLAGS) -MT HelmholtzEigen2D-HelmholtzEigen2D.o -MD -MP -MF $(DEPDIR)/HelmholtzEigen2D-HelmholtzEigen2D.Tpo -c -o HelmholtzEigen2D-HelmholtzEigen2D.o `test -f '$(srcdir)/HelmholtzEigen2D.cpp' || echo '$(srcdir)/'`$(srcdir)/HelmholtzEigen2D.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/HelmholtzEigen2D-HelmholtzEigen2D.Tpo $(DEPDIR)/HelmholtzEigen2D-HelmholtzEigen2D.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/HelmholtzEigen2D.cpp' object='HelmholtzEigen2D-HelmholtzEigen2D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HelmholtzEigen2D_CXXFLAGS) $(CXXFLAGS) -c -o HelmholtzEigen2D-HelmholtzEigen2D.o `test -f '$(srcdir)/HelmholtzEigen2D.cpp' || echo '$(srcdir)/'`$(srcdir)/HelmholtzEigen2D.cpp
+
+HelmholtzEigen2D-HelmholtzEigen2D.obj: $(srcdir)/HelmholtzEigen2D.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HelmholtzEigen2D_CXXFLAGS) $(CXXFLAGS) -MT HelmholtzEigen2D-HelmholtzEigen2D.obj -MD -MP -MF $(DEPDIR)/HelmholtzEigen2D-HelmholtzEigen2D.Tpo -c -o HelmholtzEigen2D-HelmholtzEigen2D.obj `if test -f '$(srcdir)/HelmholtzEigen2D.cpp'; then $(CYGPATH_W) '$(srcdir)/HelmholtzEigen2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/HelmholtzEigen2D.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/HelmholtzEigen2D-HelmholtzEigen2D.Tpo $(DEPDIR)/HelmholtzEigen2D-HelmholtzEigen2D.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/HelmholtzEigen2D.cpp' object='HelmholtzEigen2D-HelmholtzEigen2D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HelmholtzEigen2D_CXXFLAGS) $(CXXFLAGS) -c -o HelmholtzEigen2D-HelmholtzEigen2D.obj `if test -f '$(srcdir)/HelmholtzEigen2D.cpp'; then $(CYGPATH_W) '$(srcdir)/HelmholtzEigen2D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/HelmholtzEigen2D.cpp'; fi`
 
 HighOrderPoisson1D-HighOrderPoisson1D.o: $(srcdir)/HighOrderPoisson1D.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(HighOrderPoisson1D_CXXFLAGS) $(CXXFLAGS) -MT HighOrderPoisson1D-HighOrderPoisson1D.o -MD -MP -MF $(DEPDIR)/HighOrderPoisson1D-HighOrderPoisson1D.Tpo -c -o HighOrderPoisson1D-HighOrderPoisson1D.o `test -f '$(srcdir)/HighOrderPoisson1D.cpp' || echo '$(srcdir)/'`$(srcdir)/HighOrderPoisson1D.cpp

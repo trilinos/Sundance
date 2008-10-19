@@ -36,10 +36,11 @@
 
 namespace SundanceStdMesh
 {
-  using namespace TSFExtended;
-  using namespace Teuchos;
+using namespace TSFExtended;
+using namespace Teuchos;
 using namespace SundanceUtils;
-  using namespace Internal;
+using namespace Internal;
+
   /**
    * PartitionedRectangleMesher meshes the rectangle 
    * \f$ \left[a_x, b_x\right] \otimes \left[a_y, b_y\right] \f$
@@ -85,11 +86,18 @@ using namespace SundanceUtils;
        + ", ay=" + Teuchos::toString(ay_)
        + ", by=" + Teuchos::toString(by_)
        + ", ny=" + Teuchos::toString(ny_) + "]";}
-      
+
+
+
+    /** Find a nearly equal balance between X and Y partitions */
+    static void balanceXY(int n, int* npx, int* npy);
+    
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
     virtual RefCountPtr<MeshSourceBase> getRcp() {return rcp(this);}
+
+
 
   protected:
 

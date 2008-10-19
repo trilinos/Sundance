@@ -506,6 +506,18 @@ Expr List(const Expr& a, const Expr& b, const Expr& c,
   const Expr& g, const Expr& h, const Expr& i,
   const Expr& j);
 
+
+/** \relates Expr */
+Expr gradient(int dim);
+  
+/** \relates Expr */
+Expr div(const Expr& f);
+  
+/** \relates Expr */
+Expr cross(const Expr& a, const Expr& b);
+  
+/** \relates Expr */
+Expr curl(const Expr& f);
   
 
 }

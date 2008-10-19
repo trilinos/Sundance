@@ -29,6 +29,24 @@ PartitionedRectangleMesher::PartitionedRectangleMesher(const ParameterList& para
 }
 
 
+void PartitionedRectangleMesher::balanceXY(int n, int* npx, int* npy)
+{
+  int m = (int) floor(sqrt(n));
+  for (int i=m; i>=1; i--)
+  {
+    if (n % i == 0) 
+    {
+      *npx = i;
+      *npy = n/i;
+      return ;
+    }
+  }
+
+  *npx = n;
+  *npy = 1;
+}
+
+
 Mesh PartitionedRectangleMesher::fillMesh() const
 {
   SUNDANCE_OUT(this->verbosity() > VerbSilent,

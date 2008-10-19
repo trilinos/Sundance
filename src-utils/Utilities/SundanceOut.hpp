@@ -36,7 +36,7 @@
 #include "TSFObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_FancyOStream.hpp"
-
+#include "Teuchos_MPIComm.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -73,6 +73,22 @@ namespace SundanceUtils
             first = false;
           }
           return *rtn;
+        }
+
+      static FancyOStream& root()
+        {
+          static bool isRoot = MPIComm::world().getRank()==0;
+          static RefCountPtr<FancyOStream> blackHole
+            = rcp(new FancyOStream(rcp(new oblackholestream())));
+
+          if (isRoot)
+          {
+            return os();
+          }
+          else
+          {
+            return *blackHole;
+          }
         }
 
       static bool& suppressStdout() {static bool rtn=false; return rtn;}

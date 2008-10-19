@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
   try
     {
       int verbosity = 1;
-#define INACTIVE
+//#define INACTIVE
 #ifdef INACTIVE
       cout << "test INACTIVE" << endl;
 #else
