@@ -47,6 +47,7 @@ include $(TRILINOS_DIR)/packages/epetra/Makefile.export.epetra
 include $(TRILINOS_DIR)/packages/thyra/Makefile.export.thyra
 include $(TRILINOS_DIR)/packages/teuchos/Makefile.export.teuchos
 include $(TRILINOS_DIR)/packages/aztecoo/Makefile.export.aztecoo
+include $(TRILINOS_DIR)/packages/anasazi/Makefile.export.anasazi
 include $(TRILINOS_DIR)/packages/ifpack/Makefile.export.ifpack
 include $(TRILINOS_DIR)/packages/nox/Makefile.export.nox
 include $(TRILINOS_DIR)/packages/ml/Makefile.export.ml
@@ -55,11 +56,11 @@ include $(TRILINOS_DIR)/packages/stratimikos/Makefile.export.stratimikos
 @MOOCHO_STR@include $(TRILINOS_DIR)/packages/moocho/Makefile.export.moocho
 
 TSFEXTENDED_INCLUDES = -I$(TRILINOS_DIR)/include $(MOOCHO_INCLUDES) $(NOX_INCLUDES) \
-$(ML_INCLUDES) $(AMESOS_INCLUDES) $(IFPACK_INCLUDES) $(THYRA_INCLUDES) $(EPETRAEXT_INCLUDES) $(STRATIMIKOS_INCLUDES)
+$(ML_INCLUDES) $(AMESOS_INCLUDES) $(ANASAZI_INCLUDES) $(IFPACK_INCLUDES) $(THYRA_INCLUDES) $(EPETRAEXT_INCLUDES) $(STRATIMIKOS_INCLUDES)
 
 TMP_TSFEXTENDED_LIBS = @LDFLAGS@ \
 -L@abs_top_builddir@/src-solvers \
--lTSFExtended  $(STRATIMIKOS_LIBS) $(MOOCHO_LIBS) $(NOX_LIBS) $(ML_LIBS) $(AMESOS_LIBS) \
+-lTSFExtended  $(STRATIMIKOS_LIBS) $(MOOCHO_LIBS) $(NOX_LIBS) $(ML_LIBS) $(ANASAZI_LIBS) $(AMESOS_LIBS) \
 $(AZTECOO_LIBS) $(IFPACK_LIBS) \
 $(THYRA_LIBS) \
 $(EPETRAEXT_LIBS) \

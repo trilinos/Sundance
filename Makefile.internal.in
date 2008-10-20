@@ -60,6 +60,7 @@ TRILINOS_DIR = @TRILINOS_DIR@
 include $(TRILINOS_DIR)/packages/epetra/Makefile.export.epetra
 include $(TRILINOS_DIR)/packages/thyra/Makefile.export.thyra
 include $(TRILINOS_DIR)/packages/teuchos/Makefile.export.teuchos
+include $(TRILINOS_DIR)/packages/teuchos/Makefile.export.anasazi
 include $(TRILINOS_DIR)/packages/aztecoo/Makefile.export.aztecoo
 include $(TRILINOS_DIR)/packages/ifpack/Makefile.export.ifpack
 include $(TRILINOS_DIR)/packages/nox/Makefile.export.nox
@@ -75,6 +76,7 @@ TMP_TRILINOS_LIBS = @LDFLAGS@ \
   $(ML_LIBS) \
   $(AMESOS_LIBS) \
   $(AZTECOO_LIBS) \
+  $(ANASAZI_LIBS) \
   $(IFPACK_LIBS) \  
   $(THYRA_LIBS) \
   $(EPETRAEXT_LIBS) \
