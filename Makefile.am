@@ -114,7 +114,7 @@ endif
 if BUILD_TESTS
 tests: 
 	@echo ""
-	@echo "Now building Sundance tests"
+	@echo "Now building Sundance tests."
 	@echo ""
 	cd $(top_builddir)/tests-solvers && $(MAKE)
 	cd $(top_builddir)/tests-utils && $(MAKE)

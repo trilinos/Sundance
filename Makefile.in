@@ -746,7 +746,7 @@ all-local:
 
 @BUILD_TESTS_TRUE@tests: 
 @BUILD_TESTS_TRUE@	@echo ""
-@BUILD_TESTS_TRUE@	@echo "Now building Sundance tests"
+@BUILD_TESTS_TRUE@	@echo "Now building Sundance tests."
 @BUILD_TESTS_TRUE@	@echo ""
 @BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-solvers && $(MAKE)
 @BUILD_TESTS_TRUE@	cd $(top_builddir)/tests-utils && $(MAKE)
