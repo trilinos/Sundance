@@ -53,6 +53,47 @@ using namespace TSFExtended;
 LinearEigenproblem::LinearEigenproblem(
   const Mesh& mesh, const Expr& eqn,
   const Expr& v, const Expr& u,
+  const VectorType<double>& vecType)
+  : lumpMass_(false),
+    kProb_(),
+    mProb_(),
+    M_(),
+    discSpace_()
+{
+  Expr empty;
+  
+  kProb_ = LinearProblem(mesh, eqn, empty, v, u, vecType);
+  discSpace_ = *(kProb_.solnSpace()[0]);
+}    
+
+LinearEigenproblem::LinearEigenproblem(
+  const Mesh& mesh, const Expr& eqn,
+  const Expr& v, const Expr& u,
+  const VectorType<double>& vecType,
+  bool lumpedMass)
+  : lumpMass_(lumpedMass),
+    kProb_(),
+    mProb_(),
+    M_(),
+    discSpace_()
+{
+  Expr empty;
+  
+  kProb_ = LinearProblem(mesh, eqn, empty, v, u, vecType);
+  mProb_ = makeMassProb(mesh, empty, v, u, vecType);
+  discSpace_ = *(kProb_.solnSpace()[0]);
+  M_ = mProb_.getOperator();
+  if (lumpMass_)
+  {
+    M_ = lumpedOperator(M_);
+  }
+}    
+
+
+LinearEigenproblem::LinearEigenproblem(
+  const Mesh& mesh, const Expr& eqn,
+  const Expr& massExpr,
+  const Expr& v, const Expr& u,
   const VectorType<double>& vecType,
   bool lumpedMass)
   : lumpMass_(lumpedMass),
@@ -63,7 +104,7 @@ LinearEigenproblem::LinearEigenproblem(
 {
   Expr bc;
   kProb_ = LinearProblem(mesh, eqn, bc, v, u, vecType);
-  mProb_ = makeMassProb(mesh, v, u, vecType);
+  mProb_ = makeMassProb(mesh, massExpr, v, u, vecType);
   discSpace_ = *(kProb_.solnSpace()[0]);
   M_ = mProb_.getOperator();
   if (lumpMass_)
@@ -74,12 +115,22 @@ LinearEigenproblem::LinearEigenproblem(
 
 LinearProblem LinearEigenproblem::makeMassProb(
   const Mesh& mesh,
+  const Expr& massExpr,
   const Expr& v, const Expr& u,
   const VectorType<double>& vecType) const
 {
+  Expr eqn;
+  
   CellFilter interior = new MaximalCellFilter();
   QuadratureFamily quad = new GaussianQuadrature( 4 );
-  Expr eqn = Integral(interior, v*u, quad);
+  if (massExpr.ptr().get()==0)
+  {
+    eqn = Integral(interior, v*u, quad);
+  }
+  else
+  {
+    eqn = Integral(interior, massExpr, quad);
+  }
   Expr bc;
   LinearProblem rtn(mesh, eqn, bc, v, u, vecType);
   return rtn;

@@ -55,14 +55,34 @@ class LinearEigenproblem
 {
 public:
   /** */
+  LinearEigenproblem(){}
+  /** */
   LinearEigenproblem(
     const Mesh& mesh, const Expr& eqn,
+    const Expr& v, const Expr& u,
+    const VectorType<double>& vecType) ;
+  /** */
+  LinearEigenproblem(
+    const Mesh& mesh, const Expr& eqn,
+    const Expr& v, const Expr& u,
+    const VectorType<double>& vecType,
+    bool lumpMass) ;
+  /** */
+  LinearEigenproblem(
+    const Mesh& mesh, const Expr& eqn,
+    const Expr& massExpr,
     const Expr& v, const Expr& u,
     const VectorType<double>& vecType,
     bool lumpMass) ;
 
   /** */
   Eigensolution solve(const Eigensolver<double>& solver) const ;
+
+  /** */
+  LinearOperator<double> getK() const {return kProb_.getOperator();}
+
+  /** */
+  LinearOperator<double> getM() const {return mProb_.getOperator();}
     
   
 private:
@@ -72,6 +92,7 @@ private:
   /** */
   LinearProblem makeMassProb(
     const Mesh& mesh,
+    const Expr& massExpr,
     const Expr& v, const Expr& u,
     const VectorType<double>& vecType) const ;
 

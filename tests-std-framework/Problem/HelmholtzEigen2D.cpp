@@ -1,9 +1,9 @@
 #include "Sundance.hpp"
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;});
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;});
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;});
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;});
+CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;})
 
 
 
@@ -31,8 +31,8 @@ int main( int argc , char **argv )
 
     VectorType<double> vecType = new EpetraVectorType();
 
-    const int nx = 256;
-    const int ny = 256;
+    const int nx = 64;
+    const int ny = 64;
     const double C = 2.0;
     bool lumpedMass = true;
     ParameterList solverParams = params.sublist("Eigensolver");
