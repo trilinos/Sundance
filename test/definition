@@ -17,6 +17,14 @@
 #
 #############################################################################
 
+
+(FRAMEWORK,INSTALL)
+{
+  TESTS = ../tests-solvers/SolverTests/UserDefPrecondTest.exe;
+  COMM=SERIAL,MPI(1);
+}
+
+
 (FRAMEWORK,INSTALL)
 {
   TESTS = ../tests-solvers/VectorTests/VectorTest.exe,
@@ -25,7 +33,10 @@
           ../tests-solvers/OperatorTests/BlockOpTest.exe,
           ../tests-solvers/OperatorTests/LinearCombinationTest.exe,
           ../tests-solvers/OperatorTests/LTITest.exe,
-          ../tests-solvers/OperatorTests/MultiVectorOpTest.exe;
+          ../tests-solvers/OperatorTests/MultiVectorOpTest.exe,
+          ../tests-solvers/SolverTests/BlockTriangularTest.exe,
+          ../tests-solvers/SolverTests/PoissonBoltzmannTest.exe,
+          ../tests-solvers/SolverTests/PoissonTest.exe;
   COMM=SERIAL,MPI(2);
 }
 

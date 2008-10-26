@@ -137,7 +137,7 @@ LinearProblem LinearEigenproblem::makeMassProb(
 }
 
 
-Expr LinearEigenproblem::makeEigenfunctions(
+Array<Expr> LinearEigenproblem::makeEigenfunctions(
   Array<Vector<double> >& ev) const 
 {
   Array<Expr> x(ev.size());
@@ -145,14 +145,13 @@ Expr LinearEigenproblem::makeEigenfunctions(
   QuadratureFamily q = new GaussianQuadrature(2);
   for (unsigned int i=0; i<ev.size(); i++) 
   {
-    x[i] = new DiscreteFunction(discSpace_, ev[i]);
+    x[i] = new DiscreteFunction(discSpace_, ev[i], "ev[" + Teuchos::toString(i)+"]");
     double N = evaluateIntegral(discSpace_.mesh(), 
       Integral(interior, x[i]*x[i], q));
     ev[i].scale(1.0/sqrt(N));
   }
-  Expr rtn = new ListExpr(x);
 
-  return rtn;
+  return x;
 }
 
 
@@ -175,7 +174,7 @@ Eigensolution LinearEigenproblem::solve(const Eigensolver<double>& solver) const
   
   solver.solve(K, M_, ev, ew);
 
-  Expr eigenfuncs = makeEigenfunctions(ev);
+  Array<Expr> eigenfuncs = makeEigenfunctions(ev);
 
   return Eigensolution(eigenfuncs, ew);
 }

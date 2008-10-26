@@ -124,15 +124,18 @@ int main(int argc, char *argv[])
       if (err > tol)
         {
           cerr << "Poisson solve test FAILED" << endl;
+          return 1;
         }
       else
         {
           cerr << "Poisson solve test PASSED" << endl;
+          return 0;
         }
     }
   catch(std::exception& e)
     {
       cerr << "Caught exception: " << e.what() << endl;
+      return -1;
     }
 }
 

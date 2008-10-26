@@ -86,15 +86,18 @@ int main(int argc, char *argv[])
       if (err > tol)
         {
           cerr << "NOX Poisson-Boltzmann test FAILED" << endl;
+          return 1;
         }
       else
         {
           cerr << "NOX Poisson-Boltzmann test PASSED" << endl;
+          return 0;
         }
     }
   catch(std::exception& e)
     {
       cerr << "Caught exception: " << e.what() << endl;
+      return -1;
     }
 }
 

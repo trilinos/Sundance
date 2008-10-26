@@ -160,7 +160,8 @@ const DiscreteFunction* DiscreteFunction::discFunc(const Expr& expr)
     = dynamic_cast<const DiscreteFunction*>(e);
 
   TEST_FOR_EXCEPTION(df==0, RuntimeError,
-                     "failed to cast " << expr << " to a discrete function");
+    "failed to cast " << expr << " to a discrete function. "
+    "It appears to be of type " << e->typeName());
 
   return df;
 }
@@ -173,7 +174,8 @@ DiscreteFunction* DiscreteFunction::discFunc(Expr& expr)
     = dynamic_cast<DiscreteFunction*>(expr.ptr().get());
 
   TEST_FOR_EXCEPTION(df==0, RuntimeError,
-                     "failed to cast " << expr << " to a discrete function");
+    "failed to cast " << expr << " to a discrete function. "
+    "It appears to be of type " << expr.ptr()->typeName());
 
   return df;
 }

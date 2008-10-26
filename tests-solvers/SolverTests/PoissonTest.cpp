@@ -53,80 +53,83 @@ int main(int argc, char *argv[])
   typedef Teuchos::ScalarTraits<double> ST;
 
   try
-    {
-      int verbosity = 1;
+  {
+    int verbosity = 1;
 
-      GlobalMPISession session(&argc, &argv);
+    GlobalMPISession session(&argc, &argv);
 
-      MPIComm::world().synchronize();
+    MPIComm::world().synchronize();
 
-      VectorType<double> type = new EpetraVectorType();
+    VectorType<double> type = new EpetraVectorType();
 
-      string solverFile = SundanceUtils::searchForFile("SolverParameters/poissonParams.xml");
+    string solverFile = SundanceUtils::searchForFile("SolverParameters/poissonParams.xml");
 
-      ParameterXMLFileReader reader(solverFile);
-      ParameterList solverParams = reader.getParameters();
+    ParameterXMLFileReader reader(solverFile);
+    ParameterList solverParams = reader.getParameters();
 
-      /* create the range space  */
-      int nLocalRows = solverParams.get<int>("nLocal");
+    /* create the range space  */
+    int nLocalRows = solverParams.get<int>("nLocal");
 
-      bool symBC = solverParams.get<bool>("Symmetrize BCs");
+    bool symBC = solverParams.get<bool>("Symmetrize BCs");
 
-      MatrixLaplacian1D builder(nLocalRows, type, symBC);
+    MatrixLaplacian1D builder(nLocalRows, type, symBC);
 
-      LinearOperator<double> A = builder.getOp();
+    LinearOperator<double> A = builder.getOp();
 
-      Vector<double> x = A.domain().createMember();
-      int myRank = MPIComm::world().getRank();
-      int nProcs = MPIComm::world().getNProc();
+    Vector<double> x = A.domain().createMember();
+    int myRank = MPIComm::world().getRank();
+    int nProcs = MPIComm::world().getNProc();
       
 
-      Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
+    Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
 #ifdef TRILINOS_6
-      if (myRank==0) x[0] = 0.0;
-      if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;
-      // need to fix operator[] routine
+    if (myRank==0) x[0] = 0.0;
+    if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;
+    // need to fix operator[] routine
 #else
-      if (myRank==0) x.setElement(0, 0);
-      if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
+    if (myRank==0) x.setElement(0, 0);
+    if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
 #endif
-      Vector<double> y = A*x;
-      Vector<double> ans = A.range().createMember();
+    Vector<double> y = A*x;
+    Vector<double> ans = A.range().createMember();
 
-      LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(solverParams);
+    LinearSolver<double> solver 
+      = LinearSolverBuilder::createSolver(solverParams);
 
-      LinearOperator<double> AInv = A.inverse(solver);
+    LinearOperator<double> AInv = A.inverse(solver);
 
-      ans = AInv * y;
+    ans = AInv * y;
 
-      //      SolverState<double> state = solver.solve(A, y, ans);
+    //      SolverState<double> state = solver.solve(A, y, ans);
       
 
       
-      //      cout << state << endl;
+    //      cout << state << endl;
 
-      cout << "solver is " << solver << endl;
+    cout << "solver is " << solver << endl;
 
-      cout << "answer is " << endl;
-      ans.print(cout);
+    cout << "answer is " << endl;
+    ans.print(cout);
       
-      double err = (x-ans).norm2();
-      cout << "error norm = " << err << endl;
+    double err = (x-ans).norm2();
+    cout << "error norm = " << err << endl;
 
-      double tol = 1.0e-10;
-      if (err > tol)
-        {
-          cout << "Poisson solve test FAILED" << endl;
-        }
-      else
-        {
-          cout << "Poisson solve test PASSED" << endl;
-        }
-    }
-  catch(std::exception& e)
+    double tol = 1.0e-10;
+    if (err > tol)
     {
-      cout << "Caught exception: " << e.what() << endl;
+      cout << "Poisson solve test FAILED" << endl;
+      return 1;
     }
+    else
+    {
+      cout << "Poisson solve test PASSED" << endl;
+      return 0;
+    }
+  }
+  catch(std::exception& e)
+  {
+    cout << "Caught exception: " << e.what() << endl;
+    return -1;
+  }
 }
 

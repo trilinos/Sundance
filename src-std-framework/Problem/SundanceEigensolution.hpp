@@ -53,7 +53,7 @@ public:
   Eigensolution() : eigenfunctions_(), eigenvalues_(){;}
 
   /** */
-  Eigensolution(const Expr& eigenfunctions, 
+  Eigensolution(const Array<Expr>& eigenfunctions, 
     const Array<std::complex<double> >& eigenvalues)
     : eigenfunctions_(eigenfunctions),
       eigenvalues_(eigenvalues)
@@ -73,7 +73,7 @@ public:
     {return eigenvalues_[i];}
 
 private:
-  Expr eigenfunctions_;
+  Array<Expr> eigenfunctions_;
   Array<std::complex<double> > eigenvalues_;
 };
 

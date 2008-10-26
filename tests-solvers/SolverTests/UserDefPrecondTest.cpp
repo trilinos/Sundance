@@ -54,101 +54,99 @@ int main(int argc, char *argv[])
   typedef Teuchos::ScalarTraits<double> ST;
 
   try
-    {
-      int verbosity = 1;
-//#define INACTIVE
-#ifdef INACTIVE
-      cout << "test INACTIVE" << endl;
-#else
+  {
+    int verbosity = 1;
 
-      GlobalMPISession session(&argc, &argv);
+    GlobalMPISession session(&argc, &argv);
 
-      MPIComm::world().synchronize();
+    MPIComm::world().synchronize();
 
-      VectorType<double> type = new EpetraVectorType();
+    VectorType<double> type = new EpetraVectorType();
 
-      string solverFile 
-	= SundanceUtils::searchForFile("SolverParameters/userPrecParams.xml");
+    string solverFile 
+      = SundanceUtils::searchForFile("SolverParameters/userPrecParams.xml");
 
-      ParameterXMLFileReader reader(solverFile);
-      ParameterList solverParams = reader.getParameters();
-      ParameterList innerSolverParams = solverParams.sublist("Inner Solve");
-      ParameterList outerSolverParams = solverParams.sublist("Outer Solve");
+    ParameterXMLFileReader reader(solverFile);
+    ParameterList solverParams = reader.getParameters();
+    ParameterList innerSolverParams = solverParams.sublist("Inner Solve");
+    ParameterList outerSolverParams = solverParams.sublist("Outer Solve");
 
-      /* create the range space  */
-      int nLocalRows = solverParams.get<int>("nLocal");
+    /* create the range space  */
+    int nLocalRows = solverParams.get<int>("nLocal");
 
-      bool symBC = solverParams.get<bool>("Symmetrize BCs");
+    bool symBC = solverParams.get<bool>("Symmetrize BCs");
 
-      MatrixLaplacian1D builder(nLocalRows, type, symBC);
+    MatrixLaplacian1D builder(nLocalRows, type, symBC);
 
-      LinearOperator<double> A = builder.getOp();
+    LinearOperator<double> A = builder.getOp();
 
-      Vector<double> x = A.domain().createMember();
-      int myRank = MPIComm::world().getRank();
-      int nProcs = MPIComm::world().getNProc();
+    Vector<double> x = A.domain().createMember();
+    int myRank = MPIComm::world().getRank();
+    int nProcs = MPIComm::world().getNProc();
       
 
-      Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
+    Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
 #ifdef TRILINOS_6
-      if (myRank==0) x[0] = 0.0;
-      if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;
-      // need to fix operator[] routine
+    if (myRank==0) x[0] = 0.0;
+    if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;
+    // need to fix operator[] routine
 #else
-      if (myRank==0) x.setElement(0, 0);
-      if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
+    if (myRank==0) x.setElement(0, 0);
+    if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
 #endif
 
-      cout << "x=" << endl;
-      x.print(cout);
+    cout << "x=" << endl;
+    x.print(cout);
       
-      Vector<double> y = A*x;
-      cout << "y=" << endl;
-      y.print(cout);
+    Vector<double> y = A*x;
+    cout << "y=" << endl;
+    y.print(cout);
 
-      Vector<double> ans = A.range().createMember();
+    Vector<double> ans = A.range().createMember();
 
-      LinearSolver<double> innerSolver 
-        = LinearSolverBuilder::createSolver(innerSolverParams);
+    LinearSolver<double> innerSolver 
+      = LinearSolverBuilder::createSolver(innerSolverParams);
 
-      LinearSolver<double> outerSolver 
-        = LinearSolverBuilder::createSolver(outerSolverParams);
+    LinearSolver<double> outerSolver 
+      = LinearSolverBuilder::createSolver(outerSolverParams);
 
-      /* call the setUserPrec() function to set the operator and solver 
-       * to be used for preconditioning */
-      outerSolver.setUserPrec(A, innerSolver);
+    /* call the setUserPrec() function to set the operator and solver 
+     * to be used for preconditioning */
+    outerSolver.setUserPrec(A, innerSolver);
 
-      LinearOperator<double> AInv = A.inverse(outerSolver);
-      
-
-      ans = AInv * y;
-
-      //      SolverState<double> state = solver.solve(A, y, ans);
+    LinearOperator<double> AInv = A.inverse(outerSolver);
       
 
-      
-      //      cout << state << endl;
+    ans = AInv * y;
 
-      cout << "answer is " << endl;
-      ans.print(cout);
+    //      SolverState<double> state = solver.solve(A, y, ans);
       
-      double err = (x-ans).norm2();
-      cout << "error norm = " << err << endl;
 
-      double tol = 1.0e-10;
-      if (err > tol)
-        {
-          cout << "User-defined preconditioner test FAILED" << endl;
-        }
-      else
-        {
-          cout << "User-defined preconditioner test PASSED" << endl;
-        }
-#endif
-    }
-  catch(std::exception& e)
+      
+    //      cout << state << endl;
+
+    cout << "answer is " << endl;
+    ans.print(cout);
+      
+    double err = (x-ans).norm2();
+    cout << "error norm = " << err << endl;
+
+    double tol = 1.0e-10;
+    if (err > tol)
     {
-      cout << "Caught exception: " << e.what() << endl;
+      cout << "User-defined preconditioner test FAILED" << endl;
+      return 1;
     }
+    else
+    {
+      cout << "User-defined preconditioner test PASSED" << endl;
+      return 0;
+    }
+  }
+  catch(std::exception& e)
+  {
+    cout << "Caught exception: " << e.what() << endl;
+    return -1;
+  }
 }
 

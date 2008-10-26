@@ -87,7 +87,7 @@ public:
   
 private:
   /** */
-  Expr makeEigenfunctions(Array<Vector<double> >& ev) const ;
+  Array<Expr> makeEigenfunctions(Array<Vector<double> >& ev) const ;
 
   /** */
   LinearProblem makeMassProb(
