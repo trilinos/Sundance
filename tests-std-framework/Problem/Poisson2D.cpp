@@ -244,7 +244,9 @@ int main(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+  Sundance::init(&argc, &argv);
   std::cout << "dummy Poisson2D PASSED. Enable exodus to run the actual test" << std::endl;
+  Sundance::finalize();
   return 0;
 }
 
