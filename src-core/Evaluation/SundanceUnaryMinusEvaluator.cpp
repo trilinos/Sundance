@@ -100,8 +100,8 @@ void UnaryMinusEvaluator
 
   if (verbosity() > VerbLow)
     {
-      std::cerr << tab << "UnaryMinus operand results" << std::endl;
-      argSparsitySuperset()->print(std::cerr, vectorResults,
+      Out::os() << tab << "UnaryMinus operand results" << std::endl;
+      argSparsitySuperset()->print(Out::os(), vectorResults,
                            constantResults);
     }
 

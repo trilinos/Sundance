@@ -120,7 +120,7 @@ inline Expr FD(const Expr& f, const Expr& u)
 #define TESTER_N(expr, adExpr, order)                                   \
   {                                                                     \
     Tabs tabs1;                                                         \
-    cerr << tabs1 << endl << tabs1                                      \
+    Out::os() << tabs1 << endl << tabs1                                      \
          << "------------- Testing " << #expr << " -----------"        \
          << endl << tabs1 << endl;                                      \
     bool thisTestIsOK = true;                                           \
@@ -133,13 +133,13 @@ inline Expr FD(const Expr& f, const Expr& u)
           isOK = false;                                                 \
         }                                                               \
       double adf = (adExpr).value();                                    \
-      cerr << tabs1 << "expr value = " << f << " check=" << adf         \
+      Out::os() << tabs1 << "expr value = " << f << " check=" << adf         \
            << " |f-check|=" << fabs(f-adf) << endl;                     \
       double fError = fabs(f-adf);                                      \
       if (fError > tol1)                                                \
         {                                                               \
           thisTestIsOK=false;                                           \
-          cerr << "value computation FAILED" << endl;                   \
+          Out::os() << "value computation FAILED" << endl;                   \
           isOK = false;                                                 \
         }                                                               \
       }                                                                 \
@@ -147,16 +147,16 @@ inline Expr FD(const Expr& f, const Expr& u)
       {                                                                 \
         thisTestIsOK = false;                                           \
         isOK=false;                                                     \
-        cerr << "exception: " << ex.what() << endl ;                    \
+        Out::os() << "exception: " << ex.what() << endl ;                    \
       }                                                                 \
     if (!thisTestIsOK)                                                  \
       {                                                                 \
         failures.append(#expr);                                         \
-        cerr << "test " << (expr).toString() << " FAILED" << endl << endl;\
+        Out::os() << "test " << (expr).toString() << " FAILED" << endl << endl;\
       }                                                                 \
     else                                                                \
       {                                                                 \
-        cerr << "test " << (expr).toString() << " PASSED" << endl << endl; \
+        Out::os() << "test " << (expr).toString() << " PASSED" << endl << endl; \
       }\
   }
 
@@ -213,6 +213,8 @@ int main(int argc, char** argv)
       ADField U(ADBasis(1), sqrt(2.0));
       ADField V(ADBasis(2), sqrt(2.5));
       ADField W(ADBasis(2), sqrt(3.0));
+      ADField B(ADBasis(2), 0.0);
+      ADField C(ADBasis(2), 0.0);
 
       ADCoord X(0);
       ADCoord Y(1);
@@ -227,6 +229,8 @@ int main(int argc, char** argv)
       Expr u = new TestUnknownFunction(U, "u");
       Expr v = new TestUnknownFunction(V, "v");
       Expr w = new TestUnknownFunction(W, "w");
+      Expr b = new TestUnknownFunction(B, "b");
+      Expr c = new TestUnknownFunction(C, "c");
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -248,6 +252,10 @@ int main(int argc, char** argv)
       Array<string> failures;
 
 
+
+#ifdef BLARF
+      XTESTER(b, B);
+#endif
 
       TESTER(u, U);
 
@@ -399,7 +407,20 @@ int main(int argc, char** argv)
 
       TESTER((dx*(x*x + y*y)), (Dx*(X*X + Y*Y)));
 
-      TESTER((dx*(x*w)), (Dx*(X*W)));
+
+#ifdef BLARF
+      TESTER((b*x*dx*(b) + b*b*(dx*x)), (B*(Dx*(X*B))));
+      TESTER((b*b*(dx*x)), (B*B)*(Dx*X));
+      TESTER((dx*x), (Dx*X));
+      TESTER((b*b), (B*B));
+      
+      TESTER((c*dx*(x*b)), (C*(Dx*(X*B))));
+
+      TESTER((u*dx*(x*b)), (U*(Dx*(X*B))));
+      TESTER((u*dx*(x*b)), (U*(Dx*(X*B))));
+      TESTER((dx*(sin(x)*b)), (Dx*(sin(X)*B)));
+#endif BLARF
+
 
       /* */
       TESTER((dx*y), (Dx*Y));
@@ -414,9 +435,11 @@ int main(int argc, char** argv)
 
       TESTER((dx*(x-w)), (Dx*(X-W)));
 
+      TESTER((dx*(x*w)), (Dx*(X*W)));
+
 
       TESTER((dx*(x*w+w)), (Dx*(X*W+W)));
-      //#ifdef BLARF
+
       TESTER((dx*(x*w-w)), (Dx*(X*W-W)));
 
       TESTER((dx*(w + x*w)), (Dx*(W + X*W)));
@@ -424,10 +447,6 @@ int main(int argc, char** argv)
 
       TESTER((dx*(w - x*w)), (Dx*(W - X*W)));
 
-      //#endif
-
-
-      //#ifdef BLARF
       TESTER((dx*(y*w)), (Dx*(Y*W)));
 
       TESTER((dx*(u*w)), (Dx*(U*W)));
@@ -666,33 +685,33 @@ int main(int argc, char** argv)
 
       TESTER(exp(log(u) * 2.3/(1.0 + 0.0*v/100.0)), 
 	     exp(log(U) * 2.3/(1.0 + 0.0*V/100.0)));
-      
+
 
 
     finish:
       if (isOK)
         {
-          cerr << "all tests PASSED!" << endl;
+          Out::os() << "all tests PASSED!" << endl;
         }
       else
         {
           stat = -1;
-          cerr << "overall test FAILED!" << endl;
-          cerr << endl << "failed exprs: " << endl
+          Out::os() << "overall test FAILED!" << endl;
+          Out::os() << endl << "failed exprs: " << endl
                << endl;
           for (unsigned int i=0; i<failures.size(); i++)
             {
-              cerr << failures[i] << endl;
+              Out::os() << failures[i] << endl;
             }
-          cerr << endl;
+          Out::os() << endl;
         }
       TimeMonitor::summarize();
     }
 	catch(exception& e)
 		{
       stat = -1;
-      cerr << "overall test FAILED!" << endl;
-      cerr << "detected exception: " << e.what() << endl;
+      Out::os() << "overall test FAILED!" << endl;
+      Out::os() << "detected exception: " << e.what() << endl;
 		}
   return stat;
 }

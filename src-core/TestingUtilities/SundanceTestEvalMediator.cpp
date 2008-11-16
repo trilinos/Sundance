@@ -219,11 +219,11 @@ void TestEvalMediator
 
   if (verbosity() > VerbSilent)
     {
-      cerr << tabs << "results:" << endl;
+      Out::os() << tabs << "results:" << endl;
       for (unsigned int i=0; i<mi.size(); i++)
         {
           Tabs tab1;
-          cerr << tab1 << "mi=" << mi[i].toString() 
+          Out::os() << tab1 << "mi=" << mi[i].toString() 
                << *vec[i] << endl;
         }
     }

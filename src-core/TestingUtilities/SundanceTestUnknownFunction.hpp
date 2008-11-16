@@ -57,6 +57,7 @@ namespace SundanceTesting
     /** virtual destructor */
     virtual ~TestUnknownFunction() {;}
 
+
     /** */
     Expr createDiscreteFunction() const ;
 
@@ -64,7 +65,6 @@ namespace SundanceTesting
     GET_RCP(ExprBase);
 
   private:
-    
   };
 
 }

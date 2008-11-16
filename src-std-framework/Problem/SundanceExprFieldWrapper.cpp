@@ -111,6 +111,9 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
   TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
                      "too many DOFs found in ExprFieldWrapper::getData()");
 
+  TEST_FOR_EXCEPTION(dofs.size() == 0, RuntimeError,
+                     "no DOFs found in ExprFieldWrapper::getData()");
+
   return df_->ghostView()->getElement(dofs[0]);
 }
 

@@ -429,7 +429,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
 
   
   SUNDANCE_VERB_MEDIUM(tabs << "max diff order = " << mgr.getRegion().topLevelDiffOrder());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity()));
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << tabs << *(this->sparsity()));
   
   constantResults.resize(this->sparsity()->numConstantDerivs());
   vectorResults.resize(this->sparsity()->numVectorDerivs());
@@ -458,15 +458,15 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
       *(varArgResults[i]));
     if (verbosity() > VerbMedium)
     {
-      cout << tabs << "constant arg #" << i << 
+      Out::os() << tabs << "constant arg #" << i << 
         " results:" << *(constantArgResults[i]) << endl;
-      cout << tabs << "variable arg # " << i << " derivs:" << endl;
+      Out::os() << tabs << "variable arg # " << i << " derivs:" << endl;
       for (unsigned int j=0; j<varArgResults[i]->size(); j++)
       {
         Tabs tab1;
-        cout << tab1 << j << " ";
-        (*(varArgResults[i]))[j]->print(cout);
-        cout << endl;
+        Out::os() << tab1 << j << " ";
+        (*(varArgResults[i]))[j]->print(Out::os());
+        Out::os() << endl;
       }
     }
   }
@@ -477,14 +477,14 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   
   if (verbosity() > VerbMedium)
   {
-    cout << tabs << "constant arg derivs:" << constantArgDerivs << endl;
-    cout << tabs << "variable arg derivs:" << endl;
+    Out::os() << tabs << "constant arg derivs:" << constantArgDerivs << endl;
+    Out::os() << tabs << "variable arg derivs:" << endl;
     for (unsigned int i=0; i<varArgDerivs.size(); i++)
     {
       Tabs tab1;
-      cout << tab1 << i << " ";
-      varArgDerivs[i]->print(cout);
-      cout << endl;
+      Out::os() << tab1 << i << " ";
+      varArgDerivs[i]->print(Out::os());
+      Out::os() << endl;
     }
   }
   
@@ -534,8 +534,8 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
   {
     Tabs tab1;
-    cerr << tab1 << "chain rule results " << endl;
-    this->sparsity()->print(cerr, vectorResults,
+    Out::os() << tab1 << "chain rule results " << endl;
+    this->sparsity()->print(Out::os(), vectorResults,
       constantResults);
   }
 

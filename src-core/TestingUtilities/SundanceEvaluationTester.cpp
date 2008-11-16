@@ -32,6 +32,7 @@
 #include "SundanceEvaluationTester.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceExpr.hpp"
+#include "SundanceZeroExpr.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
@@ -70,7 +71,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
   /* create a dummy cell filter and quadrature rule         */
   /* ------------------------------------------------------ */
   rqc_ = RegionQuadCombo(rcp(new CellFilterStub()), 
-                         rcp(new QuadratureFamilyStub(1)));
+    rcp(new QuadratureFamilyStub(1)));
 
 
   /* ------------------------------------------------------ */
@@ -84,14 +85,14 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
   const UnknownFuncElement* ue 
     = dynamic_cast<const UnknownFuncElement*>(e[0].ptr().get());
   if (ue!=0)
-    {
-      unkID->put(ue->funcComponentID());
-      unks.append(e[0]);
-    }
+  {
+    unkID->put(ue->funcComponentID());
+    unks.append(e[0]);
+  }
   else
-    {
-      ev_->getUnknowns(*unkID, unks);
-    }
+  {
+    ev_->getUnknowns(*unkID, unks);
+  }
 
 
  
@@ -117,42 +118,53 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
    * In this loop we are creating phony discrete functions
    * and associating them with the unknown functions in the
    * problem. 
-  /* ------------------------------------------------------ */  
-  Array<Expr> u0;
+   * ------------------------------------------------------ */  
+  Array<Expr> uDisc;
+  Array<Expr> uEval;
 
   for (unsigned int i=0; i<unks.size(); i++)
+  {
+    Tabs tabs1;
+    const UnknownFuncElement* fe 
+      = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
+    TEST_FOR_EXCEPTION(fe==0, InternalError,
+      "unk " << unks[i] << " is not an UnknownFunction");
+
+    const UnknownFuncDataStub* data = fe->commonData();
+
+    const TestUnknownFuncData* tufd  
+      = dynamic_cast<const TestUnknownFuncData*>(data);
+
+    TEST_FOR_EXCEPTION(tufd==0, InternalError,
+      "unk " << unks[i] << " is not a TestUnknownFunction");
+
+    Expr discFunc = tufd->createDiscreteFunction(fe->name());
+
+    const DiscreteFuncElement* df 
+      = dynamic_cast<const DiscreteFuncElement*>(discFunc[0].ptr().get());
+    TEST_FOR_EXCEPTION(df==0, InternalError,
+      "df " << discFunc 
+      << " is not a DiscreteFuncElement");
+
+    SUNDANCE_VERB_LOW(tabs1 << i << " unk=" << unks[i] 
+      << " disc=" << discFunc);
+
+    uDisc.append(discFunc);
+    unkIDToDiscreteIDMap_.put(fe->funcComponentID(), df->funcComponentID());
+    if (tufd->coeffIsZero())
     {
-      Tabs tabs1;
-      const UnknownFuncElement* fe 
-        = dynamic_cast<const UnknownFuncElement*>(unks[i].ptr().get());
-      TEST_FOR_EXCEPTION(fe==0, InternalError,
-                         "unk " << unks[i] << " is not an UnknownFunction");
-
-      const UnknownFuncDataStub* data = fe->commonData();
-
-      const TestUnknownFuncData* tufd  
-        = dynamic_cast<const TestUnknownFuncData*>(data);
-
-      TEST_FOR_EXCEPTION(tufd==0, InternalError,
-                         "unk " << unks[i] << " is not a TestUnknownFunction");
-
-      Expr discFunc = tufd->createDiscreteFunction(fe->name());
-
-      const DiscreteFuncElement* df 
-        = dynamic_cast<const DiscreteFuncElement*>(discFunc[0].ptr().get());
-      TEST_FOR_EXCEPTION(df==0, InternalError,
-                         "df " << discFunc 
-                         << " is not a DiscreteFuncElement");
-
-      SUNDANCE_VERB_LOW(tabs1 << i << " unk=" << unks[i] 
-                        << " disc=" << discFunc);
-
-      u0.append(discFunc);
-      unkIDToDiscreteIDMap_.put(fe->funcComponentID(), df->funcComponentID());
+      Expr Z = new ZeroExpr();
+      uEval.append(Z);
     }
+    else
+    {
+      uEval.append(discFunc);
+    }
+  }
 
   Expr unkList = new ListExpr(unks);
-  Expr discList = new ListExpr(u0);
+  Expr discList = new ListExpr(uDisc);
+  Expr evalList = new ListExpr(uEval);
 
   SUNDANCE_VERB_LOW(tabs << "creating test eval mediator...");
   
@@ -173,29 +185,29 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
    * ------------------------------------------------------------- */  
 
   if (maxDiffOrder_ > 0)
-    {
-      SymbPreprocessor::setupVariations(e[0], 
-                                        unkList,
-                                        discList,
-                                        unkList,
-                                        discList,
-                                        dummy,
-                                        dummy,
-                                        dummy,
-                                        dummy,
-                                        dummy,
-                                        dummy,
-                                        context_);
-    }
+  {
+    SymbPreprocessor::setupVariations(e[0], 
+      unkList,
+      evalList,
+      unkList,
+      evalList,
+      dummy,
+      dummy,
+      dummy,
+      dummy,
+      dummy,
+      dummy,
+      context_);
+  }
   else
-    {
-      SymbPreprocessor::setupFunctional(e[0], 
-                                        dummy,
-                                        dummy,
-                                        unkList,
-                                        discList,
-                                        context_);
-    }
+  {
+    SymbPreprocessor::setupFunctional(e[0], 
+      dummy,
+      dummy,
+      unkList,
+      evalList,
+      context_);
+  }
 
   sparsity_ = ev_->sparsitySuperset(context_);
 
@@ -239,10 +251,10 @@ double EvaluationTester::evaluate() const
    * ------------------------------------------------------------- */ 
 
   if (verbosity() > VerbLow)
-    {
-      ev_->sparsitySuperset(context_)->print(cerr, vectorResults,
-                                             constantResults);
-    }
+  {
+    ev_->sparsitySuperset(context_)->print(Out::os(), vectorResults,
+      constantResults);
+  }
 
   /* ------------------------------------------------------------- 
    * Sum results to compute functional value
@@ -252,72 +264,72 @@ double EvaluationTester::evaluate() const
   double rtn = 0.0;
 
   for (int i=0; i<sparsity_->numDerivs(); i++)
+  {
+    const MultipleDeriv& md = sparsity_->deriv(i);
+      
+    Array<int> fieldIndex;
+    Array<MultiIndex> mi;
+
+    SUNDANCE_VERB_MEDIUM("md=" << md);
+
+    for (MultipleDeriv::const_iterator 
+           iter=md.begin(); iter != md.end(); iter++)
     {
-      const MultipleDeriv& md = sparsity_->deriv(i);
-      
-      Array<int> fieldIndex;
-      Array<MultiIndex> mi;
-
-      SUNDANCE_VERB_MEDIUM("md=" << md);
-
-      for (MultipleDeriv::const_iterator 
-             iter=md.begin(); iter != md.end(); iter++)
-        {
-          const Deriv& d = *iter;
-          TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
-                             "coordinate deriv found in TestEvalMediator::"
-                             "sumFunctionalChainRule");
-          const FunctionalDeriv* f = d.funcDeriv();
-          int uid = f->funcComponentID();
-          SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
-          TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
-                             InternalError,
-                             "uid " << uid << " not found in map " 
-                             <<unkIDToDiscreteIDMap_ );
-          int fid = unkIDToDiscreteIDMap_.get(uid);
-          int m = tem_->funcIdToFieldNumberMap().get(fid);
-          fieldIndex.append(m);
-          mi.append(f->multiIndex());
-        }
-
-      SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
-                           << ", multiindices are=" <<mi.toString() );
-
-
-      int resultIndex;
-      if (sparsity_->state(i)==ConstantDeriv)
-        {
-          resultIndex = constantCount++;
-        }
-      else
-        {
-          resultIndex = vectorCount++;
-        }
-      
-      double fieldDerivs = 1.0;
-      for (unsigned int k=0; k<fieldIndex.size(); k++)
-        {
-          fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
-        }
-
-      double coeff;
-      if (sparsity_->state(i)==ConstantDeriv)
-        {
-          coeff = constantResults[resultIndex];
-        }
-      else
-        {
-          coeff = vectorResults[resultIndex]->start()[0];
-        }
-      SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
-                           << " value=" << fieldDerivs << " coeff=" << coeff);
-
-      if (fieldIndex.size() == 0)
-        {
-          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
-          rtn += coeff * fieldDerivs;
-        }
+      const Deriv& d = *iter;
+      TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+        "coordinate deriv found in TestEvalMediator::"
+        "sumFunctionalChainRule");
+      const FunctionalDeriv* f = d.funcDeriv();
+      int uid = f->funcComponentID();
+      SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
+      TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+        InternalError,
+        "uid " << uid << " not found in map " 
+        <<unkIDToDiscreteIDMap_ );
+      int fid = unkIDToDiscreteIDMap_.get(uid);
+      int m = tem_->funcIdToFieldNumberMap().get(fid);
+      fieldIndex.append(m);
+      mi.append(f->multiIndex());
     }
+
+    SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
+      << ", multiindices are=" <<mi.toString() );
+
+
+    int resultIndex;
+    if (sparsity_->state(i)==ConstantDeriv)
+    {
+      resultIndex = constantCount++;
+    }
+    else
+    {
+      resultIndex = vectorCount++;
+    }
+      
+    double fieldDerivs = 1.0;
+    for (unsigned int k=0; k<fieldIndex.size(); k++)
+    {
+      fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
+    }
+
+    double coeff;
+    if (sparsity_->state(i)==ConstantDeriv)
+    {
+      coeff = constantResults[resultIndex];
+    }
+    else
+    {
+      coeff = vectorResults[resultIndex]->start()[0];
+    }
+    SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
+      << " value=" << fieldDerivs << " coeff=" << coeff);
+
+    if (fieldIndex.size() == 0)
+    {
+      SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
+      rtn += coeff * fieldDerivs;
+    }
+  }
 
   return rtn;
 }
@@ -332,9 +344,9 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
 
   firstDerivs.resize(tem_->numFields());
   for (int i=0; i<tem_->numFields(); i++) 
-    {
-      firstDerivs[i] = 0.0;
-    }
+  {
+    firstDerivs[i] = 0.0;
+  }
 
   Array<double> constantResults;
   Array<RefCountPtr<EvalVector> > vectorResults;
@@ -347,87 +359,87 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
   ev_->evaluate(mgr_, constantResults, vectorResults);
 
   if (verbosity() > VerbLow)
-    {
-      ev_->sparsitySuperset(context_)->print(cerr, vectorResults,
-                                             constantResults);
-    }
+  {
+    ev_->sparsitySuperset(context_)->print(Out::os(), vectorResults,
+      constantResults);
+  }
 
   int vectorCount=0;
   int constantCount=0;
   double rtn = 0.0;
 
   for (int i=0; i<sparsity_->numDerivs(); i++)
+  {
+    const MultipleDeriv& md = sparsity_->deriv(i);
+      
+    Array<int> fieldIndex;
+    Array<MultiIndex> mi;
+
+    SUNDANCE_VERB_MEDIUM("md=" << md);
+
+    for (MultipleDeriv::const_iterator 
+           iter=md.begin(); iter != md.end(); iter++)
     {
-      const MultipleDeriv& md = sparsity_->deriv(i);
-      
-      Array<int> fieldIndex;
-      Array<MultiIndex> mi;
-
-      SUNDANCE_VERB_MEDIUM("md=" << md);
-
-      for (MultipleDeriv::const_iterator 
-             iter=md.begin(); iter != md.end(); iter++)
-        {
-          const Deriv& d = *iter;
-          TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
-                             "coordinate deriv found in TestEvalMediator::"
-                             "sumFunctionalChainRule");
-          const FunctionalDeriv* f = d.funcDeriv();
-          int uid = f->funcComponentID();
-          SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
-          TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
-                             InternalError,
-                             "uid " << uid << " not found in map " 
-                             <<unkIDToDiscreteIDMap_ );
-          int fid = unkIDToDiscreteIDMap_.get(uid);
-          int m = tem_->funcIdToFieldNumberMap().get(fid);
-          fieldIndex.append(m);
-          mi.append(f->multiIndex());
-        }
-
-      SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
-                           << ", multiindices are=" <<mi.toString() );
-
-
-      int resultIndex;
-      if (sparsity_->state(i)==ConstantDeriv)
-        {
-          resultIndex = constantCount++;
-        }
-      else
-        {
-          resultIndex = vectorCount++;
-        }
-      
-      double fieldDerivs = 1.0;
-      for (unsigned int k=0; k<fieldIndex.size(); k++)
-        {
-          fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
-        }
-
-      double coeff;
-      if (sparsity_->state(i)==ConstantDeriv)
-        {
-          coeff = constantResults[resultIndex];
-        }
-      else
-        {
-          coeff = vectorResults[resultIndex]->start()[0];
-        }
-      SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
-                           << " value=" << fieldDerivs << " coeff=" << coeff);
-
-      if (fieldIndex.size() == 0)
-        {
-          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
-          rtn += coeff * fieldDerivs;
-        }
-      else if (fieldIndex.size() == 1)
-        {
-          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to first deriv");
-          firstDerivs[fieldIndex[0]] += coeff * fieldDerivs;
-        }
+      const Deriv& d = *iter;
+      TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+        "coordinate deriv found in TestEvalMediator::"
+        "sumFunctionalChainRule");
+      const FunctionalDeriv* f = d.funcDeriv();
+      int uid = f->funcComponentID();
+      SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
+      TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+        InternalError,
+        "uid " << uid << " not found in map " 
+        <<unkIDToDiscreteIDMap_ );
+      int fid = unkIDToDiscreteIDMap_.get(uid);
+      int m = tem_->funcIdToFieldNumberMap().get(fid);
+      fieldIndex.append(m);
+      mi.append(f->multiIndex());
     }
+
+    SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
+      << ", multiindices are=" <<mi.toString() );
+
+
+    int resultIndex;
+    if (sparsity_->state(i)==ConstantDeriv)
+    {
+      resultIndex = constantCount++;
+    }
+    else
+    {
+      resultIndex = vectorCount++;
+    }
+      
+    double fieldDerivs = 1.0;
+    for (unsigned int k=0; k<fieldIndex.size(); k++)
+    {
+      fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
+    }
+
+    double coeff;
+    if (sparsity_->state(i)==ConstantDeriv)
+    {
+      coeff = constantResults[resultIndex];
+    }
+    else
+    {
+      coeff = vectorResults[resultIndex]->start()[0];
+    }
+    SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
+      << " value=" << fieldDerivs << " coeff=" << coeff);
+
+    if (fieldIndex.size() == 0)
+    {
+      SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
+      rtn += coeff * fieldDerivs;
+    }
+    else if (fieldIndex.size() == 1)
+    {
+      SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to first deriv");
+      firstDerivs[fieldIndex[0]] += coeff * fieldDerivs;
+    }
+  }
 
   return rtn;
 }
@@ -440,21 +452,21 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
 
 
 double EvaluationTester::evaluate(Array<double>& firstDerivs, 
-                                  Array<Array<double> >& secondDerivs) const 
+  Array<Array<double> >& secondDerivs) const 
 {
   Tabs tabs;
 
   firstDerivs.resize(tem_->numFields());
   secondDerivs.resize(tem_->numFields());
   for (int i=0; i<tem_->numFields(); i++) 
+  {
+    firstDerivs[i] = 0.0;
+    secondDerivs[i].resize(tem_->numFields());
+    for (int j=0; j<tem_->numFields(); j++)
     {
-      firstDerivs[i] = 0.0;
-      secondDerivs[i].resize(tem_->numFields());
-      for (int j=0; j<tem_->numFields(); j++)
-        {
-          secondDerivs[i][j] = 0.0;
-        }
+      secondDerivs[i][j] = 0.0;
     }
+  }
 
   Array<double> constantResults;
   Array<RefCountPtr<EvalVector> > vectorResults;
@@ -467,120 +479,120 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
   ev_->evaluate(mgr_, constantResults, vectorResults);
 
   if (verbosity() > VerbLow)
-    {
-      ev_->sparsitySuperset(context_)->print(cerr, vectorResults,
-                                             constantResults);
-    }
+  {
+    ev_->sparsitySuperset(context_)->print(Out::os(), vectorResults,
+      constantResults);
+  }
 
   int vectorCount=0;
   int constantCount=0;
   double rtn = 0.0;
 
   for (int i=0; i<sparsity_->numDerivs(); i++)
+  {
+    const MultipleDeriv& md = sparsity_->deriv(i);
+      
+    Array<int> fieldIndex;
+    Array<MultiIndex> mi;
+
+    SUNDANCE_VERB_MEDIUM("md=" << md);
+
+    for (MultipleDeriv::const_iterator 
+           iter=md.begin(); iter != md.end(); iter++)
     {
-      const MultipleDeriv& md = sparsity_->deriv(i);
-      
-      Array<int> fieldIndex;
-      Array<MultiIndex> mi;
+      const Deriv& d = *iter;
+      TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
+        "coordinate deriv found in TestEvalMediator::"
+        "sumFunctionalChainRule");
+      const FunctionalDeriv* f = d.funcDeriv();
+      int uid = f->funcComponentID();
+      SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
+      TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
+        InternalError,
+        "uid " << uid << " not found in map " 
+        <<unkIDToDiscreteIDMap_ );
+      int fid = unkIDToDiscreteIDMap_.get(uid);
+      int m = tem_->funcIdToFieldNumberMap().get(fid);
+      fieldIndex.append(m);
+      mi.append(f->multiIndex());
+    }
 
-      SUNDANCE_VERB_MEDIUM("md=" << md);
-
-      for (MultipleDeriv::const_iterator 
-             iter=md.begin(); iter != md.end(); iter++)
-        {
-          const Deriv& d = *iter;
-          TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
-                             "coordinate deriv found in TestEvalMediator::"
-                             "sumFunctionalChainRule");
-          const FunctionalDeriv* f = d.funcDeriv();
-          int uid = f->funcComponentID();
-          SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
-          TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
-                             InternalError,
-                             "uid " << uid << " not found in map " 
-                             <<unkIDToDiscreteIDMap_ );
-          int fid = unkIDToDiscreteIDMap_.get(uid);
-          int m = tem_->funcIdToFieldNumberMap().get(fid);
-          fieldIndex.append(m);
-          mi.append(f->multiIndex());
-        }
-
-      SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
-                           << ", multiindices are=" <<mi.toString() );
+    SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
+      << ", multiindices are=" <<mi.toString() );
 
 
-      int resultIndex;
-      if (sparsity_->state(i)==ConstantDeriv)
-        {
-          resultIndex = constantCount++;
-        }
-      else
-        {
-          resultIndex = vectorCount++;
-        }
+    int resultIndex;
+    if (sparsity_->state(i)==ConstantDeriv)
+    {
+      resultIndex = constantCount++;
+    }
+    else
+    {
+      resultIndex = vectorCount++;
+    }
       
       
-      double fieldDerivs = 1.0;
-      for (unsigned int k=0; k<fieldIndex.size(); k++)
-        {
-          fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
-        }
+    double fieldDerivs = 1.0;
+    for (unsigned int k=0; k<fieldIndex.size(); k++)
+    {
+      fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
+    }
 
-      double coeff;
-      if (sparsity_->state(i)==ConstantDeriv)
-        {
-          coeff = constantResults[resultIndex];
-        }
-      else
-        {
-          coeff = vectorResults[resultIndex]->start()[0];
-        }
-      SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
-                           << " value=" << fieldDerivs << " coeff=" << coeff);
+    double coeff;
+    if (sparsity_->state(i)==ConstantDeriv)
+    {
+      coeff = constantResults[resultIndex];
+    }
+    else
+    {
+      coeff = vectorResults[resultIndex]->start()[0];
+    }
+    SUNDANCE_VERB_HIGH("field deriv " << md.toString() 
+      << " value=" << fieldDerivs << " coeff=" << coeff);
 
-      if (fieldIndex.size() == 0)
-        {
-          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
-          rtn += coeff * fieldDerivs;
-        }
-      else if (fieldIndex.size() == 1)
-        {
-          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to first deriv");
-          firstDerivs[fieldIndex[0]] += coeff * fieldDerivs;
-        }
-      else
-        {
-          int multiplicity = 1;
-          if (fieldIndex[0] != fieldIndex[1] || !(mi[0] == mi[1]))
-            {
-              multiplicity = 2;
-            }
-          SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to second deriv with multiplicity " << multiplicity);
-          secondDerivs[fieldIndex[0]][fieldIndex[1]] += multiplicity * coeff * fieldDerivs;
+    if (fieldIndex.size() == 0)
+    {
+      SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to result");
+      rtn += coeff * fieldDerivs;
+    }
+    else if (fieldIndex.size() == 1)
+    {
+      SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to first deriv");
+      firstDerivs[fieldIndex[0]] += coeff * fieldDerivs;
+    }
+    else
+    {
+      int multiplicity = 1;
+      if (fieldIndex[0] != fieldIndex[1] || !(mi[0] == mi[1]))
+      {
+        multiplicity = 2;
+      }
+      SUNDANCE_VERB_HIGH("adding " << coeff * fieldDerivs << " to second deriv with multiplicity " << multiplicity);
+      secondDerivs[fieldIndex[0]][fieldIndex[1]] += multiplicity * coeff * fieldDerivs;
       //     if (fieldIndex[0] != fieldIndex[1])
 //             {
 //               secondDerivs[fieldIndex[1]][fieldIndex[0]] += multiplicity * coeff * fieldDerivs;
 //             }
 
-        }
     }
+  }
 
   Array<Array<double> > tmp = secondDerivs;
   /* symmetrize the second derivs */
   for (int i=0; i<tem_->numFields(); i++) 
+  {
+    for (int j=0; j<tem_->numFields(); j++)
     {
-      for (int j=0; j<tem_->numFields(); j++)
-        {
-          secondDerivs[i][j] = (tmp[i][j] + tmp[j][i])/2.0;
-        }
+      secondDerivs[i][j] = (tmp[i][j] + tmp[j][i])/2.0;
     }
+  }
   return rtn;
 }
 
 
 double EvaluationTester
 ::fdEvaluate(const double& step, const double& tol, const double& tol2,
-             bool& isOK)
+  bool& isOK)
 {
   Array<double> afdFirst(tem_->numFields());
   Array<Array<double> > afdSecond(tem_->numFields()); 
@@ -593,63 +605,63 @@ double EvaluationTester
   Array<Array<double> > tmpSecond(tem_->numFields());
   
   for (int i=0; i<tem_->numFields(); i++) 
-    {
-      afdSecond[i].resize(tem_->numFields());
-      fdSecond[i].resize(tem_->numFields());
-      tmpSecond[i].resize(tem_->numFields());
-    }
+  {
+    afdSecond[i].resize(tem_->numFields());
+    fdSecond[i].resize(tem_->numFields());
+    tmpSecond[i].resize(tem_->numFields());
+  }
 
-  cerr << setprecision(14);
+  Out::os() << setprecision(14);
   double f0 = evaluate(afdFirst, afdSecond);
 
   for (int i=0; i<tem_->numFields(); i++)
+  {
+    Tabs tab2;
+    double A0 = tem_->fieldCoeff(i);
+    tem_->setFieldCoeff(i, A0 - step);
+    double fMinus = evaluate(firstMinus, tmpSecond);
+    tem_->setFieldCoeff(i, A0 + step);
+    double fPlus = evaluate(firstPlus, tmpSecond);
+    fdFirst[i] = (fPlus - fMinus)/2.0/step;
+    tem_->setFieldCoeff(i, A0);
+    double error1 = fabs(fdFirst[i] - afdFirst[i])/(step + fabs(afdFirst[i]));
+    Out::os() << tab2 << endl;
+    SUNDANCE_VERB_MEDIUM(tab2 << "f(A_i+h)=" << fPlus << "      f(A_i-h)=" << fMinus);
+
+    Out::os() << tab2 << "field " << tem_->fieldName(i) << " exact first deriv=" << afdFirst[i]
+              << "    fd=" << fdFirst[i] << "    |exact - fd|=" 
+              << error1 << endl;
+    if (error1 > tol) 
     {
-      Tabs tab2;
-      double A0 = tem_->fieldCoeff(i);
-      tem_->setFieldCoeff(i, A0 - step);
-      double fMinus = evaluate(firstMinus, tmpSecond);
-      tem_->setFieldCoeff(i, A0 + step);
-      double fPlus = evaluate(firstPlus, tmpSecond);
-      fdFirst[i] = (fPlus - fMinus)/2.0/step;
-      tem_->setFieldCoeff(i, A0);
-      double error1 = fabs(fdFirst[i] - afdFirst[i])/(step + fabs(afdFirst[i]));
-      cerr << tab2 << endl;
-      SUNDANCE_VERB_MEDIUM(tab2 << "f(A_i+h)=" << fPlus << "      f(A_i-h)=" << fMinus);
+      isOK = false;
+      Out::os() << tab2 << "first deriv wrt field "
+                << i << " calculation FAILED" << endl;
+    }
+    Out::os() << tab2 << endl;
 
-      cerr << tab2 << "field " << tem_->fieldName(i) << " exact first deriv=" << afdFirst[i]
-           << "    fd=" << fdFirst[i] << "    |exact - fd|=" 
-           << error1 << endl;
-      if (error1 > tol) 
-        {
-          isOK = false;
-          cerr << tab2 << "first deriv wrt field "
-               << i << " calculation FAILED" << endl;
-        }
-      cerr << tab2 << endl;
-
-      if (maxDiffOrder_ < 2) continue;
-      /* second deriv wrt this field by finite differences 
-      * on the AFD first derivs*/
-      fdSecond[i][i] = (firstPlus[i] - firstMinus[i])/2.0/step;
-      double error2 = fabs(fdSecond[i][i] - afdSecond[i][i])/(step + fabs(afdSecond[i][i]));
-      cerr << tab2 << "field " << tem_->fieldName(i) << " exact second deriv=" << afdSecond[i][i]
-           << "    fd=" << fdSecond[i][i] << "    |exact - fd|=" 
-           << error2 << endl;
-      if (error2 > tol2) 
-        {
-          isOK = false;
-          cerr << tab2 << "second deriv calculation wrt field "
-               << tem_->fieldName(i) << " FAILED" << endl;
-          Tabs tab3;
-          cerr << tab3 << "f'(A_i+h) = " << firstPlus[i] << endl;
-          cerr << tab3 << "f'(A_i-h) = " << firstMinus[i] << endl;
-          cerr << tab3 << "step=" << step << endl;
-        }
+    if (maxDiffOrder_ < 2) continue;
+    /* second deriv wrt this field by finite differences 
+     * on the AFD first derivs*/
+    fdSecond[i][i] = (firstPlus[i] - firstMinus[i])/2.0/step;
+    double error2 = fabs(fdSecond[i][i] - afdSecond[i][i])/(step + fabs(afdSecond[i][i]));
+    Out::os() << tab2 << "field " << tem_->fieldName(i) << " exact second deriv=" << afdSecond[i][i]
+              << "    fd=" << fdSecond[i][i] << "    |exact - fd|=" 
+              << error2 << endl;
+    if (error2 > tol2) 
+    {
+      isOK = false;
+      Out::os() << tab2 << "second deriv calculation wrt field "
+                << tem_->fieldName(i) << " FAILED" << endl;
+      Tabs tab3;
+      Out::os() << tab3 << "f'(A_i+h) = " << firstPlus[i] << endl;
+      Out::os() << tab3 << "f'(A_i-h) = " << firstMinus[i] << endl;
+      Out::os() << tab3 << "step=" << step << endl;
+    }
       
-      /* mixed partials by finite differences on the AFD first derivs*/
-      for (int j=0; j<i; j++)
-        {
-         //  /* -1,-1 node */
+    /* mixed partials by finite differences on the AFD first derivs*/
+    for (int j=0; j<i; j++)
+    {
+      //  /* -1,-1 node */
 //           double B0 = tem_->fieldCoeff(j);
 //           tem_->setFieldCoeff(i, A0 - step);
 //           tem_->setFieldCoeff(j, B0 - step);
@@ -668,26 +680,26 @@ double EvaluationTester
 //           double fPM = evaluate(tmpFirst, tmpSecond);
 //           fdSecond[i][j] = (fPP + fMM - fPM - fMP)/4.0/step/step;
 //           fdSecond[j][i] = fdSecond[i][j];
-          fdSecond[i][j] = (firstPlus[j] - firstMinus[j])/2.0/step;
-          error2 = fabs(fdSecond[i][j] - afdSecond[i][j])/(step + fabs(afdSecond[i][j]));
-          cerr << tab2 << "(" << tem_->fieldName(i) << ", " << tem_->fieldName(j) 
-               << ") exact mixed deriv=" << afdSecond[i][j]
-               << "    fd=" << fdSecond[i][j] << "    |exact - fd|=" 
-           << error2 << endl;
-          if (error2 > tol2) 
-            {
-              isOK = false;
-              cerr << tab2 << "mixed partial deriv calculation wrt fields "
-                   << i << ", " << j << " FAILED" << endl;
-              Tabs tab3;
-              cerr << tab3 << "f'(A_i+h) = " << firstPlus[j] << endl;
-              cerr << tab3 << "f'(A_i-h) = " << firstMinus[j] << endl;
-              cerr << tab3 << "step=" << step << endl;
-            }
-          tem_->setFieldCoeff(i, A0);
-          //   tem_->setFieldCoeff(j, B0);
-        }
+      fdSecond[i][j] = (firstPlus[j] - firstMinus[j])/2.0/step;
+      error2 = fabs(fdSecond[i][j] - afdSecond[i][j])/(step + fabs(afdSecond[i][j]));
+      Out::os() << tab2 << "(" << tem_->fieldName(i) << ", " << tem_->fieldName(j) 
+                << ") exact mixed deriv=" << afdSecond[i][j]
+                << "    fd=" << fdSecond[i][j] << "    |exact - fd|=" 
+                << error2 << endl;
+      if (error2 > tol2) 
+      {
+        isOK = false;
+        Out::os() << tab2 << "mixed partial deriv calculation wrt fields "
+                  << i << ", " << j << " FAILED" << endl;
+        Tabs tab3;
+        Out::os() << tab3 << "f'(A_i+h) = " << firstPlus[j] << endl;
+        Out::os() << tab3 << "f'(A_i-h) = " << firstMinus[j] << endl;
+        Out::os() << tab3 << "step=" << step << endl;
+      }
+      tem_->setFieldCoeff(i, A0);
+      //   tem_->setFieldCoeff(j, B0);
     }
+  }
 
   
 

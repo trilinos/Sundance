@@ -144,7 +144,7 @@ am__EXEEXT_2 = Poisson3D$(EXEEXT) PoissonOnDisk$(EXEEXT) \
 	Eikonal2D$(EXEEXT) BesselTest2D$(EXEEXT) Kepler$(EXEEXT) \
 	Stokes2D$(EXEEXT) LinearPartialDomain$(EXEEXT) \
 	NonlinearPartialDomain$(EXEEXT) AToCDensitySample$(EXEEXT) \
-	FunctionalTest3D$(EXEEXT)
+	FunctionalTest3D$(EXEEXT) RefinementTest3D$(EXEEXT)
 am__EXEEXT_3 = $(am__EXEEXT_1) $(am__EXEEXT_2)
 PROGRAMS = $(noinst_PROGRAMS)
 am_AToCDensitySample_OBJECTS =  \
@@ -289,6 +289,11 @@ am_RadDiff1D_OBJECTS = RadDiff1D-RadDiff1D.$(OBJEXT)
 RadDiff1D_OBJECTS = $(am_RadDiff1D_OBJECTS)
 RadDiff1D_LINK = $(CXXLD) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_RefinementTest3D_OBJECTS =  \
+	RefinementTest3D-RefinementTest3D.$(OBJEXT)
+RefinementTest3D_OBJECTS = $(am_RefinementTest3D_OBJECTS)
+RefinementTest3D_LINK = $(CXXLD) $(RefinementTest3D_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_SimpleModelEvalTest_OBJECTS =  \
 	SimpleModelEvalTest-SimpleModelEvalTest.$(OBJEXT)
 SimpleModelEvalTest_OBJECTS = $(am_SimpleModelEvalTest_OBJECTS)
@@ -356,10 +361,11 @@ SOURCES = $(AToCDensitySample_SOURCES) $(AdvectionDiffusion2D_SOURCES) \
 	$(PartitionedPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
 	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
-	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
-	$(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) \
-	$(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) \
-	$(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) \
+	$(RadDiff1D_SOURCES) $(RefinementTest3D_SOURCES) \
+	$(SimpleModelEvalTest_SOURCES) $(SpectralPoisson1D_SOURCES) \
+	$(SpectralSqrt_SOURCES) $(Stokes2D_SOURCES) \
+	$(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) \
+	$(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 DIST_SOURCES = $(AToCDensitySample_SOURCES) \
 	$(AdvectionDiffusion2D_SOURCES) $(BesselTest2D_SOURCES) \
@@ -376,10 +382,11 @@ DIST_SOURCES = $(AToCDensitySample_SOURCES) \
 	$(PartitionedPoisson1D_SOURCES) $(Poisson1D_SOURCES) \
 	$(Poisson2D_SOURCES) $(Poisson3D_SOURCES) \
 	$(PoissonBoltzmann2D_SOURCES) $(PoissonOnDisk_SOURCES) \
-	$(RadDiff1D_SOURCES) $(SimpleModelEvalTest_SOURCES) \
-	$(SpectralPoisson1D_SOURCES) $(SpectralSqrt_SOURCES) \
-	$(Stokes2D_SOURCES) $(TaylorHoodStokes2D_SOURCES) \
-	$(UserDefAlgebraic_SOURCES) $(VorticityNavierStokes2D_SOURCES) \
+	$(RadDiff1D_SOURCES) $(RefinementTest3D_SOURCES) \
+	$(SimpleModelEvalTest_SOURCES) $(SpectralPoisson1D_SOURCES) \
+	$(SpectralSqrt_SOURCES) $(Stokes2D_SOURCES) \
+	$(TaylorHoodStokes2D_SOURCES) $(UserDefAlgebraic_SOURCES) \
+	$(VorticityNavierStokes2D_SOURCES) \
 	$(VorticityStokes2D_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -518,7 +525,8 @@ target_vendor = @target_vendor@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D \
-LinearPartialDomain NonlinearPartialDomain AToCDensitySample FunctionalTest3D
+LinearPartialDomain NonlinearPartialDomain AToCDensitySample \
+FunctionalTest3D RefinementTest3D
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
@@ -912,6 +920,16 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 
 SimpleModelEvalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 SimpleModelEvalTest_LDADD = $(STD_FWK_LIBS) 
+RefinementTest3D_SOURCES = $(srcdir)/RefinementTest3D.cpp
+RefinementTest3D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+RefinementTest3D_CXXFLAGS = $(STD_FWK_INCLUDES)
+RefinementTest3D_LDADD = $(STD_FWK_LIBS) 
 STESTS = $(ALL_SRC:%=%.tst)
 PTESTS = $(PARALLEL_SRC:%=%.ptst)
 @HAVE_MPI_TRUE@CHECKTEST_ARGS = $(STESTS) $(PTESTS)
@@ -1183,6 +1201,9 @@ PoissonOnDisk$(EXEEXT): $(PoissonOnDisk_OBJECTS) $(PoissonOnDisk_DEPENDENCIES)
 RadDiff1D$(EXEEXT): $(RadDiff1D_OBJECTS) $(RadDiff1D_DEPENDENCIES) 
 	@rm -f RadDiff1D$(EXEEXT)
 	$(RadDiff1D_LINK) $(RadDiff1D_OBJECTS) $(RadDiff1D_LDADD) $(LIBS)
+RefinementTest3D$(EXEEXT): $(RefinementTest3D_OBJECTS) $(RefinementTest3D_DEPENDENCIES) 
+	@rm -f RefinementTest3D$(EXEEXT)
+	$(RefinementTest3D_LINK) $(RefinementTest3D_OBJECTS) $(RefinementTest3D_LDADD) $(LIBS)
 SimpleModelEvalTest$(EXEEXT): $(SimpleModelEvalTest_OBJECTS) $(SimpleModelEvalTest_DEPENDENCIES) 
 	@rm -f SimpleModelEvalTest$(EXEEXT)
 	$(SimpleModelEvalTest_LINK) $(SimpleModelEvalTest_OBJECTS) $(SimpleModelEvalTest_LDADD) $(LIBS)
@@ -1243,6 +1264,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonBoltzmann2D-PoissonBoltzmann2D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PoissonOnDisk-PoissonOnDisk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RadDiff1D-RadDiff1D.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RefinementTest3D-RefinementTest3D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpectralPoisson1D-SpectralPoisson1D.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpectralSqrt-SpectralSqrt.Po@am__quote@
@@ -1671,6 +1693,20 @@ RadDiff1D-RadDiff1D.obj: $(srcdir)/RadDiff1D.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RadDiff1D.cpp' object='RadDiff1D-RadDiff1D.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RadDiff1D_CXXFLAGS) $(CXXFLAGS) -c -o RadDiff1D-RadDiff1D.obj `if test -f '$(srcdir)/RadDiff1D.cpp'; then $(CYGPATH_W) '$(srcdir)/RadDiff1D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RadDiff1D.cpp'; fi`
+
+RefinementTest3D-RefinementTest3D.o: $(srcdir)/RefinementTest3D.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RefinementTest3D_CXXFLAGS) $(CXXFLAGS) -MT RefinementTest3D-RefinementTest3D.o -MD -MP -MF $(DEPDIR)/RefinementTest3D-RefinementTest3D.Tpo -c -o RefinementTest3D-RefinementTest3D.o `test -f '$(srcdir)/RefinementTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/RefinementTest3D.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/RefinementTest3D-RefinementTest3D.Tpo $(DEPDIR)/RefinementTest3D-RefinementTest3D.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RefinementTest3D.cpp' object='RefinementTest3D-RefinementTest3D.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RefinementTest3D_CXXFLAGS) $(CXXFLAGS) -c -o RefinementTest3D-RefinementTest3D.o `test -f '$(srcdir)/RefinementTest3D.cpp' || echo '$(srcdir)/'`$(srcdir)/RefinementTest3D.cpp
+
+RefinementTest3D-RefinementTest3D.obj: $(srcdir)/RefinementTest3D.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RefinementTest3D_CXXFLAGS) $(CXXFLAGS) -MT RefinementTest3D-RefinementTest3D.obj -MD -MP -MF $(DEPDIR)/RefinementTest3D-RefinementTest3D.Tpo -c -o RefinementTest3D-RefinementTest3D.obj `if test -f '$(srcdir)/RefinementTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/RefinementTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RefinementTest3D.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/RefinementTest3D-RefinementTest3D.Tpo $(DEPDIR)/RefinementTest3D-RefinementTest3D.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(srcdir)/RefinementTest3D.cpp' object='RefinementTest3D-RefinementTest3D.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(RefinementTest3D_CXXFLAGS) $(CXXFLAGS) -c -o RefinementTest3D-RefinementTest3D.obj `if test -f '$(srcdir)/RefinementTest3D.cpp'; then $(CYGPATH_W) '$(srcdir)/RefinementTest3D.cpp'; else $(CYGPATH_W) '$(srcdir)/$(srcdir)/RefinementTest3D.cpp'; fi`
 
 SimpleModelEvalTest-SimpleModelEvalTest.o: $(srcdir)/SimpleModelEvalTest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(SimpleModelEvalTest_CXXFLAGS) $(CXXFLAGS) -MT SimpleModelEvalTest-SimpleModelEvalTest.o -MD -MP -MF $(DEPDIR)/SimpleModelEvalTest-SimpleModelEvalTest.Tpo -c -o SimpleModelEvalTest-SimpleModelEvalTest.o `test -f '$(srcdir)/SimpleModelEvalTest.cpp' || echo '$(srcdir)/'`$(srcdir)/SimpleModelEvalTest.cpp

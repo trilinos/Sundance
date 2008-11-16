@@ -187,11 +187,11 @@ void SymbolicFuncElementEvaluator
   
   if (verbosity() > VerbSilent)
     {
-      cerr << tabs << "SymbolicFuncElementEvaluator::eval: expr=" << expr()->toString() 
+      Out::os() << tabs << "SymbolicFuncElementEvaluator::eval: expr=" << expr()->toString() 
            << endl;
       if (verbosity() > VerbLow)
         {
-          cerr << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
+          Out::os() << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
         }
     }
 
@@ -228,8 +228,8 @@ void SymbolicFuncElementEvaluator
     }
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "results " << endl;
-      this->sparsity()->print(cerr, vectorResults,
+      Out::os() << tabs << "results " << endl;
+      this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }
   SUNDANCE_VERB_LOW(tabs << "SymbolicFuncEvaluator::eval() done"); 

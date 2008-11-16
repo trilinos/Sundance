@@ -95,7 +95,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusNetCDFMeshReader("../../../examples-tutorial/meshes/post.ncdf", meshType);
+        = new ExodusNetCDFMeshReader("post.ncdf", meshType);
       Mesh mesh = mesher.getMesh();
       /**
        * If you know a little C++ -- just enough to be dangerous -- you might 
@@ -252,7 +252,7 @@ int main(int argc, char** argv)
        * a Trilinos \verb+ParameterList+ object, read in from an XML file
        */
 
-      ParameterXMLFileReader reader("../../../examples-tutorial/data/bicgstab.xml");
+      ParameterXMLFileReader reader("./bicgstab.xml");
       ParameterList solverParams = reader.getParameters();
       /**
        * \subsubsection{Solving the problem}

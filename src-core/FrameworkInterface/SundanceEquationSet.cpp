@@ -756,10 +756,10 @@ void EquationSet::init(const Expr& eqns,
                  iter=bcVarsOnRegions_.begin(); iter != bcVarsOnRegions_.end();
                iter ++)
             {
-              //              cerr << "region=" << iter->first << endl;
-              //              cerr << "id = " << iter->first.ptr()->id() << endl;
+              //              Out::os() << "region=" << iter->first << endl;
+              //              Out::os() << "id = " << iter->first.ptr()->id() << endl;
             }
-          //          cerr << "checking map integrity " << endl;
+          //          Out::os() << "checking map integrity " << endl;
           TEST_FOR_EXCEPTION(!bcVarsOnRegions_.containsKey(reg),
                              InternalError,
                              "Bug: region " << reg << " should appear in "

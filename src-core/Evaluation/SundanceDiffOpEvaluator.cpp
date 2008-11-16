@@ -39,6 +39,7 @@
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFuncEvaluator.hpp"
+#include "SundanceEvaluatableExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 
 using namespace SundanceCore;
@@ -109,7 +110,6 @@ DiffOpEvaluator
                                << resultIndices_[i] << " in the var result array");
           }
 
-
         int order = resultDeriv.order();
         const Set<MultipleDeriv>& RArg 
           = argExpr()->findR(order, context);
@@ -119,11 +119,16 @@ DiffOpEvaluator
           = argExpr()->findW(1, context);
 
         
+        SUNDANCE_VERB_HIGH(tab1 << "RArg = " << RArg);
         SUNDANCE_VERB_HIGH(tab1 << "RArgPlus = " << RArgPlus);
+        SUNDANCE_VERB_HIGH(tab1 << "W1Arg = " << W1Arg);
 
         Set<MultipleDeriv> funcTermCoeffs 
           = RArgPlus.intersection(increasedDerivs(resultDeriv, W1Arg));
+        SUNDANCE_VERB_HIGH(tab1 << "function term coeffs = " << funcTermCoeffs);
+
         SUNDANCE_VERB_HIGH(tab1 << "getting direct chain rule terms");
+
 
         for (Set<MultipleDeriv>::const_iterator 
                j=funcTermCoeffs.begin(); j != funcTermCoeffs.end(); j++)
@@ -248,6 +253,7 @@ DiffOpEvaluator
         SUNDANCE_VERB_HIGH(tab1 << "getting indirect chain rule terms");
         Set<MultipleDeriv> isolatedTerms 
           = RArg.intersection(backedDerivs(resultDeriv, W1Arg));
+        SUNDANCE_VERB_HIGH(tab1 << "isolated terms = " << isolatedTerms);
 
         for (Set<MultipleDeriv>::const_iterator 
                j=isolatedTerms.begin(); j != isolatedTerms.end(); j++)
@@ -268,35 +274,44 @@ DiffOpEvaluator
                 vectorMonomials_[i].append(vectorArgIndex);
               }
           }
+        /*
+        TEST_FOR_EXCEPTION(
+          constantMonomials_[i].size()==0U
+          && vectorMonomials_[i].size()==0U
+          && constantFuncCoeffs_[i].size()==0U
+          && vectorFuncCoeffs_[i].size()==0U,
+          RuntimeError,
+          "no instructions found for deriv " << resultDeriv);
+        */
       }
   }
 
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "instruction tables for summing chain rule" << endl;
+      Out::os() << tabs << "instruction tables for summing chain rule" << endl;
       for (int i=0; i<this->sparsity()->numDerivs(); i++)
         {
           Tabs tab1;
-          cerr << tab1 << "deriv " << sparsity()->deriv(i) << endl;
+          Out::os() << tab1 << "deriv " << sparsity()->deriv(i) << endl;
           {
             Tabs tab2;
-            cerr << tab2 << "constant monomials: " << constantMonomials_[i]
+            Out::os() << tab2 << "constant monomials: " << constantMonomials_[i]
                  << endl;
-            cerr << tab2 << "vector monomials: " << vectorMonomials_[i]
+            Out::os() << tab2 << "vector monomials: " << vectorMonomials_[i]
                  << endl;
             
-            cerr << tab2 << "constant coeff functions: " << endl;
+            Out::os() << tab2 << "constant coeff functions: " << endl;
             for (unsigned int j=0; j<constantFuncCoeffs_[i].size(); j++)
               {
                 Tabs tab3;
-                cerr << tab3 << "func=" << constantCoeffFuncIndices_[i][j]
+                Out::os() << tab3 << "func=" << constantCoeffFuncIndices_[i][j]
                      << " mi=" << constantCoeffFuncMi_[i][j] << endl;
               } 
-            cerr << tab2 << "vector coeff functions: " << endl;
+            Out::os() << tab2 << "vector coeff functions: " << endl;
             for (unsigned int j=0; j<vectorFuncCoeffs_[i].size(); j++)
               {
                 Tabs tab3;
-                cerr << tab3 << "func=" << vectorCoeffFuncIndices_[i][j]
+                Out::os() << tab3 << "func=" << vectorCoeffFuncIndices_[i][j]
                      << " mi=" << vectorCoeffFuncMi_[i][j] << endl;
               }
             
@@ -402,8 +417,8 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbLow)
     {
-      cerr << tabs << "DiffOp operand results" << endl;
-      argSparsitySuperset()->print(cerr, argVectorResults,
+      Out::os() << tabs << "DiffOp operand results" << endl;
+      argSparsitySuperset()->print(Out::os(), argVectorResults,
                                    argConstantResults);
     }
 
@@ -424,8 +439,6 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
   
   SUNDANCE_VERB_MEDIUM(tabs << "summing spatial/functional chain rule");
 
-
-
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
     {
       Tabs tab1;
@@ -433,6 +446,8 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
                            << this->sparsity()->deriv(i));
 
       /* add constant monomials */
+      SUNDANCE_VERB_MEDIUM(tab1 << "have " <<  constantMonomials_[i].size()
+        << " constant monomials");
       double constantVal = 0.0;
       for (unsigned int j=0; j<constantMonomials_[i].size(); j++)
         {
@@ -453,8 +468,9 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       bool vecHasBeenAllocated = false;
 
       /* add in the vector monomials */
-      SUNDANCE_VERB_MEDIUM(tab1 << "adding vector monomials");
       const Array<int>& vm = vectorMonomials_[i];
+      SUNDANCE_VERB_MEDIUM(tab1 << "have " << vm.size() 
+        << " vector monomials");
       for (unsigned int j=0; j<vm.size(); j++)
         {
           Tabs tab2;
@@ -488,7 +504,8 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       
       /* add in the function terms with constant coeffs */
       const Array<int>& cf = constantFuncCoeffs_[i];
-      SUNDANCE_VERB_MEDIUM(tab1 << "adding func terms with constant coeffs");
+      SUNDANCE_VERB_MEDIUM(tab1 << "adding " << cf.size()
+        << " func terms with constant coeffs");
       for (unsigned int j=0; j<cf.size(); j++)
         {
           Tabs tab2;
@@ -548,7 +565,8 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       
       /* add in the function terms with vector coeffs */
       const Array<int>& vf = vectorFuncCoeffs_[i];
-      SUNDANCE_VERB_MEDIUM(tab1 << "adding func terms with vector coeffs");
+      SUNDANCE_VERB_MEDIUM(tab1 << "adding " << vf.size()
+        << " func terms with vector coeffs");
       for (unsigned int j=0; j<vf.size(); j++)
         {
           Tabs tab2;
@@ -586,8 +604,8 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbLow)
     {
-      cerr << tabs << "operand results" << endl;
-      sparsity()->print(cerr, vectorResults,
+      Out::os() << tabs << "operand results" << endl;
+      sparsity()->print(Out::os(), vectorResults,
                         constantResults);
     }
   SUNDANCE_VERB_MEDIUM(tabs << "done chain rule");

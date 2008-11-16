@@ -72,9 +72,9 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
       SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << *(this->sparsity)());
 
       SUNDANCE_VERB_MEDIUM(tabs << "left sparsity " << std::endl 
-                           << *(leftSparsity()) << std::endl
-                           << tabs << "right sparsity " 
-                           << std::endl << *(rightSparsity()));
+        << tabs << *(leftSparsity()) << std::endl
+        << tabs << "right sparsity " << std::endl 
+        << tabs << *(rightSparsity()));
   
       SUNDANCE_VERB_HIGH(tabs << "left vector index map " 
                          << leftEval()->vectorIndexMap() << std::endl
@@ -93,7 +93,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           Tabs tab0;
           const MultipleDeriv& d = this->sparsity()->deriv(i);
 
-          SUNDANCE_VERB_MEDIUM(tabs << std::endl << "finding rules for deriv " << d);
+          SUNDANCE_VERB_MEDIUM(tabs << std::endl 
+            << tabs << "finding rules for deriv " << d);
 
           int order = d.order();
 
@@ -103,7 +104,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           if (resultIsConstant)
             {
               SUNDANCE_VERB_HIGH(tab0 << std::endl 
-                                 << "result will be in constant index " << constResultIndex);
+                << tab0 << "result will be in constant index " << constResultIndex);
               resultIndex_[order].append(constResultIndex);
               addConstantIndex(i, constResultIndex);
               constResultIndex++;
@@ -111,7 +112,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           else
             {
               SUNDANCE_VERB_HIGH(tab0 << std::endl 
-                                 << "result will be in constant index " << vecResultIndex);
+                << tab0 << "result will be in constant index " << vecResultIndex);
               resultIndex_[order].append(vecResultIndex);
               addVectorIndex(i, vecResultIndex);
               vecResultIndex++;
@@ -348,35 +349,35 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           if (verbosity() > VerbMedium)
             {
               Tabs tab0;
-              std::cerr << tab0 << "deriv " << i << " order=" << order ;
+              Out::os() << tab0 << "deriv " << i << " order=" << order ;
               if (resultIsConstant)
                 {
-                  std::cerr << " constant result ";
+                  Out::os() << " constant result ";
                 }
               else
                 {
-                  std::cerr << " vector result ";
+                  Out::os() << " vector result ";
                 }
-              std::cerr << resultIndex_[order] << std::endl;
+              Out::os() << resultIndex_[order] << std::endl;
               {
                 Tabs tab1;
                 if (hasStartingVector) 
                   {
-                    std::cerr << tab1 << "starting vector " << startingVector << std::endl;
+                    Out::os() << tab1 << "starting vector " << startingVector << std::endl;
                   }
-                std::cerr << tab1 << "c-c terms " << ccTerms << std::endl;
-                std::cerr << tab1 << "c-v terms " << cvTerms << std::endl;
-                std::cerr << tab1 << "v-c terms " << vcTerms << std::endl;
-                std::cerr << tab1 << "v-v terms " << vvTerms << std::endl;
+                Out::os() << tab1 << "c-c terms " << ccTerms << std::endl;
+                Out::os() << tab1 << "c-v terms " << cvTerms << std::endl;
+                Out::os() << tab1 << "v-c terms " << vcTerms << std::endl;
+                Out::os() << tab1 << "v-v terms " << vvTerms << std::endl;
               }
             }
         }
 
       if (verbosity() > VerbMedium)
         {
-          std::cerr << tabs << "maps: " << std::endl;
-          std::cerr << tabs << "vector index map " << vectorIndexMap() << std::endl;
-          std::cerr << tabs << "constant index map " << constantIndexMap() << std::endl;
+          Out::os() << tabs << "maps: " << std::endl;
+          Out::os() << tabs << "vector index map " << vectorIndexMap() << std::endl;
+          Out::os() << tabs << "constant index map " << constantIndexMap() << std::endl;
         }
     }
   catch(std::exception& e)
@@ -409,11 +410,11 @@ void ProductEvaluator
 
   if (verbosity() > VerbMedium)
     {
-      std::cerr << tabs << "left operand results" << std::endl;
-      leftSparsity()->print(std::cerr, leftVectorResults,
+      Out::os() << tabs << "left operand results" << std::endl;
+      leftSparsity()->print(Out::os(), leftVectorResults,
                             leftConstantResults);
-      std::cerr << tabs << "right operand results" << std::endl;
-      rightSparsity()->print(std::cerr, rightVectorResults,
+      Out::os() << tabs << "right operand results" << std::endl;
+      rightSparsity()->print(Out::os(), rightVectorResults,
                              rightConstantResults);
     }
   
@@ -669,8 +670,8 @@ void ProductEvaluator
 
   if (verbosity() > VerbMedium)
     {
-      std::cerr << tabs << "product result " << std::endl;
-      this->sparsity()->print(std::cerr, vectorResults,
+      Out::os() << tabs << "product result " << std::endl;
+      this->sparsity()->print(Out::os(), vectorResults,
                               constantResults);
     }
 }

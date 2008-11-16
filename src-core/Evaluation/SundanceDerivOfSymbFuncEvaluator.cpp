@@ -197,8 +197,8 @@ void DerivOfSymbFuncEvaluator::internalEval(const EvalManager& mgr,
       funcEvaluator_[0]->eval(mgr, funcConstantResults, funcVectorResults);
       if (verbosity() > VerbLow)
         {
-          cerr << tabs << "DerivOfSymbFunc results" << endl;
-          funcSparsitySuperset_->print(cerr, funcVectorResults,
+          Out::os() << tabs << "DerivOfSymbFunc results" << endl;
+          funcSparsitySuperset_->print(Out::os(), funcVectorResults,
                                        funcConstantResults);
         }
       vectorResults.resize(1);

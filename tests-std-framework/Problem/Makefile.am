@@ -34,7 +34,8 @@ EXEEXT = .exe
 
 
 SERIAL_SRC = Poisson3D PoissonOnDisk Eikonal2D BesselTest2D Kepler Stokes2D \
-LinearPartialDomain NonlinearPartialDomain AToCDensitySample FunctionalTest3D
+LinearPartialDomain NonlinearPartialDomain AToCDensitySample \
+FunctionalTest3D RefinementTest3D
 
 PARALLEL_SRC = Poisson1D Poisson2D HighOrderPoisson1D HighOrderPoisson2D \
 HighOrderProjection1D HighOrderProjection2D NoxPoisson1D PoissonBoltzmann2D \
@@ -681,6 +682,22 @@ $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFE
 SimpleModelEvalTest_CXXFLAGS = $(STD_FWK_INCLUDES)
 
 SimpleModelEvalTest_LDADD = $(STD_FWK_LIBS) 
+
+
+
+
+RefinementTest3D_SOURCES = $(srcdir)/RefinementTest3D.cpp
+
+RefinementTest3D_DEPENDENCIES = \
+$(top_builddir)/src-std-framework/libsundanceStdFwk.a \
+$(top_builddir)/src-std-mesh/libsundanceStdMesh.a \
+$(top_builddir)/src-core/libsundanceCore.a \
+$(top_builddir)/src-interop/libsundanceInterop.a \
+$(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
+
+RefinementTest3D_CXXFLAGS = $(STD_FWK_INCLUDES)
+
+RefinementTest3D_LDADD = $(STD_FWK_LIBS) 
 
 
 

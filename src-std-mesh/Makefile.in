@@ -169,6 +169,10 @@ am__objects_3 = SundanceExtrusionMeshTransformation.$(OBJEXT) \
 	SundanceFileIOChacoPartitioner.$(OBJEXT) \
 	SundanceMeshTransformationBase.$(OBJEXT) \
 	SundanceMeshTransformation.$(OBJEXT) \
+	SundanceRivaraEdge.$(OBJEXT) SundanceRivaraElement.$(OBJEXT) \
+	SundanceRivaraElementIterator.$(OBJEXT) \
+	SundanceRivaraMesh.$(OBJEXT) SundanceRivaraNode.$(OBJEXT) \
+	SundanceRivaraTreeNode.$(OBJEXT) \
 	SundanceSerialPartitionerBase.$(OBJEXT)
 am__objects_4 = SundanceExodusMeshReader.$(OBJEXT) \
 	SundanceExodusNetCDFMeshReader.$(OBJEXT) \
@@ -461,6 +465,13 @@ $(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.h
 $(top_srcdir)/src-std-mesh/Transformations/SundanceFileIOChacoPartitioner.hpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformationBase.hpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.hpp \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraFace.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.hpp  \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceSerialPartitionerBase.hpp 
 
 SUNDANCE_MESHTRANSFORMATIONS = \
@@ -468,6 +479,12 @@ $(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.c
 $(top_srcdir)/src-std-mesh/Transformations/SundanceFileIOChacoPartitioner.cpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformationBase.cpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp  \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceSerialPartitionerBase.cpp 
 
 SUNDANCE_MESHWRITERS_H = \
@@ -837,6 +854,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePartitionedLineMesher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePartitionedRectangleMesher.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundancePositionalCellPredicate.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRivaraEdge.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRivaraElement.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRivaraElementIterator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRivaraMesh.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRivaraNode.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRivaraTreeNode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSerialPartitionerBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSideCellFilter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSubsetCellFilter.Po@am__quote@
@@ -1068,6 +1091,90 @@ SundanceMeshTransformation.obj: $(top_srcdir)/src-std-mesh/Transformations/Sunda
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp' object='SundanceMeshTransformation.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceMeshTransformation.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp'; fi`
+
+SundanceRivaraEdge.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraEdge.o -MD -MP -MF $(DEPDIR)/SundanceRivaraEdge.Tpo -c -o SundanceRivaraEdge.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraEdge.Tpo $(DEPDIR)/SundanceRivaraEdge.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp' object='SundanceRivaraEdge.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraEdge.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp
+
+SundanceRivaraEdge.obj: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraEdge.obj -MD -MP -MF $(DEPDIR)/SundanceRivaraEdge.Tpo -c -o SundanceRivaraEdge.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraEdge.Tpo $(DEPDIR)/SundanceRivaraEdge.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp' object='SundanceRivaraEdge.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraEdge.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp'; fi`
+
+SundanceRivaraElement.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraElement.o -MD -MP -MF $(DEPDIR)/SundanceRivaraElement.Tpo -c -o SundanceRivaraElement.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraElement.Tpo $(DEPDIR)/SundanceRivaraElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp' object='SundanceRivaraElement.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraElement.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp
+
+SundanceRivaraElement.obj: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraElement.obj -MD -MP -MF $(DEPDIR)/SundanceRivaraElement.Tpo -c -o SundanceRivaraElement.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraElement.Tpo $(DEPDIR)/SundanceRivaraElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp' object='SundanceRivaraElement.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraElement.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp'; fi`
+
+SundanceRivaraElementIterator.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraElementIterator.o -MD -MP -MF $(DEPDIR)/SundanceRivaraElementIterator.Tpo -c -o SundanceRivaraElementIterator.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraElementIterator.Tpo $(DEPDIR)/SundanceRivaraElementIterator.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp' object='SundanceRivaraElementIterator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraElementIterator.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp
+
+SundanceRivaraElementIterator.obj: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraElementIterator.obj -MD -MP -MF $(DEPDIR)/SundanceRivaraElementIterator.Tpo -c -o SundanceRivaraElementIterator.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraElementIterator.Tpo $(DEPDIR)/SundanceRivaraElementIterator.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp' object='SundanceRivaraElementIterator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraElementIterator.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp'; fi`
+
+SundanceRivaraMesh.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraMesh.o -MD -MP -MF $(DEPDIR)/SundanceRivaraMesh.Tpo -c -o SundanceRivaraMesh.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraMesh.Tpo $(DEPDIR)/SundanceRivaraMesh.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp' object='SundanceRivaraMesh.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraMesh.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp
+
+SundanceRivaraMesh.obj: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraMesh.obj -MD -MP -MF $(DEPDIR)/SundanceRivaraMesh.Tpo -c -o SundanceRivaraMesh.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraMesh.Tpo $(DEPDIR)/SundanceRivaraMesh.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp' object='SundanceRivaraMesh.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraMesh.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp'; fi`
+
+SundanceRivaraNode.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraNode.o -MD -MP -MF $(DEPDIR)/SundanceRivaraNode.Tpo -c -o SundanceRivaraNode.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraNode.Tpo $(DEPDIR)/SundanceRivaraNode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp' object='SundanceRivaraNode.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraNode.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp
+
+SundanceRivaraNode.obj: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraNode.obj -MD -MP -MF $(DEPDIR)/SundanceRivaraNode.Tpo -c -o SundanceRivaraNode.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraNode.Tpo $(DEPDIR)/SundanceRivaraNode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp' object='SundanceRivaraNode.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraNode.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp'; fi`
+
+SundanceRivaraTreeNode.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraTreeNode.o -MD -MP -MF $(DEPDIR)/SundanceRivaraTreeNode.Tpo -c -o SundanceRivaraTreeNode.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraTreeNode.Tpo $(DEPDIR)/SundanceRivaraTreeNode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp' object='SundanceRivaraTreeNode.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraTreeNode.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp
+
+SundanceRivaraTreeNode.obj: $(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraTreeNode.obj -MD -MP -MF $(DEPDIR)/SundanceRivaraTreeNode.Tpo -c -o SundanceRivaraTreeNode.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraTreeNode.Tpo $(DEPDIR)/SundanceRivaraTreeNode.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp' object='SundanceRivaraTreeNode.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraTreeNode.obj `if test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp'; fi`
 
 SundanceSerialPartitionerBase.o: $(top_srcdir)/src-std-mesh/Transformations/SundanceSerialPartitionerBase.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceSerialPartitionerBase.o -MD -MP -MF $(DEPDIR)/SundanceSerialPartitionerBase.Tpo -c -o SundanceSerialPartitionerBase.o `test -f '$(top_srcdir)/src-std-mesh/Transformations/SundanceSerialPartitionerBase.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-mesh/Transformations/SundanceSerialPartitionerBase.cpp

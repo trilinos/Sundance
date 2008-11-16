@@ -141,7 +141,7 @@ void DiscreteFuncElementEvaluator
 
   if (verbosity() > VerbSilent)
     {
-      cerr << tabs << "DiscreteFuncElementEvaluator::eval: expr=" << expr()->toString() 
+      Out::os() << tabs << "DiscreteFuncElementEvaluator::eval: expr=" << expr()->toString() 
            << endl;
     }
 
@@ -160,8 +160,8 @@ void DiscreteFuncElementEvaluator
   
   if (verbosity() > VerbMedium)
     {
-      cerr << tabs << "results " << endl;
-      this->sparsity()->print(cerr, vectorResults,
+      Out::os() << tabs << "results " << endl;
+      this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }
   SUNDANCE_VERB_LOW(tabs << "DiscreteFuncEvaluator::eval() done"); 

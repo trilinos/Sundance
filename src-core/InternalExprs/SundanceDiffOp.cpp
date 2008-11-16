@@ -50,6 +50,8 @@ DiffOp::DiffOp(const MultiIndex& op,
     ignoreFuncTerms_(false)
 {
   Tabs tabs;
+//  verbosity() = VerbExtreme;
+//  EvaluatableExpr::classVerbosity() = VerbExtreme;
   SUNDANCE_VERB_HIGH(tabs << "forming DiffOp " << toString());
   myCoordDeriv_ = new CoordDeriv(mi_.firstOrderDirection());
 }
@@ -132,6 +134,7 @@ DiffOp::internalDetermineR(const EvalContext& context,
                            const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tab0;
+//  classVerbosity() = VerbExtreme;
   SUNDANCE_VERB_HIGH(tab0 << "DiffOp::internalDetermineR for=" << toString());
   SUNDANCE_VERB_HIGH(tab0 << "RInput = " << RInput );
 
@@ -199,6 +202,7 @@ DiffOp::internalDetermineR(const EvalContext& context,
 Set<MultipleDeriv> DiffOp::internalFindW(int order, const EvalContext& context) const
 {
   Tabs tabs;
+
   SUNDANCE_VERB_HIGH(tabs << "DiffOp::internalFindW(order="
                      << order << ") for " << toString());
 

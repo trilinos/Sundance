@@ -91,7 +91,7 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > 1)
     {
-      std::cerr << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
+      Out::os() << tabs << "sparsity = " << std::endl << tabs << *(this->sparsity)() << std::endl;
     }
 
   if (this->sparsity()->numDerivs() > 0)
@@ -105,8 +105,8 @@ void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
     {
-      std::cerr << tabs << "results " << std::endl;
-      this->sparsity()->print(std::cerr, vectorResults,
+      Out::os() << tabs << "results " << std::endl;
+      this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }
 }

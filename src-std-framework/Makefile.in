@@ -158,7 +158,7 @@ AR = ar
 ARFLAGS = cru
 libsundanceStdFwk_a_DEPENDENCIES =
 am__objects_1 = SundanceBasisFamily.$(OBJEXT) \
-	SundanceBasisFamilyBase.$(OBJEXT) \
+	SundanceBasisFamilyBase.$(OBJEXT) SundanceBubble.$(OBJEXT) \
 	SundanceClosedNewtonCotes.$(OBJEXT) \
 	SundanceClosedNewtonCotesType.$(OBJEXT) \
 	SundanceDiscreteFunction.$(OBJEXT) \
@@ -212,6 +212,7 @@ am__objects_4 = Sundance.$(OBJEXT) \
 	SundanceLinearProblem.$(OBJEXT) \
 	SundanceModelEvaluatorBase.$(OBJEXT) \
 	SundanceNLPModelEvaluator.$(OBJEXT) \
+	SundanceRivaraDriver.$(OBJEXT) \
 	SundanceNonlinearProblem.$(OBJEXT)
 am__objects_5 = $(am__objects_1) $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4)
@@ -373,6 +374,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceBasisDOFTopologyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisReferenceEvaluationBase.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceBubble.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
@@ -403,6 +405,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceVectorBasisComponent.hpp
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
@@ -502,6 +505,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.hpp 
 
 SUNDANCE_PROBLEM = \
@@ -516,6 +520,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp 
 
 STD_FWK_SOURCES = \
@@ -824,6 +829,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceAssembler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBasisFamily.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBasisFamilyBase.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceBubble.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCToAInterpolator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceClosedNewtonCotes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceClosedNewtonCotesType.Po@am__quote@
@@ -869,6 +875,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceQuadratureIntegral.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceQuadratureType.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRefIntegral.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceRivaraDriver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceSpatiallyHomogeneousDOFMapBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceStdFwkEvalMediator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceTestFunction.Po@am__quote@
@@ -923,6 +930,20 @@ SundanceBasisFamilyBase.obj: $(top_srcdir)/src-std-framework/Elements/SundanceBa
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp' object='SundanceBasisFamilyBase.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBasisFamilyBase.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp'; fi`
+
+SundanceBubble.o: $(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBubble.o -MD -MP -MF $(DEPDIR)/SundanceBubble.Tpo -c -o SundanceBubble.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceBubble.Tpo $(DEPDIR)/SundanceBubble.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp' object='SundanceBubble.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBubble.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp
+
+SundanceBubble.obj: $(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceBubble.obj -MD -MP -MF $(DEPDIR)/SundanceBubble.Tpo -c -o SundanceBubble.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceBubble.Tpo $(DEPDIR)/SundanceBubble.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp' object='SundanceBubble.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceBubble.obj `if test -f '$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp'; fi`
 
 SundanceClosedNewtonCotes.o: $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceClosedNewtonCotes.o -MD -MP -MF $(DEPDIR)/SundanceClosedNewtonCotes.Tpo -c -o SundanceClosedNewtonCotes.o `test -f '$(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp
@@ -1763,6 +1784,20 @@ SundanceNLPModelEvaluator.obj: $(top_srcdir)/src-std-framework/Problem/SundanceN
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp' object='SundanceNLPModelEvaluator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceNLPModelEvaluator.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp'; fi`
+
+SundanceRivaraDriver.o: $(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraDriver.o -MD -MP -MF $(DEPDIR)/SundanceRivaraDriver.Tpo -c -o SundanceRivaraDriver.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraDriver.Tpo $(DEPDIR)/SundanceRivaraDriver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp' object='SundanceRivaraDriver.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraDriver.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp
+
+SundanceRivaraDriver.obj: $(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceRivaraDriver.obj -MD -MP -MF $(DEPDIR)/SundanceRivaraDriver.Tpo -c -o SundanceRivaraDriver.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceRivaraDriver.Tpo $(DEPDIR)/SundanceRivaraDriver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp' object='SundanceRivaraDriver.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceRivaraDriver.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp'; fi`
 
 SundanceNonlinearProblem.o: $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceNonlinearProblem.o -MD -MP -MF $(DEPDIR)/SundanceNonlinearProblem.Tpo -c -o SundanceNonlinearProblem.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp

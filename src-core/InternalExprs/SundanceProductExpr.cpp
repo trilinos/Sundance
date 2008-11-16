@@ -84,6 +84,7 @@ const string& ProductExpr::opChar() const
 Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& context) const
 {
   Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "ProdExpr::internalFindQ_W(" << order << ")");
 
   Set<MultiSet<int> > rtn;
   if (order > 2) return rtn;
@@ -94,10 +95,14 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& c
     return rtn;
   }
 
+
   const Set<MultipleDeriv>& wLeft 
     = leftEvaluatable()->findW(0, context);
+  SUNDANCE_VERB_HIGH(tab0 << "wLeft=" << wLeft);
+
   const Set<MultipleDeriv>& wRight
     = rightEvaluatable()->findW(0, context);
+  SUNDANCE_VERB_HIGH(tab0 << "wRight=" << wRight);
   
   if (order==0)
   {

@@ -519,18 +519,23 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
 {
   Tabs tab0;
   Set<MultipleDeriv> rtn;
-  SUNDANCE_VERB_HIGH(tab0 << "EWC::internalFindW() for " << toString());  
-  /* we'll dealt with zero order derivatives specially */
+  SUNDANCE_VERB_HIGH(tab0 << "EWC::internalFindW("
+    << order << ") for " << toString());  
+  /* we'll deal with zero order derivatives specially */
   if (order==0) 
     {
+      Tabs tab1;
+      SUNDANCE_VERB_HIGH(tab1 << "case: order=0");  
       /* If I am an arbitrary nonlinear expression, I cannot be known to
        * be zero regardless of the state of my arguments. Return the
        * zeroth-order derivative. */
       if (!(isLinear() || isProduct())) 
         {
+          Tabs tab2;
+          SUNDANCE_VERB_HIGH(tab2 << "I am neither product nor linear");  
           rtn.put(MultipleDeriv());
-          SUNDANCE_VERB_HIGH(tab0 << "W[" << order << "]=" << rtn);
-          SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindW for "
+          SUNDANCE_VERB_HIGH(tab2 << "W[" << order << "]=" << rtn);
+          SUNDANCE_VERB_HIGH(tab2 << "done with EWC::internalFindW for "
                              << toString());
           return rtn;
         }
@@ -538,14 +543,16 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
       /* At this point, I've dealt with arbitrary nonlinear exprs so 
        * I know I'm either a product or a linear expr */
 
+      SUNDANCE_VERB_HIGH(tab1 << "getting Q");  
       const Set<MultiSet<int> >& Q = findQ_W(0, context);
 
       /* If there are no nonzero terms, a linear combination or a product
        * will be zero. Return the empty set. */
       if (Q.size()==0)
         {
-          SUNDANCE_VERB_HIGH(tab0 << "W[" << order << "]=" << rtn);
-          SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindW for "
+          Tabs tab2;
+          SUNDANCE_VERB_HIGH(tab2 << "W[" << order << "]=" << rtn);
+          SUNDANCE_VERB_HIGH(tab2 << "done with EWC::internalFindW for "
                              << toString());
           return rtn;
         }
@@ -553,9 +560,11 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
       /* if I'm a linear combination and any term is nonzero, I am nonzero */
       if (isLinear())
         {
+          Tabs tab2;
+          SUNDANCE_VERB_HIGH(tab2 << "I am a linear combination");  
           rtn.put(MultipleDeriv());      
-          SUNDANCE_VERB_HIGH(tab0 << "W[" << order << "]=" << rtn);
-          SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindW for "
+          SUNDANCE_VERB_HIGH(tab2 << "W[" << order << "]=" << rtn);
+          SUNDANCE_VERB_HIGH(tab2 << "done with EWC::internalFindW for "
                              << toString());    
           return rtn;
         }
@@ -570,7 +579,8 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
         {
           rtn.put(MultipleDeriv());
         }
-      SUNDANCE_VERB_HIGH(tab0 << "W[" << order << "]=" << rtn);
+      SUNDANCE_VERB_HIGH(tab1 << "I am a product");  
+      SUNDANCE_VERB_HIGH(tab1 << "W[" << order << "]=" << rtn);
       SUNDANCE_VERB_HIGH(tab0 << "done with EWC::internalFindW for "
                          << toString());
       return rtn;
@@ -581,9 +591,12 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
   Array<Array<Array<int> > > comp = compositions(order);
   for (int i=1; i<=order; i++) 
     {
-
+      Tabs tab1;
+      SUNDANCE_VERB_HIGH(tab1 << "doing order=" << i);  
 
       const Set<MultiSet<int> >& QW = findQ_W(i, context);
+
+      SUNDANCE_VERB_HIGH(tab1 << "QW=" << QW);  
       
       for (Set<MultiSet<int> >::const_iterator j=QW.begin(); j!=QW.end(); j++)
         {
@@ -608,11 +621,18 @@ const Set<MultiSet<int> >&
 ExprWithChildren::findQ_W(int order, 
                           const EvalContext& context) const
 {
+  Tabs tab1;
+  SUNDANCE_VERB_HIGH(tab1 << "finding Q_W");  
   if (!contextToQWMap_[order].containsKey(context))
     {
       contextToQWMap_[order].put(context, internalFindQ_W(order, context));
     }
+  else
+  {
+    SUNDANCE_VERB_HIGH(tab1 << "using previously computed Q_W");  
+  }
   return contextToQWMap_[order].get(context);
+
 }
 
 const Set<MultiSet<int> >& 
@@ -705,26 +725,48 @@ Set<MultiSet<int> > ExprWithChildren
 ::internalFindQ_W(int order, 
                   const EvalContext& context) const
 {
+  Tabs tab0;
+  SUNDANCE_VERB_HIGH(tab0 << "in internalFindQ_W");
   Set<MultiSet<int> > rtn;
   const Set<MultiSet<int> >& I_N = getI_N();
+  SUNDANCE_VERB_HIGH(tab0 << "I_N=" << I_N);
 
   if (isLinear())
     {
+      Tabs tab1;
       /* first derivatives of the sum wrt the arguments are 
        * always nonzero */
-      if (order==1) return I_N;
+      if (order==1) 
+      {
+        SUNDANCE_VERB_HIGH(tab1 << "is linear, order=1, so Q_W = I_N");
+        return I_N;
+      }
       /* zeroth derivatives are nonzero if terms are nonzero */
       if (order==0)
         {
+          SUNDANCE_VERB_HIGH(tab1 << "is linear, order=0");
           for (int i=0; i<numChildren(); i++)
             {
               const Set<MultipleDeriv>& W_i = evaluatableChild(i)->findW(0,context);
-              if (W_i.size() > 0) rtn.put(makeMultiSet(i));
+              SUNDANCE_VERB_HIGH(tab1 << "is linear, order=0");
+              if (W_i.size() > 0) 
+              {
+                Tabs tab2;
+                SUNDANCE_VERB_HIGH(tab2 << "child " << i << " is nonzero");
+                rtn.put(makeMultiSet(i));
+              }
+              else
+              {
+                Tabs tab2;
+                SUNDANCE_VERB_HIGH(tab2 << "child " << i << " is zero");
+              }
             }
         }
     }
   else
     {
+      Tabs tab1;
+      SUNDANCE_VERB_HIGH(tab1 << "is nonlinear, using all index set products");
       rtn = I_N;
       
       for (int i=1; i<order; i++)

@@ -63,6 +63,9 @@ namespace SundanceTesting
     /** */
     Expr createDiscreteFunction(const string& name) const ;
 
+    /** */
+    bool coeffIsZero() const {return field_.coeff()==0.0;}
+
   private:
     ADField field_;
   };

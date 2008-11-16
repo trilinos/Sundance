@@ -53,6 +53,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceBasisDOFTopologyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisReferenceEvaluationBase.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceBubble.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
@@ -83,6 +84,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceVectorBasisComponent.hpp
 SUNDANCE_ELEMENTS = \
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamily.cpp\
 $(top_srcdir)/src-std-framework/Elements/SundanceBasisFamilyBase.cpp\
+$(top_srcdir)/src-std-framework/Elements/SundanceBubble.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotes.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
@@ -182,6 +184,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.hpp 
 
 
@@ -197,6 +200,7 @@ $(top_srcdir)/src-std-framework/Problem/SundanceLinearEigenproblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceLinearProblem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceModelEvaluatorBase.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNLPModelEvaluator.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceRivaraDriver.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceNonlinearProblem.cpp 
 
 

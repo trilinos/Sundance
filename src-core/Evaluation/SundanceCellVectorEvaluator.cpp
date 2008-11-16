@@ -95,7 +95,7 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
     {
-      std::cerr << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
+      Out::os() << tabs << "sparsity = " << std::endl << tabs << *(this->sparsity)() << std::endl;
     }
 
   vectorResults.resize(1);
@@ -107,8 +107,8 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
     {
       Tabs tab1;
-      std::cerr << tab1 << "results " << std::endl;
-      this->sparsity()->print(std::cerr, vectorResults,
+      Out::os() << tab1 << "results " << std::endl;
+      this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }
 

@@ -86,6 +86,7 @@
         ../tests-std-framework/Problem/Poisson3D.exe,
         ../tests-std-framework/Problem/SimpleModelEvalTest.exe,
         ../tests-std-framework/Problem/PoissonOnDisk.exe,
+        ../tests-std-framework/Problem/RefinementTest3D.exe,
         ../tests-std-framework/Problem/Stokes2D.exe;
   COMM=SERIAL,MPI(1);
 }

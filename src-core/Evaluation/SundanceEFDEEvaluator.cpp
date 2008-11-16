@@ -138,7 +138,7 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
   {
-    std::cerr << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
+    Out::os() << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
   }
 
   constantResults.resize(constValIndexToArgIndexMap_.size());
@@ -154,8 +154,8 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbLow)
     {
       Tabs tab1;
-      std::cerr << tab1 << "EFDE operand results" << std::endl;
-      argSparsitySuperset()->print(std::cerr, argVectorResults,
+      Out::os() << tab1 << "EFDE operand results" << std::endl;
+      argSparsitySuperset()->print(Out::os(), argVectorResults,
                                    argConstantResults);
     }
 
@@ -179,8 +179,8 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
   {
     Tabs tab1;
-    std::cerr << tab1 << "results " << std::endl;
-    this->sparsity()->print(std::cerr, vectorResults,
+    Out::os() << tab1 << "results " << std::endl;
+    this->sparsity()->print(Out::os(), vectorResults,
       constantResults);
   }
 }

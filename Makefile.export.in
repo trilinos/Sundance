@@ -66,7 +66,7 @@ FIAT_BUILD_DIR = @FIAT_BUILD_DIR@
 # Exodus stuff
 #-------------------------------------------------------------------------
 
-@EXODUS_STR@EXODUS_LIBS= -lexoII -lnetcdf
+@EXODUS_STR@EXODUS_LIBS= -lexoIIv2c -lnetcdf
 
 
 #-------------------------------------------------------------------------

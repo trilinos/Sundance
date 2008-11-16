@@ -153,6 +153,13 @@ $(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.h
 $(top_srcdir)/src-std-mesh/Transformations/SundanceFileIOChacoPartitioner.hpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformationBase.hpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.hpp \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraFace.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.hpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.hpp  \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceSerialPartitionerBase.hpp 
 
 SUNDANCE_MESHTRANSFORMATIONS = \
@@ -160,6 +167,12 @@ $(top_srcdir)/src-std-mesh/Transformations/SundanceExtrusionMeshTransformation.c
 $(top_srcdir)/src-std-mesh/Transformations/SundanceFileIOChacoPartitioner.cpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformationBase.cpp \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceMeshTransformation.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraEdge.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElement.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraElementIterator.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraMesh.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraNode.cpp  \
+$(top_srcdir)/src-std-mesh/Transformations/SundanceRivaraTreeNode.cpp  \
 $(top_srcdir)/src-std-mesh/Transformations/SundanceSerialPartitionerBase.cpp 
 
 SUNDANCE_MESHWRITERS_H = \

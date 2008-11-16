@@ -432,7 +432,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
       SUNDANCE_OUT(verbosity<Evaluator>() > VerbLow,
         tab << endl << tab 
         << " ************* Nonzeros are:");
-      e->displayNonzeros(cout, context);
+      e->displayNonzeros(Out::os(), context);
     }
 
   DerivSet derivs = e->sparsitySuperset(context)->derivSet();

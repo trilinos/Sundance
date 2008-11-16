@@ -453,20 +453,20 @@ void FunctionalPolynomial
       prevKeys.put(i->first);
     }
 
-  cerr << "keys from prev level are " << prevKeys << endl;
-  cerr << "induced keys are " << inducedKeys << endl;
-  cerr << "natural keys are " << keys_[level] << endl;
+  Out::os() << "keys from prev level are " << prevKeys << endl;
+  Out::os() << "induced keys are " << inducedKeys << endl;
+  Out::os() << "natural keys are " << keys_[level] << endl;
 
   allKeys.merge(inducedKeys);
   allKeys.merge(keys_[level]);
 
-  cerr << "keys active at this level are " << allKeys << endl;
+  Out::os() << "keys active at this level are " << allKeys << endl;
 
   for (Set<MultipleDeriv>::const_iterator 
          i = allKeys.begin(); i != allKeys.end(); i++)
     {
       const MultipleDeriv& key = *i;
-      cerr << "working on key " << key << endl;
+      Out::os() << "working on key " << key << endl;
       string str;
       if (coeffs_[level].containsKey(key))
         {
@@ -474,16 +474,16 @@ void FunctionalPolynomial
         }
 
       Set<Deriv> funcs = findFuncsForSummation(prevKeys, key);
-      cerr << "funcs to sum are " << funcs << endl;
+      Out::os() << "funcs to sum are " << funcs << endl;
       for (Set<Deriv>::const_iterator 
              j = funcs.begin(); j != funcs.end(); j++)
         {
           MultipleDeriv prevKey = key;
-          cerr << "prev key = " << prevKey << endl;
-          cerr << "func = " << *j << endl;
+          Out::os() << "prev key = " << prevKey << endl;
+          Out::os() << "func = " << *j << endl;
           // if (key.size() > 0 && key.upper_bound(*j) == key.end()) 
           //  {
-          //    cerr << "skipping" << endl;
+          //    Out::os() << "skipping" << endl;
           //    continue;
           // }
           prevKey.put(*j);
@@ -507,7 +507,7 @@ string FunctionalPolynomial::evalString() const
 
   for (int level=maxLevel; level>=0; level--)
     {
-      cerr << "********* Recurrence level = " << level << " ***************"
+      Out::os() << "********* Recurrence level = " << level << " ***************"
            << endl;      
       sCurr = Map<MultipleDeriv, string>();
       stepRecurrence(level, sPrev, sCurr);
@@ -516,8 +516,8 @@ string FunctionalPolynomial::evalString() const
       for (Map<MultipleDeriv, string>::const_iterator 
              j = sCurr.begin(); j != sCurr.end(); j++)
         {
-          cerr << "key=" << j->first << endl;
-          cerr << "value=" << j->second << endl;
+          Out::os() << "key=" << j->first << endl;
+          Out::os() << "value=" << j->second << endl;
         }
     }
 

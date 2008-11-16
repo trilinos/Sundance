@@ -54,7 +54,7 @@ CoordExprEvaluator::CoordExprEvaluator(const CoordExpr* expr,
   Tabs tabs;
   SUNDANCE_VERB_LOW(tabs << "initializing coord expr evaluator for " 
                     << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << *(this->sparsity)());
+  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << tabs << *(this->sparsity)());
 
   TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 2, InternalError,
                      "CoordExprEvaluator ctor found a sparsity table "
@@ -118,7 +118,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
 
   if (verbosity() > VerbMedium)
     {
-      std::cerr << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
+      Out::os() << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
     }
 
   if (doValue_)
@@ -139,8 +139,8 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
   if (verbosity() > VerbMedium)
     {
       Tabs tab1;
-      std::cerr << tab1 << "results " << std::endl;
-      this->sparsity()->print(std::cerr, vectorResults,
+      Out::os() << tab1 << "results " << std::endl;
+      this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }
 
