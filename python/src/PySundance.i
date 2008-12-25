@@ -17,7 +17,6 @@
     }
 }
 
-
 %{
 #include "Sundance.hpp"
 #include "SundancePathUtils.hpp"
@@ -43,9 +42,24 @@ namespace SundanceUtils
 }
 
 
+%inline%{
+  class PyOut
+  {
+  public:
+    PyOut() {}
+
+    void write(const std::string& s) 
+      {
+        SundanceUtils::Out::os() << s;
+      }
+  };
+  %}
+
 %include Mesh.i
 
 %include Utils.i
+
+%include Array.i
 
 %include ParameterList.i
 
@@ -61,11 +75,17 @@ namespace SundanceUtils
 
 %include Symbolics.i
 
+%include CoordinateSystem.i
+
 %include Integral.i
 
 %include LinearProblem.i
 
 %include NonlinearProblem.i
+
+%include LinearEigenproblem.i
+
+%include Functional.i
 
 %include Viz.i
 

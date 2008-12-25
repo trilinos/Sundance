@@ -70,11 +70,38 @@ $(top_builddir)/src-core/libsundanceCore.a \
 $(top_builddir)/src-interop/libsundanceInterop.a \
 $(top_builddir)/src-utils/libsundanceUtils.a $(top_builddir)/src-solvers/libTSFExtended.a
 
+include_HEADERS = AToC.i \
+Basis.i \
+CellFilter.i\
+CoordinateSystem.i\
+Discrete.i\
+Integral.i\
+LinearProblem.i\
+Mesh.i\
+NonlinearProblem.i\
+ParameterList.i\
+PySundance.i\
+Quadrature.i\
+Spectral.i\
+Symbolics.i\
+TSF.i\
+Utils.i\
+Viz.i \
+PyTeuchos_Utils.hpp \
+PySundanceNOXSolverHandle.hpp \
+PySundanceCallback.hpp \
+PySundanceCellPredicate.hpp \
+PySundanceLinearSolver.hpp \
+PySundanceFIATScalarAdapter.hpp \
+PySundanceFIATQuadratureAdapter.hpp
+
+
+
 build: $(WRAPPERS) $(tempdir) $(LIBDEPENDENCIES)
 	rm -f $(solibdir)/_PySundance.so ../../python/python/src/PySundance_wrap.o
 	$(PYTHON) $(srcdir)/setup.py build
 
-install: build
+install: build install-includeHEADERS
 	$(PYTHON) $(srcdir)/setup.py install --prefix=$(PYTHON_PREFIX)
 
 clean-local:

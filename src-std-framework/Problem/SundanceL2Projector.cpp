@@ -57,11 +57,47 @@ L2Projector::L2Projector(const DiscreteSpace& space,
                          const LinearSolver<double>& solver)
   : prob_(), solver_()
 {
-  init(space, expr, solver);
+  CoordinateSystem cs = new CartesianCoordinateSystem();
+  init(space, cs, expr, solver);
+}
+
+
+L2Projector::L2Projector(const DiscreteSpace& space, 
+  const CoordinateSystem& cs,
+  const Expr& expr, 
+  const LinearSolver<double>& solver)
+  : prob_(), solver_()
+{
+  init(space, cs, expr, solver);
 }
 
 L2Projector::L2Projector(const DiscreteSpace& space, 
                          const Expr& expr)
+  : prob_(), solver_()
+{
+  CoordinateSystem cs = new CartesianCoordinateSystem();
+
+  /* Create an Aztec solver for solving the linear subproblems */
+  std::map<int,int> azOptions;
+  std::map<int,double> azParams;
+  
+  azOptions[AZ_solver] = AZ_cg;
+  azOptions[AZ_precond] = AZ_dom_decomp;
+  azOptions[AZ_subdomain_solve] = AZ_icc;
+  azOptions[AZ_graph_fill] = 1;
+  azOptions[AZ_max_iter] = 1000;
+  azOptions[AZ_output] = AZ_none;
+  azParams[AZ_tol] = 1.0e-13;
+  
+  LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
+
+  init(space, cs, expr, solver);
+}
+
+
+L2Projector::L2Projector(const DiscreteSpace& space, 
+  const CoordinateSystem& cs,
+  const Expr& expr)
   : prob_(), solver_()
 {
   /* Create an Aztec solver for solving the linear subproblems */
@@ -78,15 +114,16 @@ L2Projector::L2Projector(const DiscreteSpace& space,
   
   LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
-  init(space, expr, solver);
+  init(space, cs, expr, solver);
 }
 
 
 
 
-void L2Projector::init(const DiscreteSpace& space, 
-                       const Expr& expr, 
-                       const LinearSolver<double>& solver)
+void L2Projector::init(const DiscreteSpace& space,        
+  const CoordinateSystem& coordSys,
+  const Expr& expr, 
+  const LinearSolver<double>& solver)
 {
   TEST_FOR_EXCEPTION(space.basis().size() != expr.size(),
                      RuntimeError,
@@ -109,13 +146,13 @@ void L2Projector::init(const DiscreteSpace& space,
 
   CellFilter interior = new MaximalCellFilter();
 
-  int dim = space.mesh().spatialDim();
   Expr eqn = 0.0;
+  Expr J = coordSys.jacobian();
 
   for (unsigned int i=0; i<space.basis().size(); i++)
     {
       eqn = eqn + Integral(space.cellFilters(i), 
-                           v[i]*(u[i]-expr[i]), 
+                           J*v[i]*(u[i]-expr[i]), 
                            new GaussianQuadrature(4));
     }
   Expr bc;

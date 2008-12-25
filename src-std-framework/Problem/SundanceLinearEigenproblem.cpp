@@ -49,6 +49,19 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+static Time& normalizationTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("Eigenfunction normalization"); 
+  return *rtn;
+}
+
+static Time& makeEigensystemTimer() 
+{
+  static RefCountPtr<Time> rtn 
+    = TimeMonitor::getNewTimer("Building eigensystem stiffness matrix"); 
+  return *rtn;
+}
 
 LinearEigenproblem::LinearEigenproblem(
   const Mesh& mesh, const Expr& eqn,
@@ -58,6 +71,7 @@ LinearEigenproblem::LinearEigenproblem(
     kProb_(),
     mProb_(),
     M_(),
+    MUnlumped_(),
     discSpace_()
 {
   Expr empty;
@@ -75,6 +89,7 @@ LinearEigenproblem::LinearEigenproblem(
     kProb_(),
     mProb_(),
     M_(),
+    MUnlumped_(),
     discSpace_()
 {
   Expr empty;
@@ -82,10 +97,14 @@ LinearEigenproblem::LinearEigenproblem(
   kProb_ = LinearProblem(mesh, eqn, empty, v, u, vecType);
   mProb_ = makeMassProb(mesh, empty, v, u, vecType);
   discSpace_ = *(kProb_.solnSpace()[0]);
-  M_ = mProb_.getOperator();
+  MUnlumped_ = mProb_.getOperator();
   if (lumpMass_)
   {
-    M_ = lumpedOperator(M_);
+    M_ = lumpedOperator(MUnlumped_);
+  }
+  else
+  {
+    M_ = MUnlumped_;
   }
 }    
 
@@ -100,17 +119,24 @@ LinearEigenproblem::LinearEigenproblem(
     kProb_(),
     mProb_(),
     M_(),
+    MUnlumped_(),
     discSpace_()
 {
   Expr bc;
   kProb_ = LinearProblem(mesh, eqn, bc, v, u, vecType);
   mProb_ = makeMassProb(mesh, massExpr, v, u, vecType);
   discSpace_ = *(kProb_.solnSpace()[0]);
-  M_ = mProb_.getOperator();
+
+  MUnlumped_ = mProb_.getOperator();
   if (lumpMass_)
   {
-    M_ = lumpedOperator(M_);
+    M_ = lumpedOperator(MUnlumped_);
   }
+  else
+  {
+    M_ = MUnlumped_;
+  }
+  
 }    
 
 LinearProblem LinearEigenproblem::makeMassProb(
@@ -140,14 +166,24 @@ LinearProblem LinearEigenproblem::makeMassProb(
 Array<Expr> LinearEigenproblem::makeEigenfunctions(
   Array<Vector<double> >& ev) const 
 {
+  TimeMonitor timer(normalizationTimer());
+
   Array<Expr> x(ev.size());
   CellFilter interior = new MaximalCellFilter();
   QuadratureFamily q = new GaussianQuadrature(2);
   for (unsigned int i=0; i<ev.size(); i++) 
   {
     x[i] = new DiscreteFunction(discSpace_, ev[i], "ev[" + Teuchos::toString(i)+"]");
-    double N = evaluateIntegral(discSpace_.mesh(), 
-      Integral(interior, x[i]*x[i], q));
+    double N = 1.0;
+    if (MUnlumped_.ptr().get())
+    {
+      N = ev[i] * (MUnlumped_ * ev[i]);
+    }
+    else
+    {
+      N = evaluateIntegral(discSpace_.mesh(), 
+        Integral(interior, x[i]*x[i], q));
+    }
     ev[i].scale(1.0/sqrt(N));
   }
 
@@ -170,7 +206,11 @@ Eigensolution LinearEigenproblem::solve(const Eigensolver<double>& solver) const
   Array<std::complex<double> > ew;
   Array<Vector<double> > ev;
 
-  LinearOperator<double> K = kProb_.getOperator();
+  LinearOperator<double> K;
+  {
+    TimeMonitor timer(makeEigensystemTimer());
+    K = kProb_.getOperator();
+  }
   
   solver.solve(K, M_, ev, ew);
 

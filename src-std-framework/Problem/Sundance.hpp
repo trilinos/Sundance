@@ -102,12 +102,14 @@
 #include "SundanceHermiteSpectralBasis.hpp"
 
 /* Problem level classes */
+#include "SundanceCoordinateSystem.hpp"
 #include "SundanceLinearProblem.hpp"
 #include "SundanceLinearEigenproblem.hpp"
 #include "SundanceL2Projector.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 #include "SundanceFunctional.hpp"
+#include "SundanceRivaraDriver.hpp"
 #include "SundanceExprFieldWrapper.hpp"
 
 /* Solvers & stuff */

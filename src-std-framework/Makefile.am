@@ -176,6 +176,7 @@ $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceEigensolution.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.hpp \
@@ -193,6 +194,7 @@ $(top_srcdir)/src-std-framework/Problem/Sundance.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp \

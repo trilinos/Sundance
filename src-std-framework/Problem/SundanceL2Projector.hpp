@@ -37,6 +37,7 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceLinearProblem.hpp"
+#include "SundanceCoordinateSystem.hpp"
 #include "TSFLinearOperator.hpp"
 #include "TSFLinearSolver.hpp"
 #include "TSFVector.hpp"
@@ -67,6 +68,15 @@ namespace SundanceStdFwk
     L2Projector(const DiscreteSpace& space, 
                 const Expr& expr,
                 const LinearSolver<double>& solver);
+    /** */
+    L2Projector(const DiscreteSpace& space, 
+      const CoordinateSystem& coordSys,
+      const Expr& expr);
+    /** */
+    L2Projector(const DiscreteSpace& space, 
+      const CoordinateSystem& coordSys,
+      const Expr& expr,
+      const LinearSolver<double>& solver);
 
     /** */
     Expr project() const {return prob_.solve(solver_);}
@@ -76,10 +86,11 @@ namespace SundanceStdFwk
 
   private:
 
-    void init(const DiscreteSpace& space, 
-              const Expr& expr,
-              const LinearSolver<double>& solver);
-
+    void init(const DiscreteSpace& space,       
+      const CoordinateSystem& coordSys,
+      const Expr& expr,
+      const LinearSolver<double>& solver);
+    
     LinearProblem prob_;
 
     LinearSolver<double> solver_;

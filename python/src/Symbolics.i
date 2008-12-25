@@ -320,6 +320,24 @@ namespace SundanceCore
   Expr acosh(const Expr& x);
   Expr atanh(const Expr& x);
 
+/** \relates Expr */
+Expr gradient(int dim);
+  
+/** \relates Expr */
+Expr div(const Expr& f);
+  
+/** \relates Expr */
+Expr cross(const Expr& a, const Expr& b);
+  
+/** \relates Expr */
+Expr curl(const Expr& f);
+
+/** \relates Expr \relates CellVectorExpr */
+Expr CellNormalExpr(int dimension, const std::string& name);
+
+/** \relates Expr \relates CellVectorExpr */
+Expr CellTangentExpr(int dimension, const std::string& name);
+
 }
 
 

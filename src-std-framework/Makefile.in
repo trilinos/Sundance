@@ -206,6 +206,7 @@ am__objects_4 = Sundance.$(OBJEXT) \
 	SundanceAToCDensitySampler.$(OBJEXT) \
 	SundanceAToCPointLocator.$(OBJEXT) \
 	SundanceCToAInterpolator.$(OBJEXT) \
+	SundanceCoordinateSystem.$(OBJEXT) \
 	SundanceExprFieldWrapper.$(OBJEXT) \
 	SundanceFunctional.$(OBJEXT) SundanceL2Projector.$(OBJEXT) \
 	SundanceLinearEigenproblem.$(OBJEXT) \
@@ -497,6 +498,7 @@ $(top_srcdir)/src-std-framework/Problem/Sundance.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.hpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceEigensolution.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.hpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.hpp \
@@ -513,6 +515,7 @@ $(top_srcdir)/src-std-framework/Problem/Sundance.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCDensitySampler.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceAToCPointLocator.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp \
+$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceFunctional.cpp \
 $(top_srcdir)/src-std-framework/Problem/SundanceL2Projector.cpp \
@@ -833,6 +836,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCToAInterpolator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceClosedNewtonCotes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceClosedNewtonCotesType.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceCoordinateSystem.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDOFMapBase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDOFMapBuilder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SundanceDiscreteFunction.Po@am__quote@
@@ -1686,6 +1690,20 @@ SundanceCToAInterpolator.obj: $(top_srcdir)/src-std-framework/Problem/SundanceCT
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp' object='SundanceCToAInterpolator.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCToAInterpolator.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceCToAInterpolator.cpp'; fi`
+
+SundanceCoordinateSystem.o: $(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCoordinateSystem.o -MD -MP -MF $(DEPDIR)/SundanceCoordinateSystem.Tpo -c -o SundanceCoordinateSystem.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceCoordinateSystem.Tpo $(DEPDIR)/SundanceCoordinateSystem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp' object='SundanceCoordinateSystem.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCoordinateSystem.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp
+
+SundanceCoordinateSystem.obj: $(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceCoordinateSystem.obj -MD -MP -MF $(DEPDIR)/SundanceCoordinateSystem.Tpo -c -o SundanceCoordinateSystem.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp'; fi`
+@am__fastdepCXX_TRUE@	mv -f $(DEPDIR)/SundanceCoordinateSystem.Tpo $(DEPDIR)/SundanceCoordinateSystem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp' object='SundanceCoordinateSystem.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SundanceCoordinateSystem.obj `if test -f '$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp'; then $(CYGPATH_W) '$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/src-std-framework/Problem/SundanceCoordinateSystem.cpp'; fi`
 
 SundanceExprFieldWrapper.o: $(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT SundanceExprFieldWrapper.o -MD -MP -MF $(DEPDIR)/SundanceExprFieldWrapper.Tpo -c -o SundanceExprFieldWrapper.o `test -f '$(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp' || echo '$(srcdir)/'`$(top_srcdir)/src-std-framework/Problem/SundanceExprFieldWrapper.cpp

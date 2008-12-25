@@ -84,5 +84,4 @@ del sys
 import atexit
 atexit.register(Finalize)
 
-
-    %}
+%}

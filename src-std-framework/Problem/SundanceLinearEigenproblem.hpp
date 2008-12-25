@@ -104,6 +104,7 @@ private:
   LinearProblem kProb_;
   LinearProblem mProb_;
   LinearOperator<double> M_;
+  LinearOperator<double> MUnlumped_;
   DiscreteSpace discSpace_;
 };
 
