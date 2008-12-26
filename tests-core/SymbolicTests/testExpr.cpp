@@ -1,3 +1,4 @@
+#include "Teuchos_MPISession.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceIntegral.hpp"
