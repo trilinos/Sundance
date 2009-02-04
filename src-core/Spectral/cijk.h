@@ -15,7 +15,7 @@
 
 class cijk {
 
- private:
+private:
   int ndim;         /* number of dimensions in expansion */
   int order;        /* order of expansion */
   int maxorder, maxnterms;
@@ -24,7 +24,7 @@ class cijk {
   double Orthorder[2500][100];
   double icoef[100][100];
 
- public:
+public:
   cijk(int ndim, int order);
   double expectation(int i, int j, int k);
   double expectation4(int i, int j, int k, int l);
@@ -73,17 +73,17 @@ inline double cijk::expectation(int i, int j, int k){
   George::vector C(ndim+1);
 
   for(int id=1; id<=ndim; id++)
-    {
-      A[id] = int(Orthorder[i][id]);
-      B[id] = int(Orthorder[j][id]);
-      C[id] = int(Orthorder[k][id]);
-      if (i==0)
-        A[id] = 0;
-      if (j==0)
-        B[id] =0;
-      if (k==0)
-        C[id] = 0;
-    }
+  {
+    A[id] = int(Orthorder[i][id]);
+    B[id] = int(Orthorder[j][id]);
+    C[id] = int(Orthorder[k][id]);
+    if (i==0)
+      A[id] = 0;
+    if (j==0)
+      B[id] =0;
+    if (k==0)
+      C[id] = 0;
+  }
 
   double prod = 1;
 
@@ -91,46 +91,46 @@ inline double cijk::expectation(int i, int j, int k){
   Teuchos::Array<double> Sigma(ndim+1);
 
   for(int in=1; in<=ndim; in++)
-    {
-      Mu[in] = 0;
-      Sigma[in] = 1;
-    }
+  {
+    Mu[in] = 0;
+    Sigma[in] = 1;
+  }
 
   for(int dm=1; dm<=ndim; dm++)
+  {
+    double m = Mu[dm];
+    double s = Sigma[dm];
+
+    double Momt[40];
+    Momt[0] = 1;
+    Momt[1] = m;
+    Momt[2] = pow(m,2) + pow(s,2);
+    for(int mg = 3; mg<40; mg++)
+      Momt[mg] = m*Momt[mg-1]+((mg-1)*pow(s,2)*Momt[mg-2]);
+
+    George::vector A1(maxorder);
+    George::vector B1(maxorder);
+    George::vector C1(maxorder);
+
+    George::vector P1(2*maxorder);
+    George::vector P2(3*maxorder);
+
+    for(int in=1; in<=maxorder; in++)
     {
-      double m = Mu[dm];
-      double s = Sigma[dm];
-
-      double Momt[40];
-      Momt[0] = 1;
-      Momt[1] = m;
-      Momt[2] = pow(m,2) + pow(s,2);
-      for(int mg = 3; mg<40; mg++)
-        Momt[mg] = m*Momt[mg-1]+((mg-1)*pow(s,2)*Momt[mg-2]);
-
-      George::vector A1(maxorder);
-      George::vector B1(maxorder);
-      George::vector C1(maxorder);
-
-      George::vector P1(2*maxorder);
-      George::vector P2(3*maxorder);
-
-      for(int in=1; in<=maxorder; in++)
-        {
-          A1[in-1] = (icoef[int(A[dm]+1)][in]);
-          B1[in-1] = (icoef[int(B[dm]+1)][in]);
-          C1[in-1] = (icoef[int(C[dm]+1)][in]);
-        }
-
-      PC.mult1dHermite(A1,B1,P1);
-      PC.mult1dHermite(P1,C1,P2);
-
-      double p1=0;
-      for(int ig=0; ig<3*maxorder; ig++)
-        p1 += P2[ig]*Momt[ig];
-
-      prod *= p1;
+      A1[in-1] = (icoef[int(A[dm]+1)][in]);
+      B1[in-1] = (icoef[int(B[dm]+1)][in]);
+      C1[in-1] = (icoef[int(C[dm]+1)][in]);
     }
+
+    PC.mult1dHermite(A1,B1,P1);
+    PC.mult1dHermite(P1,C1,P2);
+
+    double p1=0;
+    for(int ig=0; ig<3*maxorder; ig++)
+      p1 += P2[ig]*Momt[ig];
+
+    prod *= p1;
+  }
 
   return prod;
 
@@ -156,21 +156,21 @@ inline double cijk::expectation4(int i, int j, int k, int l){
   George::vector D(ndim+1);
 
   for(int id=1; id<=ndim; id++)
-    {
-      A[id] = int(Orthorder[i][id]);
-      B[id] = int(Orthorder[j][id]);
-      C[id] = int(Orthorder[k][id]);
-      D[id] = int(Orthorder[l][id]);
+  {
+    A[id] = int(Orthorder[i][id]);
+    B[id] = int(Orthorder[j][id]);
+    C[id] = int(Orthorder[k][id]);
+    D[id] = int(Orthorder[l][id]);
 
-      if (i==0)
-        A[id] = 0;
-      if (j==0)
-        B[id] =0;
-      if (k==0)
-        C[id] = 0;
-      if(l==0)
-        D[id] = 0;
-    }
+    if (i==0)
+      A[id] = 0;
+    if (j==0)
+      B[id] =0;
+    if (k==0)
+      C[id] = 0;
+    if(l==0)
+      D[id] = 0;
+  }
 
   double prod = 1;
 
@@ -178,50 +178,50 @@ inline double cijk::expectation4(int i, int j, int k, int l){
   Teuchos::Array<double> Sigma(ndim+1);
 
   for(int in=1; in<=ndim; in++)
-    {
-      Mu[in] = 0;
-      Sigma[in] = 1;
-    }
+  {
+    Mu[in] = 0;
+    Sigma[in] = 1;
+  }
 
   for(int dm=1; dm<=ndim; dm++)
+  {
+    double m = Mu[dm];
+    double s = Sigma[dm];
+
+    double Momt[60];
+    Momt[0] = 1;
+    Momt[1] = m;
+    Momt[2] = pow(m,2) + pow(s,2);
+    for(int mg = 3; mg<60; mg++)
+      Momt[mg] = m*Momt[mg-1]+((mg-1)*pow(s,2)*Momt[mg-2]);
+
+    George::vector A1(maxorder);
+    George::vector B1(maxorder);
+    George::vector C1(maxorder);
+    George::vector D1(maxorder);
+
+    George::vector P1(2*maxorder);
+    George::vector P2(3*maxorder);
+    George::vector P3(4*maxorder);
+
+    for(int in=1; in<=maxorder; in++)
     {
-      double m = Mu[dm];
-      double s = Sigma[dm];
-
-      double Momt[60];
-      Momt[0] = 1;
-      Momt[1] = m;
-      Momt[2] = pow(m,2) + pow(s,2);
-      for(int mg = 3; mg<60; mg++)
-        Momt[mg] = m*Momt[mg-1]+((mg-1)*pow(s,2)*Momt[mg-2]);
-
-      George::vector A1(maxorder);
-      George::vector B1(maxorder);
-      George::vector C1(maxorder);
-      George::vector D1(maxorder);
-
-      George::vector P1(2*maxorder);
-      George::vector P2(3*maxorder);
-      George::vector P3(4*maxorder);
-
-      for(int in=1; in<=maxorder; in++)
-        {
-          A1[in-1] = (icoef[int(A[dm]+1)][in]);
-          B1[in-1] = (icoef[int(B[dm]+1)][in]);
-          C1[in-1] = (icoef[int(C[dm]+1)][in]);
-          D1[in-1] = (icoef[int(D[dm]+1)][in]);
-        }
-
-      PC.mult1dHermite(A1,B1,P1);
-      PC.mult1dHermite(P1,C1,P2);
-      PC.mult1dHermite(P2,D1,P3);
-
-      double p1=0;
-      for(int ig=0; ig<4*maxorder; ig++)
-        p1 += P3[ig]*Momt[ig];
-
-      prod *= p1;
+      A1[in-1] = (icoef[int(A[dm]+1)][in]);
+      B1[in-1] = (icoef[int(B[dm]+1)][in]);
+      C1[in-1] = (icoef[int(C[dm]+1)][in]);
+      D1[in-1] = (icoef[int(D[dm]+1)][in]);
     }
+
+    PC.mult1dHermite(A1,B1,P1);
+    PC.mult1dHermite(P1,C1,P2);
+    PC.mult1dHermite(P2,D1,P3);
+
+    double p1=0;
+    for(int ig=0; ig<4*maxorder; ig++)
+      p1 += P3[ig]*Momt[ig];
+
+    prod *= p1;
+  }
 
   return prod;
 
@@ -249,24 +249,24 @@ inline double cijk::expectation5(int i, int j, int k, int l,int m){
   George::vector E(ndim+1);
 
   for(int id=1; id<=ndim; id++)
-    {
-      A[id] = int(Orthorder[i][id]);
-      B[id] = int(Orthorder[j][id]);
-      C[id] = int(Orthorder[k][id]);
-      D[id] = int(Orthorder[l][id]);
-      E[id] = int(Orthorder[m][id]);
+  {
+    A[id] = int(Orthorder[i][id]);
+    B[id] = int(Orthorder[j][id]);
+    C[id] = int(Orthorder[k][id]);
+    D[id] = int(Orthorder[l][id]);
+    E[id] = int(Orthorder[m][id]);
 
-      if (i==0)
-        A[id] = 0;
-      if (j==0)
-        B[id] =0;
-      if (k==0)
-        C[id] = 0;
-      if(l==0)
-        D[id] = 0;
-      if(m==0)
-        E[id] = 0;
-    }
+    if (i==0)
+      A[id] = 0;
+    if (j==0)
+      B[id] =0;
+    if (k==0)
+      C[id] = 0;
+    if(l==0)
+      D[id] = 0;
+    if(m==0)
+      E[id] = 0;
+  }
 
   double prod = 1;
 
@@ -274,55 +274,55 @@ inline double cijk::expectation5(int i, int j, int k, int l,int m){
   Teuchos::Array<double> Sigma(ndim+1);
 
   for(int in=1; in<=ndim; in++)
-    {
-      Mu[in] = 0;
-      Sigma[in] = 1;
-    }
+  {
+    Mu[in] = 0;
+    Sigma[in] = 1;
+  }
 
   for(int dm=1; dm<=ndim; dm++)
+  {
+    double m = Mu[dm];
+    double s = Sigma[dm];
+
+    double Momt[70];
+    Momt[0] = 1;
+    Momt[1] = m;
+    Momt[2] = pow(m,2) + pow(s,2);
+    for(int mg = 3; mg<70; mg++)
+      Momt[mg] = m*Momt[mg-1]+((mg-1)*pow(s,2)*Momt[mg-2]);
+
+    George::vector A1(maxorder);
+    George::vector B1(maxorder);
+    George::vector C1(maxorder);
+    George::vector D1(maxorder);
+    George::vector E1(maxorder);
+
+    George::vector P1(2*maxorder);
+    George::vector P2(3*maxorder);
+    George::vector P3(4*maxorder);
+    George::vector P4(5*maxorder);
+
+    for(int in=1; in<=maxorder; in++)
     {
-      double m = Mu[dm];
-      double s = Sigma[dm];
-
-      double Momt[70];
-      Momt[0] = 1;
-      Momt[1] = m;
-      Momt[2] = pow(m,2) + pow(s,2);
-      for(int mg = 3; mg<70; mg++)
-        Momt[mg] = m*Momt[mg-1]+((mg-1)*pow(s,2)*Momt[mg-2]);
-
-      George::vector A1(maxorder);
-      George::vector B1(maxorder);
-      George::vector C1(maxorder);
-      George::vector D1(maxorder);
-      George::vector E1(maxorder);
-
-      George::vector P1(2*maxorder);
-      George::vector P2(3*maxorder);
-      George::vector P3(4*maxorder);
-      George::vector P4(5*maxorder);
-
-      for(int in=1; in<=maxorder; in++)
-        {
-          A1[in-1] = (icoef[int(A[dm]+1)][in]);
-          B1[in-1] = (icoef[int(B[dm]+1)][in]);
-          C1[in-1] = (icoef[int(C[dm]+1)][in]);
-          D1[in-1] = (icoef[int(D[dm]+1)][in]);
-          E1[in-1] = (icoef[int(E[dm]+1)][in]);
-        }
-
-      PC.mult1dHermite(A1,B1,P1);
-      PC.mult1dHermite(P1,C1,P2);
-      PC.mult1dHermite(P2,D1,P3);
-      PC.mult1dHermite(P3,E1,P4);
-
-
-      double p1=0;
-      for(int ig=0; ig<5*maxorder; ig++)
-        p1 += P4[ig]*Momt[ig];
-
-      prod *= p1;
+      A1[in-1] = (icoef[int(A[dm]+1)][in]);
+      B1[in-1] = (icoef[int(B[dm]+1)][in]);
+      C1[in-1] = (icoef[int(C[dm]+1)][in]);
+      D1[in-1] = (icoef[int(D[dm]+1)][in]);
+      E1[in-1] = (icoef[int(E[dm]+1)][in]);
     }
+
+    PC.mult1dHermite(A1,B1,P1);
+    PC.mult1dHermite(P1,C1,P2);
+    PC.mult1dHermite(P2,D1,P3);
+    PC.mult1dHermite(P3,E1,P4);
+
+
+    double p1=0;
+    for(int ig=0; ig<5*maxorder; ig++)
+      p1 += P4[ig]*Momt[ig];
+
+    prod *= p1;
+  }
 
   return prod;
 

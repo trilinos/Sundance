@@ -49,8 +49,8 @@ namespace SundanceUtils
     {
     public:
       /** */
-      OrderedPair(const A& a, const B& b)
-        : a_(a), b_(b) {;}
+      OrderedPair(const A& _a, const B& _b)
+        : a_(_a), b_(_b) {;}
 
       /** */
       inline bool operator<(const OrderedPair<A, B>& other) const
@@ -85,8 +85,8 @@ namespace SundanceUtils
     {
     public:
       /** */
-      OrderedTriple(const A& a, const B& b, const C& c)
-        : OrderedPair<A, OrderedPair<B, C> >(a, OrderedPair<B,C>(b,c))
+      OrderedTriple(const A& _a, const B& _b, const C& _c)
+        : OrderedPair<A, OrderedPair<B, C> >(_a, OrderedPair<B,C>(_b,_c))
         {;}
 
       const A& a() const {return this->first();}
@@ -102,8 +102,8 @@ namespace SundanceUtils
     {
     public:
       /** */
-      OrderedQuartet(const A& a, const B& b, const C& c, const D& d)
-        : OrderedPair<A, OrderedTriple<B, C, D> >(a, OrderedTriple<B,C,D>(b,c,d))
+      OrderedQuartet(const A& _a, const B& _b, const C& _c, const D& _d)
+        : OrderedPair<A, OrderedTriple<B, C, D> >(_a, OrderedTriple<B,C,D>(_b,_c,_d))
         {;}
 
       const A& a() const {return this->first();}

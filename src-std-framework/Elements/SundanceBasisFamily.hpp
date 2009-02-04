@@ -217,7 +217,7 @@ public:
     : Array<BasisFamily>(a) 
     {;}
 
-#ifdef TRILINOS_DEV
+#ifndef TRILINOS_8
   template <int n>
   BasisArray(const Teuchos::Tuple<BasisFamily, n>& a) 
     : Array<BasisFamily>(a) 

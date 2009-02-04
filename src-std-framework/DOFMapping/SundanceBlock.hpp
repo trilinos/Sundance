@@ -80,7 +80,7 @@ namespace SundanceStdFwk
     /** explicit conversion needed for python wrappers */
     BlockArray(int n) : Array<Block>(n) {;}
 
-#ifdef TRILINOS_DEV
+#ifndef TRILINOS_8
     /** */
     template <int n>
     BlockArray(const Teuchos::Tuple<Block, n>& a) : Array<Block>(a) {;}
