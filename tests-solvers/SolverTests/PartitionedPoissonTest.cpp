@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 
       VectorType<double> type = new EpetraVectorType();
 
-      string solverFile = SundanceUtils::searchForFile("SolverParameters/poissonParams.xml");
+      string solverFile = "poissonParams.xml";
 
       ParameterXMLFileReader reader(solverFile);
       ParameterList solverParams = reader.getParameters();

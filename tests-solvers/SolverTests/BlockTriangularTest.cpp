@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
       bigRHS = bigA * bigX;
       Vector<double> bigSoln = blockSpace.createMember();
 
-      string solverFile = SundanceUtils::searchForFile("SolverParameters/poissonParams.xml");
+      string solverFile = "poissonParams.xml";
 
       ParameterXMLFileReader reader(solverFile);
       ParameterList solverParams = reader.getParameters();

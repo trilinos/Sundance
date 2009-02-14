@@ -34,12 +34,13 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceCellFilterBase.hpp"
+#include "SundanceNullCellFilterStub.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
- using namespace SundanceUtils;
+using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
   namespace Internal
@@ -52,7 +53,7 @@ using namespace SundanceStdMesh::Internal;
      * independently of geometry, i.e., equations involving only
      * global parameters.
      **/
-    class NullCellFilter : public NullCellFilterStub
+  class NullCellFilter : public SundanceCore::Internal::NullCellFilterStub
     {
     public:
       /** */

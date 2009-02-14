@@ -58,8 +58,4 @@ XMLObject NullCellFilter::toXML() const
   return rtn;
 }
 
-bool NullCellFilter::lessThan(const CellFilterBase* /* other */) const
-{
-  /* Null cell sets always lose a comparison */
-  return true;
-}
+

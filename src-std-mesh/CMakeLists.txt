@@ -56,27 +56,25 @@ APPEND_SET(HEADERS
   )
 
 APPEND_SET(SOURCES
-  CellFilter/SundanceBinaryCellFilter.hpp
-  CellFilter/SundanceBoundaryCellFilter.hpp
-  CellFilter/SundanceBoundaryCellPredicate.hpp
-  CellFilter/SundanceCellFilterBase.hpp
-  CellFilter/SundanceCellFilter.hpp
-  CellFilter/SundanceCellIterator.hpp
-  CellFilter/SundanceCellPredicateBase.hpp
-  CellFilter/SundanceCellPredicate.hpp
-  CellFilter/SundanceCellSetBase.hpp
-  CellFilter/SundanceCellSet.hpp
-  CellFilter/SundanceCFMeshPair.hpp
-  CellFilter/SundanceDimensionalCellFilter.hpp
-  CellFilter/SundanceExplicitCellIterator.hpp
-  CellFilter/SundanceExplicitCellSet.hpp
-  CellFilter/SundanceImplicitCellSet.hpp
-  CellFilter/SundanceLabelCellPredicate.hpp
-  CellFilter/SundanceMaximalCellFilter.hpp
-  CellFilter/SundanceNullCellFilter.hpp
-  CellFilter/SundancePositionalCellPredicate.hpp
-  CellFilter/SundanceSideCellFilter.hpp
-  CellFilter/SundanceSubsetCellFilter.hpp
+  CellFilter/SundanceBinaryCellFilter.cpp
+  CellFilter/SundanceBoundaryCellPredicate.cpp
+  CellFilter/SundanceCellFilterBase.cpp
+  CellFilter/SundanceCellFilter.cpp
+  CellFilter/SundanceCellIterator.cpp
+  CellFilter/SundanceCellPredicateBase.cpp
+  CellFilter/SundanceCellPredicate.cpp
+  CellFilter/SundanceCellSetBase.cpp
+  CellFilter/SundanceCellSet.cpp
+  CellFilter/SundanceCFMeshPair.cpp
+  CellFilter/SundanceDimensionalCellFilter.cpp
+  CellFilter/SundanceExplicitCellSet.cpp
+  CellFilter/SundanceImplicitCellSet.cpp
+  CellFilter/SundanceLabelCellPredicate.cpp
+  CellFilter/SundanceMaximalCellFilter.cpp
+  CellFilter/SundanceNullCellFilter.cpp
+  CellFilter/SundancePositionalCellPredicate.cpp
+  CellFilter/SundanceSideCellFilter.cpp
+  CellFilter/SundanceSubsetCellFilter.cpp
   )
 
 #

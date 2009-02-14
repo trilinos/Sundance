@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     CommandLineProcessor clp;
     TimeMonitor t(totalTimer());
 
-    string infile="../../../tests-std-mesh/Readers/wheel";
+    string infile="wheel";
     string outfile=infile;
     int numProc = 4;
     bool help=false;

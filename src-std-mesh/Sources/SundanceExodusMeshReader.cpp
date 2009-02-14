@@ -3,7 +3,7 @@
 #include "SundanceExceptions.hpp"
 #include "SundancePathUtils.hpp"
 
-#ifdef HAVE_EXODUS
+#ifdef HAVE_SUNDANCE_EXODUS
 #include "exodusII.h"
 #endif 
 
@@ -50,7 +50,7 @@ ExodusMeshReader::ExodusMeshReader(const string& fname,
 Mesh ExodusMeshReader::fillMesh() const 
 {
   Mesh mesh;
-#ifndef HAVE_EXODUS
+#ifndef HAVE_SUNDANCE_EXODUS
   TEST_FOR_EXCEPTION(true, RuntimeError, 
     "ExodusMeshReader called for a build without ExodusII");
 #else
