@@ -82,10 +82,11 @@ FUNCTION(ADD_TEST_BATCH TestList)
 
     PACKAGE_COPY_FILES_TO_BINARY_DIR(${TestName}_CopyData
        ${CALL_ARGS}
-       EXEDEPS ${TestName}
      )
+     # Removing for now: EXEDEPS ${TestName}
+     # NOTE: You really don't need this as you can just type 'make' in the
+     # build directory and the target will get built.
   ENDIF()
-
 
 
 ENDFOREACH()
