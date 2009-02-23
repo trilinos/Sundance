@@ -37,9 +37,10 @@ using SundanceCore::List;
  * Solves the Poisson equation in 2D on the unit disk
  */
 
+#ifdef Trilinos_DATA_DIR
+
 int main(int argc, char** argv)
 {
-  
   try
 		{
       Sundance::init(&argc, &argv);
@@ -88,7 +89,12 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
+#else
+      ParameterXMLFileReader reader("bicgstab.xml");
+#endif
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 
@@ -142,3 +148,19 @@ int main(int argc, char** argv)
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }
+
+
+#else
+
+
+
+int main(int argc, char** argv)
+{
+  Sundance::init(&argc, &argv);
+  std::cout << "dummy PoissonOnDisk PASSED. Enable Trilinos_DATA_DIR to run the actual test" << std::endl;
+  Sundance::finalize();
+  return 0;
+}
+
+
+#endif

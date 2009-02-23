@@ -66,8 +66,14 @@ int main(int argc, char** argv)
       Expr y = new CoordExpr(1);
       VectorType<double> vecType = new EpetraVectorType();
 
-      ParameterXMLFileReader solverReader(searchForFile("SolverParameters/amesos.xml"));
-      ParameterList solverParams = solverReader.getParameters();
+
+
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/amesos.xml"));
+#else
+      ParameterXMLFileReader reader("amesos.xml");
+#endif
+      ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver
         = LinearSolverBuilder::createSolver( solverParams );
 

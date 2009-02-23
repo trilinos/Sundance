@@ -124,7 +124,12 @@ int main(int argc, char** argv)
         = new NonlinearProblem(mesh, eqn, bc, List(vPsi, vOmega),
                                List(psi, omega), u0, vecType);
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
+#else
+      ParameterXMLFileReader reader("nox.xml");
+#endif
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;

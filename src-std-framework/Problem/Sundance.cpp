@@ -77,7 +77,7 @@ int Sundance::init(int* argc, char*** argv)
       Tabs tab;
 
       /* read standard command line flags */
-      string configFilename = "SundanceConfig.xml";
+      string configFilename = "";
 
       bool defaultFpCheck = false;
       bool debugWait = false;
@@ -160,7 +160,7 @@ int Sundance::init(int* argc, char*** argv)
 
 
       /* process the settings file */
-      setSettings(configFilename);
+      if (configFilename.length() != 0L) setSettings(configFilename);
 
       bool worksetSetOnCmdLine = cmdWorkSetSize != defaultWorkSetSize;
       if (worksetSetOnCmdLine)

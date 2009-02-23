@@ -104,7 +104,11 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
       cout << "b=" << b << endl;
 
-      ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-ifpack.xml"));
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-ifpack.xml"));;
+#else
+      ParameterXMLFileReader reader("aztec-ifpack.xml");
+#endif
       ParameterList solverParams = reader.getParameters();
       cout << "params = " << solverParams << endl;
 

@@ -59,7 +59,13 @@ int main(int argc, char *argv[])
       NonlinearOperator<double> F = prob;
 
       /* create the nox solver */
+
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(SundanceUtils::searchForFile("SolverParameters/nox.xml"));
+#else
       ParameterXMLFileReader reader("nox.xml");
+#endif
+
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;

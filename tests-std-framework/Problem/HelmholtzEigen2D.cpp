@@ -15,7 +15,12 @@ int main( int argc , char **argv )
     Sundance::init( &argc , &argv );
 
 
+#ifdef HAVE_CONFIG_H
     ParameterXMLFileReader reader(searchForFile("SolverParameters/anasazi-ml.xml"));
+#else
+    ParameterXMLFileReader reader("anasazi-ml.xml");
+#endif
+
     ParameterList params = reader.getParameters();
 
 

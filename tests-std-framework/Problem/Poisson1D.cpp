@@ -89,7 +89,11 @@ int main(int argc, char** argv)
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
       cout << prob.getOperator();
 
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-ifpack.xml"));
+#else
       ParameterXMLFileReader reader("aztec-ifpack.xml");
+#endif
       ParameterList solverParams = reader.getParameters();
       cout << "params = " << solverParams << endl;
 

@@ -88,7 +88,13 @@ int main(int argc, char** argv)
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
+#else
+      ParameterXMLFileReader reader("bicgstab.xml");
+#endif
+
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 

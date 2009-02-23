@@ -2,20 +2,106 @@
 
 INCLUDE(AddTestBatch)
 
+
+# inactivated tests: PoissonOnDisk Eikonal2D. 
+# These tests need mesh files; path much be updated.
+
+SET(SerialTests
+        Poisson3D 
+        PoissonOnDisk 
+        BesselTest2D 
+        Kepler 
+        Stokes2D 
+        LinearPartialDomain 
+        NonlinearPartialDomain 
+        AToCDensitySample
+        FunctionalTest3D 
+        RefinementTest3D
+)
+
+
+
 SET(MPITests 
              Poisson1D
+             Poisson2D
+             RadDiff1D
+             Helmholtz1D
+             Coupled1D
+             Coupled2D
+             HighOrderPoisson1D
+             HighOrderPoisson2D
+             HighOrderProjection1D 
+             HighOrderProjection2D 
+             NoxPoisson1D 
+             PoissonBoltzmann2D
+             NoxAlgebraic 
+             UserDefAlgebraic 
+             TaylorHoodStokes2D
+             AdvectionDiffusion2D 
+             LinearVariationalTest 
+             OptPoisson1D
+             FunctionalTest 
+             SimpleModelEvalTest 
+             VorticityStokes2D 
+             VorticityNavierStokes2D
+             SpectralPoisson1D 
+             SpectralSqrt 
+             PartitionedPoisson1D 
+             NitschePoisson2D 
+             HelmholtzEigen2D
    )
 
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/etc/SolverParameters)
 
 
-IF (${HAVE_SUNDANCE_BROKEN_CODE})
-
 ADD_TEST_BATCH(MPITests 
         COMM serial mpi
-        DATA_FILES nox.xml poissonParams.xml aztec-ifpack.xml aztec-ml.xml
+        DATA_FILES 
+                   amesos.xml 
+                   anasazi-ml.xml 
+                   aztec-ifpack.xml 
+                   aztec-ml.xml 
+                   aztec-native.xml
+                   aztec.xml
+                   bicgstab.xml
+                   gmres.xml
+                   nox.xml            
+                   poissonParams.xml
+                   userPrecParams.xml
         DATA_SOURCE_DIR ${SolverParamPath}
         )
 
-ENDIF()
+ADD_TEST_BATCH(SerialTests 
+        COMM serial mpi
+        NUM_MPI_PROCS 1
+        DATA_FILES 
+                   amesos.xml 
+                   anasazi-ml.xml 
+                   aztec-ifpack.xml 
+                   aztec-ml.xml 
+                   aztec-native.xml
+                   aztec.xml
+                   bicgstab.xml
+                   gmres.xml
+                   nox.xml            
+                   poissonParams.xml
+                   userPrecParams.xml
+        DATA_SOURCE_DIR ${SolverParamPath}
+        )
+
+
+# Eikonal2D needs special handling
+
+PACKAGE_ADD_EXECUTABLE_AND_TEST(
+    Eikonal2D
+       SOURCES Eikonal2D.cpp bessi0.f
+       COMM serial mpi
+       NUM_MPI_PROCS 1
+   )
+
+PACKAGE_COPY_FILES_TO_BINARY_DIR(EikonalCopyFiles
+  DEST_FILES nox.xml
+  SOURCE_DIR ${SolverParamPath}
+  EXEDEPS Eikonal2D
+  )

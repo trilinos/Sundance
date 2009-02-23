@@ -104,9 +104,12 @@ int main(int argc, char *argv[])
       bigRHS = bigA * bigX;
       Vector<double> bigSoln = blockSpace.createMember();
 
-      string solverFile = "poissonParams.xml";
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(SundanceUtils::searchForFile("SolverParameters/poissonParams.xml"));
+#else
+      ParameterXMLFileReader reader("poissonParams.xml");
+#endif
 
-      ParameterXMLFileReader reader(solverFile);
       ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);

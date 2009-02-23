@@ -63,9 +63,13 @@ int main(int argc, char *argv[])
 
     VectorType<double> type = new EpetraVectorType();
 
-    string solverFile = "userPrecParams.xml";
 
-    ParameterXMLFileReader reader(solverFile);
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(SundanceUtils::searchForFile("SolverParameters/userPrecParams.xml"));
+#else
+      ParameterXMLFileReader reader("userPrecParams.xml");
+#endif
+
     ParameterList solverParams = reader.getParameters();
     ParameterList innerSolverParams = solverParams.sublist("Inner Solve");
     ParameterList outerSolverParams = solverParams.sublist("Outer Solve");

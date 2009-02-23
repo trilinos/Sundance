@@ -107,9 +107,12 @@ int main(int argc, char *argv[])
 
       VectorType<double> type = new EpetraVectorType();
 
-      string solverFile = "poissonParams.xml";
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(SundanceUtils::searchForFile("poissonParams.xml"));
+#else
+      ParameterXMLFileReader reader("poissonParams.xml");
+#endif
 
-      ParameterXMLFileReader reader(solverFile);
       ParameterList solverParams = reader.getParameters();
 
       /* create the vector spaces */

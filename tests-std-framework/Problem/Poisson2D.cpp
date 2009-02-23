@@ -42,8 +42,7 @@ CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;})
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
 CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;}) 
 
-#ifdef HAVE_EXODUS
-
+#if defined(HAVE_SUNDANCE_EXODUS)
 
 int main(int argc, char** argv)
 {
@@ -151,7 +150,12 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/" + solverFile));
+#else
+      ParameterXMLFileReader reader(solverFile);
+#endif
       ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);

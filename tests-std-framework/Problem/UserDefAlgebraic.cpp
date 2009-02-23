@@ -150,7 +150,12 @@ int main(int argc, char** argv)
       NonlinearOperator<double> F 
         = new NonlinearProblem(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
+#else
+      ParameterXMLFileReader reader("nox.xml");
+#endif
       ParameterList noxParams = reader.getParameters();
 
       cerr << "solver params = " << noxParams << endl;

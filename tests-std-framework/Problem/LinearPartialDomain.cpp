@@ -96,7 +96,12 @@ int main(int argc, char** argv)
 
       LinearProblem prob(mesh, eqn, bc, List(v1, v2), List(u1, u2), vecType);
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec.xml"));
+#else
+      ParameterXMLFileReader reader("aztec.xml");
+#endif
       ParameterList solverParams = reader.getParameters();
       cout << "params = " << solverParams << endl;
 

@@ -146,9 +146,9 @@ int main(int argc, char** argv)
       int maxDiffOrder = 2;
 
       verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbSilent;
-      verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbSilent;
+      verbosity<Evaluator>() = VerbExtreme;
+      verbosity<EvalVector>() = VerbExtreme;
+      verbosity<EvaluatableExpr>() = VerbExtreme;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;

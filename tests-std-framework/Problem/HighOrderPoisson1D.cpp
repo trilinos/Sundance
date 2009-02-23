@@ -97,7 +97,12 @@ int main(int argc, char** argv)
       cerr << "matrix = " << endl << prob.getOperator() << endl;
       cerr << "rhs = " << endl << prob.getRHS() << endl;
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
+#else
+      ParameterXMLFileReader reader("bicgstab.xml");
+#endif
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 

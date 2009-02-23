@@ -134,7 +134,11 @@ int main( int argc , char **argv )
     ParameterList verbParams = *LinearProblem::defaultVerbParams();
     LinearProblem prob( mesh , eqn , bc , v , u , vecType, verbParams);
 
+#ifdef HAVE_CONFIG_H
     ParameterXMLFileReader reader(searchForFile("SolverParameters/" + solverFile));
+#else
+      ParameterXMLFileReader reader(solverFile);
+#endif
     ParameterList solverParams = reader.getParameters();
     LinearSolver<double> solver 
       = LinearSolverBuilder::createSolver(solverParams);

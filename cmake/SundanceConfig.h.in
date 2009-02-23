@@ -17,3 +17,9 @@
 
 /* Version number of package */
 #cmakedefine SUNDANCE_VERSION
+
+/* Path to trilinos data directory. If this is not set, certain
+ * tests will be disabled  */
+#cmakedefine Trilinos_DATA_DIR
+
+

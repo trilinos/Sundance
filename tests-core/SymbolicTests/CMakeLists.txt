@@ -3,11 +3,12 @@
 
 INCLUDE(AddTestBatch)
 
+# deactivated:       SensitivityTest 
+
 SET(Tests 
         SetTest 
         ChainRule 
         SimpleEval 
-        SensitivityTest 
         PolynomialTest          
         StdTransformation 
         VariationTest 

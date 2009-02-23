@@ -118,7 +118,12 @@ int main(int argc, char** argv)
       LinearProblem prob(mesh, eqn, bc, List(vx, vy, q),
                          List(ux, uy, p), vecType);
 
+
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-native.xml"));
+#else
+      ParameterXMLFileReader reader("aztec-native.xml");
+#endif
       ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);

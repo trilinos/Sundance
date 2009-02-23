@@ -111,7 +111,12 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
     LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
-    ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
+
+#ifdef HAVE_CONFIG_H
+      ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
+#else
+      ParameterXMLFileReader reader("bicgstab.xml");
+#endif
     ParameterList solverParams = reader.getParameters();
     cout << "params = " << solverParams << endl;
 

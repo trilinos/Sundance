@@ -77,7 +77,7 @@ void PolyFunc::eval0(const double* vars, double* f) const
 
 
 
-#ifdef HAVE_EXODUS
+#if defined(HAVE_SUNDANCE_EXODUS) && defined(Trilinos_DATA_DIR)
 
 int main(int argc, char** argv)
 {
@@ -159,7 +159,11 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
+#ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-ml.xml"));
+#else
+      ParameterXMLFileReader reader("aztec-ml.xml");
+#endif
       ParameterList solverParams = reader.getParameters();
       cerr << "params = " << solverParams << endl;
 
