@@ -35,6 +35,9 @@
 #include "NOX_Common.H"
 #include "NOX_Utils.H"
 #include "NOX_TSF_Group.H"
+
+
+#ifdef Trilinos_DATA_DIR
 /** 
  * Solves the Eikonal equation in 2D
  * | \nabla u |^2 = 1 + \epsilon \nabla^2 u
@@ -186,3 +189,19 @@ int main(int argc, char** argv)
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }
+
+
+#else
+
+
+
+int main(int argc, char** argv)
+{
+  Sundance::init(&argc, &argv);
+  std::cout << "dummy Eikonal2D PASSED. Enable Trilinos_DATA_DIR to run the actual test" << std::endl;
+  Sundance::finalize();
+  return 0;
+}
+
+
+#endif
