@@ -51,7 +51,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
     /* Create a mesh. It will be of type BasisSimplicialMesh, and will
      * be built using a PartitionedLineMesher. */
     MeshType meshType = new BasicSimplicialMeshType();
-    MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
+    MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 32, meshType);
     Mesh mesh = mesher.getMesh();
 
     /* Create a cell filter that will identify the maximal cells

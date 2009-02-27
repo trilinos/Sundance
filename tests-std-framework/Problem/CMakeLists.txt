@@ -10,12 +10,14 @@ SET(SerialTests
         Poisson3D 
         PoissonOnDisk 
         BesselTest2D 
+        Coupled2D
         Kepler 
         Stokes2D 
         LinearPartialDomain 
         NonlinearPartialDomain 
         AToCDensitySample
         FunctionalTest3D 
+        FunctionalTest 
         RefinementTest3D
 )
 
@@ -27,7 +29,6 @@ SET(MPITests
              RadDiff1D
              Helmholtz1D
              Coupled1D
-             Coupled2D
              HighOrderPoisson1D
              HighOrderPoisson2D
              HighOrderProjection1D 
@@ -40,7 +41,6 @@ SET(MPITests
              AdvectionDiffusion2D 
              LinearVariationalTest 
              OptPoisson1D
-             FunctionalTest 
              SimpleModelEvalTest 
              VorticityStokes2D 
              VorticityNavierStokes2D

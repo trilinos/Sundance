@@ -49,8 +49,8 @@ int main(int argc, char** argv)
   
   try
 		{
-      int nx = 2;
-      int ny = 2;
+      int nx = 8;
+      int ny = 8;
       string meshFile="builtin";
       string solverFile = "aztec-ml.xml";
       Sundance::setOption("meshFile", meshFile, "mesh file");
@@ -75,8 +75,14 @@ int main(int argc, char** argv)
       }
       else
       {
-        mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np, 
-          0.0,  1.0, ny, 1, meshType);
+        int npx = -1;
+        int npy = -1;
+        PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
+        TEST_FOR_EXCEPT(npx < 1);
+        TEST_FOR_EXCEPT(npy < 1);
+        TEST_FOR_EXCEPT(npx * npy != np);
+        mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx, 
+          0.0,  1.0, ny, npy, meshType);
       }
       Mesh mesh = mesher.getMesh();
 

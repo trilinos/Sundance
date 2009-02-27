@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
-      int nx = 10;
+      int nx = 32;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx, meshType);
       Mesh mesh = mesher.getMesh();

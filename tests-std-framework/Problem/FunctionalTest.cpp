@@ -52,10 +52,16 @@ int main(int argc, char** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       int nx = 4;
-      int ny = 2;
+      int ny = 4;
+      int npx = -1;
+      int npy = -1;
+      PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
+      TEST_FOR_EXCEPT(npx < 1);
+      TEST_FOR_EXCEPT(npy < 1);
+      TEST_FOR_EXCEPT(npx * npy != np);
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
-                                                         0.0, 1.0, ny, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx,
+                                                         0.0, 1.0, ny, npy,
                                                          meshType);
 
       Mesh mesh = mesher.getMesh();

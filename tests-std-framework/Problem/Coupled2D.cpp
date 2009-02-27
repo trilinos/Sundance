@@ -60,6 +60,12 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
+      int npx = -1;
+      int npy = -1;
+      PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
+      TEST_FOR_EXCEPT(npx < 1);
+      TEST_FOR_EXCEPT(npy < 1);
+      TEST_FOR_EXCEPT(npx * npy != np);
 
       cout << "PID = " << getpid() << endl;
       int debugWait = 1;
@@ -73,8 +79,8 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
       int nx = 32;
 
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
-                                                         0.0, 2.0, nx, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx,
+                                                         0.0, 2.0, nx, npy,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -105,7 +111,7 @@ int main(int argc, char** argv)
       Expr grad = List(dx, dy);
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad2 = new GaussianQuadrature(2);
+      QuadratureFamily quad2 = new GaussianQuadrature(6);
 
       
       /* Define the weak form */
@@ -134,7 +140,7 @@ int main(int argc, char** argv)
       //azOptions[AZ_ml] = 1;
       //azOptions[AZ_ml_levels] = 4;
       azParams[AZ_max_iter] = 1000;
-      azParams[AZ_tol] = 1.0e-10;
+      azParams[AZ_tol] = 1.0e-8;
 
       LinearSolver<double> solver = new AztecSolver(azOptions,azParams);
 
@@ -178,7 +184,7 @@ int main(int argc, char** argv)
 
 
 
-      double tol = 1.0e-6;
+      double tol = 1.0e-5;
       Sundance::passFailTest(sqrt(uErrorSq+vErrorSq), tol);
     }
 	catch(exception& e)
