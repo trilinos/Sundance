@@ -94,8 +94,17 @@ int main(int argc, char *argv[])
     if (myRank==0) x.setElement(0, 0);
     if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
 #endif
+    cout << "input is " << endl;
+    x.print(cout);
     Vector<double> y = A*x;
+
+    cout << "rhs is " << endl;
+    y.print(cout);
+
     Vector<double> ans = A.range().createMember();
+
+    cout << "slot for solution is " << endl;
+    ans.print(cout);
 
     LinearSolver<double> solver 
       = LinearSolverBuilder::createSolver(solverParams);
@@ -104,30 +113,26 @@ int main(int argc, char *argv[])
 
     ans = AInv * y;
 
-    //      SolverState<double> state = solver.solve(A, y, ans);
-      
-
-      
-    //      cout << state << endl;
 
     cout << "solver is " << solver << endl;
 
     cout << "answer is " << endl;
     ans.print(cout);
       
-    double err = (x-ans).norm2();
+    double err = (x-ans).norm2()/((double) nProcs * nLocalRows);
     cout << "error norm = " << err << endl;
 
     double tol = 1.0e-10;
-    if (err > tol)
-    {
-      cout << "Poisson solve test FAILED" << endl;
-      return 1;
-    }
-    else
+    
+    if (err <= tol)
     {
       cout << "Poisson solve test PASSED" << endl;
       return 0;
+    }
+    else
+    {
+      cout << "Poisson solve test FAILED" << endl;
+      return 1;
     }
   }
   catch(std::exception& e)
