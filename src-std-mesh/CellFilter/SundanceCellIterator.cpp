@@ -41,8 +41,17 @@ CellIterator::CellIterator()
   :  isImplicit_(true),
     currentLID_(-1),
     reorderer_(0),
-    iter_()
+     iter_(dummy().begin())
 {;}
+
+CellIterator::CellIterator(const CellIterator& other)
+  :  isImplicit_(other.isImplicit_),
+     currentLID_(other.currentLID_),
+     reorderer_(other.reorderer_),
+     iter_()
+{
+  if (!isImplicit_) iter_ = other.iter_;
+}
 
 CellIterator::CellIterator(const Mesh& mesh, 
                            int cellDim, 
@@ -50,7 +59,7 @@ CellIterator::CellIterator(const Mesh& mesh,
   : isImplicit_(true),
     currentLID_(-1),
     reorderer_(mesh.reorderer()),
-    iter_()
+    iter_(dummy().begin())
 {
   if (cellDim == mesh.spatialDim() && reorderer_ != 0)
     {
@@ -88,20 +97,35 @@ CellIterator::CellIterator(const Set<int>* cells, CellIteratorPos pos)
   : isImplicit_(false),
     currentLID_(-1),
     reorderer_(0),
-    iter_()
+    iter_(dummy().begin())
 {
   switch(pos)
-    {
+  {
     case Begin:
       iter_ = cells->begin();
       break;
     case End:
       iter_ = cells->end();
-    }
+      break;
+    default:
+      TEST_FOR_EXCEPT(1);
+  }
   SUNDANCE_OUT(verbosity<CellFilter>() > VerbMedium, 
-               "created explicit cell iterator");
+    "created explicit cell iterator");
 }
 
 
+
+CellIterator& CellIterator::operator=(const CellIterator& other)
+{
+  if (*this!=other) 
+  {
+    isImplicit_ = other.isImplicit_;
+    currentLID_ = other.currentLID_;
+    reorderer_=other.reorderer_;
+    if (!isImplicit_) iter_ = other.iter_;
+  }
+  return *this;
+}
 
     

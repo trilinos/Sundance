@@ -83,6 +83,9 @@ using namespace SundanceStdMesh::Internal;
       /** Empty ctor */
       CellIterator();
 
+      /** Copy ctor */
+      CellIterator(const CellIterator& other);
+
       /** Construct an implicit iterator for walking all cells of a given
        * dimension on the given mesh. */
       CellIterator(const Mesh& mesh, int cellDim, CellIteratorPos pos);
@@ -90,6 +93,9 @@ using namespace SundanceStdMesh::Internal;
       /** Construct an explicit iterator for walking an explicitly
        * enumerated set of cells. */
       CellIterator(const Set<int>* cells, CellIteratorPos pos);
+
+      /** */
+      CellIterator& operator=(const CellIterator& other);
       
       /** Dereferencing operator */
       const int& operator*() const 
@@ -165,6 +171,9 @@ using namespace SundanceStdMesh::Internal;
       /** iterator for enumerated cells.
        * Used only for explicit iterators. */
       Set<int>::const_iterator iter_;
+
+      /** */
+      static Set<int> dummy() {static Set<int> rtn; return rtn;}
     };
   }
 

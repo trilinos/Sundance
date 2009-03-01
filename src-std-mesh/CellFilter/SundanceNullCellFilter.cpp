@@ -49,7 +49,7 @@ CellSet NullCellFilter::internalGetCells(const Mesh& mesh) const
 
 int NullCellFilter::dimension(const Mesh& mesh) const 
 {
-  -1;
+  return -1;
 }
 
 XMLObject NullCellFilter::toXML() const 
