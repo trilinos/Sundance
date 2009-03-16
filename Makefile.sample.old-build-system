@@ -31,11 +31,11 @@
 # ------------------------------------------------------------------------
 #
 # Makefile.sample is an example of a simple makefile that will let
-# a user build a Trilinos-based application in an arbitrary directory.
+# a user build a Sundance-based application in an arbitrary directory.
 # 
 # To use this makefile, you need to do three steps:
 # (1) Copy Makefile.sample to the location of your application source.
-# (2) Edit the definition of TRILINOS_INSTALL_DIR to point to your Trilinos
+# (2) Edit the definition of SUNDANCE_INSTALL_DIR to point to your Sundance
 #     installation directory. 
 # (3) Edit the definition of EXTRA_OBJS to list names of any object files
 #     required by your application other than that corresponding to the 
@@ -43,13 +43,13 @@
 #
 # Example: Suppose you are building an application "RANS.exe" whose code is in 
 # three source files: RANS.cpp, TurbulenceModel.cpp, and BC.cpp. You have
-# installed Trilinos in /home/bob/Soft/Trilinos/BUILD. You are building your 
+# installed Sundance in /home/bob/PDE/Sundance/BUILD. You are building your 
 # application in /home/bob/FlowModels/RANS. You would do the following:
 #
-# (1) copy the file /home/bob/Soft/Trilinos/Makefile.sample 
+# (1) copy the file /home/bob/PDE/Sundance/Makefile.sample 
 #     to /home/bob/FlowModels/RANS/Makefile
 # (2) Edit /home/bob/FlowModels/RANS/Makefile to set
-#     TRILINOS_INSTALL_DIR=/home/bob/Soft/Trilinos/BUILD
+#     SUNDANCE_INSTALL_DIR=/home/bob/PDE/Sundance/BUILD
 # (3) Edit /home/bob/FlowModels/RANS/Makefile to set 
 #     EXTRA_OBJS = TurbulenceModel.o BC.o
 # (4) Do "make RANS.exe" to build the executable.
@@ -61,15 +61,15 @@
 
 
 #--------------------------------------------------------------------------
-# Change the value of TRILINOS_INSTALL_DIR to point to the directory
-# into which you have installed Trilinos. For example, if you have
-# installed into /usr/local/trilinos-3.14.59, change this line to
+# Change the value of SUNDANCE_INSTALL_DIR to point to the directory
+# into which you have installed Sundance. For example, if you have
+# installed into /usr/local/sundance, change this line to
 #
-# TRILINOS_INSTALL_DIR = /usr/local/trilinos-3.14.59 
+# SUNDANCE_INSTALL_DIR = /usr/local/sundance 
 #
 #--------------------------------------------------------------------------
 
-TRILINOS_INSTALL_DIR = $(HOME)/Code/BUILDS/GCC-4.3.2
+SUNDANCE_INSTALL_DIR = /home/krlong/Projects/Sundance/LINUX-DEBUG
 
 
 
@@ -90,14 +90,12 @@ EXTRA_OBJS =
 #--------------------------------------------------------------------------
 
 
-include $(TRILINOS_INSTALL_DIR)/packages/Sundance/Makefile.export.cmake
+include $(SUNDANCE_INSTALL_DIR)/Makefile.export
 
-TRILINOS_LIB_PATH = $(TRILINOS_INSTALL_DIR)/lib
-TRILINOS_INCLUDE_PATH = $(TRILINOS_INSTALL_DIR)/include
 
 %.exe : %.o $(EXTRA_OBJS)
-	$(CXX_COMPILER) -o $@ $(LDFLAGS) $(TRILINOS_CXX_FLAGS) $< $(EXTRA_OBJS) -L$(TRILINOS_LIB_PATH) $(TRILINOS_LIBRARIES) $(TRILINOS_TPL_LIBRARIES) $(TRILINOS_EXTRA_LD_FLAGS)
+	$(CXX) -o $@ $(LDFLAGS) $(CXXFLAGS) $< $(EXTRA_OBJS) $(SUNDANCE_LIBS)
 
 %.o : %.cpp
-	$(CXX_COMPILER) -c -o $@ $(TRILINOS_CXX_FLAGS) -I$(TRILINOS_INCLUDE_PATH) $(TRILINOS_TPL_INCLUDES) $<
+	$(CXX) -c -o $@ -DHAVE_CONFIG_H $(CXXFLAGS) $(SUNDANCE_INCLUDES) $<
 

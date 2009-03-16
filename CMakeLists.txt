@@ -1,6 +1,7 @@
 
 INCLUDE(PackageMacros)
 INCLUDE(AddOptionAndDefine)
+INCLUDE(WriteExportMakefile)
 
 #
 # A) Define the package
@@ -11,6 +12,7 @@ PACKAGE(Sundance)
 #
 # B) Set up package-specific options
 #
+
 
 
 ADD_OPTION_AND_DEFINE(${PACKAGE_NAME}_ENABLE_Python
@@ -33,6 +35,7 @@ ADD_OPTION_AND_DEFINE(TPL_ENABLE_ExodusII
 
 
 PRINT_VAR(HAVE_SUNDANCE_EXODUS)
+
 
 #
 # C) Add the libraries, tests, and examples
@@ -59,6 +62,7 @@ PACKAGE_ADD_TEST_DIRECTORIES(tests-std-framework)
 
 
 
+WRITE_EXPORT_MAKEFILE(Trilinos Makefile.export.cmake)
 
 #
 # D) Do standard postprocessing
