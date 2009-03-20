@@ -1061,6 +1061,7 @@ void EquationSet
       
       int varID = -1;
       int unkID = -1;
+      bool foundUnk = false;
 
       MultipleDeriv::const_iterator j;
       for (j=md.begin(); j != md.end(); j++)
@@ -1070,9 +1071,10 @@ void EquationSet
           TEST_FOR_EXCEPTION(fd==0, InternalError, "non-functional deriv "
                              << d << " detected in EquationSet::"
                              "addToVarUnkPairs()");
-          if (unks.contains(fd->funcComponentID()))
+          if (!foundUnk && unks.contains(fd->funcComponentID()))
             {
               unkID = fd->funcComponentID();
+              foundUnk = true;
               continue;
             }
           if (vars.contains(fd->funcComponentID()))

@@ -42,76 +42,97 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
+using namespace Teuchos;
 
-  /**
-   *
-   */
-  class Functional
-  {
-  public:
-    /** */
-    Functional(){;}
+/**
+ *
+ */
+class Functional
+  : public TSFExtended::ParameterControlledObjectWithVerbosity<Functional>
+{
+public:
+  /** */
+  Functional(){;}
 
-    /** */
-    Functional(const Mesh& mesh, const Expr& integral, 
-               const TSFExtended::VectorType<double>& vecType);
+  /** */
+  Functional(
+    const Mesh& mesh, 
+    const Expr& integral, 
+    const TSFExtended::VectorType<double>& vecType,
+    const ParameterList& verbParams = *defaultVerbParams());
 
-    /** */
-    Functional(const Mesh& mesh, const Expr& integral, 
-               const Expr& essentialBC,
-               const TSFExtended::VectorType<double>& vecType);
+  /** */
+  Functional(
+    const Mesh& mesh, 
+    const Expr& integral, 
+    const Expr& essentialBC,
+    const TSFExtended::VectorType<double>& vecType,
+    const ParameterList& verbParams = *defaultVerbParams());
 
-    /** */
-    LinearProblem linearVariationalProb(const Expr& var,
-                                        const Expr& varEvalPts,
-                                        const Expr& unk,
-                                        const Expr& fixed,
-                                        const Expr& fixedEvalPts) const ;
+  /** */
+  LinearProblem linearVariationalProb(const Expr& var,
+    const Expr& varEvalPts,
+    const Expr& unk,
+    const Expr& fixed,
+    const Expr& fixedEvalPts) const ;
 
     
-    /** */
-    NonlinearOperator<double>
-    nonlinearVariationalProb(const Expr& var,
-                             const Expr& varEvalPts,
-                             const Expr& unk,
-                             const Expr& unkEvalPts,
-                             const Expr& fixed,
-                             const Expr& fixedEvalPts) const ;
+  /** */
+  NonlinearOperator<double>
+  nonlinearVariationalProb(const Expr& var,
+    const Expr& varEvalPts,
+    const Expr& unk,
+    const Expr& unkEvalPts,
+    const Expr& fixed,
+    const Expr& fixedEvalPts) const ;
 
 
-    /** */
-    FunctionalEvaluator evaluator(const Expr& var,
-                                  const Expr& varEvalPts,
-                                  const Expr& fixed,
-                                  const Expr& fixedEvalPts) const ;
+  /** */
+  FunctionalEvaluator evaluator(const Expr& var,
+    const Expr& varEvalPts,
+    const Expr& fixed,
+    const Expr& fixedEvalPts) const ;
 
 
-    /** */
-    FunctionalEvaluator evaluator(const Expr& var,
-                                  const Expr& varEvalPts) const ;
+  /** */
+  FunctionalEvaluator evaluator(const Expr& var,
+    const Expr& varEvalPts) const ;
 
-    /** */
-    const Mesh& mesh() const {return mesh_;}
+  /** */
+  const Mesh& mesh() const {return mesh_;}
     
-    
+  /** */
+  static RefCountPtr<ParameterList> defaultVerbParams()
+    {
+      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Functional"));
+      static int first = true;
+      if (first)
+      {
+        rtn->setName("Functional");
+        rtn->set<int>("global", 0);
+        rtn->set<int>("assembly", 0);
+        rtn->set("Assembler", *Assembler::defaultVerbParams());
+        first = false;
+      }
+      return rtn;
+    }
                                   
 
-  private:
-    Mesh mesh_;
+private:
+  Mesh mesh_;
 
-    Expr integral_;
+  Expr integral_;
 
-    Expr bc_;
+  Expr bc_;
 
-    TSFExtended::VectorType<double> vecType_;
+  TSFExtended::VectorType<double> vecType_;
     
-  };
+};
 }
 
 

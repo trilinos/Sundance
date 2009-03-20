@@ -102,7 +102,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       int funcID = f->funcComponentID();
       int myIndex = s->myIndex();
 
-      if (eqn.hasUnkID(funcID))
+      if (!foundUnk && eqn.hasUnkID(funcID))
         {
           const UnknownFuncElement* u
             = dynamic_cast<const UnknownFuncElement*>(s);

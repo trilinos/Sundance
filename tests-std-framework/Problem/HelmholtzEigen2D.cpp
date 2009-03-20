@@ -36,8 +36,8 @@ int main( int argc , char **argv )
 
     VectorType<double> vecType = new EpetraVectorType();
 
-    const int nx = 64;
-    const int ny = 64;
+    const int nx = 16;
+    const int ny = 16;
     const double C = 2.0;
     bool lumpedMass = true;
     ParameterList solverParams = params.sublist("Eigensolver");

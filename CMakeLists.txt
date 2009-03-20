@@ -1,7 +1,6 @@
 
 INCLUDE(PackageMacros)
 INCLUDE(AddOptionAndDefine)
-INCLUDE(WriteExportMakefile)
 
 #
 # A) Define the package
@@ -33,9 +32,9 @@ ADD_OPTION_AND_DEFINE(TPL_ENABLE_ExodusII
   OFF )
 
 
-
-PRINT_VAR(HAVE_SUNDANCE_EXODUS)
-
+IF(${Proj}_VERBOSE_CONFIGURE)
+  PRINT_VAR(HAVE_SUNDANCE_EXODUS)
+ENDIF()
 
 #
 # C) Add the libraries, tests, and examples
@@ -60,9 +59,6 @@ PACKAGE_ADD_TEST_DIRECTORIES(tests-std-framework)
 
 #PACKAGE_ADD_EXAMPLE_DIRECTORIES(example)
 
-
-
-WRITE_EXPORT_MAKEFILE(Trilinos Makefile.export.cmake)
 
 #
 # D) Do standard postprocessing

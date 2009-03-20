@@ -49,8 +49,10 @@ using namespace TSFExtended;
 
 
 Functional::Functional(const Mesh& mesh, const Expr& integral, 
-                       const TSFExtended::VectorType<double>& vecType)
-  : mesh_(mesh),
+  const TSFExtended::VectorType<double>& vecType,
+  const ParameterList& verbParams)
+  : ParameterControlledObjectWithVerbosity<Functional>("Functional", verbParams),
+    mesh_(mesh),
     integral_(integral),
     bc_(),
     vecType_(vecType)
@@ -58,10 +60,14 @@ Functional::Functional(const Mesh& mesh, const Expr& integral,
   
 }
 
-Functional::Functional(const Mesh& mesh, const Expr& integral,  
-                       const Expr& essentialBC,
-                       const TSFExtended::VectorType<double>& vecType)
-  : mesh_(mesh),
+Functional::Functional(
+  const Mesh& mesh, 
+  const Expr& integral,  
+  const Expr& essentialBC,
+  const TSFExtended::VectorType<double>& vecType,
+  const ParameterList& verbParams)
+  : ParameterControlledObjectWithVerbosity<Functional>("Functional", verbParams),
+    mesh_(mesh),
     integral_(integral),
     bc_(essentialBC),
     vecType_(vecType)
@@ -70,11 +76,12 @@ Functional::Functional(const Mesh& mesh, const Expr& integral,
 }
 
 
-LinearProblem Functional::linearVariationalProb(const Expr& var,
-                                                const Expr& varEvalPts,
-                                                const Expr& unk,
-                                                const Expr& fixed,
-                                                const Expr& fixedEvalPts) const
+LinearProblem Functional::linearVariationalProb(
+  const Expr& var,
+  const Expr& varEvalPts,
+  const Expr& unk,
+  const Expr& fixed,
+  const Expr& fixedEvalPts) const 
 {
 
   Array<Expr> zero(unk.size());
@@ -99,7 +106,7 @@ LinearProblem Functional::linearVariationalProb(const Expr& var,
                           tuple(fixed), tuple(fixedEvalPts)));
 
   RefCountPtr<Assembler> assembler 
-    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false));
+    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false, verbSublist("Assembler")));
 
   return LinearProblem(assembler);
 }
@@ -126,7 +133,7 @@ NonlinearOperator<double> Functional
                           tuple(fixed), tuple(fixedEvalPts)));
 
   RefCountPtr<Assembler> assembler 
-    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false));
+    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false, verbSublist("Assembler")));
 
   return new NonlinearProblem(assembler, unkEvalPts);
 }
