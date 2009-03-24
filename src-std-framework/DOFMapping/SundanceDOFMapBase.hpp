@@ -120,7 +120,7 @@ namespace SundanceStdFwk
     public:
 
       /** \brief . */
-      DOFMapBase(const Mesh& mesh);
+      DOFMapBase(const Mesh& mesh, const ParameterList& verbParams = *defaultVerbParams());
       
       /** \brief .
        *
@@ -331,7 +331,7 @@ namespace SundanceStdFwk
           static int first = true;
           if (first)
           {
-            rtn->set<int>("global", 0);
+            rtn->set<int>("setup", 0);
             first = false;
           }
           return rtn;

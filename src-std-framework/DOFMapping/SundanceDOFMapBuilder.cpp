@@ -90,8 +90,9 @@ DOFMapBuilder::DOFMapBuilder(const Mesh& mesh,
   init(findBCCols);
 }
 
-DOFMapBuilder::DOFMapBuilder()
-  : mesh_(),
+DOFMapBuilder::DOFMapBuilder(const ParameterList& verbParams)
+  : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
+    mesh_(),
     eqn_(),
     rowMap_(),
     colMap_(),
@@ -105,34 +106,44 @@ RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
                                                const Array<Set<CellFilter> >& filters) 
 {
   TimeMonitor timer(DOFBuilderCtorTimer());
+  SUNDANCE_LEVEL1("setup", "in DOFMapBuilder::makeMap()");
+  for (unsigned int i=0; i<basis.size(); i++)
+  {
+    SUNDANCE_LEVEL2("setup", "i=" << i << " basis=" << basis[i]
+      << " filters=" << filters[i]);
+  }
+
   RefCountPtr<DOFMapBase> rtn;
 
   if (allowNodalMap() && hasOmnipresentNodalMap(basis, mesh, filters))
     {
+      SUNDANCE_LEVEL2("setup", "creating omnipresent nodal map");
       CellFilter maxCells = getMaxCellFilter(filters);
-      rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells));
+      rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells, params()));
     }
   else if (hasCellBasis(basis) && hasCommonDomain(filters))
     {
       TEST_FOR_EXCEPTION(filters[0].size() != 1, RuntimeError,
                          "only a single domain expected in construction of an element "
                          "DOF map");
-      rtn = rcp(new PartialElementDOFMap(mesh, *filters[0].begin(), basis.size()));
+      rtn = rcp(new PartialElementDOFMap(mesh, *filters[0].begin(), basis.size(), params()));
     }
   else if (allFuncsAreOmnipresent(mesh, filters))
     {
+      SUNDANCE_LEVEL2("setup", "creating omnipresent mixed map");
       CellFilter maxCells = getMaxCellFilter(filters);
-      rtn = rcp(new MixedDOFMap(mesh, basis, maxCells));
+      rtn = rcp(new MixedDOFMap(mesh, basis, maxCells, params()));
     }
   else if (hasNodalBasis(basis))
     {
+      SUNDANCE_LEVEL2("setup", "creating inhomogeneous nodal map");
       SundanceUtils::Map<CellFilter, Set<int> > fmap = domainToFuncSetMap(filters);
       SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> > inputChildren;
 
       Array<SundanceUtils::Map<Set<int>, CellFilter> > disjoint 
         = DOFMapBuilder::funcDomains(mesh, fmap, inputChildren);
 
-      rtn = rcp(new InhomogeneousNodalDOFMap(mesh, disjoint));
+      rtn = rcp(new InhomogeneousNodalDOFMap(mesh, disjoint, params()));
     }
   else
     {
@@ -142,8 +153,9 @@ RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
 }
 
 
-SundanceUtils::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(const Array<Set<CellFilter> >& filters) 
+SundanceUtils::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(const Array<Set<CellFilter> >& filters) const 
 {
+  SUNDANCE_LEVEL2("setup", "in DOFMapBuilder::domainToFuncSetMap()");
   Map<CellFilter, Set<int> > rtn;
   for (unsigned int i=0; i<filters.size(); i++)
     {
@@ -162,13 +174,19 @@ SundanceUtils::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(cons
             }
         }
     }
+  for (Map<CellFilter, Set<int> >::const_iterator 
+         i=rtn.begin(); i!=rtn.end(); i++)
+  {
+    SUNDANCE_LEVEL2("setup", "subdomain=" << i->first << ", functions="
+      << i->second);
+  }
   return rtn;
 }
 
 
 void DOFMapBuilder
 ::getSubdomainUnkFuncMatches(const EquationSet& eqn,
-                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap)
+                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const 
 {
   fmap.resize(eqn.numUnkBlocks());
   
@@ -193,7 +211,7 @@ void DOFMapBuilder
 
 void DOFMapBuilder
 ::getSubdomainVarFuncMatches(const EquationSet& eqn,
-                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap)
+                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const 
 {
   fmap.resize(eqn.numVarBlocks());
   
@@ -219,7 +237,7 @@ void DOFMapBuilder
 Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
 ::funcDomains(const Mesh& mesh,
               const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
-              SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap)
+              SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap) const 
 {
   TimeMonitor timer(findFuncDomainTimer());
   Array<Array<CellFilter> > filters(mesh.spatialDim()+1);
@@ -296,6 +314,10 @@ Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
 
 void DOFMapBuilder::init(bool findBCCols)
 {
+  SUNDANCE_LEVEL1("setup", "in DOFMapBuilder::init()");
+  SUNDANCE_LEVEL2("setup", "num var blocks=" << eqn_->numVarBlocks());
+  SUNDANCE_LEVEL2("setup", "num unk blocks=" << eqn_->numUnkBlocks());
+
   rowMap_.resize(eqn_->numVarBlocks());
   colMap_.resize(eqn_->numUnkBlocks());
   isBCRow_.resize(eqn_->numVarBlocks());
@@ -306,7 +328,9 @@ void DOFMapBuilder::init(bool findBCCols)
 
   for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
     {
+      SUNDANCE_LEVEL2("setup", "making map for block row=" << br);
       rowMap_[br] = makeMap(mesh_, testBasis[br], testRegions[br]);
+      SUNDANCE_LEVEL2("setup", "marking BC rows for block row=" << br);
       markBCRows(br);
     }      
 
@@ -322,15 +346,17 @@ void DOFMapBuilder::init(bool findBCCols)
         }
       else
         {
+          SUNDANCE_LEVEL2("setup", "making map for block col=" << bc);
           colMap_[bc] = makeMap(mesh_, unkBasis[bc], unkRegions[bc]);
         }
+      SUNDANCE_LEVEL2("setup", "marking BC cols for block col=" << bc);
       if (findBCCols) markBCCols(bc);
     }
 }
 
 void DOFMapBuilder::extractUnkSetsFromEqnSet(const EquationSet& eqn,
                                              Array<Set<int> >& funcSets,
-                                             Array<CellFilter>& regions)
+                                             Array<CellFilter>& regions) const
 {
   funcSets.resize(eqn.numRegions());
   regions.resize(eqn.numRegions());
@@ -343,7 +369,7 @@ void DOFMapBuilder::extractUnkSetsFromEqnSet(const EquationSet& eqn,
 
 void DOFMapBuilder::extractVarSetsFromEqnSet(const EquationSet& eqn,
                                              Array<Set<int> >& funcSets,
-                                             Array<CellFilter>& regions)
+                                             Array<CellFilter>& regions) const
 {
   funcSets.resize(eqn.numRegions());
   regions.resize(eqn.numRegions());
@@ -357,7 +383,7 @@ void DOFMapBuilder::extractVarSetsFromEqnSet(const EquationSet& eqn,
 SundanceUtils::Map<Set<int>, Set<CellFilter> > 
 DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
                                       const Array<CellFilter>& regions,
-                                      const Mesh& mesh)
+                                      const Mesh& mesh) const 
 {
   SundanceUtils::Map<Set<int>, Set<CellFilter> > tmp;
   
@@ -384,12 +410,12 @@ DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
 
 bool DOFMapBuilder::hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
                                            const Mesh& mesh,
-                                           const Array<Set<CellFilter> >& filters)
+                                           const Array<Set<CellFilter> >& filters) const 
 {
   return hasNodalBasis(basis) && allFuncsAreOmnipresent(mesh, filters);
 }
                                            
-bool DOFMapBuilder::hasHomogeneousBasis(const Array<BasisFamily>& basis) 
+bool DOFMapBuilder::hasHomogeneousBasis(const Array<BasisFamily>& basis) const
 {
   for (unsigned int i=1; i<basis.size(); i++)
     {
@@ -399,7 +425,7 @@ bool DOFMapBuilder::hasHomogeneousBasis(const Array<BasisFamily>& basis)
 }
 
                                            
-bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters) 
+bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters) const
 {
   Set<CellFilter> first = filters[0];
   for (unsigned int i=1; i<filters.size(); i++) 
@@ -409,7 +435,7 @@ bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters)
   return true;
 }                           
 
-bool DOFMapBuilder::hasNodalBasis(const Array<BasisFamily>& basis)
+bool DOFMapBuilder::hasNodalBasis(const Array<BasisFamily>& basis) const
 {
   for (unsigned int i=0; i<basis.size(); i++)
     {
@@ -421,7 +447,7 @@ bool DOFMapBuilder::hasNodalBasis(const Array<BasisFamily>& basis)
 }
 
 
-bool DOFMapBuilder::hasCellBasis(const Array<BasisFamily>& basis)
+bool DOFMapBuilder::hasCellBasis(const Array<BasisFamily>& basis) const
 {
   for (unsigned int i=0; i<basis.size(); i++)
     {
@@ -433,7 +459,7 @@ bool DOFMapBuilder::hasCellBasis(const Array<BasisFamily>& basis)
 }
 
 bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh, 
-                                           const Array<Set<CellFilter> >& filters) 
+                                           const Array<Set<CellFilter> >& filters) const
 {
   Set<Set<CellFilter> > distinctSets;
   for (unsigned int i=0; i<filters.size(); i++)
@@ -451,7 +477,7 @@ bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh,
 }
 
 bool DOFMapBuilder::isWholeDomain(const Mesh& mesh, 
-                                  const Set<CellFilter>& filters) 
+                                  const Set<CellFilter>& filters) const
 {
   CellFilter allMax = new MaximalCellFilter();
   CellSet remainder = allMax.getCells(mesh);
@@ -475,7 +501,7 @@ bool DOFMapBuilder::isWholeDomain(const Mesh& mesh,
 
 
 
-CellFilter DOFMapBuilder::getMaxCellFilter(const Array<Set<CellFilter> >& filters) 
+CellFilter DOFMapBuilder::getMaxCellFilter(const Array<Set<CellFilter> >& filters) const
 {
   for (unsigned int i=0; i<filters.size(); i++)
     {
@@ -576,7 +602,7 @@ Array<Array<BasisFamily> > DOFMapBuilder::unkBasisArray() const
 
 Set<CellFilter> DOFMapBuilder
 ::reduceCellFilters(const Mesh& mesh, 
-                    const Set<CellFilter>& inputSet)  
+                    const Set<CellFilter>& inputSet) const
 {
   TimeMonitor timer(cellFilterReductionTimer());
   Set<CellFilter> rtn;

@@ -47,7 +47,8 @@ SubsetCellFilter::SubsetCellFilter(const CellFilter& superset,
   SUNDANCE_MSG3(verb, "creating subset cell filter: [" 
     << predicate.description()
     << "]");
-  setName(predicate.description());
+  setName("Subset[sup=" + superset.description() + ", pred="
+    + predicate.description()+"]");
 }
 
 

@@ -42,9 +42,10 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 NodalDOFMap::NodalDOFMap(const Mesh& mesh, 
-                         int nFuncs, 
-                         const CellFilter& maxCellFilter)
-  : SpatiallyHomogeneousDOFMapBase(mesh, nFuncs),
+  int nFuncs, 
+  const CellFilter& maxCellFilter,
+  const ParameterList& verbParams)
+  : SpatiallyHomogeneousDOFMapBase(mesh, nFuncs, verbParams),
     maxCellFilter_(maxCellFilter),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),
@@ -113,8 +114,8 @@ NodalDOFMap::getDOFsForCellBatch(int cellDim,
     {
       int nFacets = mesh().numFacets(cellDim, cellLID[0], 0);
       nNodes[0] = nFacets;
-      dofs[0].resize(nCells * nFuncs_ * nNodes[0]);
       int dofsPerCell = nFuncs_ * nNodes[0];
+      dofs[0].resize(nCells * dofsPerCell);
       Array<int>& dof0 = dofs[0];
       Array<int> facetLIDs(nCells * nNodes[0]);
       Array<int> dummy(nCells * nNodes[0]);
@@ -211,11 +212,9 @@ void NodalDOFMap::init()
 
 
   /* Assign DOFs for elements */
-  int nDofsPerElem = nFuncs_ * nFacets;
   for (int c=0; c<nElems_; c++)
     {
       /* set the element DOFs given the dofs of the facets */
-      int k = 0;
       for (int f=0; f<nFacets; f++)
         {
           int fLID = facetLID[c*nFacets+f];

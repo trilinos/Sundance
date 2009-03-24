@@ -44,8 +44,9 @@ using namespace Teuchos;
 
 InhomogeneousNodalDOFMap
 ::InhomogeneousNodalDOFMap(const Mesh& mesh, 
-                           const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap)
-  : DOFMapBase(mesh),
+                           const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap,
+  const ParameterList& verbParams)
+  : DOFMapBase(mesh, verbParams),
     dim_(mesh.spatialDim()),
     basis_(new Lagrange(1)),
     nTotalFuncs_(),
@@ -62,6 +63,7 @@ InhomogeneousNodalDOFMap
     elemStructure_(),
     nodeStructure_()
 {
+  SUNDANCE_LEVEL1("setup", "in InhomogeneousNodalDOFMap ctor");
 
   /* count the total number of functions across all subdomains */
   Set<int> allFuncs;
@@ -76,6 +78,7 @@ InhomogeneousNodalDOFMap
 
   
   nTotalFuncs_ = allFuncs.size();
+  SUNDANCE_LEVEL2("setup", "found " << nTotalFuncs_ << " functions");
   
 
   /* get flat arrays of subdomains and function arrays */

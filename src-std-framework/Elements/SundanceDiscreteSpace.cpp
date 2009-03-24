@@ -204,7 +204,8 @@ void DiscreteSpace::init(
     {
       Array<Set<CellFilter> > cf(regions.size());
       for (unsigned int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
-      map_ = DOFMapBuilder::makeMap(mesh_, basis, cf);
+      DOFMapBuilder b;
+      map_ = b.makeMap(mesh_, basis, cf);
     }
 
   int nDof = map_->numLocalDOFs();

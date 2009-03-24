@@ -58,7 +58,7 @@ namespace SundanceStdFwk
     public:
       /** */
       InhomogeneousNodalDOFMap(const Mesh& mesh, 
-                               const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap);
+        const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap, const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
       
       /** */
       virtual ~InhomogeneousNodalDOFMap(){;}

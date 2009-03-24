@@ -57,7 +57,8 @@ namespace SundanceStdFwk
     public:
       /** */
       NodalDOFMap(const Mesh& mesh, int nFuncs,
-                  const CellFilter& maxCellFilter);
+        const CellFilter& maxCellFilter, 
+        const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
       
       /** */
       virtual ~NodalDOFMap(){;}

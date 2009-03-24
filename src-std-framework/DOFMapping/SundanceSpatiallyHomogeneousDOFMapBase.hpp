@@ -51,7 +51,8 @@ namespace SundanceStdFwk
     {
     public:
       /** */
-      SpatiallyHomogeneousDOFMapBase(const Mesh& mesh, int nTotalFuncs) ;
+      SpatiallyHomogeneousDOFMapBase(const Mesh& mesh, int nTotalFuncs, 
+        const ParameterList& verbParams = *DOFMapBase::defaultVerbParams()) ;
 
       /** */
       virtual ~SpatiallyHomogeneousDOFMapBase() {;}

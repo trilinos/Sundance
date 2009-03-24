@@ -39,9 +39,11 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 
-SpatiallyHomogeneousDOFMapBase::SpatiallyHomogeneousDOFMapBase(const Mesh& mesh,
-                                                               int nTotalFuncs)
-  : DOFMapBase(mesh), allowedFuncs_(), funcDomains_()
+SpatiallyHomogeneousDOFMapBase
+::SpatiallyHomogeneousDOFMapBase(const Mesh& mesh,
+  int nTotalFuncs,
+  const ParameterList& verbParams)
+  : DOFMapBase(mesh, verbParams), allowedFuncs_(), funcDomains_()
 {
   RefCountPtr<Set<int> > f = rcp(new Set<int>());
   for (int i=0; i<nTotalFuncs; i++) f->put(i);

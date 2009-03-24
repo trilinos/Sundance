@@ -61,7 +61,8 @@ namespace SundanceStdFwk
       /** */
       PartialElementDOFMap(const Mesh& mesh, 
                            const CellFilter& subdomain,
-                           int nFuncs);
+                           int nFuncs,
+  const ParameterList& verbParams);
       
       /** */
       virtual ~PartialElementDOFMap(){;}

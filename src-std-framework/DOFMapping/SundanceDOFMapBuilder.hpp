@@ -44,150 +44,150 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+namespace Internal
+{
+using namespace Teuchos;
 
-    /** 
-     * 
-     */
-    class DOFMapBuilder : public TSFExtended::ParameterControlledObjectWithVerbosity<DOFMapBase>
-    {
-    public:
-      /** */
-      DOFMapBuilder();
-      /** */
-      DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn, 
-        bool findBCCols, const ParameterList& verbParams);
+/** 
+ * 
+ */
+class DOFMapBuilder : public TSFExtended::ParameterControlledObjectWithVerbosity<DOFMapBase>
+{
+public:
+  /** */
+  DOFMapBuilder(const ParameterList& verbParams=*DOFMapBase::defaultVerbParams());
+  /** */
+  DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn, 
+    bool findBCCols, const ParameterList& verbParams);
 
-      /** */
-      const Array<RefCountPtr<DOFMapBase> >& rowMap() const {return rowMap_;}
+  /** */
+  const Array<RefCountPtr<DOFMapBase> >& rowMap() const {return rowMap_;}
 
-      /** */
-      const Array<RefCountPtr<DOFMapBase> >& colMap() const {return colMap_;}
+  /** */
+  const Array<RefCountPtr<DOFMapBase> >& colMap() const {return colMap_;}
 
-      /** */
-      const Array<RefCountPtr<Array<int> > >& isBCRow() const {return isBCRow_;}
+  /** */
+  const Array<RefCountPtr<Array<int> > >& isBCRow() const {return isBCRow_;}
 
-      /** */
-      const Array<RefCountPtr<Array<int> > >& isBCCol() const {return isBCCol_;}
-
-
-      /** */
-      const Array<RefCountPtr<std::set<int> > >& remoteBCCols() const 
-        {return remoteBCCols_;}
-
-      Array<Array<BasisFamily> > testBasisArray() const ;
-
-      Array<Array<BasisFamily> > unkBasisArray() const ;
-
-      Array<Array<Set<CellFilter> > > testCellFilters() const ;
-
-      Array<Array<Set<CellFilter> > > unkCellFilters() const ;
-
-      const Mesh& mesh() const {return mesh_;}
+  /** */
+  const Array<RefCountPtr<Array<int> > >& isBCCol() const {return isBCCol_;}
 
 
+  /** */
+  const Array<RefCountPtr<std::set<int> > >& remoteBCCols() const 
+    {return remoteBCCols_;}
 
-      static RefCountPtr<DOFMapBase> makeMap(const Mesh& mesh,
-                                               const Array<BasisFamily>& basis,
-                                             const Array<Set<CellFilter> >& filters) ;
+  Array<Array<BasisFamily> > testBasisArray() const ;
 
-      static bool hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
-                                         const Mesh& mesh,
-                                         const Array<Set<CellFilter> >& filters) ;
+  Array<Array<BasisFamily> > unkBasisArray() const ;
 
-      static bool hasCommonDomain(const Array<Set<CellFilter> >& filters) ;
+  Array<Array<Set<CellFilter> > > testCellFilters() const ;
 
-      static bool hasHomogeneousBasis(const Array<BasisFamily>& basis) ;
+  Array<Array<Set<CellFilter> > > unkCellFilters() const ;
 
-      static bool hasNodalBasis(const Array<BasisFamily>& basis) ;
+  const Mesh& mesh() const {return mesh_;}
 
-      static bool hasCellBasis(const Array<BasisFamily>& basis) ;
 
-      static bool allFuncsAreOmnipresent(const Mesh& mesh,
-                                         const Array<Set<CellFilter> >& filters);
 
-      static bool isWholeDomain(const Mesh& mesh,
-                                const Set<CellFilter>& filters);
+  RefCountPtr<DOFMapBase> makeMap(const Mesh& mesh,
+    const Array<BasisFamily>& basis,
+    const Array<Set<CellFilter> >& filters) ;
 
-      static CellFilter getMaxCellFilter(const Array<Set<CellFilter> >& filters);
+  bool hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
+    const Mesh& mesh,
+    const Array<Set<CellFilter> >& filters) const ;
 
-      static bool& allowNodalMap() {static bool rtn=true; return rtn;}
+  bool hasCommonDomain(const Array<Set<CellFilter> >& filters) const ;
 
-      /** */
-      static void extractUnkSetsFromEqnSet(const EquationSet& eqn,
-                                           Array<Set<int> >& funcSets,
-                                           Array<CellFilter>& regions);
+  bool hasHomogeneousBasis(const Array<BasisFamily>& basis) const ;
 
-      /** */
-      static void extractVarSetsFromEqnSet(const EquationSet& eqn,
-                                           Array<Set<int> >& funcSets,
-                                           Array<CellFilter>& regions);
+  bool hasNodalBasis(const Array<BasisFamily>& basis) const ;
 
-      /** */
-      static SundanceUtils::Map<Set<int>, Set<CellFilter> > 
-      buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
-                             const Array<CellFilter>& regions,
-                                      const Mesh& mesh);
+  bool hasCellBasis(const Array<BasisFamily>& basis) const ;
+
+  bool allFuncsAreOmnipresent(const Mesh& mesh,
+    const Array<Set<CellFilter> >& filters) const ;
+
+  bool isWholeDomain(const Mesh& mesh,
+    const Set<CellFilter>& filters) const ;
+
+  CellFilter getMaxCellFilter(const Array<Set<CellFilter> >& filters) const ;
+
+  static bool& allowNodalMap() {static bool rtn=true; return rtn;}
+
+  /** */
+  void extractUnkSetsFromEqnSet(const EquationSet& eqn,
+    Array<Set<int> >& funcSets,
+    Array<CellFilter>& regions) const ;
+
+  /** */
+  void extractVarSetsFromEqnSet(const EquationSet& eqn,
+    Array<Set<int> >& funcSets,
+    Array<CellFilter>& regions) const ;
+
+  /** */
+  SundanceUtils::Map<Set<int>, Set<CellFilter> > 
+  buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
+    const Array<CellFilter>& regions,
+    const Mesh& mesh) const ;
         
-      static void getSubdomainUnkFuncMatches(const EquationSet& eqn,
-                                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap);
+  void getSubdomainUnkFuncMatches(const EquationSet& eqn,
+    Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const ;
         
-      static void getSubdomainVarFuncMatches(const EquationSet& eqn,
-                                             Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap);
+  void getSubdomainVarFuncMatches(const EquationSet& eqn,
+    Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const ;
 
-      static Array<SundanceUtils::Map<Set<int>, CellFilter> > 
-      funcDomains(const Mesh& mesh,
-                  const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
-                  SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap);
+  Array<SundanceUtils::Map<Set<int>, CellFilter> > 
+  funcDomains(const Mesh& mesh,
+    const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
+    SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap) const ;
 
-      static SundanceUtils::Map<CellFilter, Set<int> > domainToFuncSetMap(const Array<Set<CellFilter> >& filters) ;
+  SundanceUtils::Map<CellFilter, Set<int> > domainToFuncSetMap(const Array<Set<CellFilter> >& filters) const ;
 
-    private:
+private:
 
-      static Set<CellFilter> reduceCellFilters(const Mesh& mesh,
-                                               const Set<CellFilter>& inputSet) ;
+  Set<CellFilter> reduceCellFilters(const Mesh& mesh,
+    const Set<CellFilter>& inputSet) const ;
 
-      bool hasUnks() const ;
+  bool hasUnks() const ;
 
-      bool unksAreOmnipresent() const ;
+  bool unksAreOmnipresent() const ;
 
-      bool testsAreOmnipresent() const ;
+  bool testsAreOmnipresent() const ;
 
-      bool regionIsMaximal(int r) const ;
+  bool regionIsMaximal(int r) const ;
 
-      bool isSymmetric(int block) const ;
+  bool isSymmetric(int block) const ;
 
-      void markBCRows(int block) ;
+  void markBCRows(int block) ;
 
-      void markBCCols(int block) ;
+  void markBCCols(int block) ;
 
-      const MPIComm& comm() const {return mesh().comm();}
+  const MPIComm& comm() const {return mesh().comm();}
 
-      void init(bool findBCCols);
+  void init(bool findBCCols);
 
-      Mesh mesh_;
+  Mesh mesh_;
 
-      RefCountPtr<EquationSet> eqn_;
+  RefCountPtr<EquationSet> eqn_;
 
-      Array<RefCountPtr<DOFMapBase> > rowMap_;
+  Array<RefCountPtr<DOFMapBase> > rowMap_;
 
-      Array<RefCountPtr<DOFMapBase> > colMap_;
+  Array<RefCountPtr<DOFMapBase> > colMap_;
 
-      Array<RefCountPtr<Array<int> > > isBCRow_;
+  Array<RefCountPtr<Array<int> > > isBCRow_;
 
-      Array<RefCountPtr<Array<int> > > isBCCol_;
+  Array<RefCountPtr<Array<int> > > isBCCol_;
 
-      Array<RefCountPtr<std::set<int> > > remoteBCCols_;
-    };
-  }
+  Array<RefCountPtr<std::set<int> > > remoteBCCols_;
+};
+}
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

@@ -61,8 +61,9 @@ namespace SundanceStdFwk
     public:
       /** */
       MixedDOFMap(const Mesh& mesh, 
-                  const BasisArray& basis,
-                  const CellFilter& maxCells);
+        const BasisArray& basis,
+        const CellFilter& maxCells, 
+        const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
                         
       /** */
       virtual ~MixedDOFMap(){;}

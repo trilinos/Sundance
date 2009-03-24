@@ -57,9 +57,10 @@ static Time& maxDOFBuildTimer()
 }
 
 MixedDOFMap::MixedDOFMap(const Mesh& mesh, 
-                         const BasisArray& basis,
-                         const CellFilter& maxCells)
-  : SpatiallyHomogeneousDOFMapBase(mesh, basis.size()), 
+  const BasisArray& basis,
+  const CellFilter& maxCells,
+  const ParameterList& verbParams)
+  : SpatiallyHomogeneousDOFMapBase(mesh, basis.size(), verbParams), 
     maxCells_(maxCells),
     dim_(mesh.spatialDim()),
     dofs_(mesh.spatialDim()+1),
@@ -271,7 +272,7 @@ void MixedDOFMap::initMap()
    * third cell number. */
   Array<Array<Array<int> > > remoteCells(mesh().spatialDim()+1);
 
-  for (int d=0; d<remoteCells.size(); d++) 
+  for (unsigned int d=0; d<remoteCells.size(); d++) 
     remoteCells[d].resize(mesh().comm().getNProc());
   
   /* Loop over maximal cells in the order specified by the cell iterator.

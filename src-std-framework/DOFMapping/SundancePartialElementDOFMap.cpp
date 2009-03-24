@@ -42,9 +42,10 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 PartialElementDOFMap::PartialElementDOFMap(const Mesh& mesh, 
-                         const CellFilter& subdomain,
-                         int nFuncs)
-  : DOFMapBase(mesh),
+  const CellFilter& subdomain,
+  int nFuncs,
+  const ParameterList& verbParams)
+  : DOFMapBase(mesh, verbParams),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),
     nElems_(mesh.numCells(mesh.spatialDim())),
@@ -101,7 +102,6 @@ PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
   else
     {
       dofs[0].resize(nCells * nFuncs_);
-      Array<int>& dof0 = dofs[0];
       Array<int> cofacetLIDs(nCells);
       
       for (int c=0; c<nCells; c++)
