@@ -54,8 +54,6 @@ int main(int argc, char *argv[])
 
   try
   {
-    int verbosity = 1;
-
     GlobalMPISession session(&argc, &argv);
 
     MPIComm::world().synchronize();

@@ -215,7 +215,7 @@ inline std::ostream& operator<<(std::ostream& os, const ComputationType& ct)
  * but its unreduced ID will always be the same.
  *
  */
-class EquationSet : public TSFExtended::ObjectWithVerbosity<EquationSet>
+class EquationSet : public TSFExtended::ParameterControlledObjectWithVerbosity<EquationSet>
 {
 public:
   /** \name Constructors */
@@ -251,7 +251,8 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fields,
-    const Array<Expr>& fieldValues);
+    const Array<Expr>& fieldValues,
+    const ParameterList& verbParams = *defaultVerbParams());
 
   /** Set up equations written in weak form with test functions. This
    * ctor should be used when setting up an ordinary forward problem.
@@ -311,7 +312,8 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fixedFields,
-    const Array<Expr>& fixedFieldValues);
+    const Array<Expr>& fixedFieldValues,
+    const ParameterList& verbParams = *defaultVerbParams());
 
 
   /* Set up calculation of a functional and its first derivative wrt a 
@@ -355,7 +357,8 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fixedFields,
-    const Array<Expr>& fixedFieldValues);
+    const Array<Expr>& fixedFieldValues,
+    const ParameterList& verbParams = *defaultVerbParams());
 
   /** Set up calculation of first and second variations of 
    * a functional. This ctor should be used when deriving the
@@ -369,7 +372,8 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fixedFields,
-    const Array<Expr>& fixedFieldValues);
+    const Array<Expr>& fixedFieldValues,
+    const ParameterList& verbParams = *defaultVerbParams());
 
   //@}
 
@@ -431,13 +435,17 @@ public:
   const RefCountPtr<Set<OrderedPair<int, int> > >& bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const ;
 
 
-  /** */
+  /** Returns the integrand on the rqc r. */
   const Expr& expr(const RegionQuadCombo& r) const 
     {return regionQuadComboExprs_.get(r);}
 
-  /** */
+  /** Returns the BC integrand on rqc r. */
   const Expr& bcExpr(const RegionQuadCombo& r) const 
     {return bcRegionQuadComboExprs_.get(r);}
+
+  /** Indicates whether any watch flags are active */
+  bool hasActiveWatchFlag() const ;
+
   //@}
       
 
@@ -451,6 +459,19 @@ public:
   /** Map BC RQC to the context for the derivs of the given compType */
   EvalContext bcRqcToContext(ComputationType compType, 
     const RegionQuadCombo& r) const ; 
+  //@}
+
+  /** \name Identification of RQCs to skip for given compType */
+  //@{
+  /** Map RQC to the context for the derivs of the given compType */
+  bool skipRqc(ComputationType compType, 
+    const RegionQuadCombo& r) const ;
+
+
+  /** Map BC RQC to the context for the derivs of the given compType */
+  bool skipBCRqc(ComputationType compType, 
+    const RegionQuadCombo& r) const ;
+  
   //@}
 
 
@@ -609,6 +630,19 @@ public:
   //@}
 
 
+
+  /** */
+  static RefCountPtr<ParameterList> defaultVerbParams()
+    {
+      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Equation Set"));
+      static int first = true;
+      if (first)
+      {
+        rtn->set<int>("setup", 0);
+        first = false;
+      }
+      return rtn;
+    }
 private:
 
   /**
@@ -644,7 +678,8 @@ private:
     const Set<int>& vars,
     const Set<int>& unks,
     const DerivSet& nonzeros, 
-    bool isBC);
+    bool isBC,
+    int verb);
 
   /** */
   Array<OrderedHandle<CellFilterStub> > regions_;
@@ -713,6 +748,14 @@ private:
   /** List of the contexts for
    * each BC regionQuadCombo */
   Map<ComputationType, Map<RegionQuadCombo, EvalContext> > bcRqcToContext_;
+
+  /** List the RQCs that should be skipped for each computation type. 
+   * This is needed in cases such as when a domain has matrix terms
+   * but no vector terms. */
+  Map<ComputationType, Set<RegionQuadCombo> > rqcToSkip_;
+
+  /** List the BC RQCs that should be skipped for each computation type. */
+  Map<ComputationType, Set<RegionQuadCombo> > bcRqcToSkip_;
 
   /** var functions for this equation set */
   Array<Expr> varFuncs_;

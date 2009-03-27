@@ -35,6 +35,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMap.hpp"
 #include "Teuchos_Utils.hpp"
+#include "SundanceWatchFlag.hpp"
 #include "SundanceCellFilterStub.hpp"
 #include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceOrderedTuple.hpp"
@@ -57,8 +58,9 @@ namespace SundanceCore
     {
 
       /** */
-      typedef OrderedPair<OrderedHandle<CellFilterStub>,
-                          OrderedHandle<QuadratureFamilyStub> > RegPair;
+      typedef OrderedTriple<OrderedHandle<CellFilterStub>,
+                            OrderedHandle<QuadratureFamilyStub>,
+                            WatchFlag> RegTriple;
       /** 
        * Expressions may appear in more than one subregions of a problem,
        * for instance in an internal domain and also on a boundary. On
@@ -78,7 +80,8 @@ namespace SundanceCore
           RegionQuadCombo();
           /** */
           RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
-                          const RefCountPtr<QuadratureFamilyStub>& quad);
+            const RefCountPtr<QuadratureFamilyStub>& quad,
+            const WatchFlag& watch = WatchFlag());
 
           /** */
           inline bool operator==(const RegionQuadCombo& other) const
@@ -98,6 +101,10 @@ namespace SundanceCore
           const RefCountPtr<QuadratureFamilyStub>& quad() const 
           {return quad_;}
 
+          /** */
+          const WatchFlag& watch() const 
+          {return watch_;}
+
         private:
 
           /** */
@@ -108,16 +115,20 @@ namespace SundanceCore
 
           /** */
           RefCountPtr<QuadratureFamilyStub> quad_;
+
+          /** */
+          WatchFlag watch_;
           
           /** */
           static int getID(const RefCountPtr<CellFilterStub>& domain,
-                           const RefCountPtr<QuadratureFamilyStub>& quad);
+            const RefCountPtr<QuadratureFamilyStub>& quad,
+            const WatchFlag& watch);
 
           /** */
           static int topID() {static int rtn=0; return rtn++;}
 
           /** */
-          static Map<RegPair, int>& domainAndQuadToIDMap() ;
+          static Map<RegTriple, int>& domainAndQuadToIDMap() ;
         };
 
     }

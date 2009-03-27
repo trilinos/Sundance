@@ -304,4 +304,5 @@ bool IntegralGroup
 std::ostream& IntegralGroup::print(std::ostream& os) const
 {
   os << "IntegralGroup[derivs=" << derivs_ << "]";
+  return os;
 }

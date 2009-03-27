@@ -35,6 +35,7 @@
 #include "SundanceExpr.hpp"
 #include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceCellFilterStub.hpp"
+#include "SundanceWatchFlag.hpp"
 #include "TSFHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
@@ -51,15 +52,17 @@ namespace SundanceCore
    * \relates EquationSet
    */
   Expr Integral(const Handle<CellFilterStub>& domain,
-                const Expr& integrand);
+    const Expr& integrand,
+    const WatchFlag& watch=WatchFlag());
 
   /**
    * \relates Expr 
    * \relates EquationSet
    */
   Expr Integral(const Handle<CellFilterStub>& domain,
-                const Expr& integrand,
-                const Handle<QuadratureFamilyStub>& quad);
+    const Expr& integrand,
+    const Handle<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch=WatchFlag());
 
   
 }

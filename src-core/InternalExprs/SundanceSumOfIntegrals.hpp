@@ -40,6 +40,8 @@
 #include "SundanceOrderedHandle.hpp"
 #include "Teuchos_Array.hpp"
 #include "SundanceMap.hpp"
+#include "SundanceWatchFlag.hpp"
+#include "SundanceRegionQuadCombo.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -73,7 +75,8 @@ public:
   /** Construct given an integral over a single region */
   SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
     const Expr& expr,
-    const RefCountPtr<QuadratureFamilyStub>& quad);
+    const RefCountPtr<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch);
 
   /** */
   virtual ~SumOfIntegrals(){;}
@@ -82,6 +85,7 @@ public:
   void addTerm(const RefCountPtr<CellFilterStub>& region,
     const Expr& expr,
     const RefCountPtr<QuadratureFamilyStub>& quad, 
+    const WatchFlag& watch,
     int sign) ;
 
   /** Add this sum of integrals to another sum of integrals */
@@ -94,32 +98,20 @@ public:
   void changeSign() ;
 
   /** Return the number of subregions */
-  int numRegions() const {return regions_.size();}
+  int numRQC() const {return rqcToExprMap_.size();}
 
-  /** Return the d-th region */
-  const RefCountPtr<CellFilterStub>& region(int d) const 
-    {return regions_[d].ptr();}
-
-  /** Return the number of different quadrature rules used in the
-   * d-th region */
-  int numTerms(int d) const {return quad_[d].size();}
-
-  /** Return the q-th quadrature rule used in the d-th region */
-  const RefCountPtr<QuadratureFamilyStub>& quad(int d, int q) const 
-    {return quad_[d][q].ptr();}
-
-  /** Return the integrand for the q-th quadrature rule in the
-   * d-th region */
-  const Expr& expr(int d, int q) const 
-    {return expr_[d][q];}
+  /** */
+  const SundanceUtils::Map<RegionQuadCombo, Expr>& rqcToExprMap() const
+    {return rqcToExprMap_;}
 
   /** Return the set of unknown or variational
-   * functions defined on the d-th region */
-  Set<int> funcsOnRegion(int d, const Set<int>& funcsSet) const ;
+   * functions defined on region d */
+  Set<int> funcsOnRegion(const OrderedHandle<CellFilterStub>& d, 
+    const Set<int>& funcsSet) const ;
 
-  /** Indicate whether the integral over the 
-   * d-th region contains any test functions */
-  bool integralHasTestFunctions(int d) const ;
+  /** Indicate whether the integral over 
+   * region d contains any test functions */
+  bool integralHasTestFunctions(const OrderedHandle<CellFilterStub>& d) const ;
 
   /** Return a null cell filter of a type consistent with the
    * other filters in this integral */
@@ -167,20 +159,16 @@ public:
   /** Ordering operator for use in transforming exprs to standard form */
   virtual bool lessThan(const ScalarExpr* other) const ;
 
+  /** Look for a term with an active watchpoint */
+  bool hasWatchedTerm() const ;
+  
+
 protected:
   /** */
   Expr filterSpectral(const Expr& ex) const ;
 private:
-          
-  Array<OrderedHandle<CellFilterStub> > regions_;
 
-  Array<Array<OrderedHandle<QuadratureFamilyStub> > > quad_;
-
-  Array<Array<Expr> > expr_;
-
-  Map<OrderedHandle<CellFilterStub>, int>  cellSetToIndexMap_;
-
-  Array<Map<OrderedHandle<QuadratureFamilyStub>, int> > quadToIndexMap_;
+  SundanceUtils::Map<RegionQuadCombo, Expr> rqcToExprMap_;
 };
 }
 }

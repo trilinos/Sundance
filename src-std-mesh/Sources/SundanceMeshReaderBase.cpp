@@ -48,7 +48,7 @@ bool MeshReaderBase::getNextLine(std::istream& is, string& line,
                                          char comment) const 
 {
   bool rtn = false;
-  while (rtn=StrUtils::readLine(is, line))
+  while ((rtn=StrUtils::readLine(is, line)))
     {
       SUNDANCE_OUT(this->verbosity() == VerbHigh,
                    "read line [" << line << "]");

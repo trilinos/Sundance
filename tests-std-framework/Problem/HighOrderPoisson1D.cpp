@@ -44,11 +44,6 @@ int main(int argc, char** argv)
   try
 		{
       Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
-
-      //   cerr << "pid = " << getpid() << endl;
-      //int zippy = 1;
-      //while (zippy) ;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();

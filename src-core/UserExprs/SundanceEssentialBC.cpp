@@ -41,7 +41,8 @@ using namespace TSFExtended;
 using namespace SundanceCore::Internal;
 
 Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
-                               const Expr& integrand)
+                               const Expr& integrand,
+  const WatchFlag& watch)
 {
   const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(integrand.ptr().get());
   const ConstantExpr* c = dynamic_cast<const ConstantExpr*>(integrand.ptr().get());
@@ -50,12 +51,13 @@ Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
       return integrand;
     }
   RefCountPtr<QuadratureFamilyStub> quad = QuadratureFamilyStub::defaultQuadrature();
-  return new SumOfBCs(domain.ptr(), Re(integrand), quad);
+  return new SumOfBCs(domain.ptr(), Re(integrand), quad, watch);
 }
 
 Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
-                               const Expr& integrand,
-                               const Handle<QuadratureFamilyStub>& quad)
+  const Expr& integrand,
+  const Handle<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch)
 {
   const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(integrand.ptr().get());
   const ConstantExpr* c = dynamic_cast<const ConstantExpr*>(integrand.ptr().get());
@@ -63,5 +65,5 @@ Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,
     {
       return integrand;
     }
-  return new SumOfBCs(domain.ptr(), Re(integrand), quad.ptr());
+  return new SumOfBCs(domain.ptr(), Re(integrand), quad.ptr(), watch);
 }

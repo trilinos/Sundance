@@ -79,7 +79,7 @@ bool FileIOChacoPartitioner::getNextLine(std::istream& is, string& line,
                                          char comment) const 
 {
   bool rtn = false;
-  while (rtn=StrUtils::readLine(is, line))
+  while ((rtn=StrUtils::readLine(is, line)))
     {
       if (line.length() > 0) line = StrUtils::before(line,comment);
       if (isEmptyLine(line)) continue;

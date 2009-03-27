@@ -67,7 +67,6 @@ int main(int argc, char** argv)
 
 
       Mesh mesh = mesher.getMesh();
-      double h0 = 2.0/((double) ny);
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
       Expr h = new CellDiameterExpr();

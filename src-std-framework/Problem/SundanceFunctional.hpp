@@ -107,20 +107,7 @@ public:
   const Mesh& mesh() const {return mesh_;}
     
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams()
-    {
-      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Functional"));
-      static int first = true;
-      if (first)
-      {
-        rtn->setName("Functional");
-        rtn->set<int>("global", 0);
-        rtn->set<int>("assembly", 0);
-        rtn->set("Assembler", *Assembler::defaultVerbParams());
-        first = false;
-      }
-      return rtn;
-    }
+  static RefCountPtr<ParameterList> defaultVerbParams();
                                   
 
 private:

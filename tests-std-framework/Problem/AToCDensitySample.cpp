@@ -46,7 +46,6 @@ int main(int argc, char** argv)
   try
 		{
       Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -86,7 +85,6 @@ int main(int argc, char** argv)
 
       cout << "making points" << endl;
       /* create a bunch of particles */
-      const double pi = 4.0*atan(1.0);
       int nCells = mesh.numCells(2);
       int nPts = 150000;
 

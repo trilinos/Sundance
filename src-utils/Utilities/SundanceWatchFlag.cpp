@@ -28,56 +28,42 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SUMOFBCS_H
-#define SUNDANCE_SUMOFBCS_H
+#include "SundanceWatchFlag.hpp"
+#include "SundanceOut.hpp"
 
-#include "SundanceDefs.hpp"
-#include "SundanceSumOfIntegrals.hpp"
+using namespace SundanceUtils;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceCore
+WatchFlag::WatchFlag(const std::string& name)
+  : name_(name)
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace Internal;
-  using std::string;
-
-  namespace Internal
-    {
-      /** 
-       * SumOfBCs represents a sum of essential
-       * boundary conditions in integral form
-       */
-      class SumOfBCs : public SumOfIntegrals
-        {
-        public:
-          /** Construct given an integral over a single region */
-          SumOfBCs(const RefCountPtr<CellFilterStub>& region,
-            const Expr& expr,
-            const RefCountPtr<QuadratureFamilyStub>& quad,
-            const WatchFlag& watch);
-
-          /** */
-          virtual ~SumOfBCs(){;}
-
-          /** Write a simple text description suitable 
-           * for output to a terminal */
-          virtual ostream& toText(ostream& os, bool paren) const ;
-
-          /** Write in a form suitable for LaTeX formatting */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
-
-          /** Write in XML */
-          virtual XMLObject toXML() const ;
-
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
-
-        private:
-        };
-    }
+  if (name_.size() > 0U) isActiveMap().put(name, true);
+  else isActiveMap().put(name, false);
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-#endif
+void WatchFlag::activate() 
+{
+  isActiveMap()[name()] = true;
+}
+
+void WatchFlag::deactivate() 
+{
+  isActiveMap()[name()] = false;
+}
+
+bool WatchFlag::isActive() const 
+{
+  return isActiveMap().get(name());
+}
+
+XMLObject WatchFlag::toXML() const 
+{
+  XMLObject xml("WatchFlag");
+  xml.addAttribute("name", name());
+  return xml;
+}
+
+
+
+
+

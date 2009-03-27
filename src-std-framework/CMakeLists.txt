@@ -146,6 +146,7 @@ APPEND_SET(HEADERS
   Assembly/SundanceFunctionalEvaluator.hpp
   Assembly/SundanceGrouperBase.hpp
   Assembly/SundanceIntegralGroup.hpp
+  Assembly/SundanceIntegrationCellSpecifier.hpp
   Assembly/SundanceLocalDOFMap.hpp
   Assembly/SundanceLocalMatrixContainer.hpp
   Assembly/SundanceMapBundle.hpp

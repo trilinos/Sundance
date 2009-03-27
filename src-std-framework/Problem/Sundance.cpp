@@ -402,7 +402,7 @@ VerbositySetting Sundance::verbosity(const string& str)
 bool Sundance::checkTest(double error, double tol)
 {
   int myFail = error > tol;
-  int anyFail = 0;
+  int anyFail = myFail;
   MPIComm::world().allReduce((void*) &myFail, (void*) &anyFail, 1, MPIComm::INT,
                      MPIComm::SUM);
   return (anyFail == 0);

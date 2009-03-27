@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
 {
   try
     {
-      int verbosity = 1;
       GlobalMPISession session(&argc, &argv);
 
 
@@ -73,6 +72,8 @@ int main(int argc, char *argv[])
       NOXSolver solver(noxParams, F);
 
       NOX::StatusTest::StatusType stat = solver.solve();
+      TEST_FOR_EXCEPTION(stat != NOX::StatusTest::Converged,
+        runtime_error, "solve failed");
 
       Vector<double> soln = solver.getSolution();
 

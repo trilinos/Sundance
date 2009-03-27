@@ -33,9 +33,14 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
-#include "SundanceAssembler.hpp"
-
+#include "TSFVectorImpl.hpp"
+#include "TSFVectorType.hpp"
 #ifndef DOXYGEN_DEVELOPER_ONLY
+
+namespace SundanceStdMesh
+{
+class Mesh;
+}
 
 namespace SundanceStdFwk
 {
@@ -48,6 +53,7 @@ using namespace SundanceCore::Internal;
 namespace Internal
 {
 using namespace Teuchos;
+class Assembler;
 
 /** 
  * 
@@ -93,19 +99,7 @@ public:
   double fdGradientCheck(double h) const ;
           
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams()
-    {
-      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Functional Evaluator"));
-      static int first = true;
-      if (first)
-      {
-        rtn->set<int>("global", 0);
-        rtn->set<int>("assembly", 0);
-        rtn->set("Assembler", *Assembler::defaultVerbParams());
-        first = false;
-      }
-      return rtn;
-    }
+  static RefCountPtr<ParameterList> defaultVerbParams();
 
 private:
 
@@ -128,7 +122,7 @@ private:
 }
 /** */
 double evaluateIntegral(const Mesh& mesh, const Expr& expr,
-  const ParameterList& verbParams = *FunctionalEvaluator::defaultVerbParams());
+  const ParameterList& verbParams = *Internal::FunctionalEvaluator::defaultVerbParams());
 
 
 }

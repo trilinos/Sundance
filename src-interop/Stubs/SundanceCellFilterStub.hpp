@@ -103,11 +103,23 @@ namespace SundanceCore
       /** */
       bool isNullRegion() const ;
 
-      
+      /** */
+      bool operator!=(const CellFilterStub& other) const 
+        {
+          return this->lessThan(&other) || other.lessThan(this);
+        }
+
+      /** */
+      bool operator==(const CellFilterStub& other) const 
+        {
+          return !(*this != other);
+        }
 
     };
   }
 }
+
+
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

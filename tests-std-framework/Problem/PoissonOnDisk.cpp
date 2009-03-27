@@ -44,9 +44,6 @@ int main(int argc, char** argv)
   try
 		{
       Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
-
-
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -79,7 +76,6 @@ int main(int argc, char** argv)
       QuadratureFamily quad2 = new GaussianQuadrature(2);
       QuadratureFamily quad4 = new GaussianQuadrature(4);
 
-      const double pi = 4.0*atan(1.0);
       /* Define the weak form */
       Expr eqn = Integral(interior, (grad*v)*(grad*u)  + v, quad2);
       /* Define the Dirichlet BC */

@@ -36,14 +36,6 @@
 #include "NOX_Utils.H"
 #include "NOX_TSF_Group.H"
 
-#define LOUD()                                          \
-  {                                                     \
-    verbosity<Evaluator>() = VerbExtreme;               \
-    verbosity<SparsitySuperset>() = VerbSilent;         \
-    verbosity<EvalVector>() = VerbSilent;               \
-    verbosity<EvaluatableExpr>() = VerbExtreme;         \
-    verbosity<AbstractEvalMediator>() = VerbExtreme;    \
-  }
 
 /** Evaluate u*v - 6.0 */
 class F1 : public PointwiseUserDefFunctor1
@@ -104,8 +96,6 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-
-      EquationSet::classVerbosity() = VerbExtreme;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();

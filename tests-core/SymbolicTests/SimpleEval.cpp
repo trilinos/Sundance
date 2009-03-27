@@ -137,8 +137,6 @@ int main(int argc, char** argv)
 
       TimeMonitor t(totalTimer());
 
-      int maxDiffOrder = 2;
-
       verbosity<SymbolicTransformation>() = VerbExtreme;
       verbosity<Evaluator>() = VerbSilent;
       verbosity<EvalVector>() = VerbSilent;

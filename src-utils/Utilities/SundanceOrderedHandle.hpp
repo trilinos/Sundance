@@ -105,6 +105,21 @@ namespace SundanceUtils
       bool rtn = this->ptr()->lessThan(other.ptr().get());
       return rtn;
     }
+
+    /** */
+    bool operator!=(const OrderedHandle<PointerType>& other) const
+      {
+        return (*this < other) || (other < *this);
+      }
+
+
+    /** */
+    bool operator==(const OrderedHandle<PointerType>& other) const
+      {
+        return !(*this != other);
+      }
+
+    
   };
 }
 

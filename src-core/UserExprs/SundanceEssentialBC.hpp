@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
+#include "SundanceWatchFlag.hpp"
 #include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceCellFilterStub.hpp"
 #include "TSFHandle.hpp"
@@ -48,12 +49,14 @@ namespace SundanceCore
 
   /** \relates Expr */
   Expr EssentialBC(const Handle<CellFilterStub>& domain,
-                   const Expr& integrand);
+    const Expr& integrand,
+    const WatchFlag& watch=WatchFlag());
 
   /** \relates Expr */
   Expr EssentialBC(const Handle<CellFilterStub>& domain,
-                   const Expr& integrand,
-                   const Handle<QuadratureFamilyStub>& quad);
+    const Expr& integrand,
+    const Handle<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch=WatchFlag());
 
   
 }

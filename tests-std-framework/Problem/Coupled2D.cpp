@@ -67,10 +67,6 @@ int main(int argc, char** argv)
       TEST_FOR_EXCEPT(npy < 1);
       TEST_FOR_EXCEPT(npx * npy != np);
 
-      cout << "PID = " << getpid() << endl;
-      int debugWait = 1;
-      //     while (debugWait);
-
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 

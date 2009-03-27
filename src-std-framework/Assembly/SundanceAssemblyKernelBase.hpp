@@ -126,6 +126,9 @@ public:
   /** verbosity level */
   int verb() const {return verb_;}
 
+  /** set verbosity level */
+  void setVerbosity(int verb) {verb_=verb;}
+
 private:
   int verb_;
 };

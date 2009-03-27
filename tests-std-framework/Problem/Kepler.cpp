@@ -116,6 +116,9 @@ int main(int argc, char** argv)
           cerr << "--------------------------------------------------------- " << endl;
           // Solve the nonlinear system
           NOX::StatusTest::StatusType status = solver.solve();
+          TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+            runtime_error, "solve failed");
+          
 
           int maxTerms = 400;
           Expr exactSoln = x;

@@ -28,56 +28,41 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SUMOFBCS_H
-#define SUNDANCE_SUMOFBCS_H
+#ifndef SUNDANCE_INTEGRATIONCELLSPECIFIER_H
+#define SUNDANCE_INTEGRATIONCELLSPECIFIER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSumOfIntegrals.hpp"
+#include <iostream>
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceCore
+namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace Internal;
-  using std::string;
+using namespace Teuchos;
+namespace Internal
+{
+  
 
-  namespace Internal
-    {
-      /** 
-       * SumOfBCs represents a sum of essential
-       * boundary conditions in integral form
-       */
-      class SumOfBCs : public SumOfIntegrals
-        {
-        public:
-          /** Construct given an integral over a single region */
-          SumOfBCs(const RefCountPtr<CellFilterStub>& region,
-            const Expr& expr,
-            const RefCountPtr<QuadratureFamilyStub>& quad,
-            const WatchFlag& watch);
+/** */
+enum IntegrationCellSpecifier {NoTermsNeedCofacets, AllTermsNeedCofacets, SomeTermsNeedCofacets};
 
-          /** */
-          virtual ~SumOfBCs(){;}
-
-          /** Write a simple text description suitable 
-           * for output to a terminal */
-          virtual ostream& toText(ostream& os, bool paren) const ;
-
-          /** Write in a form suitable for LaTeX formatting */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
-
-          /** Write in XML */
-          virtual XMLObject toXML() const ;
-
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
-
-        private:
-        };
-    }
+/** */
+inline std::ostream& operator<<(
+  std::ostream& os, const IntegrationCellSpecifier& s)
+{
+  switch(s)
+  {
+    case NoTermsNeedCofacets:
+      os << "[No terms need cofacets]";
+      break;
+    case AllTermsNeedCofacets:
+      os << "[All terms need cofacets]";
+      break;
+    default:
+      os << "[Some terms need cofacets]";
+  }
+  return os;
+}
+}
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

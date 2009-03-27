@@ -41,15 +41,12 @@ using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 SumOfIntegrals::SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
-                               const Expr& expr,
-                               const RefCountPtr<QuadratureFamilyStub>& quad)
-  : ScalarExpr(), regions_(),
-    quad_(),
-    expr_(),
-    cellSetToIndexMap_(),
-    quadToIndexMap_()
+  const Expr& expr,
+  const RefCountPtr<QuadratureFamilyStub>& quad,
+  const WatchFlag& watch)
+  : ScalarExpr(), rqcToExprMap_()
 {
-  addTerm(region, expr, quad, 1);
+  addTerm(region, expr, quad, watch, 1);
 }
 
 
@@ -63,111 +60,86 @@ Expr SumOfIntegrals::filterSpectral(const Expr& expr) const
 
 
 void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
-                             const Expr& expr,
-                             const RefCountPtr<QuadratureFamilyStub>& quadPtr, 
-                             int sign)
+  const Expr& expr,
+  const RefCountPtr<QuadratureFamilyStub>& quadPtr, 
+  const WatchFlag& watch, int sign)
 {
-  int d = regions_.length();
-
   Expr ex = filterSpectral(expr);
 
-  OrderedHandle<CellFilterStub> region(regionPtr);
-  OrderedHandle<QuadratureFamilyStub> quad(quadPtr);
+  RegionQuadCombo rqc(regionPtr, quadPtr, watch);
 
-  if (cellSetToIndexMap_.containsKey(region))
-    {
-      d = cellSetToIndexMap_.get(region);
-    }
+  if (rqcToExprMap_.containsKey(rqc))
+  {
+    Expr e = rqcToExprMap_.get(rqc);
+    rqcToExprMap_.put(rqc, e + sign*expr);
+  }
   else
-    {
-      regions_.append(region);
-      quadToIndexMap_.resize(d+1);
-      quad_.resize(d+1);
-      expr_.resize(d+1);
-      cellSetToIndexMap_.put(region, d);
-    }
-  
-  int q = quad_[d].length();
-  if (quadToIndexMap_[d].containsKey(quad))
-    {
-      q = quadToIndexMap_[d].get(quad);
-      if (sign > 0)
-        {
-          expr_[d][q] = expr_[d][q] + ex;
-        }
-      else
-        {
-          expr_[d][q] = expr_[d][q] - ex;
-        }
-    }
-  else
-    {
-      quad_[d].append(quad);
-      if (sign > 0)
-        {
-          expr_[d].append(ex);
-        }
-      else
-        {
-          expr_[d].append(-ex);
-        }
-      quadToIndexMap_[d].put(quad, q);
-    }
+  {
+    rqcToExprMap_.put(rqc, sign*expr);
+  }
 }
 
 void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign) 
 {
-  for (unsigned int d=0; d<other->regions_.size(); d++)
-    {
-      for (int q=0; q<other->numTerms(d); q++)
-        {
-          addTerm(other->regions_[d].ptr(), other->expr_[d][q],
-                  other->quad_[d][q].ptr(), sign);
-        }
-    }
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=other->rqcToExprMap_.begin(); i!=other->rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    const Expr& e = i->second;
+    addTerm(rqc.domain(), e, rqc.quad(), rqc.watch(), sign);
+  }
 }
 
 void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr) 
 {
   double a = expr->value();
-
-  for (unsigned int d=0; d<regions_.size(); d++)
-    {
-      for (int q=0; q<numTerms(d); q++)
-        {
-          expr_[d][q] = a*expr_[d][q];
-        }
-    }
+  SundanceUtils::Map<RegionQuadCombo, Expr> newMap;
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    Expr e = i->second;
+    newMap.put(i->first, a*e);
+  }
+  rqcToExprMap_ = newMap;
 }
 
 void SumOfIntegrals::changeSign()
 {
-  for (unsigned int d=0; d<regions_.size(); d++)
-    {
-      for (int q=0; q<numTerms(d); q++)
-        {
-          expr_[d][q] = -expr_[d][q];
-        }
-    }
+  SundanceUtils::Map<RegionQuadCombo, Expr> newMap;
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    Expr e = i->second;
+    newMap.put(i->first, -e);
+  }
+  rqcToExprMap_ = newMap;
 }
 
-Set<int> SumOfIntegrals::funcsOnRegion(int d, const Set<int>& funcSet) const 
+Set<int> SumOfIntegrals::funcsOnRegion(const OrderedHandle<CellFilterStub>& d, const Set<int>& funcSet) const 
 {
   Set<int> rtn;
-  for (unsigned int t=0; t<expr_[d].size(); t++)
-    { 
-      expr_[d][t].ptr()->accumulateFuncSet(rtn, funcSet);
-    }
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    if (OrderedHandle<CellFilterStub>(rqc.domain()) != d) continue;
+    Expr e = i->second;
+    e.ptr()->accumulateFuncSet(rtn, funcSet);
+  }
   return rtn;
 }
 
 
-bool SumOfIntegrals::integralHasTestFunctions(int d) const 
+bool SumOfIntegrals::integralHasTestFunctions(const OrderedHandle<CellFilterStub>& d) const 
 {
-  for (unsigned int t=0; t<expr_[d].size(); t++)
-    { 
-      if (expr_[d][t].ptr()->hasTestFunctions()) return true;
-    }
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    if (OrderedHandle<CellFilterStub>(rqc.domain()) != d) continue;
+    Expr e = i->second;
+    if (e.hasTestFunctions()) return true;
+  }
   return false;
 }
 
@@ -175,13 +147,16 @@ bool SumOfIntegrals::integralHasTestFunctions(int d) const
 
 RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
 {
-  for (unsigned int d=0; d<regions_.size(); d++)
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    if (!rqc.domain()->isNullRegion())
     {
-      if (!regions_[d].ptr()->isNullRegion())
-        {
-          return regions_[d].ptr()->makeNullRegion();
-        }
+      return rqc.domain()->makeNullRegion();
     }
+  }
+  
   TEST_FOR_EXCEPTION(true, RuntimeError,
                      "SumOfIntegrals::nullRegion() called on a sum "
                      "of integrals with no non-null regions");
@@ -191,36 +166,33 @@ RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
 
 bool SumOfIntegrals::isIndependentOf(const Expr& u) const
 {
-  for (unsigned int d=0; d<expr_.size(); d++)
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
-    for (unsigned int t=0; t<expr_[d].size(); t++)
-    {
-      if (!expr_[d][t].isIndependentOf(u)) return false;
-    }
+    Expr e = i->second;
+    if (!e.isIndependentOf(u)) return false;
   }
   return true;
 }
 
 bool SumOfIntegrals::isLinearForm(const Expr& u) const
 {
-  for (unsigned int d=0; d<expr_.size(); d++)
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
-    for (unsigned int t=0; t<expr_[d].size(); t++)
-    {
-      if (!expr_[d][t].isLinearForm(u)) return false;
-    }
+    Expr e = i->second;
+    if (!e.isLinearForm(u)) return false;
   }
   return true;
 }
 
 bool SumOfIntegrals::isQuadraticForm(const Expr& u) const
 {
-  for (unsigned int d=0; d<expr_.size(); d++)
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
-    for (unsigned int t=0; t<expr_[d].size(); t++)
-    {
-      if (!expr_[d][t].isQuadraticForm(u)) return false;
-    }
+    Expr e = i->second;
+    if (!e.isQuadraticForm(u)) return false;
   }
   return true;
 }
@@ -228,12 +200,11 @@ bool SumOfIntegrals::isQuadraticForm(const Expr& u) const
 
 bool SumOfIntegrals::everyTermHasTestFunctions() const
 {
-  for (unsigned int d=0; d<expr_.size(); d++)
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
-    for (unsigned int t=0; t<expr_[d].size(); t++)
-    {
-      if (!expr_[d][t].everyTermHasTestFunctions()) return false;
-    }
+    Expr e = i->second;
+    if (!e.everyTermHasTestFunctions()) return false;
   }
   return true;
 }
@@ -241,24 +212,22 @@ bool SumOfIntegrals::everyTermHasTestFunctions() const
 
 bool SumOfIntegrals::isLinearInTests() const
 {
-  for (unsigned int d=0; d<expr_.size(); d++)
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
-    for (unsigned int t=0; t<expr_[d].size(); t++)
-    {
-      if (!expr_[d][t].isLinearInTests()) return false;
-    }
+    Expr e = i->second;
+    if (!e.isLinearInTests()) return false;
   }
   return true;
 }
 
 bool SumOfIntegrals::hasTestFunctions() const
 {
-  for (unsigned int d=0; d<expr_.size(); d++)
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
-    for (unsigned int t=0; t<expr_[d].size(); t++)
-    {
-      if (expr_[d][t].hasTestFunctions()) return true;
-    }
+    Expr e = i->second;
+    if (e.hasTestFunctions()) return true;
   }
   return false;
 }
@@ -268,18 +237,16 @@ bool SumOfIntegrals::hasTestFunctions() const
 ostream& SumOfIntegrals::toText(ostream& os, bool paren) const
 {
   os << "Sum of Integrals[" << endl;
-  for (unsigned int d=0; d<regions_.size(); d++)
-    {
-      for (unsigned int t=0; t<quad_[d].size(); t++)
-        { 
-          os << "Integral[" << endl;
-          os << regions_[d].ptr()->toXML() << endl;
-          os << "quad rule: " << quad_[d][t].ptr()->toXML() << endl;
-          os << "expr: " << expr_[d][t].toString() << endl;
-          os << "]" << endl;
-        }
-
-    }
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    Expr e = i->second;
+    os << "Integral[" << endl;
+    os << "rqc=" << rqc.toString() << endl;
+    os << "expr=" << e.toString() << endl;
+    os << "]" << endl;
+  }
   os << "]" << endl;
 
   return os;
@@ -295,16 +262,18 @@ ostream& SumOfIntegrals::toLatex(ostream& os, bool paren) const
 XMLObject SumOfIntegrals::toXML() const 
 {
   XMLObject rtn("SumOfIntegrals");
-  for (unsigned int d=0; d<regions_.size(); d++)
-    {
-      XMLObject child("Integral");
-      rtn.addChild(child);
-      for (unsigned int t=0; t<quad_[d].size(); t++)
-        {
-          child.addChild(quad_[d][t].ptr()->toXML());
-          child.addChild(expr_[d][t].toXML());
-        }
-    }
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    Expr e = i->second;
+    XMLObject child("Integral");
+    rtn.addChild(child);
+    child.addChild(rqc.quad()->toXML());
+    child.addChild(rqc.domain()->toXML());
+    child.addChild(rqc.watch().toXML());
+    child.addChild(e.toXML());
+  }
 
   return rtn;
 }
@@ -315,26 +284,18 @@ bool SumOfIntegrals::lessThan(const ScalarExpr* other) const
   const SumOfIntegrals* f = dynamic_cast<const SumOfIntegrals*>(other);
   TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
   
-  if (regions_.size() < f->regions_.size()) return true;
-  if (regions_.size() > f->regions_.size()) return false;
+  return rqcToExprMap_ < f->rqcToExprMap_;
+}
 
-  for (unsigned int i=0; i<regions_.size(); i++)
-    {
-      if (regions_[i] < f->regions_[i]) return true;
-      if (f->regions_[i] < regions_[i]) return false;
-
-      if (quad_[i] < f->quad_[i]) return true;
-      if (f->quad_[i] < quad_[i]) return false;
-
-      if (expr_[i].size() < f->expr_[i].size()) return true;
-      if (expr_[i].size() > f->expr_[i].size()) return false;
-
-      for (unsigned int j=0; j<expr_[i].size(); j++)
-        {
-          if (expr_[i][j].lessThan(f->expr_[i][j])) return true;
-          if (f->expr_[i][j].lessThan(expr_[i][j])) return false;
-        }
-    }
-  
+bool SumOfIntegrals::hasWatchedTerm() const 
+{
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    if (rqc.watch().isActive()) return true;
+  }
   return false;
 }
+
+

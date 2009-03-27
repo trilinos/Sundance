@@ -48,7 +48,6 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-      EquationSet::classVerbosity() = VerbExtreme;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -98,7 +97,7 @@ int main(int argc, char** argv)
       Expr bc;
 
       /* We can now set up the nonlinear problem! */
-      GrouperBase::classVerbosity() = VerbExtreme;
+
       NonlinearOperator<double> F 
         = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
 

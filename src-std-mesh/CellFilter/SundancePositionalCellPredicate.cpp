@@ -67,7 +67,7 @@ void PositionalCellPredicate::testBatch(const Array<int>& cellLID,
       for (unsigned int c=0; c<cellLID.size(); c++)
         {
           results[c] = true;
-          for (unsigned int f=0; f<nf; f++)
+          for (int f=0; f<nf; f++)
             {
               int fLID = facetLIDs[c*nf + f];
               if ((*func_)(mesh().nodePosition(fLID)) == false)

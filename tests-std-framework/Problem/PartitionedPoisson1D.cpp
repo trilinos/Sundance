@@ -93,8 +93,6 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
 
       /* We can now set up the linear problem! */
-      Assembler::classVerbosity() = VerbExtreme;
-      //DOFMapBase::classVerbosity() = VerbExtreme;
       ParameterList vp = *LinearProblem::defaultVerbParams();
       LinearProblem prob(mesh, eqn, bc, v, u, vecType, vp, true); 
 

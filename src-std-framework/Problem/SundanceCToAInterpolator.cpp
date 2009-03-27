@@ -97,8 +97,6 @@ void CToAInterpolator::updateField(const Expr& field)
 
   const Array<int>& dofs0 = dofs[0];
 
-  const Mesh& mesh = locator_.mesh();
-  int dum;
   for (unsigned int c=0; c<cellLID.size(); c++)
     {
       for (int n=0; n<nFacets_; n++)

@@ -43,7 +43,6 @@ int main(int argc, char** argv)
   try
 		{
       Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();

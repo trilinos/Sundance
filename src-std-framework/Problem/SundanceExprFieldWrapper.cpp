@@ -98,7 +98,6 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
       TEST_FOR_EXCEPTION(expr.size() != 1, RuntimeError,
                          "non-scalar expr given to ExprFieldWrapper ctor");
     }
-
 }
 
 

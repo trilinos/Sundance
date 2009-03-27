@@ -146,7 +146,7 @@ std::ostream& LocalDOFMap::print(std::ostream& os) const
       const Array<Array<int> >& dofs = localDOFs(b);
       int nChunks = mapStruct(b)->numBasisChunks();
       
-      for (int c=0; c<cellLID_->size(); c++)
+      for (unsigned int c=0; c<cellLID_->size(); c++)
       {
         Tabs tab2;
         os << tab2 << "cell LID=" << (*cellLID_)[c] << endl;

@@ -43,7 +43,6 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
   try
   {
     Sundance::init(&argc, &argv);
-    int np = MPIComm::world().getNProc();
 
     /* We will do our linear algebra using Epetra */
     VectorType<double> vecType = new EpetraVectorType();

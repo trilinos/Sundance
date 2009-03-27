@@ -57,12 +57,7 @@ static Time& batchedFacetGrabTimer()
 }
 
 
-static Time& cofacetGrabTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("cofacet grabbing"); 
-  return *rtn;
-}
+
 
 static Time& getJacobianTimer() 
 {

@@ -138,17 +138,11 @@ int main(int argc, char** argv)
       MPIComm::world().synchronize();
 
 
-#ifdef LOUD
-      GrouperBase::classVerbosity() = VerbExtreme;
-      Evaluator::classVerbosity() = VerbExtreme;
-#endif
       Expr I5 = Integral(interior, 1.0, quad4);
       double f5 = evaluateIntegral(mesh, I5);
       cout << "integral of 1.0 = " << f5 << endl;
       double I5Exact = 1.0;
       cout << "exact: " << I5Exact << endl;
-      GrouperBase::classVerbosity() = VerbSilent;
-      Evaluator::classVerbosity() = VerbSilent;
 
       error = max(error, fabs(f5 - I5Exact));
       cout << "error = " << fabs(f5 - I5Exact) << endl;

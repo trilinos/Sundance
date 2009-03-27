@@ -398,13 +398,15 @@ DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
     }
   
   /* eliminate overlap between cell filters */
-  SundanceUtils::Map<Set<int>, Set<CellFilter> > rtn;
-  for (SundanceUtils::Map<Set<int>, Set<CellFilter> >::const_iterator 
+  
+  SundanceUtils::Map<Set<int>, Set<CellFilter> > rtn=tmp;
+  /*
+    for (SundanceUtils::Map<Set<int>, Set<CellFilter> >::const_iterator 
          i=tmp.begin(); i!=tmp.end(); i++)
     {
       rtn.put(i->first, reduceCellFilters(mesh, i->second));
     }
-
+  */
   return rtn;
 }
 
@@ -511,7 +513,7 @@ CellFilter DOFMapBuilder::getMaxCellFilter(const Array<Set<CellFilter> >& filter
       if (0 != dynamic_cast<const MaximalCellFilter*>(cf.ptr().get()))
         return cf;
     }
-  TEST_FOR_EXCEPT(true);
+//  TEST_FOR_EXCEPT(true);
   return new MaximalCellFilter();
 }
 
@@ -538,8 +540,9 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
               CellFilter cf = j->ptr();
               s.put(cf);
             }
-          Set<CellFilter> reducedS = reduceCellFilters(mesh(), s);
-          rtn[b].append(reducedS);
+          //         Set<CellFilter> reducedS = reduceCellFilters(mesh(), s);
+//          rtn[b].append(reducedS);
+          rtn[b].append(s);
         }
     }
   return rtn;
@@ -566,8 +569,9 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
               CellFilter cf = j->ptr();
               s.put(cf);
             }
-          Set<CellFilter> reducedS = reduceCellFilters(mesh(), s);
-          rtn[b].append(reducedS);
+//          Set<CellFilter> reducedS = reduceCellFilters(mesh(), s);
+//          rtn[b].append(reducedS);
+          rtn[b].append(s);
         }
     }
   return rtn;
@@ -624,9 +628,15 @@ Set<CellFilter> DOFMapBuilder
       if (f.dimension(mesh) != mesh.spatialDim()) continue;
       myMaxFilters = myMaxFilters + f;
     }
-  CellSet allMax = m.getCells(mesh);
-  CellSet myMax = myMaxFilters.getCells(mesh);
 
+  CellSet myMax = myMaxFilters.getCells(mesh);
+//  if (myMax.size() == mesh.numCells(mesh.spatialDim()))
+//  {
+//    rtn.put(m);
+//    return rtn;
+//  }
+
+  CellSet allMax = m.getCells(mesh);
   CellSet diff = allMax.setDifference(myMax);
   /* if the difference between the collected max cell set and the known
    * set of all max cells is empty, then we're done */

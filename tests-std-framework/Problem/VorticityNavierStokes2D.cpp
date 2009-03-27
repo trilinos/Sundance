@@ -51,9 +51,6 @@ int main(int argc, char** argv)
       GlobalMPISession session(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
-      //      DOFMapBase::classVerbosity() = VerbExtreme;
-      //      Assembler::classVerbosity() = VerbExtreme;
-
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
 
@@ -148,6 +145,8 @@ int main(int argc, char** argv)
           cerr << "--------------------------------------------------------- " << endl;
           // Solve the nonlinear system
           NOX::StatusTest::StatusType status = solver.solve();
+          TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+            runtime_error, "solve failed");
 
           /* Write the field in VTK format */
           FieldWriter w = new VTKWriter("vns-r" + Teuchos::toString(Re));
@@ -163,7 +162,7 @@ int main(int argc, char** argv)
       Expr totalVorticityExpr = Integral(interior, u0[1], quad2);
       double totalVorticity = evaluateIntegral(mesh, totalVorticityExpr);
       cerr << "total vorticity = " << totalVorticity << endl;
-      cerr << "number of assemble calls: " << Assembler::numAssembleCalls() << endl;
+
       double tol = 1.0e-4;
       Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
       TimeMonitor::summarize();

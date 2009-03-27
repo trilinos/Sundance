@@ -35,6 +35,7 @@
 #include "SundanceElementIntegral.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceMultipleDeriv.hpp"
+#include "SundanceIntegrationCellSpecifier.hpp"
 
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -50,26 +51,6 @@ namespace Internal
 {
   
 
-/** */
-enum IntegrationCellSpecifier {NoTermsNeedCofacets, AllTermsNeedCofacets, SomeTermsNeedCofacets};
-
-/** */
-inline std::ostream& operator<<(
-  std::ostream& os, const IntegrationCellSpecifier& s)
-{
-  switch(s)
-  {
-    case NoTermsNeedCofacets:
-      os << "[No terms need cofacets]";
-      break;
-    case AllTermsNeedCofacets:
-      os << "[All terms need cofacets]";
-      break;
-    default:
-      os << "[Some terms need cofacets]";
-  }
-  return os;
-}
 
 /** 
  *

@@ -11,6 +11,7 @@ SET(SerialTests
         PoissonOnDisk 
         BesselTest2D 
         Coupled2D
+        FOSLSMagnetostatics2D
         Kepler 
         Stokes2D 
         LinearPartialDomain 

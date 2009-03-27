@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceLocalDOFMap.hpp"
-#include "SundanceAssembler.hpp"
+#include "SundanceIntegrationCellSpecifier.hpp"
 
 namespace SundanceStdFwk
 {
@@ -46,6 +46,8 @@ using namespace SundanceCore::Internal;
 namespace Internal
 {
 using namespace Teuchos;
+class DOFMapBase;
+class StdFwkEvalMediator;
 
 
 /**

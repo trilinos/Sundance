@@ -28,56 +28,54 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SUMOFBCS_H
-#define SUNDANCE_SUMOFBCS_H
+#ifndef SUNDANCE_WATCHFLAG_H
+#define SUNDANCE_WATCHFLAG_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSumOfIntegrals.hpp"
+#include "SundanceMap.hpp"
+#include "Teuchos_XMLObject.hpp"
+#include <string>
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceCore
+namespace SundanceUtils
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace Internal;
-  using std::string;
-
-  namespace Internal
+  /** 
+   * WatchFlag
+   */
+  class WatchFlag
     {
-      /** 
-       * SumOfBCs represents a sum of essential
-       * boundary conditions in integral form
-       */
-      class SumOfBCs : public SumOfIntegrals
+    public:
+      /** */
+      WatchFlag(const std::string& name="");
+
+      /** */
+      const std::string& name() const {return name_;}
+
+      /** */
+      void activate() ;
+
+      /** */
+      void deactivate() ;
+
+      /** */
+      bool isActive() const ;
+
+      /** */
+      bool operator<(const WatchFlag& other) const
+        {return name() < other.name();}
+
+      /** */
+      XMLObject toXML() const ;
+
+    private:
+      std::string name_;
+
+      static Map<std::string, bool>& isActiveMap()
         {
-        public:
-          /** Construct given an integral over a single region */
-          SumOfBCs(const RefCountPtr<CellFilterStub>& region,
-            const Expr& expr,
-            const RefCountPtr<QuadratureFamilyStub>& quad,
-            const WatchFlag& watch);
+          static Map<std::string, bool> rtn;
+          return rtn;
+        }
 
-          /** */
-          virtual ~SumOfBCs(){;}
-
-          /** Write a simple text description suitable 
-           * for output to a terminal */
-          virtual ostream& toText(ostream& os, bool paren) const ;
-
-          /** Write in a form suitable for LaTeX formatting */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
-
-          /** Write in XML */
-          virtual XMLObject toXML() const ;
-
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
-
-        private:
-        };
-    }
+    };
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

@@ -149,10 +149,6 @@ int main(int argc, char** argv)
       Expr h = new CellDiameterExpr();
       Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln)/h, quad4);
 
-      Assembler::defaultVerbParams()->set<int>("global", 2);
-      Assembler::defaultVerbParams()->set<int>("evaluation", 4);
-      Assembler::defaultVerbParams()->set<int>("assembly loop", 2);
-      
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
@@ -229,8 +225,7 @@ int main(int argc, char** argv)
       double derivErrorSq = derivErrInt.evaluate();
       cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
-      Assembler::defaultVerbParams()->set<int>("global", 2);
-      Assembler::defaultVerbParams()->set<int>("assembly loop", 2);
+
       double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
       cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
 

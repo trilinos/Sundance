@@ -58,6 +58,7 @@ static Time& lpCtorTimer()
   return *rtn;
 }
 
+
 LinearProblem::LinearProblem() 
   : assembler_(),
     A_(),
@@ -65,6 +66,7 @@ LinearProblem::LinearProblem()
 {
   TimeMonitor timer(lpCtorTimer());
 }
+
 
 
 LinearProblem::LinearProblem(const Mesh& mesh, 
@@ -301,6 +303,28 @@ LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler,
     }
 }
 
+/* Return the map from cells and functions to row indices */
+const RefCountPtr<DOFMapBase>& LinearProblem::rowMap(int blockRow) const 
+{return assembler_->rowMap()[blockRow];}
+    
+/* Return the map from cells and functions to column indices */
+const RefCountPtr<DOFMapBase>& LinearProblem::colMap(int blockCol) const 
+{return assembler_->colMap()[blockCol];}
+
+/* Return the discrete space in which solutions live */
+const Array<RefCountPtr<DiscreteSpace> >& LinearProblem::solnSpace() const 
+{return assembler_->solutionSpace();}
+    
+/* Return the set of row indices marked as 
+ * essential boundary conditions */
+const RefCountPtr<Set<int> >& LinearProblem::bcRows(int blockRow) const 
+{return assembler_->bcRows()[blockRow];}
+
+/* Return the number of block rows in the problem  */
+int LinearProblem::numBlockRows() const {return assembler_->rowMap().size();}
+
+/* Return the number of block cols in the problem  */
+int LinearProblem::numBlockCols() const {return assembler_->colMap().size();}
 
 TSFExtended::Vector<double> LinearProblem::getRHS() const 
 {
@@ -460,4 +484,27 @@ void LinearProblem::handleSolveFailure() const
                      RuntimeError, TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss));
 
   cerr << TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss) << endl;
+}
+
+
+Vector<double> 
+LinearProblem::convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
+  const Array<Vector<double> >& bcBlock) const 
+{return assembler_->convertToMonolithicVector(internalBlock, bcBlock);}
+
+
+RefCountPtr<ParameterList> LinearProblem::defaultVerbParams()
+{
+  static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Linear Problem"));
+  static int first = true;
+  if (first)
+  {
+    rtn->setName("Linear Problem");
+    rtn->set<int>("global", 0);
+    rtn->set<int>("assembly", 0);
+    rtn->set<int>("solve control", 0);
+    rtn->set("Assembler", *Assembler::defaultVerbParams());
+    first = false;
+  }
+  return rtn;
 }

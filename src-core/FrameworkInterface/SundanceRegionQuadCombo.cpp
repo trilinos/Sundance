@@ -39,18 +39,20 @@ using namespace Teuchos;
 
 
 RegionQuadCombo::RegionQuadCombo()
-  : id_(-1), domain_(), quad_()
+  : id_(-1), domain_(), quad_(), watch_()
 {;}
 
 RegionQuadCombo::RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
-                       const RefCountPtr<QuadratureFamilyStub>& quad)
-  : id_(getID(domain, quad)), domain_(domain), quad_(quad)
+  const RefCountPtr<QuadratureFamilyStub>& quad,
+  const WatchFlag& watch)
+  : id_(getID(domain, quad,watch)), domain_(domain), quad_(quad), watch_(watch)
 {;}
 
 int RegionQuadCombo::getID(const RefCountPtr<CellFilterStub>& domain,
-                      const RefCountPtr<QuadratureFamilyStub>& quad)
+  const RefCountPtr<QuadratureFamilyStub>& quad,
+  const WatchFlag& watch)
 {
-  RegPair p(domain, quad);
+  RegTriple p(domain, quad, watch);
 
   if (!domainAndQuadToIDMap().containsKey(p))
     {
@@ -69,13 +71,14 @@ string RegionQuadCombo::toString() const
   {
     oss << tabs << "cell filter=" << domain_->description() << std::endl;
     oss << tabs << "quadrature rule=" << quad_->description() << std::endl;
+    oss << tabs << "watchpoint=[" << watch().name() << "]" << std::endl;
   }
   return oss.str();
 }
 
-SundanceUtils::Map<RegPair, int>& RegionQuadCombo::domainAndQuadToIDMap()
+SundanceUtils::Map<RegTriple, int>& RegionQuadCombo::domainAndQuadToIDMap()
 {
-  static SundanceUtils::Map<RegPair, int> rtn = SundanceUtils::Map<RegPair, int>();
+  static SundanceUtils::Map<RegTriple, int> rtn = SundanceUtils::Map<RegTriple, int>();
   return rtn;
 }
 

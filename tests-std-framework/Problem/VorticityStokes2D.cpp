@@ -60,7 +60,7 @@ int main(int argc, char** argv)
       int ny = 32;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
-                                                         0.0, 1.0, nx, 1,
+                                                         0.0, 1.0, ny, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 

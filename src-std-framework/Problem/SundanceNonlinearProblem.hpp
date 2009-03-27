@@ -34,7 +34,6 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceExpr.hpp"
-#include "SundanceAssembler.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "TSFNonlinearOperatorBase.hpp"
@@ -50,6 +49,10 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
   using namespace Teuchos;
+namespace Internal
+{
+class Assembler;
+}
 
     /** 
      * NonlinearProblem encapsulates a discrete nonlinear problem, and can

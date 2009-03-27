@@ -79,8 +79,6 @@ int main(int argc, char** argv)
   try
 		{
       Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
-      int precision = 3;    // precision when printing vectors
       double epsilon = 2.0;   
 
       /* We will do our linear algebra using Epetra */

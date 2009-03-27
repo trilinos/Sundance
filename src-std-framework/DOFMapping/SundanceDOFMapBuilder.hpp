@@ -186,6 +186,7 @@ private:
   Array<RefCountPtr<Array<int> > > isBCCol_;
 
   Array<RefCountPtr<std::set<int> > > remoteBCCols_;
+
 };
 }
 }

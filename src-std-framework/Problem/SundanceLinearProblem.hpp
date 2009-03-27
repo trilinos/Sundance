@@ -35,7 +35,6 @@
 #include "SundanceMesh.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceBlock.hpp"
-#include "SundanceAssembler.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "TSFLinearOperator.hpp"
@@ -51,6 +50,11 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore::Internal;
   using namespace Teuchos;
+
+namespace Internal
+{
+class Assembler;
+}
 
   /** 
    * LinearProblem encapsulates all information needed to form
@@ -115,27 +119,24 @@ namespace SundanceStdFwk
     LinearOperator<double> getOperator() const ;
 
     /** Return the map from cells and functions to row indices */
-    const RefCountPtr<DOFMapBase>& rowMap(int blockRow) const 
-    {return assembler_->rowMap()[blockRow];}
+    const RefCountPtr<DOFMapBase>& rowMap(int blockRow) const ;
     
     /** Return the map from cells and functions to column indices */
-    const RefCountPtr<DOFMapBase>& colMap(int blockCol) const 
-    {return assembler_->colMap()[blockCol];}
+    const RefCountPtr<DOFMapBase>& colMap(int blockCol) const ;
 
     /** Return the discrete space in which solutions live */
-    const Array<RefCountPtr<DiscreteSpace> >& solnSpace() const 
-      {return assembler_->solutionSpace();}
+    const Array<RefCountPtr<DiscreteSpace> >& solnSpace() const ;
+
     
     /** Return the set of row indices marked as 
      * essential boundary conditions */
-    const RefCountPtr<Set<int> >& bcRows(int blockRow) const 
-    {return assembler_->bcRows()[blockRow];}
+    const RefCountPtr<Set<int> >& bcRows(int blockRow) const ;
 
     /** Return the number of block rows in the problem  */
-    int numBlockRows() const {return assembler_->rowMap().size();}
+    int numBlockRows() const ;
 
     /** Return the number of block cols in the problem  */
-    int numBlockCols() const {return assembler_->colMap().size();}
+    int numBlockCols() const ;
 
     /** Form a solution expression out of a vector obtained from a linear
      * solver */
@@ -145,8 +146,7 @@ namespace SundanceStdFwk
      * monolithic vector */
     Vector<double> 
     convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
-      const Array<Vector<double> >& bcBlock) const 
-      {return assembler_->convertToMonolithicVector(internalBlock, bcBlock);}
+      const Array<Vector<double> >& bcBlock) const ;
 
     /** Flag indicating whether to stop on a solve failure */
     static bool& stopOnSolveFailure() {static bool rtn = false; return rtn;}
@@ -165,21 +165,7 @@ namespace SundanceStdFwk
 
     
     /** */
-    static RefCountPtr<ParameterList> defaultVerbParams()
-      {
-        static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Linear Problem"));
-        static int first = true;
-        if (first)
-        {
-          rtn->setName("Linear Problem");
-          rtn->set<int>("global", 0);
-          rtn->set<int>("assembly", 0);
-          rtn->set<int>("solve control", 0);
-          rtn->set("Assembler", *Assembler::defaultVerbParams());
-          first = false;
-        }
-        return rtn;
-      }
+    static RefCountPtr<ParameterList> defaultVerbParams();
 
 
   private:

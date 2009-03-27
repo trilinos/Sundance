@@ -48,12 +48,6 @@ MeshBase::MeshBase(int dim, const MPIComm& comm)
 
 
 
-static Time& facetGrabTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("unbatched facet grabbing"); 
-  return *rtn;
-}
 
 Point MeshBase::centroid(int cellDim, int cellLID) const
 {
@@ -117,8 +111,6 @@ void MeshBase::getFacetArray(int cellDim, int cellLID, int facetDim,
                              Array<int>& facetLIDs,
                              Array<int>& facetOrientations) const
 {
-  // TimeMonitor timer(facetGrabTimer());
-
   int nf = numFacets(cellDim, cellLID, facetDim);
   facetLIDs.resize(nf);
   facetOrientations.resize(nf);

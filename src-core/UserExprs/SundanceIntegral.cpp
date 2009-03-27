@@ -40,17 +40,19 @@ using namespace TSFExtended;
 using namespace SundanceCore::Internal;
 
 Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
-              const Expr& integrand)
+  const Expr& integrand,
+  const WatchFlag& watch)
 {
   RefCountPtr<QuadratureFamilyStub> quad 
     = QuadratureFamilyStub::defaultQuadrature(); 
 
-  return new SumOfIntegrals(domain.ptr(), Re(integrand), quad);
+  return new SumOfIntegrals(domain.ptr(), Re(integrand), quad, watch);
 }
 
 Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
-                        const Expr& integrand,
-                        const Handle<QuadratureFamilyStub>& quad)
+  const Expr& integrand,
+  const Handle<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch)
 {
-  return new SumOfIntegrals(domain.ptr(), Re(integrand), quad.ptr());
+  return new SumOfIntegrals(domain.ptr(), Re(integrand), quad.ptr(),watch);
 }

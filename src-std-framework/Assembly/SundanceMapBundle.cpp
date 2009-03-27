@@ -31,6 +31,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceMapBundle.hpp"
+#include "SundanceAssembler.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

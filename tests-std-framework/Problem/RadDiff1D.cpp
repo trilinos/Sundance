@@ -102,6 +102,9 @@ int main(int argc, char** argv)
 
       // Solve the nonlinear system
       NOX::StatusTest::StatusType status = solver.solve();
+      TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+        runtime_error, "solve failed");
+
 
       /* check solution */
       Expr exactSoln = pow(15.0*x + 1.0, 0.25);

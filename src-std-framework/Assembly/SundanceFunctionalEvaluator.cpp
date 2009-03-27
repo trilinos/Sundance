@@ -30,6 +30,7 @@
 
 #include "SundanceFunctionalEvaluator.hpp"
 #include "SundanceEquationSet.hpp"
+#include "SundanceAssembler.hpp"
 #include "SundanceSymbPreprocessor.hpp"
 #include "TSFSequentialIteratorImpl.hpp"
 #include "SundanceOut.hpp"
@@ -243,9 +244,9 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
       if (showAll)
       {
         os << "i " << globalIndex << " x_i=" << tmp 
-             << " f(x)=" << f0 
-             << " f(x+h)=" << fPlus 
-             << " f(x-h)=" << fMinus << endl;
+           << " f(x)=" << f0 
+           << " f(x+h)=" << fPlus 
+           << " f(x-h)=" << fMinus << endl;
       }
       x.setElement(globalIndex, tmp);
       localIndex++;
@@ -269,8 +270,8 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
     {
       os << "i " << i;
       os << " FD=" << df_dx[k] 
-           << " grad=" << gf[i]
-           << " r=" << r << endl;
+         << " grad=" << gf[i]
+         << " r=" << r << endl;
     }
     if (localMaxErr < r) localMaxErr = r;
   }
@@ -282,4 +283,20 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   os << tabs << "fd check: max error = " << maxErr << endl;
 
   return maxErr;
+}
+
+
+
+RefCountPtr<ParameterList> FunctionalEvaluator::defaultVerbParams()
+{
+  static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Functional Evaluator"));
+  static int first = true;
+  if (first)
+  {
+    rtn->set<int>("global", 0);
+    rtn->set<int>("assembly", 0);
+    rtn->set("Assembler", *Assembler::defaultVerbParams());
+    first = false;
+  }
+  return rtn;
 }

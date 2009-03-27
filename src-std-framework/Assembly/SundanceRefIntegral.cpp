@@ -90,7 +90,6 @@ RefIntegral::RefIntegral(int spatialDim,
   quad.getPoints(cellType, quadPts, quadWeights);  
 
   for (unsigned int q=0; q<quadWeights.size(); q++) W_[0][0] += quadWeights[q];
-  std::cerr << "master cell volume=" << W_[0][0] << std::endl;
 }
 
 RefIntegral::RefIntegral(int spatialDim,

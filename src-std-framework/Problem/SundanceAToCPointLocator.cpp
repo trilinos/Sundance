@@ -46,12 +46,7 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 
-static Time& pointLocationTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("point location"); 
-  return *rtn;
-}
+
 
 static Time& pointLocatorCtorTimer() 
 {

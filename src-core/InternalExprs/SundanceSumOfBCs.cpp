@@ -37,11 +37,13 @@ using namespace SundanceUtils;
 using namespace SundanceCore::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
+using std::endl;
 
 SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterStub>& region,
-                   const Expr& expr,
-                   const RefCountPtr<QuadratureFamilyStub>& quad)
-  : SumOfIntegrals(region, expr, quad)
+  const Expr& expr,
+  const RefCountPtr<QuadratureFamilyStub>& quad,
+  const WatchFlag& watch)
+  : SumOfIntegrals(region, expr, quad, watch)
 {;}
 
 
@@ -50,19 +52,18 @@ SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterStub>& region,
 
 ostream& SumOfBCs::toText(ostream& os, bool paren) const
 {
-  os << "Sum of BCs[" << std::endl;
-  for (int d=0; d<numRegions(); d++)
-    {
-      for (int t=0; t<numTerms(d); t++)
-        {
-          os << "BC[" << std::endl;
-          os << region(d)->toXML() << std::endl;
-          os << "quad rule: " << quad(d,t)->toXML() << std::endl;
-          os << "expr: " << expr(d,t).toString() << std::endl;
-          os << "]" << std::endl;
-        }
-    }
-  os << "]" << std::endl;
+  os << "Sum of BCs[" << endl;
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap().begin(); i!=rqcToExprMap().end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    Expr e = i->second;
+    os << "Integral[" << endl;
+    os << "rqc=" << rqc.toString() << endl;
+    os << "expr=" << e.toString() << endl;
+    os << "]" << endl;
+  }
+  os << "]" << endl;
 
   return os;
 }
@@ -70,24 +71,24 @@ ostream& SumOfBCs::toText(ostream& os, bool paren) const
 ostream& SumOfBCs::toLatex(ostream& os, bool paren) const
 {
   TEST_FOR_EXCEPTION(true, InternalError, 
-                     "SumOfIntegrals::toLatex is undefined");
+                     "SumOfBCs::toLatex is undefined");
   return os;
 }
 
 XMLObject SumOfBCs::toXML() const 
 {
   XMLObject rtn("SumOfBCs");
-  for (int d=0; d<numRegions(); d++)
-    {
-      rtn.addChild(region(d)->toXML());
-      XMLObject child("BC");
-      rtn.addChild(child);
-      for (int t=0; t<numTerms(d); t++)
-        {
-          child.addChild(quad(d,t)->toXML());
-          child.addChild(expr(d,t).toXML());
-        }
-    }
-
+  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap().begin(); i!=rqcToExprMap().end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    Expr e = i->second;
+    XMLObject child("Integral");
+    rtn.addChild(child);
+    child.addChild(rqc.quad()->toXML());
+    child.addChild(rqc.domain()->toXML());
+    child.addChild(rqc.watch().toXML());
+    child.addChild(e.toXML());
+  }
   return rtn;
 }
