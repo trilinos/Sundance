@@ -66,7 +66,8 @@ $(top_srcdir)/src-utils/Utilities/SundanceSet.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceTabs.hpp \
 $(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.hpp \
-$(top_srcdir)/src-utils/Utilities/SundanceVersionString.hpp 
+$(top_srcdir)/src-utils/Utilities/SundanceVersionString.hpp \
+$(top_srcdir)/src-utils/Utilities/SundanceWatchFlag.hpp 
 
 SUNDANCE_UTILITIES = \
 $(top_srcdir)/src-utils/Utilities/SundanceADReal.cpp \
@@ -78,7 +79,8 @@ $(top_srcdir)/src-utils/Utilities/SundanceIntHashSet.cpp \
 $(top_srcdir)/src-utils/Utilities/SundancePoint.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceStdMathFunctors.cpp \
 $(top_srcdir)/src-utils/Utilities/SundanceTabs.cpp \
-$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp 
+$(top_srcdir)/src-utils/Utilities/SundanceUnaryFunctor.cpp \
+$(top_srcdir)/src-utils/Utilities/SundanceWatchFlag.cpp  
 
 
 

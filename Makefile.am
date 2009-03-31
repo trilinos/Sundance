@@ -193,12 +193,12 @@ install-data-hook:
 ## #######################################################################
 
 get-data-needed-for-tests:
-	mkdir -p $(abs_top_builddir)/etc/SolverParameters
-	mkdir -p $(abs_top_builddir)/examples-tutorial/meshes
-	mkdir -p $(abs_top_builddir)/examples-tutorial/data
-	cp $(top_srcdir)/etc/SolverParameters/*.xml $(abs_top_builddir)/etc/SolverParameters
-	cp $(top_srcdir)/etc/*.xml $(abs_top_builddir)/etc
-	cp $(top_srcdir)/examples-tutorial/data/*.* $(abs_top_builddir)/examples-tutorial/data
+	mkdir -p $(top_builddir)/etc/SolverParameters
+	mkdir -p $(top_builddir)/examples-tutorial/meshes
+	mkdir -p $(top_builddir)/examples-tutorial/data
+	cp $(top_srcdir)/etc/SolverParameters/*.xml $(top_builddir)/etc/SolverParameters
+	cp $(top_srcdir)/etc/*.xml $(top_builddir)/etc
+	cp $(top_srcdir)/examples-tutorial/data/*.* $(top_builddir)/examples-tutorial/data
 
 
 ## #######################################################################
