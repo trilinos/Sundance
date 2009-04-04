@@ -3,9 +3,6 @@
 INCLUDE(AddTestBatch)
 
 
-# inactivated tests: PoissonOnDisk Eikonal2D. 
-# These tests need mesh files; path much be updated.
-
 SET(SerialTests
         Poisson3D 
         PoissonOnDisk 
@@ -58,25 +55,15 @@ SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/etc/SolverParameters)
 
 ADD_TEST_BATCH(MPITests 
         COMM serial mpi
-        DATA_FILES 
-                   amesos.xml 
-                   anasazi-ml.xml 
-                   aztec-ifpack.xml 
-                   aztec-ml.xml 
-                   aztec-native.xml
-                   aztec.xml
-                   bicgstab.xml
-                   gmres.xml
-                   nox.xml            
-                   poissonParams.xml
-                   userPrecParams.xml
-        DATA_SOURCE_DIR ${SolverParamPath}
         )
 
 ADD_TEST_BATCH(SerialTests 
         COMM serial mpi
         NUM_MPI_PROCS 1
-        DATA_FILES 
+        )
+
+PACKAGE_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
+  DEST_FILES 
                    amesos.xml 
                    anasazi-ml.xml 
                    aztec-ifpack.xml 
@@ -88,11 +75,13 @@ ADD_TEST_BATCH(SerialTests
                    nox.xml            
                    poissonParams.xml
                    userPrecParams.xml
-        DATA_SOURCE_DIR ${SolverParamPath}
-        )
+  SOURCE_DIR ${SolverParamPath}
+  EXEDEPS ${MPITests} ${SerialTests}
+  )
 
 
-# Eikonal2D needs special handling
+
+# Eikonal2D needs special handling because of the fortran file
 
 PACKAGE_ADD_EXECUTABLE_AND_TEST(
     Eikonal2D
