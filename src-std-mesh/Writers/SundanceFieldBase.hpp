@@ -31,49 +31,76 @@
 #ifndef SUNDANCE_FIELDBASE_H
 #define SUNDANCE_FIELDBASE_H
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 #include "SundanceDefs.hpp"
 #include "TSFHandleable.hpp"
+#include "Teuchos_Array.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+#include "SundanceCellSet.hpp"
 
-namespace SundanceStdMesh
+
+
+namespace SundanceStdFwk
 {
-  namespace Internal
-  {
-    /**
-     *
-     */
-    class FieldBase : public TSFExtended::Handleable<FieldBase>
-    {
-    public:
-      /** */
-      FieldBase(){;}
-
-      /** virtual dtor */
-      virtual ~FieldBase(){;}
-
-      /** */
-      virtual int numElems() const {return 1;}
-
-      /** */
-      virtual double getData(int cellDim, int cellID, int elem) const = 0 ;
-
-      /** */
-      virtual bool isDefined(int cellDim, int cellID, int elem) const = 0 ;
-
-      /** */
-      virtual bool isPointData() const = 0 ;
-
-      /** */
-      virtual bool isCellData() const {return !isPointData();}
-
-    };
-  }
+class CellFilter;
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+namespace SundanceStdMesh
+{
+class Mesh;
+using SundanceStdFwk::CellFilter;
+
+namespace Internal
+{
+using SundanceUtils::Map;
+using Teuchos::Array;
+using Teuchos::RefCountPtr;
+/**
+ *
+ */
+class FieldBase : public TSFExtended::Handleable<FieldBase>
+{
+public:
+  /** */
+  FieldBase(){;}
+
+  /** virtual dtor */
+  virtual ~FieldBase(){;}
+
+  /** */
+  virtual int numElems() const {return 1;}
+
+  /** */
+  virtual double getData(int cellDim, int cellID, int elem) const = 0 ;
+
+  /** */
+  virtual bool isDefined(int cellDim, int cellID, int elem) const = 0 ;
+
+  /** */
+  virtual bool isPointData() const = 0 ;
+
+  /** */
+  virtual bool isCellData() const {return !isPointData();}
+
+  /** Get a batch of data. 
+   * \param batch Output array of data values. This is a 2D array packed
+   * into a 1D vector with function index as the faster running index.
+   */
+  virtual void getDataBatch(int cellDim, const Array<int>& cellID,
+    const Array<int>& funcElem, Array<double>& batch) const ;
+
+  /**
+   * Return the cell filter on which this field is defined 
+   */
+  virtual const CellFilter& domain() const ;
+
+};
+}
+using SundanceStdFwk::Internal::CellSet;
+using SundanceStdFwk::CellFilter;
+
+CellSet connectedNodeSet(const CellFilter& f, const Mesh& mesh);
+RefCountPtr<Array<int> > cellSetToLIDArray(const CellSet& cs);
+}
 
 #endif

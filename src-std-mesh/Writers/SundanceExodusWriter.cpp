@@ -31,10 +31,12 @@
 #include "SundanceExodusWriter.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceMaximalCellFilter.hpp"
+#include "SundanceCellFilter.hpp"
 #include "SundanceTabs.hpp"
 #include "Teuchos_XMLObject.hpp"
 
-#ifdef HAVE_EXODUS 
+#ifdef HAVE_SUNDANCE_EXODUS 
 #include "exodusII.h"
 #endif
 
@@ -42,6 +44,8 @@
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
+using namespace SundanceStdFwk;
+using namespace SundanceStdFwk::Internal;
 using namespace Teuchos;
 using namespace TSFExtended;
 using namespace std;
@@ -60,14 +64,33 @@ void ExodusWriter::write() const
   parFile = parFile + ".pxo";
 
   if (nProc() > 1) writeParallelInfo(parFile);
-#ifdef HAVE_EXODUS
+#ifdef HAVE_SUNDANCE_EXODUS
   int ws = 8;
   int exoid = ex_create(exoFile.c_str(), EX_CLOBBER, &ws, &ws);
 
   TEST_FOR_EXCEPTION(exoid < 0, RuntimeError, "failure to create file "
     << filename());
 
-  writeMesh(exoid);
+
+  Array<CellFilter> nsFilters;
+  Array<int> omniFuncs;
+  Array<RefCountPtr<Array<int> > > funcsForNodeset;
+  Array<RefCountPtr<Array<int> > > nodesForNodeset;
+  Array<int> nsID;
+  Array<int> nsNodesPerSet;
+  Array<int> nsNodePtr;
+  RefCountPtr<Array<int> > allNodes=rcp(new Array<int>());
+
+  
+  findNodeSets(nsFilters, omniFuncs, funcsForNodeset,
+    nodesForNodeset, nsID, nsNodesPerSet, nsNodePtr, allNodes);
+  
+  writeMesh(exoid, nsFilters, omniFuncs, funcsForNodeset,
+    nodesForNodeset, nsID, nsNodesPerSet, nsNodePtr, allNodes );
+  
+  writeFields(exoid, nsFilters, omniFuncs, funcsForNodeset,
+    nodesForNodeset, nsID);
+
 
   ex_close(exoid);
 #else
@@ -82,9 +105,17 @@ void ExodusWriter::offset(Array<int>& x) const
 }
 
 
-void ExodusWriter::writeMesh(int exoid) const
+void ExodusWriter::writeMesh(int exoid, 
+  const Array<CellFilter>& nodesetFilters,
+  const Array<int>& omnipresentFuncs,
+  const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
+  const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+  const Array<int>& nsID,
+  const Array<int>& nNodesPerSet,
+  const Array<int>& nsNodePtr,
+  const RefCountPtr<Array<int> >& allNodes) const
 {
-#ifdef HAVE_EXODUS
+#ifdef HAVE_SUNDANCE_EXODUS
 
   int ierr = 0;
 
@@ -94,20 +125,15 @@ void ExodusWriter::writeMesh(int exoid) const
   Array<int> ssLabels = mesh().getAllLabelsForDimension(dim-1).elements();
   int numSS = 0;
 
-  for (int ss=0; ss<ssLabels.size(); ss++) 
+  for (unsigned int ss=0; ss<ssLabels.size(); ss++) 
   {
     if (ssLabels[ss] != 0) numSS++;
   }
   
-  Array<int> nsLabels = mesh().getAllLabelsForDimension(0).elements();
-  int numNS = 0;
-
-  for (int ns=0; ns<nsLabels.size(); ns++) 
-  {
-    if (nsLabels[ns] != 0) numNS++;
-  }
+  int numNS = nsID.size();
 
   
+  /* initialize the output file */
   ierr = ex_put_init(
     exoid, 
     filename().c_str(), 
@@ -119,15 +145,8 @@ void ExodusWriter::writeMesh(int exoid) const
     numSS
     );
 
-  char* qa_record[1][4];
-  qa_record[0][0] = "Sundance";
-  qa_record[0][1] = "sundance";
-  qa_record[0][2] = "date";
-  qa_record[0][3] = "time";
 
-  ierr = ex_put_qa(exoid, 1, qa_record);
-  TEST_FOR_EXCEPT(ierr < 0);
-
+  /* write the vertices */
   int nPts = mesh().numCells(0);
   Array<double> x(nPts);
   Array<double> y(nPts);
@@ -154,18 +173,22 @@ void ExodusWriter::writeMesh(int exoid) const
 
   if (dim==2)
   {
-    char* coordNames[2];
-    coordNames[0] = "x";
-    coordNames[1] = "y";
-    ierr = ex_put_coord_names(exoid, coordNames);
+    Array<std::string> cn;
+    cn.append("x");
+    cn.append("y");
+    Array<const char*> pp;
+    getCharpp(cn, pp);
+    ierr = ex_put_coord_names(exoid,(char**) &(pp[0]));
   }
   else
   {
-    char* coordNames[3];
-    coordNames[0] = "x";
-    coordNames[1] = "y";
-    coordNames[2] = "z";
-    ierr = ex_put_coord_names(exoid, coordNames);
+    Array<std::string> cn;
+    cn.append("x");
+    cn.append("y");
+    cn.append("z");
+    Array<const char*> pp;
+    getCharpp(cn, pp);
+    ierr = ex_put_coord_names(exoid, (char**)&(pp[0]));
   }
 
   TEST_FOR_EXCEPT(ierr < 0);
@@ -226,30 +249,163 @@ void ExodusWriter::writeMesh(int exoid) const
 
   
   /* write the node sets */
+  Array<int> nsDistPerSet(nsID.size(), 0);
+  Array<int> nsDistPtr(nsID.size(), 0);
+  Array<int> emptyDist(1, 0);
 
-  for (unsigned int ns=0; ns<nsLabels.size(); ns++)
-  {
-    if (nsLabels[ns]==0) continue;
-    cout << "ns=" << ns << " label=" << nsLabels[ns] << endl;
-    Array<int> nodeLIDs;
-
-    mesh().getLIDsForLabel(0, nsLabels[ns], nodeLIDs);
-
-    int numNodes = nodeLIDs.size();
-    int numDists = 0;
-
-    offset(nodeLIDs);
-
-    ierr = ex_put_node_set_param(exoid, nsLabels[ns]+1, numNodes, numDists);
-    
-    ierr = ex_put_node_set(exoid, nsLabels[ns]+1, &(nodeLIDs[0]));
-  }
+  offset(*allNodes);
+  
+  ierr = ex_put_concat_node_sets( exoid,
+    (int*) &(nsID[0]),
+    (int*) &(nNodesPerSet[0]),
+    &(nsDistPerSet[0]),
+    (int*) &(nsNodePtr[0]),
+    &(nsDistPtr[0]),
+    &((*allNodes)[0]),
+    &(emptyDist[0]));
 
   TEST_FOR_EXCEPT(ierr < 0);
 #else
   TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
 #endif
 }
+
+
+void ExodusWriter::writeFields(int exoid, 
+  const Array<CellFilter>& nodesetFilters,
+  const Array<int>& omnipresentFuncs,
+  const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
+  const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+  const Array<int>& nsID) const 
+{
+
+#ifdef HAVE_SUNDANCE_EXODUS
+  int nNodalFuncs = omnipresentFuncs().size();
+  int nNodesetFuncs = pointScalarFields().size() - nNodalFuncs;
+  int nElemFuncs = cellScalarFields().size();
+  int nNodesets = funcsForNodeset.size();
+
+
+
+  Set<int> nsFuncSet;
+  Map<int, Array<int> > funcToNSMap;
+
+  for (int i=0; i<nNodesets; i++)
+  {
+    const Array<int>& f = *(funcsForNodeset[i]);
+    for (unsigned int j=0; j<f.size(); j++)
+    {
+      nsFuncSet.put(f[j]);
+      if (funcToNSMap.containsKey(f[j]))
+      {
+        funcToNSMap[f[j]].append(i);
+      }
+      else
+      {
+        funcToNSMap.put(f[j], tuple(i));
+      }
+    }
+  }
+  Array<int> nsFuncs = nsFuncSet.elements();
+  TEST_FOR_EXCEPT(nsFuncs.size() != (unsigned int) nNodesetFuncs);
+
+  Map<int, int > funcIDToNSFuncIndex;
+  for (int i=0; i<nNodesetFuncs; i++) funcIDToNSFuncIndex.put(nsFuncs[i],i);
+
+  Array<Array<int> > nsFuncNodesets(nsFuncs.size());
+  for (int i=0; i<nNodesetFuncs; i++)
+  {
+    nsFuncNodesets[i] = funcToNSMap.get(nsFuncs[i]);
+  }
+
+  Array<int> nodesetFuncTruthTable(nNodesetFuncs * nNodesets, 0);
+  for (int i=0; i<nNodesetFuncs; i++)
+  {
+    for (unsigned int j=0; j<nsFuncNodesets[i].size(); j++)
+    {
+      int ns = nsFuncNodesets[i][j];
+      nodesetFuncTruthTable[ns*nNodesetFuncs + i] = 1;
+    }
+
+    nsFuncNodesets[i] = funcToNSMap.get(nsFuncs[i]);
+  }
+
+  
+
+
+  int ierr = ex_put_var_param(exoid, "M", nNodesetFuncs);
+  TEST_FOR_EXCEPT(ierr < 0);
+
+  ierr = ex_put_nset_var_tab(exoid, nNodesets, 
+    nNodesetFuncs, &(nodesetFuncTruthTable[0]));
+  TEST_FOR_EXCEPT(ierr < 0);
+
+  ierr = ex_put_var_param(exoid, "N", nNodalFuncs);
+  TEST_FOR_EXCEPT(ierr < 0);
+
+  Array<std::string> nsFuncNames(nNodesetFuncs);
+  Array<const char*> nsNameP;
+
+  for (int i=0; i<nNodesetFuncs; i++)
+  {
+    nsFuncNames[i] = pointScalarNames()[nsFuncs[i]];
+  }
+  getCharpp(nsFuncNames, nsNameP);  
+  
+  ierr = ex_put_var_names(exoid, "M", nNodesetFuncs, (char**)&(nsNameP[0]));
+  TEST_FOR_EXCEPT(ierr < 0);
+
+
+
+  Array<std::string> nodalFuncNames(nNodalFuncs);
+  Array<const char*> nNameP;
+
+  for (int i=0; i<nNodalFuncs; i++)
+  {
+    nodalFuncNames[i] = pointScalarNames()[omnipresentFuncs[i]];
+  }
+  getCharpp(nodalFuncNames, nNameP);  
+  
+  ierr = ex_put_var_names(exoid, "N", nNodalFuncs, (char**)&(nNameP[0]));
+  TEST_FOR_EXCEPT(ierr < 0);
+
+  Array<double> funcVals;
+  Array<int> nodeID(mesh().numCells(0));
+  for (int i=0; i<mesh().numCells(0); i++) nodeID[i]=i;
+  
+  for (int i=0; i<nNodalFuncs; i++)
+  {
+    int f = omnipresentFuncs[i];
+    pointScalarFields()[f]->getDataBatch(0, nodeID, tuple(f), funcVals);
+    int t = 1;
+    int numNodes = funcVals.size();
+    ierr = ex_put_nodal_var(exoid, t, i+1, numNodes, &(funcVals[0]));
+    TEST_FOR_EXCEPT(ierr < 0);
+  }
+
+  for (int i=0; i<nNodesetFuncs; i++)
+  {
+    const Array<int>& ns = nsFuncNodesets[i];
+    int fid = nsFuncs[i];
+
+    for (unsigned int s=0; s<ns.size(); s++)
+    {
+      const Array<int>& nodes = *(nodesForNodeset[ns[s]]);
+      pointScalarFields()[fid]->getDataBatch(0, nodes, tuple(fid), funcVals);
+      int t = 1;
+      int numNodes = funcVals.size();
+      int id = nsID[ns[s]];
+      ierr = ex_put_nset_var(exoid, t, i+1, id, numNodes, &(funcVals[0]));
+      TEST_FOR_EXCEPT(ierr < 0);
+    }
+  }
+
+#else
+  TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
+#endif
+  
+}
+
 
 
 std::string ExodusWriter::elemType(const CellType& type) const
@@ -298,3 +454,102 @@ void ExodusWriter::writeParallelInfo(const string& parfile) const
       os << "# " << comments()[i] << std::endl;
     }
 }
+
+
+
+
+
+void ExodusWriter::findNodeSets(
+  Array<CellFilter>& nodesetFilters,
+  Array<int>& omnipresentFuncs,
+  Array<RefCountPtr<Array<int> > >& funcsForNodeset,
+  Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+  Array<int>& nsID,
+  Array<int>& nNodesPerSet,
+  Array<int>& nsNodePtr,
+  RefCountPtr<Array<int> > allNodes
+  ) const 
+{
+  int verb = 4;
+
+  const Array<RefCountPtr<FieldBase> >& f = pointScalarFields();
+  CellFilter maximal = new MaximalCellFilter();
+
+  nNodesPerSet.resize(0);
+  nsNodePtr.resize(0);
+  nsID.resize(0);
+
+  Map<CellFilter, RefCountPtr<Array<int> > > tmp;
+
+  for (unsigned int i=0; i<f.size(); i++)
+  {
+    const CellFilter& cf = f[i]->domain(); 
+    if (cf==maximal) 
+    {
+      SUNDANCE_MSG2(verb, "function #" << i << " is defined on all nodes");
+      omnipresentFuncs.append(i);
+      continue;
+    }
+    if (!tmp.containsKey(cf))
+    {
+      RefCountPtr<Array<int> > a = rcp(new Array<int>());
+      tmp.put(cf, a);
+    }
+    SUNDANCE_MSG2(verb, "function #" << i << " is defined on CF " << cf);
+    tmp[cf]->append(i);
+  }
+
+  int nodesetID=1;
+  int nodePtr=0;
+  nodesetFilters.resize(0);
+  funcsForNodeset.resize(0);
+  nodesForNodeset.resize(0);
+
+  for (Map<CellFilter, RefCountPtr<Array<int> > >::const_iterator
+         i=tmp.begin(); i!=tmp.end(); i++)
+  {
+    const CellFilter& cf = i->first;
+    nodesetFilters.append(cf);
+    funcsForNodeset.append(i->second);
+    RefCountPtr<Array<int> > cells 
+      = cellSetToLIDArray(connectedNodeSet(cf, mesh()));
+    nodesForNodeset.append(cells);
+    int nn = cells->size();
+    nNodesPerSet.append(nn);
+    nsID.append(nodesetID++);
+    nsNodePtr.append(nodePtr);
+    nodePtr += nn;
+  }
+
+  SUNDANCE_MSG2(verb, "node set IDs = " << nsID);
+  SUNDANCE_MSG2(verb, "num nodes = " << nNodesPerSet);
+  SUNDANCE_MSG2(verb, "node set pointers = " << nsNodePtr);
+
+
+  int numNodes = nodePtr;
+  allNodes->resize(numNodes);
+
+  int k=0;
+  for (unsigned int i=0; i<nsID.size(); i++)
+  {
+    SUNDANCE_MSG2(verb, "node set " << i << " funcs = " 
+      << *funcsForNodeset[i]);
+    SUNDANCE_MSG2(verb, "node set " << i 
+      << " nodes = " << *nodesForNodeset[i]);
+    const Array<int>& myCells = *(nodesForNodeset[i]);
+    for (unsigned int c=0; c<myCells.size(); c++)
+    {
+      (*allNodes)[k++] = myCells[c];
+    }
+  }
+
+  SUNDANCE_MSG2(verb, "all nodes = " << *allNodes);
+}
+
+void ExodusWriter::getCharpp(const Array<std::string>& s, Array<const char*>& p) const
+{
+  p.resize(s.size());
+  for (unsigned int i=0; i<p.size(); i++) p[i] = s[i].c_str();
+}
+
+

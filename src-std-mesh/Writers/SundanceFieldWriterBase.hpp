@@ -32,9 +32,6 @@
 #define SUNDANCE_FIELDWRITERBASE_H
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceFieldBase.hpp"
@@ -156,6 +153,5 @@ namespace SundanceStdMesh
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

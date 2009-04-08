@@ -218,6 +218,7 @@ APPEND_SET(HEADERS
 
 APPEND_SET(SOURCES
   Writers/SundanceExodusWriter.cpp
+  Writers/SundanceFieldBase.cpp
   Writers/SundanceFieldWriter.cpp
   Writers/SundanceFieldWriterBase.cpp
   Writers/SundanceMatlabWriter.cpp

@@ -221,6 +221,7 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalContext.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.hpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionSupportResolver.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.hpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultipleDeriv.hpp \
@@ -240,6 +241,7 @@ $(top_srcdir)/src-core/FrameworkInterface/SundanceDiscreteFunctionStub.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEquationSet.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceEvalVector.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionalDeriv.cpp \
+$(top_srcdir)/src-core/FrameworkInterface/SundanceFunctionSupportResolver.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceLoadableVector.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultiIndex.cpp \
 $(top_srcdir)/src-core/FrameworkInterface/SundanceMultipleDeriv.cpp \

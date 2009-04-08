@@ -30,12 +30,18 @@
 
 #include "SundanceEquationSet.hpp"
 #include "SundanceSymbPreprocessor.hpp"
+#include "SundanceFunctionSupportResolver.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceSpectralExpr.hpp"
 #include "SundanceUnknownParameterElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceFunctionalDeriv.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundanceIntegral.hpp"
+#include "SundanceListExpr.hpp"
+#include "SundanceEssentialBC.hpp"
+#include "SundanceSumOfIntegrals.hpp"
+#include "SundanceSumOfBCs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
@@ -53,40 +59,23 @@ EquationSet::EquationSet(const Expr& eqns,
   const Expr& paramEvalPts,
   const Array<Expr>& fields,
   const Array<Expr>& fieldValues,
-    const ParameterList& verbParams)
+  const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams),
-    regions_(),
-    varsOnRegions_(),
-    unksOnRegions_(),
+    fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
-    bcVarsOnRegions_(),
-    bcUnksOnRegions_(),
     regionQuadCombos_(),
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
-    testToRegionsMap_(),
-    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
     bcRqcToContext_(),
     rqcToSkip_(),
     bcRqcToSkip_(),
-    varFuncs_(),
-    unkFuncs_(),
     unkLinearizationPts_(),
-    unkParams_(),
     unkParamEvalPts_(),
-    varIDToReducedIDMap_(),
-    unkIDToReducedIDMap_(),
-    unkParamIDToReducedUnkParamIDMap_(),
-    varIDToBlockMap_(),
-    unkIDToBlockMap_(),
-    unreducedVarID_(),
-    unreducedUnkID_(),
-    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -97,6 +86,10 @@ EquationSet::EquationSet(const Expr& eqns,
   Array<Expr> unkEvalPt;
   Array<Expr> vars;
   Array<Expr> varEvalPt;
+  Expr unkParams;
+
+  fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, unks, unkParams,
+      params, fields, true, verbLevel("setup")));
   
   compTypes_.put(FunctionalOnly);
 
@@ -108,12 +101,9 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadComboNonzeroDerivs_.put(FunctionalOnly,
     Map<RegionQuadCombo, DerivSet>());
 
+  
 
-  init(eqns, bcs, vars, varEvalPt,
-    unks, unkEvalPt,
-    unkParams_, unkParamEvalPts_,
-    params, paramEvalPts,
-    fields, fieldValues);
+  init(varEvalPt, unkEvalPt, unkParamEvalPts_, paramEvalPts, fieldValues);
 }
 
 EquationSet::EquationSet(const Expr& eqns, 
@@ -129,38 +119,21 @@ EquationSet::EquationSet(const Expr& eqns,
   const Array<Expr>& fixedFieldValues,
   const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams),
-    regions_(),
-    varsOnRegions_(),
-    unksOnRegions_(),
+    fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
-    bcVarsOnRegions_(),
-    bcUnksOnRegions_(),
     regionQuadCombos_(),
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
-    testToRegionsMap_(),
-    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
     bcRqcToContext_(),
     rqcToSkip_(),
     bcRqcToSkip_(),
-    varFuncs_(flattenSpectral(vars)),
-    unkFuncs_(flattenSpectral(unks)),
     unkLinearizationPts_(flattenSpectral(unkLinearizationPts)),
-    unkParams_(unkParams),
     unkParamEvalPts_(unkParamEvalPts),
-    varIDToReducedIDMap_(),
-    unkIDToReducedIDMap_(),
-    unkParamIDToReducedUnkParamIDMap_(),
-    varIDToBlockMap_(),
-    unkIDToBlockMap_(),
-    unreducedVarID_(),
-    unreducedUnkID_(),
-    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(false),
@@ -170,6 +143,9 @@ EquationSet::EquationSet(const Expr& eqns,
   compTypes_.put(MatrixAndVector);
   compTypes_.put(VectorOnly);
 
+  fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, 
+      unks, unkParams,
+      params, fixedFields, false, verbLevel("setup")));
 
   rqcToContext_.put(MatrixAndVector, Map<RegionQuadCombo, EvalContext>());
   bcRqcToContext_.put(MatrixAndVector, Map<RegionQuadCombo, EvalContext>());
@@ -199,11 +175,9 @@ EquationSet::EquationSet(const Expr& eqns,
   }
 
   Array<Expr> zero;
-  init(eqns, bcs, flattenSpectral(vars), zero,
-    flattenSpectral(unks), flattenSpectral(unkLinearizationPts),
-    unkParams_, unkParamEvalPts_,
-    params, paramEvalPts,
-    fixedFields, fixedFieldValues);
+
+  init(zero, flattenSpectral(unkLinearizationPts), unkParamEvalPts_, 
+    paramEvalPts, fixedFieldValues);
 }
 
 
@@ -217,46 +191,33 @@ EquationSet::EquationSet(const Expr& eqns,
   const Expr& paramEvalPts,
   const Array<Expr>& fixedFields,
   const Array<Expr>& fixedFieldValues,
-    const ParameterList& verbParams)
+  const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams), 
-    regions_(),
-    varsOnRegions_(),
-    unksOnRegions_(),
+    fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
-    bcVarsOnRegions_(),
-    bcUnksOnRegions_(),
     regionQuadCombos_(),
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
-    testToRegionsMap_(),
-    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
     bcRqcToContext_(),
     rqcToSkip_(),
     bcRqcToSkip_(),
-    varFuncs_(flattenSpectral(vars)),
-    unkFuncs_(flattenSpectral(unks)),
     unkLinearizationPts_(flattenSpectral(unkLinearizationPts)),
-    unkParams_(),
     unkParamEvalPts_(),
-    varIDToReducedIDMap_(),
-    unkIDToReducedIDMap_(),
-    unkParamIDToReducedUnkParamIDMap_(),
-    varIDToBlockMap_(),
-    unkIDToBlockMap_(),
-    unreducedVarID_(),
-    unreducedUnkID_(),
-    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
     isFunctionalCalculator_(false),
     isSensitivityProblem_(false)
 {
+  Expr unkParams;
+  fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, 
+      unks, unkParams, params, fixedFields, 
+      isVariationalProblem_, verbLevel("setup")));
 
   compTypes_.put(MatrixAndVector);
   compTypes_.put(VectorOnly);
@@ -277,11 +238,10 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadComboNonzeroDerivs_.put(VectorOnly, 
     Map<RegionQuadCombo, DerivSet>());
 
-  init(eqns, bcs, flattenSpectral(vars), flattenSpectral(varLinearizationPts), 
-    flattenSpectral(unks), flattenSpectral(unkLinearizationPts),
-    unkParams_, unkParamEvalPts_,
-    params, paramEvalPts,
-    fixedFields, fixedFieldValues);
+  init(flattenSpectral(varLinearizationPts), 
+    flattenSpectral(unkLinearizationPts), 
+    unkParamEvalPts_, 
+    paramEvalPts, fixedFieldValues);
 }
 
 EquationSet::EquationSet(const Expr& eqns, 
@@ -292,40 +252,23 @@ EquationSet::EquationSet(const Expr& eqns,
   const Expr& paramEvalPts,
   const Array<Expr>& fixedFields,
   const Array<Expr>& fixedFieldValues,
-    const ParameterList& verbParams)
+  const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams),
-    regions_(),
-    varsOnRegions_(),
-    unksOnRegions_(),
+    fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
-    bcVarsOnRegions_(),
-    bcUnksOnRegions_(),
     regionQuadCombos_(),
     bcRegionQuadCombos_(),
     regionQuadComboExprs_(),
     bcRegionQuadComboExprs_(),
-    testToRegionsMap_(),
-    unkToRegionsMap_(),
     regionQuadComboNonzeroDerivs_(),
     bcRegionQuadComboNonzeroDerivs_(),
     rqcToContext_(),
     bcRqcToContext_(),
     rqcToSkip_(),
     bcRqcToSkip_(),
-    varFuncs_(vars),
-    unkFuncs_(),
     unkLinearizationPts_(),
-    unkParams_(),
     unkParamEvalPts_(),
-    varIDToReducedIDMap_(),
-    unkIDToReducedIDMap_(),
-    unkParamIDToReducedUnkParamIDMap_(),
-    varIDToBlockMap_(),
-    unkIDToBlockMap_(),
-    unreducedVarID_(),
-    unreducedUnkID_(),
-    unreducedUnkParamID_(),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -334,6 +277,12 @@ EquationSet::EquationSet(const Expr& eqns,
 {
   compTypes_.put(FunctionalOnly);
   compTypes_.put(FunctionalAndGradient);
+
+  Expr unkParams;
+  Array<Expr> unks;
+  fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, 
+      unks, unkParams,
+      params, fixedFields, isVariationalProblem_, verbLevel("setup")));
 
   rqcToContext_.put(FunctionalAndGradient, Map<RegionQuadCombo, EvalContext>());
   bcRqcToContext_.put(FunctionalAndGradient, Map<RegionQuadCombo, EvalContext>());
@@ -351,57 +300,31 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadComboNonzeroDerivs_.put(FunctionalOnly, 
     Map<RegionQuadCombo, DerivSet>());
 
-  init(eqns, bcs, flattenSpectral(vars), flattenSpectral(varLinearizationPts), 
-    flattenSpectral(unkFuncs_), flattenSpectral(unkLinearizationPts_),
-    unkParams_, unkParamEvalPts_,   
-    params, paramEvalPts, 
-    fixedFields, fixedFieldValues);
+
+  init(flattenSpectral(varLinearizationPts), 
+    flattenSpectral(unkLinearizationPts_), 
+    unkParamEvalPts_, 
+    paramEvalPts, fixedFieldValues);
 }
 
 
 
 
-void EquationSet::init(const Expr& eqns, 
-  const Expr& bcs,
-  const Array<Expr>& vars, 
+void EquationSet::init(
   const Array<Expr>& varLinearizationPts,
-  const Array<Expr>& unks,
   const Array<Expr>& unkLinearizationPts,
-  const Expr& unkParams,
   const Expr& unkParamEvalPts, 
-  const Expr& fixedParams,
   const Expr& fixedParamEvalPts,
-  const Array<Expr>& fixedFields,
   const Array<Expr>& fixedFieldValues)
 {
   Tabs tab0;
   Tabs tab1;
-
-  /* begin with a sanity check to ensure that the input equation set 
-   * exists and is integral form */
-  const SumOfIntegrals* integralSum
-    = dynamic_cast<const SumOfIntegrals*>(eqns.ptr().get());
-
-  TEST_FOR_EXCEPTION(eqns.ptr().get()==0, RuntimeError,
-    "EquationSet ctor detected empty equation set input");
-
-  TEST_FOR_EXCEPTION(integralSum==0, RuntimeError,
-    "EquationSet ctor detected an input equation set that "
-    "is not in integral form");
-
-  bool hasBCs = false;
-  const SumOfBCs* bcSum = 0 ;
-  if (bcs.ptr().get() != 0)
-  {
-    bcSum = dynamic_cast<const SumOfBCs*>(bcs.ptr().get());
-    TEST_FOR_EXCEPTION(bcSum==0, RuntimeError,
-      "EquationSet ctor detected an input Essential "
-      "BC that is not an EssentialBC object. "
-      "Object is " << bcs);
-    hasBCs = true;
-  }
+  bool hasBCs = fsr_->hasBCs();
+  const SumOfBCs* bcSum = fsr_->bcSum();
+  const SumOfIntegrals* integralSum = fsr_->integralSum();
  
   int verb = verbLevel("setup");
+
   /* upgrade base verbosity level if one of the terms is being watched */
   if (integralSum->hasWatchedTerm() || (hasBCs && bcSum->hasWatchedTerm()))
   {
@@ -409,144 +332,20 @@ void EquationSet::init(const Expr& eqns,
   }
   SUNDANCE_BANNER1(verb, tab0, "EquationSet setup");
 
-  if (hasBCs)
-  {
-    SUNDANCE_MSG1(verb, tab1 << "Problem has EssentialBCs");
-  }
-  else
-  {
-    SUNDANCE_MSG1(verb, tab1 << "Problem has no EssentialBCs");
-  }
+  /* get symbolic functions from the function support resolver */
+  const Array<Expr>& unks = fsr_->unks();
+  const Array<Expr>& vars = fsr_->vars();
+  const Expr& unkParams = fsr_->unkParams();
+  const Expr& fixedParams = fsr_->fixedParams();
+  const Array<Expr>& fixedFields = fsr_->fixedFields();
 
-  /* 
-   * See whether the variational functions are TestFunction objects
-   * (as in a problem where we've already taken variations, or in 
-   * a Galerkin-like formulation of a non-variational problem) 
-   * or UnknownFunction objects, as in a variational problem. 
-   */
-  bool varsAreTestFunctions = false;
-  for (unsigned int b=0; b<vars.size(); b++)
-  {
-    for (unsigned int i=0; i<vars[b].size(); i++)
-    {
-      const TestFuncElement* t 
-        = dynamic_cast<const TestFuncElement*>(vars[b][i].ptr().get());
-      TEST_FOR_EXCEPTION(t == 0 && varsAreTestFunctions==true,
-        RuntimeError,
-        "variational function list " << vars
-        << " contains a mix of test and "
-        "non-test functions");
-      TEST_FOR_EXCEPTION(t != 0 && i>0 && varsAreTestFunctions==false,
-        RuntimeError,
-        "variational function list " << vars
-        << " contains a mix of test and "
-        "non-test functions");
-      if (t!=0) varsAreTestFunctions=true;
-    }
-  }
+  const Set<int>& varFuncSet = fsr_->varFuncSet();
+  const Set<int>& unkFuncSet = fsr_->unkFuncSet();
 
-
-  TEST_FOR_EXCEPTION(varsAreTestFunctions == true
-    && isVariationalProblem_,
-    RuntimeError,
-    "test functions given to a variational equation set");
-
-  TEST_FOR_EXCEPTION(varsAreTestFunctions == false
-    && !isVariationalProblem_,
-    RuntimeError,
-    "variational functions are unknowns, but equation "
-    "set is not variational");
-
-  if (isVariationalProblem_)
-  {
-    SUNDANCE_MSG1(verb, tab1 << "is variational problem");
-  }
-  else
-  {
-    SUNDANCE_MSG1(verb, tab1 << "is not in variational form");
-  }
-    
-  
-  /* map each var and unknown function's ID numbers to its
-   * position in the input function lists */
-  Set<int> varFuncSet;
-  Set<int> unkFuncSet;
-  Set<int> unkParamSet;
-  varIDToReducedIDMap_.resize(vars.size());
-  unreducedVarID_.resize(vars.size());
-  for (unsigned int b=0; b<vars.size(); b++)
-  {
-    Tabs tab2;
-    unreducedVarID_[b].resize(vars[b].size());
-    for (unsigned int i=0; i<vars[b].size(); i++)
-    {
-      const FuncElementBase* t 
-        = dynamic_cast<const FuncElementBase*>(vars[b][i].ptr().get());
-      int fid = t->funcComponentID();
-      varFuncSet.put(fid);
-      varIDToBlockMap_.put(fid, b);
-      varIDToReducedIDMap_[b].put(fid, i);
-      unreducedVarID_[b][i] = fid;
-    }
-    SUNDANCE_MSG2(verb, tab2 << "block=" << b << " var functions are " 
-      << unreducedUnkID_[b]);
-  }
-
-  TEST_FOR_EXCEPTION(unks.size() == 0 && !isFunctionalCalculator_,
-    InternalError,
-    "no unks passed to an equation set that is not "
-    "a gradient calculator");
-
-  /* set up func ID maps for unks */
-  unkIDToReducedIDMap_.resize(unks.size());
-  unreducedUnkID_.resize(unks.size());
-  for (unsigned int b=0; b<unks.size(); b++)
-  {
-    Tabs tab2;
-    unreducedUnkID_[b].resize(unks[b].size());
-    for (unsigned int i=0; i<unks[b].size(); i++)
-    {
-      const UnknownFuncElement* u 
-        = dynamic_cast<const UnknownFuncElement*>(unks[b][i].ptr().get());
-      TEST_FOR_EXCEPTION(u==0, RuntimeError, 
-        "EquationSet ctor input unk function "
-        << unks[b][i] 
-        << " does not appear to be a unk function");
-      int fid = u->funcComponentID();
-      unkFuncSet.put(fid);
-      unkIDToBlockMap_.put(fid, b);
-      unkIDToReducedIDMap_[b].put(fid, i);
-      unreducedUnkID_[b][i] = fid;
-    }
-    SUNDANCE_MSG2(verb, tab2 << "block=" << b << " unk functions are " 
-      << unreducedUnkID_[b]);
-  }
-
-
-  
-  
-  /* set up func ID maps for unk parameters */
-  unreducedUnkParamID_.resize(unkParams.size());
-  for (unsigned int i=0; i<unkParams.size(); i++)
-  {
-    const UnknownParameterElement* u 
-      = dynamic_cast<const UnknownParameterElement*>(unkParams[i].ptr().get());
-    TEST_FOR_EXCEPTION(u==0, RuntimeError, 
-      "EquationSet ctor input unk parameter "
-      << unkParams[i] 
-      << " does not appear to be a unk parameter");
-    int fid = u->funcComponentID();
-    unkParamSet.put(fid);
-    unkParamIDToReducedUnkParamIDMap_.put(fid, i);
-    unreducedUnkParamID_[i] = fid;
-  }
-  SUNDANCE_MSG2(verb, tab1 << "unk parameters are " 
-    << unreducedUnkParamID_);
-
-
-  Set<OrderedHandle<CellFilterStub> > regionSet;
   Set<RegionQuadCombo> rqcSet;
   Set<RegionQuadCombo> rqcBCSet;
+
+
 
   Array<int> contextID = tuple(EvalContext::nextID(),
     EvalContext::nextID(),
@@ -554,13 +353,17 @@ void EquationSet::init(const Expr& eqns,
     EvalContext::nextID(),
     EvalContext::nextID());
 
-  /* initialize list of regions to skip */
+
+  /* for each computation type, initialize list of regions to skip */
   for (Set<ComputationType>::const_iterator 
          i=compTypes_.begin(); i!=compTypes_.end(); i++)
   {
     rqcToSkip_[*i] = Set<RegionQuadCombo>();
     bcRqcToSkip_[*i] = Set<RegionQuadCombo>();
   }
+
+
+
   /* Now compile a list of all regions appearing in either the eqns or
    * the BCs */
 
@@ -585,22 +388,6 @@ void EquationSet::init(const Expr& eqns,
     Expr term = r->second;
     OrderedHandle<CellFilterStub> reg = rqc.domain();
     OrderedHandle<QuadratureFamilyStub> quad = rqc.quad();
-
-    if (!regionSet.contains(reg)) 
-    {
-      regionSet.put(reg);
-      Set<int> vf = integralSum->funcsOnRegion(reg, varFuncSet);
-      Set<int> uf = integralSum->funcsOnRegion(reg, unkFuncSet);
-      varsOnRegions_.put(reg, vf);
-      unksOnRegions_.put(reg, uf);
-    }
-    else
-    {
-      Set<int>& t = varsOnRegions_.get(reg);
-      t.merge(integralSum->funcsOnRegion(reg, varFuncSet));
-      Set<int>& u = unksOnRegions_.get(reg);
-      u.merge(integralSum->funcsOnRegion(reg, unkFuncSet));
-    }
 
     regionQuadComboExprs_.put(rqc, term);
 
@@ -852,35 +639,6 @@ void EquationSet::init(const Expr& eqns,
       OrderedHandle<CellFilterStub> reg = rqc.domain();
       OrderedHandle<QuadratureFamilyStub> quad = rqc.quad();
 
-      if (!regionSet.contains(reg)) 
-      {
-        regionSet.put(reg);
-        varsOnRegions_.put(reg, bcSum->funcsOnRegion(reg, varFuncSet));
-        unksOnRegions_.put(reg, bcSum->funcsOnRegion(reg, unkFuncSet));
-        bcVarsOnRegions_.put(reg, bcSum->funcsOnRegion(reg, varFuncSet));
-        bcUnksOnRegions_.put(reg, bcSum->funcsOnRegion(reg, unkFuncSet));
-      }
-      else
-      {
-        if (!bcVarsOnRegions_.containsKey(reg))
-        {
-          bcVarsOnRegions_.put(reg, bcSum->funcsOnRegion(reg, varFuncSet));
-        }
-        if (!bcUnksOnRegions_.containsKey(reg))
-        {
-          bcUnksOnRegions_.put(reg, bcSum->funcsOnRegion(reg, unkFuncSet));
-        }
-        Set<int>& t = varsOnRegions_.get(reg);
-        t.merge(bcSum->funcsOnRegion(reg, varFuncSet));
-        Set<int>& u = unksOnRegions_.get(reg);
-        u.merge(bcSum->funcsOnRegion(reg, unkFuncSet));
-      }
-
-      TEST_FOR_EXCEPTION(!bcVarsOnRegions_.containsKey(reg),
-        InternalError,
-        "Bug: region " << reg << " should appear in "
-        "BC list" << bcVarsOnRegions_);
-
       bcRegionQuadComboExprs_.put(rqc, term); 
 
 
@@ -1118,77 +876,14 @@ void EquationSet::init(const Expr& eqns,
     }
   }
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-    "Vars appearing on each region: " << endl << varsOnRegions_);
-
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-    "Unks appearing on each region: " << endl << unksOnRegions_);
-
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-    "Vars appearing on each BC region: " 
-    << endl << bcVarsOnRegions_);
-
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-    "Unks appearing on each BC region: " 
-    << endl << bcUnksOnRegions_);
+  
 
 
   /* convert sets to arrays */
-  regions_ = regionSet.elements();
   regionQuadCombos_ = rqcSet.elements();
   bcRegionQuadCombos_ = rqcBCSet.elements();
 
-  reducedVarsOnRegions_.resize(regions_.size());
-  reducedUnksOnRegions_.resize(regions_.size());
-  for (unsigned int r=0; r<regions_.size(); r++)
-  {
-    regionToIndexMap_.put(regions_[r], r);
-    reducedVarsOnRegions_[r].resize(numVarBlocks());
-    reducedUnksOnRegions_[r].resize(numUnkBlocks());
-    OrderedHandle<CellFilterStub> cf = regions_[r];
-    const Set<int>& v = this->varsOnRegion(r);
-    const Set<int>& u = this->unksOnRegion(r);
-    const Set<int>& bv = this->varsOnRegion(r);
-    const Set<int>& bu = this->unksOnRegion(r);
-    Set<int> vf = v;
-    Set<int> uf = u;
-    vf.merge(bv);
-    uf.merge(bu);
-    for (Set<int>::const_iterator i=vf.begin(); i!=vf.end(); i++)
-    {
-      int fid = *i;
-      if (testToRegionsMap_.containsKey(fid))
-      {
-        testToRegionsMap_[fid].put(cf);
-      }
-      else
-      {
-        Set<OrderedHandle<CellFilterStub> > s;
-        s.put(cf);
-        testToRegionsMap_.put(fid, s);
-      }
-      int rv = reducedVarID(fid);
-      int br = blockForVarID(fid);
-      reducedVarsOnRegions_[r][br].put(rv);
-    }
-    for (Set<int>::const_iterator i=uf.begin(); i!=uf.end(); i++)
-    {
-      int fid = *i;
-      if (unkToRegionsMap_.containsKey(fid))
-      {
-        unkToRegionsMap_[fid].put(cf);
-      }
-      else
-      {
-        Set<OrderedHandle<CellFilterStub> > s;
-        s.put(cf);
-        unkToRegionsMap_.put(fid, s);
-      }
-      int ru = reducedUnkID(fid);
-      int bc = blockForUnkID(fid);
-      reducedUnksOnRegions_[r][bc].put(ru);
-    }
-  }
+  
 
 
 }
@@ -1346,7 +1041,7 @@ bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const
 
 bool EquationSet::isBCRegion(int d) const
 {
-  return bcVarsOnRegions_.containsKey(regions_[d]);
+  return fsr_->isBCRegion(d);
 }
 
 
@@ -1423,29 +1118,18 @@ const DerivSet& EquationSet::nonzeroBCFunctionalDerivs(ComputationType compType,
 
 int EquationSet::reducedVarID(int varID) const 
 {
-  TEST_FOR_EXCEPTION(!hasVarID(varID), RuntimeError, 
-    "varID " << varID << " not found in equation set");
-
-  int b = blockForVarID(varID);
-  return varIDToReducedIDMap_[b].get(varID);
+  return fsr_->reducedVarID(varID);
 }
 
 int EquationSet::reducedUnkID(int unkID) const 
 {
-  TEST_FOR_EXCEPTION(!hasUnkID(unkID), RuntimeError, 
-    "unkID " << unkID << " not found in equation set");
-
-  int b = blockForUnkID(unkID);
-  return unkIDToReducedIDMap_[b].get(unkID);
+  return fsr_->reducedUnkID(unkID);
 }
 
 
-int EquationSet::reducedUnkParamID(int unkID) const 
+int EquationSet::reducedUnkParamID(int unkParamID) const 
 {
-  TEST_FOR_EXCEPTION(!hasUnkParamID(unkID), RuntimeError, 
-    "unkParamID " << unkID << " not found in equation set");
-
-  return unkParamIDToReducedUnkParamIDMap_.get(unkID);
+  return fsr_->reducedUnkParamID(unkParamID);
 }
 
 
@@ -1457,40 +1141,131 @@ Expr EquationSet::toList(const Array<Expr>& e)
 
 int EquationSet::blockForVarID(int varID) const 
 {
-  TEST_FOR_EXCEPTION(!varIDToBlockMap_.containsKey(varID), RuntimeError,
-    "key " << varID << " not found in map "
-    << varIDToBlockMap_);
-  return varIDToBlockMap_.get(varID);
+  return fsr_->blockForVarID(varID);
 }
 
 int EquationSet::blockForUnkID(int unkID) const 
 {
-  TEST_FOR_EXCEPTION(!unkIDToBlockMap_.containsKey(unkID), RuntimeError,
-    "key " << unkID << " not found in map "
-    << unkIDToBlockMap_);
-  return unkIDToBlockMap_.get(unkID);
+  return fsr_->blockForUnkID(unkID);
 }
 
 const Set<OrderedHandle<CellFilterStub> >&  EquationSet::regionsForTestFunc(int testID) const
 {
-  TEST_FOR_EXCEPTION(!testToRegionsMap_.containsKey(testID), RuntimeError,
-    "key " << testID << " not found in map "
-    << testToRegionsMap_);
-  return testToRegionsMap_.get(testID);
+  return fsr_->regionsForTestFunc(testID);
 }
 
 const Set<OrderedHandle<CellFilterStub> >&  EquationSet::regionsForUnkFunc(int unkID) const
 {
-  TEST_FOR_EXCEPTION(!unkToRegionsMap_.containsKey(unkID), RuntimeError,
-    "key " << unkID << " not found in map "
-    << testToRegionsMap_);
-  return unkToRegionsMap_.get(unkID);
+  return fsr_->regionsForUnkFunc(unkID);
 }
 
 int EquationSet::indexForRegion(const OrderedHandle<CellFilterStub>& region) const
 {
-  TEST_FOR_EXCEPTION(!regionToIndexMap_.containsKey(region), RuntimeError,
-    "key " << region << " not found in map "
-    << regionToIndexMap_);
-  return regionToIndexMap_.get(region);
+  return fsr_->indexForRegion(region);
 }
+
+unsigned int EquationSet::numRegions() const {return fsr_->numRegions();}
+
+const RefCountPtr<CellFilterStub>& EquationSet::region(int d) const 
+{return fsr_->region(d);}
+
+
+
+/* Returns the number of variational function blocks */
+unsigned int EquationSet::numVarBlocks() const 
+{return fsr_->numVarBlocks();}
+
+/* Returns the number of unknown function blocks */
+unsigned int EquationSet::numUnkBlocks() const 
+{return fsr_->numUnkBlocks();}
+
+/* Returns the number of unknown parameters */
+unsigned int EquationSet::numUnkParams() const 
+{return fsr_->numUnkParams();}
+
+/* Returns the number of variational functions in this block */
+unsigned int EquationSet::numVars(int block) const 
+{return fsr_->numVars(block);}
+
+/* Returns the number of unk functions in this block */
+unsigned int EquationSet::numUnks(int block) const 
+{return fsr_->numUnks(block);}
+
+/* Returns the i-th variational function in block b */
+const Expr& EquationSet::varFunc(int b, int i) const 
+{return fsr_->varFunc(b,i);}
+    
+
+/* Returns the i-th unknown function in block b */
+const Expr& EquationSet::unkFunc(int b, int i) const 
+{return fsr_->unkFunc(b,i);}
+
+/* Returns the i-th unknown parameter */
+const Expr& EquationSet::unkParam(int i) const 
+{return fsr_->unkParam(i);}
+
+/* Determine whether a given func ID is listed as a 
+ * variational function in this equation set */
+bool EquationSet::hasVarID(int fid) const 
+{return fsr_->hasVarID(fid);}
+
+/* Determine whether a given func ID is listed as a unk function 
+ * in this equation set */
+bool EquationSet::hasUnkID(int fid) const 
+{return fsr_->hasUnkID(fid);}
+
+/* Determine whether a given func ID is listed as a unk parameter 
+ * in this equation set */
+bool EquationSet::hasUnkParamID(int fid) const 
+{return fsr_->hasUnkParamID(fid);}
+
+ 
+/* Returns the variational functions that appear explicitly
+ * on the d-th region */
+const Set<int>& EquationSet::varsOnRegion(int d) const 
+{return fsr_->varsOnRegion(d);}
+
+/* Returns the unknown functions that appear explicitly on the
+ * d-th region. */
+const Set<int>& EquationSet::unksOnRegion(int d) const 
+{return fsr_->unksOnRegion(d);}
+
+/* Returns the variational functions that 
+ * appear in BCs on the d-th region.
+ * We can use this information to tag certain rows as BC rows */
+const Set<int>& EquationSet::bcVarsOnRegion(int d) const 
+{return fsr_->bcVarsOnRegion(d);}
+
+/* Returns the unknown functions that appear in BCs on the d-th region.
+ * We can use this information to tag certain columns as BC
+ * columns in the event we're doing symmetrized BC application */
+const Set<int>& EquationSet::bcUnksOnRegion(int d) const 
+{return fsr_->bcUnksOnRegion(d);}
+
+/* Returns the reduced variational functions that appear explicitly
+ * on the d-th region */
+const Array<Set<int> >& EquationSet::reducedVarsOnRegion(const OrderedHandle<CellFilterStub>& r) const 
+{return fsr_->reducedVarsOnRegion(r);}
+
+/* Returns the reduced unknown functions that appear explicitly on the
+ * d-th region. */
+const Array<Set<int> >& EquationSet::reducedUnksOnRegion(const OrderedHandle<CellFilterStub>& r) const 
+{return fsr_->reducedVarsOnRegion(r);}
+
+
+/** get the unreduced funcID for a variational function
+ * as specified by a reduced ID and block index */
+int EquationSet::unreducedVarID(int block, int reducedVarID) const 
+{return fsr_->unreducedVarID(block, reducedVarID);}
+
+/** get the unreduced funcID for an unknown function
+ * as specified by a reduced ID and block index */
+int EquationSet::unreducedUnkID(int block, int reducedUnkID) const 
+{return fsr_->unreducedUnkID(block, reducedUnkID);}
+
+
+/** get the unreduced funcID for an unknown parameter
+ * as specified by a reduced ID and block index */
+int EquationSet::unreducedUnkParamID(int reducedUnkParamID) const 
+{return fsr_->unreducedUnkParamID(reducedUnkParamID);}
+

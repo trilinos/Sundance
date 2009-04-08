@@ -227,6 +227,7 @@ APPEND_SET(HEADERS
   FrameworkInterface/SundanceEvalContext.hpp
   FrameworkInterface/SundanceEvalVector.hpp
   FrameworkInterface/SundanceFunctionalDeriv.hpp
+  FrameworkInterface/SundanceFunctionSupportResolver.hpp
   FrameworkInterface/SundanceLoadableVector.hpp
   FrameworkInterface/SundanceMultiIndex.hpp
   FrameworkInterface/SundanceMultipleDeriv.hpp
@@ -247,6 +248,7 @@ APPEND_SET(SOURCES
   FrameworkInterface/SundanceEquationSet.cpp
   FrameworkInterface/SundanceEvalVector.cpp
   FrameworkInterface/SundanceFunctionalDeriv.cpp
+  FrameworkInterface/SundanceFunctionSupportResolver.cpp
   FrameworkInterface/SundanceLoadableVector.cpp
   FrameworkInterface/SundanceMultiIndex.cpp
   FrameworkInterface/SundanceMultipleDeriv.cpp

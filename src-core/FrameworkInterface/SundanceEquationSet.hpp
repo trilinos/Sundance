@@ -32,11 +32,7 @@
 #define SUNDANCE_EQUATIONSET_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceIntegral.hpp"
-#include "SundanceListExpr.hpp"
-#include "SundanceEssentialBC.hpp"
-#include "SundanceSumOfIntegrals.hpp"
-#include "SundanceSumOfBCs.hpp"
+#include "SundanceExpr.hpp"
 #include "SundanceDerivSet.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalContext.hpp"
@@ -53,6 +49,8 @@ using std::string;
 
 namespace Internal
 {
+class FunctionSupportResolver;
+
 /** 
  * \relates EquationSet
  *
@@ -375,17 +373,24 @@ public:
     const Array<Expr>& fixedFieldValues,
     const ParameterList& verbParams = *defaultVerbParams());
 
+  /** */
+  EquationSet(const RefCountPtr<FunctionSupportResolver>& fsr,
+    const Array<Expr>& varLinearizationPts,
+    const Array<Expr>& unkLinearizationPts, 
+    const Expr& paramValues,
+    const Array<Expr>& fixedFieldValues,
+    const ParameterList& verbParams = *defaultVerbParams());
+
   //@}
 
   /** \name Finding integration regions for the equation set */
   //@{
   /** Returns the number of regions on which pieces of the equation
    * or BCs are defined. */
-  unsigned int numRegions() const {return regions_.size();}
+  unsigned int numRegions() const ;
       
   /** Returns the d-th region for this equation set */
-  const RefCountPtr<CellFilterStub>& region(int d) const 
-    {return regions_[d].ptr();}
+  const RefCountPtr<CellFilterStub>& region(int d) const ;
 
   /** Returns the index of the given region */
   int indexForRegion(const OrderedHandle<CellFilterStub>& region) const ;
@@ -478,43 +483,40 @@ public:
   /** \name Getting information about functions */
   //@{
   /** Returns the number of variational function blocks */
-  unsigned int numVarBlocks() const {return varFuncs_.size();}
+  unsigned int numVarBlocks() const ;
 
   /** Returns the number of unknown function blocks */
-  unsigned int numUnkBlocks() const {return unkFuncs_.size();}
+  unsigned int numUnkBlocks() const ;
 
   /** Returns the number of unknown parameters */
-  unsigned int numUnkParams() const {return unkParams_.size();}
+  unsigned int numUnkParams() const ;
 
   /** Returns the number of variational functions in this block */
-  unsigned int numVars(int block) const {return varFuncs_[block].size();}
+  unsigned int numVars(int block) const ;
 
   /** Returns the number of unk functions in this block */
-  unsigned int numUnks(int block) const {return unkFuncs_[block].size();}
+  unsigned int numUnks(int block) const ;
 
   /** Returns the i-th variational function in block b */
-  const Expr& varFunc(int b, int i) const {return varFuncs_[b][i];}
+  const Expr& varFunc(int b, int i) const ;
 
   /** Returns the i-th unknown function in block b */
-  const Expr& unkFunc(int b, int i) const {return unkFuncs_[b][i];}
+  const Expr& unkFunc(int b, int i) const ;
 
   /** Returns the i-th unknown parameter */
-  const Expr& unkParam(int i) const {return unkParams_[i];}
+  const Expr& unkParam(int i) const ;
 
   /** Determine whether a given func ID is listed as a 
    * variational function in this equation set */
-  bool hasVarID(int fid) const 
-    {return varIDToBlockMap_.containsKey(fid);}
+  bool hasVarID(int fid) const ;
 
   /** Determine whether a given func ID is listed as a unk function 
    * in this equation set */
-  bool hasUnkID(int fid) const 
-    {return unkIDToBlockMap_.containsKey(fid);}
+  bool hasUnkID(int fid) const ;
 
   /** Determine whether a given func ID is listed as a unk parameter 
    * in this equation set */
-  bool hasUnkParamID(int fid) const 
-    {return unkParamIDToReducedUnkParamIDMap_.containsKey(fid);}
+  bool hasUnkParamID(int fid) const ;
 
   /** get the block number for the variational function having the
    * specified unreduced funcID */
@@ -530,35 +532,31 @@ public:
   //@{
   /** Returns the variational functions that appear explicitly
    * on the d-th region */
-  const Set<int>& varsOnRegion(int d) const 
-    {return varsOnRegions_.get(regions_[d]);}
+  const Set<int>& varsOnRegion(int d) const ;
 
   /** Returns the unknown functions that appear explicitly on the
    * d-th region. */
-  const Set<int>& unksOnRegion(int d) const 
-    {return unksOnRegions_.get(regions_[d]);}
+  const Set<int>& unksOnRegion(int d) const ;
 
   /** Returns the variational functions that 
    * appear in BCs on the d-th region.
    * We can use this information to tag certain rows as BC rows */
-  const Set<int>& bcVarsOnRegion(int d) const 
-    {return bcVarsOnRegions_.get(regions_[d]);}
+  const Set<int>& bcVarsOnRegion(int d) const ;
 
   /** Returns the unknown functions that appear in BCs on the d-th region.
    * We can use this information to tag certain columns as BC
    * columns in the event we're doing symmetrized BC application */
-  const Set<int>& bcUnksOnRegion(int d) const 
-    {return bcUnksOnRegions_.get(regions_[d]);}
+  const Set<int>& bcUnksOnRegion(int d) const ;
+
 
   /** Returns the reduced variational functions that appear explicitly
    * on the d-th region */
-  const Array<Set<int> >& reducedVarsOnRegion(const OrderedHandle<CellFilterStub>& r) const 
-    {return reducedVarsOnRegions_[indexForRegion(r)];}
+  const Array<Set<int> >& reducedVarsOnRegion(const OrderedHandle<CellFilterStub>& r) const ;
+
 
   /** Returns the reduced unknown functions that appear explicitly on the
    * d-th region. */
-  const Array<Set<int> >& reducedUnksOnRegion(const OrderedHandle<CellFilterStub>& r) const 
-    {return reducedUnksOnRegions_[indexForRegion(r)];}
+  const Array<Set<int> >& reducedUnksOnRegion(const OrderedHandle<CellFilterStub>& r) const ;
   //@}
 
       
@@ -580,18 +578,17 @@ public:
 
   /** get the unreduced funcID for a variational function
    * as specified by a reduced ID and block index */
-  int unreducedVarID(int block, int reducedVarID) const 
-    {return unreducedVarID_[block][reducedVarID];}
+  int unreducedVarID(int block, int reducedVarID) const ;
+
 
   /** get the unreduced funcID for an unknown function
    * as specified by a reduced ID and block index */
-  int unreducedUnkID(int block, int reducedUnkID) const 
-    {return unreducedUnkID_[block][reducedUnkID];}
+  int unreducedUnkID(int block, int reducedUnkID) const ;
 
   /** get the unreduced funcID for an unknown parameter
    * as specified by a reduced ID and block index */
-  int unreducedUnkParamID(int reducedUnkParamID) const 
-    {return unreducedUnkParamID_[reducedUnkParamID];}
+  int unreducedUnkParamID(int reducedUnkParamID) const ;
+
   //@}
 
 
@@ -657,17 +654,10 @@ private:
   /** 
    * Common initialization function called by all constructors
    */
-  void init(const Expr& eqns, 
-    const Expr& bcs,
-    const Array<Expr>& vars, 
-    const Array<Expr>& varLinearizationPts,
-    const Array<Expr>& unks,
+  void init(const Array<Expr>& varLinearizationPts,
     const Array<Expr>& unkLinearizationPts,
-    const Expr& unkParams,
     const Expr& unkParamEvalPts, 
-    const Expr& fixedParams,
     const Expr& fixedParamValues,
-    const Array<Expr>& fixedFields,
     const Array<Expr>& fixedFieldValues);
 
   /** Helper that converts an array of expr to a list expression */
@@ -681,23 +671,9 @@ private:
     bool isBC,
     int verb);
 
-  /** */
-  Array<OrderedHandle<CellFilterStub> > regions_;
-
-  /** */
-  Map<OrderedHandle<CellFilterStub>, int> regionToIndexMap_;
-
-  /** */
-  Map<OrderedHandle<CellFilterStub>, Set<int> > varsOnRegions_;
-
-  /** */
-  Map<OrderedHandle<CellFilterStub>, Set<int> > unksOnRegions_;
-
-  /** */
-  Array<Array<Set<int> > > reducedVarsOnRegions_;
-
-  /** */
-  Array<Array<Set<int> > > reducedUnksOnRegions_;
+  /** The FunctionSupportResolver deals with associating functions with
+   * subdomains */
+  RefCountPtr<FunctionSupportResolver> fsr_;
 
   /** Map from cell filter to pairs of (varID, unkID) appearing
    * on those cells. This is needed to construct the sparsity pattern
@@ -710,12 +686,6 @@ private:
   Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > bcVarUnkPairsOnRegions_;
 
   /** */
-  Map<OrderedHandle<CellFilterStub>, Set<int> > bcVarsOnRegions_;
-
-  /** */
-  Map<OrderedHandle<CellFilterStub>, Set<int> > bcUnksOnRegions_;
-
-  /** */
   Array<RegionQuadCombo> regionQuadCombos_;
 
   /** */
@@ -726,12 +696,6 @@ private:
 
   /** */
   Map<RegionQuadCombo, Expr> bcRegionQuadComboExprs_;
-
-  /** */
-  Map<int, Set<OrderedHandle<CellFilterStub> > > testToRegionsMap_;
-
-  /** */
-  Map<int, Set<OrderedHandle<CellFilterStub> > > unkToRegionsMap_;
 
   /** List of the sets of nonzero functional derivatives at 
    * each regionQuadCombo */
@@ -757,59 +721,13 @@ private:
   /** List the BC RQCs that should be skipped for each computation type. */
   Map<ComputationType, Set<RegionQuadCombo> > bcRqcToSkip_;
 
-  /** var functions for this equation set */
-  Array<Expr> varFuncs_;
-
-  /** unknown functions for this equation set */
-  Array<Expr> unkFuncs_;
 
   /** The point in function space about which the equations
    * are linearized */
   Array<Expr> unkLinearizationPts_;
 
-  /** unknown parameters for this equation set */
-  Expr unkParams_;
-
   /** unknown parameter evaluation points for this equation set */
   Expr unkParamEvalPts_;
-
-  /** map from variational function funcID to that function's
-   * position in list of var functions */
-  Array<Map<int, int> > varIDToReducedIDMap_;
-
-  /** map from unknown function funcID to that function's
-   * position in list of unk functions */
-  Array<Map<int, int> > unkIDToReducedIDMap_;
-
-  /** map from unknown function funcID to that function's
-   * position in list of unk functions */
-  Map<int, int> unkParamIDToReducedUnkParamIDMap_;
-
-  /** map from variational function funcID to that function's
-   * position in list of var blocks */
-  Map<int, int> varIDToBlockMap_;
-
-  /** map from unknown function funcID to that function's
-   * position in list of unk blocks */
-  Map<int, int> unkIDToBlockMap_;
-
-  /** Map from (block, unreduced var ID) to reduced ID */
-  Array<Array<int> > reducedVarID_;
-
-  /** Map from (block, unreduced unk ID) to reduced ID */
-  Array<Array<int> > reducedUnkID_;
-
-  /** Map from unreduced unk ID to reduced ID */
-  Array<int> reducedUnkParamID_;
-
-  /** Map from (block, reduced varID) to unreduced varID */
-  Array<Array<int> > unreducedVarID_;
-
-  /** Map from (block, reduced unkID) to unreduced unkID */
-  Array<Array<int> > unreducedUnkID_;
-
-  /** Map from reduced unkParamID to unreduced unkParamID */
-  Array<int> unreducedUnkParamID_;
 
   /** Set of the computation types supported here */
   Set<ComputationType> compTypes_;

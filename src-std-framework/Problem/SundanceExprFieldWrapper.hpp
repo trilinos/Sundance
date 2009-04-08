@@ -74,6 +74,13 @@ namespace SundanceStdFwk
 
       /* */
       GET_RCP(FieldBase);
+      /**
+       * Return the cell filter on which this field is defined 
+       */
+      virtual const CellFilter& domain() const 
+        {
+          return discreteSpace_.cellFilters(indices_[0]);
+        }
 
     public:
       Expr expr_;

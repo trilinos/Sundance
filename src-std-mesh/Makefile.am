@@ -187,6 +187,7 @@ $(top_srcdir)/src-std-mesh/Writers/SundanceVTKWriter.hpp
 
 SUNDANCE_MESHWRITERS = \
 $(top_srcdir)/src-std-mesh/Writers/SundanceExodusWriter.cpp \
+$(top_srcdir)/src-std-mesh/Writers/SundanceFieldBase.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriter.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceFieldWriterBase.cpp \
 $(top_srcdir)/src-std-mesh/Writers/SundanceMatlabWriter.cpp \

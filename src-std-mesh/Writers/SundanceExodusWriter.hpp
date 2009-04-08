@@ -59,9 +59,25 @@ namespace SundanceStdMesh
 
     /** */
     void writeParallelInfo(const string& filename) const ;
-        
 
-  private:
+
+  private:    
+    /** */
+    void getCharpp(const Array<std::string>& s, Array<const char*>& p) const ;
+
+    /** */
+    void findNodeSets(
+      Array<CellFilter>& nodesetFilters,
+      Array<int>& omnipresentFuncs,
+      Array<RefCountPtr<Array<int> > >& funcsForNodeset,
+      Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+      Array<int>& nsID,
+      Array<int>& nNodesPerSet,
+      Array<int>& nsNodePtr,
+      RefCountPtr<Array<int> > allNodes
+      ) const ;
+
+
 
     /** */
     void offset(Array<int>& x) const ;
@@ -70,13 +86,27 @@ namespace SundanceStdMesh
     std::string elemType(const CellType& type) const ;
 
     /** */
-    void writeMesh(int exoID) const ;
+    void writeMesh(int exoID, 
+      const Array<CellFilter>& nodesetFilters,
+      const Array<int>& omnipresentFuncs,
+      const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
+      const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+      const Array<int>& nsID,
+      const Array<int>& nNodesPerSet,
+      const Array<int>& nsNodePtr,
+      const RefCountPtr<Array<int> >& allNodes) const ;
 
+    /** */
+    void writeFields(int exoID, 
+      const Array<CellFilter>& nodesetFilters,
+      const Array<int>& omnipresentFuncs,
+      const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
+      const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+      const Array<int>& nsID) const ;
+    
     
   };
 }
-
-
 
 
 #endif
