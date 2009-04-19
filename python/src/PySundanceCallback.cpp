@@ -24,7 +24,7 @@ PyObject * PySundanceCallback::setFunction( PyObject * pyMethod)
     PyObject *p_func   = NULL;
 
 
-    assert(0 != p_args && "Null argument passed to setFunction()");
+    assert(0 != pyMethod && "Null argument passed to setFunction()");
     
     if (PyArg_ParseTuple(pyMethod, "O", &p_temp)) {
       // Assume that if this is a tuple, the item in the tuple is a
@@ -51,7 +51,7 @@ PyObject * PySundanceCallback::setFunction( PyObject * pyMethod)
     Py_INCREF(Py_None);
     p_result = Py_None;
 
-    assert(0 != mp_callback && "Pointer to callback not set");
+    assert(0 != callback_ && "Pointer to callback not set");
     return p_result;
 }
  

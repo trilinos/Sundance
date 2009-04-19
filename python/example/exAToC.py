@@ -15,8 +15,8 @@ from random import *
 def main():
 
   vecType = EpetraVectorType()
-  ny = 100
-  nx = 100
+  ny = 10
+  nx = 10
   mesher  = PartitionedRectangleMesher(0.0, 1.0, nx, 1,
                                        0.0, 1.0, ny, 1);
   mesh = mesher.getMesh();
@@ -43,7 +43,7 @@ def main():
   # Create a point locator object. This same object can be shared between
   # interpolator objects and sampler objects. The virtualGridSize argument
   # defines the virtual structured grid used to accelerate lookups.
-  virtualGridSize = [200, 200]
+  virtualGridSize = [27, 27]
   locator = AToCPointLocator(mesh, interior, virtualGridSize)
 
   # Create an interpolator object that will use our locator to interpolate
@@ -54,7 +54,7 @@ def main():
   # Create a vector of 2D points with interleaved coordinates, i.e.,
   # points = [x_0, y_0, x_1, y_1, ..., x_N, y_N]. The "doubleVector" type
   # is a python-wrapped std::vector<double> object.
-  nPts = 15000
+  nPts = 1500
   points = doubleVector(2*nPts)
 
   # Choose points from a uniform distribution on the unit square

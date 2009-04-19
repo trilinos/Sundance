@@ -1,7 +1,6 @@
 #ifndef PYSUNDANCECELLPREDICATE_H
 #define PYSUNDANCECELLPREDICATE_H
 
-#include "Python.h"
 #include "PySundanceCallback.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 

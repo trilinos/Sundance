@@ -40,6 +40,13 @@
 #include "TSFVectorSpace.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
+namespace SundanceCore
+{
+namespace Internal
+{
+class FunctionSupportResolver;
+}
+}
 namespace SundanceStdFwk
 {
   using namespace SundanceUtils;
@@ -104,6 +111,11 @@ namespace SundanceStdFwk
                   const VectorType<double>& vecType);
 
     /** */
+    DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+      const RefCountPtr<FunctionSupportResolver>& fsr,
+      const VectorType<double>& vecType);
+
+    /** */
     const RefCountPtr<DOFMapBase>& map() const {return map_;}
 
     /** return the number of functions */
@@ -150,6 +162,14 @@ namespace SundanceStdFwk
 
     /** */
     Array<CellFilter> maximalRegions(int n) const ;
+
+    /** */
+    void initVectorSpace(
+      const RefCountPtr<Array<int> >& isBCIndex, 
+      bool partitionBCs);
+    
+    /** */
+    void initImporter();
 
 
     /** */

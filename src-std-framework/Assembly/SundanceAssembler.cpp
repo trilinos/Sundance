@@ -234,7 +234,7 @@ void Assembler::init(const Mesh& mesh,
   {
     Tabs tab1;
     SUNDANCE_MSG2(verb, tab1 << "building row spaces");
-    mapBuilder = DOFMapBuilder(mesh, eqn, partitionBCs_, 
+    mapBuilder = DOFMapBuilder(mesh, eqn->fsr(), partitionBCs_, 
       verbSublist("DOF Map"));
 
     rowMap_ = mapBuilder.rowMap();

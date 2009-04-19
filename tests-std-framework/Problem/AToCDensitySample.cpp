@@ -53,8 +53,8 @@ int main(int argc, char** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, 100, 1,
-                                                         -1.0, 1.0, 100, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, 32, 1,
+                                                         -1.0, 1.0, 32, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
       cout << "making points" << endl;
       /* create a bunch of particles */
       int nCells = mesh.numCells(2);
-      int nPts = 150000;
+      int nPts = 15000;
 
       Array<double> pos(2*nPts);
       Array<double> f(F.size() * nPts);

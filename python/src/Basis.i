@@ -3,16 +3,18 @@
 
 %{
 
-#define HAVE_PY_FIAT
+
   // System includes
 #include <Python.h>
 
   // Sundance includes
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
+#ifdef HAVE_FIAT
 #include "SundanceFIATLagrange.hpp"
 #include "PySundanceFIATScalarAdapter.hpp"
 #include "PySundanceBasisCheck.hpp"
+#endif
   %}
 
 
@@ -74,8 +76,10 @@ namespace SundanceStdFwk
 
 
 %rename(Lagrange) makeLagrange;
+#ifdef HAVE_FIAT
 %rename(FIATLagrange) makeFIATLagrange;
 %rename(FIATScalarAdapter) makeFIATScalarAdapter;
+#endif
 
 %inline %{
   /* Create a Lagrange basis function */
@@ -83,17 +87,11 @@ namespace SundanceStdFwk
   {
     return new SundanceStdFwk::Lagrange(order);
   }
-  /* Create a Lagrange basis function */
+#ifdef HAVE_FIAT
   SundanceStdFwk::BasisFamily makeFIATLagrange(int order)
   {
-    #ifdef HAVE_FIAT
+
     return new SundanceStdFwk::FIATLagrange(order);
-    #else
-    TEST_FOR_EXCEPTION(true, RuntimeError, "FIATLagrange called, but "
-                       "FIAT not enabled. Try reconfiguring with "
-                       "--enable-fiat");
-    return BasisFamily(); // -Wall
-    #endif
   }
 
   SundanceStdFwk::BasisFamily makeFIATScalarAdapter(PyObject *py_basis ,
@@ -102,7 +100,7 @@ namespace SundanceStdFwk
     return new SundanceStdFwk::FIATScalarAdapter(py_basis,order);
   }
 
-
+#endif
   /* */
   SundanceStdFwk::BasisArray 
     BasisList()

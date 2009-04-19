@@ -76,11 +76,11 @@ static Time& findFuncDomainTimer()
 }
 
 DOFMapBuilder::DOFMapBuilder(const Mesh& mesh, 
-  const RefCountPtr<EquationSet>& eqn, bool findBCCols,
+  const RefCountPtr<FunctionSupportResolver>& fsr, bool findBCCols,
   const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
     mesh_(mesh),
-    eqn_(eqn),
+    fsr_(fsr),
     rowMap_(),
     colMap_(),
     isBCRow_(),
@@ -93,7 +93,7 @@ DOFMapBuilder::DOFMapBuilder(const Mesh& mesh,
 DOFMapBuilder::DOFMapBuilder(const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
     mesh_(),
-    eqn_(),
+    fsr_(),
     rowMap_(),
     colMap_(),
     isBCRow_(),
@@ -185,18 +185,18 @@ SundanceUtils::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(cons
 
 
 void DOFMapBuilder
-::getSubdomainUnkFuncMatches(const EquationSet& eqn,
+::getSubdomainUnkFuncMatches(const FunctionSupportResolver& fsr,
                              Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const 
 {
-  fmap.resize(eqn.numUnkBlocks());
+  fmap.resize(fsr.numUnkBlocks());
   
-  for (unsigned int r=0; r<eqn.numRegions(); r++)
+  for (unsigned int r=0; r<fsr.numRegions(); r++)
     {
-      CellFilter subreg = eqn.region(r);
-      Set<int> funcs = eqn.unksOnRegion(r).setUnion(eqn.bcUnksOnRegion(r));
+      CellFilter subreg = fsr.region(r);
+      Set<int> funcs = fsr.unksOnRegion(r).setUnion(fsr.bcUnksOnRegion(r));
       for (Set<int>::const_iterator i=funcs.begin(); i!=funcs.end(); i++)
         {
-          int block = eqn.blockForUnkID(*i);
+          int block = fsr.blockForUnkID(*i);
           if (fmap[block].containsKey(subreg))
             {
               fmap[block][subreg].put(*i);
@@ -210,18 +210,18 @@ void DOFMapBuilder
 }
 
 void DOFMapBuilder
-::getSubdomainVarFuncMatches(const EquationSet& eqn,
+::getSubdomainVarFuncMatches(const FunctionSupportResolver& fsr,
                              Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const 
 {
-  fmap.resize(eqn.numVarBlocks());
+  fmap.resize(fsr.numVarBlocks());
   
-  for (unsigned int r=0; r<eqn.numRegions(); r++)
+  for (unsigned int r=0; r<fsr.numRegions(); r++)
     {
-      CellFilter subreg = eqn.region(r);
-      Set<int> funcs = eqn.varsOnRegion(r).setUnion(eqn.bcVarsOnRegion(r));
+      CellFilter subreg = fsr.region(r);
+      Set<int> funcs = fsr.varsOnRegion(r).setUnion(fsr.bcVarsOnRegion(r));
       for (Set<int>::const_iterator i=funcs.begin(); i!=funcs.end(); i++)
         {
-          int block = eqn.blockForVarID(*i);
+          int block = fsr.blockForVarID(*i);
           if (fmap[block].containsKey(subreg))
             {
               fmap[block][subreg].put(*i);
@@ -315,18 +315,18 @@ Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
 void DOFMapBuilder::init(bool findBCCols)
 {
   SUNDANCE_LEVEL1("setup", "in DOFMapBuilder::init()");
-  SUNDANCE_LEVEL2("setup", "num var blocks=" << eqn_->numVarBlocks());
-  SUNDANCE_LEVEL2("setup", "num unk blocks=" << eqn_->numUnkBlocks());
+  SUNDANCE_LEVEL2("setup", "num var blocks=" << fsr_->numVarBlocks());
+  SUNDANCE_LEVEL2("setup", "num unk blocks=" << fsr_->numUnkBlocks());
 
-  rowMap_.resize(eqn_->numVarBlocks());
-  colMap_.resize(eqn_->numUnkBlocks());
-  isBCRow_.resize(eqn_->numVarBlocks());
-  isBCCol_.resize(eqn_->numUnkBlocks());
+  rowMap_.resize(fsr_->numVarBlocks());
+  colMap_.resize(fsr_->numUnkBlocks());
+  isBCRow_.resize(fsr_->numVarBlocks());
+  isBCCol_.resize(fsr_->numUnkBlocks());
 
   Array<Array<BasisFamily> > testBasis = testBasisArray();
   Array<Array<Set<CellFilter> > > testRegions = testCellFilters();
 
-  for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
+  for (unsigned int br=0; br<fsr_->numVarBlocks(); br++)
     {
       SUNDANCE_LEVEL2("setup", "making map for block row=" << br);
       rowMap_[br] = makeMap(mesh_, testBasis[br], testRegions[br]);
@@ -338,7 +338,7 @@ void DOFMapBuilder::init(bool findBCCols)
   Array<Array<BasisFamily> > unkBasis = unkBasisArray();
   Array<Array<Set<CellFilter> > > unkRegions = unkCellFilters();
 
-  for (unsigned int bc=0; bc<eqn_->numUnkBlocks(); bc++)
+  for (unsigned int bc=0; bc<fsr_->numUnkBlocks(); bc++)
     {
       if (isSymmetric(bc))
         {
@@ -354,29 +354,29 @@ void DOFMapBuilder::init(bool findBCCols)
     }
 }
 
-void DOFMapBuilder::extractUnkSetsFromEqnSet(const EquationSet& eqn,
+void DOFMapBuilder::extractUnkSetsFromFSR(const FunctionSupportResolver& fsr,
                                              Array<Set<int> >& funcSets,
                                              Array<CellFilter>& regions) const
 {
-  funcSets.resize(eqn.numRegions());
-  regions.resize(eqn.numRegions());
-  for (unsigned int r=0; r<eqn.numRegions(); r++)
+  funcSets.resize(fsr.numRegions());
+  regions.resize(fsr.numRegions());
+  for (unsigned int r=0; r<fsr.numRegions(); r++)
     {
-      regions[r] = eqn.region(r);
-      funcSets[r] = eqn.unksOnRegion(r).setUnion(eqn.bcUnksOnRegion(r));
+      regions[r] = fsr.region(r);
+      funcSets[r] = fsr.unksOnRegion(r).setUnion(fsr.bcUnksOnRegion(r));
     }
 }
 
-void DOFMapBuilder::extractVarSetsFromEqnSet(const EquationSet& eqn,
+void DOFMapBuilder::extractVarSetsFromFSR(const FunctionSupportResolver& fsr,
                                              Array<Set<int> >& funcSets,
                                              Array<CellFilter>& regions) const
 {
-  funcSets.resize(eqn.numRegions());
-  regions.resize(eqn.numRegions());
-  for (unsigned int r=0; r<eqn.numRegions(); r++)
+  funcSets.resize(fsr.numRegions());
+  regions.resize(fsr.numRegions());
+  for (unsigned int r=0; r<fsr.numRegions(); r++)
     {
-      regions[r] = eqn.region(r);
-      funcSets[r] = eqn.varsOnRegion(r).setUnion(eqn.bcVarsOnRegion(r));
+      regions[r] = fsr.region(r);
+      funcSets[r] = fsr.varsOnRegion(r).setUnion(fsr.bcVarsOnRegion(r));
     }
 }
 
@@ -521,16 +521,16 @@ CellFilter DOFMapBuilder::getMaxCellFilter(const Array<Set<CellFilter> >& filter
 
 Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
 {
-  Array<Array<Set<CellFilter> > > rtn(eqn_->numVarBlocks());
+  Array<Array<Set<CellFilter> > > rtn(fsr_->numVarBlocks());
 
-  for (unsigned int b=0; b<eqn_->numVarBlocks(); b++)
+  for (unsigned int b=0; b<fsr_->numVarBlocks(); b++)
     {
-      for (unsigned int i=0; i<eqn_->numVars(b); i++) 
+      for (unsigned int i=0; i<fsr_->numVars(b); i++) 
         {
-          int testID = eqn_->unreducedVarID(b, i);
+          int testID = fsr_->unreducedVarID(b, i);
           Set<CellFilter> s;
           const Set<OrderedHandle<CellFilterStub> >& cfs 
-            = eqn_->regionsForTestFunc(testID);
+            = fsr_->regionsForTestFunc(testID);
           for (Set<OrderedHandle<CellFilterStub> >::const_iterator 
                  j=cfs.begin(); j!=cfs.end(); j++)
             {
@@ -550,16 +550,16 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
 
 Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
 {
-  Array<Array<Set<CellFilter> > > rtn(eqn_->numUnkBlocks());
+  Array<Array<Set<CellFilter> > > rtn(fsr_->numUnkBlocks());
 
-  for (unsigned int b=0; b<eqn_->numUnkBlocks(); b++)
+  for (unsigned int b=0; b<fsr_->numUnkBlocks(); b++)
     {
-      for (unsigned int i=0; i<eqn_->numUnks(b); i++) 
+      for (unsigned int i=0; i<fsr_->numUnks(b); i++) 
         {
-          int unkID = eqn_->unreducedUnkID(b, i);
+          int unkID = fsr_->unreducedUnkID(b, i);
           Set<CellFilter> s;
           const Set<OrderedHandle<CellFilterStub> >& cfs 
-            = eqn_->regionsForUnkFunc(unkID);
+            = fsr_->regionsForUnkFunc(unkID);
           for (Set<OrderedHandle<CellFilterStub> >::const_iterator 
                  j=cfs.begin(); j!=cfs.end(); j++)
             {
@@ -579,12 +579,12 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
 
 Array<Array<BasisFamily> > DOFMapBuilder::testBasisArray() const 
 {
-  Array<Array<BasisFamily> > rtn(eqn_->numVarBlocks());
-  for (unsigned int b=0; b<eqn_->numVarBlocks(); b++)
+  Array<Array<BasisFamily> > rtn(fsr_->numVarBlocks());
+  for (unsigned int b=0; b<fsr_->numVarBlocks(); b++)
     {
-      for (unsigned int i=0; i<eqn_->numVars(b); i++) 
+      for (unsigned int i=0; i<fsr_->numVars(b); i++) 
         {
-          rtn[b].append(BasisFamily::getBasis(eqn_->varFunc(b, i)));
+          rtn[b].append(BasisFamily::getBasis(fsr_->varFunc(b, i)));
         }
     }
   return rtn;
@@ -592,12 +592,12 @@ Array<Array<BasisFamily> > DOFMapBuilder::testBasisArray() const
 
 Array<Array<BasisFamily> > DOFMapBuilder::unkBasisArray() const 
 {
-  Array<Array<BasisFamily> > rtn(eqn_->numUnkBlocks());
-  for (unsigned int b=0; b<eqn_->numUnkBlocks(); b++)
+  Array<Array<BasisFamily> > rtn(fsr_->numUnkBlocks());
+  for (unsigned int b=0; b<fsr_->numUnkBlocks(); b++)
     {
-      for (unsigned int i=0; i<eqn_->numUnks(b); i++) 
+      for (unsigned int i=0; i<fsr_->numUnks(b); i++) 
         {
-          rtn[b].append(BasisFamily::getBasis(eqn_->unkFunc(b, i)));
+          rtn[b].append(BasisFamily::getBasis(fsr_->unkFunc(b, i)));
         }
     }
   return rtn;
@@ -673,14 +673,14 @@ Set<CellFilter> DOFMapBuilder
 
 bool DOFMapBuilder::isSymmetric(int b) const 
 {
-  if ((int)eqn_->numVarBlocks() < b || (int)eqn_->numUnkBlocks() < b) return false;
+  if ((int)fsr_->numVarBlocks() < b || (int)fsr_->numUnkBlocks() < b) return false;
 
-  if (eqn_->numVars(b) != eqn_->numUnks(b)) return false;
+  if (fsr_->numVars(b) != fsr_->numUnks(b)) return false;
 
-  for (unsigned int i=0; i<eqn_->numVars(b); i++) 
+  for (unsigned int i=0; i<fsr_->numVars(b); i++) 
     {
-      BasisFamily basis1 = BasisFamily::getBasis(eqn_->varFunc(b,i));
-      BasisFamily basis2 = BasisFamily::getBasis(eqn_->unkFunc(b,i));
+      BasisFamily basis1 = BasisFamily::getBasis(fsr_->varFunc(b,i));
+      BasisFamily basis2 = BasisFamily::getBasis(fsr_->unkFunc(b,i));
       if (!(basis1 == basis2)) return false;
     }
   return true;
@@ -688,7 +688,7 @@ bool DOFMapBuilder::isSymmetric(int b) const
 
 bool DOFMapBuilder::regionIsMaximal(int r) const 
 {
-  const CellFilterStub* reg = eqn_->region(r).get();
+  const CellFilterStub* reg = fsr_->region(r).get();
   return (dynamic_cast<const MaximalCellFilter*>(reg) != 0);
 }
 
@@ -703,12 +703,12 @@ void DOFMapBuilder::markBCRows(int block)
   Array<RefCountPtr<Array<int> > > cellBatches;
   const RefCountPtr<DOFMapBase>& rowMap = rowMap_[block];
 
-  for (unsigned int r=0; r<eqn_->numRegions(); r++)
+  for (unsigned int r=0; r<fsr_->numRegions(); r++)
     {
       /* find the cells in this region */
-      CellFilter region = eqn_->region(r);
+      CellFilter region = fsr_->region(r);
 
-      if (!eqn_->isBCRegion(r)) continue;
+      if (!fsr_->isBCRegion(r)) continue;
 
       int dim = region.dimension(mesh_);
       CellSet cells = region.getCells(mesh_);
@@ -720,15 +720,15 @@ void DOFMapBuilder::markBCRows(int block)
       if (cellLID->size() == 0U) continue;
       
       /* find the functions that appear in BCs on this region */
-      const Set<int>& allBcFuncs = eqn_->bcVarsOnRegion(r);
+      const Set<int>& allBcFuncs = fsr_->bcVarsOnRegion(r);
 
       Set<int> bcFuncs;
       for (Set<int>::const_iterator 
              i=allBcFuncs.begin(); i != allBcFuncs.end(); i++)
         {
-          if (block == eqn_->blockForVarID(*i)) 
+          if (block == fsr_->blockForVarID(*i)) 
             {
-              bcFuncs.put(eqn_->reducedVarID(*i));
+              bcFuncs.put(fsr_->reducedVarID(*i));
             }
         }
       if (bcFuncs.size()==0) continue;
@@ -777,12 +777,12 @@ void DOFMapBuilder::markBCCols(int block)
   Array<RefCountPtr<Array<int> > > cellBatches;
   const RefCountPtr<DOFMapBase>& colMap = colMap_[block];
 
-  for (unsigned int r=0; r<eqn_->numRegions(); r++)
+  for (unsigned int r=0; r<fsr_->numRegions(); r++)
     {
       /* find the cells in this region */
-      CellFilter region = eqn_->region(r);
+      CellFilter region = fsr_->region(r);
 
-      if (!eqn_->isBCRegion(r)) continue;
+      if (!fsr_->isBCRegion(r)) continue;
 
       int dim = region.dimension(mesh_);
       CellSet cells = region.getCells(mesh_);
@@ -794,15 +794,15 @@ void DOFMapBuilder::markBCCols(int block)
       if (cellLID->size() == 0U) continue;
       
       /* find the functions that appear in BCs on this region */
-      const Set<int>& allBcFuncs = eqn_->bcUnksOnRegion(r);
+      const Set<int>& allBcFuncs = fsr_->bcUnksOnRegion(r);
 
       Set<int> bcFuncs;
       for (Set<int>::const_iterator 
              i=allBcFuncs.begin(); i != allBcFuncs.end(); i++)
         {
-          if (block == eqn_->blockForUnkID(*i)) 
+          if (block == fsr_->blockForUnkID(*i)) 
             {
-              bcFuncs.put(eqn_->reducedUnkID(*i));
+              bcFuncs.put(fsr_->reducedUnkID(*i));
             }
         }
       if (bcFuncs.size()==0) continue;

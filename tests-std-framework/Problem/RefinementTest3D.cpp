@@ -58,7 +58,7 @@ int main(int argc, char** argv)
       Mesh mesh = mesher.getMesh();
 
       MeshTransformation extruder 
-        = new ExtrusionMeshTransformation(0.0, 0.05, 1, meshType);
+        = new ExtrusionMeshTransformation(0.0, 0.08, 1, meshType);
 
       mesh = extruder.apply(mesh);
 
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
         = LinearSolverBuilder::createSolver( solverParams );
 
       double errEst = 1.0;
-      double localTol = 2.0e-6;
+      double localTol = 2.0e-5;
       double errNorm = 1.0;
 
       CellFilter interior = new MaximalCellFilter();
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
       }
 
 
-      Sundance::passFailTest(errNorm, 2.0e-4);
+      Sundance::passFailTest(errNorm, 2.0e-3);
     }
 	catch(std::exception& e)
 		{

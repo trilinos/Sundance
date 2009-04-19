@@ -1,7 +1,6 @@
 #ifndef PYSUNDANCELINEARSOLVER_H
 #define PYSUNDANCELINEARSOLVER_H
 
-#include "Python.h"
 #include "PySundanceCallback.hpp"
 #include "TSFLinearSolverBase.hpp"
 #include "TSFHandleable.hpp"

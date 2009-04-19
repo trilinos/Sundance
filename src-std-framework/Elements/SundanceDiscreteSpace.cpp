@@ -30,6 +30,7 @@
 
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceDOFMapBuilder.hpp"
+#include "SundanceFunctionSupportResolver.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "TSFProductVectorSpaceImpl.hpp"
@@ -182,7 +183,51 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
        replicate(basis, spBasis.nterms()));
 }
 
+DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
+      const RefCountPtr<FunctionSupportResolver>& fsr,
+      const VectorType<double>& vecType)
+  : map_(), 
+    mesh_(mesh), 
+    subdomains_(),
+    basis_(basis),
+    vecSpace_(), 
+    vecType_(vecType),
+    ghostImporter_()
+{
+  bool partitionBCs = false;
+  DOFMapBuilder builder(mesh, fsr, partitionBCs);
 
+  map_ = builder.colMap()[0];
+  Array<Set<CellFilter> > cf = builder.unkCellFilters()[0];
+
+  for (unsigned int i=0; i<cf.size(); i++)
+  {
+    Array<Array<CellFilter> > dimCF(mesh.spatialDim()+1);
+    for (Set<CellFilter>::const_iterator 
+           iter=cf[i].begin(); iter != cf[i].end(); iter++)
+    {
+      CellFilter f = *iter;
+      int dim = f.dimension(mesh);
+      dimCF[dim].append(f);
+    }
+    for (int d=mesh.spatialDim(); d>=0; d--)
+    {
+      if (dimCF[d].size() == 0) continue;
+      CellFilter f = dimCF[d][0];
+      for (unsigned int j=1; j<dimCF[d].size(); j++)
+      {
+        f = f + dimCF[d][j];
+      }
+      subdomains_.append(f);
+      break;
+    }
+  }
+  RefCountPtr<Array<int> > dummyBCIndices;
+  
+
+  initVectorSpace(dummyBCIndices, partitionBCs);
+  initImporter();
+}
 
 void DiscreteSpace::init(
   const Array<CellFilter>& regions,
@@ -207,6 +252,21 @@ void DiscreteSpace::init(
       DOFMapBuilder b;
       map_ = b.makeMap(mesh_, basis, cf);
     }
+
+  initVectorSpace(isBCIndex, partitionBCs);
+
+  if (!partitionBCs)
+  {
+    initImporter();
+  }
+}
+
+void DiscreteSpace::initVectorSpace(
+  const RefCountPtr<Array<int> >& isBCIndex, 
+  bool partitionBCs)
+{
+  TEST_FOR_EXCEPTION(map_.get()==0, InternalError,
+    "uninitialized map");
 
   int nDof = map_->numLocalDOFs();
   int lowDof = map_->lowestLocalDOF();
@@ -255,16 +315,24 @@ void DiscreteSpace::init(
       map_->numLocalDOFs(),
       &(dofs[0]));
   }
-
-  if (!partitionBCs)
-  {
-    RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
-    int nGhost = ghostIndices->size();
-    int* ghosts = 0;
-    if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
-    ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
-  }
 }
+
+void DiscreteSpace::initImporter()
+{
+  TEST_FOR_EXCEPTION(map_.get()==0, InternalError,
+    "uninitialized map");
+  TEST_FOR_EXCEPTION(vecSpace_.ptr().get()==0, InternalError,
+    "uninitialized vector space");
+  TEST_FOR_EXCEPTION(vecType_.ptr().get()==0, InternalError,
+    "uninitialized vector type");
+  
+  RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
+  int nGhost = ghostIndices->size();
+  int* ghosts = 0;
+  if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
+  ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
+}
+
 
 Array<CellFilter> DiscreteSpace::maximalRegions(int n) const
 {

@@ -56,8 +56,8 @@ int main(int argc, char** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 128;
-      int ny = 128;
+      int nx = 32;
+      int ny = 32;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(-1.0, 1.0, nx, np,
                                                          -1.0, 1.0, ny, 1,
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 
       
 
-      double tol = 1.0e-4;
+      double tol = 1.0e-3;
       Sundance::passFailTest(sqrt(errorXSq+errorYSq), tol);
 
     }

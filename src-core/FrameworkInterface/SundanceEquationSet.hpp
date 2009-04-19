@@ -451,6 +451,9 @@ public:
   /** Indicates whether any watch flags are active */
   bool hasActiveWatchFlag() const ;
 
+  /** */
+  const RefCountPtr<FunctionSupportResolver>& fsr() const {return fsr_;}
+
   //@}
       
 

@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceDOFMapBase.hpp"
-#include "SundanceEquationSet.hpp"
+#include "SundanceFunctionSupportResolver.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceCFMeshPair.hpp"
@@ -63,8 +63,8 @@ public:
   /** */
   DOFMapBuilder(const ParameterList& verbParams=*DOFMapBase::defaultVerbParams());
   /** */
-  DOFMapBuilder(const Mesh& mesh, const RefCountPtr<EquationSet>& eqn, 
-    bool findBCCols, const ParameterList& verbParams);
+  DOFMapBuilder(const Mesh& mesh, const RefCountPtr<FunctionSupportResolver>& fsr, 
+    bool findBCCols, const ParameterList& verbParams=*DOFMapBase::defaultVerbParams());
 
   /** */
   const Array<RefCountPtr<DOFMapBase> >& rowMap() const {return rowMap_;}
@@ -122,12 +122,12 @@ public:
   static bool& allowNodalMap() {static bool rtn=true; return rtn;}
 
   /** */
-  void extractUnkSetsFromEqnSet(const EquationSet& eqn,
+  void extractUnkSetsFromFSR(const FunctionSupportResolver& fsr,
     Array<Set<int> >& funcSets,
     Array<CellFilter>& regions) const ;
 
   /** */
-  void extractVarSetsFromEqnSet(const EquationSet& eqn,
+  void extractVarSetsFromFSR(const FunctionSupportResolver& fsr,
     Array<Set<int> >& funcSets,
     Array<CellFilter>& regions) const ;
 
@@ -137,10 +137,10 @@ public:
     const Array<CellFilter>& regions,
     const Mesh& mesh) const ;
         
-  void getSubdomainUnkFuncMatches(const EquationSet& eqn,
+  void getSubdomainUnkFuncMatches(const FunctionSupportResolver& fsr,
     Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const ;
         
-  void getSubdomainVarFuncMatches(const EquationSet& eqn,
+  void getSubdomainVarFuncMatches(const FunctionSupportResolver& fsr,
     Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const ;
 
   Array<SundanceUtils::Map<Set<int>, CellFilter> > 
@@ -175,7 +175,7 @@ private:
 
   Mesh mesh_;
 
-  RefCountPtr<EquationSet> eqn_;
+  RefCountPtr<FunctionSupportResolver> fsr_;
 
   Array<RefCountPtr<DOFMapBase> > rowMap_;
 

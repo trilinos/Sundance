@@ -104,8 +104,8 @@ int main(int argc, char** argv)
 
       NOXSolver solver(noxParams, F);
 
-      int numEcc = 10;
-      double finalEcc = 0.95;
+      int numEcc = 5;
+      double finalEcc = 0.4;
       double maxErr = 0.0;
       for (int r=1; r<=numEcc; r++)
         {

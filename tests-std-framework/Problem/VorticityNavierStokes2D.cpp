@@ -57,7 +57,7 @@ int main(int argc, char** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      int n=32;
+      int n=16;
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, n, np,
                                                          0.0, 1.0, n, 1,
                                                          meshType);
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
       double totalVorticity = evaluateIntegral(mesh, totalVorticityExpr);
       cerr << "total vorticity = " << totalVorticity << endl;
 
-      double tol = 1.0e-4;
+      double tol = 1.0e-3;
       Sundance::passFailTest(fabs(totalVorticity-1.0), tol);
       TimeMonitor::summarize();
     }

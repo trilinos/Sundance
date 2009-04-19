@@ -139,8 +139,8 @@ int main(int argc, char** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedRectangleMesher(0.0, 10.0, 128, 1,
-                                                         0.0, 10.0, 128, 1,
+      MeshSource mesher = new PartitionedRectangleMesher(0.0, 10.0, 64, 1,
+                                                         0.0, 10.0, 64, 1,
                                                          meshType);
       Mesh mesh = mesher.getMesh();
 
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
       w.addField("Drum_n", new ExprFieldWrapper(DnDisc));
       w.write();
 
-      double tol = 1.0e-6;
+      double tol = 4.0e-6;
       Sundance::passFailTest(::sqrt(errorSq), tol);
     }
 	catch(exception& e)
