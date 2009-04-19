@@ -618,6 +618,7 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
         }
       }
     }
+    A.endBlockFill();
   }
   
   configureVector(b);
