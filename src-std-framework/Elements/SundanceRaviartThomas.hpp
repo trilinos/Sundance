@@ -33,18 +33,18 @@
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "SundanceBasisDOFTopologyBase.hpp"
+#include "SundanceBasisFamilyBase.hpp"
 
 namespace SundanceStdFwk 
 {
 /** 
  * Lowest-order Raviart-Thomas basis 
  */
-class RaviartThomas : public BasisDOFTopologyBase
+class RaviartThomas : public HDivVectorBasis
 {
 public:
   /** */
-  RaviartThomas();
+  RaviartThomas(int spatialDim);
 
   /**   
    * \brief Inform caller as to whether a given cell type is supported 
@@ -72,6 +72,15 @@ public:
 
   /** */
   std::string description() const ;
+
+  /** */
+  virtual void refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const MultiIndex& deriv,
+    Array<Array<Array<double> > >& result
+    ) const ;  
 private:
 
     

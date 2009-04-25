@@ -29,6 +29,8 @@
 /* @HEADER@ */
 
 #include "SundanceBubble.hpp"
+#include "SundanceMultiIndex.hpp"
+#include "SundancePoint.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
 #include "TSFObjectWithVerbosity.hpp"

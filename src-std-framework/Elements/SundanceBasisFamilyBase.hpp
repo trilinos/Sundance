@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceBasisDOFTopologyBase.hpp"
+#include "SundanceTensorBasisBase.hpp"
 #include "SundanceBasisReferenceEvaluationBase.hpp"
 #include "TSFHandleable.hpp"
 #include "TSFPrintable.hpp"
@@ -59,51 +60,17 @@ class BasisFamilyBase
     public TSFExtended::Printable,
     public TSFExtended::ObjectWithVerbosity<BasisFamilyBase>,
     public BasisDOFTopologyBase,
+    public TensorBasisBase,
     public BasisReferenceEvaluationBase
 {
 public:
 
-  /** 
-   * \brief Return the polynomial order of the basis functions, for use in
-   * determining the quadrature rule required to integrate a product of
-   * basis functions exactly. The polynomial order will be the smallest
-   * integer for which all mixed partial derivatives vanish exactly.
-   *  
-   * Note: in H(div) and H(curl) spaces the order of accuracy is not
-   * always an integer, and the relationship between the order of accuracy
-   * and the return value of the order() method is not necessarily simple
-   * (for instance, it can depend on things such as the convexity of the
-   * boundary). Thus it is best to think of this method as specifying
-   * the required order of quadrature, and neither the order of accuracy of
-   * approximation nor the order to which the space is complete.
-   */
+  /** */
   virtual int order() const = 0 ;
-
-  /** 
-   * \brief Return the dimension of the members of 
-   * a vector-valued basis. Return 1 if the basis
-   * is scalar-valued. 
-   */
-  virtual int dim() const = 0 ;
-
-  /** \brief Inform caller as to whether I am a scalar basis. Default
-   * implementation returns false. Overridden by ScalarBasis. */
-  virtual bool isScalarBasis() const {return false;}
-
-  /** \brief Inform caller as to whether I am a covariant basis. Default
-   * implementation returns false. Overridden by CovariantBasis. */
-  virtual bool isCovariantBasis() const {return false;}
-
-  /** \brief Inform caller as to whether I am a contravariant basis. Default
-   * implementation returns false. Overridden by CovariantBasis.  */
-  virtual bool isContravariantBasis() const {return false;}
 
   /** */
   virtual bool lessThan(const BasisDOFTopologyBase* other) const ;
 };
-
-
-
 
 
 /* ----- Subtypes of BasisFamilyBase that specify transformation type --- */
@@ -116,40 +83,64 @@ class ScalarBasis
   : public BasisFamilyBase
 {
 public:
+  /** Inform caller that my tensor order is zero */
+  int tensorOrder() const {return 0;}
+
   /** Inform caller that I am a scalar basis */
   bool isScalarBasis() const {return true;}
   
-   /** 
-    * \brief Return the dimension of the members of a scalar-valued basis  
-    */
+   /** Return the dimension of the members of a scalar-valued basis  */
   int dim() const {return 1;}
 };
 
-/** 
- * Base class for bases for covariant vector fields (fields in H(div) 
- * spaces).
- */
-class CovariantVectorBasis
+/** */
+class VectorBasis
   : public BasisFamilyBase
 {
 public:
-  /** Inform caller that I am a covariant basis */
-  bool isCovariantBasis() const {return true;}
+  /** */
+  VectorBasis(int dim) : dim_(dim) {}
+  /** Inform caller that my tensor order is one */
+  int tensorOrder() const {return 1;}
 
+   /** Return the dimension of the members of a scalar-valued basis  */
+  int dim() const {return dim_;}
+
+private:
+  int dim_;
 };
 
 
 /** 
- * Base class for bases for contravariant vector fields (fields in H(curl) 
- * spaces).
+ * Base class for bases living in H(div) 
  */
-class ContravariantVectorBasis
-  : public BasisFamilyBase
+class HDivVectorBasis
+  : public VectorBasis
 {
 public:
-  /** Inform caller that I am a contravariant basis */
-  bool isContravariantBasis() const {return true;}
+  /** */
+  HDivVectorBasis(int dim) : VectorBasis(dim) {}
+  
+  /** Inform caller that I am an H(div) basis */
+  bool isHDivBasis() const {return true;}
+
 };
+
+/** 
+ * Base class for bases living in H(curl) 
+ */
+class HCurlVectorBasis
+  : public VectorBasis
+{
+public:
+  /** */
+  HCurlVectorBasis(int dim) : VectorBasis(dim) {}
+
+  /** Inform caller that I am an H(curl) basis */
+  bool isHCurlBasis() const {return true;}
+
+};
+
 
 
 

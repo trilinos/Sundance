@@ -31,6 +31,8 @@
 #include "SundanceNedelec.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundanceMultiIndex.hpp"
+#include "SundancePoint.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
@@ -40,7 +42,8 @@ using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-Nedelec::Nedelec()
+Nedelec::Nedelec(int spatialDim)
+  : HCurlVectorBasis(spatialDim)
 {}
 
 bool Nedelec::supportsCellTypePair(
@@ -125,6 +128,13 @@ void Nedelec::getReferenceDOFs(
       dofs[1] = tuple<Array<int> >(tuple(0), tuple(1), tuple(2));
       dofs[2] = tuple(Array<int>());
       return;
+    case TetCell:
+      dofs.resize(4);
+      dofs[0] = tuple(Array<int>());
+      dofs[1] = tuple<Array<int> >(tuple(0), tuple(1), tuple(2), tuple(3));
+      dofs[2] = tuple(Array<int>());
+      dofs[3] = tuple(Array<int>());
+      return;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
                          << cellType << " not implemented in Nedelec basis");
@@ -140,73 +150,7 @@ void Nedelec::refEval(
   const MultiIndex& deriv,
   Array<Array<Array<double> > >& result) const
 {
-  int dim = dimension(maximalCellType);
-  result.resize(dim);
-  for (int i=0; i<dim; i++) result[i].resize(pts.length());
-
-  switch(cellType)
-    {
-    case TriangleCell:
-      for (int d=0; d<dim; d++)
-      {
-        for (int i=0; i<pts.length(); i++)
-        {
-          evalOnTriangle(d, pts[i], deriv, result[d][i]);
-        }
-      }
-      return;
-    default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
-                         "Nedelec::refEval() unimplemented for cell type "
-                         << cellType);
-
-    }
+  TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of Nedelec elements not yet supported");
 }
 
-/* ---------- evaluation on different cell types -------------- */
-
-void Nedelec::evalOnTriangle(int dir,
-  const Point& pt, 
-  const MultiIndex& deriv,
-  Array<double>& result) const
-{
-	ADReal x = ADReal(pt[0], 0, 2);
-	ADReal y = ADReal(pt[1], 1, 2);
-	ADReal one(1.0, 2);
-
-  Array<ADReal> tmp;
-
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, "x=" << x.value() << " y="
-               << y.value());
-
-  result.resize(3);
-  tmp.resize(3);
-
-  switch(dir)
-  {
-    case 0:
-      tmp[0] = 1.0-y;
-      tmp[1] = -y;
-      tmp[2] = -y;
-      break;
-    case 1:
-      tmp[0] = x;
-      tmp[1] = x;
-      tmp[2] = x-1.0;
-      break;
-    default:
-      TEST_FOR_EXCEPTION(true, InternalError, "impossible direction="
-        << dir << " in Nedelec::evalOnTriangle()");
-  }
-
-	for (int i=0; i<tmp.length(); i++)
-  {
-    SUNDANCE_OUT(this->verbosity() > VerbHigh,
-      "tmp[" << i << "]=" << tmp[i].value() 
-      << " grad=" << tmp[i].gradient());
-    if (deriv.order()==0) result[i] = tmp[i].value();
-    else 
-      result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
-  }
-}
 

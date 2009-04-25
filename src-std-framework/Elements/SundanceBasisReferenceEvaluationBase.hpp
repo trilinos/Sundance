@@ -33,10 +33,11 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellType.hpp"
-#include "SundancePoint.hpp"
-#include "SundanceMultiIndex.hpp"
 #include "Teuchos_Array.hpp"
 
+
+namespace SundanceUtils {class Point;}
+namespace SundanceCore {namespace Internal {class MultiIndex;}}
 
 namespace SundanceStdFwk {
 
@@ -114,6 +115,7 @@ x   *           Specifically,
     const MultiIndex& deriv,
     Array<Array<Array<double> > >& result
     ) const = 0 ;  
+
 };
 
 }

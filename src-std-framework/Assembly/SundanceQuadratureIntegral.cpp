@@ -30,6 +30,7 @@
 
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceGaussianQuadrature.hpp"
+#include "SundanceMultiIndex.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"

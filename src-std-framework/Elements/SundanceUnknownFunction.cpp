@@ -67,6 +67,6 @@ UnknownFunction::UnknownFunction(const Array<BasisFamily>& basis,
                                  const SpectralBasis& spBasis,
                                  const string& name)
   : UnknownFunctionStub(name, spBasis, vectorDimStructure(basis),
-                        rcp(new UnknownFunctionData(replicate(basis, spBasis.nterms())))), 
+    rcp(new UnknownFunctionData(replicate(basis, spBasis.nterms())))), 
     FuncWithBasis(replicate(basis, spBasis.nterms()))
 {;}

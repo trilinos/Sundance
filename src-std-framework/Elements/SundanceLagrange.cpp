@@ -31,6 +31,8 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundanceMultiIndex.hpp"
+#include "SundancePoint.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 

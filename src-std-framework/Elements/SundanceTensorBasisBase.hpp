@@ -28,72 +28,44 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_NEDELEC_H
-#define SUNDANCE_NEDELEC_H
+#ifndef SUNDANCE_TENSORBASISBASE_H
+#define SUNDANCE_TENSORBASISBASE_H
 
-#include "SundanceDefs.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "SundanceBasisFamilyBase.hpp"
+namespace SundanceStdFwk {
 
-namespace SundanceStdFwk 
-{
 /** 
- * Lowest-order Nedelec basis 
+ *
  */
-class Nedelec : public HCurlVectorBasis
+class TensorBasisBase
 {
 public:
-  /** */
-  Nedelec(int spatialDim);
 
-  /**   
-   * \brief Inform caller as to whether a given cell type is supported 
+  /** 
+   * \brief Return the tensor order of the basis
    */
-  bool supportsCellTypePair(
-    const CellType& maximalCellType,
-    const CellType& cellType
-    ) const ;
+  virtual int tensorOrder() const = 0 ;
 
-  /** */
-  void print(std::ostream& os) const ;
+  /** 
+   * \brief Return the dimension of the members of 
+   * a vector-valued basis. Return 1 if the basis
+   * is scalar-valued. 
+   */
+  virtual int dim() const = 0 ;
 
-  /** */
-  int order() const {return 1;}
+  /** \brief Inform caller as to whether I am a scalar basis. Default
+   * implementation returns false. Overridden by ScalarBasis. */
+  virtual bool isScalarBasis() const {return false;}
 
-  /** return the number of nodes for this basis on the given cell type */
-  int nReferenceDOFs(
-    const CellType& maximalCellType,
-    const CellType& cellType
-    ) const ;
+  /** \brief Inform caller as to whether I am in H(div) */
+  virtual bool isHDivBasis() const {return false;}
 
-  /** */
-  void getReferenceDOFs(
-    const CellType& maximalCellType,
-    const CellType& cellType,
-    Array<Array<Array<int> > >& dofs) const ;
-
-  /** */
-  void refEval(
-    const CellType& maximalCellType,
-    const CellType& cellType,
-    const Array<Point>& pts,
-    const MultiIndex& deriv,
-    Array<Array<Array<double> > >& result) const ;
-
-
-
-  /* Handleable boilerplate */
-  GET_RCP(BasisFamilyBase);
-
-private:
-
-    
-  /** evaluate on a triangle cell  */
-  void evalOnTriangle(int dir, const Point& pt,
-    const MultiIndex& deriv,
-    Array<double>& result) const ;
-    
+  /** \brief Inform caller as to whether I am in H(curl) */
+  virtual bool isHCurlBasis() const {return false;}
 };
-}
+
+
+
+} // namespace SundanceStdFwk
+
 
 #endif

@@ -29,6 +29,9 @@
 /* @HEADER@ */
 
 #include "SundanceRaviartThomas.hpp"
+#include "SundancePoint.hpp"
+#include "SundanceCellType.hpp"
+#include "SundanceMultiIndex.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceTypeUtils.hpp"
 #include "TSFObjectWithVerbosity.hpp"
@@ -40,7 +43,8 @@ using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-RaviartThomas::RaviartThomas()
+RaviartThomas::RaviartThomas(int spatialDim)
+  : HDivVectorBasis(spatialDim)
 {}
 
 bool RaviartThomas::supportsCellTypePair(
@@ -146,4 +150,15 @@ bool RaviartThomas::lessThan(const BasisDOFTopologyBase* other) const
   if (typeLessThan(other, this)) return false;
 
   return false;
+}
+
+
+void RaviartThomas::refEval(
+  const CellType& maximalCellType,
+  const CellType& cellType,
+  const Array<Point>& pts,
+  const MultiIndex& deriv,
+  Array<Array<Array<double> > >& result) const
+{
+  TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements not yet supported");
 }

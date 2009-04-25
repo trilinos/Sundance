@@ -100,6 +100,12 @@ public:
    */
   int dim() const ;
 
+  /** 
+   * \brief Return the tensor order of the members of 
+   * a basis.
+   */
+  int tensorOrder() const {return ptr()->tensorOrder();}
+
   /** */
   bool operator==(const BasisFamily& other) const ;
 
@@ -108,11 +114,11 @@ public:
   /** \brief Inform caller as to whether I am a scalar basis. */
   bool isScalarBasis() const {return ptr()->isScalarBasis();}
 
-  /** \brief Inform caller as to whether I am a covariant basis. */
-  bool isCovariantBasis() const {return ptr()->isCovariantBasis();}
+  /** \brief Inform caller as to whether I am an H(div) basis. */
+  bool isHDivBasis() const {return ptr()->isHDivBasis();}
 
-  /** \brief Inform caller as to whether I am a contravariant basis. */
-  bool isContravariantBasis() const {return ptr()->isContravariantBasis();}
+  /** \brief Inform caller as to whether I am an H(curl) basis. */
+  bool isHCurlBasis() const {return ptr()->isHCurlBasis();}
 
   /** Sum up the dim() values for array of bases. */
   static unsigned int size(const Array<BasisFamily>& b) ;
