@@ -247,11 +247,11 @@ void Assembler::init(const Mesh& mesh,
       lowestRow_[b] = rowMap_[b]->lowestLocalDOF();
       SUNDANCE_MSG2(verb, tab2 << "block " << b << ": lowest row="
         << lowestRow_[b]);
-      externalRowSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray()[b], 
+      externalRowSpace_[b] = rcp(new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
           rowMap_[b], rowVecType_[b]));
       if (partitionBCs_)
       {
-        privateRowSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.testBasisArray()[b], 
+        privateRowSpace_[b] = rcp(new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
             rowMap_[b], isBCRow_[b], rowVecType_[b]));
       }
       else
@@ -270,11 +270,11 @@ void Assembler::init(const Mesh& mesh,
     for (unsigned int b=0; b<eqn_->numUnkBlocks(); b++) 
     {
       Tabs tab2;
-      externalColSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray()[b], 
+      externalColSpace_[b] = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
           colMap_[b], colVecType_[b]));
       if (partitionBCs_)
       {
-        privateColSpace_[b] = rcp(new DiscreteSpace(mesh, mapBuilder.unkBasisArray()[b], 
+        privateColSpace_[b] = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
             colMap_[b], isBCCol_[b], colVecType_[b]));
         converter_[b] = rcp(new PartitionedToMonolithicConverter(privateColSpace_[b]->vecSpace(), isBCCol_[b], externalColSpace_[b]->vecSpace()));
       }

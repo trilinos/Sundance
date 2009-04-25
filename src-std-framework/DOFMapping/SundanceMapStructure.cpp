@@ -30,6 +30,8 @@
 
 #include "SundanceMapStructure.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceExceptions.hpp"
+#include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
@@ -40,7 +42,7 @@ using std::endl;
 using std::setw;
 
 MapStructure::MapStructure(int nTotalFuncs,
-                           const Array<BasisFamily>& bases,
+                           const Array<RCP<BasisDOFTopologyBase> >& bases,
                            const Array<Array<int> >& funcs)
 {
   init(nTotalFuncs, bases, funcs);
@@ -48,14 +50,14 @@ MapStructure::MapStructure(int nTotalFuncs,
 
 
 MapStructure::MapStructure(int nTotalFuncs,
-                           const BasisFamily& bases,
+                           const RCP<BasisDOFTopologyBase>& bases,
                            const Array<Array<int> >& funcs)
 {
   init(nTotalFuncs, replicate(bases, funcs.size()), funcs);
 }
 
 MapStructure::MapStructure(int nTotalFuncs,
-                           const BasisFamily& bases)
+                           const RCP<BasisDOFTopologyBase>& bases)
 {
   Array<int> f(nTotalFuncs);
   for (int i=0; i<nTotalFuncs; i++) f[i] = i;
@@ -65,7 +67,7 @@ MapStructure::MapStructure(int nTotalFuncs,
 
 
 void MapStructure::init(int nTotalFuncs,
-                        const Array<BasisFamily>& bases,
+                        const Array<RCP<BasisDOFTopologyBase> >& bases,
                         const Array<Array<int> >& funcs)
 {
   bases_ = bases;
@@ -137,4 +139,19 @@ std::ostream& MapStructure::print(std::ostream& os) const
 }
 
 
+namespace SundanceStdFwk{
+namespace Internal
+{
+
+
+Array<RCP<BasisDOFTopologyBase> > replicate(
+  const RCP<BasisDOFTopologyBase>& model,
+  int n)
+{
+  Array<RCP<BasisDOFTopologyBase> > rtn(n);
+  for (int i=0; i<n; i++) rtn[i] = model;
+  return rtn;
+}
+
+}}
 

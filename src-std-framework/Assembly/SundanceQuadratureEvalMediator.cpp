@@ -579,7 +579,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     Tabs tab1;
     SUNDANCE_MSG2(verb(), tab1 << "processing dof map chunk=" << chunk
       << " of " << mapStruct->numBasisChunks());
-    const BasisFamily& basis = mapStruct->basis(chunk);
+    BasisFamily basis = rcp_dynamic_cast<BasisFamilyBase>(mapStruct->basis(chunk));
     SUNDANCE_MSG4(verb(), tab1 << "basis=" << basis);
 
     int nFuncs = mapStruct->numFuncs(chunk);

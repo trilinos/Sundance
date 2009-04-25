@@ -50,6 +50,7 @@ using std::string;
 namespace Internal
 {
 class FunctionSupportResolver;
+class CommonFuncDataStub;
 
 /** 
  * \relates EquationSet
@@ -501,10 +502,10 @@ public:
   unsigned int numUnks(int block) const ;
 
   /** Returns the i-th variational function in block b */
-  const Expr& varFunc(int b, int i) const ;
+  RCP<const CommonFuncDataStub> varFuncData(int b, int i) const ;
 
   /** Returns the i-th unknown function in block b */
-  const Expr& unkFunc(int b, int i) const ;
+  RCP<const CommonFuncDataStub> unkFuncData(int b, int i) const ;
 
   /** Returns the i-th unknown parameter */
   const Expr& unkParam(int i) const ;

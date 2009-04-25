@@ -81,6 +81,7 @@ public:
     Array<Array<Array<double> > >& result) const ;
 
 
+
   /* Handleable boilerplate */
   GET_RCP(BasisFamilyBase);
 

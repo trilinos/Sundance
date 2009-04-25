@@ -298,7 +298,9 @@ LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler,
     {
       for (unsigned int j=0; j<eqn->numUnks(i); j++) 
         {
-          names_[i].append(eqn->unkFunc(i,j).toString());
+//          names_[i].append(eqn->unkFunc(i,j).toString());
+          names_[i].append("u(" + Teuchos::toString(i) + ", "
+            + Teuchos::toString(j) + ")");
         }
     }
 }

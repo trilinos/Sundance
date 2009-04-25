@@ -33,37 +33,41 @@
 
 
 #include "SundanceDefs.hpp"
-#include "SundanceBasisFamily.hpp"
+#include "Teuchos_Array.hpp"
+#include "Teuchos_RefCountPtr.hpp"
 
 namespace SundanceStdFwk
 {
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
+class BasisDOFTopologyBase;
+
 namespace Internal
 {
 using namespace Teuchos;
+
 
 class MapStructure
 {
 public:
   /** */
   MapStructure(int nTotalFuncs,
-    const Array<BasisFamily>& bases,
+    const Array<RCP<BasisDOFTopologyBase> >& bases,
     const Array<Array<int> >& funcs);
   /** */
   MapStructure(int nTotalFuncs,
-    const BasisFamily& basis,
+    const RCP<BasisDOFTopologyBase>& basis,
     const Array<Array<int> >& funcs);
   /** */
   MapStructure(int nTotalFuncs,
-    const BasisFamily& basis);
+    const RCP<BasisDOFTopologyBase>& basis);
 
   /** */
   int numBasisChunks() const {return bases_.size();}
 
   /** */
-  const BasisFamily& basis(int basisChunk) const
+  const RCP<BasisDOFTopologyBase>& basis(int basisChunk) const
     {return bases_[basisChunk];}
 
   /** */
@@ -86,14 +90,19 @@ public:
 private:
   /** */
   void init(int nTotalFuncs,
-    const Array<BasisFamily>& bases,
+    const Array<RCP<BasisDOFTopologyBase> >& bases,
     const Array<Array<int> >& funcs);
 
-  Array<BasisFamily> bases_;
+  Array<RCP<BasisDOFTopologyBase> > bases_;
   Array<Array<int> > funcs_;
   Array<int> chunkForFuncID_;
   Array<int> indexForFuncID_;
 };
+
+/** \relates BasisDOFTopologyBase */
+Array<RCP<BasisDOFTopologyBase> > replicate(
+  const RCP<BasisDOFTopologyBase>& model,
+  int n);
 
 }
 }
@@ -107,5 +116,6 @@ inline std::ostream& operator<<(std::ostream& os,
 {
   return m.print(os);
 }
+
 }}
 #endif

@@ -35,6 +35,7 @@
 #include "SundancePartialElementDOFMap.hpp"
 #include "SundanceLagrange.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -52,7 +53,7 @@ PartialElementDOFMap::PartialElementDOFMap(const Mesh& mesh,
     subdomain_(subdomain),
     funcDomains_(nFuncs, subdomain),
     elemDofs_(nElems_ * nFuncs, -1),
-    structure_(rcp(new MapStructure(nFuncs_, new Lagrange(0)))),
+    structure_(rcp(new MapStructure(nFuncs_, rcp(new Lagrange(0))))),
     allFuncs_()
 {
   init();

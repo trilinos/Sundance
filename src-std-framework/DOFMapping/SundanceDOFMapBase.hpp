@@ -35,11 +35,10 @@
 #include "SundanceMesh.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
-#include "SundanceBasisFamily.hpp"
 #include "SundanceMapStructure.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
+namespace Teuchos {class Time;}
 
 namespace SundanceStdFwk
 {
@@ -351,9 +350,9 @@ namespace SundanceStdFwk
 
       void addGhostIndex(int dof) {ghostIndices_->append(dof);}
 
-      static Time& dofLookupTimer() ;
+      static Teuchos::Time& dofLookupTimer() ;
 
-      static Time& batchedDofLookupTimer() ;
+      static Teuchos::Time& batchedDofLookupTimer() ;
 
     private:
 
@@ -372,7 +371,5 @@ namespace SundanceStdFwk
     };
   }
 }
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceMixedDOFMap.hpp"
+#include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
@@ -57,7 +58,7 @@ static Time& maxDOFBuildTimer()
 }
 
 MixedDOFMap::MixedDOFMap(const Mesh& mesh, 
-  const BasisArray& basis,
+  const Array<RCP<BasisDOFTopologyBase> >& basis,
   const CellFilter& maxCells,
   const ParameterList& verbParams)
   : SpatiallyHomogeneousDOFMapBase(mesh, basis.size(), verbParams), 
@@ -81,24 +82,25 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
   Tabs tab;
   SUNDANCE_VERB_LOW(tab << "building mixed DOF map");
 
-  SundanceUtils::Map<BasisFamily, int> basisToChunkMap;
-  Array<BasisFamily> chunkBases;
+  SundanceUtils::Map<OrderedHandle<BasisDOFTopologyBase>, int> basisToChunkMap;
+  Array<RCP<BasisDOFTopologyBase> > chunkBases;
   Array<Array<int> > chunkFuncs;
   
   int chunk = 0;
   int nBasis = basis.size();
   for (int i=0; i<nBasis; i++)
     {
-      if (!basisToChunkMap.containsKey(basis[i]))
+      OrderedHandle<BasisDOFTopologyBase> bh = basis[i];
+      if (!basisToChunkMap.containsKey(bh))
         {
           chunkBases.append(basis[i]);
-          basisToChunkMap.put(basis[i], chunk);
+          basisToChunkMap.put(bh, chunk);
           chunkFuncs.append(tuple(i));
           chunk++;
         }
       else
         {
-          int b = basisToChunkMap.get(basis[i]);
+          int b = basisToChunkMap.get(bh);
           chunkFuncs[b].append(i);
         }
     }

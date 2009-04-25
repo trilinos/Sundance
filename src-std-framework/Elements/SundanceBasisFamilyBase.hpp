@@ -37,6 +37,7 @@
 #include "TSFHandleable.hpp"
 #include "TSFPrintable.hpp"
 #include "TSFObjectWithVerbosity.hpp"
+#include "SundanceTypeUtils.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 namespace SundanceStdFwk {
@@ -61,25 +62,6 @@ class BasisFamilyBase
     public BasisReferenceEvaluationBase
 {
 public:
-
-  /** \brief Comparison function allowing use of 
-   *  OrderedHandle<BasisFamilyBase>
-   *  in sorted containers. The default implementation compares the
-   *  values of order().
-   *
-   *  Note: this method should normally only be called from within the
-   *  comparison operator of OrderedHandle, in which context comparisons
-   *  between different derived types have already been resolved by 
-   *  comparisons of typeid. Thus, we can require that the lessThan()
-   *  function be called only with an argument whose typeid is 
-   *  equal to that of <tt>*this.</tt> We recommend that all overriding
-   *  implementations check that condition.  
-   * 
-   * \param other 
-   *         [in] Pointer to another basis family object. 
-   *         Precondition: <tt>typeid(*this)==typeid(*other).</tt>
-   */
-  virtual bool lessThan(const BasisFamilyBase* other) const ;
 
   /** 
    * \brief Return the polynomial order of the basis functions, for use in
@@ -115,6 +97,9 @@ public:
   /** \brief Inform caller as to whether I am a contravariant basis. Default
    * implementation returns false. Overridden by CovariantBasis.  */
   virtual bool isContravariantBasis() const {return false;}
+
+  /** */
+  virtual bool lessThan(const BasisDOFTopologyBase* other) const ;
 };
 
 

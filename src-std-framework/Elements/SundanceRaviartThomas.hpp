@@ -28,63 +28,54 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_UNKNOWNFUNCELEMENT_H
-#define SUNDANCE_UNKNOWNFUNCELEMENT_H
-
+#ifndef SUNDANCE_RAVIARTTHOMAS_H
+#define SUNDANCE_RAVIARTTHOMAS_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSymbolicFuncElement.hpp"
-#include "SundanceUnknownFuncDataStub.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+#include "SundanceBasisDOFTopologyBase.hpp"
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
-namespace SundanceCore
+namespace SundanceStdFwk 
 {
-  using namespace SundanceUtils;
+/** 
+ * Lowest-order Raviart-Thomas basis 
+ */
+class RaviartThomas : public BasisDOFTopologyBase
+{
+public:
+  /** */
+  RaviartThomas();
 
+  /**   
+   * \brief Inform caller as to whether a given cell type is supported 
+   */
+  bool supportsCellTypePair(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+  /** */
+  virtual void getReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    Array<Array<Array<int> > >& dofs
+    ) const ;
 
-    using std::string;
-    using std::ostream;
+  /** */
+  virtual int nReferenceDOFs(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
 
-    /** 
-     * UnknownFuncElement represents a scalar-valued element of a (possibly)
-     * list-valued UnknownFunction
-     */
-    class UnknownFuncElement : public SymbolicFuncElement
-    {
-    public:
-      /** */
-      UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
-        const string& name,
-        const string& suffix,
-        int commonFuncID,
-        int myIndex);
+  /** */
+  virtual bool lessThan(const BasisDOFTopologyBase* other) const ;
 
-      /** virtual destructor */
-      virtual ~UnknownFuncElement() {;}
+  /** */
+  std::string description() const ;
+private:
 
-      /** Get the data associated with the vector-valued function 
-       * that contains this function element. */
-      RCP<const UnknownFuncDataStub> commonData() const {return commonData_;}
-
-      /** */
-      virtual XMLObject toXML() const ;
-
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
-      
-    private:
-       const RefCountPtr<const UnknownFuncDataStub> commonData_;
-    };
-  }
+    
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

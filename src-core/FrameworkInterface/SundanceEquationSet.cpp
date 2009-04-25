@@ -926,6 +926,7 @@ void EquationSet
 
   for (DerivSet::const_iterator i=nonzeros.begin(); i!=nonzeros.end(); i++)
   {
+    Tabs tab1;
     const MultipleDeriv& md = *i;
     if (md.order() != 2) continue;
       
@@ -939,21 +940,25 @@ void EquationSet
         "addToVarUnkPairs()");
       f.append(fd);
     }
+
+    SUNDANCE_MSG2(verb, tab1 << "f1=" << f[0]->sharedFuncID()
+      << ", f2=" << f[1]->sharedFuncID() << ", vars=" << vars 
+      << ", unks=" << unks);
     
     bool gotIt=false;
-    if (unks.contains(f[0]->funcComponentID())
-      && vars.contains(f[1]->funcComponentID()))
+    if (unks.contains(f[0]->sharedFuncID())
+      && vars.contains(f[1]->sharedFuncID()))
     {
-      int unkID = f[0]->funcComponentID();
-      int varID = f[1]->funcComponentID();
+      int unkID = f[0]->sharedFuncID();
+      int varID = f[1]->sharedFuncID();
       funcPairs->put(OrderedPair<int, int>(varID, unkID));
       gotIt=true;
     }
-    if (unks.contains(f[1]->funcComponentID())
-      && vars.contains(f[0]->funcComponentID()))
+    if (unks.contains(f[1]->sharedFuncID())
+      && vars.contains(f[0]->sharedFuncID()))
     {
-      int unkID = f[1]->funcComponentID();
-      int varID = f[0]->funcComponentID();
+      int unkID = f[1]->sharedFuncID();
+      int varID = f[0]->sharedFuncID();
       funcPairs->put(OrderedPair<int, int>(varID, unkID));
       gotIt=true;
     }
@@ -1192,13 +1197,13 @@ unsigned int EquationSet::numUnks(int block) const
 {return fsr_->numUnks(block);}
 
 /* Returns the i-th variational function in block b */
-const Expr& EquationSet::varFunc(int b, int i) const 
-{return fsr_->varFunc(b,i);}
+RCP<const CommonFuncDataStub>  EquationSet::varFuncData(int b, int i) const 
+{return fsr_->varFuncData(b,i);}
     
 
 /* Returns the i-th unknown function in block b */
-const Expr& EquationSet::unkFunc(int b, int i) const 
-{return fsr_->unkFunc(b,i);}
+RCP<const CommonFuncDataStub>  EquationSet::unkFuncData(int b, int i) const 
+{return fsr_->unkFuncData(b,i);}
 
 /* Returns the i-th unknown parameter */
 const Expr& EquationSet::unkParam(int i) const 

@@ -71,6 +71,8 @@ FunctionSupportResolver::FunctionSupportResolver(
     bcUnksOnRegions_(),
     testToRegionsMap_(),
     unkToRegionsMap_(),
+    varFuncData_(),
+    unkFuncData_(),
     varFuncs_(flattenSpectral(vars)),
     unkFuncs_(flattenSpectral(unks)),
     fixedFields_(flattenSpectral(fixedFields)),
@@ -173,24 +175,38 @@ FunctionSupportResolver::FunctionSupportResolver(
     SUNDANCE_MSG1(verb, tab1 << "is not in variational form");
   }
 
-  /* map each var and unknown function's ID numbers to its
-   * position in the input function lists */
-  Set<int> unkParamSet;
+
+  /*
+   * Now we collect arrays of the function data (e.g., basis functions).
+   * Several function components may share common data. For example, the
+   * components of a function discretized with Nedelec elements will
+   * all point back to the same data. The symbolic engine needs to know 
+   * about components, but the DOF map system only needs bases. 
+   */
+  varFuncData_.resize(vars.size());
+  unkFuncData_.resize(unks.size());
   varIDToReducedIDMap_.resize(vars.size());
   unreducedVarID_.resize(vars.size());
+  
+
+  /* map each var and unknown function's ID numbers to its
+   * position in the input function lists */
   for (unsigned int b=0; b<vars.size(); b++)
   {
     Tabs tab2;
     unreducedVarID_[b].resize(vars[b].size());
-    for (unsigned int i=0; i<vars[b].size(); i++)
+    int k=0;
+    for (unsigned int i=0; i<vars[b].size(); i++, k++)
     {
       const FuncElementBase* t 
         = dynamic_cast<const FuncElementBase*>(vars[b][i].ptr().get());
-      int fid = t->funcComponentID();
+      int fid = t->sharedFuncID();
+      if (varFuncSet_.contains(fid)) continue;
+      varFuncData_[b].append(getSharedFunctionData(t));
       varFuncSet_.put(fid);
       varIDToBlockMap_.put(fid, b);
-      varIDToReducedIDMap_[b].put(fid, i);
-      unreducedVarID_[b][i] = fid;
+      varIDToReducedIDMap_[b].put(fid, k);
+      unreducedVarID_[b][k] = fid;
     }
     SUNDANCE_MSG2(verb, tab2 << "block=" << b << " var functions are " 
       << unreducedUnkID_[b]);
@@ -203,7 +219,8 @@ FunctionSupportResolver::FunctionSupportResolver(
   {
     Tabs tab2;
     unreducedUnkID_[b].resize(unks[b].size());
-    for (unsigned int i=0; i<unks[b].size(); i++)
+    int k=0;
+    for (unsigned int i=0; i<unks[b].size(); i++, k++)
     {
       const UnknownFuncElement* u 
         = dynamic_cast<const UnknownFuncElement*>(unks[b][i].ptr().get());
@@ -211,11 +228,13 @@ FunctionSupportResolver::FunctionSupportResolver(
         "EquationSet ctor input unk function "
         << unks[b][i] 
         << " does not appear to be a unk function");
-      int fid = u->funcComponentID();
+      int fid = u->sharedFuncID();
+      if (unkFuncSet_.contains(fid)) continue;
+      unkFuncData_[b].append(getSharedFunctionData(u));
       unkFuncSet_.put(fid);
       unkIDToBlockMap_.put(fid, b);
-      unkIDToReducedIDMap_[b].put(fid, i);
-      unreducedUnkID_[b][i] = fid;
+      unkIDToReducedIDMap_[b].put(fid, k);
+      unreducedUnkID_[b][k] = fid;
     }
     SUNDANCE_MSG2(verb, tab2 << "block=" << b << " unk functions are " 
       << unreducedUnkID_[b]);
@@ -504,3 +523,31 @@ bool FunctionSupportResolver::hasBCs() const
 {
   return bcSum_ != 0;
 }
+
+
+namespace SundanceCore
+{
+namespace Internal
+{
+
+RefCountPtr<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f)
+{
+  const UnknownFuncElement* u = dynamic_cast<const UnknownFuncElement*>(f);
+  const TestFuncElement* t = dynamic_cast<const TestFuncElement*>(f);
+
+  if (u != 0) 
+  {
+    return rcp_dynamic_cast<const CommonFuncDataStub>(u->commonData());
+  }
+  if (t != 0)
+  {
+    return rcp_dynamic_cast<const CommonFuncDataStub>(t->commonData());
+  }
+  
+  TEST_FOR_EXCEPTION( true, InternalError, 
+    "unrecognized function type: " << typeid(*f).name());
+  return u->commonData(); // -Wall, will never be called;
+}
+}
+}
+

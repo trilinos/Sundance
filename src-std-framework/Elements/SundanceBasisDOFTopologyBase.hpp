@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceCellType.hpp"
 #include "Teuchos_Array.hpp"
+#include "Teuchos_Describable.hpp"
 
 namespace SundanceStdFwk {
 
@@ -49,7 +50,7 @@ using SundanceStdMesh::CellType;
  * A function \f$g(x)\f$ defined on a cell is represented as:
 
  \f[
-  g(x) = \sum_{i=0}^{N-1} \bar{g}_i \psi_i(x)
+ g(x) = \sum_{i=0}^{N-1} \bar{g}_i \psi_i(x)
  \f]
 
  * where \f$x\in\Re^{D}\f$ is the spatial spatial coordinate for spatical dim
@@ -76,7 +77,8 @@ using SundanceStdMesh::CellType;
  * This is an interoperability interface and is therefore
  * deliberately minimalist. 
  */
-class BasisDOFTopologyBase
+class BasisDOFTopologyBase :
+    public Teuchos::Describable
 {
 public:
 
@@ -122,7 +124,7 @@ public:
    * facet dimension <tt>facetDim</tt> is given by:
 
    \code
-     dofs[facetDim][facetIndex][faceDofIndex] 
+   dofs[facetDim][facetIndex][faceDofIndex] 
    \endcode
    
    * For dofs attached to the cell body, the local DOF within the entire cell
@@ -149,21 +151,21 @@ public:
 
    \verbatim
 
-    Order 0:
+   Order 0:
 
-    { {}, {}, {{0}} }
+   { {}, {}, {{0}} }
    
-    Order 1:
+   Order 1:
 
-    { { {0}, {1}, {2} }, {}, {} }
+   { { {0}, {1}, {2} }, {}, {} }
     
-    Order 2:
+   Order 2:
 
-    { { {0}, {1}, {2} }, { {3}, {4}, {5} }, {} }
+   { { {0}, {1}, {2} }, { {3}, {4}, {5} }, {} }
     
-    Order 3:
+   Order 3:
 
-    { { {0}, {1}, {2} }, { {3,4}, {5,6}, {7,8} }, {9} }
+   { { {0}, {1}, {2} }, { {3,4}, {5,6}, {7,8} }, {9} }
 
    \endverbatim
 
@@ -197,7 +199,29 @@ public:
     const CellType& maximalCellType,
     const CellType& cellType
     ) const = 0;
+
+
+
+  /** \brief Comparison function allowing use of 
+   * OrderedHandle<BasisFamilyBase>
+   * in sorted containers. This is needed by the MixedDOFMap ctor when
+   * it uses an STL map to group functions having the same bases into chunks. 
+   *
+   *  Note: this method should normally only be called from within the
+   *  comparison operator of OrderedHandle, in which context comparisons
+   *  between different derived types have already been resolved by 
+   *  comparisons of typeid. Thus, we can require that the lessThan()
+   *  function be called only with an argument whose typeid is 
+   *  equal to that of <tt>*this.</tt> We recommend that all overriding
+   *  implementations check that condition.  
+   * 
+   * \param other 
+   *         [in] Pointer to another basis family object. 
+   *         Precondition: <tt>typeid(*this)==typeid(*other).</tt>
+   */
+  virtual bool lessThan(const BasisDOFTopologyBase* other) const = 0 ;
 };
+
 
 } // namespace SundanceStdFwk
 

@@ -34,7 +34,6 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
-#include "SundanceBasisFamily.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceSpatiallyHomogeneousDOFMapBase.hpp"
@@ -43,190 +42,192 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+class BasisDOFTopologyBase;
 
-    /** 
-     * A MixedDOFMap is a DOF map for the case where 
-     * every function is defined
-     * on every cell in the mesh, but where functions may have different bases. 
-     */
-    class MixedDOFMap : public SpatiallyHomogeneousDOFMapBase
-    {
-    public:
-      /** */
-      MixedDOFMap(const Mesh& mesh, 
-        const BasisArray& basis,
-        const CellFilter& maxCells, 
-        const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
+namespace Internal
+{
+using namespace Teuchos;
+
+/** 
+ * A MixedDOFMap is a DOF map for the case where 
+ * every function is defined
+ * on every cell in the mesh, but where functions may have different bases. 
+ */
+class MixedDOFMap : public SpatiallyHomogeneousDOFMapBase
+{
+public:
+  /** */
+  MixedDOFMap(const Mesh& mesh, 
+    const Array<RCP<BasisDOFTopologyBase> >& basis,
+    const CellFilter& maxCells, 
+    const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
                         
-      /** */
-      virtual ~MixedDOFMap(){;}
+  /** */
+  virtual ~MixedDOFMap(){;}
 
-      /** */
-      RefCountPtr<const MapStructure> 
-      getDOFsForCellBatch(int cellDim,
-                          const Array<int>& cellLID,
-                          const Set<int>& requestedFuncSet,
-                          Array<Array<int> >& dofs,
-                          Array<int>& nNodes) const ;
+  /** */
+  RefCountPtr<const MapStructure> 
+  getDOFsForCellBatch(int cellDim,
+    const Array<int>& cellLID,
+    const Set<int>& requestedFuncSet,
+    Array<Array<int> >& dofs,
+    Array<int>& nNodes) const ;
 
-      /** */
-      RefCountPtr<const MapStructure> mapStruct() const 
-      {return structure_;}
+  /** */
+  RefCountPtr<const MapStructure> mapStruct() const 
+    {return structure_;}
 
-      /** */
-      int chunkForFuncID(int funcID) const
-      {return structure_->chunkForFuncID(funcID);}
+  /** */
+  int chunkForFuncID(int funcID) const
+    {return structure_->chunkForFuncID(funcID);}
 
-      /** */
-      int indexForFuncID(int funcID) const 
-      {return structure_->indexForFuncID(funcID);}
+  /** */
+  int indexForFuncID(int funcID) const 
+    {return structure_->indexForFuncID(funcID);}
       
-      /** */
-      int nFuncs(int basisChunk) const
-      {return nFuncs_[basisChunk];}
+  /** */
+  int nFuncs(int basisChunk) const
+    {return nFuncs_[basisChunk];}
 
-      /** */
-      int nBasisChunks() const 
-      {return nFuncs_.size();}
+  /** */
+  int nBasisChunks() const 
+    {return nFuncs_.size();}
 
-      /** */
-      const BasisFamily& basis(int basisChunk) const
-      {return structure_->basis(basisChunk);}
+  /** */
+  const RCP<BasisDOFTopologyBase>& basis(int basisChunk) const
+    {return structure_->basis(basisChunk);}
 
-      /** */
-      const Array<int>& funcID(int basisChunk) const 
-      {return structure_->funcs(basisChunk);}
+  /** */
+  const Array<int>& funcID(int basisChunk) const 
+    {return structure_->funcs(basisChunk);}
 
 
-    private:
+private:
 
-      /** */
-      void checkTable() const ;
+  /** */
+  void checkTable() const ;
 
-      /** */
-      inline int getInitialDOFForCell(int cellDim, int cellLID, int basisChunk) const
-      {
-        return dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]];
-      }
+  /** */
+  inline int getInitialDOFForCell(int cellDim, int cellLID, int basisChunk) const
+    {
+      return dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]];
+    }
 
-      inline int* getInitialDOFPtrForCell(int cellDim, int cellLID, int basisChunk)
-      {
-        return &(dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]]);
-      }
+  inline int* getInitialDOFPtrForCell(int cellDim, int cellLID, int basisChunk)
+    {
+      return &(dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]]);
+    }
 
-      inline const int* getInitialDOFPtrForCell(int cellDim, int cellLID, 
-                                                int basisChunk) const 
-      {
-        return &(dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]]);
-      }
+  inline const int* getInitialDOFPtrForCell(int cellDim, int cellLID, 
+    int basisChunk) const 
+    {
+      return &(dofs_[cellDim][basisChunk][cellLID*nDofsPerCell_[basisChunk][cellDim]]);
+    }
 
-      /** */
-      void allocate(const Mesh& mesh);
+  /** */
+  void allocate(const Mesh& mesh);
       
-      /** */
-      void buildMaximalDofTable() const ;
+  /** */
+  void buildMaximalDofTable() const ;
 
-      bool hasBeenAssigned(int cellDim, int cellLID) const 
-      {return hasBeenAssigned_[cellDim][cellLID];}
+  bool hasBeenAssigned(int cellDim, int cellLID) const 
+    {return hasBeenAssigned_[cellDim][cellLID];}
 
-      void markAsAssigned(int cellDim, int cellLID)
-      {hasBeenAssigned_[cellDim][cellLID] = true;}
+  void markAsAssigned(int cellDim, int cellLID)
+    {hasBeenAssigned_[cellDim][cellLID] = true;}
 
-      /** */
-      void initMap();
+  /** */
+  void initMap();
 
-      /** */
-      void setDOFs(int basisChunk, int cellDim, int cellLID, 
-                   int& nextDOF, bool isRemote=false);
+  /** */
+  void setDOFs(int basisChunk, int cellDim, int cellLID, 
+    int& nextDOF, bool isRemote=false);
 
-      /** */
-      void shareDOFs(int cellDim,
-                     const Array<Array<int> >& outgoingCellRequests);
+  /** */
+  void shareDOFs(int cellDim,
+    const Array<Array<int> >& outgoingCellRequests);
 
-      /** */
-      void computeOffsets(int dim, int localCount);
+  /** */
+  void computeOffsets(int dim, int localCount);
 
-      /** */
-      static int uninitializedVal() {return -1;}
+  /** */
+  static int uninitializedVal() {return -1;}
 
-      /** */
-      CellFilter maxCells_;
+  /** */
+  CellFilter maxCells_;
 
-      /** spatial dimension */
-      int dim_;
+  /** spatial dimension */
+  int dim_;
 
-      /** Tables of DOFs, indexed by dimension and chunk number.
-       *
-       * dof(cellDim, cellLID, chunk, func, node) 
-       * = dofs_[cellDim][chunk][(cellLID*nFunc + func)*nNode + node]
-       */
-      Array<Array<Array<int> > > dofs_;
+  /** Tables of DOFs, indexed by dimension and chunk number.
+   *
+   * dof(cellDim, cellLID, chunk, func, node) 
+   * = dofs_[cellDim][chunk][(cellLID*nFunc + func)*nNode + node]
+   */
+  Array<Array<Array<int> > > dofs_;
 
-      /** DOFs for maximal cells, indexed by basis chunk number 
-       *
-       * dof(cellLID, chunk, func, node) 
-       * = maximalDofs_[chunk][(cellLID*nFunc + func)*nNode + node];
-       */
-      mutable Array<Array<int> > maximalDofs_;
+  /** DOFs for maximal cells, indexed by basis chunk number 
+   *
+   * dof(cellLID, chunk, func, node) 
+   * = maximalDofs_[chunk][(cellLID*nFunc + func)*nNode + node];
+   */
+  mutable Array<Array<int> > maximalDofs_;
 
-      /** whether maximal DOFs have been tabulated */
-      mutable bool haveMaximalDofs_;
+  /** whether maximal DOFs have been tabulated */
+  mutable bool haveMaximalDofs_;
 
-      /** 
-       * localNodePtrs_[basisChunk][cellDim][facetDim][facetNumber][nodeNumber]
-       */
-      Array<Array<Array<Array<Array<int> > > > > localNodePtrs_;
+  /** 
+   * localNodePtrs_[basisChunk][cellDim][facetDim][facetNumber][nodeNumber]
+   */
+  Array<Array<Array<Array<Array<int> > > > > localNodePtrs_;
 
-      /** The number of nodes per cell, for each basis function type, 
-       * <i>not</i> including the nodes of the facets of the cell. Indexed as 
-       * nNodesPerCell_[basis][dimension] */
-      Array<Array<int> > nNodesPerCell_;
+  /** The number of nodes per cell, for each basis function type, 
+   * <i>not</i> including the nodes of the facets of the cell. Indexed as 
+   * nNodesPerCell_[basis][dimension] */
+  Array<Array<int> > nNodesPerCell_;
 
-      /** The number of DOFs per cell, for each basis function type, 
-       * <i>not</i> including the DOFs of the facets of the cell. Indexed as 
-       * nDofsPerCell_[basis][dimension] */
-      Array<Array<int> > nDofsPerCell_;
+  /** The number of DOFs per cell, for each basis function type, 
+   * <i>not</i> including the DOFs of the facets of the cell. Indexed as 
+   * nDofsPerCell_[basis][dimension] */
+  Array<Array<int> > nDofsPerCell_;
 
-      /** The number of nodes per cell, for each basis function type, including
-       * the nodes of the facets of the cell. Indexed as 
-       * nNodesPerCell_[basis][dimension] */
-      Array<Array<int> > totalNNodesPerCell_;
+  /** The number of nodes per cell, for each basis function type, including
+   * the nodes of the facets of the cell. Indexed as 
+   * nNodesPerCell_[basis][dimension] */
+  Array<Array<int> > totalNNodesPerCell_;
 
-      /** The number of DOFs per cell, for each basis function type, including
-       * the DOFs of the facets of the cell. Indexed as 
-       * nDofsPerCell_[basis][dimension] */
-      Array<Array<int> > totalNDofsPerCell_;
+  /** The number of DOFs per cell, for each basis function type, including
+   * the DOFs of the facets of the cell. Indexed as 
+   * nDofsPerCell_[basis][dimension] */
+  Array<Array<int> > totalNDofsPerCell_;
 
-      /** Indicates whether the cells of each dimension have any DOFs in this
-       * map, for any chunk. */
-      Array<int> cellHasAnyDOFs_;
+  /** Indicates whether the cells of each dimension have any DOFs in this
+   * map, for any chunk. */
+  Array<int> cellHasAnyDOFs_;
 
-      /** number of facets of dimension facetDim for cells of dimension cellDim.
-       * Indexed as numFacets_[cellDim][facetDim]
-       */
-      Array<Array<int> > numFacets_;
+  /** number of facets of dimension facetDim for cells of dimension cellDim.
+   * Indexed as numFacets_[cellDim][facetDim]
+   */
+  Array<Array<int> > numFacets_;
 
-      /** Orientation of each edge or face as seen by the maximal cell
-       * from which its DOFs were originally assigned. */
-      Array<Array<int> > originalFacetOrientation_;
+  /** Orientation of each edge or face as seen by the maximal cell
+   * from which its DOFs were originally assigned. */
+  Array<Array<int> > originalFacetOrientation_;
 
-      /** */
-      Array<Array<int> > hasBeenAssigned_;
+  /** */
+  Array<Array<int> > hasBeenAssigned_;
 
-      /** */
-      RefCountPtr<const MapStructure> structure_;
+  /** */
+  RefCountPtr<const MapStructure> structure_;
 
-      /** */
-      Array<int> nFuncs_;
-    };
-  }
+  /** */
+  Array<int> nFuncs_;
+};
+}
 }
 
                   

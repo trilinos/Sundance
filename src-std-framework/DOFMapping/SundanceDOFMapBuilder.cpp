@@ -102,14 +102,15 @@ DOFMapBuilder::DOFMapBuilder(const ParameterList& verbParams)
 {}
 
 RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
-                                               const Array<BasisFamily>& basis,
+                                               const Array<RCP<BasisDOFTopologyBase> >& basis,
                                                const Array<Set<CellFilter> >& filters) 
 {
   TimeMonitor timer(DOFBuilderCtorTimer());
   SUNDANCE_LEVEL1("setup", "in DOFMapBuilder::makeMap()");
   for (unsigned int i=0; i<basis.size(); i++)
   {
-    SUNDANCE_LEVEL2("setup", "i=" << i << " basis=" << basis[i]
+    SUNDANCE_LEVEL2("setup", "i=" << i 
+      << " basis=" << basis[i]->description()
       << " filters=" << filters[i]);
   }
 
@@ -323,7 +324,7 @@ void DOFMapBuilder::init(bool findBCCols)
   isBCRow_.resize(fsr_->numVarBlocks());
   isBCCol_.resize(fsr_->numUnkBlocks());
 
-  Array<Array<BasisFamily> > testBasis = testBasisArray();
+  Array<Array<RCP<BasisDOFTopologyBase> > > testBasis = testBasisTopologyArray();
   Array<Array<Set<CellFilter> > > testRegions = testCellFilters();
 
   for (unsigned int br=0; br<fsr_->numVarBlocks(); br++)
@@ -335,7 +336,7 @@ void DOFMapBuilder::init(bool findBCCols)
     }      
 
 
-  Array<Array<BasisFamily> > unkBasis = unkBasisArray();
+  Array<Array<RCP<BasisDOFTopologyBase> > > unkBasis = unkBasisTopologyArray();
   Array<Array<Set<CellFilter> > > unkRegions = unkCellFilters();
 
   for (unsigned int bc=0; bc<fsr_->numUnkBlocks(); bc++)
@@ -410,21 +411,13 @@ DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
   return rtn;
 }
 
-bool DOFMapBuilder::hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
+bool DOFMapBuilder::hasOmnipresentNodalMap(const Array<RCP<BasisDOFTopologyBase> >& basis,
                                            const Mesh& mesh,
                                            const Array<Set<CellFilter> >& filters) const 
 {
   return hasNodalBasis(basis) && allFuncsAreOmnipresent(mesh, filters);
 }
                                            
-bool DOFMapBuilder::hasHomogeneousBasis(const Array<BasisFamily>& basis) const
-{
-  for (unsigned int i=1; i<basis.size(); i++)
-    {
-      if (!(basis[i] == basis[i-1])) return false;
-    }
-  return true;
-}
 
                                            
 bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters) const
@@ -437,25 +430,25 @@ bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters) cons
   return true;
 }                           
 
-bool DOFMapBuilder::hasNodalBasis(const Array<BasisFamily>& basis) const
+bool DOFMapBuilder::hasNodalBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const
 {
   for (unsigned int i=0; i<basis.size(); i++)
     {
       const Lagrange* lagr 
-        = dynamic_cast<const Lagrange*>(basis[0].ptr().get());
-      if (lagr==0 || basis[0].order()!=1) return false;
+        = dynamic_cast<const Lagrange*>(basis[0].get());
+      if (lagr==0 || lagr->order()!=1) return false;
     }
   return true;
 }
 
 
-bool DOFMapBuilder::hasCellBasis(const Array<BasisFamily>& basis) const
+bool DOFMapBuilder::hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const
 {
   for (unsigned int i=0; i<basis.size(); i++)
     {
       const Lagrange* lagr 
-        = dynamic_cast<const Lagrange*>(basis[0].ptr().get());
-      if (lagr==0 || basis[0].order()!=0) return false;
+        = dynamic_cast<const Lagrange*>(basis[0].get());
+      if (lagr==0 || lagr->order()!=0) return false;
     }
   return true;
 }
@@ -577,27 +570,27 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
   return rtn;
 }
 
-Array<Array<BasisFamily> > DOFMapBuilder::testBasisArray() const 
+Array<Array<RCP<BasisDOFTopologyBase> > > DOFMapBuilder::testBasisTopologyArray() const 
 {
-  Array<Array<BasisFamily> > rtn(fsr_->numVarBlocks());
+  Array<Array<RCP<BasisDOFTopologyBase> > > rtn(fsr_->numVarBlocks());
   for (unsigned int b=0; b<fsr_->numVarBlocks(); b++)
     {
       for (unsigned int i=0; i<fsr_->numVars(b); i++) 
         {
-          rtn[b].append(BasisFamily::getBasis(fsr_->varFunc(b, i)));
+          rtn[b].append(BasisFamily::getBasisTopology(fsr_->varFuncData(b, i)));
         }
     }
   return rtn;
 }
 
-Array<Array<BasisFamily> > DOFMapBuilder::unkBasisArray() const 
+Array<Array<RCP<BasisDOFTopologyBase> > > DOFMapBuilder::unkBasisTopologyArray() const 
 {
-  Array<Array<BasisFamily> > rtn(fsr_->numUnkBlocks());
+  Array<Array<RCP<BasisDOFTopologyBase> > > rtn(fsr_->numUnkBlocks());
   for (unsigned int b=0; b<fsr_->numUnkBlocks(); b++)
     {
       for (unsigned int i=0; i<fsr_->numUnks(b); i++) 
         {
-          rtn[b].append(BasisFamily::getBasis(fsr_->unkFunc(b, i)));
+          rtn[b].append(BasisFamily::getBasisTopology(fsr_->unkFuncData(b, i)));
         }
     }
   return rtn;
@@ -679,8 +672,8 @@ bool DOFMapBuilder::isSymmetric(int b) const
 
   for (unsigned int i=0; i<fsr_->numVars(b); i++) 
     {
-      BasisFamily basis1 = BasisFamily::getBasis(fsr_->varFunc(b,i));
-      BasisFamily basis2 = BasisFamily::getBasis(fsr_->unkFunc(b,i));
+      BasisFamily basis1 = BasisFamily::getBasis(fsr_->varFuncData(b,i));
+      BasisFamily basis2 = BasisFamily::getBasis(fsr_->unkFuncData(b,i));
       if (!(basis1 == basis2)) return false;
     }
   return true;
@@ -843,4 +836,38 @@ void DOFMapBuilder::markBCCols(int block)
         }
     }
 }
-        
+
+
+
+namespace SundanceStdFwk
+{
+
+Array<Array<BasisFamily> > testBasisArray(const RCP<FunctionSupportResolver>& fsr) 
+{
+  Array<Array<BasisFamily> > rtn(fsr->numVarBlocks());
+  for (unsigned int b=0; b<fsr->numVarBlocks(); b++)
+    {
+      for (unsigned int i=0; i<fsr->numVars(b); i++) 
+        {
+          rtn[b].append(BasisFamily::getBasis(fsr->varFuncData(b, i)));
+        }
+    }
+  return rtn;
+}
+
+
+Array<Array<BasisFamily> > unkBasisArray(const RCP<FunctionSupportResolver>& fsr) 
+{
+  Array<Array<BasisFamily> > rtn(fsr->numUnkBlocks());
+  for (unsigned int b=0; b<fsr->numUnkBlocks(); b++)
+    {
+      for (unsigned int i=0; i<fsr->numUnks(b); i++) 
+        {
+          rtn[b].append(BasisFamily::getBasis(fsr->unkFuncData(b, i)));
+        }
+    }
+  return rtn;
+}
+
+
+}        

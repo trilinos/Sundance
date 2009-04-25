@@ -34,6 +34,7 @@
 #include "SundanceOrderedTuple.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

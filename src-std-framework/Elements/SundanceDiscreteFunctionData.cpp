@@ -77,12 +77,12 @@ DiscreteFunctionData::DiscreteFunctionData(const DiscreteSpace& space,
 const DiscreteFunctionData* DiscreteFunctionData::getData(const DiscreteFuncElement* dfe)
 {
   TEST_FOR_EXCEPTION(dfe==0, RuntimeError, "null argument to DiscreteFunctionData::getData()");
-  const DiscreteFunctionData* rtn 
-    = dynamic_cast<const DiscreteFunctionData*>(dfe->commonData());
-  TEST_FOR_EXCEPTION(rtn==0, RuntimeError, 
+  RCP<const DiscreteFunctionData> rtn 
+    = rcp_dynamic_cast<const DiscreteFunctionData>(dfe->commonData());
+  TEST_FOR_EXCEPTION(rtn.get()==0, RuntimeError, 
                      "cast to DiscreteFunctionData* failed for "
                      "discrete function element " << dfe->toXML());
-  return rtn;
+  return rtn.get();
 }
 
 void DiscreteFunctionData::setVector(const Vector<double>& vec) 

@@ -35,17 +35,14 @@ using namespace SundanceStdFwk;
 using namespace SundanceUtils;
 using namespace Teuchos;
 
-bool BasisFamilyBase::lessThan(const BasisFamilyBase* other) const 
-{
-  TEST_FOR_EXCEPTION(
-    (typeid(*this).before(typeid(*other)) 
-      || typeid(*other).before(typeid(*this))),
-    InternalError,
-    "mismatched types: this=" << typeid(*this).name()
-    << " and other=" << typeid(*other).name() 
-    << " in BasisFamilyBase::lessThan(). This is most likely "
-    "an internal bug, because the case of distinct types should have "
-    "been dealt with before this point.");
 
-  return order() < other->order();
+bool BasisFamilyBase::lessThan(const BasisDOFTopologyBase* other) const 
+{
+  if (typeLessThan(this, other)) return true;
+  if (typeLessThan(other, this)) return false;
+
+  const BasisFamilyBase* bfb = dynamic_cast<const BasisFamilyBase*>(other);
+  TEST_FOR_EXCEPTION(bfb==0, InternalError,
+    "BasisFamilyBase::lessThan() given an argument that is not a BFB*");
+  return order() < bfb->order();
 }

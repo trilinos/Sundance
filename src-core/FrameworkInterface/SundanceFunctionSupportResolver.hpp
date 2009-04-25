@@ -46,6 +46,7 @@ namespace Internal
 
 class SumOfIntegrals;
 class SumOfBCs;
+class CommonFuncDataStub;
 
 /** */
 class FunctionSupportResolver
@@ -81,11 +82,11 @@ public:
   /** Returns the number of unk functions in this block */
   unsigned int numUnks(int block) const {return unkFuncs_[block].size();}
 
-  /** Returns the i-th variational function in block b */
-  const Expr& varFunc(int b, int i) const {return varFuncs_[b][i];}
+  /** Returns the data for the i-th variational function in block b */
+  RCP<const CommonFuncDataStub> varFuncData(int b, int i) const {return varFuncData_[b][i];}
 
-  /** Returns the i-th unknown function in block b */
-  const Expr& unkFunc(int b, int i) const {return unkFuncs_[b][i];}
+  /** Returns the data for the i-th unknown function in block b */
+  RCP<const CommonFuncDataStub> unkFuncData(int b, int i) const {return unkFuncData_[b][i];}
 
   /** Returns the i-th unknown parameter */
   const Expr& unkParam(int i) const {return unkParams_[i];}
@@ -311,6 +312,12 @@ private:
   /** */
   Map<int, Set<OrderedHandle<CellFilterStub> > > unkToRegionsMap_;
 
+  /** var function data for this equation set */
+  Array<Array<RCP<const CommonFuncDataStub> > > varFuncData_;
+
+  /** unknown function data for this equation set */
+  Array<Array<RCP<const CommonFuncDataStub> > > unkFuncData_;
+
   /** var functions for this equation set */
   Array<Expr> varFuncs_;
 
@@ -378,6 +385,10 @@ private:
    * a variational problem */
   bool isVariationalProblem_;
 };
+
+/** */
+RefCountPtr<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f);
+
 }
 }
  

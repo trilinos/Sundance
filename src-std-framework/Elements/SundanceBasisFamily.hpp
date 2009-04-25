@@ -32,17 +32,24 @@
 #define SUNDANCE_BASISFAMILY_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceExpr.hpp"
 #include "SundanceBasisFamilyBase.hpp"
 #include "SundanceOrderedHandle.hpp"
 #include "Teuchos_Array.hpp"
+
+namespace SundanceCore
+{
+namespace Internal
+{
+class CommonFuncDataStub;
+}
+}
 
 namespace SundanceStdFwk
 {
 using Teuchos::XMLObject;
 using Teuchos::tuple;
-using SundanceCore::Expr;
 using SundanceUtils::OrderedHandle;
+using SundanceCore::Internal::CommonFuncDataStub;
 using TSFExtended::Handle;
 
 /** 
@@ -111,7 +118,10 @@ public:
   static unsigned int size(const Array<BasisFamily>& b) ;
 
   /** Extract the basis from an expression */
-  static BasisFamily getBasis(const Expr& expr);
+  static BasisFamily getBasis(const RCP<const CommonFuncDataStub>& funcData);
+
+  /** Extract the basis from an expression */
+  static RCP<BasisDOFTopologyBase> getBasisTopology(const RCP<const CommonFuncDataStub>& funcData);
 };
 
 /** \relates BasisFamily */

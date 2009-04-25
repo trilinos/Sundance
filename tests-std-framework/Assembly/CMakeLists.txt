@@ -7,7 +7,8 @@ SET(SerialTests BasisCheck TransformedIntegral2D  QuadratureTest)
 
 
 ADD_TEST_BATCH(SerialTests 
-        COMM serial
+        COMM serial mpi
+        NUM_MPI_PROCS 1
         )      
 
 

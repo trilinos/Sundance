@@ -106,7 +106,7 @@ XMLObject Parameter::toXML() const
 
 const ParameterData* Parameter::data() const
 {
-  const ParameterData* pd = dynamic_cast<const ParameterData*>(commonData());
+  const ParameterData* pd = dynamic_cast<const ParameterData*>(commonData().get());
 
   TEST_FOR_EXCEPTION(pd==0, InternalError, "cast failed");
 

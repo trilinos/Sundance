@@ -35,6 +35,7 @@
 #include "SundanceInhomogeneousNodalDOFMap.hpp"
 #include "SundanceLagrange.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -48,7 +49,7 @@ InhomogeneousNodalDOFMap
   const ParameterList& verbParams)
   : DOFMapBase(mesh, verbParams),
     dim_(mesh.spatialDim()),
-    basis_(new Lagrange(1)),
+    basis_(rcp(new Lagrange(1))),
     nTotalFuncs_(),
     funcDomains_(),
     nodeDofs_(),
@@ -192,7 +193,7 @@ InhomogeneousNodalDOFMap
           funcIndexWithinNodeFuncSet_[f][funcs[i]] = i;
         }
       nodeDofs_[f].resize(nFuncs * funcSetNodeCounts[f]);
-      Array<BasisFamily> nodeBases = tuple(basis_);
+      Array<RCP<BasisDOFTopologyBase> > nodeBases = tuple(basis_);
       Array<Array<int> > nodeFuncs = tuple(nodalFuncSets_[f].elements());
       nodeStructure_[f] = rcp(new MapStructure(nTotalFuncs_, 
                                                nodeBases, nodeFuncs));
@@ -275,7 +276,7 @@ InhomogeneousNodalDOFMap
       getFunctionDofs(d, cellLIDs[r], facetLID, funcArrays[r], dofs);
       elemDofs_[count] = dofs[0];
       elemFuncArrays.append(funcArrays[r]);
-      Array<BasisFamily> elemBases = tuple(basis_);
+      Array<RCP<BasisDOFTopologyBase> > elemBases = tuple(basis_);
       Array<Array<int> > elemFuncs = tuple(elemFuncSets_[count].elements());
       elemStructure_.append(rcp(new MapStructure(nTotalFuncs_, 
                                                  elemBases, elemFuncs)));

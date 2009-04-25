@@ -28,9 +28,10 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceP1NC.hpp"
-#include "SundanceADReal.hpp"
+#include "SundanceRaviartThomas.hpp"
 #include "SundanceExceptions.hpp"
+#include "SundanceTypeUtils.hpp"
+#include "TSFObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
@@ -39,8 +40,10 @@ using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+RaviartThomas::RaviartThomas()
+{}
 
-bool P1NC::supportsCellTypePair(
+bool RaviartThomas::supportsCellTypePair(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const
@@ -73,42 +76,44 @@ bool P1NC::supportsCellTypePair(
   }
 }
 
-
-void P1NC::print(std::ostream& os) const 
+std::string RaviartThomas::description() const 
 {
-  os << "P1NC()";
+  return "RaviartThomas()";
 }
 
-int P1NC::nReferenceDOFs(
+int RaviartThomas::nReferenceDOFs(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const
 {
   switch(cellType)
-    {
+  {
     case PointCell:
       return 0;
     case LineCell:
       return 1;
     case TriangleCell:
       return 3;
+    case TetCell:
+      return 4;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in P1NC basis");
+        << cellType << " not implemented in RaviartThomas basis");
       return -1; // -Wall
-    }
+  }
 }
 
-void P1NC::getReferenceDOFs(
+void RaviartThomas::getReferenceDOFs(
   const CellType& maximalCellType,
   const CellType& cellType,
-  Array<Array<Array<int> > > &dofs ) const
+  Array<Array<Array<int> > >& dofs) const 
 {
   switch(cellType)
-    {
+  {
     case PointCell:
       dofs.resize(1);
       dofs[0] = tuple(Array<int>());
+      return;
     case LineCell:
       dofs.resize(2);
       dofs[0] = tuple(Array<int>());
@@ -120,112 +125,25 @@ void P1NC::getReferenceDOFs(
       dofs[1] = tuple<Array<int> >(tuple(0), tuple(1), tuple(2));
       dofs[2] = tuple(Array<int>());
       return;
+    case TetCell:
+      dofs.resize(4);
+      dofs[0] = tuple(Array<int>());
+      dofs[1] = tuple<Array<int> >(tuple(0), tuple(1), tuple(2), tuple(3));
+      dofs[2] = tuple(Array<int>());
+      dofs[3] = tuple(Array<int>());
+      return;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in P1NC basis");
-    }
+        << cellType << " not implemented in RaviartThomas basis");
+  }
 }
 
 
 
-void P1NC::refEval(
-    const CellType& maximalCellType,
-    const CellType& cellType,
-    const Array<Point>& pts,
-    const MultiIndex& deriv,
-    Array<Array<Array<double> > >& result) const
-{
-  result.resize(1);
-  result[0].resize(pts.length());
-
-  switch(cellType)
-    {
-    case LineCell:
-      for (int i=0; i<pts.length(); i++)
-        {
-          evalOnLine(pts[i], deriv, result[0][i]);
-        }
-      return;
-    case TriangleCell:
-      for (int i=0; i<pts.length(); i++)
-        {
-          evalOnTriangle(pts[i], deriv, result[0][i]);
-        }
-      return;
-    default:
-#ifndef TRILINOS_7
-      SUNDANCE_ERROR("P1NC::refEval() unimplemented for cell type "
-                     << cellType);
-#else
-      SUNDANCE_ERROR7("P1NC::refEval() unimplemented for cell type "
-                     << cellType);
-#endif
-    }
-}
-
-/* ---------- evaluation on different cell types -------------- */
-
-void P1NC::evalOnLine(const Point& pt, 
-                      const MultiIndex& deriv,
-                      Array<double>& result) const
-{
-	ADReal x = ADReal(pt[0], 0, 1);
-	ADReal one(1.0, 1);
-	
-	result.resize(1);
-	Array<ADReal> tmp(result.length());
-
-  tmp[0] = one;
-
-	for (int i=0; i<tmp.length(); i++)
-		{
-			if (deriv.order()==0) result[i] = tmp[i].value();
-			else result[i] = tmp[i].gradient()[0];
-		}
-}
-
-void P1NC::evalOnTriangle(const Point& pt, 
-                          const MultiIndex& deriv,
-                          Array<double>& result) const
-
-
-
-{
-	ADReal x = ADReal(pt[0], 0, 2);
-	ADReal y = ADReal(pt[1], 1, 2);
-	ADReal one(1.0, 2);
-
-  Array<ADReal> tmp;
-
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, "x=" << x.value() << " y="
-               << y.value());
-
-  result.resize(3);
-  tmp.resize(3);
-
-  tmp[0] = 1.0 - 2.0*y;
-  tmp[1] = 2.0*(x + y) - 1.0;
-  tmp[2] = 1.0 - 2.0*x;
-
-	for (int i=0; i<tmp.length(); i++)
-		{
-      SUNDANCE_OUT(this->verbosity() > VerbHigh,
-                   "tmp[" << i << "]=" << tmp[i].value() 
-                   << " grad=" << tmp[i].gradient());
-			if (deriv.order()==0) 
-        result[i] = tmp[i].value();
-			else 
-        result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
-		}
-}
-
-
-
-bool P1NC::lessThan(const BasisDOFTopologyBase* other) const 
+bool RaviartThomas::lessThan(const BasisDOFTopologyBase* other) const 
 {
   if (typeLessThan(this, other)) return true;
   if (typeLessThan(other, this)) return false;
 
-  const P1NC* lag = dynamic_cast<const P1NC*>(other);
-  return order() < lag->order();
+  return false;
 }

@@ -28,63 +28,25 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_UNKNOWNFUNCELEMENT_H
-#define SUNDANCE_UNKNOWNFUNCELEMENT_H
-
+#ifndef SUNDANCE_TYPEUTILS_H
+#define SUNDANCE_TYPEUTILS_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSymbolicFuncElement.hpp"
-#include "SundanceUnknownFuncDataStub.hpp"
+#include "SundanceExceptions.hpp"
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
-namespace SundanceCore
+namespace SundanceUtils
 {
-  using namespace SundanceUtils;
 
-
-  namespace Internal
-  {
-    using namespace Teuchos;
-
-    using std::string;
-    using std::ostream;
-
-    /** 
-     * UnknownFuncElement represents a scalar-valued element of a (possibly)
-     * list-valued UnknownFunction
-     */
-    class UnknownFuncElement : public SymbolicFuncElement
-    {
-    public:
-      /** */
-      UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
-        const string& name,
-        const string& suffix,
-        int commonFuncID,
-        int myIndex);
-
-      /** virtual destructor */
-      virtual ~UnknownFuncElement() {;}
-
-      /** Get the data associated with the vector-valued function 
-       * that contains this function element. */
-      RCP<const UnknownFuncDataStub> commonData() const {return commonData_;}
-
-      /** */
-      virtual XMLObject toXML() const ;
-
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
-      
-    private:
-       const RefCountPtr<const UnknownFuncDataStub> commonData_;
-    };
-  }
+/** */
+template <typename A, typename B> inline bool typeLessThan(
+  const A* a,
+  const B* b
+  )
+{
+  return typeid(*a).before(typeid(*b));
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+}
+
 #endif

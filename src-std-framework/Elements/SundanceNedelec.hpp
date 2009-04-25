@@ -28,8 +28,8 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_LAGRANGE_H
-#define SUNDANCE_LAGRANGE_H
+#ifndef SUNDANCE_NEDELEC_H
+#define SUNDANCE_NEDELEC_H
 
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
@@ -79,6 +79,7 @@ public:
     const Array<Point>& pts,
     const MultiIndex& deriv,
     Array<Array<Array<double> > >& result) const ;
+
 
 
   /* Handleable boilerplate */

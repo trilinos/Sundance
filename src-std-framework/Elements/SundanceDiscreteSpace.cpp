@@ -245,12 +245,17 @@ void DiscreteSpace::init(
 {
   basis_ = basis;
   subdomains_ = regions;
+  Array<RCP<BasisDOFTopologyBase> > basisTop(basis.size());
+  for (unsigned int b=0; b<basis.size(); b++)
+  {
+    basisTop[b] = rcp_dynamic_cast<BasisDOFTopologyBase>(basis[b].ptr());
+  }
   if (map_.get()==0) 
     {
       Array<Set<CellFilter> > cf(regions.size());
       for (unsigned int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
       DOFMapBuilder b;
-      map_ = b.makeMap(mesh_, basis, cf);
+      map_ = b.makeMap(mesh_, basisTop, cf);
     }
 
   initVectorSpace(isBCIndex, partitionBCs);

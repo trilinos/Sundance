@@ -77,7 +77,7 @@ namespace SundanceCore
 
       /** Get the data associated with the vector-valued function 
        * that contains this function element. */
-      const DiscreteFuncDataStub* commonData() const {return commonData_.get();}
+      RCP<const DiscreteFuncDataStub> commonData() const {return commonData_;}
 
       /** Get the data associated with the vector-valued function 
        * that contains this function element. */

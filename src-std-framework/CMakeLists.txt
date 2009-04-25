@@ -47,27 +47,23 @@ APPEND_SET(HEADERS
   Elements/SundanceDiscreteFunction.hpp
   Elements/SundanceDiscreteFunctionData.hpp
   Elements/SundanceDiscreteSpace.hpp
-  Elements/SundanceFIATExpansion.hpp
-  Elements/SundanceFIATLagrange.hpp
-  Elements/SundanceFIATP1NC.hpp
   Elements/SundanceFuncWithBasis.hpp
   Elements/SundanceGauss1D.hpp
   Elements/SundanceGaussianQuadrature.hpp
   Elements/SundanceGaussianQuadratureType.hpp
   Elements/SundanceLagrange.hpp
   Elements/SundanceNedelec.hpp
-  Elements/SundanceP1NC.hpp
   Elements/SundanceQuadratureFamily.hpp
   Elements/SundanceQuadratureFamilyBase.hpp
   Elements/SundanceQuadratureType.hpp
   Elements/SundanceQuadratureTypeBase.hpp
+  Elements/SundanceRaviartThomas.hpp
   Elements/SundanceTestFunction.hpp
   Elements/SundanceTestFunctionData.hpp
   Elements/SundanceTetQuadrature.hpp
   Elements/SundanceTriangleQuadrature.hpp
   Elements/SundanceUnknownFunction.hpp
   Elements/SundanceUnknownFunctionData.hpp
-  Elements/SundanceVectorBasisComponent.hpp
   )
 
 APPEND_SET(SOURCES
@@ -79,25 +75,21 @@ APPEND_SET(SOURCES
   Elements/SundanceDiscreteFunction.cpp
   Elements/SundanceDiscreteFunctionData.cpp
   Elements/SundanceDiscreteSpace.cpp
-  Elements/SundanceFIATExpansion.cpp
-  Elements/SundanceFIATLagrange.cpp
-  Elements/SundanceFIATP1NC.cpp
   Elements/SundanceGauss1D.cpp
   Elements/SundanceGaussianQuadrature.cpp
   Elements/SundanceGaussianQuadratureType.cpp
   Elements/SundanceLagrange.cpp
   Elements/SundanceNedelec.cpp
-  Elements/SundanceP1NC.cpp
   Elements/SundanceQuadratureFamily.cpp
   Elements/SundanceQuadratureFamilyBase.cpp
   Elements/SundanceQuadratureType.cpp
+  Elements/SundanceRaviartThomas.cpp
   Elements/SundanceTestFunction.cpp
   Elements/SundanceTestFunctionData.cpp
   Elements/SundanceTetQuadrature.cpp
   Elements/SundanceTriangleQuadrature.cpp
   Elements/SundanceUnknownFunction.cpp
   Elements/SundanceUnknownFunctionData.cpp
-  Elements/SundanceVectorBasisComponent.cpp
   )
 
 #

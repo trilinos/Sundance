@@ -49,10 +49,11 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceCore;
 using namespace SundanceCore::Internal;
+using namespace Teuchos;
 
 namespace Internal
 {
-using namespace Teuchos;
+
 
 /** 
  * 
@@ -83,9 +84,9 @@ public:
   const Array<RefCountPtr<std::set<int> > >& remoteBCCols() const 
     {return remoteBCCols_;}
 
-  Array<Array<BasisFamily> > testBasisArray() const ;
+  Array<Array<RCP<BasisDOFTopologyBase> > > testBasisTopologyArray() const ;
 
-  Array<Array<BasisFamily> > unkBasisArray() const ;
+  Array<Array<RCP<BasisDOFTopologyBase> > > unkBasisTopologyArray() const ;
 
   Array<Array<Set<CellFilter> > > testCellFilters() const ;
 
@@ -96,20 +97,18 @@ public:
 
 
   RefCountPtr<DOFMapBase> makeMap(const Mesh& mesh,
-    const Array<BasisFamily>& basis,
+    const Array<RCP<BasisDOFTopologyBase> >& basis,
     const Array<Set<CellFilter> >& filters) ;
 
-  bool hasOmnipresentNodalMap(const Array<BasisFamily>& basis,
+  bool hasOmnipresentNodalMap(const Array<RCP<BasisDOFTopologyBase> >& basis,
     const Mesh& mesh,
     const Array<Set<CellFilter> >& filters) const ;
 
   bool hasCommonDomain(const Array<Set<CellFilter> >& filters) const ;
 
-  bool hasHomogeneousBasis(const Array<BasisFamily>& basis) const ;
+  bool hasNodalBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const ;
 
-  bool hasNodalBasis(const Array<BasisFamily>& basis) const ;
-
-  bool hasCellBasis(const Array<BasisFamily>& basis) const ;
+  bool hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const ;
 
   bool allFuncsAreOmnipresent(const Mesh& mesh,
     const Array<Set<CellFilter> >& filters) const ;
@@ -130,6 +129,9 @@ public:
   void extractVarSetsFromFSR(const FunctionSupportResolver& fsr,
     Array<Set<int> >& funcSets,
     Array<CellFilter>& regions) const ;
+
+  /** */
+  const RCP<FunctionSupportResolver>& fsr() const {return fsr_;}
 
   /** */
   SundanceUtils::Map<Set<int>, Set<CellFilter> > 
@@ -189,6 +191,12 @@ private:
 
 };
 }
+/** \relates DOFMapBuilder */
+Array<Array<BasisFamily> > testBasisArray(const RefCountPtr<FunctionSupportResolver>& fsr) ;
+
+/** \relates DOFMapBuilder */
+Array<Array<BasisFamily> > unkBasisArray(const RefCountPtr<FunctionSupportResolver>& fsr) ;
+
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

@@ -69,7 +69,7 @@ namespace SundanceCore
 
       /** Get the data associated with the vector-valued function 
        * that contains this function element. */
-      const TestFuncDataStub* commonData() const {return commonData_.get();}
+      RCP<const TestFuncDataStub> commonData() const {return commonData_;}
 
 
       /** Test whether all terms have test functions. 

@@ -35,6 +35,7 @@
 #include "SundanceNodalDOFMap.hpp"
 #include "SundanceLagrange.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
+#include "Teuchos_TimeMonitor.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -54,7 +55,7 @@ NodalDOFMap::NodalDOFMap(const Mesh& mesh,
     nNodesPerElem_(mesh.numFacets(mesh.spatialDim(),0,0)),
     elemDofs_(nElems_ * nFuncs * nNodesPerElem_),
     nodeDofs_(mesh.numCells(0)*nFuncs_, -1),
-    structure_(rcp(new MapStructure(nFuncs_, new Lagrange(1))))
+    structure_(rcp(new MapStructure(nFuncs_, rcp(new Lagrange(1)))))
 {
   init();
 }

@@ -76,9 +76,9 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
                          << f[i] << " is not a discrete function");
       funcIdToFieldNumberMap_.put(u0->funcComponentID(), i);
 
-      const DiscreteFuncDataStub* data = u0->commonData();
+      RCP<const DiscreteFuncDataStub> data = u0->commonData();
       const TestDiscreteFuncData* tdfd  
-        = dynamic_cast<const TestDiscreteFuncData*>(data);
+        = dynamic_cast<const TestDiscreteFuncData*>(data.get());
 
       TEST_FOR_EXCEPTION(tdfd==0, InternalError,
                          "df " << f[i] << " is not a TestDiscreteFunction");

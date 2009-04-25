@@ -30,11 +30,11 @@
 
 #include "SundanceBasisFamily.hpp"
 #include "SundanceUnknownFunction.hpp"
-#include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFunction.hpp"
-#include "SundanceTestFuncElement.hpp"
 #include "SundanceDiscreteFunction.hpp"
-#include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceUnknownFunctionData.hpp"
+#include "SundanceTestFunctionData.hpp"
+#include "SundanceDiscreteFunctionData.hpp"
 
 using namespace TSFExtended;
 using namespace SundanceStdFwk;
@@ -74,44 +74,49 @@ int BasisFamily::nReferenceDOFs(const CellType& maximalCellType,
   return ptr()->nReferenceDOFs(maximalCellType, cellType);
 }
 
-BasisFamily BasisFamily::getBasis(const Expr& expr)
+BasisFamily BasisFamily::getBasis(const RCP<const CommonFuncDataStub>& funcData)
 {
-  TEST_FOR_EXCEPTION(expr.size() > 1, RuntimeError, "non-scalar expression in BasisFamily::getBasis()");
-
   /* First try to process assuming the input is an unknown function */
-  const UnknownFuncElement* u 
-    = dynamic_cast<const UnknownFuncElement*>(expr[0].ptr().get());
+  const UnknownFunctionData* u 
+    = dynamic_cast<const UnknownFunctionData*>(funcData.get());
   if (u != 0)
     {
-      const UnknownFunctionData* data = UnknownFunctionData::getData(u);
-      return data->basis()[u->myIndex()];
+      return u->basis()[0];
     }
 
   /* Next try to process assuming the input is a test function */
-  const TestFuncElement* t 
-    = dynamic_cast<const TestFuncElement*>(expr[0].ptr().get());
+  const TestFunctionData* t 
+    = dynamic_cast<const TestFunctionData*>(funcData.get());
   if (t != 0)
     {
-      const TestFunctionData* data = TestFunctionData::getData(t);
-      return data->basis()[t->myIndex()];
+      return t->basis()[0];
     }
 
+
   /* Next try to process assuming the input is a discrete function */
-  const DiscreteFuncElement* d
-    = dynamic_cast<const DiscreteFuncElement*>(expr[0].ptr().get());
+  const DiscreteFunctionData* d
+    = dynamic_cast<const DiscreteFunctionData*>(funcData.get());
   if (d != 0)
     {
-      const DiscreteFunctionData* data = DiscreteFunctionData::getData(d);
-      return data->discreteSpace().basis()[d->myIndex()];
+      return d->discreteSpace().basis()[0];
     }
 
   TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, RuntimeError,
-                     "BasisFamily::getBasis() argument is not a function");
+    "BasisFamily::getBasis() argument is not a recognized "
+    "type of function data");
   return BasisFamily();
   
 }
 
 
+
+RCP<BasisDOFTopologyBase> BasisFamily::getBasisTopology(const RCP<const CommonFuncDataStub>& funcData)
+{
+  BasisFamily b = getBasis(funcData);
+  TEST_FOR_EXCEPT(b.ptr().get()==0);
+
+  return rcp_dynamic_cast<BasisDOFTopologyBase>(b.ptr());
+}
 
 
 namespace SundanceStdFwk

@@ -130,12 +130,12 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     TEST_FOR_EXCEPTION(fe==0, InternalError,
       "unk " << unks[i] << " is not an UnknownFunction");
 
-    const UnknownFuncDataStub* data = fe->commonData();
+    RCP<const UnknownFuncDataStub> data = fe->commonData();
 
-    const TestUnknownFuncData* tufd  
-      = dynamic_cast<const TestUnknownFuncData*>(data);
+    RCP<const TestUnknownFuncData> tufd  
+      = rcp_dynamic_cast<const TestUnknownFuncData>(data);
 
-    TEST_FOR_EXCEPTION(tufd==0, InternalError,
+    TEST_FOR_EXCEPTION(tufd.get()==0, InternalError,
       "unk " << unks[i] << " is not a TestUnknownFunction");
 
     Expr discFunc = tufd->createDiscreteFunction(fe->name());

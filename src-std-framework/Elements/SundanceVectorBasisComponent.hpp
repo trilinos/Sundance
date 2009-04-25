@@ -116,6 +116,7 @@ public:
         pts, deriv, result);
     }
 
+
 private:
   BasisFamily master_;
   int direction_;

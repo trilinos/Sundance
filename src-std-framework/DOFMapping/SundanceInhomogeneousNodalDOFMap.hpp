@@ -111,7 +111,7 @@ namespace SundanceStdFwk
                       int& nextDOF) ;
 
       int dim_;
-      BasisFamily basis_;
+      RCP<BasisDOFTopologyBase> basis_;
       int nTotalFuncs_;
       Array<CellFilter> funcDomains_;
 

@@ -356,3 +356,4 @@ void Bubble::evalOnTet(const Point& pt,
 				result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
 		}
 }
+

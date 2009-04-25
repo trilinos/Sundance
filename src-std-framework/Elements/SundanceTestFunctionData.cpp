@@ -45,10 +45,10 @@ const TestFunctionData* TestFunctionData::getData(const TestFuncElement* dfe)
 {
   TEST_FOR_EXCEPTION(dfe==0, RuntimeError, 
                      "null argument to UnknownFunctionData::getData()");
-  const TestFunctionData* rtn 
-    = dynamic_cast<const TestFunctionData*>(dfe->commonData());
-  TEST_FOR_EXCEPTION(rtn==0, RuntimeError, 
+  RCP<const TestFunctionData> rtn 
+    = rcp_dynamic_cast<const TestFunctionData>(dfe->commonData());
+  TEST_FOR_EXCEPTION(rtn.get()==0, RuntimeError, 
                      "cast to TestFunctionData* failed for "
                      "discrete function element " << dfe->toXML());
-  return rtn;
+  return rtn.get();
 }

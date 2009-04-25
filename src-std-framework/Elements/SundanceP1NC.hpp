@@ -80,6 +80,9 @@ public:
     const MultiIndex& deriv,
     Array<Array<Array<double> > >& result) const ;
 
+  /** */
+  bool lessThan(const BasisDOFTopologyBase* other) const ;
+
 
   /* Handleable boilerplate */
   GET_RCP(BasisFamilyBase);
