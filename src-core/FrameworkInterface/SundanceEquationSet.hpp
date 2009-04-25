@@ -501,6 +501,16 @@ public:
   /** Returns the number of unk functions in this block */
   unsigned int numUnks(int block) const ;
 
+  /** Returns the number of variational function IDs in this block.
+   * See the comment in FSR.hpp for an explanation of the difference 
+   * between this and numVars(). */
+  unsigned int numVarIDs(int block) const ;
+
+  /** Returns the number of unk function IDs in this block.
+   * See the comment in FSR.hpp for an explanation of the difference 
+   * between this and numVars().  */
+  unsigned int numUnkIDs(int block) const ;
+
   /** Returns the i-th variational function in block b */
   RCP<const CommonFuncDataStub> varFuncData(int b, int i) const ;
 

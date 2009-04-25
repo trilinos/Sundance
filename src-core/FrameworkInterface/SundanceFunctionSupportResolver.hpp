@@ -82,6 +82,18 @@ public:
   /** Returns the number of unk functions in this block */
   unsigned int numUnks(int block) const {return unkFuncs_[block].size();}
 
+  /** Returns the number of variational function IDs in this block.
+   * This will differ from the number of variational functions in cases
+   * where a vector field uses a single vector-valued basis rather
+   * than scalar bases for each component. */
+  unsigned int numVarIDs(int block) const {return varFuncData_[block].size();}
+
+  /** Returns the number of unk function IDs in this block.
+   * This will differ from the number of unknown functions in cases
+   * where a vector field uses a single vector-valued basis rather
+   * than scalar bases for each component. */ 
+  unsigned int numUnkIDs(int block) const {return unkFuncData_[block].size();}
+
   /** Returns the data for the i-th variational function in block b */
   RCP<const CommonFuncDataStub> varFuncData(int b, int i) const {return varFuncData_[b][i];}
 

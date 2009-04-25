@@ -1196,6 +1196,14 @@ unsigned int EquationSet::numVars(int block) const
 unsigned int EquationSet::numUnks(int block) const 
 {return fsr_->numUnks(block);}
 
+/* Returns the number of variational function IDs in this block */
+unsigned int EquationSet::numVarIDs(int block) const 
+{return fsr_->numVarIDs(block);}
+
+/* Returns the number of unk function IDs in this block */
+unsigned int EquationSet::numUnkIDs(int block) const 
+{return fsr_->numUnkIDs(block);}
+
 /* Returns the i-th variational function in block b */
 RCP<const CommonFuncDataStub>  EquationSet::varFuncData(int b, int i) const 
 {return fsr_->varFuncData(b,i);}

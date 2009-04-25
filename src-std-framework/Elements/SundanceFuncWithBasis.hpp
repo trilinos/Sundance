@@ -34,8 +34,6 @@
 #include "SundanceDefs.hpp"
 #include "SundanceBasisFamily.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceStdFwk
 {
   namespace Internal
@@ -62,6 +60,10 @@ namespace SundanceStdFwk
   }
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+namespace SundanceCore {class Expr;}
+namespace std
+{
+string describeFunction(const SundanceCore::Expr& f);
+}
 
 #endif

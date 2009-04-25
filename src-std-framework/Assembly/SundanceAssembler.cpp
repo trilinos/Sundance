@@ -1115,8 +1115,8 @@ void Assembler::getGraph(int br, int bc,
             << *bcPairs);
         }
       }
-      Array<Set<int> > unksForTestsSet(eqn_->numVars(bc));
-      Array<Set<int> > bcUnksForTestsSet(eqn_->numVars(bc));
+      Array<Set<int> > unksForTestsSet(eqn_->numVarIDs(bc));
+      Array<Set<int> > bcUnksForTestsSet(eqn_->numVarIDs(bc));
 
       Set<OrderedPair<int, int> >::const_iterator i;
       
@@ -1178,7 +1178,7 @@ void Assembler::getGraph(int br, int bc,
 
       int highestRow = lowestRow_[br] + rowMap_[br]->numLocalDOFs();
 
-      int nt = eqn_->numVars(br);
+      int nt = eqn_->numVarIDs(br);
 
       CellIterator iter=cells.begin();
       while (iter != cells.end())
@@ -1377,8 +1377,8 @@ void Assembler
           << *bcPairs);
       }
     }
-    Array<Set<int> > unksForTestsSet(eqn_->numVars(br));
-    Array<Set<int> > bcUnksForTestsSet(eqn_->numVars(br));
+    Array<Set<int> > unksForTestsSet(eqn_->numVarIDs(br));
+    Array<Set<int> > bcUnksForTestsSet(eqn_->numVarIDs(br));
 
     Set<OrderedPair<int, int> >::const_iterator i;
       

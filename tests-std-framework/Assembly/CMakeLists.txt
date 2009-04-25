@@ -3,7 +3,7 @@
 
 INCLUDE(AddTestBatch)
 
-SET(SerialTests BasisCheck TransformedIntegral2D  QuadratureTest)
+SET(SerialTests BasisCheck TransformedIntegral2D  QuadratureTest RTDOFTest)
 
 
 ADD_TEST_BATCH(SerialTests 

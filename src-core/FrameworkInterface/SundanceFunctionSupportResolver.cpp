@@ -209,7 +209,7 @@ FunctionSupportResolver::FunctionSupportResolver(
       unreducedVarID_[b][k] = fid;
     }
     SUNDANCE_MSG2(verb, tab2 << "block=" << b << " var functions are " 
-      << unreducedUnkID_[b]);
+      << unreducedVarID_[b]);
   }
 
   /* set up func ID maps for unks */

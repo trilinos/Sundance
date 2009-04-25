@@ -75,6 +75,7 @@ APPEND_SET(SOURCES
   Elements/SundanceDiscreteFunction.cpp
   Elements/SundanceDiscreteFunctionData.cpp
   Elements/SundanceDiscreteSpace.cpp
+  Elements/SundanceFuncWithBasis.cpp
   Elements/SundanceGauss1D.cpp
   Elements/SundanceGaussianQuadrature.cpp
   Elements/SundanceGaussianQuadratureType.cpp

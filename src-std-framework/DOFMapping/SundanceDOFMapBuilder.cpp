@@ -518,7 +518,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
 
   for (unsigned int b=0; b<fsr_->numVarBlocks(); b++)
     {
-      for (unsigned int i=0; i<fsr_->numVars(b); i++) 
+      for (unsigned int i=0; i<fsr_->numVarIDs(b); i++) 
         {
           int testID = fsr_->unreducedVarID(b, i);
           Set<CellFilter> s;
@@ -547,7 +547,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
 
   for (unsigned int b=0; b<fsr_->numUnkBlocks(); b++)
     {
-      for (unsigned int i=0; i<fsr_->numUnks(b); i++) 
+      for (unsigned int i=0; i<fsr_->numUnkIDs(b); i++) 
         {
           int unkID = fsr_->unreducedUnkID(b, i);
           Set<CellFilter> s;
@@ -575,7 +575,7 @@ Array<Array<RCP<BasisDOFTopologyBase> > > DOFMapBuilder::testBasisTopologyArray(
   Array<Array<RCP<BasisDOFTopologyBase> > > rtn(fsr_->numVarBlocks());
   for (unsigned int b=0; b<fsr_->numVarBlocks(); b++)
     {
-      for (unsigned int i=0; i<fsr_->numVars(b); i++) 
+      for (unsigned int i=0; i<fsr_->numVarIDs(b); i++) 
         {
           rtn[b].append(BasisFamily::getBasisTopology(fsr_->varFuncData(b, i)));
         }
@@ -588,7 +588,7 @@ Array<Array<RCP<BasisDOFTopologyBase> > > DOFMapBuilder::unkBasisTopologyArray()
   Array<Array<RCP<BasisDOFTopologyBase> > > rtn(fsr_->numUnkBlocks());
   for (unsigned int b=0; b<fsr_->numUnkBlocks(); b++)
     {
-      for (unsigned int i=0; i<fsr_->numUnks(b); i++) 
+      for (unsigned int i=0; i<fsr_->numUnkIDs(b); i++) 
         {
           rtn[b].append(BasisFamily::getBasisTopology(fsr_->unkFuncData(b, i)));
         }
@@ -668,9 +668,9 @@ bool DOFMapBuilder::isSymmetric(int b) const
 {
   if ((int)fsr_->numVarBlocks() < b || (int)fsr_->numUnkBlocks() < b) return false;
 
-  if (fsr_->numVars(b) != fsr_->numUnks(b)) return false;
+  if (fsr_->numVarIDs(b) != fsr_->numUnkIDs(b)) return false;
 
-  for (unsigned int i=0; i<fsr_->numVars(b); i++) 
+  for (unsigned int i=0; i<fsr_->numVarIDs(b); i++) 
     {
       BasisFamily basis1 = BasisFamily::getBasis(fsr_->varFuncData(b,i));
       BasisFamily basis2 = BasisFamily::getBasis(fsr_->unkFuncData(b,i));
@@ -847,7 +847,7 @@ Array<Array<BasisFamily> > testBasisArray(const RCP<FunctionSupportResolver>& fs
   Array<Array<BasisFamily> > rtn(fsr->numVarBlocks());
   for (unsigned int b=0; b<fsr->numVarBlocks(); b++)
     {
-      for (unsigned int i=0; i<fsr->numVars(b); i++) 
+      for (unsigned int i=0; i<fsr->numVarIDs(b); i++) 
         {
           rtn[b].append(BasisFamily::getBasis(fsr->varFuncData(b, i)));
         }
@@ -861,7 +861,7 @@ Array<Array<BasisFamily> > unkBasisArray(const RCP<FunctionSupportResolver>& fsr
   Array<Array<BasisFamily> > rtn(fsr->numUnkBlocks());
   for (unsigned int b=0; b<fsr->numUnkBlocks(); b++)
     {
-      for (unsigned int i=0; i<fsr->numUnks(b); i++) 
+      for (unsigned int i=0; i<fsr->numUnkIDs(b); i++) 
         {
           rtn[b].append(BasisFamily::getBasis(fsr->unkFuncData(b, i)));
         }

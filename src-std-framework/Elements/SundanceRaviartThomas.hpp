@@ -46,6 +46,12 @@ public:
   /** */
   RaviartThomas(int spatialDim);
 
+  /** */
+  int order() const {return 1;}
+
+  /** */
+  void print(std::ostream& os) const ;
+
   /**   
    * \brief Inform caller as to whether a given cell type is supported 
    */
@@ -81,6 +87,10 @@ public:
     const MultiIndex& deriv,
     Array<Array<Array<double> > >& result
     ) const ;  
+
+
+  /* Handleable boilerplate */
+  GET_RCP(BasisFamilyBase);
 private:
 
     

@@ -162,3 +162,9 @@ void RaviartThomas::refEval(
 {
   TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements not yet supported");
 }
+
+
+void RaviartThomas::print(std::ostream& os) const 
+{
+  os << "RaviartThomas(" << dim() << ")";
+}
