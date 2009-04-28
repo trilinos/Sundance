@@ -196,7 +196,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     Tabs tab2;
     unreducedVarID_[b].resize(vars[b].size());
     int k=0;
-    for (unsigned int i=0; i<vars[b].size(); i++, k++)
+    for (unsigned int i=0; i<vars[b].size(); i++)
     {
       const FuncElementBase* t 
         = dynamic_cast<const FuncElementBase*>(vars[b][i].ptr().get());
@@ -207,6 +207,7 @@ FunctionSupportResolver::FunctionSupportResolver(
       varIDToBlockMap_.put(fid, b);
       varIDToReducedIDMap_[b].put(fid, k);
       unreducedVarID_[b][k] = fid;
+      k++;
     }
     SUNDANCE_MSG2(verb, tab2 << "block=" << b << " var functions are " 
       << unreducedVarID_[b]);
@@ -220,7 +221,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     Tabs tab2;
     unreducedUnkID_[b].resize(unks[b].size());
     int k=0;
-    for (unsigned int i=0; i<unks[b].size(); i++, k++)
+    for (unsigned int i=0; i<unks[b].size(); i++)
     {
       const UnknownFuncElement* u 
         = dynamic_cast<const UnknownFuncElement*>(unks[b][i].ptr().get());
@@ -235,6 +236,7 @@ FunctionSupportResolver::FunctionSupportResolver(
       unkIDToBlockMap_.put(fid, b);
       unkIDToReducedIDMap_[b].put(fid, k);
       unreducedUnkID_[b][k] = fid;
+      k++;
     }
     SUNDANCE_MSG2(verb, tab2 << "block=" << b << " unk functions are " 
       << unreducedUnkID_[b]);

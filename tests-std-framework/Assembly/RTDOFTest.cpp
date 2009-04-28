@@ -42,13 +42,25 @@ int main(int argc, char** argv)
   {
     Sundance::init(&argc, &argv);
 
+    /* */
+    int npx = MPIComm::world().getNProc();
+
     /* Create a mesh. It will be of type BasisSimplicialMesh, and will
      * be built using a PartitionedLineMesher. */
     MeshType meshType = new BasicSimplicialMeshType();
-    MeshSource mesher = new PartitionedRectangleMesher(0.0, 10.0, 2, 1,
-      0.0, 10.0, 2, 1,
+    MeshSource mesher = new PartitionedRectangleMesher(0.0, 3.0, 2, npx,
+      0.0, 1.0, 2, 1,
       meshType);
     Mesh mesh = mesher.getMesh();
+
+
+    FieldWriter w = new VerboseFieldWriter();
+    w.addMesh(mesh);
+    w.write();
+
+    FieldWriter w2 = new VTKWriter("rtMesh");
+    w2.addMesh(mesh);
+    w2.write();
 
     /* Create a cell filter that will identify the maximal cells
      * in the interior of the domain */
@@ -59,18 +71,27 @@ int main(int argc, char** argv)
     /* */
     Expr u = new UnknownFunction(new RaviartThomas(2));
 
+    /* */
+    Expr q = new TestFunction(new Lagrange(1));
+    /* */
+    Expr p = new UnknownFunction(new Lagrange(1));
+
     Out::os() << "v = " << describeFunction(v) << endl;
     Out::os() << "u = " << describeFunction(u) << endl;
+
+    Out::os() << "q = " << describeFunction(q) << endl;
+    Out::os() << "p = " << describeFunction(p) << endl;
 
 
 
     QuadratureFamily quad = new GaussianQuadrature(2);
-    Expr eqn = Integral(interior, v*u, quad);
+    Expr eqn = Integral(interior, v*u + p*q, quad);
     Expr dum;
 
+    int verb = 0;
     RCP<FunctionSupportResolver> fsr 
-      = rcp(new FunctionSupportResolver(eqn, dum, tuple(v), tuple(u),
-          dum, dum, tuple(dum), false, 4));
+      = rcp(new FunctionSupportResolver(eqn, dum, tuple(List(v,q).flatten()), tuple(List(u,p).flatten()),
+          dum, dum, tuple(dum), false, verb));
           
     
     DOFMapBuilder builder(mesh, fsr, false);
@@ -80,6 +101,8 @@ int main(int argc, char** argv)
       RCP<DOFMapBase> rm = builder.rowMap()[br];
       rm->print(Out::os());
     }
+
+    
   }
 	catch(exception& e)
   {
