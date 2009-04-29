@@ -146,6 +146,7 @@ APPEND_SET(HEADERS
   Assembly/SundanceMatrixVectorAssemblyKernel.hpp
   Assembly/SundanceQuadratureEvalMediator.hpp
   Assembly/SundanceQuadratureIntegral.hpp
+  Assembly/SundanceQuadratureIntegralBase.hpp
   Assembly/SundanceRefIntegral.hpp
   Assembly/SundanceStdFwkEvalMediator.hpp
   Assembly/SundanceTrivialGrouper.hpp
@@ -166,6 +167,7 @@ APPEND_SET(SOURCES
   Assembly/SundanceMatrixVectorAssemblyKernel.cpp
   Assembly/SundanceQuadratureEvalMediator.cpp
   Assembly/SundanceQuadratureIntegral.cpp
+  Assembly/SundanceQuadratureIntegralBase.cpp
   Assembly/SundanceRefIntegral.cpp
   Assembly/SundanceStdFwkEvalMediator.cpp
   Assembly/SundanceTrivialGrouper.cpp

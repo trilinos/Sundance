@@ -32,7 +32,7 @@
 #define SUNDANCE_QUADRATUREINTEGRAL_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceElementIntegral.hpp"
+#include "SundanceQuadratureIntegralBase.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -53,7 +53,7 @@ using namespace Teuchos;
  *
  */
 class QuadratureIntegral 
-  : public ElementIntegral
+  : public QuadratureIntegralBase
 {
 public:
   /** Construct a zero-form to be computed by quadrature */
@@ -92,53 +92,28 @@ public:
   virtual ~QuadratureIntegral(){;}
 
   /** */
-  void transform(const CellJacobianBatch& JTrans,
-    const CellJacobianBatch& JVol,
-    const Array<int>& isLocalFlag,
-    const Array<int>& facetNum,
-    const double* const coeff,
-    RefCountPtr<Array<double> >& A) const 
-    {
-      if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
-      else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
-      else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, coeff, A);
-    }
+  virtual void transformZeroForm(const CellJacobianBatch& JTrans,
+				 const CellJacobianBatch& JVol,
+				 const Array<int>& isLocalFlag,
+				 const Array<int>& facetIndex,
+				 const double* const coeff,
+				 RefCountPtr<Array<double> >& A) const ;
       
   /** */
-  void transformZeroForm(const CellJacobianBatch& JTrans,
-    const CellJacobianBatch& JVol,
-    const Array<int>& isLocalFlag,
-    const Array<int>& facetIndex,
-    const double* const coeff,
-    RefCountPtr<Array<double> >& A) const ;
-      
-  /** */
-  void transformTwoForm(const CellJacobianBatch& JTrans,
-    const CellJacobianBatch& JVol,
-    const Array<int>& facetIndex,
-    const double* const coeff,
-    RefCountPtr<Array<double> >& A) const ;
+  virtual void transformTwoForm(const CellJacobianBatch& JTrans,
+				const CellJacobianBatch& JVol,
+				const Array<int>& facetIndex,
+				const double* const coeff,
+				RefCountPtr<Array<double> >& A) const ;
       
   /** */
   void transformOneForm(const CellJacobianBatch& JTrans,
-    const CellJacobianBatch& JVol,
-    const Array<int>& facetIndex,
-    const double* const coeff,
-    RefCountPtr<Array<double> >& A) const ;
-
-  /** */
-  void print(ostream& os) const ;
-      
-
-
-  /** */
-  int nQuad() const {return nQuad_;}
-
-  static double& totalFlops() {static double rtn = 0; return rtn;}
+			const CellJacobianBatch& JVol,
+			const Array<int>& facetIndex,
+			const double* const coeff,
+			RefCountPtr<Array<double> >& A) const ;
 
 private:
-
-  static void addFlops(const double& flops) {totalFlops() += flops;}
 
   /** Do the integration by summing reference quantities over quadrature
    * points and then transforming the sum to physical quantities.  */
@@ -198,9 +173,6 @@ private:
 
   /* */
   Array<Array<double> > W_;
-
-  /* */
-  int nQuad_;
 
   /* */
   bool useSumFirstMethod_;

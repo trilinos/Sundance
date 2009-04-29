@@ -70,9 +70,8 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   const CellType& cellType,
   const QuadratureFamily& quad,
   const ParameterList& verbParams)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verbParams),
+  : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, quad , verbParams),
     W_(),
-    nQuad_(0),
     useSumFirstMethod_(true)
 {
   Tabs tab0;
@@ -121,11 +120,10 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                                        int alpha,
                                        int testDerivOrder,
                                        const QuadratureFamily& quad,
-  const ParameterList& verbParams)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-    testBasis, alpha, testDerivOrder, verbParams),
+				       const ParameterList& verbParams)
+  : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, 
+			   testBasis, alpha, testDerivOrder, quad , verbParams),
     W_(),
-    nQuad_(0),
     useSumFirstMethod_(true)
 {
   Tabs tab0;
@@ -245,12 +243,11 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                                        int beta,
                                        int unkDerivOrder,
                                        const QuadratureFamily& quad,
-  const ParameterList& verbParams)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-                    testBasis, alpha, testDerivOrder, 
-    unkBasis, beta, unkDerivOrder, verbParams), 
+				       const ParameterList& verbParams)
+  : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, 
+			   testBasis, alpha, testDerivOrder, 
+			   unkBasis, beta, unkDerivOrder, quad , verbParams), 
     W_(),
-    nQuad_(0),
     useSumFirstMethod_(true)
 {
   Tabs tab0;
@@ -371,11 +368,6 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
 }
 
-
-void QuadratureIntegral::print(ostream& os) const 
-{
-  
-}
 
 void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,  
                                            const CellJacobianBatch& JVol,
