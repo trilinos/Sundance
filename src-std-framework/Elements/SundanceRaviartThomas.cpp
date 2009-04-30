@@ -95,7 +95,7 @@ int RaviartThomas::nReferenceDOFs(
     case PointCell:
       return 0;
     case LineCell:
-      return 1;
+      return 2;
     case TriangleCell:
       return 3;
     case TetCell:
