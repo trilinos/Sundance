@@ -164,6 +164,9 @@ APPEND_SET(HEADERS
   Assembly/ElementIntegration/SundanceElementIntegralBilinearFormCell.hpp
   Assembly/ElementIntegration/SundanceElementIntegralBilinearFormFacet.hpp
   Assembly/ElementIntegration/SundanceIQI_HdivLF_DivV_Cell.hpp
+  Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.hpp
+  Assembly/ElementIntegration/SundanceIQI_HdivLF_Vi_Cell.hpp
+  Assembly/ElementIntegration/SundanceIQI_HdivLF_Vi_Facet.hpp
   )
 
 APPEND_SET(SOURCES
@@ -186,6 +189,9 @@ APPEND_SET(SOURCES
   Assembly/SundanceVectorAssemblyKernel.cpp
   Assembly/SundanceVectorFillingAssemblyKernel.cpp
   Assembly/ElementIntegration/SundanceIQI_HdivLF_DivV_Cell.cpp
+  Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.cpp
+  Assembly/ElementIntegration/SundanceIQI_HdivLF_Vi_Cell.cpp
+  Assembly/ElementIntegration/SundanceIQI_HdivLF_Vi_Facet.cpp
   )
 
 #
