@@ -28,8 +28,8 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_IQI_LF_VI_CELL_H
-#define SUNDANCE_IQI_LF_VI_CELL_H
+#ifndef SUNDANCE_IQI_VECLF_VI_CELL_H
+#define SUNDANCE_IQI_VECLF_VI_CELL_H
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellJacobianBatch.hpp"
@@ -56,23 +56,23 @@ namespace SundanceStdFwk
     /** 
      * 
      IQI: IntrepidQuadratureIntegral
-     HdivLF: LinearForm where test function lies in H(div)
-     Vi: the test function is a component of an H(div) vector
+     VecLF: LinearForm where test function is vector-valued
+     Vi: the test function is a component of a vector
     */
-    class IQI_HdivLF_Vi_Cell : public ElementIntegralLinearFormCell
+    class IQI_VecLF_Vi_Cell : public ElementIntegralLinearFormCell
     {
     public:
       /** Constructor */
-      IQI_HdivLF_Vi_Cell( int spatialDim,
-			  const CellType& maxCellType,
-			  const BasisFamily& testBasis,
-			  const int component ,
-			  const QuadratureFamily& quad,
-			  const ParameterList& verbParams 
-			  = *ElementIntegralBase::defaultVerbParams());
-
+      IQI_VecLF_Vi_Cell( int spatialDim,
+			 const CellType& maxCellType,
+			 const BasisFamily& testBasis,
+			 const int component ,
+			 const QuadratureFamily& quad,
+			 const ParameterList& verbParams 
+			 = *ElementIntegralBase::defaultVerbParams());
+      
       /** Destructor */
-      virtual ~IQI_HdivLF_Vi_Cell() {;}
+      virtual ~IQI_VecLF_Vi_Cell() {;}
       
       /** evaluates integral of coeff against divergence of each basis function */
       virtual void evaluate( CellJacobianBatch& JTrans,

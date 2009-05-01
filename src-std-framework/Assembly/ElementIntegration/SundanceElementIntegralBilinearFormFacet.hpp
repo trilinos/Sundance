@@ -36,6 +36,7 @@
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "Teuchos_Array.hpp"
+#include "SundanceElementIntegralBilinearForm.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 

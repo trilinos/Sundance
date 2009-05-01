@@ -28,8 +28,8 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_IQI_LF_VI_FACET_H
-#define SUNDANCE_IQI_LF_VI_FACET_H
+#ifndef SUNDANCE_IQI_VECLF_VI_FACET_H
+#define SUNDANCE_IQI_VECLF_VI_FACET_H
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellJacobianBatch.hpp"
@@ -56,14 +56,14 @@ namespace SundanceStdFwk
     /** 
      * 
      IQI: IntrepidQuadratureIntegral
-     HdivLF: LinearForm where test function lies in H(div)
-     Vi: the test function is a component of an H(div) vector
+     VecLF: LinearForm where test function is vector-valued (div)
+     Vi: the test function is a component of a vector
     */
-    class IQI_HdivLF_Vi_Facet : public ElementIntegralLinearFormFacet
+    class IQI_VecLF_Vi_Facet : public ElementIntegralLinearFormFacet
     {
     public:
       /** Constructor */
-      IQI_HdivLF_Vi_Facet( int spatialDim,
+      IQI_VecLF_Vi_Facet( int spatialDim,
 			   const CellType& maxCellType,
 			   int dim ,
 			   const CellType& cellType ,
@@ -74,7 +74,7 @@ namespace SundanceStdFwk
 			   = *ElementIntegralBase::defaultVerbParams());
       
       /** Destructor */
-      virtual ~IQI_HdivLF_Vi_Facet() {;}
+      virtual ~IQI_VecLF_Vi_Facet() {;}
       
       /** evaluates integral of coeff against divergence of each basis function */
       virtual void evaluate( CellJacobianBatch& JTrans,

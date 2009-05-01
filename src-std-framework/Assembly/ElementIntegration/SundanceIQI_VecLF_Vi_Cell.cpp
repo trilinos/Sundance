@@ -9,7 +9,7 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceIQI_HdivLF_Vi_Facet.hpp"
+#include "SundanceIQI_VecLF_Vi_Cell.hpp"
 
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
@@ -20,35 +20,29 @@ using namespace SundanceCore;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
- IQI_HdivLF_Vi_Facet:: IQI_HdivLF_Vi_Facet( int spatialDim ,
-					    const CellType & maxCellType ,
-					    int dim ,
-					    const CellType &cellType ,
-					    const BasisFamily &testBasis ,
-					    int component ,
-					    const QuadratureFamily &quad ,
-					    const ParameterList& verbParams ):
-  ElementIntegralLinearFormFacet( spatialDim ,
-				  maxCellType ,
-				  dim ,
-				  cellType ,
-				  testBasis ,
-				  quad ,
-				  verbParams )
+IQI_VecLF_Vi_Cell::IQI_VecLF_Vi_Cell( int spatialDim ,
+					const CellType & maxCellType ,
+					const BasisFamily &testBasis ,
+					int component ,
+					const QuadratureFamily &quad ,
+					const ParameterList& verbParams ):
+  ElementIntegralLinearFormCell( spatialDim ,
+				 maxCellType ,
+				 testBasis ,
+				 quad ,
+				 verbParams )
 {
   TEST_FOR_EXCEPTION(true,
 		     InternalError,
-		     "IQI_HdivLF_Vi_Facet is not implemented" );
+		     "IQI_VecLF_Vi_Cell is not implemented" );
 }
 
-void IQI_HdivLF_Vi_Facet::evaluate( CellJacobianBatch& JTrans,
-				    CellJacobianBatch& JVol ,
-				    const Array<int>& facetIndex ,
-				    const double* const coeff,
-				    RefCountPtr<Array<double> >& A) const
+void IQI_VecLF_Vi_Cell::evaluate( CellJacobianBatch& JTrans,
+				   const double* const coeff,
+				   RefCountPtr<Array<double> >& A) const
 {
   TEST_FOR_EXCEPTION(true,
 		     InternalError,
-		     "IQI_HdivLF_Vi_Facet is not implemented" );
+		     "IQI_VecLF_Vi_Cell is not implemented" );
 }
 
