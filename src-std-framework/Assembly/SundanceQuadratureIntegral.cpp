@@ -370,11 +370,11 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
 
 void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,  
-                                           const CellJacobianBatch& JVol,
-                                           const Array<int>& isLocalFlag,
-                                           const Array<int>& facetIndex,
-                                           const double* const coeff,
-                                           RefCountPtr<Array<double> >& A) const
+					   const CellJacobianBatch& JVol,
+					   const Array<int>& isLocalFlag,
+					   const Array<int>& facetIndex,
+					   const double* const coeff,
+					   RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
   Tabs tabs;
@@ -437,7 +437,6 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
 
   addFlops(flops);
 }
-
 
 
 void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,  

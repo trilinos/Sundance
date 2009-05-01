@@ -107,8 +107,10 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
 
 }
 
-
 void QuadratureIntegralBase::print(ostream& os) const 
 {
   
 }
+
+
+

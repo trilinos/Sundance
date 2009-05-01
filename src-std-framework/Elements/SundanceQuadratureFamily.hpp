@@ -59,6 +59,13 @@ namespace SundanceStdFwk
     /** */
     int order() const ;
 
+    /** Returns the number of points in a rule of the given cell type 
+         WARNING: this is slow.  Call it once and store the result. 
+          TODO: make it pure virtual and override with queries in
+          the derived classes, making them supply the information.  */
+    int getNumPoints( const CellType& cellType ) const;
+
+
     /** Get the quadrature points and weights for the given cell type */
     void getPoints(const CellType& cellType, 
                    Array<Point>& quadPoints,

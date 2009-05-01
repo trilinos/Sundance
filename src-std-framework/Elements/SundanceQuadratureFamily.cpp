@@ -35,6 +35,13 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
+int QuadratureFamily::getNumPoints( const CellType & cellType ) const
+{
+  const QuadratureFamilyBase* q 
+    = dynamic_cast<const QuadratureFamilyBase*>(ptr().get());
+  return q->getNumPoints( cellType );
+}
+
 void QuadratureFamily::getPoints(const CellType& cellType, 
                                  Array<Point>& quadPoints,
                                  Array<double>& quadWeights) const 

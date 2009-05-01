@@ -65,6 +65,18 @@ namespace SundanceStdFwk
       /** */
       virtual ~QuadratureFamilyBase(){;}
 
+      /** Gets number of points associated with a particular cell type:
+          WARNING: this is slow.  Call it once and store the result. 
+          TODO: make it pure virtual and override with queries in
+          the derived classes, making them supply the information.  */
+      virtual int getNumPoints( const CellType &cellType ) const 
+      {
+	Array<Point> qp;
+	Array<double> qw;
+	this->getPoints(cellType,qp,qw);
+	return qp.size();
+      }
+
       /** Get the quadrature points and weights for the given cell type */
       virtual void getPoints(const CellType& cellType, 
                      Array<Point>& quadPoints,
