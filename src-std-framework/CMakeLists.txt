@@ -167,6 +167,8 @@ APPEND_SET(HEADERS
   Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.hpp
   Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Cell.hpp
   Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Facet.hpp
+  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Cell.hpp
+  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Facet.hpp
   )
 
 APPEND_SET(SOURCES
@@ -192,6 +194,8 @@ APPEND_SET(SOURCES
   Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.cpp
   Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Cell.cpp
   Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Facet.cpp
+  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Cell.cpp
+  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Facet.cpp
   )
 
 #
