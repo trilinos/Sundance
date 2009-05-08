@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceExplicitFunctionalDerivativeElement.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceEFDEEvaluator.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
@@ -37,7 +37,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -49,7 +49,6 @@ ExplicitFunctionalDerivativeElement
   : UnaryExpr(arg), fd_(fd)
 {
   Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "forming EFDE " << toString());
 }
 
 ostream& ExplicitFunctionalDerivativeElement
@@ -93,8 +92,9 @@ ExplicitFunctionalDerivativeElement
                            const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tab0;
-  SUNDANCE_VERB_HIGH(tab0 << "ExplicitFunctionalDerivativeElement::internalDetermineR for=" << toString());
-  SUNDANCE_VERB_HIGH(tab0 << "RInput = " << RInput );
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab0 << "ExplicitFunctionalDerivativeElement::internalDetermineR for=" << toString());
+  SUNDANCE_MSG3(verb, tab0 << "RInput = " << RInput );
 
   RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
@@ -105,7 +105,7 @@ ExplicitFunctionalDerivativeElement
       {
         Tabs tab2;
         const Set<MultipleDeriv>& Wi = findW(i, context);
-        SUNDANCE_VERB_EXTREME( tab2 << "W[" << i << "] = " << Wi );
+        SUNDANCE_MSG5(verb,  tab2 << "W[" << i << "] = " << Wi );
         (*rtn)[i] = RInput[i].intersection(Wi);
       }
 
@@ -115,25 +115,25 @@ ExplicitFunctionalDerivativeElement
     for (unsigned int order=1; order<=RInput.size(); order++)
       {
         Tabs tab2;
-        SUNDANCE_VERB_HIGH(tab2 << "order = " << order);
+        SUNDANCE_MSG3(verb, tab2 << "order = " << order);
         if (RInput[order-1].size() == 0U) continue;
         const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
         const Set<MultipleDeriv>& RMinus = (*rtn)[order-1];
 
-        SUNDANCE_VERB_HIGH(tab2 << "RInput = " << RInput[order-1]);
-        SUNDANCE_VERB_HIGH(tab2 << "FD times RInput = " 
+        SUNDANCE_MSG3(verb, tab2 << "RInput = " << RInput[order-1]);
+        SUNDANCE_MSG3(verb, tab2 << "FD times RInput = " 
           << setProduct(RMinus, makeSet(me)));
         
         RArg[order].merge(setProduct(RMinus, makeSet(me)).intersection(WArg));
       }
-    SUNDANCE_VERB_HIGH(tab1 << "RArg = " << RArg);
+    SUNDANCE_MSG3(verb, tab1 << "RArg = " << RArg);
     
-    SUNDANCE_VERB_HIGH(tab1 << "calling determineR() for arg "
+    SUNDANCE_MSG3(verb, tab1 << "calling determineR() for arg "
                        << evaluatableArg()->toString());
     evaluatableArg()->determineR(context, RArg);
   }
-  SUNDANCE_VERB_HIGH(tab0 << "R = " << (*rtn) );
-  SUNDANCE_VERB_HIGH(tab0 << "done with ExplicitFunctionalDerivativeElement::internalDetermineR for "
+  SUNDANCE_MSG3(verb, tab0 << "R = " << (*rtn) );
+  SUNDANCE_MSG3(verb, tab0 << "done with ExplicitFunctionalDerivativeElement::internalDetermineR for "
                      << toString());
   /* all done */  
   return rtn;
@@ -144,7 +144,8 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 ::internalFindW(int order, const EvalContext& context) const
 {
   Tabs tab0;
-  SUNDANCE_VERB_HIGH(tab0 
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab0 
     << "ExplicitFunctionalDerivativeElement::internalFindW(order="
     << order << ") for " << toString());
 
@@ -157,15 +158,15 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
     const Set<MultipleDeriv>& WArgPlus 
       = evaluatableArg()->findW(order+1, context);
     
-    SUNDANCE_VERB_EXTREME(tab1 << "WArgPlus = " << WArgPlus);
+    SUNDANCE_MSG5(verb, tab1 << "WArgPlus = " << WArgPlus);
     MultipleDeriv me(fd_);
     Set<MultipleDeriv> WargPlusOslashFD = setDivision(WArgPlus, makeSet(me));
-    SUNDANCE_VERB_EXTREME(tab1 << "WArgPlus / fd = " 
+    SUNDANCE_MSG5(verb, tab1 << "WArgPlus / fd = " 
       << WargPlusOslashFD);
     rtn = WargPlusOslashFD;
   }
-  SUNDANCE_VERB_HIGH(tab0 << "W[" << order << "]=" << rtn);
-  SUNDANCE_VERB_HIGH(tab0 << "done with ExplicitFunctionalDerivativeElement::internalFindW(" << order << ") for "
+  SUNDANCE_MSG3(verb, tab0 << "W[" << order << "]=" << rtn);
+  SUNDANCE_MSG3(verb, tab0 << "done with ExplicitFunctionalDerivativeElement::internalFindW(" << order << ") for "
                      << toString());
 
   return rtn;
@@ -176,21 +177,22 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 ::internalFindV(int order, const EvalContext& context) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for " 
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tabs << "ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for " 
                      << toString());
 
   Set<MultipleDeriv> rtn;
   
   {
     Tabs tab1;
-    SUNDANCE_VERB_EXTREME(tab1 << "finding R");
+    SUNDANCE_MSG5(verb, tab1 << "finding R");
     const Set<MultipleDeriv>& R = findR(order, context);
-    SUNDANCE_VERB_EXTREME(tab1 << "finding C");
+    SUNDANCE_MSG5(verb, tab1 << "finding C");
     const Set<MultipleDeriv>& C = findC(order, context);
     rtn = R.setDifference(C);
   }
-  SUNDANCE_VERB_HIGH(tabs << "V[" << order << "]=" << rtn);
-  SUNDANCE_VERB_HIGH(tabs << "done with ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for "
+  SUNDANCE_MSG3(verb, tabs << "V[" << order << "]=" << rtn);
+  SUNDANCE_MSG3(verb, tabs << "done with ExplicitFunctionalDerivativeElement::internalFindV(" << order << ") for "
     << toString());
   
   return rtn;
@@ -201,28 +203,29 @@ Set<MultipleDeriv> ExplicitFunctionalDerivativeElement
 ::internalFindC(int order, const EvalContext& context) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "ExplicitFunctionalDerivativeElement::internalFindC() for " 
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tabs << "ExplicitFunctionalDerivativeElement::internalFindC() for " 
     << toString());
   Set<MultipleDeriv> rtn ;
   if (order < 3) 
   {
     Tabs tab1;
-    SUNDANCE_VERB_EXTREME(tab1 << "finding R");
+    SUNDANCE_MSG5(verb, tab1 << "finding R");
     const Set<MultipleDeriv>& R = findR(order, context);
-    SUNDANCE_VERB_EXTREME(tab1 << "R=" << R);
+    SUNDANCE_MSG5(verb, tab1 << "R=" << R);
 
-    SUNDANCE_VERB_EXTREME(tab1 << "finding C for arg");
+    SUNDANCE_MSG5(verb, tab1 << "finding C for arg");
     const Set<MultipleDeriv>& argC 
       = evaluatableArg()->findC(order+1, context);
-    SUNDANCE_VERB_EXTREME(tab1 << "argC=" << argC);
+    SUNDANCE_MSG5(verb, tab1 << "argC=" << argC);
 
     MultipleDeriv me(fd_);
     Set<MultipleDeriv> tmp = setDivision(argC, makeSet(me));
     rtn = tmp.intersection(R);
   }
 
-  SUNDANCE_VERB_HIGH(tabs << "C[" << order << "]=" << rtn);
-  SUNDANCE_VERB_HIGH(tabs << "done with ExplicitFunctionalDerivativeElement::internalFindC for "
+  SUNDANCE_MSG3(verb, tabs << "C[" << order << "]=" << rtn);
+  SUNDANCE_MSG3(verb, tabs << "done with ExplicitFunctionalDerivativeElement::internalFindC for "
     << toString());
   return rtn;
 }

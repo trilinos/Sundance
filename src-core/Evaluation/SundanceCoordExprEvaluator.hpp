@@ -34,49 +34,39 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSubtypeEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  class CoordExpr;
+class CoordExpr;
 
-  namespace Internal 
-  {
-    /** 
-     *
-     */
-    class CoordExprEvaluator : public SubtypeEvaluator<CoordExpr>
-    {
-    public:
-      /** */
-      CoordExprEvaluator(const CoordExpr* expr, 
-                         const EvalContext& context);
+/** 
+ *
+ */
+class CoordExprEvaluator : public SubtypeEvaluator<CoordExpr>
+{
+public:
+  /** */
+  CoordExprEvaluator(const CoordExpr* expr, 
+    const EvalContext& context);
 
-      /** */
-      virtual ~CoordExprEvaluator(){;}
+  /** */
+  virtual ~CoordExprEvaluator(){;}
 
-      /** */
-      TEUCHOS_TIMER(coordEvalTimer, "coord function evaluation");
+  /** */
+  TEUCHOS_TIMER(coordEvalTimer, "coord function evaluation");
 
-      /** */
-      virtual void internalEval(const EvalManager& mgr,
-                   Array<double>& constantResults,
-                   Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+  /** */
+  virtual void internalEval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
       
-    private:
+private:
       
-      bool doValue_;
+  bool doValue_;
 
-      bool doDeriv_;
+  bool doDeriv_;
 
-      string stringRep_;
-    };
-  }
+  string stringRep_;
+};
 }
-
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
-
 
 #endif

@@ -35,9 +35,9 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace Teuchos;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace TSFExtended;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 
 Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
   const Expr& integrand,

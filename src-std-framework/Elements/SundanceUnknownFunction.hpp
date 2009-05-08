@@ -42,7 +42,7 @@ namespace SundanceStdFwk
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
   using namespace Internal;
 
   
@@ -61,25 +61,16 @@ namespace SundanceStdFwk
     UnknownFunction(const BasisFamily& basis, const string& name="");
 
     /** */
-    UnknownFunction(const Array<BasisFamily>& basis, const string& name="");
-
-    /** */
     UnknownFunction(const BasisFamily& basis, 
                     const SpectralBasis& spBasis,
                     const string& name="");
 
-    /** */
-    UnknownFunction(const Array<BasisFamily>& basis,  
-                    const SpectralBasis& spBasis,
-                    const string& name="");
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */
     virtual ~UnknownFunction() {;}
 
     /* boilerplate */
     GET_RCP(ExprBase);
-#endif /* DOXYGEN_DEVELOPER_ONLY */
   };
 
 }

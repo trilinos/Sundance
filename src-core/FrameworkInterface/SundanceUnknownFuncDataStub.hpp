@@ -36,33 +36,27 @@
 #include "SundanceCommonFuncDataStub.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  namespace Internal
-  {
-    /** 
-     * UnknownFuncDataStub is a placeholder for data to be shared between
-     * multiple components of an unknown function. Such data
-     * is framework-dependent, and might be something like a basis function.
-     */
-    class UnknownFuncDataStub : virtual public CommonFuncDataStub
-    {
-    public:
-      /** */
-      UnknownFuncDataStub()
-        : CommonFuncDataStub() {;}
+/** 
+ * UnknownFuncDataStub is a placeholder for data to be shared between
+ * multiple components of an unknown function. Such data
+ * is framework-dependent, and might be something like a basis function.
+ */
+class UnknownFuncDataStub : virtual public CommonFuncDataStub
+{
+public:
+  /** */
+  UnknownFuncDataStub()
+    : CommonFuncDataStub() {;}
 
-      /** */
-      virtual ~UnknownFuncDataStub(){;}
+  /** */
+  virtual ~UnknownFuncDataStub(){;}
 
-    private:
-    };
-  }
+private:
+};
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

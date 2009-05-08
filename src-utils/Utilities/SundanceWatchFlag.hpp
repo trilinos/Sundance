@@ -66,8 +66,24 @@ namespace SundanceUtils
       /** */
       XMLObject toXML() const ;
 
+      /** */
+      int evalVerb() const {return evalVerbosity_;}
+
+      /** */
+      int setupVerb() const {return setupVerbosity_;}
+
+      /** */
+      void setEvalVerb(int v) {evalVerbosity_=v;}
+
+      /** */
+      int setSetupVerb(int v) {setupVerbosity_=v;}
+
     private:
       std::string name_;
+
+      int evalVerbosity_;
+
+      int setupVerbosity_;
 
       static Map<std::string, bool>& isActiveMap()
         {

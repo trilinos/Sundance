@@ -38,80 +38,73 @@
 #include "SundanceUnknownFuncDataStub.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
+using namespace SundanceUtils;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace Teuchos;
 
-    using std::string;
-    using std::ostream;
+using std::string;
+using std::ostream;
 
-    /** 
-     * UnknownParameterElement represents an element of an unknown 
-     * spatially-constant parameter
-     */
-    class UnknownParameterElement : public UnknownFuncElement,
-                                    public SpatiallyConstantExpr
-    {
-    public:
-      /** */
-      UnknownParameterElement(const string& name,
-        const string& suffix,
-        int commonFuncID,
-        int myIndex);
+/** 
+ * UnknownParameterElement represents an element of an unknown 
+ * spatially-constant parameter
+ */
+class UnknownParameterElement : public UnknownFuncElement,
+                                public SpatiallyConstantExpr
+{
+public:
+  /** */
+  UnknownParameterElement(const string& name,
+    const string& suffix,
+    const FunctionIdentifier& fid);
 
-      /** virtual destructor */
-      virtual ~UnknownParameterElement() {;}
+
+  /** virtual destructor */
+  virtual ~UnknownParameterElement() {;}
 
       
-      /** */
-      Evaluator* createEvaluator(const EvaluatableExpr* expr,
-                                 const EvalContext& context) const ;
+  /** */
+  Evaluator* createEvaluator(const EvaluatableExpr* expr,
+    const EvalContext& context) const ;
 
       
 
-      /** */
-      void setValue(const double& value) {parameterValue()->setValue(value);}
+  /** */
+  void setValue(const double& value) {parameterValue()->setValue(value);}
 
-      /** */
-      const double& value() const {return parameterValue()->value();}
+  /** */
+  const double& value() const {return parameterValue()->value();}
 
           
-      /** */
-      Set<MultipleDeriv> 
-      internalFindW(int order, const EvalContext& context) const ;
-      /** */
-      Set<MultipleDeriv> 
-      internalFindC(int order, const EvalContext& context) const ;
-      /** */
-      Set<MultipleDeriv> 
-      internalFindV(int order, const EvalContext& context) const ;
+  /** */
+  Set<MultipleDeriv> 
+  internalFindW(int order, const EvalContext& context) const ;
+  /** */
+  Set<MultipleDeriv> 
+  internalFindC(int order, const EvalContext& context) const ;
+  /** */
+  Set<MultipleDeriv> 
+  internalFindV(int order, const EvalContext& context) const ;
 
+  /** */
+  bool lessThan(const ScalarExpr* other) const ;
 
-      /** */
-      XMLObject toXML() const ;
+  /** */
+  XMLObject toXML() const ;
 
-      /** */
-      RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+  /** */
+  RefCountPtr<ExprBase> getRcp() {return rcp(this);}
       
-    private:
+private:
 
-      /** */
-      const Parameter* parameterValue() const ;
-      /** */
-      Parameter* parameterValue() ;
+  /** */
+  const Parameter* parameterValue() const ;
+  /** */
+  Parameter* parameterValue() ;
       
-    };
-  }
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

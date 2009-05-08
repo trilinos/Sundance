@@ -34,50 +34,43 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSumOfIntegrals.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace Internal;
-  using std::string;
+using namespace SundanceUtils;
+using namespace Teuchos;
+using std::string;
 
-  namespace Internal
-    {
-      /** 
-       * SumOfBCs represents a sum of essential
-       * boundary conditions in integral form
-       */
-      class SumOfBCs : public SumOfIntegrals
-        {
-        public:
-          /** Construct given an integral over a single region */
-          SumOfBCs(const RefCountPtr<CellFilterStub>& region,
-            const Expr& expr,
-            const RefCountPtr<QuadratureFamilyStub>& quad,
-            const WatchFlag& watch);
+/** 
+ * SumOfBCs represents a sum of essential
+ * boundary conditions in integral form
+ */
+class SumOfBCs : public SumOfIntegrals
+{
+public:
+  /** Construct given an integral over a single region */
+  SumOfBCs(const RefCountPtr<CellFilterStub>& region,
+    const Expr& expr,
+    const RefCountPtr<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch);
 
-          /** */
-          virtual ~SumOfBCs(){;}
+  /** */
+  virtual ~SumOfBCs(){;}
 
-          /** Write a simple text description suitable 
-           * for output to a terminal */
-          virtual ostream& toText(ostream& os, bool paren) const ;
+  /** Write a simple text description suitable 
+   * for output to a terminal */
+  virtual ostream& toText(ostream& os, bool paren) const ;
 
-          /** Write in a form suitable for LaTeX formatting */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
+  /** Write in a form suitable for LaTeX formatting */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
 
-          /** Write in XML */
-          virtual XMLObject toXML() const ;
+  /** Write in XML */
+  virtual XMLObject toXML() const ;
 
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-        private:
-        };
-    }
+private:
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

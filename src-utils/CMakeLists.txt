@@ -40,6 +40,7 @@ APPEND_SET(HEADERS
   Utilities/SundanceCombinatorialUtils.hpp
   Utilities/SundanceDebug.hpp
   Utilities/SundanceDefs.hpp
+  Utilities/SundanceEnumTypeField.hpp
   Utilities/SundanceExceptions.hpp
   Utilities/SundanceFunctorDomain.hpp
   Utilities/SundanceIntHashSet.hpp

@@ -35,7 +35,7 @@ using namespace SundanceUtils;
 
 
 WatchFlag::WatchFlag(const std::string& name)
-  : name_(name)
+  : name_(name), evalVerbosity_(0), setupVerbosity_(0)
 {
   if (name_.size() > 0U) isActiveMap().put(name, true);
   else isActiveMap().put(name, false);

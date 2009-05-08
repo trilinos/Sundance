@@ -34,46 +34,35 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSubtypeEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  class CellDiameterExpr;
+class CellDiameterExpr;
 
-  namespace Internal 
-  {
-    /** 
-     *
-     */
-    class CellDiameterExprEvaluator : public SubtypeEvaluator<CellDiameterExpr>
-    {
-    public:
-      /** */
-      CellDiameterExprEvaluator(const CellDiameterExpr* expr, 
-                                const EvalContext& context);
+/** 
+ *
+ */
+class CellDiameterExprEvaluator : public SubtypeEvaluator<CellDiameterExpr>
+{
+public:
+  /** */
+  CellDiameterExprEvaluator(const CellDiameterExpr* expr, 
+    const EvalContext& context);
 
-      /** */
-      virtual ~CellDiameterExprEvaluator(){;}
+  /** */
+  virtual ~CellDiameterExprEvaluator(){;}
 
-      /** */
-      TEUCHOS_TIMER(cellDiameterEvalTimer, "cell diameter evaluation");
+  /** */
+  TEUCHOS_TIMER(cellDiameterEvalTimer, "cell diameter evaluation");
 
-      /** */
-      virtual void internalEval(const EvalManager& mgr,
-                   Array<double>& constantResults,
-                   Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+  /** */
+  virtual void internalEval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
       
-    private:
+private:
       
-      string stringRep_;
-    };
-  }
+  string stringRep_;
+};
 }
-
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
-
-
 
 #endif

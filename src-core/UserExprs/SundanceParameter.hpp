@@ -42,7 +42,6 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace Internal;
 
   using std::string;
   using std::ostream;
@@ -57,8 +56,8 @@ namespace SundanceCore
    * When a constant's value may need to be changed, use a Parameter rather
    * than a simple double.
    */
-  class Parameter : public virtual Internal::DiscreteFuncElement,
-                    public virtual Internal::SpatiallyConstantExpr
+  class Parameter : public virtual DiscreteFuncElement,
+                    public virtual SpatiallyConstantExpr
   {
   public:
     /** */
@@ -101,7 +100,7 @@ namespace SundanceCore
                                        const EvalContext& context) const ;
 
     /** */
-    virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+    virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
     //@}
 
     /** Write self in text form */
@@ -111,10 +110,10 @@ namespace SundanceCore
 
   protected:
     /** */
-    const Internal::ParameterData* data() const ;
+    const ParameterData* data() const ;
 
     /** */
-    Internal::ParameterData* data();
+    ParameterData* data();
 
 
   };

@@ -36,69 +36,57 @@
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceTestFuncDataStub.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+using std::string;
+using std::ostream;
 
-    using std::string;
-    using std::ostream;
+/** 
+ * TestFuncElement represents a scalar-valued element of a (possibly)
+ * list-valued TestFunction
+ */
+class TestFuncElement : public SymbolicFuncElement
+{
+public:
+  /** */
+  TestFuncElement(const RefCountPtr<const TestFuncDataStub>& commonData,
+    const string& name,
+    const string& suffix, const FunctionIdentifier& fid);
 
-    /** 
-     * TestFuncElement represents a scalar-valued element of a (possibly)
-     * list-valued TestFunction
-     */
-    class TestFuncElement : public SymbolicFuncElement
-    {
-    public:
-      /** */
-      TestFuncElement(const RefCountPtr<const TestFuncDataStub>& master,
-        const string& name,
-        const string& suffix,
-        int commonFuncID,
-        int myIndex);
+  /** virtual destructor */
+  virtual ~TestFuncElement() {;}
 
-      /** virtual destructor */
-      virtual ~TestFuncElement() {;}
+  /** Test whether all terms have test functions. 
+   * I'm a test function, so return true */
+  virtual bool everyTermHasTestFunctions() const {return true;}
 
-      /** Get the data associated with the vector-valued function 
-       * that contains this function element. */
-      RCP<const TestFuncDataStub> commonData() const {return commonData_;}
+  /** Test whether this expr contains a test function. 
+   * I'm a test function, so return true. */
+  virtual bool hasTestFunctions() const {return true;}
 
+  /** */
+  virtual bool isTestFunction() const {return true;}
 
-      /** Test whether all terms have test functions. 
-       * I'm a test function, so return true */
-      virtual bool everyTermHasTestFunctions() const {return true;}
-
-      /** Test whether this expr contains a test function. 
-       * I'm a test function, so return true. */
-      virtual bool hasTestFunctions() const {return true;}
-
-
-      /** 
-       * Indicate whether the expression is linear 
-       * with respect to test functions */
-      virtual bool isLinearInTests() const {return true;}
-
-
-      /** */
-      virtual XMLObject toXML() const ;
-
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+  /** 
+   * Indicate whether the expression is linear 
+   * with respect to test functions */
+  virtual bool isLinearInTests() const {return true;}
       
-    private:
-      const RefCountPtr<const TestFuncDataStub> commonData_;
-    };
-  }
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
+
+
+  /** */
+  virtual XMLObject toXML() const ;
+
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+      
+private:
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

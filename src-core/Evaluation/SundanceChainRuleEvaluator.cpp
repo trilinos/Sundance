@@ -30,7 +30,7 @@
 
 #include "SundanceChainRuleEvaluator.hpp"
 #include "SundanceCombinatorialUtils.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceExceptions.hpp"
@@ -38,14 +38,11 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-#ifdef TEUCHOS_HAVE_ARRAY_BOUNDSCHECK
-#error blah
-#endif
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -61,7 +58,8 @@ ChainRuleEvaluator::ChainRuleEvaluator(const ExprWithChildren* expr,
     zerothDerivIsConstant_(false)
 {
   Tabs tabs;
-  SUNDANCE_VERB_HIGH(tabs << "ChainRuleEvaluator base class ctor for " 
+  SUNDANCE_MSG1(context.setupVerbosity(),
+    tabs << "ChainRuleEvaluator base class ctor for " 
     << expr->toString());
   for (int i=0; i<numChildren(); i++)
   {
@@ -248,10 +246,11 @@ int ChainRuleEvaluator::derivComboMultiplicity(const MultiSet<MultipleDeriv>& b)
 void ChainRuleEvaluator::init(const ExprWithChildren* expr, 
   const EvalContext& context)
 {
+  int verb = context.setupVerbosity();
 
   typedef Array<OrderedPair<Array<MultiSet<int> >, Array<MultipleDeriv> > > CR;
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "ChainRuleEvaluator::init() for " 
+  SUNDANCE_MSG1(verb, tabs << "ChainRuleEvaluator::init() for " 
     << expr->toString());
 
   const Set<MultipleDeriv>& C = expr->findC(context);
@@ -267,7 +266,7 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
     argC[i] = expr->evaluatableChild(i)->findC(context);
     argR[i] = expr->evaluatableChild(i)->findR(context);
   }
-  SUNDANCE_VERB_HIGH(tabs << "sparsity = " << *(this->sparsity()));
+  SUNDANCE_MSG3(verb, tabs << "sparsity = " << *(this->sparsity()));
   typedef Set<MultipleDeriv>::const_iterator iter;
 
   int count=0;
@@ -276,14 +275,14 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
   for (iter md=R.begin(); md!=R.end(); md++, count++)
   {
     Tabs tab1;
-    SUNDANCE_VERB_HIGH(tab1 << "working out evaluator for " << *md);
+    SUNDANCE_MSG3(verb, tab1 << "working out evaluator for " << *md);
     int N = md->order();
     bool resultIsConstant = C.contains(*md);
     int resultIndex;
     if (resultIsConstant)
     {
       Tabs tab2;
-      SUNDANCE_VERB_HIGH(tab2 << "result is constant, const index=" << constResultIndex);
+      SUNDANCE_MSG3(verb, tab2 << "result is constant, const index=" << constResultIndex);
       addConstantIndex(count, constResultIndex);
       resultIndex = constResultIndex;
       constResultIndex++;
@@ -291,18 +290,18 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
     else
     {
       Tabs tab2;
-      SUNDANCE_VERB_HIGH(tab2 << "result is variable, vec index=" << vecResultIndex);
+      SUNDANCE_MSG3(verb, tab2 << "result is variable, vec index=" << vecResultIndex);
       addVectorIndex(count, vecResultIndex);
       resultIndex = vecResultIndex;
       vecResultIndex++;
     }
 
-    SUNDANCE_VERB_HIGH(tab1 << "order=" << N);
+    SUNDANCE_MSG3(verb, tab1 << "order=" << N);
       
     if (N==0)
     {
       Tabs tab2;
-      SUNDANCE_VERB_HIGH(tab2 << "zeroth deriv index=" << resultIndex);
+      SUNDANCE_MSG3(verb, tab2 << "zeroth deriv index=" << resultIndex);
       zerothDerivIsConstant_ = resultIsConstant;
       zerothDerivResultIndex_ = resultIndex;
       continue;
@@ -318,17 +317,17 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
     for (int n=1; n<=N; n++)
     {
       Tabs tab2;
-      SUNDANCE_VERB_HIGH(tab2 << "n=" << n);
+      SUNDANCE_MSG3(verb, tab2 << "n=" << n);
       const Set<MultiSet<int> >& QW = expr->findQ_W(n, context);
       const Set<MultiSet<int> >& QC = expr->findQ_C(n, context);
-      SUNDANCE_VERB_HIGH(tab2 << "Q_W=" << QW);
-      SUNDANCE_VERB_HIGH(tab2 << "Q_C=" << QC);
+      SUNDANCE_MSG3(verb, tab2 << "Q_W=" << QW);
+      SUNDANCE_MSG3(verb, tab2 << "Q_C=" << QC);
       for (Set<MultiSet<int> >::const_iterator 
              j=QW.begin(); j!=QW.end(); j++)
       {
         Tabs tab3;
         const MultiSet<int>& lambda = *j;
-        SUNDANCE_VERB_HIGH(tab3 << "arg index set =" << lambda);
+        SUNDANCE_MSG3(verb, tab3 << "arg index set =" << lambda);
         bool argDerivIsConstant = QC.contains(lambda);
         int argDerivIndex = -1;
         if (argDerivIsConstant) 
@@ -343,7 +342,7 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
         for (int s=1; s<=N; s++)
         {
           Tabs tab4;
-          SUNDANCE_VERB_HIGH(tab4 << "preparing chain rule terms for "
+          SUNDANCE_MSG3(verb, tab4 << "preparing chain rule terms for "
             "s=" << s << ", lambda=" << lambda << ", nu=" << nu);
           CR p = chainRuleTerms(s, lambda, nu);
           for (CR::const_iterator j=p.begin(); j!=p.end(); j++)
@@ -351,9 +350,9 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
             Tabs tab5;
             Array<MultiSet<int> > K = j->first();
             Array<MultipleDeriv> L = j->second();
-            SUNDANCE_VERB_HIGH(tab5 << "K=" << K << endl << tab5 << "L=" << L);
+            SUNDANCE_MSG3(verb, tab5 << "K=" << K << endl << tab5 << "L=" << L);
             double weight = chainRuleMultiplicity(nu, K, L);
-            SUNDANCE_VERB_HIGH(tab5 << "weight=" << weight);
+            SUNDANCE_MSG3(verb, tab5 << "weight=" << weight);
             DerivProduct prod(weight);
             bool termIsZero = false;
             for (unsigned int j=0; j<K.size(); j++)
@@ -369,25 +368,25 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
                   = childEvaluators_[argIndex];
                                
                 int rawValIndex = argSp->getIndex(derivOfArg);
-                SUNDANCE_VERB_HIGH(tab5 << "argR=" 
+                SUNDANCE_MSG3(verb, tab5 << "argR=" 
                   << argR[argIndex]);
                 if (argV[argIndex].contains(derivOfArg))
                 {
-                  SUNDANCE_VERB_HIGH(tab5 << "mdArg is variable");
+                  SUNDANCE_MSG3(verb, tab5 << "mdArg is variable");
                   int valIndex 
                     = argEv->vectorIndexMap().get(rawValIndex);
                   prod.addVariableFactor(IndexPair(argIndex, valIndex));
                 }
                 else if (argC[argIndex].contains(derivOfArg))
                 {
-                  SUNDANCE_VERB_HIGH(tab5 << "mdArg is constant");
+                  SUNDANCE_MSG3(verb, tab5 << "mdArg is constant");
                   int valIndex 
                     = argEv->constantIndexMap().get(rawValIndex);
                   prod.addConstantFactor(IndexPair(argIndex, valIndex));
                 }
                 else
                 {
-                  SUNDANCE_VERB_HIGH(tab5 << "mdArg is zero");
+                  SUNDANCE_MSG3(verb, tab5 << "mdArg is zero");
                   termIsZero = true;
                   break;
                 }
@@ -406,10 +405,10 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
     expansions_.append(sum);
   }
 
-  SUNDANCE_VERB_HIGH(tabs << "num constant results: " 
+  SUNDANCE_MSG3(verb, tabs << "num constant results: " 
     << this->sparsity()->numConstantDerivs());
 
-  SUNDANCE_VERB_HIGH(tabs << "num var results: " 
+  SUNDANCE_MSG3(verb, tabs << "num var results: " 
     << this->sparsity()->numVectorDerivs());
 
   
@@ -424,20 +423,20 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   TimeMonitor timer(chainRuleEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_VERB_LOW(tabs << "ChainRuleEvaluator::eval() expr=" 
+  SUNDANCE_MSG1(mgr.verb(), tabs << "ChainRuleEvaluator::eval() expr=" 
     << expr()->toString());
 
   
-  SUNDANCE_VERB_MEDIUM(tabs << "max diff order = " << mgr.getRegion().topLevelDiffOrder());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << tabs << *(this->sparsity()));
+  SUNDANCE_MSG2(mgr.verb(), tabs << "max diff order = " << mgr.getRegion().topLevelDiffOrder());
+  SUNDANCE_MSG2(mgr.verb(), tabs << "return sparsity " << endl << tabs << *(this->sparsity()));
   
   constantResults.resize(this->sparsity()->numConstantDerivs());
   vectorResults.resize(this->sparsity()->numVectorDerivs());
 
-  SUNDANCE_VERB_HIGH(tabs << "num constant results: " 
+  SUNDANCE_MSG3(mgr.verb(),tabs << "num constant results: " 
     << this->sparsity()->numConstantDerivs());
 
-  SUNDANCE_VERB_HIGH(tabs << "num var results: " 
+  SUNDANCE_MSG3(mgr.verb(),tabs << "num var results: " 
     << this->sparsity()->numVectorDerivs());
 
   Array<RefCountPtr<Array<double> > > constantArgResults(numChildren());
@@ -449,14 +448,14 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   for (int i=0; i<numChildren(); i++)
   {
     Tabs tab1;
-    SUNDANCE_VERB_HIGH(tab1 << "computing results for child #"
+    SUNDANCE_MSG3(mgr.verb(), tab1 << "computing results for child #"
       << i);
                          
     constantArgResults[i] = rcp(new Array<double>());
     varArgResults[i] = rcp(new Array<RefCountPtr<EvalVector> >());
     childEvaluators_[i]->eval(mgr, *(constantArgResults[i]), 
       *(varArgResults[i]));
-    if (verbosity() > VerbMedium)
+    if (mgr.verb() > 2)
     {
       Out::os() << tabs << "constant arg #" << i << 
         " results:" << *(constantArgResults[i]) << endl;
@@ -475,7 +474,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
     constantArgDerivs, varArgDerivs);
 
   
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 2)
   {
     Out::os() << tabs << "constant arg derivs:" << constantArgDerivs << endl;
     Out::os() << tabs << "variable arg derivs:" << endl;
@@ -494,7 +493,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
     Tabs tab1;
     int resultIndex = expansions_[i]->resultIndex();
     bool isConstant = expansions_[i]->resultIsConstant();
-    SUNDANCE_VERB_HIGH(tab1 << "doing expansion for deriv #" << i
+    SUNDANCE_MSG3(mgr.verb(), tab1 << "doing expansion for deriv #" << i
       << ", result index="
       << resultIndex << endl << tab1
       << "deriv=" << expansions_[i]->deriv());
@@ -513,25 +512,25 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
 
   if (zerothDerivResultIndex_ >= 0)
   {
-    SUNDANCE_VERB_HIGH(tabs << "processing zeroth-order deriv");
+    SUNDANCE_MSG3(mgr.verb(), tabs << "processing zeroth-order deriv");
     Tabs tab1;
-    SUNDANCE_VERB_HIGH(tab1 << "result index = " << zerothDerivResultIndex_);
+    SUNDANCE_MSG3(mgr.verb(), tab1 << "result index = " << zerothDerivResultIndex_);
     if (zerothDerivIsConstant_)
     {
       Tabs tab2;
-      SUNDANCE_VERB_HIGH(tab2 << "zeroth-order deriv is constant");
+      SUNDANCE_MSG3(mgr.verb(), tab2 << "zeroth-order deriv is constant");
       constantResults[zerothDerivResultIndex_] = constantArgDerivs[0];
     }
     else
     {
       Tabs tab2;
-      SUNDANCE_VERB_HIGH(tab2 << "zeroth-order deriv is variable");
+      SUNDANCE_MSG3(mgr.verb(), tab2 << "zeroth-order deriv is variable");
       vectorResults[zerothDerivResultIndex_] = varArgDerivs[0];
     }
   }
 
 
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 2)
   {
     Tabs tab1;
     Out::os() << tab1 << "chain rule results " << endl;
@@ -539,14 +538,13 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
       constantResults);
   }
 
-  SUNDANCE_VERB_LOW(tabs << "ChainRuleEvaluator::eval() done"); 
+  SUNDANCE_MSG1(mgr.verb(), tabs << "ChainRuleEvaluator::eval() done"); 
 }
 
 
 
 
 namespace SundanceCore {
-namespace Internal {
 
 MultipleDeriv makeDeriv(const Expr& a)
 {
@@ -555,7 +553,7 @@ MultipleDeriv makeDeriv(const Expr& a)
 
   TEST_FOR_EXCEPT(aPtr==0);
 
-  Deriv d = new FunctionalDeriv(aPtr, MultiIndex());
+  Deriv d = funcDeriv(aPtr);
   MultipleDeriv rtn;
   rtn.put(d);
   return rtn;
@@ -574,8 +572,8 @@ MultipleDeriv makeDeriv(const Expr& a, const Expr& b)
 
   TEST_FOR_EXCEPT(bPtr==0);
 
-  Deriv da = new FunctionalDeriv(aPtr, MultiIndex());
-  Deriv db = new FunctionalDeriv(bPtr, MultiIndex());
+  Deriv da = funcDeriv(aPtr);
+  Deriv db = funcDeriv(bPtr);
   MultipleDeriv rtn;
   rtn.put(da);
   rtn.put(db);
@@ -601,9 +599,9 @@ MultipleDeriv makeDeriv(const Expr& a, const Expr& b, const Expr& c)
 
   TEST_FOR_EXCEPT(cPtr==0);
 
-  Deriv da = new FunctionalDeriv(aPtr, MultiIndex());
-  Deriv db = new FunctionalDeriv(bPtr, MultiIndex());
-  Deriv dc = new FunctionalDeriv(cPtr, MultiIndex());
+  Deriv da = funcDeriv(aPtr);
+  Deriv db = funcDeriv(bPtr);
+  Deriv dc = funcDeriv(cPtr);
   MultipleDeriv rtn;
   rtn.put(da);
   rtn.put(db);
@@ -611,5 +609,4 @@ MultipleDeriv makeDeriv(const Expr& a, const Expr& b, const Expr& c)
   return rtn;
 }
 
-} // namespace Internal
 } // namespace SundanceCore

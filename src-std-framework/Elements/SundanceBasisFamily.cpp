@@ -39,7 +39,7 @@
 using namespace TSFExtended;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
@@ -122,15 +122,19 @@ RCP<BasisDOFTopologyBase> BasisFamily::getBasisTopology(const RCP<const CommonFu
 namespace SundanceStdFwk
 {
 
-Array<int> vectorDimStructure(const Array<BasisFamily>& basis)
+Array<std::pair<int, int> > 
+vectorDimStructure(const Array<BasisFamily>& basis)
 {
-  Array<int> rtn;
-  for (unsigned int i=0; i<basis.size(); i++) rtn.append(basis[i].dim());
+  Array<std::pair<int, int> > rtn;
+  for (unsigned int i=0; i<basis.size(); i++) 
+  {
+    rtn.append(std::pair<int, int>(basis[i].tensorOrder(), basis[i].dim()));
+  }
   return rtn;
 }
 
 
-Array<int> vectorDimStructure(const BasisFamily& basis)
+Array<std::pair<int, int> > vectorDimStructure(const BasisFamily& basis)
 {
   return vectorDimStructure(tuple(basis));
 }

@@ -37,7 +37,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -48,7 +48,7 @@ void NullEvaluator::internalEval(const EvalManager& mgr,
                                  Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
   Tabs tab;
-  SUNDANCE_VERB_MEDIUM(tab << "doing null evaluation... nothing to do");
+  SUNDANCE_MSG1(mgr.verb(), tab << "doing null evaluation... nothing to do");
 }
 
 

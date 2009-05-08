@@ -41,7 +41,6 @@
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
 using namespace std;
 
@@ -115,7 +114,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   /* upgrade base verbosity level if one of the terms is being watched */
   if (integralSum_->hasWatchedTerm() || (hasBCs && bcSum_->hasWatchedTerm()))
   {
-    verb = max(verb, 1);
+    verb = max(verb, 2);
   }
   SUNDANCE_BANNER1(verb, tab0, "FunctionSupportResolver setup");
 
@@ -200,7 +199,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     {
       const FuncElementBase* t 
         = dynamic_cast<const FuncElementBase*>(vars[b][i].ptr().get());
-      int fid = t->sharedFuncID();
+      int fid = t->fid().dofID();
       if (varFuncSet_.contains(fid)) continue;
       varFuncData_[b].append(getSharedFunctionData(t));
       varFuncSet_.put(fid);
@@ -229,7 +228,7 @@ FunctionSupportResolver::FunctionSupportResolver(
         "EquationSet ctor input unk function "
         << unks[b][i] 
         << " does not appear to be a unk function");
-      int fid = u->sharedFuncID();
+      int fid = u->fid().dofID();
       if (unkFuncSet_.contains(fid)) continue;
       unkFuncData_[b].append(getSharedFunctionData(u));
       unkFuncSet_.put(fid);
@@ -255,7 +254,7 @@ FunctionSupportResolver::FunctionSupportResolver(
       "EquationSet ctor input unk parameter "
       << unkParams[i] 
       << " does not appear to be a unk parameter");
-    int fid = u->funcComponentID();
+    int fid = u->fid().dofID();
     unkParamSet_.put(fid);
     unkParamIDToReducedUnkParamIDMap_.put(fid, i);
     unreducedUnkParamID_[i] = fid;
@@ -278,11 +277,12 @@ FunctionSupportResolver::FunctionSupportResolver(
     if (rqc.watch().isActive()) 
     {
       rqcVerb=5;
-      SUNDANCE_MSG1(verb, tab15 << "processing RQC = " << rqc);
+      SUNDANCE_MSG1(rqcVerb, tab15 << "processing RQC = " << rqc);
     }
 
-
     Expr term = r->second;
+
+    SUNDANCE_MSG2(rqcVerb, tab2 << "expr = " << term);
     OrderedHandle<CellFilterStub> reg = rqc.domain();
 
     if (!regionSet.contains(reg)) 
@@ -290,6 +290,8 @@ FunctionSupportResolver::FunctionSupportResolver(
       regionSet.put(reg);
       Set<int> vf = integralSum_->funcsOnRegion(reg, varFuncSet_);
       Set<int> uf = integralSum_->funcsOnRegion(reg, unkFuncSet_);
+      SUNDANCE_MSG2(rqcVerb, tab2 << "vf = " << vf);
+      SUNDANCE_MSG2(rqcVerb, tab2 << "uf = " << uf);
       varsOnRegions_.put(reg, vf);
       unksOnRegions_.put(reg, uf);
     }
@@ -300,6 +302,8 @@ FunctionSupportResolver::FunctionSupportResolver(
       Set<int>& u = unksOnRegions_.get(reg);
       u.merge(integralSum_->funcsOnRegion(reg, unkFuncSet_));
     }
+    SUNDANCE_MSG2(rqcVerb, tab2 << "varsOnRegion = " << varsOnRegions_.get(reg));
+    SUNDANCE_MSG2(rqcVerb, tab2 << "unksOnRegion = " << unksOnRegions_.get(reg));
   }
   
 
@@ -357,6 +361,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   reducedUnksOnRegions_.resize(regions_.size());
   for (unsigned int r=0; r<regions_.size(); r++)
   {
+    Tabs tab1;
     regionToIndexMap_.put(regions_[r], r);
     reducedVarsOnRegions_[r].resize(numVarBlocks());
     reducedUnksOnRegions_[r].resize(numUnkBlocks());
@@ -372,6 +377,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     for (Set<int>::const_iterator i=vf.begin(); i!=vf.end(); i++)
     {
       int fid = *i;
+      SUNDANCE_MSG2(verb, tab1 << "adding VF=" << fid << " to testToRegionMap");
       if (testToRegionsMap_.containsKey(fid))
       {
         testToRegionsMap_[fid].put(cf);
@@ -529,8 +535,6 @@ bool FunctionSupportResolver::hasBCs() const
 
 namespace SundanceCore
 {
-namespace Internal
-{
 
 RefCountPtr<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f)
 {
@@ -549,7 +553,6 @@ RefCountPtr<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBas
   TEST_FOR_EXCEPTION( true, InternalError, 
     "unrecognized function type: " << typeid(*f).name());
   return u->commonData(); // -Wall, will never be called;
-}
 }
 }
 

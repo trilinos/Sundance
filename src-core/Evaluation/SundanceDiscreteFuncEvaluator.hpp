@@ -35,13 +35,8 @@
 #include "SundanceSubtypeEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore 
 {
-  namespace Internal 
-  {
     class DiscreteFuncElement;
 
     /** 
@@ -82,11 +77,6 @@ namespace SundanceCore
     };
 
   }
-}
-
-
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 #endif

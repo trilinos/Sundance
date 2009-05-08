@@ -33,31 +33,33 @@
 
 #include "SundanceConstantExpr.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  namespace Internal
-    {
-      class ZeroExpr : public ConstantExpr
-        {
-        public:
-          /** */
-          ZeroExpr();
+using namespace SundanceUtils;
+class ZeroExpr : public ConstantExpr
+{
+public:
+  /** */
+  ZeroExpr();
 
-          /** */
-          virtual ~ZeroExpr() {;}
+  /** */
+  virtual ~ZeroExpr() {;}
+
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindW(int order, const EvalContext& context) const ;
+
+  /** Find spatially-constant functional derivatives */
+  virtual Set<MultipleDeriv> 
+  internalFindC(int order, const EvalContext& context) const ;
 
           
 
-          /** */
-          virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
-        protected:
-        private:
-        };
-    }
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+protected:
+private:
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

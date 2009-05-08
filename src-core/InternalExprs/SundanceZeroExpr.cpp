@@ -33,11 +33,34 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 ZeroExpr::ZeroExpr()
 	: ConstantExpr(0.0)
 {}
 
+Set<MultipleDeriv> 
+ZeroExpr::internalFindW(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
 
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "ZeroExpr::internalFindW found" << rtn << " for order="
+    << order);
+
+  return rtn;
+}
+
+Set<MultipleDeriv> 
+ZeroExpr::internalFindC(int order, const EvalContext& context) const
+{
+  Set<MultipleDeriv> rtn;
+
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "ZeroExpr::internalFindC found" << rtn << " for order="
+    << order);
+  return rtn;
+}

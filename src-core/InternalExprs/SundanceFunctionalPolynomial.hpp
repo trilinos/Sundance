@@ -35,116 +35,110 @@
 #include "SundanceEvaluatableExpr.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using std::string;
+using std::ostream;
 
-  namespace Internal
-  {
-    /**
-     * Specialized class for representing polynomials in symbolic
-     * functions and their derivatives. 
-     */
-    class FunctionalPolynomial : public EvaluatableExpr
-    {
-    public:
-      /** ctor */
-      FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr);
-      /** ctor */
-      FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr> >& funcs,
-                           const Map<int, Set<MultiIndex> >& funcMultiIndices,
-                           const Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > & coeffs);
+/**
+ * Specialized class for representing polynomials in symbolic
+ * functions and their derivatives. 
+ */
+class FunctionalPolynomial : public EvaluatableExpr
+{
+public:
+  /** ctor */
+  FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr);
+  /** ctor */
+  FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr> >& funcs,
+    const Map<int, Set<MultiIndex> >& funcMultiIndices,
+    const Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > & coeffs);
 
-      /** virtual destructor */
-      virtual ~FunctionalPolynomial() {;}
+  /** virtual destructor */
+  virtual ~FunctionalPolynomial() {;}
 
 
-      /** */
-      virtual Set<MultipleDeriv> 
-      internalFindW(int order, const EvalContext& context) const ;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindW(int order, const EvalContext& context) const ;
 
       
 
-      /** */
-      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-      /** */
-      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
-                                         const EvalContext& context) const ;
+  /** */
+  virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+    const EvalContext& context) const ;
 
-      /** */
-      RefCountPtr<FunctionalPolynomial> addPoly(const FunctionalPolynomial* other,
-                                      int sign) const ;
+  /** */
+  RefCountPtr<FunctionalPolynomial> addPoly(const FunctionalPolynomial* other,
+    int sign) const ;
 
-      /** */
-      RefCountPtr<FunctionalPolynomial> multiplyPoly(const FunctionalPolynomial* other) const ;
+  /** */
+  RefCountPtr<FunctionalPolynomial> multiplyPoly(const FunctionalPolynomial* other) const ;
 
-      /** */
-      RefCountPtr<FunctionalPolynomial> multiplyScalar(const RefCountPtr<ScalarExpr>& alpha) const ;
+  /** */
+  RefCountPtr<FunctionalPolynomial> multiplyScalar(const RefCountPtr<ScalarExpr>& alpha) const ;
 
-      /** */
-      RefCountPtr<FunctionalPolynomial> addFunction(const RefCountPtr<ScalarExpr>& u,
-                                          int sign) const ;
+  /** */
+  RefCountPtr<FunctionalPolynomial> addFunction(const RefCountPtr<ScalarExpr>& u,
+    int sign) const ;
 
-      /** */
-      static bool isConvertibleToPoly(const ScalarExpr* expr) ;
+  /** */
+  static bool isConvertibleToPoly(const ScalarExpr* expr) ;
 
-      /** */
-      static RefCountPtr<FunctionalPolynomial> toPoly(const RefCountPtr<ScalarExpr>& expr);
+  /** */
+  static RefCountPtr<FunctionalPolynomial> toPoly(const RefCountPtr<ScalarExpr>& expr);
 
 
-      /** Write a simple text description suitable 
-       * for output to a terminal */
-      virtual ostream& toText(ostream& os, bool paren) const ;
+  /** Write a simple text description suitable 
+   * for output to a terminal */
+  virtual ostream& toText(ostream& os, bool paren) const ;
       
-      /** Write in a form suitable for LaTeX formatting */
-      virtual ostream& toLatex(ostream& os, bool paren) const ;
+  /** Write in a form suitable for LaTeX formatting */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
 
-      /** Write in XML */
-      virtual XMLObject toXML() const ;
+  /** Write in XML */
+  virtual XMLObject toXML() const ;
 
-      /** Ordering operator for use in transforming exprs to standard form */
-      virtual bool lessThan(const ScalarExpr* other) const ;
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
 
-    private:
+private:
 
-      /** */
-      Map<int, RefCountPtr<ScalarExpr> > funcs_;
+  /** */
+  Map<int, RefCountPtr<ScalarExpr> > funcs_;
 
-      /** */
-      Map<int, Set<MultiIndex> > funcMultiIndices_;
+  /** */
+  Map<int, Set<MultiIndex> > funcMultiIndices_;
 
-      /** */
-      Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > coeffs_;
+  /** */
+  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > coeffs_;
 
-      /** */
-      Array<Set<MultipleDeriv> > keys_;
+  /** */
+  Array<Set<MultipleDeriv> > keys_;
 
-      /** */
-      Set<Deriv> findFuncsForSummation(const Set<MultipleDeriv>& prevSet,
-                                            const MultipleDeriv& thisSet) const ;
+  /** */
+  Set<Deriv> findFuncsForSummation(const Set<MultipleDeriv>& prevSet,
+    const MultipleDeriv& thisSet) const ;
       
-      /**    
-       * Given a term's key, find the term that will appear as
-       * its successor in the evaluation recurrence.
-       */
-      MultipleDeriv successorTerm(const MultipleDeriv& md) const ;
+  /**    
+   * Given a term's key, find the term that will appear as
+   * its successor in the evaluation recurrence.
+   */
+  MultipleDeriv successorTerm(const MultipleDeriv& md) const ;
 
-      /** */
-      void stepRecurrence(int level, const Map<MultipleDeriv, string>& sPrev,
-                          Map<MultipleDeriv, string>& sCurr) const ;
+  /** */
+  void stepRecurrence(int level, const Map<MultipleDeriv, string>& sPrev,
+    Map<MultipleDeriv, string>& sCurr) const ;
 
-      /** */
-      string evalString() const ;
-    };
-  }
+  /** */
+  string evalString() const ;
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

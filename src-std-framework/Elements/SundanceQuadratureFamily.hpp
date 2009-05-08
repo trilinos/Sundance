@@ -40,7 +40,7 @@ namespace SundanceStdFwk
   using namespace TSFExtended;
   using namespace SundanceUtils;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
 
   /** 
    * QuadratureFamily is a geometry-independent specification of

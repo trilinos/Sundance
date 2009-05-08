@@ -38,7 +38,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -48,6 +48,8 @@ ConstantEvaluator::ConstantEvaluator(const SpatiallyConstantExpr* expr,
                                      const EvalContext& context)
   : SubtypeEvaluator<SpatiallyConstantExpr>(expr, context)
 {
+  Tabs tab;
+  SUNDANCE_MSG1(context.setupVerbosity(), tab << "in ConstantEvaluator ctor");
   /*
    * There is only one possible nonzero derivative of this expression: the
    * zeroth-order derivative. 
@@ -77,17 +79,21 @@ ConstantEvaluator::ConstantEvaluator(const SpatiallyConstantExpr* expr,
 
 
 void ConstantEvaluator::internalEval(const EvalManager& mgr,
-                                     Array<double>& constantResults,
-                                     Array<RefCountPtr<EvalVector> >& vectorResults) const 
+  Array<double>& constantResults,
+  Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  // TimeMonitor timer(constantEvalTimer());
   Tabs tabs;
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, tabs << "ConstantEvaluator::eval() expr="
-               << expr()->toString());
+  SUNDANCE_MSG1(mgr.verb(), tabs << "ConstantEvaluator::eval() expr="
+    << expr()->toString());
 
   if (this->sparsity()->numDerivs() > 0)
-    {
-      constantResults.resize(1);
-      constantResults[0] = expr()->value();
-    }
+  {
+    constantResults.resize(1);
+    constantResults[0] = expr()->value();
+    SUNDANCE_MSG2(mgr.verb(), tabs << "result=" << constantResults[0]);
+  }
+  else
+  {
+    SUNDANCE_MSG2(mgr.verb(), tabs << "no results requested");
+  }
 }

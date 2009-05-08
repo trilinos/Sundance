@@ -28,51 +28,39 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceFunctionalDeriv.hpp"
-#include "SundanceDeriv.hpp"
-#include "SundanceOrderedTuple.hpp"
+#ifndef SUNDANCE_FUNCSETACCUMULATOR_H
+#define SUNDANCE_FUNCSETACCUMULATOR_H
 
 
+#include "SundanceDefs.hpp"
+#include "SundanceSet.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
-
-FunctionalDeriv::FunctionalDeriv(const FuncElementBase* func,
-                                 const MultiIndex& mi)
-  : DerivBase(), func_(func), mi_(mi)
-{;}
-
-bool FunctionalDeriv::lessThan(const Deriv& other) const
+namespace SundanceCore
 {
-  /* First compare types: spatial derivs are ranked lower than 
-   * functional derivs, so if the other guy is a spatial deriv, I'm higher */
-  if (other.isCoordDeriv()) return false;
+using SundanceUtils::Set;
 
-  /* We can now safely cast to a functional deriv and compare contents */
-
-  const FunctionalDeriv* f = other.funcDeriv();
-
-  if (funcComponentID() < f->funcComponentID()) return true;
-  if (funcComponentID() > f->funcComponentID()) return false;
-  if (multiIndex() < f->multiIndex()) return true;
-  return false;
-}
-
-Deriv FunctionalDeriv::derivWrtMultiIndex(const MultiIndex& mi) const
+/**
+ * This abstract class defines the interface for accumulating 
+ * sets of functions that are available in an expression.
+ */
+class FuncSetAccumulator 
 {
-  return new FunctionalDeriv(func_, mi_ + mi);
-}
+public:
 
-string FunctionalDeriv::toString() const 
-{
-  if (mi_.order()==0)
-    {
-      return func_->name();
-    }
-  return "D[" + func_->name() + ", " + mi_.coordForm() + "]";
+  /** Append to the set of func IDs present in this expression. 
+   * \param funcDofIDs the active functions available from this expression
+   * \param activeSet the functions required by the client
+   * Most classes will not contain functions, so the 
+   * default implementation is a no-op. This will be overridden by 
+   * function subtypes
+   */
+  virtual void accumulateFuncSet(Set<int>& funcDofIDs, 
+    const Set<int>& activeSet) const {;}
+
+private:
+};
+
 }
 
 
+#endif

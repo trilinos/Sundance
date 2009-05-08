@@ -30,7 +30,7 @@
 
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceEvaluatableExpr.hpp"
-#include "SundanceCoordDeriv.hpp"
+
 #include "SundanceEvalVector.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
@@ -40,7 +40,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace TSFExtended;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
@@ -97,7 +97,7 @@ void SparsitySuperset::addDeriv(const MultipleDeriv& d,
           if (i->isCoordDeriv())
             {
               MultiIndex m;
-              int dir = i->coordDeriv()->dir();
+              int dir = i->coordDerivDir();
               m[dir] = 1;
               mi = mi + m;
             }

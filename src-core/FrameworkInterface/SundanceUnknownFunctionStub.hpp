@@ -31,8 +31,6 @@
 #ifndef SUNDANCE_UNKNOWNFUNCTIONSTUB_H
 #define SUNDANCE_UNKNOWNFUNCTIONSTUB_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceSymbolicFunc.hpp"
 #include "SundanceUnknownFuncDataStub.hpp"
@@ -43,10 +41,6 @@ namespace SundanceCore
 {
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace Internal;
-
-namespace Internal
-{
 using std::string;
 using std::ostream;
 
@@ -74,33 +68,35 @@ class UnknownFunctionStub : public SymbolicFunc
 {
 public:
   /** */
-  UnknownFunctionStub(const string& name, const Array<int>& dims = tuple(1),
-    const RefCountPtr<const UnknownFuncDataStub>& data=RefCountPtr<const UnknownFuncDataStub>());
+  UnknownFunctionStub(const string& name, 
+    int tensorOrder=0, int dim=1,
+    const RCP<const UnknownFuncDataStub>& data=RCP<const UnknownFuncDataStub>());
 
   /** */
   UnknownFunctionStub(const string& name, const SpectralBasis& sbasis, 
-    const Array<int>& dims = tuple(1),
-    const RefCountPtr<const UnknownFuncDataStub>& data=RefCountPtr<const UnknownFuncDataStub>());
+    int tensorOrder=0, int dim=1,
+    const RCP<const UnknownFuncDataStub>& data=RCP<const UnknownFuncDataStub>());
   
   /** virtual destructor */
   virtual ~UnknownFunctionStub() {;}
 
   /** */
-  virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+  bool isUnknownFunction() const {return true;}
+
+  /** */
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 protected:
 
   /** */
-  const RefCountPtr<const UnknownFuncDataStub>& dataStub() const {return data_;}
+  const RCP<const UnknownFuncDataStub>& dataStub() const {return data_;}
 
 private:
-  RefCountPtr<const UnknownFuncDataStub> data_;
+  RCP<const UnknownFuncDataStub> data_;
 
 
 };
 }
-}
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

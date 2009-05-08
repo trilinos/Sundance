@@ -42,82 +42,75 @@
 #include "SundanceUserDefFunctorElement.hpp"
 #include "SundanceUserDefOpEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
-
-
-  class UserDefOp;
-
-  namespace Internal
-    {
-      /** 
-       * Scalar element of a vector-valued user-defined expression.
-       */
-      class UserDefOpElement : virtual public ExprWithChildren
-        {
-        public:
-          /** */
-          UserDefOpElement(const Array<RefCountPtr<ScalarExpr> >& args,
-            const RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > >& evalMap,
-            const RefCountPtr<const UserDefFunctorElement>& functorElement);
-
-          /** virtual destructor */
-          virtual ~UserDefOpElement() {;}
-
-          /** Return the index of this element into 
-           * the list-valued user defined op */
-          int myIndex() const {return functorElement_->myIndex();}
+using std::string;
+using std::ostream;
 
 
-          /** Write self in text form */
-          virtual ostream& toText(ostream& os, bool paren) const ;
+class UserDefOp;
 
-          /** Write self in Latex form */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
+/** 
+ * Scalar element of a vector-valued user-defined expression.
+ */
+class UserDefOpElement : virtual public ExprWithChildren
+{
+public:
+  /** */
+  UserDefOpElement(const Array<RefCountPtr<ScalarExpr> >& args,
+    const RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > >& evalMap,
+    const RefCountPtr<const UserDefFunctorElement>& functorElement);
 
-          /** Write in XML */
-          virtual XMLObject toXML() const ;
+  /** virtual destructor */
+  virtual ~UserDefOpElement() {;}
 
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** Return the index of this element into 
+   * the list-valued user defined op */
+  int myIndex() const {return functorElement_->myIndex();}
 
-          /** Access to the functor underlying this object */
-          const UserDefFunctorElement* functorElement() const 
-          {return functorElement_.get();}
 
-          /** */
-          void reset() const ;
+  /** Write self in text form */
+  virtual ostream& toText(ostream& os, bool paren) const ;
 
-          /** */
-          Evaluator* createEvaluator(const EvaluatableExpr* expr,
-                                     const EvalContext& context) const ;
+  /** Write self in Latex form */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
 
-          /** */
-          virtual void getArgDerivIndices(const Array<int>& orders,
-                                          SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
-                                          SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
+  /** Write in XML */
+  virtual XMLObject toXML() const ;
 
-        protected:
-          /** Get an evaluator that will be common to all vector elements of 
-           * this operator */
-          RefCountPtr<const UserDefOpCommonEvaluator> 
-          getCommonEvaluator(const EvalContext& context) const ;
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+
+  /** Access to the functor underlying this object */
+  const UserDefFunctorElement* functorElement() const 
+    {return functorElement_.get();}
+
+  /** */
+  void reset() const ;
+
+  /** */
+  Evaluator* createEvaluator(const EvaluatableExpr* expr,
+    const EvalContext& context) const ;
+
+  /** */
+  virtual void getArgDerivIndices(const Array<int>& orders,
+    SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
+    SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
+
+protected:
+  /** Get an evaluator that will be common to all vector elements of 
+   * this operator */
+  RefCountPtr<const UserDefOpCommonEvaluator> 
+  getCommonEvaluator(const EvalContext& context) const ;
           
-        private:
-          mutable RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > > commonEvaluatorsMap_;
-          const RefCountPtr<const UserDefFunctorElement> functorElement_;
-        };
-    }
+private:
+  mutable RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > > commonEvaluatorsMap_;
+  const RefCountPtr<const UserDefFunctorElement> functorElement_;
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

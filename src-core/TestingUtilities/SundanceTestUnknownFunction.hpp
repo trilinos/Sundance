@@ -41,7 +41,7 @@ namespace SundanceTesting
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
 
   /** 
    *
@@ -51,7 +51,7 @@ namespace SundanceTesting
   public:
     /** */
     TestUnknownFunction(const ADField& field, const string& name="")
-      : UnknownFunctionStub(name, tuple(1), rcp(new TestUnknownFuncData(field)))
+      : UnknownFunctionStub(name, 0,1, rcp(new TestUnknownFuncData(field)))
     {;}
     
     /** virtual destructor */

@@ -37,7 +37,7 @@
 
 
 namespace SundanceUtils {class Point;}
-namespace SundanceCore {namespace Internal {class MultiIndex;}}
+namespace SundanceCore {class MultiIndex;}
 
 namespace SundanceStdFwk {
 
@@ -45,7 +45,7 @@ namespace SundanceStdFwk {
 using Teuchos::Array;
 using SundanceUtils::Point;
 using SundanceStdMesh::CellType;
-using SundanceCore::Internal::MultiIndex;
+using SundanceCore::MultiIndex;
 
 
 /** 

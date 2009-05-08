@@ -29,14 +29,10 @@
 /* @HEADER@ */
 
 #include "SundanceMultipleDeriv.hpp"
-#include "SundanceCoordDeriv.hpp"
-#include "SundanceFunctionalDeriv.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 MultipleDeriv::MultipleDeriv()
@@ -59,12 +55,12 @@ int MultipleDeriv::spatialOrder() const
 {
   int rtn = 0;
   for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
+  {
+    if (i->isCoordDeriv())
     {
-      if (i->isCoordDeriv())
-        {
-          rtn += 1;
-        }
+      rtn += 1;
     }
+  }
   return rtn;
 }
 
@@ -72,45 +68,44 @@ MultiIndex MultipleDeriv::spatialDeriv() const
 {
   MultiIndex rtn;
   for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
+  {
+    if (i->isCoordDeriv())
     {
-      if (i->isCoordDeriv())
-        {
-          int d = i->coordDeriv()->dir();
-          rtn[d] += 1;
-        }
+      int d = i->coordDerivDir();
+      rtn[d] += 1;
     }
+  }
   return rtn;
 }
 
-MultiSet<int> MultipleDeriv::funcComponentIDs() const
+MultiSet<FunctionIdentifier> MultipleDeriv::funcIDs() const
 {
-  MultiSet<int> rtn;
+  MultiSet<FunctionIdentifier> rtn;
   for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
+  {
+    if (i->isFunctionalDeriv())
     {
-      if (i->isFunctionalDeriv())
-        {
-          int f = i->funcDeriv()->funcComponentID();
-          rtn.put(f);
-        }
-      TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
-                         "MultipleDeriv::funcIDs() found spatial deriv");
+      rtn.put(i->fid());
     }
+    TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
+      "MultipleDeriv::funcIDs() found spatial deriv");
+  }
   return rtn;
 }
 
-MultiSet<int> MultipleDeriv::sharedFuncIDs() const
+MultiSet<int> MultipleDeriv::dofIDs() const
 {
   MultiSet<int> rtn;
   for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
+  {
+    if (i->isFunctionalDeriv())
     {
-      if (i->isFunctionalDeriv())
-        {
-          int f = i->funcDeriv()->funcComponentID();
-          rtn.put(f);
-        }
-      TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
-                         "MultipleDeriv::funcIDs() found spatial deriv");
+      int f = i->dofID();
+      rtn.put(f);
     }
+    TEST_FOR_EXCEPTION(!i->isFunctionalDeriv(), RuntimeError,
+      "MultipleDeriv::sharedFuncIDs() found spatial deriv");
+  }
   return rtn;
 }
 
@@ -119,13 +114,13 @@ MultipleDeriv MultipleDeriv::product(const MultipleDeriv& other) const
   MultipleDeriv rtn;
   
   for (MultipleDeriv::const_iterator i=this->begin(); i!=this->end(); i++)
-    {
-      rtn.put(*i);
-    }
+  {
+    rtn.put(*i);
+  }
   for (MultipleDeriv::const_iterator i=other.begin(); i!=other.end(); i++)
-    {
-      rtn.put(*i);
-    }
+  {
+    rtn.put(*i);
+  }
   return rtn;
 }
 
@@ -147,9 +142,9 @@ MultipleDeriv MultipleDeriv::factorOutDeriv(const Deriv& x) const
 bool MultipleDeriv::containsDeriv(const MultipleDeriv& x) const
 {
   for (MultipleDeriv::const_iterator i=x.begin(); i!=x.end(); i++)
-    {
-      if ( count(*i) <= x.count(*i) ) return false;
-    }
+  {
+    if ( count(*i) <= x.count(*i) ) return false;
+  }
   return true;
 }
 
@@ -158,12 +153,12 @@ MultipleDeriv MultipleDeriv::factorOutDeriv(const MultipleDeriv& x) const
   MultipleDeriv rtn = *this;
 
   for (MultipleDeriv::const_iterator i=x.begin(); i!=x.end(); i++)
-    {
-      MultipleDeriv::iterator j = rtn.find(*i);
+  {
+    MultipleDeriv::iterator j = rtn.find(*i);
 
-      /* remove a single copy of the given derivative */
-      if (j != rtn.end()) rtn.erase(j);
-    }
+    /* remove a single copy of the given derivative */
+    if (j != rtn.end()) rtn.erase(j);
+  }
 
   if (rtn.size() == this->size()) return MultipleDeriv();
   return rtn;
@@ -171,19 +166,16 @@ MultipleDeriv MultipleDeriv::factorOutDeriv(const MultipleDeriv& x) const
 
 bool MultipleDeriv
 ::isInRequiredSet(const Set<MultiSet<int> >& funcCombinations,
-                  const Set<MultiIndex>& multiIndices) const
+  const Set<MultiIndex>& multiIndices) const
 {
   if (spatialOrder() == 0)
-    {
-      return funcCombinations.contains(funcComponentIDs());
-    }
+  {
+    return funcCombinations.contains(dofIDs());
+  }
   else
-    {
-      //    TEST_FOR_EXCEPTION(order() > spatialOrder(), RuntimeError,
-      //                         "can't handle mixed spatial/functional derivatives "
-      //                         "at this point");
-      return multiIndices.contains(spatialDeriv());
-    }
+  {
+    return multiIndices.contains(spatialDeriv());
+  }
 }
 
 
@@ -193,59 +185,59 @@ void MultipleDeriv
   int N = order();
 
   if (N==0)
-    {
-      MultipleDeriv md0;
-      DerivPair p(md0, md0);
-      perms.put(p, 1);
-      return;
-    }
+  {
+    MultipleDeriv md0;
+    DerivPair p(md0, md0);
+    perms.put(p, 1);
+    return;
+  }
 
   int p2 = pow2(N);
 
   for (int i=0; i<p2; i++)
+  {
+    MultipleDeriv left;
+    MultipleDeriv right;
+    Array<int> bits = bitsOfAnInteger(i, N);
+    int j=0; 
+    MultipleDeriv::const_iterator iter;
+    for (iter=this->begin(); iter != this->end(); iter++, j++)
     {
-      MultipleDeriv left;
-      MultipleDeriv right;
-      Array<int> bits = bitsOfAnInteger(i, N);
-      int j=0; 
-      MultipleDeriv::const_iterator iter;
-      for (iter=this->begin(); iter != this->end(); iter++, j++)
-        {
-          if (bits[j]==true)
-            {
-              left.put(*iter);
-            }
-          else
-            {
-              right.put(*iter);
-            }
-        }
-      DerivPair p(left, right);
-      if (!perms.containsKey(p))
-        {
-          perms.put(p, 1);
-        }
+      if (bits[j]==true)
+      {
+        left.put(*iter);
+      }
       else
-        {
-          int count = perms.get(p);
-          perms.put(p, count+1);
-        }
+      {
+        right.put(*iter);
+      }
     }
+    DerivPair p(left, right);
+    if (!perms.containsKey(p))
+    {
+      perms.put(p, 1);
+    }
+    else
+    {
+      int count = perms.get(p);
+      perms.put(p, count+1);
+    }
+  }
 }
 
 Array<int> MultipleDeriv::bitsOfAnInteger(int x, int n)
 {
   TEST_FOR_EXCEPTION(x >= pow2(n), InternalError,
-                     "Invalid input to MultipleDeriv::bitsOfX");
+    "Invalid input to MultipleDeriv::bitsOfX");
                      
   Array<int> rtn(n);
 
   int r = x;
   for (int b=n-1; b>=0; b--)
-    {
-      rtn[b] = r/pow2(b);
-      r = r - rtn[b]*pow2(b);
-    }
+  {
+    rtn[b] = r/pow2(b);
+    r = r - rtn[b]*pow2(b);
+  }
   return rtn;
 }
 
@@ -254,10 +246,10 @@ int MultipleDeriv::pow2(int n)
   static Array<int> p2(1,1);
 
   if ((unsigned int) n >= p2.size())
-    {
-      int oldN = p2.size(); 
-      for (int i=oldN; i<=n; i++) p2.push_back(p2[i-1]*2);
-    }
+  {
+    int oldN = p2.size(); 
+    for (int i=oldN; i<=n; i++) p2.push_back(p2[i-1]*2);
+  }
   
   return p2[n];
 }
@@ -266,110 +258,111 @@ int MultipleDeriv::pow2(int n)
 
 namespace SundanceCore
 {
-  namespace Internal
+Set<MultipleDeriv> applyTx(const Set<MultipleDeriv>& s,
+  const MultiIndex& x)
+{
+  Set<MultipleDeriv> rtn;
+
+  for (Set<MultipleDeriv>::const_iterator i=s.begin(); i!=s.end(); i++)
   {
-    Set<MultipleDeriv> applyTx(const Set<MultipleDeriv>& s,
-                               const MultiIndex& x)
+    const MultipleDeriv& md = *i;
+    for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
     {
-      Set<MultipleDeriv> rtn;
-
-      for (Set<MultipleDeriv>::const_iterator i=s.begin(); i!=s.end(); i++)
+      const Deriv& d = *j;
+      if (d.isFunctionalDeriv())
+      {
+        const MultiIndex& mi = d.opOnFunc().mi();
+        MultiIndex miNew = mi+x;
+        if (miNew.isValid())
         {
-          const MultipleDeriv& md = *i;
-          for (MultipleDeriv::const_iterator j=md.begin(); j!=md.end(); j++)
-            {
-              const Deriv& d = *j;
-              if (d.isFunctionalDeriv())
-                {
-                  const FunctionalDeriv* f = d.funcDeriv();
-                  const MultiIndex& mi = f->multiIndex();
-                  const FuncElementBase* func = f->func();
-                  MultiIndex miNew = mi+x;
-                  if (miNew.isValid())
-                    {
-                      Deriv dNew = new FunctionalDeriv(func, miNew);
-                      MultipleDeriv mdNew = md;
-                      mdNew.erase(mdNew.find(d));
-                      mdNew.put(dNew);
-                      rtn.put(mdNew);
-                    }
-                }
-            }
+          Deriv dNew = d.derivWrtMultiIndex(miNew);
+          MultipleDeriv mdNew = md;
+          mdNew.erase(mdNew.find(d));
+          mdNew.put(dNew);
+          rtn.put(mdNew);
         }
-      return rtn;
+      }
     }
+  }
+  return rtn;
+}
 
-    Set<MultipleDeriv> Xx(const MultiIndex& x)
+Set<MultipleDeriv> Xx(const MultiIndex& x)
+{
+  Set<MultipleDeriv> rtn;
+
+  TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
+    "invalid multiindex " << x << " in this context");
+
+  MultipleDeriv xmd = makeMultiDeriv(coordDeriv(x.firstOrderDirection()));
+  rtn.put(xmd);
+  return rtn;
+}
+
+Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
+  const MultiIndex& x)
+{
+  Set<MultipleDeriv> rtn;
+
+  TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
+    "invalid multiindex " << x << " in this context");
+
+  for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
+  {
+    const MultipleDeriv& md = *i;
+    TEST_FOR_EXCEPTION(md.order() != 1, InternalError,
+      "Only first-order multiple functional derivatives "
+      "should appear in this function. The derivative "
+      << md << " is not first-order.");
+
+    const Deriv& d = *(md.begin());
+
+    if (d.isFunctionalDeriv())
     {
-      Set<MultipleDeriv> rtn;
-
-      TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
-                         "invalid multiindex " << x << " in this context");
-
-      Deriv xd = new CoordDeriv(x.firstOrderDirection());
-      MultipleDeriv xmd;
-      xmd.put(xd);
-      rtn.put(xmd);
-      return rtn;
+      /* */
+      TEST_FOR_EXCEPTION(!d.canBeDifferentiated(),
+        InternalError, "function signature " << d << " cannot be "
+        "differentiated further spatially");
+      /* accept a functional derivative if the associated function 
+       * is not identically zero */
+      const SymbolicFuncElement* sfe = d.symbFuncElem();
+      TEST_FOR_EXCEPTION(sfe==0, InternalError, 
+        "can't cast function in "
+        << d << " to a SymbolicFuncElement");
+      if (sfe && !sfe->evalPtIsZero()) rtn.put(md);
     }
-
-    Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
-                               const MultiIndex& x)
-    {
-      Set<MultipleDeriv> rtn;
-
-      TEST_FOR_EXCEPTION(x.order() < 0 || x.order() > 1, InternalError,
-                         "invalid multiindex " << x << " in this context");
-
-      for (Set<MultipleDeriv>::const_iterator i=W.begin(); i!=W.end(); i++)
-        {
-          const MultipleDeriv& md = *i;
-          TEST_FOR_EXCEPTION(md.order() != 1, InternalError,
-                             "Only first-order multiple functional derivatives "
-                             "should appear in this function. The derivative "
-                             << md << " is not first-order.");
-
-          const Deriv& d = *(md.begin());
-
-          if (d.isFunctionalDeriv())
-            {
-              /* accept a functional derivative if the associated function 
-               * is not identically zero */
-              const FunctionalDeriv* f = d.funcDeriv();
-              const FuncElementBase* func = f->func();
-              const SymbolicFuncElement* sfe 
-                = dynamic_cast<const SymbolicFuncElement*>(func);
-              TEST_FOR_EXCEPTION(sfe==0, InternalError, "can't cast function in "
-                                 << d << " to a SymbolicFuncElement");
-              if (!sfe->evalPtIsZero()) rtn.put(md);
-            }
-        }
-      return rtn;
-    }
+  }
+  return rtn;
+}
 
 
     
-  int factorial(const MultipleDeriv& ms)
-  {
-    SundanceUtils::Map<Deriv, int> counts;
+int factorial(const MultipleDeriv& ms)
+{
+  SundanceUtils::Map<Deriv, int> counts;
     
-    for (MultipleDeriv::const_iterator i=ms.begin(); i!=ms.end(); i++)
-      {
-        if (counts.containsKey(*i)) counts[*i]++;
-        else counts.put(*i, 1);
-      }
-
-    int rtn = 1;
-    for (SundanceUtils::Map<Deriv, int>::const_iterator
-           i=counts.begin(); i!=counts.end(); i++)
-      {
-        int f = 1;
-        for (int j=1; j<=i->second; j++) f *= j;
-        rtn *= f;
-      }
-    return rtn;
+  for (MultipleDeriv::const_iterator i=ms.begin(); i!=ms.end(); i++)
+  {
+    if (counts.containsKey(*i)) counts[*i]++;
+    else counts.put(*i, 1);
   }
 
-
+  int rtn = 1;
+  for (SundanceUtils::Map<Deriv, int>::const_iterator
+         i=counts.begin(); i!=counts.end(); i++)
+  {
+    int f = 1;
+    for (int j=1; j<=i->second; j++) f *= j;
+    rtn *= f;
   }
+  return rtn;
+}
+
+MultipleDeriv makeMultiDeriv(const Deriv& d)
+{
+  MultipleDeriv rtn;
+  rtn.put(d);
+  return rtn;
+}
+
 }

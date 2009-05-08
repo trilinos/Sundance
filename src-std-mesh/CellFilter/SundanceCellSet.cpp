@@ -39,7 +39,7 @@
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 

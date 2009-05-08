@@ -43,12 +43,13 @@
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 EvalManager::EvalManager()
-  : region_(),
+  : verb_(0),
+    region_(),
     mediator_()
 {}
 

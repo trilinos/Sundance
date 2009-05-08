@@ -33,7 +33,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 ConstantExpr::ConstantExpr(const double& value)
@@ -48,6 +48,10 @@ ConstantExpr::internalFindW(int order, const EvalContext& context) const
   Set<MultipleDeriv> rtn;
 
   if (order==0) rtn.put(MultipleDeriv());
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "ConstantExpr::internalFindW found" << rtn << " for order="
+    << order);
 
   return rtn;
 }
@@ -56,7 +60,9 @@ Set<MultipleDeriv>
 ConstantExpr::internalFindV(int order, const EvalContext& context) const
 {
   Set<MultipleDeriv> rtn;
-
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "ConstantExpr::internalFindV is a no-op");
   return rtn;
 }
 
@@ -64,6 +70,9 @@ ConstantExpr::internalFindV(int order, const EvalContext& context) const
 Set<MultipleDeriv> 
 ConstantExpr::internalFindC(int order, const EvalContext& context) const
 {
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "ConstantExpr::internalFindC is forwarding to findR()");
   return findR(order, context);
 }
 

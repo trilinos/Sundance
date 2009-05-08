@@ -38,98 +38,96 @@
 #include "SundanceNoncopyable.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  class CoordExpr;
+using namespace SundanceUtils;
+class CoordExpr;
+class MultiIndex;
+class DiscreteFuncElement;
 
 
-  namespace Internal
-    {
-      class MultiIndex;
-      class DiscreteFuncElement;
+/**
+ * EvalManager provides methods for interfacing to the framework
+ * through an AbstractEvalMediator and managing temporary variables
+ * through a TempStack.
+ *
+ * If no mediator is set, string evaluations will be done 
+ */
+class EvalManager : public Noncopyable
+{
+public:
+  /** Empty ctor */
+  EvalManager();
 
-      using namespace Internal;
+  /** */
+  void evalCoordExpr(const CoordExpr* expr,
+    RefCountPtr<EvalVector>&  result) const ;
 
-      /**
-       * EvalManager provides methods for interfacing to the framework
-       * through an AbstractEvalMediator and managing temporary variables
-       * through a TempStack.
-       *
-       * If no mediator is set, string evaluations will be done 
-       */
-      class EvalManager : public Noncopyable
-        {
-        public:
-          /** Empty ctor */
-          EvalManager();
+  /** */
+  void evalCellDiameterExpr(const CellDiameterExpr* expr,
+    RefCountPtr<EvalVector>&  result) const ;
 
-          /** */
-          void evalCoordExpr(const CoordExpr* expr,
-                             RefCountPtr<EvalVector>&  result) const ;
+  /** */
+  void evalCellVectorExpr(const CellVectorExpr* expr,
+    RefCountPtr<EvalVector>&  result) const ;
 
-          /** */
-          void evalCellDiameterExpr(const CellDiameterExpr* expr,
-                                    RefCountPtr<EvalVector>&  result) const ;
+  /** */
+  void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
+    const Array<MultiIndex>& mi,
+    Array<RefCountPtr<EvalVector> >& result) const ;
 
-          /** */
-          void evalCellVectorExpr(const CellVectorExpr* expr,
-				  RefCountPtr<EvalVector>&  result) const ;
+  /** */
+  void setMediator(const RefCountPtr<AbstractEvalMediator>& med) 
+    {mediator_ = med;}
 
-          /** */
-          void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
-                                       const Array<MultiIndex>& mi,
-                                       Array<RefCountPtr<EvalVector> >& result) const ;
+  /** */
+  void setVerbosity(int verb) 
+    {verb_ = verb;}
 
-          /** */
-          void setMediator(const RefCountPtr<AbstractEvalMediator>& med) 
-          {mediator_ = med;}
+  /** */
+  int verb() const {return verb_;}
 
-          /** */
-          void setVecSize(int vecSize) {stack().setVecSize(vecSize);}
+  /** */
+  void setVecSize(int vecSize) {stack().setVecSize(vecSize);}
           
 
-          /** Return a pointer to the mediator. We'll need the
-           * mediator for computing framework-specific functions.
-           */
-          const AbstractEvalMediator* mediator() const {return mediator_.get();}
+  /** Return a pointer to the mediator. We'll need the
+   * mediator for computing framework-specific functions.
+   */
+  const AbstractEvalMediator* mediator() const {return mediator_.get();}
 
-          /** */
-          void setRegion(const EvalContext& region)
-            {region_ = region;}
+  /** */
+  void setRegion(const EvalContext& region)
+    {region_ = region;}
 
-          /** */
-          const EvalContext& getRegion() const {return region_;}
+  /** */
+  const EvalContext& getRegion() const {return region_;}
 
-          /** */
-          static TempStack& stack();
+  /** */
+  static TempStack& stack();
 
-          /** */
-          int getMaxDiffOrder() const ;
+  /** */
+  int getMaxDiffOrder() const ;
 
 
-          /** */
-          RefCountPtr<EvalVector> popVector() const ;
+  /** */
+  RefCountPtr<EvalVector> popVector() const ;
 
-          /** */
-          TEUCHOS_TIMER(coordEvalTimer, "coord function evaluation");
+  /** */
+  TEUCHOS_TIMER(coordEvalTimer, "coord function evaluation");
 
-          /** */
-          TEUCHOS_TIMER(discFuncEvalTimer, "discrete function evaluation");
+  /** */
+  TEUCHOS_TIMER(discFuncEvalTimer, "discrete function evaluation");
 
-        private:
+private:
+  int verb_;
 
-          EvalContext region_;
+  EvalContext region_;
 
-          RefCountPtr<AbstractEvalMediator> mediator_;
+  RefCountPtr<AbstractEvalMediator> mediator_;
 
-      };
+};
 
-    }
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

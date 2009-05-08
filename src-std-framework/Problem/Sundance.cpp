@@ -302,7 +302,7 @@ void Sundance::setSettings(const XMLObject& xml)
           const string& value = child.getRequired("value");
           if (context=="Evaluation")
             {
-              SundanceCore::Internal::Evaluator::classVerbosity() = verbosity(value);
+              SundanceCore::Evaluator::classVerbosity() = verbosity(value);
             }
           else if (context=="Assembly")
             {
@@ -330,8 +330,8 @@ void Sundance::setSettings(const XMLObject& xml)
             }
           else if (context=="Symbolic Sparsity Determination")
             {
-              SundanceCore::Internal::SparsitySuperset::classVerbosity() = verbosity(value);
-              SundanceCore::Internal::EvaluatableExpr::classVerbosity() = verbosity(value);
+              SundanceCore::SparsitySuperset::classVerbosity() = verbosity(value);
+              SundanceCore::EvaluatableExpr::classVerbosity() = verbosity(value);
             }
           else if (context=="Integral Grouping")
             {

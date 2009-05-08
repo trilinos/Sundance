@@ -34,62 +34,62 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceListExpr.hpp"
+#include "SundanceSymbolicFuncDescriptor.hpp"
+#include "SundanceFunctionWithID.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  namespace Internal
-  {
-
-    using namespace Internal;
-    using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
     
-    using std::string;
-    using std::ostream;
 
-    /** 
-     * SymbolicFunc is a base class for functions such as test and unknown
-     * functions that are "variables" in a weak form. Symbolic functions
-     * cannot be evaluated directly; before evaluating a weak form,
-     a value must be substituted for 
-     * each symbolic func using either the substituteZero() or
-     * substituteFunction() method. 
-     *
-     * A symbolic function will construct itself as a list of
-     * SymbolicFuncElement objects that point back to the SymbolicFunction.
-     */
-    class SymbolicFunc : public ListExpr
-    {
-    public:
-      /** Empty ctor, initializes list to empty */
-      SymbolicFunc();
+/** 
+ * SymbolicFunc is a base class for functions such as test and unknown
+ * functions that are "variables" in a weak form. Symbolic functions
+ * cannot be evaluated directly; before evaluating a weak form,
+ a value must be substituted for 
+ * each symbolic func using either the substituteZero() or
+ * substituteFunction() method. 
+ *
+ * A symbolic function will construct itself as a list of
+ * SymbolicFuncElement objects that point back to the SymbolicFunction.
+ */
+class SymbolicFunc : public ListExpr, public SymbolicFuncDescriptor,
+  public FunctionWithID
+{
+public:
+  /** Ctor records common data but initializes list to empty */
+  SymbolicFunc(const FunctionWithID& fid, 
+    const RefCountPtr<const CommonFuncDataStub>& data);
 
-      /** virtual destructor */
-      virtual ~SymbolicFunc() {;}
+  /** virtual destructor */
+  virtual ~SymbolicFunc() {;}
 
-      /** Specify that expressions involving this function are to be evaluated
-       * with this function set to zero. This is appropriate for computing
-       * the functional derivatives that arise in a linear problem */
-      void substituteZero() const ;
+  /** Specify that expressions involving this function are to be evaluated
+   * with this function set to zero. This is appropriate for computing
+   * the functional derivatives that arise in a linear problem */
+  void substituteZero() const ;
 
-      /** Specify that expressions involving this function are to be evaluated
-       * with this function set to the discrete function \f$u_0\f$. 
-       * This is appropriate for computing
-       * the functional derivatives that arise in a nonlinear expression
-       * being linearized about \f$u_0\f$. 
-       */
-      void substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const ;
+  /** Specify that expressions involving this function are to be evaluated
+   * with this function set to the discrete function \f$u_0\f$. 
+   * This is appropriate for computing
+   * the functional derivatives that arise in a nonlinear expression
+   * being linearized about \f$u_0\f$. 
+   */
+  void substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const ;
 
-      /** Generate */
-      static int nextCommonID() {static int rtn=0; rtn++; return rtn;}
+  /** */
+  const RefCountPtr<const CommonFuncDataStub>& commonData() const 
+    {return commonData_;}
+  
 
-    };
-  }
+private:
+  RefCountPtr<const CommonFuncDataStub> commonData_;
+
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

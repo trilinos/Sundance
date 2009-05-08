@@ -39,67 +39,60 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_XMLObject.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  namespace Internal
-  {
-    using namespace Teuchos;
-    using namespace Internal;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-    class QuadratureFamilyStub 
-      : public TSFExtended::Handleable<QuadratureFamilyStub>,
-        public TSFExtended::Printable,
-        public TSFExtended::Describable,
-        public Noncopyable
-    {
-    public:
-      /** Empty ctor */
-      QuadratureFamilyStub(int order);
+class QuadratureFamilyStub 
+  : public TSFExtended::Handleable<QuadratureFamilyStub>,
+    public TSFExtended::Printable,
+    public TSFExtended::Describable,
+    public Noncopyable
+{
+public:
+  /** Empty ctor */
+  QuadratureFamilyStub(int order);
 
-      /** virtual dtor */
-      virtual ~QuadratureFamilyStub(){;}
+  /** virtual dtor */
+  virtual ~QuadratureFamilyStub(){;}
 
-      /** Return the order of the quadrature rule */
-      int order() const {return order_;}
+  /** Return the order of the quadrature rule */
+  int order() const {return order_;}
 
-      /** Write to XML */
-      virtual XMLObject toXML() const ;
+  /** Write to XML */
+  virtual XMLObject toXML() const ;
 
-      /** Ordering for storage in STL maps */
-      virtual bool lessThan(const QuadratureFamilyStub* other) const 
-      {return order() < other->order();}
+  /** Ordering for storage in STL maps */
+  virtual bool lessThan(const QuadratureFamilyStub* other) const 
+    {return order() < other->order();}
 
-      /** \name Printable interface */
-      //@{
-      /** Print to a stream */
-      virtual void print(std::ostream& os) const {os << toXML();}
-      //@}
+  /** \name Printable interface */
+  //@{
+  /** Print to a stream */
+  virtual void print(std::ostream& os) const {os << toXML();}
+  //@}
 
-      /** \name Describable interface */
-      //@{
-      /** Print to a stream */
-      virtual string description() const 
-      {return "QuadratureFamilyStub[order=" + Teuchos::toString(order()) 
-         +  "]";}
-      //@}
+  /** \name Describable interface */
+  //@{
+  /** Print to a stream */
+  virtual string description() const 
+    {return "QuadratureFamilyStub[order=" + Teuchos::toString(order()) 
+        +  "]";}
+  //@}
 
-      /** */
-      virtual RefCountPtr<QuadratureFamilyStub> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<QuadratureFamilyStub> getRcp() {return rcp(this);}
 
-      /** */
-      static RefCountPtr<QuadratureFamilyStub>& defaultQuadrature()
-      {static RefCountPtr<QuadratureFamilyStub> rtn
-          = rcp(new QuadratureFamilyStub(1)); return rtn;}
+  /** */
+  static RefCountPtr<QuadratureFamilyStub>& defaultQuadrature()
+    {static RefCountPtr<QuadratureFamilyStub> rtn
+        = rcp(new QuadratureFamilyStub(1)); return rtn;}
       
-    private:
-      int order_;
-    };
-  }
+private:
+  int order_;
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

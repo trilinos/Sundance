@@ -31,18 +31,19 @@
 #include "SundanceSymbolicFunc.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceZeroExpr.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceDerivSet.hpp"
 #include "SundanceTabs.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
-SymbolicFunc::SymbolicFunc()
-  : ListExpr()
+SymbolicFunc::SymbolicFunc(const FunctionWithID& fid, 
+    const RefCountPtr<const CommonFuncDataStub>& data)
+  : ListExpr(), FunctionWithID(fid), commonData_(data)
 {}
 
 

@@ -44,7 +44,7 @@ namespace SundanceStdFwk
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
   using namespace Internal;
 
   /** 
@@ -125,6 +125,8 @@ namespace SundanceStdFwk
 
 
   private:
+    /** */
+    RCP<DiscreteFuncDataStub> getRCP(DiscreteFunctionData* ptr);
 
     RefCountPtr<DiscreteFunctionData> data_;
 

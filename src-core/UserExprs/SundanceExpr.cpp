@@ -36,8 +36,8 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceDiffOp.hpp"
-#include "SundanceFunctionalDeriv.hpp"
-#include "SundanceCoordDeriv.hpp"
+
+
 #include "SundanceUnaryMinus.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceComplexExpr.hpp"
@@ -58,7 +58,7 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace Teuchos;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 
 static Time& sumTimer() 
 {
@@ -1110,7 +1110,8 @@ bool Expr::isUnknownElement() const
 }
 
 
-void Expr::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
+void Expr::getUnknowns(Set<int>& unkID, 
+  Array<Expr>& unks) const
 {
   TEST_FOR_EXCEPTION(ptr().get()==0, RuntimeError, 
     "function called on null expression");
@@ -1120,10 +1121,10 @@ void Expr::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
 
   if (u != 0) 
   {
-    if (!unkID.contains(u->funcComponentID())) 
+    if (!unkID.contains(u->fid().dofID())) 
     {
       unks.append(*this);
-      unkID.put(u->funcComponentID());
+      unkID.put(u->fid().dofID());
     }
   }
   else
@@ -1143,10 +1144,10 @@ void Expr::getTests(Set<int>& varID, Array<Expr>& vars) const
 
   if (u != 0) 
   {
-    if (!varID.contains(u->funcComponentID())) 
+    if (!varID.contains(u->fid().dofID())) 
     {
       vars.append(*this);
-      varID.put(u->funcComponentID());
+      varID.put(u->fid().dofID());
     }
   }
   else

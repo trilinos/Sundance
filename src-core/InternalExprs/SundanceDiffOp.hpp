@@ -41,161 +41,156 @@
 #include "SundanceDiffOpEvaluator.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
 class Expr;
 
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using std::string;
+using std::ostream;
 
-  namespace Internal
-  {
-    /**
-     *
-     */
-    class DiffOp : public UnaryExpr
+/**
+ *
+ */
+class DiffOp : public UnaryExpr
+{
+public:
+  /** ctor */
+  DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg);
+
+  /** virtual destructor */
+  virtual ~DiffOp() {;}
+
+
+  /** 
+   * Indicate whether the expression is linear 
+   * with respect to test functions 
+   */
+  virtual bool isLinearInTests() const 
+    {return evaluatableArg()->isLinearInTests();}
+      
+      
+  /** Indicate whether the expression is linear in the given 
+   * functions */
+  virtual bool isLinearForm(const Expr& u) const 
     {
-    public:
-      /** ctor */
-      DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg);
-
-      /** virtual destructor */
-      virtual ~DiffOp() {;}
-
-
-      /** 
-       * Indicate whether the expression is linear 
-       * with respect to test functions 
-       */
-      virtual bool isLinearInTests() const 
-        {return evaluatableArg()->isLinearInTests();}
+      return evaluatableArg()->isLinearForm(u);
+    }
       
-      
-      /** Indicate whether the expression is linear in the given 
-       * functions */
-      virtual bool isLinearForm(const Expr& u) const 
-        {
-          return evaluatableArg()->isLinearForm(u);
-        }
-      
-      /** Indicate whether the expression is at most 
-       * quadratic in the given functions */
-      virtual bool isQuadraticForm(const Expr& u) const
-        {
-          return evaluatableArg()->isQuadraticForm(u);
-        }
+  /** Indicate whether the expression is at most 
+   * quadratic in the given functions */
+  virtual bool isQuadraticForm(const Expr& u) const
+    {
+      return evaluatableArg()->isQuadraticForm(u);
+    }
 
-      /**
-       * Find the maximum differentiation order acting on discrete
-       * functions in this expression. 
-       */
-      virtual int maxDiffOrderOnDiscreteFunctions() const 
-        {
-          int rtn = evaluatableArg()->maxDiffOrderOnDiscreteFunctions();
-          if (evaluatableArg()->hasDiscreteFunctions()) 
-          {
-            rtn += mi_.order();
-          }
-          return rtn;
-        }
+  /**
+   * Find the maximum differentiation order acting on discrete
+   * functions in this expression. 
+   */
+  virtual int maxDiffOrderOnDiscreteFunctions() const 
+    {
+      int rtn = evaluatableArg()->maxDiffOrderOnDiscreteFunctions();
+      if (evaluatableArg()->hasDiscreteFunctions()) 
+      {
+        rtn += mi_.order();
+      }
+      return rtn;
+    }
 
 
-      /** Write a simple text description suitable
-       * for output to a terminal */
-      virtual ostream& toText(ostream& os, bool paren) const ;
+  /** Write a simple text description suitable
+   * for output to a terminal */
+  virtual ostream& toText(ostream& os, bool paren) const ;
 
-      /** Write in a form suitable for LaTeX formatting */
-      virtual ostream& toLatex(ostream& os, bool paren) const ;
+  /** Write in a form suitable for LaTeX formatting */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
 
-      /** Write in XML */
-      virtual XMLObject toXML() const ;
-
-
-      /** */
-      virtual Set<MultipleDeriv> 
-      internalFindW(int order, const EvalContext& context) const ;
+  /** Write in XML */
+  virtual XMLObject toXML() const ;
 
 
-      /** */
-      virtual Set<MultipleDeriv> 
-      internalFindV(int order, const EvalContext& context) const ;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindW(int order, const EvalContext& context) const ;
 
 
-      /** */
-      virtual Set<MultipleDeriv> 
-      internalFindC(int order, const EvalContext& context) const ;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindV(int order, const EvalContext& context) const ;
 
 
-      /** */
-      virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
-      internalDetermineR(const EvalContext& context,
-                         const Array<Set<MultipleDeriv> >& RInput) const ;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindC(int order, const EvalContext& context) const ;
 
-      /** */
-      void requestMultiIndexAtEvalPoint(const MultiIndex& mi,
-                                        const MultipleDeriv& u,
-                                        const EvalContext& context) const ;
+
+  /** */
+  virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+  internalDetermineR(const EvalContext& context,
+    const Array<Set<MultipleDeriv> >& RInput) const ;
+
+  /** */
+  void requestMultiIndexAtEvalPoint(const MultiIndex& mi,
+    const MultipleDeriv& u,
+    const EvalContext& context) const ;
       
       
       
-      /** */
-      const Deriv& myCoordDeriv() const {return myCoordDeriv_;}
+  /** */
+  const Deriv& myCoordDeriv() const {return myCoordDeriv_;}
 
-      /** */
-      const MultiIndex& mi() const {return mi_;}
+  /** */
+  const MultiIndex& mi() const {return mi_;}
 
-      /** Get the functions that are required in the evaluation
-       * of the multiple deriv d */
-      const SundanceUtils::Set<Deriv>& requiredFunctions(const MultipleDeriv& d) const 
-      {return requiredFunctions_[d];}
+  /** Get the functions that are required in the evaluation
+   * of the multiple deriv d */
+  const SundanceUtils::Set<Deriv>& requiredFunctions(const MultipleDeriv& d) const 
+    {return requiredFunctions_[d];}
 
-      /** */
-      bool requiresFunctionsToEval(const MultipleDeriv& d) const 
-      {return requiredFunctions_.containsKey(d);}
+  /** */
+  bool requiresFunctionsToEval(const MultipleDeriv& d) const 
+    {return requiredFunctions_.containsKey(d);}
 
     
       
      
 
-      /** */
-      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
 
-      /** */
-      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
-                                         const EvalContext& context) const ;
+  /** */
+  virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+    const EvalContext& context) const ;
 
      
 
-      /** */
-      virtual void registerSpatialDerivs(const EvalContext& context, 
-                                         const Set<MultiIndex>& miSet) const ;
+  /** */
+  virtual void registerSpatialDerivs(const EvalContext& context, 
+    const Set<MultiIndex>& miSet) const ;
 
-      /** Ordering operator for use in transforming exprs to standard form */
-      virtual bool lessThan(const ScalarExpr* other) const ;
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
 
-    private:
+private:
 
       
       
 
-      MultiIndex mi_;
+  MultiIndex mi_;
 
 
-      Deriv myCoordDeriv_;
+  Deriv myCoordDeriv_;
 
-      mutable Map<MultipleDeriv, SundanceUtils::Set<Deriv>, 
-                  increasingOrder<MultipleDeriv> > requiredFunctions_;
+  mutable Map<MultipleDeriv, SundanceUtils::Set<Deriv>, 
+              increasingOrder<MultipleDeriv> > requiredFunctions_;
 
-      mutable bool ignoreFuncTerms_;
-    };
-  }
+  mutable bool ignoreFuncTerms_;
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

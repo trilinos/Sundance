@@ -42,11 +42,9 @@
 
 namespace SundanceCore
 {
-namespace Internal
-{
 class FunctionSupportResolver;
 }
-}
+
 namespace SundanceStdFwk
 {
   using namespace SundanceUtils;
@@ -54,7 +52,7 @@ namespace SundanceStdFwk
   using namespace TSFExtended;
   using namespace SundanceStdMesh;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
   using namespace Internal;
 
   /** 
@@ -125,7 +123,7 @@ namespace SundanceStdFwk
     const BasisArray& basis() const {return basis_;}
 
     /** */
-    Array<int> dimStructure() const {return vectorDimStructure(basis());}
+    Array<std::pair<int,int> > dimStructure() const {return vectorDimStructure(basis());}
 
     /** */
     Vector<double> createVector() const {return vecSpace_.createMember();}

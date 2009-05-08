@@ -33,70 +33,65 @@
 
 #include "SundanceSpatiallyConstantExpr.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  namespace Internal
-    {
-      /**
-       * ConstantExpr contains an immutable constant, to be distinguished
-       * from a parameter that is constant in space but can change
-       * during the course of a simulation.
-       */
-      class ConstantExpr : public SpatiallyConstantExpr
-        {
-        public:
-          ConstantExpr(const double& value);
-          virtual ~ConstantExpr() {;}
+using namespace SundanceUtils;
 
-          /** */
-          virtual ostream& toText(ostream& os, bool paren) const ;
+/**
+ * ConstantExpr contains an immutable constant, to be distinguished
+ * from a parameter that is constant in space but can change
+ * during the course of a simulation.
+ */
+class ConstantExpr : public SpatiallyConstantExpr
+{
+public:
+  ConstantExpr(const double& value);
+  virtual ~ConstantExpr() {;}
 
-          /** */
-          virtual ostream& toLatex(ostream& os, bool paren) const ;
+  /** */
+  virtual ostream& toText(ostream& os, bool paren) const ;
 
-          /** */
-          virtual XMLObject toXML() const ;
+  /** */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
 
-          /** */
-          virtual bool isImmutable() const {return true;}
+  /** */
+  virtual XMLObject toXML() const ;
+
+  /** */
+  virtual bool isImmutable() const {return true;}
 
           
-          /** */
-          virtual void setValue(const double& value) {value_ = value;}
+  /** */
+  virtual void setValue(const double& value) {value_ = value;}
           
-          /** */
-          virtual const double& value() const {return value_;}
+  /** */
+  virtual const double& value() const {return value_;}
 
-          /** Ordering operator for use in transforming exprs to standard form */
-          virtual bool lessThan(const ScalarExpr* other) const ;
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
 
-          /** */
-          virtual Set<MultipleDeriv> 
-          internalFindW(int order, const EvalContext& context) const ;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindW(int order, const EvalContext& context) const ;
 
-          /** Find spatially-constant functional derivatives */
-          virtual Set<MultipleDeriv> 
-          internalFindC(int order, const EvalContext& context) const ;
+  /** Find spatially-constant functional derivatives */
+  virtual Set<MultipleDeriv> 
+  internalFindC(int order, const EvalContext& context) const ;
 
-          /** Find spatially-variable functional derivatives */
-          virtual Set<MultipleDeriv> 
-          internalFindV(int order, const EvalContext& context) const ;
+  /** Find spatially-variable functional derivatives */
+  virtual Set<MultipleDeriv> 
+  internalFindV(int order, const EvalContext& context) const ;
           
 
 
-          /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
 
-        protected:
-        private:
-          double value_;
-        };
-    }
+protected:
+private:
+  double value_;
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

@@ -45,7 +45,7 @@
 
 using namespace SundanceUtils;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 #define SUNDANCE_UNARY_OP(opName, functorName, description) \

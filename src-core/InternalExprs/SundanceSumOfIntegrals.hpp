@@ -43,18 +43,14 @@
 #include "SundanceWatchFlag.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace Internal;
 using std::string;
 using SundanceUtils::Map;
 
-namespace Internal
-{
 class SpatiallyConstantExpr;
 
 /** 
@@ -171,7 +167,5 @@ private:
   SundanceUtils::Map<RegionQuadCombo, Expr> rqcToExprMap_;
 };
 }
-}
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

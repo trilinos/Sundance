@@ -34,16 +34,13 @@
 #include "SundanceBinaryExpr.hpp"
 #include "SundanceSumEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
 using namespace SundanceUtils;
 using namespace Teuchos;
 using std::string;
 
-namespace Internal
-{
+
 /**
  * SumExpr is the internal representation of an addition or subtraction
  * node in the expression tree.
@@ -107,7 +104,4 @@ private:
 
 };
 }
-}
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

@@ -42,122 +42,108 @@
 #include "SundanceOrderedHandle.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
-
 namespace SundanceCore
 {
-  using namespace Teuchos;
-  using namespace SundanceUtils;
-  using std::string;
-  using SundanceUtils::Map;
+using namespace Teuchos;
+using namespace SundanceUtils;
+using std::string;
+using SundanceUtils::Map;
 
+/** */
+typedef OrderedTriple<OrderedHandle<CellFilterStub>,
+                      OrderedHandle<QuadratureFamilyStub>,
+                      WatchFlag> RegTriple;
+/** 
+ * Expressions may appear in more than one subregions of a problem,
+ * for instance in an internal domain and also on a boundary. On
+ * those different subregions, a given expression might be subject
+ * to different sets of functional derivatives; thus, different
+ * evaluation regions might have different sparsity patterns. 
+ * It is therefore necessary to build and store
+ * sparsity information on a region-by-region basis. 
+ *
+ * Class RegionQuadCombo is used as an identifier for regions. The
+ * only thing it needs to do is to be useable as a key in a STL map.
+ */
+class RegionQuadCombo 
+{
+public:
+  /** */
+  RegionQuadCombo();
+  /** */
+  RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
+    const RefCountPtr<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch = WatchFlag());
 
-  namespace Internal
-    {
+  /** */
+  inline bool operator==(const RegionQuadCombo& other) const
+    {return id_==other.id_;}
 
-      /** */
-      typedef OrderedTriple<OrderedHandle<CellFilterStub>,
-                            OrderedHandle<QuadratureFamilyStub>,
-                            WatchFlag> RegTriple;
-      /** 
-       * Expressions may appear in more than one subregions of a problem,
-       * for instance in an internal domain and also on a boundary. On
-       * those different subregions, a given expression might be subject
-       * to different sets of functional derivatives; thus, different
-       * evaluation regions might have different sparsity patterns. 
-       * It is therefore necessary to build and store
-       * sparsity information on a region-by-region basis. 
-       *
-       * Class RegionQuadCombo is used as an identifier for regions. The
-       * only thing it needs to do is to be useable as a key in a STL map.
-       */
-      class RegionQuadCombo 
-        {
-        public:
-          /** */
-          RegionQuadCombo();
-          /** */
-          RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
-            const RefCountPtr<QuadratureFamilyStub>& quad,
-            const WatchFlag& watch = WatchFlag());
+  /** */
+  string toString() const ;
 
-          /** */
-          inline bool operator==(const RegionQuadCombo& other) const
-            {return id_==other.id_;}
+  /** */
+  bool operator<(const RegionQuadCombo& other) const
+    {return id_ < other.id_;}
 
-          /** */
-          string toString() const ;
+  /** */
+  const RefCountPtr<CellFilterStub>& domain() const {return domain_;}
 
-          /** */
-          bool operator<(const RegionQuadCombo& other) const
-            {return id_ < other.id_;}
+  /** */
+  const RefCountPtr<QuadratureFamilyStub>& quad() const 
+    {return quad_;}
 
-          /** */
-          const RefCountPtr<CellFilterStub>& domain() const {return domain_;}
+  /** */
+  const WatchFlag& watch() const 
+    {return watch_;}
 
-          /** */
-          const RefCountPtr<QuadratureFamilyStub>& quad() const 
-          {return quad_;}
+private:
 
-          /** */
-          const WatchFlag& watch() const 
-          {return watch_;}
+  /** */
+  int id_;
 
-        private:
+  /** */
+  RefCountPtr<CellFilterStub> domain_;
 
-          /** */
-          int id_;
+  /** */
+  RefCountPtr<QuadratureFamilyStub> quad_;
 
-          /** */
-          RefCountPtr<CellFilterStub> domain_;
-
-          /** */
-          RefCountPtr<QuadratureFamilyStub> quad_;
-
-          /** */
-          WatchFlag watch_;
+  /** */
+  WatchFlag watch_;
           
-          /** */
-          static int getID(const RefCountPtr<CellFilterStub>& domain,
-            const RefCountPtr<QuadratureFamilyStub>& quad,
-            const WatchFlag& watch);
+  /** */
+  static int getID(const RefCountPtr<CellFilterStub>& domain,
+    const RefCountPtr<QuadratureFamilyStub>& quad,
+    const WatchFlag& watch);
 
-          /** */
-          static int topID() {static int rtn=0; return rtn++;}
+  /** */
+  static int topID() {static int rtn=0; return rtn++;}
 
-          /** */
-          static Map<RegTriple, int>& domainAndQuadToIDMap() ;
-        };
+  /** */
+  static Map<RegTriple, int>& domainAndQuadToIDMap() ;
+};
 
-    }
 }
 
 namespace std
 {
-  /** \relates SundanceCore::Internal::RegionQuadCombo*/
-  inline ostream& operator<<(ostream& os, 
-                             const SundanceCore::Internal::RegionQuadCombo& c)
-  {
-    os << c.toString();
-    return os;
-  }
+/** \relates SundanceCore::RegionQuadCombo*/
+inline ostream& operator<<(ostream& os, 
+  const SundanceCore::RegionQuadCombo& c)
+{
+  os << c.toString();
+  return os;
+}
 }
 
 namespace Teuchos
 {
-  using std::string;
+using std::string;
 
-  /** \relates SundanceCore::Internal::RegionQuadCombo */
-  inline string toString(const SundanceCore::Internal::RegionQuadCombo& h)
-    {return h.toString();}
+/** \relates SundanceCore::RegionQuadCombo */
+inline string toString(const SundanceCore::RegionQuadCombo& h)
+{return h.toString();}
 
 }
 
-
-
-
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

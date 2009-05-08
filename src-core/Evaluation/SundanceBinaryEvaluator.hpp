@@ -34,116 +34,105 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSubtypeEvaluator.hpp"
 #include "SundanceEvaluatableExpr.hpp"
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
+#include "SundanceEvalManager.hpp"
 
 namespace SundanceCore 
 {
-  namespace Internal
-  {
-    class EvalContext;
-  }
+class EvalContext;
   
-  using namespace Internal;
-  using namespace TSFExtended;
+using namespace TSFExtended;
 
-  namespace Internal 
-  {
-    /**
-     * 
-     */
-    template <class ExprType> class BinaryEvaluator 
-      : public SubtypeEvaluator<ExprType>
+/**
+ * 
+ */
+template <class ExprType> class BinaryEvaluator 
+  : public SubtypeEvaluator<ExprType>
+{
+public:
+  /** */
+  BinaryEvaluator(const ExprType* expr,
+    const EvalContext& context)
+    : SubtypeEvaluator<ExprType>(expr, context),
+      leftExpr_(expr->leftEvaluatable()),
+      rightExpr_(expr->rightEvaluatable()),
+      leftSparsity_(leftExpr_->sparsitySuperset(context)),
+      rightSparsity_(rightExpr_->sparsitySuperset(context)),
+      leftEval_(leftExpr_->evaluator(context)),
+      rightEval_(rightExpr_->evaluator(context))
     {
-    public:
-      /** */
-      BinaryEvaluator(const ExprType* expr,
-                      const EvalContext& context)
-        : SubtypeEvaluator<ExprType>(expr, context),
-          leftExpr_(expr->leftEvaluatable()),
-          rightExpr_(expr->rightEvaluatable()),
-          leftSparsity_(leftExpr_->sparsitySuperset(context)),
-          rightSparsity_(rightExpr_->sparsitySuperset(context)),
-          leftEval_(leftExpr_->evaluator(context)),
-          rightEval_(rightExpr_->evaluator(context))
-      {
-        Tabs tab;
-        leftEval_->addClient();
-        rightEval_->addClient();
-      }
+      Tabs tab;
+      leftEval_->addClient();
+      rightEval_->addClient();
+    }
 
-      /** */
-      virtual ~BinaryEvaluator(){;}
+  /** */
+  virtual ~BinaryEvaluator(){;}
 
-      /** */
-      virtual void resetNumCalls() const 
-      {
-        leftEval_->resetNumCalls();
-        rightEval_->resetNumCalls();
-        Evaluator::resetNumCalls();
-      }
+  /** */
+  virtual void resetNumCalls() const 
+    {
+      leftEval_->resetNumCalls();
+      rightEval_->resetNumCalls();
+      Evaluator::resetNumCalls();
+    }
 
-    protected:
+protected:
       
-      /** */
-      const RefCountPtr<SparsitySuperset>& leftSparsity() const 
-      {return leftSparsity_;}
+  /** */
+  const RefCountPtr<SparsitySuperset>& leftSparsity() const 
+    {return leftSparsity_;}
       
-      /** */
-      const RefCountPtr<SparsitySuperset>& rightSparsity() const 
-      {return rightSparsity_;}
+  /** */
+  const RefCountPtr<SparsitySuperset>& rightSparsity() const 
+    {return rightSparsity_;}
 
-      /** */
-      const EvaluatableExpr* leftExpr() const {return leftExpr_;}
+  /** */
+  const EvaluatableExpr* leftExpr() const {return leftExpr_;}
 
-      /** */
-      const EvaluatableExpr* rightExpr() const {return rightExpr_;}
+  /** */
+  const EvaluatableExpr* rightExpr() const {return rightExpr_;}
 
-      /** */
-      const RefCountPtr<Evaluator>& leftEval() const {return leftEval_;}
+  /** */
+  const RefCountPtr<Evaluator>& leftEval() const {return leftEval_;}
 
-      /** */
-      const RefCountPtr<Evaluator>& rightEval() const {return rightEval_;}
+  /** */
+  const RefCountPtr<Evaluator>& rightEval() const {return rightEval_;}
 
-      /** */
-      void evalChildren(const EvalManager& mgr,
-                        Array<double>& leftConstResults,
-                        Array<RefCountPtr<EvalVector> >& leftVecResults,
-                        Array<double>& rightConstResults,
-                        Array<RefCountPtr<EvalVector> >& rightVecResults) const 
-      {
-        Tabs tabs;
-        SUNDANCE_OUT(this->verbosity() > VerbLow, 
-                     tabs << "Evaluating left and right children: "
-                     << std::endl << tabs << "left=" << leftExpr_->toString()
-                     << std::endl << tabs << "right=" << rightExpr_->toString());
-        SUNDANCE_OUT(this->verbosity() > VerbLow, 
-                     tabs << "Evaluating left=" << leftExpr_->toString());
-        leftEval()->eval(mgr, leftConstResults, leftVecResults);
+  /** */
+  void evalChildren(const EvalManager& mgr,
+    Array<double>& leftConstResults,
+    Array<RefCountPtr<EvalVector> >& leftVecResults,
+    Array<double>& rightConstResults,
+    Array<RefCountPtr<EvalVector> >& rightVecResults) const 
+    {
+      Tabs tabs;
+      SUNDANCE_MSG2(mgr.verb(), 
+        tabs << "Evaluating left and right children: "
+        << std::endl << tabs << "left=" << leftExpr_->toString()
+        << std::endl << tabs << "right=" << rightExpr_->toString());
+      SUNDANCE_MSG2(mgr.verb(),
+        tabs << "Evaluating left=" << leftExpr_->toString());
+      leftEval()->eval(mgr, leftConstResults, leftVecResults);
         
-        SUNDANCE_OUT(this->verbosity() > VerbLow, 
-                     tabs << "Evaluating right=" << rightExpr_->toString());
-        rightEval()->eval(mgr, rightConstResults, rightVecResults);
-      }
+      SUNDANCE_MSG2(mgr.verb(),
+        tabs << "Evaluating right=" << rightExpr_->toString());
+      rightEval()->eval(mgr, rightConstResults, rightVecResults);
+    }
 
-    private:
-      const EvaluatableExpr* leftExpr_;
+private:
+  const EvaluatableExpr* leftExpr_;
 
-      const EvaluatableExpr* rightExpr_;
+  const EvaluatableExpr* rightExpr_;
 
-      RefCountPtr<SparsitySuperset> leftSparsity_;
+  RefCountPtr<SparsitySuperset> leftSparsity_;
 
-      RefCountPtr<SparsitySuperset> rightSparsity_;
+  RefCountPtr<SparsitySuperset> rightSparsity_;
 
-      RefCountPtr<Evaluator> leftEval_;
+  RefCountPtr<Evaluator> leftEval_;
 
-      RefCountPtr<Evaluator> rightEval_;
-    };
-  }
+  RefCountPtr<Evaluator> rightEval_;
+};
 }
-           
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
 
 
 #endif

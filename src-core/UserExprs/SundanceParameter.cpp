@@ -34,13 +34,12 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 Parameter::Parameter(const double& value, const string& name)
 	: DiscreteFuncElement(rcp(new ParameterData(value)), 
-    name, "", 
-    SymbolicFunc::nextCommonID(), 0),  
+    name, "", makeFuncID(0), 0),
     SpatiallyConstantExpr()
 {;}
 

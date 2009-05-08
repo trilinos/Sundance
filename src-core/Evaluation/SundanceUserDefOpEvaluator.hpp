@@ -39,74 +39,66 @@
 #include "SundanceChainRuleEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
 
+class UserDefOpElement;
+class SymbolicFuncElementEvaluator;
+class UserDefOpCommonEvaluator;
+/**
+ *
+ */
+class UserDefOpEvaluator : public ChainRuleEvaluator
+{
+public:
+  /** */
+  UserDefOpEvaluator(const UserDefOpElement* expr,
+    const RefCountPtr<const UserDefOpCommonEvaluator>& commonEval,
+    const EvalContext& context);
 
-  namespace Internal 
-  {
-    class UserDefOpElement;
-    class SymbolicFuncElementEvaluator;
-    class UserDefOpCommonEvaluator;
-    /**
-     *
-     */
-    class UserDefOpEvaluator : public ChainRuleEvaluator
-    {
-    public:
-      /** */
-      UserDefOpEvaluator(const UserDefOpElement* expr,
-                         const RefCountPtr<const UserDefOpCommonEvaluator>& commonEval,
-                         const EvalContext& context);
-
-      /** */
-      virtual ~UserDefOpEvaluator(){;}
+  /** */
+  virtual ~UserDefOpEvaluator(){;}
 
 
-      /** */
-      virtual void 
-      evalArgDerivs(const EvalManager& mgr,
-                    const Array<RefCountPtr<Array<double> > >& constArgRes,
-                    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
-                    Array<double>& constArgDerivs,
-                    Array<RefCountPtr<EvalVector> >& varArgDerivs) const ;
+  /** */
+  virtual void 
+  evalArgDerivs(const EvalManager& mgr,
+    const Array<RefCountPtr<Array<double> > >& constArgRes,
+    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
+    Array<double>& constArgDerivs,
+    Array<RefCountPtr<EvalVector> >& varArgDerivs) const ;
 
      
         
-      /** */
-      TEUCHOS_TIMER(evalTimer, "user defined nonlinear op evaluation");
+  /** */
+  TEUCHOS_TIMER(evalTimer, "user defined nonlinear op evaluation");
 
-      /** */
-      void resetNumCalls() const ;
+  /** */
+  void resetNumCalls() const ;
 
-    protected:
+protected:
 
-      Array<int> findRequiredOrders(const ExprWithChildren* expr, 
-                                    const EvalContext& context) ;
+  Array<int> findRequiredOrders(const ExprWithChildren* expr, 
+    const EvalContext& context) ;
 
-      const UserDefFunctorElement* functor() const {return functor_;}
+  const UserDefFunctorElement* functor() const {return functor_;}
 
-      const UserDefOpCommonEvaluator* commonEval() const 
-      {return commonEval_.get();}
+  const UserDefOpCommonEvaluator* commonEval() const 
+    {return commonEval_.get();}
 
-      int myIndex() const {return functor_->myIndex();}
+  int myIndex() const {return functor_->myIndex();}
 
-    private:
-      Array<int> argValueIndex_;
-      Array<int> argValueIsConstant_;
-      const UserDefFunctorElement* functor_;
-      RefCountPtr<const UserDefOpCommonEvaluator> commonEval_;
-      int maxOrder_;
-      int numVarArgDerivs_;
-      int numConstArgDerivs_;
-      bool allArgsAreConstant_;
-    }; 
-  }
+private:
+  Array<int> argValueIndex_;
+  Array<int> argValueIsConstant_;
+  const UserDefFunctorElement* functor_;
+  RefCountPtr<const UserDefOpCommonEvaluator> commonEval_;
+  int maxOrder_;
+  int numVarArgDerivs_;
+  int numConstArgDerivs_;
+  bool allArgsAreConstant_;
+}; 
 }
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 #endif

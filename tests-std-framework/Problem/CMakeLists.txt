@@ -27,6 +27,7 @@ SET(MPITests
              RadDiff1D
              Helmholtz1D
              Coupled1D
+             CrankNicolsonHeat1D
              HighOrderPoisson1D
              HighOrderPoisson2D
              HighOrderProjection1D 

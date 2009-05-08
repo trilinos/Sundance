@@ -37,106 +37,111 @@
 #include "SundanceDiscreteFuncEvaluator.hpp"
 #include "SundanceDiscreteFuncDataStub.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-
-  namespace Internal
-  {
-    using namespace Teuchos;
-
-    using std::string;
-    using std::ostream;
-
-    /** 
-     * DiscreteFuncElement represents a scalar-valued element
-     * of a (possibly) vector-valued discrete function. 
-     *
-     * DiscreteFuncElement is framework-independent. Any framework-specific
-     * information should go in a subclass of DiscreteFuncDataStub.
-     * The DiscreteFuncDataStub object can be accessed through the
-     * <tt>master()</tt> method of this class.
-     */
-    class DiscreteFuncElement : public virtual EvaluatableExpr,
-                                public FuncElementBase,
-                                public virtual GenericEvaluatorFactory<DiscreteFuncElement, DiscreteFuncElementEvaluator>
-    {
-    public:
-      /** */
-      DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
-        const string& name,
-        const string& suffix,
-        int commonFuncID,
-        int myIndex);
-
-      /** virtual destructor */
-      virtual ~DiscreteFuncElement() {;}
+using namespace SundanceUtils;
 
 
-      /** Get the data associated with the vector-valued function 
-       * that contains this function element. */
-      RCP<const DiscreteFuncDataStub> commonData() const {return commonData_;}
+using namespace Teuchos;
 
-      /** Get the data associated with the vector-valued function 
-       * that contains this function element. */
-      DiscreteFuncDataStub* commonData() {return commonData_.get();}
+using std::string;
+using std::ostream;
 
-      /** Get my index into the master's list of elements */
-      int myIndex() const {return myIndex_;}
+/** 
+ * DiscreteFuncElement represents a scalar-valued element
+ * of a (possibly) vector-valued discrete function. 
+ *
+ * DiscreteFuncElement is framework-independent. Any framework-specific
+ * information should go in a subclass of DiscreteFuncDataStub.
+ * The DiscreteFuncDataStub object can be accessed through the
+ * <tt>master()</tt> method of this class.
+ */
+class DiscreteFuncElement : public virtual EvaluatableExpr,
+                            public FuncElementBase,
+                            public virtual GenericEvaluatorFactory<DiscreteFuncElement, DiscreteFuncElementEvaluator>
+{
+public:
+  /** */
+  DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
+    const string& name,
+    const string& suffix,
+    const FunctionIdentifier& fid,
+    int myIndexIntoVector);
 
-      /** Inform this function that it will need to be evaluated using the specified
-       * multiIndex*/
-      void addMultiIndex(const MultiIndex& newMi) const ;
+  /** virtual destructor */
+  virtual ~DiscreteFuncElement() {;}
 
-       /**
-        * Find the maximum differentiation order acting on discrete
-        * functions in this expression. 
-        */
-      int maxDiffOrderOnDiscreteFunctions() const {return 0;}
+
+  /** Get the data associated with the vector-valued function 
+   * that contains this function element. */
+  RCP<const DiscreteFuncDataStub> commonData() const {return commonData_;}
+
+  /** Get the data associated with the vector-valued function 
+   * that contains this function element. */
+  DiscreteFuncDataStub* commonData() {return commonData_.get();}
+
+  /** Get my index into the master's list of elements */
+  int myIndex() const {return myIndex_;}
+
+  /** Inform this function that it will need to be evaluated using the specified
+   * multiIndex*/
+  void addMultiIndex(const MultiIndex& newMi) const ;
+
+  /**
+   * Find the maximum differentiation order acting on discrete
+   * functions in this expression. 
+   */
+  int maxDiffOrderOnDiscreteFunctions() const {return 0;}
       
-      /**
-       * Indicate whether this expression contains discrete functions.
-       * This object is a discrete function, so return true.
-       */
-      virtual bool hasDiscreteFunctions() const {return true;}
-
-      /** */
-      virtual Set<MultipleDeriv> 
-      internalFindW(int order, const EvalContext& context) const ;
-      /** */
-      virtual Set<MultipleDeriv> 
-      internalFindV(int order, const EvalContext& context) const ;
-      /** */
-      virtual Set<MultipleDeriv> 
-      internalFindC(int order, const EvalContext& context) const ;
-
-      /** */
-      virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
-      internalDetermineR(const EvalContext& context,
-                         const Array<Set<MultipleDeriv> >& RInput) const ;
-
-      /** */
-      virtual XMLObject toXML() const ;
-
-      /** */
-      const Set<MultiIndex>& multiIndexSet() const {return miSet_;}
-
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+  /**
+   * Indicate whether this expression contains discrete functions.
+   * This object is a discrete function, so return true.
+   */
+  virtual bool hasDiscreteFunctions() const {return true;}
       
-    private:
+  /**
+   * Indicate whether this expression contains test functions.
+   * This object is a discrete function, so return false.
+   */
+  virtual bool hasTestFunctions() const {return false;}
 
-      RefCountPtr<DiscreteFuncDataStub> commonData_;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindW(int order, const EvalContext& context) const ;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindV(int order, const EvalContext& context) const ;
+  /** */
+  virtual Set<MultipleDeriv> 
+  internalFindC(int order, const EvalContext& context) const ;
 
-      int myIndex_;
+  /** */
+  virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+  internalDetermineR(const EvalContext& context,
+    const Array<Set<MultipleDeriv> >& RInput) const ;
 
-      mutable Set<MultiIndex> miSet_;
+  /** */
+  virtual XMLObject toXML() const ;
+
+  /** */
+  const Set<MultiIndex>& multiIndexSet() const {return miSet_;}
+
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+
+  /** */
+  bool lessThan(const ScalarExpr* other) const ;
       
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-    };
-  }
+private:
+
+  RefCountPtr<DiscreteFuncDataStub> commonData_;
+
+  mutable Set<MultiIndex> miSet_;
+
+  int myIndex_;
+      
+
+};
 }
 
 #endif

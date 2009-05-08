@@ -43,7 +43,7 @@ namespace SundanceTesting
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
 
   /** 
    *
@@ -54,7 +54,7 @@ namespace SundanceTesting
     /** */
     TestDiscreteFunction(const ADField& field, 
                          const string& name="")
-      :  DiscreteFunctionStub(name, tuple(1), rcp(new TestDiscreteFuncData(field))) {;}
+      :  DiscreteFunctionStub(name, 0,1, rcp(new TestDiscreteFuncData(field))) {;}
    
     /** virtual destructor */
     virtual ~TestDiscreteFunction() {;}

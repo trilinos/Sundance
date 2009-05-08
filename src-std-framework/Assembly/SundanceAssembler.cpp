@@ -54,7 +54,7 @@
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
@@ -875,6 +875,10 @@ void Assembler::assemblyLoop(const ComputationType compType,
       evaluator->resetNumCalls();
       SUNDANCE_MSG2(rqcVerb, tab1 
         << "====== evaluating coefficient expressions") ;
+      if (rqc_[r].watch().evalVerb() > 0 && rqc_[r].watch().isActive())
+      { 
+        evalMgr_->setVerbosity(rqc_[r].watch().evalVerb());
+      }
       evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
       SUNDANCE_MSG2(rqcVerb, tab1 << "====== done evaluating expressions") ;

@@ -36,20 +36,14 @@
 #include "SundanceOrderedHandle.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceCore
-{
-namespace Internal
-{
-class CommonFuncDataStub;
-}
-}
+namespace SundanceCore {class CommonFuncDataStub;}
 
 namespace SundanceStdFwk
 {
 using Teuchos::XMLObject;
 using Teuchos::tuple;
 using SundanceUtils::OrderedHandle;
-using SundanceCore::Internal::CommonFuncDataStub;
+using SundanceCore::CommonFuncDataStub;
 using TSFExtended::Handle;
 
 /** 
@@ -243,11 +237,11 @@ public:
 
 
 /** \relates BasisFamily */
-Array<int> vectorDimStructure(const Array<BasisFamily>& basis);
+Array<std::pair<int, int> > vectorDimStructure(const Array<BasisFamily>& basis);
 
 
 /** \relates BasisFamily */
-Array<int> vectorDimStructure(const BasisFamily& basis);
+Array<std::pair<int, int> > vectorDimStructure(const BasisFamily& basis);
 
 
 

@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
       TimeMonitor t(totalTimer());
 
-      int maxDiffOrder = 2;
+      int maxDiffOrder = 0;
 
       verbosity<SymbolicTransformation>() = VerbSilent;
       verbosity<Evaluator>() = VerbSilent;
@@ -89,6 +89,7 @@ int main(int argc, char** argv)
               dum, dum, dum, dum,
               alpha, alpha0,
               context);
+            Out::os() << "derivs=" << ds << endl;
           }
         }
 
@@ -99,6 +100,6 @@ int main(int argc, char** argv)
 			Out::println(e.what());
 		}
 
-
+  return 0;
   
 }

@@ -35,72 +35,59 @@
 #include "SundanceEvaluator.hpp"
 #include "SundanceEvaluatableExpr.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  namespace Internal
-  {
-    class EvalContext;
-  }
-  
-  using namespace Internal;
-  using namespace TSFExtended;
+class EvalContext;
+using namespace TSFExtended;
 
-  namespace Internal 
-  {
-    /**
-     * 
-     */
-    template <class ExprType> class SubtypeEvaluator : public Evaluator
+/**
+ * 
+ */
+template <class ExprType> class SubtypeEvaluator : public Evaluator
+{
+public:
+  /** */
+  SubtypeEvaluator(const ExprType* expr,
+    const EvalContext& context)
+    : Evaluator(), 
+      expr_(expr), 
+      sparsity_(expr_->sparsitySuperset(context))
     {
-    public:
-      /** */
-      SubtypeEvaluator(const ExprType* expr,
-                       const EvalContext& context)
-        : Evaluator(), 
-          expr_(expr), 
-          sparsity_(expr_->sparsitySuperset(context))
-      {
-        verbosity() = Evaluator::classVerbosity();
-      }
+      verbosity() = Evaluator::classVerbosity();
+    }
 
-      /** */
-      virtual ~SubtypeEvaluator(){;}
+  /** */
+  virtual ~SubtypeEvaluator(){;}
 
 
       
-      /** */
-      const RefCountPtr<SparsitySuperset>& sparsity() const {return sparsity_;}
+  /** */
+  const RefCountPtr<SparsitySuperset>& sparsity() const {return sparsity_;}
 
-    protected:
-      /** */
-      const ExprType* expr() const {return expr_;}
+protected:
+  /** */
+  const ExprType* expr() const {return expr_;}
 
-      /** */
-      const MultipleDeriv& vectorResultDeriv(int iVec) const 
-      {
-        return this->sparsity()->deriv(vectorIndices()[iVec]);
-      }
+  /** */
+  const MultipleDeriv& vectorResultDeriv(int iVec) const 
+    {
+      return this->sparsity()->deriv(vectorIndices()[iVec]);
+    }
 
-      /** */
-      const MultipleDeriv& constantResultDeriv(int iConst) const 
-      {
-        return this->sparsity()->deriv(constantIndices()[iConst]);
-      }
+  /** */
+  const MultipleDeriv& constantResultDeriv(int iConst) const 
+    {
+      return this->sparsity()->deriv(constantIndices()[iConst]);
+    }
 
-    private:
-      const ExprType* expr_;
+private:
+  const ExprType* expr_;
 
-      RefCountPtr<SparsitySuperset> sparsity_;
-    };
-
-    
-
-  }
+  RefCountPtr<SparsitySuperset> sparsity_;
+};
+   
 }
-           
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
+
 
 
 

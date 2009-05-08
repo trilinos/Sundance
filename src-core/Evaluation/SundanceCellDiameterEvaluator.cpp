@@ -39,20 +39,22 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-CellDiameterExprEvaluator::CellDiameterExprEvaluator(const CellDiameterExpr* expr, 
-                                       const EvalContext& context)
+CellDiameterExprEvaluator::CellDiameterExprEvaluator(
+  const CellDiameterExpr* expr, 
+  const EvalContext& context)
   : SubtypeEvaluator<CellDiameterExpr>(expr, context), 
     stringRep_(expr->toString())
 {
 
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "initializing cell diameter expr evaluator for " 
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG1(verb, tabs << "initializing cell diameter expr evaluator for " 
                     << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << *(this->sparsity)());
+  SUNDANCE_MSG2(verb, tabs << "return sparsity " << std::endl << *(this->sparsity)());
 
   TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 1, InternalError,
                      "CellDiameterExprEvaluator ctor found a sparsity table "
@@ -81,29 +83,35 @@ CellDiameterExprEvaluator::CellDiameterExprEvaluator(const CellDiameterExpr* exp
 
 
 void CellDiameterExprEvaluator::internalEval(const EvalManager& mgr,
-                                             Array<double>& constantResults,
-                                             Array<RefCountPtr<EvalVector> >& vectorResults) const 
+  Array<double>& constantResults,
+  Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  //  TimeMonitor timer(cellDiameterEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_VERB_LOW(tabs << "CellDiameterExprEvaluator::eval() expr=" << expr()->toString());
+  SUNDANCE_MSG2(mgr.verb(), tabs << "CellDiameterExprEvaluator::eval() expr=" 
+    << expr()->toString());
 
-  if (verbosity() > 1)
+  if (mgr.verb() > 2)
     {
-      Out::os() << tabs << "sparsity = " << std::endl << tabs << *(this->sparsity)() << std::endl;
+      Out::os() << tabs << "sparsity = " 
+                << std::endl << tabs << *(this->sparsity)() << std::endl;
     }
 
   if (this->sparsity()->numDerivs() > 0)
     {
       vectorResults.resize(1);
       vectorResults[0] = mgr.popVector();
+      SUNDANCE_MSG3(mgr.verb(), tabs << "forwarding to evaluation manager");
       mgr.evalCellDiameterExpr(expr(), vectorResults[0]);
       mgr.stack().setVecSize(vectorResults[0]->length());
       if (EvalVector::shadowOps()) vectorResults[0]->setString(stringRep_);
     }
+  else
+  {
+    SUNDANCE_MSG4(mgr.verb(), tabs << "no results requested");
+  }
 
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 2)
     {
       Out::os() << tabs << "results " << std::endl;
       this->sparsity()->print(Out::os(), vectorResults,

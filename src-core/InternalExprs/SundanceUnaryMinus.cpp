@@ -33,7 +33,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 UnaryMinus::UnaryMinus(const RefCountPtr<ScalarExpr>& arg)
@@ -42,6 +42,9 @@ UnaryMinus::UnaryMinus(const RefCountPtr<ScalarExpr>& arg)
 
 Set<MultiSet<int> > UnaryMinus::internalFindQ_W(int order, const EvalContext& context) const
 {
+  int verb = context.setupVerbosity();
+  Tabs tab;
+  SUNDANCE_MSG3(verb, tab << "UnaryMinus::internalFindQ_W(" << order << ")");
   Set<MultiSet<int> > rtn;
   if (order > 1) return rtn;
 

@@ -36,40 +36,32 @@
 #include "SundanceDiscreteFuncDataStub.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  namespace Internal
-  {
-    /** 
-     * ParameterData is the specialization of DiscreteFuncDataStub to the
-     * case of a constant-valued discrete function. It is used
-     * as the discrete value of an unknown parameter expression.
-     */
-    class ParameterData : public DiscreteFuncDataStub 
-    {
-    public:
-      /** */
-      ParameterData(const double& value)
-        : DiscreteFuncDataStub(), value_(value) {;}
+/** 
+ * ParameterData is the specialization of DiscreteFuncDataStub to the
+ * case of a constant-valued discrete function. It is used
+ * as the discrete value of an unknown parameter expression.
+ */
+class ParameterData : public DiscreteFuncDataStub 
+{
+public:
+  /** */
+  ParameterData(const double& value)
+    : DiscreteFuncDataStub(), value_(value) {;}
 
-      /** */
-      virtual ~ParameterData(){;}
+  /** */
+  virtual ~ParameterData(){;}
 
-      /** */
-      void setValue(const double& value) {value_ = value;}
+  /** */
+  void setValue(const double& value) {value_ = value;}
 
-      /** */
-      const double& value() const {return value_;}
+  /** */
+  const double& value() const {return value_;}
 
-    private:
-      double value_;
-    };
-  }
+private:
+  double value_;
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

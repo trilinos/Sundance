@@ -32,58 +32,53 @@
 #define SUNDANCE_DERIVOFSYMBFUNC_H
 
 #include "SundanceDefs.hpp"
+#include "SundanceFunctionIdentifier.hpp"
 #include "SundanceDiffOp.hpp"
 #include "SundanceDerivOfSymbFuncEvaluator.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using std::string;
+using std::ostream;
 
-  namespace Internal
-  {
-    /**
-     * Specialization of DiffOp to the case where the argument is a 
-     * symbolic function, allowing optimized evaluation.
-     */
-    class DerivOfSymbFunc : public DiffOp
-    {
-    public:
-      /** ctor */
-      DerivOfSymbFunc(const MultiIndex& op, 
-                      const RefCountPtr<ScalarExpr>& arg);
+/**
+ * Specialization of DiffOp to the case where the argument is a 
+ * symbolic function, allowing optimized evaluation.
+ */
+class DerivOfSymbFunc : public DiffOp
+{
+public:
+  /** ctor */
+  DerivOfSymbFunc(const MultiIndex& op, 
+    const RefCountPtr<ScalarExpr>& arg);
 
-      /** virtual destructor */
-      virtual ~DerivOfSymbFunc() {;}
+  /** virtual destructor */
+  virtual ~DerivOfSymbFunc() {;}
 
-      /** */
-      int funcComponentID() const {return funcID_;}
+  /** */
+  const FunctionIdentifier& argFid() const {return argFid_;}
 
-      /** */
-      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-      /** */
-      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
-                                         const EvalContext& context) const ;
+  /** */
+  virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+    const EvalContext& context) const ;
 
-      /** */
-      FunctionalDeriv* representMeAsFunctionalDeriv() const ;
+  /** */
+  Deriv representMeAsFunctionalDeriv() const ;
 
-      /** Ordering operator for use in transforming exprs to standard form */
-      virtual bool lessThan(const ScalarExpr* other) const ;
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
 
 
-    private:
-      int funcID_;
-    };
-  }
+private:
+  FunctionIdentifier argFid_;
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

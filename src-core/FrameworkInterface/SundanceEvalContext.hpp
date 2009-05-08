@@ -38,9 +38,6 @@
 #include "Teuchos_Utils.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 
 namespace SundanceCore
 {
@@ -48,8 +45,6 @@ namespace SundanceCore
   using namespace SundanceUtils;
   using std::string;
 
-  namespace Internal
-    {
       /** 
        * Different contexts might require the same expression to be
        * evaluated to different orders of functional differentiation; for
@@ -77,8 +72,17 @@ namespace SundanceCore
           EvalContext(const RegionQuadCombo& rqc,
                       int topLevelDiffOrder,
                       int contextID)
-            : data_(rcp(new OrderedTriple<int, int, RegionQuadCombo>(topLevelDiffOrder, contextID, rqc)))
+            : setupVerbosity_(0), 
+              data_(rcp(new OrderedTriple<int, int, RegionQuadCombo>(topLevelDiffOrder, contextID, rqc)))
           {;}
+
+          /** Set the verbosity level to be used during preprocessing 
+           * of expressions in this context */
+          void setSetupVerbosity(int v) {setupVerbosity_ = v;}
+
+          /** Return the verbosity level to be used during preprocessing 
+           * of expressions in this context */
+          int setupVerbosity() const {return setupVerbosity_;}
 
           /** Comparison operator for use in maps */
           bool operator<(const EvalContext& other) const 
@@ -106,18 +110,18 @@ namespace SundanceCore
           /** Return a unique context ID */
           static int nextID() {static int rtn=0; return rtn++;}
         private:
+          int setupVerbosity_;
           RefCountPtr<OrderedTriple<int, int, RegionQuadCombo> > data_;
         };
 
-    }
 }
 
 
 namespace std
 {
-  /** \relates SundanceCore::Internal::EvalContext */
+  /** \relates SundanceCore::EvalContext */
   inline ostream& operator<<(ostream& os, 
-                             const SundanceCore::Internal::EvalContext& c)
+                             const SundanceCore::EvalContext& c)
   {
     os << c.toString();
     return os;
@@ -128,13 +132,11 @@ namespace Teuchos
 {
   using std::string;
 
-  /** \relates SundanceCore::Internal::EvalContext */
-  inline string toString(const SundanceCore::Internal::EvalContext& h)
+  /** \relates SundanceCore::EvalContext */
+  inline string toString(const SundanceCore::EvalContext& h)
     {return h.toString();}
 
 }
 
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

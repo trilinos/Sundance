@@ -38,14 +38,12 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceSymbolicFuncEvaluator.hpp"
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
+#include "SundanceSymbolicFuncDescriptor.hpp"
+#include "SundanceCommonFuncDataStub.hpp"
 
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  namespace Internal
-  {
     class DiscreteFuncElement;
     using namespace Teuchos;
 
@@ -57,6 +55,7 @@ namespace SundanceCore
      * list-valued SymbolicFunction. 
      */
     class SymbolicFuncElement : public FuncElementBase,
+                                public SymbolicFuncDescriptor,
                                 virtual public EvaluatableExpr,
                                 public GenericEvaluatorFactory<SymbolicFuncElement, SymbolicFuncElementEvaluator>
     {
@@ -64,14 +63,18 @@ namespace SundanceCore
       /** */
       SymbolicFuncElement(const string& name, 
         const string& suffix,
-        int commonFuncID,
-        int myIndex);
+        const FunctionIdentifier& fid,
+        const RCP<const CommonFuncDataStub>& data);
       
       /** virtual destructor */
       virtual ~SymbolicFuncElement() {;}
 
-      /** Get my index into the master's list of elements */
-      int myIndex() const {return myIndex_;}
+      /** Append to the set of func IDs present in this expression. */
+      void accumulateFuncSet(Set<int>& funcDofIDs, 
+        const Set<int>& activeSet) const ;
+
+      /** */
+      virtual bool hasTestFunctions() const {return false;}
 
 
       /** Specify that expressions involving this function are to be evaluated
@@ -101,6 +104,9 @@ namespace SundanceCore
 
       /** */
       bool evalPtIsZero() const ;
+
+      /** */
+      const RCP<const CommonFuncDataStub>& commonData() const {return commonData_;}
 
 
       /** \name Preprocessing */
@@ -137,19 +143,15 @@ namespace SundanceCore
       virtual bool isLinearForm(const Expr& u) const ;
       
       /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
       
     private:
+      RCP<const CommonFuncDataStub> commonData_;
+
       mutable RefCountPtr<EvaluatableExpr> evalPt_;
 
       mutable Array<int> evalPtDerivSetIndices_;
-
-      int myIndex_;
-      
-
     };
-  }
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

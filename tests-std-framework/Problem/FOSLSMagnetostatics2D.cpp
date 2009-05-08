@@ -119,7 +119,7 @@ int main(int argc, char** argv)
       Functional sq(mesh, sqResid, vecType);
       
       Expr dum;
-      Expr zero = new SundanceCore::Internal::ZeroExpr();
+      Expr zero = new SundanceCore::ZeroExpr();
       Expr u = List(H1x, H1y, H2x, H2y);
       Expr v0 = List(zero,zero,zero,zero);
       LinearProblem prob = sq.linearVariationalProb(u, v0, u, dum, dum);

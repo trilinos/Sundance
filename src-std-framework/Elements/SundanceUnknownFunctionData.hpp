@@ -41,7 +41,7 @@ namespace SundanceStdFwk
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
 
   
   namespace Internal

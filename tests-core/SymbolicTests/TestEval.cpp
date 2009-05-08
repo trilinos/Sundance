@@ -31,7 +31,7 @@ using namespace SundanceUtils;
 using namespace SundanceTesting;
 using namespace SundanceCore;
 using SundanceCore::List;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -98,8 +98,8 @@ inline Expr FD(const Expr& f, const Expr& u)
   {                                                     \
     verbosity<EvaluationTester>() = VerbExtreme;        \
     verbosity<Evaluator>() = VerbExtreme;               \
-    verbosity<SparsitySuperset>() = VerbSilent;         \
-    verbosity<EvalVector>() = VerbSilent;               \
+    verbosity<SparsitySuperset>() = VerbExtreme;         \
+    verbosity<EvalVector>() = VerbExtreme;               \
     verbosity<EvaluatableExpr>() = VerbExtreme;         \
     verbosity<AbstractEvalMediator>() = VerbExtreme;    \
   }
@@ -190,16 +190,6 @@ int main(int argc, char** argv)
       Tabs tabs;
       TimeMonitor timer(totalTimer());
 
-      //verbosity<SymbolicTransformation>() = VerbExtreme;
-      //#define BLAHBLAH
-#ifdef BLAHBLAH
-      verbosity<EvaluationTester>() = VerbExtreme;
-      verbosity<Evaluator>() = VerbExtreme;
-      verbosity<SparsitySuperset>() = VerbSilent;
-      verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
-      verbosity<AbstractEvalMediator>() = VerbExtreme;
-#endif
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;
@@ -257,7 +247,10 @@ int main(int argc, char** argv)
       XTESTER(b, B);
 #endif
 
+
+#ifdef BLARF
       TESTER(u, U);
+
 
 
       TESTER(-u, -U);
@@ -388,7 +381,6 @@ int main(int argc, char** argv)
       /* */
       TESTER( (x*u)*u, (X*U)*U );
 
-      
 
       /* -------------- tests of diff ops ----------------------- */
 
@@ -396,7 +388,7 @@ int main(int argc, char** argv)
       //#endif     
 
       /* */
-      TESTER((dx*u), (Dx*U));
+      TESTER1((dx*u), (Dx*U));
 
       /* */
       TESTER((dx*x), (Dx*X));
@@ -408,7 +400,7 @@ int main(int argc, char** argv)
       TESTER((dx*(x*x + y*y)), (Dx*(X*X + Y*Y)));
 
 
-#ifdef BLARF
+#ifdef BLARF2
       TESTER((b*x*dx*(b) + b*b*(dx*x)), (B*(Dx*(X*B))));
       TESTER((b*b*(dx*x)), (B*B)*(Dx*X));
       TESTER((dx*x), (Dx*X));
@@ -419,15 +411,18 @@ int main(int argc, char** argv)
       TESTER((u*dx*(x*b)), (U*(Dx*(X*B))));
       TESTER((u*dx*(x*b)), (U*(Dx*(X*B))));
       TESTER((dx*(sin(x)*b)), (Dx*(sin(X)*B)));
-#endif BLARF
+#endif 
 
 
       /* */
       TESTER((dx*y), (Dx*Y));
 
       TESTER((dx*u+dx*w), (Dx*U+Dx*W));
+
+#endif
       
       TESTER((dx*(u+w)), (Dx*(U+W)));
+
 
       TESTER((dx*(u-w)), (Dx*(U-W)));
 

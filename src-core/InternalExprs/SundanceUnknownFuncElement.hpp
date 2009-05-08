@@ -37,54 +37,46 @@
 #include "SundanceUnknownFuncDataStub.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
+using namespace SundanceUtils;
+
+using namespace Teuchos;
+
+using std::string;
+using std::ostream;
+
+/** 
+ * UnknownFuncElement represents a scalar-valued element of a (possibly)
+ * list-valued UnknownFunction
+ */
+class UnknownFuncElement : public SymbolicFuncElement
+{
+public:
+  /** */
+  UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
+    const string& name,
+    const string& suffix,
+    const FunctionIdentifier& fid);
 
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+  /** virtual destructor */
+  virtual ~UnknownFuncElement() {;}
 
-    using std::string;
-    using std::ostream;
-
-    /** 
-     * UnknownFuncElement represents a scalar-valued element of a (possibly)
-     * list-valued UnknownFunction
-     */
-    class UnknownFuncElement : public SymbolicFuncElement
-    {
-    public:
-      /** */
-      UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
-        const string& name,
-        const string& suffix,
-        int commonFuncID,
-        int myIndex);
-
-      /** virtual destructor */
-      virtual ~UnknownFuncElement() {;}
-
-      /** Get the data associated with the vector-valued function 
-       * that contains this function element. */
-      RCP<const UnknownFuncDataStub> commonData() const {return commonData_;}
-
-      /** */
-      virtual XMLObject toXML() const ;
-
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual XMLObject toXML() const ;
       
-    private:
-       const RefCountPtr<const UnknownFuncDataStub> commonData_;
-    };
-  }
+  /** */
+  virtual bool isUnknownFunction() const {return true;}
+      
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
+
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+      
+private:
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

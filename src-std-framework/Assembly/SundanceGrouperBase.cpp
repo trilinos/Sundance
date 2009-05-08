@@ -32,7 +32,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceFuncWithBasis.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceUnknownFunction.hpp"
@@ -41,7 +41,7 @@
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
@@ -89,25 +89,24 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       "detected a non-functional derivative: "
       << functionalDeriv.toString());
       
-    const FunctionalDeriv* f = d.funcDeriv();
+    const FunctionIdentifier& fid = d.fid();
       
-    const SymbolicFuncElement* s 
-      = dynamic_cast<const SymbolicFuncElement*>(f->func());
+    const SymbolicFuncElement* s = d.symbFuncElem();
 
     TEST_FOR_EXCEPTION(s==0, InternalError, 
       "WeakFormBatch::extractWeakForm failed to cast "
       "function to SymbolicFuncElement");
       
 
-    int funcID = f->funcComponentID();
-    int myIndex = s->myIndex();
+    int dofID = fid.dofID();
+    int myIndex = fid.componentIndex();
 
-    if (!foundVar && eqn.hasVarID(funcID))
+    if (!foundVar && eqn.hasVarID(dofID))
     {
       foundVar = true;
-      reducedVarID = eqn.reducedVarID(funcID);
-      rawVarID = funcID;
-      testBlock = eqn.blockForVarID(funcID);
+      reducedVarID = eqn.reducedVarID(dofID);
+      rawVarID = dofID;
+      testBlock = eqn.blockForVarID(dofID);
 
       SUNDANCE_LEVEL2("extract weak form",
         tab << "found varID=" << reducedVarID);
@@ -134,7 +133,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       SUNDANCE_LEVEL2("extract weak form", 
         tab << "found varBasis=" << varBasis);
 
-      miVar = f->multiIndex();
+      miVar = d.opOnFunc().mi();
       SUNDANCE_LEVEL2("extract weak form", 
         tab << "found var multi index=" << miVar.toString());
     }
@@ -146,9 +145,9 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
         "WeakFormBatch::extractWeakForm could not cast "
         "unknown function to UnknownFuncElement");
       foundUnk = true;
-      reducedUnkID = eqn.reducedUnkID(funcID);
-      rawUnkID = funcID;
-      unkBlock = eqn.blockForUnkID(funcID);
+      reducedUnkID = eqn.reducedUnkID(dofID);
+      rawUnkID = dofID;
+      unkBlock = eqn.blockForUnkID(dofID);
 
       SUNDANCE_LEVEL2("extract weak form",
         tab << "found reducedUnkID=" << reducedUnkID);
@@ -157,7 +156,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       SUNDANCE_LEVEL2("extract weak form",
         tab << "found unkBasis=" << unkBasis);
 
-      miUnk = f->multiIndex();
+      miUnk = d.opOnFunc().mi();
       SUNDANCE_LEVEL2("extract weak form",
         tab << "found unk multi index=" << miUnk.toString());
     }

@@ -41,7 +41,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -71,6 +71,15 @@ SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Expr& coeffs)
   for (int i=0; i<nterms; i++)
     coeffs_[i] = coeffs[i];
   sbasis_ = rcp(new SpectralBasis(sbasis));
+}
+
+void SpectralExpr::accumulateFuncSet(Set<int>& funcDofIDs, 
+  const Set<int>& activeSet) const
+{
+  for (unsigned int i=0; i<coeffs_.size(); i++)
+  {
+    dynamic_cast<const ScalarExpr*>(coeffs_[i].ptr().get())->accumulateFuncSet(funcDofIDs, activeSet);
+  }
 }
 
 SpectralBasis SpectralExpr::getSpectralBasis() const

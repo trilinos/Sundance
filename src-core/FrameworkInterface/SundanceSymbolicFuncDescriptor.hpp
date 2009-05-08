@@ -28,54 +28,32 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_DERIVBASE_H
-#define SUNDANCE_DERIVBASE_H
+#ifndef SUNDANCE_SYMBOLICFUNCDESCRIPTOR_H
+#define SUNDANCE_SYMBOLICFUNCDESCRIPTOR_H
+
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "SundanceExceptions.hpp"
-#include "TSFHandleable.hpp"
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  namespace Internal
-    {
-      using namespace Teuchos;
-      class Deriv;
+/**
+ * This is a base class for functions or elements that need to report
+ * whether they're test or unknown functions. 
+ */
+class SymbolicFuncDescriptor
+{
+public:
 
-      /**
-       * DerivBase is a base class for first-order functional and spatial
-       * differentiation in the region of internal AD. Multiple derivatives
-       * are represented with the DerivSet object.
-       */
-      class DerivBase : public TSFExtended::Handleable<DerivBase>
-        {
-        public:
-          /** */
-          DerivBase();
+  /** */
+  virtual bool isTestFunction() const {return false;}
 
-          /** */
-          virtual ~DerivBase(){;}
+  /** */
+  virtual bool isUnknownFunction() const {return false;}
 
-          /** */
-          virtual bool lessThan(const Deriv& other) const = 0 ;
+private:
+};
 
-          /** */
-          virtual std::string toString() const = 0 ;
-
-        private:
-
-        };
-    }
 }
-
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 
 #endif

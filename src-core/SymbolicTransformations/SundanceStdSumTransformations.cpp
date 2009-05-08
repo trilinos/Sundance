@@ -38,8 +38,8 @@
 #include "SundanceCoordExpr.hpp"
 #include "SundanceDerivative.hpp"
 #include "SundanceDiffOp.hpp"
-#include "SundanceFunctionalDeriv.hpp"
-#include "SundanceCoordDeriv.hpp"
+
+
 #include "SundanceUnaryMinus.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceFunctionalPolynomial.hpp"
@@ -53,7 +53,7 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace Teuchos;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 
 static Time& polysumTimer() 
 {

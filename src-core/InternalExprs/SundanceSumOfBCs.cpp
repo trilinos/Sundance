@@ -34,8 +34,8 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace Teuchos;
 using std::endl;
 

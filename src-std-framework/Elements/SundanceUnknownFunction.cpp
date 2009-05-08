@@ -36,37 +36,29 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
 UnknownFunction::UnknownFunction(const BasisFamily& basis, const string& name)
-  : UnknownFunctionStub(name, vectorDimStructure(basis),
+  : UnknownFunctionStub(name, vectorDimStructure(basis)[0].first,
+    vectorDimStructure(basis)[0].second,
                         rcp(new UnknownFunctionData(tuple(basis)))), 
     FuncWithBasis(basis)
 {;}
 
 
-UnknownFunction::UnknownFunction(const Array<BasisFamily>& basis, const string& name)
-  : UnknownFunctionStub(name, vectorDimStructure(basis),
-                        rcp(new UnknownFunctionData(basis))), 
-    FuncWithBasis(basis)
-{;}
+
 
 
 UnknownFunction::UnknownFunction(const BasisFamily& basis, 
                                  const SpectralBasis& spBasis,
                                  const string& name)
-  : UnknownFunctionStub(name, spBasis, vectorDimStructure(basis),
+  : UnknownFunctionStub(name, spBasis, vectorDimStructure(basis)[0].first,
+    vectorDimStructure(basis)[0].second,
                         rcp(new UnknownFunctionData(replicate(basis, spBasis.nterms())))), 
     FuncWithBasis(replicate(basis, spBasis.nterms()))
 {;}
 
 
-UnknownFunction::UnknownFunction(const Array<BasisFamily>& basis, 
-                                 const SpectralBasis& spBasis,
-                                 const string& name)
-  : UnknownFunctionStub(name, spBasis, vectorDimStructure(basis),
-    rcp(new UnknownFunctionData(replicate(basis, spBasis.nterms())))), 
-    FuncWithBasis(replicate(basis, spBasis.nterms()))
-{;}
+

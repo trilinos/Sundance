@@ -33,7 +33,6 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 DerivSet::DerivSet()

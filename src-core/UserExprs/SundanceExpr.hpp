@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExprBase.hpp"
+#include "SundanceFunctionIdentifier.hpp"
 #include "SundanceMap.hpp"
 #include "TSFHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
@@ -43,11 +44,8 @@
 namespace SundanceCore
 {
 
-namespace Internal
-{
 class ScalarExpr;
 class FuncElementBase;
-}
 
 using namespace SundanceUtils;
 /**
@@ -194,11 +192,11 @@ using namespace SundanceUtils;
  * Cell diameter expressions are scalar valued.
  * </ul>
  */
-class Expr : public TSFExtended::Handle<Internal::ExprBase>
+class Expr : public TSFExtended::Handle<ExprBase>
 {
 public:
   /* boilerplate handle ctors */
-  HANDLE_CTORS(Expr, Internal::ExprBase);
+  HANDLE_CTORS(Expr, ExprBase);
 
   /** Construct with a constant. Creates a ConstantExpr. */
   Expr(const double& c);
@@ -337,7 +335,7 @@ public:
   static bool& showAllParens() {static bool rtn = false; return rtn;}
 
   /** Create a new handle for an existing ptr.  */
-  static Expr handle(const RefCountPtr<Internal::ExprBase>& ptr)
+  static Expr handle(const RefCountPtr<ExprBase>& ptr)
     {return Expr(ptr);}
 
   /** */
@@ -373,10 +371,10 @@ public:
 
 
   /** */
-  const Internal::ScalarExpr* scalarExpr() const ;
+  const ScalarExpr* scalarExpr() const ;
 
   /** */
-  const Internal::FuncElementBase* funcElement() const ;
+  const FuncElementBase* funcElement() const ;
 
 private:
 

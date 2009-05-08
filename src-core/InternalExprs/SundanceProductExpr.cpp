@@ -32,14 +32,14 @@
 #include "SundanceProductExpr.hpp"
 #include "SundanceProductEvaluator.hpp"
 #include "SundanceDeriv.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -84,7 +84,8 @@ const string& ProductExpr::opChar() const
 Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& context) const
 {
   Tabs tab0;
-  SUNDANCE_VERB_HIGH(tab0 << "ProdExpr::internalFindQ_W(" << order << ")");
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab0 << "ProdExpr::internalFindQ_W(" << order << ")");
 
   Set<MultiSet<int> > rtn;
   if (order > 2) return rtn;
@@ -98,11 +99,11 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& c
 
   const Set<MultipleDeriv>& wLeft 
     = leftEvaluatable()->findW(0, context);
-  SUNDANCE_VERB_HIGH(tab0 << "wLeft=" << wLeft);
+  SUNDANCE_MSG3(verb, tab0 << "wLeft=" << wLeft);
 
   const Set<MultipleDeriv>& wRight
     = rightEvaluatable()->findW(0, context);
-  SUNDANCE_VERB_HIGH(tab0 << "wRight=" << wRight);
+  SUNDANCE_MSG3(verb, tab0 << "wRight=" << wRight);
   
   if (order==0)
   {
@@ -129,6 +130,8 @@ Set<MultiSet<int> > ProductExpr::internalFindQ_W(int order, const EvalContext& c
 Set<MultiSet<int> > ProductExpr::internalFindQ_V(int order, const EvalContext& context) const
 {
   Tabs tab0;
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab0 << "ProdExpr::internalFindQ_V(" << order << ")");
 
   Set<MultiSet<int> > rtn;
   if (order > 1) return rtn;

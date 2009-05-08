@@ -31,13 +31,13 @@
 #include "SundanceProductEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceProductExpr.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -394,11 +394,11 @@ void ProductEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const
 {
-  //  TimeMonitor timer(evalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-               tabs << "ProductEvaluator::eval() expr=" << expr()->toString());
+  SUNDANCE_MSG1(mgr.verb(),
+    tabs << "ProductEvaluator::eval() expr=" 
+    << expr()->toString());
 
   /* evaluate the children */
   Array<RefCountPtr<EvalVector> > leftVectorResults; 
@@ -408,7 +408,7 @@ void ProductEvaluator
   evalChildren(mgr, leftConstantResults, leftVectorResults,
                rightConstantResults, rightVectorResults);
 
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 2)
     {
       Out::os() << tabs << "left operand results" << std::endl;
       leftSparsity()->print(Out::os(), leftVectorResults,
@@ -485,7 +485,7 @@ void ProductEvaluator
                       result->multiply_V(coeff.get());
                     }
                 }
-              SUNDANCE_VERB_HIGH(tabs << "workspace = " << result->str());
+              SUNDANCE_MSG3(mgr.verb(), tabs << "workspace = " << result->str());
             }
           else
             {
@@ -525,7 +525,7 @@ void ProductEvaluator
                                            rightVectorResults[sv[1]].get());
                         }
                     }
-                  SUNDANCE_VERB_HIGH(tabs << "init to v-v prod, m="
+                  SUNDANCE_MSG3(mgr.verb(), tabs << "init to v-v prod, m="
                                      << multiplicity << ", left=" 
                                      << leftVectorResults[sv[0]]->str()
                                      << ", right=" 
@@ -561,7 +561,7 @@ void ProductEvaluator
                           result->setTo_V(leftVectorResults[sv[0]].get());
                         }
                     }
-                  SUNDANCE_VERB_HIGH(tabs << "init to v-c prod, m="
+                  SUNDANCE_MSG3(mgr.verb(), tabs << "init to v-c prod, m="
                                      << multiplicity << ", left=" 
                                      << leftVectorResults[sv[0]]->str()
                                      << ", right=" 
@@ -597,7 +597,7 @@ void ProductEvaluator
                           result->setTo_V(rightVectorResults[sv[1]].get());
                         }
                     }
-                  SUNDANCE_VERB_HIGH(tabs << "init to c-v prod, m="
+                  SUNDANCE_MSG3(mgr.verb(), tabs << "init to c-v prod, m="
                                      << multiplicity << ", left=" 
                                      << leftConstantResults[sv[0]]
                                      << ", right=" 
@@ -605,7 +605,7 @@ void ProductEvaluator
                                      << ", result=" << result->str());
                   
                 }
-              SUNDANCE_VERB_HIGH(tabs << "starting value = " << result->str());
+              SUNDANCE_MSG3(mgr.verb(), tabs << "starting value = " << result->str());
             }
           vectorResults[resultIndex_[order][i]] = result;
 
@@ -615,7 +615,7 @@ void ProductEvaluator
 
           for (unsigned int j=0; j<cvTerms.size(); j++)
             {
-              SUNDANCE_VERB_HIGH(tabs << "adding c-v term " << cvTerms[j]);
+              SUNDANCE_MSG3(mgr.verb(), tabs << "adding c-v term " << cvTerms[j]);
               
               double multiplicity = cvTerms[j][2];
               double scalar = multiplicity*leftConstantResults[cvTerms[j][0]];
@@ -632,7 +632,7 @@ void ProductEvaluator
 
           for (unsigned int j=0; j<vcTerms.size(); j++)
             {
-              SUNDANCE_VERB_HIGH(tabs << "adding v-c term " << vcTerms[j]);
+              SUNDANCE_MSG3(mgr.verb(), tabs << "adding v-c term " << vcTerms[j]);
 
               double multiplicity = vcTerms[j][2];
               double scalar = multiplicity*rightConstantResults[vcTerms[j][1]];
@@ -649,7 +649,7 @@ void ProductEvaluator
 
           for (unsigned int j=0; j<vvTerms.size(); j++)
             {
-              SUNDANCE_VERB_HIGH(tabs << "adding v-v term " << vvTerms[j]);
+              SUNDANCE_MSG3(mgr.verb(), tabs << "adding v-v term " << vvTerms[j]);
 
               double multiplicity = vvTerms[j][2];
               const EvalVector* vec1 = leftVectorResults[vvTerms[j][0]].get();
@@ -668,7 +668,7 @@ void ProductEvaluator
         }
     }
 
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 1)
     {
       Out::os() << tabs << "product result " << std::endl;
       this->sparsity()->print(Out::os(), vectorResults,

@@ -40,7 +40,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
@@ -59,8 +59,8 @@ static Time& dfCtorTimer()
 
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const string& name)
-  : DiscreteFunctionStub(name, space.dimStructure(),
-                         rcp(new DiscreteFunctionData(space))), 
+  : DiscreteFunctionStub(tuple(name), space.dimStructure(),
+                         getRCP(new DiscreteFunctionData(space))), 
     FuncWithBasis(space.basis()),
     data_()
 {
@@ -71,7 +71,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const Array<string>& name)
   : DiscreteFunctionStub(name, space.dimStructure(),
-                         rcp(new DiscreteFunctionData(space))), 
+                         getRCP(new DiscreteFunctionData(space))), 
     FuncWithBasis(space.basis()),
     data_()
 {
@@ -82,8 +82,8 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const double& constantValue,
                                    const string& name)
-  : DiscreteFunctionStub(name, space.dimStructure(),
-                         rcp(new DiscreteFunctionData(space, constantValue))), 
+  : DiscreteFunctionStub(tuple(name), space.dimStructure(),
+                         getRCP(new DiscreteFunctionData(space, constantValue))), 
     FuncWithBasis(space.basis()),
     data_()
 {
@@ -98,7 +98,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
                                    const double& constantValue,
                                    const Array<string>& name)
   : DiscreteFunctionStub(name, space.dimStructure(),
-                         rcp(new DiscreteFunctionData(space, constantValue))), 
+                         getRCP(new DiscreteFunctionData(space, constantValue))), 
     FuncWithBasis(space.basis()),
     data_()
 {
@@ -112,8 +112,8 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
 DiscreteFunction::DiscreteFunction(const DiscreteSpace& space, 
                                    const Vector<double>& vec,
                                    const string& name)
-  : DiscreteFunctionStub(name, space.dimStructure(),
-                         rcp(new DiscreteFunctionData(space, vec))), 
+  : DiscreteFunctionStub(tuple(name), space.dimStructure(),
+                         getRCP(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),
     data_()
 {
@@ -125,7 +125,7 @@ DiscreteFunction::DiscreteFunction(const DiscreteSpace& space,
                                    const Vector<double>& vec,
                                    const Array<string>& name)
   : DiscreteFunctionStub(name, space.dimStructure(),
-                         rcp(new DiscreteFunctionData(space, vec))), 
+                         getRCP(new DiscreteFunctionData(space, vec))), 
     FuncWithBasis(space.basis()),
     data_()
 {
@@ -181,4 +181,8 @@ DiscreteFunction* DiscreteFunction::discFunc(Expr& expr)
 }
 
 
+RCP<DiscreteFuncDataStub> DiscreteFunction::getRCP(DiscreteFunctionData* ptr)
+{
+  return rcp_dynamic_cast<DiscreteFuncDataStub>(rcp(ptr));
+}
 

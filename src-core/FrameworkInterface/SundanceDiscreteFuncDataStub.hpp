@@ -36,34 +36,27 @@
 #include "SundanceCommonFuncDataStub.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  namespace Internal
-  {
-    /** 
-     * DiscreteFuncDataStub is a placeholder for data to be shared between
-     * multiple components of a discrete function. Such data
-     * is framework-dependent, and might be something like a basis function
-     * or a vector of values.
-     */
-    class DiscreteFuncDataStub : virtual public CommonFuncDataStub
-    {
-    public:
-      /** */
-      DiscreteFuncDataStub()
-        : CommonFuncDataStub() {;}
+/** 
+ * DiscreteFuncDataStub is a placeholder for data to be shared between
+ * multiple components of a discrete function. Such data
+ * is framework-dependent, and might be something like a basis function
+ * or a vector of values.
+ */
+class DiscreteFuncDataStub : virtual public CommonFuncDataStub
+{
+public:
+  /** */
+  DiscreteFuncDataStub()
+    : CommonFuncDataStub() {;}
 
-      /** */
-      virtual ~DiscreteFuncDataStub(){;}
+  /** */
+  virtual ~DiscreteFuncDataStub(){;}
 
-    private:
-    };
-  }
+private:
+};
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

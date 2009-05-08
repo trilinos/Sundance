@@ -42,61 +42,54 @@
 #include "SundanceNonlinearUnaryOpEvaluator.hpp"
 
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using std::string;
+using std::ostream;
 
-  namespace Internal
-  {
-    /**
-     *
-     */
-    class NonlinearUnaryOp : public UnaryExpr,
-                             public GenericEvaluatorFactory<NonlinearUnaryOp, NonlinearUnaryOpEvaluator>
-    {
-    public:
-      /** construct with an argument and the functor defining the operation */
-      NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg, 
-        const RefCountPtr<UnaryFunctor>& op);
+/**
+ *
+ */
+class NonlinearUnaryOp : public UnaryExpr,
+                         public GenericEvaluatorFactory<NonlinearUnaryOp, NonlinearUnaryOpEvaluator>
+{
+public:
+  /** construct with an argument and the functor defining the operation */
+  NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg, 
+    const RefCountPtr<UnaryFunctor>& op);
 
-      /** virtual destructor */
-      virtual ~NonlinearUnaryOp() {;}
+  /** virtual destructor */
+  virtual ~NonlinearUnaryOp() {;}
 
-      /** Write a simple text description suitable
-       * for output to a terminal */
-      virtual ostream& toText(ostream& os, bool paren) const ;
+  /** Write a simple text description suitable
+   * for output to a terminal */
+  virtual ostream& toText(ostream& os, bool paren) const ;
 
-      /** Write in a form suitable for LaTeX formatting */
-      virtual ostream& toLatex(ostream& os, bool paren) const ;
+  /** Write in a form suitable for LaTeX formatting */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
 
-      /** Write in XML */
-      virtual XMLObject toXML() const ;
+  /** Write in XML */
+  virtual XMLObject toXML() const ;
 
-      /** */
-      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
 
-      /** Access to the operator */
-      const UnaryFunctor* op() const {return op_.get();}
+  /** Access to the operator */
+  const UnaryFunctor* op() const {return op_.get();}
 
 
-      /** Ordering operator for use in transforming exprs to standard form */
-      virtual bool lessThan(const ScalarExpr* other) const ;
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
 
-    private:
+private:
       
-      RefCountPtr<UnaryFunctor> op_;
+  RefCountPtr<UnaryFunctor> op_;
 
-    };
-  }
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

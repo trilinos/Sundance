@@ -36,137 +36,134 @@
 #include "SundanceEvaluator.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  namespace Internal 
-  {
-    using namespace Teuchos;
-    /** */
-    class IndexPair 
-    {
-    public:
-      /** */
-      IndexPair(int argIndex, int valueIndex)
-        : argIndex_(argIndex), valueIndex_(valueIndex) {;}
+
+using namespace Teuchos;
+
+
+/** */
+class IndexPair 
+{
+public:
+  /** */
+  IndexPair(int argIndex, int valueIndex)
+    : argIndex_(argIndex), valueIndex_(valueIndex) {;}
       
-      /** */
-      int argIndex() const {return argIndex_;}
+  /** */
+  int argIndex() const {return argIndex_;}
       
-      /** */
-      int valueIndex() const {return valueIndex_;}
+  /** */
+  int valueIndex() const {return valueIndex_;}
       
-    private:
-      int argIndex_;
-      int valueIndex_;
-    };
+private:
+  int argIndex_;
+  int valueIndex_;
+};
 
-    /** */
-    class DerivProduct
-    {
-    public:
-      /** */
-      DerivProduct() : coeff_(1.0), constants_(), variables_() {}
-      /** */
-      DerivProduct(const double& coeff) : coeff_(coeff), constants_(), variables_() {}
+/** */
+class DerivProduct
+{
+public:
+  /** */
+  DerivProduct() : coeff_(1.0), constants_(), variables_() {}
+  /** */
+  DerivProduct(const double& coeff) : coeff_(coeff), constants_(), variables_() {}
 
-      /** */
-      void addConstantFactor(const IndexPair& p) {constants_.append(p);}
+  /** */
+  void addConstantFactor(const IndexPair& p) {constants_.append(p);}
 
-      /** */
-      void addVariableFactor(const IndexPair& p) {variables_.append(p);}
+  /** */
+  void addVariableFactor(const IndexPair& p) {variables_.append(p);}
 
-      /** */
-      bool isConstant() const {return numVariables()==0;}
+  /** */
+  bool isConstant() const {return numVariables()==0;}
 
-      /** */
-      int numConstants() const {return constants_.size();}
+  /** */
+  int numConstants() const {return constants_.size();}
 
-      /** */
-      int numVariables() const {return variables_.size();}
+  /** */
+  int numVariables() const {return variables_.size();}
 
-      /** */
-      const double& coeff() const {return coeff_;}
+  /** */
+  const double& coeff() const {return coeff_;}
 
-      /** */
-      const IndexPair& constant(int i) const {return constants_[i];}
+  /** */
+  const IndexPair& constant(int i) const {return constants_[i];}
 
-      /** */
-      const IndexPair& variable(int i) const {return variables_[i];}
+  /** */
+  const IndexPair& variable(int i) const {return variables_[i];}
         
-    private:
+private:
 
-      double coeff_;
+  double coeff_;
 
-      Array<IndexPair> constants_;
+  Array<IndexPair> constants_;
 
-      Array<IndexPair> variables_;
-    };
-
-
-    /** */
-    class ChainRuleSum : public TSFExtended::ObjectWithVerbosity<Evaluator>
-    {
-    public:
-      /** */
-      ChainRuleSum(const MultipleDeriv& md, 
-                   int resultIndex,
-                   bool resultIsConstant);
-
-      /** */
-      void addTerm(int argDerivIndex, 
-                   bool argDerivIsConstant,
-                   const Array<DerivProduct>& sum);
+  Array<IndexPair> variables_;
+};
 
 
-      /** */
-      void evalConstant(const EvalManager& mgr,
-                        const Array<RefCountPtr<Array<double> > >& constantArgResults,
-                        const Array<double>& constantArgDerivs,
-                        double& constResult) const ;
+/** */
+class ChainRuleSum : public TSFExtended::ObjectWithVerbosity<Evaluator>
+{
+public:
+  /** */
+  ChainRuleSum(const MultipleDeriv& md, 
+    int resultIndex,
+    bool resultIsConstant);
 
-      /** */
-      void evalVar(const EvalManager& mgr,
-                   const Array<RefCountPtr<Array<double> > >& constantArgResults,
-                   const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > > & vArgResults,
-                   const Array<double>& constantArgDerivs,
-                   const Array<RefCountPtr<EvalVector> >& varArgDerivs,
-                   RefCountPtr<EvalVector>& varResult) const ;
+  /** */
+  void addTerm(int argDerivIndex, 
+    bool argDerivIsConstant,
+    const Array<DerivProduct>& sum);
 
-      /** */
-      int resultIndex() const {return resultIndex_;}
 
-      /** */
-      bool resultIsConstant() const {return resultIsConstant_;}
+  /** */
+  void evalConstant(const EvalManager& mgr,
+    const Array<RefCountPtr<Array<double> > >& constantArgResults,
+    const Array<double>& constantArgDerivs,
+    double& constResult) const ;
 
-      /** */
-      int numTerms() const {return terms_.size();}
+  /** */
+  void evalVar(const EvalManager& mgr,
+    const Array<RefCountPtr<Array<double> > >& constantArgResults,
+    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > > & vArgResults,
+    const Array<double>& constantArgDerivs,
+    const Array<RefCountPtr<EvalVector> >& varArgDerivs,
+    RefCountPtr<EvalVector>& varResult) const ;
 
-      /** */
-      bool argDerivIsConstant(int i) const {return argDerivIsConstant_[i];}
+  /** */
+  int resultIndex() const {return resultIndex_;}
 
-      /** */
-      int argDerivIndex(int i) const {return argDerivIndex_[i];}
+  /** */
+  bool resultIsConstant() const {return resultIsConstant_;}
 
-      /** */
-      const Array<DerivProduct>& terms(int i) const {return terms_[i];}
+  /** */
+  int numTerms() const {return terms_.size();}
 
-      /** */
-      const MultipleDeriv& deriv() const {return md_;}
+  /** */
+  bool argDerivIsConstant(int i) const {return argDerivIsConstant_[i];}
 
-    private:
-      MultipleDeriv md_;
-      int resultIndex_;
-      bool resultIsConstant_;
+  /** */
+  int argDerivIndex(int i) const {return argDerivIndex_[i];}
 
-      Array<int> argDerivIndex_;
-      Array<int> argDerivIsConstant_;
-      Array<Array<DerivProduct> > terms_;
-    };
-  }
+  /** */
+  const Array<DerivProduct>& terms(int i) const {return terms_[i];}
+
+  /** */
+  const MultipleDeriv& deriv() const {return md_;}
+
+private:
+  MultipleDeriv md_;
+  int resultIndex_;
+  bool resultIsConstant_;
+
+  Array<int> argDerivIndex_;
+  Array<int> argDerivIsConstant_;
+  Array<Array<DerivProduct> > terms_;
+};
+
 }
                
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
 #endif

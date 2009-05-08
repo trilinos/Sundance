@@ -39,8 +39,6 @@
 #include "SundanceExprBase.hpp"
 #include "SundanceExpr.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
 
@@ -50,10 +48,9 @@ using namespace Teuchos;
 using std::string;
 using std::ostream;
 
-namespace Internal
-{
+
 /** */
-class ScalarExpr : public ExprBase
+class ScalarExpr : virtual public ExprBase
 {
 public:
   /** empty ctor */
@@ -112,7 +109,5 @@ public:
 protected:
 };
 }
-}
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

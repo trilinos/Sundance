@@ -42,7 +42,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -138,12 +138,9 @@ void DiscreteFuncElementEvaluator
                Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
   Tabs tabs;
-
-  if (verbosity() > VerbSilent)
-    {
-      Out::os() << tabs << "DiscreteFuncElementEvaluator::eval: expr=" << expr()->toString() 
-           << endl;
-    }
+  SUNDANCE_MSG1(mgr.verb(),
+    tabs << "DiscreteFuncElementEvaluator::eval: expr=" 
+    << expr()->toString());
 
   vectorResults.resize(mi_.size());
   for (unsigned int i=0; i<mi_.size(); i++)
@@ -158,12 +155,12 @@ void DiscreteFuncElementEvaluator
   mgr.evalDiscreteFuncElement(expr(), mi_, vectorResults);
   mgr.stack().setVecSize(vectorResults[0]->length());
   
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 2)
     {
       Out::os() << tabs << "results " << endl;
       this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }
-  SUNDANCE_VERB_LOW(tabs << "DiscreteFuncEvaluator::eval() done"); 
+  SUNDANCE_MSG1(mgr.verb(), tabs << "DiscreteFuncEvaluator::eval() done"); 
 }
 

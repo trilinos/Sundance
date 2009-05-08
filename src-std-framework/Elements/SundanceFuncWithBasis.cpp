@@ -40,7 +40,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
@@ -81,9 +81,7 @@ string describeFunction(const SundanceCore::Expr& f)
         << f[0]);
     }
 
-    string rtn = type + "[name=" + fe->name() + ", componentID=" 
-      + Teuchos::toString(fe->funcComponentID()) + ", tensorID="
-      + Teuchos::toString(fe->sharedFuncID()) + "]";
+    string rtn = type + "[name=" + fe->name() + ", fid=" + fe->fid().toString() + "]";
     return rtn;
       
   }

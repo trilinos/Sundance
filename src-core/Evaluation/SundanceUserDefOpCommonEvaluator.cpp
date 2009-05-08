@@ -40,7 +40,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -102,9 +102,9 @@ void UserDefOpCommonEvaluator
 {
   Tabs tab0;
   int numPoints = EvalManager::stack().vecSize();
-  SUNDANCE_VERB_HIGH(tab0 << "UDOpCommonEval::evalAllComponents()");
-  SUNDANCE_VERB_HIGH(tab0 << "num points = " << numPoints);
-  SUNDANCE_VERB_MEDIUM(tab0 << "max diff order = " << maxOrder_);
+  SUNDANCE_MSG3(mgr.verb(), tab0 << "UDOpCommonEval::evalAllComponents()");
+  SUNDANCE_MSG3(mgr.verb(), tab0 << "num points = " << numPoints);
+  SUNDANCE_MSG2(mgr.verb(), tab0 << "max diff order = " << maxOrder_);
 
   TEST_FOR_EXCEPTION(numPoints==0, InternalError,
                      "Empty vector detected in evalArgDerivs()"); 
@@ -132,9 +132,9 @@ void UserDefOpCommonEvaluator
           argVals[q] = (*(vArgVals[q]))[argValueIndex_[q]];
           argPtrs[q] = argVals[q]->start();
         }
-      SUNDANCE_VERB_HIGH(tab1 << "argument #" << q << " is:");
+      SUNDANCE_MSG3(mgr.verb(), tab1 << "argument #" << q << " is:");
       Tabs tab2;
-      SUNDANCE_VERB_HIGH(tab2 << argVals[q]->str());
+      SUNDANCE_MSG3(mgr.verb(), tab2 << argVals[q]->str());
     }
 
   /* Allocate vectors for the function values and derivatives */
@@ -163,7 +163,7 @@ void UserDefOpCommonEvaluator
       varArgDerivCache_[i][0]->resize(numPoints);
       varArgDerivCache_[i][0]->setString(functor_->name(i));
       int d0Pos = i;
-      SUNDANCE_VERB_HIGH("zeroth deriv of elem #" << i << " is at " << d0Pos);
+      SUNDANCE_MSG3(mgr.verb(), "zeroth deriv of elem #" << i << " is at " << d0Pos);
       resultVecs[d0Pos] = varArgDerivCache_[i][0]->start();
       if (maxOrder_ > 0)
         {
@@ -173,7 +173,7 @@ void UserDefOpCommonEvaluator
               varArgDerivCache_[i][j+1] = mgr.popVector();
               varArgDerivCache_[i][j+1]->resize(numPoints);
               int d1Pos = rangeDim + domainDim*i + j;
-              SUNDANCE_VERB_HIGH("first deriv (" << j << ") of elem #" << i 
+              SUNDANCE_MSG3(mgr.verb(), "first deriv (" << j << ") of elem #" << i 
                                  << " is at " << d1Pos);
               resultVecs[d1Pos] 
                 = varArgDerivCache_[i][j+1]->start();
@@ -196,7 +196,7 @@ void UserDefOpCommonEvaluator
                                                              + "}]");
                       int d2Pos = rangeDim + domainDim*rangeDim 
                         + i*numSecond + ptr;
-                      SUNDANCE_VERB_HIGH("second deriv (" << j << ", " << k << 
+                      SUNDANCE_MSG3(mgr.verb(), "second deriv (" << j << ", " << k << 
                                          ") of elem #" << i << " is at " << d2Pos);
                       resultVecs[d2Pos] 
                         = varArgDerivCache_[i][m+ptr]->start();

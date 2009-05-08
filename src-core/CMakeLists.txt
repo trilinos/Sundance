@@ -77,7 +77,6 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/InternalExprs)
 APPEND_SET(HEADERS
   InternalExprs/SundanceBinaryExpr.hpp
   InternalExprs/SundanceConstantExpr.hpp
-  InternalExprs/SundanceCoordDeriv.hpp
   InternalExprs/SundanceDerivOfSymbFunc.hpp
   InternalExprs/SundanceDiffOp.hpp
   InternalExprs/SundanceDiscreteFuncElement.hpp
@@ -86,7 +85,9 @@ APPEND_SET(HEADERS
   InternalExprs/SundanceExprBase.hpp
   InternalExprs/SundanceExprWithChildren.hpp
   InternalExprs/SundanceFuncElementBase.hpp
+  InternalExprs/SundanceFuncSetAccumulator.hpp
   InternalExprs/SundanceFunctionalPolynomial.hpp
+  InternalExprs/SundanceFunctionWithID.hpp
   InternalExprs/SundanceListExpr.hpp
   InternalExprs/SundanceNonlinearExpr.hpp
   InternalExprs/SundanceNonlinearUnaryOp.hpp
@@ -115,7 +116,6 @@ APPEND_SET(HEADERS
 APPEND_SET(SOURCES
   InternalExprs/SundanceBinaryExpr.cpp
   InternalExprs/SundanceConstantExpr.cpp
-  InternalExprs/SundanceCoordDeriv.cpp
   InternalExprs/SundanceDerivOfSymbFunc.cpp
   InternalExprs/SundanceDiffOp.cpp
   InternalExprs/SundanceDiscreteFuncElement.cpp
@@ -125,6 +125,7 @@ APPEND_SET(SOURCES
   InternalExprs/SundanceExprWithChildren.cpp
   InternalExprs/SundanceFuncElementBase.cpp
   InternalExprs/SundanceFunctionalPolynomial.cpp
+  InternalExprs/SundanceFunctionWithID.cpp
   InternalExprs/SundanceListExpr.cpp
   InternalExprs/SundanceNonlinearExpr.cpp
   InternalExprs/SundanceNonlinearUnaryOp.cpp
@@ -217,8 +218,8 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/FrameworkInterface)
 
 APPEND_SET(HEADERS
   FrameworkInterface/SundanceAbstractEvalMediator.hpp
+  FrameworkInterface/SundanceAlgebraSpecifier.hpp
   FrameworkInterface/SundanceCommonFuncDataStub.hpp
-  FrameworkInterface/SundanceDerivBase.hpp
   FrameworkInterface/SundanceDeriv.hpp
   FrameworkInterface/SundanceDerivSet.hpp
   FrameworkInterface/SundanceDiscreteFuncDataStub.hpp
@@ -226,13 +227,15 @@ APPEND_SET(HEADERS
   FrameworkInterface/SundanceEquationSet.hpp
   FrameworkInterface/SundanceEvalContext.hpp
   FrameworkInterface/SundanceEvalVector.hpp
-  FrameworkInterface/SundanceFunctionalDeriv.hpp
+  FrameworkInterface/SundanceFunctionIdentifier.hpp
   FrameworkInterface/SundanceFunctionSupportResolver.hpp
   FrameworkInterface/SundanceLoadableVector.hpp
   FrameworkInterface/SundanceMultiIndex.hpp
   FrameworkInterface/SundanceMultipleDeriv.hpp
   FrameworkInterface/SundanceQuadratureFamilyStub.hpp
   FrameworkInterface/SundanceRegionQuadCombo.hpp
+  FrameworkInterface/SundanceSpatialDerivSpecifier.hpp
+  FrameworkInterface/SundanceSymbolicFuncDescriptor.hpp
   FrameworkInterface/SundanceTestFuncDataStub.hpp
   FrameworkInterface/SundanceTestFunctionStub.hpp
   FrameworkInterface/SundanceUnknownFuncDataStub.hpp
@@ -241,19 +244,20 @@ APPEND_SET(HEADERS
 
 APPEND_SET(SOURCES
   FrameworkInterface/SundanceAbstractEvalMediator.cpp
-  FrameworkInterface/SundanceDerivBase.cpp
+  FrameworkInterface/SundanceAlgebraSpecifier.cpp
   FrameworkInterface/SundanceDeriv.cpp
   FrameworkInterface/SundanceDerivSet.cpp
   FrameworkInterface/SundanceDiscreteFunctionStub.cpp
   FrameworkInterface/SundanceEquationSet.cpp
   FrameworkInterface/SundanceEvalVector.cpp
-  FrameworkInterface/SundanceFunctionalDeriv.cpp
+  FrameworkInterface/SundanceFunctionIdentifier.cpp
   FrameworkInterface/SundanceFunctionSupportResolver.cpp
   FrameworkInterface/SundanceLoadableVector.cpp
   FrameworkInterface/SundanceMultiIndex.cpp
   FrameworkInterface/SundanceMultipleDeriv.cpp
   FrameworkInterface/SundanceQuadratureFamilyStub.cpp
   FrameworkInterface/SundanceRegionQuadCombo.cpp
+  FrameworkInterface/SundanceSpatialDerivSpecifier.cpp
   FrameworkInterface/SundanceTestFunctionStub.cpp
   FrameworkInterface/SundanceUnknownFunctionStub.cpp
   )

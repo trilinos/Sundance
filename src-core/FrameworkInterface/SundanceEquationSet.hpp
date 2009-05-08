@@ -38,17 +38,13 @@
 #include "SundanceEvalContext.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace Internal;
 using std::string;
 
-namespace Internal
-{
 class FunctionSupportResolver;
 class CommonFuncDataStub;
 
@@ -764,7 +760,5 @@ private:
 
 };
 }
-}
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

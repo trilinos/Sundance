@@ -38,56 +38,53 @@
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using std::string;
+using std::ostream;
 
-  /** 
-   * Derivative is an expression subtype representing 
-   * a first-order spatial partial derivative operator.
-   */
-  class Derivative : public Internal::ScalarExpr
-    {
-    public:
-      /** Construct an operator for spatial differentiation with respect to
-       * the given direction (0=x, 1=y, or 2=z).  */
-      Derivative(int direction);
+/** 
+ * Derivative is an expression subtype representing 
+ * a first-order spatial partial derivative operator.
+ */
+class Derivative : public ScalarExpr
+{
+public:
+  /** Construct an operator for spatial differentiation with respect to
+   * the given direction (0=x, 1=y, or 2=z).  */
+  Derivative(int direction);
 
-      /** virtual destructor */
-      virtual ~Derivative() {;}
+  /** virtual destructor */
+  virtual ~Derivative() {;}
 
-      /** */
-      virtual XMLObject toXML() const ;
+  /** */
+  virtual XMLObject toXML() const ;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
+  /** Indicate whether this expression is a "hungry"
+   * differential operator that is awaiting an argument. */
+  virtual bool isHungryDiffOp() const {return true;}
 
-      /** Indicate whether this expression is a "hungry"
-       * differential operator that is awaiting an argument. */
-      virtual bool isHungryDiffOp() const {return true;}
+  /** */
+  virtual ostream& toText(ostream& os, bool paren) const ;
 
-      /** */
-      virtual ostream& toText(ostream& os, bool paren) const ;
+  /** */
+  virtual ostream& toLatex(ostream& os, bool paren) const ;
 
-      /** */
-      virtual ostream& toLatex(ostream& os, bool paren) const ;
+  /** */
+  const MultiIndex& multiIndex() const {return m_;}
 
-      /** */
-      const Internal::MultiIndex& multiIndex() const {return m_;}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
-
-      /** Ordering operator for use in transforming exprs to standard form */
-      virtual bool lessThan(const ScalarExpr* other) const ;
+  /** Ordering operator for use in transforming exprs to standard form */
+  virtual bool lessThan(const ScalarExpr* other) const ;
 
 
-    private:
-      Internal::MultiIndex m_;
+private:
+  MultiIndex m_;
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-    };
+};
 }
 
 #endif

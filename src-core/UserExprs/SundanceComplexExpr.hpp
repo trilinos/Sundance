@@ -40,7 +40,7 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace Internal;
+
 
   using std::string;
   using std::ostream;
@@ -49,7 +49,7 @@ namespace SundanceCore
   /** 
    * Complex expression
    */
-  class ComplexExpr : public Internal::ExprBase
+  class ComplexExpr : public ExprBase
   {
   public:
     /** */
@@ -76,7 +76,7 @@ namespace SundanceCore
     {os << real() << "+i" << imag(); return os;}
 
     /** */
-    virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+    virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
   protected:
 

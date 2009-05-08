@@ -42,124 +42,110 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  class CoordExpr;
+class CoordExpr;
 
-  namespace Internal
-  {
-    class EvalContext;
-  }
+class EvalContext;
   
-  using namespace Internal;
-  using namespace TSFExtended;
+using namespace TSFExtended;
 
-  namespace Internal 
-  {
-    class EvalManager;
+class EvalManager;
 
-    /**
-     * Base class for evaluator objects. Each EvaluatableExpr type will 
-     * have an associated Evaluator subtype.
-     */
-    class Evaluator : public TSFExtended::ObjectWithVerbosity<Evaluator>
-    {
-    public:
-      /** */
-      Evaluator();
+/**
+ * Base class for evaluator objects. Each EvaluatableExpr type will 
+ * have an associated Evaluator subtype.
+ */
+class Evaluator : public TSFExtended::ObjectWithVerbosity<Evaluator>
+{
+public:
+  /** */
+  Evaluator();
 
-      /** */
-      virtual ~Evaluator(){;}
+  /** */
+  virtual ~Evaluator(){;}
 
-      /** 
-       * Client-level evaluation method. Computes new results on the
-       * first call, makes copies on subsequent calls up to the last client, 
-       * and finally returns the original result vector upon the 
-       * last client's call. 
-       */
-      void eval(const EvalManager& mgr,
-                Array<double>& constantResults,
-                Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+  /** 
+   * Client-level evaluation method. Computes new results on the
+   * first call, makes copies on subsequent calls up to the last client, 
+   * and finally returns the original result vector upon the 
+   * last client's call. 
+   */
+  void eval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
 
-      /** Reset the number of calls to zero. This should be called
-       * at the beginning of every new evaluation cycle. */
-      virtual void resetNumCalls() const {numCalls_=0;}
+  /** Reset the number of calls to zero. This should be called
+   * at the beginning of every new evaluation cycle. */
+  virtual void resetNumCalls() const {numCalls_=0;}
 
-      /** */
-      virtual void 
-      internalEval(const EvalManager& mgr,
-                   Array<double>& constantResults,
-                   Array<RefCountPtr<EvalVector> >& vectorResults) const = 0 ;
+  /** */
+  virtual void 
+  internalEval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const = 0 ;
 
-      /** Add one to the number of clients. */
-      void addClient() {numClients_++;}
+  /** Add one to the number of clients. */
+  void addClient() {numClients_++;}
 
-      /** */
-      void addConstantIndex(int index, int constantIndex);
+  /** */
+  void addConstantIndex(int index, int constantIndex);
 
-      /** */
-      void addVectorIndex(int index, int vectorIndex);
+  /** */
+  void addVectorIndex(int index, int vectorIndex);
 
       
 
-      /** */
-      const SundanceUtils::Map<int, int>& constantIndexMap() const 
-      {return constantIndexMap_;}
+  /** */
+  const SundanceUtils::Map<int, int>& constantIndexMap() const 
+    {return constantIndexMap_;}
 
-      /** */
-      const SundanceUtils::Map<int, int>& vectorIndexMap() const 
-      {return vectorIndexMap_;}
-    protected:
+  /** */
+  const SundanceUtils::Map<int, int>& vectorIndexMap() const 
+    {return vectorIndexMap_;}
+protected:
 
-      /** Return the number of clients that will require results
-       * from this evaluator */
-      int numClients() const {return numClients_;}
+  /** Return the number of clients that will require results
+   * from this evaluator */
+  int numClients() const {return numClients_;}
 
-      /** */
-      bool isOne(int x) const {return x==1;}
+  /** */
+  bool isOne(int x) const {return x==1;}
 
-      /** */
-      bool isOne(const double& x) const {return isZero(x-1.0);}
+  /** */
+  bool isOne(const double& x) const {return isZero(x-1.0);}
 
-      /** */
-      bool isZero(const double& x) const {return fabs(x-0.0)<1.0e-15;}
+  /** */
+  bool isZero(const double& x) const {return fabs(x-0.0)<1.0e-15;}
 
-      /** */
-      const Array<int>& constantIndices() const {return constantIndices_;}
+  /** */
+  const Array<int>& constantIndices() const {return constantIndices_;}
 
-      /** */
-      const Array<int>& vectorIndices() const {return vectorIndices_;}
+  /** */
+  const Array<int>& vectorIndices() const {return vectorIndices_;}
 
 
-    private:
-      int numClients_;
+private:
+  int numClients_;
 
-      mutable int numCalls_;
+  mutable int numCalls_;
 
-      mutable Array<RefCountPtr<EvalVector> > vectorResultCache_;
+  mutable Array<RefCountPtr<EvalVector> > vectorResultCache_;
 
-      mutable Array<double> constantResultCache_;
+  mutable Array<double> constantResultCache_;
 
-      SundanceUtils::Map<int, int> constantIndexMap_;
+  SundanceUtils::Map<int, int> constantIndexMap_;
 
-      SundanceUtils::Map<int, int> vectorIndexMap_;
+  SundanceUtils::Map<int, int> vectorIndexMap_;
 
-      Array<int> vectorIndices_;
+  Array<int> vectorIndices_;
 
-      Array<int> constantIndices_;
-    };
+  Array<int> constantIndices_;
+};
 
 
     
 
-  }
 }
-           
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
-
 
 #endif

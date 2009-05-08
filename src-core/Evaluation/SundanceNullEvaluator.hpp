@@ -34,34 +34,28 @@
 #include "SundanceDefs.hpp"
 #include "SundanceEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  namespace Internal 
-  {
-    /** 
-     * 
-     */
-    class NullEvaluator : public Evaluator
-    {
-    public:
-      /** */
-      NullEvaluator();
+/** 
+ * 
+ */
+class NullEvaluator : public Evaluator
+{
+public:
+  /** */
+  NullEvaluator();
 
-      /** */
-      virtual ~NullEvaluator(){;}
+  /** */
+  virtual ~NullEvaluator(){;}
 
-      /** */
-      virtual void internalEval(const EvalManager& mgr,
-                                Array<double>& constantResults,
-                                Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+  /** */
+  virtual void internalEval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
 
       
-    }; 
-  }
+}; 
 }
-               
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
+
 
 #endif

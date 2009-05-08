@@ -32,14 +32,14 @@
 #include "SundanceUserDefOpCommonEvaluator.hpp"
 #include "SundanceUserDefOpElement.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceUserDefOp.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 

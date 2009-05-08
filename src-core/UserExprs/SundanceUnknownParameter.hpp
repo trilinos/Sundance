@@ -31,42 +31,35 @@
 #ifndef SUNDANCE_UNKNOWNPARAMETER_H
 #define SUNDANCE_UNKNOWNPARAMETER_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceUnknownParameterElement.hpp"
 #include "SundanceSymbolicFunc.hpp"
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace Internal;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  namespace Internal
-  {
-    using std::string;
-    using std::ostream;
+using std::string;
+using std::ostream;
 
-    /** 
-     *
-     */
-    class UnknownParameter : public SymbolicFunc
-    {
-    public:
-      /** */
-      UnknownParameter(const string& name);
+/** 
+ *
+ */
+class UnknownParameter : public SymbolicFunc
+{
+public:
+  /** */
+  UnknownParameter(const string& name);
 
-      /** virtual destructor */
-      virtual ~UnknownParameter() {;}
+  /** virtual destructor */
+  virtual ~UnknownParameter() {;}
 
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
 
-    };
-  }
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

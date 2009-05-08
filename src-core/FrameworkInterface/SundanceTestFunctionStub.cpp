@@ -37,64 +37,85 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
 
 TestFunctionStub::TestFunctionStub(const string& name, 
-  const Array<int>& dims,
+  int tensorOrder,
+  int dim, 
   const RefCountPtr<const TestFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
+  : SymbolicFunc(makeFuncID(tensorOrder), 
+    rcp_dynamic_cast<const CommonFuncDataStub>(data)), data_(data)
 {
-  string funcSuffix;
-  int count = 0;
-  for (unsigned int f=0; f<dims.size(); f++)
+  FunctionIdentifier myFid = fid();
+  if (tensorOrder==0)
   {
-    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
-    int commonFuncID = nextCommonID();
-    for (int d=0; d<dims[f]; d++, count++)
+    append(new TestFuncElement(data, name, "", myFid));
+  }
+  else if (tensorOrder==1)
+  {
+    for (int d=0; d<dim; d++)
     {
-      string componentSuffix;
-      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
-      string suffix = funcSuffix + componentSuffix;
-      append(new TestFuncElement(data, name, suffix, commonFuncID, count));
+      string suffix="[" + Teuchos::toString(d) + "]";
+      FunctionIdentifier fid = myFid.createComponent(d);
+      append(new TestFuncElement(data, name, suffix, fid));
     }
+  }
+  else 
+  {
+    TEST_FOR_EXCEPTION(true, RuntimeError, "tensor order = " << tensorOrder
+      << " not supported");
   }
 }
 
-
-
 TestFunctionStub::TestFunctionStub(const string& name, 
-  const SpectralBasis& sbasis, const Array<int>& dims,
+  const SpectralBasis& sbasis, int tensorOrder, int dim,
   const RefCountPtr<const TestFuncDataStub>& data)
-  : SymbolicFunc(), data_(data)
+  :  SymbolicFunc(makeFuncID(tensorOrder), 
+    rcp_dynamic_cast<const CommonFuncDataStub>(data)), data_(data)
 {
-  string funcSuffix;
-  int count = 0;
-  for (unsigned int f=0; f<dims.size(); f++)
+  Array<FunctionIdentifier> cFid(sbasis.nterms());
+
+  for (int n=0; n<sbasis.nterms(); n++)
   {
-    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
-    Array<int> cfid(sbasis.nterms());
+    cFid[n] = makeFuncID(tensorOrder);
+  }
+  
+  if (tensorOrder==0 || dim==1)
+  {
+    Array<Expr> coeffs(sbasis.nterms());
     for (int n=0; n<sbasis.nterms(); n++)
     {
-      cfid[n] = nextCommonID();
+      string suffix="";
+      if (sbasis.nterms()>1) suffix = "[" + Teuchos::toString(n) + "]";
+      coeffs[n] = new TestFuncElement(data, name, suffix, cFid[n]);
     }
-    for (int d=0; d<dims[f]; d++)
+    append(new SpectralExpr(sbasis, coeffs));
+  }
+  else if (tensorOrder==1)
+  {
+    for (int d=0; d<dim; d++)
     {
-      string componentSuffix;
-      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
-
+      string suffix="[" + Teuchos::toString(d) + "]";
       Array<Expr> coeffs(sbasis.nterms());
-      for (int n=0; n<sbasis.nterms(); n++, count++)
+      for (int n=0; n<sbasis.nterms(); n++)
       {
-        if (sbasis.nterms()>1) componentSuffix = "[" + Teuchos::toString(n) + "]";
-      string suffix = funcSuffix + componentSuffix;
-        coeffs[n] = new TestFuncElement(data, name, suffix, cfid[n], count);
+        FunctionIdentifier fid = cFid[n].createComponent(d);
+        if (sbasis.nterms()>1) suffix += "[" + Teuchos::toString(n) + "]";
+        coeffs[n]= new TestFuncElement(data, name, suffix, fid);
       }
       append(new SpectralExpr(sbasis, coeffs));
     }
   }
+  else 
+  {
+    TEST_FOR_EXCEPTION(true, RuntimeError, "tensor order = " << tensorOrder
+      << " not supported");
+  }
 }
+
+
+
 

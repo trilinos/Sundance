@@ -30,26 +30,25 @@
 
 #include "SundanceUnknownParameterElement.hpp"
 
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceDerivSet.hpp"
 #include "SundanceTabs.hpp"
-#include "SundanceCoordDeriv.hpp"
+
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 UnknownParameterElement
 ::UnknownParameterElement(const string& name,
   const string& suffix,
-  int commonFuncID,
-  int myIndex)
+  const FunctionIdentifier& fid)
 	: UnknownFuncElement(rcp(new UnknownFuncDataStub()), name, 
-    suffix, commonFuncID, myIndex),
-    SpatiallyConstantExpr()
+  suffix, fid),
+  SpatiallyConstantExpr()
 {}
 
 
@@ -57,19 +56,21 @@ UnknownParameterElement
 Set<MultipleDeriv> 
 UnknownParameterElement::internalFindW(int order, const EvalContext& context) const
 {
+  int verb = context.setupVerbosity();
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "in UPE::internalFindW, order=" << order);
   Set<MultipleDeriv> rtn;
 
   if (order==0) 
-    {
-      if (!evalPtIsZero()) rtn.put(MultipleDeriv());
-    }
+  {
+    if (!evalPtIsZero()) rtn.put(MultipleDeriv());
+  }
   else if (order==1)
-    {
-      Deriv d = new FunctionalDeriv(this, MultiIndex());
-      MultipleDeriv md;
-      md.put(d);
-      rtn.put(md);
-    }
+  {
+    MultipleDeriv md = makeMultiDeriv(funcDeriv(this));
+    rtn.put(md);
+  }
 
   return rtn;
 }
@@ -79,6 +80,10 @@ UnknownParameterElement::internalFindW(int order, const EvalContext& context) co
 Set<MultipleDeriv> 
 UnknownParameterElement::internalFindV(int order, const EvalContext& context) const
 {
+  int verb = context.setupVerbosity();
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "UPE::internalFindV is a no-op");
   Set<MultipleDeriv> rtn;
 
   return rtn;
@@ -88,15 +93,17 @@ UnknownParameterElement::internalFindV(int order, const EvalContext& context) co
 Set<MultipleDeriv> 
 UnknownParameterElement::internalFindC(int order, const EvalContext& context) const
 {
+  int verb = context.setupVerbosity();
+  Tabs tab;
+  SUNDANCE_MSG2(context.setupVerbosity(), 
+    tab << "in UPE::internalFindC, order=" << order);
   Set<MultipleDeriv> rtn;
 
   if (order==1)
-    {
-      Deriv d = new FunctionalDeriv(this, MultiIndex());
-      MultipleDeriv md;
-      md.put(d);
-      rtn.put(md);
-    }
+  {
+    MultipleDeriv md = makeMultiDeriv(funcDeriv(this));
+    rtn.put(md);
+  }
   return rtn.intersection(UnknownFuncElement::findR(order, context));
 }
 
@@ -104,7 +111,7 @@ UnknownParameterElement::internalFindC(int order, const EvalContext& context) co
 
 Evaluator* UnknownParameterElement
 ::createEvaluator(const EvaluatableExpr* expr,
-                  const EvalContext& context) const 
+  const EvalContext& context) const 
 {
   return SymbolicFuncElement::createEvaluator(expr, context);
 }
@@ -114,7 +121,7 @@ const Parameter* UnknownParameterElement::parameterValue() const
 {
   const Parameter* p = dynamic_cast<const Parameter*>(evalPt());
   TEST_FOR_EXCEPTION(p==0, InternalError, 
-                     "UnknownParameter evalPt() is not a Parameter");
+    "UnknownParameter evalPt() is not a Parameter");
   return p;
 }
 
@@ -122,19 +129,31 @@ Parameter* UnknownParameterElement::parameterValue()
 {
   Parameter* p = dynamic_cast<Parameter*>(evalPt());
   TEST_FOR_EXCEPTION(p==0, InternalError, 
-                     "UnknownParameter evalPt() is not a Parameter");
+    "UnknownParameter evalPt() is not a Parameter");
   return p;
 }
 
 
+bool UnknownParameterElement::lessThan(const ScalarExpr* other) const
+{
+  const UnknownParameterElement* p 
+    = dynamic_cast<const UnknownParameterElement*>(other);
+  TEST_FOR_EXCEPT(p==0);
+
+  if (name() < p->name()) return true;
+
+  TEST_FOR_EXCEPTION(name()==p->name() && this == p, RuntimeError,
+    "detected two different parameters with the same name");
+  return false;
+}
 
 
 
 
 XMLObject UnknownParameterElement::toXML() const 
 {
-	XMLObject rtn("UnknownParameterElement");
-	rtn.addAttribute("name", name());
-	return rtn;
+  XMLObject rtn("UnknownParameterElement");
+  rtn.addAttribute("name", name());
+  return rtn;
 }
 

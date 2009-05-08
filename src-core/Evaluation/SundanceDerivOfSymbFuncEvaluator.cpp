@@ -31,7 +31,7 @@
 #include "SundanceDerivOfSymbFuncEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceDerivOfSymbFunc.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceUnknownFuncElement.hpp"
@@ -42,7 +42,7 @@
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -60,10 +60,11 @@ DerivOfSymbFuncEvaluator
     funcSparsitySuperset_()
 {
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "initializing DerivOfSymbFunc evaluator for " 
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG1(verb, tabs << "initializing DerivOfSymbFunc evaluator for " 
                     << expr->toString());
 
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << endl << *(this->sparsity)());
+  SUNDANCE_MSG2(verb, tabs << "return sparsity " << endl << *(this->sparsity)());
 
   const MultiIndex& mi = expr->mi();
   const SymbolicFuncElement* sf 
@@ -108,7 +109,7 @@ DerivOfSymbFuncEvaluator
     }
   else
     {
-      SUNDANCE_VERB_MEDIUM(tabs << "setting up evaluation for discrete eval pt");
+      SUNDANCE_MSG2(verb, tabs << "setting up evaluation for discrete eval pt");
       u->setupEval(context);
     }
   
@@ -166,18 +167,18 @@ DerivOfSymbFuncEvaluator
 
 
 void DerivOfSymbFuncEvaluator::internalEval(const EvalManager& mgr,
-                                            Array<double>& constantResults,
-                                            Array<RefCountPtr<EvalVector> >& vectorResults)  const
+  Array<double>& constantResults,
+  Array<RefCountPtr<EvalVector> >& vectorResults)  const
 {
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "DerivOfSymbFuncEvaluator::eval() expr=" 
-                    << expr()->toString());
+  SUNDANCE_MSG1(mgr.verb(), tabs << "DerivOfSymbFuncEvaluator::eval() expr=" 
+    << expr()->toString());
 
   /* if the function is a test or zero func, we can take a quick way out */
   if (evalPtIsZero_)
     {
       Tabs tabs1;
-      SUNDANCE_VERB_MEDIUM(tabs1 << "taking zero function shortcut");
+      SUNDANCE_MSG2(mgr.verb(), tabs1 << "taking zero function shortcut");
       constantResults.resize(1);
       constantResults[0] = 1.0;
       return;
@@ -190,14 +191,17 @@ void DerivOfSymbFuncEvaluator::internalEval(const EvalManager& mgr,
     }
   if (funcMiIndex_ >= 0)
     {
+      Tabs tabs1;
+      SUNDANCE_MSG2(mgr.verb(), tabs1 << "evaluating argument");
       /* evaluate the argument */
       Array<RefCountPtr<EvalVector> > funcVectorResults;
       Array<double> funcConstantResults;
       
-      funcEvaluator_[0]->eval(mgr, funcConstantResults, funcVectorResults);
-      if (verbosity() > VerbLow)
+      funcEvaluator_[0]->eval(mgr, 
+        funcConstantResults, funcVectorResults);
+      if (mgr.verb() > 2)
         {
-          Out::os() << tabs << "DerivOfSymbFunc results" << endl;
+          Out::os() << tabs1 << "DerivOfSymbFunc results" << endl;
           funcSparsitySuperset_->print(Out::os(), funcVectorResults,
                                        funcConstantResults);
         }

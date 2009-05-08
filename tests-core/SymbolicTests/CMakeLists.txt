@@ -6,9 +6,11 @@ INCLUDE(AddTestBatch)
 # deactivated:       SensitivityTest 
 
 SET(Tests 
-        SetTest 
+        DerivSpecTest
+        PreprocTest
         ChainRule 
         SimpleEval 
+        TestEval 
         PolynomialTest          
         StdTransformation 
         VariationTest 
@@ -16,7 +18,8 @@ SET(Tests
 )
     
 ADD_TEST_BATCH(Tests 
-        COMM serial
+        COMM serial mpi
+        NUM_MPI_PROCS 1
         )
 
 

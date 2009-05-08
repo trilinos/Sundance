@@ -28,16 +28,44 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#include "SundanceDerivBase.hpp"
+#ifndef SUNDANCE_ENUMTYPEFIELD_HPP
+#define SUNDANCE_ENUMTYPEFIELD_HPP
 
- 
+#include "SundanceDefs.hpp"
+#include "SundanceExceptions.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+namespace SundanceUtils
+{
 
-using namespace SundanceCore::Internal;
-using namespace Teuchos;
+template <typename T> class EnumTypeField
+{
+public:
+  /** */
+  EnumTypeField(const T& type) : type_(type) {}
 
-DerivBase::DerivBase()
-{;}
+  /** */
+  void assertType(const T& reqType) const 
+    {
+      TEST_FOR_EXCEPTION(reqType != type(), RuntimeError, 
+        "expected type=" << reqType << ", found type=" << type());
+    }
 
+  /** */
+  void assertNotType(const T& tabooType) const 
+    {
+      TEST_FOR_EXCEPTION(tabooType == type(), RuntimeError, 
+        "type=" << tabooType << " is unexpected in this context");
+    }
+
+  /** */
+  const T& type() const {return type_;}
+
+  /** */
+  bool isType(const T& t) const {return type_==t;}
+private:
+  T type_;
+};
+
+}
+
+#endif

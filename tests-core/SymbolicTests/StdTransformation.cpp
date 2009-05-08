@@ -11,7 +11,6 @@
 
 using namespace SundanceUtils;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 bool checkStringForms(const Expr& e1, const Expr& e2)

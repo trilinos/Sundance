@@ -35,38 +35,31 @@
 #include "SundanceDiscreteFuncDataStub.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  namespace Internal
-    {
-      /** */
-      class SpatiallyConstantExpr : public virtual EvaluatableExpr,
-                                    public virtual GenericEvaluatorFactory<SpatiallyConstantExpr, ConstantEvaluator>
+using namespace SundanceUtils;
+/** */
+class SpatiallyConstantExpr : public virtual EvaluatableExpr,
+                              public virtual GenericEvaluatorFactory<SpatiallyConstantExpr, ConstantEvaluator>
         
-        {
-        public:
-          /** */
-          SpatiallyConstantExpr() ;
+{
+public:
+  /** */
+  SpatiallyConstantExpr() ;
 
-          /** */
-          virtual ~SpatiallyConstantExpr(){;}
+  /** */
+  virtual ~SpatiallyConstantExpr(){;}
 
-          /** */
-          virtual const double& value() const = 0;
+  /** */
+  virtual const double& value() const = 0;
 
-          /** */
-          virtual void setValue(const double& value) = 0 ;
+  /** */
+  virtual void setValue(const double& value) = 0 ;
 
-          /** */
-          bool isConstant() const {return true;}
-        private:
-        };
-    }
+  /** */
+  bool isConstant() const {return true;}
+private:
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

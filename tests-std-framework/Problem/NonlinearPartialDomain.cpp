@@ -81,6 +81,7 @@ int main(int argc, char** argv)
       CellFilter A = interior.subset(new ATest());
       CellFilter B = interior.subset(new BTest());
       CellFilter C = interior.subset(new CTest());
+      CellFilter D = right;
 
       Expr u1 = new UnknownFunction(new Lagrange(1));
       Expr u2 = new UnknownFunction(new Lagrange(1));
@@ -134,6 +135,10 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, err);
       double errorSq = errInt.evaluate();
       cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+
+      Expr err2 = Integral(D, pow(dx*(u0[0] - x), 2.0), quad);
+      FunctionalEvaluator err2Int(mesh, err);
+      double error2Sq = err2Int.evaluate();
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("PartialDomain2d");

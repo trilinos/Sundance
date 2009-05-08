@@ -46,7 +46,7 @@ namespace SundanceTesting
 {
   using namespace SundanceUtils;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
   using SundanceUtils::Map;
   /**
    *

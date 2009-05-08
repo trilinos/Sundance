@@ -33,7 +33,7 @@ class CPredicate :
 
 class DPredicate :
   def evalOp(self, x, y) :
-    return math.fabs(x-1.0) < 1.0e-10
+    return math.fabs(x-0.4) < 1.0e-10
 
 from noxSolver import solverParams
 

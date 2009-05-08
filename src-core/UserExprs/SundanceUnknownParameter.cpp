@@ -35,14 +35,14 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
 
 UnknownParameter::UnknownParameter(const string& name)
-	: SymbolicFunc()
+	: SymbolicFunc(makeFuncID(0), rcp(new UnknownFuncDataStub()))
 {
-  append(new UnknownParameterElement(name, "", SymbolicFunc::nextCommonID(), 0));
+  append(new UnknownParameterElement(name, "", fid()));
 }

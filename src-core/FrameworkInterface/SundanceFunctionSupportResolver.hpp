@@ -41,8 +41,6 @@
 
 namespace SundanceCore
 {
-namespace Internal
-{
 
 class SumOfIntegrals;
 class SumOfBCs;
@@ -401,7 +399,6 @@ private:
 /** */
 RefCountPtr<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f);
 
-}
 }
  
 #endif

@@ -31,13 +31,13 @@
 #include "SundanceUnaryMinusEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
 #include "SundanceUnaryMinus.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -85,20 +85,16 @@ void UnaryMinusEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const
 {
-  //  TimeMonitor timer(evalTimer());
   Tabs tab;
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
-               tab << "UnaryMinusEvaluator::eval() expr=" << expr()->toString());
+  SUNDANCE_MSG1(mgr.verb(),
+    tab << "UnaryMinusEvaluator::eval() expr=" << expr()->toString());
 
 
   /* evaluate the argument */
-  Array<RefCountPtr<EvalVector> > argVectorResults;
-  Array<double> argConstantResults;
-
   evalOperand(mgr, constantResults, vectorResults);
 
 
-  if (verbosity() > VerbLow)
+  if (mgr.verb() > 2)
     {
       Out::os() << tab << "UnaryMinus operand results" << std::endl;
       argSparsitySuperset()->print(Out::os(), vectorResults,
@@ -116,6 +112,13 @@ void UnaryMinusEvaluator
     }
 
   
+  if (mgr.verb() > 1)
+    {
+      Out::os() << tab << "UnaryMinus results" << std::endl;
+      sparsity()->print(Out::os(), vectorResults,
+                           constantResults);
+    }
+
   
 }
 

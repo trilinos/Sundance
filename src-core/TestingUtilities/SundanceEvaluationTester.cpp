@@ -39,8 +39,8 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceMultiIndex.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceTesting;
@@ -86,7 +86,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     = dynamic_cast<const UnknownFuncElement*>(e[0].ptr().get());
   if (ue!=0)
   {
-    unkID->put(ue->funcComponentID());
+    unkID->put(ue->fid().dofID());
     unks.append(e[0]);
   }
   else
@@ -130,7 +130,8 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     TEST_FOR_EXCEPTION(fe==0, InternalError,
       "unk " << unks[i] << " is not an UnknownFunction");
 
-    RCP<const UnknownFuncDataStub> data = fe->commonData();
+    RCP<const UnknownFuncDataStub> data 
+      = rcp_dynamic_cast<const UnknownFuncDataStub>(fe->commonData());
 
     RCP<const TestUnknownFuncData> tufd  
       = rcp_dynamic_cast<const TestUnknownFuncData>(data);
@@ -150,7 +151,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
       << " disc=" << discFunc);
 
     uDisc.append(discFunc);
-    unkIDToDiscreteIDMap_.put(fe->funcComponentID(), df->funcComponentID());
+    unkIDToDiscreteIDMap_.put(fe->fid().dofID(), df->fid().dofID());
     if (tufd->coeffIsZero())
     {
       Expr Z = new ZeroExpr();
@@ -209,7 +210,9 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
       context_);
   }
 
+  Out::os() << tabs << "sparsity pattern: " << endl;
   sparsity_ = ev_->sparsitySuperset(context_);
+  sparsity_->print(Out::os());
 
 }
 
@@ -279,8 +282,7 @@ double EvaluationTester::evaluate() const
       TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
-      const FunctionalDeriv* f = d.funcDeriv();
-      int uid = f->funcComponentID();
+      int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
       TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
         InternalError,
@@ -289,7 +291,7 @@ double EvaluationTester::evaluate() const
       int fid = unkIDToDiscreteIDMap_.get(uid);
       int m = tem_->funcIdToFieldNumberMap().get(fid);
       fieldIndex.append(m);
-      mi.append(f->multiIndex());
+      mi.append(d.opOnFunc().mi());
     }
 
     SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
@@ -384,8 +386,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
       TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
-      const FunctionalDeriv* f = d.funcDeriv();
-      int uid = f->funcComponentID();
+      int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
       TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
         InternalError,
@@ -394,7 +395,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
       int fid = unkIDToDiscreteIDMap_.get(uid);
       int m = tem_->funcIdToFieldNumberMap().get(fid);
       fieldIndex.append(m);
-      mi.append(f->multiIndex());
+      mi.append(d.opOnFunc().mi());
     }
 
     SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex
@@ -504,8 +505,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
       TEST_FOR_EXCEPTION(d.isCoordDeriv(), InternalError,
         "coordinate deriv found in TestEvalMediator::"
         "sumFunctionalChainRule");
-      const FunctionalDeriv* f = d.funcDeriv();
-      int uid = f->funcComponentID();
+      int uid = d.fid().dofID();
       SUNDANCE_VERB_EXTREME("deriv=" << d << " uid=" << uid);
       TEST_FOR_EXCEPTION(!unkIDToDiscreteIDMap_.containsKey(uid),
         InternalError,
@@ -514,7 +514,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
       int fid = unkIDToDiscreteIDMap_.get(uid);
       int m = tem_->funcIdToFieldNumberMap().get(fid);
       fieldIndex.append(m);
-      mi.append(f->multiIndex());
+      mi.append(d.opOnFunc().mi());
     }
 
     SUNDANCE_VERB_MEDIUM("field indices are " << fieldIndex

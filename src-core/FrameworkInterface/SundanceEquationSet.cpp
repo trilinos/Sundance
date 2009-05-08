@@ -35,7 +35,6 @@
 #include "SundanceSpectralExpr.hpp"
 #include "SundanceUnknownParameterElement.hpp"
 #include "SundanceTestFuncElement.hpp"
-#include "SundanceFunctionalDeriv.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceIntegral.hpp"
 #include "SundanceListExpr.hpp"
@@ -50,7 +49,6 @@
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
 using namespace Teuchos;
 
 EquationSet::EquationSet(const Expr& eqns, 
@@ -379,8 +377,8 @@ void EquationSet::init(
     int rqcVerb = verb;
     if (rqc.watch().isActive()) 
     {
-      rqcVerb=5;
-      SUNDANCE_MSG1(verb, tab15 << "processing RQC = " << rqc);
+      rqcVerb=rqc.watch().setupVerb();
+      SUNDANCE_MSG1(rqcVerb, tab15 << "processing RQC = " << rqc);
     }
 
 
@@ -397,6 +395,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing matrix/vector calculation");
       Tabs tab3; 
       EvalContext context(rqc, 2, contextID[0]);
+      context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       
       if (isVariationalProblem_)
@@ -450,6 +449,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing vector-only calculation");
       Tabs tab3; 
       EvalContext context(rqc, 1, contextID[1]);
+      context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       if (isVariationalProblem_)
       {
@@ -497,6 +497,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing sensitivity calculation");
       Tabs tab3;
       EvalContext context(rqc, 2, contextID[4]);
+      context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
         ::setupSensitivities(term, toList(vars), 
@@ -529,6 +530,7 @@ void EquationSet::init(
 
       int maxOrder = 0;
       EvalContext context(rqc, maxOrder, contextID[2]);
+      context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       Expr fields;
       Expr fieldValues;
@@ -595,6 +597,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing functional/gradient calculation");
       Tabs tab3;
       EvalContext context(rqc, 1, contextID[3]);
+      context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
         ::setupGradient(term, 
@@ -630,7 +633,7 @@ void EquationSet::init(
       int rqcVerb = verb;
       if (rqc.watch().isActive()) 
       {
-        rqcVerb=5;
+        rqcVerb=rqc.watch().setupVerb();
         SUNDANCE_MSG1(verb, tab15 << "processing RQC = " << rqc);
       }
 
@@ -648,6 +651,7 @@ void EquationSet::init(
       {
         Tabs tab3;
         EvalContext context(rqc, 2, contextID[0]);
+        context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
               
         if (isVariationalProblem_)
@@ -702,6 +706,7 @@ void EquationSet::init(
       {
         Tabs tab3;
         EvalContext context(rqc, 1, contextID[1]);
+        context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         if (isVariationalProblem_)
         {
@@ -753,6 +758,7 @@ void EquationSet::init(
       {
         Tabs tab3;
         EvalContext context(rqc, 2, contextID[4]);
+        context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
           ::setupSensitivities(term, toList(vars), toList(unks), 
@@ -786,6 +792,7 @@ void EquationSet::init(
       {
         Tabs tab3;
         EvalContext context(rqc, 0, contextID[2]);
+        context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         Expr fields;
         Expr fieldValues;
@@ -853,6 +860,7 @@ void EquationSet::init(
       {
         Tabs tab3;
         EvalContext context(rqc, 1, contextID[3]);
+        context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
           ::setupGradient(term, 
@@ -930,35 +938,35 @@ void EquationSet
     const MultipleDeriv& md = *i;
     if (md.order() != 2) continue;
       
-    Array<const FunctionalDeriv*> f;
+    Array<Deriv> f;
     for (MultipleDeriv::const_iterator j=md.begin(); j != md.end(); j++)
     {
       const Deriv& d = *j;
-      const FunctionalDeriv* fd = d.funcDeriv();
-      TEST_FOR_EXCEPTION(fd==0, InternalError, "non-functional deriv "
+      TEST_FOR_EXCEPTION(!d.isFunctionalDeriv(), 
+        InternalError, "non-functional deriv "
         << d << " detected in EquationSet::"
         "addToVarUnkPairs()");
-      f.append(fd);
+      f.append(d);
     }
 
-    SUNDANCE_MSG2(verb, tab1 << "f1=" << f[0]->sharedFuncID()
-      << ", f2=" << f[1]->sharedFuncID() << ", vars=" << vars 
+    SUNDANCE_MSG2(verb, tab1 << "f1=" << f[0].dofID()
+      << ", f2=" << f[1].dofID() << ", vars=" << vars 
       << ", unks=" << unks);
     
     bool gotIt=false;
-    if (unks.contains(f[0]->sharedFuncID())
-      && vars.contains(f[1]->sharedFuncID()))
+    if (unks.contains(f[0].dofID())
+      && vars.contains(f[1].dofID()))
     {
-      int unkID = f[0]->sharedFuncID();
-      int varID = f[1]->sharedFuncID();
+      int unkID = f[0].dofID();
+      int varID = f[1].dofID();
       funcPairs->put(OrderedPair<int, int>(varID, unkID));
       gotIt=true;
     }
-    if (unks.contains(f[1]->sharedFuncID())
-      && vars.contains(f[0]->sharedFuncID()))
+    if (unks.contains(f[1].dofID())
+      && vars.contains(f[0].dofID()))
     {
-      int unkID = f[1]->sharedFuncID();
-      int varID = f[0]->sharedFuncID();
+      int unkID = f[1].dofID();
+      int varID = f[0].dofID();
       funcPairs->put(OrderedPair<int, int>(varID, unkID));
       gotIt=true;
     }

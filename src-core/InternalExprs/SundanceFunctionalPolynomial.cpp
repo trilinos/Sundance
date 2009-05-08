@@ -37,12 +37,12 @@
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceDerivOfSymbFunc.hpp"
 #include "SundanceUnaryExpr.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -64,19 +64,14 @@ FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
     = dynamic_cast<const SymbolicFuncElement*>(expr.get());
   if (s != 0)
     {
-      funcID = s->funcComponentID();
       mi = MultiIndex();
-      const FuncElementBase* f 
-        = dynamic_cast<const SymbolicFuncElement*>(s);
-      deriv = new FunctionalDeriv(f, mi);
+      deriv = funcDeriv(s);
     }
   
   const DerivOfSymbFunc* d
     = dynamic_cast<const DerivOfSymbFunc*>(expr.get());
   if (d != 0)
     {
-      funcID = d->funcComponentID();
-      mi = d->mi();
       deriv = d->representMeAsFunctionalDeriv();
     }
 

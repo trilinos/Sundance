@@ -36,33 +36,26 @@
 #include "SundanceCommonFuncDataStub.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  namespace Internal
-  {
-    /** 
-     * TestFuncDataStub is a placeholder for data to be shared between
-     * multiple components of a test function. Such data
-     * is framework-dependent, and might be something like a basis function.
-     */
-    class TestFuncDataStub : public CommonFuncDataStub
-    {
-    public:
-      /** */
-      TestFuncDataStub()
-        : CommonFuncDataStub() {;}
+/** 
+ * TestFuncDataStub is a placeholder for data to be shared between
+ * multiple components of a test function. Such data
+ * is framework-dependent, and might be something like a basis function.
+ */
+class TestFuncDataStub : public CommonFuncDataStub
+{
+public:
+  /** */
+  TestFuncDataStub()
+    : CommonFuncDataStub() {;}
 
-      /** */
-      virtual ~TestFuncDataStub(){;}
+  /** */
+  virtual ~TestFuncDataStub(){;}
 
-    private:
-    };
-  }
+private:
+};
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

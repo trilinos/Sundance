@@ -41,7 +41,7 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceCoordExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceEvalManager.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceExpr.hpp"
@@ -56,7 +56,7 @@ namespace SundanceTesting
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
 
   /** 
    *

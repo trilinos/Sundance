@@ -29,71 +29,315 @@
 /* @HEADER@ */
 
 #include "SundanceDeriv.hpp"
-#include "SundanceFunctionalDeriv.hpp"
-#include "SundanceCoordDeriv.hpp"
+
+
 #include "SundanceExceptions.hpp"
 #include "SundanceUnknownFuncElement.hpp"
+#include "SundanceSymbolicFuncElement.hpp"
+#include "SundanceSymbolicFunc.hpp"
+#include "SundanceCommonFuncDataStub.hpp"
 #include "SundanceTestFuncElement.hpp"
  
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
+
+Deriv::Deriv()
+  : EnumTypeField<DerivType>(NullDT), myAlgSpec_(ScalarAT), fid_(), sds_(), 
+    symbFuncElem_(0), symbFunc_(0), coordDerivDir_(-1)
+{}
+
+Deriv::Deriv(int coordDerivDir)
+  : EnumTypeField<DerivType>(CoordDT), myAlgSpec_(coordDerivDir),
+    fid_(FunctionIdentifier()), sds_(), 
+    symbFuncElem_(0), symbFunc_(0), coordDerivDir_(coordDerivDir)
+{}
+
+
+Deriv::Deriv(
+  const SymbolicFuncElement* func,
+  const SpatialDerivSpecifier& d
+  )
+  : EnumTypeField<DerivType>(FunctionalDT), myAlgSpec_(),
+    fid_(), sds_(d),
+    symbFuncElem_(func),
+    symbFunc_(0), coordDerivDir_(-1)
+{
+  TEST_FOR_EXCEPTION(func==0, InternalError, 
+    "null function given to Deriv ctor");
+  fid_ = func->fid();
+  myAlgSpec_ = derivAlgSpec(fid_.algSpec(), d);
+
+  checkConsistencyOfOperations();
+}
+
+Deriv::Deriv( 
+  const SymbolicFunc* func,
+  const SpatialDerivSpecifier& d
+  )
+  : EnumTypeField<DerivType>(FunctionalDT), myAlgSpec_(),
+    fid_(), sds_(d),
+    symbFuncElem_(0), symbFunc_(func), coordDerivDir_(-1)
+{
+  TEST_FOR_EXCEPTION(func==0, InternalError, 
+    "null function given to Deriv ctor");
+  fid_ = func->fid();
+  myAlgSpec_ = derivAlgSpec(fid_.algSpec(), d);
+
+  checkConsistencyOfOperations();
+}
+
+void Deriv::checkConsistencyOfOperations() const 
+{
+  TEST_FOR_EXCEPT(sds_.isDivergence() && !fid_.isVector());
+  TEST_FOR_EXCEPT(sds_.isPartial() && fid_.isVector());
+  TEST_FOR_EXCEPT(sds_.isNormal() && fid_.isVector());
+}
 
 
 bool Deriv::operator<(const Deriv& other) const 
 {
-  return ptr()->lessThan(other);
+  if (type() < other.type()) return true;
+  if (type() > other.type()) return false;
+
+  if (type() == CoordDT)
+  {
+    return coordDerivDir() < other.coordDerivDir();
+  }
+  else 
+  {
+    OrderedPair<FunctionIdentifier, SpatialDerivSpecifier> me(fid(),sds_);
+    OrderedPair<FunctionIdentifier, SpatialDerivSpecifier> you(other.fid(),other.sds_);
+    return me < you;
+  }
 }
+
 
 bool Deriv::operator==(const Deriv& other) const
 {
-  if (*this < other || other < *this) return false;
-  return true;
+  return !(*this < other || other < *this);
 }
 
-
-string Deriv::toString() const 
+std::string Deriv::toString(bool verb) const 
 {
-  return ptr()->toString();
+  static Array<string> coords = tuple<string>("x", "y", "z");
+  switch(type())
+  {
+    case CoordDT:
+      return coords[coordDerivDir()];
+    case FunctionalDT:
+    {
+      string f;
+      if (symbFunc_!=0) f = symbFunc_->toString();
+      else if (symbFuncElem_!=0) f = symbFuncElem_->toString();
+      else TEST_FOR_EXCEPT(true);
+
+      if (opOnFunc().isPartial() && opOnFunc().derivOrder()>0)
+      {
+        return "D[" + f + ", " 
+          + coords[opOnFunc().mi().firstOrderDirection()] + "]";
+      }
+      else if (opOnFunc().isDivergence())
+      {
+        return "div(" + f + ")";
+      }
+      else if (opOnFunc().isNormal() && opOnFunc().derivOrder()>0)
+      {
+        return "D[" + f + ", normal]";
+      }
+      else if (opOnFunc().isIdentity()) 
+      {
+        return f;
+      }
+      else TEST_FOR_EXCEPT(1);
+    }
+    case NullDT:
+      return "NullDeriv()";
+    default:
+      TEST_FOR_EXCEPT(1);
+      return "NullDeriv";
+  }
 }
 
-const FunctionalDeriv* Deriv::funcDeriv() const 
+const SymbolicFuncDescriptor* Deriv::sfdPtr() const 
 {
-  return dynamic_cast<FunctionalDeriv*>(ptr().get());
-}
-
-const CoordDeriv* Deriv::coordDeriv() const 
-{
-  return dynamic_cast<CoordDeriv*>(ptr().get());
+  assertType(FunctionalDT);
+  /* at this point, exactly one of the two function pointers should be
+   * nonzero */
+  TEST_FOR_EXCEPT(symbFuncElem_ == 0 && symbFunc_==0);
+  TEST_FOR_EXCEPT(symbFuncElem_ != 0 && symbFunc_!=0);
+  
+  /* return the nonzero pointer */
+  if (symbFuncElem_) return symbFuncElem_;
+  if (symbFunc_) return symbFunc_;
 }
 
 bool Deriv::isTestFunction() const 
 {
-  if (!isFunctionalDeriv()) return false;
-
-  const FunctionalDeriv* f = funcDeriv();
-
-  TEST_FOR_EXCEPTION(f==0, RuntimeError,
-                     "contents not a functional derivative in Deriv::isTestFunction()");
-
-  const TestFuncElement* t 
-        = dynamic_cast<const TestFuncElement*>(f->func());
-  return t != 0;
+  if( isFunctionalDeriv() )
+  {
+    return sfdPtr()->isTestFunction();
+  }
+  return false;
 }
 
 bool Deriv::isUnknownFunction() const 
 {
-  if (!isFunctionalDeriv()) return false;
-
-  const FunctionalDeriv* f = funcDeriv();
-
-  TEST_FOR_EXCEPTION(f==0, RuntimeError,
-                     "contents not a functional derivative in Deriv::isTestFunction()");
-
-  const UnknownFuncElement* u 
-        = dynamic_cast<const UnknownFuncElement*>(f->func());
-  return u != 0;
+  if( isFunctionalDeriv() )
+  {
+    return sfdPtr()->isUnknownFunction();
+  }
+  return false;
 }
+
+int Deriv::dofID() const 
+{
+  assertType(FunctionalDT);
+  return fid_.dofID();
+}
+
+const AlgebraSpecifier& Deriv::funcAlgSpec() const 
+{
+  assertType(FunctionalDT);
+  return fid_.algSpec();
+}
+
+bool Deriv::canBeDifferentiated() const 
+{
+  assertType(FunctionalDT);
+  return opOnFunc().isIdentity() || opOnFunc().isPartial();
+}
+
+int Deriv::coordDerivDir() const
+{
+  assertType(CoordDT);
+  return coordDerivDir_;
+}
+
+const RCP<const CommonFuncDataStub>& Deriv::data() const
+{
+  assertType(FunctionalDT);
+  TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, InternalError,
+    "Deriv::data() called, but deriv=" << *this << " does not contain a "
+    "valid function");
+  if (symbFuncElem_) return symbFuncElem_->commonData();
+  if (symbFunc_) return symbFunc_->commonData();
+}
+
+const FunctionIdentifier& Deriv::fid() const 
+{
+  assertType(FunctionalDT);
+  return fid_;
+}
+
+const SpatialDerivSpecifier& Deriv::opOnFunc() const 
+{
+  assertType(FunctionalDT);
+  return sds_;
+}
+
+Deriv Deriv::derivWrtMultiIndex(const MultiIndex& mi) const
+{
+  assertType(FunctionalDT);
+  TEST_FOR_EXCEPTION(mi.order()>0 && sds_.isDivergence(), InternalError,
+    "cannot take spatial derivative of an atomic divergence operation");
+
+  SpatialDerivSpecifier d = sds_.derivWrtMultiIndex(mi);
+
+  if (symbFuncElem_ != 0)
+  {
+    return Deriv(symbFuncElem_, d);
+  }
+  else if (symbFunc_ != 0)
+  {
+    return Deriv(symbFunc_, d);
+  }
+  TEST_FOR_EXCEPTION(true, InternalError,
+    "attempt to differentiation a null operative function");
+  return *this; // -Wall
+}
+
+
+AlgebraSpecifier Deriv::derivAlgSpec(
+  const AlgebraSpecifier& funcAlgSpec,
+  const SpatialDerivSpecifier& d)
+{
+  SpatialDerivType sdt = d.type();
+  if (d.derivOrder()==0) 
+  {
+    return funcAlgSpec;
+  }
+  else if (d.isPartial()) 
+  {
+    return AlgebraSpecifier(d.mi().firstOrderDirection());
+  }
+  else if (d.isDivergence())
+  {
+    return ScalarAT;
+  }
+  else if (d.isNormal())
+  {
+    return NormalAT;
+  }
+  else
+  {
+    TEST_FOR_EXCEPT(true);
+    return IdentitySDT;
+  }
+}
+
+
+
+
+namespace SundanceCore
+{
+
+Deriv coordDeriv(int d) 
+{
+  return Deriv(d);
+}
+
+Deriv coordDeriv(const MultiIndex& mi) 
+{
+  return Deriv(mi.firstOrderDirection());
+}
+
+
+Deriv funcDeriv(const SymbolicFuncElement* symbFunc)
+{
+  return Deriv(symbFunc, SpatialDerivSpecifier());
+}
+
+Deriv funcDeriv(const SymbolicFuncElement* symbFunc,
+  const MultiIndex& mi)
+{
+  return Deriv(symbFunc, SpatialDerivSpecifier(mi));
+}
+
+Deriv funcDeriv(const SymbolicFunc* symbFunc)
+{
+  return Deriv(symbFunc, SpatialDerivSpecifier());
+}
+
+Deriv funcDeriv(const SymbolicFunc* symbFunc,
+  const MultiIndex& mi)
+{
+  return Deriv(symbFunc, SpatialDerivSpecifier(mi));
+}
+
+
+Deriv normalDeriv(const SymbolicFuncElement* symbFunc)
+{
+  return Deriv(symbFunc, SpatialDerivSpecifier(NormalSDT, 1));
+}
+
+Deriv divergenceDeriv(const SymbolicFunc* symbFunc)
+{
+  return Deriv(symbFunc, SpatialDerivSpecifier(DivSDT, 0));
+}
+
+}
+

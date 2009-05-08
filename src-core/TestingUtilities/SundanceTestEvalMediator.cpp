@@ -34,7 +34,7 @@
 #include "SundanceCellDiameterExpr.hpp"
 #include "SundanceCellVectorExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceEvalManager.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceExpr.hpp"
@@ -46,8 +46,8 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceEvalManager.hpp"
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace SundanceTesting;
@@ -74,7 +74,7 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
       TEST_FOR_EXCEPTION(u0 == 0, InternalError,
                          "TestEvalMediator ctor: field argument "
                          << f[i] << " is not a discrete function");
-      funcIdToFieldNumberMap_.put(u0->funcComponentID(), i);
+      funcIdToFieldNumberMap_.put(u0->fid().dofID(), i);
 
       RCP<const DiscreteFuncDataStub> data = u0->commonData();
       const TestDiscreteFuncData* tdfd  
@@ -192,12 +192,12 @@ void TestEvalMediator
 
   string funcName = expr->name();
   
-  TEST_FOR_EXCEPTION(!funcIdToFieldNumberMap_.containsKey(expr->funcComponentID()),
-                     InternalError, "funcID " << expr->funcComponentID()
+  TEST_FOR_EXCEPTION(!funcIdToFieldNumberMap_.containsKey(expr->fid().dofID()),
+                     InternalError, "funcID " << expr->fid().dofID()
                      << " not found in TestEvalMediator funcID to field "
                      "map" << funcIdToFieldNumberMap_);
 
-  int fieldIndex = funcIdToFieldNumberMap_.get(expr->funcComponentID());
+  int fieldIndex = funcIdToFieldNumberMap_.get(expr->fid().dofID());
   
   for (unsigned int i=0; i<mi.size(); i++)
     {

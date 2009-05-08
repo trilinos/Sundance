@@ -33,27 +33,27 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceZeroExpr.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceDerivSet.hpp"
 #include "SundanceTabs.hpp"
-#include "SundanceCoordDeriv.hpp"
+
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 
 SymbolicFuncElement::SymbolicFuncElement(const string& name,
   const string& suffix,
-  int commonFuncID,
-  int myIndex)
-	: EvaluatableExpr(), FuncElementBase(name, suffix, commonFuncID),
+  const FunctionIdentifier& fid,
+  const RCP<const CommonFuncDataStub>& data)
+	: EvaluatableExpr(), FuncElementBase(name, suffix, fid),
+    commonData_(data),
     evalPt_(),
-    evalPtDerivSetIndices_(),
-    myIndex_(myIndex)
+    evalPtDerivSetIndices_()
 {}
 
 void SymbolicFuncElement::registerSpatialDerivs(const EvalContext& context, 
@@ -63,18 +63,29 @@ void SymbolicFuncElement::registerSpatialDerivs(const EvalContext& context,
   EvaluatableExpr::registerSpatialDerivs(context, miSet);
 }
 
+void SymbolicFuncElement::accumulateFuncSet(Set<int>& funcDofIDs, 
+  const Set<int>& activeSet) const
+{
+  if (activeSet.contains(fid().dofID())) 
+  {
+    funcDofIDs.put(fid().dofID());
+  }
+}
+
+
 Set<MultipleDeriv> 
 SymbolicFuncElement::internalFindW(int order, const EvalContext& context) const
 {
   Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "SFE::internalFindW(order=" << order << ") for "
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab << "SFE::internalFindW(order=" << order << ") for "
                      << toString());
 
   Set<MultipleDeriv> rtn;
 
   {
     Tabs tab1;
-    SUNDANCE_VERB_HIGH(tab1 << "findW() for eval point");
+    SUNDANCE_MSG3(verb, tab1 << "findW() for eval point");
     evalPt()->findW(order, context);
   }
 
@@ -83,23 +94,23 @@ SymbolicFuncElement::internalFindW(int order, const EvalContext& context) const
       Tabs tab1;
       if (!evalPtIsZero()) 
         {
-          SUNDANCE_VERB_EXTREME(tab1 << "value of " << toString() << " is nonzero" );
+          SUNDANCE_MSG5(verb, tab1 << "value of " << toString() << " is nonzero" );
           rtn.put(MultipleDeriv());
         }
       else
         {
-          SUNDANCE_VERB_EXTREME( tab1 << "value of " << toString() << " is zero" );
+          SUNDANCE_MSG5(verb,  tab1 << "value of " << toString() << " is zero" );
         }
     }
   else if (order==1)
     {
-      Deriv d = new FunctionalDeriv(this, MultiIndex());
+      Deriv d = funcDeriv(this);
       MultipleDeriv md;
       md.put(d);
       rtn.put(md);
     }
   
-  SUNDANCE_VERB_HIGH( tab << "SFE: W[" << order << "] = " << rtn );
+  SUNDANCE_MSG3(verb,  tab << "SFE: W[" << order << "] = " << rtn );
 
   return rtn;
 }
@@ -109,13 +120,14 @@ Set<MultipleDeriv>
 SymbolicFuncElement::internalFindV(int order, const EvalContext& context) const
 {
   Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "SFE::internalFindV(order=" << order << ") for "
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab << "SFE::internalFindV(order=" << order << ") for "
                      << toString());
   Set<MultipleDeriv> rtn;
 
   {
     Tabs tab1;
-    SUNDANCE_VERB_HIGH(tab1 << "findV() for eval point");
+    SUNDANCE_MSG3(verb, tab1 << "findV() for eval point");
     evalPt()->findV(order, context);
   }
 
@@ -124,11 +136,11 @@ SymbolicFuncElement::internalFindV(int order, const EvalContext& context) const
       if (!evalPtIsZero()) rtn.put(MultipleDeriv());
     }
 
-  SUNDANCE_VERB_EXTREME( tab << "SFE: V = " << rtn );
-  SUNDANCE_VERB_EXTREME( tab << "SFE: R = " << findR(order, context) );
+  SUNDANCE_MSG5(verb,  tab << "SFE: V = " << rtn );
+  SUNDANCE_MSG5(verb,  tab << "SFE: R = " << findR(order, context) );
   rtn = rtn.intersection(findR(order, context));
 
-  SUNDANCE_VERB_HIGH( tab << "SFE: V[" << order << "] = " << rtn );
+  SUNDANCE_MSG3(verb,  tab << "SFE: V[" << order << "] = " << rtn );
   return rtn;
 }
 
@@ -137,19 +149,20 @@ Set<MultipleDeriv>
 SymbolicFuncElement::internalFindC(int order, const EvalContext& context) const
 {
   Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "SFE::internalFindV(order=" << order << ") for "
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab << "SFE::internalFindV(order=" << order << ") for "
                      << toString());
   Set<MultipleDeriv> rtn;
 
   {
     Tabs tab1;
-    SUNDANCE_VERB_HIGH(tab1 << "findC() for eval point");
+    SUNDANCE_MSG3(verb, tab1 << "findC() for eval point");
     evalPt()->findC(order, context);
   }
 
   if (order==1)
     {
-      Deriv d = new FunctionalDeriv(this, MultiIndex());
+      Deriv d(funcDeriv(this));
       MultipleDeriv md;
       md.put(d);
       rtn.put(md);
@@ -157,7 +170,7 @@ SymbolicFuncElement::internalFindC(int order, const EvalContext& context) const
 
   rtn = rtn.intersection(findR(order, context));
 
-  SUNDANCE_VERB_HIGH( tab << "SFE: C[" << order << "] = " << rtn );
+  SUNDANCE_MSG3(verb,  tab << "SFE: C[" << order << "] = " << rtn );
   return rtn;
 }
 
@@ -167,15 +180,18 @@ RefCountPtr<Array<Set<MultipleDeriv> > > SymbolicFuncElement
                      const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "SFE::internalDetermineR() for "
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab << "SFE::internalDetermineR() for "
                      << toString());
   {
     Tabs tab1;
-    SUNDANCE_VERB_HIGH(tab1 << "determineR() for eval point");
+    SUNDANCE_MSG3(verb, tab1 << "determineR() for eval point");
     evalPt()->determineR(context, RInput);
-  }
 
-  return EvaluatableExpr::internalDetermineR(context, RInput);
+    SUNDANCE_MSG3(verb, tab1 << "SFE::internalDetermineR() for "
+      << toString() << " delegating to EE");
+    return EvaluatableExpr::internalDetermineR(context, RInput);
+  }
 }
 
 bool SymbolicFuncElement::evalPtIsZero() const
@@ -209,7 +225,7 @@ bool SymbolicFuncElement::isIndependentOf(const Expr& u) const
     const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);
     TEST_FOR_EXCEPTION(f==0, InternalError, "expected a list of functions, "
       " got " << u);
-    if (funcComponentID() == f->funcComponentID()) return false;
+    if (fid().dofID() == f->fid().dofID()) return false;
   }
   return true;
 }
@@ -224,7 +240,7 @@ bool SymbolicFuncElement::isLinearForm(const Expr& u) const
     const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);
     TEST_FOR_EXCEPTION(f==0, InternalError, "expected a list of functions, "
       " got " << u);
-    if (funcComponentID() == f->funcComponentID()) return true;
+    if (fid().dofID() == f->fid().dofID()) return true;
   }
   return false;
 }

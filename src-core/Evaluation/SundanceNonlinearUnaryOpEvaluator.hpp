@@ -36,50 +36,40 @@
 #include "SundanceChainRuleEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 
 namespace SundanceCore 
 {
-  namespace Internal 
-  {
-    class NonlinearUnaryOp;
+class NonlinearUnaryOp;
     
-    /**
-     *
-     */
-    class NonlinearUnaryOpEvaluator : public ChainRuleEvaluator
-    {
-    public:
-      /** */
-      NonlinearUnaryOpEvaluator(const NonlinearUnaryOp* expr,
-                                const EvalContext& context);
+/**
+ *
+ */
+class NonlinearUnaryOpEvaluator : public ChainRuleEvaluator
+{
+public:
+  /** */
+  NonlinearUnaryOpEvaluator(const NonlinearUnaryOp* expr,
+    const EvalContext& context);
 
-      /** */
-      virtual ~NonlinearUnaryOpEvaluator(){;}
+  /** */
+  virtual ~NonlinearUnaryOpEvaluator(){;}
 
-      /** */
-      virtual void evalArgDerivs(const EvalManager& mgr,
-                                 const Array<RefCountPtr<Array<double> > >& constArgRes,
-                                 const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
-                                 Array<double>& constArgDerivs,
-                                 Array<RefCountPtr<EvalVector> >& varArgDerivs) const;
+  /** */
+  virtual void evalArgDerivs(const EvalManager& mgr,
+    const Array<RefCountPtr<Array<double> > >& constArgRes,
+    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
+    Array<double>& constArgDerivs,
+    Array<RefCountPtr<EvalVector> >& varArgDerivs) const;
       
-      /** */
-      TEUCHOS_TIMER(evalTimer, "nonlinear unary op arg evaluation");
-    private:
-      const UnaryFunctor* op_;
-      int maxOrder_;
-      bool argIsConstant_;
-      int argValueIndex_;
-    }; 
-  }
+  /** */
+  TEUCHOS_TIMER(evalTimer, "nonlinear unary op arg evaluation");
+private:
+  const UnaryFunctor* op_;
+  int maxOrder_;
+  bool argIsConstant_;
+  int argValueIndex_;
+}; 
 }
-
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
-
 
 
 #endif

@@ -42,7 +42,7 @@ namespace SundanceStdFwk
   using namespace SundanceUtils;
   using namespace Teuchos;
   using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
   using namespace Internal;
 
   /** 
@@ -58,20 +58,11 @@ namespace SundanceStdFwk
     /** */
     TestFunction(const BasisFamily& basis, const string& name="");
 
-    /** 
-     * 
-     */
-    TestFunction(const Array<BasisFamily>& basis, const string& name="");
-
     /** */
     TestFunction(const BasisFamily& basis, 
                  const SpectralBasis& spBasis,
                  const string& name="");
     
-    /** */
-    TestFunction(const Array<BasisFamily>& basis,  
-                 const SpectralBasis& spBasis,
-                 const string& name="");
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** virtual destructor */

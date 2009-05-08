@@ -35,111 +35,106 @@
 
 #include "SundanceBinaryExpr.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using std::string;
+using std::ostream;
 
-  namespace Internal
-  {
-    /** 
-     * ProductExpr represents a product of two scalar-valued expressions
-     */
-    class ProductExpr : public BinaryExpr
+
+/** 
+ * ProductExpr represents a product of two scalar-valued expressions
+ */
+class ProductExpr : public BinaryExpr
+{
+public:
+  /** */
+  ProductExpr(const RefCountPtr<ScalarExpr>& a, 
+    const RefCountPtr<ScalarExpr>& b);
+
+  /** virtual dtor */
+  virtual ~ProductExpr() {;}
+
+  /** Indicate whether this expression is a "hungry"
+   * differential operator that is awaiting an argument. */
+  virtual bool isHungryDiffOp() const ;
+
+  /** */
+  virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
+    const EvalContext& context) const ;
+      
+  /** */
+  virtual Set<MultiSet<int> > internalFindQ_W(int order, 
+    const EvalContext& context) const ;
+      
+  /** */
+  virtual Set<MultiSet<int> > internalFindQ_V(int order, 
+    const EvalContext& context) const ;
+
+      
+
+  /** */
+  virtual bool isProduct() const {return true;}
+
+  /** 
+   * Indicate whether the expression is linear 
+   * with respect to test functions */
+  virtual bool isLinearInTests() const 
     {
-    public:
-      /** */
-      ProductExpr(const RefCountPtr<ScalarExpr>& a, 
-        const RefCountPtr<ScalarExpr>& b);
+      bool leftIsLinear = leftScalar()->isLinearInTests() ;
+      bool rightIsLinear = rightScalar()->isLinearInTests() ;
 
-      /** virtual dtor */
-      virtual ~ProductExpr() {;}
-
-      /** Indicate whether this expression is a "hungry"
-       * differential operator that is awaiting an argument. */
-      virtual bool isHungryDiffOp() const ;
-
-      /** */
-      virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
-					 const EvalContext& context) const ;
-      
-      /** */
-      virtual Set<MultiSet<int> > internalFindQ_W(int order, 
-                                                  const EvalContext& context) const ;
-      
-      /** */
-      virtual Set<MultiSet<int> > internalFindQ_V(int order, 
-                                                  const EvalContext& context) const ;
-
-      
-
-      /** */
-      virtual bool isProduct() const {return true;}
-
-      /** 
-       * Indicate whether the expression is linear 
-       * with respect to test functions */
-      virtual bool isLinearInTests() const 
-        {
-          bool leftIsLinear = leftScalar()->isLinearInTests() ;
-          bool rightIsLinear = rightScalar()->isLinearInTests() ;
-
-          bool leftHasTests = leftScalar()->hasTestFunctions() ;
-          bool rightHasTests = rightScalar()->hasTestFunctions() ;
+      bool leftHasTests = leftScalar()->hasTestFunctions() ;
+      bool rightHasTests = rightScalar()->hasTestFunctions() ;
           
-          return (leftIsLinear && !rightHasTests) 
-            || (!leftHasTests && rightIsLinear);
-        }
+      return (leftIsLinear && !rightHasTests) 
+        || (!leftHasTests && rightIsLinear);
+    }
       
-      /** Indicate whether the expression is linear in the given 
-       * functions */
-      virtual bool isLinearForm(const Expr& u) const 
-        {
-          bool L = leftScalar()->isLinearForm(u);
-          bool R = rightScalar()->isLinearForm(u);
-          return ( (L || R) && !(L==R) );
-        }
+  /** Indicate whether the expression is linear in the given 
+   * functions */
+  virtual bool isLinearForm(const Expr& u) const 
+    {
+      bool L = leftScalar()->isLinearForm(u);
+      bool R = rightScalar()->isLinearForm(u);
+      return ( (L || R) && !(L==R) );
+    }
       
-      /** Indicate whether the expression is a quadratic form in the given 
-       * functions */
-      virtual bool isQuadraticForm(const Expr& u) const
-        {
-          bool LQ = leftScalar()->isQuadraticForm(u);
-          bool RQ = rightScalar()->isQuadraticForm(u);
-          bool LL = leftScalar()->isLinearForm(u);
-          bool RL = leftScalar()->isLinearForm(u);
-          bool LI = leftScalar()->isIndependentOf(u);
-          bool RI = rightScalar()->isIndependentOf(u);
+  /** Indicate whether the expression is a quadratic form in the given 
+   * functions */
+  virtual bool isQuadraticForm(const Expr& u) const
+    {
+      bool LQ = leftScalar()->isQuadraticForm(u);
+      bool RQ = rightScalar()->isQuadraticForm(u);
+      bool LL = leftScalar()->isLinearForm(u);
+      bool RL = leftScalar()->isLinearForm(u);
+      bool LI = leftScalar()->isIndependentOf(u);
+      bool RI = rightScalar()->isIndependentOf(u);
 
-          if (LI && RQ) return true;
-          if (RI && LQ) return true;
-          if (LL && RL) return true;
-          return false;
-        }
+      if (LI && RQ) return true;
+      if (RI && LQ) return true;
+      if (LL && RL) return true;
+      return false;
+    }
 
-      /** */
-      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
-    protected:
-      /** */
-      virtual bool parenthesizeSelf() const {return true;}
-      /** */
-      virtual bool parenthesizeOperands() const {return true;}
-      /** */
-      virtual const string& xmlTag() const ;
-      /** */
-      virtual const string& opChar() const ;
+  /** */
+  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+protected:
+  /** */
+  virtual bool parenthesizeSelf() const {return true;}
+  /** */
+  virtual bool parenthesizeOperands() const {return true;}
+  /** */
+  virtual const string& xmlTag() const ;
+  /** */
+  virtual const string& opChar() const ;
 
-    private:
+private:
 
-    };
-  }
+};
 }
 
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

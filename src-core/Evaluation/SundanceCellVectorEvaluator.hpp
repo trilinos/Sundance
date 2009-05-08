@@ -34,50 +34,41 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSubtypeEvaluator.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  class CellVectorExpr;
+class CellVectorExpr;
 
-  namespace Internal 
-  {
-    /** 
-     *
-     */
-    class CellVectorEvaluator : public SubtypeEvaluator<CellVectorExpr>
-    {
-    public:
-      /** */
-      CellVectorEvaluator(const CellVectorExpr* expr, 
-        const EvalContext& context);
+/** 
+ *
+ */
+class CellVectorEvaluator : public SubtypeEvaluator<CellVectorExpr>
+{
+public:
+  /** */
+  CellVectorEvaluator(const CellVectorExpr* expr, 
+    const EvalContext& context);
 
-      /** */
-      virtual ~CellVectorEvaluator(){;}
+  /** */
+  virtual ~CellVectorEvaluator(){;}
 
-      /** */
-      TEUCHOS_TIMER(cellVectorEvalTimer, "cell normal/tangent evaluation");
+  /** */
+  TEUCHOS_TIMER(cellVectorEvalTimer, "cell normal/tangent evaluation");
 
-      /** */
-      virtual void internalEval(const EvalManager& mgr,
-                   Array<double>& constantResults,
-                   Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+  /** */
+  virtual void internalEval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
       
-    private:
+private:
       
-      int dim_;
-      bool isTangentVector_;
-      int basisVectorIndex_;
-      int componentIndex_;
+  int dim_;
+  bool isTangentVector_;
+  int basisVectorIndex_;
+  int componentIndex_;
 
-      string stringRep_;
-    };
-  }
+  string stringRep_;
+};
 }
-
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
 
 
 #endif

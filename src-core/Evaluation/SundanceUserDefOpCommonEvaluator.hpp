@@ -40,10 +40,7 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore {
-namespace Internal {
 
 class UserDefOpElement;
 class EvalContext;
@@ -112,9 +109,6 @@ private:
       
 }; 
 }
-}
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 #endif

@@ -38,7 +38,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -133,13 +133,11 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   TimeMonitor timer(efdeEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_VERB_LOW(tabs << "EFDEEvaluator::eval() expr=" 
+  SUNDANCE_MSG1(mgr.verb(), tabs << "EFDEEvaluator::eval() expr=" 
     << expr()->toString());
 
-  if (verbosity() > VerbMedium)
-  {
-    Out::os() << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
-  }
+  SUNDANCE_MSG2(mgr.verb(), tabs << "sparsity = " << std::endl 
+    << *(this->sparsity)());
 
   constantResults.resize(constValIndexToArgIndexMap_.size());
   vectorResults.resize(varValIndexToArgIndexMap_.size());
@@ -151,7 +149,7 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   evalOperand(mgr, argConstantResults, argVectorResults);
 
 
-  if (verbosity() > VerbLow)
+  if (mgr.verb() > 2)
     {
       Tabs tab1;
       Out::os() << tab1 << "EFDE operand results" << std::endl;
@@ -176,7 +174,7 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   
   
 
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 2)
   {
     Tabs tab1;
     Out::os() << tab1 << "results " << std::endl;

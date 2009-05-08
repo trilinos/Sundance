@@ -34,13 +34,13 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceSpectralBasis.hpp"
+#include "SundanceFuncSetAccumulator.hpp"
 
 namespace SundanceCore
 {
 
   using namespace SundanceUtils;
   using namespace Teuchos;
-  using namespace Internal;
   
   using std::string;
   using std::ostream;
@@ -49,7 +49,7 @@ namespace SundanceCore
    * Spectral Expression 
    */
 
-  class SpectralExpr : public Internal::ExprBase
+class SpectralExpr : public FuncSetAccumulator, public ExprBase
   {
   private:
     Array<Expr> coeffs_;
@@ -63,6 +63,7 @@ namespace SundanceCore
     
     /** virtual destructor */
     virtual ~SpectralExpr() {;}
+
 
 
     /** Return the Spectral Basis */
@@ -84,6 +85,9 @@ namespace SundanceCore
     /** Write self in text form */
     virtual ostream& toLatex(ostream& os, bool paren) const; 
     
+    /** */
+    void accumulateFuncSet(Set<int>& funcDofIDs, 
+      const Set<int>& activeSet) const ;
 
     /** */
     bool hasTestFunctions() const ;
@@ -91,7 +95,7 @@ namespace SundanceCore
     /** */
     bool hasHungryDiffOp() const ;
     /** */
-    virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+    virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
     
 
   };

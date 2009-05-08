@@ -26,7 +26,7 @@
 using namespace SundanceUtils;
 using namespace SundanceTesting;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 

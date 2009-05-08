@@ -30,31 +30,133 @@
 
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
-#include "SundanceSymbolicFunc.hpp"
 
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceUtils;
+
+using namespace SundanceCore;
 using namespace Teuchos;
 
-DiscreteFunctionStub::DiscreteFunctionStub(const string& name,
-  const Array<int>& dims, 
-  const RefCountPtr<DiscreteFuncDataStub>& data)
-	: ListExpr(), data_(data)
+
+
+DiscreteFunctionStub::DiscreteFunctionStub(const string& name, 
+  int tensorOrder,
+  int dim, 
+  const RefCountPtr<DiscreteFuncDataStub>& data,
+  int listIndex)
+  : ListExpr(), data_(data)
 {
-  string funcSuffix;
-  int count = 0;
-  for (unsigned int f=0; f<dims.size(); f++)
+  initTensor(name, tensorOrder, dim, data,  listIndex);
+}
+
+void DiscreteFunctionStub::initTensor(const string& name, 
+  int tensorOrder,
+  int dim, 
+  const RefCountPtr<DiscreteFuncDataStub>& data,
+  int listIndex)
+{
+  FunctionIdentifier myFid = makeFuncID(tensorOrder);
+  if (tensorOrder==0)
   {
-    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
-    int commonFuncID = SymbolicFunc::nextCommonID();
-    for (int d=0; d<dims[f]; d++, count++)
+    append(new DiscreteFuncElement(data, name, "", myFid, listIndex));
+  }
+  else if (tensorOrder==1)
+  {
+    for (int d=0; d<dim; d++)
     {
-      string componentSuffix;
-      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
-      string suffix = funcSuffix + componentSuffix;
-      append(new DiscreteFuncElement(data, name, suffix, commonFuncID, count));
+      string suffix="[" + Teuchos::toString(d) + "]";
+      FunctionIdentifier fid = myFid.createComponent(d);
+      append(new DiscreteFuncElement(data, name, suffix, fid, listIndex));
+    }
+  }
+  else 
+  {
+    TEST_FOR_EXCEPTION(true, RuntimeError, "tensor order = " << tensorOrder
+      << " not supported");
+  }
+}
+
+
+void DiscreteFunctionStub::initTensorSpectral(const string& name, 
+  const SpectralBasis& sbasis, 
+  int tensorOrder,
+  int dim, 
+  const RefCountPtr<DiscreteFuncDataStub>& data,
+  int listIndexOffset)
+{
+  Array<FunctionIdentifier> cFid(sbasis.nterms());
+  Array<int> listIndex(sbasis.nterms());
+
+  for (int n=0; n<sbasis.nterms(); n++)
+  {
+    cFid[n] = makeFuncID(tensorOrder);
+    listIndex[n] = listIndexOffset + n;
+  }
+  
+  if (tensorOrder==0 || dim==1)
+  {
+    Array<Expr> coeffs(sbasis.nterms());
+    for (int n=0; n<sbasis.nterms(); n++)
+    {
+      string suffix="";
+      if (sbasis.nterms()>1) suffix = "[" + Teuchos::toString(n) + "]";
+      coeffs[n] = new DiscreteFuncElement(data, name, suffix, cFid[n], listIndex[n]);
+    }
+    append(new SpectralExpr(sbasis, coeffs));
+  }
+  else if (tensorOrder==1)
+  {
+    for (int d=0; d<dim; d++)
+    {
+      string suffix="[" + Teuchos::toString(d) + "]";
+      Array<Expr> coeffs(sbasis.nterms());
+      for (int n=0; n<sbasis.nterms(); n++)
+      {
+        FunctionIdentifier fid = cFid[n].createComponent(d);
+        if (sbasis.nterms()>1) suffix += "[" + Teuchos::toString(n) + "]";
+        coeffs[n]= new DiscreteFuncElement(data, name, suffix, fid, listIndex[n]);
+      }
+      append(new SpectralExpr(sbasis, coeffs));
+    }
+  }
+  else 
+  {
+    TEST_FOR_EXCEPTION(true, RuntimeError, "tensor order = " << tensorOrder
+      << " not supported");
+  }
+}
+
+
+
+
+DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name, 
+  const Array<std::pair<int,int> >& tensorStructure,
+  const RefCountPtr<DiscreteFuncDataStub>& data)
+  : ListExpr(), data_(data)
+{
+  TEST_FOR_EXCEPT(name.size() != tensorStructure.size() && name.size()!=1U);
+
+  if (tensorStructure.size()==1U)
+  {
+    int tensorOrder = tensorStructure[0].first;
+    int dim = tensorStructure[0].second;
+    initTensor(name[0], tensorOrder, dim, data, 0);
+  }
+  else
+  {
+    for (unsigned int i=0; i<tensorStructure.size(); i++)
+    {
+      string nm;
+      if (name.size()==1U) nm = name[0] + "[" + Teuchos::toString(i) + "]";
+      else nm = name[i];
+      append(new DiscreteFunctionStub(
+               nm,
+               tensorStructure[i].first,
+               tensorStructure[i].second,
+               data, i));
     }
   }
 }
@@ -62,86 +164,44 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name,
 
 
 DiscreteFunctionStub::DiscreteFunctionStub(const string& name, 
-  const SpectralBasis& sbasis, 
-  const Array<int>& dims, 
+  const SpectralBasis& sbasis, int tensorOrder, int dim,
+  const RefCountPtr<DiscreteFuncDataStub>& data,
+  int listIndex)
+  : ListExpr(), data_(data)
+{
+  initTensorSpectral(name, sbasis, tensorOrder, dim, data, listIndex);
+}
+
+
+
+DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name, 
+  const SpectralBasis& sbasis,  
+  const Array<std::pair<int,int> >& tensorStructure,
   const RefCountPtr<DiscreteFuncDataStub>& data)
   : ListExpr(), data_(data)
 {
-  string funcSuffix;
-  int count = 0;
-  for (unsigned int f=0; f<dims.size(); f++)
+  TEST_FOR_EXCEPT(name.size() != tensorStructure.size());
+   if (tensorStructure.size()==1U)
   {
-    if (dims.size() > 1U) funcSuffix = "[" + Teuchos::toString(f) + "]";
-    Array<int> cfid(sbasis.nterms());
-    for (int n=0; n<sbasis.nterms(); n++)
+    int tensorOrder = tensorStructure[0].first;
+    int dim = tensorStructure[0].second;
+    initTensorSpectral(name[0], sbasis, tensorOrder, dim, data, 0);
+  }
+  else
+  {
+    for (unsigned int i=0; i<tensorStructure.size(); i++)
     {
-      cfid[n] = SymbolicFunc::nextCommonID();
-    }
-    for (int d=0; d<dims[f]; d++)
-    {
-      string componentSuffix;
-      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
-      string suffix = funcSuffix + componentSuffix;
-      Array<Expr> coeffs(sbasis.nterms());
-      for (int n=0; n<sbasis.nterms(); n++, count++)
-      {
-        coeffs[n] = new DiscreteFuncElement(data, name, suffix, cfid[n], count);
-      }
-      append(new SpectralExpr(sbasis, coeffs));
+      string nm;
+      if (name.size()==1U) nm = name[0] + "[" + Teuchos::toString(i) + "]";
+      else nm = name[i];
+      append(new DiscreteFunctionStub(
+               nm,
+               sbasis,
+               tensorStructure[i].first,
+               tensorStructure[i].second,
+               data, i*sbasis.nterms()));
     }
   }
 }
 
 
-DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& names, 
-  const Array<int>& dims, 
-  const RefCountPtr<DiscreteFuncDataStub>& data)
-	: ListExpr(), data_(data)
-{
-  TEST_FOR_EXCEPTION(names.size() != dims.size(),
-    RuntimeError,
-    "mismatch between size of names array=" << names 
-    << " and number of functions=" << dims.size());
-
-  int count = 0;
-  for (unsigned int f=0; f<dims.size(); f++)
-  {
-    int commonFuncID = SymbolicFunc::nextCommonID();
-    for (int d=0; d<dims[f]; d++, count++)
-    {
-      string componentSuffix;
-      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
-      append(new DiscreteFuncElement(data, names[f], componentSuffix, 
-          commonFuncID, count));
-    }
-  }
-}
-
-DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& names, 
-  const SpectralBasis& sbasis, 
-  const Array<int>& dims, 
-  const RefCountPtr<DiscreteFuncDataStub>& data)
-  : ListExpr(), data_(data)
-{
-  int count = 0;
-  for (unsigned int f=0; f<dims.size(); f++)
-  {
-    Array<int> cfid(sbasis.nterms());
-    for (int n=0; n<sbasis.nterms(); n++)
-    {
-      cfid[n] = SymbolicFunc::nextCommonID();
-    }
-    for (int d=0; d<dims[f]; d++)
-    {
-      string componentSuffix;
-      if (dims[f]>1) componentSuffix = "[" + Teuchos::toString(d) + "]";
-      Array<Expr> coeffs(sbasis.nterms());
-      for (int n=0; n<sbasis.nterms(); n++, count++)
-      {
-        string spSuffix = "[" + Teuchos::toString(n) + "]" + componentSuffix;
-        coeffs[n] = new DiscreteFuncElement(data, names[f], spSuffix, cfid[n], count);
-      }
-      append(new SpectralExpr(sbasis, coeffs));
-    }
-  }
-}

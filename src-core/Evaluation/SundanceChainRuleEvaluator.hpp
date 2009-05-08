@@ -36,149 +36,143 @@
 #include "SundanceExprWithChildren.hpp"
 #include "SundanceChainRuleSum.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceCore 
 {
-  namespace Internal 
-  {
-    /** 
-     *
-     */
-    class ChainRuleEvaluator : public SubtypeEvaluator<ExprWithChildren>
-    {
-    public:
+/** 
+ *
+ */
+class ChainRuleEvaluator : public SubtypeEvaluator<ExprWithChildren>
+{
+public:
 
-      /** */
-      ChainRuleEvaluator(const ExprWithChildren* expr, 
-                         const EvalContext& context);
+  /** */
+  ChainRuleEvaluator(const ExprWithChildren* expr, 
+    const EvalContext& context);
 
-      /** */
-      virtual ~ChainRuleEvaluator(){;}
+  /** */
+  virtual ~ChainRuleEvaluator(){;}
 
-      /** */
-      virtual void internalEval(const EvalManager& mgr,
-                                Array<double>& constantResults,
-                                Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+  /** */
+  virtual void internalEval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
 
-      /** */
-      int numChildren() const {return childEvaluators_.size();}
+  /** */
+  int numChildren() const {return childEvaluators_.size();}
 
-      /** */
-      int constArgDerivIndex(const MultiSet<int>& df) const ;
+  /** */
+  int constArgDerivIndex(const MultiSet<int>& df) const ;
 
-      /** */
-      int varArgDerivIndex(const MultiSet<int>& df) const ;
+  /** */
+  int varArgDerivIndex(const MultiSet<int>& df) const ;
 
-      /** */
-      TEUCHOS_TIMER(chainRuleEvalTimer, "chain rule evaluation");
+  /** */
+  TEUCHOS_TIMER(chainRuleEvalTimer, "chain rule evaluation");
 
 
-      /** */
-      const Array<Array<int> >& nComps(int N, int n) const ;
+  /** */
+  const Array<Array<int> >& nComps(int N, int n) const ;
 
-      /** */
-      void resetNumCalls() const ;
+  /** */
+  void resetNumCalls() const ;
 
-      /** 
-       * Evaluate the derivatives of the expression with respect to
-       * the arguments.
-       *
-       * \param mgr Manager for this evaluation step
-       *
-       * \param constDerivsOfArgs Constant values and functional
-       * derivatives of arguments.  The outer array index is over
-       * arguments. The inner array index is over functional
-       * derivatives of that argument.
-       *
-       * \param varDerivsOfArgs Variable values and functional
-       * derivatives of arguments.  The outer array index is over
-       * arguments. The inner array index is over functional
-       * derivatives of that argument.
-       *
-       * \param constArgDerivs Constant-valued derivatives of expr wrt
-       * arguments.
-       *
-       * \param varArgDerivs Variable-valued derivatives of expr wrt
-       * arguments.
-       */
+  /** 
+   * Evaluate the derivatives of the expression with respect to
+   * the arguments.
+   *
+   * \param mgr Manager for this evaluation step
+   *
+   * \param constDerivsOfArgs Constant values and functional
+   * derivatives of arguments.  The outer array index is over
+   * arguments. The inner array index is over functional
+   * derivatives of that argument.
+   *
+   * \param varDerivsOfArgs Variable values and functional
+   * derivatives of arguments.  The outer array index is over
+   * arguments. The inner array index is over functional
+   * derivatives of that argument.
+   *
+   * \param constArgDerivs Constant-valued derivatives of expr wrt
+   * arguments.
+   *
+   * \param varArgDerivs Variable-valued derivatives of expr wrt
+   * arguments.
+   */
 
-      virtual void evalArgDerivs(const EvalManager& mgr,
-                                 const Array<RefCountPtr<Array<double> > >& constDerivsOfArgs,
-                                 const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& varDerivOfArgs,
-                                 Array<double>& constArgDerivs,
-                                 Array<RefCountPtr<EvalVector> >& varArgDerivs) const = 0 ;
+  virtual void evalArgDerivs(const EvalManager& mgr,
+    const Array<RefCountPtr<Array<double> > >& constDerivsOfArgs,
+    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& varDerivOfArgs,
+    Array<double>& constArgDerivs,
+    Array<RefCountPtr<EvalVector> >& varArgDerivs) const = 0 ;
 
 
-      static Set<MultiSet<MultipleDeriv> > chainRuleBins(const MultipleDeriv& d,
-                                                      const MultiSet<int>& q);
+  static Set<MultiSet<MultipleDeriv> > chainRuleBins(const MultipleDeriv& d,
+    const MultiSet<int>& q);
       
-    protected:
-      /** The init() function should be called from the derived class ctors */
-      void init(const ExprWithChildren* expr, 
-                const EvalContext& context);
+protected:
+  /** The init() function should be called from the derived class ctors */
+  void init(const ExprWithChildren* expr, 
+    const EvalContext& context);
 
-      /** */
-      void addConstArgDeriv(const MultiSet<int>& df, int index);
+  /** */
+  void addConstArgDeriv(const MultiSet<int>& df, int index);
 
-      /** */
-      void addVarArgDeriv(const MultiSet<int>& df, int index);
+  /** */
+  void addVarArgDeriv(const MultiSet<int>& df, int index);
 
-      /** */
-      const Evaluator* childEvaluator(int i) const {return childEvaluators_[i].get();}
+  /** */
+  const Evaluator* childEvaluator(int i) const {return childEvaluators_[i].get();}
 
-      /** */
-      const SparsitySuperset* childSparsity(int i) const {return childSparsity_[i].get();}
+  /** */
+  const SparsitySuperset* childSparsity(int i) const {return childSparsity_[i].get();}
 
-      static MultipleDeriv makeMD(const Array<Deriv>& d) ;
+  static MultipleDeriv makeMD(const Array<Deriv>& d) ;
 
-      /** Returns the binomial coefficient */
-      double choose(int N, int n) const ;
+  /** Returns the binomial coefficient */
+  double choose(int N, int n) const ;
       
-      /** Returns the factorial of n */
-      double fact(int n) const ;
+  /** Returns the factorial of n */
+  double fact(int n) const ;
 
 
-      /** Returns the stirling number of the second kind */
-      double stirling2(int n, int k) const ;
+  /** Returns the stirling number of the second kind */
+  double stirling2(int n, int k) const ;
 
-      /** */
-      int derivComboMultiplicity(const MultiSet<MultipleDeriv>& b) const ;
+  /** */
+  int derivComboMultiplicity(const MultiSet<MultipleDeriv>& b) const ;
 
 
-    private:
+private:
 
       
-      Array<RefCountPtr<ChainRuleSum> > expansions_;
+  Array<RefCountPtr<ChainRuleSum> > expansions_;
 
-      Array<RefCountPtr<Evaluator> > childEvaluators_;
+  Array<RefCountPtr<Evaluator> > childEvaluators_;
 
-      Array<RefCountPtr<SparsitySuperset> > childSparsity_;
+  Array<RefCountPtr<SparsitySuperset> > childSparsity_;
 
-      Map<MultiSet<int>, int> constArgDerivMap_;
+  Map<MultiSet<int>, int> constArgDerivMap_;
 
-      Map<MultiSet<int>, int> varArgDerivMap_;
+  Map<MultiSet<int>, int> varArgDerivMap_;
 
-      int zerothDerivResultIndex_;
+  int zerothDerivResultIndex_;
 
-      bool zerothDerivIsConstant_;
+  bool zerothDerivIsConstant_;
 
-      static Map<OrderedPair<int, int>, Array<Array<int> > >& compMap() ;
-    };
+  static Map<OrderedPair<int, int>, Array<Array<int> > >& compMap() ;
+};
 
-    /** */
-    MultipleDeriv makeDeriv(const Expr& a);
+/** */
+MultipleDeriv makeDeriv(const Expr& a);
 
-    /** */
-    MultipleDeriv makeDeriv(const Expr& a, const Expr& b);
+/** */
+MultipleDeriv makeDeriv(const Expr& a, const Expr& b);
 
-    /** */
-    MultipleDeriv makeDeriv(const Expr& a, const Expr& b, const Expr& c);
+/** */
+MultipleDeriv makeDeriv(const Expr& a, const Expr& b, const Expr& c);
 
     
-  }
 }
-               
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
+
 
 #endif

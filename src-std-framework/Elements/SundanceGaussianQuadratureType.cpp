@@ -38,7 +38,7 @@ using namespace SundanceStdFwk;
 using namespace SundanceUtils;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 GaussianQuadratureType::GaussianQuadratureType()

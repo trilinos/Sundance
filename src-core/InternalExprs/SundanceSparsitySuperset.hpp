@@ -43,155 +43,150 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  namespace Internal
+/**
+ * DerivState can be used to classify the known state of
+ * each functional derivative at any node in the expression
+ * tree.  ZeroDeriv means the derivative is structurally
+ * zero at that node -- note that derivatives that are
+ * nonzero at a root node can be structurally zero at some
+ * child node. ConstantDeriv means that the derivative is
+ * known to be a constant (in space) at that
+ * node. VectorDeriv means that the derivative is non-zero,
+ * non-constant, i.e., a vector of values.
+ */
+enum DerivState {ZeroDeriv, ConstantDeriv, VectorDeriv};
+
+/**
+ *
+ */
+class SparsitySuperset 
+  : public TSFExtended::ObjectWithVerbosity<SparsitySuperset>
+{
+public:
+          
+  /** Create a sparsity set */
+  SparsitySuperset(const Set<MultipleDeriv>& C,
+    const Set<MultipleDeriv>& V);
+
+  /** \name Access to information about individual derivatives */
+  //@{
+  /** Detect whether a given derivative exists in this set */
+  bool containsDeriv(const MultipleDeriv& d) const ;
+
+  /** Find the index at which the results for the
+      given functional derivative are stored in the results array */
+  int getIndex(const MultipleDeriv& d) const ;
+
+  /** Return the results stored at index i */
+  inline const MultipleDeriv& deriv(int i) const
+    {return derivs_[i];}
+
+  /** Return the constancy state of deriv i */
+  inline const DerivState& state(int i) const
+    {return states_[i];}
+
+  /** */
+  inline int numDerivs() const {return derivs_.size();}
+
+  /** */
+  int numConstantDerivs() const {return numConstantDerivs_;}
+
+  /** */
+  int numVectorDerivs() const {return numVectorDerivs_;}
+
+          
+          
+  /** */
+  int maxOrder() const {return maxOrder_;}
+
+
+  /** Indicate whether the specified derivative is
+   * spatially constant at this node */
+  bool isConstant(int i) const {return states_[i]==ConstantDeriv;}
+
+  /** Indicate whether the specified multiple derivative contains
+   * at least one order of spatial differentiation */
+  bool isSpatialDeriv(int i) const 
     {
-      /**
-       * DerivState can be used to classify the known state of
-       * each functional derivative at any node in the expression
-       * tree.  ZeroDeriv means the derivative is structurally
-       * zero at that node -- note that derivatives that are
-       * nonzero at a root node can be structurally zero at some
-       * child node. ConstantDeriv means that the derivative is
-       * known to be a constant (in space) at that
-       * node. VectorDeriv means that the derivative is non-zero,
-       * non-constant, i.e., a vector of values.
-       */
-      enum DerivState {ZeroDeriv, ConstantDeriv, VectorDeriv};
+      return multiIndex_[i].order() != 0;
+    }
 
-      /**
-       *
-       */
-      class SparsitySuperset 
-        : public TSFExtended::ObjectWithVerbosity<SparsitySuperset>
-        {
-        public:
+  /** Return the spatial multi index for the i-th derivative */
+  const MultiIndex& multiIndex(int i) const 
+    {return multiIndex_[i];}
+  //@}
           
-          /** Create a sparsity set */
-          SparsitySuperset(const Set<MultipleDeriv>& C,
-                           const Set<MultipleDeriv>& V);
+  /** */
+  void print(ostream& os) const ;
+  /** */
+  void print(ostream& os, 
+    const Array<RefCountPtr<EvalVector> >& vecResults,
+    const Array<double>& constantResults) const ;
 
-          /** \name Access to information about individual derivatives */
-          //@{
-          /** Detect whether a given derivative exists in this set */
-          bool containsDeriv(const MultipleDeriv& d) const ;
+  /** */
+  std::string toString() const ;
 
-          /** Find the index at which the results for the
-              given functional derivative are stored in the results array */
-          int getIndex(const MultipleDeriv& d) const ;
+  /** */
+  DerivSet derivSet() const ;
 
-          /** Return the results stored at index i */
-          inline const MultipleDeriv& deriv(int i) const
-            {return derivs_[i];}
+private:
 
-          /** Return the constancy state of deriv i */
-          inline const DerivState& state(int i) const
-            {return states_[i];}
+  /** Add a derivative to the set. Called by the subset's addDeriv()
+   * method. */
+  void addDeriv(const MultipleDeriv& d, 
+    const DerivState& state);
 
-          /** */
-          inline int numDerivs() const {return derivs_.size();}
+  /** Add a derivative to the set. Called by the subset's addDeriv()
+   * method. */
+  void addDeriv(const Deriv& d, 
+    const DerivState& state);
 
-          /** */
-          int numConstantDerivs() const {return numConstantDerivs_;}
+  /** */
+  int maxOrder_;
 
-          /** */
-          int numVectorDerivs() const {return numVectorDerivs_;}
+  /** Map from deriv to position of the derivative's
+   * value in the results array */
+  SundanceUtils::Map<MultipleDeriv, int> derivToIndexMap_;
 
-          
-          
-          /** */
-          int maxOrder() const {return maxOrder_;}
+  /** The list of functional derivatives whose values are
+   * stored in this results set */
+  Array<MultipleDeriv> derivs_;
 
+  /** The state of each derivative at this node in the expression */
+  Array<DerivState> states_;
 
-          /** Indicate whether the specified derivative is
-           * spatially constant at this node */
-          bool isConstant(int i) const {return states_[i]==ConstantDeriv;}
+  /** Multiindices */
+  Array<MultiIndex> multiIndex_;
 
-          /** Indicate whether the specified multiple derivative contains
-           * at least one order of spatial differentiation */
-          bool isSpatialDeriv(int i) const 
-          {
-            return multiIndex_[i].order() != 0;
-          }
+  /** */
+  int numConstantDerivs_;
 
-          /** Return the spatial multi index for the i-th derivative */
-          const MultiIndex& multiIndex(int i) const 
-          {return multiIndex_[i];}
-          //@}
-          
-          /** */
-          void print(ostream& os) const ;
-          /** */
-          void print(ostream& os, 
-                     const Array<RefCountPtr<EvalVector> >& vecResults,
-                     const Array<double>& constantResults) const ;
-
-          /** */
-          std::string toString() const ;
-
-          /** */
-          DerivSet derivSet() const ;
-
-        private:
-
-          /** Add a derivative to the set. Called by the subset's addDeriv()
-           * method. */
-          void addDeriv(const MultipleDeriv& d, 
-                        const DerivState& state);
-
-          /** Add a derivative to the set. Called by the subset's addDeriv()
-           * method. */
-          void addDeriv(const Deriv& d, 
-                        const DerivState& state);
-
-          /** */
-          int maxOrder_;
-
-          /** Map from deriv to position of the derivative's
-           * value in the results array */
-          SundanceUtils::Map<MultipleDeriv, int> derivToIndexMap_;
-
-          /** The list of functional derivatives whose values are
-           * stored in this results set */
-          Array<MultipleDeriv> derivs_;
-
-          /** The state of each derivative at this node in the expression */
-          Array<DerivState> states_;
-
-          /** Multiindices */
-          Array<MultiIndex> multiIndex_;
-
-          /** */
-          int numConstantDerivs_;
-
-          /** */
-          int numVectorDerivs_;
+  /** */
+  int numVectorDerivs_;
 
           
 
-        };
-  }
+};
+
 }
 
 namespace std
 {
-  /** \relates SparsitySuperset */
-  inline std::ostream& operator<<(std::ostream& os,
-                                  const SundanceCore::Internal::SparsitySuperset& s)
-  {
-    s.print(os);
-    return os;
-  }
+/** \relates SparsitySuperset */
+inline std::ostream& operator<<(std::ostream& os,
+  const SundanceCore::SparsitySuperset& s)
+{
+  s.print(os);
+  return os;
+}
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

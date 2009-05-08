@@ -31,8 +31,6 @@
 #ifndef SUNDANCE_DISCRETEFUNCTIONSTUB_H
 #define SUNDANCE_DISCRETEFUNCTIONSTUB_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceListExpr.hpp"
 #include "SundanceDiscreteFuncDataStub.hpp"
@@ -40,76 +38,83 @@
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  namespace Internal
-  {
-    using namespace Internal;
-    using std::string;
-    using std::ostream;
+using namespace SundanceUtils;
+using std::string;
+using std::ostream;
 
-    /** 
-     * DiscreteFunctionStub is the base class for discrete functions. 
-     * Each framework will need to implement its own subclass of
-     * DiscreteFunctionStub. 
-     *
-     * The interface is left very minimal so as to not place
-     * any constraints on how a framework might specify vectors
-     * and bases. When a framework needs any information about the
-     * discrete function, it will have to get it by downcasting
-     * to the appropriate framework-specific subclass.
-     *
-     * <h4> Writing a DiscreteFunctionStub subclass </h4>
-     *
-     * For purposes of interaction with the Sundance core, no 
-     * additional methods are required.
-     * However, most frameworks will require extensions to 
-     * DiscreteFunctionStub that can supply the framework with information
-     * on the basis and vector used by the discrete func. See the
-     * demo and standard frameworks for information on how to do this.
-     */
-    class DiscreteFunctionStub : public ListExpr
-    {
-    public:
-      /** */
-      DiscreteFunctionStub(const string& name, 
-        const Array<int>& dims=tuple(1), 
-        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+/** 
+ * DiscreteFunctionStub is the base class for discrete functions. 
+ * Each framework will need to implement its own subclass of
+ * DiscreteFunctionStub. 
+ *
+ * The interface is left very minimal so as to not place
+ * any constraints on how a framework might specify vectors
+ * and bases. When a framework needs any information about the
+ * discrete function, it will have to get it by downcasting
+ * to the appropriate framework-specific subclass.
+ *
+ * <h4> Writing a DiscreteFunctionStub subclass </h4>
+ *
+ * For purposes of interaction with the Sundance core, no 
+ * additional methods are required.
+ * However, most frameworks will require extensions to 
+ * DiscreteFunctionStub that can supply the framework with information
+ * on the basis and vector used by the discrete func. See the
+ * demo and standard frameworks for information on how to do this.
+ */
+class DiscreteFunctionStub : public ListExpr
+{
+public:
+  /** */
+  DiscreteFunctionStub(const string& name, 
+    int tensorOrder=0, int dim=1,
+    const RCP<DiscreteFuncDataStub>& data=RCP<DiscreteFuncDataStub>(),
+    int listIndex=0);
+  /** */
+  DiscreteFunctionStub(const Array<string>& name, 
+    const Array<std::pair<int,int> >& tensorStructure,
+    const RCP<DiscreteFuncDataStub>& data=RCP<DiscreteFuncDataStub>());
      
-      /** */
-      DiscreteFunctionStub(const string& name, 
-        const SpectralBasis& sbasis, 
-        const Array<int>& dims=tuple(1), 
-        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
-
-      /** */
-      DiscreteFunctionStub(const Array<string>& names, 
-        const Array<int>& dims=tuple(1), 
-        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+  /** */
+  DiscreteFunctionStub(const string& name, 
+    const SpectralBasis& sbasis, 
+    int tensorOrder=0, int dim=1,
+    const RCP<DiscreteFuncDataStub>& data=RCP<DiscreteFuncDataStub>(),
+    int listIndex=0);
      
-      /** */
-      DiscreteFunctionStub(const Array<string>& names, 
-        const SpectralBasis& sbasis, 
-        const Array<int>& dims=tuple(1), 
-        const RefCountPtr<DiscreteFuncDataStub>& data=RefCountPtr<DiscreteFuncDataStub>());
+  /** */
+  DiscreteFunctionStub(const Array<string>& name, 
+    const SpectralBasis& sbasis, 
+    const Array<std::pair<int,int> >& tensorStructure,
+    const RCP<DiscreteFuncDataStub>& data=RCP<DiscreteFuncDataStub>());
 
+  /** virtual destructor */
+  virtual ~DiscreteFunctionStub() {;}
 
-      /** virtual destructor */
-      virtual ~DiscreteFunctionStub() {;}
+  /** */
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
-      /** */
-      virtual RefCountPtr<Internal::ExprBase> getRcp() {return rcp(this);}
+protected:
+  /** */
+  void initTensor(const string& name, 
+    int tensorOrder, int dim,
+    const RCP<DiscreteFuncDataStub>& data,
+    int listIndex);
+  /** */
+  void initTensorSpectral(const string& name, 
+    const SpectralBasis& sbasis, 
+    int tensorOrder, int dim,
+    const RCP<DiscreteFuncDataStub>& data,
+    int listIndex);
 
-    protected:
+  /** */
+  const RCP<DiscreteFuncDataStub>& dataStub() const {return data_;}
 
-      /** */
-      const RefCountPtr<DiscreteFuncDataStub>& dataStub() const {return data_;}
-
-    private:
-      RefCountPtr<DiscreteFuncDataStub> data_;
-    };
-  }
+private:
+  RCP<DiscreteFuncDataStub> data_;
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

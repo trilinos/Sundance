@@ -33,17 +33,17 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 TestFuncElement
 ::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
   const string& name,
   const string& suffix,
-  int commonFuncID,
-  int myIndex)
-	: SymbolicFuncElement(name, suffix, commonFuncID, myIndex), commonData_(data)
+  const FunctionIdentifier& fid)
+	: SymbolicFuncElement(name, suffix, fid,
+    rcp_dynamic_cast<const CommonFuncDataStub>(data))
 {}
 
 
@@ -55,3 +55,12 @@ XMLObject TestFuncElement::toXML() const
 }
 
 
+
+
+bool TestFuncElement::lessThan(const ScalarExpr* other) const
+{
+  const FuncElementBase* f = dynamic_cast<const FuncElementBase*>(other);
+  TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
+  
+  return (fid() < f->fid());
+}

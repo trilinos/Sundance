@@ -36,7 +36,7 @@ using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace Teuchos;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 
 SumTransformationSequence::SumTransformationSequence()
   : SumTransformation(), 

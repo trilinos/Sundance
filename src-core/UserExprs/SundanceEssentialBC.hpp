@@ -44,7 +44,6 @@ namespace SundanceCore
 {
   using namespace SundanceUtils;
   using namespace TSFExtended;
-  using namespace Internal;
   using namespace Teuchos;
 
   /** \relates Expr */

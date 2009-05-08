@@ -32,13 +32,13 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceSumExpr.hpp"
 #include "SundanceProductExpr.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -204,7 +204,7 @@ void SumEvaluator
   //  TimeMonitor timer(evalTimer());
   Tabs tabs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
+  SUNDANCE_MSG1(mgr.verb(),
                tabs << "SumEvaluator::eval() expr=" << expr()->toString());
 
   /* evaluate the children */
@@ -234,7 +234,7 @@ void SumEvaluator
       Tabs tab1;
       constantResults[singleRightConstant_[i][0]]
         = sign_*rightConstResults[singleRightConstant_[i][1]];
-      SUNDANCE_VERB_MEDIUM(tab1 << "sum for "
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "sum for "
                            << constantResultDeriv(singleRightConstant_[i][0])
                            << ": L=0, R=" 
                            << sign_*rightConstResults[singleRightConstant_[i][1]]);
@@ -246,7 +246,7 @@ void SumEvaluator
       Tabs tab1;
       constantResults[singleLeftConstant_[i][0]]
         = leftConstResults[singleLeftConstant_[i][1]];
-      SUNDANCE_VERB_MEDIUM(tab1 << "sum for " 
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "sum for " 
                            << constantResultDeriv(singleLeftConstant_[i][0])
                            << ": L=" 
                            << leftConstResults[singleLeftConstant_[i][1]]
@@ -260,7 +260,7 @@ void SumEvaluator
       if (sign_ < 0.0) rightVectorResults[singleRightVector_[i][1]]->multiply_S(sign_);
       vectorResults[singleRightVector_[i][0]]
         = rightVectorResults[singleRightVector_[i][1]];
-      SUNDANCE_VERB_MEDIUM(tab1 << "sum for "
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "sum for "
                            << vectorResultDeriv(singleRightVector_[i][0])
                            << ": L=0, R=" 
                            << sign_ << "*" << 
@@ -273,7 +273,7 @@ void SumEvaluator
       Tabs tab1;
       vectorResults[singleLeftVector_[i][0]]
         = leftVectorResults[singleLeftVector_[i][1]];
-      SUNDANCE_VERB_MEDIUM(tab1 << "sum for " 
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "sum for " 
                            << vectorResultDeriv(singleLeftVector_[i][0])
                            << ": L=" 
                            << leftVectorResults[singleLeftVector_[i][1]]->str()
@@ -287,7 +287,7 @@ void SumEvaluator
       constantResults[ccSums_[i][0]]
         = leftConstResults[ccSums_[i][1]] 
         + sign_*rightConstResults[ccSums_[i][2]];
-      SUNDANCE_VERB_MEDIUM(tab1 << "c-c sum for " 
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "c-c sum for " 
                            << constantResultDeriv(ccSums_[i][0])
                            << ": L=" << leftConstResults[ccSums_[i][1]] 
                            << " R=" << sign_*rightConstResults[ccSums_[i][2]]);
@@ -298,7 +298,7 @@ void SumEvaluator
     {
       Tabs tab1;
       RefCountPtr<EvalVector>& v = rightVectorResults[cvSums_[i][2]];
-      SUNDANCE_VERB_MEDIUM(tab1 << "doing c-v sum for " 
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "doing c-v sum for " 
                            << vectorResultDeriv(cvSums_[i][0])
                            << ": L=" << leftConstResults[cvSums_[i][1]] 
                            << " R=" << sign_ << "*" 
@@ -319,7 +319,7 @@ void SumEvaluator
     {
       Tabs tab1;
       RefCountPtr<EvalVector>& v = leftVectorResults[vcSums_[i][1]] ;
-      SUNDANCE_VERB_MEDIUM(tab1 << "doing v-c sum for " 
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "doing v-c sum for " 
                            << vectorResultDeriv(vcSums_[i][0])
                            << ": L=" << leftVectorResults[vcSums_[i][1]]->str()
                            << " R=" 
@@ -333,7 +333,7 @@ void SumEvaluator
     {
       Tabs tab1;
       RefCountPtr<EvalVector>& v = leftVectorResults[vvSums_[i][1]];
-      SUNDANCE_VERB_MEDIUM(tab1 << "doing v-v sum for " 
+      SUNDANCE_MSG2(mgr.verb(), tab1 << "doing v-v sum for " 
                            << vectorResultDeriv(vvSums_[i][0])
                            << ": L=" 
                            << leftVectorResults[vvSums_[i][1]]->str() 
@@ -350,7 +350,7 @@ void SumEvaluator
       vectorResults[vvSums_[i][0]] = v;
     }
   
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 1)
     {
       Out::os() << tabs << "sum result " << std::endl;
       this->sparsity()->print(Out::os(), vectorResults,

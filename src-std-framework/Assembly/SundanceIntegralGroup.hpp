@@ -44,7 +44,7 @@ namespace SundanceStdFwk
 {
 using namespace Teuchos;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 namespace Internal

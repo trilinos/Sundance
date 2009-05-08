@@ -39,7 +39,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -50,11 +50,11 @@ CoordExprEvaluator::CoordExprEvaluator(const CoordExpr* expr,
     doDeriv_(false),
     stringRep_(expr->toString())
 {
-
+  int verb = context.setupVerbosity();
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "initializing coord expr evaluator for " 
+  SUNDANCE_MSG1(verb, tabs << "initializing coord expr evaluator for " 
                     << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << std::endl << tabs << *(this->sparsity)());
+  SUNDANCE_MSG2(verb, tabs << "return sparsity " << std::endl << tabs << *(this->sparsity)());
 
   TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() > 2, InternalError,
                      "CoordExprEvaluator ctor found a sparsity table "
@@ -108,21 +108,20 @@ CoordExprEvaluator::CoordExprEvaluator(const CoordExpr* expr,
 
 
 void CoordExprEvaluator::internalEval(const EvalManager& mgr,
-                                      Array<double>& constantResults,
-                                      Array<RefCountPtr<EvalVector> >& vectorResults) const 
+  Array<double>& constantResults,
+  Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  //  TimeMonitor timer(coordEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_VERB_LOW(tabs << "CoordExprEvaluator::eval() expr=" << expr()->toString());
+  SUNDANCE_MSG1(mgr.verb(), tabs << "CoordExprEvaluator::eval() expr=" << expr()->toString());
 
-  if (verbosity() > VerbMedium)
-    {
-      Out::os() << tabs << "sparsity = " << std::endl << *(this->sparsity)() << std::endl;
-    }
+  SUNDANCE_MSG2(mgr.verb(), tabs << "sparsity = " << std::endl 
+    << *(this->sparsity)())
 
   if (doValue_)
     {
+      Tabs tab2;
+      SUNDANCE_MSG3(mgr.verb(), tab2 << "computing derivative");
       vectorResults.resize(1);
       vectorResults[0] = mgr.popVector();
       mgr.evalCoordExpr(expr(), vectorResults[0]);
@@ -132,11 +131,13 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
   
   if (doDeriv_)
     {
+      Tabs tab2;
+      SUNDANCE_MSG3(mgr.verb(), tab2 << "computing value");
       constantResults.resize(1);
       constantResults[0] = 1.0;
     }
 
-  if (verbosity() > VerbMedium)
+  if (mgr.verb() > 2)
     {
       Tabs tab1;
       Out::os() << tab1 << "results " << std::endl;

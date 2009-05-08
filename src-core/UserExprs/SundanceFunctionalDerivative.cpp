@@ -29,18 +29,15 @@
 /* @HEADER@ */
 
 #include "SundanceFunctionalDerivative.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceSymbolicTransformation.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceExplicitFunctionalDerivativeElement.hpp"
 
-using namespace SundanceCore;
 using namespace SundanceUtils;
-
 using namespace Teuchos;
-using namespace SundanceCore::Internal;
 using namespace TSFExtended;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 
 Expr SundanceCore::FunctionalDerivative(const Expr& F, const Expr& u)
 {
@@ -50,9 +47,8 @@ Expr SundanceCore::FunctionalDerivative(const Expr& F, const Expr& u)
 
     const UnknownFuncElement* uPtr
       = dynamic_cast<const UnknownFuncElement*>(u[0].ptr().get());
-    MultiIndex m0;
     
-    Deriv fd = new FunctionalDeriv(uPtr, m0);
+    Deriv fd = funcDeriv(uPtr);
     
     return new ExplicitFunctionalDerivativeElement(arg, fd);
   }

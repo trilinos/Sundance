@@ -30,14 +30,14 @@
 
 #include "SundanceNonlinearUnaryOpEvaluator.hpp"
 #include "SundanceEvalManager.hpp"
-#include "SundanceFunctionalDeriv.hpp"
+
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -113,8 +113,9 @@ void NonlinearUnaryOpEvaluator
                 Array<RefCountPtr<EvalVector> >& varArgDerivs) const
 {
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "NonlinearUnaryOpEvaluator::evalArgDerivs() for " 
-                    << expr()->toString());
+  SUNDANCE_MSG1(mgr.verb(), tabs 
+    << "NonlinearUnaryOpEvaluator::evalArgDerivs() for " 
+    << expr()->toString());
   
   if (argIsConstant_)
     {
@@ -212,8 +213,9 @@ void NonlinearUnaryOpEvaluator
         }
     }
 
-  SUNDANCE_VERB_LOW(tabs << "done NonlinearUnaryOpEvaluator::evalArgDerivs() for " 
-                    << expr()->toString());
+  SUNDANCE_MSG1(mgr.verb(),
+    tabs << "done NonlinearUnaryOpEvaluator::evalArgDerivs() for " 
+    << expr()->toString());
 }
 
 

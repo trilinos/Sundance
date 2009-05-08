@@ -28,8 +28,8 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_EVALCONTEXT_H
-#define SUNDANCE_EVALCONTEXT_H
+#ifndef SUNDANCE_EVALCONTEXTSTUB_H
+#define SUNDANCE_EVALCONTEXTSTUB_H
 
 
 #include "SundanceDefs.hpp"
@@ -37,36 +37,30 @@
 #include "Teuchos_Utils.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 
 namespace SundanceCore
 {
-  using namespace Teuchos;
-  using namespace SundanceUtils;
-  using std::string;
+using namespace Teuchos;
+using namespace SundanceUtils;
+using std::string;
 
-  namespace Internal
-    {
-      /** 
-       * 
-       */
-      class EvalContextStub
-        {
-        public:
-          /** */
-          EvalContextStub();
+/** 
+ * 
+ */
+class EvalContextStub
+{
+public:
+  /** */
+  EvalContextStub();
           
-          /** */
-          virtual ~EvalContextStub(){;}
+  /** */
+  virtual ~EvalContextStub(){;}
 
           
 
-        private:
-        };
+private:
+};
 
-    }
 }
 
 
@@ -74,5 +68,4 @@ namespace SundanceCore
 
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

@@ -34,34 +34,25 @@
 
 #include "SundanceDefs.hpp"
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 namespace SundanceCore
 {
-  namespace Internal
-  {
-    /** 
-     * CommonFuncDataStub is a placeholder for data to be shared between
-     * multiple components of a symbolic or discrete function. Such data
-     * is framework-dependent, and might be something like a basis function
-     * or vector of nodal function values.
-     */
-    class CommonFuncDataStub
-    {
-    public:
-      /** */
-      CommonFuncDataStub(){;}
+/** 
+ * CommonFuncDataStub is a placeholder for data to be shared between
+ * multiple components of a symbolic or discrete function. Such data
+ * is framework-dependent, and might be something like a basis function
+ * or vector of nodal function values.
+ */
+class CommonFuncDataStub
+{
+public:
+  /** */
+  CommonFuncDataStub() {}
 
-      /** */
-      virtual ~CommonFuncDataStub(){;}
+  /** */
+  virtual ~CommonFuncDataStub(){;}
 
-    private:
-    };
-  }
+};
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

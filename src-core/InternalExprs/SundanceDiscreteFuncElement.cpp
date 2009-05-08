@@ -30,14 +30,14 @@
 
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
-#include "SundanceCoordDeriv.hpp"
+
 #include "SundanceDeriv.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -45,13 +45,12 @@ DiscreteFuncElement
 ::DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
   const string& name,
   const string& suffix,
-  int commonFuncID,
-  int myIndex)
+  const FunctionIdentifier& fid, int myIndex)
 	: EvaluatableExpr(), 
-    FuncElementBase(name, suffix, commonFuncID),
+    FuncElementBase(name, suffix, fid),
     commonData_(data),
-    myIndex_(myIndex),
-    miSet_()
+    miSet_(),
+    myIndex_(myIndex)
 {}
 
 
@@ -60,7 +59,8 @@ RefCountPtr<Array<Set<MultipleDeriv> > > DiscreteFuncElement
                      const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "DFE::internalDetermineR() for "
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab << "DFE::internalDetermineR() for "
                      << toString());
   Array<Set<MultipleDeriv> > RIn = RInput;
   Set<MultiIndex> miSet = activeSpatialDerivs(context);
@@ -70,7 +70,7 @@ RefCountPtr<Array<Set<MultipleDeriv> > > DiscreteFuncElement
       const MultiIndex& mi = *i;
       int order = mi.order();
       if (order==0) RIn[0].put(MultipleDeriv());
-      if (order==1) RIn[1].put(MultipleDeriv(new CoordDeriv(mi.firstOrderDirection())));
+      if (order==1) RIn[1].put(MultipleDeriv(coordDeriv(mi)));
     }
 
   return EvaluatableExpr::internalDetermineR(context, RIn);
@@ -80,6 +80,10 @@ RefCountPtr<Array<Set<MultipleDeriv> > > DiscreteFuncElement
 Set<MultipleDeriv> 
 DiscreteFuncElement::internalFindW(int order, const EvalContext& context) const
 {
+  Tabs tab;
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab << "DFE::internalFindW(order=" << order << ") for "
+                     << toString());
   Set<MultipleDeriv> rtn;
 
   Set<MultiIndex> miSet = activeSpatialDerivs(context);
@@ -95,7 +99,7 @@ DiscreteFuncElement::internalFindW(int order, const EvalContext& context) const
           const MultiIndex& mi = *i;
           int diffOrder = mi.order();
           if (diffOrder==1) 
-            rtn.put(MultipleDeriv(new CoordDeriv(mi.firstOrderDirection())));
+            rtn.put(MultipleDeriv(coordDeriv(mi)));
         }
     }
 
@@ -106,7 +110,8 @@ Set<MultipleDeriv>
 DiscreteFuncElement::internalFindV(int order, const EvalContext& context) const
 {
   Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "DFE::internalFindV(order=" << order << ") for "
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab << "DFE::internalFindV(order=" << order << ") for "
                      << toString());
   Set<MultipleDeriv> rtn;
   Set<MultiIndex> miSet = activeSpatialDerivs(context);
@@ -122,7 +127,7 @@ DiscreteFuncElement::internalFindV(int order, const EvalContext& context) const
           const MultiIndex& mi = *i;
           int diffOrder = mi.order();
           if (diffOrder==1) 
-            rtn.put(MultipleDeriv(new CoordDeriv(mi.firstOrderDirection())));
+            rtn.put(MultipleDeriv(coordDeriv(mi)));
         }
     }
   
@@ -133,6 +138,9 @@ DiscreteFuncElement::internalFindV(int order, const EvalContext& context) const
 Set<MultipleDeriv> 
 DiscreteFuncElement::internalFindC(int order, const EvalContext& context) const
 {
+  Tabs tab;
+  SUNDANCE_MSG5(context.setupVerbosity(), 
+    tab << "DFE::internalFindC is a no-op");
   Set<MultipleDeriv> rtn;
   return rtn;
 }
@@ -150,4 +158,11 @@ XMLObject DiscreteFuncElement::toXML() const
 }
 
 
+bool DiscreteFuncElement::lessThan(const ScalarExpr* other) const
+{
+  const DiscreteFuncElement* p 
+    = dynamic_cast<const DiscreteFuncElement*>(other);
+  TEST_FOR_EXCEPT(p==0);
 
+  return fid() < p->fid();
+}

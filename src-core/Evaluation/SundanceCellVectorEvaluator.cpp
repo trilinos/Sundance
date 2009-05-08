@@ -39,12 +39,12 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr, 
-                                       const EvalContext& context)
+  const EvalContext& context)
   : SubtypeEvaluator<CellVectorExpr>(expr, context), 
     dim_(expr->dimension()),
     isTangentVector_(expr->isTangent()),
@@ -54,15 +54,16 @@ CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr,
 {
 
   Tabs tabs;
-  SUNDANCE_VERB_LOW(tabs << "initializing cell vector evaluator for " 
-                    << expr->toString());
-  SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " 
-		       << std::endl << *(this->sparsity)());
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG1(verb, tabs << "initializing cell vector evaluator for " 
+    << expr->toString());
+  SUNDANCE_MSG2(verb, tabs << "return sparsity " 
+    << std::endl << *(this->sparsity)());
 
   TEST_FOR_EXCEPTION(this->sparsity()->numDerivs() >1 , InternalError,
-                     "CellVectorEvaluator ctor found a sparsity table "
-                     "with more than one entry. The bad sparsity table is "
-                     << *(this->sparsity)());
+    "CellVectorEvaluator ctor found a sparsity table "
+    "with more than one entry. The bad sparsity table is "
+    << *(this->sparsity)());
 
   /* 
    * There is only one possible entries in the nozeros table for a
@@ -70,47 +71,46 @@ CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr,
    */
   
   for (int i=0; i<this->sparsity()->numDerivs(); i++)
-    {
-      const MultipleDeriv& d = this->sparsity()->deriv(i);
+  {
+    const MultipleDeriv& d = this->sparsity()->deriv(i);
 
-      /* for a zeroth-order derivative, evaluate the coord expr */
-      TEST_FOR_EXCEPTION(d.order() != 0, RuntimeError, 
-			 "Derivative " << d << " is not valid for "
-			 "CellVectorEvaluator");
-      addVectorIndex(i, 0);
-    }
+    /* for a zeroth-order derivative, evaluate the coord expr */
+    TEST_FOR_EXCEPTION(d.order() != 0, RuntimeError, 
+      "Derivative " << d << " is not valid for "
+      "CellVectorEvaluator");
+    addVectorIndex(i, 0);
+  }
   
 }
 
 
 
 void CellVectorEvaluator::internalEval(const EvalManager& mgr,
-                                      Array<double>& constantResults,
-                                      Array<RefCountPtr<EvalVector> >& vectorResults) const 
+  Array<double>& constantResults,
+  Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  //  TimeMonitor timer(coordEvalTimer());
   Tabs tabs;
 
-  SUNDANCE_VERB_LOW(tabs << "CellVectorEvaluator::eval() expr=" << expr()->toString());
+  SUNDANCE_MSG2(mgr.verb(), tabs << "CellVectorEvaluator::eval() expr=" 
+    << expr()->toString());
 
-  if (verbosity() > VerbMedium)
-    {
-      Out::os() << tabs << "sparsity = " << std::endl << tabs << *(this->sparsity)() << std::endl;
-    }
-
+  SUNDANCE_MSG3(mgr.verb(), 
+    tabs << "sparsity = " << std::endl << tabs << *(this->sparsity)());
+  
   vectorResults.resize(1);
   vectorResults[0] = mgr.popVector();
+  SUNDANCE_MSG4(mgr.verb(), tabs << "forwarding to evaluation manager");
   mgr.evalCellVectorExpr(expr(), vectorResults[0]);
   mgr.stack().setVecSize(vectorResults[0]->length());
   vectorResults[0]->setString(stringRep_);
 
-  if (verbosity() > VerbMedium)
-    {
-      Tabs tab1;
-      Out::os() << tab1 << "results " << std::endl;
-      this->sparsity()->print(Out::os(), vectorResults,
-                            constantResults);
-    }
+  if (mgr.verb() > 2)
+  {
+    Tabs tab1;
+    Out::os() << tab1 << "results " << std::endl;
+    this->sparsity()->print(Out::os(), vectorResults,
+      constantResults);
+  }
 
 }
 

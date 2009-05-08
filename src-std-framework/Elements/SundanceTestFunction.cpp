@@ -36,37 +36,26 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 
 TestFunction::TestFunction(const BasisFamily& basis, const string& name)
-  : TestFunctionStub(name, vectorDimStructure(basis),
-                        rcp(new TestFunctionData(tuple(basis)))), 
+  : TestFunctionStub(name, vectorDimStructure(basis)[0].first,
+    vectorDimStructure(basis)[0].second,
+    rcp(new TestFunctionData(tuple(basis)))), 
     FuncWithBasis(basis)
 {;}
 
-
-TestFunction::TestFunction(const Array<BasisFamily>& basis, const string& name)
-  : TestFunctionStub(name, vectorDimStructure(basis),
-                        rcp(new TestFunctionData(basis))), 
-    FuncWithBasis(basis)
-{;}
 
 
 TestFunction::TestFunction(const BasisFamily& basis, 
                                  const SpectralBasis& spBasis,
                                  const string& name)
-  : TestFunctionStub(name, spBasis, vectorDimStructure(basis),
-                     rcp(new TestFunctionData(replicate(basis, spBasis.nterms())))), 
+  : TestFunctionStub(name, spBasis, vectorDimStructure(basis)[0].first,
+    vectorDimStructure(basis)[0].second,
+    rcp(new TestFunctionData(replicate(basis, spBasis.nterms())))), 
     FuncWithBasis(replicate(basis, spBasis.nterms()))
 {;}
 
 
-TestFunction::TestFunction(const Array<BasisFamily>& basis, 
-                                 const SpectralBasis& spBasis,
-                                 const string& name)
-  : TestFunctionStub(name, spBasis, vectorDimStructure(basis),
-                     rcp(new TestFunctionData(replicate(basis, spBasis.nterms())))), 
-    FuncWithBasis(replicate(basis, spBasis.nterms()))
-{;}

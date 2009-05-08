@@ -75,9 +75,11 @@ int main(int argc, char** argv)
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad = new GaussianQuadrature(2);
 
-
+      WatchFlag watchMe("watch");
+      watchMe.setEvalVerb(5);
       /* Define the weak form */
-      Expr eqn = Integral(interior, -(dx*v)*(dx*u) - 2.0*v, quad);
+      Expr eqn = Integral(interior, -(dx*v)*(dx*u), quad, watchMe)
+        + Integral(interior, -2.0*v, quad);
       /* Define the Dirichlet BC */
       Expr bc = EssentialBC(leftPoint, v*u, quad);
 
@@ -86,8 +88,9 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
 
 
+      ParameterList verb = *LinearProblem::defaultVerbParams();
+      verb.sublist("Assembler").set<int>("evaluation",5);
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
-      cout << prob.getOperator();
 
 #ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/aztec-ifpack.xml"));

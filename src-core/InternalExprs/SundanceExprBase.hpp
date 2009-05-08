@@ -49,8 +49,7 @@ using namespace Teuchos;
 using std::string;
 using std::ostream;
 
-namespace Internal
-{
+
 /** */
 class ExprBase : public TSFExtended::Handleable<ExprBase>
 {
@@ -91,7 +90,7 @@ protected:
 };
 
 
-}
+
 }
 
 #endif

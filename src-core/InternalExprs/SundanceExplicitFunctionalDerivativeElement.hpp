@@ -54,12 +54,12 @@ using std::ostream;
  * Scalar element of an explicit user-level functional derivative
  */
 class ExplicitFunctionalDerivativeElement 
-  : virtual public Internal::UnaryExpr
+  : virtual public UnaryExpr
 {
 public:
   /** */
   ExplicitFunctionalDerivativeElement(
-    const RefCountPtr<Internal::ScalarExpr>& arg,
+    const RefCountPtr<ScalarExpr>& arg,
     const Deriv& fd
     );
             

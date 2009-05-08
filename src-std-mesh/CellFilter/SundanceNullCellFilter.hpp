@@ -53,7 +53,7 @@ using namespace SundanceStdMesh::Internal;
      * independently of geometry, i.e., equations involving only
      * global parameters.
      **/
-  class NullCellFilter : public SundanceCore::Internal::NullCellFilterStub
+  class NullCellFilter : public SundanceCore::NullCellFilterStub
     {
     public:
       /** */

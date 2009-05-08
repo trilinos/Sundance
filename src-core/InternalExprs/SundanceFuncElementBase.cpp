@@ -29,35 +29,23 @@
 /* @HEADER@ */
 
 #include "SundanceFuncElementBase.hpp"
-#include "SundanceFunctionalDeriv.hpp"
-#include "SundanceCoordDeriv.hpp"
+
+
 #include "SundanceExpr.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 
 FuncElementBase::FuncElementBase(const string& rootName,
-  const string& suffix,
-  int sharedID)
-	: ScalarExpr(), name_(rootName + suffix), rootName_(rootName),
-    suffix_(suffix), componentID_(nextComponentID()), sharedID_(sharedID)
+  const string& suffix, const FunctionIdentifier& fid)
+	: ScalarExpr(), FunctionWithID(fid), 
+    name_(rootName + suffix), rootName_(rootName),
+    suffix_(suffix)
 {}
 
-FuncElementBase::FuncElementBase(const string& rootName,
-  int sharedID)
-	: ScalarExpr(), name_(rootName), rootName_(rootName),
-    suffix_(), componentID_(nextComponentID()), sharedID_(sharedID)
-{}
-
-
-void FuncElementBase::accumulateFuncSet(Set<int>& funcIDs, 
-                                        const Set<int>& activeSet) const
-{
-  if (activeSet.contains(funcComponentID())) funcIDs.put(funcComponentID());
-}
 
 ostream& FuncElementBase::toText(ostream& os, bool /* paren */) const 
 {
@@ -77,7 +65,7 @@ bool FuncElementBase::lessThan(const ScalarExpr* other) const
   const FuncElementBase* f = dynamic_cast<const FuncElementBase*>(other);
   TEST_FOR_EXCEPTION(f==0, InternalError, "cast should never fail at this point");
   
-  return (funcComponentID() < f->funcComponentID());
+  return (fid() < f->fid());
 }
 
   

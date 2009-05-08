@@ -35,63 +35,56 @@
 #include "SundanceSubtypeEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 
 namespace SundanceCore 
 {
-  class Parameter;
+class Parameter;
 
-  namespace Internal 
-  {
-    class DiscreteFuncElementEvaluator; 
-    class SymbolicFuncElement;
-    class ConstantEvaluator; 
+class DiscreteFuncElementEvaluator; 
+class SymbolicFuncElement;
+class ConstantEvaluator; 
 
-    /** 
-     *
-     */
-    class SymbolicFuncElementEvaluator 
-      : public SubtypeEvaluator<SymbolicFuncElement>
-    {
-    public:
-      /** */
-      SymbolicFuncElementEvaluator(const SymbolicFuncElement* expr, 
-                                   const EvalContext& context);
+/** 
+ *
+ */
+class SymbolicFuncElementEvaluator 
+  : public SubtypeEvaluator<SymbolicFuncElement>
+{
+public:
+  /** */
+  SymbolicFuncElementEvaluator(const SymbolicFuncElement* expr, 
+    const EvalContext& context);
 
-      /** */
-      virtual ~SymbolicFuncElementEvaluator(){;}
+  /** */
+  virtual ~SymbolicFuncElementEvaluator(){;}
 
-      /** */
-      virtual void internalEval(const EvalManager& mgr,
-                   Array<double>& constantResults,
-                   Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+  /** */
+  virtual void internalEval(const EvalManager& mgr,
+    Array<double>& constantResults,
+    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
 
-      /** */
-      TEUCHOS_TIMER(symbolicFuncEvalTimer, "symbolic function evaluation");
+  /** */
+  TEUCHOS_TIMER(symbolicFuncEvalTimer, "symbolic function evaluation");
 
-      /** */
-      const DiscreteFuncElementEvaluator* dfEval() const {return dfEval_;}
-      /** */
-      const ConstantEvaluator* pEval() const {return pEval_;}
+  /** */
+  const DiscreteFuncElementEvaluator* dfEval() const {return dfEval_;}
+  /** */
+  const ConstantEvaluator* pEval() const {return pEval_;}
 
-    private:
-      Array<MultiIndex> mi_;
-      Array<int> spatialDerivPtrs_;
-      Array<int> onePtrs_;
-      Array<int> paramValuePtrs_;
-      const DiscreteFuncElement* df_;
-      const Parameter* p_;
-      const DiscreteFuncElementEvaluator* dfEval_;
-      const ConstantEvaluator* pEval_;
-      Array<string> stringReps_;
-    };
+private:
+  Array<MultiIndex> mi_;
+  Array<int> spatialDerivPtrs_;
+  Array<int> onePtrs_;
+  Array<int> paramValuePtrs_;
+  const DiscreteFuncElement* df_;
+  const Parameter* p_;
+  const DiscreteFuncElementEvaluator* dfEval_;
+  const ConstantEvaluator* pEval_;
+  Array<string> stringReps_;
+};
 
     
 
-  }
 }
 
-                  
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 #endif

@@ -43,67 +43,64 @@
 
 namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-  using std::string;
-  using std::ostream;
+using std::string;
+using std::ostream;
 
-  namespace Internal
-  {
-    /**
-     * Scalar-valued element of a vector-valued functor
-     */
-    class UserDefFunctorElement
-    {
-    public:
-      /** ctor */
-      UserDefFunctorElement(const RefCountPtr<const UserDefFunctor>& functor,
-                            int myIndex);
+/**
+ * Scalar-valued element of a vector-valued functor
+ */
+class UserDefFunctorElement
+{
+public:
+  /** ctor */
+  UserDefFunctorElement(const RefCountPtr<const UserDefFunctor>& functor,
+    int myIndex);
 
-      /** */
-      virtual ~UserDefFunctorElement(){;}
+  /** */
+  virtual ~UserDefFunctorElement(){;}
 
-      /** */
-      const string& name() const {return master_->name(myIndex());}
+  /** */
+  const string& name() const {return master_->name(myIndex());}
 
-      /** */
-      const string& masterName() const {return master_->name();}
+  /** */
+  const string& masterName() const {return master_->name();}
 
-      /** */
-      void evalArgDerivs(int maxOrder, 
-                         const Array<double>& in,
-                         Array<double>& outDerivs) const ;
+  /** */
+  void evalArgDerivs(int maxOrder, 
+    const Array<double>& in,
+    Array<double>& outDerivs) const ;
 
-      /** */
-      void getArgDerivIndices(const Array<int>& orders,
-                              SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
-                              SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
+  /** */
+  void getArgDerivIndices(const Array<int>& orders,
+    SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
+    SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
 
-      /** */
-      int numArgs() const {return master_->domainDim();}
+  /** */
+  int numArgs() const {return master_->domainDim();}
 
-      /** */
-      void reset() const {master_->reset();}
+  /** */
+  void reset() const {master_->reset();}
 
-      /** Return the index of this element into the list-valued 
-       * user defined op */
-      int myIndex() const {return myIndex_;}
+  /** Return the index of this element into the list-valued 
+   * user defined op */
+  int myIndex() const {return myIndex_;}
 
-      /** */
-      const UserDefFunctor* master() const 
-      {return master_.get();}
+  /** */
+  const UserDefFunctor* master() const 
+    {return master_.get();}
 
-      /** */
-      int maxOrder() const {return master_->maxOrder();}
+  /** */
+  int maxOrder() const {return master_->maxOrder();}
 
 
-    private:
-      const RefCountPtr<const UserDefFunctor> master_;
-      const int myIndex_;
-    };
+private:
+  const RefCountPtr<const UserDefFunctor> master_;
+  const int myIndex_;
+};
 
-  }
 
 }
 

@@ -31,14 +31,13 @@
 #ifndef SUNDANCE_COORDEXPR_H
 #define SUNDANCE_COORDEXPR_H
 
-#include "SundanceFuncElementBase.hpp"
 #include "SundanceEvaluatorFactory.hpp"
 #include "SundanceCoordExprEvaluator.hpp"
 
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
 
   /** 
    * CoordExpr is an 
@@ -47,8 +46,7 @@ namespace SundanceCore
    * \f$y\f$, or \f$z\f$) to be represented is specified by the first
    * argement to the constructor. 
    */
-  class CoordExpr : public FuncElementBase,
-                    public EvaluatableExpr,
+  class CoordExpr : public EvaluatableExpr,
                     public GenericEvaluatorFactory<CoordExpr, CoordExprEvaluator>
     {
     public:
@@ -61,10 +59,18 @@ namespace SundanceCore
       /** */
       virtual XMLObject toXML() const ;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
       /** */
       int dir() const {return dir_;}
 
+      /** */
+      const string& name() const {return name_;}
+
+      /** Write a simple text description suitable 
+       * for output to a terminal */
+      virtual ostream& toText(ostream& os, bool paren) const {os<<name();}
+      
+      /** Write in a form suitable for LaTeX formatting */
+      virtual ostream& toLatex(ostream& os, bool paren) const {os<<name();}
 
     
       /** */
@@ -89,8 +95,7 @@ namespace SundanceCore
 
     private:
       int dir_;
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
-
+      string name_;
     };
 }
 

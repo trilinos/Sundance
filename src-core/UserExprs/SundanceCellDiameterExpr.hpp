@@ -37,7 +37,7 @@
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  using namespace SundanceCore::Internal;
+  using namespace SundanceCore;
 
   /**
    * Expression that returns a characteristic size for each cell on 

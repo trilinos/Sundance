@@ -24,12 +24,12 @@
 
 using namespace SundanceUtils;
 using namespace SundanceCore;
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 using SundanceCore::List;
 
-using SundanceCore::Internal::UnknownFuncElement;
+using SundanceCore::UnknownFuncElement;
 
 static Time& totalTimer() 
 {

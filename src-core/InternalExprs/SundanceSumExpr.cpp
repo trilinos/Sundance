@@ -37,7 +37,7 @@
 
 
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace SundanceUtils;
 

@@ -44,7 +44,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
-using namespace SundanceCore::Internal;
+using namespace SundanceCore;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -182,18 +182,13 @@ void SymbolicFuncElementEvaluator
                Array<double>& constantResults,
                Array<RefCountPtr<EvalVector> >& vectorResults) const 
 {
-  ///  TimeMonitor timer(symbolicFuncEvalTimer());
   Tabs tabs;
   
-  if (verbosity() > VerbSilent)
-    {
-      Out::os() << tabs << "SymbolicFuncElementEvaluator::eval: expr=" << expr()->toString() 
-           << endl;
-      if (verbosity() > VerbLow)
-        {
-          Out::os() << tabs << "sparsity = " << endl << *(this->sparsity)() << endl;
-        }
-    }
+  SUNDANCE_MSG1(mgr.verb(), 
+    tabs << "SymbolicFuncElementEvaluator::eval: expr=" 
+    << expr()->toString());
+  SUNDANCE_MSG2(mgr.verb(), tabs << "sparsity = " 
+    << endl << *(this->sparsity)());
 
   constantResults.resize(onePtrs_.size() + paramValuePtrs_.size());
   vectorResults.resize(spatialDerivPtrs_.size());
@@ -232,7 +227,7 @@ void SymbolicFuncElementEvaluator
       this->sparsity()->print(Out::os(), vectorResults,
                             constantResults);
     }
-  SUNDANCE_VERB_LOW(tabs << "SymbolicFuncEvaluator::eval() done"); 
+  SUNDANCE_MSG1(mgr.verb(), tabs << "SymbolicFuncEvaluator::eval() done"); 
 
 }
 
