@@ -81,8 +81,8 @@ public:
     {mediator_ = med;}
 
   /** */
-  void setVerbosity(int verb) 
-    {verb_ = verb;}
+  void setVerbosity(int verb) ;
+
 
   /** */
   int verb() const {return verb_;}

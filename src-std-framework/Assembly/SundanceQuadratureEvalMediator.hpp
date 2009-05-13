@@ -63,8 +63,7 @@ namespace SundanceStdFwk
        */
       QuadratureEvalMediator(const Mesh& mesh, 
         int cellDim,
-        const QuadratureFamily& quad,
-        int verb);
+        const QuadratureFamily& quad);
 
       /** */
       virtual ~QuadratureEvalMediator(){;}
@@ -100,15 +99,14 @@ namespace SundanceStdFwk
       virtual void print(ostream& os) const ;
 
       /** */
-      RefCountPtr<Array<Array<double> > > getRefBasisVals(const BasisFamily& basis, 
+      Array<Array<double> >* getRefBasisVals(const BasisFamily& basis, 
                                                    int diffOrder) const ;
 
       /** */
-      RefCountPtr<Array<Array<Array<double> > > > getFacetRefBasisVals(const BasisFamily& basis) const ;
+      RefCountPtr<Array<Array<Array<double> > > > getFacetRefBasisVals(const BasisFamily& basis, int diffOrder) const ;
 
       /** */
-      const Array<double>& quadWgts() const 
-      {return *(refQuadWeights_.get(cellType()));}
+      int numQuadPts(const CellType& cellType) const ;
 
       static double& totalFlops() {static double rtn = 0; return rtn;}
 
@@ -116,8 +114,14 @@ namespace SundanceStdFwk
 
       static void addFlops(const double& flops) {totalFlops() += flops;}
 
-      /** */
-      int numFacetCases() const {return numFacetCases_;}
+      /**
+       * Return the number of different cases for which reference
+       * basis functions must be evaluated. If we're on maximal cells,
+       * this will be one. If we're on lower-dimensional cells, this will
+       * be equal to the number of cellDim-dimensional facets of the maximal
+       * cells.
+       */
+      int numEvaluationCases() const {return numEvaluationCases_;}
 
     private:
 
@@ -131,27 +135,33 @@ namespace SundanceStdFwk
       void computePhysQuadPts() const ;
 
       /** */
-      int numFacetCases_;
+      int numEvaluationCases_;
 
       /** */
       QuadratureFamily quad_;
 
       /** */
-      Map<CellType, RefCountPtr<Array<Point> > > refQuadPts_;
+      Map<CellType, int> numQuadPtsForCellType_;
 
-      /** */
-      Map<CellType, RefCountPtr<Array<Array<Point> > > > refFacetQuadPts_;
+      /** quadPtsForReferenceCell_ stores quadrature points using the 
+       * cell's coordinate system, i.e., points on a line are
+       * stored in 1D coordinates regardless of the dimension of the 
+       * maximal cell. This tabulation of quad pts is used in push
+       * forward operations because it saves some pointer chasing 
+       * within the mesh's pushForward() function.  */
+      Map<CellType, RefCountPtr<Array<Point> > > quadPtsForReferenceCell_;
 
-      /** */
-      Map<CellType, RefCountPtr<Array<double> > > refQuadWeights_;
+      /** quadPtsReferredToMaxCell_ stores quadrature points using the maximal
+       * cell's coordinate system, i.e., points on a line are stored in 2D
+       * coordinates if the line is a facet of a triangle, and so on. These
+       * quadrature points are used in basis function evaluations. */
+      Map<CellType, RefCountPtr<Array<Array<Point> > > > quadPtsReferredToMaxCell_;
 
       /** */
       mutable Array<Point> physQuadPts_;
 
       /** */
-      mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<double> > > > > refBasisVals_;
-
-      mutable Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<Array<double> > > > > refFacetBasisVals_;
+      mutable Array<Map<OrderedPair<BasisFamily, CellType>, RefCountPtr<Array<Array<Array<double> > > > > > refFacetBasisVals_;
       
     };
   }

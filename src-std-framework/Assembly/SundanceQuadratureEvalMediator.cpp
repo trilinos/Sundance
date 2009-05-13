@@ -57,16 +57,15 @@ using namespace TSFExtended;
 QuadratureEvalMediator
 ::QuadratureEvalMediator(const Mesh& mesh, 
   int cellDim,
-  const QuadratureFamily& quad, 
-  int verb)
-  : StdFwkEvalMediator(mesh, cellDim, verb),
+  const QuadratureFamily& quad)
+  : StdFwkEvalMediator(mesh, cellDim),
+    numEvaluationCases_(-1),
     quad_(quad),
-    refQuadPts_(),
-    refFacetQuadPts_(),
-    refQuadWeights_(),
+    numQuadPtsForCellType_(),
+    quadPtsForReferenceCell_(),
+    quadPtsReferredToMaxCell_(),
     physQuadPts_(),
-    refBasisVals_(2),
-    refFacetBasisVals_()
+    refFacetBasisVals_(2)
 {}
 
 void QuadratureEvalMediator::setCellType(const CellType& cellType,
@@ -76,46 +75,63 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
 
   if (cellType != maxCellType)
   {
-    numFacetCases_ = numFacets(maxCellType, cellDim());
+    numEvaluationCases_ = numFacets(maxCellType, cellDim());
   }
-  
-  if (refQuadPts_.containsKey(cellType)) return;
+  else
+  {
+    numEvaluationCases_ = 1;
+  }
 
-  
+  if (quadPtsReferredToMaxCell_.containsKey(cellType)) return;
+
   RefCountPtr<Array<Point> > pts = rcp(new Array<Point>());
-  RefCountPtr<Array<double> > wgts = rcp(new Array<double>());
+  RefCountPtr<Array<double> > wgts = rcp(new Array<double>()); 
 
   quad_.getPoints(cellType, *pts, *wgts);
-  refQuadPts_.put(cellType, pts);
-  refQuadWeights_.put(cellType, wgts);
+  quadPtsForReferenceCell_.put(cellType, pts);
 
-  if (cellType != maxCellType)
+  numQuadPtsForCellType_.put(cellType, pts->size());
+
+  RefCountPtr<Array<Array<Point> > > facetPts 
+    = rcp(new Array<Array<Point> >(numEvaluationCases()));
+  RefCountPtr<Array<Array<double> > > facetWgts 
+    = rcp(new Array<Array<double> >(numEvaluationCases()));
+  
+  for (int fc=0; fc<numEvaluationCases(); fc++)
   {
-    RefCountPtr<Array<Array<Point> > > facetPts 
-      = rcp(new Array<Array<Point> >(numFacetCases()));
-    RefCountPtr<Array<Array<double> > > facetWgts 
-      = rcp(new Array<Array<double> >(numFacetCases()));
-    for (int fc=0; fc<numFacetCases(); fc++)
+    if (cellType != maxCellType)
     {
       quad_.getFacetPoints(maxCellType, cellDim(), fc, 
         (*facetPts)[fc], (*facetWgts)[fc]);
     }
-    refFacetQuadPts_.put(cellType, facetPts);
+    else
+    {
+      quad_.getPoints(maxCellType, (*facetPts)[fc], (*facetWgts)[fc]);
+    }
   }
+  quadPtsReferredToMaxCell_.put(cellType, facetPts);
+}
+
+int QuadratureEvalMediator::numQuadPts(const CellType& ct) const 
+{
+  TEST_FOR_EXCEPTION(!numQuadPtsForCellType_.containsKey(ct),
+    RuntimeError,
+    "no quadrature points have been tabulated for cell type=" << ct);
+  return numQuadPtsForCellType_.get(ct);
 }
 
 void QuadratureEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
   RefCountPtr<EvalVector>& vec) const 
 {
   Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs 
+  SUNDANCE_MSG2(verb(),tabs 
     << "QuadratureEvalMediator evaluating cell diameter expr " 
     << expr->toString());
 
-  int nQuad = quadWgts().size();
+  int nQuad = numQuadPts(cellType());
   int nCells = cellLID()->size();
 
-  SUNDANCE_VERB_HIGH(tabs << "number of quad pts=" << nQuad);
+  SUNDANCE_MSG3(verb(),tabs << "number of quad pts=" << nQuad);
   Array<double> diameters;
   mesh().getCellDiameters(cellDim(), *cellLID(), diameters);
 
@@ -136,14 +152,14 @@ void QuadratureEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
   RefCountPtr<EvalVector>& vec) const 
 {
   Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs 
+  SUNDANCE_MSG2(verb(),tabs 
     << "QuadratureEvalMediator evaluating cell normal expr " 
     << expr->toString());
 
-  int nQuad = quadWgts().size();
+  int nQuad = numQuadPts(cellType());
   int nCells = cellLID()->size();
 
-  SUNDANCE_VERB_HIGH(tabs << "number of quad pts=" << nQuad);
+  SUNDANCE_MSG3(verb(),tabs << "number of quad pts=" << nQuad);
   Array<Point> normals;
   mesh().outwardNormals(*cellLID(), normals);
   int dir = expr->componentIndex();
@@ -165,7 +181,7 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
   RefCountPtr<EvalVector>& vec) const 
 {
   Tabs tabs;
-  SUNDANCE_VERB_MEDIUM(tabs 
+  SUNDANCE_MSG2(verb(),tabs 
     << "QuadratureEvalMediator evaluating coord expr " 
     << expr->toString());
   
@@ -173,7 +189,7 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
   int nQuad = physQuadPts_.length();
   int d = expr->dir();
   
-  SUNDANCE_VERB_HIGH(tabs << "number of quad pts=" << nQuad);
+  SUNDANCE_MSG3(verb(),tabs << "number of quad pts=" << nQuad);
 
   vec->resize(nQuad);
   double * const xx = vec->start();
@@ -184,35 +200,45 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
 }
 
 RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
-::getFacetRefBasisVals(const BasisFamily& basis) const
+::getFacetRefBasisVals(const BasisFamily& basis, int diffOrder) const
 {
   Tabs tab;
   RefCountPtr<Array<Array<Array<double> > > > rtn ;
 
-  if (!cofacetCellsAreReady()) setupFacetTransformations();
-
-  TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), RuntimeError, 
-    "cofacet cells not ready in getFacetRefBasisVals()");
-
+  if (cellDim() != maxCellDim())
+  {
+    if (!cofacetCellsAreReady()) setupFacetTransformations();
+    
+    TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), RuntimeError, 
+      "cofacet cells not ready in getFacetRefBasisVals()");
+  }
   typedef OrderedPair<BasisFamily, CellType> key;
 
-  if (!refFacetBasisVals_.containsKey(key(basis, cellType())))
-  {
-    SUNDANCE_OUT(this->verbosity() > VerbMedium,
-      tab << "computing basis values on facet quad pts");
-    rtn = rcp(new Array<Array<Array<double> > >(numFacetCases()));
+  int nDerivResults = 1;
+  if (diffOrder==1) nDerivResults = maxCellDim();
 
-    for (int fc=0; fc<numFacetCases(); fc++)
+  if (!refFacetBasisVals_[diffOrder].containsKey(key(basis, cellType())))
+  {
+    SUNDANCE_OUT(this->verb() > VerbMedium,
+      tab << "computing basis values on facet quad pts");
+    rtn = rcp(new Array<Array<Array<double> > >(numEvaluationCases()));
+
+    Array<Array<Array<Array<double> > > > tmp(nDerivResults);
+
+    for (int fc=0; fc<numEvaluationCases(); fc++)
     {
       (*rtn)[fc].resize(basis.dim());
-      Array<Array<Array<Array<double> > > > tmp(maxCellDim());    
-      for (int r=0; r<maxCellDim(); r++)
+
+      for (int r=0; r<nDerivResults; r++)
       {
         tmp[r].resize(basis.dim());
         MultiIndex mi;
-        mi[r]=1;
+        if (diffOrder==1)
+        {
+          mi[r]=1;
+        }
         basis.ptr()->refEval(maxCellType(), maxCellType(), 
-          (*(refFacetQuadPts_.get(cellType())))[fc], 
+          (*(quadPtsReferredToMaxCell_.get(cellType())))[fc], 
           mi, tmp[r]);
       }
       /* the tmp array contains values indexed as [quad][node]. 
@@ -225,115 +251,37 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
       for (int d=0; d<basis.dim(); d++)
       {
         (*rtn)[fc][d].resize(nTot);
-        for (int r=0; r<dim; r++)
+        for (int r=0; r<nDerivResults; r++)
         {
           for (int q=0; q<nQuad; q++)
           {
             for (int n=0; n<nNodes; n++)
             {
-              (*rtn)[fc][d][(n*nQuad + q)*dim + r] = tmp[r][d][q][n];
+              (*rtn)[fc][d][(n*nQuad + q)*nDerivResults + r] = tmp[r][d][q][n];
             }
           }
         }
       }
     }
-    refFacetBasisVals_.put(key(basis, cellType()), rtn);
+    refFacetBasisVals_[diffOrder].put(key(basis, cellType()), rtn);
   }
   else
   {
-    SUNDANCE_OUT(this->verbosity() > VerbMedium,
+    SUNDANCE_OUT(this->verb() > VerbMedium,
       tab << "reusing facet basis values on quad pts");
-    rtn = refFacetBasisVals_.get(key(basis, cellType()));
+    rtn = refFacetBasisVals_[diffOrder].get(key(basis, cellType()));
   }
 
   return rtn;
 }
 
-RefCountPtr<Array<Array<double> > > QuadratureEvalMediator
+Array<Array<double> >* QuadratureEvalMediator
 ::getRefBasisVals(const BasisFamily& basis, int diffOrder) const
 {
   Tabs tab;
-  RefCountPtr<Array<Array<double> > > rtn ;
-
-  typedef OrderedPair<BasisFamily, CellType> key;
-
-  TEST_FOR_EXCEPT(diffOrder > 1);
-
-  if (!refBasisVals_[diffOrder].containsKey(key(basis, cellType())))
-  {
-    SUNDANCE_OUT(this->verbosity() > VerbMedium,
-      tab << "computing basis values on quad pts");
-    rtn = rcp(new Array<Array<double> >());
-    rtn->resize(basis.dim());
-
-    if (diffOrder==0)
-    {
-      Array<Array<Array<double> > > tmp;
-      basis.ptr()->refEval(maxCellType(), cellType(), 
-        *(refQuadPts_.get(cellType())), 
-        MultiIndex(), tmp);
-      /* the tmp array contains values indexed as [quad][node]. 
-       * We need to put this into fortran order with quad index running
-       * fastest */
-      for (int d=0; d<basis.dim(); d++)
-      {
-        int nQuad = tmp[d].size();
-        int nNodes = tmp[d][0].size();
-        int nTot = nQuad*nNodes;
-        (*rtn)[d].resize(nTot);
-          
-        for (int q=0; q<nQuad; q++)
-        {
-          for (int n=0; n<nNodes; n++)
-          {
-            (*rtn)[d][n*nQuad + q] = tmp[d][q][n];
-          }
-        }
-      }
-    }
-    else
-    {
-      Array<Array<Array<Array<double> > > > tmp(cellDim());          
-      for (int r=0; r<cellDim(); r++)
-      {
-        MultiIndex mi;
-        mi[r]=1;
-        basis.ptr()->refEval(maxCellType(), cellType(), 
-          *(refQuadPts_.get(cellType())), 
-          mi, tmp[r]);
-      }
-      /* the tmp array contains values indexed as [quad][node]. 
-       * We need to put this into fortran order with quad index running
-       * fastest */
-      int dim = cellDim();
-      for (int d=0; d<basis.dim(); d++)
-      {
-        int nQuad = tmp[0][d].size();
-        int nNodes = tmp[0][d][0].size();
-        int nTot = dim * nQuad * nNodes;
-        (*rtn)[d].resize(nTot);
-          
-        for (int r=0; r<dim; r++)
-        {
-          for (int q=0; q<nQuad; q++)
-          {
-            for (int n=0; n<nNodes; n++)
-            {
-              (*rtn)[d][(n*nQuad + q)*dim + r] = tmp[r][d][q][n];
-            }
-          }
-        }
-      }
-    }
-    refBasisVals_[diffOrder].put(key(basis, cellType()), rtn);
-  }
-  else
-  {
-    SUNDANCE_OUT(this->verbosity() > VerbMedium,
-      tab << "reusing basis values on quad pts");
-    rtn = refBasisVals_[diffOrder].get(key(basis, cellType()));
-  }
-  return rtn;
+  RefCountPtr<Array<Array<Array<double> > > > fRtn 
+    = getFacetRefBasisVals(basis, diffOrder);
+  return &((*fRtn)[0]);
 }
 
 
@@ -348,23 +296,23 @@ void QuadratureEvalMediator
     "with expr that is not a discrete function");
   Tabs tab;
 
-  SUNDANCE_VERB_LOW(tab << "QuadEvalMed evaluating DF " << expr->name());
+  SUNDANCE_MSG1(verb(),tab << "QuadEvalMed evaluating DF " << expr->name());
 
-  int nQuad = quadWgts().size();
+  int nQuad = numQuadPts(cellType());
   int myIndex = expr->myIndex();
 
   for (unsigned int i=0; i<multiIndices.size(); i++)
   {
     Tabs tab1;
     const MultiIndex& mi = multiIndices[i];
-    SUNDANCE_VERB_MEDIUM(
+    SUNDANCE_MSG2(verb(),
       tab1 << "evaluating DF for multiindex " << mi << endl
       << tab1 << "num cells = " << cellLID()->size() << endl
-      << tab1 << "num quad points = " << quadWgts().size() << endl
+      << tab1 << "num quad points = " << nQuad << endl
       << tab1 << "my index = " << expr->myIndex() << endl
       << tab1 << "num funcs = " << f->discreteSpace().nFunc());
 
-    vec[i]->resize(cellLID()->size() * quadWgts().size());
+    vec[i]->resize(cellLID()->size() * nQuad);
   
     if (mi.order() == 0)
     {
@@ -375,7 +323,7 @@ void QuadratureEvalMediator
       }
       else
       {
-        SUNDANCE_VERB_MEDIUM(tab2 << "reusing function cache");
+        SUNDANCE_MSG2(verb(),tab2 << "reusing function cache");
       }
 
       const RefCountPtr<const MapStructure>& mapStruct = mapStructCache()[f];
@@ -383,21 +331,21 @@ void QuadratureEvalMediator
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
 
-      SUNDANCE_VERB_HIGH(tab2 << "chunk number = " << chunk << endl
+      SUNDANCE_MSG3(verb(),tab2 << "chunk number = " << chunk << endl
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
       const RefCountPtr<Array<Array<double> > >& cacheVals 
         = fCache()[f];
 
-      SUNDANCE_VERB_EXTREME(tab2 << "cached function values=" << (*cacheVals)[chunk]);
+      SUNDANCE_MSG4(verb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
 
       const double* cachePtr = &((*cacheVals)[chunk][0]);
       double* vecPtr = vec[i]->start();
           
       int cellSize = nQuad*nFuncs;
       int offset = funcIndex*nQuad;
-      SUNDANCE_VERB_HIGH(tab2 << "cell size=" << cellSize << ", offset=" 
+      SUNDANCE_MSG3(verb(),tab2 << "cell size=" << cellSize << ", offset=" 
         << offset);
       int k = 0;
       for (unsigned int c=0; c<cellLID()->size(); c++)
@@ -407,10 +355,25 @@ void QuadratureEvalMediator
           vecPtr[k] = cachePtr[c*cellSize + offset + q];
         }
       }
-      SUNDANCE_VERB_EXTREME(tab2 << "result vector=");
-      if (verbosity() >= VerbExtreme)
+      SUNDANCE_MSG4(verb(),tab2 << "result vector=");
+      if (verb() >= VerbExtreme)
       {
         vec[i]->print(cerr);
+        computePhysQuadPts();
+        k=0;
+        for (unsigned int c=0; c<cellLID()->size(); c++)
+        {
+          Out::os() << tab2 << "-------------------------------------------"
+                    << endl;
+          Out::os() << tab2 << "c=" << c << " cell LID=" << (*cellLID())[c]
+                    << endl;
+          Tabs tab3;
+          for (int q=0; q<nQuad; q++, k++)
+          {
+            Out::os() << tab3 << "q=" << q << " " << physQuadPts_[k]
+                      << " val=" << vecPtr[k] << endl;
+          }
+        }
       }
     }
     else
@@ -422,25 +385,23 @@ void QuadratureEvalMediator
       }
       else
       {
-        SUNDANCE_VERB_HIGH(tab2 << "reusing function cache");
+        SUNDANCE_MSG3(verb(),tab2 << "reusing function cache");
       }
 
-      RefCountPtr<const MapStructure> mapStruct;
-      if (cellDim() == maxCellDim()) mapStruct = mapStructCache()[f];
-      else mapStruct = facetMapStructCache()[f];
+      RefCountPtr<const MapStructure> mapStruct = mapStructCache()[f];
       int chunk = mapStruct->chunkForFuncID(myIndex);
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
 
 
-      SUNDANCE_VERB_HIGH(tab2 << "chunk number = " << chunk << endl
+      SUNDANCE_MSG3(verb(),tab2 << "chunk number = " << chunk << endl
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
       const RefCountPtr<Array<Array<double> > >& cacheVals 
         = dfCache()[f];
 
-      SUNDANCE_VERB_EXTREME(tab2 << "cached function values=" << (*cacheVals)[chunk]);
+      SUNDANCE_MSG4(verb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
 
       int dim = maxCellDim();
       int pDir = mi.firstOrderDirection();
@@ -451,7 +412,7 @@ void QuadratureEvalMediator
       int offset = funcIndex * nQuad * dim;
       int k = 0;
 
-      SUNDANCE_VERB_HIGH(tab2 << "dim=" << dim << ", pDir=" << pDir
+      SUNDANCE_MSG3(verb(),tab2 << "dim=" << dim << ", pDir=" << pDir
         << ", cell size=" << cellSize << ", offset=" 
         << offset);
       for (unsigned int c=0; c<cellLID()->size(); c++)
@@ -461,10 +422,25 @@ void QuadratureEvalMediator
           vecPtr[k] = cachePtr[c*cellSize + offset + q*dim + pDir];
         }
       }
-      SUNDANCE_VERB_EXTREME(tab2 << "result vector=");
-      if (verbosity() >= VerbExtreme)
+      SUNDANCE_MSG4(verb(),tab2 << "result vector=");
+      if (verb() >= VerbExtreme)
       {
         vec[i]->print(cerr);
+        computePhysQuadPts();
+        k=0;
+        for (unsigned int c=0; c<cellLID()->size(); c++)
+        {
+          Out::os() << tab2 << "-------------------------------------------"
+                    << endl;
+          Out::os() << tab2 << "c=" << c << " cell LID=" << (*cellLID())[c]
+                    << endl;
+          Tabs tab3;
+          for (int q=0; q<nQuad; q++, k++)
+          {
+            Out::os() << tab3 << "q=" << q << " " << physQuadPts_[k]
+                      << " val=" << vecPtr[k] << endl;
+          }
+        }
       }
     }
   }
@@ -489,46 +465,26 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
   Teuchos::BLAS<int,double> blas;
 
-  if (mi.order() == 1 && cellDim() != maxCellDim())
   {
     Tabs tab1;
-    SUNDANCE_MSG2(verb(), tab1 << "referring to cofacets");
-    if (!cofacetCellsAreReady()) setupFacetTransformations();
-
-    TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), RuntimeError, 
-      "cofacet cells not ready in fillFunctionCache()");
-
-    if (!facetLocalValueCacheIsValid().containsKey(f) 
-      || !facetLocalValueCacheIsValid().get(f))
-    {
-      Tabs tab2;
-      SUNDANCE_MSG2(verb(), tab2 << "filling cache");
-      localValues = rcp(new Array<Array<double> >());
-      mapStruct = f->getLocalValues(maxCellDim(), maxCellLIDs(), *localValues);
-      TEST_FOR_EXCEPT(mapStruct.get() == 0);
-      facetLocalValueCache().put(f, localValues);
-      facetMapStructCache().put(f, mapStruct);
-      facetLocalValueCacheIsValid().put(f, true);
-    }
-    else
-    {
-      Tabs tab2;
-      SUNDANCE_MSG2(verb(), tab2 << "reusing cache");
-      localValues = facetLocalValueCache().get(f);
-      mapStruct = facetMapStructCache().get(f);
-    }
-  }
-  else
-  {
-    Tabs tab1;
-    SUNDANCE_MSG2(verb(), tab1 << "using non-cofacet cells");
+    SUNDANCE_MSG2(verb(), tab1 << "packing local values");
     if (!localValueCacheIsValid().containsKey(f) 
       || !localValueCacheIsValid().get(f))
     {
       Tabs tab2;
       SUNDANCE_MSG2(verb(), tab2 << "filling cache");
       localValues = rcp(new Array<Array<double> >());
-      mapStruct = f->getLocalValues(cellDim(), *cellLID(), *localValues);
+      if (cellDim() != maxCellDim())
+      {
+        if (!cofacetCellsAreReady()) setupFacetTransformations();
+        mapStruct = f->getLocalValues(maxCellDim(), *cofacetCellLID(), 
+          *localValues);
+      }
+      else
+      {
+        mapStruct = f->getLocalValues(maxCellDim(), *cellLID(), *localValues);
+      }
+
       TEST_FOR_EXCEPT(mapStruct.get() == 0);
       localValueCache().put(f, localValues);
       mapStructCache().put(f, mapStruct);
@@ -588,7 +544,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
     Array<double>& cache = (*cacheVals)[chunk];
 
-    int nQuad = quadWgts().size();
+    int nQuad = numQuadPts(cellType());
     int nCells = cellLID()->size();
     SUNDANCE_MSG2(verb(), tab1 << "num quad points=" << nQuad);
     SUNDANCE_MSG2(verb(), tab1 << "num cells=" << nCells);
@@ -610,7 +566,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
      * Sum over nodal values, which we can do with a matrix-matrix multiply
      * between the ref basis values and the local function values.
      *
-     * There are two cases: (1) When we are evaluating spatial derivatives
+     * There are two cases: (1) When we are evaluating 
      * on a facet, we must use different sets of reference function values
      * on the different facets. We must therefore loop over the evaluation
      * cells, using a vector of reference values chosen according to the
@@ -632,16 +588,14 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
      * (nQuad*nDir)-by-(nFuncs*nCells) matrix.
 
     */
-    if (mi.order() == 1 && cellDim() != maxCellDim())
+    if (cellDim() != maxCellDim())
     {
       Tabs tab2;
       SUNDANCE_MSG2(verb(), 
-        tab2 << "derivatives present on non-maximal cells, so referring "
-        << endl
-        << tab2 << "to maximal cells for transformations");
+        tab2 << "evaluating by reference to maximal cell");
       
       RefCountPtr<Array<Array<Array<double> > > > refFacetBasisValues 
-        = getFacetRefBasisVals(basis);
+        = getFacetRefBasisVals(basis, mi.order());
       /* Note: even though we're ultimately not evaluating on 
        * maxCellType() here, use maxCellType() for both arguments
        * to nReferenceDOFs() because derivatives need to be
@@ -668,11 +622,9 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         double* C = &((*cacheVals)[chunk][c*nRowsA*nColsB]);
         blas.GEMM( Teuchos::NO_TRANS, Teuchos::NO_TRANS, nRowsA, nColsB, nColsA,
           alpha, A, lda, B, ldb, beta, C, ldc);
-        //dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, B,
-        //  &ldb, &beta, C, &ldc);
       }
     }
-    else 
+    else /* cellDim() == maxCellDim() */
     {
       /* 
        * Sum over nodal values, which we can do with a matrix-matrix multiply
@@ -681,9 +633,9 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       Tabs tab2;
       SUNDANCE_MSG2(verb(), tab2 << "building batch transformation matrix");
 
-      RefCountPtr<Array<Array<double> > > refBasisValues 
+      Array<Array<double> >* refBasisValues 
         = getRefBasisVals(basis, diffOrder);
-      int nNodes = basis.nReferenceDOFs(maxCellType(), cellType());
+      int nNodes = basis.nReferenceDOFs(maxCellType(), maxCellType());
       int nRowsA = nQuad*nDir;
       int nColsA = nNodes;
       int nColsB = nFuncs*nCells; 
@@ -693,13 +645,53 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       double alpha = 1.0;
       double beta = 0.0;
       int vecComp = 0;
+      if (verb() >= VerbExtreme)
+      {
+        Tabs tab3;
+        Out::os() << tab2 << "Printing values at nodes" << endl;
+        for (int c=0; c<nCells; c++)
+        {
+          Out::os() << tab3 << "-------------------------------------------"
+                    << endl;
+          Out::os() << tab3 << "c=" << c << " cell LID=" << (*cellLID())[c]
+                    << endl;
+          Tabs tab4;
+          int offset = c*nNodes*nFuncs;
+          for (int n=0; n<nNodes; n++)
+          {
+            Out::os() << tab4 << "n=" << n;
+            for (int f=0; f<nFuncs; f++)
+            {
+              Out::os() << " " << (*localValues)[chunk][offset + n*nFuncs + f];
+            }
+            Out::os() << endl;
+          }
+        }
+        Out::os() << tab2 << "-------------------------------------------";
+        Out::os() << tab2 << "Printing reference basis at nodes" << endl;
+        Out::os() << tab2 << "-------------------------------------------"
+                  << endl;
+        for (int n=0; n<nNodes; n++)
+        {
+          Out::os() << tab3 << "node=" << n << endl;
+          for (int q=0; q<nQuad; q++)
+          {
+            Tabs tab4;
+            Out::os() << tab4 << "q=" << q;
+            for (int r=0; r<nDir; r++)
+            {
+              Out::os () << " " 
+                         << (*refBasisValues)[vecComp][(n*nQuad + q)*nDir + r];
+            }
+            Out::os() << endl;
+          }
+        }
+      }
       double* A = &((*refBasisValues)[vecComp][0]);
       double* B = &((*localValues)[chunk][0]);
       double* C = &((*cacheVals)[chunk][0]);
       blas.GEMM( Teuchos::NO_TRANS, Teuchos::NO_TRANS, nRowsA, nColsB, nColsA, alpha,
         A, lda, B, ldb, beta, C, ldc );
-      //dgemm_("n", "n", &nRowsA, &nColsB, &nColsA, &alpha, A, &lda, 
-      //      B, &ldb, &beta, C, &ldc);
     }
 
     SUNDANCE_MSG2(verb(), tab1 << "doing transformations via dgemm");
@@ -734,23 +726,23 @@ void QuadratureEvalMediator::computePhysQuadPts() const
 {
   if (cacheIsValid()) 
   {
-    SUNDANCE_OUT(this->verbosity() > VerbLow, 
+    SUNDANCE_OUT(this->verb() > VerbLow, 
       "reusing cached phys quad points");
   }
   else
   {
     double jFlops = CellJacobianBatch::totalFlops();
-    SUNDANCE_OUT(this->verbosity() > VerbLow, 
+    SUNDANCE_OUT(this->verb() > VerbLow, 
       "computing phys quad points");
-    const Array<Point>& refPts = *(refQuadPts_.get(cellType()));
+    const Array<Point>& refPts = *(quadPtsForReferenceCell_.get(cellType()));
     mesh().pushForward(cellDim(), *cellLID(), 
       refPts, physQuadPts_); 
 
     addFlops(CellJacobianBatch::totalFlops() - jFlops);
     cacheIsValid() = true;
+    SUNDANCE_OUT(this->verb() > VerbMedium, 
+      "phys quad: " << physQuadPts_);
   }
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-    "phys quad: " << physQuadPts_);
 }
 
 

@@ -51,7 +51,6 @@ class DiscreteFuncElement;
  * calculation must be delegated to the framework.
  */
 class AbstractEvalMediator 
-  : public TSFExtended::ObjectWithVerbosity<AbstractEvalMediator>
 {
 public:
   /** */
@@ -59,6 +58,13 @@ public:
 
   /** */
   virtual ~AbstractEvalMediator(){;}
+
+  /** */
+  void setVerbosity(int verb) 
+    {verb_ = verb;}
+
+  /** */
+  int verb() const {return verb_;}
 
           
 
@@ -83,6 +89,7 @@ public:
   virtual void evalCellVectorExpr(const CellVectorExpr* expr,
     RefCountPtr<EvalVector>& vec) const = 0 ;
 private:
+  int verb_;
 };
 }
 

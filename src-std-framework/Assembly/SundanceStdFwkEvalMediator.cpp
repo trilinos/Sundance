@@ -48,8 +48,8 @@ using namespace TSFExtended;
 
 
 
-StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim, int verb)
-  : AbstractEvalMediator(verb),
+StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
+  : AbstractEvalMediator(),
     mesh_(mesh),
     cellDim_(cellDim),
     cellType_(NullCell),
@@ -65,13 +65,10 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim, int verb)
     fCache_(),
     dfCache_(),
     localValueCache_(),
-    facetLocalValueCache_(),
     mapStructCache_(),
-    facetMapStructCache_(),
     fCacheIsValid_(),
     dfCacheIsValid_(),
-    localValueCacheIsValid_(),
-    facetLocalValueCacheIsValid_()
+    localValueCacheIsValid_()
 {;}
 
 void StdFwkEvalMediator::setCellType(const CellType& cellType,
@@ -106,10 +103,6 @@ void StdFwkEvalMediator::setCellBatch(IntegrationCellSpecifier intCellSpec,
       iter->second = false;
     }
   for (iter = localValueCacheIsValid_.begin(); iter != localValueCacheIsValid_.end(); iter++)
-    {
-      iter->second = false;
-    }
-  for (iter = facetLocalValueCacheIsValid_.begin(); iter != facetLocalValueCacheIsValid_.end(); iter++)
     {
       iter->second = false;
     }

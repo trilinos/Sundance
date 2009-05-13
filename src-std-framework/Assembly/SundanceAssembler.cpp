@@ -220,8 +220,6 @@ void Assembler::init(const Mesh& mesh,
 
   SUNDANCE_BANNER1(verb, tab0, "Assembler setup");
 
-  int medVerb = this->verbLevel("evaluation mediator");
-
   RefCountPtr<GrouperBase> grouper 
     = rcp(new TrivialGrouper(this->verbSublist("Integration")));
 
@@ -374,7 +372,7 @@ void Assembler::init(const Mesh& mesh,
     SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for rqc=" 
       << rqc << endl << tab12 << "expr = " << expr);
     mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
-          quad, medVerb)));
+          quad)));
   }
 
   SUNDANCE_MSG1(verb, tab0 << "setting up BC region-quadrature combinations");
@@ -443,13 +441,13 @@ void Assembler::init(const Mesh& mesh,
     SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
       << rqc << endl << tab1 << "expr = " << expr);
     mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
-          quad, medVerb)));
+          quad)));
   }
 
 
   for (unsigned int m=0; m<mediators_.size(); m++)
   {
-    mediators_[m]->verbosity() = (VerbositySetting) verbLevel("evaluation");
+    mediators_[m]->setVerbosity(verbLevel("evaluation"));
   }
 }
 

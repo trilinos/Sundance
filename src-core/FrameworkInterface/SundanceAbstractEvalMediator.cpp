@@ -37,6 +37,6 @@ using namespace SundanceUtils;
 
 
 AbstractEvalMediator::AbstractEvalMediator(int verb)
-  : TSFExtended::ObjectWithVerbosity<AbstractEvalMediator>(verb)
+  : verb_(verb)
 {}
 

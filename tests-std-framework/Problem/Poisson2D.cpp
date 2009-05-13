@@ -98,6 +98,9 @@ int main(int argc, char** argv)
       }
       mesh.dump(meshFile+"-dump");
 
+      WatchFlag watchMe("watch");
+      watchMe.setEvalVerb(5);
+
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
@@ -144,7 +147,7 @@ int main(int argc, char** argv)
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       Expr one = new SundanceCore::Parameter(1.0);
       Expr exactSoln = x+2.0*y;//0.5*x*x + (1.0/3.0)*y;
-      Expr eqn = Integral(interior, (grad*u)*(grad*v)  /* + one*v */, quad2);
+      Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2);
       /* Define the Dirichlet BC */
       Expr h = new CellDiameterExpr();
       Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln)/h, quad4);
@@ -189,7 +192,7 @@ int main(int argc, char** argv)
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
                               err*err,
-                              quad4);
+        quad4, watchMe);
 
       Expr derivErr = dx*(exactSoln-soln);
       Expr derivErrExpr = Integral(interior, 

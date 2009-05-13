@@ -96,7 +96,7 @@ void TestEvalMediator::evalCoordExpr(const CoordExpr* expr,
                                      RefCountPtr<EvalVector>& vec) const
 {
   Tabs tabs;
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
+  SUNDANCE_OUT(verb() > VerbSilent,
                tabs << "evaluating coord expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
@@ -107,7 +107,7 @@ void TestEvalMediator::evalCoordExpr(const CoordExpr* expr,
 
   xx[0] = x_[direction];
 
-  SUNDANCE_VERB_LOW(tabs << "results: " << *vec);
+  SUNDANCE_MSG2(verb(), tabs << "results: " << *vec);
 }
 
 void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
@@ -115,7 +115,7 @@ void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 {
   Tabs tabs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
+  SUNDANCE_OUT(verb() > VerbSilent,
                tabs << "evaluating cell diameter expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
@@ -124,7 +124,7 @@ void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 
   xx[0] = 1.0;
 
-  SUNDANCE_VERB_LOW(tabs << "results: " << *vec);
+  SUNDANCE_MSG2(verb(), tabs << "results: " << *vec);
 }
 
 
@@ -133,7 +133,7 @@ void TestEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 {
   Tabs tabs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
+  SUNDANCE_OUT(verb() > VerbSilent,
                tabs << "evaluating cell vector expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
@@ -161,7 +161,7 @@ void TestEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 	}
     }
   TEST_FOR_EXCEPT(expr->isTangent());
-  SUNDANCE_VERB_LOW(tabs << "results: " << *vec);
+  SUNDANCE_MSG2(verb(), tabs << "results: " << *vec);
 }
 
 
@@ -176,7 +176,7 @@ void TestEvalMediator
 
   Tabs tabs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
+  SUNDANCE_OUT(verb() > VerbSilent,
                tabs << "evaluating discrete func " << expr->toString() 
                << " with multiindices " << mi);
 
@@ -213,11 +213,11 @@ void TestEvalMediator
         }
 
       double * const xx = vec[i]->start();
-      SUNDANCE_VERB_HIGH("coeff=" << fields_[fieldIndex].coeff());
+      SUNDANCE_MSG3(verb(), "coeff=" << fields_[fieldIndex].coeff());
       xx[0] = fields_[fieldIndex].coeff() * evalDummyBasis(fieldIndex, mi[i]);
     }
 
-  if (verbosity() > VerbSilent)
+  if (verb() > VerbSilent)
     {
       Out::os() << tabs << "results:" << endl;
       for (unsigned int i=0; i<mi.size(); i++)
@@ -236,8 +236,8 @@ double TestEvalMediator::evalDummyBasis(int m, const MultiIndex& mi) const
                      "order > 1. The bad multiindex was " << mi.toString());
 
   ADReal result = fields_[m].basis().evaluate(ADField::evalPoint());
-  SUNDANCE_VERB_HIGH("basis.value() " << result.value());
-  SUNDANCE_VERB_HIGH("basis.gradient() " << result.gradient());
+  SUNDANCE_MSG3(verb(), "basis.value() " << result.value());
+  SUNDANCE_MSG3(verb(), "basis.gradient() " << result.gradient());
 
   if (mi.order()==0)
     {

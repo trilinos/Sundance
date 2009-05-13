@@ -78,10 +78,10 @@ int main(int argc, char** argv)
       WatchFlag watchMe("watch");
       watchMe.setEvalVerb(5);
       /* Define the weak form */
-      Expr eqn = Integral(interior, -(dx*v)*(dx*u), quad, watchMe)
+      Expr eqn = Integral(interior, -(dx*v)*(dx*u), quad)
         + Integral(interior, -2.0*v, quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*u, quad);
+      Expr bc = EssentialBC(leftPoint, v*u, quad, watchMe);
 
       
 
