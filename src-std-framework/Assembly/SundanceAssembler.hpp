@@ -32,15 +32,6 @@
 #define SUNDANCE_ASSEMBLER_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceDOFMapBase.hpp"
-#include "SundanceEquationSet.hpp"
-#include "SundanceDiscreteSpace.hpp"
-#include "SundanceDiscreteFunction.hpp"
-#include "SundanceIntegralGroup.hpp"
-#include "SundanceGrouperBase.hpp"
-#include "SundanceEvalManager.hpp"
-#include "SundanceStdFwkEvalMediator.hpp"
-#include "SundanceEvaluatableExpr.hpp"
 #include "TSFLoadableVector.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFLinearOperator.hpp"
@@ -52,7 +43,21 @@
 #include "TSFCollectivelyConfigurableMatrixFactory.hpp"
 #include "TSFPartitionedMatrixFactory.hpp"
 #include "TSFPartitionedToMonolithicConverter.hpp"
-#include "SundanceAssemblyKernelBase.hpp"
+#include "SundanceRegionQuadCombo.hpp"
+#include "SundanceMesh.hpp"
+#include "SundanceEvalContext.hpp"
+#include "SundanceIntegrationCellSpecifier.hpp"
+#include "SundanceComputationType.hpp"
+
+
+namespace SundanceCore
+{
+class EquationSet;
+class EvaluatableExpr;
+class EvalManager;
+class EvalVector;
+}
+
 
 namespace SundanceStdFwk
 {
@@ -62,9 +67,17 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceCore;
 using namespace SundanceCore;
 
+class DiscreteSpace;
+class DiscreteFunction;
+
 namespace Internal
 {
 using namespace Teuchos;
+class DOFMapBase;
+class IntegralGroup;
+class StdFwkEvalMediator;
+class AssemblyKernelBase;
+
 
 typedef std::set<int> ColSetType;
 
@@ -171,26 +184,7 @@ public:
     {return eqn_;}
 
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams()
-    {
-      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Assembler"));
-      static int first = true;
-      if (first)
-      {
-        rtn->set<int>("setup", 0);
-        rtn->set<int>("matrix config", 0);
-        rtn->set<int>("vector config", 0);
-        rtn->set<int>("matrix fill", 0);
-        rtn->set<int>("vector fill", 0);
-        rtn->set<int>("assembly loop", 0);
-        rtn->set<int>("evaluation", 0);
-        rtn->set<int>("evaluation mediator", 0);
-        rtn->set("Integration", *ElementIntegral::defaultVerbParams());
-        rtn->set("DOF Map", *DOFMapBase::defaultVerbParams());
-        first = false;
-      }
-      return rtn;
-    }
+  static RefCountPtr<ParameterList> defaultVerbParams();
 
 
 private:
@@ -207,7 +201,7 @@ private:
     const Array<RefCountPtr<EvalVector> >& vectorCoeffs) const ;
 
   /** */
-  void assemblyLoop(const ComputationType compType,
+  void assemblyLoop(const ComputationType& compType,
     RefCountPtr<AssemblyKernelBase> kernel) const ;
 
 
@@ -230,7 +224,7 @@ private:
 
   /** */
   IntegrationCellSpecifier whetherToUseCofacets(
-    const Array<IntegralGroup>& groups,
+    const Array<RCP<IntegralGroup> >& groups,
     const EvaluatableExpr* ee,
     bool isMaximalCell) const ;
 
@@ -273,7 +267,7 @@ private:
 
   Array<int> isBCRqc_;
 
-  Map<ComputationType, Array<Array<IntegralGroup> > > groups_;
+  Map<ComputationType, Array<Array<RCP<IntegralGroup> > > > groups_;
 
   Array<RefCountPtr<StdFwkEvalMediator> > mediators_;
 

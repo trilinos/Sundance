@@ -122,6 +122,15 @@ public:
 
   /** Extract the basis from an expression */
   static RCP<BasisDOFTopologyBase> getBasisTopology(const RCP<const CommonFuncDataStub>& funcData);
+
+  /** */
+  void refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const MultiIndex& deriv,
+    Array<Array<Array<double> > >& result,
+    int verbosity) const ;
 };
 
 /** \relates BasisFamily */

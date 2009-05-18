@@ -34,8 +34,9 @@
 using namespace SundanceUtils;
 
 
-WatchFlag::WatchFlag(const std::string& name)
-  : name_(name), evalVerbosity_(0), setupVerbosity_(0)
+WatchFlag::WatchFlag(const std::string& name,
+  const ParameterList& params)
+  : name_(name), params_(rcp(new ParameterList(params)))
 {
   if (name_.size() > 0U) isActiveMap().put(name, true);
   else isActiveMap().put(name, false);
@@ -63,7 +64,34 @@ XMLObject WatchFlag::toXML() const
   return xml;
 }
 
+int WatchFlag::param(const std::string& name) const 
+{
+  return params_->get<int>(name);
+}
+
+
+void WatchFlag::setParam(const std::string& name, int val)
+{
+  params_->set<int>(name, val);
+}
 
 
 
 
+RCP<ParameterList> WatchFlag::defaultParams()
+{
+  static RCP<ParameterList> rtn=rcp(new ParameterList());
+  static bool first=true;
+  if (first)
+  {
+    rtn->set<int>("evaluation", 0);
+    rtn->set<int>("discrete function evaluation", 0);
+    rtn->set<int>("symbolic preprocessing", 0);
+    rtn->set<int>("integration setup", 0);
+    rtn->set<int>("integration", 0);
+    rtn->set<int>("integral transformation", 0);
+    rtn->set<int>("fill", 0);
+    first = false;
+  }
+  return rtn;
+}

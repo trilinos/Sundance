@@ -119,6 +119,56 @@ RCP<BasisDOFTopologyBase> BasisFamily::getBasisTopology(const RCP<const CommonFu
 }
 
 
+void BasisFamily::refEval(
+    const CellType& maximalCellType,
+    const CellType& cellType,
+    const Array<Point>& pts,
+    const MultiIndex& deriv,
+    Array<Array<Array<double> > >& result,
+    int verbosity) const
+{
+  Tabs tab;
+  SUNDANCE_MSG3(verbosity, tab << "evaluating basis " << *this 
+    << " with multi-index " << deriv);
+  ptr()->refEval(maximalCellType, cellType, pts, deriv, result, verbosity);
+  string f = "D[phi_n," + deriv.toString()+"]";
+
+  if (verbosity >= 4)
+  {
+    Tabs tab1;
+    for (unsigned int q=0; q<pts.size(); q++)
+    {
+      Tabs tab2;
+      Out::os() << tab1 << "evaluation point = " << pts[q] << endl;
+      Out::os() << tab2 << setw(5) << "n";
+      int nComps = result.size();
+      if (nComps == 1)
+      {
+        Out::os() << setw(20) <<  f << endl;
+      }
+      else
+      {
+        for (int d=0; d<nComps; d++)
+        {
+          string fd = f + "[" + Teuchos::toString(d) + "]";
+          Out::os() << setw(20) <<  fd;
+        }
+        Out::os() << endl;
+      }
+      for (unsigned int n=0; n<result[0][q].size(); n++)
+      {
+        Out::os() << tab2 << setw(5) << n;
+        for (int d=0; d<nComps; d++)
+        {
+          Out::os() << setw(20) <<  result[d][q][n];
+        }
+        Out::os() << endl;
+      }
+    }
+  }
+}
+
+
 namespace SundanceStdFwk
 {
 

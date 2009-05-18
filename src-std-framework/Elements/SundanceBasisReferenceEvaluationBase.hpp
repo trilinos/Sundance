@@ -113,7 +113,8 @@ x   *           Specifically,
     const CellType& cellType,
     const Array<Point>& pts,
     const MultiIndex& deriv,
-    Array<Array<Array<double> > >& result
+    Array<Array<Array<double> > >& result,
+    int verbosity = 0
     ) const = 0 ;  
 
 };

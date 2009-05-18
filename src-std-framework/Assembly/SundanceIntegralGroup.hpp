@@ -38,7 +38,6 @@
 #include "SundanceIntegrationCellSpecifier.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
@@ -55,20 +54,20 @@ namespace Internal
 /** 
  *
  */
-class IntegralGroup : public TSFExtended::ParameterControlledObjectWithVerbosity<ElementIntegral>
+class IntegralGroup 
 {
 public:
   /** */
   IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
-    const ParameterList& verbParams);
+    int verb);
   /** */
   IntegralGroup(const Array<int>& testID,
     const Array<int>& testBlock,
     const Array<RefCountPtr<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
     const Array<MultipleDeriv>& derivs,
-    const ParameterList& verbParams);
+    int verb);
   /** */
   IntegralGroup(const Array<int>& testID,
     const Array<int>& testBlock,
@@ -77,7 +76,7 @@ public:
     const Array<RefCountPtr<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
     const Array<MultipleDeriv>& derivs,
-    const ParameterList& verbParams);
+    int verb);
 
 
   /** Indicate whether this is a group of two-forms */
@@ -130,11 +129,27 @@ public:
 
 
   /** */
-  std::ostream& print(std::ostream& os) const ;
+  int integrationVerb() const {return integrationVerb_;}
+    
+  /** */
+  int transformVerb() const {return transformVerb_;}
+
+  /** */
+  const Array<MultipleDeriv>& derivs() const 
+    {return derivs_;}
 
 
 
 private:
+  /** */
+  int findIntegrationVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const ;
+  /** */
+  int findTransformVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const ;
+  /** */
+  int integrationVerb_;
+
+  /** */
+  int transformVerb_;
       
   /** */
   int order_;
@@ -173,14 +188,9 @@ private:
   Array<MultipleDeriv> derivs_;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const IntegralGroup& g)
-{
-  return g.print(os);
-}
 
 }
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

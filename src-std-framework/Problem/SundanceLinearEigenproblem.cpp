@@ -38,6 +38,7 @@
 #include "SundanceListExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceEquationSet.hpp"
+#include "SundanceQuadratureFamily.hpp"
 #include "SundanceAssembler.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceGaussianQuadrature.hpp"

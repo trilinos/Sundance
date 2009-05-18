@@ -47,38 +47,38 @@ using namespace TSFExtended;
 
 extern "C" 
 {
-  int dgemm_(const char* transA, const char* transB,
-             const int* M, const int *N, const int* K,
-             const double* alpha, 
-             const double* A, const int* ldA,
-             const double* B, const int* ldB,
-             const double* beta,
-             double* C, const int* ldC);
+int dgemm_(const char* transA, const char* transB,
+  const int* M, const int *N, const int* K,
+  const double* alpha, 
+  const double* A, const int* ldA,
+  const double* B, const int* ldB,
+  const double* beta,
+  double* C, const int* ldC);
 }
 
 QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
-					       const CellType& maxCellType,
-					       int dim, 
-					       const CellType& cellType,
-					       const QuadratureFamily& quad,
-					       const ParameterList& verbParams)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verbParams),
+  const CellType& maxCellType,
+  int dim, 
+  const CellType& cellType,
+  const QuadratureFamily& quad,
+  int verb)
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verb),
     nQuad_(0)
 {
 }
 
 
 QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
-					       const CellType& maxCellType,
-					       int dim, 
-					       const CellType& cellType,
-					       const BasisFamily& testBasis,
-					       int alpha,
-					       int testDerivOrder,
-					       const QuadratureFamily& quad,
-  const ParameterList& verbParams)
+  const CellType& maxCellType,
+  int dim, 
+  const CellType& cellType,
+  const BasisFamily& testBasis,
+  int alpha,
+  int testDerivOrder,
+  const QuadratureFamily& quad,
+  int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-    testBasis, alpha, testDerivOrder, verbParams),
+    testBasis, alpha, testDerivOrder, verb),
     nQuad_(0)
 {
 
@@ -88,29 +88,26 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
 
 
 QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
-					       const CellType& maxCellType,
-					       int dim,
-					       const CellType& cellType,
-					       const BasisFamily& testBasis,
-					       int alpha,
-					       int testDerivOrder,
-					       const BasisFamily& unkBasis,
-					       int beta,
-					       int unkDerivOrder,
-					       const QuadratureFamily& quad,
-					       const ParameterList& verbParams)
+  const CellType& maxCellType,
+  int dim,
+  const CellType& cellType,
+  const BasisFamily& testBasis,
+  int alpha,
+  int testDerivOrder,
+  const BasisFamily& unkBasis,
+  int beta,
+  int unkDerivOrder,
+  const QuadratureFamily& quad,
+  int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-                    testBasis, alpha, testDerivOrder, 
-    unkBasis, beta, unkDerivOrder, verbParams), 
+    testBasis, alpha, testDerivOrder, 
+    unkBasis, beta, unkDerivOrder, verb), 
     nQuad_(0)
 {
 
 }
 
-void QuadratureIntegralBase::print(ostream& os) const 
-{
-  
-}
+
 
 
 

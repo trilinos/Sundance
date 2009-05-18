@@ -153,8 +153,15 @@ int main(int argc, char** argv)
       /* Define the Dirichlet BC */
       Expr exactSoln = (x + 1.0)*x - 1.0/4.0;
       Expr h = new CellDiameterExpr();
-      Expr bc = EssentialBC(side4, v*(u-exactSoln)/h, quad4)
-        + EssentialBC(side6, v*(u-exactSoln)/h, quad4);
+
+      WatchFlag watchBC("watch BCs");
+      watchBC.setParam("integration setup", 6);
+      watchBC.setParam("integration", 6);
+      watchBC.setParam("fill", 6);
+      watchBC.setParam("evaluation", 6);
+
+      Expr bc = EssentialBC(side4, v*(u-exactSoln), quad4)
+        + EssentialBC(side6, v*(u-exactSoln), quad4, watchBC);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);

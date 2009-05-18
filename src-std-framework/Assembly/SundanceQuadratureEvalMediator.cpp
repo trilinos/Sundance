@@ -726,18 +726,43 @@ void QuadratureEvalMediator::computePhysQuadPts() const
 {
   if (cacheIsValid()) 
   {
-    SUNDANCE_OUT(this->verb() > VerbLow, 
-      "reusing cached phys quad points");
+    Tabs tab0(0);
+    SUNDANCE_MSG2(verb(), tab0 << "reusing phys quad points");
   }
   else
   {
+    Tabs tab0(0);
     double jFlops = CellJacobianBatch::totalFlops();
-    SUNDANCE_OUT(this->verb() > VerbLow, 
-      "computing phys quad points");
-    const Array<Point>& refPts = *(quadPtsForReferenceCell_.get(cellType()));
-    mesh().pushForward(cellDim(), *cellLID(), 
-      refPts, physQuadPts_); 
-
+    SUNDANCE_MSG2(verb(), tab0 << "computing phys quad points");
+    physQuadPts_.resize(0);
+    if (cellDim() != maxCellDim())
+    {
+      Tabs tab1;
+      SUNDANCE_MSG2(verb(), tab1 << "using cofacets");
+      SUNDANCE_MSG3(verb(), tab1 << "num cofacets = " << cofacetCellLID()->size());
+      Array<Point> tmp;
+      Array<int> cell(1);
+      for (unsigned int c=0; c<cellLID()->size(); c++)
+      {
+        cell[0] = (*cofacetCellLID())[c];
+        int facetIndex = facetIndices()[c];
+        const Array<Point>& refFacetPts 
+          =  (*(quadPtsReferredToMaxCell_.get(cellType())))[facetIndex];
+        tmp.resize(refFacetPts.size());
+        mesh().pushForward(maxCellDim(), cell, refFacetPts, tmp);
+        for (int q=0; q<tmp.size(); q++)
+        {
+          physQuadPts_.append(tmp[q]);
+        }
+      }
+    }
+    else
+    {
+      const Array<Point>& refPts 
+        = *(quadPtsForReferenceCell_.get(cellType()));
+      mesh().pushForward(cellDim(), *cellLID(), 
+        refPts, physQuadPts_); 
+    }
     addFlops(CellJacobianBatch::totalFlops() - jFlops);
     cacheIsValid() = true;
     SUNDANCE_OUT(this->verb() > VerbMedium, 

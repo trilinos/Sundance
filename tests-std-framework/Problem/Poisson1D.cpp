@@ -76,7 +76,9 @@ int main(int argc, char** argv)
       QuadratureFamily quad = new GaussianQuadrature(2);
 
       WatchFlag watchMe("watch");
-      watchMe.setEvalVerb(5);
+      watchMe.setParam("evaluation", 5);
+      watchMe.setParam("integration setup", 5);
+      watchMe.setParam("integration", 5);
       /* Define the weak form */
       Expr eqn = Integral(interior, -(dx*v)*(dx*u), quad)
         + Integral(interior, -2.0*v, quad);

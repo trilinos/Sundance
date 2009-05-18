@@ -42,6 +42,7 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
+using std::endl;
 
 static Time& transCreationTimer() 
 {
@@ -54,8 +55,10 @@ ElementIntegral::ElementIntegral(int spatialDim,
   const CellType& maxCellType,
   int dim, 
   const CellType& cellType,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
+  int verb)
+  : setupVerb_(verb),
+    integrationVerb_(0),
+    transformVerb_(0),
     spatialDim_(spatialDim),
     dim_(dim),
     nFacetCases_(1),
@@ -68,8 +71,20 @@ ElementIntegral::ElementIntegral(int spatialDim,
     nNodes_(-1),
     order_(0),
     alpha_(),
-    beta_()
-{}
+    beta_(),
+    cellType_(cellType),
+    maxCellType_(maxCellType),
+    evalCellType_(maxCellType),
+    testBasis_(),
+    unkBasis_()
+{
+  /* if we're integrating a derivative along a facet, we need to refer back
+   * to the maximal cell. */
+  if (dim != spatialDim)
+  {
+    nFacetCases_ = numFacets(maxCellType, dim);
+  }
+}
 
 ElementIntegral::ElementIntegral(int spatialDim,
   const CellType& maxCellType,
@@ -78,8 +93,10 @@ ElementIntegral::ElementIntegral(int spatialDim,
   const BasisFamily& testBasis,
   int alpha,
   int testDerivOrder,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
+  int verb)
+  : setupVerb_(verb),
+    integrationVerb_(0),
+    transformVerb_(0),
     spatialDim_(spatialDim),
     dim_(dim),
     nFacetCases_(1),
@@ -92,11 +109,16 @@ ElementIntegral::ElementIntegral(int spatialDim,
     nNodes_(nNodesTest_),
     order_(1),
     alpha_(alpha),
-    beta_(-1)
+    beta_(-1),
+    cellType_(cellType),
+    maxCellType_(maxCellType),
+    evalCellType_(maxCellType),
+    testBasis_(testBasis),
+    unkBasis_()
 {
   /* if we're integrating a derivative along a facet, we need to refer back
    * to the maximal cell. */
-  if (testDerivOrder >= 1 && dim != spatialDim)
+  if (dim != spatialDim)
   {
     nFacetCases_ = numFacets(maxCellType, dim);
     nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
@@ -116,8 +138,10 @@ ElementIntegral::ElementIntegral(int spatialDim,
   const BasisFamily& unkBasis,
   int beta,
   int unkDerivOrder,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
+  int verb)
+  : setupVerb_(verb),
+    integrationVerb_(0),
+    transformVerb_(0),
     spatialDim_(spatialDim),
     dim_(dim),
     nFacetCases_(1),
@@ -130,18 +154,119 @@ ElementIntegral::ElementIntegral(int spatialDim,
     nNodes_(nNodesTest_*nNodesUnk_),
     order_(2),
     alpha_(alpha),
-    beta_(beta)
+    beta_(beta),
+    cellType_(cellType),
+    maxCellType_(maxCellType),
+    evalCellType_(maxCellType),
+    testBasis_(testBasis),
+    unkBasis_(unkBasis)
 {
   /* if we're integrating a derivative along a facet, we need to refer back
    * to the maximal cell. */
-  if ((testDerivOrder >= 1 || unkDerivOrder >= 1)  && dim != spatialDim) 
+  if (dim != spatialDim) 
   {
     nFacetCases_ = numFacets(maxCellType, dim);
     nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
     nNodesUnk_ = unkBasis.nReferenceDOFs(maxCellType, maxCellType);
     nNodes_ = nNodesTest_ * nNodesUnk_;
   }
+
 }
+
+
+void ElementIntegral::setVerbosity(
+  int integrationVerb,
+  int transformVerb)
+{
+  integrationVerb_ = integrationVerb;
+  transformVerb_ = transformVerb;
+}
+
+void ElementIntegral::describe(ostream& os) const 
+{
+  Tabs tab(0);
+  bool hasTest = testDerivOrder() >= 0;
+  bool hasUnk = unkDerivOrder() >= 0;
+
+  if (hasTest)
+  {
+    os << tab << "Test functions:" << endl;
+    Tabs tab1;
+    os << tab1 << "test basis = " << testBasis() << endl;
+    os << tab1 << "test differentiation order = " << testDerivOrder() << endl;
+    os << tab1 << "alpha = " << alpha() << endl;
+    os << tab1 << "num test gradient components=" << nRefDerivTest() << endl;
+  }
+  if (hasUnk)
+  {
+    os << tab << "Unknown functions:" << endl;
+    Tabs tab1;
+    os << tab1 << "unk basis = " << unkBasis() << endl;
+    os << tab1 << "unk differentiation order = " << unkDerivOrder() << endl;
+    os << tab1 << "beta = " << beta() << endl;
+    os << tab1  << "num unk gradient components=" << nRefDerivUnk() << endl;
+  }
+  os << tab << "Geometry:" << endl;
+  Tabs tab1;
+  os << tab1 << "cell type on which integral is defined: " << cellType()
+     << endl;
+  os << tab1 << "maximal cell type: " << maxCellType() << endl;
+  os << tab1 << "cell type on which quad pts defined: " << evalCellType()
+     << endl;
+  os << tab << "Number of evaluation cases: " << nFacetCases() << endl;
+}
+
+
+void ElementIntegral::assertBilinearForm() const 
+{
+  TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
+    InternalError,
+    "Test function derivative order=" << testDerivOrder()
+    << " must be 0 or 1");
+  
+  TEST_FOR_EXCEPTION(unkDerivOrder() < 0 || unkDerivOrder() > 1,
+    InternalError,
+    "Unknown function derivative order=" << unkDerivOrder()
+    << " must be 0 or 1");
+}
+
+void ElementIntegral::assertLinearForm() const 
+{
+  TEST_FOR_EXCEPTION(testDerivOrder() < 0 || testDerivOrder() > 1,
+    InternalError,
+    "Test function derivative order=" << testDerivOrder()
+    << " must be 0 or 1");
+}
+
+
+void ElementIntegral::getQuad(const QuadratureFamily& quad,
+  int evalCase, Array<Point>& quadPts, Array<double>& quadWeights) const 
+{
+  Tabs tab(0);
+
+  SUNDANCE_MSG2(setupVerb(), tab << "getting quad points for rule "
+    << quad);
+
+  if (nFacetCases()==1) 
+  {
+    quad.getPoints(cellType(), quadPts, quadWeights);
+  }
+  else 
+  {
+    int dim = dimension(cellType());
+    quad.getFacetPoints(maxCellType(), dim, evalCase, 
+      quadPts, quadWeights);
+  }
+
+  if (setupVerb() >= 4)
+  {
+    Tabs tab1;
+    SUNDANCE_MSG4(setupVerb(), 
+      tab1 << "quadrature points on ref cell are:");
+    printQuad(Out::os(), quadPts, quadWeights);
+  }
+}
+  
 
 
 Array<double>& ElementIntegral::G(int alpha)
@@ -197,6 +322,7 @@ void ElementIntegral
   const CellJacobianBatch& JVol) const
 {
   TimeMonitor timer(transCreationTimer());
+  Tabs tab;
 
   int flops = 0;
 
@@ -204,13 +330,11 @@ void ElementIntegral
 
   if (testDerivOrder() == 1 && unkDerivOrder() == 1)
   {
+    Tabs tab2;
     if (transformationMatrixIsValid(alpha(), beta())) return;
     transformationMatrixIsValid(alpha(), beta()) = true;
 
     G(alpha(), beta()).resize(JTrans.numCells() * JTrans.cellDim() * JTrans.cellDim());
-
-    SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-      Tabs() << "both derivs are first order");
 
     double* GPtr = &(G(alpha(),beta())[0]);
     int k = 0;
@@ -287,6 +411,9 @@ void ElementIntegral
   const CellJacobianBatch& JVol) const 
 {
   TimeMonitor timer(transCreationTimer());
+  Tabs tab;
+  SUNDANCE_MSG2(transformVerb(), 
+    tab << "ElementIntegral creating linear form trans matrices");
 
   int maxDim = JTrans.cellDim();
 

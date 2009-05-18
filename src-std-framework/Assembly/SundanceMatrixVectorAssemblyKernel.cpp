@@ -95,7 +95,7 @@ void MatrixVectorAssemblyKernel::fill(
 {
   Tabs tab0;
   SUNDANCE_MSG1(verb(), tab0 << "in MatrixVectorAssemblyKernel::fill()");
-  SUNDANCE_MSG1(verb(), tab0 << "filling for integral group " << group);
+  SUNDANCE_MSG1(verb(), tab0 << "filling for integral group " << group.derivs());
 
   bool useCofacets = group.usesMaximalCofacets();
 
@@ -334,7 +334,7 @@ void MatrixVectorAssemblyKernel::writeLSMs(
       for (int n=0; n<nUnkNodes; n++)
       {
         double Amn = localValues[lr*nUnkNodes + n];
-        os << setw(12) << Amn;
+        os << setw(12) << setprecision(5) << Amn;
       }
       os << endl;
     }

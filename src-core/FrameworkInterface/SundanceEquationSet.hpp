@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceDerivSet.hpp"
+#include "SundanceComputationType.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalContext.hpp"
 #include "TSFObjectWithVerbosity.hpp"
@@ -48,41 +49,6 @@ using std::string;
 class FunctionSupportResolver;
 class CommonFuncDataStub;
 
-/** 
- * \relates EquationSet
- *
- * Specifier of what sort of calculation is to be done with an
- * equation set
- */
-enum ComputationType {MatrixAndVector, VectorOnly, 
-                      FunctionalOnly, FunctionalAndGradient,
-                      Sensitivities};
-
-/** */
-inline std::ostream& operator<<(std::ostream& os, const ComputationType& ct)
-{
-  switch(ct)
-  {
-    case MatrixAndVector:
-      os << "MatrixAndVector";
-      break;
-    case VectorOnly:
-      os << "VectorOnly";
-      break;
-    case FunctionalOnly:
-      os << "FunctionalOnly";
-      break;
-    case FunctionalAndGradient:
-      os << "FunctionalAndGradient";
-      break;
-    case Sensitivities:
-      os << "Sensitivities";
-      break;
-    default:
-      TEST_FOR_EXCEPT(1);
-  }
-  return os;
-}
 
 /** 
  * Source: SundanceEquationSet.cpp

@@ -226,7 +226,8 @@ void Lagrange::refEval(
   const CellType& cellType,
   const Array<Point>& pts,
   const MultiIndex& deriv,
-  Array<Array<Array<double> > >& result) const
+  Array<Array<Array<double> > >& result,
+  int verbosity) const
 {
   typedef Array<double> Adouble;
   result.resize(1);

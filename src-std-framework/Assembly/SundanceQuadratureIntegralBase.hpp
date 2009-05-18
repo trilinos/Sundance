@@ -34,117 +34,112 @@
 #include "SundanceDefs.hpp"
 #include "SundanceElementIntegral.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore::Internal;
   
-  namespace Internal
-  {
-    using namespace Teuchos;
+namespace Internal
+{
+using namespace Teuchos;
     
-    /** 
-     *  
-     *
-     */
-    class QuadratureIntegralBase
-      : public ElementIntegral
-    {
-    public:
-      /** Construct a zero-form to be computed by quadrature */
-      QuadratureIntegralBase(int spatialDim,
-			     const CellType& maxCellType,
-			     int dim, 
-			     const CellType& cellType,
-			     const QuadratureFamily& quad,
-			     const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
-      /** Construct a one form to be computed by quadrature */
-      QuadratureIntegralBase(int spatialDim,
-			     const CellType& maxCellType,
-			     int dim, 
-			     const CellType& cellType,
-			     const BasisFamily& testBasis,
-			     int alpha,
-			     int testDerivOrder,
-			     const QuadratureFamily& quad,
-			     const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
-      
-      /** Construct a two-form to be computed by quadrature */
-      QuadratureIntegralBase(int spatialDim,
-			     const CellType& maxCellType,
-			     int dim,
-			     const CellType& cellType,
-			     const BasisFamily& testBasis,
-			     int alpha,
-			     int testDerivOrder,
-			     const BasisFamily& unkBasis,
-			     int beta,
-			     int unkDerivOrder,
-			     const QuadratureFamily& quad,
-			     const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
-      
-      /** virtual dtor */
-      virtual ~QuadratureIntegralBase(){;}
-      
-      /** */
-      virtual void transform(const CellJacobianBatch& JTrans,
-			     const CellJacobianBatch& JVol,
-			     const Array<int>& isLocalFlag,
-			     const Array<int>& facetNum,
-			     const double* const coeff,
-			     RefCountPtr<Array<double> >& A) const 
-      {
-	if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
-	else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
-	else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, coeff, A);
-      }
-      
-      /** */
-      virtual void transformZeroForm(const CellJacobianBatch& JTrans,
-				     const CellJacobianBatch& JVol,
-				     const Array<int>& isLocalFlag,
-				     const Array<int>& facetIndex,
-				     const double* const coeff,
-				     RefCountPtr<Array<double> >& A) const = 0;
-      
-      /** */
-      virtual void transformTwoForm(const CellJacobianBatch& JTrans,
-				    const CellJacobianBatch& JVol,
-				    const Array<int>& facetIndex,
-				    const double* const coeff,
-				    RefCountPtr<Array<double> >& A) const = 0;
-      
-      /** */
-      virtual void transformOneForm(const CellJacobianBatch& JTrans,
-				    const CellJacobianBatch& JVol,
-				    const Array<int>& facetIndex,
-				    const double* const coeff,
-				    RefCountPtr<Array<double> >& A) const = 0;
-      
-      /** */
-      virtual void print(ostream& os) const;
-      
-      
-      /** */
-      virtual int nQuad() const {return nQuad_;}
-      
-      static double& totalFlops() {static double rtn = 0; return rtn;}
+/** 
+ *  
+ *
+ */
+class QuadratureIntegralBase
+  : public ElementIntegral
+{
+public:
+  /** Construct a zero-form to be computed by quadrature */
+  QuadratureIntegralBase(int spatialDim,
+    const CellType& maxCellType,
+    int dim, 
+    const CellType& cellType,
+    const QuadratureFamily& quad,
+    int verb);
 
-    protected:
-      static void addFlops(const double& flops) {totalFlops() += flops;}
+  /** Construct a one form to be computed by quadrature */
+  QuadratureIntegralBase(int spatialDim,
+    const CellType& maxCellType,
+    int dim, 
+    const CellType& cellType,
+    const BasisFamily& testBasis,
+    int alpha,
+    int testDerivOrder,
+    const QuadratureFamily& quad,
+    int verb);
       
-      /* */
-      int nQuad_;
+  /** Construct a two-form to be computed by quadrature */
+  QuadratureIntegralBase(int spatialDim,
+    const CellType& maxCellType,
+    int dim,
+    const CellType& cellType,
+    const BasisFamily& testBasis,
+    int alpha,
+    int testDerivOrder,
+    const BasisFamily& unkBasis,
+    int beta,
+    int unkDerivOrder,
+    const QuadratureFamily& quad,
+    int verb);
       
-    };
-  }
+  /** virtual dtor */
+  virtual ~QuadratureIntegralBase(){;}
+      
+  /** */
+  virtual void transform(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& isLocalFlag,
+    const Array<int>& facetNum,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const 
+    {
+      if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
+      else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
+      else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, coeff, A);
+    }
+      
+  /** */
+  virtual void transformZeroForm(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& isLocalFlag,
+    const Array<int>& facetIndex,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const = 0;
+      
+  /** */
+  virtual void transformTwoForm(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& facetIndex,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const = 0;
+      
+  /** */
+  virtual void transformOneForm(const CellJacobianBatch& JTrans,
+    const CellJacobianBatch& JVol,
+    const Array<int>& facetIndex,
+    const double* const coeff,
+    RefCountPtr<Array<double> >& A) const = 0;
+      
+      
+  /** */
+  virtual int nQuad() const {return nQuad_;}
+      
+  static double& totalFlops() {static double rtn = 0; return rtn;}
+
+protected:
+  static void addFlops(const double& flops) {totalFlops() += flops;}
+      
+  /* */
+  int nQuad_;
+      
+};
+}
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

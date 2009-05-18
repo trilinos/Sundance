@@ -38,78 +38,90 @@
 #include "Teuchos_FancyOStream.hpp"
 #include "Teuchos_MPIComm.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
+namespace Teuchos
+{
+template <class T> class Array;
+}
 namespace SundanceUtils
 {
-  using namespace Teuchos;
-  /**
-   *
-   */
-  class Out
+class Tabs;
+using namespace Teuchos;
+
+/**
+ *
+ */
+class Out
+{
+public:
+      
+  static void println(const std::string& str) 
     {
-    public:
-      
-      static void println(const std::string& str) 
+      if (hasLogFile()) *logFile() << str << std::endl;
+      if (!suppressStdout()) os() << str << std::endl;
+    }
+
+  static void setLogFile(const std::string& filename)
+    {
+      logFile() = rcp(new std::ofstream(filename.c_str()));
+      hasLogFile() = true;
+    }
+
+  static FancyOStream& os()
+    {
+      static RefCountPtr<std::ostream> os = rcp(&std::cout, false);
+      static RefCountPtr<FancyOStream> rtn = fancyOStream(os);
+      static bool first = true;
+      if (first)
       {
-        if (hasLogFile()) *logFile() << str << std::endl;
-        if (!suppressStdout()) os() << str << std::endl;
+        rtn->setShowProcRank(true);
+        first = false;
       }
+      return *rtn;
+    }
 
-      static void setLogFile(const std::string& filename)
+  static FancyOStream& root()
+    {
+      static bool isRoot = MPIComm::world().getRank()==0;
+      static RefCountPtr<FancyOStream> blackHole
+        = rcp(new FancyOStream(rcp(new oblackholestream())));
+
+      if (isRoot)
       {
-        logFile() = rcp(new std::ofstream(filename.c_str()));
-        hasLogFile() = true;
+        return os();
       }
+      else
+      {
+        return *blackHole;
+      }
+    }
 
-      static FancyOStream& os()
-        {
-          static RefCountPtr<std::ostream> os = rcp(&std::cout, false);
-          static RefCountPtr<FancyOStream> rtn = fancyOStream(os);
-          static bool first = true;
-          if (first)
-          {
-            rtn->setShowProcRank(true);
-            first = false;
-          }
-          return *rtn;
-        }
+  static bool& suppressStdout() {static bool rtn=false; return rtn;}
 
-      static FancyOStream& root()
-        {
-          static bool isRoot = MPIComm::world().getRank()==0;
-          static RefCountPtr<FancyOStream> blackHole
-            = rcp(new FancyOStream(rcp(new oblackholestream())));
-
-          if (isRoot)
-          {
-            return os();
-          }
-          else
-          {
-            return *blackHole;
-          }
-        }
-
-      static bool& suppressStdout() {static bool rtn=false; return rtn;}
-
-    private:
-      static bool& hasLogFile() {static bool rtn=false; return rtn;}
-      static RefCountPtr<std::ostream>& logFile() {static RefCountPtr<std::ostream> rtn; return rtn;}
+private:
+  static bool& hasLogFile() {static bool rtn=false; return rtn;}
+  static RefCountPtr<std::ostream>& logFile() {static RefCountPtr<std::ostream> rtn; return rtn;}
       
-    };
+};
+
+
+/** */
+void writeTable(std::ostream& os, const Tabs& tab,
+  const Array<double>& a, int cols);
+/** */
+void writeTable(std::ostream& os, const Tabs& tab, 
+  const Array<int>& a, int cols);
 
 }
 
 #define SUNDANCE_OUT(test, msg) \
-{ \
-  if (test) \
+  { \
+    if (test) \
     { \
       TeuchosOStringStream omsg; \
       omsg << msg; \
       Out::println(omsg.str());                 \
     } \
-}
+  }
 
 
 #define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_OUT(this->verbosity() > VerbHigh, msg)
@@ -146,7 +158,7 @@ namespace SundanceUtils
   SUNDANCE_MSG1(level, tab \
     << "===================================================================");\
   SUNDANCE_MSG1(level, tab << endl << tab \
-    << msg); \
+    << "  " << msg); \
   SUNDANCE_MSG1(level, tab << endl << tab\
     << "===================================================================");
 
@@ -168,8 +180,4 @@ namespace SundanceUtils
   SUNDANCE_MSG3(level, tab << endl << tab\
     << "-------------------------------------------------------------------");
 
-
-
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

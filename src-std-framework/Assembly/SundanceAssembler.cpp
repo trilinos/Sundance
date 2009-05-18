@@ -35,6 +35,17 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceTrivialGrouper.hpp"
+#include "SundanceDOFMapBase.hpp"
+#include "SundanceEquationSet.hpp"
+#include "SundanceDiscreteSpace.hpp"
+#include "SundanceDiscreteFunction.hpp"
+#include "SundanceIntegralGroup.hpp"
+#include "SundanceGrouperBase.hpp"
+#include "SundanceEvalManager.hpp"
+#include "SundanceStdFwkEvalMediator.hpp"
+#include "SundanceEvaluatableExpr.hpp"
+#include "TSFLoadableVector.hpp"
+#include "TSFLoadableMatrix.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceEvaluator.hpp"
 #include "Teuchos_Time.hpp"
@@ -120,6 +131,21 @@ static Time& graphFlatteningTimer()
   return *rtn;
 }
 
+
+RefCountPtr<ParameterList> Assembler::defaultVerbParams()
+{
+  static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Assembler"));
+  static int first = true;
+  if (first)
+  {
+    rtn->set<int>("setup", 0);
+    rtn->set<int>("matrix config", 0);
+    rtn->set<int>("vector config", 0);
+    rtn->set("DOF Map", *DOFMapBase::defaultVerbParams());
+    first = false;
+  }
+  return rtn;
+}
 
 Assembler
 ::Assembler(const Mesh& mesh, 
@@ -209,22 +235,29 @@ Assembler
 void Assembler::init(const Mesh& mesh, 
   const RefCountPtr<EquationSet>& eqn)
 {
-  Tabs tab0;
+  Tabs tab0(0);
 
+  /* Decide a verbosity level for the overall setup */
   int verb = this->verbLevel("setup");
   if (eqn->hasActiveWatchFlag()) 
   {
-    Out::os() << "has active watch flag" << endl;
     verb = max(verb, 1);
   }
 
   SUNDANCE_BANNER1(verb, tab0, "Assembler setup");
 
-  RefCountPtr<GrouperBase> grouper 
-    = rcp(new TrivialGrouper(this->verbSublist("Integration")));
 
+  /* Create an integral grouper */
+  RefCountPtr<GrouperBase> grouper 
+    = rcp(new TrivialGrouper());
+
+
+  /* Find out which types of computations this assembler will 
+   * be required to carry out */
   const Set<ComputationType>& compTypes = eqn->computationTypes();
 
+
+  /* Create the DOF map for the row space */
   DOFMapBuilder mapBuilder;
 
   if (compTypes.contains(VectorOnly) 
@@ -239,17 +272,20 @@ void Assembler::init(const Mesh& mesh,
     isBCRow_ = mapBuilder.isBCRow();
     isBCCol_ = mapBuilder.isBCCol();
     lowestRow_.resize(eqn_->numVarBlocks());
-    for (unsigned int b=0; b<lowestRow_.size(); b++) 
+    /* create discrete space for each block */
+    for (unsigned int b=0; b<eqn_->numVarBlocks(); b++) 
     {
       Tabs tab2;
       lowestRow_[b] = rowMap_[b]->lowestLocalDOF();
       SUNDANCE_MSG2(verb, tab2 << "block " << b << ": lowest row="
         << lowestRow_[b]);
-      externalRowSpace_[b] = rcp(new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
+      externalRowSpace_[b] = rcp(
+        new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
           rowMap_[b], rowVecType_[b]));
       if (partitionBCs_)
       {
-        privateRowSpace_[b] = rcp(new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
+        privateRowSpace_[b] = rcp(
+          new DiscreteSpace(mesh, testBasisArray(mapBuilder.fsr())[b], 
             rowMap_[b], isBCRow_[b], rowVecType_[b]));
       }
       else
@@ -260,21 +296,30 @@ void Assembler::init(const Mesh& mesh,
     }
   }
 
+
+
   if (!eqn->isFunctionalCalculator())
   {
     Tabs tab1;
+    /* Create the DOF map for the column space */
     SUNDANCE_MSG2(verb, tab1 << "building column spaces");
     colMap_ = mapBuilder.colMap();
+    /* create discrete space for each block */
     for (unsigned int b=0; b<eqn_->numUnkBlocks(); b++) 
     {
       Tabs tab2;
-      externalColSpace_[b] = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
-          colMap_[b], colVecType_[b]));
+      externalColSpace_[b] 
+        = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
+            colMap_[b], colVecType_[b]));
       if (partitionBCs_)
       {
-        privateColSpace_[b] = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
-            colMap_[b], isBCCol_[b], colVecType_[b]));
-        converter_[b] = rcp(new PartitionedToMonolithicConverter(privateColSpace_[b]->vecSpace(), isBCCol_[b], externalColSpace_[b]->vecSpace()));
+        privateColSpace_[b] 
+          = rcp(new DiscreteSpace(mesh, unkBasisArray(mapBuilder.fsr())[b], 
+              colMap_[b], isBCCol_[b], colVecType_[b]));
+        converter_[b] 
+          = rcp(new PartitionedToMonolithicConverter(
+                  privateColSpace_[b]->vecSpace(), 
+                  isBCCol_[b], externalColSpace_[b]->vecSpace()));
       }
       else
       {
@@ -283,52 +328,91 @@ void Assembler::init(const Mesh& mesh,
       SUNDANCE_MSG2(verb, tab2 << "block " << b << ": done forming col space");
     }
 
-    groups_.put(MatrixAndVector, Array<Array<IntegralGroup> >());
-    rqcRequiresMaximalCofacets_.put(MatrixAndVector, Array<IntegrationCellSpecifier>());
+    /* initialize empty tables of information for each RQC in a 
+     * matrix-vector calculation */
+    groups_.put(MatrixAndVector, Array<Array<RCP<IntegralGroup> > >());
+    rqcRequiresMaximalCofacets_.put(MatrixAndVector, 
+      Array<IntegrationCellSpecifier>());
     contexts_.put(MatrixAndVector, Array<EvalContext>());
     evalExprs_.put(MatrixAndVector, Array<const EvaluatableExpr*>());
-    groups_.put(VectorOnly, Array<Array<IntegralGroup> >());
-    rqcRequiresMaximalCofacets_.put(VectorOnly, Array<IntegrationCellSpecifier>());
+
+    /* create tables for vector calculation */
+    groups_.put(VectorOnly, Array<Array<RCP<IntegralGroup> > >());
+    rqcRequiresMaximalCofacets_.put(VectorOnly, 
+      Array<IntegrationCellSpecifier>());
     contexts_.put(VectorOnly, Array<EvalContext>());
     evalExprs_.put(VectorOnly, Array<const EvaluatableExpr*>());
   }
   else
   {
-    groups_.put(FunctionalAndGradient, Array<Array<IntegralGroup> >());
-    rqcRequiresMaximalCofacets_.put(FunctionalAndGradient, Array<IntegrationCellSpecifier>());
+    /* create tables for functional and gradient calculation */
+    groups_.put(FunctionalAndGradient, Array<Array<RCP<IntegralGroup> > >());
+    rqcRequiresMaximalCofacets_.put(FunctionalAndGradient, 
+      Array<IntegrationCellSpecifier>());
     contexts_.put(FunctionalAndGradient, Array<EvalContext>());
     evalExprs_.put(FunctionalAndGradient, Array<const EvaluatableExpr*>());
-    groups_.put(FunctionalOnly, Array<Array<IntegralGroup> >());
-    rqcRequiresMaximalCofacets_.put(FunctionalOnly, Array<IntegrationCellSpecifier>());
+    /* create tables for functional calculation */
+    groups_.put(FunctionalOnly, Array<Array<RCP<IntegralGroup> > >());
+    rqcRequiresMaximalCofacets_.put(FunctionalOnly, 
+      Array<IntegrationCellSpecifier>());
     contexts_.put(FunctionalOnly, Array<EvalContext>());
     evalExprs_.put(FunctionalOnly, Array<const EvaluatableExpr*>());
   }
 
-  SUNDANCE_MSG1(verb, tab0 << "setting up non-BC region-quadrature combinations");
+
+
+
+
+  /* --- We now loop over non-BC RQCs, doing initialization tasks for each */
+  SUNDANCE_MSG1(verb, tab0 << endl 
+    << tab0 << "=== setting up non-BC region-quadrature combinations");
 
   for (unsigned int r=0; r<eqn->regionQuadCombos().size(); r++)
   {
     Tabs tab1;
     Tabs tab12;
     const RegionQuadCombo& rqc = eqn->regionQuadCombos()[r];
+
+    /* Determine the verbosity setting for this RQC */
     bool watchMe = rqc.watch().isActive();
-    rqc_.append(rqc);
-    isBCRqc_.append(false);
-    const Expr& expr = eqn->expr(rqc);
 
     int rqcVerb = verb;
-    if (watchMe) rqcVerb=max(4,verb);
+    int integralCtorVerb = 0;
+    int integrationVerb = 0;
+    int integralTransformVerb = 0;
+    if (watchMe) 
+    {
+      rqcVerb = max(4,rqcVerb);
+      integralCtorVerb = rqc.watch().param("integration");
+      integrationVerb = rqc.watch().param("integration setup");
+      integralTransformVerb = rqc.watch().param("integral transformation");
+    }
 
-    SUNDANCE_MSG2(rqcVerb, tab1 << endl << "--------------------------------------------------------------------");
-    SUNDANCE_MSG2(rqcVerb, tab1 << "creating integral groups for"
+
+    /* Note that I'm not an essential BC */
+    rqc_.append(rqc);
+    isBCRqc_.append(false);
+
+    /* Find the expression for this RQC */
+    const Expr& expr = eqn->expr(rqc);
+
+    SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 << "------------------------------------------------");
+    SUNDANCE_MSG2(rqcVerb, tab1 << "initializing assembly for"
       << endl << tab12 << "rqc=" 
-      << rqc << endl << tab12 << "expr = " << expr);
+      << rqc << endl << tab12 << endl << tab12 << "------------------------------"
+      << endl << tab12 << "expr = " << expr
+      << endl << tab12 << "------------------------------"
+      );
 
+    
+    /* Find the cell type needed for this RQC */
     int cellDim = CellFilter(rqc.domain()).dimension(mesh);
     CellType cellType = mesh.cellType(cellDim);
     CellType maxCellType = mesh.cellType(mesh.spatialDim());
     QuadratureFamily quad(rqc.quad());
 
+
+    /* Do setup for each required computation type */
     bool rqcUsed = false;
 
     for (Set<ComputationType>::const_iterator 
@@ -337,68 +421,125 @@ void Assembler::init(const Mesh& mesh,
          i++)
     {
       Tabs tab2;
-      Tabs tab3;
       const ComputationType& compType = *i;
-      SUNDANCE_MSG2(rqcVerb, tab2 << "computation type " << compType);
+      SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1
+        << "** computation type " << compType);
+      /* Some RQCs may be unused in a given calculation. For example, an RQC
+       * may be needed for vector calculation but not matrix-vector 
+       * calculation. See if this RQC is needed for the present 
+       * computation type. If not, there's nothing more to do here. */
       if (eqn->skipRqc(compType, rqc))
       {
-        SUNDANCE_MSG2(rqcVerb, tab3 << "computation type  " << compType << " not needed!");
+        SUNDANCE_MSG2(rqcVerb, tab2 << "RQC not needed for computation type  " 
+          << compType);
         continue;
       }
 
+      /* If we're to this point, we know the RQC is needed for this 
+       * computation type */
       rqcUsed = true;
+
+      /* Look up a "context" object that we'll use as a key for different
+       * evaluations of this expression */
       EvalContext context = eqn->rqcToContext(compType, rqc);
 
-      SUNDANCE_MSG2(rqcVerb, tab3 << "context " << context.brief());
+      SUNDANCE_MSG2(rqcVerb, tab2 << "context " << context.brief());
+
+      /* Register the context */
       contexts_[compType].append(context);
+
+      /* Register the expression */
       const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
       evalExprs_[compType].append(ee);
+
+      /* Get the "sparsity superset" which is a description of all 
+       * derivatives that must be computed by this expression in the
+       * present context */
       const RefCountPtr<SparsitySuperset>& sparsity 
         = ee->sparsitySuperset(context);
-      SUNDANCE_MSG3(rqcVerb, tab3 << "sparsity pattern " << *sparsity);
+      SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
 
-      Array<IntegralGroup> groups;
+      /* We're now ready to create integration groups for doing the 
+       * integrals needed in this computation for the present RQC. */
+      Array<RCP<IntegralGroup> > groups;
+      grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
         cellType, cellDim, quad, sparsity, groups);
+      grouper->setVerbosity(0,0,0);
       groups_[compType].append(groups);
+
+      /* Record whether or not integrations need to be done by reference
+       * to maximal cofacets. */ 
       IntegrationCellSpecifier cellSpec 
         = whetherToUseCofacets(groups, ee, cellDim==mesh_.spatialDim());
-      SUNDANCE_MSG2(rqcVerb, tab3 << "integration: " << cellSpec);
+      SUNDANCE_MSG2(rqcVerb, tab2 << "integration: " << cellSpec);
       rqcRequiresMaximalCofacets_[compType].append(cellSpec);
+      SUNDANCE_MSG2(rqcVerb, tab1
+        << "done with computation type " << compType);
     }
     
+    /* If this RQC has never been used, we've made a mistake */
     TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "rqc=" << rqc 
       << " never used for any computation???");
     SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for rqc=" 
       << rqc << endl << tab12 << "expr = " << expr);
+
+    /* Finally, create an evaluation mediator for this RQC. The evaluation
+     * mediator is the object through which symbolic objects refer to
+     * mesh-dependent quantities (e.g., discrete functions) during
+     * evaluation.  */
     mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
           quad)));
+    SUNDANCE_MSG2(rqcVerb, tab1 
+      << "done with RQC");
   }
 
-  SUNDANCE_MSG1(verb, tab0 << "setting up BC region-quadrature combinations");
+
+
+  /* --- We now loop over BC RQCs, doing initialization tasks for each */
+  SUNDANCE_MSG1(verb, tab0 << endl 
+    << tab0 << "=== setting up BC region-quadrature combinations");
   
   for (unsigned int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
   {
     Tabs tab1;
     const RegionQuadCombo& rqc = eqn->bcRegionQuadCombos()[r];
+
+    /* Determine the verbosity setting for this RQC */
     bool watchMe = rqc.watch().isActive();
-
     int rqcVerb = verb;
-    if (watchMe) rqcVerb=max(4,verb);
+    int integralCtorVerb = 0;
+    int integrationVerb = 0;
+    int integralTransformVerb = 0;
+    if (watchMe) 
+    {
+      rqcVerb = max(4,rqcVerb);
+      integralCtorVerb = rqc.watch().param("integration");
+      integrationVerb = rqc.watch().param("integration setup");
+      integralTransformVerb = rqc.watch().param("integral transformation");
+    }
 
+    /* Note that I am an essential BC */
     rqc_.append(rqc);
     isBCRqc_.append(true);
+
+
+    /* Find the expression for this RQC */    
     const Expr& expr = eqn->bcExpr(rqc);
 
-    SUNDANCE_MSG1(rqcVerb, tab1 << "creating integral groups for BC rqc=" 
+    SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 
+      << "------------------------------------------------");
+    SUNDANCE_MSG1(rqcVerb, tab1 << "initializing assembly for BC rqc=" 
       << rqc << endl << tab1 
-      << "expr = " << expr.toXML().toString());
+      << "expr = " << expr);
       
+    /* Find the cell type needed for this RQC */    
     int cellDim = CellFilter(rqc.domain()).dimension(mesh);
     CellType cellType = mesh.cellType(cellDim);
     CellType maxCellType = mesh.cellType(mesh.spatialDim());
     QuadratureFamily quad(rqc.quad());
 
+    /* Do setup for each required computation type */
     bool rqcUsed = false;
 
     for (Set<ComputationType>::const_iterator 
@@ -408,16 +549,30 @@ void Assembler::init(const Mesh& mesh,
     {
       Tabs tab2;
       const ComputationType& compType = *i;
-      SUNDANCE_MSG2(rqcVerb, tab2 << "computation type " << compType);
+      SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 
+        << "** computation type " << compType);
+      
+      /* Some RQCs may be unused in a given calculation. For example, an RQC
+       * may be needed for vector calculation but not matrix-vector 
+       * calculation. See if this RQC is needed for the present 
+       * computation type. If not, there's nothing more to do here. */
       if (eqn->skipBCRqc(compType, rqc))
       {
-        Tabs tab3;
-        SUNDANCE_MSG2(rqcVerb, tab3 << "computation type  " << compType << " not needed!");
+        SUNDANCE_MSG2(rqcVerb, 
+          tab2 << "this rqc not needed for computation type " << compType);
         continue;
       }
+
+      /* If we're to this point, we know the RQC is needed for this 
+       * computation type */   
       rqcUsed = true;
+
+      /* Look up a "context" object that we'll use as a key for different
+       * evaluations of this expression */
       EvalContext context = eqn->bcRqcToContext(compType, rqc);
       SUNDANCE_MSG2(rqcVerb, tab2 << "context " << context);
+
+      
       contexts_[compType].append(context);
       const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
       evalExprs_[compType].append(ee);
@@ -425,14 +580,18 @@ void Assembler::init(const Mesh& mesh,
         = ee->sparsitySuperset(context);
       SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
 
-      Array<IntegralGroup> groups;
+      Array<RCP<IntegralGroup> > groups;
+      grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
         cellType, cellDim, quad, sparsity, groups);
+      grouper->setVerbosity(0,0,0);
       groups_[compType].append(groups);
       IntegrationCellSpecifier cellSpec 
         = whetherToUseCofacets(groups, ee, cellDim==mesh_.spatialDim());
       SUNDANCE_MSG2(rqcVerb, tab2 << "integration: " << cellSpec);
       rqcRequiresMaximalCofacets_[compType].append(cellSpec);
+      SUNDANCE_MSG2(rqcVerb, tab1
+        << "done with computation type " << compType);
     }
     TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "BC rqc=" << rqc 
       << " never used for any computation???");
@@ -442,18 +601,14 @@ void Assembler::init(const Mesh& mesh,
       << rqc << endl << tab1 << "expr = " << expr);
     mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
           quad)));
-  }
-
-
-  for (unsigned int m=0; m<mediators_.size(); m++)
-  {
-    mediators_[m]->setVerbosity(verbLevel("evaluation"));
+    SUNDANCE_MSG2(rqcVerb, tab1 
+      << "done with BC RQC");
   }
 }
 
 
 IntegrationCellSpecifier Assembler::whetherToUseCofacets(
-  const Array<IntegralGroup>& groups,
+  const Array<RCP<IntegralGroup> >& groups,
   const EvaluatableExpr* ee,
   bool isMaximalCell) const
 {
@@ -474,7 +629,7 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
   for (unsigned int g=0; g<groups.size(); g++)
   {
     Tabs tab1;
-    switch(groups[g].usesMaximalCofacets()) 
+    switch(groups[g]->usesMaximalCofacets()) 
     {
       case NoTermsNeedCofacets:
         allTermsNeedCofacets = false;
@@ -488,7 +643,7 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
       default:
         TEST_FOR_EXCEPT(1);
     }
-  }
+  } 
 
   if (allTermsNeedCofacets)
   {
@@ -727,11 +882,11 @@ void Assembler::displayEvaluationResults(
 
 
 
-void Assembler::assemblyLoop(const ComputationType compType,
+void Assembler::assemblyLoop(const ComputationType& compType,
   RefCountPtr<AssemblyKernelBase> kernel) const
 {
   Tabs tab;
-  int verb = verbLevel("assembly loop");
+  int verb = 0;
   if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
 
   SUNDANCE_BANNER1(verb, tab, "Assembly loop");
@@ -756,7 +911,7 @@ void Assembler::assemblyLoop(const ComputationType compType,
 
   /* Get the symbolic specification of the current computation */
   const Array<EvalContext>& contexts = contexts_.get(compType);
-  const Array<Array<IntegralGroup> >& groups = groups_.get(compType);
+  const Array<Array<RCP<IntegralGroup> > >& groups = groups_.get(compType);
   const Array<const EvaluatableExpr*>& evalExprs 
     = evalExprs_.get(compType);
 
@@ -764,20 +919,26 @@ void Assembler::assemblyLoop(const ComputationType compType,
   /* === Start main loop */
   SUNDANCE_MSG1(verb, 
     tab << "---------- outer assembly loop over subregions");
+
+  /* Record the default kernel verbosity so we can reset it if changes */
   int oldKernelVerb = kernel->verb();
-  cout << "old kernel verb " << oldKernelVerb << endl;
   for (unsigned int r=0; r<rqc_.size(); r++)
   {
     Tabs tab0;
+
+    /* Set the verbosity level for this RQC */
     int rqcVerb = verb;
+    int evalVerb = 0;
+
     if (rqc_[r].watch().isActive()) 
     {
       rqcVerb=5;
-      kernel->setVerbosity(rqcVerb);
+      evalVerb = rqc_[r].watch().param("evaluation");
+      kernel->setVerbosity(rqc_[r].watch().param("fill"));
 
       SUNDANCE_MSG2(rqcVerb, tab0 << endl 
         << tab0 << "-------------"
-        << endl << tab0 << " doing subregion=" 
+        << endl << tab0 << " doing watched subregion=" 
         << rqc_[r]);     
     }
     Tabs tab01;
@@ -785,6 +946,8 @@ void Assembler::assemblyLoop(const ComputationType compType,
     SUNDANCE_MSG2(rqcVerb, tab01 << "expr is " << evalExprs[r]->toString());
     SUNDANCE_MSG2(rqcVerb, tab01 << "isBC= " << isBCRqc_[r]);
 
+    
+    /* Deciding whether we should skip this RQC */
     if ((!isBCRqc_[r] && eqn_->skipRqc(compType, rqc_[r]))
       || (isBCRqc_[r] && eqn_->skipBCRqc(compType, rqc_[r])))
     {
@@ -857,6 +1020,12 @@ void Assembler::assemblyLoop(const ComputationType compType,
       }
       workSetCounter++;
 
+      /* set the verbosity for the evaluation mediator */
+      if (evalVerb > 0)
+      { 
+        evalMgr_->setVerbosity(evalVerb);
+      }
+
       /* Register the workset with the mediator */
       mediators_[r]->setCellBatch(intCellSpec, workSet);
       const CellJacobianBatch& JVol = mediators_[r]->JVol();
@@ -873,14 +1042,10 @@ void Assembler::assemblyLoop(const ComputationType compType,
       evaluator->resetNumCalls();
       SUNDANCE_MSG2(rqcVerb, tab1 
         << "====== evaluating coefficient expressions") ;
-      if (rqc_[r].watch().evalVerb() > 0 && rqc_[r].watch().isActive())
-      { 
-        evalMgr_->setVerbosity(rqc_[r].watch().evalVerb());
-      }
       evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
       SUNDANCE_MSG2(rqcVerb, tab1 << "====== done evaluating expressions") ;
-      if (rqcVerb > 2) 
+      if (evalVerb > 2) 
       {
         displayEvaluationResults(contexts[r], evalExprs[r], constantCoeffs, 
           vectorCoeffs);
@@ -898,15 +1063,16 @@ void Assembler::assemblyLoop(const ComputationType compType,
           << groups[r].size() );
 
         /* do the integrals */
-        const IntegralGroup& group = groups[r][g];
-        if (!group.evaluate(JTrans, JVol, *isLocalFlag, facetIndices, 
+        const RCP<IntegralGroup>& group = groups[r][g];
+        if (!group->evaluate(JTrans, JVol, *isLocalFlag, facetIndices, 
             vectorCoeffs, constantCoeffs, localValues)) continue;
         /* add the integration results into the output objects */
-        kernel->fill(isBCRqc_[r], group, localValues);
+        kernel->fill(isBCRqc_[r], *group, localValues);
       }
       SUNDANCE_MSG2(rqcVerb, tab1 << "----- done looping over integral groups");
     }
     SUNDANCE_MSG2(rqcVerb, tab0 << "----- done looping over worksets");
+    /* reset the kernel verbosity to the default */
     kernel->setVerbosity(oldKernelVerb);
   }
   SUNDANCE_MSG2(verb, tab << "----- done looping over rqcs");
@@ -929,7 +1095,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 {
   TimeMonitor timer(assemblyTimer());
   Tabs tab;
-  int verb = verbLevel("assembly loop");
+  int verb = 0;
   if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
   
   SUNDANCE_BANNER1(verb, tab, "Assembling matrix and vector");
@@ -949,7 +1115,7 @@ void Assembler::assemble(LinearOperator<double>& A,
             rowMap_, isBCRow_, lowestRow_,
             colMap_, isBCCol_, lowestCol_,
             A, b, partitionBCs_, 
-            max(verbLevel("matrix fill"), verbLevel("vector fill"))));
+            0));
 
   assemblyLoop(MatrixAndVector, kernel);
   SUNDANCE_MSG1(verb, tab << "Assembler: done assembling matrix and vector");
@@ -962,7 +1128,7 @@ void Assembler::assemble(Vector<double>& b) const
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
-  int verb = verbLevel("assembly loop");
+  int verb = 0;
   if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
 
   SUNDANCE_BANNER1(verb, tab, "Assembling vector");
@@ -981,7 +1147,7 @@ void Assembler::assemble(Vector<double>& b) const
   RefCountPtr<AssemblyKernelBase> kernel 
     = rcp(new VectorAssemblyKernel(
             rowMap_, isBCRow_, lowestRow_,
-            b, partitionBCs_, verbLevel("vector fill")));
+            b, partitionBCs_, 0));
 
   assemblyLoop(VectorOnly, kernel);
 
@@ -995,7 +1161,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
-  int verb = verbLevel("assembly loop");
+  int verb = 0;
   if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
 
   SUNDANCE_BANNER1(verb, tab, "Computing functional and gradient");
@@ -1006,9 +1172,9 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
     "does not support value/gradient assembly");
 
   if (vecNeedsConfiguration_)
-    {
-      configureVector(gradient);
-    }
+  {
+    configureVector(gradient);
+  }
 
   value = 0.0;
   
@@ -1033,7 +1199,7 @@ void Assembler::evaluate(double& value) const
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
-  int verb = verbLevel("assembly loop");
+  int verb = 0;
   if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
 
   SUNDANCE_BANNER1(verb, tab, "Computing functional");

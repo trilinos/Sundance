@@ -49,8 +49,8 @@ int main(int argc, char** argv)
   
   try
 		{
-      int nx = 8;
-      int ny = 8;
+      int nx = 2;
+      int ny = 2;
       string meshFile="builtin";
       string solverFile = "aztec-ml.xml";
       Sundance::setOption("meshFile", meshFile, "mesh file");
@@ -60,6 +60,9 @@ int main(int argc, char** argv)
 
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
+
+      nx = nx*np;
+      ny = ny*np;
 
       /* We will do our linear algebra using Epetra */
       VectorType<double> vecType = new EpetraVectorType();
@@ -98,8 +101,16 @@ int main(int argc, char** argv)
       }
       mesh.dump(meshFile+"-dump");
 
-      WatchFlag watchMe("watch");
-      watchMe.setEvalVerb(5);
+      WatchFlag watchMe("watch eqn");
+      watchMe.deactivate();
+
+      WatchFlag watchBC("watch BCs");
+      watchBC.setParam("integration setup", 6);
+      watchBC.setParam("integration", 6);
+      watchBC.setParam("fill", 6);
+      watchBC.setParam("evaluation", 6);
+      watchBC.deactivate();
+
 
       /* Create a cell filter that will identify the maximal cells
        * in the interior of the domain */
@@ -146,11 +157,12 @@ int main(int argc, char** argv)
       /* Define the weak form */
       //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
       Expr one = new SundanceCore::Parameter(1.0);
-      Expr exactSoln = x+2.0*y;//0.5*x*x + (1.0/3.0)*y;
-      Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2);
+      Expr exactSoln = 2.0*x+y;
+      Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2, watchMe);
       /* Define the Dirichlet BC */
       Expr h = new CellDiameterExpr();
-      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln)/h, quad4);
+      /////////////// divide by h
+      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad4, watchBC);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
@@ -165,9 +177,10 @@ int main(int argc, char** argv)
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
 
-      //      cout << "map = " << endl;
-      //prob.rowMap()->print(cout);
-      //cout << endl;
+//      Out::os() << "row map = " << endl;
+//      prob.rowMap(0)->print(Out::os());
+//      Out::os() << endl;
+
       Expr soln = prob.solve(solver);
 
       DiscreteSpace discSpace2(mesh, new Lagrange(2), vecType);
@@ -189,10 +202,14 @@ int main(int argc, char** argv)
       w.addField("rank", new ExprFieldWrapper(pidDisc));
       w.write();
 
+      FieldWriter w2 = new VerboseFieldWriter("mesh");
+      w2.addMesh(mesh);
+      w2.write();
+
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
                               err*err,
-        quad4, watchMe);
+        quad4);
 
       Expr derivErr = dx*(exactSoln-soln);
       Expr derivErrExpr = Integral(interior, 
@@ -206,17 +223,14 @@ int main(int argc, char** argv)
                                   new GaussianQuadrature(2));
 
       
-
+      watchBC.activate();
       Expr exactFluxExpr = Integral(top, 
-                                    dy*exactSoln,
-                                    new GaussianQuadrature(2));
+        dy*exactSoln,
+        new GaussianQuadrature(2), watchBC);
 
       Expr numFluxExpr = Integral(top, 
                                   dy*soln,
                                   new GaussianQuadrature(2));
-      //        + Integral(top+bottom, 
-      //                   pow(dy*(soln-exactSoln), 2),
-      //                   new GaussianQuadrature(2));
 
 
       FunctionalEvaluator errInt(mesh, errExpr);
@@ -231,6 +245,7 @@ int main(int argc, char** argv)
 
       double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
       cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
+
 
       cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
       cout << "numerical flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;

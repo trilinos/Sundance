@@ -78,7 +78,8 @@ public:
     const CellType& cellType,
     const Array<Point>& pts,
     const MultiIndex& deriv,
-    Array<Array<Array<double> > >& result) const ;
+    Array<Array<Array<double> > >& result,
+    int verbosity=0) const ;
 
 
 

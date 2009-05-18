@@ -46,6 +46,9 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
+using std::ios_base;
+using std::setw;
+using std::endl;
 
 extern "C" 
 {
@@ -71,15 +74,15 @@ RefIntegral::RefIntegral(int spatialDim,
   const CellType& maxCellType,
   int dim, 
   const CellType& cellType,
-  const ParameterList& verbParams)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verbParams), W_()
+  int verb)
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verb), W_()
 {
-  Tabs tab0;
-  verbosity() = classVerbosity();
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
-    tab0 << "************* computing reference 0-form integrals ********" 
-    << std::endl << tab0 << "cell type=" << cellType);
+  Tabs tab0(0);
 
+  SUNDANCE_MSG1(setupVerb(),
+    tab0 << "************* creating reference 0-form integrals ********");
+  if (setupVerb()) describe(Out::os());
+  
   /* we need to sum the quadrature weights 
      to compute the volume of the reference cell */
   QuadratureFamily quad = new GaussianQuadrature(2);
@@ -101,70 +104,68 @@ RefIntegral::RefIntegral(int spatialDim,
   const BasisFamily& testBasis,
   int alpha,
   int testDerivOrder,
-  const ParameterList& verbParams)
+  int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-    testBasis, alpha, testDerivOrder, verbParams), W_()
+    testBasis, alpha, testDerivOrder, verb), W_()
 {
-  Tabs tab0;
-  verbosity() = classVerbosity();
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
-    tab0 << "************* computing reference 1-form integrals ********" 
-    << std::endl << tab0 << "test basis=" 
-    << testBasis 
-    << std::endl << tab0 << "cell type=" << cellType
-    << std::endl << tab0 <<"differentiation order="
-    << testDerivOrder);
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-    tab0 << "num test derivative components=" 
-    << nRefDerivTest());
-
-  TEST_FOR_EXCEPTION(testDerivOrder < 0 || testDerivOrder > 1,
-    InternalError,
-    "Test function derivative order=" << testDerivOrder
-    << " must be 0 or 1");
+  Tabs tab0(0);
+  SUNDANCE_MSG1(setupVerb(),
+    tab0 << "************* creating reference 1-form integrals ********");
+  if (setupVerb()) describe(Out::os());
+  assertLinearForm();
 
   W_.resize(nFacetCases());
 
-  CellType evalCellType = cellType;
-  if (nFacetCases() > 1) evalCellType = maxCellType;
-
+  /* Determine the quadrature order needed for exact integrations */
   QuadratureType qType = new GaussianQuadratureType();
-  int reqOrder = qType.findValidOrder(cellType, std::max(1, testBasis.order()));
+  int reqOrder = qType.findValidOrder(cellType, 
+    std::max(1, testBasis.order()));
+
+  SUNDANCE_MSG2(setupVerb(),
+    tab0 << "using quadrature order=" << reqOrder);
+   
+  /* Create a quadrature family of the required order */
   QuadratureFamily quad = qType.createQuadFamily(reqOrder);
   
-  
+  /* We now loop over the different evaluation cases, integrating the
+   * basis functions for each. Because this is a reference integral,
+   * we can actually do the untransformed integrals here. */
   for (int fc=0; fc<nFacetCases(); fc++)
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(setupVerb(),
+      tab1 << "evaluation case=" << fc << " of " << nFacetCases());
+    /* initialize size of untransformed integral results array */
     W_[fc].resize(nRefDerivTest() * nNodesTest());
+
+    /* initialize values of integrals to zero */
     for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
     Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
   
+    /* get quadrature points */
     Array<Point> quadPts;
     Array<double> quadWeights;
-    if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
-    else quad.getFacetPoints(maxCellType, dim, fc, quadPts, quadWeights);
+    getQuad(quad, fc, quadPts, quadWeights);
 
     int nQuad = quadPts.size();
 
-    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-      tab0 << "quad pts" << quadPts);
-
-    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-      tab0 << "quad weights" << quadWeights);
-
+    /* compute the basis functions */
     for (int r=0; r<nRefDerivTest(); r++)
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(setupVerb(), tab2 << "evaluating basis derivative " 
+        << r << " of " << nRefDerivTest());
+
       testBasisVals[r].resize(testBasis.dim());
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(maxCellType, evalCellType, quadPts, mi, 
-        testBasisVals[r]);
+      testBasis.refEval(maxCellType, evalCellType(), quadPts, mi, 
+        testBasisVals[r], setupVerb());
     }
 
-    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-      tab0 << "basis values" << testBasisVals);
-
+    /* do the quadrature */
+    SUNDANCE_MSG2(setupVerb(), tab1 << "doing quadrature");
     int vecComp = 0;
     for (int q=0; q<nQuad; q++)
     {
@@ -181,12 +182,43 @@ RefIntegral::RefIntegral(int spatialDim,
     for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
 
     addFlops(3*nQuad*nRefDerivTest()*nNodesTest() + W_[fc].size());
+  }
 
-  }
-  if (verbosity() > VerbMedium)
+  /* print the result */
+  SUNDANCE_MSG4(setupVerb(), tab0 << "--------------------------------------");
+  SUNDANCE_MSG4(setupVerb(), tab0 << "reference linear form integral results");
+  if (setupVerb() >= 4)
   {
-    print(std::cerr);
+    for (int fc=0; fc<nFacetCases(); fc++)
+    {
+      Tabs tab1;
+      SUNDANCE_MSG4(setupVerb(), tab1 << "------ evaluation case " << fc << " of "
+        << nFacetCases() << "-------");
+      
+      for (int r=0; r<nRefDerivTest(); r++)
+      {
+        Tabs tab2;
+
+        MultiIndex mi;
+        if (testDerivOrder==1) mi[r] = 1;
+        SUNDANCE_MSG1(setupVerb(), tab2 << "multiindex=" << mi);
+
+        ios_base::fmtflags oldFlags = Out::os().flags();
+        Out::os().setf(ios_base::right);    
+        Out::os().setf(ios_base::showpoint);
+        for (int nt=0; nt<nNodesTest(); nt++)
+        {
+          Tabs tab3;
+          Out::os() << tab3 << setw(10) << nt 
+                    << setw(12) << std::setprecision(5) << value(fc, r, nt) 
+                    << endl;
+        }
+        Out::os().flags(oldFlags);
+      }
+    }
   }
+
+  SUNDANCE_MSG1(setupVerb(), tab0 << "done reference linear form ctor");
 }
 
 
@@ -202,47 +234,39 @@ RefIntegral::RefIntegral(int spatialDim,
   const BasisFamily& unkBasis,
   int beta,
   int unkDerivOrder, 
-  const ParameterList& verbParams)
+  int verb)
   : ElementIntegral(spatialDim, maxCellType,  dim, cellType,
     testBasis, alpha, testDerivOrder, 
-    unkBasis, beta, unkDerivOrder, verbParams), W_()
+    unkBasis, beta, unkDerivOrder, verb), W_()
 
 {
-  Tabs tab0;
-  verbosity() = classVerbosity();
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, 
-    tab0 << " ************* computing reference 2-form integrals ***************" 
-    << std::endl << tab0 << "test basis=" 
-    << testBasis 
-    << std::endl << tab0 << "unk basis=" << unkBasis
-    << std::endl << tab0 << "cell type=" << cellType
-    << std::endl << tab0 <<"differentiation order t=" 
-    << testDerivOrder << ", u=" << unkDerivOrder);
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-    tab0 << "num test derivative components=" 
-    << nRefDerivTest());
+  Tabs tab0(0);
+  SUNDANCE_MSG1(setupVerb(),
+    tab0 << "************* creating reference 2-form integrals ********");
+  if (setupVerb()) describe(Out::os());
 
-  TEST_FOR_EXCEPTION(testDerivOrder < 0 || testDerivOrder > 1,
-    InternalError,
-    "Test function derivative order=" << testDerivOrder
-    << " must be 0 or 1");
-  
-  TEST_FOR_EXCEPTION(unkDerivOrder < 0 || unkDerivOrder > 1,
-    InternalError,
-    "Unknown function derivative order=" << unkDerivOrder
-    << " must be 0 or 1");
+  assertBilinearForm();
 
   W_.resize(nFacetCases());
 
-  CellType evalCellType = cellType;
-  if (nFacetCases() > 1) evalCellType = maxCellType;
-
   QuadratureType qType = new GaussianQuadratureType();
-  int reqOrder = qType.findValidOrder(cellType, std::max(1, unkBasis.order() + testBasis.order()));
+  int reqOrder = qType.findValidOrder(cellType, 
+    std::max(1, unkBasis.order() + testBasis.order()));
+
+  SUNDANCE_MSG2(setupVerb(),
+    tab0 << "using quadrature order=" << reqOrder);
   QuadratureFamily quad = qType.createQuadFamily(reqOrder);
+
+
+  SUNDANCE_MSG2(setupVerb(),
+    tab0 << "processing evaluation cases");
 
   for (int fc=0; fc<nFacetCases(); fc++)
   {
+    Tabs tab1;
+    SUNDANCE_MSG1(setupVerb(), tab1 << "------ evaluation case " << fc << " of "
+      << nFacetCases() << "-------");
+    
     W_[fc].resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
     for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
@@ -251,41 +275,36 @@ RefIntegral::RefIntegral(int spatialDim,
         
     Array<Point> quadPts;
     Array<double> quadWeights;
-    if (nFacetCases()==1) quad.getPoints(cellType, quadPts, quadWeights);
-    else quad.getFacetPoints(maxCellType, dim, fc, quadPts, quadWeights);
+    getQuad(quad, fc, quadPts, quadWeights);
     int nQuad = quadPts.size();
-
-    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-      tab0 << "quad pts" << quadPts);
-
-    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-      tab0 << "quad weights" << quadWeights);
 
     for (int r=0; r<nRefDerivTest(); r++)
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(setupVerb(), tab2 
+        << "evaluating test function basis derivative " 
+        << r << " of " << nRefDerivTest());
       testBasisVals[r].resize(testBasis.dim());
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.ptr()->refEval(maxCellType, evalCellType, quadPts, mi, 
-        testBasisVals[r]);
+      testBasis.refEval(maxCellType, evalCellType(), quadPts, mi, 
+        testBasisVals[r], setupVerb());
     }
-
-    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-      tab0 << "test basis values" << testBasisVals);
 
     for (int r=0; r<nRefDerivUnk(); r++)
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(setupVerb(), tab2 
+        << "evaluating unknown function basis derivative " 
+        << r << " of " << nRefDerivUnk());
       unkBasisVals[r].resize(unkBasis.dim());
       MultiIndex mi;
       if (unkDerivOrder==1) mi[r] = 1;
-      unkBasis.ptr()->refEval(maxCellType, evalCellType, 
-        quadPts, mi, unkBasisVals[r]);
+      unkBasis.refEval(maxCellType, evalCellType(), 
+        quadPts, mi, unkBasisVals[r], setupVerb());
     }
 
-
-    SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-      tab0 << "unk basis values" << unkBasisVals);
-
+    SUNDANCE_MSG2(setupVerb(), tab1 << "doing quadrature...");
     int vecComp = 0;
     for (int q=0; q<nQuad; q++)
     {
@@ -305,143 +324,60 @@ RefIntegral::RefIntegral(int spatialDim,
         }
       }
     }
+    SUNDANCE_MSG2(setupVerb(), tab1 << "...done");
     addFlops(4*nQuad*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
       + W_[fc].size());
     for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
   }
-  if (verbosity() > VerbMedium)
+
+  SUNDANCE_MSG1(setupVerb(), tab0 
+    << "----------------------------------------");
+  SUNDANCE_MSG4(setupVerb(), tab0 
+    << "reference bilinear form integral results");
+  if (setupVerb() >= 4)
   {
-    print(std::cerr);
-  }
-
-}
-
-
-void RefIntegral::print(ostream& os) const 
-{
-  for (int fc=0; fc<nFacetCases(); fc++)
-  {
-    if (order()==1)
+    for (int fc=0; fc<nFacetCases(); fc++)
     {
       Tabs tab1;
-      os << tab1 << "reference one-form values" << std::endl;
-      if (testDerivOrder()==0)
+      SUNDANCE_MSG4(setupVerb(), tab1 << "evaluation case " << fc << " of "
+        << nFacetCases());
+      
+      for (int rt=0; rt<nRefDerivTest(); rt++)
       {
-        Tabs tab2;
-        os << tab2 << W_[fc] << std::endl;
-      }
-      else
-      {
-        Tabs tab2;
-        for (int r=0; r<dim(); r++)
+        for (int ru=0; ru<nRefDerivUnk(); ru++)
         {
-          os << tab2 << "dir=" << r << " {";
-          for (int n=0; n<nNodes(); n++) 
+          Tabs tab2;
+          MultiIndex miTest;
+          if (testDerivOrder==1) miTest[rt] = 1;
+          MultiIndex miUnk;
+          if (unkDerivOrder==1) miUnk[ru] = 1;
+          SUNDANCE_MSG1(setupVerb(), tab2 << "test multiindex=" << miTest
+            << " unk multiindex=" << miUnk);
+          
+          ios_base::fmtflags oldFlags = Out::os().flags();
+          Out::os().setf(ios_base::right);    
+          Out::os().setf(ios_base::showpoint);
+          for (int nt=0; nt<nNodesTest(); nt++)
           {
-            if (n != 0) os << ", ";
-            os << value(fc, r, n);
-          }
-          os << "}" << std::endl;
-        }
-      }
-      os << tab1 << std::endl << tab1 << std::endl;
-    }
-    else if (order()==2)
-    {
-      Tabs tab1;
-      os << tab1 << "reference two-form values" << std::endl;
-      if (testDerivOrder()==0 && unkDerivOrder()==0)
-      {
-        Tabs tab2;
-        os << tab2 << "{";
-        for (int nt=0; nt<nNodesTest(); nt++) 
-        {
-          if (nt!=0) os << ", ";
-          os << "{";
-          for (int nu=0; nu<nNodesUnk(); nu++)
-          {
-            if (nu!=0) os << ", ";
-            os << value(fc, 0, nt, 0, nu);
-          }
-          os << "}";
-        }
-        os << "}" << std::endl;
-      }
-      else if (testDerivOrder()==1 && unkDerivOrder()==1)
-      {
-        Tabs tab2;
-        for (int t=0; t<dim(); t++)
-        {
-          for (int u=0; u<dim(); u++)
-          {
-            os << tab2 << "test dir=" << t 
-               << ", unk dir=" << u << std::endl;
             Tabs tab3;
-            os << tab3 << "{";
-            for (int nt=0; nt<nNodesTest(); nt++) 
-            {
-              if (nt!=0) os << ", ";
-              os << "{";
-              for (int nu=0; nu<nNodesUnk(); nu++)
-              {
-                if (nu!=0) os << ", ";
-                os << value(fc, t, nt, u, nu);
-              }
-              os << "}";
-            }
-            os << "}" << std::endl;
-          }
-        }
-      }
-      else if (testDerivOrder()==1 && unkDerivOrder()==0)
-      {
-        Tabs tab2;
-        for (int t=0; t<dim(); t++)
-        {
-          os << tab2 << "test dir=" << t << std::endl;
-          Tabs tab3;
-          os << tab3 << "{";
-          for (int nt=0; nt<nNodesTest(); nt++) 
-          {
-            if (nt!=0) os << ", ";
-            os << "{";
+            Out::os() << tab3 << setw(10) << nt;
             for (int nu=0; nu<nNodesUnk(); nu++)
             {
-              if (nu!=0) os << ", ";
-              os << value(fc, t, nt, 0, nu);
+              Out::os() << setw(12) << std::setprecision(5)
+                        << value(fc, rt, nt, ru, nu) ;
             }
-            os << "}";
+            Out::os() << endl;
           }
-          os << "}" << std::endl;
+          Out::os().flags(oldFlags);
         }
       }
-      else /* if (testDerivOrder()==1 && unkDerivOrder()==0) */
-      {
-        Tabs tab2;
-        for (int u=0; u<dim(); u++)
-        {
-          os << tab2 << "unk dir=" << u << std::endl;
-          Tabs tab3;
-          os << tab3 << "{";
-          for (int nt=0; nt<nNodesTest(); nt++) 
-          {
-            if (nt!=0) os << ", ";
-            os << "{";
-            for (int nu=0; nu<nNodesUnk(); nu++)
-            {
-              if (nu!=0) os << ", ";
-              os << value(fc, 0, nt, u, nu);
-            }
-            os << "}";
-          }
-          os << "}" << std::endl;
-        }
-      }
-      os << tab1 << std::endl << tab1 << std::endl;
-      os << tab1 << std::endl << tab1 << std::endl;
     }
   }
+
+  SUNDANCE_MSG1(setupVerb(), tab0 << "done reference bilinear form ctor");
 }
+
+
 
 
 void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
@@ -456,7 +392,7 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
     "for form of order " << order());
 
   Tabs tabs;  
-  SUNDANCE_VERB_MEDIUM(tabs << "doing zero form by reference");
+  SUNDANCE_MSG1(integrationVerb(), tabs << "doing zero form by reference");
 
   double& a = (*A)[0];
   int flops = 0;
@@ -504,7 +440,8 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
     "RefIntegral::transformOneForm() called for form "
     "of order " << order());
   Tabs tabs;  
-  SUNDANCE_VERB_MEDIUM(tabs << "doing one form by reference");
+  SUNDANCE_MSG1(integrationVerb(),
+    tabs << "doing one form by reference");
   
   /* If the derivative order is zero, the only transformation to be done 
    * is to multiply by the cell's Jacobian determinant */
@@ -512,10 +449,13 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   {
     double* aPtr = &((*A)[0]);
     int count = 0;
-    const Array<double>& w = W_[0];
+    int nfc = nFacetCases();
     for (int c=0; c<JVol.numCells(); c++)
     {
       double detJ = coeff * fabs(JVol.detJ()[c]);
+      int fc = 0;
+      if (nfc != 1) fc = facetIndex[c];
+      const Array<double>& w = W_[fc];
       for (int n=0; n<nNodes(); n++, count++) 
       {
         aPtr[count] += detJ*w[n];
@@ -534,7 +474,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
 
     createOneFormTransformationMatrix(JTrans, JVol);
 
-    SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+    SUNDANCE_MSG3(transformVerb(),
       Tabs() << "transformation matrix=" << G(alpha()));
     int nNodes0 = nNodes();
       
@@ -580,17 +520,19 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
     "of order " << order());
   
   Tabs tabs;  
-  SUNDANCE_VERB_MEDIUM(tabs << "doing two form by reference");
+  SUNDANCE_MSG1(transformVerb(), tabs << "doing two form by reference");
 
   /* If the derivative orders are zero, the only transformation to be done 
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)
   {
     double* aPtr = &((*A)[0]);
-    const Array<double>& w = W_[0];
     int count = 0;
     for (int c=0; c<JVol.numCells(); c++)
     {
+      int fc = 0;
+      if (nFacetCases() != 1) fc = facetIndex[c];
+      const Array<double>& w = W_[fc];
       double detJ = coeff * fabs(JVol.detJ()[c]);
       for (int n=0; n<nNodes(); n++, count++) 
       {
@@ -614,19 +556,19 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
     if (testDerivOrder() == 0)
     {
       GPtr = &(G(beta())[0]);
-      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+      SUNDANCE_MSG2(transformVerb(),
         Tabs() << "transformation matrix=" << G(beta()));
     }
     else if (unkDerivOrder() == 0)
     {
       GPtr = &(G(alpha())[0]);
-      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+      SUNDANCE_MSG2(transformVerb(),
         Tabs() << "transformation matrix=" << G(alpha()));
     }
     else
     {
       GPtr = &(G(alpha(), beta())[0]);
-      SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+      SUNDANCE_MSG2(transformVerb(),
         Tabs() << "transformation matrix=" 
         << G(alpha(),beta()));
     }
@@ -652,7 +594,8 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
         int fc = facetIndex[c];
         double* aPtr = &((*A)[c*nNodes0]);
         double* gPtr = &(GPtr[c*nTransRows]);
-        SUNDANCE_VERB_EXTREME(tabs << "c=" << c << ", facet case=" << fc
+        SUNDANCE_MSG2(integrationVerb(),
+          tabs << "c=" << c << ", facet case=" << fc
           << " W=" << W_[fc]);
         ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
           &nNodes0, gPtr, &nTransRows, &one, 

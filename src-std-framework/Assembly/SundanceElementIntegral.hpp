@@ -37,7 +37,6 @@
 #include "SundanceBasisFamily.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
@@ -55,9 +54,7 @@ using namespace Teuchos;
  * ElementIntegral encapsulates the common data needed for the
  * integration of groups of related zero-forms, one-forms, and two-forms.
  */
-class ElementIntegral 
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<ElementIntegral>,
-    public TSFExtended::Printable
+class ElementIntegral
 {
 public:
   /** Construct a zero-form */
@@ -65,7 +62,7 @@ public:
     const CellType& maxCellType,
     int dim, 
     const CellType& cellType,
-    const ParameterList& verbParams);
+    int verb);
 
   /** Construct a one-form */
   ElementIntegral(int spatialDim,
@@ -75,7 +72,7 @@ public:
     const BasisFamily& testBasis,
     int alpha,
     int testDerivOrder,
-    const ParameterList& verbParams);
+    int verb);
 
   /** Construct a two-form */
   ElementIntegral(int spatialDim,
@@ -88,7 +85,7 @@ public:
     const BasisFamily& unkBasis,
     int beta,
     int unkDerivOrder,
-    const ParameterList& verbParams);
+    int verb);
 
   /** virtual dtor */
   virtual ~ElementIntegral(){;}
@@ -107,11 +104,27 @@ public:
    * matrix */
   int nNodes() const {return nNodes_;}
 
-  /** Return the number of different facets for which integrals must be tabulated
-   * in the cases where an integral must be done by referring back to a maximal
-   * cell */
+  /** Return the number of different facets for which integrals 
+   * must be tabulated in the cases where an integral must be done 
+   * by referring back to a maximal cell */
   int nFacetCases() const {return nFacetCases_;}
 
+  /** */
+  void setVerbosity(
+    int integrationVerb,
+    int transformVerb);
+
+  /** */
+  int setupVerb() const {return setupVerb_;}
+    
+  /** */
+  int integrationVerb() const {return integrationVerb_;}
+    
+  /** */
+  int transformVerb() const {return transformVerb_;}
+
+  /** */
+  void describe(std::ostream& os) const ;
 
   /** */
   static int& transformationMatrixIsValid(int alpha);
@@ -127,24 +140,14 @@ public:
   static double& totalFlops() {static double rtn = 0; return rtn;}
 
 
-  /** */
-  static RefCountPtr<ParameterList> defaultVerbParams()
-    {
-      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Integration"));
-      static int first = true;
-      if (first)
-      {
-        rtn->set<int>("setup", 0);
-        rtn->set<int>("transformation", 0);
-        rtn->set<int>("integration", 0);
-        rtn->set<int>("extract weak form", 0);
-        rtn->set<int>("find groups", 0);
-        first = false;
-      }
-      return rtn;
-    }
-
 protected:
+
+  /** */
+  void assertBilinearForm() const ;
+
+  /** */
+  void assertLinearForm() const ;
+
   /** */
   static void addFlops(const double& flops) {totalFlops() += flops;}
 
@@ -178,6 +181,21 @@ protected:
   /** */
   int beta() const {return beta_;}
 
+  /** */
+  const CellType& cellType() const {return cellType_;}
+
+  /** */
+  const CellType& maxCellType() const {return maxCellType_;}
+
+  /** */
+  const CellType& evalCellType() const {return evalCellType_;}
+
+  /** */
+  const BasisFamily& testBasis() const {return testBasis_;}
+
+  /** */
+  const BasisFamily& unkBasis() const {return unkBasis_;}
+
   /** Workspace for element transformations involving one derivative*/
   static Array<double>& G(int gamma) ;
 
@@ -198,6 +216,9 @@ protected:
       else return 0.0;
     }
 
+  /** */
+  void getQuad(const QuadratureFamily& quad, int evalCase,
+    Array<Point>& quadPts, Array<double>& quadWeights) const ;
 
   /** */
   void createTwoFormTransformationMatrix(const CellJacobianBatch& JTrans,
@@ -207,6 +228,10 @@ protected:
     const CellJacobianBatch& JVol) const;
 
 private:
+
+  int setupVerb_;
+  int integrationVerb_;
+  int transformVerb_;
 
   int spatialDim_;
 
@@ -233,11 +258,20 @@ private:
   int alpha_;
 
   int beta_;
+
+  CellType cellType_;
+
+  CellType maxCellType_;
+
+  CellType evalCellType_;
+
+  BasisFamily testBasis_;
+
+  BasisFamily unkBasis_;
       
 };
 }
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

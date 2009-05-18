@@ -32,7 +32,9 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceFuncWithBasis.hpp"
-
+#include "SundanceBasisFamily.hpp"
+#include "SundanceQuadratureFamily.hpp"
+#include "SundanceEquationSet.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceUnknownFunction.hpp"
@@ -49,6 +51,17 @@ using namespace Teuchos;
 using namespace TSFExtended;
 
 
+void GrouperBase::setVerbosity(
+  int setupVerb,
+  int integrationVerb,
+  int transformVerb)
+{
+  setupVerb_ = setupVerb;
+  integrationVerb_ = integrationVerb;
+  transformVerb_ = transformVerb;
+}
+
+
 
 void GrouperBase::extractWeakForm(const EquationSet& eqn,
   const MultipleDeriv& functionalDeriv,
@@ -60,13 +73,14 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
   int& testBlock, int& unkBlock, 
   bool& isOneForm) const
 {
-  Tabs tab0;
+  Tabs tab0(0);
 
   MultipleDeriv::const_iterator iter;
 
   isOneForm = false;  
 
   if (functionalDeriv.size()==0) return;
+
   TEST_FOR_EXCEPTION(functionalDeriv.size() > 2, InternalError,
     "WeakFormBatch::extractWeakForm detected a functional "
     "derivative of order > 2: " 
@@ -75,7 +89,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
   bool foundUnk = false;
   bool foundVar = false;
 
-  SUNDANCE_LEVEL2("extract weak form",
+  SUNDANCE_MSG2(setupVerb(), 
     tab0 << "extracting weak form for functional derivative " 
     << functionalDeriv);
 
@@ -108,7 +122,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       rawVarID = dofID;
       testBlock = eqn.blockForVarID(dofID);
 
-      SUNDANCE_LEVEL2("extract weak form",
+      SUNDANCE_MSG2(setupVerb(), 
         tab << "found varID=" << reducedVarID);
 
       const UnknownFuncElement* u
@@ -130,11 +144,11 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       {
         varBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
       }
-      SUNDANCE_LEVEL2("extract weak form", 
+      SUNDANCE_MSG2(setupVerb(), 
         tab << "found varBasis=" << varBasis);
 
       miVar = d.opOnFunc().mi();
-      SUNDANCE_LEVEL2("extract weak form", 
+      SUNDANCE_MSG2(setupVerb(), 
         tab << "found var multi index=" << miVar.toString());
     }
     else
@@ -149,15 +163,15 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       rawUnkID = dofID;
       unkBlock = eqn.blockForUnkID(dofID);
 
-      SUNDANCE_LEVEL2("extract weak form",
+      SUNDANCE_MSG2(setupVerb(), 
         tab << "found reducedUnkID=" << reducedUnkID);
 
       unkBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
-      SUNDANCE_LEVEL2("extract weak form",
+      SUNDANCE_MSG2(setupVerb(), 
         tab << "found unkBasis=" << unkBasis);
 
       miUnk = d.opOnFunc().mi();
-      SUNDANCE_LEVEL2("extract weak form",
+      SUNDANCE_MSG2(setupVerb(), 
         tab << "found unk multi index=" << miUnk.toString());
     }
   }

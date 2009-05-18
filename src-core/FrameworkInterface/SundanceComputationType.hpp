@@ -28,50 +28,49 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_TRIVIALGROUPER_H
-#define SUNDANCE_TRIVIALGROUPER_H
+#ifndef SUNDANCE_COMPUTATIONTYPE_H
+#define SUNDANCE_COMPUTATIONTYPE_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceGrouperBase.hpp"
 
-namespace SundanceStdFwk
+namespace SundanceCore
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+/** 
+ * \relates EquationSet
+ *
+ * Specifier of what sort of calculation is to be done with an
+ * equation set
+ */
+enum ComputationType {MatrixAndVector, VectorOnly, 
+                      FunctionalOnly, FunctionalAndGradient,
+                      Sensitivities};
 
-  namespace Internal
+/** */
+inline std::ostream& operator<<(std::ostream& os, const ComputationType& ct)
+{
+  switch(ct)
   {
-    using namespace Teuchos;
-
-    /** 
-     * Grouper
-     */
-    class TrivialGrouper : public GrouperBase
-    {
-    public:
-      /** */
-      TrivialGrouper() : GrouperBase() {;}
-
-      /** */
-      virtual ~TrivialGrouper(){;}
-
-      /** */
-      virtual void findGroups(const EquationSet& eqn,
-                              const CellType& maxCellType,
-                              int spatialDim,
-                              const CellType& cellType,
-                              int cellDim,
-                              const QuadratureFamily& quad,
-                              const RefCountPtr<SparsitySuperset>& sparsity,
-                              Array<RCP<IntegralGroup> >& groups) const ;
-                              
-    };
-
+    case MatrixAndVector:
+      os << "MatrixAndVector";
+      break;
+    case VectorOnly:
+      os << "VectorOnly";
+      break;
+    case FunctionalOnly:
+      os << "FunctionalOnly";
+      break;
+    case FunctionalAndGradient:
+      os << "FunctionalAndGradient";
+      break;
+    case Sensitivities:
+      os << "Sensitivities";
+      break;
+    default:
+      TEST_FOR_EXCEPT(1);
   }
+  return os;
 }
 
+}
 
 #endif

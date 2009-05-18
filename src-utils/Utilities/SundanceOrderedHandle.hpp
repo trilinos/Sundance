@@ -46,7 +46,6 @@ handle(const RefCountPtr<contents >& smartPtr) : OrderedHandle<contents >(smartP
 
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceUtils
 {
@@ -136,7 +135,7 @@ namespace std
 }
 
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif
 

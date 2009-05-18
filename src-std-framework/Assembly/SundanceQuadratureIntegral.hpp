@@ -34,8 +34,6 @@
 #include "SundanceDefs.hpp"
 #include "SundanceQuadratureIntegralBase.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceStdFwk
 {
 using namespace SundanceUtils;
@@ -62,7 +60,8 @@ public:
     int dim, 
     const CellType& cellType,
     const QuadratureFamily& quad,
-    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+    int verb);
+
   /** Construct a one form to be computed by quadrature */
   QuadratureIntegral(int spatialDim,
     const CellType& maxCellType,
@@ -72,7 +71,7 @@ public:
     int alpha,
     int testDerivOrder,
     const QuadratureFamily& quad,
-    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+    int verb);
 
   /** Construct a two-form to be computed by quadrature */
   QuadratureIntegral(int spatialDim,
@@ -86,7 +85,7 @@ public:
     int beta,
     int unkDerivOrder,
     const QuadratureFamily& quad,
-    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+    int verb);
 
   /** virtual dtor */
   virtual ~QuadratureIntegral(){;}
@@ -181,6 +180,5 @@ private:
 }
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

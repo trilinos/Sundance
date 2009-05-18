@@ -46,11 +46,13 @@ BinaryCellFilter::BinaryCellFilter(const CellFilter& left,
 {
   string str;
   switch(op)
-    {
+  {
     case Union:
       str = "Union(";
+      break;
     case Intersection:
       str = "Intersection(";
+      break;
     default:
       str = "SetDifference(";
     }

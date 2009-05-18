@@ -56,8 +56,9 @@ static Time& integrationTimer()
 IntegralGroup
 ::IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
   const Array<int>& resultIndices,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
+  int verb)
+  : integrationVerb_(findIntegrationVerb(integrals)),
+    transformVerb_(findTransformVerb(integrals)),
     order_(0),
     nTestNodes_(0),
     nUnkNodes_(0),
@@ -98,7 +99,6 @@ IntegralGroup
   {
     requiresMaximalCofacet_ = NoTermsNeedCofacets;
   }
-  
 }
 
 IntegralGroup
@@ -107,19 +107,20 @@ IntegralGroup
   const Array<RefCountPtr<ElementIntegral> >& integrals,
   const Array<int>& resultIndices,
   const Array<MultipleDeriv>& derivs,
-  const ParameterList& verbParams)
-  :  ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
-     order_(1),
-     nTestNodes_(0),
-     nUnkNodes_(0),
-     testID_(testID),
-     unkID_(),
-     testBlock_(testBlock),
-     unkBlock_(),
-     integrals_(integrals),
-     resultIndices_(resultIndices),
+  int verb)
+  : integrationVerb_(findIntegrationVerb(integrals)),
+    transformVerb_(findTransformVerb(integrals)),
+    order_(1),
+    nTestNodes_(0),
+    nUnkNodes_(0),
+    testID_(testID),
+    unkID_(),
+    testBlock_(testBlock),
+    unkBlock_(),
+    integrals_(integrals),
+    resultIndices_(resultIndices),
     termUsesMaximalCofacets_(integrals_.size()),
-     requiresMaximalCofacet_(SomeTermsNeedCofacets),
+    requiresMaximalCofacet_(SomeTermsNeedCofacets),
     derivs_(derivs)
 {
   bool allReqMaximalCofacets = true;
@@ -166,19 +167,20 @@ IntegralGroup
   const Array<RefCountPtr<ElementIntegral> >& integrals,
   const Array<int>& resultIndices,
   const Array<MultipleDeriv>& derivs,
-  const ParameterList& verbParams)
-  :  ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams),
-     order_(2),
-     nTestNodes_(0),
-     nUnkNodes_(0),
-     testID_(testID),
-     unkID_(unkID),
-     testBlock_(testBlock),
-     unkBlock_(unkBlock),
-     integrals_(integrals),
-     resultIndices_(resultIndices),
+  int verb)
+  : integrationVerb_(findIntegrationVerb(integrals)),
+    transformVerb_(findTransformVerb(integrals)),
+    order_(2),
+    nTestNodes_(0),
+    nUnkNodes_(0),
+    testID_(testID),
+    unkID_(unkID),
+    testBlock_(testBlock),
+    unkBlock_(unkBlock),
+    integrals_(integrals),
+    resultIndices_(resultIndices),
     termUsesMaximalCofacets_(integrals_.size()),
-     requiresMaximalCofacet_(SomeTermsNeedCofacets),
+    requiresMaximalCofacet_(SomeTermsNeedCofacets),
     derivs_(derivs)
 {
   bool allReqMaximalCofacets = true;
@@ -232,12 +234,12 @@ bool IntegralGroup
   RefCountPtr<Array<double> >& A) const
 {
   TimeMonitor timer(integrationTimer());
-  Tabs tab0;
+  Tabs tab0(0);
 
 
-  SUNDANCE_LEVEL1("integration",
-    tab0 << "integral group has size "
-    << integrals_.size());
+  SUNDANCE_MSG1(integrationVerb(), tab0 << "evaluating integral group with "
+    << integrals_.size() << " integrals");
+
 
   /* initialize the return vector */
   if (integrals_[0]->nNodes() == -1) A->resize(1);
@@ -246,13 +248,14 @@ bool IntegralGroup
   int n = A->size();
   for (int i=0; i<n; i++) aPtr[i] = 0.0;
 
-  SUNDANCE_LEVEL4("integration", tab0 << "begin A=" << *A);
+  SUNDANCE_MSG5(integrationVerb(), tab0 << "begin A=");
+  if (integrationVerb() >=5) writeTable(Out::os(), tab0, *A, 6);
 
   /* do the integrals */
   for (unsigned int i=0; i<integrals_.size(); i++)
   {
     Tabs tab1;
-    SUNDANCE_LEVEL1("integration", tab1 << "group member i=" << i 
+    SUNDANCE_MSG1(integrationVerb(), tab1 << "group member i=" << i 
       << " of " << integrals_.size());
     Tabs tab2;
 
@@ -263,17 +266,17 @@ bool IntegralGroup
 
     if (ref!=0)
     {
-      SUNDANCE_LEVEL2("integration",
+      SUNDANCE_MSG2(integrationVerb(),
         tab2 << "Integrating term group " << i 
         << " by transformed reference integral");
       double f = constantCoeffs[resultIndices_[i]];
-      SUNDANCE_LEVEL2("integration", 
+      SUNDANCE_MSG2(integrationVerb(),
         tab2 << "Coefficient is " << f);
       ref->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
     }
     else 
     {
-      SUNDANCE_LEVEL2("integration",
+      SUNDANCE_MSG2(integrationVerb(),
         tab2 << "Integrating term group " << i 
         << " by quadrature");
           
@@ -286,24 +289,39 @@ bool IntegralGroup
         << "]");
 
       Tabs tab3;
-      SUNDANCE_LEVEL4("integration",
+      SUNDANCE_MSG3(integrationVerb(),
         tab3 << "coefficients are " <<  vectorCoeffs[resultIndices_[i]]->str());
 
       const double* const f = vectorCoeffs[resultIndices_[i]]->start();
       quad->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
     }
-    SUNDANCE_LEVEL4("integration", 
-      tab1 << "i=" << i << " integral values=" << *A);
+    SUNDANCE_MSG4(integrationVerb(),
+      tab1 << "i=" << i << " integral values=");
+    if (integrationVerb() >=4) writeTable(Out::os(), tab1, *A, 6);
   }
-  SUNDANCE_LEVEL1("integration", tab0 << "done integral group evaluation");
+  SUNDANCE_MSG1(integrationVerb(), tab0 << "done integral group");
 
   return true;
 }
 
 
-
-std::ostream& IntegralGroup::print(std::ostream& os) const
+int IntegralGroup::findIntegrationVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const
 {
-  os << "IntegralGroup[derivs=" << derivs_ << "]";
-  return os;
+  int rtn = 0;
+  for (unsigned int i=0; i<integrals.size(); i++)
+  {
+    rtn = std::max(rtn, integrals[i]->integrationVerb());
+  }
+  return rtn;
+}
+
+
+int IntegralGroup::findTransformVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const
+{
+  int rtn = 0;
+  for (unsigned int i=0; i<integrals.size(); i++)
+  {
+    rtn = std::max(rtn, integrals[i]->transformVerb());
+  }
+  return rtn;
 }

@@ -90,7 +90,7 @@ public:
     const CellType& maxCellType,
     int dim, 
     const CellType& cellType,
-    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+    int verb);
 
   /** Construct a reference one-form */
   RefIntegral(int spatialDim,
@@ -100,7 +100,7 @@ public:
     const BasisFamily& testBasis,
     int alpha,
     int testDerivOrder,
-    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+    int verb);
 
   /** Construct a reference two-form */
   RefIntegral(int spatialDim,
@@ -113,7 +113,7 @@ public:
     const BasisFamily& unkBasis,
     int beta,
     int unkDerivOrder,
-    const ParameterList& verbParams = *ElementIntegral::defaultVerbParams());
+    int verb);
 
   /** virtual dtor */
   virtual ~RefIntegral(){;}

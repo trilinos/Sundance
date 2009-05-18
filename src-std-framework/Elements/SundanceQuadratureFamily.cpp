@@ -29,11 +29,17 @@
 /* @HEADER@ */
 
 #include "SundanceQuadratureFamily.hpp"
+#include "SundanceTabs.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
+using namespace SundanceUtils;
 using namespace Teuchos;
+using std::ios_base;
+using std::setw;
+using std::endl;
+using std::setprecision;
 
 int QuadratureFamily::getNumPoints( const CellType & cellType ) const
 {
@@ -231,3 +237,42 @@ void QuadratureFamily::getTetFacetQuad(int facetDim,
 
 
 
+namespace SundanceStdFwk
+{
+void printQuad(std::ostream& os, 
+  const Array<Point>& pts, const Array<double>& wgts)
+{
+  Tabs tab(0);
+  static Array<string> names = tuple<string>("x", "y", "z");
+  TEST_FOR_EXCEPT(pts.size() != wgts.size());
+  
+  TEST_FOR_EXCEPT(pts.size() < 1U);
+
+  int dim = pts[0].dim();
+
+  int prec=10;
+  int w = prec+5;
+  ios_base::fmtflags oldFlags = os.flags();
+  os.setf(ios_base::internal);    
+  os.setf(ios_base::showpoint);
+
+  os << tab << setw(5) << "i" << setw(w) << "w";;
+  
+  for (unsigned int i=0; i<pts[0].dim(); i++)
+  {
+    os << setw(w) << names[i] ;
+  }
+  os << endl;
+  os.setf(ios_base::right);    
+  for (unsigned int i=0; i<pts.size(); i++)
+  {
+    os << tab << setw(5) << i << setw(w) << setprecision(prec) << wgts[i];
+    for (int d=0; d<dim; d++)
+    {
+      os << setw(w) << setprecision(prec) << pts[i][d];
+    }
+    os << endl;
+  }
+  os.flags(oldFlags);
+}
+}

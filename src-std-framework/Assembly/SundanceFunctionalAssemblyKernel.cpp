@@ -31,6 +31,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceFunctionalAssemblyKernel.hpp"
+#include "SundanceIntegralGroup.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 

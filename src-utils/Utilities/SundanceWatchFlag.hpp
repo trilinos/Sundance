@@ -34,18 +34,24 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMap.hpp"
 #include "Teuchos_XMLObject.hpp"
+#include "Teuchos_ParameterList.hpp"
 #include <string>
+
+
 
 namespace SundanceUtils
 {
+using Teuchos::ParameterList;
   /** 
-   * WatchFlag
+   * Class WatchFlag is used to mark individual expressions for possibly 
+   * increased verbosity for diagnostic output.
    */
   class WatchFlag
     {
     public:
       /** */
-      WatchFlag(const std::string& name="");
+      WatchFlag(const std::string& name="", 
+        const ParameterList& params = *defaultParams());
 
       /** */
       const std::string& name() const {return name_;}
@@ -67,23 +73,19 @@ namespace SundanceUtils
       XMLObject toXML() const ;
 
       /** */
-      int evalVerb() const {return evalVerbosity_;}
+      int param(const std::string& name) const ;
 
       /** */
-      int setupVerb() const {return setupVerbosity_;}
+      void setParam(const std::string& name, int val);
 
       /** */
-      void setEvalVerb(int v) {evalVerbosity_=v;}
+      static RCP<ParameterList> defaultParams();
 
-      /** */
-      int setSetupVerb(int v) {setupVerbosity_=v;}
 
     private:
       std::string name_;
 
-      int evalVerbosity_;
-
-      int setupVerbosity_;
+      RCP<ParameterList> params_;
 
       static Map<std::string, bool>& isActiveMap()
         {

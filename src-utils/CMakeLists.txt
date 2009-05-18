@@ -67,6 +67,7 @@ APPEND_SET(SOURCES
   Utilities/SundanceExceptions.cpp
   Utilities/SundanceFunctorDomain.cpp
   Utilities/SundanceIntHashSet.cpp
+  Utilities/SundanceOut.cpp
   Utilities/SundancePoint.cpp
   Utilities/SundanceStdMathFunctors.cpp
   Utilities/SundanceTabs.cpp

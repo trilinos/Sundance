@@ -31,7 +31,8 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceMapBundle.hpp"
-#include "SundanceAssembler.hpp"
+#include "SundanceDOFMapBase.hpp"
+#include "SundanceStdFwkEvalMediator.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -118,6 +119,7 @@ void MapBundle::buildLocalDOFMaps(
   const Array<Set<int> >& requiredFuncs)
 {
   Tabs tab;
+  int verbosity = mediator->verb();
 
   int numBlocks = dofMap_.size();
 
@@ -127,20 +129,23 @@ void MapBundle::buildLocalDOFMaps(
   int maxCellDim = mediator->maxCellDim();
   int cellDim = mediator->cellDim();
 
+  SUNDANCE_MSG3(verbosity, tab << "cell dim=" << cellDim);
+  SUNDANCE_MSG3(verbosity, tab << "max cell dim=" << maxCellDim);
+
   for (int b=0; b<numBlocks; b++)
   {   
     Tabs tab2;
-    SUNDANCE_MSG3(verb(), tab2 << "getting dofs for block " 
+    SUNDANCE_MSG3(verbosity, tab2 << "getting dofs for block " 
       << b << " of " << numBlocks);
         
     if (intCellSpec != AllTermsNeedCofacets)
     {
       Tabs tab3;
-      SUNDANCE_MSG3(verb(), tab3 << "getting ordinary dofs");
+      SUNDANCE_MSG3(verbosity, tab3 << "getting ordinary dofs");
 
       if (!localDOFMap_->hasCells()) 
       {
-        SUNDANCE_MSG3(verb(), tab3 << "setting cells of dim " 
+        SUNDANCE_MSG3(verbosity, tab3 << "setting cells of dim " 
           << cellDim);
         localDOFMap_->setCells(cellDim, maxCellDim, mediator->cellLID());
       }     
@@ -150,14 +155,16 @@ void MapBundle::buildLocalDOFMaps(
     else
     {
       Tabs tab3;
-      SUNDANCE_MSG3(verb(), tab3 << "ordinary dofs not needed for block " << b);
+      SUNDANCE_MSG3(verbosity, tab3 << "ordinary dofs not needed for block " << b);
     }
 
         
     if (intCellSpec != NoTermsNeedCofacets)
     {
       Tabs tab3;
-      SUNDANCE_MSG3(verb(), tab3 << "getting cofacet dofs");
+      SUNDANCE_MSG3(verbosity, tab3 << "getting cofacet dofs");
+      SUNDANCE_MSG3(verbosity, tab3 << "cofacet cells="
+        << *(mediator->cofacetCellLID()));
 
       if (!cofacetLocalDOFMap_->hasCells()) 
         cofacetLocalDOFMap_->setCells(maxCellDim, 
@@ -169,19 +176,19 @@ void MapBundle::buildLocalDOFMaps(
     else
     {
       Tabs tab3;
-      SUNDANCE_MSG3(verb(), tab3 << "cofacet dofs not needed for block " << b);
+      SUNDANCE_MSG3(verbosity, tab3 << "cofacet dofs not needed for block " << b);
     }
         
   }
 
   if (intCellSpec != AllTermsNeedCofacets)
   {
-    SUNDANCE_MSG4(verb(), tab << "local DOF values " << *localDOFMap_);
+    SUNDANCE_MSG4(verbosity, tab << "local DOF values " << *localDOFMap_);
   }
 
   if (intCellSpec != NoTermsNeedCofacets)
   {
-    SUNDANCE_MSG4(verb(), tab << "local cofacet DOF values " 
+    SUNDANCE_MSG4(verbosity, tab << "local cofacet DOF values " 
       << *cofacetLocalDOFMap_);
   }
 }

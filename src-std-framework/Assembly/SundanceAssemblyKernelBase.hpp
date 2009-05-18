@@ -66,6 +66,9 @@ namespace Internal
 {
 using namespace Teuchos;
 
+class StdFwkEvalMediator;
+class IntegralGroup;
+
 /** 
  * AssemblyKernelBase abstracts the operations that must be done in an
  * assembly loop. Regardless of whether the assembly loop is doing

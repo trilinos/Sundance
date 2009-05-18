@@ -52,8 +52,9 @@ SET(PAR_TEST_LIST
   VorticityStokes2D
 )
 
+# Disables Poisson3D
 SET(SERIAL_TEST_LIST
-  Poisson3D
+
   ConvTest2D
   AToC
   NonlinearPartialDomain

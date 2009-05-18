@@ -28,16 +28,22 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_GROUPER_H
-#define SUNDANCE_GROUPER_H
+#ifndef SUNDANCE_GROUPERBASE_H
+#define SUNDANCE_GROUPERBASE_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceSparsitySuperset.hpp"
-#include "SundanceIntegralGroup.hpp"
-#include "SundanceEquationSet.hpp"
+#include "SundanceCellType.hpp"
+#include "Teuchos_RefCountPtr.hpp"
+
+namespace SundanceCore
+{
+class EquationSet;
+class SparsitySuperset;
+class MultiIndex;
+class MultipleDeriv;
+}
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
@@ -45,27 +51,26 @@ using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceCore;
-using namespace SundanceCore;
+
+class QuadratureFamily;
+class BasisFamily;
 
 namespace Internal
 {
 using namespace Teuchos;
-using TSFExtended::ObjectWithVerbosity;  
+
+class IntegralGroup;
+
 
 /** 
  * Grouper
  */
 class GrouperBase
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<ElementIntegral>
 {
 public:
   /** */
   GrouperBase() {}
 
-  /** */
-  GrouperBase(const ParameterList& verbParams)
-    : ParameterControlledObjectWithVerbosity<ElementIntegral>("Integration", verbParams)
-    {}
   /** */
   virtual ~GrouperBase(){;}
 
@@ -77,9 +82,23 @@ public:
     int cellDim,
     const QuadratureFamily& quad,
     const RefCountPtr<SparsitySuperset>& sparsity,
-    Array<IntegralGroup>& groups) const = 0 ;
+    Array<RCP<IntegralGroup> >& groups) const = 0 ;
 
- 
+  /** */
+  void setVerbosity(
+    int setupVerb,
+    int integrationVerb,
+    int transformVerb);
+    
+
+  /** */
+  int setupVerb() const {return setupVerb_;}
+    
+  /** */
+  int integrationVerb() const {return integrationVerb_;}
+    
+  /** */
+  int transformVerb() const {return transformVerb_;}
 
 protected:
   void extractWeakForm(const EquationSet& eqn,
@@ -92,11 +111,14 @@ protected:
     int& testBlock, int& unkBlock, 
     bool& isOneForm) const ;
                               
+private:
+  int setupVerb_;
+  int integrationVerb_;
+  int transformVerb_;
 };
 
 }
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

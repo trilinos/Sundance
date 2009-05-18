@@ -315,18 +315,18 @@ void EquationSet::init(
   const Expr& fixedParamEvalPts,
   const Array<Expr>& fixedFieldValues)
 {
-  Tabs tab0;
+  Tabs tab0(0);
   Tabs tab1;
   bool hasBCs = fsr_->hasBCs();
   const SumOfBCs* bcSum = fsr_->bcSum();
   const SumOfIntegrals* integralSum = fsr_->integralSum();
  
-  int verb = verbLevel("setup");
+  int verb = 0;
 
   /* upgrade base verbosity level if one of the terms is being watched */
   if (integralSum->hasWatchedTerm() || (hasBCs && bcSum->hasWatchedTerm()))
   {
-    verb = max(verb, 1);
+    verb = 1;
   }
   SUNDANCE_BANNER1(verb, tab0, "EquationSet setup");
 
@@ -377,7 +377,7 @@ void EquationSet::init(
     int rqcVerb = verb;
     if (rqc.watch().isActive()) 
     {
-      rqcVerb=rqc.watch().setupVerb();
+      rqcVerb=rqc.watch().param("symbolic preprocessing");
       SUNDANCE_MSG1(rqcVerb, tab15 << "processing RQC = " << rqc);
     }
 
@@ -633,7 +633,7 @@ void EquationSet::init(
       int rqcVerb = verb;
       if (rqc.watch().isActive()) 
       {
-        rqcVerb=rqc.watch().setupVerb();
+        rqcVerb=rqc.watch().param("symbolic preprocessing");
         SUNDANCE_MSG1(verb, tab15 << "processing RQC = " << rqc);
       }
 

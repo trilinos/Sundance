@@ -312,18 +312,6 @@ void Sundance::setSettings(const XMLObject& xml)
             {
               LinearProblem::classVerbosity() = verbosity(value);
             }
-          else if (context=="Integration Management")
-            {
-              Internal::IntegralGroup::classVerbosity() = verbosity(value);
-            }
-          else if (context=="Quadrature")
-            {
-              Internal::QuadratureIntegral::classVerbosity() = verbosity(value);
-            }
-          else if (context=="Reference Integration")
-            {
-              Internal::RefIntegral::classVerbosity() = verbosity(value);
-            }
           else if (context=="DOF Mapping")
             {
               Internal::DOFMapBase::classVerbosity() = verbosity(value);
@@ -332,10 +320,6 @@ void Sundance::setSettings(const XMLObject& xml)
             {
               SundanceCore::SparsitySuperset::classVerbosity() = verbosity(value);
               SundanceCore::EvaluatableExpr::classVerbosity() = verbosity(value);
-            }
-          else if (context=="Integral Grouping")
-            {
-              Internal::GrouperBase::classVerbosity() = verbosity(value);
             }
           else if (context=="Mesh Creation")
             {

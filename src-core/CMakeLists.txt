@@ -220,6 +220,7 @@ APPEND_SET(HEADERS
   FrameworkInterface/SundanceAbstractEvalMediator.hpp
   FrameworkInterface/SundanceAlgebraSpecifier.hpp
   FrameworkInterface/SundanceCommonFuncDataStub.hpp
+  FrameworkInterface/SundanceComputationType.hpp
   FrameworkInterface/SundanceDeriv.hpp
   FrameworkInterface/SundanceDerivSet.hpp
   FrameworkInterface/SundanceDiscreteFuncDataStub.hpp

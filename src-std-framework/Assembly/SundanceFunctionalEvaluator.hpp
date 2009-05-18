@@ -35,7 +35,6 @@
 #include "SundanceExpr.hpp"
 #include "TSFVectorImpl.hpp"
 #include "TSFVectorType.hpp"
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdMesh
 {
@@ -127,6 +126,5 @@ double evaluateIntegral(const Mesh& mesh, const Expr& expr,
 
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

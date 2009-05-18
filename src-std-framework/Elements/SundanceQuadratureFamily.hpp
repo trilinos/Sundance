@@ -95,6 +95,13 @@ namespace SundanceStdFwk
                          Array<Point>& quadPoints,
                          Array<double>& quadWeights) const ;
   };
+
+
+/** \relates QuadratureFamily */
+void printQuad(std::ostream& os, 
+  const Array<Point>& pts, const Array<double>& wgts);
+
+
 }
 
 #endif

@@ -2,13 +2,16 @@
 
 INCLUDE(AddTestBatch)
 
+SET(DisabledTests
+  Poisson3D
+  FOSLSMagnetostatics2D
+  RefinementTest3D
+)
 
 SET(SerialTests
-        Poisson3D 
         PoissonOnDisk 
         BesselTest2D 
         Coupled2D
-        FOSLSMagnetostatics2D
         Kepler 
         Stokes2D 
         LinearPartialDomain 
@@ -16,7 +19,6 @@ SET(SerialTests
         AToCDensitySample
         FunctionalTest3D 
         FunctionalTest 
-        RefinementTest3D
 )
 
 

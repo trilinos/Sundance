@@ -28,50 +28,65 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_TRIVIALGROUPER_H
-#define SUNDANCE_TRIVIALGROUPER_H
+#include "SundanceOut.hpp"
+#include "SundanceTabs.hpp"
+#include "Teuchos_Array.hpp"
 
-#include "SundanceDefs.hpp"
-#include "SundanceGrouperBase.hpp"
+using namespace SundanceUtils;
+using namespace Teuchos;
+using namespace std;
 
-namespace SundanceStdFwk
+
+namespace SundanceUtils
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
 
-  namespace Internal
+void writeTable(std::ostream& os, const Tabs& tab,
+  const Array<double>& a, int cols)
+{
+  int rows = a.size() / cols;
+
+  for (int i=0; i<rows; i++)
   {
-    using namespace Teuchos;
-
-    /** 
-     * Grouper
-     */
-    class TrivialGrouper : public GrouperBase
-    {
-    public:
-      /** */
-      TrivialGrouper() : GrouperBase() {;}
-
-      /** */
-      virtual ~TrivialGrouper(){;}
-
-      /** */
-      virtual void findGroups(const EquationSet& eqn,
-                              const CellType& maxCellType,
-                              int spatialDim,
-                              const CellType& cellType,
-                              int cellDim,
-                              const QuadratureFamily& quad,
-                              const RefCountPtr<SparsitySuperset>& sparsity,
-                              Array<RCP<IntegralGroup> >& groups) const ;
-                              
-    };
-
+    os << tab << setw(10) << i << ":";
+    for (int j=0; j<cols; j++) 
+      os << setw(12) << setprecision(6) << a[i*cols+j];
+    os << endl;
   }
+  int n = a.size() - rows * cols;
+  if (n==0) return ;
+  os << tab << setw(10) << rows << ":" ;
+  for (int j=0; j<n; j++) 
+    os << setw(12) << setprecision(6) << a[rows*cols+j];
+  os << endl;
 }
 
 
-#endif
+void writeTable(std::ostream& os, const Tabs& tab,
+  const Array<int>& a, int cols)
+{
+  int rows = a.size() / cols;
+
+  for (int i=0; i<rows; i++)
+  {
+    os << tab << setw(10) << i << ":";
+    for (int j=0; j<cols; j++) 
+      os << setw(10) << a[i*cols+j];
+    os << endl;
+  }
+  int n = a.size() - rows * cols;
+  if (n==0) return ;
+  os << tab << setw(10) << rows << ":" ;
+  for (int j=0; j<n; j++) 
+    os << setw(10) << a[rows*cols+j];
+  os << endl;
+}
+
+
+}
+
+
+
+
+
+
+

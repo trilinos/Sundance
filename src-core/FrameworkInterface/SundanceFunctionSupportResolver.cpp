@@ -87,7 +87,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     unreducedUnkParamID_(),
     isVariationalProblem_(isVariational)
 {
-  Tabs tab0;
+  Tabs tab0(0);
   Tabs tab1;
 
   /* begin with a sanity check to ensure that the input equation set 
@@ -276,7 +276,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     int rqcVerb = verb;
     if (rqc.watch().isActive()) 
     {
-      rqcVerb=5;
+      rqcVerb=rqc.watch().param("symbolic preprocessing");
       SUNDANCE_MSG1(rqcVerb, tab15 << "processing RQC = " << rqc);
     }
 
@@ -321,7 +321,7 @@ FunctionSupportResolver::FunctionSupportResolver(
       int rqcVerb = verb;
       if (rqc.watch().isActive()) 
       {
-        rqcVerb=5;
+        rqcVerb=rqc.watch().param("symbolic preprocessing");
         SUNDANCE_MSG1(verb, tab15 << "processing RQC = " << rqc);
       }
 

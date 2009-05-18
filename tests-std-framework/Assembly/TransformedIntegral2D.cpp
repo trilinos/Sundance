@@ -89,6 +89,7 @@ static Time& totalTimer()
 int main(int argc, char** argv)
 {
   int stat = 0;
+  int verb=1;
   try
   {
     GlobalMPISession session(&argc, &argv);
@@ -99,8 +100,6 @@ int main(int argc, char** argv)
     int dim=2;
 
     Utils::setChopVal(1.0e-14);
-
-    verbosity<RefIntegral>() = VerbMedium;
 
     CellType cellType = TriangleCell;
 
@@ -158,7 +157,7 @@ int main(int argc, char** argv)
         {
           int alpha = t;
           Tabs tab;
-          RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp);
+          RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, verb);
           A->resize(JBatch.numCells() * ref.nNodes());
           for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
           ref.transformOneForm(JBatch, JBatch, dummy, coeff, A);
@@ -174,7 +173,7 @@ int main(int argc, char** argv)
             }
             cerr << "}" << endl;
           }
-          QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4);
+          QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, verb);
           Array<double> quadCoeff(2*quad.nQuad(), 1.0);
           B->resize(JBatch.numCells() * quad.nNodes());
           for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
@@ -254,7 +253,7 @@ int main(int argc, char** argv)
                 //  || t==1) continue;
                 int beta = u;
                 RefIntegral ref(dim, cellType, dim, cellType, P, alpha,
-                  dp, Q, beta, dq);
+                  dp, Q, beta, dq, verb);
                 A->resize(JBatch.numCells() * ref.nNodes());
                 for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
                 ref.transformTwoForm(JBatch, JBatch, dummy, coeff, A);
@@ -283,7 +282,7 @@ int main(int argc, char** argv)
 
 
                 QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha,
-                  dp, Q, beta, dq, q4);
+                  dp, Q, beta, dq, q4, verb);
                 Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                 B->resize(JBatch.numCells() * quad.nNodes());
                 for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;

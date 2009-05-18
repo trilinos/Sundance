@@ -31,6 +31,11 @@
 #include "SundanceTrivialGrouper.hpp"
 #include "SundanceRefIntegral.hpp"
 #include "SundanceQuadratureIntegral.hpp"
+#include "SundanceEquationSet.hpp"
+#include "SundanceIntegralGroup.hpp"
+#include "SundanceBasisFamily.hpp"
+#include "SundanceSparsitySuperset.hpp"
+#include "SundanceQuadratureFamily.hpp"
 #include "SundanceMap.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
@@ -52,23 +57,23 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   int cellDim,
   const QuadratureFamily& quad,
   const RefCountPtr<SparsitySuperset>& sparsity,
-  Array<IntegralGroup>& groups) const
+  Array<RCP<IntegralGroup> >& groups) const
 {
-  Tabs tab;
-  const ParameterList& verbParams = params();
+  Tabs tab(0);
 
-  SUNDANCE_LEVEL1("find groups",
+  SUNDANCE_MSG1(setupVerb(),
     tab << "in TrivialGrouper::findGroups(), num derivs = " 
     << sparsity->numDerivs());
-  SUNDANCE_LEVEL2("find groups",
+  SUNDANCE_MSG1(setupVerb(), 
     tab << "cell type = " << cellType);
-  SUNDANCE_LEVEL2("find groups",
+  SUNDANCE_MSG1(setupVerb(), 
     tab << "sparsity = " << std::endl << *sparsity << std::endl);
 
   int vecCount=0;
   int constCount=0;
 
-  /* turn off grouping for submaximal cells. This works around a bug detected by Rob Kirby that
+  /* turn off grouping for submaximal cells. This works around 
+   * a bug detected by Rob Kirby that
    * shows up with Nitsche BCs in mixed-element discretizations */
   bool doGroups = true;
   if (cellType != maxCellType) doGroups = false;
@@ -82,36 +87,38 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 
   for (int i=0; i<sparsity->numDerivs(); i++)
   {
-    Tabs tab1;
     const MultipleDeriv& d = sparsity->deriv(i);
-    SUNDANCE_LEVEL3("find groups",
-      tab1 << "defining integration policy for " << d);
+    SUNDANCE_MSG3(setupVerb(),
+      tab << "--------------------------------------------------");
+    SUNDANCE_MSG3(setupVerb(),
+      tab << "defining integration policy for " << d);
+    SUNDANCE_MSG3(setupVerb(),
+      tab << "--------------------------------------------------");
       
     if (d.order()==0) 
     {
-      Tabs tab2;
       RefCountPtr<ElementIntegral> integral ;
       int resultIndex;
       if (sparsity->isConstant(i))
       {
         integral = rcp(new RefIntegral(spatialDim, maxCellType, 
-            cellDim, cellType, verbParams));
+            cellDim, cellType, setupVerb()));
         resultIndex = constCount++;
       }
       else
       {
         integral = rcp(new QuadratureIntegral(spatialDim, maxCellType, 
             cellDim, cellType, quad,
-            verbParams));
+            setupVerb()));
         resultIndex = vecCount++;
       }
-      SUNDANCE_LEVEL3("find groups", tab2 << "is zero-form");
-      groups.append(IntegralGroup(tuple(integral),
-          tuple(resultIndex), verbParams));
+      integral->setVerbosity(integrationVerb(), transformVerb());
+      SUNDANCE_MSG3(setupVerb(), tab << "is zero-form");
+      groups.append(rcp(new IntegralGroup(tuple(integral),
+            tuple(resultIndex), setupVerb())));
     }
     else
     {
-      Tabs tab2;
       BasisFamily testBasis;
       BasisFamily unkBasis;
       MultiIndex miTest;
@@ -128,11 +135,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         testID, unkID,
         testBlock, unkBlock,
         isOneForm);
-
-      /* In variational problems we might have (u,v) and (v,u). Because the derivative
-       * is stored as an unordered multiset it can't distinguish between the two cases.
-       * We need to check the equation set to see if the two functions show up as
-       * variations and unknowns. If so, then we need to produce the transposed integral.
+      
+      
+      /* In variational problems we might have (u,v) and (v,u). Because 
+       * the derivative is stored as an unordered multiset it can't 
+       * distinguish between the two cases. We need to check the equation 
+       * set to see if the two functions show up as variations and 
+       * unknowns. If so, then we need to produce the transposed integral.
        */
       bool transposeNeeded = false;
       if (!isOneForm && rawTestID!=rawUnkID 
@@ -144,29 +153,29 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 
       if (isOneForm)
       {
-        SUNDANCE_LEVEL3("find groups", tab2 << "is one-form");
+        SUNDANCE_MSG3(setupVerb(), tab << "is one-form");
       }
       else
       {
-        SUNDANCE_LEVEL3("find groups", tab2 << "is two-form");
+        SUNDANCE_MSG3(setupVerb(), tab << "is two-form");
       }
 
-      SUNDANCE_LEVEL3("find groups", 
-        tab2 << "test ID: " << testID << " block=" << testBlock);
+      SUNDANCE_MSG3(setupVerb(), 
+        tab << "test ID: " << testID << " block=" << testBlock);
 
       if (!isOneForm)
       {
-        SUNDANCE_LEVEL3("find groups", tab2 << "unk funcID: " << unkID << " block=" << unkBlock);
+        SUNDANCE_MSG3(setupVerb(), tab << "unk funcID: " << unkID << " block=" << unkBlock);
       }
                    
-      SUNDANCE_LEVEL3("find groups", tab2 << "deriv = " << d);
+      SUNDANCE_MSG3(setupVerb(), tab << "deriv = " << d);
       if (sparsity->isConstant(i))
       {
-        SUNDANCE_LEVEL3("find groups", tab2 << "coeff is constant");
+        SUNDANCE_MSG3(setupVerb(), tab << "coeff is constant");
       }
       else
       {
-        SUNDANCE_LEVEL3("find groups", tab2 << "coeff is non-constant");
+        SUNDANCE_MSG3(setupVerb(), tab << "coeff is non-constant");
       }
 
       RefCountPtr<ElementIntegral> integral;
@@ -174,7 +183,6 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       int resultIndex;
       if (sparsity->isConstant(i))
       {
-        Tabs tab3;
         if (isOneForm)
         {
           int alpha=0;
@@ -182,12 +190,10 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             alpha = miTest.firstOrderDirection();
           }
-          SUNDANCE_LEVEL3("find groups",
-            tab3 << "creating reference integral for one-form");
           integral = rcp(new RefIntegral(spatialDim, maxCellType, 
               cellDim, cellType,
               testBasis, alpha, 
-              miTest.order(), verbParams));
+              miTest.order(), setupVerb()));
         }
         else
         {
@@ -201,25 +207,22 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             beta = miUnk.firstOrderDirection();
           }
-          SUNDANCE_LEVEL3("find groups",
-            tab3 << "creating reference integral for two-form");
           integral = rcp(new RefIntegral(spatialDim, maxCellType,
               cellDim, cellType,
               testBasis, alpha, miTest.order(),
-              unkBasis, beta, miUnk.order(), verbParams));
+              unkBasis, beta, miUnk.order(), setupVerb()));
           if (transposeNeeded)
           {
             transposedIntegral = rcp(new RefIntegral(spatialDim, maxCellType,
                 cellDim, cellType,
                 unkBasis, beta, miUnk.order(),
-                testBasis, alpha, miTest.order(), verbParams));
+                testBasis, alpha, miTest.order(), setupVerb()));
           }
         }
         resultIndex = constCount++;
       }
-      else
+      else /* sparsity->isVector(i) */
       {
-        Tabs tab3;
         if (isOneForm)
         {
           int alpha=0;
@@ -227,12 +230,10 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             alpha = miTest.firstOrderDirection();
           }
-          SUNDANCE_LEVEL3("find groups",
-            tab3 << "creating quadrature integral for one-form");
           integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
               cellDim, cellType,
               testBasis, alpha, 
-              miTest.order(), quad, verbParams));
+              miTest.order(), quad, setupVerb()));
         }
         else
         {
@@ -246,25 +247,31 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             beta = miUnk.firstOrderDirection();
           }
-          SUNDANCE_LEVEL3("find groups",
-            tab3 << "creating quadrature integral for two-form");
           integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
               cellDim, cellType,
               testBasis, alpha, 
               miTest.order(),
               unkBasis, beta, 
-              miUnk.order(), quad, verbParams));
+              miUnk.order(), quad, setupVerb()));
           if (transposeNeeded)
           {
             transposedIntegral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                 cellDim, cellType,
                 unkBasis, beta, miUnk.order(),
-                testBasis, alpha, miTest.order(), quad, verbParams));
+                testBasis, alpha, miTest.order(), quad, setupVerb()));
           }
         }
         resultIndex = vecCount++;
       }
+
+      /* Set the verbosity for the integrals */
+      integral->setVerbosity(integrationVerb(), transformVerb());
+      if (transposeNeeded)
+      {
+        transposedIntegral->setVerbosity(integrationVerb(), transformVerb());
+      }
           
+      
       if (isOneForm)
       {
         if (doGroups)
@@ -283,25 +290,25 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         }
         else
         {
-          groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
-              tuple(integral),
-              tuple(resultIndex), tuple(d), verbParams));
+          groups.append(rcp(new IntegralGroup(tuple(testID), tuple(testBlock),
+                tuple(integral),
+                tuple(resultIndex), tuple(d), setupVerb())));
         }
       }
       else
       {
         if (!doGroups)
         {
-          groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
-              tuple(unkID), tuple(unkBlock),
-              tuple(integral),
-              tuple(resultIndex), tuple(d), verbParams));
+          groups.append(rcp(new IntegralGroup(tuple(testID), tuple(testBlock),
+                tuple(unkID), tuple(unkBlock),
+                tuple(integral),
+                tuple(resultIndex), tuple(d), setupVerb())));
           if (transposeNeeded)
           {
-            groups.append(IntegralGroup(tuple(unkID), tuple(unkBlock),
-                tuple(testID), tuple(testBlock),
-                tuple(transposedIntegral),
-                tuple(resultIndex), tuple(d), verbParams));
+            groups.append(rcp(new IntegralGroup(tuple(unkID), tuple(unkBlock),
+                  tuple(testID), tuple(testBlock),
+                  tuple(transposedIntegral),
+                  tuple(resultIndex), tuple(d), setupVerb())));
           }
         }
         else
@@ -310,18 +317,18 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           OrderedQuartet<int, BasisFamily, int, BasisFamily> testUnkKey(rawTestID, testBasis, rawUnkID, unkBasis);
 
 
-          SUNDANCE_LEVEL1("find groups", tab3 << "key=" << testUnkKey);
+          SUNDANCE_MSG2(setupVerb(), tab3 << "key=" << testUnkKey);
           if (!twoForms.containsKey(testUnkKey))
           {
             Tabs tab4;
-            SUNDANCE_LEVEL1("find groups", tab4 << "key not found");
+            SUNDANCE_MSG2(setupVerb(), tab4 << "key not found");
             twoForms.put(testUnkKey, tuple(integral));
             twoFormResultIndices.put(testUnkKey, tuple(resultIndex));
           }
           else
           {
             Tabs tab4;
-            SUNDANCE_LEVEL1("find groups", tab4 << "key found");
+            SUNDANCE_MSG2(setupVerb(), tab4 << "key found");
             twoForms[testUnkKey].append(integral);
             twoFormResultIndices[testUnkKey].append(resultIndex);
           }
@@ -332,14 +339,14 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
             if (!twoForms.containsKey(unkTestKey))
             {
               Tabs tab4;
-              SUNDANCE_LEVEL1("find groups", tab4 << "key not found");
+              SUNDANCE_MSG2(setupVerb(), tab4 << "key not found");
               twoForms.put(unkTestKey, tuple(transposedIntegral));
               twoFormResultIndices.put(unkTestKey, tuple(resultIndex));
             }
             else
             {
               Tabs tab4;
-              SUNDANCE_LEVEL1("find groups", tab4 << "key found");
+              SUNDANCE_MSG2(setupVerb(), tab4 << "key found");
               twoForms[unkTestKey].append(transposedIntegral);
               twoFormResultIndices[unkTestKey].append(resultIndex);
             }
@@ -351,12 +358,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
 
   if (doGroups)
   {
-    Tabs tab2;
-    SUNDANCE_LEVEL1("find groups", tab2 << "creating integral groups");
+    Tabs tab;
+    SUNDANCE_MSG2(setupVerb(), tab << "creating integral groups");
     for (twoFormMap::const_iterator i=twoForms.begin(); i!=twoForms.end(); i++)
     {
       Tabs tab3;
-      SUNDANCE_LEVEL1("find groups", tab3 << "integral group number="
+      SUNDANCE_MSG2(setupVerb(), tab3 << "integral group number="
         << groups.size());
       int rawTestID = i->first.a();
       BasisFamily testBasis = i->first.b();
@@ -369,7 +376,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
       const Array<int>& resultIndices 
         = twoFormResultIndices.get(i->first);
-      SUNDANCE_LEVEL1("find groups", tab3 << "creating two-form integral group" << std::endl
+      SUNDANCE_MSG2(setupVerb(), tab3 << "creating two-form integral group" << std::endl
         << tab3 << "testID=" << rawTestID << std::endl
         << tab3 << "unkID=" << rawUnkID << std::endl
         << tab3 << "testBlock=" << testBlock << std::endl
@@ -381,19 +388,19 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       for (unsigned int j=0; j<resultIndices.size(); j++)
       {
         MultipleDeriv d = sparsity->deriv(resultIndices[j]);
-        SUNDANCE_LEVEL1("find groups", tab3 << "deriv " << j << " " 
+        SUNDANCE_MSG2(setupVerb(), tab3 << "deriv " << j << " " 
           << d);
         grpDerivs.append(d);
       }
-      groups.append(IntegralGroup(tuple(testID), tuple(testBlock), tuple(unkID), 
-          tuple(unkBlock),
-          integrals, resultIndices, grpDerivs, verbParams));
+      groups.append(rcp(new IntegralGroup(tuple(testID), tuple(testBlock), 
+            tuple(unkID), tuple(unkBlock),
+            integrals, resultIndices, grpDerivs, setupVerb())));
     }
 
     for (oneFormMap::const_iterator i=oneForms.begin(); i!=oneForms.end(); i++)
     {
       Tabs tab3;
-      SUNDANCE_LEVEL1("find groups", tab3 << "integral group number="
+      SUNDANCE_MSG2(setupVerb(), tab3 << "integral group number="
         << groups.size());
       int rawTestID = i->first.first();
       int testID = eqn.reducedVarID(rawTestID);
@@ -401,19 +408,19 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
       const Array<int>& resultIndices 
         = oneFormResultIndices.get(i->first);
-      SUNDANCE_LEVEL1("find groups", tab3 << "creating one-form integral group" << std::endl
+      SUNDANCE_MSG2(setupVerb(), tab3 << "creating one-form integral group" << std::endl
         << tab3 << "testID=" << testID << std::endl
         << tab3 << "resultIndices=" << resultIndices);
       Array<MultipleDeriv> grpDerivs;
       for (unsigned int j=0; j<resultIndices.size(); j++)
       {
         MultipleDeriv d = sparsity->deriv(resultIndices[j]);
-        SUNDANCE_LEVEL1("find groups", tab3 << "deriv " << j << " " 
+        SUNDANCE_MSG2(setupVerb(), tab3 << "deriv " << j << " " 
           << d);
         grpDerivs.append(d);
       }
-      groups.append(IntegralGroup(tuple(testID), tuple(testBlock),
-          integrals, resultIndices, grpDerivs, verbParams));
+      groups.append(rcp(new IntegralGroup(tuple(testID), tuple(testBlock),
+            integrals, resultIndices, grpDerivs, setupVerb())));
     }
   }
   

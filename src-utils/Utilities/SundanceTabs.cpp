@@ -33,16 +33,16 @@
 using namespace SundanceUtils;
 
 
-Tabs::Tabs(char c)
-  : c_(c), myLevel_(0)
+Tabs::Tabs(bool jump)
+  : jump_(jump), myLevel_(0)
 {
-  tabLevel()++;
+  if (jump) tabLevel()++;
   myLevel_ = tabLevel();
 }
 
 Tabs::~Tabs()
 {
-  tabLevel()--;
+  if (jump_) tabLevel()--;
 }
 
 void Tabs::print(std::ostream& os) const
@@ -52,7 +52,7 @@ void Tabs::print(std::ostream& os) const
       os << "[" << tabLevel() << "]";
     }
   int n = myLevel_ * tabSize();
-  for (int i=0; i<n; i++) os << c_;
+  for (int i=0; i<n; i++) os << " ";
 }
 
 
