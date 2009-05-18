@@ -131,31 +131,31 @@ int main(int argc, char** argv)
            << endl;
 
       cerr << "Evaluating phi(vert) with FIAT-Lagrange" << endl;
-      fiatLagrange.ptr()->refEval(cellType, cellType, verts, d0, result);
+      fiatLagrange.ptr()->refEval(cellType, verts, d0, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << "Evaluating phi(vert) with Lagrange" << endl;
-      lagrange.ptr()->refEval(cellType, cellType, verts, d0, result);
+      lagrange.ptr()->refEval(cellType, verts, d0, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << endl ;
 
       cerr << "Evaluating Dx*phi(vert) with FIAT-Lagrange" << endl;
-      fiatLagrange.ptr()->refEval(cellType, cellType, verts, dx, result);
+      fiatLagrange.ptr()->refEval(cellType, verts, dx, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << "Evaluating Dx*phi(vert) with Lagrange" << endl;
-      lagrange.ptr()->refEval(cellType, cellType, verts, dx, result);
+      lagrange.ptr()->refEval(cellType, verts, dx, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << endl ;
       
       cerr << "Evaluating Dy*phi(vert) with FIAT-Lagrange" << endl;
-      fiatLagrange.ptr()->refEval(cellType, cellType, verts, dy, result);
+      fiatLagrange.ptr()->refEval(cellType, verts, dy, result);
       cerr << "results = " << result << endl << endl;
 
       cerr << "Evaluating Dy*phi(vert) with Lagrange" << endl;
-      lagrange.ptr()->refEval(cellType, cellType, verts, dy, result);
+      lagrange.ptr()->refEval(cellType, verts, dy, result);
       cerr << "results = " << result << endl << endl;
 
       

@@ -125,7 +125,6 @@ public:
 
   /** */
   void refEval(
-    const CellType& maximalCellType,
     const CellType& cellType,
     const Array<Point>& pts,
     const MultiIndex& deriv,

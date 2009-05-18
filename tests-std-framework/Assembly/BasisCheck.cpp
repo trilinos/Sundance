@@ -155,10 +155,10 @@ int main(int argc, char** argv)
               Array<Array<Array<double> > > values1;
               Array<Array<Array<double> > > values2;
               cerr << tab5 << "computing basis1...";
-              b1.ptr()->refEval(cellType, cellType, qPts, mi, values1);
+              b1.ptr()->refEval(cellType, qPts, mi, values1);
               cerr << "done" << endl;
               cerr << tab5 << "computing basis2...";
-              b2.ptr()->refEval(cellType, cellType, qPts, mi, values2);
+              b2.ptr()->refEval(cellType, qPts, mi, values2);
               cerr << "done" << endl;
               int nNodes1 = b1.ptr()->nReferenceDOFs(cellType, cellType);
               int nNodes2 = b2.ptr()->nReferenceDOFs(cellType, cellType);

@@ -205,9 +205,11 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
   Tabs tab;
   RefCountPtr<Array<Array<Array<double> > > > rtn ;
 
+  CellType evalCellType = cellType();
   if (cellDim() != maxCellDim())
   {
     if (!cofacetCellsAreReady()) setupFacetTransformations();
+    evalCellType = maxCellType();
     
     TEST_FOR_EXCEPTION(!cofacetCellsAreReady(), RuntimeError, 
       "cofacet cells not ready in getFacetRefBasisVals()");
@@ -237,7 +239,7 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
         {
           mi[r]=1;
         }
-        basis.ptr()->refEval(maxCellType(), maxCellType(), 
+        basis.ptr()->refEval(evalCellType, 
           (*(quadPtsReferredToMaxCell_.get(cellType())))[fc], 
           mi, tmp[r]);
       }

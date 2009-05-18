@@ -60,20 +60,9 @@ public:
    * the basis functions) for an array of points on the "reference cell" for a
    * given cell type.
    *
-   * \param  maximalCellType
-   *           [in] Cell type for the maximal-dimension reference cell
-   *           in which the current cell is embedded. This information 
-   *           is required for certain basis families where basis members
-   *           from throughout the cell have nonzero support on facets
-   *           to which their associated DOFs are not directly attached. 
-   *           If the current cell
-   *           is already of maximal dimension, the value of 
-   *           <tt>maximalCellType</tt> is simply equal to <tt>cellType.</tt>
    * \param  cellType
    *           [in] The type of cell on which the basis is currently being
    *           evaluated. 
-   *           Precondition: <tt>dimension(cellType) 
-   *           <= dimension(maximalCellType).</tt>
    * \param  pts
    *           [in] Array of points on the reference cell (or master cell)
    *           where the basis functions are to be computed. 
@@ -109,7 +98,6 @@ x   *           Specifically,
    *           mapStructure.numBasisChunks()</tt>). 
    */
   virtual void refEval(
-    const CellType& maximalCellType,
     const CellType& cellType,
     const Array<Point>& pts,
     const MultiIndex& deriv,

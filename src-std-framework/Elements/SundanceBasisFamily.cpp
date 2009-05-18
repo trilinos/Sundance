@@ -120,7 +120,6 @@ RCP<BasisDOFTopologyBase> BasisFamily::getBasisTopology(const RCP<const CommonFu
 
 
 void BasisFamily::refEval(
-    const CellType& maximalCellType,
     const CellType& cellType,
     const Array<Point>& pts,
     const MultiIndex& deriv,
@@ -130,7 +129,7 @@ void BasisFamily::refEval(
   Tabs tab;
   SUNDANCE_MSG3(verbosity, tab << "evaluating basis " << *this 
     << " with multi-index " << deriv);
-  ptr()->refEval(maximalCellType, cellType, pts, deriv, result, verbosity);
+  ptr()->refEval(cellType, pts, deriv, result, verbosity);
   string f = "D[phi_n," + deriv.toString()+"]";
 
   if (verbosity >= 4)

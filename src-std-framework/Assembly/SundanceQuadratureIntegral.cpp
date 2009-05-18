@@ -164,7 +164,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       MultiIndex mi;
       testBasisVals[r].resize(testBasis.dim());
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.refEval(evalCellType(), evalCellType(), quadPts, mi, 
+      testBasis.refEval(evalCellType(), quadPts, mi, 
         testBasisVals[r], setupVerb());
     }
 
@@ -239,7 +239,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       testBasisVals[r].resize(testBasis.dim());
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.refEval(evalCellType(), evalCellType(), quadPts, mi, 
+      testBasis.refEval(evalCellType(), quadPts, mi, 
         testBasisVals[r], setupVerb());
     }
 
@@ -248,7 +248,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       unkBasisVals[r].resize(unkBasis.dim());
       MultiIndex mi;
       if (unkDerivOrder==1) mi[r] = 1;
-      unkBasis.refEval(evalCellType(), evalCellType(), 
+      unkBasis.refEval(evalCellType(), 
         quadPts, mi, unkBasisVals[r], setupVerb());
     }
 

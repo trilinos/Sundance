@@ -222,7 +222,6 @@ Array<int> Lagrange::makeRange(int low, int high)
 }
 
 void Lagrange::refEval(
-  const CellType& maximalCellType,
   const CellType& cellType,
   const Array<Point>& pts,
   const MultiIndex& deriv,

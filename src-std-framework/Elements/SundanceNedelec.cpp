@@ -144,7 +144,6 @@ void Nedelec::getReferenceDOFs(
 
 
 void Nedelec::refEval(
-  const CellType& maximalCellType,
   const CellType& cellType,
   const Array<Point>& pts,
   const MultiIndex& deriv,

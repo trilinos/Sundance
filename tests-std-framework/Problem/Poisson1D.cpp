@@ -154,13 +154,7 @@ int main(int argc, char** argv)
       double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
       cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
-      ParameterList verbParams = *FunctionalEvaluator::defaultVerbParams();
-      verbParams.sublist("Assembler").set<int>("setup", 4);
-      verbParams.sublist("Assembler").set<int>("assembly loop", 3);
-      verbParams.sublist("Assembler").set<int>("evaluation mediator", 4);
-
-      Out::os() << verbParams << endl;
-      double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr, verbParams);
+      double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
       cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
 
       Expr exactFluxExpr = Integral(leftPoint, 

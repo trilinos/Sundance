@@ -204,7 +204,6 @@ void Bubble::getReferenceDOFs(
 
 
 void Bubble::refEval(
-  const CellType& maximalCellType,
   const CellType& cellType,
   const Array<Point>& pts,
   const MultiIndex& deriv,
@@ -214,16 +213,6 @@ void Bubble::refEval(
   typedef Array<double> Adouble;
   result.resize(1);
   result[0].resize(pts.length());
-
-  if (cellType != maximalCellType)
-  {
-    for (int i=0; i<pts.length(); i++)
-    {
-      result[0][i].resize(1);
-      result[0][i][0] = 0.0;
-    }
-    return;
-  }
 
   switch(cellType)
     {

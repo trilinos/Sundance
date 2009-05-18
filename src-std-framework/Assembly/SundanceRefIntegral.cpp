@@ -160,7 +160,7 @@ RefIntegral::RefIntegral(int spatialDim,
       testBasisVals[r].resize(testBasis.dim());
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.refEval(maxCellType, evalCellType(), quadPts, mi, 
+      testBasis.refEval(evalCellType(), quadPts, mi, 
         testBasisVals[r], setupVerb());
     }
 
@@ -287,7 +287,7 @@ RefIntegral::RefIntegral(int spatialDim,
       testBasisVals[r].resize(testBasis.dim());
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.refEval(maxCellType, evalCellType(), quadPts, mi, 
+      testBasis.refEval(evalCellType(), quadPts, mi, 
         testBasisVals[r], setupVerb());
     }
 
@@ -300,7 +300,7 @@ RefIntegral::RefIntegral(int spatialDim,
       unkBasisVals[r].resize(unkBasis.dim());
       MultiIndex mi;
       if (unkDerivOrder==1) mi[r] = 1;
-      unkBasis.refEval(maxCellType, evalCellType(), 
+      unkBasis.refEval(evalCellType(), 
         quadPts, mi, unkBasisVals[r], setupVerb());
     }
 
