@@ -36,6 +36,7 @@
 #include "SundanceTypeUtils.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
+#include "SundanceADReal.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceUtils;
@@ -160,7 +161,85 @@ void RaviartThomas::refEval(
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
-  TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements not yet supported");
+  switch(cellType) {
+  case PointCell:
+    {
+      TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements for PointCell not supported");
+    }
+    break;
+  case LineCell:
+    {
+      result.resize(1);
+      result[0].resize(pts.length());
+      Array<ADReal> tmp;
+      tmp.resize(2);
+      for (int i=0;i<pts.length();i++) {
+	ADReal x = ADReal( pts[i][0] , 0 , 1 );
+	ADReal one(1.0,1);
+	result[0][i].resize(2);
+	tmp[0] = one - x;
+	tmp[1] = x;
+	if (deriv.order()==0) {
+	  for (int j=0;j<tmp.length();j++) {
+	    result[0][i][j] = tmp[j].value();
+	  }
+	}
+	else {
+	  for (int j=0;j<tmp.length();j++) {
+	    result[0][i][j] = tmp[j].gradient()[deriv.firstOrderDirection()];
+	  }
+	}
+      }
+    }
+    break;
+  case TriangleCell:
+    {
+      result.resize(2);
+      result[0].resize(pts.length());
+      result[1].resize(pts.length());
+      Array<ADReal> tmp0;
+      Array<ADReal> tmp1;
+      tmp0.resize(3);
+      tmp1.resize(3);
+      for (int i=0;i<pts.length();i++) {
+	ADReal x = ADReal(pts[i][0],0,2);
+	ADReal y = ADReal(pts[i][1],1,2);
+	ADReal one(1.0,2);
+	ADReal rt2(sqrt(2.0),2);
+	result[0][i].resize(3);
+	result[1][i].resize(3);
+	tmp0[0] = x;
+	tmp1[0] = y - one;
+	tmp0[1] = rt2 * x;
+	tmp1[1] = rt2 * y;
+	tmp0[2] = x - one;
+	tmp1[2] = y;
+	if (deriv.order()==0) {
+	  for (int j=0;j<tmp0.length();j++) {
+	    result[0][i][j] = tmp0[j].value();
+	    result[1][i][j] = tmp1[j].value();
+	  }
+	}
+	else {
+	  for (int j=0;j<tmp0.length();j++) {
+	    result[0][i][j] = tmp0[j].gradient()[deriv.firstOrderDirection()];
+	    result[1][i][j] = tmp1[j].gradient()[deriv.firstOrderDirection()];
+	  }
+	}
+      }
+    }
+    break;
+  case TetCell:
+    {
+      TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements for TetCell not supported");
+    }
+    break;
+  default:
+    TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements unknown cell type");
+    break;
+  }
+
+  return;
 }
 
 
