@@ -89,21 +89,21 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
   int chunk = 0;
   int nBasis = basis.size();
   for (int i=0; i<nBasis; i++)
+  {
+    OrderedHandle<BasisDOFTopologyBase> bh = basis[i];
+    if (!basisToChunkMap.containsKey(bh))
     {
-      OrderedHandle<BasisDOFTopologyBase> bh = basis[i];
-      if (!basisToChunkMap.containsKey(bh))
-        {
-          chunkBases.append(basis[i]);
-          basisToChunkMap.put(bh, chunk);
-          chunkFuncs.append(tuple(i));
-          chunk++;
-        }
-      else
-        {
-          int b = basisToChunkMap.get(bh);
-          chunkFuncs[b].append(i);
-        }
+      chunkBases.append(basis[i]);
+      basisToChunkMap.put(bh, chunk);
+      chunkFuncs.append(tuple(i));
+      chunk++;
     }
+    else
+    {
+      int b = basisToChunkMap.get(bh);
+      chunkFuncs[b].append(i);
+    }
+  }
 
 
   structure_ = rcp(new MapStructure(basis.size(), chunkBases, chunkFuncs));
@@ -142,13 +142,13 @@ void MixedDOFMap::allocate(const Mesh& mesh)
   maximalDofs_.resize(nBasisChunks());
 
   for (int b=0; b<nBasisChunks(); b++)
-    {
-      localNodePtrs_[b].resize(mesh.spatialDim()+1);
-      nNodesPerCell_[b].resize(mesh.spatialDim()+1);
-      totalNNodesPerCell_[b].resize(mesh.spatialDim()+1);
-      nDofsPerCell_[b].resize(mesh.spatialDim()+1);
-      totalNDofsPerCell_[b].resize(mesh.spatialDim()+1);
-    }
+  {
+    localNodePtrs_[b].resize(mesh.spatialDim()+1);
+    nNodesPerCell_[b].resize(mesh.spatialDim()+1);
+    totalNNodesPerCell_[b].resize(mesh.spatialDim()+1);
+    nDofsPerCell_[b].resize(mesh.spatialDim()+1);
+    totalNDofsPerCell_[b].resize(mesh.spatialDim()+1);
+  }
   
 
   /* compute node counts for each cell dimension and each basis type */
@@ -157,108 +157,108 @@ void MixedDOFMap::allocate(const Mesh& mesh)
   numFacets_.resize(dim_+1);
 
   for (int d=0; d<=dim_; d++)
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_MEDIUM(tab1 << "allocating d=" << d);
+    /* record the number of facets for each cell type so we're
+     * not making a bunch of mesh calls */
+    numFacets_[d].resize(d);
+    for (int fd=0; fd<d; fd++) numFacets_[d][fd]=mesh.numFacets(d, 0, fd);
+    SUNDANCE_VERB_HIGH(tab1 << "num facets for dimension " << d << " is " 
+      << numFacets_[d]);
+
+    cellHasAnyDOFs_[d] = false;
+    dofs_[d].resize(nBasisChunks());
+
+    int numCells = mesh.numCells(d);
+    hasBeenAssigned_[d].resize(numCells);
+
+    for (int b=0; b<nBasisChunks(); b++)
     {
-      Tabs tab1;
-      SUNDANCE_VERB_MEDIUM(tab1 << "allocating d=" << d);
-      /* record the number of facets for each cell type so we're
-       * not making a bunch of mesh calls */
-      numFacets_[d].resize(d);
-      for (int fd=0; fd<d; fd++) numFacets_[d][fd]=mesh.numFacets(d, 0, fd);
-      SUNDANCE_VERB_HIGH(tab1 << "num facets for dimension " << d << " is " 
-                         << numFacets_[d]);
-
-      cellHasAnyDOFs_[d] = false;
-      dofs_[d].resize(nBasisChunks());
-
-      int numCells = mesh.numCells(d);
-      hasBeenAssigned_[d].resize(numCells);
-
-      for (int b=0; b<nBasisChunks(); b++)
+      int nNodes = basis(b).ptr()->nReferenceDOFs(mesh.cellType(dim_), mesh.cellType(d));
+      if (nNodes == 0)
+      {
+        nNodesPerCell_[b][d] = 0;
+        nDofsPerCell_[b][d] = 0;
+      }
+      else
+      {
+        /* look up the node pointer for this cell and for all of its
+         * facets */
+        basis(b).ptr()->getReferenceDOFs(mesh.cellType(dim_),
+          mesh.cellType(d), 
+          localNodePtrs_[b][d]);
+              
+              
+        SUNDANCE_VERB_HIGH(tab1 << "node ptrs for basis " << basis(b)
+          << "and dimension " << d << " are " 
+          << localNodePtrs_[b][d]);
+              
+        /* with the node pointers in hand, we can work out the number
+         * of nodes per cell in this dimension for this basis */
+        if (localNodePtrs_[b][d][d].size() > 0) 
         {
-          int nNodes = basis(b).ptr()->nReferenceDOFs(mesh.cellType(dim_), mesh.cellType(d));
-          if (nNodes == 0)
-            {
-              nNodesPerCell_[b][d] = 0;
-              nDofsPerCell_[b][d] = 0;
-            }
-          else
-            {
-              /* look up the node pointer for this cell and for all of its
-               * facets */
-              basis(b).ptr()->getReferenceDOFs(mesh.cellType(dim_),
-                mesh.cellType(d), 
-                localNodePtrs_[b][d]);
-              
-              
-              SUNDANCE_VERB_HIGH(tab1 << "node ptrs for basis " << basis(b)
-                                 << "and dimension " << d << " are " 
-                                 << localNodePtrs_[b][d]);
-              
-              /* with the node pointers in hand, we can work out the number
-               * of nodes per cell in this dimension for this basis */
-              if (localNodePtrs_[b][d][d].size() > 0) 
-                {
-                  nNodesPerCell_[b][d] = localNodePtrs_[b][d][d][0].size();
-                  if (nNodesPerCell_[b][d] > 0) cellHasAnyDOFs_[d] = true;
-                }
-              else
-                {
-                  nNodesPerCell_[b][d] = 0;
-                }
-              nDofsPerCell_[b][d] = nNodesPerCell_[b][d] * nFuncs(b);
-            }
+          nNodesPerCell_[b][d] = localNodePtrs_[b][d][d][0].size();
+          if (nNodesPerCell_[b][d] > 0) cellHasAnyDOFs_[d] = true;
+        }
+        else
+        {
+          nNodesPerCell_[b][d] = 0;
+        }
+        nDofsPerCell_[b][d] = nNodesPerCell_[b][d] * nFuncs(b);
+      }
 
-          /* if the cell is of intermediate dimension and it has DOFs, we
-           * need to assign GIDs for the cells of this dimension. Otherwise,
-           * we can skip intermediate GID assignment, saving some parallel
-           * communication */
-          if (nDofsPerCell_[b][d] > 0 && d > 0 && d < mesh.spatialDim())
-            {
-              Mesh& tmpMesh = const_cast<Mesh&>(mesh);
-              tmpMesh.assignIntermediateCellGIDs(d);
-            }
+      /* if the cell is of intermediate dimension and it has DOFs, we
+       * need to assign GIDs for the cells of this dimension. Otherwise,
+       * we can skip intermediate GID assignment, saving some parallel
+       * communication */
+      if (nDofsPerCell_[b][d] > 0 && d > 0 && d < mesh.spatialDim())
+      {
+        Mesh& tmpMesh = const_cast<Mesh&>(mesh);
+        tmpMesh.assignIntermediateCellGIDs(d);
+      }
           
-          SUNDANCE_VERB_HIGH(tab1 << 
-                             "num nodes for basis " << basis(b)
-                             << "and dimension " << d << " is " 
-                             << nNodesPerCell_[b][d]);
+      SUNDANCE_VERB_HIGH(tab1 << 
+        "num nodes for basis " << basis(b)
+        << "and dimension " << d << " is " 
+        << nNodesPerCell_[b][d]);
 
-          totalNNodesPerCell_[b][d] = nNodesPerCell_[b][d];
-          for (int dd=0; dd<d; dd++) 
-            {
-              totalNNodesPerCell_[b][d] 
-                += numFacets_[d][dd]*nNodesPerCell_[b][dd];
-            }
-          totalNDofsPerCell_[b][d] = totalNNodesPerCell_[b][d] * nFuncs(b);
+      totalNNodesPerCell_[b][d] = nNodesPerCell_[b][d];
+      for (int dd=0; dd<d; dd++) 
+      {
+        totalNNodesPerCell_[b][d] 
+          += numFacets_[d][dd]*nNodesPerCell_[b][dd];
+      }
+      totalNDofsPerCell_[b][d] = totalNNodesPerCell_[b][d] * nFuncs(b);
 
-          if (nNodes > 0)
-            {
-              /* allocate the DOFs array for this dimension */
-              dofs_[d][b].resize(nDofsPerCell_[b][d] * numCells);
+      if (nNodes > 0)
+      {
+        /* allocate the DOFs array for this dimension */
+        dofs_[d][b].resize(nDofsPerCell_[b][d] * numCells);
               
-              /* set all DOFs to a marker value */
-              int nDof = dofs_[d][b].size();
-              Array<int>& dofs = dofs_[d][b];
-              int marker = uninitializedVal();
-              for (int i=0; i<nDof; i++) 
-                {
-                  dofs[i] = marker;
-                }
-            }
-          /* allocate the maximal dof array */
-          if (d==dim_)
-            {
-              maximalDofs_[b].resize(totalNDofsPerCell_[b][d]*numCells);
-            }
-        }
-
-      /* allocate the array of original facet orientations */
-      if (d > 0 && d < dim_) 
+        /* set all DOFs to a marker value */
+        int nDof = dofs_[d][b].size();
+        Array<int>& dofs = dofs_[d][b];
+        int marker = uninitializedVal();
+        for (int i=0; i<nDof; i++) 
         {
-          originalFacetOrientation_[d-1].resize(numCells);
+          dofs[i] = marker;
         }
-      
+      }
+      /* allocate the maximal dof array */
+      if (d==dim_)
+      {
+        maximalDofs_[b].resize(totalNDofsPerCell_[b][d]*numCells);
+      }
     }
+
+    /* allocate the array of original facet orientations */
+    if (d > 0 && d < dim_) 
+    {
+      originalFacetOrientation_[d-1].resize(numCells);
+    }
+      
+  }
   SUNDANCE_VERB_LOW(tab << "done allocating DOF map");
 }
 
@@ -288,85 +288,85 @@ void MixedDOFMap::initMap()
   CellSet cells = maxCells_.getCells(mesh());
   CellIterator iter;
   for (iter=cells.begin(); iter != cells.end(); iter++)
-    {
-      /* first assign any DOFs associated with the maximal cell */
-      int cellLID = *iter;
-      int owner;
+  {
+    /* first assign any DOFs associated with the maximal cell */
+    int cellLID = *iter;
+    int owner;
       
-      if (cellHasAnyDOFs_[dim_])
+    if (cellHasAnyDOFs_[dim_])
+    {
+      /* if the maximal cell is owned by another processor,
+       * put it in the list of cells for which we need to request 
+       * DOF information from another processor */
+      if (isRemote(dim_, cellLID, owner))
+      {
+        int cellGID = mesh().mapLIDToGID(dim_, cellLID);
+        SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
+          << " thinks d-" << dim_ 
+          << " cell GID=" << cellGID
+          << " is owned remotely by p=" 
+          << owner);
+        remoteCells[dim_][owner].append(cellGID); 
+      }
+      else /* the cell is locally owned, so we can 
+            * set its DOF numbers now */
+      {
+        for (int b=0; b<nBasisChunks(); b++)
         {
-          /* if the maximal cell is owned by another processor,
-           * put it in the list of cells for which we need to request 
-           * DOF information from another processor */
-          if (isRemote(dim_, cellLID, owner))
-            {
-              int cellGID = mesh().mapLIDToGID(dim_, cellLID);
-              SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
-                                    << " thinks d-" << dim_ 
-                                    << " cell GID=" << cellGID
-                                    << " is owned remotely by p=" 
-                                    << owner);
-              remoteCells[dim_][owner].append(cellGID); 
-            }
-          else /* the cell is locally owned, so we can 
-                * set its DOF numbers now */
-            {
-              for (int b=0; b<nBasisChunks(); b++)
-                {
-                  setDOFs(b, dim_, cellLID, nextDOF);
-                }
-            }
+          setDOFs(b, dim_, cellLID, nextDOF);
         }
-
-      /* Now assign any DOFs associated with the facets. */
-      for (int d=0; d<dim_; d++)
-        {
-          if (cellHasAnyDOFs_[d])
-            {
-              int nf = numFacets_[dim_][d];
-              Array<int> facetLID(nf);
-              Array<int> facetOrientations(nf);
-              /* look up the LIDs of the facets */
-              mesh().getFacetArray(dim_, cellLID, d, 
-                                   facetLID, facetOrientations);
-              /* for each facet, process its DOFs */
-              for (int f=0; f<nf; f++)
-                {
-                  /* if the facet's DOFs have been assigned already,
-                   * we're done */
-                  if (!hasBeenAssigned(d, facetLID[f]))
-                    {
-                      markAsAssigned(d, facetLID[f]);
-                      /* the facet may be owned by another processor */
-                      if (isRemote(d, facetLID[f], owner))
-                        {
-                          int facetGID 
-                            = mesh().mapLIDToGID(d, facetLID[f]);
-                          SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
-                                                << " thinks d-" << d 
-                                                << " cell GID=" << facetGID
-                                                << " is owned remotely by p=" << owner);
-                          remoteCells[d][owner].append(facetGID);
-                        }
-                      else /* we can assign a DOF locally */
-                        {
-                          /* assign DOF */
-                          for (int b=0; b<nBasisChunks(); b++)
-                            {
-                              setDOFs(b, d, facetLID[f], nextDOF);
-                            }
-                          /* record the orientation wrt the maximal cell */
-                          if (d > 0) 
-                            {
-                              originalFacetOrientation_[d-1][facetLID[f]] 
-                                = facetOrientations[f];
-                            }
-                        }
-                    }
-                }
-            }
-        }
+      }
     }
+
+    /* Now assign any DOFs associated with the facets. */
+    for (int d=0; d<dim_; d++)
+    {
+      if (cellHasAnyDOFs_[d])
+      {
+        int nf = numFacets_[dim_][d];
+        Array<int> facetLID(nf);
+        Array<int> facetOrientations(nf);
+        /* look up the LIDs of the facets */
+        mesh().getFacetArray(dim_, cellLID, d, 
+          facetLID, facetOrientations);
+        /* for each facet, process its DOFs */
+        for (int f=0; f<nf; f++)
+        {
+          /* if the facet's DOFs have been assigned already,
+           * we're done */
+          if (!hasBeenAssigned(d, facetLID[f]))
+          {
+            markAsAssigned(d, facetLID[f]);
+            /* the facet may be owned by another processor */
+            if (isRemote(d, facetLID[f], owner))
+            {
+              int facetGID 
+                = mesh().mapLIDToGID(d, facetLID[f]);
+              SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
+                << " thinks d-" << d 
+                << " cell GID=" << facetGID
+                << " is owned remotely by p=" << owner);
+              remoteCells[d][owner].append(facetGID);
+            }
+            else /* we can assign a DOF locally */
+            {
+              /* assign DOF */
+              for (int b=0; b<nBasisChunks(); b++)
+              {
+                setDOFs(b, d, facetLID[f], nextDOF);
+              }
+              /* record the orientation wrt the maximal cell */
+              if (d > 0) 
+              {
+                originalFacetOrientation_[d-1][facetLID[f]] 
+                  = facetOrientations[f];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
     
 
   /* Done with first pass, in which we have assigned DOFs for all
@@ -375,27 +375,27 @@ void MixedDOFMap::initMap()
 
   int numLocalDOFs = nextDOF;
   if (mesh().comm().getNProc() > 1)
+  {
+    for (int d=0; d<=dim_; d++)
     {
-      for (int d=0; d<=dim_; d++)
-        {
-          if (cellHasAnyDOFs_[d])
-            {
-              computeOffsets(d, numLocalDOFs);
-              shareDOFs(d, remoteCells[d]);
-            }
-        }
+      if (cellHasAnyDOFs_[d])
+      {
+        computeOffsets(d, numLocalDOFs);
+        shareDOFs(d, remoteCells[d]);
+      }
     }
+  }
   else
-    {
-      setLowestLocalDOF(0);
-      setNumLocalDOFs(numLocalDOFs);
-      setTotalNumDOFs(numLocalDOFs);
-    }
+  {
+    setLowestLocalDOF(0);
+    setNumLocalDOFs(numLocalDOFs);
+    setTotalNumDOFs(numLocalDOFs);
+  }
   SUNDANCE_VERB_LOW(tab << "done initializing DOF map");
 }
 
 void MixedDOFMap::shareDOFs(int cellDim,
-                            const Array<Array<int> >& outgoingCellRequests)
+  const Array<Array<int> >& outgoingCellRequests)
 {
   int np = mesh().comm().getNProc();
   int rank = mesh().comm().getRank();
@@ -405,16 +405,16 @@ void MixedDOFMap::shareDOFs(int cellDim,
   Array<Array<int> > incomingDOFs;
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
-               "p=" << mesh().comm().getRank()
-               << "synchronizing DOFs for cells of dimension " << cellDim);
+    "p=" << mesh().comm().getRank()
+    << "synchronizing DOFs for cells of dimension " << cellDim);
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
-               "p=" << mesh().comm().getRank()
-               << " sending cell reqs d=" << cellDim << " GID=" << outgoingCellRequests);
+    "p=" << mesh().comm().getRank()
+    << " sending cell reqs d=" << cellDim << " GID=" << outgoingCellRequests);
 
   /* share the cell requests */
   MPIContainerComm<int>::allToAll(outgoingCellRequests, 
-                                  incomingCellRequests,
-                                  mesh().comm());
+    incomingCellRequests,
+    mesh().comm());
   
   /* we send the following information in response:
    * (1) The first DOF for each chunk for the requested cell
@@ -423,152 +423,152 @@ void MixedDOFMap::shareDOFs(int cellDim,
   int blockSize = 0;
   bool sendOrientation = false;
   for (int b=0; b<nBasisChunks(); b++)
-    {
-      int nDofs = nDofsPerCell_[b][cellDim];
-      if (nDofs > 0) blockSize++;
-      if (nDofs > 1 && cellDim > 0 && cellDim < dim_) sendOrientation = true;
-    }
+  {
+    int nDofs = nDofsPerCell_[b][cellDim];
+    if (nDofs > 0) blockSize++;
+    if (nDofs > 1 && cellDim > 0 && cellDim < dim_) sendOrientation = true;
+  }
   blockSize += sendOrientation;
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
-               "p=" << rank
-               << "recvd DOF requests for cells of dimension " << cellDim
-               << " GID=" << incomingCellRequests);
+    "p=" << rank
+    << "recvd DOF requests for cells of dimension " << cellDim
+    << " GID=" << incomingCellRequests);
 
   /* get orientations and DOF numbers for the first node of every cell that's been 
    * requested by someone else */
   for (int p=0; p<np; p++)
+  {
+    if (p==rank) continue;
+    const Array<int>& requestsFromProc = incomingCellRequests[p];
+    int nReq = requestsFromProc.size();
+
+    SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
+      << " recv'd from proc=" << p
+      << " reqs for DOFs for cells " 
+      << requestsFromProc);
+
+    outgoingDOFs[p].resize(nReq * blockSize);
+
+    for (int c=0; c<nReq; c++)
     {
-      if (p==rank) continue;
-      const Array<int>& requestsFromProc = incomingCellRequests[p];
-      int nReq = requestsFromProc.size();
-
-      SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
-                            << " recv'd from proc=" << p
-                            << " reqs for DOFs for cells " 
-                            << requestsFromProc);
-
-      outgoingDOFs[p].resize(nReq * blockSize);
-
-      for (int c=0; c<nReq; c++)
-        {
-          int GID = requestsFromProc[c];
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
-                       "p=" << rank
-                       << " processing cell with d=" << cellDim 
-                       << " GID=" << GID);
-          int LID = mesh().mapGIDToLID(cellDim, GID);
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
-                       "p=" << rank
-                       << " LID=" << LID << " dofs=" << dofs_[cellDim]);
-          int blockOffset = 0;
-          for (int b=0; b<nBasisChunks(); b++)
-            {
-              if (nDofsPerCell_[b][cellDim] == 0) continue;
-              outgoingDOFs[p][blockSize*c+blockOffset] 
-                = getInitialDOFForCell(cellDim, LID, b);
-              blockOffset++;
-            }
-          if (sendOrientation)
-            {
-              outgoingDOFs[p][blockSize*(c+1) - 1] 
-                = originalFacetOrientation_[cellDim-1][LID];
-            }
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
-                       "p=" << rank
-                       << " done processing cell with GID=" << GID);
-        }
+      int GID = requestsFromProc[c];
+      SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+        "p=" << rank
+        << " processing cell with d=" << cellDim 
+        << " GID=" << GID);
+      int LID = mesh().mapGIDToLID(cellDim, GID);
+      SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+        "p=" << rank
+        << " LID=" << LID << " dofs=" << dofs_[cellDim]);
+      int blockOffset = 0;
+      for (int b=0; b<nBasisChunks(); b++)
+      {
+        if (nDofsPerCell_[b][cellDim] == 0) continue;
+        outgoingDOFs[p][blockSize*c+blockOffset] 
+          = getInitialDOFForCell(cellDim, LID, b);
+        blockOffset++;
+      }
+      if (sendOrientation)
+      {
+        outgoingDOFs[p][blockSize*(c+1) - 1] 
+          = originalFacetOrientation_[cellDim-1][LID];
+      }
+      SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+        "p=" << rank
+        << " done processing cell with GID=" << GID);
     }
+  }
  
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
-               "p=" << mesh().comm().getRank()
-               << "answering DOF requests for cells of dimension " << cellDim);
+    "p=" << mesh().comm().getRank()
+    << "answering DOF requests for cells of dimension " << cellDim);
 
   /* share the DOF numbers */
   MPIContainerComm<int>::allToAll(outgoingDOFs,
-                                  incomingDOFs,
-                                  mesh().comm());
+    incomingDOFs,
+    mesh().comm());
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium,  
-               "p=" << mesh().comm().getRank()
-               << "communicated DOF answers for cells of dimension " << cellDim);
+    "p=" << mesh().comm().getRank()
+    << "communicated DOF answers for cells of dimension " << cellDim);
 
   
   /* now assign the DOFs from the other procs */
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
+  {
+    if (p==mesh().comm().getRank()) continue;
+    const Array<int>& dofsFromProc = incomingDOFs[p];
+    int numCells = dofsFromProc.size()/blockSize;
+    for (int c=0; c<numCells; c++)
     {
-      if (p==mesh().comm().getRank()) continue;
-      const Array<int>& dofsFromProc = incomingDOFs[p];
-      int numCells = dofsFromProc.size()/blockSize;
-      for (int c=0; c<numCells; c++)
-        {
-          int cellGID = outgoingCellRequests[p][c];
-          int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
-          int blockOffset = 0;
-          for (int b=0; b<nBasisChunks(); b++)
-            {
-              if (nDofsPerCell_[b][cellDim] == 0) continue;
-              int dof = dofsFromProc[blockSize*c+blockOffset];
-              setDOFs(b, cellDim, cellLID, dof, true);
-              blockOffset++;
-            }
-          if (sendOrientation) 
-            {
-              originalFacetOrientation_[cellDim-1][cellLID] 
-                = dofsFromProc[blockSize*(c+1)-1];
-            }
-        }
+      int cellGID = outgoingCellRequests[p][c];
+      int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
+      int blockOffset = 0;
+      for (int b=0; b<nBasisChunks(); b++)
+      {
+        if (nDofsPerCell_[b][cellDim] == 0) continue;
+        int dof = dofsFromProc[blockSize*c+blockOffset];
+        setDOFs(b, cellDim, cellLID, dof, true);
+        blockOffset++;
+      }
+      if (sendOrientation) 
+      {
+        originalFacetOrientation_[cellDim-1][cellLID] 
+          = dofsFromProc[blockSize*(c+1)-1];
+      }
     }
+  }
   
 }
 
 
 
 void MixedDOFMap::setDOFs(int basisChunk, int cellDim, int cellLID, 
-                          int& nextDOF, bool isRemote)
+  int& nextDOF, bool isRemote)
 {
   Tabs tab;
   SUNDANCE_VERB_HIGH(tab << "setting DOFs for " << cellDim 
-                     << "-cell " << cellLID);
+    << "-cell " << cellLID);
   int nDofs = nDofsPerCell_[basisChunk][cellDim];
   if (nDofs==0) return;
 
   int* ptr = getInitialDOFPtrForCell(cellDim, cellLID, basisChunk);
   
   if (isRemote)
+  {
+    for (int i=0; i<nDofs; i++, nextDOF++) 
     {
-      for (int i=0; i<nDofs; i++, nextDOF++) 
-        {
-          ptr[i] = nextDOF;;
-          addGhostIndex(nextDOF);
-        }
+      ptr[i] = nextDOF;;
+      addGhostIndex(nextDOF);
     }
+  }
   else
+  {
+    for (int i=0; i<nDofs; i++,nextDOF++) 
     {
-      for (int i=0; i<nDofs; i++,nextDOF++) 
-        {
-          ptr[i] = nextDOF;
-        }
+      ptr[i] = nextDOF;
     }
+  }
 }
 
 
 
 RefCountPtr<const MapStructure> MixedDOFMap
 ::getDOFsForCellBatch(int cellDim,
-                      const Array<int>& cellLID,
-                      const Set<int>& requestedFuncSet,
-                      Array<Array<int> >& dofs,
-                      Array<int>& nNodes) const 
+  const Array<int>& cellLID,
+  const Set<int>& requestedFuncSet,
+  Array<Array<int> >& dofs,
+  Array<int>& nNodes) const 
 {
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
   SUNDANCE_OUT(this->verbosity() > VerbHigh, 
-               tab << "getDOFsForCellBatch(): cellDim=" << cellDim
-               << " cellLID=" << cellLID);
+    tab << "getDOFsForCellBatch(): cellDim=" << cellDim
+    << " cellLID=" << cellLID);
 
   dofs.resize(nBasisChunks());
   nNodes.resize(nBasisChunks());
@@ -576,153 +576,153 @@ RefCountPtr<const MapStructure> MixedDOFMap
   int nCells = cellLID.size();
 
   if (cellDim == dim_)
+  {
+    Tabs tab1;
+
+    if (!haveMaximalDofs_) 
     {
-      Tabs tab1;
-
-      if (!haveMaximalDofs_) 
-        {
-          buildMaximalDofTable();
-        }
-
-      SUNDANCE_VERB_EXTREME(tab1 << "getting dofs for maximal cells");
-
-      for (int b=0; b<nBasisChunks(); b++)
-        {
-          nNodes[b] = totalNNodesPerCell_[b][cellDim];
-          dofs[b].resize(nNodes[b]*nFuncs(b)*nCells);
-          int dofsPerCell = nFuncs(b)*nNodes[b];
-          Array<int>& chunkDofs = dofs[b];
-          for (int c=0; c<nCells; c++)
-            {
-              for (int i=0; i<dofsPerCell; i++)
-                {
-                  chunkDofs[c*dofsPerCell + i] 
-                    = maximalDofs_[b][cellLID[c]*dofsPerCell+i];
-                }
-            }
-        }
+      buildMaximalDofTable();
     }
+
+    SUNDANCE_VERB_EXTREME(tab1 << "getting dofs for maximal cells");
+
+    for (int b=0; b<nBasisChunks(); b++)
+    {
+      nNodes[b] = totalNNodesPerCell_[b][cellDim];
+      dofs[b].resize(nNodes[b]*nFuncs(b)*nCells);
+      int dofsPerCell = nFuncs(b)*nNodes[b];
+      Array<int>& chunkDofs = dofs[b];
+      for (int c=0; c<nCells; c++)
+      {
+        for (int i=0; i<dofsPerCell; i++)
+        {
+          chunkDofs[c*dofsPerCell + i] 
+            = maximalDofs_[b][cellLID[c]*dofsPerCell+i];
+        }
+      }
+    }
+  }
   else
-    {
-      Tabs tab1;
-      SUNDANCE_VERB_EXTREME(tab1 << "getting dofs for non-maximal cells");
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_EXTREME(tab1 << "getting dofs for non-maximal cells");
   
-      static Array<Array<int> > facetLID(3);
-      static Array<Array<int> > facetOrientations(3);
-      static Array<int> numFacets(3);
+    static Array<Array<int> > facetLID(3);
+    static Array<Array<int> > facetOrientations(3);
+    static Array<int> numFacets(3);
 
-      for (int d=0; d<cellDim; d++) 
-        {
-          numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
-          mesh().getFacetLIDs(cellDim, cellLID, d, facetLID[d], 
-                              facetOrientations[d]);
-        }
-
-      for (int b=0; b<nBasisChunks(); b++)
-        {
-          nNodes[b] = totalNNodesPerCell_[b][cellDim];
-          dofs[b].resize(nNodes[b]*nFuncs(b)*nCells);
-          int dofsPerCell = nFuncs(b)*nNodes[b];
-          
-          Array<int>& toPtr = dofs[b];
-          int nf = nFuncs(b);
-
-          for (int c=0; c<nCells; c++)
-            {
-              Tabs tab2;
-              SUNDANCE_VERB_EXTREME(tab2 << "cell=" << c);
-              int offset = dofsPerCell*c;
-
-              /* first get the DOFs for the nodes associated with 
-               * the cell's interior */
-              SUNDANCE_VERB_EXTREME(tab2 << "doing interior nodes");
-              int nInteriorNodes = nNodesPerCell_[b][cellDim];
-              //              int nInteriorNodes = localNodePtrs_[b][cellDim][cellDim][0].size();
-              if (nInteriorNodes > 0)
-                {
-                  if (cellDim==0 || nInteriorNodes <= 1) /* orientation-independent */
-                    {
-                      // const int* fromPtr 
-                      //                        = getInitialDOFPtrForCell(cellDim, cellLID[c], b);
-
-                      for (int func=0; func<nf; func++)
-                        {
-                          for (int n=0; n<nInteriorNodes; n++)
-                            {
-                              int ptr = localNodePtrs_[b][cellDim][cellDim][0][n];
-                              toPtr[offset + func*nNodes[b] + ptr] 
-                                = dofs_[cellDim][b][cellLID[c]*nDofsPerCell_[b][cellDim]+func*nNodesPerCell_[b][cellDim]+n];
-                              //                                = fromPtr[func*nNodes[b] + n];
-                            }
-                        }
-                    }
-                  else
-                    {
-                      int sign = originalFacetOrientation_[cellDim-1][cellLID[c]];
-                      int nInteriorNodes = localNodePtrs_[b][cellDim][cellDim][0].size();
-                      //     const int* fromPtr 
-                      //                        = getInitialDOFPtrForCell(cellDim, cellLID[c], b);
-                 
-                      for (int func=0; func<nf; func++)
-                        {
-                          for (int m=0; m<nInteriorNodes; m++)
-                            {
-                              int n = m;
-                              if (sign<0) n = nInteriorNodes-1-m;
-                              int ptr = localNodePtrs_[b][cellDim][cellDim][0][m];
-                              toPtr[offset + func*nNodes[b] + ptr]  = dofs_[cellDim][b][cellLID[c]*nDofsPerCell_[b][cellDim]+func*nNodesPerCell_[b][cellDim]+n];
-                              //    = fromPtr[func*nNodes[b] + n];
-                            }
-                        }
-                    }
-                }
-
-              /* now do the facets */
-              for (int d=0; d<cellDim; d++)
-                {
-                  Tabs tab2;
-                  SUNDANCE_VERB_EXTREME(tab2 << "facet dim=" << d);
-                  if (nNodesPerCell_[b][d] == 0) continue;
-                  for (int f=0; f<numFacets[d]; f++)
-                    {
-                      Tabs tab3;
-                      int facetID = facetLID[d][c*numFacets[d]+f];
-                      SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
-                      int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
-                      //const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
-                      int* toPtr1 = &(dofs[b][dofsPerCell*c]);
-                      const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
-                      for (int func=0; func<nf; func++)
-                        {
-                          if (d == 0 || nFacetNodes <= 1) /* orientation-independent */
-                            {
-                              for (int n=0; n<nFacetNodes; n++)
-                                {
-                                  int ptr = nodePtr[n];
-                                  toPtr1[func*nNodes[b] + ptr] //= fromPtr[func*nNodes[b] + n];
-                                    = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-                                }
-                            }
-                          else /* orientation-dependent */
-                            {
-                              int facetOrientation = facetOrientations[d][c*numFacets[d]+f]
-                                * originalFacetOrientation_[d-1][facetID];
-                              for (int m=0; m<nFacetNodes; m++)
-                                {
-                                  int n = m;
-                                  if (facetOrientation<0) n = nFacetNodes-1-m;
-                                  int ptr = nodePtr[n];
-                                  toPtr1[func*nNodes[b]+ptr] 
-                                    = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-                                  //                                    = fromPtr[func*nNodes[b]+n];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    for (int d=0; d<cellDim; d++) 
+    {
+      numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
+      mesh().getFacetLIDs(cellDim, cellLID, d, facetLID[d], 
+        facetOrientations[d]);
     }
+
+    for (int b=0; b<nBasisChunks(); b++)
+    {
+      nNodes[b] = totalNNodesPerCell_[b][cellDim];
+      dofs[b].resize(nNodes[b]*nFuncs(b)*nCells);
+      int dofsPerCell = nFuncs(b)*nNodes[b];
+          
+      Array<int>& toPtr = dofs[b];
+      int nf = nFuncs(b);
+
+      for (int c=0; c<nCells; c++)
+      {
+        Tabs tab2;
+        SUNDANCE_VERB_EXTREME(tab2 << "cell=" << c);
+        int offset = dofsPerCell*c;
+
+        /* first get the DOFs for the nodes associated with 
+         * the cell's interior */
+        SUNDANCE_VERB_EXTREME(tab2 << "doing interior nodes");
+        int nInteriorNodes = nNodesPerCell_[b][cellDim];
+        //              int nInteriorNodes = localNodePtrs_[b][cellDim][cellDim][0].size();
+        if (nInteriorNodes > 0)
+        {
+          if (cellDim==0 || nInteriorNodes <= 1) /* orientation-independent */
+          {
+            // const int* fromPtr 
+            //                        = getInitialDOFPtrForCell(cellDim, cellLID[c], b);
+
+            for (int func=0; func<nf; func++)
+            {
+              for (int n=0; n<nInteriorNodes; n++)
+              {
+                int ptr = localNodePtrs_[b][cellDim][cellDim][0][n];
+                toPtr[offset + func*nNodes[b] + ptr] 
+                  = dofs_[cellDim][b][cellLID[c]*nDofsPerCell_[b][cellDim]+func*nNodesPerCell_[b][cellDim]+n];
+                //                                = fromPtr[func*nNodes[b] + n];
+              }
+            }
+          }
+          else
+          {
+            int sign = originalFacetOrientation_[cellDim-1][cellLID[c]];
+            int nInteriorNodes = localNodePtrs_[b][cellDim][cellDim][0].size();
+            //     const int* fromPtr 
+            //                        = getInitialDOFPtrForCell(cellDim, cellLID[c], b);
+                 
+            for (int func=0; func<nf; func++)
+            {
+              for (int m=0; m<nInteriorNodes; m++)
+              {
+                int n = m;
+                if (sign<0) n = nInteriorNodes-1-m;
+                int ptr = localNodePtrs_[b][cellDim][cellDim][0][m];
+                toPtr[offset + func*nNodes[b] + ptr]  = dofs_[cellDim][b][cellLID[c]*nDofsPerCell_[b][cellDim]+func*nNodesPerCell_[b][cellDim]+n];
+                //    = fromPtr[func*nNodes[b] + n];
+              }
+            }
+          }
+        }
+
+        /* now do the facets */
+        for (int d=0; d<cellDim; d++)
+        {
+          Tabs tab2;
+          SUNDANCE_VERB_EXTREME(tab2 << "facet dim=" << d);
+          if (nNodesPerCell_[b][d] == 0) continue;
+          for (int f=0; f<numFacets[d]; f++)
+          {
+            Tabs tab3;
+            int facetID = facetLID[d][c*numFacets[d]+f];
+            SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
+            int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
+            //const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
+            int* toPtr1 = &(dofs[b][dofsPerCell*c]);
+            const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
+            for (int func=0; func<nf; func++)
+            {
+              if (d == 0 || nFacetNodes <= 1) /* orientation-independent */
+              {
+                for (int n=0; n<nFacetNodes; n++)
+                {
+                  int ptr = nodePtr[n];
+                  toPtr1[func*nNodes[b] + ptr] //= fromPtr[func*nNodes[b] + n];
+                    = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
+                }
+              }
+              else /* orientation-dependent */
+              {
+                int facetOrientation = facetOrientations[d][c*numFacets[d]+f]
+                  * originalFacetOrientation_[d-1][facetID];
+                for (int m=0; m<nFacetNodes; m++)
+                {
+                  int n = m;
+                  if (facetOrientation<0) n = nFacetNodes-1-m;
+                  int ptr = nodePtr[n];
+                  toPtr1[func*nNodes[b]+ptr] 
+                    = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
+                  //                                    = fromPtr[func*nNodes[b]+n];
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   return structure_;
 }    
 
@@ -744,102 +744,102 @@ void MixedDOFMap::buildMaximalDofTable() const
   for (int c=0; c<nCells; c++) cellLID[c]=c;
   
   for (int d=0; d<cellDim; d++) 
-    {
-      numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
-      mesh().getFacetLIDs(cellDim, cellLID, d, 
-                          facetLID[d], facetOrientations[d]);
-    }
+  {
+    numFacets[d] = mesh().numFacets(cellDim, cellLID[0], d);
+    mesh().getFacetLIDs(cellDim, cellLID, d, 
+      facetLID[d], facetOrientations[d]);
+  }
 
   Array<int> nInteriorNodes(nBasisChunks());
   Array<int> nNodes(nBasisChunks());
   for (int b = 0; b<nBasisChunks(); b++)
-    {
-      nInteriorNodes[b] = localNodePtrs_[b][cellDim][cellDim][0].size();
-      nNodes[b] = totalNNodesPerCell_[b][cellDim];
-    }
+  {
+    nInteriorNodes[b] = localNodePtrs_[b][cellDim][cellDim][0].size();
+    nNodes[b] = totalNNodesPerCell_[b][cellDim];
+  }
 
   for (int c=0; c<nCells; c++)
+  {
+    Tabs tab1;
+    SUNDANCE_VERB_EXTREME(tab1 << "working on cell=" << c 
+      << " LID=" << cellLID[c]);
+    /* first get the DOFs for the nodes associated with 
+     * the cell's interior */
+    SUNDANCE_VERB_EXTREME(tab1 << "doing interior nodes");
+    for (int b=0; b<nBasisChunks(); b++)
     {
-      Tabs tab1;
-      SUNDANCE_VERB_EXTREME(tab1 << "working on cell=" << c 
-                            << " LID=" << cellLID[c]);
-      /* first get the DOFs for the nodes associated with 
-       * the cell's interior */
-      SUNDANCE_VERB_EXTREME(tab1 << "doing interior nodes");
-      for (int b=0; b<nBasisChunks(); b++)
+      if (nInteriorNodes[b]>0)
+      {
+        //const int* fromPtr = getInitialDOFPtrForCell(dim_, cellLID[c], b);
+        int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
+        int nf = nFuncs(b);
+        for (int func=0; func<nf; func++)
         {
-          if (nInteriorNodes[b]>0)
-            {
-              //const int* fromPtr = getInitialDOFPtrForCell(dim_, cellLID[c], b);
-              int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
-              int nf = nFuncs(b);
-              for (int func=0; func<nf; func++)
-                {
-                  for (int n=0; n<nInteriorNodes[b]; n++)
-                    {
+          for (int n=0; n<nInteriorNodes[b]; n++)
+          {
                       
-                      int ptr = localNodePtrs_[b][cellDim][cellDim][0][n];
-                      toPtr[func*nNodes[b] + ptr] = //fromPtr[func*nNodes[b] + n];
-                        dofs_[cellDim][b][cellLID[c]*nDofsPerCell_[b][cellDim]+func*nNodesPerCell_[b][cellDim]+n];
-                    }
-                }
-            }
+            int ptr = localNodePtrs_[b][cellDim][cellDim][0][n];
+            toPtr[func*nNodes[b] + ptr] = //fromPtr[func*nNodes[b] + n];
+              dofs_[cellDim][b][cellLID[c]*nDofsPerCell_[b][cellDim]+func*nNodesPerCell_[b][cellDim]+n];
+          }
         }
-      
-      SUNDANCE_VERB_EXTREME(tab1 << "doing facet nodes");
-      /* now get the DOFs for the nodes on the facets */
-      for (int d=0; d<cellDim; d++)
-        {
-          Tabs tab2;
-          SUNDANCE_VERB_EXTREME(tab2 << "facet dim=" << d);
-
-          for (int f=0; f<numFacets[d]; f++)
-            {
-              Tabs tab3;
-              int facetID = facetLID[d][c*numFacets[d]+f];
-              SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
-
-              for (int b=0; b<nBasisChunks(); b++)
-                {
-                  int nf = nFuncs(b);
-                  if (nDofsPerCell_[b][d]==0) continue;
-                  int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
-                  if (nFacetNodes == 0) continue;
-                  //  const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
-                  int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
-                  const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
-                  for (int func=0; func<nf; func++)
-                    {
-                      if (d == 0 || nFacetNodes <= 1) /* orientation-independent */
-                        {
-                          for (int n=0; n<nFacetNodes; n++)
-                            {
-                              int ptr = nodePtr[n];
-
-                              toPtr[func*nNodes[b] + ptr] 
-                                = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-                              //= fromPtr[func*nNodes[b] + n];
-                            }
-                        }
-                      else /* orientation-dependent */
-                        {
-                          int facetOrientation = facetOrientations[d][c*numFacets[d]+f]
-                            * originalFacetOrientation_[d-1][facetID];
-                          for (int m=0; m<nFacetNodes; m++)
-                            {
-                              int n = m;
-                              if (facetOrientation<0) n = nFacetNodes-1-m;
-                              int ptr = nodePtr[m];
-                              toPtr[func*nNodes[b]+ptr] 
-                                = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-                              //= fromPtr[func*nNodes[b]+n];
-                            }
-                        }
-                    }
-                }
-            }
-        }
+      }
     }
+      
+    SUNDANCE_VERB_EXTREME(tab1 << "doing facet nodes");
+    /* now get the DOFs for the nodes on the facets */
+    for (int d=0; d<cellDim; d++)
+    {
+      Tabs tab2;
+      SUNDANCE_VERB_EXTREME(tab2 << "facet dim=" << d);
+
+      for (int f=0; f<numFacets[d]; f++)
+      {
+        Tabs tab3;
+        int facetID = facetLID[d][c*numFacets[d]+f];
+        SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
+
+        for (int b=0; b<nBasisChunks(); b++)
+        {
+          int nf = nFuncs(b);
+          if (nDofsPerCell_[b][d]==0) continue;
+          int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
+          if (nFacetNodes == 0) continue;
+          //  const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
+          int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
+          const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
+          for (int func=0; func<nf; func++)
+          {
+            if (d == 0 || nFacetNodes <= 1) /* orientation-independent */
+            {
+              for (int n=0; n<nFacetNodes; n++)
+              {
+                int ptr = nodePtr[n];
+
+                toPtr[func*nNodes[b] + ptr] 
+                  = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
+                //= fromPtr[func*nNodes[b] + n];
+              }
+            }
+            else /* orientation-dependent */
+            {
+              int facetOrientation = facetOrientations[d][c*numFacets[d]+f]
+                * originalFacetOrientation_[d-1][facetID];
+              for (int m=0; m<nFacetNodes; m++)
+              {
+                int n = m;
+                if (facetOrientation<0) n = nFacetNodes-1-m;
+                int ptr = nodePtr[m];
+                toPtr[func*nNodes[b]+ptr] 
+                  = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
+                //= fromPtr[func*nNodes[b]+n];
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   haveMaximalDofs_ = true;
 }
@@ -851,60 +851,60 @@ void MixedDOFMap::buildMaximalDofTable() const
 void MixedDOFMap::computeOffsets(int dim, int localCount)
 {
   if (verbosity() > VerbMedium)
-    {
-      comm().synchronize();
-      comm().synchronize();
-      comm().synchronize();
-      comm().synchronize();
-    }
+  {
+    comm().synchronize();
+    comm().synchronize();
+    comm().synchronize();
+    comm().synchronize();
+  }
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-               "p=" << mesh().comm().getRank()
-               << " sharing offsets for DOF numbering for dim=" << dim);
+    "p=" << mesh().comm().getRank()
+    << " sharing offsets for DOF numbering for dim=" << dim);
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-               "p=" << mesh().comm().getRank()
-               << " I have " << localCount << " cells");
+    "p=" << mesh().comm().getRank()
+    << " I have " << localCount << " cells");
 
   Array<int> dofOffsets;
   int totalDOFCount;
   MPIContainerComm<int>::accumulate(localCount, dofOffsets, totalDOFCount,
-                                    mesh().comm());
+    mesh().comm());
   int myOffset = dofOffsets[mesh().comm().getRank()];
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-               "p=" << mesh().comm().getRank()
-               << " back from MPI accumulate");
+    "p=" << mesh().comm().getRank()
+    << " back from MPI accumulate");
 
   if (verbosity() > VerbMedium)
-    {
-      comm().synchronize();
-      comm().synchronize();
-      comm().synchronize();
-      comm().synchronize();
-    }
+  {
+    comm().synchronize();
+    comm().synchronize();
+    comm().synchronize();
+    comm().synchronize();
+  }
 
   for (unsigned int chunk=0; chunk<dofs_[dim].size(); chunk++)
+  {
+    for (unsigned int n=0; n<dofs_[dim][chunk].size(); n++)
     {
-      for (unsigned int n=0; n<dofs_[dim][chunk].size(); n++)
-        {
-          if (dofs_[dim][chunk][n] >= 0) dofs_[dim][chunk][n] += myOffset;
-        }
+      if (dofs_[dim][chunk][n] >= 0) dofs_[dim][chunk][n] += myOffset;
     }
+  }
 
   setLowestLocalDOF(myOffset);
   setNumLocalDOFs(localCount);
   setTotalNumDOFs(totalDOFCount);
 
   SUNDANCE_OUT(this->verbosity() > VerbMedium, 
-               "p=" << mesh().comm().getRank() 
-               << " done sharing offsets for DOF numbering for dim=" << dim);
+    "p=" << mesh().comm().getRank() 
+    << " done sharing offsets for DOF numbering for dim=" << dim);
   if (verbosity() > VerbMedium)
-    {
-      comm().synchronize();
-      comm().synchronize();
-      comm().synchronize();
-      comm().synchronize();
-    }
+  {
+    comm().synchronize();
+    comm().synchronize();
+    comm().synchronize();
+    comm().synchronize();
+  }
 
 }                           
 
@@ -914,19 +914,19 @@ void MixedDOFMap::checkTable() const
 {
   int bad = 0;
   for (unsigned int d=0; d<dofs_.size(); d++)
+  {
+    for (unsigned int chunk=0; chunk<dofs_[d].size(); chunk++)
     {
-      for (unsigned int chunk=0; chunk<dofs_[d].size(); chunk++)
-        {
-          const Array<int>& dofs = dofs_[d][chunk];
-          for (unsigned int n=0; n<dofs.size(); n++)
-            {
-              if (dofs[n] < 0) bad = 1;
-            }
-        }
+      const Array<int>& dofs = dofs_[d][chunk];
+      for (unsigned int n=0; n<dofs.size(); n++)
+      {
+        if (dofs[n] < 0) bad = 1;
+      }
     }
+  }
   
   int anyBad = bad;
   comm().allReduce((void*) &bad, (void*) &anyBad, 1, 
-                   MPIComm::INT, MPIComm::SUM);
+    MPIComm::INT, MPIComm::SUM);
   TEST_FOR_EXCEPTION(anyBad > 0, RuntimeError, "invalid DOF map");
 }

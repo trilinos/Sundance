@@ -45,7 +45,7 @@ using namespace Teuchos;
 
 InhomogeneousNodalDOFMap
 ::InhomogeneousNodalDOFMap(const Mesh& mesh, 
-                           const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap,
+  const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap,
   const ParameterList& verbParams)
   : DOFMapBase(mesh, verbParams),
     dim_(mesh.spatialDim()),
@@ -69,13 +69,13 @@ InhomogeneousNodalDOFMap
   /* count the total number of functions across all subdomains */
   Set<int> allFuncs;
   for (int d=dim_; d>=0; d--)
+  {
+    for (Map<Set<int>, CellFilter>::const_iterator 
+           i=funcSetToDomainMap[d].begin(); i!=funcSetToDomainMap[d].end(); i++)
     {
-      for (Map<Set<int>, CellFilter>::const_iterator 
-             i=funcSetToDomainMap[d].begin(); i!=funcSetToDomainMap[d].end(); i++)
-        {
-          allFuncs.merge(i->first);
-        }
+      allFuncs.merge(i->first);
     }
+  }
 
   
   nTotalFuncs_ = allFuncs.size();
@@ -89,22 +89,22 @@ InhomogeneousNodalDOFMap
   Array<Set<int> > funcSets;
 
   for (int d=dim_; d>=0; d--)
+  {
+    for (Map<Set<int>, CellFilter>::const_iterator 
+           i=funcSetToDomainMap[d].begin(); i!=funcSetToDomainMap[d].end(); i++)
     {
-      for (Map<Set<int>, CellFilter>::const_iterator 
-             i=funcSetToDomainMap[d].begin(); i!=funcSetToDomainMap[d].end(); i++)
-        {
-          subdomains.append(i->second);
-          if (d==dim_) 
-            {
-              elemFuncSets_.append(i->first);
-              maxSubdomains.append(i->second);
-            }
+      subdomains.append(i->second);
+      if (d==dim_) 
+      {
+        elemFuncSets_.append(i->first);
+        maxSubdomains.append(i->second);
+      }
 
-          Array<int> myFuncs = i->first.elements();
-          funcArrays.append(myFuncs);
-          funcSets.append(i->first);
-        }
+      Array<int> myFuncs = i->first.elements();
+      funcArrays.append(myFuncs);
+      funcSets.append(i->first);
     }
+  }
 
 
   /* determine the functions appearing at each node */
@@ -117,41 +117,41 @@ InhomogeneousNodalDOFMap
   Array<Set<int> > nodeToFuncSetMap(mesh.numCells(0));
 
   for (unsigned int r=0; r<subdomains.size(); r++)
-    {
-      int d = subdomains[r].dimension(mesh);
-      CellSet cells = subdomains[r].getCells(mesh);
+  {
+    int d = subdomains[r].dimension(mesh);
+    CellSet cells = subdomains[r].getCells(mesh);
 
-      for (CellIterator c=cells.begin(); c!=cells.end(); c++)
-        {
-          int cellLID = *c;
-          cellLIDs[r].append(cellLID);
-        }
-      if (cellLIDs[r].size()==0) continue; 
-      int nFacets = mesh.numFacets(d, cellLIDs[r][0], 0);
-      if (d==0)
-        {
-          for (unsigned int c=0; c<cellLIDs[r].size(); c++)
-            {
-              int fLID = cellLIDs[r][c];
-              nodeToFuncSetMap[fLID].merge(funcSets[r]);
-            }
-        }
-      else
-        {
-          Array<int>& facetLID = facetLIDs[r];
-          facetLID.resize(nFacets*cellLIDs[r].size());
-          facetOrientations[r].resize(nFacets*cellLIDs[r].size());
-          mesh.getFacetLIDs(d, cellLIDs[r], 0, facetLID, facetOrientations[r]);
-          for (unsigned int c=0; c<cellLIDs[r].size(); c++)
-            {
-              for (int f=0; f<nFacets; f++)
-                {
-                  int fLID = facetLID[c*nFacets+f];
-                  nodeToFuncSetMap[fLID].merge(funcSets[r]);
-                }
-            }
-        }
+    for (CellIterator c=cells.begin(); c!=cells.end(); c++)
+    {
+      int cellLID = *c;
+      cellLIDs[r].append(cellLID);
     }
+    if (cellLIDs[r].size()==0) continue; 
+    int nFacets = mesh.numFacets(d, cellLIDs[r][0], 0);
+    if (d==0)
+    {
+      for (unsigned int c=0; c<cellLIDs[r].size(); c++)
+      {
+        int fLID = cellLIDs[r][c];
+        nodeToFuncSetMap[fLID].merge(funcSets[r]);
+      }
+    }
+    else
+    {
+      Array<int>& facetLID = facetLIDs[r];
+      facetLID.resize(nFacets*cellLIDs[r].size());
+      facetOrientations[r].resize(nFacets*cellLIDs[r].size());
+      mesh.getFacetLIDs(d, cellLIDs[r], 0, facetLID, facetOrientations[r]);
+      for (unsigned int c=0; c<cellLIDs[r].size(); c++)
+      {
+        for (int f=0; f<nFacets; f++)
+        {
+          int fLID = facetLID[c*nFacets+f];
+          nodeToFuncSetMap[fLID].merge(funcSets[r]);
+        }
+      }
+    }
+  }
 
   /* find the distinct combinations of functions at the nodes */
 
@@ -160,44 +160,44 @@ InhomogeneousNodalDOFMap
   int nNodes = mesh.numCells(0);
 
   for (int n=0; n<nNodes; n++)
+  {
+    const Set<int>& f = nodeToFuncSetMap[n];
+    if (f.size()==0) continue;
+    int funcComboIndex;
+    if (!fsToFSIndexMap.containsKey(f)) 
     {
-      const Set<int>& f = nodeToFuncSetMap[n];
-      if (f.size()==0) continue;
-      int funcComboIndex;
-      if (!fsToFSIndexMap.containsKey(f)) 
-        {
-          funcComboIndex = nodalFuncSets_.size();
-          fsToFSIndexMap.put(f, funcComboIndex);
-          nodalFuncSets_.append(f);
-          funcSetNodeCounts.append(1);
-          nodeToOffsetMap_[n] = 0;
-        }
-      else
-        {
-          funcComboIndex = fsToFSIndexMap.get(f);
-          nodeToOffsetMap_[n] = f.size() * funcSetNodeCounts[funcComboIndex];
-          funcSetNodeCounts[funcComboIndex]++;
-        }
-      nodeToFuncSetIndexMap_[n] = funcComboIndex;
+      funcComboIndex = nodalFuncSets_.size();
+      fsToFSIndexMap.put(f, funcComboIndex);
+      nodalFuncSets_.append(f);
+      funcSetNodeCounts.append(1);
+      nodeToOffsetMap_[n] = 0;
     }
+    else
+    {
+      funcComboIndex = fsToFSIndexMap.get(f);
+      nodeToOffsetMap_[n] = f.size() * funcSetNodeCounts[funcComboIndex];
+      funcSetNodeCounts[funcComboIndex]++;
+    }
+    nodeToFuncSetIndexMap_[n] = funcComboIndex;
+  }
 
   nodeDofs_.resize(nodalFuncSets_.size());
   nodeStructure_.resize(nodalFuncSets_.size());
   for (unsigned int f=0; f<nodalFuncSets_.size(); f++)
+  {
+    Array<int> funcs = nodalFuncSets_[f].elements();
+    int nFuncs = funcs.size();
+    funcIndexWithinNodeFuncSet_[f] = Array<int>(nTotalFuncs_, -1);
+    for (int i=0; i<nFuncs; i++)
     {
-      Array<int> funcs = nodalFuncSets_[f].elements();
-      int nFuncs = funcs.size();
-      funcIndexWithinNodeFuncSet_[f] = Array<int>(nTotalFuncs_, -1);
-      for (int i=0; i<nFuncs; i++)
-        {
-          funcIndexWithinNodeFuncSet_[f][funcs[i]] = i;
-        }
-      nodeDofs_[f].resize(nFuncs * funcSetNodeCounts[f]);
-      Array<RCP<BasisDOFTopologyBase> > nodeBases = tuple(basis_);
-      Array<Array<int> > nodeFuncs = tuple(nodalFuncSets_[f].elements());
-      nodeStructure_[f] = rcp(new MapStructure(nTotalFuncs_, 
-                                               nodeBases, nodeFuncs));
+      funcIndexWithinNodeFuncSet_[f][funcs[i]] = i;
     }
+    nodeDofs_[f].resize(nFuncs * funcSetNodeCounts[f]);
+    Array<RCP<BasisDOFTopologyBase> > nodeBases = tuple(basis_);
+    Array<Array<int> > nodeFuncs = tuple(nodalFuncSets_[f].elements());
+    nodeStructure_[f] = rcp(new MapStructure(nTotalFuncs_, 
+        nodeBases, nodeFuncs));
+  }
 
 
 
@@ -207,47 +207,47 @@ InhomogeneousNodalDOFMap
   Array<Array<int> > remoteNodes(mesh.comm().getNProc());
 
   for (unsigned int r=0; r<subdomains.size(); r++)
+  {
+    int d = subdomains[r].dimension(mesh);
+
+    if (cellLIDs[r].size()==0) continue; 
+
+    if (d==0)
     {
-      int d = subdomains[r].dimension(mesh);
-
-      if (cellLIDs[r].size()==0) continue; 
-
-      if (d==0)
+      for (unsigned int c=0; c<cellLIDs[r].size(); c++)
+      {
+        int fLID = cellLIDs[r][c];
+        int funcSetIndex = nodeToFuncSetIndexMap_[fLID];
+        int nFuncs = nodalFuncSets_[funcSetIndex].size();
+        int dofOffset = nodeToOffsetMap_[fLID];
+        if (!hasProcessedNode[fLID])
         {
-          for (unsigned int c=0; c<cellLIDs[r].size(); c++)
-            {
-              int fLID = cellLIDs[r][c];
-              int funcSetIndex = nodeToFuncSetIndexMap_[fLID];
-              int nFuncs = nodalFuncSets_[funcSetIndex].size();
-              int dofOffset = nodeToOffsetMap_[fLID];
-              if (!hasProcessedNode[fLID])
-                {
-                  assignNode(fLID, funcSetIndex, dofOffset, nFuncs,
-                             remoteNodes, hasProcessedNode, nextDOF);
-                }
-            }
+          assignNode(fLID, funcSetIndex, dofOffset, nFuncs,
+            remoteNodes, hasProcessedNode, nextDOF);
         }
-      else
-        {
-          Array<int>& facetLID = facetLIDs[r];
-          int nFacets = mesh.numFacets(d, cellLIDs[r][0], 0);      
-          for (unsigned int c=0; c<cellLIDs[r].size(); c++)
-            {
-              for (int f=0; f<nFacets; f++)
-                {
-                  int fLID = facetLID[c*nFacets+f];
-                  int funcSetIndex = nodeToFuncSetIndexMap_[fLID];
-                  int dofOffset = nodeToOffsetMap_[fLID];
-                  int nFuncs = nodalFuncSets_[funcSetIndex].size();
-                  if (!hasProcessedNode[fLID])
-                    {
-                      assignNode(fLID, funcSetIndex, dofOffset, nFuncs,
-                                 remoteNodes, hasProcessedNode, nextDOF);
-                    }
-                }
-            }
-        }
+      }
     }
+    else
+    {
+      Array<int>& facetLID = facetLIDs[r];
+      int nFacets = mesh.numFacets(d, cellLIDs[r][0], 0);      
+      for (unsigned int c=0; c<cellLIDs[r].size(); c++)
+      {
+        for (int f=0; f<nFacets; f++)
+        {
+          int fLID = facetLID[c*nFacets+f];
+          int funcSetIndex = nodeToFuncSetIndexMap_[fLID];
+          int dofOffset = nodeToOffsetMap_[fLID];
+          int nFuncs = nodalFuncSets_[funcSetIndex].size();
+          if (!hasProcessedNode[fLID])
+          {
+            assignNode(fLID, funcSetIndex, dofOffset, nFuncs,
+              remoteNodes, hasProcessedNode, nextDOF);
+          }
+        }
+      }
+    }
+  }
 
 
   /* Compute offsets for each processor */
@@ -265,118 +265,118 @@ InhomogeneousNodalDOFMap
   funcDomains_.resize(nTotalFuncs_);
 
   for (unsigned int r=0; r<subdomains.size(); r++)
+  {
+    int d = subdomains[r].dimension(mesh);
+    if (d != dim_) continue;
+    if (cellLIDs[r].size()==0) continue; 
+    int nFacets = mesh.numFacets(d, cellLIDs[r][0], 0);      
+    Array<int>& facetLID = facetLIDs[r];
+    Array<Array<int> > dofs(1);
+    dofs[0].resize(funcArrays[r].size() * cellLIDs[r].size() * nFacets);
+    getFunctionDofs(d, cellLIDs[r], facetLID, funcArrays[r], dofs);
+    elemDofs_[count] = dofs[0];
+    elemFuncArrays.append(funcArrays[r]);
+    Array<RCP<BasisDOFTopologyBase> > elemBases = tuple(basis_);
+    Array<Array<int> > elemFuncs = tuple(elemFuncSets_[count].elements());
+    elemStructure_.append(rcp(new MapStructure(nTotalFuncs_, 
+          elemBases, elemFuncs)));
+    for (unsigned int c=0; c<cellLIDs[r].size(); c++)
     {
-      int d = subdomains[r].dimension(mesh);
-      if (d != dim_) continue;
-      if (cellLIDs[r].size()==0) continue; 
-      int nFacets = mesh.numFacets(d, cellLIDs[r][0], 0);      
-      Array<int>& facetLID = facetLIDs[r];
-      Array<Array<int> > dofs(1);
-      dofs[0].resize(funcArrays[r].size() * cellLIDs[r].size() * nFacets);
-      getFunctionDofs(d, cellLIDs[r], facetLID, funcArrays[r], dofs);
-      elemDofs_[count] = dofs[0];
-      elemFuncArrays.append(funcArrays[r]);
-      Array<RCP<BasisDOFTopologyBase> > elemBases = tuple(basis_);
-      Array<Array<int> > elemFuncs = tuple(elemFuncSets_[count].elements());
-      elemStructure_.append(rcp(new MapStructure(nTotalFuncs_, 
-                                                 elemBases, elemFuncs)));
-      for (unsigned int c=0; c<cellLIDs[r].size(); c++)
-        {
-          elemToFuncSetIndexMap_[cellLIDs[r][c]] = count;
-        }
-      for (unsigned int i=0; i<elemFuncs[0].size(); i++)
-        {
-          funcDomains_[elemFuncs[0][i]] = funcDomains_[elemFuncs[0][i]] + subdomains[r];
-        }
-      count++;
+      elemToFuncSetIndexMap_[cellLIDs[r][c]] = count;
     }
+    for (unsigned int i=0; i<elemFuncs[0].size(); i++)
+    {
+      funcDomains_[elemFuncs[0][i]] = funcDomains_[elemFuncs[0][i]] + subdomains[r];
+    }
+    count++;
+  }
   
 }
 
 
 void InhomogeneousNodalDOFMap::getFunctionDofs(int cellDim,
-                                               const Array<int>& cellLID,
-                                               const Array<int>& facetLID,
-                                               const Array<int>& funcs,
-                                               Array<Array<int> >& dofs) const
+  const Array<int>& cellLID,
+  const Array<int>& facetLID,
+  const Array<int>& funcs,
+  Array<Array<int> >& dofs) const
 {
   Array<int>& dofChunk = dofs[0];
 
   if (cellDim != 0)
+  {
+    int nFacets = mesh().numFacets(cellDim, cellLID[0], 0);
+    dofChunk.resize(funcs.size() * cellLID.size() * nFacets);
+      
+      
+    for (unsigned int c=0; c<cellLID.size(); c++)
     {
-      int nFacets = mesh().numFacets(cellDim, cellLID[0], 0);
-      dofChunk.resize(funcs.size() * cellLID.size() * nFacets);
-      
-      
-      for (unsigned int c=0; c<cellLID.size(); c++)
+      for (int f=0; f<nFacets; f++)
+      {
+        int fLID = facetLID[c*nFacets + f];
+        int fci = nodeToFuncSetIndexMap_[fLID];
+        int nodeOffset = nodeToOffsetMap_[fLID];
+        for (unsigned int i=0; i<funcs.size(); i++)
         {
-          for (int f=0; f<nFacets; f++)
-            {
-              int fLID = facetLID[c*nFacets + f];
-              int fci = nodeToFuncSetIndexMap_[fLID];
-              int nodeOffset = nodeToOffsetMap_[fLID];
-              for (unsigned int i=0; i<funcs.size(); i++)
-                {
-                  int funcIndex = funcIndexWithinNodeFuncSet_[fci][funcs[i]];
-                  dofChunk[(c*funcs.size()+i)*nFacets + f] 
-                    = nodeDofs_[fci][nodeOffset+funcIndex];
-                }
-            }
+          int funcIndex = funcIndexWithinNodeFuncSet_[fci][funcs[i]];
+          dofChunk[(c*funcs.size()+i)*nFacets + f] 
+            = nodeDofs_[fci][nodeOffset+funcIndex];
         }
+      }
     }
+  }
   else
-    {
-      dofChunk.resize(funcs.size() * cellLID.size());
+  {
+    dofChunk.resize(funcs.size() * cellLID.size());
 
-      for (unsigned int c=0; c<cellLID.size(); c++)
-        {
-          int fci = nodeToFuncSetIndexMap_[cellLID[c]];
-          int nodeOffset = nodeToOffsetMap_[cellLID[c]];
-          for (unsigned int i=0; i<funcs.size(); i++)
-            {
-              int funcIndex = funcIndexWithinNodeFuncSet_[fci][funcs[i]];
-              dofChunk[c*funcs.size()+ i] 
-                = nodeDofs_[fci][nodeOffset+funcIndex];
-            }
-        }
+    for (unsigned int c=0; c<cellLID.size(); c++)
+    {
+      int fci = nodeToFuncSetIndexMap_[cellLID[c]];
+      int nodeOffset = nodeToOffsetMap_[cellLID[c]];
+      for (unsigned int i=0; i<funcs.size(); i++)
+      {
+        int funcIndex = funcIndexWithinNodeFuncSet_[fci][funcs[i]];
+        dofChunk[c*funcs.size()+ i] 
+          = nodeDofs_[fci][nodeOffset+funcIndex];
+      }
     }
+  }
 }
 
 void InhomogeneousNodalDOFMap::assignNode(int fLID,
-                                          int funcSetIndex,
-                                          int dofOffset,
-                                          int nFuncs,
-                                          Array<Array<int> >& remoteNodes,
-                                          Array<int>& hasProcessedCell,
-                                          int& nextDOF)
+  int funcSetIndex,
+  int dofOffset,
+  int nFuncs,
+  Array<Array<int> >& remoteNodes,
+  Array<int>& hasProcessedCell,
+  int& nextDOF)
 {
   /* the facet may be owned by another processor */
   int owner;
   if (isRemote(0, fLID, owner))
-    {
-      int facetGID 
-        = mesh().mapLIDToGID(0, fLID);
-      remoteNodes[owner].append(facetGID);
+  {
+    int facetGID 
+      = mesh().mapLIDToGID(0, fLID);
+    remoteNodes[owner].append(facetGID);
       
-    }
+  }
   else /* we can assign a DOF locally */
+  {
+    /* assign DOFs */
+    Array<int>& myDofs = nodeDofs_[funcSetIndex];
+    for (int i=0; i<nFuncs; i++)
     {
-      /* assign DOFs */
-      Array<int>& myDofs = nodeDofs_[funcSetIndex];
-      for (int i=0; i<nFuncs; i++)
-        {
-          myDofs[dofOffset + i] = nextDOF;
-          nextDOF++;
-        }
+      myDofs[dofOffset + i] = nextDOF;
+      nextDOF++;
     }
+  }
   hasProcessedCell[fLID] = 1;
 }
 
 void InhomogeneousNodalDOFMap::computeOffsets(int localCount)
 {
   TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
-                     RuntimeError,
-                     "parallel inhomogeneous DOF maps not yet supported");
+    RuntimeError,
+    "parallel inhomogeneous DOF maps not yet supported");
   
   int totalDOFCount = localCount;
   int myOffset = 0;
@@ -388,150 +388,150 @@ void InhomogeneousNodalDOFMap::computeOffsets(int localCount)
 void InhomogeneousNodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& remoteNodes)
 {
   TEST_FOR_EXCEPTION(mesh().comm().getNProc() != 1,
-                     RuntimeError,
-                     "parallel inhomogeneous DOF maps not yet supported");
+    RuntimeError,
+    "parallel inhomogeneous DOF maps not yet supported");
 }
 
 RefCountPtr<const Set<int> >
 InhomogeneousNodalDOFMap::allowedFuncsOnCellBatch(int cellDim,
-                                                  const Array<int>& cellLID) const 
+  const Array<int>& cellLID) const 
 {
   Set<int> rtn;
 
   if (cellDim==0)
+  {
+    rtn = nodalFuncSets_[nodeToFuncSetIndexMap_[cellLID[0]]];
+    for (unsigned int c=0; c<cellLID.size(); c++) 
     {
-      rtn = nodalFuncSets_[nodeToFuncSetIndexMap_[cellLID[0]]];
-      for (unsigned int c=0; c<cellLID.size(); c++) 
-        {
-          const Set<int>& s = nodalFuncSets_[nodeToFuncSetIndexMap_[cellLID[c]]];
-          rtn = rtn.intersection(s);
-        }
+      const Set<int>& s = nodalFuncSets_[nodeToFuncSetIndexMap_[cellLID[c]]];
+      rtn = rtn.intersection(s);
     }
+  }
   else if (cellDim==dim_)
+  {
+    rtn = elemFuncSets_[elemToFuncSetIndexMap_[cellLID[0]]];
+    for (unsigned int c=0; c<cellLID.size(); c++) 
     {
-      rtn = elemFuncSets_[elemToFuncSetIndexMap_[cellLID[0]]];
-      for (unsigned int c=0; c<cellLID.size(); c++) 
-        {
-          const Set<int>& s = elemFuncSets_[elemToFuncSetIndexMap_[cellLID[c]]];
-          rtn = rtn.intersection(s);
-        }
+      const Set<int>& s = elemFuncSets_[elemToFuncSetIndexMap_[cellLID[c]]];
+      rtn = rtn.intersection(s);
     }
+  }
   else
+  {
+    Array<int> facetLID;
+    Array<int> facetOrientations;
+    mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
+    rtn = nodalFuncSets_[nodeToFuncSetIndexMap_[facetLID[0]]];
+    for (unsigned int f=0; f<facetLID.size(); f++)
     {
-      Array<int> facetLID;
-      Array<int> facetOrientations;
-      mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
-      rtn = nodalFuncSets_[nodeToFuncSetIndexMap_[facetLID[0]]];
-      for (unsigned int f=0; f<facetLID.size(); f++)
-        {
-          const Set<int>& s = nodalFuncSets_[nodeToFuncSetIndexMap_[facetLID[f]]];
-          rtn = rtn.intersection(s);
-        }
+      const Set<int>& s = nodalFuncSets_[nodeToFuncSetIndexMap_[facetLID[f]]];
+      rtn = rtn.intersection(s);
     }
+  }
   return rcp(new Set<int>(rtn));
 }
 
 
 RefCountPtr<const MapStructure> 
 InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
-                                              const Array<int>& cellLID,
-                                              const Set<int>& requestedFuncSet,
-                                              Array<Array<int> >& dofs,
-                                              Array<int>& nNodes) const 
+  const Array<int>& cellLID,
+  const Set<int>& requestedFuncSet,
+  Array<Array<int> >& dofs,
+  Array<int>& nNodes) const 
 {
   TimeMonitor timer(batchedDofLookupTimer());
 
   if (cellDim==0)
+  {
+    bool isHomogeneous = true;
+    int firstFuncSet = nodeToFuncSetIndexMap_[cellLID[0]];
+    for (unsigned int c=0; c<cellLID.size(); c++)
     {
-      bool isHomogeneous = true;
-      int firstFuncSet = nodeToFuncSetIndexMap_[cellLID[0]];
-      for (unsigned int c=0; c<cellLID.size(); c++)
-        {
-          if (nodeToFuncSetIndexMap_[cellLID[c]] != firstFuncSet) 
-            {
-              isHomogeneous = false;
-              break;
-            }
-        }
-
-      dofs.resize(1);
-      nNodes.resize(1);
-      nNodes[0] = 1;
-      Array<int> dummyFacets;
-
-      if (isHomogeneous)
-        {
-          const Set<int>& funcSet = nodalFuncSets_[firstFuncSet];
-          TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
-          Array<int> funcs = funcSet.elements();
-          getFunctionDofs(cellDim, cellLID, dummyFacets, funcs, dofs);
-          return nodeStructure_[firstFuncSet];
-        }
-      else
-        {
-          Array<int> funcs = requestedFuncSet.elements();
-          getFunctionDofs(cellDim, cellLID, dummyFacets, funcs, dofs);
-          RefCountPtr<const MapStructure> rtn 
-            = rcp(new MapStructure(nTotalFuncs_, basis_, tuple(funcs)));
-          return rtn;
-        }
+      if (nodeToFuncSetIndexMap_[cellLID[c]] != firstFuncSet) 
+      {
+        isHomogeneous = false;
+        break;
+      }
     }
+
+    dofs.resize(1);
+    nNodes.resize(1);
+    nNodes[0] = 1;
+    Array<int> dummyFacets;
+
+    if (isHomogeneous)
+    {
+      const Set<int>& funcSet = nodalFuncSets_[firstFuncSet];
+      TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
+      Array<int> funcs = funcSet.elements();
+      getFunctionDofs(cellDim, cellLID, dummyFacets, funcs, dofs);
+      return nodeStructure_[firstFuncSet];
+    }
+    else
+    {
+      Array<int> funcs = requestedFuncSet.elements();
+      getFunctionDofs(cellDim, cellLID, dummyFacets, funcs, dofs);
+      RefCountPtr<const MapStructure> rtn 
+        = rcp(new MapStructure(nTotalFuncs_, basis_, tuple(funcs)));
+      return rtn;
+    }
+  }
   else if (cellDim==dim_)
+  {
+    bool isHomogeneous = true;
+    int firstFuncSet = elemToFuncSetIndexMap_[cellLID[0]];
+    for (unsigned int c=0; c<cellLID.size(); c++)
     {
-      bool isHomogeneous = true;
-      int firstFuncSet = elemToFuncSetIndexMap_[cellLID[0]];
-      for (unsigned int c=0; c<cellLID.size(); c++)
-        {
-          if (elemToFuncSetIndexMap_[cellLID[c]] != firstFuncSet) 
-            {
-              isHomogeneous = false;
-              break;
-            }
-        }
-
-      dofs.resize(1);
-      nNodes.resize(1);
-      nNodes[0] = mesh().numFacets(cellDim, cellLID[0], 0);
-
-      if (isHomogeneous)
-        {
-          Array<int> facetLID;
-          Array<int> facetOrientations;
-          mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
-          const Set<int>& funcSet = elemFuncSets_[firstFuncSet];
-          TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
-          Array<int> funcs = funcSet.elements();
-          getFunctionDofs(cellDim, cellLID, facetLID, funcs, dofs);
-          return elemStructure_[firstFuncSet];
-        }
-      else
-        {
-          Array<int> facetLID;
-          Array<int> facetOrientations;
-          mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
-          Array<int> funcs = requestedFuncSet.elements();
-          getFunctionDofs(cellDim, cellLID, facetLID, funcs, dofs);
-          RefCountPtr<const MapStructure> rtn 
-            = rcp(new MapStructure(nTotalFuncs_, basis_, tuple(funcs)));
-          return rtn;
-        }
+      if (elemToFuncSetIndexMap_[cellLID[c]] != firstFuncSet) 
+      {
+        isHomogeneous = false;
+        break;
+      }
     }
-  else
+
+    dofs.resize(1);
+    nNodes.resize(1);
+    nNodes[0] = mesh().numFacets(cellDim, cellLID[0], 0);
+
+    if (isHomogeneous)
     {
       Array<int> facetLID;
       Array<int> facetOrientations;
       mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
-      dofs.resize(1);
-      nNodes.resize(1);
-      nNodes[0] = mesh().numFacets(cellDim, cellLID[0], 0);
-
+      const Set<int>& funcSet = elemFuncSets_[firstFuncSet];
+      TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
+      Array<int> funcs = funcSet.elements();
+      getFunctionDofs(cellDim, cellLID, facetLID, funcs, dofs);
+      return elemStructure_[firstFuncSet];
+    }
+    else
+    {
+      Array<int> facetLID;
+      Array<int> facetOrientations;
+      mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
       Array<int> funcs = requestedFuncSet.elements();
-
       getFunctionDofs(cellDim, cellLID, facetLID, funcs, dofs);
       RefCountPtr<const MapStructure> rtn 
         = rcp(new MapStructure(nTotalFuncs_, basis_, tuple(funcs)));
       return rtn;
     }
+  }
+  else
+  {
+    Array<int> facetLID;
+    Array<int> facetOrientations;
+    mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
+    dofs.resize(1);
+    nNodes.resize(1);
+    nNodes[0] = mesh().numFacets(cellDim, cellLID[0], 0);
+
+    Array<int> funcs = requestedFuncSet.elements();
+
+    getFunctionDofs(cellDim, cellLID, facetLID, funcs, dofs);
+    RefCountPtr<const MapStructure> rtn 
+      = rcp(new MapStructure(nTotalFuncs_, basis_, tuple(funcs)));
+    return rtn;
+  }
 }
 
 
@@ -541,21 +541,21 @@ void InhomogeneousNodalDOFMap::print(ostream& os) const
   Tabs tab0;
   std::cout << tab0 << "dof map: " << std::endl;
   for (int d=0; d<=dim_; d++)
+  {
+    Tabs tab1;
+    std::cout << tab1 << d << "-cells: " << std::endl;
+    for (int n=0; n<mesh().numCells(d); n++)
     {
-      Tabs tab1;
-      std::cout << tab1 << d << "-cells: " << std::endl;
-      for (int n=0; n<mesh().numCells(d); n++)
-        {
-          Tabs tab2;
-          std::cout << tab2 << "d=" << d << " cell=" << n << std::endl;
-          RefCountPtr<const Set<int> > funcs = allowedFuncsOnCellBatch(d, tuple(n));
-          for (Set<int>::const_iterator f=funcs->begin(); f!=funcs->end(); f++)
-            {
-              Tabs tab3;
-              Array<int> dofs;
-              getDOFsForCell(d, n, *f, dofs);
-              std::cout << tab3 << " f=" << *f << " dofs=" << dofs << std::endl;
-            }
-        }
+      Tabs tab2;
+      std::cout << tab2 << "d=" << d << " cell=" << n << std::endl;
+      RefCountPtr<const Set<int> > funcs = allowedFuncsOnCellBatch(d, tuple(n));
+      for (Set<int>::const_iterator f=funcs->begin(); f!=funcs->end(); f++)
+      {
+        Tabs tab3;
+        Array<int> dofs;
+        getDOFsForCell(d, n, *f, dofs);
+        std::cout << tab3 << " f=" << *f << " dofs=" << dofs << std::endl;
+      }
     }
+  }
 }

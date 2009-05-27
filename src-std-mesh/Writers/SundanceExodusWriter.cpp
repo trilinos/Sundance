@@ -227,21 +227,23 @@ void ExodusWriter::writeMesh(int exoid,
     if (ssLabels[ss]==0) continue;
     cout << "ss=" << ss << " label=" << ssLabels[ss] << endl;
     Array<int> sideLIDs;
-    Array<int> elemLIDs;
-    Array<int> facets;
+    RCP<Array<int> > elemLIDs = rcp(new Array<int>());
+    RCP<Array<int> > facets = rcp(new Array<int>());
+    MaximalCofacetBatch maxCofacetBatch;
 
     mesh().getLIDsForLabel(dim-1, ssLabels[ss], sideLIDs);
-    mesh().getMaxCofacetLIDs(dim-1, sideLIDs, elemLIDs, facets);
+    mesh().getMaxCofacetLIDs(sideLIDs, maxCofacetBatch);
+    maxCofacetBatch.getSpecifiedCofacets(0, elemLIDs, facets);
 
     int numSides = sideLIDs.size();
     int numDists = 0;
 
     offset(sideLIDs);
-    offset(elemLIDs);
-    offset(facets);
+    offset(*elemLIDs);
+    offset(*facets);
 
     ierr = ex_put_side_set_param(exoid, ssLabels[ss], numSides, numDists);
-    ierr = ex_put_side_set(exoid, ssLabels[ss], &(elemLIDs[0]), &(facets[0]));
+    ierr = ex_put_side_set(exoid, ssLabels[ss], &((*elemLIDs)[0]), &((*facets)[0]));
   }
   
   TEST_FOR_EXCEPT(ierr < 0);

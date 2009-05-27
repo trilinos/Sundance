@@ -177,19 +177,16 @@ namespace SundanceStdMesh
                              int cofacetIndex,
                              int& facetIndex) const  ;
     /** 
-     * Get the LIDs of the maximal cofacets for a batch of cells.
+     * Get the LIDs of the maximal cofacets for a batch of codimension-one
+     * cells.
      *
-     * \param cellDim [in] dimension of the cells whose cofacets 
-     * are being obtained
      * \param cellLIDs [in] array of LIDs of the cells whose cofacets are 
      * being obtained
-     * \param cofacetLIDs [out] array of LIDs for the maximal cofacets
-     * \param facetIndex [out] index of each calling cell
-     * into the list of its maximal cofacet's facets 
+     * \param cofacets [out] the batch of cofacets
      */
-      virtual void getMaxCofacetLIDs(int cellDim, const Array<int>& cellLIDs,
-    Array<int>& cofacetLIDs, Array<int>& facetIndices) const ;
-
+      virtual void getMaxCofacetLIDs(const Array<int>& cellLIDs,
+        MaximalCofacetBatch& cofacets) const ;
+        
       
       /** 
        * Find the cofacets of the given cell

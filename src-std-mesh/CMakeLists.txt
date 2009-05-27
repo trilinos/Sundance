@@ -93,6 +93,7 @@ APPEND_SET(HEADERS
   Interface/SundanceGeomUtils.hpp
   Interface/SundanceIncrementallyCreatableMesh.hpp
   Interface/SundanceIdentityReorderer.hpp
+  Interface/SundanceMaximalCofacetBatch.hpp
   Interface/SundanceMesh.hpp
   Interface/SundanceMeshBase.hpp
   Interface/SundanceMeshTypeBase.hpp
@@ -106,6 +107,7 @@ APPEND_SET(SOURCES
   Interface/SundanceCellReorderer.cpp
   Interface/SundanceGeomUtils.cpp
   Interface/SundanceIdentityReorderer.cpp
+  Interface/SundanceMaximalCofacetBatch.cpp
   Interface/SundanceMesh.cpp
   Interface/SundanceMeshBase.cpp
   Interface/SundanceMeshType.cpp

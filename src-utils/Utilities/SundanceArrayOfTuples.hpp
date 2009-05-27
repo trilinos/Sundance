@@ -31,8 +31,6 @@
 #ifndef SUNDANCE_ARRAYOFTUPLES_H
 #define SUNDANCE_ARRAYOFTUPLES_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "Teuchos_Array.hpp"
 
 namespace SundanceUtils
@@ -64,7 +62,18 @@ namespace SundanceUtils
       int tupleSize() const {return tupleSize_;}
 
       /** Change the number of tuples */
-      void resize(int newSize) {data_.resize(newSize*tupleSize_);}
+      void resize(int newSize) {
+        numTuples_ = newSize;
+        data_.resize(numTuples_*tupleSize_);
+      }
+
+      /** Change the number and size of the tuples */
+      void resize(int newSize, int newTupleSize) 
+        {
+        numTuples_ = newSize;
+        tupleSize_ = newTupleSize;
+        data_.resize(numTuples_*tupleSize_);
+        }
 
       /** Reserve memory for a number of tuples */
       void reserve(int newSize) {data_.reserve(newSize*tupleSize_);}
@@ -125,7 +134,5 @@ namespace SundanceUtils
 
 
 }
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
 
 #endif

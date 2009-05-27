@@ -31,9 +31,6 @@
 #ifndef SUNDANCE_MESHBASE_H
 #define SUNDANCE_MESHBASE_H
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceSet.hpp"
@@ -47,11 +44,14 @@
 
 namespace SundanceStdMesh {
 
+class MaximalCofacetBatch;
+
 namespace Internal {
 
 using namespace Teuchos;
 using namespace SundanceUtils;
 class CellJacobianBatch;
+
 
 /** \brief Abstract interface to a mesh.
  *
@@ -596,18 +596,17 @@ public:
                             int cofacetIndex, 
                             int& facetIndex) const = 0 ;
     /** 
-     * Get the LIDs of the maximal cofacets for a batch of cells.
+     * Get the LIDs of the maximal cofacets for a batch of codimension-one
+     * cells.
      *
-     * \param cellDim [in] dimension of the cells whose cofacets 
-     * are being obtained
      * \param cellLIDs [in] array of LIDs of the cells whose cofacets are 
      * being obtained
-     * \param cofacetLIDs [out] array of LIDs for the maximal cofacets
+     * \param cofacets [out] 
      * \param facetIndex [out] index of each calling cell
      * into the list of its maximal cofacet's facets 
      */
-  virtual void getMaxCofacetLIDs(int cellDim, const Array<int>& cellLIDs,
-    Array<int>& cofacetLIDs, Array<int>& facetIndices) const = 0 ;
+  virtual void getMaxCofacetLIDs(const Array<int>& cellLIDs,
+    MaximalCofacetBatch& cofacets) const = 0 ;
 
   /** \brief Return an array of the LIDs of all of the co-facets for a
    * given relative cell.
@@ -929,7 +928,5 @@ private:
 } // namespace Internal
 
 } // namespace SundanceStdMesh
-
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

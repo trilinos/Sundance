@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshBase.hpp"
+#include "SundanceMaximalCofacetBatch.hpp"
 #include "SundanceIncrementallyCreatableMesh.hpp"
 #include "SundanceIdentityReorderer.hpp"
 #include "SundanceCellReorderer.hpp"
@@ -40,10 +41,11 @@
 
 namespace SundanceStdMesh
 {
-  using namespace TSFExtended;
-  using namespace Teuchos;
+using namespace TSFExtended;
+using namespace Teuchos;
 using namespace SundanceUtils;
-  using namespace Internal;
+using namespace Internal;
+
   /**
    * Mesh is the user-level object representing discrete geometry. 
    * The Mesh class is a handle to a MeshBase, which is an abstract interface
@@ -251,19 +253,16 @@ using namespace SundanceUtils;
     {return ptr()->maxCofacetLID(cellDim, cellLID, cofacetIndex, facetIndex);}
 
     /** 
-     * Get the LIDs of the maximal cofacets for a batch of cells. 
+     * Get the LIDs of the maximal cofacets for a batch of 
+     * codimension-one cells. 
      *
-     * \param cellDim [in] dimension of the cells whose cofacets 
-     * are being obtained
      * \param cellLIDs [in] array of LIDs of the cells whose cofacets are 
      * being obtained
-     * \param cofacetLIDs [out] array of LIDs for the maximal cofacets
-     * \param facetIndex [out] index of each calling cell
-     * into the list of its maximal cofacet's facets
+     * \param cofacets [out] the batch of cofacets
      */
-    void getMaxCofacetLIDs(int cellDim, const Array<int>& cellLIDs,
-      Array<int>& cofacetLIDs, Array<int>& facetIndices) const 
-      {ptr()->getMaxCofacetLIDs(cellDim, cellLIDs, cofacetLIDs, facetIndices);}
+    void getMaxCofacetLIDs(const Array<int>& cellLIDs,
+      MaximalCofacetBatch& cofacets) const 
+      {ptr()->getMaxCofacetLIDs(cellLIDs, cofacets);}
 
 
 
