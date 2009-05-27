@@ -33,6 +33,7 @@
 #include "SundanceTempStack.hpp"
 #include "SundanceCellDiameterExpr.hpp"
 #include "SundanceCellVectorExpr.hpp"
+#include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceCellJacobianBatch.hpp"
@@ -239,9 +240,10 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
         {
           mi[r]=1;
         }
-        basis.ptr()->refEval(evalCellType, 
+        SpatialDerivSpecifier deriv(mi);
+        basis.refEval(evalCellType, 
           (*(quadPtsReferredToMaxCell_.get(cellType())))[fc], 
-          mi, tmp[r]);
+          deriv, tmp[r], verb());
       }
       /* the tmp array contains values indexed as [quad][node]. 
        * We need to put this into fortran order with quad index running

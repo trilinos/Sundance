@@ -37,6 +37,7 @@
 
 
 namespace SundanceUtils {class Point;}
+namespace SundanceCore {class SpatialDerivSpecifier;}
 namespace SundanceCore {class MultiIndex;}
 
 namespace SundanceStdFwk {
@@ -45,6 +46,7 @@ namespace SundanceStdFwk {
 using Teuchos::Array;
 using SundanceUtils::Point;
 using SundanceStdMesh::CellType;
+using SundanceCore::SpatialDerivSpecifier;
 using SundanceCore::MultiIndex;
 
 
@@ -67,10 +69,8 @@ public:
    *           [in] Array of points on the reference cell (or master cell)
    *           where the basis functions are to be computed. 
    * \param  deriv
-   *           [in] Specifies which derivatives in each spatial direction
-   *           to evaluate the basis functions derivatives for. 
-   *           Preconditions: <tt>deriv[d]==0</tt> for any <tt>d</tt> such
-   *           that <tt>dimension(maximalCellType) <= d.</tt>
+   *           [in] Specification of which differential operator is
+   *           to be applied to the basis functions.
    * \param  result
    *           [out] On output, gives a triply nested array which contain
    *           the basis functions (or the requested basis function
@@ -100,7 +100,7 @@ x   *           Specifically,
   virtual void refEval(
     const CellType& cellType,
     const Array<Point>& pts,
-    const MultiIndex& deriv,
+    const SpatialDerivSpecifier& deriv,
     Array<Array<Array<double> > >& result,
     int verbosity = 0
     ) const = 0 ;  

@@ -76,7 +76,7 @@ public:
   void refEval(
     const CellType& cellType,
     const Array<Point>& pts,
-    const MultiIndex& deriv,
+    const SpatialDerivSpecifier& deriv,
     Array<Array<Array<double> > >& result,
     int verbosity=0) const ;
 
@@ -90,7 +90,7 @@ private:
     
   /** evaluate on a triangle cell  */
   void evalOnTriangle(int dir, const Point& pt,
-    const MultiIndex& deriv,
+    const SpatialDerivSpecifier& deriv,
     Array<double>& result) const ;
     
 };

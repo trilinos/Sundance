@@ -83,7 +83,7 @@ public:
   virtual void refEval(
     const CellType& cellType,
     const Array<Point>& pts,
-    const MultiIndex& deriv,
+    const SpatialDerivSpecifier& deriv,
     Array<Array<Array<double> > >& result,
     int verbosity=0) const ;  
 

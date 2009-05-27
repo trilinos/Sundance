@@ -122,15 +122,15 @@ RCP<BasisDOFTopologyBase> BasisFamily::getBasisTopology(const RCP<const CommonFu
 void BasisFamily::refEval(
     const CellType& cellType,
     const Array<Point>& pts,
-    const MultiIndex& deriv,
+    const SpatialDerivSpecifier& deriv,
     Array<Array<Array<double> > >& result,
     int verbosity) const
 {
   Tabs tab;
   SUNDANCE_MSG3(verbosity, tab << "evaluating basis " << *this 
-    << " with multi-index " << deriv);
+    << " with spatial derivative " << deriv);
   ptr()->refEval(cellType, pts, deriv, result, verbosity);
-  string f = "D[phi_n," + deriv.toString()+"]";
+  string f = deriv.toString()+ "[phi_n]";
 
   if (verbosity >= 4)
   {

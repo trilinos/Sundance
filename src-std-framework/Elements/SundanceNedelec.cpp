@@ -31,7 +31,7 @@
 #include "SundanceNedelec.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
-#include "SundanceMultiIndex.hpp"
+#include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
@@ -146,7 +146,7 @@ void Nedelec::getReferenceDOFs(
 void Nedelec::refEval(
   const CellType& cellType,
   const Array<Point>& pts,
-  const MultiIndex& deriv,
+  const SpatialDerivSpecifier& deriv,
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {

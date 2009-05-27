@@ -31,7 +31,7 @@
 #include "SundanceRaviartThomas.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceCellType.hpp"
-#include "SundanceMultiIndex.hpp"
+#include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceTypeUtils.hpp"
 #include "TSFObjectWithVerbosity.hpp"
@@ -157,42 +157,43 @@ bool RaviartThomas::lessThan(const BasisDOFTopologyBase* other) const
 void RaviartThomas::refEval(
   const CellType& cellType,
   const Array<Point>& pts,
-  const MultiIndex& deriv,
+  const SpatialDerivSpecifier& sds,
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
+  const MultiIndex& deriv = sds.mi();
   switch(cellType) {
-  case PointCell:
+    case PointCell:
     {
       TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements for PointCell not supported");
     }
     break;
-  case LineCell:
+    case LineCell:
     {
       result.resize(1);
       result[0].resize(pts.length());
       Array<ADReal> tmp;
       tmp.resize(2);
       for (int i=0;i<pts.length();i++) {
-	ADReal x = ADReal( pts[i][0] , 0 , 1 );
-	ADReal one(1.0,1);
-	result[0][i].resize(2);
-	tmp[0] = one - x;
-	tmp[1] = x;
-	if (deriv.order()==0) {
-	  for (int j=0;j<tmp.length();j++) {
-	    result[0][i][j] = tmp[j].value();
-	  }
-	}
-	else {
-	  for (int j=0;j<tmp.length();j++) {
-	    result[0][i][j] = tmp[j].gradient()[deriv.firstOrderDirection()];
-	  }
-	}
+        ADReal x = ADReal( pts[i][0] , 0 , 1 );
+        ADReal one(1.0,1);
+        result[0][i].resize(2);
+        tmp[0] = one - x;
+        tmp[1] = x;
+        if (deriv.order()==0) {
+          for (int j=0;j<tmp.length();j++) {
+            result[0][i][j] = tmp[j].value();
+          }
+        }
+        else {
+          for (int j=0;j<tmp.length();j++) {
+            result[0][i][j] = tmp[j].gradient()[deriv.firstOrderDirection()];
+          }
+        }
       }
     }
     break;
-  case TriangleCell:
+    case TriangleCell:
     {
       result.resize(2);
       result[0].resize(pts.length());
@@ -202,41 +203,41 @@ void RaviartThomas::refEval(
       tmp0.resize(3);
       tmp1.resize(3);
       for (int i=0;i<pts.length();i++) {
-	ADReal x = ADReal(pts[i][0],0,2);
-	ADReal y = ADReal(pts[i][1],1,2);
-	ADReal one(1.0,2);
-	ADReal rt2(sqrt(2.0),2);
-	result[0][i].resize(3);
-	result[1][i].resize(3);
-	tmp0[0] = x;
-	tmp1[0] = y - one;
-	tmp0[1] = rt2 * x;
-	tmp1[1] = rt2 * y;
-	tmp0[2] = x - one;
-	tmp1[2] = y;
-	if (deriv.order()==0) {
-	  for (int j=0;j<tmp0.length();j++) {
-	    result[0][i][j] = tmp0[j].value();
-	    result[1][i][j] = tmp1[j].value();
-	  }
-	}
-	else {
-	  for (int j=0;j<tmp0.length();j++) {
-	    result[0][i][j] = tmp0[j].gradient()[deriv.firstOrderDirection()];
-	    result[1][i][j] = tmp1[j].gradient()[deriv.firstOrderDirection()];
-	  }
-	}
+        ADReal x = ADReal(pts[i][0],0,2);
+        ADReal y = ADReal(pts[i][1],1,2);
+        ADReal one(1.0,2);
+        ADReal rt2(sqrt(2.0),2);
+        result[0][i].resize(3);
+        result[1][i].resize(3);
+        tmp0[0] = x;
+        tmp1[0] = y - one;
+        tmp0[1] = rt2 * x;
+        tmp1[1] = rt2 * y;
+        tmp0[2] = x - one;
+        tmp1[2] = y;
+        if (deriv.order()==0) {
+          for (int j=0;j<tmp0.length();j++) {
+            result[0][i][j] = tmp0[j].value();
+            result[1][i][j] = tmp1[j].value();
+          }
+        }
+        else {
+          for (int j=0;j<tmp0.length();j++) {
+            result[0][i][j] = tmp0[j].gradient()[deriv.firstOrderDirection()];
+            result[1][i][j] = tmp1[j].gradient()[deriv.firstOrderDirection()];
+          }
+        }
       }
     }
     break;
-  case TetCell:
+    case TetCell:
     {
       TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements for TetCell not supported");
     }
     break;
-  default:
-    TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements unknown cell type");
-    break;
+    default:
+      TEST_FOR_EXCEPTION(true, RuntimeError, "evaluation of RaviartThomas elements unknown cell type");
+      break;
   }
 
   return;

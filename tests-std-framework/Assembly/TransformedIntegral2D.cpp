@@ -203,7 +203,10 @@ int main(int argc, char** argv)
               if (r!=0) cerr << ", ";
               int i = cell*ref.nNodesTest()+r;
               double err = fabs(Utils::chop((*B)[i] - (*A)[i]));
-              if (err > 1.0e-14) OK = false;
+              if (err > 1.0e-14) 
+              {
+                OK = false;
+              }
               cerr << err;
             }
             cerr << "}" << endl;

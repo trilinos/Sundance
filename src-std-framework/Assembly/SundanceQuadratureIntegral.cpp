@@ -30,7 +30,7 @@
 
 #include "SundanceQuadratureIntegral.hpp"
 #include "SundanceGaussianQuadrature.hpp"
-#include "SundanceMultiIndex.hpp"
+#include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
@@ -164,7 +164,8 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       MultiIndex mi;
       testBasisVals[r].resize(testBasis.dim());
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.refEval(evalCellType(), quadPts, mi, 
+      SpatialDerivSpecifier deriv(mi);
+      testBasis.refEval(evalCellType(), quadPts, deriv, 
         testBasisVals[r], setupVerb());
     }
 
@@ -239,7 +240,8 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       testBasisVals[r].resize(testBasis.dim());
       MultiIndex mi;
       if (testDerivOrder==1) mi[r] = 1;
-      testBasis.refEval(evalCellType(), quadPts, mi, 
+      SpatialDerivSpecifier deriv(mi);
+      testBasis.refEval(evalCellType(), quadPts, deriv, 
         testBasisVals[r], setupVerb());
     }
 
@@ -248,8 +250,9 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
       unkBasisVals[r].resize(unkBasis.dim());
       MultiIndex mi;
       if (unkDerivOrder==1) mi[r] = 1;
+      SpatialDerivSpecifier deriv(mi);
       unkBasis.refEval(evalCellType(), 
-        quadPts, mi, unkBasisVals[r], setupVerb());
+        quadPts, deriv, unkBasisVals[r], setupVerb());
     }
 
 

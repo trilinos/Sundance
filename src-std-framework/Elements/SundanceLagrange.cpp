@@ -31,7 +31,7 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
-#include "SundanceMultiIndex.hpp"
+#include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
 #include "TSFObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
@@ -224,10 +224,14 @@ Array<int> Lagrange::makeRange(int low, int high)
 void Lagrange::refEval(
   const CellType& cellType,
   const Array<Point>& pts,
-  const MultiIndex& deriv,
+  const SpatialDerivSpecifier& sds,
   Array<Array<Array<double> > >& result,
   int verbosity) const
 {
+  TEST_FOR_EXCEPTION(!(sds.isPartial() || sds.isIdentity()), 
+    RuntimeError,
+    "cannot evaluate spatial derivative " << sds << " on Lagrange basis");
+  const MultiIndex& deriv = sds.mi();
   typedef Array<double> Adouble;
   result.resize(1);
   result[0].resize(pts.length());
