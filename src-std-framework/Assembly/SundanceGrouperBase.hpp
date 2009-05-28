@@ -82,6 +82,7 @@ public:
     int cellDim,
     const QuadratureFamily& quad,
     const RefCountPtr<SparsitySuperset>& sparsity,
+    bool isInternalBdry,
     Array<RCP<IntegralGroup> >& groups) const = 0 ;
 
   /** */

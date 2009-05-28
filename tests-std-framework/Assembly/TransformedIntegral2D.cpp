@@ -99,6 +99,8 @@ int main(int argc, char** argv)
     int pMax = 2;
     int dim=2;
 
+    bool isInternalBdry = false;
+
     Utils::setChopVal(1.0e-14);
 
     CellType cellType = TriangleCell;
@@ -157,7 +159,7 @@ int main(int argc, char** argv)
         {
           int alpha = t;
           Tabs tab;
-          RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, verb);
+          RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, isInternalBdry, verb);
           A->resize(JBatch.numCells() * ref.nNodes());
           for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
           ref.transformOneForm(JBatch, JBatch, dummy, coeff, A);
@@ -173,7 +175,7 @@ int main(int argc, char** argv)
             }
             cerr << "}" << endl;
           }
-          QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, verb);
+          QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, isInternalBdry, verb);
           Array<double> quadCoeff(2*quad.nQuad(), 1.0);
           B->resize(JBatch.numCells() * quad.nNodes());
           for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
@@ -256,7 +258,7 @@ int main(int argc, char** argv)
                 //  || t==1) continue;
                 int beta = u;
                 RefIntegral ref(dim, cellType, dim, cellType, P, alpha,
-                  dp, Q, beta, dq, verb);
+                  dp, Q, beta, dq, isInternalBdry, verb);
                 A->resize(JBatch.numCells() * ref.nNodes());
                 for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
                 ref.transformTwoForm(JBatch, JBatch, dummy, coeff, A);
@@ -285,7 +287,7 @@ int main(int argc, char** argv)
 
 
                 QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha,
-                  dp, Q, beta, dq, q4, verb);
+                  dp, Q, beta, dq, q4, isInternalBdry, verb);
                 Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                 B->resize(JBatch.numCells() * quad.nNodes());
                 for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;

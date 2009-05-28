@@ -61,8 +61,10 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
   int dim, 
   const CellType& cellType,
   const QuadratureFamily& quad,
+  bool isInternalBdry,
   int verb)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verb),
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, isInternalBdry, 
+    verb),
     nQuad_(0)
 {
 }
@@ -76,9 +78,10 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
   int alpha,
   int testDerivOrder,
   const QuadratureFamily& quad,
+  bool isInternalBdry,
   int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-    testBasis, alpha, testDerivOrder, verb),
+    testBasis, alpha, testDerivOrder, isInternalBdry, verb),
     nQuad_(0)
 {
 
@@ -98,10 +101,11 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
   int beta,
   int unkDerivOrder,
   const QuadratureFamily& quad,
+  bool isInternalBdry,
   int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
     testBasis, alpha, testDerivOrder, 
-    unkBasis, beta, unkDerivOrder, verb), 
+    unkBasis, beta, unkDerivOrder, isInternalBdry, verb), 
     nQuad_(0)
 {
 

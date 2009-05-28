@@ -132,11 +132,11 @@ int main(int argc, char** argv)
 
           Array<int> alpha = tuple(0,1);
           Array<int> beta = tuple(0,1);
-          RefIntegral ref(dim, dim, cellType, P, alpha, 1, P, beta, 1);          
+          RefIntegral ref(dim, dim, cellType, P, alpha, 1, P, beta, 1, isInternalBdry);          
           QuadratureIntegral qxx(dim, dim, cellType, P, tuple(0), 1, 
-                                 P, tuple(0), 1, q4);                    
+                                 P, tuple(0), 1, q4, isInternalBdry);                    
           QuadratureIntegral qyy(dim, dim, cellType, P, tuple(1), 1, 
-                                 P, tuple(1), 1, q4);          
+                                 P, tuple(1), 1, q4, isInternalBdry);          
 
           int nq = qxx.nQuad();
           Array<double> varCoeff(nq, 1.0);

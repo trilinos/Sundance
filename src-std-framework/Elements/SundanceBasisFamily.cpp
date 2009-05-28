@@ -35,6 +35,7 @@
 #include "SundanceUnknownFunctionData.hpp"
 #include "SundanceTestFunctionData.hpp"
 #include "SundanceDiscreteFunctionData.hpp"
+#include "SundanceLagrange.hpp"
 
 using namespace TSFExtended;
 using namespace SundanceStdFwk;
@@ -186,6 +187,12 @@ vectorDimStructure(const Array<BasisFamily>& basis)
 Array<std::pair<int, int> > vectorDimStructure(const BasisFamily& basis)
 {
   return vectorDimStructure(tuple(basis));
+}
+
+bool basisRestrictableToBoundary(const BasisFamily& b)
+{
+  const Lagrange* lag = dynamic_cast<const Lagrange*>(b.ptr().get());
+  return lag != 0;
 }
 
 }

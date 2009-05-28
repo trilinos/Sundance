@@ -73,13 +73,16 @@ namespace SundanceStdFwk
       virtual ~StdFwkEvalMediator(){;}
 
       /** */
-      void setCellBatch(IntegrationCellSpecifier intCellSpec,
-                        const RefCountPtr<const Array<int> >& cellLID);
+      void setCellBatch(const RefCountPtr<const Array<int> >& cellLID);
+
+      /** */
+      void setIntegrationSpec(IntegrationCellSpecifier intCellSpec);
 
 
       /** Update the cell type */
       virtual void setCellType(const CellType& cellType,
-                               const CellType& maxCellType) ;
+        const CellType& maxCellType,
+        bool isInternalBdry) ;
 
       /** Return the Jacobian to be used in computing the volume of cells
       being integrated. This will not necessarily be the same as the
@@ -124,6 +127,9 @@ namespace SundanceStdFwk
       /** */
       bool cofacetCellsAreReady() const {return cofacetCellsAreReady_;}
 
+      /** */
+      bool isInternalBdry() const {return isInternalBdry_;}
+
 
     protected:
       const Mesh& mesh() const {return mesh_;}
@@ -159,6 +165,8 @@ namespace SundanceStdFwk
       CellType cellType_;
 
       CellType maxCellType_;
+
+      bool isInternalBdry_;
 
       RefCountPtr<const Array<int> > cellLID_;
 

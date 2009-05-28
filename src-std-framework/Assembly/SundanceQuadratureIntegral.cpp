@@ -73,8 +73,9 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   int dim, 
   const CellType& cellType,
   const QuadratureFamily& quad,
+  bool isInternalBdry,
   int verb)
-  : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, quad , verb),
+  : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, quad , isInternalBdry, verb),
     W_(),
     useSumFirstMethod_(true)
 {
@@ -118,9 +119,10 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   int alpha,
   int testDerivOrder,
   const QuadratureFamily& quad,
+  bool isInternalBdry,
   int verb)
   : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, 
-    testBasis, alpha, testDerivOrder, quad , verb),
+    testBasis, alpha, testDerivOrder, quad , isInternalBdry, verb),
     W_(),
     useSumFirstMethod_(true)
 {
@@ -202,10 +204,11 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   int beta,
   int unkDerivOrder,
   const QuadratureFamily& quad,
+  bool isInternalBdry,
   int verb)
   : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, 
     testBasis, alpha, testDerivOrder, 
-    unkBasis, beta, unkDerivOrder, quad , verb), 
+    unkBasis, beta, unkDerivOrder, quad , isInternalBdry, verb), 
     W_(),
     useSumFirstMethod_(true)
 {

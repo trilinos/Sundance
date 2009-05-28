@@ -4,7 +4,6 @@ INCLUDE(AddTestBatch)
 
 SET(DisabledTests
   Poisson3D
-  FOSLSMagnetostatics2D
   RefinementTest3D
 )
 
@@ -17,6 +16,7 @@ SET(SerialTests
         LinearPartialDomain 
         NonlinearPartialDomain 
         AToCDensitySample
+        FOSLSMagnetostatics2D
         FunctionalTest3D 
         FunctionalTest 
 )

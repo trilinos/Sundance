@@ -62,6 +62,7 @@ public:
     const CellType& maxCellType,
     int dim, 
     const CellType& cellType,
+    bool isInternalBdry,
     int verb);
 
   /** Construct a one-form */
@@ -72,6 +73,7 @@ public:
     const BasisFamily& testBasis,
     int alpha,
     int testDerivOrder,
+    bool isInternalBdry,
     int verb);
 
   /** Construct a two-form */
@@ -85,6 +87,7 @@ public:
     const BasisFamily& unkBasis,
     int beta,
     int unkDerivOrder,
+    bool isInternalBdry,
     int verb);
 
   /** virtual dtor */
@@ -108,6 +111,12 @@ public:
    * must be tabulated in the cases where an integral must be done 
    * by referring back to a maximal cell */
   int nFacetCases() const {return nFacetCases_;}
+
+  /** Whether this is an integral on an internal boundary */
+  bool isInternalBdry() const {return isInternalBdry_;}
+
+  /** */
+  static bool& alwaysUseCofacets();
 
   /** */
   void setVerbosity(
@@ -236,6 +245,8 @@ private:
   int spatialDim_;
 
   int dim_;
+
+  bool isInternalBdry_;
 
   int nFacetCases_;
 

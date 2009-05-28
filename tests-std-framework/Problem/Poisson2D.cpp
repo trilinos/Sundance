@@ -31,6 +31,7 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
 #include "SundanceExodusMeshReader.hpp"
+#include "SundanceElementIntegral.hpp"
 
 using SundanceCore::List;
 /** 
@@ -38,130 +39,131 @@ using SundanceCore::List;
  */
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;}) 
-CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;}) 
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;}) 
+  CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;}) 
+  CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
+  CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;}) 
 
 #if defined(HAVE_SUNDANCE_EXODUS)
 
-int main(int argc, char** argv)
+  int main(int argc, char** argv)
 {
   
   try
-		{
-      int nx = 2;
-      int ny = 2;
-      string meshFile="builtin";
-      string solverFile = "aztec-ml.xml";
-      Sundance::setOption("meshFile", meshFile, "mesh file");
-      Sundance::setOption("nx", nx, "number of elements in x");
-      Sundance::setOption("ny", ny, "number of elements in y");
-      Sundance::setOption("solver", solverFile, "name of XML file for solver");
+  {
+    ElementIntegral::alwaysUseCofacets() = false;
+    int nx = 2;
+    int ny = 2;
+    string meshFile="builtin";
+    string solverFile = "aztec-ml.xml";
+    Sundance::setOption("meshFile", meshFile, "mesh file");
+    Sundance::setOption("nx", nx, "number of elements in x");
+    Sundance::setOption("ny", ny, "number of elements in y");
+    Sundance::setOption("solver", solverFile, "name of XML file for solver");
 
-      Sundance::init(&argc, &argv);
-      int np = MPIComm::world().getNProc();
+    Sundance::init(&argc, &argv);
+    int np = MPIComm::world().getNProc();
 
-      nx = nx*np;
-      ny = ny*np;
+    nx = nx*np;
+    ny = ny*np;
 
-      /* We will do our linear algebra using Epetra */
-      VectorType<double> vecType = new EpetraVectorType();
+    /* We will do our linear algebra using Epetra */
+    VectorType<double> vecType = new EpetraVectorType();
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedRectangleMesher. */
-      MeshType meshType = new BasicSimplicialMeshType();
+    /* Create a mesh. It will be of type BasisSimplicialMesh, and will
+     * be built using a PartitionedRectangleMesher. */
+    MeshType meshType = new BasicSimplicialMeshType();
       
-      MeshSource mesher;
-      if (meshFile != "builtin")
-      {
-        mesher = new ExodusMeshReader("../../../examples-tutorial/meshes/"+meshFile, meshType);
-      }
-      else
-      {
-        int npx = -1;
-        int npy = -1;
-        PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
-        TEST_FOR_EXCEPT(npx < 1);
-        TEST_FOR_EXCEPT(npy < 1);
-        TEST_FOR_EXCEPT(npx * npy != np);
-        mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx, 
-          0.0,  1.0, ny, npy, meshType);
-      }
-      Mesh mesh = mesher.getMesh();
+    MeshSource mesher;
+    if (meshFile != "builtin")
+    {
+      mesher = new ExodusMeshReader("../../../examples-tutorial/meshes/"+meshFile, meshType);
+    }
+    else
+    {
+      int npx = -1;
+      int npy = -1;
+      PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
+      TEST_FOR_EXCEPT(npx < 1);
+      TEST_FOR_EXCEPT(npy < 1);
+      TEST_FOR_EXCEPT(npx * npy != np);
+      mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx, 
+        0.0,  1.0, ny, npy, meshType);
+    }
+    Mesh mesh = mesher.getMesh();
 
 
-      bool meshOK = mesh.checkConsistency(meshFile+"-check");
-      if (meshOK) 
-      {
-        cout << "mesh is OK" << endl;
-      }
-      else
-      {
-        cout << "mesh is INCONSISTENT" << endl;
-      }
-      mesh.dump(meshFile+"-dump");
+    bool meshOK = mesh.checkConsistency(meshFile+"-check");
+    if (meshOK) 
+    {
+      cout << "mesh is OK" << endl;
+    }
+    else
+    {
+      cout << "mesh is INCONSISTENT" << endl;
+    }
+    mesh.dump(meshFile+"-dump");
 
-      WatchFlag watchMe("watch eqn");
-      watchMe.deactivate();
+    WatchFlag watchMe("watch eqn");
+    watchMe.deactivate();
 
-      WatchFlag watchBC("watch BCs");
-      watchBC.setParam("integration setup", 6);
-      watchBC.setParam("integration", 6);
-      watchBC.setParam("fill", 6);
-      watchBC.setParam("evaluation", 6);
-      watchBC.deactivate();
+    WatchFlag watchBC("watch BCs");
+    watchBC.setParam("integration setup", 6);
+    watchBC.setParam("integration", 6);
+    watchBC.setParam("fill", 6);
+    watchBC.setParam("evaluation", 6);
+//    watchBC.deactivate();
 
 
-      /* Create a cell filter that will identify the maximal cells
-       * in the interior of the domain */
-      CellFilter interior = new MaximalCellFilter();
-      CellFilter edges = new DimensionalCellFilter(1);
+    /* Create a cell filter that will identify the maximal cells
+     * in the interior of the domain */
+    CellFilter interior = new MaximalCellFilter();
+    CellFilter edges = new DimensionalCellFilter(1);
 
-      CellFilter left;
-      CellFilter right;
-      CellFilter top;
-      CellFilter bottom;
+    CellFilter left;
+    CellFilter right;
+    CellFilter top;
+    CellFilter bottom;
 
-      if (meshFile != "builtin")
-      {
-        left = edges.labeledSubset(1);
-        right = edges.labeledSubset(2);
-        top = edges.labeledSubset(3);
-        bottom = edges.labeledSubset(4);
-      }
-      else
-      {
-        left = edges.subset(new LeftPointTest());
-        right = edges.subset(new RightPointTest());
-        top = edges.subset(new TopPointTest());
-        bottom = edges.subset(new BottomPointTest());
-      }
+    if (meshFile != "builtin")
+    {
+      left = edges.labeledSubset(1);
+      right = edges.labeledSubset(2);
+      top = edges.labeledSubset(3);
+      bottom = edges.labeledSubset(4);
+    }
+    else
+    {
+      left = edges.subset(new LeftPointTest());
+      right = edges.subset(new RightPointTest());
+      top = edges.subset(new TopPointTest());
+      bottom = edges.subset(new BottomPointTest());
+    }
       
-      /* Create unknown and test functions, discretized using second-order
-       * Lagrange interpolants */
-      BasisFamily basis = new Lagrange(1);
-      Expr u = new UnknownFunction(basis, "u");
-      Expr v = new TestFunction(basis, "v");
+    /* Create unknown and test functions, discretized using second-order
+     * Lagrange interpolants */
+    BasisFamily basis = new Lagrange(1);
+    Expr u = new UnknownFunction(basis, "u");
+    Expr v = new TestFunction(basis, "v");
 
-      /* Create differential operator and coordinate functions */
-      Expr dx = new Derivative(0);
-      Expr dy = new Derivative(1);
-      Expr grad = List(dx, dy);
-      Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
+    /* Create differential operator and coordinate functions */
+    Expr dx = new Derivative(0);
+    Expr dy = new Derivative(1);
+    Expr grad = List(dx, dy);
+    Expr x = new CoordExpr(0);
+    Expr y = new CoordExpr(1);
 
-      /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad2 = new GaussianQuadrature(2);
-      QuadratureFamily quad4 = new GaussianQuadrature(4);
+    /* We need a quadrature rule for doing the integrations */
+    QuadratureFamily quad2 = new GaussianQuadrature(2);
+    QuadratureFamily quad4 = new GaussianQuadrature(4);
 
-      /* Define the weak form */
-      //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-      Expr one = new SundanceCore::Parameter(1.0);
-      Expr exactSoln = 2.0*x+y;
-      Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2, watchMe);
-      /* Define the Dirichlet BC */
-      Expr h = new CellDiameterExpr();
-      /////////////// divide by h
+    /* Define the weak form */
+    //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
+    Expr one = new SundanceCore::Parameter(1.0);
+    Expr exactSoln = 2.0*x+y;
+    Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2, watchMe);
+    /* Define the Dirichlet BC */
+    Expr h = new CellDiameterExpr();
+    /////////////// divide by h
       Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad4, watchBC);
 
       /* We can now set up the linear problem! */
@@ -208,19 +210,19 @@ int main(int argc, char** argv)
 
       Expr err = exactSoln - soln;
       Expr errExpr = Integral(interior, 
-                              err*err,
+        err*err,
         quad4);
 
       Expr derivErr = dx*(exactSoln-soln);
       Expr derivErrExpr = Integral(interior, 
-                                   derivErr*derivErr, 
-                                   quad2);
+        derivErr*derivErr, 
+        quad2);
 
       
 
       Expr fluxErrExpr = Integral(top, 
-                                  pow(dy*(soln-exactSoln), 2),
-                                  new GaussianQuadrature(2));
+        pow(dy*(soln-exactSoln), 2),
+        new GaussianQuadrature(2));
 
       
       watchBC.activate();
@@ -229,8 +231,8 @@ int main(int argc, char** argv)
         new GaussianQuadrature(2), watchBC);
 
       Expr numFluxExpr = Integral(top, 
-                                  dy*soln,
-                                  new GaussianQuadrature(2));
+        dy*soln,
+        new GaussianQuadrature(2));
 
 
       FunctionalEvaluator errInt(mesh, errExpr);
@@ -252,11 +254,11 @@ int main(int argc, char** argv)
 
       Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), 1.0e-9);
 
-    }
+  }
 	catch(exception& e)
-		{
-      Sundance::handleException(e);
-		}
+  {
+    Sundance::handleException(e);
+  }
   Sundance::finalize(); return Sundance::testStatus(); 
 
   return Sundance::testStatus();

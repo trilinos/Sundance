@@ -80,6 +80,7 @@ int main(int argc, char** argv)
       QuadratureFamily quad2 = new GaussianQuadrature(2);
 
       WatchFlag watch("watch me");
+      watch.setParam("integration setup", 6);
       watch.deactivate();
 
       const double pi = 4.0*atan(1.0);

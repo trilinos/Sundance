@@ -93,7 +93,8 @@ namespace SundanceStdFwk
             
       /** */
       virtual void setCellType(const CellType& cellType,
-                               const CellType& maxCellType) ;
+        const CellType& maxCellType,
+        bool isInternalBdry) ;
 
       /** */
       virtual void print(ostream& os) const ;

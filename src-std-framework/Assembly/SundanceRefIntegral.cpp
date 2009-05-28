@@ -74,8 +74,10 @@ RefIntegral::RefIntegral(int spatialDim,
   const CellType& maxCellType,
   int dim, 
   const CellType& cellType,
+  bool isInternalBdry,
   int verb)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, verb), W_()
+  : ElementIntegral(spatialDim, maxCellType, dim, cellType, isInternalBdry,
+    verb), W_()
 {
   Tabs tab0(0);
 
@@ -104,9 +106,10 @@ RefIntegral::RefIntegral(int spatialDim,
   const BasisFamily& testBasis,
   int alpha,
   int testDerivOrder,
+  bool isInternalBdry,
   int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-    testBasis, alpha, testDerivOrder, verb), W_()
+    testBasis, alpha, testDerivOrder, isInternalBdry, verb), W_()
 {
   Tabs tab0(0);
   SUNDANCE_MSG1(setupVerb(),
@@ -235,10 +238,11 @@ RefIntegral::RefIntegral(int spatialDim,
   const BasisFamily& unkBasis,
   int beta,
   int unkDerivOrder, 
+  bool isInternalBdry,
   int verb)
   : ElementIntegral(spatialDim, maxCellType,  dim, cellType,
     testBasis, alpha, testDerivOrder, 
-    unkBasis, beta, unkDerivOrder, verb), W_()
+    unkBasis, beta, unkDerivOrder, isInternalBdry, verb), W_()
 
 {
   Tabs tab0(0);

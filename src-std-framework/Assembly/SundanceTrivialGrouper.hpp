@@ -36,41 +36,42 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+namespace Internal
+{
+using namespace Teuchos;
 
-    /** 
-     * Grouper
-     */
-    class TrivialGrouper : public GrouperBase
-    {
-    public:
-      /** */
-      TrivialGrouper() : GrouperBase() {;}
+/** 
+ * Grouper
+ */
+class TrivialGrouper : public GrouperBase
+{
+public:
+  /** */
+  TrivialGrouper() : GrouperBase() {;}
 
-      /** */
-      virtual ~TrivialGrouper(){;}
+  /** */
+  virtual ~TrivialGrouper(){;}
 
-      /** */
-      virtual void findGroups(const EquationSet& eqn,
-                              const CellType& maxCellType,
-                              int spatialDim,
-                              const CellType& cellType,
-                              int cellDim,
-                              const QuadratureFamily& quad,
-                              const RefCountPtr<SparsitySuperset>& sparsity,
-                              Array<RCP<IntegralGroup> >& groups) const ;
+  /** */
+  virtual void findGroups(const EquationSet& eqn,
+    const CellType& maxCellType,
+    int spatialDim,
+    const CellType& cellType,
+    int cellDim,
+    const QuadratureFamily& quad,
+    const RefCountPtr<SparsitySuperset>& sparsity,
+    bool isInternalBdry,                              
+    Array<RCP<IntegralGroup> >& groups) const ;
                               
-    };
+};
 
-  }
+}
 }
 
 

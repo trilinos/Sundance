@@ -70,47 +70,58 @@ QuadratureEvalMediator
 {}
 
 void QuadratureEvalMediator::setCellType(const CellType& cellType,
-  const CellType& maxCellType) 
+  const CellType& maxCellType,
+  bool isInternBdry) 
 {
-  StdFwkEvalMediator::setCellType(cellType, maxCellType);
+  StdFwkEvalMediator::setCellType(cellType, maxCellType, isInternBdry);
 
-  if (cellType != maxCellType)
+  TEST_FOR_EXCEPT(isInternalBdry() 
+    && integrationCellSpec() != NoTermsNeedCofacets);
+
+  if (cellType != maxCellType && !isInternalBdry())
   {
     numEvaluationCases_ = numFacets(maxCellType, cellDim());
   }
-  else
+  else 
   {
     numEvaluationCases_ = 1;
   }
 
-  if (quadPtsReferredToMaxCell_.containsKey(cellType)) return;
+  if (!isInternalBdry() 
+    && quadPtsReferredToMaxCell_.containsKey(cellType)) return;
 
-  RefCountPtr<Array<Point> > pts = rcp(new Array<Point>());
-  RefCountPtr<Array<double> > wgts = rcp(new Array<double>()); 
-
-  quad_.getPoints(cellType, *pts, *wgts);
-  quadPtsForReferenceCell_.put(cellType, pts);
-
-  numQuadPtsForCellType_.put(cellType, pts->size());
-
-  RefCountPtr<Array<Array<Point> > > facetPts 
-    = rcp(new Array<Array<Point> >(numEvaluationCases()));
-  RefCountPtr<Array<Array<double> > > facetWgts 
-    = rcp(new Array<Array<double> >(numEvaluationCases()));
-  
-  for (int fc=0; fc<numEvaluationCases(); fc++)
+  if (!quadPtsForReferenceCell_.containsKey(cellType))
   {
-    if (cellType != maxCellType)
-    {
-      quad_.getFacetPoints(maxCellType, cellDim(), fc, 
-        (*facetPts)[fc], (*facetWgts)[fc]);
-    }
-    else
-    {
-      quad_.getPoints(maxCellType, (*facetPts)[fc], (*facetWgts)[fc]);
-    }
+    RefCountPtr<Array<Point> > pts = rcp(new Array<Point>());
+    RefCountPtr<Array<double> > wgts = rcp(new Array<double>()); 
+    
+    quad_.getPoints(cellType, *pts, *wgts);
+    quadPtsForReferenceCell_.put(cellType, pts);
+    
+    numQuadPtsForCellType_.put(cellType, pts->size());
   }
-  quadPtsReferredToMaxCell_.put(cellType, facetPts);
+
+  if (!isInternalBdry())
+  {
+    RefCountPtr<Array<Array<Point> > > facetPts 
+      = rcp(new Array<Array<Point> >(numEvaluationCases()));
+    RefCountPtr<Array<Array<double> > > facetWgts 
+      = rcp(new Array<Array<double> >(numEvaluationCases()));
+
+    for (int fc=0; fc<numEvaluationCases(); fc++)
+    {
+      if (cellType != maxCellType)
+      {
+        quad_.getFacetPoints(maxCellType, cellDim(), fc, 
+          (*facetPts)[fc], (*facetWgts)[fc]);
+      }
+      else
+      {
+        quad_.getPoints(maxCellType, (*facetPts)[fc], (*facetWgts)[fc]);
+      }
+    }
+    quadPtsReferredToMaxCell_.put(cellType, facetPts);
+  }
 }
 
 int QuadratureEvalMediator::numQuadPts(const CellType& ct) const 
@@ -739,7 +750,8 @@ void QuadratureEvalMediator::computePhysQuadPts() const
     double jFlops = CellJacobianBatch::totalFlops();
     SUNDANCE_MSG2(verb(), tab0 << "computing phys quad points");
     physQuadPts_.resize(0);
-    if (cellDim() != maxCellDim())
+    if (cellDim() != maxCellDim() && ElementIntegral::alwaysUseCofacets()
+      && !isInternalBdry())
     {
       Tabs tab1;
       SUNDANCE_MSG2(verb(), tab1 << "using cofacets");

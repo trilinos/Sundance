@@ -172,6 +172,7 @@ Assembler
     rqc_(),
     contexts_(),
     isBCRqc_(),
+    isInternalBdry_(),
     groups_(),
     mediators_(),
     evalExprs_(),
@@ -213,6 +214,7 @@ Assembler
     rqc_(),
     contexts_(),
     isBCRqc_(),
+    isInternalBdry_(),
     groups_(),
     mediators_(),
     evalExprs_(),
@@ -411,6 +413,11 @@ void Assembler::init(const Mesh& mesh,
     CellType maxCellType = mesh.cellType(mesh.spatialDim());
     QuadratureFamily quad(rqc.quad());
 
+    /* Detect internal boundaries. These need special handling */
+    bool isInternalBdry = detectInternalBdry(cellDim, rqc.domain());
+    isInternalBdry_.append(isInternalBdry);
+
+    SUNDANCE_MSG2(rqcVerb, tab12 << "isInternalBdry=" << isInternalBdry);
 
     /* Do setup for each required computation type */
     bool rqcUsed = false;
@@ -464,7 +471,7 @@ void Assembler::init(const Mesh& mesh,
       Array<RCP<IntegralGroup> > groups;
       grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
-        cellType, cellDim, quad, sparsity, groups);
+        cellType, cellDim, quad, sparsity, isInternalBdry, groups);
       grouper->setVerbosity(0,0,0);
       groups_[compType].append(groups);
 
@@ -539,6 +546,10 @@ void Assembler::init(const Mesh& mesh,
     CellType maxCellType = mesh.cellType(mesh.spatialDim());
     QuadratureFamily quad(rqc.quad());
 
+    /* Detect internal boundaries. These need special handling */
+    bool isInternalBdry = detectInternalBdry(cellDim, rqc.domain());
+    isInternalBdry_.append(isInternalBdry);
+
     /* Do setup for each required computation type */
     bool rqcUsed = false;
 
@@ -583,7 +594,7 @@ void Assembler::init(const Mesh& mesh,
       Array<RCP<IntegralGroup> > groups;
       grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
-        cellType, cellDim, quad, sparsity, groups);
+        cellType, cellDim, quad, sparsity, isInternalBdry, groups);
       grouper->setVerbosity(0,0,0);
       groups_[compType].append(groups);
       IntegrationCellSpecifier cellSpec 
@@ -606,6 +617,20 @@ void Assembler::init(const Mesh& mesh,
   }
 }
 
+bool Assembler::detectInternalBdry(int cellDim,
+  const CellFilter& filter) const
+{
+  int d = mesh_.spatialDim();
+  if (cellDim == d-1)
+  {
+    CellSet cells = filter.getCells(mesh_);
+    for (CellIterator c=cells.begin(); c!=cells.end(); c++)
+    {
+      if (mesh_.numMaxCofacets(cellDim, *c) > 1) return true;
+    }      
+  }
+  return false;
+}
 
 IntegrationCellSpecifier Assembler::whetherToUseCofacets(
   const Array<RCP<IntegralGroup> >& groups,
@@ -891,6 +916,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
 
   SUNDANCE_BANNER1(verb, tab, "Assembly loop");
 
+  SUNDANCE_MSG2(verb, tab << "computation type is " << compType); 
   /* Allocate space for the workset's list of cell local IDs */
   SUNDANCE_MSG2(verb, tab << "work set size is " << workSetSize()); 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
@@ -972,15 +998,6 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       << ", max cell type = " << maxCellType 
       << ", max cell dim = " << mesh_.spatialDim());
 
-    /* Find the unknowns and variations appearing on the current domain */
-    const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
-    const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(filter);
-
-    /* Prepare for evaluation on the current domain */
-    mediators_[r]->setCellType(cellType, maxCellType);    
-    const Evaluator* evaluator 
-      = evalExprs[r]->evaluator(contexts[r]).get();
-
 
     /* Determine whether we need to refer to maximal cofacets for 
      * some or all integrations and DOF mappings */
@@ -988,6 +1005,17 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       = rqcRequiresMaximalCofacets_.get(compType)[r];
     SUNDANCE_MSG2(rqcVerb, tab01 
       << "whether we need to refer to maximal cofacets: " << intCellSpec);
+
+    /* Find the unknowns and variations appearing on the current domain */
+    const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
+    const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(filter);
+
+    /* Prepare for evaluation on the current domain */
+    mediators_[r]->setIntegrationSpec(intCellSpec);
+    mediators_[r]->setCellType(cellType, maxCellType, isInternalBdry_[r]);    
+    const Evaluator* evaluator 
+      = evalExprs[r]->evaluator(contexts[r]).get();
+
 
 
     /* Loop over cells in batches of the work set size */
@@ -1027,7 +1055,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       }
 
       /* Register the workset with the mediator */
-      mediators_[r]->setCellBatch(intCellSpec, workSet);
+      mediators_[r]->setCellBatch(workSet);
       const CellJacobianBatch& JVol = mediators_[r]->JVol();
       const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
       const Array<int>& facetIndices = mediators_[r]->facetIndices();

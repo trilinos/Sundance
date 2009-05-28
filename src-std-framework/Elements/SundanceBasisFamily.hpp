@@ -252,6 +252,15 @@ Array<std::pair<int, int> > vectorDimStructure(const Array<BasisFamily>& basis);
 Array<std::pair<int, int> > vectorDimStructure(const BasisFamily& basis);
 
 
+/** \relates BasisFamily 
+ * Indicate whether members of a basis have support on a boundary only
+ * if their associated dofs live on the boundary. This will return true
+ * for Lagrange, false for P1NC, RT, Nedelec, and most other bases. 
+ *
+ * This is used to simplify boundary integrals.
+ */
+bool basisRestrictableToBoundary(const BasisFamily& b);
+
 
 }
 

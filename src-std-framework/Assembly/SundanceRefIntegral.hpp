@@ -90,6 +90,7 @@ public:
     const CellType& maxCellType,
     int dim, 
     const CellType& cellType,
+    bool isInternalBdry,
     int verb);
 
   /** Construct a reference one-form */
@@ -100,6 +101,7 @@ public:
     const BasisFamily& testBasis,
     int alpha,
     int testDerivOrder,
+    bool isInternalBdry,
     int verb);
 
   /** Construct a reference two-form */
@@ -113,6 +115,7 @@ public:
     const BasisFamily& unkBasis,
     int beta,
     int unkDerivOrder,
+    bool isInternalBdry,
     int verb);
 
   /** virtual dtor */

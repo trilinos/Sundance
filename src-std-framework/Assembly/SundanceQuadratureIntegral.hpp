@@ -60,6 +60,7 @@ public:
     int dim, 
     const CellType& cellType,
     const QuadratureFamily& quad,
+    bool isInternalBdry,
     int verb);
 
   /** Construct a one form to be computed by quadrature */
@@ -71,6 +72,7 @@ public:
     int alpha,
     int testDerivOrder,
     const QuadratureFamily& quad,
+    bool isInternalBdry,
     int verb);
 
   /** Construct a two-form to be computed by quadrature */
@@ -85,6 +87,7 @@ public:
     int beta,
     int unkDerivOrder,
     const QuadratureFamily& quad,
+    bool isInternalBdry,
     int verb);
 
   /** virtual dtor */

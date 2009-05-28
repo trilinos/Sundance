@@ -54,6 +54,7 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
     cellDim_(cellDim),
     cellType_(NullCell),
     maxCellType_(NullCell),
+    isInternalBdry_(false),
     cellLID_(),
     JVol_(rcp(new CellJacobianBatch())),
     JTrans_(rcp(new CellJacobianBatch())),
@@ -72,24 +73,32 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
 {;}
 
 void StdFwkEvalMediator::setCellType(const CellType& cellType,
-                               const CellType& maxCellType) 
+  const CellType& maxCellType,
+  bool isInternalBdry) 
 {
   cellType_=cellType; 
   maxCellType_ = maxCellType;
+  isInternalBdry_ = isInternalBdry;
   cacheIsValid() = false; 
   jCacheIsValid_=false;
   cofacetCellsAreReady_ = false;
 }
 
-void StdFwkEvalMediator::setCellBatch(IntegrationCellSpecifier intCellSpec,
-                                      const RefCountPtr<const Array<int> >& cellLID) 
+
+void StdFwkEvalMediator::setIntegrationSpec(
+  IntegrationCellSpecifier intCellSpec)
+{
+  intCellSpec_ = intCellSpec;
+}
+
+void StdFwkEvalMediator::setCellBatch(
+  const RefCountPtr<const Array<int> >& cellLID) 
 {
   cellLID_ = cellLID; 
   cacheIsValid() = false; 
   jCacheIsValid_=false;
   cofacetCellsAreReady_ = false;
   mesh_.getJacobians(cellDim(), *cellLID, *JVol_);
-  intCellSpec_ = intCellSpec;
   if (intCellSpec_!=NoTermsNeedCofacets) setupFacetTransformations();
 
   /* mark the function caches as invalid */

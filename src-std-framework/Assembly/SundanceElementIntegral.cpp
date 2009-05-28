@@ -51,16 +51,25 @@ static Time& transCreationTimer()
   return *rtn;
 }
 
+
+bool& ElementIntegral::alwaysUseCofacets()
+{
+  static bool rtn = true;
+  return rtn;
+}
+
 ElementIntegral::ElementIntegral(int spatialDim,
   const CellType& maxCellType,
   int dim, 
   const CellType& cellType,
+  bool isInternalBdry,
   int verb)
   : setupVerb_(verb),
     integrationVerb_(0),
     transformVerb_(0),
     spatialDim_(spatialDim),
     dim_(dim),
+    isInternalBdry_(isInternalBdry),
     nFacetCases_(1),
     testDerivOrder_(-1), 
     nRefDerivTest_(-1),
@@ -74,14 +83,15 @@ ElementIntegral::ElementIntegral(int spatialDim,
     beta_(),
     cellType_(cellType),
     maxCellType_(maxCellType),
-    evalCellType_(maxCellType),
+    evalCellType_(cellType),
     testBasis_(),
     unkBasis_()
 {
   /* if we're integrating a derivative along a facet, we need to refer back
    * to the maximal cell. */
-  if (dim != spatialDim)
+  if (alwaysUseCofacets() && dim != spatialDim)
   {
+    evalCellType_ = maxCellType_;
     nFacetCases_ = numFacets(maxCellType, dim);
   }
 }
@@ -93,12 +103,14 @@ ElementIntegral::ElementIntegral(int spatialDim,
   const BasisFamily& testBasis,
   int alpha,
   int testDerivOrder,
+  bool isInternalBdry,
   int verb)
   : setupVerb_(verb),
     integrationVerb_(0),
     transformVerb_(0),
     spatialDim_(spatialDim),
     dim_(dim),
+    isInternalBdry_(isInternalBdry),
     nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
@@ -112,17 +124,31 @@ ElementIntegral::ElementIntegral(int spatialDim,
     beta_(-1),
     cellType_(cellType),
     maxCellType_(maxCellType),
-    evalCellType_(maxCellType),
+    evalCellType_(cellType),
     testBasis_(testBasis),
     unkBasis_()
 {
-  /* if we're integrating a derivative along a facet, we need to refer back
+  /* if we're integrating a derivative along a facet, we may need to refer back
    * to the maximal cell. */
+  bool okToRestrictTestToBdry = basisRestrictableToBoundary(testBasis);
+    
   if (dim != spatialDim)
   {
-    nFacetCases_ = numFacets(maxCellType, dim);
-    nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
-    nNodes_ = nNodesTest_;
+    if (isInternalBdry)
+    {
+      TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
+    }
+    else if (alwaysUseCofacets() || testDerivOrder>0)
+    {
+      evalCellType_ = maxCellType_;
+      nFacetCases_ = numFacets(maxCellType, dim);
+      nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
+      nNodes_ = nNodesTest_;
+    }
+    else
+    {
+      TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
+    }
   }
 }
 
@@ -138,12 +164,14 @@ ElementIntegral::ElementIntegral(int spatialDim,
   const BasisFamily& unkBasis,
   int beta,
   int unkDerivOrder,
+  bool isInternalBdry,
   int verb)
   : setupVerb_(verb),
     integrationVerb_(0),
     transformVerb_(0),
     spatialDim_(spatialDim),
     dim_(dim),
+    isInternalBdry_(isInternalBdry),
     nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
@@ -157,20 +185,35 @@ ElementIntegral::ElementIntegral(int spatialDim,
     beta_(beta),
     cellType_(cellType),
     maxCellType_(maxCellType),
-    evalCellType_(maxCellType),
+    evalCellType_(cellType),
     testBasis_(testBasis),
     unkBasis_(unkBasis)
 {
-  /* if we're integrating a derivative along a facet, we need to refer back
+  /* if we're integrating a derivative along a facet, we may need to refer back
    * to the maximal cell. */
-  if (dim != spatialDim) 
-  {
-    nFacetCases_ = numFacets(maxCellType, dim);
-    nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
-    nNodesUnk_ = unkBasis.nReferenceDOFs(maxCellType, maxCellType);
-    nNodes_ = nNodesTest_ * nNodesUnk_;
-  }
+  bool okToRestrictTestToBdry = basisRestrictableToBoundary(testBasis);
+  bool okToRestrictUnkToBdry = basisRestrictableToBoundary(unkBasis);
 
+
+  if (dim != spatialDim)
+  {
+    if (isInternalBdry)
+    {
+      TEST_FOR_EXCEPT(!(okToRestrictTestToBdry && okToRestrictUnkToBdry));   
+    }
+    else if (alwaysUseCofacets() || testDerivOrder>0 || unkDerivOrder>0)
+    {
+      evalCellType_ = maxCellType_;
+      nFacetCases_ = numFacets(maxCellType, dim);
+      nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
+      nNodesUnk_ = unkBasis.nReferenceDOFs(maxCellType, maxCellType);
+      nNodes_ = nNodesTest_ * nNodesUnk_;
+    }
+    else
+    {
+      TEST_FOR_EXCEPT(okToRestrictTestToBdry != okToRestrictUnkToBdry);
+    }
+  }
 }
 
 

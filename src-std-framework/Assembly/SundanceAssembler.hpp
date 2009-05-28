@@ -69,6 +69,7 @@ using namespace SundanceCore;
 
 class DiscreteSpace;
 class DiscreteFunction;
+class CellFilter;
 
 namespace Internal
 {
@@ -194,6 +195,9 @@ private:
     const RefCountPtr<EquationSet>& eqn);
 
   /** */
+  bool detectInternalBdry(int cellDim, const CellFilter& filter) const ;
+
+  /** */
   void displayEvaluationResults(
     const EvalContext& context, 
     const EvaluatableExpr* evalExpr, 
@@ -266,6 +270,8 @@ private:
   Map<ComputationType, Array<EvalContext> > contexts_;
 
   Array<int> isBCRqc_;
+
+  Array<int> isInternalBdry_;
 
   Map<ComputationType, Array<Array<RCP<IntegralGroup> > > > groups_;
 
