@@ -55,6 +55,7 @@ APPEND_SET(HEADERS
   Utilities/SundanceSet.hpp
   Utilities/SundanceStdMathFunctors.hpp
   Utilities/SundanceTabs.hpp
+  Utilities/SundanceTypeUtils.hpp
   Utilities/SundanceUnaryFunctor.hpp
   Utilities/SundanceVersionString.hpp
   Utilities/SundanceWatchFlag.hpp

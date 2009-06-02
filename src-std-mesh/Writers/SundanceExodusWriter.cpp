@@ -250,23 +250,26 @@ void ExodusWriter::writeMesh(int exoid,
   cout << "writing node sets" << endl;
 
   
-  /* write the node sets */
-  Array<int> nsDistPerSet(nsID.size(), 0);
-  Array<int> nsDistPtr(nsID.size(), 0);
-  Array<int> emptyDist(1, 0);
+  if (nsID.size() > 0U)
+  {
+    /* write the node sets */
+    Array<int> nsDistPerSet(nsID.size(), 0);
+    Array<int> nsDistPtr(nsID.size(), 0);
+    Array<int> emptyDist(1, 0);
 
-  offset(*allNodes);
+    offset(*allNodes);
   
-  ierr = ex_put_concat_node_sets( exoid,
-    (int*) &(nsID[0]),
-    (int*) &(nNodesPerSet[0]),
-    &(nsDistPerSet[0]),
-    (int*) &(nsNodePtr[0]),
-    &(nsDistPtr[0]),
-    &((*allNodes)[0]),
-    &(emptyDist[0]));
+    ierr = ex_put_concat_node_sets( exoid,
+      (int*) &(nsID[0]),
+      (int*) &(nNodesPerSet[0]),
+      &(nsDistPerSet[0]),
+      (int*) &(nsNodePtr[0]),
+      &(nsDistPtr[0]),
+      &((*allNodes)[0]),
+      &(emptyDist[0]));
 
-  TEST_FOR_EXCEPT(ierr < 0);
+    TEST_FOR_EXCEPT(ierr < 0);
+  }
 #else
   TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
 #endif
@@ -334,74 +337,78 @@ void ExodusWriter::writeFields(int exoid,
 
   
 
-
-  int ierr = ex_put_var_param(exoid, "M", nNodesetFuncs);
-  TEST_FOR_EXCEPT(ierr < 0);
-
-  ierr = ex_put_nset_var_tab(exoid, nNodesets, 
-    nNodesetFuncs, &(nodesetFuncTruthTable[0]));
-  TEST_FOR_EXCEPT(ierr < 0);
-
-  ierr = ex_put_var_param(exoid, "N", nNodalFuncs);
-  TEST_FOR_EXCEPT(ierr < 0);
-
-  Array<std::string> nsFuncNames(nNodesetFuncs);
-  Array<const char*> nsNameP;
-
-  for (int i=0; i<nNodesetFuncs; i++)
+  int ierr;
+  if (nNodesets > 0)
   {
-    nsFuncNames[i] = pointScalarNames()[nsFuncs[i]];
-  }
-  getCharpp(nsFuncNames, nsNameP);  
-  
-  ierr = ex_put_var_names(exoid, "M", nNodesetFuncs, (char**)&(nsNameP[0]));
-  TEST_FOR_EXCEPT(ierr < 0);
+    ierr = ex_put_var_param(exoid, "M", nNodesetFuncs);
+    TEST_FOR_EXCEPT(ierr < 0);
+    
+    ierr = ex_put_nset_var_tab(exoid, nNodesets, 
+      nNodesetFuncs, &(nodesetFuncTruthTable[0]));
+    TEST_FOR_EXCEPT(ierr < 0);
+    
+    ierr = ex_put_var_param(exoid, "N", nNodalFuncs);
+    TEST_FOR_EXCEPT(ierr < 0);
 
+    Array<std::string> nsFuncNames(nNodesetFuncs);
+    Array<const char*> nsNameP;
+    
+    for (int i=0; i<nNodesetFuncs; i++)
+    {
+      nsFuncNames[i] = pointScalarNames()[nsFuncs[i]];
+    }
+    getCharpp(nsFuncNames, nsNameP);  
+    
+    ierr = ex_put_var_names(exoid, "M", nNodesetFuncs, (char**)&(nsNameP[0]));
+    TEST_FOR_EXCEPT(ierr < 0);
+  }
 
 
   Array<std::string> nodalFuncNames(nNodalFuncs);
   Array<const char*> nNameP;
-
+  
   for (int i=0; i<nNodalFuncs; i++)
   {
     nodalFuncNames[i] = pointScalarNames()[omnipresentFuncs[i]];
   }
   getCharpp(nodalFuncNames, nNameP);  
   
-  ierr = ex_put_var_names(exoid, "N", nNodalFuncs, (char**)&(nNameP[0]));
-  TEST_FOR_EXCEPT(ierr < 0);
-
-  Array<double> funcVals;
-  Array<int> nodeID(mesh().numCells(0));
-  for (int i=0; i<mesh().numCells(0); i++) nodeID[i]=i;
-  
-  for (int i=0; i<nNodalFuncs; i++)
+  if (nNodalFuncs > 0)
   {
-    int f = omnipresentFuncs[i];
-    pointScalarFields()[f]->getDataBatch(0, nodeID, tuple(f), funcVals);
-    int t = 1;
-    int numNodes = funcVals.size();
-    ierr = ex_put_nodal_var(exoid, t, i+1, numNodes, &(funcVals[0]));
+    ierr = ex_put_var_names(exoid, "N", nNodalFuncs, (char**)&(nNameP[0]));
     TEST_FOR_EXCEPT(ierr < 0);
-  }
-
-  for (int i=0; i<nNodesetFuncs; i++)
-  {
-    const Array<int>& ns = nsFuncNodesets[i];
-    int fid = nsFuncs[i];
-
-    for (unsigned int s=0; s<ns.size(); s++)
+    
+    Array<double> funcVals;
+    Array<int> nodeID(mesh().numCells(0));
+    for (int i=0; i<mesh().numCells(0); i++) nodeID[i]=i;
+    
+    for (int i=0; i<nNodalFuncs; i++)
     {
-      const Array<int>& nodes = *(nodesForNodeset[ns[s]]);
-      pointScalarFields()[fid]->getDataBatch(0, nodes, tuple(fid), funcVals);
+      int f = omnipresentFuncs[i];
+      pointScalarFields()[f]->getDataBatch(0, nodeID, tuple(f), funcVals);
       int t = 1;
       int numNodes = funcVals.size();
-      int id = nsID[ns[s]];
-      ierr = ex_put_nset_var(exoid, t, i+1, id, numNodes, &(funcVals[0]));
+      ierr = ex_put_nodal_var(exoid, t, i+1, numNodes, &(funcVals[0]));
       TEST_FOR_EXCEPT(ierr < 0);
     }
+    
+    for (int i=0; i<nNodesetFuncs; i++)
+    {
+      const Array<int>& ns = nsFuncNodesets[i];
+      int fid = nsFuncs[i];
+      
+      for (unsigned int s=0; s<ns.size(); s++)
+      {
+        const Array<int>& nodes = *(nodesForNodeset[ns[s]]);
+        pointScalarFields()[fid]->getDataBatch(0, nodes, tuple(fid), funcVals);
+        int t = 1;
+        int numNodes = funcVals.size();
+        int id = nsID[ns[s]];
+        ierr = ex_put_nset_var(exoid, t, i+1, id, numNodes, &(funcVals[0]));
+        TEST_FOR_EXCEPT(ierr < 0);
+      }
+    }
   }
-
 #else
   TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
 #endif
@@ -439,22 +446,22 @@ void ExodusWriter::writeParallelInfo(const string& parfile) const
 
   os << nPts << std::endl;
   for (int i=0; i<nPts; i++)
-    {
-      os << i << " " << mesh().mapLIDToGID(0,i) 
-         << " " << mesh().ownerProcID(0,i) << std::endl;
-    }
+  {
+    os << i << " " << mesh().mapLIDToGID(0,i) 
+       << " " << mesh().ownerProcID(0,i) << std::endl;
+  }
 
   os << nCells << std::endl;
   for (int c=0; c<nCells; c++)
-    {
-      os << c << " " << mesh().mapLIDToGID(dim,c) 
-         << " " << mesh().ownerProcID(dim,c) << std::endl;
-    }
+  {
+    os << c << " " << mesh().mapLIDToGID(dim,c) 
+       << " " << mesh().ownerProcID(dim,c) << std::endl;
+  }
 
   for (int i=0; i<comments().length(); i++)
-    {
-      os << "# " << comments()[i] << std::endl;
-    }
+  {
+    os << "# " << comments()[i] << std::endl;
+  }
 }
 
 

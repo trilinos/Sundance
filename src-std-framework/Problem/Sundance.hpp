@@ -94,9 +94,6 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceLagrange.hpp"
-#include "SundanceFIATLagrange.hpp"
-#include "SundanceFIATP1NC.hpp"
-#include "SundanceP1NC.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 
 /* Spectral */

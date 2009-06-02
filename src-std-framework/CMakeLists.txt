@@ -58,6 +58,7 @@ APPEND_SET(HEADERS
   Elements/SundanceQuadratureType.hpp
   Elements/SundanceQuadratureTypeBase.hpp
   Elements/SundanceRaviartThomas.hpp
+  Elements/SundanceTensorBasisBase.hpp
   Elements/SundanceTestFunction.hpp
   Elements/SundanceTestFunctionData.hpp
   Elements/SundanceTetQuadrature.hpp

@@ -4,7 +4,9 @@ INCLUDE(AddTestBatch)
 
 SET(DisabledTests
   Poisson3D
+  TwoZoneDiscFunc
   RefinementTest3D
+  FunctionalTest3D 
 )
 
 SET(SerialTests
@@ -17,7 +19,6 @@ SET(SerialTests
         NonlinearPartialDomain 
         AToCDensitySample
         FOSLSMagnetostatics2D
-        FunctionalTest3D 
         FunctionalTest 
 )
 
