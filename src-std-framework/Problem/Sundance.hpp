@@ -68,6 +68,8 @@
 #include "SundancePartitionedLineMesher.hpp"
 #include "SundanceExtrusionMeshTransformation.hpp"
 #include "SundancePartitionedRectangleMesher.hpp"
+#include "SundanceSerialPartitionerBase.hpp"
+#include "SundanceFileIOChacoPartitioner.hpp"
 #include "SundanceTriangleMeshReader.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
 #include "SundanceExodusMeshReader.hpp"
@@ -88,6 +90,7 @@
 #include "SundanceVerboseFieldWriter.hpp"
 #include "SundanceTriangleWriter.hpp"
 #include "SundanceVTKWriter.hpp"
+#include "SundanceExodusWriter.hpp"
 
 
 /* FE  */
