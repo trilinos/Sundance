@@ -94,6 +94,11 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
         {
           XMLObject pc("Piece");
           string pfile = filename + Teuchos::toString(p) + ".vtu";
+          size_t pos = pfile.find_last_of("/");
+          if (pos != string::npos)
+          {
+            pfile = pfile.substr(pos+1);
+          }
           pc.addAttribute("Source", pfile);
           os << pc << std::endl;
         }
