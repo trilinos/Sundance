@@ -67,10 +67,12 @@ namespace SundanceCore
 
       /** Write a simple text description suitable 
        * for output to a terminal */
-      virtual ostream& toText(ostream& os, bool paren) const {os<<name();}
+      virtual ostream& toText(ostream& os, bool paren) const 
+        {os<<name(); return os;}
       
       /** Write in a form suitable for LaTeX formatting */
-      virtual ostream& toLatex(ostream& os, bool paren) const {os<<name();}
+      virtual ostream& toLatex(ostream& os, bool paren) const 
+        {os<<name(); return os;}
 
     
       /** */
