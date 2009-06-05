@@ -64,7 +64,9 @@ InhomogeneousNodalDOFMap
     elemStructure_(),
     nodeStructure_()
 {
-  SUNDANCE_LEVEL1("setup", "in InhomogeneousNodalDOFMap ctor");
+  int verb = 0;
+  SUNDANCE_MSG1(verb, "in InhomogeneousNodalDOFMap ctor");
+  SUNDANCE_MSG2(verb, "func set to domain map " << funcSetToDomainMap);
 
   /* count the total number of functions across all subdomains */
   Set<int> allFuncs;
@@ -79,7 +81,7 @@ InhomogeneousNodalDOFMap
 
   
   nTotalFuncs_ = allFuncs.size();
-  SUNDANCE_LEVEL2("setup", "found " << nTotalFuncs_ << " functions");
+  SUNDANCE_MSG2(verb, "found " << nTotalFuncs_ << " functions");
   
 
   /* get flat arrays of subdomains and function arrays */
@@ -109,7 +111,7 @@ InhomogeneousNodalDOFMap
 
   /* determine the functions appearing at each node */
 
-  funcIndexWithinNodeFuncSet_.resize(nTotalFuncs_);
+
 
   Array<Array<int> > cellLIDs(subdomains.size());
   Array<Array<int> > facetLIDs(subdomains.size());
@@ -120,7 +122,9 @@ InhomogeneousNodalDOFMap
   {
     int d = subdomains[r].dimension(mesh);
     CellSet cells = subdomains[r].getCells(mesh);
-
+    SUNDANCE_MSG2(verb, "domain " << subdomains[r] << " has functions "
+      << funcSets[r]);
+      
     for (CellIterator c=cells.begin(); c!=cells.end(); c++)
     {
       int cellLID = *c;
@@ -181,8 +185,12 @@ InhomogeneousNodalDOFMap
     nodeToFuncSetIndexMap_[n] = funcComboIndex;
   }
 
+  SUNDANCE_MSG2(verb, "nodal func sets = " << nodalFuncSets_);
+
   nodeDofs_.resize(nodalFuncSets_.size());
   nodeStructure_.resize(nodalFuncSets_.size());
+  funcIndexWithinNodeFuncSet_.resize(nodalFuncSets_.size());
+
   for (unsigned int f=0; f<nodalFuncSets_.size(); f++)
   {
     Array<int> funcs = nodalFuncSets_[f].elements();

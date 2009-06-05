@@ -33,8 +33,8 @@ int main(int argc, char** argv)
       VectorType<double> vecType = new EpetraVectorType();
 
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 32;
-      int ny = 32;
+      int nx = 64;
+      int ny = 64;
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx, 
         0.0,  1.0, ny, npy, meshType);
       Mesh mesh = mesher.getMesh();
@@ -52,13 +52,10 @@ int main(int argc, char** argv)
       CellFilter topRight = faces.subset(new TopRightTest());
       CellFilter bottomRight = faces.subset(new BottomRightTest());
 
-      CellFilter top = faces.subset(new TopPointTest());
-      CellFilter bottom = faces.subset(new BottomPointTest());
-
       BasisFamily basis = new Lagrange(1);
       Array<CellFilter> domains(2);
-      domains[0] = top;
-      domains[1] = bottom;
+      domains[0] = topZone;
+      domains[1] = bottomZone;
       DiscreteSpace discSpace(mesh, List(basis, basis), domains, vecType);
 
       Expr x = new CoordExpr(0);
@@ -74,7 +71,10 @@ int main(int argc, char** argv)
       w.addField("y", new ExprFieldWrapper(u[1]));
       w.write();
 
-      double errorSq = 0.0;
+      Expr errExpr = Integral(topZone, pow(u[0]-x, 2), new GaussianQuadrature(6))
+        + Integral(bottomZone, pow(u[1]-y, 2), new GaussianQuadrature(6));
+
+      double errorSq = evaluateIntegral(mesh, errExpr);
       double tol = 1.0e-6;
       Sundance::passFailTest(::sqrt(errorSq), tol);
 

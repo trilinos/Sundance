@@ -82,11 +82,9 @@ class Assembler;
         bool partitionBCs = false);
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
       /** */
       NonlinearProblem(const RefCountPtr<Assembler>& assembler, 
                        const Expr& u0);
-#endif
 
       /** Compute the residual and Jacobian at the current evaluation point */
       LinearOperator<double> computeJacobianAndFunction(Vector<double>& functionValue) const ;
@@ -109,11 +107,12 @@ class Assembler;
 
       /** Create the Jacobian object, but don't fill it in. */
       LinearOperator<double> allocateJacobian() const ;
-      
+
+      /** Set an initial guess */
+      void setInitialGuess(const Expr& u0New);
 
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
       /* Handle boilerplate */
       GET_RCP(TSFExtended::NonlinearOperatorBase<double>);
@@ -131,7 +130,6 @@ class Assembler;
 
       /** */
       mutable DiscreteFunction* discreteU0_;
-#endif /* DOXYGEN_DEVELOPER_ONLY */
       
     };
 }

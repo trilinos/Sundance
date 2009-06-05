@@ -258,7 +258,6 @@ Mesh ExodusMeshReader::fillMesh() const
   {
     ierr = ex_get_side_set_ids(exoID, &(ssIDs[0]));
   }
-  cout << "side sets are" << ssIDs << endl;
   TEST_FOR_EXCEPT(ierr < 0);
   for (int ss=0; ss<numSideSets; ss++)
   {

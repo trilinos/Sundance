@@ -180,8 +180,15 @@ TSFExtended::Vector<double> NonlinearProblem::getInitialGuess() const
   
   Vector<double> u0 = discreteU0_->getVector();
 
-
   return u0;
+}
+
+void NonlinearProblem::setInitialGuess(const Expr& u0New) 
+{
+  const DiscreteFunction* in = DiscreteFunction::discFunc(u0New);
+  TEST_FOR_EXCEPT(in==0);
+  setEvalPt(in->getVector().copy());
+  discreteU0_->setVector(currentEvalPt());
 }
 
 
