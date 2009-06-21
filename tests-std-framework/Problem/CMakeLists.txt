@@ -6,11 +6,11 @@ SET(DisabledTests
   RefinementTest3D
   FunctionalTest3D 
   transientOneZoneEddy2D
-  Poisson3D
 )
 
 SET(SerialTests
         PoissonOnDisk 
+        Poisson3D
         BesselTest2D 
         Coupled2D
         Kepler 

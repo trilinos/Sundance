@@ -33,6 +33,7 @@
 #include "SundanceLabelCellPredicate.hpp"
 #include "SundanceExodusNetCDFMeshReader.hpp"
 #include "SundanceExodusMeshReader.hpp"
+#include "SundanceElementIntegral.hpp"
 
 using SundanceCore::List;
 /** 
@@ -85,6 +86,7 @@ int main(int argc, char** argv)
 		{
       int depth = 0;
       bool useCCode = false;
+      SundanceStdFwk::Internal::ElementIntegral::alwaysUseCofacets() = false;
       Sundance::clp().setOption("depth", &depth, "expression depth");
       Sundance::clp().setOption("C", "symb", &useCCode, "Code type (C or symbolic)");
       Sundance::init(&argc, &argv);
