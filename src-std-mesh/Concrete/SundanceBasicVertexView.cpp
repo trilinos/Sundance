@@ -24,6 +24,18 @@ string VertexView::toString() const
  */
 int VertexView::hashCode() const
 {
+  int rtn = 0;
+      int* p = *base_ + offset_*length_;
+
+      for (int i=0; i<length_; i++)
+        {
+          rtn += p[i];
+        }
+
+      return rtn;
+
+#ifdef BLARF
+      // fails with sign int
   int* p = *base_ + offset_*length_;
 
   unsigned char* key = reinterpret_cast<unsigned char*>(p);
@@ -43,4 +55,5 @@ int VertexView::hashCode() const
   hash ^= (hash >> 11);
   hash += (hash << 15);
   return hash;
+#endif
 }
