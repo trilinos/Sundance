@@ -66,17 +66,21 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
     {
       Tabs tabs;
 
-      SUNDANCE_VERB_LOW(tabs << "initializing product evaluator for " 
-                        << expr->toString());
+      SUNDANCE_MSG1(context.setupVerbosity(),
+        tabs << "initializing product evaluator for " 
+        << expr->toString());
 
-      SUNDANCE_VERB_MEDIUM(tabs << "return sparsity " << *(this->sparsity)());
+      SUNDANCE_MSG2(context.setupVerbosity(),
+        tabs << "return sparsity " << *(this->sparsity)());
 
-      SUNDANCE_VERB_MEDIUM(tabs << "left sparsity " << std::endl 
+      SUNDANCE_MSG2(context.setupVerbosity(),
+        tabs << "left sparsity " << std::endl 
         << tabs << *(leftSparsity()) << std::endl
         << tabs << "right sparsity " << std::endl 
         << tabs << *(rightSparsity()));
   
-      SUNDANCE_VERB_HIGH(tabs << "left vector index map " 
+      SUNDANCE_MSG3(context.setupVerbosity(),
+        tabs << "left vector index map " 
                          << leftEval()->vectorIndexMap() << std::endl
                          << tabs << "right vector index map " 
                          << rightEval()->vectorIndexMap() << std::endl
@@ -93,7 +97,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           Tabs tab0;
           const MultipleDeriv& d = this->sparsity()->deriv(i);
 
-          SUNDANCE_VERB_MEDIUM(tabs << std::endl 
+          SUNDANCE_MSG2(context.setupVerbosity(),
+            tabs << std::endl 
             << tabs << "finding rules for deriv " << d);
 
           int order = d.order();
@@ -103,7 +108,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           resultIsConstant_[order].append(resultIsConstant);
           if (resultIsConstant)
             {
-              SUNDANCE_VERB_HIGH(tab0 << std::endl 
+              SUNDANCE_MSG3(context.setupVerbosity(),
+                tab0 << std::endl 
                 << tab0 << "result will be in constant index " << constResultIndex);
               resultIndex_[order].append(constResultIndex);
               addConstantIndex(i, constResultIndex);
@@ -111,7 +117,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
             }
           else
             {
-              SUNDANCE_VERB_HIGH(tab0 << std::endl 
+              SUNDANCE_MSG3(context.setupVerbosity(),
+                tab0 << std::endl 
                 << tab0 << "result will be in constant index " << vecResultIndex);
               resultIndex_[order].append(vecResultIndex);
               addVectorIndex(i, vecResultIndex);
@@ -153,7 +160,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
               /* We can write onto left vector */
               hasVectorWorkspace = true;
               workspaceIndex = leftEval()->vectorIndexMap().get(dnLeftIndex);       
-              SUNDANCE_VERB_HIGH(tab0 << "using left as workspace");
+              SUNDANCE_MSG3(context.setupVerbosity(),
+                tab0 << "using left as workspace");
               workspaceIsLeft = true;
               int d0RightIndex = rightSparsity()->getIndex(MultipleDeriv());
               bool d0RightIsConst = rightSparsity()->state(d0RightIndex)==ConstantDeriv;
@@ -178,7 +186,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
               hasVectorWorkspace = true;
               workspaceIndex = rightEval()->vectorIndexMap().get(dnRightIndex); 
               workspaceIsLeft = false;
-              SUNDANCE_VERB_HIGH(tab0 << "using right as workspace");
+              SUNDANCE_MSG3(context.setupVerbosity(),
+                tab0 << "using right as workspace");
               int d0LeftIndex = leftSparsity()->getIndex(MultipleDeriv());
               bool d0LeftIsConst = leftSparsity()->state(d0LeftIndex)==ConstantDeriv;
               workspaceCoeffIsConstant = d0LeftIsConst;
@@ -207,14 +216,14 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
                 {
                   wsDeriv = rightSparsity()->deriv(dnRightIndex);
                 }
-              SUNDANCE_VERB_MEDIUM(tab0 << "has workspace vector: "
+              SUNDANCE_MSG2(context.setupVerbosity(), tab0 << "has workspace vector: "
                                    << wSide << " deriv= " 
                                    << wsDeriv
                                    << ", coeff index= " << workspaceCoeffIndex);
             }
           else
             {
-              SUNDANCE_VERB_MEDIUM(tab0 << "has no workspace vector");
+              SUNDANCE_MSG2(context.setupVerbosity(), tab0 << "has no workspace vector");
             }
 
           hasWorkspace_[order].append(hasVectorWorkspace);
@@ -225,7 +234,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
       
           ProductRulePerms perms;
           d.productRulePermutations(perms);
-          SUNDANCE_VERB_EXTREME(tabs << "product rule permutations " << perms);
+          SUNDANCE_MSG4(context.setupVerbosity(),
+            tabs << "product rule permutations " << perms);
 
           Array<Array<int> > ccTerms;
           Array<Array<int> > cvTerms;
@@ -257,8 +267,10 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
               int iRight = rightSparsity()->getIndex(dRight);
 
               if (iLeft==-1 || iRight==-1) continue;
-              SUNDANCE_VERB_EXTREME(tab1 << "left deriv=" << dLeft);
-              SUNDANCE_VERB_EXTREME(tab1 << "right deriv=" << dRight);
+              SUNDANCE_MSG4(context.setupVerbosity(),
+                tab1 << "left deriv=" << dLeft);
+              SUNDANCE_MSG4(context.setupVerbosity(),
+                tab1 << "right deriv=" << dRight);
 
               bool leftIsConst = leftSparsity()->state(iLeft)==ConstantDeriv;
               bool rightIsConst = rightSparsity()->state(iRight)==ConstantDeriv;
@@ -266,21 +278,25 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
               if (leftIsConst)
                 {
                   Tabs tab2;
-                  SUNDANCE_VERB_EXTREME(tab2 << "left is const");
+                  SUNDANCE_MSG4(context.setupVerbosity(),
+                    tab2 << "left is const");
                   int leftIndex = leftEval()->constantIndexMap().get(iLeft);
                   if (rightIsConst)
                     {
-                      SUNDANCE_VERB_EXTREME(tab2 << "right is const");
+                      SUNDANCE_MSG4(context.setupVerbosity(),
+                        tab2 << "right is const");
                       int rightIndex = rightEval()->constantIndexMap().get(iRight);
                       ccTerms.append(tuple(leftIndex, rightIndex, multiplicity));
                     }
                   else
                     {
-                      SUNDANCE_VERB_EXTREME(tab2 << "right is vec");
+                      SUNDANCE_MSG4(context.setupVerbosity(),
+                        tab2 << "right is vec");
                       int rightIndex = rightEval()->vectorIndexMap().get(iRight);
                       if (!hasVectorWorkspace && !hasStartingVector)
                         {
-                          SUNDANCE_VERB_EXTREME(tab1 << "found c-v starting vec");
+                          SUNDANCE_MSG4(context.setupVerbosity(),
+                            tab1 << "found c-v starting vec");
                           startingVector = tuple(leftIndex, rightIndex, 
                                                  multiplicity);
                           hasStartingVector = true;
@@ -288,7 +304,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
                         }
                       else
                         {
-                          SUNDANCE_VERB_EXTREME(tab1 << "found c-v term");
+                          SUNDANCE_MSG4(context.setupVerbosity(),
+                            tab1 << "found c-v term");
                           cvTerms.append(tuple(leftIndex, rightIndex, 
                                                multiplicity));
                         }
@@ -297,15 +314,18 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
               else
                 {
                   Tabs tab2;
-                  SUNDANCE_VERB_EXTREME(tab2 << "left is vec");
+                  SUNDANCE_MSG4(context.setupVerbosity(),
+                    tab2 << "left is vec");
                   int leftIndex = leftEval()->vectorIndexMap().get(iLeft);
                   if (rightIsConst)
                     {
-                      SUNDANCE_VERB_EXTREME(tab2 << "right is const");
+                      SUNDANCE_MSG4(context.setupVerbosity(),
+                        tab2 << "right is const");
                       int rightIndex = rightEval()->constantIndexMap().get(iRight);
                       if (!hasVectorWorkspace && !hasStartingVector)
                         {
-                          SUNDANCE_VERB_EXTREME(tab1 << "found v-c starting vec");
+                          SUNDANCE_MSG4(context.setupVerbosity(),
+                            tab1 << "found v-c starting vec");
                           startingVector = tuple(leftIndex, rightIndex, 
                                                  multiplicity);
                           hasStartingVector = true;
@@ -313,18 +333,21 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
                         }
                       else
                         {
-                          SUNDANCE_VERB_EXTREME(tab1 << "found v-c term");
+                          SUNDANCE_MSG4(context.setupVerbosity(),
+                            tab1 << "found v-c term");
                           vcTerms.append(tuple(leftIndex, rightIndex, 
                                                multiplicity));
                         }
                     }
                   else
                     {
-                      SUNDANCE_VERB_EXTREME(tab2 << "right is vec");
+                      SUNDANCE_MSG4(context.setupVerbosity(),
+                        tab2 << "right is vec");
                       int rightIndex = rightEval()->vectorIndexMap().get(iRight);
                       if (!hasVectorWorkspace && !hasStartingVector)
                         {
-                          SUNDANCE_VERB_EXTREME(tab1 << "found v-v starting vec");
+                          SUNDANCE_MSG4(context.setupVerbosity(),
+                            tab1 << "found v-v starting vec");
                           startingVector = tuple(leftIndex, rightIndex, 
                                                  multiplicity);
                           hasStartingVector = true;
@@ -332,7 +355,8 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
                         }
                       else
                         {
-                          SUNDANCE_VERB_EXTREME(tab1 << "found v-v term");
+                          SUNDANCE_MSG4(context.setupVerbosity(),
+                            tab1 << "found v-v term");
                           vvTerms.append(tuple(leftIndex, rightIndex, 
                                                multiplicity));
                         }
@@ -352,11 +376,11 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
               Out::os() << tab0 << "deriv " << i << " order=" << order ;
               if (resultIsConstant)
                 {
-                  Out::os() << " constant result ";
+                  Out::os() << " constant result, index= ";
                 }
               else
                 {
-                  Out::os() << " vector result ";
+                  Out::os() << " vector result, index= ";
                 }
               Out::os() << resultIndex_[order] << std::endl;
               {
@@ -385,7 +409,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
       TEST_FOR_EXCEPTION(true, RuntimeError, 
                          "exception detected in ProductEvaluator: expr="
                          << expr->toString() << std::endl
-                         << "exception=" << e.what());
+                        << "exception=" << e.what());
     }
 }
 

@@ -31,8 +31,6 @@
 #ifndef SUNDANCE_COMBINATORIALUTILS_H
 #define SUNDANCE_COMBINATORIALUTILS_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 #include "SundanceMultiSet.hpp"
@@ -275,7 +273,7 @@ namespace SundanceUtils
 
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
+
 
 #endif
 

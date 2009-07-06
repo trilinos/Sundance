@@ -58,6 +58,7 @@ void doit(const Expr& e,
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
   mgr.setRegion(region);
+  mgr.setVerbosity(5);
 
   static RefCountPtr<AbstractEvalMediator> mediator 
     = rcp(new StringEvalMediator());
@@ -70,6 +71,9 @@ void doit(const Expr& e,
   Expr fixed;
   Expr fixed0;
 
+  Out::os() << "params = " << unkParams << endl;
+  Out::os() << "param vals = " << paramVals << endl;
+
   DerivSet d = SymbPreprocessor::setupSensitivities(e[0], 
                                                     tests,
                                                     unks,
@@ -80,23 +84,26 @@ void doit(const Expr& e,
                                                     fixed0,
                                                     fixed0,
                                                     fixed0,
-                                                    region);
+    region,
+    Sensitivities);
 
   Tabs tab;
-  cerr << tab << *ev->sparsitySuperset(region) << endl;
-  //  ev->showSparsity(cerr, region);
+  Out::os() << tab << "done setup" << endl;
+  Out::os() << tab << *ev->sparsitySuperset(region) << endl;
+  //  ev->showSparsity(Out::os(), region);
 
   // RefCountPtr<EvalVectorArray> results;
 
   Array<double> constantResults;
   Array<RefCountPtr<EvalVector> > vectorResults;
 
+  Out::os() << tab << "starting eval" << endl;
   ev->evaluate(mgr, constantResults, vectorResults);
 
-  ev->sparsitySuperset(region)->print(cerr, vectorResults, constantResults);
+  ev->sparsitySuperset(region)->print(Out::os(), vectorResults, constantResults);
 
   
-  // results->print(cerr, ev->sparsitySuperset(region).get());
+  // results->print(Out::os(), ev->sparsitySuperset(region).get());
 }
 
 
@@ -109,10 +116,10 @@ void testExpr(const Expr& e,
           const Expr& paramVals, 
               const EvalContext& region)
 {
-  cerr << endl 
+  Out::os() << endl 
        << "------------------------------------------------------------- " << endl;
-  cerr  << "-------- testing " << e.toString() << " -------- " << endl;
-  cerr << endl 
+  Out::os()  << "-------- testing " << e.toString() << " -------- " << endl;
+  Out::os() << endl 
        << "------------------------------------------------------------- " << endl;
 
   try
@@ -121,10 +128,10 @@ void testExpr(const Expr& e,
     }
   catch(exception& ex)
     {
-      cerr << "EXCEPTION DETECTED!" << endl;
-      cerr << ex.what() << endl;
-      // cerr << "repeating with increased verbosity..." << endl;
-      //       cerr << "-------- testing " << e.toString() << " -------- " << endl;
+      Out::os() << "EXCEPTION DETECTED!" << endl;
+      Out::os() << ex.what() << endl;
+      // Out::os() << "repeating with increased verbosity..." << endl;
+      //       Out::os() << "-------- testing " << e.toString() << " -------- " << endl;
       //       Evaluator::verbosity() = 2;
       //       EvalVector::verbosity() = 2;
       //       EvaluatableExpr::verbosity() = 2;
@@ -141,13 +148,10 @@ int main(int argc, char** argv)
 		{
       GlobalMPISession session(&argc, &argv);
 
-      TimeMonitor t(totalTimer());
 
-      int maxDiffOrder = 2;
-
-      verbosity<SymbolicTransformation>() = VerbSilent;
+//      verbosity<SymbolicTransformation>() = VerbSilent;
       verbosity<Evaluator>() = VerbExtreme;
-      verbosity<EvalVector>() = VerbExtreme;
+//      verbosity<EvalVector>() = VerbExtreme;
       verbosity<EvaluatableExpr>() = VerbExtreme;
       Expr::showAllParens() = true;
 
@@ -163,9 +167,9 @@ int main(int argc, char** argv)
 			Expr beta0 = new Parameter(2.72, "beta0");
 			Expr v = new TestFunctionStub("v");
 
-      cerr << "u=" << u << endl;
-      cerr << "v=" << v << endl;
-      cerr << "alpha=" << alpha << endl;
+      Out::os() << "u=" << u << endl;
+      Out::os() << "v=" << v << endl;
+      Out::os() << "alpha=" << alpha << endl;
 
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
@@ -178,29 +182,30 @@ int main(int argc, char** argv)
       
 
       tests.append(v*dx*(u*u - x*u) + dx*(v*alpha*u) + v*sin(alpha*u) + 2.0*v + v*exp(u*beta));
+//      tests.append(v*sin(alpha*u));
+      //tests.append(v*alpha*u);
 
 
       for (int i=0; i<tests.length(); i++)
         {
           RegionQuadCombo rqc(rcp(new CellFilterStub()), 
                               rcp(new QuadratureFamilyStub(1)));
-          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
+          EvalContext context(rqc, makeSet(2), EvalContext::nextID());
+          context.setSetupVerbosity(5);
           testExpr(tests[i], 
-                   SundanceCore::List(v),
-                   SundanceCore::List(u),
-                   SundanceCore::List(u0),
-                   SundanceCore::List(alpha, beta),
-                   SundanceCore::List(alpha0, beta0),
-                   context);
+            SundanceCore::List(v),
+            SundanceCore::List(u),
+            SundanceCore::List(u0),
+            SundanceCore::List(alpha, beta),
+            SundanceCore::List(alpha0, beta0),
+            context);
         }
 
-
+      
     }
 	catch(exception& e)
 		{
 			Out::println(e.what());
 		}
-  TimeMonitor::summarize();
-
   
 }

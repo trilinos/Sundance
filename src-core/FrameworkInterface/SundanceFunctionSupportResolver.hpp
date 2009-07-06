@@ -74,6 +74,9 @@ public:
   /** Returns the number of unknown parameters */
   unsigned int numUnkParams() const {return unkParams_.size();}
 
+  /** Returns the number of fixed parameters */
+  unsigned int numFixedParams() const {return fixedParams_.size();}
+
   /** Returns the number of variational functions in this block */
   unsigned int numVars(int block) const {return varFuncs_[block].size();}
 
@@ -115,6 +118,11 @@ public:
    * in this equation set */
   bool hasUnkParamID(int fid) const 
     {return unkParamIDToReducedUnkParamIDMap_.containsKey(fid);}
+
+  /** Determine whether a given func ID is listed as a fixed parameter 
+   * in this equation set */
+  bool hasFixedParamID(int fid) const 
+    {return fixedParamIDToReducedFixedParamIDMap_.containsKey(fid);}
 
   /** get the block number for the variational function having the
    * specified unreduced funcID */
@@ -178,6 +186,10 @@ public:
    * having the given funcID */
   int reducedUnkParamID(int unkID) const ;
 
+  /** get the reduced ID for the fixed parameter
+   * having the given funcID */
+  int reducedFixedParamID(int unkID) const ;
+
   /** get the unreduced funcID for a variational function
    * as specified by a reduced ID and block index */
   int unreducedVarID(int block, int reducedVarID) const 
@@ -189,9 +201,19 @@ public:
     {return unreducedUnkID_[block][reducedUnkID];}
 
   /** get the unreduced funcID for an unknown parameter
-   * as specified by a reduced ID and block index */
+   * as specified by a reduced ID  */
   int unreducedUnkParamID(int reducedUnkParamID) const 
     {return unreducedUnkParamID_[reducedUnkParamID];}
+
+  /** get the unreduced funcID for a fixed parameter
+   * as specified by a reduced ID */
+  int unreducedFixedParamID(int reducedFixedParamID) const 
+    {return unreducedFixedParamID_[reducedFixedParamID];}
+
+  /** Return the map from fixed param ID to reduced fixed param ID */
+  const Map<int, int>& fixedParamIDToReducedFixedParamIDMap() const
+    {return fixedParamIDToReducedFixedParamIDMap_;}
+  
   //@}
 
 
@@ -253,9 +275,6 @@ public:
   const Array<Expr>& fixedFields() const {return fixedFields_;}
 
   /** */
-  const Expr& params() const {return params_;}
-
-  /** */
   const Expr& fixedParams() const {return fixedParams_;}
 
   /** */
@@ -267,6 +286,8 @@ public:
   const Set<int>& unkFuncSet() const {return unkFuncSet_;}
   /** */
   const Set<int>& unkParamSet() const {return unkParamSet_;}
+  /** */
+  const Set<int>& fixedParamSet() const {return fixedParamSet_;}
   
       
 private:
@@ -291,6 +312,9 @@ private:
 
   /** */
   Set<int> unkParamSet_;
+
+  /** */
+  Set<int> fixedParamSet_;
 
   /** */
   Array<OrderedHandle<CellFilterStub> > regions_;
@@ -344,10 +368,7 @@ private:
   /** unknown parameters for this equation set */
   Expr unkParams_;
 
-  /** unknown parameters for this equation set */
-  Expr params_;
-
-  /** unknown parameters for this equation set */
+  /** fixed parameters for this equation set */
   Expr fixedParams_;
 
   /** map from variational function funcID to that function's
@@ -358,9 +379,13 @@ private:
    * position in list of unk functions */
   Array<Map<int, int> > unkIDToReducedIDMap_;
 
-  /** map from unknown function funcID to that function's
-   * position in list of unk functions */
+  /** map from unknown param funcID to that param's
+   * position in list of unk params */
   Map<int, int> unkParamIDToReducedUnkParamIDMap_;
+
+  /** map from fixed param funcID to that param's
+   * position in list of fixed params */
+  Map<int, int> fixedParamIDToReducedFixedParamIDMap_;
 
   /** map from variational function funcID to that function's
    * position in list of var blocks */
@@ -379,6 +404,9 @@ private:
   /** Map from unreduced unk ID to reduced ID */
   Array<int> reducedUnkParamID_;
 
+  /** Map from unreduced fixed ID to reduced ID */
+  Array<int> reducedFixedParamID_;
+
   /** Map from (block, reduced varID) to unreduced varID */
   Array<Array<int> > unreducedVarID_;
 
@@ -387,6 +415,9 @@ private:
 
   /** Map from reduced unkParamID to unreduced unkParamID */
   Array<int> unreducedUnkParamID_;
+
+  /** Map from reduced fixedParamID to unreduced fixedParamID */
+  Array<int> unreducedFixedParamID_;
 
   /** Flag indicating whether this equation set is nonlinear */
   bool isNonlinear_;

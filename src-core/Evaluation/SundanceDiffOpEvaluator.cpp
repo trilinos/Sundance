@@ -392,7 +392,6 @@ Set<MultipleDeriv> DiffOpEvaluator
       const MultipleDeriv& md = *i;
       TEST_FOR_EXCEPT(md.order() != 1);
       Deriv lambda = *(md.begin());
-      Out::os() << "lambda=" << lambda << endl;
       if (lambda.isCoordDeriv()) continue;
       TEST_FOR_EXCEPT(!lambda.isFunctionalDeriv());
       FunctionIdentifier lambda_fid = lambda.fid();

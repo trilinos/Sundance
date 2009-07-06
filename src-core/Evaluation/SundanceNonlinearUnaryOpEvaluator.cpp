@@ -143,7 +143,18 @@ void NonlinearUnaryOpEvaluator
     }
   else
     {
+      Tabs tab1;
+      SUNDANCE_MSG2(mgr.verb(), 
+        tab1 << "argument is a vector: argValIndex=" << argValueIndex_);
+      SUNDANCE_MSG2(mgr.verb(), 
+        tab1 << "num vector results =" << vArgResults.size());
+
       const Array<RefCountPtr<EvalVector> >& av = *(vArgResults[0]);
+
+      SUNDANCE_MSG2(mgr.verb(), 
+        tab1 << "av size=" << av.size());
+
+
       const double* argValue = av[argValueIndex_]->start();
       varArgDerivs.resize(maxOrder_+1);
       varArgDerivs[0] = mgr.stack().popVector();

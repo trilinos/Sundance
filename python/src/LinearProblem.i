@@ -134,7 +134,7 @@ namespace SundanceStdFwk
                   const SundanceStdFwk::BlockArray& v, 
                   const SundanceStdFwk::BlockArray& u);
 
-    TSFExtended::Vector<double> getRHS() const ;
+    TSFExtended::Vector<double> getSingleRHS() const ;
 
     TSFExtended::LinearOperator<double> getOperator() const ;
 

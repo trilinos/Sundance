@@ -83,7 +83,22 @@ Parameter::internalFindV(int order, const EvalContext& context) const
 Set<MultipleDeriv> 
 Parameter::internalFindC(int order, const EvalContext& context) const
 {
-  return findR(order, context);
+  Tabs tab;
+  int verb = context.setupVerbosity();
+  SUNDANCE_MSG3(verb, tab 
+    << "Parameter::internalFindC(order=" << order << ") for "
+    << toString());
+  Set<MultipleDeriv> rtn;
+
+  if (order==0)
+    {
+      rtn.put(MultipleDeriv());
+    }
+
+  rtn = rtn.intersection(findR(order, context));
+
+  SUNDANCE_MSG3(verb,  tab << "Parameter: C[" << order << "] = " << rtn );
+  return rtn;
 }
 
 

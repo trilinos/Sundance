@@ -214,7 +214,10 @@ computeJacobianAndFunction(Vector<double>& functionValue) const
 
   discreteU0_->setVector(currentEvalPt());
 
-  assembler_->assemble(J_, functionValue);
+  Array<Vector<double> > mv(1);
+  mv[0] = functionValue;
+  assembler_->assemble(J_, mv);
+  functionValue = mv[0];
 
   return J_;
 }
@@ -244,7 +247,13 @@ computeJacobianAndFunction(LinearOperator<double>& J,
 
   discreteU0_->setVector(currentEvalPt());
 
-  assembler_->assemble(J, resid);
+  Array<Vector<double> > mv(1);
+  mv[0] = resid;
+
+  assembler_->assemble(J, mv);
+
+  resid = mv[0];
+
   J_ = J;
 }
 
@@ -265,7 +274,13 @@ Vector<double> NonlinearProblem::computeFunctionValue() const
   discreteU0_->setVector(currentEvalPt());
 
   Vector<double> rtn = createMember(range());
-  assembler_->assemble(rtn);
+
+  Array<Vector<double> > mv(1);
+  mv[0] = rtn;
+
+  assembler_->assemble(mv);
+
+  rtn = mv[0];
 
   return rtn;
 }
@@ -291,6 +306,12 @@ void NonlinearProblem::computeFunctionValue(Vector<double>& resid) const
 
   discreteU0_->setVector(currentEvalPt());
 
-  assembler_->assemble(resid);
+
+  Array<Vector<double> > mv(1);
+  mv[0] = resid;
+
+  assembler_->assemble(mv);
+
+  resid = mv[0];
 }
 

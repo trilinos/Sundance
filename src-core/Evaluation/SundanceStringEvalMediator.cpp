@@ -58,6 +58,8 @@ void StringEvalMediator::evalCoordExpr(const CoordExpr* expr,
   SUNDANCE_MSG1(verb(), 
     "evaluating coord expr " << expr->toString());
   
+  vec->resize(1);
+  vec->start()[0]=0.0;
   vec->setString(expr->name());
 }
 
@@ -67,6 +69,8 @@ void StringEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
   SUNDANCE_MSG1(verb(), 
     "evaluating cell diameter expr " << expr->toXML().toString());
   
+  vec->resize(1);
+  vec->start()[0]=0.0;
   vec->setString(expr->name());
 }
 
@@ -75,6 +79,8 @@ void StringEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 {
   SUNDANCE_MSG1(verb(), "evaluating cell vector expr " << expr->toXML().toString());
   
+  vec->resize(1);
+  vec->start()[0]=0.0;
   vec->setString(expr->name());
 }
 
@@ -97,6 +103,8 @@ void StringEvalMediator
   
   for (unsigned int i=0; i<mi.size(); i++)
     {
+      vec[i]->resize(1);
+      vec[i]->start()[0]=0.0;
       if (mi[i].order()==0)
         {
           vec[i]->setString(funcName);

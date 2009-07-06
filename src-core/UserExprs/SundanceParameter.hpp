@@ -35,6 +35,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
+#include "SundanceSymbolicFuncDescriptor.hpp"
 #include "SundanceParameterData.hpp"
 
 
@@ -57,6 +58,7 @@ namespace SundanceCore
    * than a simple double.
    */
   class Parameter : public virtual DiscreteFuncElement,
+                    public SymbolicFuncDescriptor,
                     public virtual SpatiallyConstantExpr
   {
   public:
@@ -106,6 +108,9 @@ namespace SundanceCore
     /** Write self in text form */
     virtual ostream& toText(ostream& os, bool paren) const 
     {os << "Parameter[" << name() << " = " << value() << "]"; return os;}
+
+    /** */
+    bool isParameter() const {return true;}
 
 
   protected:

@@ -37,6 +37,7 @@
 #include "SundanceEvaluatableExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceComputationType.hpp"
 
 
 
@@ -49,6 +50,7 @@ using std::string;
 using std::ostream;
 
 class Parameter;
+
 
 /** */
 class SymbPreprocessor 
@@ -67,7 +69,8 @@ public:
     const Expr& fixedFieldEvalPts, 
     const Expr& fixedParams,
     const Expr& fixedParamEvalPts, 
-    const EvalContext& context);
+    const EvalContext& context,
+    const ComputationType& compType);
 
   /** */
   static DerivSet setupFunctional(const Expr& expr, 
@@ -75,7 +78,8 @@ public:
     const Expr& fixedParamEvalPts,
     const Expr& fixedFields,
     const Expr& fixedFieldEvalPts,
-    const EvalContext& context);
+    const EvalContext& context,
+  const ComputationType& compType);
 
   /** */
   static DerivSet setupGradient(const Expr& expr, 
@@ -85,7 +89,8 @@ public:
     const Expr& fixedParamEvalPts,
     const Expr& fixedFields,
     const Expr& fixedFieldEvalPts, 
-    const EvalContext& contex);
+    const EvalContext& contex,
+  const ComputationType& compType);
 
   /** */
   static DerivSet setupSensitivities(const Expr& expr, 
@@ -98,7 +103,8 @@ public:
     const Expr& fixedParamEvalPts,
     const Expr& fixedFields,
     const Expr& fixedFieldEvalPts,
-    const EvalContext& context);
+    const EvalContext& context,
+  const ComputationType& compType);
 
   /** */
   static DerivSet setupFwdProblem(const Expr& expr, 
@@ -111,7 +117,8 @@ public:
     const Expr& fixedParamEvalPts,
     const Expr& fixedFields,
     const Expr& fixedFieldEvalPts,
-    const EvalContext& context);
+    const EvalContext& context,
+  const ComputationType& compType);
 
   /** check the input functions for redundancies and functions
    * of unexpected type. Set evaluation points and collect
@@ -132,7 +139,7 @@ public:
           << ", but we expected type=" << typeid(T).name());
 
         /* Add the function's ID to the ID set. While we're here, check
-        * to ensure we have no duplicates in the input list. */
+         * to ensure we have no duplicates in the input list. */
         int fid = uPtr->fid().dofID();
         TEST_FOR_EXCEPTION(idSet.contains(fid), RuntimeError,
           "duplicate function in input list " << u.toString());

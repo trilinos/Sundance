@@ -50,7 +50,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   const Array<Expr>& vars,
   const Array<Expr>& unks,
   const Expr& unkParams,
-  const Expr& params,
+  const Expr& fixedParams,
   const Array<Expr>& fixedFields,
   bool isVariational,
   int verb)
@@ -62,6 +62,7 @@ FunctionSupportResolver::FunctionSupportResolver(
     varFuncSet_(),
     unkFuncSet_(),
     unkParamSet_(),
+    fixedParamSet_(),
     regions_(),
     regionToIndexMap_(),
     varsOnRegions_(),
@@ -76,15 +77,17 @@ FunctionSupportResolver::FunctionSupportResolver(
     unkFuncs_(flattenSpectral(unks)),
     fixedFields_(flattenSpectral(fixedFields)),
     unkParams_(unkParams),
-    params_(params),
+    fixedParams_(fixedParams),
     varIDToReducedIDMap_(),
     unkIDToReducedIDMap_(),
     unkParamIDToReducedUnkParamIDMap_(),
+    fixedParamIDToReducedFixedParamIDMap_(),
     varIDToBlockMap_(),
     unkIDToBlockMap_(),
     unreducedVarID_(),
     unreducedUnkID_(),
     unreducedUnkParamID_(),
+    unreducedFixedParamID_(),
     isVariationalProblem_(isVariational)
 {
   Tabs tab0(0);
@@ -261,6 +264,26 @@ FunctionSupportResolver::FunctionSupportResolver(
   }
   SUNDANCE_MSG2(verb, tab1 << "unk parameters are " 
     << unreducedUnkParamID_);
+
+  
+  
+  /* set up func ID maps for fixed parameters */
+  unreducedFixedParamID_.resize(fixedParams.size());
+  for (unsigned int i=0; i<fixedParams.size(); i++)
+  {
+    const UnknownParameterElement* u 
+      = dynamic_cast<const UnknownParameterElement*>(fixedParams[i].ptr().get());
+    TEST_FOR_EXCEPTION(u==0, RuntimeError, 
+      "EquationSet ctor input fixed parameter "
+      << fixedParams[i] 
+      << " does not appear to be a fixed parameter");
+    int fid = u->fid().dofID();
+    fixedParamSet_.put(fid);
+    fixedParamIDToReducedFixedParamIDMap_.put(fid, i);
+    unreducedFixedParamID_[i] = fid;
+  }
+  SUNDANCE_MSG2(verb, tab1 << "fixed parameters are " 
+    << unreducedFixedParamID_);
 
   Set<OrderedHandle<CellFilterStub> > regionSet;
 
@@ -485,6 +508,14 @@ int FunctionSupportResolver::reducedUnkParamID(int unkID) const
     "unkParamID " << unkID << " not found in equation set");
 
   return unkParamIDToReducedUnkParamIDMap_.get(unkID);
+}
+
+int FunctionSupportResolver::reducedFixedParamID(int parID) const 
+{
+  TEST_FOR_EXCEPTION(!hasFixedParamID(parID), RuntimeError, 
+    "fixedParamID " << parID << " not found in equation set");
+
+  return fixedParamIDToReducedFixedParamIDMap_.get(parID);
 }
 
 int FunctionSupportResolver::blockForVarID(int varID) const 

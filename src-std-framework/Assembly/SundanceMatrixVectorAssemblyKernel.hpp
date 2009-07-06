@@ -61,7 +61,7 @@ public:
     const Array<RefCountPtr<Array<int> > >& isBCCol,
     const Array<int>& lowestLocalCol,
     LinearOperator<double> A,
-    Vector<double> b,
+    Array<Vector<double> > b,
     bool partitionBCs,
     int verb)
     : VectorFillingAssemblyKernel(rowMap, isBCRow, lowestLocalRow, 

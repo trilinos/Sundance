@@ -95,6 +95,9 @@ public:
   XMLObject toXML() const ;
 
   /** */
+  bool isParameter() const {return true;}
+
+  /** */
   RefCountPtr<ExprBase> getRcp() {return rcp(this);}
       
 private:

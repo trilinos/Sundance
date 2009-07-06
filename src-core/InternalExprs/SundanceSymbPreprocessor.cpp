@@ -64,7 +64,8 @@ DerivSet SymbPreprocessor::setupFwdProblem(const Expr& expr,
   const Expr& fixedParamEvalPts,
   const Expr& fixedFields,
   const Expr& fixedFieldEvalPts,
-  const EvalContext& context)
+  const EvalContext& context,
+  const ComputationType& compType)
 {
   Expr zero;
   Expr v = tests.flatten();
@@ -78,7 +79,7 @@ DerivSet SymbPreprocessor::setupFwdProblem(const Expr& expr,
     unkParams, unkParamEvalPts,
     fixedFields, fixedFieldEvalPts,
     fixedParams, fixedParamEvalPts,
-    context);
+    context, compType);
 }
 
 
@@ -94,7 +95,8 @@ DerivSet SymbPreprocessor::setupSensitivities(const Expr& expr,
   const Expr& fixedParamEvalPts,
   const Expr& fixedFields,
   const Expr& fixedFieldEvalPts,
-  const EvalContext& context)
+  const EvalContext& context,
+  const ComputationType& compType)
 {
   Expr zero;
   Expr v = tests.flatten();
@@ -108,7 +110,7 @@ DerivSet SymbPreprocessor::setupSensitivities(const Expr& expr,
     unkParams, unkParamEvalPts,
     fixedFields, fixedFieldEvalPts,
     fixedParams, fixedParamEvalPts,
-    context);
+    context, compType);
 }
 
 
@@ -117,7 +119,8 @@ DerivSet SymbPreprocessor::setupFunctional(const Expr& expr,
   const Expr& fixedParamEvalPts,
   const Expr& fixedFields,
   const Expr& fixedFieldEvalPts,
-  const EvalContext& context)
+  const EvalContext& context,
+  const ComputationType& compType)
 {
   Expr vars;
   Expr varEvalPts;
@@ -132,7 +135,7 @@ DerivSet SymbPreprocessor::setupFunctional(const Expr& expr,
     unkParams, unkParamEvalPts,
     fixedFields, fixedFieldEvalPts,
     fixedParams, fixedParamEvalPts,
-    context);
+    context,compType);
 }
 
 
@@ -146,7 +149,8 @@ DerivSet SymbPreprocessor::setupGradient(const Expr& expr,
   const Expr& fixedParamEvalPts,
   const Expr& fixedFields,
   const Expr& fixedFieldEvalPts, 
-  const EvalContext& context)
+  const EvalContext& context,
+  const ComputationType& compType)
 {
   Expr unks;
   Expr unkEvalPts;
@@ -159,7 +163,7 @@ DerivSet SymbPreprocessor::setupGradient(const Expr& expr,
     unkParams, unkParamEvalPts,
     fixedFields, fixedFieldEvalPts,
     fixedParams, fixedParamEvalPts,
-    context);
+    context, compType);
 }
 
 
@@ -176,7 +180,8 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   const Expr& fixedFieldEvalPts, 
   const Expr& fixedParams,
   const Expr& fixedParamEvalPts, 
-  const EvalContext& context)
+  const EvalContext& context,
+  const ComputationType& compType)
 {
   TimeMonitor t(preprocTimer());
   Tabs tab;
@@ -194,16 +199,22 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
     tab << "************ setting up variations of expr: " 
     << expr 
     << endl << tab << "context is " << context 
+    << endl << tab << "conp type is " << compType
     << endl << tab << "vars are " << vars
     << endl << tab << "unks are " << unks
     << endl << tab << "unk parameters " << unkParams
+    << endl << tab << "fixed parameters " << fixedParams
     << endl << tab << "the eval points for the vars are " 
     << varEvalPts
     << endl << tab << "the eval points for the unks are " 
     << unkEvalPts
     << endl << tab 
-    << " and the eval points for the parameters are " 
-    << unkParamEvalPts << tab << endl);
+    << "the eval points for the unknown parameters are " 
+    << unkParamEvalPts 
+    << endl << tab 
+    << "the eval points for the fixed parameters are " 
+    << fixedParamEvalPts 
+    << tab << endl);
 
   TEST_FOR_EXCEPTION(e==0, InternalError,
     "Non-evaluatable expr " << expr.toString()
@@ -243,22 +254,33 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
 
   SUNDANCE_MSG5(verb, tab << "forming active set");
   Array<SundanceUtils::Set<MultiSet<int> > > activeFuncIDs(3);
-  activeFuncIDs[0].put(MultiSet<int>());
+  if (context.needsDerivOrder(0)) activeFuncIDs[0].put(MultiSet<int>());
   if (context.topLevelDiffOrder() >= 1)
   {
     for (Set<int>::const_iterator i=varID.begin(); i != varID.end(); i++)
     {
-      activeFuncIDs[1].put(makeMultiSet<int>(*i));
+      if (context.needsDerivOrder(1)) activeFuncIDs[1].put(makeMultiSet<int>(*i));
       if (context.topLevelDiffOrder()==2)
       {
         for (Set<int>::const_iterator j=unkID.begin(); j != unkID.end(); j++)
         {
           activeFuncIDs[2].put(makeMultiSet<int>(*i, *j));
         }
-        for (Set<int>::const_iterator 
-               j=unkParamID.begin(); j != unkParamID.end(); j++)
+        if (compType==MatrixAndVector)
         {
-          activeFuncIDs[2].put(makeMultiSet<int>(*i, *j));
+          for (Set<int>::const_iterator 
+                 j=unkParamID.begin(); j != unkParamID.end(); j++)
+          {
+            activeFuncIDs[2].put(makeMultiSet<int>(*i, *j));
+          }
+        }
+        else if (compType==Sensitivities)
+        {
+          for (Set<int>::const_iterator 
+                 j=fixedParamID.begin(); j != fixedParamID.end(); j++)
+          {
+            activeFuncIDs[2].put(makeMultiSet<int>(*i, *j));
+          }
         }
       }
     }

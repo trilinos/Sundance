@@ -365,4 +365,15 @@ MultipleDeriv makeMultiDeriv(const Deriv& d)
   return rtn;
 }
 
+bool hasParameter(const MultipleDeriv& d)
+{
+  for (MultipleDeriv::const_iterator i=d.begin(); i!=d.end(); i++)
+  {
+    if (i->isParameter()) return true;
+  }
+  return false;
+}
+
+
+
 }

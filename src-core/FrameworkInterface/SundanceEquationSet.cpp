@@ -74,6 +74,7 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRqcToSkip_(),
     unkLinearizationPts_(),
     unkParamEvalPts_(),
+    fixedParamEvalPts_(paramEvalPts),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -132,6 +133,7 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRqcToSkip_(),
     unkLinearizationPts_(flattenSpectral(unkLinearizationPts)),
     unkParamEvalPts_(unkParamEvalPts),
+    fixedParamEvalPts_(paramEvalPts),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(false),
@@ -161,7 +163,7 @@ EquationSet::EquationSet(const Expr& eqns,
   bcRegionQuadComboNonzeroDerivs_.put(VectorOnly, 
     Map<RegionQuadCombo, DerivSet>());
 
-  if (unkParams.size() > 0) 
+  if (params.size() > 0) 
   {
     compTypes_.put(Sensitivities);
     rqcToContext_.put(Sensitivities, Map<RegionQuadCombo, EvalContext>());
@@ -206,6 +208,7 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRqcToSkip_(),
     unkLinearizationPts_(flattenSpectral(unkLinearizationPts)),
     unkParamEvalPts_(),
+    fixedParamEvalPts_(paramEvalPts),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -267,6 +270,7 @@ EquationSet::EquationSet(const Expr& eqns,
     bcRqcToSkip_(),
     unkLinearizationPts_(),
     unkParamEvalPts_(),
+    fixedParamEvalPts_(paramEvalPts),
     compTypes_(),
     isNonlinear_(false),
     isVariationalProblem_(true),
@@ -330,12 +334,15 @@ void EquationSet::init(
   }
   SUNDANCE_BANNER1(verb, tab0, "EquationSet setup");
 
+
   /* get symbolic functions from the function support resolver */
   const Array<Expr>& unks = fsr_->unks();
   const Array<Expr>& vars = fsr_->vars();
   const Expr& unkParams = fsr_->unkParams();
   const Expr& fixedParams = fsr_->fixedParams();
   const Array<Expr>& fixedFields = fsr_->fixedFields();
+
+  SUNDANCE_MSG1(verb, tab0 << "fixed params = " << fixedParams);
 
   const Set<int>& varFuncSet = fsr_->varFuncSet();
   const Set<int>& unkFuncSet = fsr_->unkFuncSet();
@@ -394,7 +401,7 @@ void EquationSet::init(
     {
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing matrix/vector calculation");
       Tabs tab3; 
-      EvalContext context(rqc, 2, contextID[0]);
+      EvalContext context(rqc, makeSet(1,2), contextID[0]);
       context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       
@@ -412,7 +419,8 @@ void EquationSet::init(
             toList(fixedFieldValues),
             fixedParams, 
             fixedParamEvalPts,
-            context);
+            context, 
+            MatrixAndVector);
       }
       else
       {
@@ -426,7 +434,8 @@ void EquationSet::init(
             fixedParamEvalPts,
             toList(fixedFields), 
             toList(fixedFieldValues),
-            context);
+            context, 
+            MatrixAndVector);
       }
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
       if (nonzeros.size()==0U) 
@@ -448,7 +457,7 @@ void EquationSet::init(
     {
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing vector-only calculation");
       Tabs tab3; 
-      EvalContext context(rqc, 1, contextID[1]);
+      EvalContext context(rqc, makeSet(1), contextID[1]);
       context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       if (isVariationalProblem_)
@@ -464,7 +473,8 @@ void EquationSet::init(
             toList(fixedFieldValues),
             fixedParams, 
             fixedParamEvalPts,
-            context);
+            context,
+            VectorOnly);
       }
       else
       {
@@ -478,7 +488,8 @@ void EquationSet::init(
             fixedParamEvalPts,
             toList(fixedFields), 
             toList(fixedFieldValues),
-            context);
+            context,
+            VectorOnly);
       }
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
       if (nonzeros.size()==0U) 
@@ -496,7 +507,7 @@ void EquationSet::init(
     {
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing sensitivity calculation");
       Tabs tab3;
-      EvalContext context(rqc, 2, contextID[4]);
+      EvalContext context(rqc, makeSet(2), contextID[4]);
       context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
@@ -509,7 +520,8 @@ void EquationSet::init(
           fixedParamEvalPts,
           toList(fixedFields), 
           toList(fixedFieldValues),
-          context);
+          context,
+          Sensitivities);
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
       if (nonzeros.size()==0U) 
       {
@@ -528,8 +540,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing functional calculation");
       Tabs tab3;
 
-      int maxOrder = 0;
-      EvalContext context(rqc, maxOrder, contextID[2]);
+      EvalContext context(rqc, makeSet(0), contextID[2]);
       context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       Expr fields;
@@ -580,7 +591,8 @@ void EquationSet::init(
           fixedParamEvalPts,
           fields,
           fieldValues,
-          context);
+          context,
+          FunctionalOnly);
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
 
       if (nonzeros.size()==0U) 
@@ -596,7 +608,7 @@ void EquationSet::init(
     {
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing functional/gradient calculation");
       Tabs tab3;
-      EvalContext context(rqc, 1, contextID[3]);
+      EvalContext context(rqc, makeSet(0,1), contextID[3]);
       context.setSetupVerbosity(rqcVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
@@ -605,7 +617,8 @@ void EquationSet::init(
           fixedParams, 
           fixedParamEvalPts,
           toList(fixedFields), toList(fixedFieldValues),
-          context);
+          context,
+          FunctionalAndGradient);
 
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
 
@@ -650,7 +663,7 @@ void EquationSet::init(
       if (compTypes_.contains(MatrixAndVector))
       {
         Tabs tab3;
-        EvalContext context(rqc, 2, contextID[0]);
+        EvalContext context(rqc, makeSet(1,2), contextID[0]);
         context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
               
@@ -668,7 +681,8 @@ void EquationSet::init(
               toList(fixedFieldValues),
               fixedParams, 
               fixedParamEvalPts,
-              context);
+              context,
+              MatrixAndVector);
         }
         else
         {
@@ -681,7 +695,8 @@ void EquationSet::init(
               fixedParamEvalPts,
               toList(fixedFields), 
               toList(fixedFieldValues),
-              context);
+              context,
+              MatrixAndVector);
         }
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
         if (nonzeros.size()==0U) 
@@ -705,7 +720,7 @@ void EquationSet::init(
       if (compTypes_.contains(VectorOnly))
       {
         Tabs tab3;
-        EvalContext context(rqc, 1, contextID[1]);
+        EvalContext context(rqc, makeSet(1), contextID[1]);
         context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         if (isVariationalProblem_)
@@ -721,7 +736,8 @@ void EquationSet::init(
               toList(fixedFieldValues),
               fixedParams, 
               fixedParamEvalPts,
-              context);
+              context,
+              VectorOnly);
         }
         else
         {
@@ -734,7 +750,8 @@ void EquationSet::init(
               fixedParamEvalPts,
               toList(fixedFields), 
               toList(fixedFieldValues),
-              context);
+              context,
+              VectorOnly);
         }
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
         if (nonzeros.size()==0U) 
@@ -757,7 +774,7 @@ void EquationSet::init(
       if (compTypes_.contains(Sensitivities))
       {
         Tabs tab3;
-        EvalContext context(rqc, 2, contextID[4]);
+        EvalContext context(rqc, makeSet(2), contextID[4]);
         context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
@@ -769,7 +786,8 @@ void EquationSet::init(
             fixedParamEvalPts,
             toList(fixedFields), 
             toList(fixedFieldValues),
-            context);
+            context,
+            Sensitivities);
 
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
         if (nonzeros.size()==0U) 
@@ -791,7 +809,7 @@ void EquationSet::init(
       if (compTypes_.contains(FunctionalOnly))
       {
         Tabs tab3;
-        EvalContext context(rqc, 0, contextID[2]);
+        EvalContext context(rqc, makeSet(0), contextID[2]);
         context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         Expr fields;
@@ -840,7 +858,8 @@ void EquationSet::init(
             fixedParams, 
             fixedParamEvalPts,
             fields, fieldValues,
-            context);
+            context,
+            FunctionalOnly);
 
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);                  
         if (nonzeros.size()==0U) 
@@ -859,7 +878,7 @@ void EquationSet::init(
       if (compTypes_.contains(FunctionalAndGradient))
       {
         Tabs tab3;
-        EvalContext context(rqc, 1, contextID[3]);
+        EvalContext context(rqc, makeSet(0,1), contextID[3]);
         context.setSetupVerbosity(rqcVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
@@ -870,7 +889,8 @@ void EquationSet::init(
             fixedParamEvalPts,
             toList(fixedFields), 
             toList(fixedFieldValues),
-            context);
+            context,
+          FunctionalAndGradient);
 
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
         if (nonzeros.size()==0U) 
@@ -1145,6 +1165,11 @@ int EquationSet::reducedUnkParamID(int unkParamID) const
   return fsr_->reducedUnkParamID(unkParamID);
 }
 
+int EquationSet::reducedFixedParamID(int paramID) const 
+{
+  return fsr_->reducedFixedParamID(paramID);
+}
+
 
 Expr EquationSet::toList(const Array<Expr>& e)
 {
@@ -1196,6 +1221,10 @@ unsigned int EquationSet::numUnkBlocks() const
 unsigned int EquationSet::numUnkParams() const 
 {return fsr_->numUnkParams();}
 
+/* Returns the number of fixed parameters */
+unsigned int EquationSet::numFixedParams() const 
+{return fsr_->numFixedParams();}
+
 /* Returns the number of variational functions in this block */
 unsigned int EquationSet::numVars(int block) const 
 {return fsr_->numVars(block);}
@@ -1239,6 +1268,11 @@ bool EquationSet::hasUnkID(int fid) const
  * in this equation set */
 bool EquationSet::hasUnkParamID(int fid) const 
 {return fsr_->hasUnkParamID(fid);}
+
+/* Determine whether a given func ID is listed as a fixed parameter 
+ * in this equation set */
+bool EquationSet::hasFixedParamID(int fid) const 
+{return fsr_->hasFixedParamID(fid);}
 
  
 /* Returns the variational functions that appear explicitly
@@ -1286,7 +1320,13 @@ int EquationSet::unreducedUnkID(int block, int reducedUnkID) const
 
 
 /** get the unreduced funcID for an unknown parameter
- * as specified by a reduced ID and block index */
+ * as specified by a reduced ID */
 int EquationSet::unreducedUnkParamID(int reducedUnkParamID) const 
 {return fsr_->unreducedUnkParamID(reducedUnkParamID);}
+
+
+/** get the unreduced funcID for a fixed parameter
+ * as specified by a reduced ID */
+int EquationSet::unreducedFixedParamID(int reducedParamID) const 
+{return fsr_->unreducedFixedParamID(reducedParamID);}
 

@@ -51,8 +51,8 @@ using namespace Teuchos;
 
 /**
  * VectorFillingAssemblyKernel provides a common implementation of
- * vector-filling capabilities needed by matrix-vector assembly, 
- * vector assembly, and functional gradient evaluation. 
+ * multivector-filling capabilities needed by matrix-vector assembly, 
+ * multivector assembly, and functional gradient evaluation. 
  */
 class VectorFillingAssemblyKernel : public AssemblyKernelBase
 {
@@ -62,7 +62,7 @@ public:
   const Array<RefCountPtr<DOFMapBase> >& dofMap,
   const Array<RefCountPtr<Array<int> > >& isBCIndex,
   const Array<int>& lowestLocalIndex,
-  Vector<double>& b,
+  Array<Vector<double> >& b,
   bool partitionBCs,
   int verb
     );
@@ -78,7 +78,8 @@ protected:
   void insertLocalVectorBatch(bool isBCRqc,
     bool useCofacetCells,
     const Array<int>& funcID,  
-    const Array<int>& funcBlock, 
+    const Array<int>& funcBlock,
+    const Array<int>& mvIndices,  
     const Array<double>& localValues) const ;
 
   /** 
@@ -96,8 +97,8 @@ protected:
 
 private:
 
-  Vector<double> b_;
-  Array<RefCountPtr<LoadableVector<double> > > vec_;
+  Array<Vector<double> > b_;
+  Array<Array<RefCountPtr<LoadableVector<double> > > > vec_;
   mutable MapBundle mapBundle_;
 
 };

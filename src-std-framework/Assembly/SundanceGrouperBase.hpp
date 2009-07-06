@@ -110,7 +110,8 @@ protected:
     int& rawVarID, int& rawUnkID,  
     int& reducedTestID, int& reducedUnkID, 
     int& testBlock, int& unkBlock, 
-    bool& isOneForm) const ;
+    int& rawParamID, int& reducedParamID,
+    bool& isOneForm, bool& hasParam) const ;
                               
 private:
   int setupVerb_;

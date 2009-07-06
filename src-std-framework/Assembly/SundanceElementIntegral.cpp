@@ -128,8 +128,8 @@ ElementIntegral::ElementIntegral(int spatialDim,
     testBasis_(testBasis),
     unkBasis_()
 {
-  /* if we're integrating a derivative along a facet, we may need to refer back
-   * to the maximal cell. */
+  /* if we're integrating a derivative along a facet, we 
+   * may need to refer back to the maximal cell. */
   bool okToRestrictTestToBdry = basisRestrictableToBoundary(testBasis);
     
   if (dim != spatialDim)

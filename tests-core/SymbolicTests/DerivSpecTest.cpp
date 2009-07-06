@@ -6,6 +6,7 @@
 #include "SundanceTestFunctionStub.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceSymbolicFunc.hpp"
+#include "SundanceUnknownParameter.hpp"
 #include "Teuchos_TestingHelpers.hpp"
 #include "SundanceOut.hpp"
 
@@ -76,6 +77,7 @@ bool testVecFunction()
   Expr u = new UnknownFunctionStub("u", 1, 3);
   Expr phi = new UnknownFunctionStub("u", 0, 1);
   Expr v = new TestFunctionStub("v", 1, 3);
+  Expr alpha = new UnknownParameter("alpha");
 
   TEUCHOS_TEST_EQUALITY(u.size(), dim, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(v.size(), dim, Out::os(), pass);
@@ -88,12 +90,20 @@ bool testVecFunction()
   
   
   Deriv d_du = funcDeriv(u);
+  Deriv d_dAlpha = funcDeriv(alpha);
   Deriv d_dphi = funcDeriv(phi);
   Deriv d_dphi_x = d_dphi.derivWrtMultiIndex(MultiIndex(1,0,0));
   Deriv divU = divergenceDeriv(u);
   Deriv divV = divergenceDeriv(v);
 
   TEUCHOS_TEST_EQUALITY(divU.fid(), fid(u), Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.fid(), fid(alpha), Out::os(), pass);
+
+  SUNDANCE_BANNER1(verb, tab, "checking algSpec for parameter");
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.algSpec().isScalar(), true, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.algSpec().isVector(), false, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.algSpec().isNormal(), false, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.algSpec().isCoordinateComponent(), false, Out::os(), pass);
 
   SUNDANCE_BANNER1(verb, tab, "checking algSpec for divergence");
   TEUCHOS_TEST_EQUALITY(divU.algSpec().isScalar(), true, Out::os(), pass);
@@ -121,6 +131,8 @@ bool testVecFunction()
 
 
   SUNDANCE_BANNER1(verb, tab, "checking distinction between functional and spatial derivs");
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.isFunctionalDeriv(), true, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.isCoordDeriv(), false, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(divU.isFunctionalDeriv(), true, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(divU.isCoordDeriv(), false, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_du.isFunctionalDeriv(), true, Out::os(), pass);
@@ -130,27 +142,39 @@ bool testVecFunction()
   TEUCHOS_TEST_EQUALITY(d_dphi_x.isFunctionalDeriv(), true, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_dphi_x.isCoordDeriv(), false, Out::os(), pass);
 
+
   SUNDANCE_BANNER1(verb, tab, "checking identification of differentiation order");
   TEUCHOS_TEST_EQUALITY(divU.opOnFunc().derivOrder(), 1, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_du.opOnFunc().derivOrder(), 0, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.opOnFunc().derivOrder(), 0, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_dphi.opOnFunc().derivOrder(), 0, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_dphi_x.opOnFunc().derivOrder(), 1, Out::os(), pass);
 
   SUNDANCE_BANNER1(verb, tab, "checking identification of test and unk funcs");
   TEUCHOS_TEST_EQUALITY(d_du.isTestFunction(), false, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_du.isUnknownFunction(), true, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_du.isParameter(), false, Out::os(), pass);
 
   TEUCHOS_TEST_EQUALITY(d_dphi.isTestFunction(), false, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_dphi.isUnknownFunction(), true, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dphi.isParameter(), false, Out::os(), pass);
 
   TEUCHOS_TEST_EQUALITY(d_dphi_x.isTestFunction(), false, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(d_dphi_x.isUnknownFunction(), true, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dphi.isParameter(), false, Out::os(), pass);
 
   TEUCHOS_TEST_EQUALITY(divU.isTestFunction(), false, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(divU.isUnknownFunction(), true, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(divU.isParameter(), false, Out::os(), pass);
 
   TEUCHOS_TEST_EQUALITY(divV.isTestFunction(), true, Out::os(), pass);
   TEUCHOS_TEST_EQUALITY(divV.isUnknownFunction(), false, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(divV.isParameter(), false, Out::os(), pass);
+
+  /* unknown parameters are both unknown and parameters */
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.isTestFunction(), false, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.isUnknownFunction(), true, Out::os(), pass);
+  TEUCHOS_TEST_EQUALITY(d_dAlpha.isParameter(), true, Out::os(), pass);
 
   SUNDANCE_BANNER1(verb, tab, "checking identification of spatial operators acting on operative functions");
 
@@ -178,6 +202,13 @@ bool testVecFunction()
   SUNDANCE_BANNER1(verb, tab, "checking that applying a zero-order partial derivative to a divergence does not throw an exception");
   TEST_NOTHROW(divU.derivWrtMultiIndex(MultiIndex(0,0,0)), pass);
 
+
+  SUNDANCE_BANNER1(verb, tab, "checking that applying a partial derivative to a parameter throws an exception");
+  TEST_THROW(d_dAlpha.derivWrtMultiIndex(MultiIndex(1,0,0)), pass);
+  TEST_THROW(d_dAlpha.derivWrtMultiIndex(MultiIndex(0,1,0)), pass);
+  TEST_THROW(d_dAlpha.derivWrtMultiIndex(MultiIndex(0,0,1)), pass);
+  SUNDANCE_BANNER1(verb, tab, "checking that applying a zero-order partial derivative to a divergence does not throw an exception");
+  TEST_NOTHROW(d_dAlpha.derivWrtMultiIndex(MultiIndex(0,0,0)), pass);
 
   SUNDANCE_BANNER1(verb, tab, "all done!");
 

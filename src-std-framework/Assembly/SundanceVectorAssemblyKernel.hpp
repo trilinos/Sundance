@@ -59,7 +59,7 @@ public:
   const Array<RefCountPtr<DOFMapBase> >& dofMap,
   const Array<RefCountPtr<Array<int> > >& isBCIndex,
   const Array<int>& lowestLocalIndex,
-  Vector<double>& b,
+  Array<Vector<double> >& b,
   bool partitionBCs,
   int verb
     );

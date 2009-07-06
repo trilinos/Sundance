@@ -97,7 +97,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
       LinearProblem prob(mesh, eqn, bc, v, u, vecType, vp, true); 
 
       LinearOperator<double> A = prob.getOperator();
-      Vector<double> b = prob.getRHS();
+      Vector<double> b = prob.getRHS()[0];
       b.scale(-1.0);
 
       cout << "b=" << b << endl;
@@ -130,7 +130,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
       cout << "x_b=" << endl << xb << endl;
 
       Vector<double> solnVec = prob.convertToMonolithicVector(tuple(xi), tuple(xb));
-      Expr soln = prob.formSolutionExpr(solnVec);
+      Expr soln = prob.formSolutionExpr(tuple(solnVec));
 
       Expr exactSoln = x*(x-2.0);
 

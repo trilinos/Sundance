@@ -243,8 +243,12 @@ public:
 };
 
 
-
+/** */
 MultipleDeriv makeMultiDeriv(const Deriv& d);
+
+/** */
+bool hasParameter(const MultipleDeriv& d) ;
+
 
 }
 

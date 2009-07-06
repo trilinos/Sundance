@@ -150,7 +150,7 @@ SymbolicFuncElement::internalFindC(int order, const EvalContext& context) const
 {
   Tabs tab;
   int verb = context.setupVerbosity();
-  SUNDANCE_MSG3(verb, tab << "SFE::internalFindV(order=" << order << ") for "
+  SUNDANCE_MSG3(verb, tab << "SFE::internalFindC(order=" << order << ") for "
                      << toString());
   Set<MultipleDeriv> rtn;
 

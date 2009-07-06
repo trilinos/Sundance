@@ -47,7 +47,7 @@ VectorAssemblyKernel::VectorAssemblyKernel(
   const Array<RefCountPtr<DOFMapBase> >& dofMap,
   const Array<RefCountPtr<Array<int> > >& isBCIndex,
   const Array<int>& lowestLocalIndex,
-  Vector<double>& b,
+  Array<Vector<double> >& b,
   bool partitionBCs,
   int verb
   )
@@ -71,7 +71,7 @@ void VectorAssemblyKernel::fill(
   if (group.isOneForm())
   {
     insertLocalVectorBatch(isBC, useCofacets, 
-      group.testID(), group.testBlock(),
+      group.testID(), group.testBlock(), group.mvIndices(),
       *localValues);
   }
 

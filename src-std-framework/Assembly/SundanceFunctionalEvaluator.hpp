@@ -115,7 +115,7 @@ private:
   VectorType<double> vecType_;
       
   /** */
-  mutable Vector<double> gradient_;
+  mutable Array<Vector<double> > gradient_;
       
 };
 }

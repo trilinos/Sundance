@@ -99,6 +99,12 @@ UnknownParameterElement::internalFindC(int order, const EvalContext& context) co
     tab << "in UPE::internalFindC, order=" << order);
   Set<MultipleDeriv> rtn;
 
+  if (order==0)
+  {
+    MultipleDeriv md;
+    if (!evalPtIsZero()) rtn.put(md);
+  }
+
   if (order==1)
   {
     MultipleDeriv md = makeMultiDeriv(funcDeriv(this));

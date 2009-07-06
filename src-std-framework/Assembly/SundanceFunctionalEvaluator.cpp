@@ -77,7 +77,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     assembler_(),
     varValues_(),
     vecType_(),
-    gradient_()
+    gradient_(1)
 {
   Array<Expr> fields;
   Expr bcs;
@@ -103,7 +103,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     assembler_(),
     varValues_(varValues),
     vecType_(vectorType),
-    gradient_()
+    gradient_(1)
 {
   Array<Expr> v = tuple(var.flatten());
   Array<Expr> v0 = tuple(varValues.flatten());
@@ -130,7 +130,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     assembler_(),
     varValues_(varEvalPts),
     vecType_(vectorType),
-    gradient_()
+    gradient_(1)
 {
   Array<Expr> f = tuple(fields.flatten());
   Array<Expr> f0 = tuple(fieldValues.flatten());
@@ -157,7 +157,7 @@ Vector<double> FunctionalEvaluator::evalGradientVector(double& value) const
 {
   assembler_->evaluate(value, gradient_);
 
-  return gradient_;
+  return gradient_[0];
 }
 
 Expr FunctionalEvaluator::evalGradient(double& value) const 

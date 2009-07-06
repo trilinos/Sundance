@@ -99,7 +99,9 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
   /* ------------------------------------------------------ */
   /* create a context object                                */
   /* ------------------------------------------------------ */ 
-  context_ = EvalContext(rqc_, maxDiffOrder, EvalContext::nextID()); 
+  Set<int> d;
+  for (int i=0; i<=maxDiffOrder; i++) d.put(i);
+  context_ = EvalContext(rqc_, d, EvalContext::nextID()); 
  
 
 
@@ -187,6 +189,9 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
 
   if (maxDiffOrder_ > 0)
   {
+    ComputationType compType=VectorOnly;    
+    if (maxDiffOrder_==2) compType=MatrixAndVector;
+
     SymbPreprocessor::setupVariations(e[0], 
       unkList,
       evalList,
@@ -198,7 +203,8 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
       dummy,
       dummy,
       dummy,
-      context_);
+      context_,
+      compType);
   }
   else
   {
@@ -207,7 +213,8 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
       dummy,
       unkList,
       evalList,
-      context_);
+      context_,
+      FunctionalOnly);
   }
 
   Out::os() << tabs << "sparsity pattern: " << endl;

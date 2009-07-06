@@ -158,7 +158,7 @@ Assembler
     partitionBCs_(partitionBCs),
     matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
-    vecNeedsConfiguration_(true),
+    numConfiguredColumns_(0),
     mesh_(mesh),
     eqn_(eqn),
     rowMap_(),
@@ -200,7 +200,7 @@ Assembler
     partitionBCs_(false),
     matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
-    vecNeedsConfiguration_(true),
+    numConfiguredColumns_(0),
     mesh_(mesh),
     eqn_(eqn),
     rowMap_(),
@@ -228,6 +228,7 @@ Assembler
     colVecType_(),
     testIDToBlockMap_(),
     unkIDToBlockMap_(),
+    fixedParamIDToVectorNumber_(),
     converter_(eqn->numUnkBlocks())
 {
   TimeMonitor timer(assemblerCtorTimer());
@@ -263,6 +264,7 @@ void Assembler::init(const Mesh& mesh,
   DOFMapBuilder mapBuilder;
 
   if (compTypes.contains(VectorOnly) 
+    || compTypes.contains(Sensitivities) 
     || compTypes.contains(FunctionalAndGradient))
   {
     Tabs tab1;
@@ -297,8 +299,6 @@ void Assembler::init(const Mesh& mesh,
       SUNDANCE_MSG2(verb, tab2 << "block " << b << ": done forming row space");
     }
   }
-
-
 
   if (!eqn->isFunctionalCalculator())
   {
@@ -344,6 +344,20 @@ void Assembler::init(const Mesh& mesh,
       Array<IntegrationCellSpecifier>());
     contexts_.put(VectorOnly, Array<EvalContext>());
     evalExprs_.put(VectorOnly, Array<const EvaluatableExpr*>());
+
+    if (eqn->isSensitivityCalculator())
+    {
+      fixedParamIDToVectorNumber_ 
+        = eqn->fsr()->fixedParamIDToReducedFixedParamIDMap();
+
+      /* create tables for sensitivity calculation */
+      groups_.put(Sensitivities, Array<Array<RCP<IntegralGroup> > >());
+      rqcRequiresMaximalCofacets_.put(Sensitivities, 
+        Array<IntegrationCellSpecifier>());
+      contexts_.put(Sensitivities, Array<EvalContext>());
+      evalExprs_.put(Sensitivities, Array<const EvaluatableExpr*>());
+      
+    }
   }
   else
   {
@@ -695,7 +709,7 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
 }
   
 
-void Assembler::configureVector(Vector<double>& b) const 
+void Assembler::configureVector(Array<Vector<double> >& b) const 
 {
   TimeMonitor timer(configTimer());
 
@@ -708,7 +722,7 @@ void Assembler::configureVector(Vector<double>& b) const
     vs[i] = privateRowSpace_[i]->vecSpace();
   }
   VectorSpace<double> rowSpace;
-
+  
   if (eqn_->numVarBlocks() > 1)
   {
     rowSpace = TSFExtended::productSpace(vs);
@@ -718,33 +732,34 @@ void Assembler::configureVector(Vector<double>& b) const
     rowSpace = vs[0];
   }
 
-
-  b = rowSpace.createMember();
-
-  if (!partitionBCs_ && eqn_->numVarBlocks() > 1)
+  for (unsigned int i=numConfiguredColumns_; i<b.size(); i++)
   {
-    /* configure the blocks */
-    Vector<double> vecBlock;
-    for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
+    b[i] = rowSpace.createMember();
+
+    if (!partitionBCs_ && eqn_->numVarBlocks() > 1)
     {
-      configureVectorBlock(br, vecBlock);
-      b.setBlock(br, vecBlock);
+      /* configure the blocks */
+      Vector<double> vecBlock;
+      for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
+      {
+        configureVectorBlock(br, vecBlock);
+        b[i].setBlock(br, vecBlock);
+      }
     }
-  }
-  else
-  {
-    /* nothing to do here except check that the vector is loadable */
-    if (!partitionBCs_)
+    else
     {
-      TSFExtended::LoadableVector<double>* lv 
-        = dynamic_cast<TSFExtended::LoadableVector<double>* >(b.ptr().get());
+      /* nothing to do here except check that the vector is loadable */
+      if (!partitionBCs_)
+      {
+        TSFExtended::LoadableVector<double>* lv 
+          = dynamic_cast<TSFExtended::LoadableVector<double>* >(b[i].ptr().get());
         
-      TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
-        "vector is not loadable in Assembler::configureVector()");
+        TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
+          "vector is not loadable in Assembler::configureVector()");
+      }
     }
   }
-  
-  vecNeedsConfiguration_ = false;
+  numConfiguredColumns_ = b.size();
 }
 
 void Assembler::configureVectorBlock(int br, Vector<double>& b) const 
@@ -768,40 +783,48 @@ void Assembler::configureVectorBlock(int br, Vector<double>& b) const
 
 
 void Assembler::configureMatrix(LinearOperator<double>& A,
-  Vector<double>& b) const
+  Array<Vector<double> >& b) const
 {
   TimeMonitor timer(configTimer());
-  Tabs tab0;
-  SUNDANCE_LEVEL1("matrix config", tab0 << "in Assembler::configureMatrix()");
-  int nRowBlocks = rowMap_.size();
-  int nColBlocks = colMap_.size();
-  Array<Array<int> > isNonzero = findNonzeroBlocks();
-
-  if (nRowBlocks==1 && nColBlocks==1)
+  
+  if (matNeedsConfiguration_)
   {
-    configureMatrixBlock(0,0,A);
+    Tabs tab0;
+    SUNDANCE_LEVEL1("matrix config", tab0 << "in Assembler::configureMatrix()");
+    int nRowBlocks = rowMap_.size();
+    int nColBlocks = colMap_.size();
+    Array<Array<int> > isNonzero = findNonzeroBlocks();
+
+    if (nRowBlocks==1 && nColBlocks==1)
+    {
+      configureMatrixBlock(0,0,A);
+    }
+    else
+    {
+      A = makeLinearOperator(new BlockOperator<double>(solnVecSpace(), rowVecSpace()));
+      for (int br=0; br<nRowBlocks; br++)
+      {
+        for (int bc=0; bc<nColBlocks; bc++)
+        {
+          if (isNonzero[br][bc])
+          {
+            LinearOperator<double> matBlock;
+            configureMatrixBlock(br, bc, matBlock);
+            A.setBlock(br, bc, matBlock);
+          }
+        }
+      }
+      A.endBlockFill();
+    }
+    matNeedsConfiguration_ = false;
   }
   else
   {
-    A = makeLinearOperator(new BlockOperator<double>(solnVecSpace(), rowVecSpace()));
-    for (int br=0; br<nRowBlocks; br++)
-    {
-      for (int bc=0; bc<nColBlocks; bc++)
-      {
-        if (isNonzero[br][bc])
-        {
-          LinearOperator<double> matBlock;
-          configureMatrixBlock(br, bc, matBlock);
-          A.setBlock(br, bc, matBlock);
-        }
-      }
-    }
-    A.endBlockFill();
+    Tabs tab0;
+    SUNDANCE_LEVEL1("matrix config", 
+      tab0 << "Assembler::configureMatrix() not needed, proceeding to configure vector");
   }
-  
   configureVector(b);
-
-  matNeedsConfiguration_ = false;
 }
 
 void Assembler::configureMatrixBlock(int br, int bc,
@@ -809,12 +832,13 @@ void Assembler::configureMatrixBlock(int br, int bc,
 {
   Tabs tab;
   TimeMonitor timer(configTimer());
+
   SUNDANCE_LEVEL1("matrix config", tab << "in Assembler::configureMatrixBlock()");
   
   SUNDANCE_LEVEL2("matrix config", tab << "Assembler: num rows = " << rowMap()[br]->numDOFs());
   
   SUNDANCE_LEVEL2("matrix config", tab << "Assembler: num cols = " << colMap()[bc]->numDOFs());
-
+  
   VectorSpace<double> rowSpace = privateRowSpace_[br]->vecSpace();
   VectorSpace<double> colSpace = privateColSpace_[bc]->vecSpace();
 
@@ -877,8 +901,8 @@ void Assembler::configureMatrixBlock(int br, int bc,
 
 TSFExtended::LinearOperator<double> Assembler::allocateMatrix() const
 {
-  TSFExtended::LinearOperator<double> A;
-  TSFExtended::Vector<double> b;
+  LinearOperator<double> A;
+  Array<Vector<double> > b;
   configureMatrix(A, b);
   return A;
 }
@@ -1119,7 +1143,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
 /* ------------  assemble both the vector and the matrix  ------------- */
 
 void Assembler::assemble(LinearOperator<double>& A,
-  Vector<double>& b) const 
+  Array<Vector<double> >& mv) const 
 {
   TimeMonitor timer(assemblyTimer());
   Tabs tab;
@@ -1133,16 +1157,13 @@ void Assembler::assemble(LinearOperator<double>& A,
     "Assembler::assemble(A, b) called for an assembler that "
     "does not support matrix/vector assembly");
 
-  if (matNeedsConfiguration_)
-  {
-    configureMatrix(A, b);
-  }
+  configureMatrix(A, mv);
   
   RefCountPtr<AssemblyKernelBase> kernel 
     = rcp(new MatrixVectorAssemblyKernel(
             rowMap_, isBCRow_, lowestRow_,
             colMap_, isBCCol_, lowestCol_,
-            A, b, partitionBCs_, 
+            A, mv, partitionBCs_, 
             0));
 
   assemblyLoop(MatrixAndVector, kernel);
@@ -1152,7 +1173,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 
 /* ------------  assemble the vector alone  ------------- */
 
-void Assembler::assemble(Vector<double>& b) const 
+void Assembler::assemble(Array<Vector<double> >& mv) const 
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
@@ -1166,16 +1187,12 @@ void Assembler::assemble(Vector<double>& b) const
     "Assembler::assemble(b) called for an assembler that "
     "does not support vector-only assembly");
 
-  if (vecNeedsConfiguration_)
-  {
-    configureVector(b);
-  }
-
+  configureVector(mv);
   
   RefCountPtr<AssemblyKernelBase> kernel 
     = rcp(new VectorAssemblyKernel(
             rowMap_, isBCRow_, lowestRow_,
-            b, partitionBCs_, 0));
+            mv, partitionBCs_, 0));
 
   assemblyLoop(VectorOnly, kernel);
 
@@ -1185,7 +1202,7 @@ void Assembler::assemble(Vector<double>& b) const
 
 /* ------------  evaluate a functional and its gradient ---- */
 
-void Assembler::evaluate(double& value, Vector<double>& gradient) const 
+void Assembler::evaluate(double& value, Array<Vector<double> >& gradient) const 
 {
   Tabs tab;
   TimeMonitor timer(assemblyTimer());
@@ -1199,10 +1216,7 @@ void Assembler::evaluate(double& value, Vector<double>& gradient) const
     "Assembler::evaluate(f,df) called for an assembler that "
     "does not support value/gradient assembly");
 
-  if (vecNeedsConfiguration_)
-  {
-    configureVector(gradient);
-  }
+  configureVector(gradient);
 
   value = 0.0;
   

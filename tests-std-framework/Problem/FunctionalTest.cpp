@@ -178,7 +178,7 @@ int main(int argc, char** argv)
                          + (alpha0-sin(pi*x))*beta , quad4);
       Expr bc;
       LinearProblem phony(mesh, dg, bc, beta, alpha, vecType);
-      Vector<double> dgVec = phony.getRHS();
+      Vector<double> dgVec = phony.getRHS()[0];
 
       double gExact = 0.5*(-2.0*pi*I1Exact + I3Exact + 2.0*I2Exact + I4Exact);
 

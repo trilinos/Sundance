@@ -80,11 +80,11 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   if (cellType != maxCellType) doGroups = false;
 
   typedef SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RefCountPtr<ElementIntegral> > > twoFormMap;
-  typedef SundanceUtils::Map<OrderedPair<int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
+  typedef SundanceUtils::Map<OrderedTriple<int,int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
   SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RefCountPtr<ElementIntegral> > > twoForms;
   SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<int> > twoFormResultIndices;
-  SundanceUtils::Map<OrderedPair<int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneForms;
-  SundanceUtils::Map<OrderedPair<int,BasisFamily>, Array<int> > oneFormResultIndices;
+  SundanceUtils::Map<OrderedTriple<int,int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneForms;
+  SundanceUtils::Map<OrderedTriple<int,int,BasisFamily>, Array<int> > oneFormResultIndices;
 
   for (int i=0; i<sparsity->numDerivs(); i++)
   {
@@ -124,19 +124,30 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       BasisFamily unkBasis;
       MultiIndex miTest;
       MultiIndex miUnk;
-      int rawTestID;
-      int rawUnkID;
-      int testID;
-      int unkID;
-      int testBlock;
-      int unkBlock;
+      int rawTestID = -1;
+      int rawUnkID = -1;
+      int rawParamID = -1;
+      int testID = -1;
+      int unkID = -1;
+      int paramID = -1;
+      int testBlock = -1;
+      int unkBlock = -1;
       bool isOneForm;
+      bool hasParam;
       extractWeakForm(eqn, d, testBasis, unkBasis, miTest, miUnk, 
         rawTestID, rawUnkID,
         testID, unkID,
         testBlock, unkBlock,
-        isOneForm);
+        rawParamID, paramID,
+        isOneForm, hasParam);
       
+      TEST_FOR_EXCEPT(hasParam && !isOneForm);
+
+      /* The parameter index acts as an index into a multivector. If
+       * this one-form is not a parametric derivative, we use zero as
+       * the multivector index */
+      int mvIndex = 0;
+      if (hasParam) mvIndex = paramID; 
       
       /* In variational problems we might have (u,v) and (v,u). Because 
        * the derivative is stored as an unordered multiset it can't 
@@ -161,12 +172,27 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         SUNDANCE_MSG3(setupVerb(), tab << "is two-form");
       }
 
+
+      if (hasParam)
+      {
+        SUNDANCE_MSG3(setupVerb(), tab << "is a parametric derivative");
+      }
+      else
+      {
+        SUNDANCE_MSG3(setupVerb(), tab << "is not a parametric derivative");
+      }
+
       SUNDANCE_MSG3(setupVerb(), 
         tab << "test ID: " << testID << " block=" << testBlock);
 
       if (!isOneForm)
       {
         SUNDANCE_MSG3(setupVerb(), tab << "unk funcID: " << unkID << " block=" << unkBlock);
+      }
+
+      if (hasParam)
+      {
+        SUNDANCE_MSG3(setupVerb(), tab << "paramID=" << paramID);
       }
                    
       SUNDANCE_MSG3(setupVerb(), tab << "deriv = " << d);
@@ -277,7 +303,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       {
         if (doGroups)
         {
-          OrderedPair<int,BasisFamily> testKey(rawTestID, testBasis);
+          OrderedTriple<int,int,BasisFamily> testKey(rawTestID, mvIndex, testBasis);
           if (!oneForms.containsKey(testKey))
           {
             oneForms.put(testKey, tuple(integral));
@@ -292,6 +318,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         else
         {
           groups.append(rcp(new IntegralGroup(tuple(testID), tuple(testBlock),
+                tuple(mvIndex),
                 tuple(integral),
                 tuple(resultIndex), tuple(d), setupVerb())));
         }
@@ -403,7 +430,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       Tabs tab3;
       SUNDANCE_MSG2(setupVerb(), tab3 << "integral group number="
         << groups.size());
-      int rawTestID = i->first.first();
+      int rawTestID = i->first.a();
+      int mvIndex = i->first.b();
       int testID = eqn.reducedVarID(rawTestID);
       int testBlock = eqn.blockForVarID(rawTestID);
       const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
@@ -421,6 +449,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         grpDerivs.append(d);
       }
       groups.append(rcp(new IntegralGroup(tuple(testID), tuple(testBlock),
+            tuple(mvIndex),
             integrals, resultIndices, grpDerivs, setupVerb())));
     }
   }

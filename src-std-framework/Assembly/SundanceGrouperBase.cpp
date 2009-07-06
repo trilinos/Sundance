@@ -38,6 +38,7 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceUnknownFunction.hpp"
+#include "SundanceUnknownParameterElement.hpp"
 #include "SundanceTestFunction.hpp"
 
 using namespace SundanceStdFwk;
@@ -71,18 +72,20 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
   int& rawVarID, int& rawUnkID,  
   int& reducedVarID, int& reducedUnkID,  
   int& testBlock, int& unkBlock, 
-  bool& isOneForm) const
+  int& rawParamID, int& reducedParamID, 
+  bool& isOneForm, bool& hasParam) const
 {
   Tabs tab0(0);
 
   MultipleDeriv::const_iterator iter;
 
   isOneForm = false;  
+  hasParam = false;
 
   if (functionalDeriv.size()==0) return;
 
   TEST_FOR_EXCEPTION(functionalDeriv.size() > 2, InternalError,
-    "WeakFormBatch::extractWeakForm detected a functional "
+    "GrouperBase::extractWeakForm detected a functional "
     "derivative of order > 2: " 
     << functionalDeriv.toString());
 
@@ -93,13 +96,14 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
     tab0 << "extracting weak form for functional derivative " 
     << functionalDeriv);
 
+
   for (iter = functionalDeriv.begin(); iter != functionalDeriv.end(); iter++)
   {
     Tabs tab;
     const Deriv& d = *iter;
       
     TEST_FOR_EXCEPTION(!d.isFunctionalDeriv(), InternalError,
-      "WeakFormBatch::extractWeakForm "
+      "GrouperBase::extractWeakForm "
       "detected a non-functional derivative: "
       << functionalDeriv.toString());
       
@@ -108,7 +112,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
     const SymbolicFuncElement* s = d.symbFuncElem();
 
     TEST_FOR_EXCEPTION(s==0, InternalError, 
-      "WeakFormBatch::extractWeakForm failed to cast "
+      "GrouperBase::extractWeakForm failed to cast "
       "function to SymbolicFuncElement");
       
 
@@ -117,6 +121,8 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
 
     if (!foundVar && eqn.hasVarID(dofID))
     {
+      TEST_FOR_EXCEPTION(d.isParameter(), InternalError,
+        "Parameter not expected here");
       foundVar = true;
       reducedVarID = eqn.reducedVarID(dofID);
       rawVarID = dofID;
@@ -132,7 +138,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
         = dynamic_cast<const TestFuncElement*>(s);
 
       TEST_FOR_EXCEPTION(u==0 && t==0, InternalError, 
-        "WeakFormBatch::extractWeakForm could not cast "
+        "GrouperBase::extractWeakForm could not cast "
         "variational function to either an "
         "UnknownFuncElement or a TestFuncElement");
 
@@ -140,7 +146,7 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       {
         varBasis = TestFunctionData::getData(t)->basis()[myIndex];
       }
-      else
+      else 
       {
         varBasis = UnknownFunctionData::getData(u)->basis()[myIndex];
       }
@@ -151,12 +157,25 @@ void GrouperBase::extractWeakForm(const EquationSet& eqn,
       SUNDANCE_MSG2(setupVerb(), 
         tab << "found var multi index=" << miVar.toString());
     }
+    else if (eqn.hasFixedParamID(dofID))
+    {
+      const UnknownParameterElement* upe
+        = dynamic_cast<const UnknownParameterElement*>(s);
+      TEST_FOR_EXCEPTION(upe==0, InternalError, 
+        "GrouperBase::extractWeakForm could not cast "
+        "unknown parameter to UnknownParameterElement");
+      hasParam = true;
+      rawParamID = dofID;
+      reducedParamID = eqn.reducedFixedParamID(dofID);
+    }
     else
     {
+      TEST_FOR_EXCEPTION(d.isParameter(), InternalError,
+        "Parameter not expected here");
       const UnknownFuncElement* u
         = dynamic_cast<const UnknownFuncElement*>(s);
       TEST_FOR_EXCEPTION(u==0, InternalError, 
-        "WeakFormBatch::extractWeakForm could not cast "
+        "GrouperBase::extractWeakForm could not cast "
         "unknown function to UnknownFuncElement");
       foundUnk = true;
       reducedUnkID = eqn.reducedUnkID(dofID);

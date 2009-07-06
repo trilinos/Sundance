@@ -10,6 +10,8 @@ SET(Tests
         PreprocTest
         ChainRule 
         SimpleEval 
+        SensitivityTest 
+        SensEqnTest 
         TestEval 
         PolynomialTest          
         StdTransformation 

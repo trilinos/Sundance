@@ -61,13 +61,16 @@ public:
   IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
     int verb);
+
   /** */
   IntegralGroup(const Array<int>& testID,
     const Array<int>& testBlock,
+    const Array<int>& mvIndices,
     const Array<RefCountPtr<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
     const Array<MultipleDeriv>& derivs,
     int verb);
+
   /** */
   IntegralGroup(const Array<int>& testID,
     const Array<int>& testBlock,
@@ -107,6 +110,10 @@ public:
 
   /** Return the block numbers for the unk functions */
   const Array<int>& unkBlock() const {return unkBlock_;}
+
+  /** Return the multivector column indices for the one-forms */
+  const Array<int>& mvIndices() const {return mvIndices_;}
+  
 
   /** Whether the group requires transformations based on a maximal cofacet */
   IntegrationCellSpecifier usesMaximalCofacets() const 
@@ -171,6 +178,9 @@ private:
 
   /** */
   Array<int> unkBlock_;
+
+  /** */
+  Array<int> mvIndices_;
 
   /** */
   Array<RefCountPtr<ElementIntegral> > integrals_;

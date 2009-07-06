@@ -36,105 +36,114 @@
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceSet.hpp"
 #include "Teuchos_Utils.hpp"
-
+#include <algorithm>
 
 
 namespace SundanceCore
 {
-  using namespace Teuchos;
-  using namespace SundanceUtils;
-  using std::string;
+using namespace Teuchos;
+using namespace SundanceUtils;
+using SundanceUtils::Set;
+using std::string;
+using std::max_element;
 
-      /** 
-       * Different contexts might require the same expression to be
-       * evaluated to different orders of functional differentiation; for
-       * example, in setting up a linear system, second-order derivatives
-       * are required, but in evaluating a functional only zeroth derivs
-       * are required. 
-       * An EvaluationContext is used as a key to associate an evaluator and
-       * its corresponding set of
-       * functional derivatives with a context.
-       *
-       * They key consists of three parts: first, an integer identifier
-       * indicating the caller, e.g., an assembler or functional evaluator,
-       * second, an integer representing the maximum order of 
-       * differentiation required by the top level caller, and third,
-       a region-quadrature combination.  
-       */
-      class EvalContext
-        {
-        public:
-          /** Empty ctor */
-          EvalContext() : data_() {;}
+/** 
+ * Different contexts might require the same expression to be
+ * evaluated to different orders of functional differentiation; for
+ * example, in setting up a linear system, second-order derivatives
+ * are required, but in evaluating a functional only zeroth derivs
+ * are required. 
+ * An EvaluationContext is used as a key to associate an evaluator and
+ * its corresponding set of
+ * functional derivatives with a context.
+ *
+ * They key consists of three parts: first, an integer identifier
+ * indicating the caller, e.g., an assembler or functional evaluator,
+ * second, a set indicating which orders of 
+ * differentiation are required by the top level caller, and third,
+ a region-quadrature combination.  
+*/
+class EvalContext
+{
+public:
+  /** Empty ctor */
+  EvalContext() : data_() {;}
 
-          /** Construct with a region-quadrature combination and
-           * an identifier of the construcing context. */
-          EvalContext(const RegionQuadCombo& rqc,
-                      int topLevelDiffOrder,
-                      int contextID)
-            : setupVerbosity_(0), 
-              data_(rcp(new OrderedTriple<int, int, RegionQuadCombo>(topLevelDiffOrder, contextID, rqc)))
-          {;}
+  /** Construct with a region-quadrature combination and
+   * an identifier of the construcing context. */
+  EvalContext(const RegionQuadCombo& rqc,
+    const Set<int>& needsDiffOrder,
+    int contextID)
+    : setupVerbosity_(0), 
+      maxDiffOrder_(*max_element(needsDiffOrder.begin(), needsDiffOrder.end())),
+      data_(rcp(new OrderedTriple<Set<int>, int, RegionQuadCombo>(needsDiffOrder, contextID, rqc)))
+    {}
 
-          /** Set the verbosity level to be used during preprocessing 
-           * of expressions in this context */
-          void setSetupVerbosity(int v) {setupVerbosity_ = v;}
+  /** Set the verbosity level to be used during preprocessing 
+   * of expressions in this context */
+  void setSetupVerbosity(int v) {setupVerbosity_ = v;}
 
-          /** Return the verbosity level to be used during preprocessing 
-           * of expressions in this context */
-          int setupVerbosity() const {return setupVerbosity_;}
+  /** Return the verbosity level to be used during preprocessing 
+   * of expressions in this context */
+  int setupVerbosity() const {return setupVerbosity_;}
 
-          /** Comparison operator for use in maps */
-          bool operator<(const EvalContext& other) const 
-          {return *data_ < *other.data_;}
+  /** Comparison operator for use in maps */
+  bool operator<(const EvalContext& other) const 
+    {return *data_ < *other.data_;}
           
-          /** Write to a string */
-          string toString() const
-          {return "EvalContext[diffOrder=" 
-             + Teuchos::toString(data_->a())
-             + ", id=" 
-             + Teuchos::toString(data_->b())
-             + ", " + data_->c().toString() + "]";}
+  /** Write to a string */
+  string toString() const
+    {return "EvalContext[diffOrder=" 
+        + Teuchos::toString(data_->a())
+        + ", id=" 
+        + Teuchos::toString(data_->b())
+        + ", " + data_->c().toString() + "]";}
           
-          /** Write a short description to a string */
-          string brief() const
-          {return "EvalContext[diffOrder=" 
-             + Teuchos::toString(data_->a())
-             + ", id=" 
-             + Teuchos::toString(data_->b())
-             + "]";}
+  /** Write a short description to a string */
+  string brief() const
+    {return "EvalContext[diffOrder=" 
+        + Teuchos::toString(data_->a())
+        + ", id=" 
+        + Teuchos::toString(data_->b())
+        + "]";}
 
-          /** */
-          int topLevelDiffOrder() const {return data_->a();}
+  /** */
+  int topLevelDiffOrder() const {return maxDiffOrder_;}
 
-          /** Return a unique context ID */
-          static int nextID() {static int rtn=0; return rtn++;}
-        private:
-          int setupVerbosity_;
-          RefCountPtr<OrderedTriple<int, int, RegionQuadCombo> > data_;
-        };
+  /** Indicate whether or not a given order of differentiation 
+   * is needed in this context */
+  bool needsDerivOrder(int order) const {return data_->a().contains(order);}
+  
+
+  /** Return a unique context ID */
+  static int nextID() {static int rtn=0; return rtn++;}
+private:
+  int setupVerbosity_;
+  int maxDiffOrder_;
+  RefCountPtr<OrderedTriple<Set<int>, int, RegionQuadCombo> > data_;
+};
 
 }
 
 
 namespace std
 {
-  /** \relates SundanceCore::EvalContext */
-  inline ostream& operator<<(ostream& os, 
-                             const SundanceCore::EvalContext& c)
-  {
-    os << c.toString();
-    return os;
-  }
+/** \relates SundanceCore::EvalContext */
+inline ostream& operator<<(ostream& os, 
+  const SundanceCore::EvalContext& c)
+{
+  os << c.toString();
+  return os;
+}
 }
 
 namespace Teuchos
 {
-  using std::string;
+using std::string;
 
-  /** \relates SundanceCore::EvalContext */
-  inline string toString(const SundanceCore::EvalContext& h)
-    {return h.toString();}
+/** \relates SundanceCore::EvalContext */
+inline string toString(const SundanceCore::EvalContext& h)
+{return h.toString();}
 
 }
 

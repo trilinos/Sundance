@@ -59,7 +59,7 @@ public:
     const Array<RefCountPtr<DOFMapBase> >& dofMap,
     const Array<RefCountPtr<Array<int> > >& isBCIndex,
     const Array<int>& lowestLocalIndex,
-    Vector<double>& grad,
+    Array<Vector<double> >& grad,
     bool partitionBCs,
     double* value, 
     int verb)
@@ -67,7 +67,11 @@ public:
       funcKernel_(rcp(new FunctionalAssemblyKernel(comm, value, verb))),
       vecKernel_(rcp(new VectorAssemblyKernel(dofMap, isBCIndex,
             lowestLocalIndex, grad, partitionBCs, verb)))
-    {}
+    {
+      TEST_FOR_EXCEPTION(grad.size() != 1U, InternalError,
+        "assembly target in FunctionalGradientAssemblyKernel should not "
+        "be a multivector");
+    }
 
   /** */
   void prepareForWorkSet(

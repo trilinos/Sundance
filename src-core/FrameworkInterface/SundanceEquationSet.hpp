@@ -457,6 +457,9 @@ public:
   /** Returns the number of unknown parameters */
   unsigned int numUnkParams() const ;
 
+  /** Returns the number of fixed parameters */
+  unsigned int numFixedParams() const ;
+
   /** Returns the number of variational functions in this block */
   unsigned int numVars(int block) const ;
 
@@ -482,6 +485,9 @@ public:
   /** Returns the i-th unknown parameter */
   const Expr& unkParam(int i) const ;
 
+  /** Returns the i-th unknown parameter */
+  const Expr& fixedParam(int i) const ;
+
   /** Determine whether a given func ID is listed as a 
    * variational function in this equation set */
   bool hasVarID(int fid) const ;
@@ -493,6 +499,10 @@ public:
   /** Determine whether a given func ID is listed as a unk parameter 
    * in this equation set */
   bool hasUnkParamID(int fid) const ;
+
+  /** Determine whether a given func ID is listed as a fixed parameter 
+   * in this equation set */
+  bool hasFixedParamID(int fid) const ;
 
   /** get the block number for the variational function having the
    * specified unreduced funcID */
@@ -552,6 +562,10 @@ public:
    * having the given funcID */
   int reducedUnkParamID(int unkID) const ;
 
+  /** get the reduced ID for the fixed parameter
+   * having the given funcID */
+  int reducedFixedParamID(int unkID) const ;
+
   /** get the unreduced funcID for a variational function
    * as specified by a reduced ID and block index */
   int unreducedVarID(int block, int reducedVarID) const ;
@@ -564,6 +578,10 @@ public:
   /** get the unreduced funcID for an unknown parameter
    * as specified by a reduced ID and block index */
   int unreducedUnkParamID(int reducedUnkParamID) const ;
+
+  /** get the unreduced funcID for a fixed parameter
+   * as specified by a reduced ID and block index */
+  int unreducedFixedParamID(int reducedFixedParamID) const ;
 
   //@}
 
@@ -704,6 +722,9 @@ private:
 
   /** unknown parameter evaluation points for this equation set */
   Expr unkParamEvalPts_;
+
+  /** fixed parameter evaluation points for this equation set */
+  Expr fixedParamEvalPts_;
 
   /** Set of the computation types supported here */
   Set<ComputationType> compTypes_;

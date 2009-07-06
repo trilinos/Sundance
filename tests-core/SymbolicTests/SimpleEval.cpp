@@ -47,10 +47,10 @@ static Time& doitTimer()
 
 
 void doit(const Expr& e, 
-          const Expr& tests,
-          const Expr& unks,
-          const Expr& u0, 
-          const EvalContext& region)
+  const Expr& tests,
+  const Expr& unks,
+  const Expr& u0, 
+  const EvalContext& region)
 {
   TimeMonitor t0(doitTimer());
   EvalManager mgr;
@@ -69,14 +69,15 @@ void doit(const Expr& e,
     = dynamic_cast<const EvaluatableExpr*>(e[0].ptr().get());
 
   DerivSet d = SymbPreprocessor::setupFwdProblem(e[0], 
-                                                 tests,
-                                                 unks,
-                                                 u0,
-                                                 params,
-                                                 params,
-                                                 fixed, fixed,
-                                                 fixed, fixed,
-                                                 region);
+    tests,
+    unks,
+    u0,
+    params,
+    params,
+    fixed, fixed,
+    fixed, fixed,
+    region,
+    MatrixAndVector);
 
   Tabs tab;
   Out::os() << tab << *ev->sparsitySuperset(region) << endl;
@@ -95,91 +96,91 @@ void doit(const Expr& e,
 
 
 void testExpr(const Expr& e,  
-              const Expr& tests,
-              const Expr& unks,
-              const Expr& u0, 
-              const EvalContext& region)
+  const Expr& tests,
+  const Expr& unks,
+  const Expr& u0, 
+  const EvalContext& region)
 {
   Out::os() << endl 
-       << "------------------------------------------------------------- " << endl;
+            << "------------------------------------------------------------- " << endl;
   Out::os()  << "-------- testing " << e.toString() << " -------- " << endl;
   Out::os() << endl 
-       << "------------------------------------------------------------- " << endl;
+            << "------------------------------------------------------------- " << endl;
 
   try
-    {
-      doit(e, tests, unks, u0, region);
-    }
+  {
+    doit(e, tests, unks, u0, region);
+  }
   catch(exception& ex)
-    {
-      Out::os() << "EXCEPTION DETECTED!" << endl;
-      Out::os() << ex.what() << endl;
-      exit(1);
-    }
+  {
+    Out::os() << "EXCEPTION DETECTED!" << endl;
+    Out::os() << ex.what() << endl;
+    exit(1);
+  }
 }
 
 int main(int argc, char** argv)
 {
   
   try
-		{
-      GlobalMPISession session(&argc, &argv);
+  {
+    GlobalMPISession session(&argc, &argv);
 
-      TimeMonitor t(totalTimer());
+    TimeMonitor t(totalTimer());
 
-      Expr::showAllParens() = true;
+    Expr::showAllParens() = true;
 //      ProductTransformation::optimizeFunctionDiffOps()=true;
 
-      EvalVector::shadowOps() = true;
+    EvalVector::shadowOps() = true;
 
-      Expr dx = new Derivative(0);
-      Expr dy = new Derivative(1);
+    Expr dx = new Derivative(0);
+    Expr dy = new Derivative(1);
 
-      Expr x = new CoordExpr(0);
-      Expr y = new CoordExpr(1);
+    Expr x = new CoordExpr(0);
+    Expr y = new CoordExpr(1);
 
-			Expr u = new UnknownFunctionStub("u");
-			Expr v = new TestFunctionStub("v");
+    Expr u = new UnknownFunctionStub("u");
+    Expr v = new TestFunctionStub("v");
 
-      Handle<CellFilterStub> interior = rcp(new CellFilterStub());
-      Handle<QuadratureFamilyStub> quad = rcp(new QuadratureFamilyStub(1));
+    Handle<CellFilterStub> interior = rcp(new CellFilterStub());
+    Handle<QuadratureFamilyStub> quad = rcp(new QuadratureFamilyStub(1));
       
-      Expr u0 = new DiscreteFunctionStub("u0");
-      Expr w0 = new DiscreteFunctionStub("w0");
-      Expr zero = new ZeroExpr();
+    Expr u0 = new DiscreteFunctionStub("u0");
+    Expr w0 = new DiscreteFunctionStub("w0");
+    Expr zero = new ZeroExpr();
 
-      Array<Expr> tests;
+    Array<Expr> tests;
 
 
 
-      int maxDiffOrder=2;
+    int maxDiffOrder=2;
 //      tests.append(v*u);
 //      tests.append((dx*v)*(dx*u));
-      tests.append((dx*v));
+    tests.append((dx*v));
 //      tests.append(v*(dx*(u - u0)));
 
 
-      for (int i=0; i<tests.length(); i++)
-        {
-          RegionQuadCombo rqc(rcp(new CellFilterStub()), 
-                              rcp(new QuadratureFamilyStub(1)));
-          EvalContext context(rqc, maxDiffOrder, EvalContext::nextID());
-          context.setSetupVerbosity(5);
-          testExpr(tests[i], 
-                   SundanceCore::List(v),
-                   SundanceCore::List(u),
-                   SundanceCore::List(zero),
-                   context);
-        }
+    for (int i=0; i<tests.length(); i++)
+    {
+      RegionQuadCombo rqc(rcp(new CellFilterStub()), 
+        rcp(new QuadratureFamilyStub(1)));
+      EvalContext context(rqc, makeSet(1,2), EvalContext::nextID());
+      context.setSetupVerbosity(5);
+      testExpr(tests[i], 
+        SundanceCore::List(v),
+        SundanceCore::List(u),
+        SundanceCore::List(zero),
+        context);
+    }
 
       
 
-      TimeMonitor::summarize();
-    }
+    TimeMonitor::summarize();
+  }
 	catch(exception& e)
-		{
-			Out::println(e.what());
-		}
+  {
+    Out::println(e.what());
+  }
 
 
   

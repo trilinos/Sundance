@@ -50,6 +50,9 @@ public:
   /** */
   virtual bool isUnknownFunction() const {return false;}
 
+  /** */
+  virtual bool isParameter() const {return false;}
+
 private:
 };
 

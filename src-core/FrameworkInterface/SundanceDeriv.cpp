@@ -32,6 +32,7 @@
 
 
 #include "SundanceExceptions.hpp"
+#include "SundanceParameter.hpp"
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceSymbolicFunc.hpp"
@@ -53,7 +54,8 @@ Deriv::Deriv()
 Deriv::Deriv(int coordDerivDir)
   : EnumTypeField<DerivType>(CoordDT), myAlgSpec_(coordDerivDir),
     fid_(FunctionIdentifier()), sds_(), 
-    symbFuncElem_(0), symbFunc_(0), coordDerivDir_(coordDerivDir)
+    symbFuncElem_(0), symbFunc_(0),
+    coordDerivDir_(coordDerivDir)
 {}
 
 
@@ -89,6 +91,7 @@ Deriv::Deriv(
 
   checkConsistencyOfOperations();
 }
+
 
 void Deriv::checkConsistencyOfOperations() const 
 {
@@ -193,6 +196,16 @@ bool Deriv::isUnknownFunction() const
   return false;
 }
 
+
+bool Deriv::isParameter() const 
+{
+  if( isFunctionalDeriv() )
+  {
+    return sfdPtr()->isParameter();
+  }
+  return false;
+}
+
 int Deriv::dofID() const 
 {
   assertType(FunctionalDT);
@@ -208,6 +221,7 @@ const AlgebraSpecifier& Deriv::funcAlgSpec() const
 bool Deriv::canBeDifferentiated() const 
 {
   assertType(FunctionalDT);
+  if (isParameter()) return false;
   return opOnFunc().isIdentity() || opOnFunc().isPartial();
 }
 
@@ -217,10 +231,11 @@ int Deriv::coordDerivDir() const
   return coordDerivDir_;
 }
 
-const RCP<const CommonFuncDataStub>& Deriv::data() const
+RCP<const CommonFuncDataStub> Deriv::data() const
 {
   assertType(FunctionalDT);
-  TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, InternalError,
+  TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
+    InternalError,
     "Deriv::data() called, but deriv=" << *this << " does not contain a "
     "valid function");
   if (symbFuncElem_) return symbFuncElem_->commonData();
@@ -244,6 +259,8 @@ Deriv Deriv::derivWrtMultiIndex(const MultiIndex& mi) const
   assertType(FunctionalDT);
   TEST_FOR_EXCEPTION(mi.order()>0 && sds_.isDivergence(), InternalError,
     "cannot take spatial derivative of an atomic divergence operation");
+  TEST_FOR_EXCEPTION(mi.order()>0 && isParameter(), InternalError,
+    "cannot take spatial derivative of a parameter");
 
   SpatialDerivSpecifier d = sds_.derivWrtMultiIndex(mi);
 
@@ -255,8 +272,9 @@ Deriv Deriv::derivWrtMultiIndex(const MultiIndex& mi) const
   {
     return Deriv(symbFunc_, d);
   }
-  TEST_FOR_EXCEPTION(true, InternalError,
-    "attempt to differentiation a null operative function");
+  TEST_FOR_EXCEPTION(symbFuncElem_==0 && symbFunc_==0, 
+    InternalError,
+    "attempt to differentiate a null operative function");
   return *this; // -Wall
 }
 
@@ -321,6 +339,7 @@ Deriv funcDeriv(const SymbolicFunc* symbFunc)
 {
   return Deriv(symbFunc, SpatialDerivSpecifier());
 }
+
 
 Deriv funcDeriv(const SymbolicFunc* symbFunc,
   const MultiIndex& mi)

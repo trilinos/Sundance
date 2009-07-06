@@ -66,6 +66,7 @@ IntegralGroup
     unkID_(),
     testBlock_(),
     unkBlock_(),
+    mvIndices_(),
     integrals_(integrals),
     resultIndices_(resultIndices),
     termUsesMaximalCofacets_(integrals_.size()),
@@ -101,9 +102,13 @@ IntegralGroup
   }
 }
 
+
+
+
 IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
   const Array<int>& testBlock,
+  const Array<int>& mvIndices,
   const Array<RefCountPtr<ElementIntegral> >& integrals,
   const Array<int>& resultIndices,
   const Array<MultipleDeriv>& derivs,
@@ -117,6 +122,7 @@ IntegralGroup
     unkID_(),
     testBlock_(testBlock),
     unkBlock_(),
+    mvIndices_(mvIndices),
     integrals_(integrals),
     resultIndices_(resultIndices),
     termUsesMaximalCofacets_(integrals_.size()),
@@ -177,6 +183,7 @@ IntegralGroup
     unkID_(unkID),
     testBlock_(testBlock),
     unkBlock_(unkBlock),
+    mvIndices_(),
     integrals_(integrals),
     resultIndices_(resultIndices),
     termUsesMaximalCofacets_(integrals_.size()),
@@ -223,6 +230,9 @@ IntegralGroup
     requiresMaximalCofacet_ = NoTermsNeedCofacets;
   }
 }
+
+
+
 
 bool IntegralGroup
 ::evaluate(const CellJacobianBatch& JTrans,

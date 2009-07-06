@@ -41,6 +41,7 @@ namespace SundanceCore
 using namespace SundanceUtils;
 using namespace Teuchos;
 class SymbolicFunc;
+class Parameter;
 class SymbolicFuncElement;
 class SymbolicFuncDescriptor;
 class CommonFuncDataStub;
@@ -167,6 +168,7 @@ public:
     const SpatialDerivSpecifier& d
     );
 
+
   /** Comparison operator for use in sets and maps */
   bool operator<(const Deriv& other) const ;
 
@@ -192,6 +194,9 @@ public:
 
   /** True if my operative function is unknown */
   bool isUnknownFunction() const ;
+
+  /** True if my operative function is a parameter */
+  bool isParameter() const ;
 
   /** Create a new functional derivative in which the function
    * has been differentiated spatially by the given multi index, for example,
@@ -225,7 +230,7 @@ public:
   const AlgebraSpecifier& funcAlgSpec() const ;
 
   /** Return a pointer to my function's data */
-  const RCP<const CommonFuncDataStub>& data() const ;
+  RCP<const CommonFuncDataStub> data() const ;
 
   /** If I am a coordinate derivative, return my direction */
   int coordDerivDir() const ;

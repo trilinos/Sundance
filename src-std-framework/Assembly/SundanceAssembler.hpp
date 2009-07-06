@@ -135,15 +135,15 @@ public:
 
   /** */
   void assemble(TSFExtended::LinearOperator<double>& A,
-    TSFExtended::Vector<double>& b) const ;
+    Array<Vector<double> >& b) const ;
 
 
   /** */
-  void assemble(TSFExtended::Vector<double>& b) const ;
+  void assemble(Array<Vector<double> >& b) const ;
 
   /** */
   void evaluate(double& value,
-    TSFExtended::Vector<double>& gradient) const ;
+    Array<Vector<double> >& gradient) const ;
 
   /** */
   void evaluate(double& value) const ;
@@ -165,7 +165,7 @@ public:
   /** */
   void flushConfiguration() 
     {
-      vecNeedsConfiguration_ = true;
+      numConfiguredColumns_ = 0U;
       matNeedsConfiguration_ = true;
     }
 
@@ -211,10 +211,10 @@ private:
 
   /** */
   void configureMatrix(LinearOperator<double>& A,
-    Vector<double>& b) const ;
+    Array<Vector<double> >& b) const ;
 
   /** */
-  void configureVector(Vector<double>& b) const ;
+  void configureVector(Array<Vector<double> >& b) const ;
 
   /** */
   void configureMatrixBlock(int br, int bc, 
@@ -243,7 +243,7 @@ private:
       
   mutable bool matNeedsFinalization_;
 
-  mutable bool vecNeedsConfiguration_;
+  mutable unsigned int numConfiguredColumns_;
 
   Mesh mesh_;
 
@@ -298,6 +298,8 @@ private:
   Map<int, int> testIDToBlockMap_;
 
   Map<int, int> unkIDToBlockMap_;
+
+  Map<int, int> fixedParamIDToVectorNumber_;
 
   Map<ComputationType, Array<IntegrationCellSpecifier> > rqcRequiresMaximalCofacets_;
 

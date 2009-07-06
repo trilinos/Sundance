@@ -56,13 +56,13 @@ VectorFillingAssemblyKernel::VectorFillingAssemblyKernel(
   const Array<RefCountPtr<DOFMapBase> >& dofMap,
   const Array<RefCountPtr<Array<int> > >& isBCIndex,
   const Array<int>& lowestLocalIndex,
-  Vector<double>& b,
+  Array<Vector<double> >& b,
   bool partitionBCs,
   int verbosity
   )
   : AssemblyKernelBase(verbosity),
     b_(b),
-    vec_(dofMap.size()),
+    vec_(b.size()),
     mapBundle_(dofMap, isBCIndex, lowestLocalIndex, partitionBCs, verbosity)
 {
   Tabs tab0;
@@ -70,32 +70,36 @@ VectorFillingAssemblyKernel::VectorFillingAssemblyKernel(
   SUNDANCE_MSG1(verb(), tab0 << "VectorFillingAssemblyKernel ctor");
   
   int numBlocks = dofMap.size();
-  
-  for (int block=0; block<numBlocks; block++)
+
+  for (unsigned int i=0; i<b_.size(); i++)
   {
-    Tabs tab1;
-    SUNDANCE_MSG1(verb(), tab1 << "getting vector for block b=" 
-      << block << " of " << numBlocks);
-    Vector<double> vecBlock; 
-    if (partitionBCs && numBlocks == 1)
+    vec_[i].resize(numBlocks);
+    for (int block=0; block<numBlocks; block++)
     {
-      Tabs tab2;
-      SUNDANCE_MSG1(verb(), tab2 << "making loadable block vector");
-      vecBlock = b;
-      int lowestRow = mapBundle_.lowestLocalIndex(block) ;
-      int highestRow = lowestRow + mapBundle_.dofMap(block)->numLocalDOFs();
-      vec_[block] = 
-        rcp(new LoadableBlockVector(vecBlock, lowestRow,
-            highestRow, mapBundle_.isBCIndex(block)));
+      Tabs tab1;
+      SUNDANCE_MSG1(verb(), tab1 << "getting vector for block b=" 
+        << block << " of " << numBlocks);
+      Vector<double> vecBlock; 
+      if (partitionBCs && numBlocks == 1)
+      {
+        Tabs tab2;
+        SUNDANCE_MSG1(verb(), tab2 << "making loadable block vector");
+        vecBlock = b[i];
+        int lowestRow = mapBundle_.lowestLocalIndex(block) ;
+        int highestRow = lowestRow + mapBundle_.dofMap(block)->numLocalDOFs();
+        vec_[i][block] = 
+          rcp(new LoadableBlockVector(vecBlock, lowestRow,
+              highestRow, mapBundle_.isBCIndex(block)));
+      }
+      else
+      {
+        vecBlock = b[i].getBlock(block);
+        vec_[i][block] = rcp_dynamic_cast<LoadableVector<double> >(vecBlock.ptr());
+      }
+      TEST_FOR_EXCEPTION(vec_[i][block].get()==0, RuntimeError,
+        "vector block " << block << " is not loadable");
+      vecBlock.zero();
     }
-    else
-    {
-      vecBlock = b.getBlock(block);
-      vec_[block] = rcp_dynamic_cast<LoadableVector<double> >(vecBlock.ptr());
-    }
-    TEST_FOR_EXCEPTION(vec_[block].get()==0, RuntimeError,
-      "vector block " << block << " is not loadable");
-    vecBlock.zero();
   }
   SUNDANCE_MSG1(verb(), tab0 << "done VectorFillingAssemblyKernel ctor");
 }
@@ -115,6 +119,7 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
   bool useCofacetCells,
   const Array<int>& funcID,  
   const Array<int>& funcBlock, 
+  const Array<int>& mvIndices, 
   const Array<double>& localValues) const
 {
   TimeMonitor timer(vecInsertTimer());
@@ -134,6 +139,8 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
     SUNDANCE_MSG2(verb(), tab1 << "is BC eqn = " << isBCRqc);
     SUNDANCE_MSG2(verb(), tab1 << "num cells = " << nCells);
     SUNDANCE_MSG2(verb(), tab1 << "using cofacet cells = " << useCofacetCells);
+    SUNDANCE_MSG2(verb(), tab1 << "multivector index = " 
+      << mvIndices[i]);
 
     /* First, find the block associated with the current function
      * so that we can find the appropriate DOF information */
@@ -162,7 +169,8 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
 
     /* At this point, we can start to load the elements */
     int r=0;
-    RefCountPtr<TSFExtended::LoadableVector<double> > vecBlock = vec_[block];
+    RefCountPtr<TSFExtended::LoadableVector<double> > vecBlock 
+      = vec_[mvIndices[i]][block];
 
     FancyOStream& os = Out::os();
 

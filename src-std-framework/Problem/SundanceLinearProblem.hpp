@@ -44,152 +44,156 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+using namespace SundanceCore;
+using namespace SundanceCore;
+using namespace Teuchos;
 
 namespace Internal
 {
 class Assembler;
 }
 
-  /** 
-   * LinearProblem encapsulates all information needed to form
-   * a discrete linear problem. 
-   */
-  class LinearProblem 
-    : public TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>
-  {
-  public:
-    /** Empty ctor */
-    LinearProblem();
+/** 
+ * LinearProblem encapsulates all information needed to form
+ * a discrete linear problem. 
+ */
+class LinearProblem 
+  : public TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>
+{
+public:
+  /** Empty ctor */
+  LinearProblem();
     
-    /** Construct with a mesh, equation set, bcs, test and unknown funcs,
-     * and a vector type. */
-    LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-      const Expr& test, const Expr& unk, 
-      const TSFExtended::VectorType<double>& vecType,
-      const ParameterList& verbParams = *defaultVerbParams(),
-      bool partitionBCs = false
-      );
+  /** Construct with a mesh, equation set, bcs, test and unknown funcs,
+   * and a vector type. */
+  LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+    const Expr& test, const Expr& unk, 
+    const TSFExtended::VectorType<double>& vecType,
+    const ParameterList& verbParams = *defaultVerbParams(),
+    bool partitionBCs = false
+    );
     
-    /** Construct with a mesh, equation set, bcs, and blocks of variables */
-    LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-      const BlockArray& test, const BlockArray& unk,
-      const ParameterList& verbParams = *defaultVerbParams(),
-      bool partitionBCs = false);
+  /** Construct with a mesh, equation set, bcs, and blocks of variables */
+  LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+    const BlockArray& test, const BlockArray& unk,
+    const ParameterList& verbParams = *defaultVerbParams(),
+    bool partitionBCs = false);
     
-    /** Construct with a mesh, equation set, bcs, test and unknown funcs,
-     * parameters, and a vector type. */
-    LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-      const Expr& test, const Expr& unk, 
-      const Expr& unkParams, const Expr& unkParamVals, 
-      const TSFExtended::VectorType<double>& vecType,
-      const ParameterList& verbParams = *defaultVerbParams(),
-      bool partitionBCs = false);
+  /** Construct with a mesh, equation set, bcs, test and unknown funcs,
+   * parameters, and a vector type. */
+  LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+    const Expr& test, const Expr& unk, 
+    const Expr& unkParams, const Expr& unkParamVals, 
+    const TSFExtended::VectorType<double>& vecType,
+    const ParameterList& verbParams = *defaultVerbParams(),
+    bool partitionBCs = false);
     
-    /** Construct with a mesh, equation set, bcs, parameters, and blocks of variables */
-    LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-      const BlockArray& test, const BlockArray& unk, 
-      const Expr& unkParams, const Expr& unkParamVals,
-      const ParameterList& verbParams = *defaultVerbParams(),
-      bool partitionBCs = false);
+  /** Construct with a mesh, equation set, bcs, parameters, and blocks of
+      variables */
+  LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+    const BlockArray& test, const BlockArray& unk, 
+    const Expr& unkParams, const Expr& unkParamVals,
+    const ParameterList& verbParams = *defaultVerbParams(),
+    bool partitionBCs = false);
 
-    /** */
-    LinearProblem(const RefCountPtr<Assembler>& assembler,
-      const ParameterList& verbParams = *defaultVerbParams());
+  /** */
+  LinearProblem(const RefCountPtr<Assembler>& assembler,
+    const ParameterList& verbParams = *defaultVerbParams());
 
-    /** Solve the problem using the specified solver algorithm */
-    Expr solve(const LinearSolver<double>& solver) const ;
+  /** Solve the problem using the specified solver algorithm */
+  Expr solve(const LinearSolver<double>& solver) const ;
 
-    /** Return the status of the last solve */
-    SolverState<double> solveStatus() const ;
+  /** Return the status of the last solve */
+  SolverState<double> solveStatus() const ;
 
-    /** Solve the problem, writing the solution into the given function */
-    SolverState<double> solve(const LinearSolver<double>& solver,
-                              Expr& soln) const ;
+  /** Solve the problem, writing the solution into the given function */
+  SolverState<double> solve(const LinearSolver<double>& solver,
+    Expr& soln) const ;
 
-    /** Return the vector on the right-hand side of the linear equation */
-    Vector<double> getRHS() const ;
+  /** Return the multivector on the right-hand side of the linear equation */
+  Array<Vector<double> > getRHS() const ;
 
-    /** Return the operator on the left-hand side of the equation */
-    LinearOperator<double> getOperator() const ;
+  /** Return the vector on the right-hand side of the linear equation */
+  Vector<double> getSingleRHS() const {return getRHS()[0];}
 
-    /** Return the map from cells and functions to row indices */
-    const RefCountPtr<DOFMapBase>& rowMap(int blockRow) const ;
+  /** Return the operator on the left-hand side of the equation */
+  LinearOperator<double> getOperator() const ;
+
+  /** Return the map from cells and functions to row indices */
+  const RefCountPtr<DOFMapBase>& rowMap(int blockRow) const ;
     
-    /** Return the map from cells and functions to column indices */
-    const RefCountPtr<DOFMapBase>& colMap(int blockCol) const ;
+  /** Return the map from cells and functions to column indices */
+  const RefCountPtr<DOFMapBase>& colMap(int blockCol) const ;
 
-    /** Return the discrete space in which solutions live */
-    const Array<RefCountPtr<DiscreteSpace> >& solnSpace() const ;
+  /** Return the discrete space in which solutions live */
+  const Array<RefCountPtr<DiscreteSpace> >& solnSpace() const ;
 
     
-    /** Return the set of row indices marked as 
-     * essential boundary conditions */
-    const RefCountPtr<Set<int> >& bcRows(int blockRow) const ;
+  /** Return the set of row indices marked as 
+   * essential boundary conditions */
+  const RefCountPtr<Set<int> >& bcRows(int blockRow) const ;
 
-    /** Return the number of block rows in the problem  */
-    int numBlockRows() const ;
+  /** Return the number of block rows in the problem  */
+  int numBlockRows() const ;
 
-    /** Return the number of block cols in the problem  */
-    int numBlockCols() const ;
+  /** Return the number of block cols in the problem  */
+  int numBlockCols() const ;
 
-    /** Form a solution expression out of a vector obtained from a linear
-     * solver */
-    Expr formSolutionExpr(const Vector<double>& solnVector) const ;
+  /** Form a solution expression out of a vector obtained from a linear
+   * solver */
+  Expr formSolutionExpr(const Array<Vector<double> >& solnVector) const ;
 
-    /** Convert from a BC-partitioned solution vector to a 
-     * monolithic vector */
-    Vector<double> 
-    convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
-      const Array<Vector<double> >& bcBlock) const ;
+  /** Convert from a BC-partitioned solution vector to a 
+   * monolithic vector */
+  Vector<double> 
+  convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
+    const Array<Vector<double> >& bcBlock) const ;
 
-    /** Flag indicating whether to stop on a solve failure */
-    static bool& stopOnSolveFailure() {static bool rtn = false; return rtn;}
+  /** Flag indicating whether to stop on a solve failure */
+  static bool& stopOnSolveFailure() {static bool rtn = false; return rtn;}
 
-    /** Flag indicating whether to write out the matrix and vector
-     * after a solve failure */
-    static bool& dumpBadMatrix() {static bool rtn = true; return rtn;}
+  /** Flag indicating whether to write out the matrix and vector
+   * after a solve failure */
+  static bool& dumpBadMatrix() {static bool rtn = true; return rtn;}
 
-    /** Filename for dump of bad matrix */
-    static string& badMatrixFilename() 
+  /** Filename for dump of bad matrix */
+  static string& badMatrixFilename() 
     {static string rtn = "badMatrix.dat"; return rtn;}
 
-    /** Filename for dump of bad vector */
-    static string& badVectorFilename() 
+  /** Filename for dump of bad vector */
+  static string& badVectorFilename() 
     {static string rtn = "badVector.dat"; return rtn;}
 
     
-    /** */
-    static RefCountPtr<ParameterList> defaultVerbParams();
+  /** */
+  static RefCountPtr<ParameterList> defaultVerbParams();
 
 
-  private:
+private:
 
-    /** Do error reporting and matrix dumping after a solve failure */
-    void handleSolveFailure() const ;
+  /** Do error reporting and matrix dumping after a solve failure */
+  void handleSolveFailure(int col) const ;
     
       
-    /** */
-    RefCountPtr<Assembler> assembler_;
+  /** */
+  RefCountPtr<Assembler> assembler_;
 
-    /** */
-    mutable LinearOperator<double> A_;
+  /** */
+  mutable LinearOperator<double> A_;
 
-    /** */
-    mutable Vector<double> rhs_;
+  /** */
+  mutable Array<Vector<double> > rhs_;
 
-    /** */
-    mutable RefCountPtr<SolverState<double> > status_;
+  /** */
+  mutable RefCountPtr<SolverState<double> > status_;
 
-    /** */
-    Array<Array<string> > names_;
+  /** */
+  Array<Array<string> > names_;
     
-  };
+};
 }
 
 

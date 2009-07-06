@@ -459,7 +459,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
     {
       Out::os() << tabs << "constant arg #" << i << 
         " results:" << *(constantArgResults[i]) << endl;
-      Out::os() << tabs << "variable arg # " << i << " derivs:" << endl;
+      Out::os() << tabs << "variable arg #" << i << " derivs:" << endl;
       for (unsigned int j=0; j<varArgResults[i]->size(); j++)
       {
         Tabs tab1;

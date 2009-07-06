@@ -104,7 +104,7 @@ void MatrixVectorAssemblyKernel::fill(
     Tabs tab1;
     SUNDANCE_MSG2(verb(), tab1 << "group is one form");
     insertLocalVectorBatch(isBC, useCofacets, 
-      group.testID(), group.testBlock(),
+      group.testID(), group.testBlock(), group.mvIndices(),
       *localValues);
   }
   else if (group.isTwoForm())
