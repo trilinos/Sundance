@@ -732,12 +732,14 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
     rowSpace = vs[0];
   }
 
-  for (unsigned int i=numConfiguredColumns_; i<b.size(); i++)
+  for (unsigned int i=0; i<b.size(); i++)
   {
+    Out::os() << "configuring column " << i << endl;
     b[i] = rowSpace.createMember();
 
     if (!partitionBCs_ && eqn_->numVarBlocks() > 1)
     {
+      Out::os() << "vector is blocked" << endl;
       /* configure the blocks */
       Vector<double> vecBlock;
       for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
@@ -756,6 +758,11 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
         
         TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
           "vector is not loadable in Assembler::configureVector()");
+        Out::os() << "vector is loadable" << endl;
+      }
+      else
+      {
+        Out::os() << "bcs are partitioned" << endl;
       }
     }
   }
@@ -1168,6 +1175,37 @@ void Assembler::assemble(LinearOperator<double>& A,
 
   assemblyLoop(MatrixAndVector, kernel);
   SUNDANCE_MSG1(verb, tab << "Assembler: done assembling matrix and vector");
+}
+
+/* ------------  assemble the matrix and sensitivity RHS ------------- */
+
+void Assembler::assembleSensitivities(LinearOperator<double>& A,
+  Array<Vector<double> >& mv) const 
+{
+  TimeMonitor timer(assemblyTimer());
+  Tabs tab;
+  int verb = 0;
+  if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
+  
+  SUNDANCE_BANNER1(verb, tab, "Assembling matrix and sensitivity vector");
+
+  TEST_FOR_EXCEPTION(!contexts_.containsKey(Sensitivities),
+    RuntimeError,
+    "Assembler::assembleSensitivities(A, b) called for an assembler that "
+    "does not support sensitivity assembly");
+
+  configureMatrix(A, mv);
+  
+  
+  RefCountPtr<AssemblyKernelBase> kernel 
+    = rcp(new MatrixVectorAssemblyKernel(
+            rowMap_, isBCRow_, lowestRow_,
+            colMap_, isBCCol_, lowestCol_,
+            A, mv, partitionBCs_, 
+            0));
+
+  assemblyLoop(Sensitivities, kernel);
+  SUNDANCE_MSG1(verb, tab << "Assembler: done assembling matrix and sensitivity vector");
 }
 
 

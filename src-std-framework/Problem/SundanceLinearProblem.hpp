@@ -32,15 +32,8 @@
 #define SUNDANCE_LINEARPROBLEM_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceMesh.hpp"
-#include "SundanceExpr.hpp"
-#include "SundanceBlock.hpp"
-#include "SundanceDiscreteFunction.hpp"
+#include "SundanceLinearSolveDriver.hpp"
 #include "TSFObjectWithVerbosity.hpp"
-#include "TSFLinearOperator.hpp"
-#include "TSFLinearSolver.hpp"
-#include "TSFVector.hpp"
-#include "TSFVectorType.hpp"
 
 namespace SundanceStdFwk
 {
@@ -106,9 +99,6 @@ public:
   /** Solve the problem using the specified solver algorithm */
   Expr solve(const LinearSolver<double>& solver) const ;
 
-  /** Return the status of the last solve */
-  SolverState<double> solveStatus() const ;
-
   /** Solve the problem, writing the solution into the given function */
   SolverState<double> solve(const LinearSolver<double>& solver,
     Expr& soln) const ;
@@ -142,9 +132,6 @@ public:
   /** Return the number of block cols in the problem  */
   int numBlockCols() const ;
 
-  /** Form a solution expression out of a vector obtained from a linear
-   * solver */
-  Expr formSolutionExpr(const Array<Vector<double> >& solnVector) const ;
 
   /** Convert from a BC-partitioned solution vector to a 
    * monolithic vector */
@@ -152,20 +139,26 @@ public:
   convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
     const Array<Vector<double> >& bcBlock) const ;
 
+  /** */
+  Expr formSolutionExpr(const Array<Vector<double> >& vec) const ;
+
   /** Flag indicating whether to stop on a solve failure */
-  static bool& stopOnSolveFailure() {static bool rtn = false; return rtn;}
+  static bool& solveFailureIsFatal()
+    {return LinearSolveDriver::solveFailureIsFatal();}
+    
 
   /** Flag indicating whether to write out the matrix and vector
    * after a solve failure */
-  static bool& dumpBadMatrix() {static bool rtn = true; return rtn;}
+  static bool& dumpBadMatrix() 
+    {return LinearSolveDriver::dumpBadMatrix();}
 
   /** Filename for dump of bad matrix */
   static string& badMatrixFilename() 
-    {static string rtn = "badMatrix.dat"; return rtn;}
+    {return LinearSolveDriver::badMatrixFilename();}
 
   /** Filename for dump of bad vector */
   static string& badVectorFilename() 
-    {static string rtn = "badVector.dat"; return rtn;}
+    {return LinearSolveDriver::badVectorFilename();}
 
     
   /** */
@@ -174,9 +167,6 @@ public:
 
 private:
 
-  /** Do error reporting and matrix dumping after a solve failure */
-  void handleSolveFailure(int col) const ;
-    
       
   /** */
   RefCountPtr<Assembler> assembler_;
@@ -188,10 +178,10 @@ private:
   mutable Array<Vector<double> > rhs_;
 
   /** */
-  mutable RefCountPtr<SolverState<double> > status_;
+  Array<Array<string> > names_;
 
   /** */
-  Array<Array<string> > names_;
+  LinearSolveDriver solveDriver_;
     
 };
 }

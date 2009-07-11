@@ -81,8 +81,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     assembler_(),
     A_(),
     rhs_(1),
-    status_(),
-    names_(1)
+    names_(1),
+    solveDriver_()
 {
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flattenSpectral();
@@ -130,8 +130,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     assembler_(),
     A_(),
     rhs_(1),
-    status_(),
-    names_(1)
+    names_(1),
+    solveDriver_()
 {
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flattenSpectral();
@@ -174,8 +174,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     assembler_(),
     A_(),
     rhs_(1),
-    status_(),
-    names_(unk.size())
+    names_(unk.size()),
+    solveDriver_()
 {
   TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
@@ -237,8 +237,8 @@ LinearProblem::LinearProblem(const Mesh& mesh,
     assembler_(),
     A_(),
     rhs_(1),
-    status_(),
-    names_(unk.size())
+    names_(unk.size()),
+    solveDriver_()
 {
   TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
@@ -345,13 +345,6 @@ TSFExtended::LinearOperator<double> LinearProblem::getOperator() const
   return A_;
 }
 
-SolverState<double> LinearProblem::solveStatus() const
-{
-  TEST_FOR_EXCEPTION(status_.get()==0, RuntimeError,
-    "Null status pointer in LinearProblem::solveStatus().");
-  return *status_;
-}
-
 Expr LinearProblem::solve(const LinearSolver<double>& solver) const 
 {
   Tabs tab;
@@ -364,28 +357,24 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
     rhs_[i].scale(-1.0);
 
   SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() solving system");
-  
-  for (unsigned int i=0; i<rhs_.size(); i++)
-  {
-    solnVec[i] = rhs_[i].copy();
-    status_ 
-      = rcp(new SolverState<double>(solver.solve(A_, rhs_[i], solnVec[i])));
-    const SolverState<double>& state = *status_;
-    SUNDANCE_VERB_MEDIUM(tab << 
-      "LinearProblem::solve() done solving system: status is " 
-      << state.stateDescription());
-    if (state.finalState() != SolveConverged) 
-    {
-      handleSolveFailure(i);
-    }
-    TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
-      RuntimeError,
-      "LinearProblem: Solve failed!");
-  }
 
-  Expr soln = formSolutionExpr(solnVec);
+  Expr rtn;
 
-  return soln;
+  /* we're not checking the status of the solve, so failures should
+   * be fatal */
+  bool save = LinearSolveDriver::solveFailureIsFatal();
+  LinearSolveDriver::solveFailureIsFatal() = true;
+
+  int vrb = verbLevel("solve control");
+
+  solveDriver_.solve(solver, A_, rhs_, solnSpace(), names_, vrb, rtn);
+
+  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() done solving system");
+
+  /* restore original failure-handling setting */
+  LinearSolveDriver::solveFailureIsFatal()=save; 
+
+  return rtn;
 }
 
 SolverState<double> LinearProblem
@@ -405,125 +394,26 @@ SolverState<double> LinearProblem
 
   SUNDANCE_VERB_LOW(tab << "solving LinearProblem");
   
-  for (unsigned int i=0; i<rhs_.size(); i++)
-  {
-    solnVec[i] = rhs_[i].copy();
-  }
-
-  for (unsigned int i=0; i<rhs_.size(); i++)
-  {
-    status_ = rcp(new SolverState<double>(solver.solve(A_, rhs_[i], solnVec[i])));
-    const SolverState<double>& state = *status_;
-    SUNDANCE_VERB_MEDIUM(tab << 
-      "LinearProblem::solve() done solving system: status is " 
-      << state.stateDescription());
-    if (state.finalState() != SolveConverged) 
-    {
-      handleSolveFailure(i);
-      TEST_FOR_EXCEPTION(state.finalState() != SolveConverged,
-        RuntimeError,
-        "LinearProblem: Solve failed!");
-    }
-  }
-  
-  
-  if (soln.ptr().get()==0)
-  {
-    soln = formSolutionExpr(solnVec);
-  }
-  else
-  {
-    TEST_FOR_EXCEPT(soln.size() != rhs_.size());
-    for (unsigned int i=0; i<rhs_.size(); i++)
-    {
-      Expr u = soln[i];
-      DiscreteFunction::discFunc(u)->setVector(solnVec[i]);
-    }
-  }
-
-  return *status_;
+  int verb = verbLevel("solve control");
+  return solveDriver_.solve(solver, A_, rhs_, solnSpace(), names_, verb, soln);
 }
 
-Expr LinearProblem::formSolutionExpr(const Array<Vector<double> >& solnVector) const
-{
-  Array<Expr> cols(rhs_.size());
-  for (unsigned int m=0; m<rhs_.size(); m++)
-  {
-    Array<Expr> rtn(assembler_->solutionSpace().size());
-
-    for (unsigned int i=0; i<rtn.size(); i++)
-    {
-      string name = "Soln";
-      if (rtn.size() > 1U) name += "[" + Teuchos::toString(i) + "]";
-      rtn[i] = new DiscreteFunction(*(assembler_->solutionSpace()[i]),
-        solnVector[m].getBlock(i), names_[i]);
-    }
-    if (rtn.size() > 1U)
-    {
-      cols[m] = new ListExpr(rtn);
-    }
-    else
-    {
-      cols[m] = rtn[0];
-    }
-  }
-
-  if (cols.size() > 1U)
-  {
-    return new ListExpr(cols);;
-  }
-  else
-  {
-    return cols[0];
-  }
-}
-
-void LinearProblem::handleSolveFailure(int column) const 
-{
-  const SolverState<double>& state = *status_;
-
-  TeuchosOStringStream ss;
-  ss << "Solve failed! state = "
-     << state.stateDescription()
-     << "\nmessage=" << state.finalMsg()
-     << "\niters taken = " << state.finalIters()
-     << "\nfinal residual = " << state.finalResid();
-  
-  if (dumpBadMatrix())
-  {
-    if (A_.ptr().get() != 0)
-    {
-      ofstream osA(badMatrixFilename().c_str());
-      A_.print(osA);
-      ss << "\nmatrix written to " << badMatrixFilename();
-    }
-    else
-    {
-      ss << "\nthe matrix is null! Evil is afoot in your code...";
-    }
-    if (rhs_[column].ptr().get() != 0)
-    {
-      ofstream osb(badVectorFilename().c_str());
-      rhs_[column].print(osb);
-      ss << "\nRHS vector written to " << badVectorFilename();
-    }
-    else
-    {
-      ss << "\nthe RHS vector is null! Evil is afoot in your code...";
-    }
-  }
-
-  TEST_FOR_EXCEPTION((state.finalState() != SolveConverged) && stopOnSolveFailure(),
-    RuntimeError, TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss));
-
-  cerr << TEUCHOS_OSTRINGSTREAM_GET_C_STR(ss) << endl;
-}
 
 
 Vector<double> 
 LinearProblem::convertToMonolithicVector(const Array<Vector<double> >& internalBlock,
   const Array<Vector<double> >& bcBlock) const 
 {return assembler_->convertToMonolithicVector(internalBlock, bcBlock);}
+
+
+Expr LinearProblem::formSolutionExpr(const Array<Vector<double> >& vec) const
+{
+  return solveDriver_.formSolutionExpr(vec, solnSpace(), names_,
+    verbLevel("solve control"));
+}
+
+
+
 
 
 RefCountPtr<ParameterList> LinearProblem::defaultVerbParams()

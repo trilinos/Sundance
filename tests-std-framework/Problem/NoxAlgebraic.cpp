@@ -78,8 +78,7 @@ int main(int argc, char** argv)
       Expr bc;
 
       /* We can now set up the nonlinear problem! */
-      NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
 
 
 #ifdef HAVE_CONFIG_H
@@ -91,9 +90,9 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
-      solver.solve();
+      prob.solve(solver);
 
       Expr exactSoln = sqrt(2.0);
       

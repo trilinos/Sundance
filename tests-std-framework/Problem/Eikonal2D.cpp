@@ -128,7 +128,7 @@ int main(int argc, char** argv)
       Expr bc = EssentialBC(bdry, v*u, quad4);
 
       /* Create a TSF NonlinearOperator object */
-      NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+      NonlinearProblem nlp(mesh, eqn, bc, v, u, u0, vecType);
 
 
 #ifdef HAVE_CONFIG_H
@@ -140,9 +140,10 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
-      solver.solve();
+      /* Solve the problem. The solution is written into the expr u0 */
+      nlp.solve(solver);
 
      
 

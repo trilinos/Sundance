@@ -29,10 +29,13 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
+#include "SundanceUnknownParameter.hpp"
+#include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceDiscreteFunctionData.hpp"
 
 
 /** 
- * Solves the radiation diffusion equation in 1D
+ * Solves the steady Burgers equation in 1D
  */
 
 
@@ -52,7 +55,7 @@ int main(int argc, char** argv)
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
       MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 100*np, meshType);
+      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 400*np, meshType);
       Mesh mesh = mesher.getMesh();
 
       /* Create a cell filter that will identify the maximal cells
@@ -61,8 +64,6 @@ int main(int argc, char** argv)
       CellFilter points = new DimensionalCellFilter(0);
       CellFilter rightPoint = points.subset(new RightPointTest());
       CellFilter leftPoint = points.subset(new LeftPointTest());
-
-      
       
       /* Create unknown and test functions, discretized using first-order
        * Lagrange interpolants */
@@ -73,23 +74,44 @@ int main(int argc, char** argv)
       Expr dx = new Derivative(0);
       Expr x = new CoordExpr(0);
 
+      /* Parameters */
+      Expr a = new UnknownParameter("a");
+      Expr b = new UnknownParameter("b");
+      Expr c = new UnknownParameter("c");
+      Expr a0 = new SundanceCore::Parameter(-2.0);
+      Expr b0 = new SundanceCore::Parameter(1.0);
+      Expr c0 = new SundanceCore::Parameter(10.0);
+
+      Expr uLeft = -2.0*c*b/a;
+      Expr uRight = -2.0*c*b/(a+b);
+      Expr exactSoln = -2.0*c0/(a0 + b0*x);
+
+      Expr den = a0+b0*x;
+      Expr sa = 2.0*b0*c0/den/den;
+      Expr sb = -2.0*c0*a0/den/den;
+      Expr sc = -2.0*b0/den;
+
       /* Create a discrete space, and discretize the function 1.0+x on it */
       DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
-      L2Projector projector(discSpace, 1.0+x);
+      L2Projector projector(discSpace, x);
       Expr u0 = projector.project();
 
       /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(8);
+      QuadratureFamily quad = new GaussianQuadrature(4);
 
      
       /* Define the weak form */
-      Expr eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad);
+      Expr eqn = Integral(interior, c*(dx*u)*(dx*v) + v*u*(dx*u), quad);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*(u-1.0), quad)
-        + EssentialBC(rightPoint, v*(u-2.0), quad); 
+
+      WatchFlag watch("watch eqn");
+
+      Expr bc = EssentialBC(leftPoint, v*(u-uLeft), quad, watch)
+        + EssentialBC(rightPoint, v*(u-uRight), quad); 
 
       /* Create a TSF NonlinearOperator object */
-      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
+      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, 
+        List(a,b,c), List(a0,b0,c0), vecType);
 
 #ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
@@ -99,6 +121,7 @@ int main(int argc, char** argv)
       ParameterList noxParams = reader.getParameters();
 
       NOXSolver solver(noxParams);
+      LinearSolver<double> linSolver = solver.linSolver();
 
       // Solve the nonlinear system
       NOX::StatusTest::StatusType status = prob.solve(solver);
@@ -106,20 +129,52 @@ int main(int argc, char** argv)
         runtime_error, "solve failed");
 
 
+      /* compute senstivities */
+      Expr sens = prob.computeSensitivities(linSolver);
+
+      /* Write the field in ASCII format */
+      FieldWriter w = new MatlabWriter("Burgers1DSoln");
+      w.addMesh(mesh);
+      w.addField("u", new ExprFieldWrapper(u0));
+      for (int i=0; i<sens.size(); i++)
+      {
+        w.addField("sens_" + Teuchos::toString(i), 
+          new ExprFieldWrapper(sens[i]));
+      }
+      w.write();
+
+
       /* check solution */
-      Expr exactSoln = pow(15.0*x + 1.0, 0.25);
-      
       Expr errExpr = Integral(interior, 
                               pow(u0-exactSoln, 2),
                               new GaussianQuadrature(8));
+      Expr errExprA = Integral(interior, 
+                              pow(sens[0]-sa, 2),
+                              new GaussianQuadrature(8));
+      Expr errExprB = Integral(interior, 
+                              pow(sens[1]-sb, 2),
+                              new GaussianQuadrature(8));
+      Expr errExprC = Integral(interior, 
+                              pow(sens[2]-sc, 2),
+                              new GaussianQuadrature(8));
 
-      double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      double errorSq0 = evaluateIntegral(mesh, errExpr);
+      cerr << "soln error norm = " << sqrt(errorSq0) << endl << endl;
 
+      double errorSqA = evaluateIntegral(mesh, errExprA);
+      cerr << "sens A error norm = " << sqrt(errorSqA) << endl << endl;
+
+      double errorSqB = evaluateIntegral(mesh, errExprB);
+      cerr << "sens B error norm = " << sqrt(errorSqB) << endl << endl;
+
+      double errorSqC = evaluateIntegral(mesh, errExprC);
+      cerr << "sens C error norm = " << sqrt(errorSqC) << endl << endl;
+
+
+      double error = sqrt(errorSq0 + errorSqA + errorSqB + errorSqC);
       
-
       double tol = 1.0e-4;
-      Sundance::passFailTest(errorSq, tol);
+      Sundance::passFailTest(error, tol);
 
     }
 	catch(exception& e)

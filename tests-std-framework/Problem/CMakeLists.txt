@@ -49,6 +49,7 @@ SET(MPITests
              VorticityNavierStokes2D
              SpectralPoisson1D 
              SpectralSqrt 
+             SteadyBurgers1D
              PartitionedPoisson1D 
              NitschePoisson2D 
              HelmholtzEigen2D

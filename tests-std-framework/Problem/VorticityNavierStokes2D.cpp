@@ -117,9 +117,8 @@ int main(int argc, char** argv)
       Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
 
       /* Create a TSF NonlinearOperator object */
-      NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, List(vPsi, vOmega),
-                               List(psi, omega), u0, vecType);
+      NonlinearProblem prob(mesh, eqn, bc, List(vPsi, vOmega),
+        List(psi, omega), u0, vecType);
 
 
 #ifdef HAVE_CONFIG_H
@@ -131,7 +130,7 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
       int numReynolds = 10;
       double finalReynolds = 100.0;
@@ -144,7 +143,7 @@ int main(int argc, char** argv)
           cerr << " reynolds = " << reynolds << endl;
           cerr << "--------------------------------------------------------- " << endl;
           // Solve the nonlinear system
-          NOX::StatusTest::StatusType status = solver.solve();
+          NOX::StatusTest::StatusType status = prob.solve(solver);
           TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
             runtime_error, "solve failed");
 

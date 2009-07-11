@@ -135,9 +135,6 @@ int main(int argc, char** argv)
 
       Expr soln = prob.solve(solver);
 
-      TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
-                         RuntimeError,
-                         "solve failed");
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("mag2D");

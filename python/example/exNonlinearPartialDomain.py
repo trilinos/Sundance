@@ -92,8 +92,8 @@ def main():
                           List(v1, v2), List(u1, u2), u0, vecType)
 
   # solve the problem
-  solver = NOXSolver(solverParams, prob)
-  solver.solve()
+  solver = NOXSolver(solverParams)
+  prob.solve(solver)
 
   # compute the error
   err2 = ((u0[0] - 2.0)**2.0).integral(interior, mesh, quad) \

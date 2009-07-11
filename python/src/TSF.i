@@ -23,7 +23,7 @@
 #include "TSFLinearSolverBuilder.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
 #include "PyTeuchos_Utils.hpp"
-#include "PySundanceNOXSolverHandle.hpp"
+//#include "PySundanceNOXSolverHandle.hpp"
 #include "PySundanceLinearSolver.hpp"
   %}
 
@@ -42,7 +42,7 @@
 %rename(LinearOperator) LinOp;
 %rename(LinearSolver) LinSol;
 %rename(NonlinearOperator) NonlinOp;
-%rename(NOXSolver) makeNOXSolver;
+//%rename(NOXSolver) makeNOXSolver;
 %rename(Preconditioner) Precond;
 %rename(PreconditionerFactory) PrecondFactory;
 
@@ -726,57 +726,55 @@ namespace NOX
 }
 
 
-/* --------- NOX solver ------------ */
 namespace TSFExtended
 {
-  class NOXSolverHandle
+class NOXSolver 
+{
+public:
+  /** */
+  NOXSolver();
+  /** */
+  NOXSolver(const Teuchos::ParameterList& params);
+
+  %extend {
+    NOXSolver(PyObject* dict)
+    {
+      Teuchos::ParameterList params = dict2ParameterList(dict);
+      return new NOXSolver(params);
+    }
+    }
+  
+  /** */
+  NOX::StatusTest::StatusType solve(const NonlinearOperator<double>& F, 
+    Vector<double>& soln) const ;
+
+  /** */
+  const LinearSolver<double>& linSolver() const ;
+
+};
+
+%extend NOXSolver {
+  NOXSolver(PyObject* dict)
   {
-  public:
-    ~NOXSolverHandle();
-    NOXSolverHandle();
-
-    NOX::StatusTest::StatusType solve() const ;
-
-  };
+    Teuchos::ParameterList params = dict2ParameterList(dict);
+    return NOXSolver(params);
+  }
+}
 }
 
 
 
-
-
-
-
-%inline %{
-  /* Create a nonlinear solver from a parameter list */
-  TSFExtended::
-    NOXSolverHandle makeNOXSolver(const Teuchos::ParameterList& params,
-                                  const TSFExtended::NonlinearOperator<double>& F)
-  {
-
-    NOXSolverHandle rtn;
-    try
-      {
-        rtn = rcp(new TSFExtended::NOXSolver(params, F));
-      }
-    catch(std::exception& e)
-      {
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        std::cerr << "detected exception "
-                  << e.what() << " in makeNOXSolver()" << std::endl;
-      }
-    return rtn;
-  }
-  %}
-
-
 %inline %{
   /* Create a nonlinear solver from a Python dictionary */
-  TSFExtended::
-    NOXSolverHandle makeNOXSolver(PyObject* dict,
-                                  const TSFExtended::NonlinearOperator<double>& F)
+  TSFExtended::NOXSolver makeNOXSolver(PyObject* dict)
   {
     Teuchos::ParameterList params = dict2ParameterList(dict);
-    return makeNOXSolver(params, F);
+    return NOXSolver(params);
+  }
+  /* Create a nonlinear solver from a Python dictionary */
+  TSFExtended::NOXSolver makeNOXSolver(const Teuchos::ParameterList& params)
+  {
+    return NOXSolver(params);
   }
   %}
 

@@ -98,8 +98,7 @@ int main(int argc, char** argv)
 
       /* We can now set up the nonlinear problem! */
 
-      NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
 
 
 
@@ -112,9 +111,9 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
-      solver.solve();
+      prob.solve(solver);
 
       /* Inspect solution values. The solution is constant in space,
        * so we can simply take the first NTerms entries in the vector */

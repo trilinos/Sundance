@@ -69,13 +69,12 @@ int main(int argc, char *argv[])
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
-      NOX::StatusTest::StatusType stat = solver.solve();
+      Vector<double> soln;
+      NOX::StatusTest::StatusType stat = solver.solve(F, soln);
       TEST_FOR_EXCEPTION(stat != NOX::StatusTest::Converged,
         runtime_error, "solve failed");
-
-      Vector<double> soln = solver.getSolution();
 
       cerr << "solution = " << endl << soln << endl;
 

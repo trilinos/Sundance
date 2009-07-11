@@ -16,7 +16,6 @@ APPEND_SET(HEADERS
   PySundanceCallback.hpp
   PySundanceCellPredicate.hpp
   PySundanceLinearSolver.hpp
-  PySundanceNOXSolverHandle.hpp
   PyTeuchos_Utils.hpp
   )
 
@@ -24,7 +23,6 @@ APPEND_SET(SOURCES
   PySundanceCallback.cpp
   PySundanceCellPredicate.cpp
   PySundanceLinearSolver.cpp
-  PySundanceNOXSolverHandle.cpp
   PyTeuchos_Utils.cpp
   )
 

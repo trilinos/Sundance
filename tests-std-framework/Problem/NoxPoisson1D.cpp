@@ -94,8 +94,7 @@ int main(int argc, char** argv)
 
 
       /* Create a TSF NonlinearOperator object */
-      NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
+      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
       
 
 #ifdef HAVE_CONFIG_H
@@ -107,9 +106,9 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
-      solver.solve();
+      prob.solve(solver);
 
       Expr exactSoln = x*(x-2.0);
 

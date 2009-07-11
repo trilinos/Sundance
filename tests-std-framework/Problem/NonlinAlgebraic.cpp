@@ -84,7 +84,7 @@ int main(int argc, char** argv)
       LOUD();
 
       /* We can now set up the nonlinear problem! */
-      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
+      NLOp prob(mesh, eqn, bc, v, u, u0, vecType);
 
       /* Set up the linear solver used in solving J*delta+b = 0 */
       ParameterList solverParams;

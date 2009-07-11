@@ -20,6 +20,7 @@ class RightPointPredicate :
     return (math.fabs(pt-1.0) < 1.0e-10);
 
 from noxSolver import solverParams
+from noxSolver import solverDict
 
 def main():
 
@@ -50,9 +51,9 @@ def main():
   eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad)
 
   prob = NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType)
-  solver = NOXSolver(solverParams, prob)
+  solver = NOXSolver(solverParams)
 
-  solver.solve()
+  prob.solve(solver)
 
   exactSoln = pow(15.0*x + 1.0, 0.25)
 

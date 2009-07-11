@@ -137,6 +137,10 @@ public:
   void assemble(TSFExtended::LinearOperator<double>& A,
     Array<Vector<double> >& b) const ;
 
+  /** */
+  void assembleSensitivities(TSFExtended::LinearOperator<double>& A,
+    Array<Vector<double> >& b) const ;
+
 
   /** */
   void assemble(Array<Vector<double> >& b) const ;

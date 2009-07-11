@@ -105,8 +105,7 @@ int main(int argc, char** argv)
 
 
       /* We can now set up the nonlinear problem! */
-      NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
+      NonlinearProblem prob(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
 
 
 #ifdef HAVE_CONFIG_H
@@ -118,9 +117,9 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
-      solver.solve();
+      prob.solve(solver);
 
       DiscreteSpace ds2(mesh, L1, A+B, vecType);
       L2Projector proj(ds2, 3.0*u0[1]);

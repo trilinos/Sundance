@@ -127,10 +127,6 @@ int main(int argc, char** argv)
 
       Expr soln = prob.solve(solver);
 
-      TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
-                         RuntimeError,
-                         "solve failed");
-
       Expr exactSoln = x*(x-2.0);
 
       Expr errExpr = Integral(interior, 

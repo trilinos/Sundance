@@ -89,9 +89,7 @@ int main(int argc, char** argv)
       Expr bc;
 
       /* Create a TSF NonlinearOperator object */
-      NonlinearOperator<double> F = new NonlinearProblem(mesh, eqn, bc, v, u, u0, vecType);
-      F.verbosity() = VerbLow;
-      NOX::TSF::Group::classVerbosity() = VerbLow;
+      NonlinearProblem nlp(mesh, eqn, bc, v, u, u0, vecType);
 
 #ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
@@ -102,7 +100,7 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
       int numEcc = 5;
       double finalEcc = 0.4;
@@ -115,7 +113,7 @@ int main(int argc, char** argv)
           cerr << " solving at eccentricity = " << ecc << endl;
           cerr << "--------------------------------------------------------- " << endl;
           // Solve the nonlinear system
-          NOX::StatusTest::StatusType status = solver.solve();
+          NOX::StatusTest::StatusType status = nlp.solve(solver);
           TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
             runtime_error, "solve failed");
           

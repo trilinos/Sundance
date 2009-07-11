@@ -137,8 +137,7 @@ int main(int argc, char** argv)
       Expr bc;
 
         /* We can now set up the nonlinear problem! */
-      NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
+        NonlinearProblem prob(mesh, eqn, bc, List(v1, v2), List(u1, u2), u0, vecType);
 
 
 #ifdef HAVE_CONFIG_H
@@ -150,9 +149,9 @@ int main(int argc, char** argv)
 
       cerr << "solver params = " << noxParams << endl;
 
-      NOXSolver solver(noxParams, F);
+      NOXSolver solver(noxParams);
 
-      solver.solve();
+      prob.solve(solver);
 
       Expr errExpr = Integral(interior, 
                               pow(u0[0]-2.0, 2) + pow(u0[1]-3.0, 2),

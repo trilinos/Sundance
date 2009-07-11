@@ -111,7 +111,7 @@ LinearProblem Functional::linearVariationalProb(
   return LinearProblem(assembler);
 }
 
-NonlinearOperator<double> Functional
+NonlinearProblem Functional
 ::nonlinearVariationalProb(const Expr& var,
                            const Expr& varEvalPts,
                            const Expr& unk,
@@ -135,7 +135,7 @@ NonlinearOperator<double> Functional
   RefCountPtr<Assembler> assembler 
     = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false, verbSublist("Assembler")));
 
-  return new NonlinearProblem(assembler, unkEvalPts);
+  return NonlinearProblem(assembler, unkEvalPts);
 }
 
 FunctionalEvaluator Functional::evaluator(const Expr& var,

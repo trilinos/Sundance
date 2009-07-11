@@ -31,7 +31,7 @@ class Functional
       const TSFExtended::VectorType<double>& vecType);
 
     /** */
-    TSFExtended::NonlinearOperator<double>
+    NonlinearProblem
     nonlinearVariationalProb(const SundanceCore::Expr& var,
                              const SundanceCore::Expr& varEvalPts,
                              const SundanceCore::Expr& unk,

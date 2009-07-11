@@ -125,9 +125,6 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
     Expr soln = prob.solve(solver);
 
-    TEST_FOR_EXCEPTION(!(prob.solveStatus().finalState() == SolveConverged),
-      RuntimeError,
-      "solve failed");
 
     Expr zz = Integral(interior, soln[0], quad);
     double totalU = evaluateIntegral(mesh, zz);

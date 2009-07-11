@@ -32,14 +32,8 @@
 #define SUNDANCE_NONLINEARPROBLEM_H
 
 #include "SundanceDefs.hpp"
-#include "SundanceMesh.hpp"
-#include "SundanceExpr.hpp"
-#include "SundanceDiscreteFunction.hpp"
-#include "TSFObjectWithVerbosity.hpp"
-#include "TSFNonlinearOperatorBase.hpp"
-#include "TSFLinearOperator.hpp"
-#include "TSFVector.hpp"
-#include "TSFVectorType.hpp"
+#include "SundanceNLOp.hpp"
+#include "TSFNOXSolver.H"
 
 namespace SundanceStdFwk
 {
@@ -49,18 +43,12 @@ namespace SundanceStdFwk
   using namespace SundanceCore;
   using namespace SundanceCore;
   using namespace Teuchos;
-namespace Internal
-{
-class Assembler;
-}
 
     /** 
-     * NonlinearProblem encapsulates a discrete nonlinear problem, and can
-     * be passed to a nonlinear solver such as NOX.
+     * NonlinearProblem encapsulates a discrete nonlinear problem
      */
   class NonlinearProblem 
-    : public TSFExtended::ObjectWithVerbosity<NonlinearProblem>,
-      public TSFExtended::NonlinearOperatorBase<double>
+    : public TSFExtended::ObjectWithVerbosity<NonlinearProblem>
     {
     public:
       /** Empty ctor */
@@ -69,72 +57,41 @@ class Assembler;
       /** Construct with a mesh, equation set, bcs, test and unknown funcs,
        * and a vector type */
       NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-                       const Expr& test, const Expr& unk, const Expr& u0, 
+        const Expr& test, const Expr& unk, const Expr& u0, 
         const TSFExtended::VectorType<double>& vecType,
         bool partitionBCs = false);
 
       /** Construct with a mesh, equation set, bcs, test and unknown funcs,
        * parameters, and a vector type */
       NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-                       const Expr& test, const Expr& unk, const Expr& u0, 
-                       const Expr& params, const Expr& paramVals,  
+        const Expr& test, const Expr& unk, const Expr& u0, 
+        const Expr& params, const Expr& paramVals,  
         const TSFExtended::VectorType<double>& vecType,
         bool partitionBCs = false);
 
 
       /** */
       NonlinearProblem(const RefCountPtr<Assembler>& assembler, 
-                       const Expr& u0);
-
-      /** Compute the residual and Jacobian at the current evaluation point */
-      LinearOperator<double> computeJacobianAndFunction(Vector<double>& functionValue) const ;
-
-      /** Write the Jacobian and residual into the objects provided */
-      void computeJacobianAndFunction(LinearOperator<double>& J,
-                                      Vector<double>& resid) const ;
+        const Expr& u0);
 
       /** Compute direct sensitivities to parameters */
-      Expr computeSensitivities() const ;
-      
+      Expr computeSensitivities(const LinearSolver<double>& solver) const ;
+
+      /** Solve the nonlinear problem */
+      NOX::StatusTest::StatusType solve(const NOXSolver& solver) const ;
 
       /** Return the current evaluation point as a Sundance expression */
-      Expr getU0() const {return u0_;}
-
-      /** Compute the residual at the current eval point */
-      TSFExtended::Vector<double> computeFunctionValue() const ;
-      
-      /** Write the residual into the object provided */
-      void computeFunctionValue(Vector<double>& resid) const ;
-
-      /** Get an initial guess */
-      TSFExtended::Vector<double> getInitialGuess() const ;
-
-      /** Create the Jacobian object, but don't fill it in. */
-      LinearOperator<double> allocateJacobian() const ;
+      Expr getU0() const {return op_->getU0();}
 
       /** Set an initial guess */
-      void setInitialGuess(const Expr& u0New);
-
-
-
-
-      /* Handle boilerplate */
-      GET_RCP(TSFExtended::NonlinearOperatorBase<double>);
+      void setInitialGuess(const Expr& u0New)
+        {op_->setInitialGuess(u0New);}
 
     private:
       
       /** */
-      RefCountPtr<Assembler> assembler_;
+      RefCountPtr<NLOp> op_;
 
-      /** */
-      mutable TSFExtended::LinearOperator<double> J_;
-
-      /** */
-      Expr u0_;
-
-      /** */
-      mutable DiscreteFunction* discreteU0_;
-      
     };
 }
 

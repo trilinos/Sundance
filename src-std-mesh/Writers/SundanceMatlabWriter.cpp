@@ -51,11 +51,15 @@ void MatlabWriter::write() const
           
   for (int i=0; i<numNodes; i++)
     {
-      os << mesh().nodePosition(i);
+      const Point& x = mesh().nodePosition(i);
+      for (int d=0; d<x.dim(); d++) 
+        os << x[d] << " ";
+
       for (unsigned int j=0; j<pointScalarFields().size(); j++)
         {
           const RefCountPtr<FieldBase>& expr = pointScalarFields()[j];
-          os << " " << expr->getData(0, i, 0);
+          if (j>0) os << " " ;
+          os << expr->getData(0, i, 0);
         }
       os << std::endl;
     }

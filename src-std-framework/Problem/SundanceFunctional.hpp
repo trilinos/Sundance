@@ -83,7 +83,7 @@ public:
 
     
   /** */
-  NonlinearOperator<double>
+  NonlinearProblem
   nonlinearVariationalProb(const Expr& var,
     const Expr& varEvalPts,
     const Expr& unk,

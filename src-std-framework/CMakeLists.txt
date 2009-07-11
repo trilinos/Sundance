@@ -229,8 +229,10 @@ APPEND_SET(HEADERS
   Problem/SundanceL2Projector.hpp
   Problem/SundanceLinearEigenproblem.hpp
   Problem/SundanceLinearProblem.hpp
+  Problem/SundanceLinearSolveDriver.hpp
   Problem/SundanceModelEvaluatorBase.hpp
   Problem/SundanceNLPModelEvaluator.hpp
+  Problem/SundanceNLOp.hpp
   Problem/SundanceRivaraDriver.hpp
   Problem/SundanceNonlinearProblem.hpp 
   )
@@ -246,8 +248,10 @@ APPEND_SET(SOURCES
   Problem/SundanceL2Projector.cpp
   Problem/SundanceLinearEigenproblem.cpp
   Problem/SundanceLinearProblem.cpp
+  Problem/SundanceLinearSolveDriver.cpp
   Problem/SundanceModelEvaluatorBase.cpp
   Problem/SundanceNLPModelEvaluator.cpp
+  Problem/SundanceNLOp.cpp
   Problem/SundanceRivaraDriver.cpp
   Problem/SundanceNonlinearProblem.cpp
   )
