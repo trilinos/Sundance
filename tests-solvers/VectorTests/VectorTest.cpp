@@ -29,6 +29,7 @@
 #include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVector.hpp"
 #include "TSFLinearCombination.hpp"
+#include "TSFLinearSolverImpl.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFVectorSpace.hpp"
 #include "TSFEpetraVectorType.hpp"

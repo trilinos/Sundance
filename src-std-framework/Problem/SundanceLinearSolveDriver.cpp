@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceLinearSolveDriver.hpp"
+#include "TSFLinearSolver.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
@@ -59,13 +60,10 @@ LinearSolveDriver::solve(const LinearSolver<double>& solver,
   Array<Vector<double> > solnVec(rhs.size());
   SolverState<double> state;
 
-  Out::os() << "num RHS = " << rhs.size() << endl;
-
   for (unsigned int i=0; i<rhs.size(); i++)
   {
     Tabs tab1;
 
-    Out::os() << "column = " << i << " rhs=" << rhs[i] << endl;
     solnVec[i] = rhs[i].copy();
     
     SUNDANCE_MSG2(verb, tab1 << "solving with RHS #" << i 
@@ -147,9 +145,6 @@ Expr LinearSolveDriver::formSolutionExpr(
   for (unsigned int m=0; m<solnVector.size(); m++)
   {
     Array<Expr> col(solutionSpace.size());
-    Out::os() << "column = " << m << endl;
-    Out::os() << "vector = " << solnVector[m] << endl;
-    Out::os() << "vec ptr = " << solnVector[m].ptr().get() << endl;
 
     for (unsigned int i=0; i<col.size(); i++)
     {

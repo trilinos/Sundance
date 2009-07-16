@@ -19,6 +19,8 @@ SET(SerialTests
         NonlinearPartialDomain 
         AToCDensitySample
         FOSLSMagnetostatics2D
+        NonlinearPDECOTest1D
+        NonlinearPDECOTest2D
         FunctionalTest 
         TwoZoneDiscFunc
 )
@@ -79,6 +81,8 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
                    bicgstab.xml
                    gmres.xml
                    nox.xml            
+                   nox-amesos.xml            
+                   nox-aztec.xml            
                    poissonParams.xml
                    userPrecParams.xml
   SOURCE_DIR ${SolverParamPath}

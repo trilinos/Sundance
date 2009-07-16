@@ -35,6 +35,7 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceLinearSolveDriver.hpp"
+#include "TSFLinearSolver.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

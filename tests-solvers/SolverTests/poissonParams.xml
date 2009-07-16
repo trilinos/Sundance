@@ -23,7 +23,7 @@
 
 
 <ParameterList>
-  <Parameter name="nLocal" type="int" value="20"/>
+  <Parameter name="nLocal" type="int" value="1000"/>
   <Parameter name="Symmetrize BCs" type="bool" value="false"/>
 
   <ParameterList name="Linear Solver">

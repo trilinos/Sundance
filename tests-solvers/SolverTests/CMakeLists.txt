@@ -4,12 +4,13 @@
 INCLUDE(AddTestBatch)
 
 SET(MPITests 
-             PoissonTest 
+             PoissonTest
              BlockTriangularTest 
              PoissonBoltzmannTest 
              PartitionedPoissonTest)
 
 SET(SerialOnlyTests 
+             BelosPoissonTest 
              UserDefPrecondTest)
 
 
@@ -33,10 +34,13 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(SolverTestCopyFiles
                    aztec-ml.xml 
                    aztec-native.xml
                    aztec.xml
+                   belos-ifpack.xml
                    bicgstab.xml
                    gmres.xml
                    nox.xml            
                    poissonParams.xml
+                   ifpackParams.xml
+                   mlParams.xml
                    userPrecParams.xml
   SOURCE_DIR ${SolverParamPath}
   EXEDEPS ${MPITests} ${SerialTests}

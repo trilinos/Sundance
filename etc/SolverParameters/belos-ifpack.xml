@@ -1,0 +1,21 @@
+
+
+<ParameterList>
+  <ParameterList name="Linear Solver">
+    <Parameter name="Type" type="string" value="Belos"/>
+    <Parameter name="Maximum Iterations" type="int" value="1000"/>
+    <Parameter name="Method" type="string" value="GMRES"/>
+    <ParameterList name="Preconditioner">
+       <Parameter name="Type" type="string" value="Ifpack"/>
+       <Parameter name="Prec Type" type="string" value="ILU"/>
+       <Parameter name="Overlap" type="int" value="1"/>
+       <ParameterList name="Ifpack Settings">
+          <Parameter name="fact: level-of-fill" type="int" value="2"/>
+       </ParameterList>
+    </ParameterList> 
+    <Parameter name="Convergence Tolerance" type="double" value="1e-10"/>
+    <Parameter name="Output Frequency" type="int" value="4"/>
+    <Parameter name="Num Blocks" type="int" value="1"/>
+    <Parameter name="Block Size" type="int" value="1"/>
+  </ParameterList>
+</ParameterList>

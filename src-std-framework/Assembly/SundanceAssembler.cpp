@@ -734,12 +734,10 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
 
   for (unsigned int i=0; i<b.size(); i++)
   {
-    Out::os() << "configuring column " << i << endl;
     b[i] = rowSpace.createMember();
 
     if (!partitionBCs_ && eqn_->numVarBlocks() > 1)
     {
-      Out::os() << "vector is blocked" << endl;
       /* configure the blocks */
       Vector<double> vecBlock;
       for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
@@ -758,11 +756,9 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
         
         TEST_FOR_EXCEPTION(lv == 0, RuntimeError,
           "vector is not loadable in Assembler::configureVector()");
-        Out::os() << "vector is loadable" << endl;
       }
       else
       {
-        Out::os() << "bcs are partitioned" << endl;
       }
     }
   }
@@ -1174,6 +1170,16 @@ void Assembler::assemble(LinearOperator<double>& A,
             0));
 
   assemblyLoop(MatrixAndVector, kernel);
+
+  SUNDANCE_MSG1(verb, tab << "matrix=" << A);
+  if (verb>0) A.print(Out::os());
+  SUNDANCE_MSG1(verb, tab << "vectors=" << mv);
+  for (unsigned int i=0; i<mv.size(); i++) 
+  {
+    SUNDANCE_MSG1(verb, tab << "vectors #" << i);
+    if (verb>0) mv[i].print(Out::os());
+  }
+
   SUNDANCE_MSG1(verb, tab << "Assembler: done assembling matrix and vector");
 }
 

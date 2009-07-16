@@ -130,7 +130,7 @@ APPEND_SET(SOURCES
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Assembly)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Assembly/ElementIntegration)
+#INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Assembly/ElementIntegration)
 
 APPEND_SET(HEADERS
   Assembly/SundanceAssembler.hpp
@@ -154,28 +154,30 @@ APPEND_SET(HEADERS
   Assembly/SundanceTrivialGrouper.hpp
   Assembly/SundanceVectorAssemblyKernel.hpp
   Assembly/SundanceVectorFillingAssemblyKernel.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralBase.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralFunctional.hpp  
-  Assembly/ElementIntegration/SundanceElementIntegralFunctionalCell.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralFunctionalFacet.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralLinearForm.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralLinearFormCell.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralLinearFormFacet.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralBilinearForm.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralBilinearFormCell.hpp
-  Assembly/ElementIntegration/SundanceElementIntegralBilinearFormFacet.hpp
-  Assembly/ElementIntegration/SundanceIQI_HdivLF_DivV_Cell.hpp
-  Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.hpp
-  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Cell.hpp
-  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Facet.hpp
-  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Cell.hpp
-  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Facet.hpp
-  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Cell.hpp
-  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Facet.hpp
-  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_DivUV_Cell.hpp
-  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_UNV_Facet.hpp
-  Assembly/ElementIntegration/SundanceIQI_HdivHdivBLF_DivUDivV_Cell.hpp
   )
+
+
+#  Assembly/ElementIntegration/SundanceElementIntegralBase.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralFunctional.hpp  
+#  Assembly/ElementIntegration/SundanceElementIntegralFunctionalCell.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralFunctionalFacet.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralLinearForm.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralLinearFormCell.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralLinearFormFacet.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralBilinearForm.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralBilinearFormCell.hpp
+#  Assembly/ElementIntegration/SundanceElementIntegralBilinearFormFacet.hpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivLF_DivV_Cell.hpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.hpp
+#  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Cell.hpp
+#  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Facet.hpp
+#  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Cell.hpp
+#  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Facet.hpp
+#  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Cell.hpp
+#  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Facet.hpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_DivUV_Cell.hpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_UNV_Facet.hpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivHdivBLF_DivUDivV_Cell.hpp
 
 APPEND_SET(SOURCES
   Assembly/SundanceAssembler.cpp
@@ -196,19 +198,18 @@ APPEND_SET(SOURCES
   Assembly/SundanceTrivialGrouper.cpp
   Assembly/SundanceVectorAssemblyKernel.cpp
   Assembly/SundanceVectorFillingAssemblyKernel.cpp
-  Assembly/ElementIntegration/SundanceIQI_HdivLF_DivV_Cell.cpp
-  Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.cpp
-  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Cell.cpp
-  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Facet.cpp
-  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Cell.cpp
-  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Facet.cpp
-  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Cell.cpp
-  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Facet.cpp
-  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_DivUV_Cell.cpp
-  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_UNV_Facet.cpp
-  Assembly/ElementIntegration/SundanceIQI_HdivHdivBLF_DivUDivV_Cell.cpp
   )
-
+#  Assembly/ElementIntegration/SundanceIQI_HdivLF_DivV_Cell.cpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivLF_VN_Facet.cpp
+#  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Cell.cpp
+#  Assembly/ElementIntegration/SundanceIQI_VecLF_Vi_Facet.cpp
+#  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Cell.cpp
+#  Assembly/ElementIntegration/SundanceIQI_VecVecBLF_UiVj_Facet.cpp
+#  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Cell.cpp
+#  Assembly/ElementIntegration/SundanceIQI_ScalVecBLF_UVj_Facet.cpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_DivUV_Cell.cpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivScalBLF_UNV_Facet.cpp
+#  Assembly/ElementIntegration/SundanceIQI_HdivHdivBLF_DivUDivV_Cell.cpp
 
 #
 # Problem files
