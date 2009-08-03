@@ -49,7 +49,11 @@
 #include "SundanceVersionString.hpp"
 #include "SundanceProductTransformation.hpp"
 #include <unistd.h>
+#ifndef _MSC_VER
 #include <sys/unistd.h>
+#else
+#include "winprocess.h"
+#endif
 #ifdef HAVE_MPI
 #include "mpi.h"
 #endif

@@ -31,7 +31,7 @@ PartitionedRectangleMesher::PartitionedRectangleMesher(const ParameterList& para
 
 void PartitionedRectangleMesher::balanceXY(int n, int* npx, int* npy)
 {
-  int m = (int) floor(sqrt(n));
+  int m = (int) floor(sqrt((double)n));
   for (int i=m; i>=1; i--)
   {
     if (n % i == 0) 

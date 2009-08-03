@@ -1,4 +1,7 @@
 #include "SundanceGauss1D.hpp"
+#ifdef _MSC_VER
+# include "winmath.h"
+#endif
 
 using namespace SundanceStdFwk;
 using namespace SundanceUtils;

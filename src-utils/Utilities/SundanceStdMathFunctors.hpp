@@ -34,6 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceUnaryFunctor.hpp"
+#ifdef _MSC_VER
+# include "winmath.h"
+#endif
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
