@@ -48,13 +48,31 @@ using namespace Teuchos;
 
 
 /**
- * VectorAssemblyKernel builds load vectors
+ * VectorAssemblyKernel builds load vectors. It derives from VectorFillingAssemblyKernel,
+ * which implements the functions shared between all kernels that build vectors,
+ * such as FunctionalAndGradientAssemblyKernel.
  */
 class VectorAssemblyKernel : public VectorFillingAssemblyKernel
 {
 public:
   
-  /** */
+  /**
+   * Ctor takes several arguments:
+   * \param dofMap is an array of DOFMap ptrs, one for each block 
+   *
+   * \param isBCIndex is an array of ptrs to arrays of ints (bools). The value 
+   * (*isBCIndex[b])[d] indicates whether dof #d in block #b is or is not 
+   * an essential BC dof. 
+   *
+   * \param lowestLocalIndex stores the lowest locally-owned DOF index for each 
+   * block 
+   * 
+   * \param b multivector to be filled
+   *
+   * \param partitionBC whether dirichlet BCs are stored in a separate block
+   *
+   * \param verb verbosity level
+   */
   VectorAssemblyKernel(
   const Array<RefCountPtr<DOFMapBase> >& dofMap,
   const Array<RefCountPtr<Array<int> > >& isBCIndex,

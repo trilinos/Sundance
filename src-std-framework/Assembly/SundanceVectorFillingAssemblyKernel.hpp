@@ -57,7 +57,23 @@ using namespace Teuchos;
 class VectorFillingAssemblyKernel : public AssemblyKernelBase
 {
 public:
-  /** */
+  /**
+   * Ctor takes several arguments:
+   * \param dofMap is an array of DOFMap ptrs, one for each block 
+   *
+   * \param isBCIndex is an array of ptrs to arrays of ints (bools). The value 
+   * (*isBCIndex[b])[d] indicates whether dof #d in block #b is or is not 
+   * an essential BC dof. 
+   *
+   * \param lowestLocalIndex stores the lowest locally-owned DOF index for each 
+   * block 
+   * 
+   * \param b multivector to be filled
+   *
+   * \param partitionBC whether dirichlet BCs are stored in a separate block
+   *
+   * \param verb verbosity level
+   */
   VectorFillingAssemblyKernel(
   const Array<RefCountPtr<DOFMapBase> >& dofMap,
   const Array<RefCountPtr<Array<int> > >& isBCIndex,
@@ -96,9 +112,11 @@ protected:
   const MapBundle& mapBundle() const {return mapBundle_;}
 
 private:
-
-  Array<Vector<double> > b_;
+  /** Multivector to be filled */
+  Array<Vector<double> > b_;   
+  /** Loadable view of the multivector to be filled */
   Array<Array<RefCountPtr<LoadableVector<double> > > > vec_;
+  /** The map bundle collects together several DOF-mapping data structures */
   mutable MapBundle mapBundle_;
 
 };

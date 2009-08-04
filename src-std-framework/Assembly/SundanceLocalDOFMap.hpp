@@ -42,7 +42,7 @@ namespace SundanceStdFwk
 namespace Internal
 {
 /** 
- * LocalDOFMap bundles several tables used for fast lookup of
+ * LocalDOFMap bundles several compact tables used for fast lookup of
  * local DOFs. 
  */
 class LocalDOFMap

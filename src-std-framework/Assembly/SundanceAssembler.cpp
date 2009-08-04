@@ -711,11 +711,13 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
 
 void Assembler::configureVector(Array<Vector<double> >& b) const 
 {
+  /* Start timer, stopped upon dtor */
   TimeMonitor timer(configTimer());
 
   Tabs tab0;
   SUNDANCE_LEVEL1("vector config", tab0 << "in Assembler::configureVector()");
 
+  /* Get the vector spaces for each block of equations */
   Array<VectorSpace<double> > vs(eqn_->numVarBlocks());
   for (unsigned int i=0; i<eqn_->numVarBlocks(); i++)
   {
@@ -723,19 +725,25 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
   }
   VectorSpace<double> rowSpace;
   
+  /* If we have more than one block, we make a Cartesian product space containing
+   * the spaces for each block */
   if (eqn_->numVarBlocks() > 1)
   {
     rowSpace = TSFExtended::productSpace(vs);
   }
-  else
+  else /* Otherwise we have a single, monolithic vector space */
   {
     rowSpace = vs[0];
   }
 
+  /* Create each vector in the multivector */
   for (unsigned int i=0; i<b.size(); i++)
   {
+    /* Create the vector. Recall that the vector space is a factory used to 
+     * create a vector of specified size and distribution */
     b[i] = rowSpace.createMember();
 
+    /* If the vector is blocked, configure the blocks */
     if (!partitionBCs_ && eqn_->numVarBlocks() > 1)
     {
       /* configure the blocks */
@@ -746,7 +754,7 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
         b[i].setBlock(br, vecBlock);
       }
     }
-    else
+    else  
     {
       /* nothing to do here except check that the vector is loadable */
       if (!partitionBCs_)
@@ -944,7 +952,10 @@ void Assembler::assemblyLoop(const ComputationType& compType,
   SUNDANCE_BANNER1(verb, tab, "Assembly loop");
 
   SUNDANCE_MSG2(verb, tab << "computation type is " << compType); 
-  /* Allocate space for the workset's list of cell local IDs */
+  /* Allocate space for the workset's list of cell local IDs.
+  * Currently, a workset is an array of cell indices. It could be an array
+  * of pointers to cell objects, cell iterators, or whatever is needed to
+  * work with something like a Peano curve data structure. */
   SUNDANCE_MSG2(verb, tab << "work set size is " << workSetSize()); 
   RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
@@ -955,26 +966,44 @@ void Assembler::assemblyLoop(const ComputationType& compType,
   RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
   isLocalFlag->reserve(workSetSize());
 
-  /* Declare objects for storage of coefficient evaluation results */
+  /* Declare objects for storage of coefficient evaluation results 
+   * that are returned from the symbolic evaluation system. EvalVector
+   * is the object in which a vector of numerical values for a 
+   * given functional derivative are returned from an evaluation of
+   * a symbolic DAG. */
   Array<RefCountPtr<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
 
   /* Create an object in which to store local integration results */
   RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
 
-  /* Get the symbolic specification of the current computation */
+  /* Get the symbolic specification of the current computation.
+   * The "context" is simply a unique ID used to distinguish different
+   * settings in which evaluation might be made. The same expression might be
+   * evaluated in a context where some subset of all possible functional
+   * derivatives are needed, and later in another context where a different 
+   * subset of functional derivatives is needed. The "context" object lets
+   * us associate a different Evaluator object with each such set of
+   * requirements. */
   const Array<EvalContext>& contexts = contexts_.get(compType);
+  /* Get the integral groups needed for this calculation */
   const Array<Array<RCP<IntegralGroup> > >& groups = groups_.get(compType);
+  /* Get the expressions needed for this calculation */
   const Array<const EvaluatableExpr*>& evalExprs 
     = evalExprs_.get(compType);
 
   
-  /* === Start main loop */
+  /* === Start main loop. 
+   * The outer loop is over RQCs, that is, over unique combinations of subregions
+   * (CellFilters) and quadrature rules.   */
   SUNDANCE_MSG1(verb, 
     tab << "---------- outer assembly loop over subregions");
 
-  /* Record the default kernel verbosity so we can reset it if changes */
+  /* Record the default kernel verbosity so that it if changes we can
+  * reset it at the end of a loop iteration */
   int oldKernelVerb = kernel->verb();
+  
+  /* Looping over RQCs */
   for (unsigned int r=0; r<rqc_.size(); r++)
   {
     Tabs tab0;
@@ -983,6 +1012,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
     int rqcVerb = verb;
     int evalVerb = 0;
 
+    /* Check for watch point, and set verbosity accordingly */
     if (rqc_[r].watch().isActive()) 
     {
       rqcVerb=5;
@@ -1000,7 +1030,9 @@ void Assembler::assemblyLoop(const ComputationType& compType,
     SUNDANCE_MSG2(rqcVerb, tab01 << "isBC= " << isBCRqc_[r]);
 
     
-    /* Deciding whether we should skip this RQC */
+    /* Deciding whether we should skip this RQC in the current computation 
+     * type. For example, a certain boundary surface might appear in the
+     * computation of a functional but not in the state equation. */
     if ((!isBCRqc_[r] && eqn_->skipRqc(compType, rqc_[r]))
       || (isBCRqc_[r] && eqn_->skipBCRqc(compType, rqc_[r])))
     {
@@ -1009,15 +1041,42 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       continue;
     }
 
-    /* specify the mediator for this RQC */
+    /* specify the evaluation mediator for this RQC.
+    * Recall that the evaluation mediator is the object responsible for communication
+    * between the symbolic expression tree and discretization-dependent data structures
+    * such as discrete functions. 
+    *
+    * The evaluation manager is an object that is responsible for management
+    * of the symbolic evaluation; it controls allocation of memory for evaluation
+    * results, access to the evaluation mediator, and other administrative tasks. 
+    */
     evalMgr_->setMediator(mediators_[r]);
+    /* Tell the manager which CellFilter and QuadratureFamily we're currently working with. 
+     * This is simply forwarded to the mediator, which needs to know the number
+     * of quadrature points as well as mesh properties such as cell dimension. */
     evalMgr_->setRegion(contexts_.get(compType)[r]);
   
-    /* get the cells for the current domain */
+    /* get the cell filter for the current RQC */
     CellFilter filter = rqc_[r].domain();
+    /* Find the cells that "pass" the predicate in the filter. Note: a CellFilter
+     * will cache the cell sets it has computed, so the predicate computation will
+     * only be done once per mesh, regardless of how often this function is called. 
+     * Todo: the cache needs to be reset upon mesh refinement. 
+     */
     CellSet cells = filter.getCells(mesh_);
+    /* Find the dimension of cells that pass the current filter. */
     int cellDim = filter.dimension(mesh_);
+    /* Find the type of cells in the current filter. Note: we've assumed here that all
+     * cells have identical topology, and need to work out how to deal with 
+     * meshes with mxed cell types. That will usually be handled by grouping similar
+     * cells into "blocks" (as is done in Exodus files, for instance) in which case 
+     * will still work, but there should be an error check to ensure that that assumption
+     * is never violated. */ 
     CellType cellType = mesh_.cellType(cellDim);
+    /* Get the cell type of the maximal-dimension cofacets, in case we need 
+     * integrals or DOF maps done on the maximal cofacets. Todo: this code will break
+     * for internal boundaries at the interface between cofacets of different types,
+     * e.g., a face joining a prism and a hex. Not sure how to handle that case. */
     CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
 
     SUNDANCE_MSG2(rqcVerb, tab01 << "cell type = " << cellType 
@@ -1027,25 +1086,38 @@ void Assembler::assemblyLoop(const ComputationType& compType,
 
 
     /* Determine whether we need to refer to maximal cofacets for 
-     * some or all integrations and DOF mappings */
+     * some or all integrations and DOF mappings. */
     IntegrationCellSpecifier intCellSpec
       = rqcRequiresMaximalCofacets_.get(compType)[r];
     SUNDANCE_MSG2(rqcVerb, tab01 
       << "whether we need to refer to maximal cofacets: " << intCellSpec);
 
-    /* Find the unknowns and variations appearing on the current domain */
+    /* Find the unknowns and variations appearing on the current domain. This
+     * information is stored in the EquationSet object.  */
     const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
     const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(filter);
 
-    /* Prepare for evaluation on the current domain */
+    /* Prepare for evaluation on the current domain:
+     * Tell the mediator whether maximal cofacets should be used (which will determine
+     * how discrete functions are computed). */
     mediators_[r]->setIntegrationSpec(intCellSpec);
+    /*
+     * Tell the mediator the cell type, and whether we are on an internal
+     * boundary. We need to know if we're on an internal boundary so that 
+     * we can use DOF lookup logic that's capable of figuring out which
+     * of two cofacets contains DOF information for those functions defined
+     * on only one side of the boundary (as in, e.g., fluid-structure boundaries).
+     */
     mediators_[r]->setCellType(cellType, maxCellType, isInternalBdry_[r]);    
+    /* Get the Evaluator object that will actually carry out calculations on
+     * the expression DAG in the current context (recall that a single expression
+     * may support multiple evaluators). */
     const Evaluator* evaluator 
       = evalExprs[r]->evaluator(contexts[r]).get();
 
-
-
-    /* Loop over cells in batches of the work set size */
+    /* Loop over cells in batches of the work set size.
+     * At present, we're accumulating cell indices into an array. That would
+     * need to be changed to work with Peano. */
     CellIterator iter=cells.begin();
     int workSetCounter = 0;
     int myRank = mesh_.comm().getRank();
@@ -1056,7 +1128,10 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       Tabs tab1;
       /* build up the work set: add cells until the work set size is 
        * reached or we run out of cells. To begin with, empty both the
-       * workset array and the isLocalFlag array. */
+       * workset array and the isLocalFlag array. Note that the reserve()
+       * method has been called previously, so that as we append cells
+       * to the array, no memory allocation is done (unless we run over 
+       * the reserved size). */
       workSet->resize(0);
       isLocalFlag->resize(0);
       for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
@@ -1066,6 +1141,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
          * to zero-forms from off-processor elements */
         isLocalFlag->append(myRank==mesh_.ownerProcID(cellDim, *iter));
       }
+      /* The work set has now been accumulated */
       SUNDANCE_MSG2(rqcVerb,
         tab1 << "doing work set " << workSetCounter
         << " consisting of " << workSet->size() << " cells");
@@ -1081,24 +1157,49 @@ void Assembler::assemblyLoop(const ComputationType& compType,
         evalMgr_->setVerbosity(evalVerb);
       }
 
-      /* Register the workset with the mediator */
+      /* Register the workset with the mediator. Internally, the mediator
+       * will look up the cell Jacobians and facet indices needed for this calculation. It 
+       * uses them for discrete function transformation. */
       mediators_[r]->setCellBatch(workSet);
+      /* Get the Jacobians from the mediator, so that we can use the same Jacobian
+       * objects for discrete function transformation and for integral 
+       * transformation. The "volume" Jacobian is used to scale the integration
+       * cell volume by det(J). The "transformation" Jacobian is used to
+       * transform vectors. These will be the same, except for the case
+       * where we integrate on a facet but do transformations by reference to 
+       * a maximal cofacet. */
       const CellJacobianBatch& JVol = mediators_[r]->JVol();
       const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
+      /* Get from the mediator the facet indices for each cell. If I am integrating
+       * on a facet (e.g., a boundary cell) but getting DOFs or JTrans from
+       * a maximal cofacet, I need to know my index in the array of 
+       * that cofacet's facets. */
       const Array<int>& facetIndices = mediators_[r]->facetIndices();
 
-      /* reset the assembly kernel for the current workset */
+      /* Reset the assembly kernel for the current workset. What happens at this
+       * step depends on the specific kernel being used. The kernel might, for instance,
+       * build local DOF maps for the current batch of cells. */
       kernel->prepareForWorkSet(
         requiredVars, 
         requiredUnks, 
         mediators_[r]);
         
-      /* evaluate the coefficient expressions */
+      /* Evaluate the coefficient expressions. Recall that each coefficient
+       * appearing in an integral is a particular functional derivative of the
+       * integrand. The constant-valued coefficients are written into the
+       * constantCoeffs array, the variable coefficients into the vectorCoeffs
+       * array. 
+       *
+       * Recall that the eval manager contains the current evaluation mediator, so that
+       * by passing the evaluation manager as an argument to evaluate(), the evaluation
+       * is aware of the mediator and can therefore access discrete functions, etc.
+       */ 
       evaluator->resetNumCalls();
       SUNDANCE_MSG2(rqcVerb, tab1 
         << "====== evaluating coefficient expressions") ;
       evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
 
+      /* Optionally, print the evaluation results */
       SUNDANCE_MSG2(rqcVerb, tab1 << "====== done evaluating expressions") ;
       if (evalVerb > 2) 
       {
@@ -1106,9 +1207,21 @@ void Assembler::assemblyLoop(const ComputationType& compType,
           vectorCoeffs);
       }
     
-      /* Do the element integrals and insertions */
+      /* ---- Do the element integrals and insertions ------ */
+
+      /* The matrices used to transform integrals are built upon first use by 
+       * this workset, then cached because they may be needed for several 
+       * integrals on the same workset. As we're now in a new workset with
+       * new cells, they should be rebuilt if needed. This step informs all integrals
+       * that the cache is out of date. 
+       *
+       * Todo: this uses a static function that contains static data (via the "Meyers
+       * trick") and so is not thread-safe. If we want to do multithreaded parallelism
+       * for multicore architectures, this implementation will need to be changed.
+       */ 
       ElementIntegral::invalidateTransformationMatrices();
       
+      /* Loop over the integral groups */
       SUNDANCE_MSG2(rqcVerb, tab1 << "----- looping over integral groups");
       for (unsigned int g=0; g<groups[r].size(); g++)
       {
@@ -1117,11 +1230,18 @@ void Assembler::assemblyLoop(const ComputationType& compType,
           << "--- evaluating integral group g=" << g << " of " 
           << groups[r].size() );
 
-        /* do the integrals */
+        /* Do the integrals. The integration results will be written into
+         * the array "localValues". */
         const RCP<IntegralGroup>& group = groups[r][g];
         if (!group->evaluate(JTrans, JVol, *isLocalFlag, facetIndices, 
             vectorCoeffs, constantCoeffs, localValues)) continue;
-        /* add the integration results into the output objects */
+        /* add the integration results into the output objects by a call
+        * to the kernel's fill() function. We need to pass isBCRqc to the kernel
+        * because it might handle BC rows differently. The integral group
+        * data structure contains information about which test and unknown
+        * functions were used in this integration, and so provides to the assembly
+        * kernel such information as is needed to look up the correct DOFs for this
+        * batch of integrals. */
         kernel->fill(isBCRqc_[r], *group, localValues);
       }
       SUNDANCE_MSG2(rqcVerb, tab1 << "----- done looping over integral groups");
@@ -1133,7 +1253,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
   SUNDANCE_MSG2(verb, tab << "----- done looping over rqcs");
 
 
-  /* Do any post-fill processing */
+  /* Do any post-fill processing, such as MPI_AllReduce add on functional values. */
   SUNDANCE_MSG2(verb, tab << "doing post-loop processing"); 
   kernel->postLoopFinalization();
   SUNDANCE_BANNER1(verb, tab, "done assembly loop"); 
@@ -1219,20 +1339,27 @@ void Assembler::assembleSensitivities(LinearOperator<double>& A,
 
 void Assembler::assemble(Array<Vector<double> >& mv) const 
 {
+  /* Tab is advanced by ctor, taken back by dtor upon leaving scope */
   Tabs tab;
-  TimeMonitor timer(assemblyTimer());
+  /* Timer is started by ctor, stopped by dtor upon leaving scope */
+  TimeMonitor timer(assemblyTimer());  
+
+  /* If any subexpression is watched, print basic information */ 
   int verb = 0;
   if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
 
   SUNDANCE_BANNER1(verb, tab, "Assembling vector");
 
+  /* Throw an exception if we don't know how to compute a vector */
   TEST_FOR_EXCEPTION(!contexts_.containsKey(VectorOnly),
     RuntimeError,
     "Assembler::assemble(b) called for an assembler that "
     "does not support vector-only assembly");
 
+  /* The vector is not configured yet. Do so here. */
   configureVector(mv);
   
+  /* Create an assembly kernel that knows how to fill a vector */
   RefCountPtr<AssemblyKernelBase> kernel 
     = rcp(new VectorAssemblyKernel(
             rowMap_, isBCRow_, lowestRow_,

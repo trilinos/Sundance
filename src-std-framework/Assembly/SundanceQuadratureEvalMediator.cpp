@@ -252,6 +252,8 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
           mi[r]=1;
         }
         SpatialDerivSpecifier deriv(mi);
+        /* Here we evaluate the basis functions at specified quadrature points
+         * on the reference cell */
         basis.refEval(evalCellType, 
           (*(quadPtsReferredToMaxCell_.get(cellType())))[fc], 
           deriv, tmp[r], verb());
@@ -766,7 +768,7 @@ void QuadratureEvalMediator::computePhysQuadPts() const
           =  (*(quadPtsReferredToMaxCell_.get(cellType())))[facetIndex];
         tmp.resize(refFacetPts.size());
         mesh().pushForward(maxCellDim(), cell, refFacetPts, tmp);
-        for (int q=0; q<tmp.size(); q++)
+        for (unsigned int q=0; q<tmp.size(); q++)
         {
           physQuadPts_.append(tmp[q]);
         }

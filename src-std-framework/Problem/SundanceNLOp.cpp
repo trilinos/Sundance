@@ -68,11 +68,11 @@ NLOp::NLOp()
 
 
 NLOp::NLOp(const Mesh& mesh, 
-                                   const Expr& eqn, 
-                                   const Expr& bc,
-                                   const Expr& test, 
-                                   const Expr& unk, 
-                                   const Expr& u0, 
+  const Expr& eqn, 
+  const Expr& bc,
+  const Expr& test, 
+  const Expr& unk, 
+  const Expr& u0, 
   const VectorType<double>& vecType,
   bool partitionBCs)
   : NonlinearOperatorBase<double>(),
@@ -93,17 +93,17 @@ NLOp::NLOp(const Mesh& mesh,
 
   RefCountPtr<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(test.flattenSpectral()), tuple(unk.flattenSpectral()), tuple(u0),
-                          unkParams, unkParamValues,
-                          fixedParams, fixedParamValues,
-                          tuple(fixedFields), tuple(fixedFieldValues)));
+        unkParams, unkParamValues,
+        fixedParams, fixedParamValues,
+        tuple(fixedFields), tuple(fixedFieldValues)));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp ctor");
+    "null discrete function pointer in "
+    "NLOp ctor");
 
   VectorSpace<double> domain = assembler_->solnVecSpace();
   VectorSpace<double> range = assembler_->rowVecSpace();
@@ -112,13 +112,13 @@ NLOp::NLOp(const Mesh& mesh,
 }
 
 NLOp::NLOp(const Mesh& mesh, 
-                                   const Expr& eqn, 
-                                   const Expr& bc,
-                                   const Expr& test, 
-                                   const Expr& unk, 
-                                   const Expr& u0, 
-                                   const Expr& params, 
-                                   const Expr& paramValues,  
+  const Expr& eqn, 
+  const Expr& bc,
+  const Expr& test, 
+  const Expr& unk, 
+  const Expr& u0, 
+  const Expr& params, 
+  const Expr& paramValues,  
   const VectorType<double>& vecType,
   bool partitionBCs)
   : NonlinearOperatorBase<double>(),
@@ -149,8 +149,8 @@ NLOp::NLOp(const Mesh& mesh,
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp ctor");
+    "null discrete function pointer in "
+    "NLOp ctor");
 
   VectorSpace<double> domain = assembler_->solnVecSpace();
   VectorSpace<double> range = assembler_->rowVecSpace();
@@ -160,7 +160,7 @@ NLOp::NLOp(const Mesh& mesh,
 
 
 NLOp::NLOp(const RefCountPtr<Assembler>& assembler, 
-                                   const Expr& u0)
+  const Expr& u0)
   : NonlinearOperatorBase<double>(),
     assembler_(assembler),
     J_(),
@@ -172,8 +172,8 @@ NLOp::NLOp(const RefCountPtr<Assembler>& assembler,
   discreteU0_ = dynamic_cast<DiscreteFunction*>(u0_.ptr().get());
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp ctor");
+    "null discrete function pointer in "
+    "NLOp ctor");
 
   VectorSpace<double> domain = assembler_->solnVecSpace();
   VectorSpace<double> range = assembler_->rowVecSpace();
@@ -184,8 +184,8 @@ NLOp::NLOp(const RefCountPtr<Assembler>& assembler,
 TSFExtended::Vector<double> NLOp::getInitialGuess() const 
 {
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp::getInitialGuess()");
+    "null discrete function pointer in "
+    "NLOp::getInitialGuess()");
   
   Vector<double> u0 = discreteU0_->getVector();
 
@@ -214,45 +214,45 @@ computeJacobianAndFunction(Vector<double>& functionValue) const
    * function to the evaluation point*/
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp::jacobian()");
+    "null discrete function pointer in "
+    "NLOp::jacobian()");
 
   TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
-                     "null evaluation point in "
-                     "NLOp::jacobian()");
+    "null evaluation point in "
+    "NLOp::jacobian()");
 
   discreteU0_->setVector(currentEvalPt());
 
   Array<Vector<double> > mv(1);
   mv[0] = functionValue;
   assembler_->assemble(J_, mv);
-  functionValue = mv[0];
+  functionValue.acceptCopyOf(mv[0]);
 
   return J_;
 }
 
 void NLOp::
 computeJacobianAndFunction(LinearOperator<double>& J,
-                           Vector<double>& resid) const
+  Vector<double>& resid) const
 {
   /* Set the vector underlying the discrete 
    * function to the evaluation point*/
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp::jacobian()");
+    "null discrete function pointer in "
+    "NLOp::jacobian()");
 
   TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
-                     "null evaluation point in "
-                     "NLOp::jacobian()");
+    "null evaluation point in "
+    "NLOp::jacobian()");
 
   TEST_FOR_EXCEPTION(J.ptr().get()==0, RuntimeError,
-                     "null Jacobian pointer in "
-                     "NLOp::jacobian()");
+    "null Jacobian pointer in "
+    "NLOp::jacobian()");
 
   TEST_FOR_EXCEPTION(resid.ptr().get()==0, RuntimeError,
-                     "null residual pointer in "
-                     "NLOp::jacobian()");
+    "null residual pointer in "
+    "NLOp::jacobian()");
 
   discreteU0_->setVector(currentEvalPt());
 
@@ -261,7 +261,7 @@ computeJacobianAndFunction(LinearOperator<double>& J,
 
   assembler_->assemble(J, mv);
 
-  resid = mv[0];
+  resid.acceptCopyOf(mv[0]);
 
   J_ = J;
 }
@@ -275,12 +275,12 @@ Vector<double> NLOp::computeFunctionValue() const
    * function to the evaluation point*/
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp::computeFunctionValue()");
+    "null discrete function pointer in "
+    "NLOp::computeFunctionValue()");
 
   TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
-                     "null evaluation point in "
-                     "NLOp::computeFunctionValue()");
+    "null evaluation point in "
+    "NLOp::computeFunctionValue()");
 
   discreteU0_->setVector(currentEvalPt());
 
@@ -291,7 +291,7 @@ Vector<double> NLOp::computeFunctionValue() const
 
   assembler_->assemble(mv);
 
-  rtn = mv[0];
+  rtn.acceptCopyOf(mv[0]);
 
   return rtn;
 }
@@ -304,16 +304,16 @@ void NLOp::computeFunctionValue(Vector<double>& resid) const
    * function to the evaluation point*/
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp::computeFunctionValue()");
+    "null discrete function pointer in "
+    "NLOp::computeFunctionValue()");
 
   TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
-                     "null evaluation point in "
-                     "NLOp::computeFunctionValue()");
+    "null evaluation point in "
+    "NLOp::computeFunctionValue()");
 
   TEST_FOR_EXCEPTION(resid.ptr().get()==0, RuntimeError,
-                     "null residual pointer in "
-                     "NLOp::computeFunctionValue()");
+    "null residual pointer in "
+    "NLOp::computeFunctionValue()");
 
   discreteU0_->setVector(currentEvalPt());
 
@@ -323,7 +323,7 @@ void NLOp::computeFunctionValue(Vector<double>& resid) const
 
   assembler_->assemble(mv);
 
-  resid = mv[0];
+  resid.acceptCopyOf(mv[0]);
 }
 
 
@@ -335,16 +335,16 @@ computeSensitivities(const LinearSolver<double>& solver) const
    * function to the evaluation point*/
 
   TEST_FOR_EXCEPTION(discreteU0_==0, RuntimeError,
-                     "null discrete function pointer in "
-                     "NLOp::computeSensitivities()");
+    "null discrete function pointer in "
+    "NLOp::computeSensitivities()");
 
   TEST_FOR_EXCEPTION(currentEvalPt().ptr().get()==0, RuntimeError,
-                     "null evaluation point in "
-                     "NLOp::computeSensitivities()");
+    "null evaluation point in "
+    "NLOp::computeSensitivities()");
 
   TEST_FOR_EXCEPTION(J_.ptr().get()==0, RuntimeError,
-                     "null Jacobian pointer in "
-                     "NLOp::computeSensitivities()");
+    "null Jacobian pointer in "
+    "NLOp::computeSensitivities()");
 
   TEST_FOR_EXCEPTION(params_.ptr().get()==0, RuntimeError,
     "null parameters in NLOp::computeSensitivities()");

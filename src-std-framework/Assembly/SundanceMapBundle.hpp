@@ -59,6 +59,16 @@ class StdFwkEvalMediator;
  * indices are skipped during fill, except for EssentialBC expressions.
  * <li> The lowest local index owned by this processor.
  * </ul>
+ *
+ * The main reason for this class is the need to maintain in some cases
+ * two local maps: one based on a set of cells, another based on a set of cofacets. 
+ * In a given calculation both might be needed. The chooseMap() method is used
+ * to select the correct map for a given calculation. 
+ *
+ * A cofacet-based map will be needed when evaluating a boundary integral involving 
+ * a non-Lagrange basis or a derivative of a Lagrange basis. The most common integrals
+ * are over interior cells, for which the non-cofacet map is used regardless of basis
+ * (because an interior cell has no cofacets and has all information needed for DOF mapping).
  */
 class MapBundle
 {
@@ -157,7 +167,10 @@ private:
   Array<RefCountPtr<Array<int> > > isBCIndex_;
   Array<int> lowestLocalIndex_;
   
+  /** localDOFMap is the compact map built w/o cofacet DOFs. Either
+   * this map or the cofacet map might be used in a given calculation */
   RefCountPtr<LocalDOFMap> localDOFMap_;
+  /** localDOFMap is the compact map built with cofacet DOFs */
   RefCountPtr<LocalDOFMap> cofacetLocalDOFMap_;
 };
 

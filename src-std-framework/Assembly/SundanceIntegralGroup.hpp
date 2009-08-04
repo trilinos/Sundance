@@ -52,7 +52,16 @@ namespace Internal
 
 
 /** 
+ * IntegralGroup collects together several integrals having common properties that
+ * can be used either to eliminate redundant computations or to share storage
+ * an eliminate repeated allocations. 
  *
+ * The integrations are done using calls to methods of the ElementIntegral class. Which
+ * subtype of ElementIntegral is used (e.g., RefIntegral, QuadratureIntegral) controls
+ * how the integrations are actually done. Reference integration does the integral exactly
+ * on a reference element, then transforms to a physical cell. This is only possible
+ * with constant coefficients on an affine cell. Quadrature integration proceeds
+ * by quadrature (duh!), and is needed for variable coefficients or non-affine cells. 
  */
 class IntegralGroup 
 {

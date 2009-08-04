@@ -6,23 +6,27 @@ SET(DisabledTests
   RefinementTest3D
   FunctionalTest3D 
   transientOneZoneEddy2D
+  PoissonBoltzmannDemo3D
+  NoxAlgebraic 
 )
 
 SET(SerialTests
-        PoissonOnDisk 
-        Poisson3D
-        BesselTest2D 
-        Coupled2D
-        Kepler 
-        Stokes2D 
-        LinearPartialDomain 
-        NonlinearPartialDomain 
-        AToCDensitySample
-        FOSLSMagnetostatics2D
-        NonlinearPDECOTest1D
-        NonlinearPDECOTest2D
-        FunctionalTest 
-        TwoZoneDiscFunc
+  DiscFunc3D
+  PoissonOnDisk 
+  Poisson3D
+  PoissonBoltzmannDemo1D
+  BesselTest2D 
+  Coupled2D
+  Kepler 
+  Stokes2D 
+  LinearPartialDomain 
+  NonlinearPartialDomain 
+  AToCDensitySample
+  FOSLSMagnetostatics2D
+  NonlinearPDECOTest1D
+  NonlinearPDECOTest2D
+  FunctionalTest 
+  TwoZoneDiscFunc
 )
 
 
@@ -40,7 +44,6 @@ SET(MPITests
              HighOrderProjection2D 
              NoxPoisson1D 
              PoissonBoltzmann2D
-             NoxAlgebraic 
              UserDefAlgebraic 
              TaylorHoodStokes2D
              AdvectionDiffusion2D 

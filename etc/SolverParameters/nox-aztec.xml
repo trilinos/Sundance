@@ -12,12 +12,12 @@
       <ParameterList name="Output Information">
         <Parameter name="Error" type="bool" value="true"/>
         <Parameter name="Warning" type="bool" value="true"/>
-        <Parameter name="Outer Iteration" type="bool" value="false"/>
-        <Parameter name="Inner Iteration" type="bool" value="false"/>
+        <Parameter name="Outer Iteration" type="bool" value="true"/>
+        <Parameter name="Inner Iteration" type="bool" value="true"/>
         <Parameter name="Parameters" type="bool" value="false"/>
         <Parameter name="Details" type="bool" value="false"/>
-        <Parameter name="Linear Solver Details" type="bool" value="false"/>
-        <Parameter name="Outer Iteration StatusTest" type="bool" value="false"/>
+        <Parameter name="Linear Solver Details" type="bool" value="true"/>
+        <Parameter name="Outer Iteration StatusTest" type="bool" value="true"/>
         <Parameter name="Test Details" type="bool" value="false"/>
         <Parameter name="Stepper Iteration" type="bool" value="false"/>
         <Parameter name="Stepper Details" type="bool" value="false"/>
@@ -36,7 +36,7 @@
           <Parameter name="fact: level-of-fill" type="int" value="2"/>
        </ParameterList>
       </ParameterList> 
-      <Parameter name="Tolerance" type="double" value="1e-10"/>
+      <Parameter name="Tolerance" type="double" value="1e-12"/>
       <Parameter name="Type" type="string" value="Aztec"/>
       <Parameter name="Verbosity" type="int" value="10"/>
     </ParameterList>

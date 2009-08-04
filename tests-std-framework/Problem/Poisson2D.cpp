@@ -1,56 +1,39 @@
-/* @HEADER@ */
-// ************************************************************************
-// 
-//                              Sundance
-//                 Copyright (2005) Sandia Corporation
-// 
-// Copyright (year first published) Sandia Corporation.  Under the terms 
-// of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government 
-// retains certain rights in this software.
-// 
-// This library is free software; you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as
-// published by the Free Software Foundation; either version 2.1 of the
-// License, or (at your option) any later version.
-//  
-// This library is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//                                                                                 
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-// USA                                                                                
-// Questions? Contact Kevin Long (krlong@sandia.gov), 
-// Sandia National Laboratories, Livermore, California, USA
-// 
-// ************************************************************************
-/* @HEADER@ */
+/* 
+ * <Ignore> 
+ * 
+ *</Ignore>
+ */
 
+/* <Ignore> */
 #include "Sundance.hpp"
-#include "SundanceEvaluator.hpp"
-#include "SundanceExodusMeshReader.hpp"
-#include "SundanceElementIntegral.hpp"
-
 using SundanceCore::List;
-/** 
+
+#if defined(HAVE_SUNDANCE_EXODUS)
+
+/* </Ignore> */
+
+/*
+ * \documentclass[10pt]{article}
+ * \begin{document}
+ * 
+ */
+
+
+/* 
  * Solves the Poisson equation in 2D
  */
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;}) 
-  CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;}) 
-  CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
-  CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;}) 
+CELL_PREDICATE(BottomPointTest, {return fabs(x[1]) < 1.0e-10;}) 
+CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
+CELL_PREDICATE(TopPointTest, {return fabs(x[1]-1.0) < 1.0e-10;}) 
 
-#if defined(HAVE_SUNDANCE_EXODUS)
 
-  int main(int argc, char** argv)
+
+int main(int argc, char** argv)
 {
-  
   try
   {
-    ElementIntegral::alwaysUseCofacets() = false;
     int nx = 2;
     int ny = 2;
     string meshFile="builtin";
@@ -66,11 +49,48 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
     nx = nx*np;
     ny = ny*np;
 
-    /* We will do our linear algebra using Epetra */
+    /* 
+     * <Header level="subsubsection" name="vector_type">
+     * Creation of vector type
+     * </Header>
+     * 
+     * Next we create a \verb+VectorType+ object. A \verb+VectorType+
+     * is an abstract factory which produces \verb+VectorSpace+ objects.
+     * A \verb+VectorSpace+ is itself a factory which can produce 
+     * \verb+Vector+ objects which are, logically enough, vectors.
+     * 
+     * Why this heirarchy of factorys? Vectors may need to be created
+     * inside code far below the user level, and the \verb+VectorSpace+ 
+     * encapsulates the information needed to build a vector of a 
+     * given type, size, and distribution over processors. The 
+     * \verb+VectorType+ is needed because we might need to select a 
+     * particular {\it software representation} for a vector, {\it e.g.}, 
+     * Trilinos, Petsc, or some other library. 
+     *
+     * By using an \verb+EpetraVectorType+, we will be creating
+     * \verb+EpetraVectorSpace+ vector spaces, which in turn
+     * create \verb+EpetraVector+ vectors.
+     */
     VectorType<double> vecType = new EpetraVectorType();
 
-    /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-     * be built using a PartitionedRectangleMesher. */
+    /* 
+     * <Header level="subsubsection" name="mesh">
+     * Creation of mesh
+     * </Header>
+     * 
+     * The creation of a mesh object involves several intermediate
+     * objects: a \verb+MeshType+ and a \verb+MeshSource+. The 
+     * \verb+MeshType+ specifies what mesh data structure will be used,
+     * and the \verb+MeshSource+ builds that data structure. How it is
+     * built will depend on the \verb+MeshSource+ subtype used. An
+     * \verb+ExodusMeshReader+, for instance, reads from an Exodus II file,
+     * while a \verb+PartitionedRectangleMesher+ builds a uniform 
+     * triangulation of a rectangle.
+     * 
+     * Once the \verb+MeshType+ and \verb+MeshSource+ objects have been
+     * defined, the mesh is created (read, built, whatever) by a call
+     * to the \verb+getMesh()+ method of \verb+MeshSource+.
+     */
     MeshType meshType = new BasicSimplicialMeshType();
       
     MeshSource mesher;
@@ -111,12 +131,34 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
     watchBC.setParam("integration", 6);
     watchBC.setParam("fill", 6);
     watchBC.setParam("evaluation", 6);
+    
 //    watchBC.deactivate();
 
 
-    /* Create a cell filter that will identify the maximal cells
-     * in the interior of the domain */
+    /* 
+     * <Header level="subsubsection" name="cell_filter">
+     * Specification of geometric regions
+     * </Header>
+     * 
+     * We'll need to specify subsets of the mesh on which equations
+     * or boundary conditions are defined. In many FEA codes this is
+     * done by explicit definition of element blocks, node sets, and
+     * side sets. Rather than working with sets explicitly at the user
+     * level, we instead work with filtering rules that produce 
+     * sets of cells. These rules are represented by \verb+CellFilter+
+     * objects. 
+     *
+     * \verb+MaximalCellFilter+
+     * selects all cells having dimension equal to the spatial dimension
+     * of the mesh. 
+     */
     CellFilter interior = new MaximalCellFilter();
+
+    
+    /* 
+     * \verb+DimensionalCellFilter+
+     * selects all cells of a specified dimension.
+     */
     CellFilter edges = new DimensionalCellFilter(1);
 
     CellFilter left;
@@ -170,18 +212,10 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
 
-#ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(searchForFile("SolverParameters/" + solverFile));
-#else
       ParameterXMLFileReader reader(solverFile);
-#endif
       ParameterList solverParams = reader.getParameters();
       LinearSolver<double> solver 
         = LinearSolverBuilder::createSolver(solverParams);
-
-//      Out::os() << "row map = " << endl;
-//      prob.rowMap(0)->print(Out::os());
-//      Out::os() << endl;
 
       Expr soln = prob.solve(solver);
 
@@ -264,6 +298,8 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
   return Sundance::testStatus();
 }
 
+
+/* <Ignore> */
 #else
 
 
@@ -277,3 +313,7 @@ int main(int argc, char** argv)
 
 
 #endif
+
+/* </Ignore> */
+
+/* \end{document} */
