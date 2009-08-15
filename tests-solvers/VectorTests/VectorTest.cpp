@@ -35,6 +35,9 @@
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "TSFVectorTester.hpp"
+#ifdef _MSC_VER
+#include "winmath.h"
+#endif
 
 using namespace Teuchos;
 using namespace TSFExtended;
