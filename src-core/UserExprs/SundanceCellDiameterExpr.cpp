@@ -32,14 +32,14 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceOut.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 CellDiameterExpr::CellDiameterExpr(const string& name)
   : EvaluatableExpr(), name_(name)

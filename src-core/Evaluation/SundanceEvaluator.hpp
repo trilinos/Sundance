@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceEvalVector.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceSparsitySubset.hpp"
 #include "SundanceSet.hpp"
@@ -48,7 +48,7 @@ class CoordExpr;
 
 class EvalContext;
   
-using namespace TSFExtended;
+
 
 class EvalManager;
 
@@ -56,7 +56,7 @@ class EvalManager;
  * Base class for evaluator objects. Each EvaluatableExpr type will 
  * have an associated Evaluator subtype.
  */
-class Evaluator : public TSFExtended::ObjectWithVerbosity<Evaluator>
+class Evaluator : public SundanceUtils::ObjectWithVerbosity<Evaluator>
 {
 public:
   /** */

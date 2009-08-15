@@ -18,7 +18,7 @@ using namespace SundanceUtils;
 using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 using SundanceCore::List;
 
 int main()

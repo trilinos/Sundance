@@ -41,7 +41,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 CellVectorEvaluator::CellVectorEvaluator(const CellVectorExpr* expr, 
   const EvalContext& context)

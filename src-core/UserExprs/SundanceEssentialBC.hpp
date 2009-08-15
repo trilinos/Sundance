@@ -36,14 +36,14 @@
 #include "SundanceWatchFlag.hpp"
 #include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceCellFilterStub.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
 
 namespace SundanceCore
 {
   using namespace SundanceUtils;
-  using namespace TSFExtended;
+  
   using namespace Teuchos;
 
   /** \relates Expr */

@@ -38,9 +38,9 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceMap.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFPrintable.hpp"
-#include "TSFDescribable.hpp"
+#include "SundanceHandleable.hpp"
+#include "SundancePrintable.hpp"
+#include "Teuchos_Describable.hpp"
 
 namespace SundanceStdFwk
 {

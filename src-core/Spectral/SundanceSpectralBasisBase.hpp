@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandleable.hpp"
 #include "SundanceMap.hpp"
 
 
@@ -45,7 +45,7 @@ using namespace SundanceUtils;
 namespace SundanceCore
 {
   /** Base class for spectral bases. */
-  class SpectralBasisBase : public TSFExtended::Handleable<SpectralBasisBase>
+  class SpectralBasisBase : public SundanceUtils::Handleable<SpectralBasisBase>
   {
   public:
     /** Construct a basis */

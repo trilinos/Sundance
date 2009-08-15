@@ -34,13 +34,13 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshTypeBase.hpp"
 #include "SundanceMesh.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdMesh
 {
   //  using namespace Teuchos;
   using namespace SundanceUtils;
-  using namespace TSFExtended;
+  
 
   /**
    * Class MeshType is a user-level object for specification of which
@@ -54,14 +54,14 @@ namespace SundanceStdMesh
    * The internal representation of the mesh will be as a BasicSimplicialMesh
    * object. 
    */
-  class MeshType : public TSFExtended::Handle<Internal::MeshTypeBase>
+  class MeshType : public SundanceUtils::Handle<Internal::MeshTypeBase>
   {
   public:
     /** Construct an empty mesh type object */
     MeshType();
 
     /** Construct from a raw pointer to a mesh type subtype */
-    MeshType(TSFExtended::Handleable<Internal::MeshTypeBase>* rawPtr);
+    MeshType(SundanceUtils::Handleable<Internal::MeshTypeBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh type subtype */
     MeshType(const RefCountPtr<Internal::MeshTypeBase>& smartPtr);

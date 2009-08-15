@@ -53,7 +53,7 @@ using namespace Teuchos;
  *
  */
 class Functional
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<Functional>
+  : public SundanceUtils::ParameterControlledObjectWithVerbosity<Functional>
 {
 public:
   /** */

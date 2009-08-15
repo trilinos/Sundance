@@ -35,7 +35,7 @@
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_Array.hpp"
 
 namespace SundanceStdMesh
@@ -78,7 +78,7 @@ namespace SundanceStdMesh
      *
      */
     class CellJacobianBatch 
-      : public TSFExtended::ObjectWithVerbosity<CellJacobianBatch>
+      : public SundanceUtils::ObjectWithVerbosity<CellJacobianBatch>
     {
     public:
       /** empty ctor */

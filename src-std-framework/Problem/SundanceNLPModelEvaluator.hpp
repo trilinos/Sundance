@@ -31,7 +31,7 @@
 #define SUNDANCE_SUNDANCENLPMODELEVALUATOR_H
 
 #include "SundanceDefs.hpp"
-#include "TSFConfigDefs.hpp"
+#include "SundanceDefs.hpp"
 
 #ifdef HAVE_ENABLED_MOOCHO
 

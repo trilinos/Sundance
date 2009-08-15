@@ -39,7 +39,7 @@
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceQuadratureFamily.hpp"
 
-using namespace TSFExtended;
+
 using namespace Teuchos;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

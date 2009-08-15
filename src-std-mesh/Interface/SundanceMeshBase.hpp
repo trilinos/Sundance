@@ -35,7 +35,7 @@
 #include "SundancePoint.hpp"
 #include "SundanceSet.hpp"
 #include "SundanceCellType.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceObjectWithInstanceID.hpp"
 #include "Teuchos_MPIComm.hpp"
 #include "Teuchos_Array.hpp"
@@ -324,7 +324,7 @@ class CellJacobianBatch;
  * package or into Teuchos.
  *
  * <li>Inherit MeshBase from Teuchos::VerboseObject instead of
- * TSFExtended::ObjectWithVerbosity.
+ * SundanceUtils::ObjectWithVerbosity.
  *
  * <li>Remove any concrete implementations and data from this base interface
  * to provide a clean abstract interface.  This would include removing the
@@ -375,7 +375,7 @@ class CellJacobianBatch;
  * </ul>
  */
 class MeshBase
-  : public TSFExtended::ObjectWithVerbosity<MeshBase>
+  : public SundanceUtils::ObjectWithVerbosity<MeshBase>
   , public ObjectWithInstanceID<MeshBase>
 {
 public:

@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceMeshType.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdMesh
 {

@@ -35,7 +35,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceExpr.hpp"
 #include "SundanceDiscreteFunction.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "TSFNonlinearOperatorBase.hpp"
 #include "TSFLinearOperator.hpp"
 #include "TSFVector.hpp"
@@ -59,7 +59,7 @@ class Assembler;
  * be passed to a nonlinear solver such as NOX.
  */
 class NLOp 
-  : public TSFExtended::ObjectWithVerbosity<NLOp>,
+  : public SundanceUtils::ObjectWithVerbosity<NLOp>,
     public TSFExtended::NonlinearOperatorBase<double>
 {
 public:

@@ -38,7 +38,7 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceCFMeshPair.hpp"
 #include "SundanceMap.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
@@ -58,7 +58,7 @@ namespace Internal
 /** 
  * 
  */
-class DOFMapBuilder : public TSFExtended::ParameterControlledObjectWithVerbosity<DOFMapBase>
+class DOFMapBuilder : public SundanceUtils::ParameterControlledObjectWithVerbosity<DOFMapBase>
 {
 public:
   /** */

@@ -41,7 +41,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 ChainRuleSum::ChainRuleSum(const MultipleDeriv& md,
                            int resultIndex,

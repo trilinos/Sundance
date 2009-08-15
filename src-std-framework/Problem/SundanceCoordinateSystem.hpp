@@ -39,7 +39,7 @@ using SundanceCore::Expr;
 using namespace Teuchos;
 
 class CoordinateSystemBase : 
-  public TSFExtended::Handleable<CoordinateSystemBase>
+  public SundanceUtils::Handleable<CoordinateSystemBase>
 {
 public:
   /** */
@@ -59,7 +59,7 @@ public:
 };
 
 
-class CoordinateSystem : public TSFExtended::Handle<CoordinateSystemBase>
+class CoordinateSystem : public SundanceUtils::Handle<CoordinateSystemBase>
 {
 public:
   /* boilerplate handle ctors */

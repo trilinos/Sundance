@@ -40,7 +40,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 UserDefOp::UserDefOp(const Expr& args,
                      const RefCountPtr<const UserDefFunctor>& functor)

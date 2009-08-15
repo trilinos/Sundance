@@ -139,8 +139,9 @@
 #include "SundanceAToCDensitySampler.hpp"
 #include "SundanceCToAInterpolator.hpp"
 
-using namespace TSFExtended;
+
 using namespace TSFExtendedOps;
+using namespace TSFExtended;
 using namespace Teuchos;
 using namespace SundanceStdFwk;
 using namespace SundanceCore;

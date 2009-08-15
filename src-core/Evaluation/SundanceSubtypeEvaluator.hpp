@@ -38,7 +38,7 @@
 namespace SundanceCore 
 {
 class EvalContext;
-using namespace TSFExtended;
+
 
 /**
  * 

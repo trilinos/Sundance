@@ -5,7 +5,6 @@ INCLUDE(PackageLibraryMacros)
 # A) Package-specific configuration options
 #
 
-PACKAGE_CONFIGURE_FILE(TSF_config.h)
 
 #
 # B) Define the header and source files (and directories)
@@ -21,7 +20,7 @@ SET(SOURCES "")
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 SET(HEADERS ${HEADERS}
-  ${CMAKE_CURRENT_BINARY_DIR}/../src-solvers/TSF_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/../src-utils/SundanceConfig.h
   )
 
 #
@@ -29,7 +28,8 @@ SET(HEADERS ${HEADERS}
 #
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-solvers/Vectors)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-utils/Utilities)
+#INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../src-solvers/Vectors)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/UserExprs)
 
 APPEND_SET(HEADERS

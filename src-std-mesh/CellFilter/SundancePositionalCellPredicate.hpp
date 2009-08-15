@@ -42,7 +42,7 @@ namespace SundanceStdFwk
 
 #define NEW_CELL_PREDICATE(name)  \
   class name : public CellPredicateFunctorBase,  \
-               public TSFExtended::Handleable<CellPredicateFunctorBase>  \
+               public SundanceUtils::Handleable<CellPredicateFunctorBase>  \
   {  \
   public:  \
     name() : CellPredicateFunctorBase(#name) {} \
@@ -56,7 +56,7 @@ namespace SundanceStdFwk
 
 #define CELL_PREDICATE_(name, code) \
   class name : public CellPredicateFunctorBase, \
-               public TSFExtended::Handleable<CellPredicateFunctorBase> \
+               public SundanceUtils::Handleable<CellPredicateFunctorBase> \
   { \
   public:\
     name() : CellPredicateFunctorBase(#name){;}            \

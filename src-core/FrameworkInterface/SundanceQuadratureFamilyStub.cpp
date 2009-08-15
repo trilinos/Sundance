@@ -36,7 +36,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 QuadratureFamilyStub::QuadratureFamilyStub(int order)
 : order_(order)

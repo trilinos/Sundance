@@ -41,7 +41,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op, 
   const RefCountPtr<ScalarExpr>& arg)

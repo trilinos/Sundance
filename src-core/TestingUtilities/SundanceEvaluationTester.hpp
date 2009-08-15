@@ -48,7 +48,7 @@
 #include "SundanceTabs.hpp"
 #include "SundanceADCoord.hpp"
 #include "SundanceADDerivative.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 
 namespace SundanceTesting
@@ -62,7 +62,7 @@ namespace SundanceTesting
    *
    */
   class EvaluationTester 
-    : public TSFExtended::ObjectWithVerbosity<EvaluationTester>
+    : public SundanceUtils::ObjectWithVerbosity<EvaluationTester>
   {
   public:
     /** */

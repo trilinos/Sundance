@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshTransformationBase.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdMesh
 {
@@ -57,14 +57,14 @@ namespace SundanceStdMesh
    * Mesh mesh3D = extruder.apply(mesh2D);
    * \endcode
    */
-  class MeshTransformation : public TSFExtended::Handle<MeshTransformationBase>
+  class MeshTransformation : public SundanceUtils::Handle<MeshTransformationBase>
   {
   public:
     /** Construct an empty mesh filter object */
     MeshTransformation();
 
     /** Construct from a raw pointer to a mesh filter subtype */
-    MeshTransformation(TSFExtended::Handleable<MeshTransformationBase>* rawPtr);
+    MeshTransformation(SundanceUtils::Handleable<MeshTransformationBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh filter subtype */
     MeshTransformation(const RefCountPtr<MeshTransformationBase>& smartPtr);

@@ -36,7 +36,7 @@
 #include "SundanceAbstractEvalMediator.hpp"
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundanceIntegralGroup.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceDiscreteFunction.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
@@ -63,7 +63,7 @@ namespace SundanceStdFwk
      * and NodalEvalMediator, which does evaluation at nodal points.  */
 
     class StdFwkEvalMediator : public AbstractEvalMediator,
-                               public TSFExtended::Printable
+                               public SundanceUtils::Printable
     {
     public:
       /** */

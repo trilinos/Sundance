@@ -36,7 +36,7 @@
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceBasisFamily.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 

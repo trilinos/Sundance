@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshSourceBase.hpp"
 
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdMesh
 {
@@ -54,14 +54,14 @@ namespace SundanceStdMesh
    * MeshSource meshSrc = new TriangleMeshReader("meshFile", meshType, MPIComm::world());
    * \endcode
    */
-  class MeshSource : public TSFExtended::Handle<MeshSourceBase>
+  class MeshSource : public SundanceUtils::Handle<MeshSourceBase>
   {
   public:
     /** Construct an empty mesh source object */
     MeshSource();
 
     /** Construct from a raw pointer to a mesh source subtype */
-    MeshSource(TSFExtended::Handleable<MeshSourceBase>* rawPtr);
+    MeshSource(SundanceUtils::Handleable<MeshSourceBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh source subtype */
     MeshSource(const RefCountPtr<MeshSourceBase>& smartPtr);

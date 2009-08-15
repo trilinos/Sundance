@@ -42,7 +42,7 @@ using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace SundanceUtils;
-using namespace TSFExtended;
+
 using namespace Teuchos;
 using namespace std;
 

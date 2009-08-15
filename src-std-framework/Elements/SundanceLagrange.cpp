@@ -33,14 +33,14 @@
 #include "SundanceExceptions.hpp"
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundancePoint.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 Lagrange::Lagrange(int order)
   : order_(order)

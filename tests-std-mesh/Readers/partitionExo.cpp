@@ -22,7 +22,7 @@ using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 using namespace std;
 
 static Time& totalTimer() 

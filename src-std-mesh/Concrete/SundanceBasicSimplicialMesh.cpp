@@ -38,7 +38,7 @@
 #include "Teuchos_MPIContainerComm.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceCollectiveExceptionCheck.hpp"
 
 #include <unistd.h>

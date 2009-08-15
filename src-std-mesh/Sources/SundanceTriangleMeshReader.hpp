@@ -36,7 +36,7 @@
 
 namespace SundanceStdMesh
 {
-  using namespace TSFExtended;
+  
   using namespace Teuchos;
   using namespace SundanceUtils;
   using namespace Internal;

@@ -32,14 +32,14 @@
 #include "SundanceExpr.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 
 UnaryExpr::UnaryExpr(const RefCountPtr<ScalarExpr>& arg)

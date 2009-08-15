@@ -44,7 +44,7 @@ using Teuchos::XMLObject;
 using Teuchos::tuple;
 using SundanceUtils::OrderedHandle;
 using SundanceCore::CommonFuncDataStub;
-using TSFExtended::Handle;
+using SundanceUtils::Handle;
 
 /** 
  * BasisFamily is the user-level handle class for specifying the basis with

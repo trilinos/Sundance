@@ -49,7 +49,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 
 void GrouperBase::setVerbosity(

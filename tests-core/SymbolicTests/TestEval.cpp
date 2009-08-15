@@ -33,7 +33,7 @@ using namespace SundanceCore;
 using SundanceCore::List;
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 /* a^b */
 Expr myPow( Expr a , Expr b )

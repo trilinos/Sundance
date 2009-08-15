@@ -47,7 +47,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 using std::endl;
 using std::setw;
@@ -73,7 +73,7 @@ FunctionalEvaluator::FunctionalEvaluator()
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& integral,
   const ParameterList& verbParams)
-  : TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+  : SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
     assembler_(),
     varValues_(),
     vecType_(),
@@ -99,7 +99,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& varValues,
   const VectorType<double>& vectorType,
   const ParameterList& verbParams)
-  : TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+  : SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
     assembler_(),
     varValues_(varValues),
     vecType_(vectorType),
@@ -126,7 +126,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& fieldValues,
   const VectorType<double>& vectorType,
   const ParameterList& verbParams)
-  : TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+  : SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
     assembler_(),
     varValues_(varEvalPts),
     vecType_(vectorType),

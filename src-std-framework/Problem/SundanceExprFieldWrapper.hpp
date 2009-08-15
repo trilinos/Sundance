@@ -36,7 +36,7 @@
 
 
 #include "SundanceDefs.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandleable.hpp"
 #include "SundanceFieldBase.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceDiscreteSpace.hpp"
@@ -50,7 +50,7 @@ namespace SundanceStdFwk
     using namespace SundanceCore;
     using namespace SundanceStdMesh;
     using namespace SundanceStdMesh::Internal;
-    using namespace TSFExtended;
+    
     /**
      *
      */

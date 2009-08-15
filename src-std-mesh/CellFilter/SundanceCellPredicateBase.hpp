@@ -35,11 +35,11 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandleable.hpp"
 #include "Teuchos_XMLObject.hpp"
-#include "TSFPrintable.hpp"
-#include "TSFDescribable.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundancePrintable.hpp"
+#include "Teuchos_Describable.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include <typeinfo>
 
 namespace SundanceStdFwk
@@ -62,9 +62,9 @@ using namespace SundanceStdMesh::Internal;
      * in LabelCellPredicate and PositionalCellPredicate.
      */
     class CellPredicateBase 
-      : public TSFExtended::Handleable<CellPredicateBase>,
+      : public SundanceUtils::Handleable<CellPredicateBase>,
         public Noncopyable,
-        public TSFExtended::ObjectWithVerbosity<CellPredicateBase>
+        public SundanceUtils::ObjectWithVerbosity<CellPredicateBase>
     {
     public:
       /** Empty ctor */

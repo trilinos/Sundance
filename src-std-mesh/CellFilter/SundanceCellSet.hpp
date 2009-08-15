@@ -36,7 +36,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceCellSetBase.hpp"
 #include "SundanceCellPredicate.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 
 namespace SundanceStdFwk
@@ -45,7 +45,7 @@ namespace SundanceStdFwk
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
   using namespace Teuchos;
-  using namespace TSFExtended;
+  
 
   namespace Internal
   {
@@ -57,7 +57,7 @@ using namespace SundanceStdMesh::Internal;
      * 
      * @see CellFilter, CellIterator
      **/
-    class CellSet : public TSFExtended::Handle<CellSetBase>
+    class CellSet : public SundanceUtils::Handle<CellSetBase>
     {
     public:
       /* handle boilerplate */

@@ -48,7 +48,7 @@ namespace SundanceStdFwk
      * NonlinearProblem encapsulates a discrete nonlinear problem
      */
   class NonlinearProblem 
-    : public TSFExtended::ObjectWithVerbosity<NonlinearProblem>
+    : public SundanceUtils::ObjectWithVerbosity<NonlinearProblem>
     {
     public:
       /** Empty ctor */

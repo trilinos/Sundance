@@ -31,8 +31,8 @@
 #ifndef SUNDANCEORDEREDHANDLE_HPP
 #define SUNDANCEORDEREDHANDLE_HPP
 
-#include "TSFConfigDefs.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceDefs.hpp"
+#include "SundanceHandle.hpp"
 #include <typeinfo>
 
 
@@ -40,7 +40,7 @@
 /** Empty ctor */ \
 handle() : OrderedHandle<contents >() {;} \
 /** Construct a #handle with a raw pointer to a #contents */ \
-handle(TSFExtended::Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
+handle(SundanceUtils::Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
 /** Construct a #handle with a smart pointer to a #contents */ \
 handle(const RefCountPtr<contents >& smartPtr) : OrderedHandle<contents >(smartPtr){;}
 
@@ -52,23 +52,23 @@ namespace SundanceUtils
   using namespace Teuchos;
 
   /**
-   * Class OrderedHandle is an extension to TSFExtended::Handle that 
+   * Class OrderedHandle is an extension to SundanceUtils::Handle that 
    * includes a comparison operator ("<" operator) so that
    * the handle can be used in ordered containers such as STL maps and sets.
    */
   template <class PointerType>
-  class OrderedHandle : public TSFExtended::Handle<PointerType>
+  class OrderedHandle : public SundanceUtils::Handle<PointerType>
   {
   public:
     /** empty ctor */
-    OrderedHandle() : TSFExtended::Handle<PointerType>() {;}
+    OrderedHandle() : SundanceUtils::Handle<PointerType>() {;}
 
     /** Construct from a raw ptr */
-    OrderedHandle(TSFExtended::Handleable<PointerType>* rawPtr) : TSFExtended::Handle<PointerType>(rawPtr) {;}
+    OrderedHandle(SundanceUtils::Handleable<PointerType>* rawPtr) : SundanceUtils::Handle<PointerType>(rawPtr) {;}
 
     /** Construct from a smart ptr*/
     OrderedHandle(const RefCountPtr<PointerType>& smartPtr) 
-      : TSFExtended::Handle<PointerType>(smartPtr) {;}
+      : SundanceUtils::Handle<PointerType>(smartPtr) {;}
 
     /** comparison operator */
     bool operator<(const OrderedHandle<PointerType>& other) const 

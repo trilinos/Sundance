@@ -25,6 +25,8 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(ExampleCopyFiles
                    aztec-ml.xml 
                    aztec-native.xml
                    aztec.xml
+                   belos-ifpack.xml 
+                   belos-ml.xml 
                    bicgstab.xml
                    gmres.xml
                    nox.xml            

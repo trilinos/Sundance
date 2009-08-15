@@ -33,14 +33,14 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceOut.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 
 namespace SundanceCore

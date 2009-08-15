@@ -37,7 +37,7 @@ using namespace SundanceUtils;
 
 using namespace Teuchos;
 using namespace SundanceCore;
-using namespace TSFExtended;
+
 using namespace SundanceCore;
 
 Expr SundanceCore::EssentialBC(const Handle<CellFilterStub>& domain,

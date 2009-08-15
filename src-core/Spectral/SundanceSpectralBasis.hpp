@@ -32,8 +32,8 @@
 #define SUNDANCE_SPECTRALBASIS_H
 
 #include "SundanceDefs.hpp"
-#include "TSFHandle.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandle.hpp"
+#include "SundanceHandleable.hpp"
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceSpectralBasisBase.hpp"
@@ -46,7 +46,7 @@ using namespace SundanceUtils;
 namespace SundanceCore
 {
   /** Doxygen doc for SpectralBasis */
-  class SpectralBasis : public TSFExtended::Handle<SpectralBasisBase>
+  class SpectralBasis : public SundanceUtils::Handle<SpectralBasisBase>
   {
   public:
     /* boilerplate handle ctors */

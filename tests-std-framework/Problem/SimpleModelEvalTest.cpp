@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 #include "SundanceDefs.hpp"
-#include "TSFConfigDefs.hpp"
+#include "SundanceDefs.hpp"
 
 
 

@@ -39,7 +39,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 UserDefOpElement::UserDefOpElement(const Array<RefCountPtr<ScalarExpr> >& args,
   const RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > >& evalMap,

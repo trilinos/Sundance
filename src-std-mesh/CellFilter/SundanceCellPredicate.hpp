@@ -37,7 +37,7 @@
 #include "SundanceMesh.hpp"
 #include "SundanceCellPredicateBase.hpp"
 #include "SundancePositionalCellPredicate.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdFwk
 {
@@ -52,7 +52,7 @@ using namespace SundanceStdMesh::Internal;
      * used to decide whether
      * a given cell passes a CellFilter.
      */
-  class CellPredicate : public TSFExtended::Handle<CellPredicateBase>
+  class CellPredicate : public SundanceUtils::Handle<CellPredicateBase>
   {
     public:
     
@@ -63,7 +63,7 @@ using namespace SundanceStdMesh::Internal;
     CellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func);
 
     /** construct from a positional cell predicate functor */
-    CellPredicate(TSFExtended::Handleable<CellPredicateFunctorBase>* func);
+    CellPredicate(SundanceUtils::Handleable<CellPredicateFunctorBase>* func);
 
     /** write to XML */
     XMLObject toXML() const {return ptr()->toXML();}

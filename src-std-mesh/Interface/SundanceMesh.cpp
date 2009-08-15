@@ -42,7 +42,7 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace SundanceUtils;
-using namespace TSFExtended;
+
 
 
 IncrementallyCreatableMesh* Mesh::creatableMesh()

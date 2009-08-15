@@ -34,7 +34,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceEvalVector.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 namespace SundanceCore
 {

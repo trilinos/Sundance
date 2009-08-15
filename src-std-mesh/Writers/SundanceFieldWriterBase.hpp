@@ -44,8 +44,8 @@ namespace SundanceStdMesh
      * FieldWriterBase is a base class for objects that write fields
      * and/or meshes to a stream. 
      */
-    class FieldWriterBase : public TSFExtended::Handleable<FieldWriterBase>,
-                            public TSFExtended::ObjectWithVerbosity<FieldWriterBase>
+    class FieldWriterBase : public SundanceUtils::Handleable<FieldWriterBase>,
+                            public SundanceUtils::ObjectWithVerbosity<FieldWriterBase>
     {
     public:
       /** */

@@ -38,7 +38,7 @@ using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 using SundanceStdFwk::Internal::CellSet;
 using SundanceStdFwk::Internal::CellIterator;
 using SundanceStdFwk::CellFilter;

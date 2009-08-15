@@ -34,7 +34,7 @@
 #include "SundanceSpatialDerivSpecifier.hpp"
 #include "SundanceExceptions.hpp"
 #include "SundanceTypeUtils.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceADReal.hpp"
 
@@ -42,7 +42,7 @@ using namespace SundanceStdFwk;
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 RaviartThomas::RaviartThomas(int spatialDim)
   : HDivVectorBasis(spatialDim)

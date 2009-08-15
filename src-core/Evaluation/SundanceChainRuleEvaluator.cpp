@@ -44,7 +44,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 ChainRuleEvaluator::ChainRuleEvaluator(const ExprWithChildren* expr, 
   const EvalContext& context)

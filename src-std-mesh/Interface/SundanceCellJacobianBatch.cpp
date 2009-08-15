@@ -39,7 +39,7 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
 using namespace SundanceUtils;
-using namespace TSFExtended;
+
 
 /* declare LAPACK subroutines */
 extern "C"

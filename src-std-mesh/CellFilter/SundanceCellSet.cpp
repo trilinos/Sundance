@@ -41,7 +41,7 @@ using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 CellSet::CellSet(const Mesh& mesh, int cellDim,
                  const CellType& cellType,

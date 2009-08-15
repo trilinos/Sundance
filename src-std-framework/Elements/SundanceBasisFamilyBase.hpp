@@ -35,9 +35,9 @@
 #include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceTensorBasisBase.hpp"
 #include "SundanceBasisReferenceEvaluationBase.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFPrintable.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceHandleable.hpp"
+#include "SundancePrintable.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceTypeUtils.hpp"
 #include "Teuchos_XMLObject.hpp"
 
@@ -56,9 +56,9 @@ using Teuchos::rcp;
  *
  */
 class BasisFamilyBase
-  : public TSFExtended::Handleable<BasisFamilyBase>,
-    public TSFExtended::Printable,
-    public TSFExtended::ObjectWithVerbosity<BasisFamilyBase>,
+  : public SundanceUtils::Handleable<BasisFamilyBase>,
+    public SundanceUtils::Printable,
+    public SundanceUtils::ObjectWithVerbosity<BasisFamilyBase>,
     public BasisDOFTopologyBase,
     public TensorBasisBase,
     public BasisReferenceEvaluationBase

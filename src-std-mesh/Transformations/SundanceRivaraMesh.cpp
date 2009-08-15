@@ -10,7 +10,7 @@
 using namespace SundanceStdMesh::Rivara;
 using namespace SundanceUtils;
 using SundanceUtils::Map;
-using namespace TSFExtended;
+
 using namespace Teuchos;
 using std::endl;
 

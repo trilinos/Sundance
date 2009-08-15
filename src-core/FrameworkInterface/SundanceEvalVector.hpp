@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_Array.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceUnaryFunctor.hpp"
 #include "SundanceNoncopyable.hpp"
 
@@ -48,7 +48,7 @@ class TempStack;
  *
  */
 class EvalVector : public Noncopyable,
-                   public TSFExtended::ObjectWithVerbosity<EvalVector>
+                   public SundanceUtils::ObjectWithVerbosity<EvalVector>
 {
   friend class EvalManager;
   friend class TempStack;

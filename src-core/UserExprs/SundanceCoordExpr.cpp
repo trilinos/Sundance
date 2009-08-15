@@ -32,12 +32,12 @@
 #include "SundanceEvalManager.hpp"
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceOut.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 using namespace SundanceUtils;
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 CoordExpr::CoordExpr(int dir, const string& name)
   : EvaluatableExpr(),

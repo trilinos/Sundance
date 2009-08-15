@@ -41,8 +41,8 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceNoncopyable.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandleable.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdFwk
 {
@@ -59,10 +59,10 @@ using namespace SundanceStdMesh::Internal;
      *
      * @see CellFilter
      **/
-    class CellSetBase : public TSFExtended::ObjectWithVerbosity<CellSetBase>,
-                        public TSFExtended::Printable,
+    class CellSetBase : public SundanceUtils::ObjectWithVerbosity<CellSetBase>,
+                        public SundanceUtils::Printable,
                         public Noncopyable,
-                        public TSFExtended::Handleable<CellSetBase>
+                        public SundanceUtils::Handleable<CellSetBase>
     {
     public:
       /** Construct, initializing to an empty set */

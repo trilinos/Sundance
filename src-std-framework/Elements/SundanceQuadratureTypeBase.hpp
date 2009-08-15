@@ -36,7 +36,7 @@
 #include "Teuchos_Array.hpp"
 #include "SundanceCellType.hpp"
 #include "SundanceQuadratureFamily.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandleable.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 
@@ -53,7 +53,7 @@ namespace SundanceStdFwk
    * QuadratureTypeBase 
    */
   class QuadratureTypeBase 
-    : public TSFExtended::Handleable<QuadratureTypeBase>
+    : public SundanceUtils::Handleable<QuadratureTypeBase>
   {
   public:
     /** */

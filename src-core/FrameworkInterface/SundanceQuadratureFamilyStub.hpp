@@ -33,8 +33,8 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceNoncopyable.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFPrintable.hpp"
+#include "SundanceHandleable.hpp"
+#include "SundancePrintable.hpp"
 #include "Teuchos_Describable.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_XMLObject.hpp"
@@ -45,9 +45,9 @@ using namespace SundanceUtils;
 using namespace Teuchos;
 
 class QuadratureFamilyStub 
-  : public TSFExtended::Handleable<QuadratureFamilyStub>,
-    public TSFExtended::Printable,
-    public TSFExtended::Describable,
+  : public SundanceUtils::Handleable<QuadratureFamilyStub>,
+    public SundanceUtils::Printable,
+    public Teuchos::Describable,
     public Noncopyable
 {
 public:

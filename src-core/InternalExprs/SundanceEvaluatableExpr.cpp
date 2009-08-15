@@ -42,7 +42,7 @@
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 TEUCHOS_TIMER(evalTimer, "Symbolic Evaluation")
 

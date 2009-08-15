@@ -36,7 +36,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceNoncopyable.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include <typeinfo>
 
 namespace SundanceStdMesh
@@ -69,7 +69,7 @@ namespace SundanceStdMesh
      * and a past-the-end index. 
      */
     class CellReordererImplemBase 
-      : public TSFExtended::ObjectWithVerbosity<CellReordererImplemBase>
+      : public SundanceUtils::ObjectWithVerbosity<CellReordererImplemBase>
     {
     public:
       /** Construct with a pointer to a mesh */

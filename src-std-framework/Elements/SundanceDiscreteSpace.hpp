@@ -38,7 +38,7 @@
 #include "SundanceDOFMapBase.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFVectorSpace.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 namespace SundanceCore
 {

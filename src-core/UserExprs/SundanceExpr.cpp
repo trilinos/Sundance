@@ -112,11 +112,11 @@ static Time& prodTimer()
 
 
 Expr::Expr(const double& c)
-	: TSFExtended::Handle<ExprBase>(new ConstantExpr(c))
+	: SundanceUtils::Handle<ExprBase>(new ConstantExpr(c))
 {}
 
 Expr::Expr(const complex<double>& c)
-	: TSFExtended::Handle<ExprBase>(new ComplexExpr(new ConstantExpr(c.real()),
+	: SundanceUtils::Handle<ExprBase>(new ComplexExpr(new ConstantExpr(c.real()),
       new ConstantExpr(c.imag())))
 {}
 

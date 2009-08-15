@@ -58,7 +58,7 @@ class Assembler;
  * 
  */
 class FunctionalEvaluator 
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>
+  : public SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>
 {
 public:
   /** */

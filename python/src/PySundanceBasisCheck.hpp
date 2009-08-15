@@ -24,7 +24,7 @@
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
 
-using namespace TSFExtended;
+
 using namespace Teuchos;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

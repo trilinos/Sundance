@@ -3,13 +3,13 @@
 
 #include "PySundanceCallback.hpp"
 #include "TSFLinearSolverBase.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandleable.hpp"
 
 
 namespace TSFExtended
 {
   class PySundanceLinearSolver : public LinearSolverBase<double>,
-                                 public Handleable<LinearSolverBase<double> >
+                                 public SundanceUtils::Handleable<LinearSolverBase<double> >
   {
   public:
     /** */

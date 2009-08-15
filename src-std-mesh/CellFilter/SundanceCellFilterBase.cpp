@@ -37,7 +37,7 @@ using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 CellFilterBase::CellFilterBase()
   : CellFilterStub(), cellSetCache_(), subsets_(), disjoints_(), name_()

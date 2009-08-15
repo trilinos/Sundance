@@ -36,7 +36,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellReordererBase.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 
 namespace SundanceStdMesh
@@ -44,7 +44,7 @@ namespace SundanceStdMesh
   using namespace Teuchos;
 using namespace SundanceUtils;
   using namespace Internal;
-  using namespace TSFExtended;
+  
   class Mesh;
   /**
    * User-level handle class for abstract specification of
@@ -58,7 +58,7 @@ using namespace SundanceUtils;
    * \endcode
    */
   class CellReorderer
-    : public TSFExtended::Handle<CellReordererFactoryBase>
+    : public SundanceUtils::Handle<CellReordererFactoryBase>
   {
   public:
     HANDLE_CTORS(CellReorderer, CellReordererFactoryBase);

@@ -47,7 +47,7 @@ using namespace SundanceStdMesh::Internal;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 using namespace std;
 
 

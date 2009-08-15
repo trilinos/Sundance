@@ -40,7 +40,6 @@
 #endif
 
 #include "SundanceConfig.h"
-#include "TSF_config.h"
 
 
 namespace Teuchos {}

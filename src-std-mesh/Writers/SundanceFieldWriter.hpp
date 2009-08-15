@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceFieldWriterBase.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdMesh
 {
@@ -56,7 +56,7 @@ namespace SundanceStdMesh
    * writer.write();
    * \endcode
    */
-  class FieldWriter : public TSFExtended::Handle<FieldWriterBase>
+  class FieldWriter : public SundanceUtils::Handle<FieldWriterBase>
   {
   public:
     /* Boilerplate handle ctors */

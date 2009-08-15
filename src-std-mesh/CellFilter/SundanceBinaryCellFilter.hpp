@@ -40,7 +40,7 @@
 namespace SundanceStdFwk
 {
   using namespace Teuchos;
-  using namespace TSFExtended;
+  
   
   namespace Internal
   {

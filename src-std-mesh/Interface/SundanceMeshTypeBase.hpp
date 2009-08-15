@@ -33,9 +33,9 @@
 
 
 #include "SundanceDefs.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFDescribable.hpp"
-#include "TSFPrintable.hpp"
+#include "SundanceHandleable.hpp"
+#include "Teuchos_Describable.hpp"
+#include "SundancePrintable.hpp"
 #include "SundanceNoncopyable.hpp"
 #include "SundanceMeshBase.hpp"
 
@@ -52,9 +52,9 @@ using namespace SundanceUtils;
      * MeshTypeBase is a factory class for empty meshes, allowing generic
      * mesh sources to build a mesh of user-specified type. 
      */
-    class MeshTypeBase : public TSFExtended::Handleable<MeshTypeBase>,
-                         public TSFExtended::Printable,
-                         public TSFExtended::Describable,
+    class MeshTypeBase : public SundanceUtils::Handleable<MeshTypeBase>,
+                         public SundanceUtils::Printable,
+                         public Teuchos::Describable,
                          public Noncopyable
     {
     public:

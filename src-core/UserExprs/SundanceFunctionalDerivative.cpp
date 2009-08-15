@@ -36,7 +36,7 @@
 
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 using namespace SundanceCore;
 
 Expr SundanceCore::FunctionalDerivative(const Expr& F, const Expr& u)

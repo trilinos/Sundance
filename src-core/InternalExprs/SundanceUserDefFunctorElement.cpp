@@ -37,7 +37,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 UserDefFunctorElement
 ::UserDefFunctorElement(const RefCountPtr<const UserDefFunctor>& master,

@@ -5,8 +5,6 @@ INCLUDE(PackageLibraryMacros)
 # A) Package-specific configuration options
 #
 
-PACKAGE_CONFIGURE_FILE(TSF_config.h)
-
 #
 # B) Define the header and source files (and directories)
 #
@@ -20,9 +18,6 @@ SET(SOURCES "")
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-SET(HEADERS ${HEADERS}
-  ${CMAKE_CURRENT_BINARY_DIR}/../src-solvers/TSF_config.h
-  )
 
 #
 # Cell Filtres files

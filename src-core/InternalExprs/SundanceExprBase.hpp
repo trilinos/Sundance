@@ -37,7 +37,7 @@
 #include "SundanceSet.hpp"
 #include "Teuchos_XMLObject.hpp"
 #include "Teuchos_RefCountPtrDecl.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandleable.hpp"
 
 
 
@@ -51,7 +51,7 @@ using std::ostream;
 
 
 /** */
-class ExprBase : public TSFExtended::Handleable<ExprBase>
+class ExprBase : public SundanceUtils::Handleable<ExprBase>
 {
 public:
   /** empty ctor */

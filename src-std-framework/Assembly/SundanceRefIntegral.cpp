@@ -45,7 +45,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 using std::ios_base;
 using std::setw;
 using std::endl;

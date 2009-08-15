@@ -42,7 +42,7 @@
 #include "SundanceEvalContext.hpp"
 #include "SundanceEvalVector.hpp"
 #include "SundanceSparsitySuperset.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
 namespace SundanceCore
@@ -75,7 +75,7 @@ enum DerivSubsetSpecifier {AllNonzeros,
 class EvaluatableExpr : public virtual ScalarExpr,
                         public virtual EvaluatorFactory,
                         public virtual FuncSetAccumulator,
-                        public TSFExtended::ObjectWithVerbosity<EvaluatableExpr>
+                        public SundanceUtils::ObjectWithVerbosity<EvaluatableExpr>
 {
   typedef OrderedQuartet<EvalContext, 
                          Set<MultiIndex>,

@@ -39,7 +39,7 @@ using namespace SundanceUtils;
 using namespace SundanceCore;
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 DiscreteFuncElement
 ::DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,

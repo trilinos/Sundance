@@ -37,7 +37,7 @@
 #include "SundanceComputationType.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 #include "SundanceEvalContext.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 
 namespace SundanceCore
@@ -176,7 +176,7 @@ class CommonFuncDataStub;
  * but its unreduced ID will always be the same.
  *
  */
-class EquationSet : public TSFExtended::ParameterControlledObjectWithVerbosity<EquationSet>
+class EquationSet : public ParameterControlledObjectWithVerbosity<EquationSet>
 {
 public:
   /** \name Constructors */

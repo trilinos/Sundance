@@ -26,7 +26,7 @@ using SundanceCore::List;
 using namespace SundanceCore;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 RefCountPtr<ScalarExpr> expr2scalar(const Expr& e)
 {

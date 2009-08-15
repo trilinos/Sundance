@@ -40,8 +40,8 @@ ENDIF()
 # C) Add the libraries, tests, and examples
 #
 
-ADD_SUBDIRECTORY(src-solvers)
 ADD_SUBDIRECTORY(src-utils)
+ADD_SUBDIRECTORY(src-solvers)
 ADD_SUBDIRECTORY(src-interop)
 ADD_SUBDIRECTORY(src-core)
 ADD_SUBDIRECTORY(src-std-mesh)
@@ -51,8 +51,8 @@ IF(Sundance_ENABLE_Python)
   ADD_SUBDIRECTORY(python)
 ENDIF()
 
-PACKAGE_ADD_TEST_DIRECTORIES(tests-utils)
 PACKAGE_ADD_TEST_DIRECTORIES(tests-solvers)
+PACKAGE_ADD_TEST_DIRECTORIES(tests-utils)
 PACKAGE_ADD_TEST_DIRECTORIES(tests-core)
 PACKAGE_ADD_TEST_DIRECTORIES(tests-std-mesh)
 PACKAGE_ADD_TEST_DIRECTORIES(tests-std-framework)

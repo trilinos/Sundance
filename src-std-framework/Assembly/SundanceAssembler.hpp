@@ -86,7 +86,7 @@ typedef std::set<int> ColSetType;
  * 
  */
 class Assembler 
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<Assembler>
+  : public SundanceUtils::ParameterControlledObjectWithVerbosity<Assembler>
 {
 public:
   /** */

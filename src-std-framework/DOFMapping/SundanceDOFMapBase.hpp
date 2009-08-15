@@ -36,7 +36,7 @@
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilter.hpp"
 #include "SundanceMapStructure.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 namespace Teuchos {class Time;}
 
@@ -113,8 +113,8 @@ namespace SundanceStdFwk
      *
      * </ul>
      */
-    class DOFMapBase : public TSFExtended::ParameterControlledObjectWithVerbosity<DOFMapBase>,
-                       public TSFExtended::Printable
+    class DOFMapBase : public SundanceUtils::ParameterControlledObjectWithVerbosity<DOFMapBase>,
+                       public SundanceUtils::Printable
     {
     public:
 

@@ -48,7 +48,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 void TrivialGrouper::findGroups(const EquationSet& eqn,
   const CellType& maxCellType,

@@ -43,7 +43,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 DiffOp::DiffOp(const MultiIndex& op, 
   const RefCountPtr<ScalarExpr>& arg)

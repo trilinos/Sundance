@@ -40,7 +40,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 EFDEEvaluator::EFDEEvaluator(
   const ExplicitFunctionalDerivativeElement* expr, 

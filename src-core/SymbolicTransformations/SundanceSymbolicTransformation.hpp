@@ -32,13 +32,13 @@
 #define SUNDANCE_SYMBOLICTRANSFORMATION_H
 
 #include "SundanceDefs.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
 namespace SundanceCore
 {
 using namespace SundanceUtils;
-using namespace TSFExtended;
+
 using std::string;
   
 

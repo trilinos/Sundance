@@ -37,11 +37,11 @@
 #include "SundanceIncrementallyCreatableMesh.hpp"
 #include "SundanceIdentityReorderer.hpp"
 #include "SundanceCellReorderer.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdMesh
 {
-using namespace TSFExtended;
+
 using namespace Teuchos;
 using namespace SundanceUtils;
 using namespace Internal;
@@ -51,7 +51,7 @@ using namespace Internal;
    * The Mesh class is a handle to a MeshBase, which is an abstract interface
    * for meshes. 
    */
-  class Mesh : public Handle<MeshBase>
+  class Mesh : public SundanceUtils::Handle<MeshBase>
   {
   public:
 

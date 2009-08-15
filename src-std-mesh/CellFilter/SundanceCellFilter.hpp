@@ -38,7 +38,7 @@
 #include "SundanceCellFilterStub.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 #include "SundanceOrderedHandle.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
 namespace SundanceStdFwk
@@ -48,7 +48,7 @@ namespace SundanceStdFwk
   using namespace SundanceStdMesh::Internal;
   using namespace SundanceCore;
   using namespace Teuchos;
-  using namespace TSFExtended;
+  
 
   namespace Internal
   {

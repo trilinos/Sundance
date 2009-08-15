@@ -32,73 +32,70 @@
 #define SUNDANCE_CELLREORDERERBASE_H
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceNoncopyable.hpp"
 #include "SundanceCellReordererImplemBase.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFPrintable.hpp"
-#include "TSFDescribable.hpp"
+#include "SundanceHandleable.hpp"
+#include "SundancePrintable.hpp"
+#include "Teuchos_Describable.hpp"
 
 namespace SundanceStdMesh
 {
-  namespace Internal
-  {
-    using namespace Teuchos;
+namespace Internal
+{
+using namespace Teuchos;
 using namespace SundanceUtils;
 
-    /**
-     * Factory class to instantiate cell reorderers for specific meshes
-     */
-    class CellReordererFactoryBase 
-      : public TSFExtended::Handleable<CellReordererFactoryBase>, 
-        public Noncopyable,
-        public TSFExtended::Printable,
-        public TSFExtended::Describable
+/**
+ * Factory class to instantiate cell reorderers for specific meshes
+ */
+class CellReordererFactoryBase 
+  : public SundanceUtils::Handleable<CellReordererFactoryBase>, 
+    public Noncopyable,
+    public SundanceUtils::Printable,
+    public Teuchos::Describable
+{
+public:
+  /** */
+  CellReordererFactoryBase() {;}
+      
+  /** virtual dtor */
+  virtual ~CellReordererFactoryBase(){;}
+
+  /** */
+  virtual std::string description() const {return typeid(*this).name();}
+
+  /** */
+  virtual void print(std::ostream& os) const {os << description();}
+
+  /** Instantiate a factory */
+  virtual RCP<CellReordererImplemBase> 
+  createInstance(const MeshBase* mesh) const = 0 ;
+};
+
+/**
+ * Factory class to instantiate cell reorderers for specific meshes
+ */
+template <class T>
+class GenericCellReordererFactory : public CellReordererFactoryBase
+{
+public:
+  /** */
+  GenericCellReordererFactory() {;}
+      
+  /** virtual dtor */
+  virtual ~GenericCellReordererFactory(){;}
+
+  /** Instantiate a factory */
+  virtual RCP<CellReordererImplemBase> 
+  createInstance(const MeshBase* mesh) const 
     {
-    public:
-      /** */
-      CellReordererFactoryBase() {;}
+      return rcp(new T(mesh));
+    }
       
-      /** virtual dtor */
-      virtual ~CellReordererFactoryBase(){;}
-
-      /** */
-      virtual std::string description() const {return typeid(*this).name();}
-
-      /** */
-      virtual void print(std::ostream& os) const {os << description();}
-
-      /** Instantiate a factory */
-      virtual RefCountPtr<CellReordererImplemBase> 
-      createInstance(const MeshBase* mesh) const = 0 ;
-    };
-
-    /**
-     * Factory class to instantiate cell reorderers for specific meshes
-     */
-    template <class T>
-    class GenericCellReordererFactory : public CellReordererFactoryBase
-    {
-    public:
-      /** */
-      GenericCellReordererFactory() {;}
-      
-      /** virtual dtor */
-      virtual ~GenericCellReordererFactory(){;}
-
-      /** Instantiate a factory */
-      virtual RefCountPtr<CellReordererImplemBase> 
-      createInstance(const MeshBase* mesh) const 
-      {
-        return rcp(new T(mesh));
-      }
-      
-    };
-  }
+};
+}
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

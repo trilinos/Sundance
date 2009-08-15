@@ -37,7 +37,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 PointwiseUserDefFunctor0::PointwiseUserDefFunctor0(const string& name, 
                                                    int domainDim, 

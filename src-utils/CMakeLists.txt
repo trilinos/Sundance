@@ -5,8 +5,8 @@ INCLUDE(PackageLibraryMacros)
 # A) Package-specific configuration options
 #
 
-PACKAGE_CONFIGURE_FILE(TSF_config.h)
 PACKAGE_CONFIGURE_FILE(SundanceConfig.h)
+PACKAGE_CONFIGURE_FILE(SundanceDefaultPath.hpp)
 
 #
 # B) Define the header and source files (and directories)
@@ -22,7 +22,7 @@ SET(SOURCES "")
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 SET(HEADERS ${HEADERS}
-  ${CMAKE_CURRENT_BINARY_DIR}/../src-solvers/TSF_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/SundanceDefaultPath.hpp
   ${CMAKE_CURRENT_BINARY_DIR}/SundanceConfig.h
   )
 
@@ -43,15 +43,21 @@ APPEND_SET(HEADERS
   Utilities/SundanceEnumTypeField.hpp
   Utilities/SundanceExceptions.hpp
   Utilities/SundanceFunctorDomain.hpp
+  Utilities/SundanceHandle.hpp
+  Utilities/SundanceHandleable.hpp
   Utilities/SundanceIntHashSet.hpp
   Utilities/SundanceMap.hpp
   Utilities/SundanceMultiSet.hpp
   Utilities/SundanceNoncopyable.hpp
   Utilities/SundanceObjectWithInstanceID.hpp
+  Utilities/SundanceObjectWithVerbosity.hpp
   Utilities/SundanceOrderedHandle.hpp
   Utilities/SundanceOrderedTuple.hpp
   Utilities/SundanceOut.hpp
+  Utilities/SundanceParamUtils.hpp
+  Utilities/SundancePathUtils.hpp
   Utilities/SundancePoint.hpp
+  Utilities/SundancePrintable.hpp
   Utilities/SundanceSet.hpp
   Utilities/SundanceStdMathFunctors.hpp
   Utilities/SundanceTabs.hpp
@@ -69,6 +75,8 @@ APPEND_SET(SOURCES
   Utilities/SundanceFunctorDomain.cpp
   Utilities/SundanceIntHashSet.cpp
   Utilities/SundanceOut.cpp
+  Utilities/SundanceParamUtils.cpp
+  Utilities/SundancePathUtils.cpp
   Utilities/SundancePoint.cpp
   Utilities/SundanceStdMathFunctors.cpp
   Utilities/SundanceTabs.cpp

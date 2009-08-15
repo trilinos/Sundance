@@ -1,7 +1,6 @@
 #ifndef SUNDANCE_NULLCELLFILTER_STUB_H
 #define SUNDANCE_NULLCELLFILTER_STUB_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellFilterStub.hpp"
@@ -56,6 +55,6 @@ namespace SundanceCore
     };
   }
 }
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

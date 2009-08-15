@@ -54,7 +54,7 @@ namespace SundanceStdFwk
      * Grouper
      */
     class GrouperBase
-      : public TSFExtended::ObjectWithVerbosity<GrouperBase>
+      : public SundanceUtils::ObjectWithVerbosity<GrouperBase>
     {
     public:
       /** */

@@ -30,14 +30,14 @@
 
 #include "SundanceComplexExpr.hpp"
 #include "SundanceOut.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 using namespace SundanceCore;
 using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 ComplexExpr::ComplexExpr(const Expr& re, const Expr& im)
   : ExprBase(), real_(re), imag_(im)

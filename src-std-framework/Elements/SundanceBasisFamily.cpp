@@ -37,7 +37,7 @@
 #include "SundanceDiscreteFunctionData.hpp"
 #include "SundanceLagrange.hpp"
 
-using namespace TSFExtended;
+
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;

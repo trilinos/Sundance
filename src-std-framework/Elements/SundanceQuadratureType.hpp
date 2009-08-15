@@ -33,11 +33,11 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceQuadratureTypeBase.hpp"
-#include "TSFHandle.hpp"
+#include "SundanceHandle.hpp"
 
 namespace SundanceStdFwk
 {
-  using namespace TSFExtended;
+  
   using namespace SundanceUtils;
   using namespace SundanceCore;
   using namespace SundanceCore;
@@ -48,7 +48,7 @@ namespace SundanceStdFwk
    * a GaussianQuadrature family will generate Gaussian
    * quadrature points on any cell type.
    */
-  class QuadratureType : public Handle<QuadratureTypeBase>
+  class QuadratureType : public SundanceUtils::Handle<QuadratureTypeBase>
   {
   public:
     /* */

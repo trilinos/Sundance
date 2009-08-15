@@ -32,53 +32,51 @@
 #define SUNDANCE_IDENTITYREORDERER_H
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellReordererImplemBase.hpp"
 #include "SundanceCellReordererBase.hpp"
-#include "TSFHandleable.hpp"
+#include "SundanceHandleable.hpp"
 
 namespace SundanceStdMesh
 {
-  using namespace TSFExtended;
-  namespace Internal
-  {
-    using namespace Teuchos;
+  
+namespace Internal
+{
+using namespace Teuchos;
 using namespace SundanceUtils;
+using Teuchos::RCP;
 
-
-    /**
-     * The identity reorderer walks through cells in whatever
-     * order they are numbered the the mesh. 
-     */
-    class IdentityReordererImplem : public CellReordererImplemBase
-    {
-    public:
-      /** */
-      IdentityReordererImplem(const MeshBase* mesh); 
-      
-      /** */
-      virtual ~IdentityReordererImplem(){;}
-    
-      /** */
-      virtual int advance(int currentLID) const {return currentLID+1;}
-    };
-  }
-
+/**
+ * The identity reorderer walks through cells in whatever
+ * order they are numbered the the mesh. 
+ */
+class IdentityReordererImplem : public CellReordererImplemBase
+{
+public:
   /** */
-  class IdentityReorderer 
-    : public Internal::GenericCellReordererFactory<Internal::IdentityReordererImplem>
-  {
-  public:
-    IdentityReorderer(){;}
-
-    virtual ~IdentityReorderer(){;}
-
-    GET_RCP(Internal::CellReordererFactoryBase);
-  };
+  IdentityReordererImplem(const MeshBase* mesh); 
+      
+  /** */
+  virtual ~IdentityReordererImplem(){;}
+    
+  /** */
+  virtual int advance(int currentLID) const {return currentLID+1;}
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+/** */
+class IdentityReorderer 
+  : public Internal::GenericCellReordererFactory<Internal::IdentityReordererImplem>
+{
+public:
+  IdentityReorderer(){;}
+
+  virtual ~IdentityReorderer(){;}
+
+  GET_RCP(Internal::CellReordererFactoryBase);
+};
+}
+
 
 #endif

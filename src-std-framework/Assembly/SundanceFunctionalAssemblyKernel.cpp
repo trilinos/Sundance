@@ -40,7 +40,7 @@ using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceUtils;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 using std::setw;
 using std::endl;
       

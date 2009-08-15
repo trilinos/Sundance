@@ -44,7 +44,7 @@ using namespace SundanceUtils;
 
 using namespace SundanceCore;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 
 FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)

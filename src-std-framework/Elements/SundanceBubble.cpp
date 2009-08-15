@@ -33,14 +33,14 @@
 #include "SundancePoint.hpp"
 #include "SundanceADReal.hpp"
 #include "SundanceExceptions.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 
 

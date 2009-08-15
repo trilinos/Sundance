@@ -31,15 +31,14 @@
 #ifndef SUNDANCE_CELLFILTERSTUB_H
 #define SUNDANCE_CELLFILTERSTUB_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
 #include "SundanceObjectWithInstanceID.hpp"
 #include "SundanceNoncopyable.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFPrintable.hpp"
-#include "TSFDescribable.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceHandleable.hpp"
+#include "SundancePrintable.hpp"
+#include "Teuchos_Describable.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_XMLObject.hpp"
 
 
@@ -60,12 +59,12 @@ namespace SundanceCore
      *
      *  
      */
-    class CellFilterStub : public TSFExtended::Handleable<CellFilterStub>,
-                           public TSFExtended::Printable,
-                           public Teuchos::Describable,
-                           public Noncopyable,
-                           public ObjectWithInstanceID<CellFilterStub>,
-                           public TSFExtended::ObjectWithVerbosity<CellFilterStub>
+  class CellFilterStub : public SundanceUtils::Handleable<CellFilterStub>,
+                         public Printable,
+                         public Teuchos::Describable,
+                         public Noncopyable,
+                         public ObjectWithInstanceID<CellFilterStub>,
+                         public ObjectWithVerbosity<CellFilterStub>
     {
     public:
       /** Empty ctor */
@@ -120,6 +119,6 @@ namespace SundanceCore
 }
 
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

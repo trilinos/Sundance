@@ -9,7 +9,7 @@
 
 using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
-using namespace TSFExtended;
+
 using namespace Teuchos;
 using namespace SundanceUtils;
 using namespace std;

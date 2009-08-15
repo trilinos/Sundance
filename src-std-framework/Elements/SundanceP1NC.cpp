@@ -37,7 +37,7 @@ using namespace SundanceStdFwk;
 using namespace SundanceUtils;
 using namespace SundanceStdMesh;
 using namespace Teuchos;
-using namespace TSFExtended;
+
 
 
 bool P1NC::supportsCellTypePair(

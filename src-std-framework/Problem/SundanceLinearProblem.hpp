@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceLinearSolveDriver.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 
 namespace SundanceStdFwk
 {
@@ -54,7 +54,7 @@ class Assembler;
  * a discrete linear problem. 
  */
 class LinearProblem 
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<LinearProblem>
+  : public SundanceUtils::ParameterControlledObjectWithVerbosity<LinearProblem>
 {
 public:
   /** Empty ctor */

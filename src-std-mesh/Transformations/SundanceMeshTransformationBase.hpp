@@ -36,11 +36,11 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceMeshType.hpp"
-#include "TSFHandleable.hpp"
-#include "TSFDescribable.hpp"
-#include "TSFPrintable.hpp"
+#include "SundanceHandleable.hpp"
+#include "Teuchos_Describable.hpp"
+#include "SundancePrintable.hpp"
 #include "SundanceNoncopyable.hpp"
-#include "TSFObjectWithVerbosity.hpp"
+#include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceIncrementallyCreatableMesh.hpp"
 
 namespace SundanceStdMesh
@@ -81,11 +81,11 @@ namespace SundanceStdMesh
      * provide more informative descriptive output than the string
      * <tt>"MeshTransformationBase[unknown subtype]".</tt>
      */
-    class MeshTransformationBase : public TSFExtended::Handleable<MeshTransformationBase>,
-                           public TSFExtended::Printable,
-                           public TSFExtended::Describable,
+    class MeshTransformationBase : public SundanceUtils::Handleable<MeshTransformationBase>,
+                           public SundanceUtils::Printable,
+                           public Teuchos::Describable,
                            public Noncopyable,
-                           public TSFExtended::ObjectWithVerbosity<MeshTransformationBase>
+                           public SundanceUtils::ObjectWithVerbosity<MeshTransformationBase>
     {
     public:
       /** Construct with a mesh type, which specifies
