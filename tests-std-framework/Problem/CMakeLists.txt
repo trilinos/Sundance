@@ -55,10 +55,13 @@ SET(MPITests
              SpectralPoisson1D 
              SpectralSqrt 
              SteadyBurgers1D
-             PartitionedPoisson1D 
              NitschePoisson2D 
              HelmholtzEigen2D
    )
+
+IF (${PACKAGE_NAME}_ENABLE_MPI)
+  LIST(APPEND MPITests PartitionedPoisson1D)
+ENDIF()
 
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/etc/SolverParameters)
