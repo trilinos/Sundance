@@ -73,22 +73,31 @@ IntegralGroup
     requiresMaximalCofacet_(SomeTermsNeedCofacets),
     derivs_()
 {
+  Tabs tab;
+  SUNDANCE_MSG2(verb, tab << "forming 0-form integral group");
   bool allReqMaximalCofacets = true;
   bool noneReqMaximalCofacets = true;
   bool someReqMaximalCofacets = false;
 
   for (unsigned int i=0; i<integrals_.size(); i++)
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb, tab1 << "integral #" << i << ", numFacetCases="
+      << integrals[i]->nFacetCases());
     if (integrals[i]->nFacetCases() > 1) 
     {
+      Tabs tab2;
       someReqMaximalCofacets = true;
       noneReqMaximalCofacets = false;
       termUsesMaximalCofacets_[i] = true;
+      SUNDANCE_MSG2(verb, tab2 << "I need maximal cofacets");
     }
     else
     {
+      Tabs tab2;
       allReqMaximalCofacets = false;
       termUsesMaximalCofacets_[i] = false;
+      SUNDANCE_MSG2(verb, tab2 << "I do not need maximal cofacets");
     }
   }
 
@@ -100,6 +109,9 @@ IntegralGroup
   {
     requiresMaximalCofacet_ = NoTermsNeedCofacets;
   }
+  
+  Tabs tab1;
+  SUNDANCE_MSG2(verb, tab1 << "result=" << requiresMaximalCofacet_);
 }
 
 
@@ -129,6 +141,8 @@ IntegralGroup
     requiresMaximalCofacet_(SomeTermsNeedCofacets),
     derivs_(derivs)
 {
+  Tabs tab;
+  SUNDANCE_MSG2(verb, tab << "forming 1-form integral group");
   bool allReqMaximalCofacets = true;
   bool noneReqMaximalCofacets = true;
   bool someReqMaximalCofacets = false;
@@ -141,15 +155,22 @@ IntegralGroup
       TEST_FOR_EXCEPTION(nt != nTestNodes_, InternalError,
         "IntegralGroup ctor detected integrals with inconsistent numbers of test nodes");
     }
+    Tabs tab1;
+    SUNDANCE_MSG2(verb, tab1 << "integral #" << i << ", numFacetCases="
+      << integrals[i]->nFacetCases());
     nTestNodes_ = nt;
     if (integrals[i]->nFacetCases() > 1) 
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb, tab2 << "I need maximal cofacets");
       someReqMaximalCofacets = true;
       noneReqMaximalCofacets = false;
       termUsesMaximalCofacets_[i] = true;
     }
     else
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb, tab2 << "I do not need maximal cofacets");
       allReqMaximalCofacets = false;
       termUsesMaximalCofacets_[i] = false;
     }
@@ -163,6 +184,9 @@ IntegralGroup
   {
     requiresMaximalCofacet_ = NoTermsNeedCofacets;
   }
+  
+  Tabs tab1;
+  SUNDANCE_MSG2(verb, tab1 << "result=" << requiresMaximalCofacet_);
 }
 
 IntegralGroup
@@ -190,12 +214,17 @@ IntegralGroup
     requiresMaximalCofacet_(SomeTermsNeedCofacets),
     derivs_(derivs)
 {
+  Tabs tab;
+  SUNDANCE_MSG2(verb, tab << "forming 2-form integral group");
   bool allReqMaximalCofacets = true;
   bool noneReqMaximalCofacets = true;
   bool someReqMaximalCofacets = false;
 
   for (unsigned int i=0; i<integrals.size(); i++)
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb, tab1 << "integral #" << i << ", numFacetCases="
+      << integrals[i]->nFacetCases());
     int nt = integrals[i]->nNodesTest();
     int nu = integrals[i]->nNodesUnk();
     if (i > 0) 
@@ -213,11 +242,15 @@ IntegralGroup
       someReqMaximalCofacets = true;
       noneReqMaximalCofacets = false;
       termUsesMaximalCofacets_[i] = true;
+      Tabs tab2;
+      SUNDANCE_MSG2(verb, tab2 << "I need maximal cofacets");
     }
     else
     {
       allReqMaximalCofacets = false;
       termUsesMaximalCofacets_[i] = false;
+      Tabs tab2;
+      SUNDANCE_MSG2(verb, tab2 << "I do not need maximal cofacets");
     }
   }
 
@@ -229,6 +262,9 @@ IntegralGroup
   {
     requiresMaximalCofacet_ = NoTermsNeedCofacets;
   }
+  
+  Tabs tab1;
+  SUNDANCE_MSG2(verb, tab1 << "result=" << requiresMaximalCofacet_);
 }
 
 

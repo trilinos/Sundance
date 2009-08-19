@@ -29,12 +29,21 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
+#include "TSFVectorDecl.hpp"
 #include "TSFDefaultLTIProblemFactory.hpp"
-#include "TSFLinearCombination.hpp"
+#include "TSFCommonOperatorsDecl.hpp"
+#include "TSFLinearCombinationDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "TSFRandomSparseMatrix.hpp"
-#include "TSFProductVectorSpace.hpp"
+#include "TSFProductVectorSpaceDecl.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#include "TSFCommonOperatorsDecl.hpp"
+#endif
+
 
 STREAM_OUT(Vector<double>)
 //using namespace Teuchos;

@@ -97,7 +97,7 @@ int main(int argc, char** argv)
       int pMax = 2;
       int dim=2;
 
-      verbosity<RefIntegral>() = VerbSilent;
+      verbosity<RefIntegral>() = 0;
 
       CellType cellType = TriangleCell;
 

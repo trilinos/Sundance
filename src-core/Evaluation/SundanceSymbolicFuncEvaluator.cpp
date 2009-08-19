@@ -221,7 +221,7 @@ void SymbolicFuncElementEvaluator
     {
       constantResults[onePtrs_[i]] = 1.0;
     }
-  if (verbosity() > VerbMedium)
+  if (verb() > 2)
     {
       Out::os() << tabs << "results " << endl;
       this->sparsity()->print(Out::os(), vectorResults,

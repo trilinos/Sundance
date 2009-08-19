@@ -46,10 +46,10 @@ int main(int argc, char** argv)
 
       int maxDiffOrder = 0;
 
-      verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbSilent;
-      verbosity<EvalVector>() = VerbSilent;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+      verbosity<SymbolicTransformation>() = 0;
+      verbosity<Evaluator>() = 0;
+      verbosity<EvalVector>() = 0;
+      verbosity<EvaluatableExpr>() = 5;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;

@@ -59,7 +59,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
 {
   Tabs tabs;
 
-  if (verbosity() > VerbLow)
+  if (verb() > 2)
     {
       Out::os() << tabs << "initializing sum evaluator for " 
            << se->toString() << std::endl;
@@ -68,7 +68,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
   int constantCounter = 0;
   int vectorCounter = 0;
 
-  if (verbosity() > VerbMedium)
+  if (verb() > 2)
     {
       Out::os() << std::endl << tabs << "return sparsity ";
       this->sparsity()->print(Out::os());
@@ -215,7 +215,7 @@ void SumEvaluator
   evalChildren(mgr, leftConstResults, leftVectorResults,
                rightConstResults, rightVectorResults);
 
-  if (verbosity() > VerbMedium)
+  if (verb() > 2)
     {
       Out::os() << tabs << "left operand " << std::endl;
       leftSparsity()->print(Out::os(), leftVectorResults,

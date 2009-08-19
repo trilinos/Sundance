@@ -43,12 +43,24 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 
+#include "TSFLinearCombinationDecl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#include "TSFLinearOperatorDecl.hpp"
+#include "TSFVectorDecl.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFVectorImpl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#include "TSFLinearOperatorImpl.hpp"
+#endif
+
 using namespace SundanceStdFwk;
 using namespace SundanceCore;
 using namespace SundanceStdMesh;
 using namespace SundanceUtils;
 using namespace Teuchos;
 using namespace TSFExtended;
+using namespace TSFExtendedOps;
 
 static Time& normalizationTimer() 
 {

@@ -120,11 +120,11 @@ Expr DrumFunc(int n, double A, const Expr& x, const Expr& y)
 
 #define LOUD()                                          \
   {                                                     \
-    verbosity<Evaluator>() = VerbExtreme;               \
-    verbosity<SparsitySuperset>() = VerbSilent;         \
-    verbosity<EvalVector>() = VerbSilent;               \
-    verbosity<EvaluatableExpr>() = VerbExtreme;         \
-    verbosity<AbstractEvalMediator>() = VerbExtreme;    \
+    verbosity<Evaluator>() = 5;               \
+    verbosity<SparsitySuperset>() = 0;         \
+    verbosity<EvalVector>() = 0;               \
+    verbosity<EvaluatableExpr>() = 5;         \
+    verbosity<AbstractEvalMediator>() = 5;    \
   }
 
 int main(int argc, char** argv)

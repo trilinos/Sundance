@@ -31,7 +31,14 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceMatrixVectorAssemblyKernel.hpp"
+#include "TSFCommonOperatorsDecl.hpp"
 
+
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFCommonOperatorsImpl.hpp"
+#include "TSFBlockOperatorImpl.hpp"
+#endif
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
@@ -72,8 +79,8 @@ void MatrixVectorAssemblyKernel::init(
             matBlock = A.getBlock(br, bc);
           }
           if (matBlock.ptr().get() == 0) continue;
-          const Thyra::ZeroLinearOpBase<double>* zp
-            = dynamic_cast<const TSFExtended::ZeroLinearOpBase<double>*>(matBlock.ptr().get());
+          const SimpleZeroOp<double>* zp
+            = dynamic_cast<const SimpleZeroOp<double>*>(matBlock.ptr().get());
           if (zp) continue;
           mat_[br][bc] 
             = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(matBlock.ptr().get());

@@ -78,7 +78,7 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
     nFuncs_()
 {
   TimeMonitor timer(mixedDOFCtorTimer());
-  verbosity() = DOFMapBase::classVerbosity();
+  verb() = DOFMapBase::classVerbosity();
   Tabs tab;
   SUNDANCE_VERB_LOW(tab << "building mixed DOF map");
 
@@ -404,10 +404,10 @@ void MixedDOFMap::shareDOFs(int cellDim,
   Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
     "p=" << mesh().comm().getRank()
     << "synchronizing DOFs for cells of dimension " << cellDim);
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
     "p=" << mesh().comm().getRank()
     << " sending cell reqs d=" << cellDim << " GID=" << outgoingCellRequests);
 
@@ -430,7 +430,7 @@ void MixedDOFMap::shareDOFs(int cellDim,
   }
   blockSize += sendOrientation;
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
     "p=" << rank
     << "recvd DOF requests for cells of dimension " << cellDim
     << " GID=" << incomingCellRequests);
@@ -453,12 +453,12 @@ void MixedDOFMap::shareDOFs(int cellDim,
     for (int c=0; c<nReq; c++)
     {
       int GID = requestsFromProc[c];
-      SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+      SUNDANCE_OUT(this->verb() > 3,  
         "p=" << rank
         << " processing cell with d=" << cellDim 
         << " GID=" << GID);
       int LID = mesh().mapGIDToLID(cellDim, GID);
-      SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+      SUNDANCE_OUT(this->verb() > 3,  
         "p=" << rank
         << " LID=" << LID << " dofs=" << dofs_[cellDim]);
       int blockOffset = 0;
@@ -474,14 +474,14 @@ void MixedDOFMap::shareDOFs(int cellDim,
         outgoingDOFs[p][blockSize*(c+1) - 1] 
           = originalFacetOrientation_[cellDim-1][LID];
       }
-      SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+      SUNDANCE_OUT(this->verb() > 3,  
         "p=" << rank
         << " done processing cell with GID=" << GID);
     }
   }
  
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
     "p=" << mesh().comm().getRank()
     << "answering DOF requests for cells of dimension " << cellDim);
 
@@ -490,7 +490,7 @@ void MixedDOFMap::shareDOFs(int cellDim,
     incomingDOFs,
     mesh().comm());
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
     "p=" << mesh().comm().getRank()
     << "communicated DOF answers for cells of dimension " << cellDim);
 
@@ -566,7 +566,7 @@ RefCountPtr<const MapStructure> MixedDOFMap
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verb() > 3, 
     tab << "getDOFsForCellBatch(): cellDim=" << cellDim
     << " cellLID=" << cellLID);
 
@@ -850,18 +850,18 @@ void MixedDOFMap::buildMaximalDofTable() const
 
 void MixedDOFMap::computeOffsets(int dim, int localCount)
 {
-  if (verbosity() > VerbMedium)
+  if (verb() > 2)
   {
     comm().synchronize();
     comm().synchronize();
     comm().synchronize();
     comm().synchronize();
   }
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verb() > 2, 
     "p=" << mesh().comm().getRank()
     << " sharing offsets for DOF numbering for dim=" << dim);
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verb() > 2, 
     "p=" << mesh().comm().getRank()
     << " I have " << localCount << " cells");
 
@@ -871,11 +871,11 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
     mesh().comm());
   int myOffset = dofOffsets[mesh().comm().getRank()];
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verb() > 2, 
     "p=" << mesh().comm().getRank()
     << " back from MPI accumulate");
 
-  if (verbosity() > VerbMedium)
+  if (verb() > 2)
   {
     comm().synchronize();
     comm().synchronize();
@@ -895,10 +895,10 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
   setNumLocalDOFs(localCount);
   setTotalNumDOFs(totalDOFCount);
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium, 
+  SUNDANCE_OUT(this->verb() > 2, 
     "p=" << mesh().comm().getRank() 
     << " done sharing offsets for DOF numbering for dim=" << dim);
-  if (verbosity() > VerbMedium)
+  if (verb() > 2)
   {
     comm().synchronize();
     comm().synchronize();

@@ -29,35 +29,37 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
-#include "TSFLinearCombination.hpp"
-#include "TSFLinearOperator.hpp"
 #include "TSFLoadableMatrix.hpp"
-#include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "TSFEpetraVectorSpace.hpp"
-//#include "TSFCoreEpetraVectorSpace.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-//#include "TSFLinearSolver.hpp"
-#include "TSFBICGSTABSolver.hpp"
-#include "TSFProductVectorSpace.hpp"
-//#include "TSFInverseOperator.hpp"
-#include "TSFLinearOperator.hpp"
 #include "TSFEpetraMatrix.hpp"
-//#include "Thyra_LinearOpBase.hpp"
-#include "TSFBlockOperator.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFRandomSparseMatrix.hpp"
 #include "TSFRandomBlockMatrix.hpp"
 #include "TSFCompoundTester.hpp"
+#include "SundanceOut.hpp"
+#include "TSFProductVectorSpaceDecl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#include "TSFBlockOperatorImpl.hpp"
+#include "TSFCommonOperatorsImpl.hpp"
+#include "TSFNonmemberOpHelpersImpl.hpp"
+#include "TSFProductVectorSpaceImpl.hpp"
+#endif
+
 
 
 using namespace Teuchos;
+using namespace SundanceUtils;
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
 using Thyra::TestSpecifier;
+using std::endl;
 
 int main(int argc, char *argv[]) 
 {
@@ -67,7 +69,7 @@ int main(int argc, char *argv[])
       GlobalMPISession session(&argc, &argv);
       MPIComm::world().synchronize();
 
-      cerr << "go!" << endl;
+      Out::os() << "go!" << endl;
       VectorType<double> type = new EpetraVectorType();
 
       Array<int> domainBlockSizes = tuple(2,3,4);
@@ -103,11 +105,11 @@ int main(int argc, char *argv[])
 
       LinearOperator<double> A = builder.getOp();
 
-      cerr << "A num block rows = " << A.numBlockRows() << endl;
-      cerr << "A num block cols = " << A.numBlockCols() << endl;
+      Out::os() << "A num block rows = " << A.numBlockRows() << endl;
+      Out::os() << "A num block cols = " << A.numBlockCols() << endl;
 
       Vector<double> x = domain.createMember();
-      cerr << "randomizing trial vector" << endl;
+      Out::os() << "randomizing trial vector" << endl;
       Thyra::randomize(-1.0, 1.0, x.ptr().get());
 
       Array<Vector<double> > xBlock(domain.numBlocks());
@@ -120,18 +122,18 @@ int main(int argc, char *argv[])
 
       
 
-      cerr << "------------------------------------------------------------" << endl;
-      cerr << "computing A*x..." << endl;
+      Out::os() << "------------------------------------------------------------" << endl;
+      Out::os() << "computing A*x..." << endl;
       Vector<double> y0 = A * x;
       for (int i=0; i<y0.space().numBlocks(); i++)
         {
-          cerr << "y0[" << i << "] = " << endl << y0.getBlock(i) << endl;
+          Out::os() << "y0[" << i << "] = " << endl << y0.getBlock(i) << endl;
         }
       
 
       Vector<double> y1 = range.createMember();
-      cerr << "------------------------------------------------------------" << endl;
-      cerr << "computing A*x block-by-block..." << endl;
+      Out::os() << "------------------------------------------------------------" << endl;
+      Out::os() << "computing A*x block-by-block..." << endl;
       Array<Vector<double> > yBlock(range.numBlocks());
       for (unsigned int i=0; i<yBlock.size(); i++)
         {
@@ -142,14 +144,14 @@ int main(int argc, char *argv[])
               LinearOperator<double> Aij = A.getBlock(i,j);
               if (Aij.ptr().get() != 0)
                 {
-                  cerr << "A(" << i << ", " << j << ") = " << endl 
+                  Out::os() << "A(" << i << ", " << j << ") = " << endl 
                        << Aij << endl;
                 }
               else
                 {
-                  cerr << "A(" << i << ", " << j << ") = 0 " << endl;
+                  Out::os() << "A(" << i << ", " << j << ") = 0 " << endl;
                 }
-              cerr << "x[" << j << "] = " << endl << xBlock[j] << endl;
+              Out::os() << "x[" << j << "] = " << endl << xBlock[j] << endl;
               if (Aij.ptr().get()==0) continue;
               yBlock[i] = yBlock[i] + Aij * xBlock[j];
             }
@@ -158,26 +160,26 @@ int main(int argc, char *argv[])
 
       for (int i=0; i<y1.space().numBlocks(); i++)
         {
-          cerr << "y1[" << i << "] = " << endl << y1.getBlock(i) << endl;
+          Out::os() << "y1[" << i << "] = " << endl << y1.getBlock(i) << endl;
         }
       double err = (y1 - y0).norm2();
-      cerr << "error = " << err << endl;
+      Out::os() << "error = " << err << endl;
 
       double tol = 1.0e-13;
       if (err < tol)
         {
-          cerr << "block op test PASSED" << endl;
+          Out::os() << "block op test PASSED" << endl;
         }
       else
         {
           stat = -1;
-          cerr << "block op test FAILED" << endl;
+          Out::os() << "block op test FAILED" << endl;
         }
     }
   catch(std::exception& e)
     {
       stat = -1;
-      cerr << "Caught exception: " << e.what() << endl;
+      Out::os() << "Caught exception: " << e.what() << endl;
     }
   return stat;
 }

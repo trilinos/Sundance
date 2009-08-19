@@ -96,8 +96,7 @@ void TestEvalMediator::evalCoordExpr(const CoordExpr* expr,
                                      RefCountPtr<EvalVector>& vec) const
 {
   Tabs tabs;
-  SUNDANCE_OUT(verb() > VerbSilent,
-               tabs << "evaluating coord expr " << expr->toXML().toString());
+  SUNDANCE_MSG1(verb(), tabs << "evaluating coord expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
 
@@ -115,7 +114,7 @@ void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 {
   Tabs tabs;
 
-  SUNDANCE_OUT(verb() > VerbSilent,
+  SUNDANCE_MSG1(verb(),
                tabs << "evaluating cell diameter expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
@@ -133,7 +132,7 @@ void TestEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 {
   Tabs tabs;
 
-  SUNDANCE_OUT(verb() > VerbSilent,
+  SUNDANCE_MSG1(verb(),
                tabs << "evaluating cell vector expr " << expr->toXML().toString());
   
   vec->setString(expr->name());
@@ -176,7 +175,7 @@ void TestEvalMediator
 
   Tabs tabs;
 
-  SUNDANCE_OUT(verb() > VerbSilent,
+  SUNDANCE_MSG1(verb(),
                tabs << "evaluating discrete func " << expr->toString() 
                << " with multiindices " << mi);
 
@@ -217,7 +216,7 @@ void TestEvalMediator
       xx[0] = fields_[fieldIndex].coeff() * evalDummyBasis(fieldIndex, mi[i]);
     }
 
-  if (verb() > VerbSilent)
+  if (verb() > 0)
     {
       Out::os() << tabs << "results:" << endl;
       for (unsigned int i=0; i<mi.size(); i++)

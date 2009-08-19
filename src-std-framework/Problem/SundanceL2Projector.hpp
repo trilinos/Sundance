@@ -38,9 +38,9 @@
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceLinearProblem.hpp"
 #include "SundanceCoordinateSystem.hpp"
-#include "TSFLinearOperator.hpp"
-#include "TSFLinearSolver.hpp"
-#include "TSFVector.hpp"
+#include "TSFLinearOperatorDecl.hpp"
+#include "TSFLinearSolverDecl.hpp"
+#include "TSFVectorDecl.hpp"
 #include "TSFVectorType.hpp"
 
 namespace SundanceStdFwk

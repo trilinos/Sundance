@@ -1,5 +1,11 @@
 #include "PySundanceLinearSolver.hpp"
 
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+#endif
+
+
 using namespace TSFExtended;
 
 

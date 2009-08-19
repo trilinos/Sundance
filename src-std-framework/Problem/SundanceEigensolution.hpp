@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
 #include <complex>
-#include "TSFVector.hpp"
+#include "TSFVectorDecl.hpp"
 
 namespace SundanceStdFwk
 {

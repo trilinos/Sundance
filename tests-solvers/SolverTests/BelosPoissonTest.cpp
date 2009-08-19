@@ -31,24 +31,27 @@
 #include "BelosLinearProblem.hpp"
 #include "BelosThyraAdapter.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
-#include "TSFLinearCombination.hpp"
 #include "TSFPreconditioner.hpp"
 #include "TSFPreconditionerFactory.hpp"
 #include "TSFParameterListPreconditionerFactory.hpp"
-#include "TSFLinearOperator.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFLinearSolver.hpp"
+#include "TSFLinearSolverDecl.hpp"
 #include "TSFAztecSolver.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFLinearSolverBuilder.hpp"
 #include "SundancePathUtils.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+
+#endif
 
 using namespace Teuchos;
 using namespace TSFExtended;

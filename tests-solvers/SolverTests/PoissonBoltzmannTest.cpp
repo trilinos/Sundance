@@ -33,6 +33,14 @@
 #include "Teuchos_ParameterXMLFileReader.hpp"
 #include "SundancePathUtils.hpp"
 #include "TSFNOXSolver.H"
+#include "TSFLinearCombinationImpl.hpp"
+
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+
+#endif
 
 using namespace Teuchos;
 using namespace TSFExtended;

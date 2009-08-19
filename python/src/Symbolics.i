@@ -15,7 +15,7 @@
 #include "SundanceParameter.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 #include "SundanceStdMathOps.hpp"
-#include "TSFVector.hpp"
+#include "TSFVectorImpl.hpp"
   %}
 
 

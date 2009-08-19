@@ -152,11 +152,11 @@ int main(int argc, char** argv)
            << endl;
       //#define BLAHBLAH 1
 #ifdef BLAHBLAH
-      verbosity<Evaluator>() = VerbExtreme;
-      verbosity<SparsitySuperset>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
-      verbosity<Assembler>() = VerbExtreme;
-      verbosity<ElementIntegral>() = VerbExtreme;
+      verbosity<Evaluator>() = 5;
+      verbosity<SparsitySuperset>() = 5;
+      verbosity<EvaluatableExpr>() = 5;
+      verbosity<Assembler>() = 5;
+      verbosity<ElementIntegral>() = 5;
       EvalVector::shadowOps() = true;
 #endif   
       Expr g = Integral(interior, 0.5*pow(alpha-sin(pi*x), 2.0) , quad4);
@@ -173,11 +173,11 @@ int main(int argc, char** argv)
 
       //#define BLAHBLAH 1
 #ifdef BLAHBLAH
-      verbosity<Evaluator>() = VerbExtreme;
-      verbosity<SparsitySuperset>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
-      verbosity<Assembler>() = VerbExtreme;
-      verbosity<ElementIntegral>() = VerbExtreme;
+      verbosity<Evaluator>() = 5;
+      verbosity<SparsitySuperset>() = 5;
+      verbosity<EvaluatableExpr>() = 5;
+      verbosity<Assembler>() = 5;
+      verbosity<ElementIntegral>() = 5;
       EvalVector::shadowOps() = true;
 #endif   
 

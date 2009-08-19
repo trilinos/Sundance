@@ -27,14 +27,19 @@
 //@HEADER
 
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
-#include "TSFLinearCombination.hpp"
-#include "TSFLinearSolverImpl.hpp"
+#include "TSFVectorDecl.hpp"
+#include "TSFLinearCombinationDecl.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
+#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "TSFVectorTester.hpp"
+
+#include "TSFLinearCombinationImpl.hpp"
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#endif
+
 #ifdef _MSC_VER
 #include "winmath.h"
 #endif

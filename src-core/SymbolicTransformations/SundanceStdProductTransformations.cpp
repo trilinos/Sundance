@@ -77,7 +77,7 @@ bool RemoveZeroFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
                                         const RefCountPtr<ScalarExpr>& right,
                                         RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveZerofromProduct");
   
   /* Check for the trivial case of multiplication by zero */
@@ -88,7 +88,7 @@ bool RemoveZeroFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
     {
       if (cl->value()==0.0 || cl->value()==-0.0)
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RemoveOneFromProduct::doTransform "
                            "identified multiplication "
@@ -102,7 +102,7 @@ bool RemoveZeroFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
     {
       if (cr->value()==0.0 || cr->value()==-0.0)
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RemoveOneFromProduct::doTransform "
                            "identified multiplication "
@@ -119,7 +119,7 @@ bool RemoveOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
                                        const RefCountPtr<ScalarExpr>& right,
                                        RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveOnefromProduct");
 
   /* Check for the trivial case of multiplication by one */
@@ -130,7 +130,7 @@ bool RemoveOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
     {
       if (cl->value()==1.0)
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RemoveOneFromProduct::doTransform "
                            "identified multiplication "
@@ -144,7 +144,7 @@ bool RemoveOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
     {
       if (cr->value()==1.0)
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RemoveOneFromProduct::doTransform "
                            "identified multiplication "
@@ -162,7 +162,7 @@ bool RemoveMinusOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
                                             const RefCountPtr<ScalarExpr>& right,
                                             RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveOnefromProduct");
 
   /* Check for the trivial case of multiplication by minus one */
@@ -173,7 +173,7 @@ bool RemoveMinusOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
     {
       if (cl->value()==-1.0)
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RemoveMinusOneFromProduct::doTransform "
                            "identified multiplication "
@@ -187,7 +187,7 @@ bool RemoveMinusOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
     {
       if (cr->value()==-1.0)
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RemoveMinusOneFromProduct::doTransform "
                            "identified multiplication "
@@ -204,7 +204,7 @@ bool MoveConstantsToLeftOfProduct::doTransform(const RefCountPtr<ScalarExpr>& le
                                                const RefCountPtr<ScalarExpr>& right,
                                                RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying MoveConstantsToLeftOfProduct");
 
   /* If the left operand is non-constant and
@@ -212,7 +212,7 @@ bool MoveConstantsToLeftOfProduct::doTransform(const RefCountPtr<ScalarExpr>& le
    * transform u*constant --> constant*u */
   if (!left->isConstant() && right->isConstant())
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("MoveConstantsToLeftOfProduct::doTransform "
                        "identified right operand "
@@ -229,7 +229,7 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
                                                const RefCountPtr<ScalarExpr>& right,
                                                RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying MoveUnaryMinusOutsideProduct");
 
   /* If one of the operands is a unary minus, apply it to the whole
@@ -239,7 +239,7 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
   const UnaryMinus* ur = dynamic_cast<const UnaryMinus*>(right.get());
   if (ur != 0 && ul != 0)
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("MoveUnaryMinusOutsideProduct::doTransform "
                        "identified both operands "
@@ -251,7 +251,7 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
     }
   else if (ur != 0)
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("MoveUnaryMinusOutsideProduct::doTransform "
                        "identified right operand "
@@ -264,7 +264,7 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
     }
   else if (ul != 0)
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("MoveUnaryMinusOutsideProduct::doTransform "
                        "identified left operand "
@@ -282,7 +282,7 @@ bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left,
   const RefCountPtr<ScalarExpr>& right,
   RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying MultiplyConstants");
 
   /* If both operands are constant, just multiply them */
@@ -299,7 +299,7 @@ bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left,
           rtn = rcp(new ConstantExpr(cl->value() * cr->value()));
           return true;
         }
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("MultiplyConstants::doTransform "
                        "identified both operands "
@@ -316,7 +316,7 @@ bool AssociateHungryDiffOpWithOperand::doTransform(const RefCountPtr<ScalarExpr>
   const RefCountPtr<ScalarExpr>& right,
   RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying AssociateHungryDiffOpWithOperand");
 
   if (left->isHungryDiffOp())
@@ -330,7 +330,7 @@ bool AssociateHungryDiffOpWithOperand::doTransform(const RefCountPtr<ScalarExpr>
         {
           Expr ll = pLeft->left();
           Expr lr = pLeft->right();
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("AssociateHungryDiffOpWithOperand::doTransform "
                            "identified left "
@@ -349,7 +349,7 @@ bool KillDiffOpOnConstant::doTransform(const RefCountPtr<ScalarExpr>& left,
                                        const RefCountPtr<ScalarExpr>& right,
                                        RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, "trying KillDiffOpOnConstant");
+  SUNDANCE_OUT(this->verb() > 1, "trying KillDiffOpOnConstant");
 
   if (left->isHungryDiffOp())
     {
@@ -358,7 +358,7 @@ bool KillDiffOpOnConstant::doTransform(const RefCountPtr<ScalarExpr>& left,
       if (right->isConstant())
         {
           rtn = rcp(new ZeroExpr());
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("KillDiffOpOnConstant::doTransform "
                            "identified constant "
@@ -371,7 +371,7 @@ bool KillDiffOpOnConstant::doTransform(const RefCountPtr<ScalarExpr>& left,
       const SumExpr* sRight = dynamic_cast<const SumExpr*>(right.get());
       if (sRight != 0 && sRight->leftScalar()->isConstant())
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("KillDiffOpOnConstant::doTransform "
                            "identified constant "
@@ -390,7 +390,7 @@ bool BringConstantOutsideDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left
                                              RefCountPtr<ScalarExpr>& rtn) const
 {
   
-  SUNDANCE_OUT(this->verbosity() > VerbLow,  "trying BringConstantOutsideDiffOp");
+  SUNDANCE_OUT(this->verb() > 1,  "trying BringConstantOutsideDiffOp");
 
   if (left->isHungryDiffOp())
     {
@@ -399,7 +399,7 @@ bool BringConstantOutsideDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left
         = dynamic_cast<const ProductExpr*>(right.get());
       if (pRight != 0 && pRight->leftScalar()->isConstant())
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("BringConstantOutsideDiffOp::doTransform "
                            "identified constant "
@@ -417,7 +417,7 @@ bool DistributeSumOfDiffOps::doTransform(const RefCountPtr<ScalarExpr>& left,
                                          const RefCountPtr<ScalarExpr>& right,
                                          RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow,"trying DistributeSumOfDiffOps");
+  SUNDANCE_OUT(this->verb() > 1,"trying DistributeSumOfDiffOps");
 
   if (left->isHungryDiffOp())
     {
@@ -428,7 +428,7 @@ bool DistributeSumOfDiffOps::doTransform(const RefCountPtr<ScalarExpr>& left,
         {
           Expr ll = sLeft->left();
           Expr lr = sLeft->right();
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("DistributeSumOfDiffOps::doTransform "
                            "identified left "
@@ -446,7 +446,7 @@ bool ApplySimpleDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left,
                                     const RefCountPtr<ScalarExpr>& right,
                                     RefCountPtr<ScalarExpr>& rtn) const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbLow, "trying ApplySimpleDiffOp");
+  SUNDANCE_OUT(this->verb() > 1, "trying ApplySimpleDiffOp");
 
   if (left->isHungryDiffOp())
     {
@@ -501,7 +501,7 @@ bool RearrangeRightProductWithConstant::doTransform(const RefCountPtr<ScalarExpr
        * transform alpha*(beta*u) --> (alpha*beta)*u */
       if (left->isConstant())
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RearrangeRightProductWithConstant::doTransform: "
                            "identified left operand "
@@ -517,7 +517,7 @@ bool RearrangeRightProductWithConstant::doTransform(const RefCountPtr<ScalarExpr
          * is a product involving a constant,
          * transform u * (alpha*v) --> alpha*(u*v) */
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RearrangeRightProductWithConstant::doTransform: "
                            "identified left operand "
@@ -562,7 +562,7 @@ bool RearrangeLeftProductWithConstant::doTransform(const RefCountPtr<ScalarExpr>
        * transform (alpha*u)*beta --> (alpha*beta)*u */
       if (right->isConstant())
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RearrangeLeftProductWithConstant::doTransform: "
                            "identified right operand "
@@ -577,7 +577,7 @@ bool RearrangeLeftProductWithConstant::doTransform(const RefCountPtr<ScalarExpr>
         /* if the right operand is non-constant, 
          * transform (alpha*u)*v --> alpha*(u*v) */
         {
-          if (verbosity() > 1)
+          if (verb() > 1)
             {
               Out::println("RearrangeLeftProductWithConstant::doTransform: "
                            "identified right operand "

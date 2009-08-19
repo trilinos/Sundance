@@ -326,10 +326,10 @@ int main(int argc, char** argv)
 
     int maxDiffOrder = 2;
 
-    verbosity<SymbolicTransformation>() = VerbSilent;
-    verbosity<Evaluator>() = VerbSilent;
-    verbosity<EvalVector>() = VerbSilent;
-    verbosity<EvaluatableExpr>() = VerbSilent;
+    verbosity<SymbolicTransformation>() = 0;
+    verbosity<Evaluator>() = 0;
+    verbosity<EvalVector>() = 0;
+    verbosity<EvaluatableExpr>() = 0;
     Expr::showAllParens() = true;
     ProductTransformation::optimizeFunctionDiffOps() = false;
 
@@ -361,9 +361,9 @@ int main(int argc, char** argv)
 
 //#define BLAHBLAH 1
 #ifdef BLAHBLAH
-    verbosity<Evaluator>() = VerbExtreme;
-    verbosity<SparsitySuperset>() = VerbExtreme;
-    verbosity<EvaluatableExpr>() = VerbExtreme;
+    verbosity<Evaluator>() = 5;
+    verbosity<SparsitySuperset>() = 5;
+    verbosity<EvaluatableExpr>() = 5;
 #endif
 
     tests.append( 0.5*(u-1.404)*(u-1.404)

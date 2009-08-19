@@ -35,7 +35,7 @@
 #include "SundanceDiscreteFuncDataStub.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteSpace.hpp"
-#include "TSFVector.hpp"
+#include "TSFVectorDecl.hpp"
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 

@@ -27,17 +27,17 @@
 //@HEADER
 
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
-#include "TSFLinearCombination.hpp"
-#include "TSFLinearOperator.hpp"
-#include "TSFInverseOperator.hpp"
+#include "TSFVectorDecl.hpp"
+#include "TSFLinearCombinationDecl.hpp"
+#include "TSFLinearOperatorDecl.hpp"
+#include "TSFInverseOperatorDecl.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
+#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFLinearSolver.hpp"
+#include "TSFLinearSolverDecl.hpp"
 #include "TSFAztecSolver.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFLinearSolverBuilder.hpp"
@@ -50,6 +50,14 @@
 #include "Teuchos_FancyOStream.hpp"
 #include "TSFPartitionedToMonolithicConverter.hpp"
 #include <set>
+
+#include "TSFLinearCombinationImpl.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+
+#endif
 
 using namespace Teuchos;
 using namespace TSFExtended;

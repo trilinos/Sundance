@@ -374,7 +374,7 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
                                     int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
   TimeMonitor timer(removeZeroTimer());
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveZeroFromSum");
 
   /* Check for the trivial case of operation with zero */
@@ -383,7 +383,7 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
   const ConstantExpr* cl = dynamic_cast<const ConstantExpr*>(left.get());
   if (cl != 0 && (cl->value()==0.0 || cl->value()==-0.0))
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("RemoveZeroFromSum identified left operand as zero.");
           Out::println("Applying transformation 0 + x --> x");
@@ -396,7 +396,7 @@ bool RemoveZeroFromSum::doTransform(const RefCountPtr<ScalarExpr>& left, const R
   const ConstantExpr* cr = dynamic_cast<const ConstantExpr*>(right.get());
   if (cr != 0 && (cr->value()==0.0 || cr->value()==-0.0)) 
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("RemoveZeroFromSum identified right operand as zero.");
           Out::println("Applying transformation x + 0 --> x");
@@ -418,7 +418,7 @@ bool MoveConstantsToLeftOfSum::doTransform(const RefCountPtr<ScalarExpr>& left, 
    * transform u +/- alpha --> +/- alpha + u */
   if (right->isConstant())
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("MoveConstantsToLeftOfSum identified right "
                        "operand as constant.");
@@ -438,7 +438,7 @@ bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
                                           RefCountPtr<ScalarExpr>& rtn) const
 {
   TimeMonitor timer(removeUnaryMinusTimer());
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveUnaryMinusFromSum");
 
   /* if the right operand is a unary minus, 
@@ -447,7 +447,7 @@ bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
   const UnaryMinus* ur = dynamic_cast<const UnaryMinus*>(right.get());
   if (ul != 0 && ur != 0)
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("RemoveUnaryMinusFromSum identified both "
                        "operands as unary minuses.");
@@ -458,7 +458,7 @@ bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
     }
   else if (ul != 0)
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("RemoveUnaryMinusFromSum identified left "
                        "operand as unary minus.");
@@ -475,7 +475,7 @@ bool RemoveUnaryMinusFromSum::doTransform(const RefCountPtr<ScalarExpr>& left,
     }
   else if (ur != 0)
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("RemoveUnaryMinusFromSum identified right "
                        "operand as unary minus.");
@@ -499,13 +499,13 @@ bool SumConstants::doTransform(const RefCountPtr<ScalarExpr>& left, const RefCou
 {
   
   TimeMonitor timer(sumConstantsTimer());
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying SumConstants");
 
   /* Check to see if both are constant. If so, sum them and return */
   if (left->isConstant() && right->isConstant())
     {
-      if (verbosity() > 1)
+      if (verb() > 1)
         {
           Out::println("SumConstants identified both "
                        "operands as constant. No transformations applied.");
@@ -541,7 +541,7 @@ bool RearrangeRightSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& l
            * alpha + s1*(beta + s2*u) --> (alpha + s1*beta) + s1*s2*u */
           if (left->isConstant())
             {
-              if (verbosity() > 1)
+              if (verb() > 1)
                 {
                   Out::println("RearrangeRightSumWithConstant::doTransform "
                                "identified right "
@@ -560,7 +560,7 @@ bool RearrangeRightSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& l
           else  /* if left operand is non-constant, transform
                  * u + s1*(alpha + s2*v) --> s1*alpha + (u + s1*s2*v) */
             {
-              if (verbosity() > 1)
+              if (verb() > 1)
                 {
                   Out::println("RearrangeRightSumWithConstant::doTransform "
                                "identified right "
@@ -608,7 +608,7 @@ bool RearrangeLeftSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& le
            * (alpha + s1*u) + s2*beta --> (alpha + s2*beta) + s1*u */
           if (right->isConstant())
             {
-              if (verbosity() > 1)
+              if (verb() > 1)
                 {
                   Out::println("RearrangeLeftSumWithConstant::doTransform "
                                "identified right "
@@ -628,7 +628,7 @@ bool RearrangeLeftSumWithConstant::doTransform(const RefCountPtr<ScalarExpr>& le
           else /* if right operand is a non-constant, transform 
                 * (alpha + s1*u) + s2*v --> alpha + (s1*u + s2*v) */
             {
-              if (verbosity() > 1)
+              if (verb() > 1)
                 {
                   Out::println("RearrangeLeftSumWithConstant::doTransform "
                                "identified right "
@@ -657,7 +657,7 @@ bool SumIntegrals::doTransform(const RefCountPtr<ScalarExpr>& left,
                                int sign, RefCountPtr<ScalarExpr>& rtn) const
 {
   TimeMonitor timer(sumIntegralsTimer());
-  SUNDANCE_OUT(this->verbosity() > VerbLow, 
+  SUNDANCE_OUT(this->verb() > 1, 
                "trying SumIntegrals");
 
   const SumOfIntegrals* sLeft 

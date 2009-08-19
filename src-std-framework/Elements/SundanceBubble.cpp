@@ -290,7 +290,7 @@ void Bubble::evalOnTriangle(const Point& pt,
   result.resize(1);
 
 
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, "x=" << x.value() << " y="
+  SUNDANCE_OUT(this->verb() > 3, "x=" << x.value() << " y="
                << y.value());
 
   int p = (order_+2)/3;
@@ -308,7 +308,7 @@ void Bubble::evalOnTriangle(const Point& pt,
 
 	for (int i=0; i<tmp.length(); i++)
 		{
-      SUNDANCE_OUT(this->verbosity() > VerbHigh,
+      SUNDANCE_OUT(this->verb() > 3,
                    "tmp[" << i << "]=" << tmp[i].value() 
                    << " grad=" << tmp[i].gradient());
 			if (deriv.order()==0) result[i] = tmp[i].value();

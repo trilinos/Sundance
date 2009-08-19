@@ -74,7 +74,7 @@ PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
 
 
   Tabs tab;
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verb() > 3, 
                tab << "PartialElementDOFMap::getDOFsForCellBatch(): cellDim=" 
                << cellDim
                << " cellLID=" << cellLID);
@@ -228,10 +228,10 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
   Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << "synchronizing DOFs for cells of dimension 0");
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << " sending cell reqs d=0, GID=" 
                << outgoingCellRequests);
@@ -259,22 +259,22 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
       for (int c=0; c<nReq; c++)
         {
           int GID = requestsFromProc[c];
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verb() > 3,  
                        "p=" << rank
                        << " processing zero-cell with GID=" << GID); 
           int LID = mesh().mapGIDToLID(cellDim, GID);
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verb() > 3,  
                        "p=" << rank
                        << " LID=" << LID << " dofs=" 
                        << elemDofs_[LID*nFuncs_]);
           outgoingDOFs[p][c] = elemDofs_[LID*nFuncs_];
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verb() > 3,  
                        "p=" << rank
                        << " done processing cell with GID=" << GID);
         }
     }
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << "answering DOF requests for cells of dimension 0");
 
@@ -283,7 +283,7 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
                                   incomingDOFs,
                                   mesh().comm());
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << "communicated DOF answers for cells of dimension 0" );
 

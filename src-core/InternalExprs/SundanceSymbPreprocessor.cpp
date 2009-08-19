@@ -194,7 +194,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
 
   int verb=context.setupVerbosity();
   SUNDANCE_BANNER1(verb, tab, "in setupVariations()");
-  verbosity<EvaluatableExpr>() = (VerbositySetting) verb;
+  verbosity<EvaluatableExpr>() = verb;
   SUNDANCE_MSG1(verb,
     tab << "************ setting up variations of expr: " 
     << expr 

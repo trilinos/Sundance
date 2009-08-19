@@ -36,6 +36,10 @@
 #include "SundanceCellSet.hpp"
 #include "SundanceSubtypeEvaluator.hpp"
 
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFVectorImpl.hpp"
+#endif
+
 using namespace SundanceStdMesh;
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

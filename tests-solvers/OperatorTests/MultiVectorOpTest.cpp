@@ -29,28 +29,31 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
-#include "TSFLinearCombination.hpp"
-#include "TSFLinearOperator.hpp"
+#include "TSFVectorDecl.hpp"
+#include "TSFLinearCombinationDecl.hpp"
+#include "TSFLinearOperatorDecl.hpp"
+#include "TSFCommonOperatorsImpl.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
+#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "TSFEpetraVectorSpace.hpp"
-//#include "TSFCoreEpetraVectorSpace.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-//#include "TSFLinearSolver.hpp"
 #include "TSFBICGSTABSolver.hpp"
-#include "TSFProductVectorSpace.hpp"
-//#include "TSFInverseOperator.hpp"
-#include "TSFLinearOperator.hpp"
+#include "TSFProductVectorSpaceDecl.hpp"
+#include "TSFLinearOperatorDecl.hpp"
 #include "TSFEpetraMatrix.hpp"
-//#include "Thyra_LinearOpBase.hpp"
 #include "TSFMultiVectorOperator.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFRandomSparseMatrix.hpp"
 #include "TSFCompoundTester.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFVectorImpl.hpp"
+#endif
+
 
 STREAM_OUT(Vector<double>)
 //using namespace Teuchos;

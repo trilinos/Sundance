@@ -29,9 +29,15 @@
 /* @HEADER@ */
 
 #include "SundanceLinearSolveDriver.hpp"
-#include "TSFLinearSolver.hpp"
+#include "TSFLinearSolverDecl.hpp"
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
+
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearSolverImpl.hpp"
+#endif
+
 
 
 

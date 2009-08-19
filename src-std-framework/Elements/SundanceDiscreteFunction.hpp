@@ -37,7 +37,7 @@
 #include "SundanceDiscreteFunctionData.hpp"
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceDiscreteSpace.hpp"
-#include "TSFVector.hpp"
+#include "TSFVectorDecl.hpp"
 
 namespace SundanceStdFwk
 {

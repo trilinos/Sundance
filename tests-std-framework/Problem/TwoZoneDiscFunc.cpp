@@ -1,6 +1,7 @@
 #include "Sundance.hpp"
 
 #include "SundanceZeroExpr.hpp"
+#include "SundanceElementIntegral.hpp"
 CELL_PREDICATE(TopLeftTest, {return fabs(x[0]) < 1.0e-10 && x[1]>=0.5;}) 
 CELL_PREDICATE(BottomLeftTest, {return fabs(x[0]) < 1.0e-10 && x[1]<=0.5;}) 
 CELL_PREDICATE(TopRightTest, {return fabs(x[0]-1.0) < 1.0e-10 && x[1]>=0.5;}) 
@@ -22,6 +23,7 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
+      SundanceStdFwk::Internal::ElementIntegral::alwaysUseCofacets() = false;
       int npx = -1;
       int npy = -1;
       PartitionedRectangleMesher::balanceXY(np, &npx, &npy);
@@ -71,12 +73,35 @@ int main(int argc, char** argv)
       w.addField("y", new ExprFieldWrapper(u[1]));
       w.write();
 
-      Expr errExpr = Integral(topZone, pow(u[0]-x, 2), new GaussianQuadrature(6))
+      WatchFlag watch("watch me");
+      watch.setParam("integration setup", 6);
+      watch.setParam("integration", 0);
+      watch.setParam("fill", 0);
+      watch.setParam("evaluation", 6);
+      watch.setParam("discrete function evaluation", 6);
+      watch.activate();
+
+      Expr errExpr1 
+        = Integral(topZone, pow(u[0]-x, 2), new GaussianQuadrature(6))
         + Integral(bottomZone, pow(u[1]-y, 2), new GaussianQuadrature(6));
 
-      double errorSq = evaluateIntegral(mesh, errExpr);
+      
+      Expr errExpr2 
+        = Integral(interface, pow(u[0]-x, 2), 
+          new GaussianQuadrature(6), watch);
+      
+      Expr errExpr3 
+        = Integral(interface, pow(u[1]-y, 2), 
+          new GaussianQuadrature(6), watch);
+
+      double errorSq1 = evaluateIntegral(mesh, errExpr1);
+      double errorSq2 = evaluateIntegral(mesh, errExpr2);
+      double errorSq3 = evaluateIntegral(mesh, errExpr3);
+      Out::os() << "maximal domain error = " << ::sqrt(errorSq1) << endl;
+      Out::os() << "interface error(x) = " << ::sqrt(errorSq2) << endl;
+      Out::os() << "interface error(y) = " << ::sqrt(errorSq3) << endl;
       double tol = 1.0e-6;
-      Sundance::passFailTest(::sqrt(errorSq), tol);
+      Sundance::passFailTest(::sqrt(errorSq1 + errorSq2 + errorSq3), tol);
 
     }
 	catch(exception& e)

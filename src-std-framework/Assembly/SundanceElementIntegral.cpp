@@ -89,7 +89,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
 {
   /* if we're integrating a derivative along a facet, we need to refer back
    * to the maximal cell. */
-  if (alwaysUseCofacets() && dim != spatialDim)
+  if (alwaysUseCofacets() && dim != spatialDim && !isInternalBdry)
   {
     evalCellType_ = maxCellType_;
     nFacetCases_ = numFacets(maxCellType, dim);

@@ -49,18 +49,18 @@ void PartitionedRectangleMesher::balanceXY(int n, int* npx, int* npy)
 
 Mesh PartitionedRectangleMesher::fillMesh() const
 {
-  SUNDANCE_OUT(this->verbosity() > VerbSilent,
+  SUNDANCE_OUT(this->verb() > 0,
                "PartitionedRectangleMesher::fillLocalMesh() is meshing "
                "rectangle [" << ax_ << ", " << bx_ << "] by ["
                << ay_ << ", " << by_ << "]");
 
-  SUNDANCE_OUT(this->verbosity() == VerbHigh,
+  SUNDANCE_OUT(this->verb() == 3,
                "PartitionedRectangleMesher::fillLocalMesh() starting creation "
                "of empty mesh");
 
   Mesh mesh = createMesh(2);
 
-  SUNDANCE_OUT(this->verbosity() == VerbHigh,
+  SUNDANCE_OUT(this->verb() == 3,
                "PartitionedRectangleMesher::fillLocalMesh() done creation of "
                "empty mesh");
   
@@ -117,13 +117,13 @@ Mesh PartitionedRectangleMesher::fillMesh() const
 
           Point x( ax_ + ((double) i)*(bx_-ax_)/((double) nxTot) ,
                    ay_ + ((double) j)*(by_-ay_)/((double) nyTot));
-          SUNDANCE_OUT(this->verbosity() > VerbLow, "adding point GID=" 
+          SUNDANCE_OUT(this->verb() > 1, "adding point GID=" 
                        << globalIndex << " x=" << x << " owner=" 
                        << pointOwner);
           int lid = mesh.addVertex(globalIndex, x, pointOwner, 0);
           pts[i-lowestVisiblePtX][j-lowestVisiblePtY] = globalIndex;
           
-          SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
+          SUNDANCE_OUT(this->verb() ==  3,
                        "point " << x << " registered with LID=" << lid);
         }
     }
@@ -159,11 +159,11 @@ Mesh PartitionedRectangleMesher::fillMesh() const
               tri2 = tuple(b,c,d);
 						}
           int lid1 = mesh.addElement(globalIndex, tri1, cellOwner, 0);
-          SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
+          SUNDANCE_OUT(this->verb() ==  3,
                        "elem " << tri1 
                        << " registered with LID=" << lid1);
           int lid2 = mesh.addElement(globalIndex+1, tri2, cellOwner, 0);
-          SUNDANCE_OUT(this->verbosity() ==  VerbHigh,
+          SUNDANCE_OUT(this->verb() ==  3,
                        "elem " << tri2 
                        << " registered with LID=" << lid2);
           

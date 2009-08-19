@@ -31,14 +31,14 @@ ExodusMeshReader::ExodusMeshReader(const string& fname,
   exoFilename_ = exoFilename_ + ".exo";
   parFilename_ = parFilename_ + ".pxo";
   
-  verbosity() = classVerbosity();
-  //  verbosity() = VerbExtreme;
-  SUNDANCE_OUT(this->verbosity() > VerbLow,
+  verb() = classVerbosity();
+
+  SUNDANCE_OUT(this->verb() > 1,
                "exodus filename = " << exoFilename_);
   
   if (nProc() > 1)
   {
-    SUNDANCE_OUT(this->verbosity() > VerbLow,
+    SUNDANCE_OUT(this->verb() > 1,
       "par filename = " << parFilename_);
   }
 }
@@ -66,7 +66,7 @@ Mesh ExodusMeshReader::fillMesh() const
 
   readParallelInfo(ptGID, ptOwner, elemGID, elemOwner);
 
-  if (verbosity() > VerbMedium) ex_opts(EX_DEBUG | EX_VERBOSE);
+  if (verb() > 2) ex_opts(EX_DEBUG | EX_VERBOSE);
 
   string resolvedName = searchForFile(exoFilename_);
   int exoID = ex_open(resolvedName.c_str(), EX_READ, 
@@ -380,7 +380,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
 
       nElems = StrUtils::atoi(tokens[0]);
 
-      SUNDANCE_OUT(this->verbosity() > VerbLow,
+      SUNDANCE_OUT(this->verb() > 1,
         "read nElems = " << nElems);
 
 

@@ -149,10 +149,10 @@ int main(int argc, char** argv)
       GlobalMPISession session(&argc, &argv);
 
 
-//      verbosity<SymbolicTransformation>() = VerbSilent;
-      verbosity<Evaluator>() = VerbExtreme;
-//      verbosity<EvalVector>() = VerbExtreme;
-      verbosity<EvaluatableExpr>() = VerbExtreme;
+//      verbosity<SymbolicTransformation>() = 0;
+      verbosity<Evaluator>() = 6;
+//      verbosity<EvalVector>() = 6;
+      verbosity<EvaluatableExpr>() = 6;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = true;

@@ -80,7 +80,7 @@ int main(int argc, char** argv)
       MeshSource mesher 
         = new ExodusMeshReader("../../../tests-std-mesh/Readers/wheel", meshType);
 
-      mesher.ptr()->verbosity() = VerbSilent;
+      mesher.ptr()->verb() = 0;
 
       Mesh mesh = mesher.getMesh();
 

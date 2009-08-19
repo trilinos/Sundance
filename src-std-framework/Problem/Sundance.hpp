@@ -118,8 +118,8 @@
 #include "TSFEpetraVectorType.hpp"
 #include "TSFBICGSTABSolver.hpp"
 #include "TSFAztecSolver.hpp"
-#include "TSFLinearSolver.hpp"
-#include "TSFLinearCombination.hpp"
+#include "TSFLinearSolverImpl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
 #include "TSFLinearSolverBuilder.hpp"
 #include "TSFMLOperator.hpp"
 #include "TSFParameterListPreconditionerFactory.hpp"
@@ -157,100 +157,100 @@ using SundanceCore::List;
 
 namespace SundanceStdFwk
 {
-  /**
-   * Class Sundance provides several static methods for
-   * managing the environment of a simulation. Every simulation code
-   * should begin with a call to Sundance::init() and end with
-   * a call to Sundance::finalize().
+/**
+ * Class Sundance provides several static methods for
+ * managing the environment of a simulation. Every simulation code
+ * should begin with a call to Sundance::init() and end with
+ * a call to Sundance::finalize().
+ */
+class Sundance
+{
+public:
+  static void setOption(const string& optionName, 
+    int& value, 
+    const string& helpMsg);
+
+  static void setOption(const string& optionName, 
+    string& value, 
+    const string& helpMsg);
+
+  static void setOption(const string& optionName, 
+    double& value, 
+    const string& helpMsg);
+
+  static void setOption(const string& optionTrueName, 
+    const string& optionFalseName, 
+    bool& value, 
+    const string& helpMsg);
+
+  /** 
+   * Do initialization steps such as starting MPI (if necessary), 
+   * parsing the Unix command
+   * line, and reading runtime options from the configuration file.
+   * MPI is initialized through a call to Teuchos::GlobalMPISession, 
+   * which in turn checks whether MPI needs initialization and calls
+   * MPI_Init() if necessary. If some other library you're using has
+   * its own MPI initialization system, it is thus perfectly safe to
+   * call Sundance::init() as well.
    */
-  class Sundance
-  {
-  public:
-    static void setOption(const string& optionName, 
-                          int& value, 
-                          const string& helpMsg);
-
-    static void setOption(const string& optionName, 
-                          string& value, 
-                          const string& helpMsg);
-
-    static void setOption(const string& optionName, 
-                          double& value, 
-                          const string& helpMsg);
-
-    static void setOption(const string& optionTrueName, 
-                          const string& optionFalseName, 
-                          bool& value, 
-                          const string& helpMsg);
-
-    /** 
-     * Do initialization steps such as starting MPI (if necessary), 
-     * parsing the Unix command
-     * line, and reading runtime options from the configuration file.
-     * MPI is initialized through a call to Teuchos::GlobalMPISession, 
-     * which in turn checks whether MPI needs initialization and calls
-     * MPI_Init() if necessary. If some other library you're using has
-     * its own MPI initialization system, it is thus perfectly safe to
-     * call Sundance::init() as well.
-     */
-    static int init(int* argc, char*** argv);
+  static int init(int* argc, char*** argv);
     
-    /** 
-     * Do finalization steps such as calling MPI_finalize() (if necessary),
-     * and collecting and printing timing information.
-     */
-    static int finalize();
+  /** 
+   * Do finalization steps such as calling MPI_finalize() (if necessary),
+   * and collecting and printing timing information.
+   */
+  static int finalize();
     
-    /** */
-    static void handleException(std::exception& e);
+  /** */
+  static void handleException(std::exception& e);
 
-    /** */
-    static Teuchos::FancyOStream& os() ;
-
-
-    /** */
-    static bool passFailTest(double error, double tol);
-
-    /** */
-    static bool passFailTest(const string& statusMsg,
-                             bool status, double error, double tol);
+  /** */
+  static Teuchos::FancyOStream& os() ;
 
 
-    static VerbositySetting verbosity(const string& str);
+  /** */
+  static bool passFailTest(double error, double tol);
 
-    /** */
-    static void setSettings(const XMLObject& xml);
+  /** */
+  static bool passFailTest(const string& statusMsg,
+    bool status, double error, double tol);
 
-    /** Set to true if a message should be written by each processor
-     * at startup. */
-    static bool& showStartupMessage();
 
-    /** Decide whether to skip timing outputs to work around
-     * a trilinos 6.0.x bug */
-    static bool& skipTimingOutput()
+  static int verbosity(const string& str);
+
+  /** */
+  static void setSettings(const XMLObject& xml);
+
+  /** Set to true if a message should be written by each processor
+   * at startup. */
+  static bool& showStartupMessage();
+
+  /** Decide whether to skip timing outputs to work around
+   * a trilinos 6.0.x bug */
+  static bool& skipTimingOutput()
     {static bool rtn=false; return rtn;}
 
-    /** */
-    static int& testStatus() {static int rtn = -1; return rtn;}
+  /** */
+  static int& testStatus() {static int rtn = -1; return rtn;}
 
 
 
-    static CommandLineProcessor& clp()
+  static CommandLineProcessor& clp()
     {static CommandLineProcessor rtn; return rtn;}
-  private:
-    static bool checkTest(double error, double tol);
+private:
+  static bool checkTest(double error, double tol);
 
-    static void setSettings(const string& settingsFile);
+  static void setSettings(const string& settingsFile);
 
 
 
-    static RefCountPtr<GlobalMPISession> globalMPISession(int* argc, char*** argv)
+  static RefCountPtr<GlobalMPISession> globalMPISession(int* argc, char*** argv)
     {
       static RefCountPtr<GlobalMPISession> rtn 
         = rcp(new GlobalMPISession(argc, argv, &std::cerr)); 
       return rtn;
     }
-  };
+};
 
 }
 

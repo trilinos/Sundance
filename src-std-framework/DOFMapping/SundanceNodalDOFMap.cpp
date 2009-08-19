@@ -71,7 +71,7 @@ NodalDOFMap::getDOFsForCellBatch(int cellDim,
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
-  SUNDANCE_OUT(this->verbosity() > VerbHigh, 
+  SUNDANCE_OUT(this->verb() > 3, 
                tab << "NodalDOFMap::getDOFsForCellBatch(): cellDim=" << cellDim
                << " cellLID=" << cellLID);
 
@@ -268,10 +268,10 @@ void NodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCellRequests
   Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << "synchronizing DOFs for cells of dimension 0");
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << " sending cell reqs d=0, GID=" 
                << outgoingCellRequests);
@@ -299,22 +299,22 @@ void NodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCellRequests
       for (int c=0; c<nReq; c++)
         {
           int GID = requestsFromProc[c];
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verb() > 3,  
                        "p=" << rank
                        << " processing zero-cell with GID=" << GID); 
           int LID = mesh().mapGIDToLID(0, GID);
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verb() > 3,  
                        "p=" << rank
                        << " LID=" << LID << " dofs=" 
                        << nodeDofs_[LID*nFuncs_]);
           outgoingDOFs[p][c] = nodeDofs_[LID*nFuncs_];
-          SUNDANCE_OUT(this->verbosity() > VerbHigh,  
+          SUNDANCE_OUT(this->verb() > 3,  
                        "p=" << rank
                        << " done processing cell with GID=" << GID);
         }
     }
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << "answering DOF requests for cells of dimension 0");
 
@@ -323,7 +323,7 @@ void NodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCellRequests
                                   incomingDOFs,
                                   mesh().comm());
 
-  SUNDANCE_OUT(this->verbosity() > VerbMedium,  
+  SUNDANCE_OUT(this->verb() > 2,  
                "p=" << mesh().comm().getRank()
                << "communicated DOF answers for cells of dimension 0" );
 

@@ -48,6 +48,7 @@ APPEND_SET(HEADERS
   Utilities/SundanceIntHashSet.hpp
   Utilities/SundanceMap.hpp
   Utilities/SundanceMultiSet.hpp
+  Utilities/SundanceNamedObject.hpp
   Utilities/SundanceNoncopyable.hpp
   Utilities/SundanceObjectWithInstanceID.hpp
   Utilities/SundanceObjectWithVerbosity.hpp

@@ -5,18 +5,19 @@
 #include <Python.h>
 
   // Sundance includes
+#include "SundanceDefs.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
-#include "TSFVector.hpp"
+#include "TSFVectorSpaceDecl.hpp"
+#include "TSFVectorDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
-#include "TSFLinearOperator.hpp"
-#include "TSFLinearSolver.hpp"
+#include "TSFLinearOperatorDecl.hpp"
+#include "TSFLinearSolverDecl.hpp"
 #include "TSFPreconditionerFactory.hpp"
 #include "TSFPreconditioner.hpp"
 #include "TSFGenericLeftPreconditioner.hpp"
 #include "TSFGenericRightPreconditioner.hpp"
-#include "TSFProductVectorSpace.hpp"
-#include "TSFBlockOperator.hpp"
+#include "TSFProductVectorSpaceDecl.hpp"
+#include "TSFBlockOperatorDecl.hpp"
 #include "TSFGMRESSolver.hpp"
 #include "TSFBICGSTABSolver.hpp"
 #include "TSFNOXSolver.H"
@@ -25,7 +26,17 @@
 #include "PyTeuchos_Utils.hpp"
 //#include "PySundanceNOXSolverHandle.hpp"
 #include "PySundanceLinearSolver.hpp"
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFVectorSpaceImpl.hpp"
+#include "TSFVectorImpl.hpp"
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+#include "TSFProductVectorSpaceImpl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#endif
   %}
+
+
 
 
 // SWIG library includes

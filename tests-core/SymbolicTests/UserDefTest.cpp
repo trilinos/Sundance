@@ -43,22 +43,22 @@ static Time& totalTimer()
 
 #define LOUD()                                          \
   {                                                     \
-    verbosity<EvaluationTester>() = VerbExtreme;        \
-    verbosity<Evaluator>() = VerbExtreme;               \
-    verbosity<SparsitySuperset>() = VerbSilent;         \
-    verbosity<EvalVector>() = VerbSilent;               \
-    verbosity<EvaluatableExpr>() = VerbExtreme;         \
-    verbosity<AbstractEvalMediator>() = VerbExtreme;    \
+    verbosity<EvaluationTester>() = 5;        \
+    verbosity<Evaluator>() = 5;               \
+    verbosity<SparsitySuperset>() = 0;         \
+    verbosity<EvalVector>() = 0;               \
+    verbosity<EvaluatableExpr>() = 5;         \
+    verbosity<AbstractEvalMediator>() = 5;    \
   }
 
 #define QUIET()                                         \
   {                                                     \
-    verbosity<EvaluationTester>() = VerbSilent;         \
-    verbosity<Evaluator>() = VerbSilent;                \
-    verbosity<SparsitySuperset>() = VerbSilent;         \
-    verbosity<EvalVector>() = VerbSilent;               \
-    verbosity<EvaluatableExpr>() = VerbSilent;          \
-    verbosity<AbstractEvalMediator>() = VerbSilent;     \
+    verbosity<EvaluationTester>() = 0;         \
+    verbosity<Evaluator>() = 0;                \
+    verbosity<SparsitySuperset>() = 0;         \
+    verbosity<EvalVector>() = 0;               \
+    verbosity<EvaluatableExpr>() = 0;          \
+    verbosity<AbstractEvalMediator>() = 0;     \
   }
 
 
@@ -240,7 +240,7 @@ int main(int argc, char** argv)
       cout << "value (symb)    = " << f2 << endl;
       cout << "deriv (symb)    = " << df2 << endl;
 
-      //verbosity<Evaluator>() = VerbExtreme;
+      //verbosity<Evaluator>() = 5;
       cout << "evaluating user def expr, eval1()" << endl;
 
       EvaluationTester fTester1(f, 1);
@@ -269,7 +269,7 @@ int main(int argc, char** argv)
       cout << "value (symb)    = " << f5 << endl;
       cout << "deriv (symb)    = " << df5 << endl;
 
-      //verbosity<Evaluator>() = VerbExtreme;
+      //verbosity<Evaluator>() = 5;
       cout << "evaluating user def expr, eval1()" << endl;
 
       EvaluationTester fTester6(F2*List(x,y), 1);

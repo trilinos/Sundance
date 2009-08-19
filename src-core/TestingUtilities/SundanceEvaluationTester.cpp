@@ -62,7 +62,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     unkIDToDiscreteIDMap_(),
     maxDiffOrder_(maxDiffOrder)
 {
-  verbosity() = classVerbosity();
+  verb() = classVerbosity();
   Tabs tabs;
 
   SUNDANCE_VERB_LOW(tabs << "creating tester for expression " << e.toString());
@@ -260,7 +260,7 @@ double EvaluationTester::evaluate() const
    * Print results if asked to
    * ------------------------------------------------------------- */ 
 
-  if (verbosity() > VerbLow)
+  if (verb() > 1)
   {
     ev_->sparsitySuperset(context_)->print(Out::os(), vectorResults,
       constantResults);
@@ -367,7 +367,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
   ev_->evaluator(context_)->resetNumCalls();
   ev_->evaluate(mgr_, constantResults, vectorResults);
 
-  if (verbosity() > VerbLow)
+  if (verb() > 1)
   {
     ev_->sparsitySuperset(context_)->print(Out::os(), vectorResults,
       constantResults);
@@ -486,7 +486,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
   ev_->evaluator(context_)->resetNumCalls();
   ev_->evaluate(mgr_, constantResults, vectorResults);
 
-  if (verbosity() > VerbLow)
+  if (verb() > 1)
   {
     ev_->sparsitySuperset(context_)->print(Out::os(), vectorResults,
       constantResults);

@@ -124,10 +124,10 @@ void writeTable(std::ostream& os, const Tabs& tab,
   }
 
 
-#define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_OUT(this->verbosity() > VerbHigh, msg)
-#define SUNDANCE_VERB_HIGH(msg) SUNDANCE_OUT(this->verbosity() > VerbMedium, msg)
-#define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_OUT(this->verbosity() > VerbLow, msg)
-#define SUNDANCE_VERB_LOW(msg) SUNDANCE_OUT(this->verbosity() > VerbSilent, msg)
+#define SUNDANCE_VERB_EXTREME(msg) SUNDANCE_MSG4(this->verb(), msg)
+#define SUNDANCE_VERB_HIGH(msg) SUNDANCE_MSG3(this->verb(), msg)
+#define SUNDANCE_VERB_MEDIUM(msg) SUNDANCE_MSG2(this->verb(), msg)
+#define SUNDANCE_VERB_LOW(msg) SUNDANCE_MSG1(this->verb(), msg)
 
 #define SUNDANCE_HEADER_LINE "\n------------------------------------------------------------------\n"
 

@@ -38,6 +38,10 @@
 #include "SundanceExpr.hpp"
 #include "SundanceListExpr.hpp"
 #include "TSFSolverState.hpp"
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#endif
+
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

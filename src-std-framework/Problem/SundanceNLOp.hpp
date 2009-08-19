@@ -37,8 +37,8 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "TSFNonlinearOperatorBase.hpp"
-#include "TSFLinearOperator.hpp"
-#include "TSFVector.hpp"
+#include "TSFLinearOperatorDecl.hpp"
+#include "TSFVectorDecl.hpp"
 #include "TSFVectorType.hpp"
 
 namespace SundanceStdFwk

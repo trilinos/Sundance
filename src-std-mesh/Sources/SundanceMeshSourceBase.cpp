@@ -40,7 +40,7 @@ Mesh MeshSourceBase::getMesh() const
   if (!hasCachedMesh_)
     {
       Mesh rtn =  fillMesh();
-      if (verbosity() > VerbSilent)
+      if (verb() > 0)
         {
           std::cerr << tabs << "got a mesh with " << rtn.numCells(0)
                << " nodes and " << rtn.numCells(rtn.spatialDim())
@@ -62,7 +62,7 @@ void MeshSourceBase
 Mesh MeshSourceBase::createMesh(int dim) const
 {
   cachedMesh_ = meshType_.createEmptyMesh(dim, comm_);
-  cachedMesh_.ptr()->verbosity() = verbosity();
+  cachedMesh_.ptr()->verb() = verb();
   hasCachedMesh_ = true;
   
   return cachedMesh_;

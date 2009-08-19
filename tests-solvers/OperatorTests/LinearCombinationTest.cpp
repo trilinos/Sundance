@@ -29,28 +29,34 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
-#include "TSFLinearCombination.hpp"
-#include "TSFLinearOperator.hpp"
+#include "TSFVectorDecl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#include "TSFLinearOperatorDecl.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
+#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "TSFEpetraVectorSpace.hpp"
-//#include "TSFCoreEpetraVectorSpace.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-//#include "TSFLinearSolver.hpp"
 #include "TSFBICGSTABSolver.hpp"
-#include "TSFProductVectorSpace.hpp"
-//#include "TSFInverseOperator.hpp"
-#include "TSFLinearOperator.hpp"
+#include "TSFProductVectorSpaceDecl.hpp"
 #include "TSFEpetraMatrix.hpp"
-//#include "Thyra_LinearOpBase.hpp"
-#include "TSFBlockOperator.hpp"
+#include "TSFBlockOperatorDecl.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFRandomSparseMatrix.hpp"
 #include "TSFLinearCombinationTester.hpp"
+
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFBlockOperatorImpl.hpp"
+#include "TSFCommonOperatorsImpl.hpp"
+#include "TSFNonmemberOpHelpersImpl.hpp"
+#include "TSFProductVectorSpaceImpl.hpp"
+#endif
+
+
 
 using namespace Teuchos;
 using namespace std;

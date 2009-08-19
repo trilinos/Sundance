@@ -67,7 +67,7 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
       f = f + ".vtu";
     }
   
-  SUNDANCE_OUT(this->verbosity() > VerbSilent, "writing VTK file " << f);
+  SUNDANCE_OUT(this->verb() > 0, "writing VTK file " << f);
 
   std::ofstream os(f.c_str());
 

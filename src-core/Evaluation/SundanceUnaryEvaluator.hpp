@@ -60,14 +60,14 @@ public:
       {
         Tabs tab;
 
-        SUNDANCE_VERB_HIGH(tab << "UnaryEvaluator ctor: expr = " << expr->toString());
+        SUNDANCE_MSG3(this->verb(), tab << "UnaryEvaluator ctor: expr = " << expr->toString());
 
-        SUNDANCE_VERB_HIGH(tab << "arg sparsity superset maxOrder: " 
+        SUNDANCE_MSG3(this->verb(), tab << "arg sparsity superset maxOrder: " 
           << argSparsitySuperset_->maxOrder());
             
         argEval_->addClient();
             
-        SUNDANCE_VERB_HIGH(tab << "done unary evalulator ctor");
+        SUNDANCE_MSG3(this->verb(), tab << "done unary evalulator ctor");
       }
       catch(std::exception& e)
       {
@@ -108,9 +108,9 @@ protected:
     Array<RefCountPtr<EvalVector> >& argVectorResults) const 
     {
       Tabs tabs;
-      SUNDANCE_OUT(this->verbosity() > VerbLow, 
-        tabs << "Evaluating operand: ");
+      SUNDANCE_MSG1(this->verb(),  tabs << "UnaryEvaluator: evaluating operand: ");
       argEval()->eval(mgr, argConstantResults, argVectorResults);
+      SUNDANCE_MSG1(this->verb(),  tabs << "UnaryEvaluator: done eval operand ");
     }
 private:
   const EvaluatableExpr* argExpr_;

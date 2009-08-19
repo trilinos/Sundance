@@ -2,7 +2,7 @@
 #define PYSUNDANCELINEARSOLVER_H
 
 #include "PySundanceCallback.hpp"
-#include "TSFLinearSolverBase.hpp"
+#include "TSFLinearSolverBaseDecl.hpp"
 #include "SundanceHandleable.hpp"
 
 

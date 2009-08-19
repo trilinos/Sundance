@@ -33,6 +33,7 @@
 #include "SundancePrintable.hpp"
 #include "Teuchos_Describable.hpp"
 #include "SundanceHandleable.hpp"
+#include "SundanceNamedObject.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_MPIComm.hpp"
@@ -59,7 +60,7 @@ handle(const Teuchos::RefCountPtr<contents >& smartPtr) : SundanceUtils::Handle<
 
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
+
 
 namespace SundanceUtils
 {
@@ -116,13 +117,29 @@ namespace SundanceUtils
         else out_arg << description();
       }
 
+
+    /** */
+    void setName(const std::string& name)
+      {
+        NamedObject* n = dynamic_cast<NamedObject*>(ptr_.get());
+        if (n!=0) n->setName(name);
+      }
+
+    /** */
+    std::string name() const 
+      {
+        NamedObject* n = dynamic_cast<NamedObject*>(ptr_.get());
+        if (n!=0) return n->name();
+        return "AnonymousHandle";
+      }
+
     /** 
      * Return the verbosity setting using the ObjectWithVerbosity
      * interface. If the contents of the handle cannot be downcasted
      * or crosscasted into an ObjectWithVerbosity, an exception will
      * be thrown. 
      */
-    VerbositySetting verbosity() const 
+    int verb() const 
     {
       const ObjectWithVerbosity<PointerType>* v 
         = dynamic_cast<const ObjectWithVerbosity<PointerType>*>(ptr_.get());
@@ -130,7 +147,7 @@ namespace SundanceUtils
       TEST_FOR_EXCEPTION(v==0, std::runtime_error,
                          "Attempted to cast non-verbose "
                          "pointer to an ObjectWithVerbosity");
-      return v->verbosity();
+      return v->verb();
     }
 
     /** 
@@ -140,7 +157,7 @@ namespace SundanceUtils
      * or crosscasted into an ObjectWithVerbosity, an exception will
      * be thrown. 
      */
-    VerbositySetting& verbosity() 
+    int& verb() 
     {
       ObjectWithVerbosity<PointerType>* v 
         = dynamic_cast<ObjectWithVerbosity<PointerType>*>(ptr_.get());
@@ -148,11 +165,11 @@ namespace SundanceUtils
       TEST_FOR_EXCEPTION(v==0, std::runtime_error,
                          "Attempted to cast non-verbose "
                          "pointer to an ObjectWithVerbosity");
-      return v->verbosity();
+      return v->verb();
     }
 
     /** Writeable access to the class-wide verbosity setting for the handled type */
-    static VerbositySetting& classVerbosity() 
+    static int& classVerbosity() 
     {
       return PointerType::classVerbosity();
     }
@@ -165,15 +182,14 @@ namespace SundanceUtils
   template <class PointerType> inline 
   void Handle<PointerType>::print(std::ostream& os) const 
   {
+    const NamedObject* n = dynamic_cast<const NamedObject*>(ptr_.get());
     const Printable* p = dynamic_cast<const Printable*>(ptr_.get());
     const Describable* d = dynamic_cast<const Describable*>(ptr_.get());
       
-    TEST_FOR_EXCEPTION(p==0 && d==0, std::runtime_error,
-      "Attempt to print a Handle to an object that is neither "
-      "Printable nor Describable");
-
     if (p!=0) p->print(os);
     else if (d!=0) os << description();
+    else if (n!=0) os << n->name();
+    else os << "NonprintableObject[" << ptr_.get() << "]";
   }
 
   /* implementation of description() */
@@ -181,11 +197,10 @@ namespace SundanceUtils
   std::string Handle<PointerType>::description() const 
   {
     const Describable* p = dynamic_cast<const Describable*>(ptr_.get());
-    
-    TEST_FOR_EXCEPTION(p==0, std::runtime_error,
-                       "Attempted to cast non-describable "
-                       "pointer to a Describable");
-    return p->description();
+    if (p!=0)
+      return p->description();
+    else
+      return "UndescribedObject[]";
   }
 }
 
@@ -201,7 +216,7 @@ std::ostream& operator<<(std::ostream& os, const SundanceUtils::Handle<PointerTy
 inline ostream& operator<<(ostream& os, const handleType& h) \
 {h.print(os); return os;}
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif
 

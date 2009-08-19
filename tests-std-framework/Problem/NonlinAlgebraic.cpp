@@ -34,8 +34,8 @@
 #define LOUD()                                          \
   {                                                     \
     verbosity<Evaluator>() = VerbExtreme;               \
-    verbosity<SparsitySuperset>() = VerbSilent;         \
-    verbosity<EvalVector>() = VerbSilent;               \
+    verbosity<SparsitySuperset>() = 0;         \
+    verbosity<EvalVector>() = 0;               \
     verbosity<EvaluatableExpr>() = VerbExtreme;         \
     verbosity<AbstractEvalMediator>() = VerbExtreme;    \
   }

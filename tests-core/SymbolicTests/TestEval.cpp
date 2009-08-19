@@ -96,22 +96,22 @@ inline Expr FD(const Expr& f, const Expr& u)
 
 #define LOUD()                                          \
   {                                                     \
-    verbosity<EvaluationTester>() = VerbExtreme;        \
-    verbosity<Evaluator>() = VerbExtreme;               \
-    verbosity<SparsitySuperset>() = VerbExtreme;         \
-    verbosity<EvalVector>() = VerbExtreme;               \
-    verbosity<EvaluatableExpr>() = VerbExtreme;         \
-    verbosity<AbstractEvalMediator>() = VerbExtreme;    \
+    verbosity<EvaluationTester>() = 6;        \
+    verbosity<Evaluator>() = 6;               \
+    verbosity<SparsitySuperset>() = 6;         \
+    verbosity<EvalVector>() = 6;               \
+    verbosity<EvaluatableExpr>() = 6;         \
+    verbosity<AbstractEvalMediator>() = 6;    \
   }
 
 #define QUIET()                                         \
   {                                                     \
-    verbosity<EvaluationTester>() = VerbSilent;         \
-    verbosity<Evaluator>() = VerbSilent;                \
-    verbosity<SparsitySuperset>() = VerbSilent;         \
-    verbosity<EvalVector>() = VerbSilent;               \
-    verbosity<EvaluatableExpr>() = VerbSilent;          \
-    verbosity<AbstractEvalMediator>() = VerbSilent;     \
+    verbosity<EvaluationTester>() = 0;         \
+    verbosity<Evaluator>() = 0;                \
+    verbosity<SparsitySuperset>() = 0;         \
+    verbosity<EvalVector>() = 0;               \
+    verbosity<EvaluatableExpr>() = 0;          \
+    verbosity<AbstractEvalMediator>() = 0;     \
   }
 
 

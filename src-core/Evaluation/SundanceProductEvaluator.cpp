@@ -203,7 +203,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
                 }
             }
       
-          if (hasVectorWorkspace && verbosity() > VerbMedium)
+          if (hasVectorWorkspace && verb() > 2)
             {
               string wSide = "right";
               MultipleDeriv wsDeriv;
@@ -370,7 +370,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
           startingVectors_[order].append(startingVector);
           startingParities_[order].append(startingParity);
 
-          if (verbosity() > VerbMedium)
+          if (verb() > 2)
             {
               Tabs tab0;
               Out::os() << tab0 << "deriv " << i << " order=" << order ;
@@ -397,7 +397,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
             }
         }
 
-      if (verbosity() > VerbMedium)
+      if (verb() > 2)
         {
           Out::os() << tabs << "maps: " << std::endl;
           Out::os() << tabs << "vector index map " << vectorIndexMap() << std::endl;

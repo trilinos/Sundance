@@ -35,7 +35,13 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceLinearSolveDriver.hpp"
-#include "TSFLinearSolver.hpp"
+#include "TSFLinearSolverDecl.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#endif
 
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;

@@ -34,8 +34,8 @@
 #include "SundanceDefs.hpp"
 #include "TSFLoadableVector.hpp"
 #include "TSFLoadableMatrix.hpp"
-#include "TSFLinearOperator.hpp"
-#include "TSFVector.hpp"
+#include "TSFLinearOperatorDecl.hpp"
+#include "TSFVectorDecl.hpp"
 #include "TSFVectorType.hpp"
 #include "Teuchos_HashSet.hpp"
 #include "Teuchos_ParameterList.hpp"
@@ -234,7 +234,8 @@ private:
   IntegrationCellSpecifier whetherToUseCofacets(
     const Array<RCP<IntegralGroup> >& groups,
     const EvaluatableExpr* ee,
-    bool isMaximalCell) const ;
+    bool isMaximalCell,
+    int verb) const ;
 
   
   

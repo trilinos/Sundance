@@ -20,9 +20,6 @@ using Teuchos::FancyOStream;
 using Teuchos::ParameterList;
 using Teuchos::ParameterEntry;
 
-/** \enum Verbosity settings */
-enum VerbositySetting {VerbSilent=0, VerbLow=1, VerbMedium=2, 
-                       VerbHigh=3, VerbExtreme=4};
 
 /** 
  * Defines traits for getting default verbosity parameters from a class
@@ -40,7 +37,7 @@ public:
  * provide an interface for getting/setting
  * verbosity flags for classes or instances. 
  *
- * All objects start out with a verbosity setting of VerbSilent.
+ * All objects start out with a verbosity setting of 0.
  * 
  * You can set verbosity for a single instance of a class, or for
  * the whole class. To set for an instance, use the verbosity()
@@ -49,9 +46,9 @@ public:
  * Mesh mesh1 = reader1.getMesh();
  * Mesh mesh2 = reader2.getMesh();
  * Mesh mesh3 = reader3.getMesh();
- * mesh1.verbosity() = VerbHigh;
+ * mesh1.verbosity() = 3;
  * \endcode
- * which sets the verbosity of <tt>mesh1</tt> to VerbHigh and leaves
+ * which sets the verbosity of <tt>mesh1</tt> to 3 and leaves
  * those of <tt>mesh2</tt> and <tt>mesh3</tt> unchanged.
  *
  * Alternatively, you can set a default verbosity for an entire
@@ -60,13 +57,13 @@ public:
  * Mesh mesh1 = reader1.getMesh();
  * Mesh mesh2 = reader2.getMesh();
  * Mesh mesh3 = reader3.getMesh();
- * mesh1.verbosity() = VerbHigh;
- * verbosity<Mesh>() = VerbMedium;
+ * mesh1.verbosity() = 3;
+ * verbosity<Mesh>() = 2;
  * \endcode
- * which sets the default verbosity to VerbMedium. Since <tt>mesh1</tt>
- * has its own verbosity setting of VerbHigh, 
+ * which sets the default verbosity to 2. Since <tt>mesh1</tt>
+ * has its own verbosity setting of 3, 
  * it will use it rather than the
- * default, but <tt>mesh2</tt> and <tt>mesh3</tt> will use VerbMedium.
+ * default, but <tt>mesh2</tt> and <tt>mesh3</tt> will use 2.
  * 
  */
 template <class X>
@@ -74,32 +71,18 @@ class ObjectWithVerbosity
 {
 public:
   /** \deprecated Construct, starting silent */
-  ObjectWithVerbosity() : verbosity_(classVerbosity()), setLocally_(false) {;}
-
-  /** */
-  ObjectWithVerbosity(int verb) : verb_(verb){;}
+  ObjectWithVerbosity(int verb=classVerbosity()) : verb_() {;}
 
   /** */
   int verb() const {return verb_;}
 
-  /** \deprecated Read-only access to the verbosity */
-  VerbositySetting verbosity() const 
-    {
-      if (setLocally_) return verbosity_;
-      return classVerbosity();
-    }
-
-  /** \deprecated Writeable access to the verbosity setting */
-  VerbositySetting& verbosity() 
-    {
-      setLocally_ = true; 
-      return verbosity_;
-    }
+  /** */
+  int& verb() {return verb_;}
 
   /** \deprecated Writeable access to the default verbosity for the class */
-  static VerbositySetting& classVerbosity() 
+  static int& classVerbosity() 
     {
-      static VerbositySetting rtn = VerbSilent;
+      static int rtn = 0;
       return rtn;
     }
 
@@ -120,12 +103,6 @@ public:
 
 private:
   /** */
-  VerbositySetting verbosity_;
-
-  /** */
-  bool setLocally_;
-
-  /** */
   int verb_;
 };
 
@@ -133,7 +110,7 @@ private:
  * \relates ObjectWithVerbosity
  * Global method for setting verbosity of a class
  */
-template <class X> VerbositySetting& verbosity() 
+template <class X> int& verbosity() 
 {
   return X::classVerbosity();
 }

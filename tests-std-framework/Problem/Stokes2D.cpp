@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 
       //#define BLAHBLAH 1
 #ifdef BLAHBLAH
-      verbosity<Evaluator>() = VerbMedium;
+      verbosity<Evaluator>() = 2;
       verbosity<SparsitySuperset>() = VerbExtreme;
       verbosity<EvaluatableExpr>() = VerbExtreme;
       verbosity<Assembler>() = VerbExtreme;

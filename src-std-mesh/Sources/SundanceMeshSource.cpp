@@ -42,7 +42,7 @@ Mesh MeshSource::getMesh() const
     {
       Tabs tabs;
       int nProc = ptr()->comm().getNProc();
-      SUNDANCE_OUT(ptr()->verbosity() > VerbSilent, 
+      SUNDANCE_OUT(ptr()->verb() > 0, 
                    "MeshSource::getMesh()");
       if (staggerOutput() && nProc > 1)
         {
@@ -51,7 +51,7 @@ Mesh MeshSource::getMesh() const
             {
               ptr()->comm().synchronize();
               if (p != myRank) continue;
-              SUNDANCE_OUT(ptr()->verbosity() > VerbSilent, 
+              SUNDANCE_OUT(ptr()->verb() > 0, 
                            "========= Building local mesh on processor " 
                            << p << " ============ ");
               rtn = ptr()->getMesh();

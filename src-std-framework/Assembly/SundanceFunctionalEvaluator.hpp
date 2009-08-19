@@ -48,6 +48,7 @@ using namespace SundanceStdMesh;
 using namespace SundanceStdMesh::Internal;
 using namespace SundanceCore;
 using namespace SundanceCore;
+using namespace TSFExtended;
 
 namespace Internal
 {

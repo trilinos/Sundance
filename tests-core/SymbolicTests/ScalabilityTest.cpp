@@ -47,12 +47,12 @@ int main(int argc, char** argv)
       Tabs tabs;
       TimeMonitor timer(totalTimer());
 
-      //       verbosity<SymbolicTransformation>() = VerbSilent;
-      //       verbosity<EvaluationTester>() = VerbExtreme;
-      //       verbosity<Evaluator>() = VerbExtreme;
-      //       verbosity<EvalVector>() = VerbExtreme;
-      //       verbosity<EvaluatableExpr>() = VerbExtreme;
-      //       verbosity<AbstractEvalMediator>() = VerbExtreme;
+      //       verbosity<SymbolicTransformation>() = 0;
+      //       verbosity<EvaluationTester>() = 5;
+      //       verbosity<Evaluator>() = 5;
+      //       verbosity<EvalVector>() = 5;
+      //       verbosity<EvaluatableExpr>() = 5;
+      //       verbosity<AbstractEvalMediator>() = 5;
       Expr::showAllParens() = true;
 
       EvalVector::shadowOps() = false;

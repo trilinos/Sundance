@@ -22,9 +22,9 @@ Mesh PartitionedLineMesher::fillMesh() const
 
   try
     {
-      //      MeshBase::classVerbosity() = VerbExtreme;
-      //      ((PartitionedLineMesher*)this)->verbosity() = VerbExtreme;
-      SUNDANCE_OUT(this->verbosity() > VerbSilent,
+      //      MeshBase::classVerbosity() = 5;
+      //      ((PartitionedLineMesher*)this)->verb() = 5;
+      SUNDANCE_OUT(this->verb() > 0,
                    "PartitionedLineMesher::fillLocalMesh() is meshing "
                    "interval [" << ax_ << ", " << bx_ << "]");
 
@@ -36,7 +36,7 @@ Mesh PartitionedLineMesher::fillMesh() const
       int np = nProc();
       int nppx = nx_/np;
 
-      SUNDANCE_OUT(this->verbosity() > VerbSilent,
+      SUNDANCE_OUT(this->verb() > 0,
                    "PartitionedLineMesher::fillLocalMesh() has " << nppx
                    << " points per proc");
 
@@ -48,7 +48,7 @@ Mesh PartitionedLineMesher::fillMesh() const
       int highestVisiblePtX = lowestVisiblePtX + nppx + 1;
       if (highestVisiblePtX > nx_) highestVisiblePtX = nx_;
 
-      SUNDANCE_OUT(this->verbosity() > VerbSilent,
+      SUNDANCE_OUT(this->verb() > 0,
                    "index range is [" << lowestVisiblePtX << ", " << 
                    highestVisiblePtX << "]");
 
@@ -63,11 +63,11 @@ Mesh PartitionedLineMesher::fillMesh() const
           if (i==nx_) pointOwner--;
           Point x( ax_ + ((double) i)*(bx_-ax_)/((double) nx_)); 
 
-          SUNDANCE_OUT(this->verbosity() > VerbLow, "adding point GID=" 
+          SUNDANCE_OUT(this->verb() > 1, "adding point GID=" 
                        << globalIndex << " x=" << x << " owner=" << pointOwner); 
           int lid = mesh.addVertex(globalIndex, x, pointOwner, 0);
           pts[i-lowestVisiblePtX] = globalIndex;
-          SUNDANCE_OUT(this->verbosity() >  VerbHigh,
+          SUNDANCE_OUT(this->verb() >  3,
                        "point " << x << " registered with LID=" << lid);
         }
 
@@ -80,12 +80,12 @@ Mesh PartitionedLineMesher::fillMesh() const
           int a = pts[i-lowestVisiblePtX];
           int b = pts[i-lowestVisiblePtX+1];
           int cellOwner = i/nppx;
-          SUNDANCE_OUT(this->verbosity() > VerbLow, "adding elem GID=" 
+          SUNDANCE_OUT(this->verb() > 1, "adding elem GID=" 
                        << globalIndex << " nodes=" << tuple(a,b) 
                        << " owner=" << cellOwner); 
 
           int lid = mesh.addElement(globalIndex, tuple(a,b), cellOwner, 0);
-          SUNDANCE_OUT(this->verbosity() >  VerbHigh,
+          SUNDANCE_OUT(this->verb() >  3,
                        "elem " << tuple(a,b) << " registered with LID=" << lid);
         }
 

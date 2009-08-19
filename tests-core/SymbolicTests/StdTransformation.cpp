@@ -33,7 +33,7 @@ int main(int argc, char** argv)
       GlobalMPISession session(&argc, &argv);
 
       
-      //      verbosity<SymbolicTransformation>() = VerbExtreme;
+      //      verbosity<SymbolicTransformation>() = 5;
 
       Expr::showAllParens() = false;
       EvalVector::shadowOps() = true;

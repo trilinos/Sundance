@@ -36,6 +36,11 @@
 #include "SundanceEquationSet.hpp"
 #include "SundanceLinearSolveDriver.hpp"
 
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#endif
+
+
 using namespace SundanceStdFwk;
 using namespace SundanceStdFwk::Internal;
 using namespace SundanceCore;

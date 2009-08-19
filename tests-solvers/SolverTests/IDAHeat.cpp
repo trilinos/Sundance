@@ -27,14 +27,23 @@
 //@HEADER
 
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVector.hpp"
-#include "TSFLinearCombination.hpp"
+#include "TSFVectorDecl.hpp"
+#include "TSFLinearCombinationDecl.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
+#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "TSFHeatOperator1D.hpp"
 #include "TSF_NVector.hpp"
+
+#ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
+#include "TSFLinearOperatorImpl.hpp"
+#include "TSFLinearSolverImpl.hpp"
+#include "TSFLinearCombinationImpl.hpp"
+#include "TSFCommonOperatorsDecl.hpp"
+#endif
+
+
 
 using namespace Teuchos;
 using namespace TSFExtended;

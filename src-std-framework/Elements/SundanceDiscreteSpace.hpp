@@ -37,7 +37,7 @@
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceDOFMapBase.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpace.hpp"
+#include "TSFVectorSpaceDecl.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
 namespace SundanceCore

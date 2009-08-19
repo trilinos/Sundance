@@ -47,7 +47,7 @@ int main(int argc, char** argv)
                                                          0.0, 1.0, 4, np,
                                                          meshType);
 
-      mesher.ptr()->verbosity() = VerbExtreme;
+      mesher.ptr()->verb() = VerbExtreme;
 
 
       Mesh mesh = mesher.getMesh();

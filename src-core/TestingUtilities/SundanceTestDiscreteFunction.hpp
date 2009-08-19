@@ -36,7 +36,7 @@
 #include "SundanceDiscreteFunctionStub.hpp"
 #include "SundanceTestDiscreteFuncData.hpp"
 #include "SundanceADField.hpp"
-#include "TSFVector.hpp"
+#include "TSFVectorDecl.hpp"
 
 namespace SundanceTesting
 {
