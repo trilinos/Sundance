@@ -24,39 +24,40 @@
 // Questions? Contact Michael A. Heroux (maherou@sandia.gov) 
 // 
 // **********************************************************************/
-/* @HEADER@ */
+ /* @HEADER@ */
 
 #ifndef SundanceHANDLE_HPP
 #define SundanceHANDLE_HPP
 
 #include "SundanceDefs.hpp"
+#include "SundanceOut.hpp"
 #include "SundancePrintable.hpp"
 #include "Teuchos_Describable.hpp"
 #include "SundanceHandleable.hpp"
 #include "SundanceNamedObject.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
-#include "Teuchos_MPIComm.hpp"
+#include "Teuchos_TypeNameTraits.hpp"
 
 
-/** \def This helper macro defines boilerplate constructors for classes deriving
- * from Handle.
- *
- * If class MyHandle is a handle to a type MyType, simply 
- * put
- * \code
- * HANDLE_CTORS(MyHandle, MyType);
- * \endcode
- * in the class declaration of MyHandle and the macro will create 
- * an empty ctor, a ctor from a smart ptr, and a ctor from a raw pointer. 
- * The macro will also create appropriate doxygen for the handle ctors */
+ /** \def This helper macro defines boilerplate constructors for classes deriving
+  * from Handle.
+  *
+  * If class MyHandle is a handle to a type MyType, simply 
+  * put
+  * \code
+  * HANDLE_CTORS(MyHandle, MyType);
+  * \endcode
+  * in the class declaration of MyHandle and the macro will create 
+  * an empty ctor, a ctor from a smart ptr, and a ctor from a raw pointer. 
+  * The macro will also create appropriate doxygen for the handle ctors */
 #define HANDLE_CTORS(handle, contents) \
-/** Empty ctor */ \
+  /** Empty ctor */ \
 handle() : SundanceUtils::Handle<contents >() {;} \
-/** Construct a #handle with a raw pointer to a #contents */ \
-handle(SundanceUtils::Handleable<contents >* rawPtr) : SundanceUtils::Handle<contents >(rawPtr) {;} \
-/** Construct a #handle with a smart pointer to a #contents */ \
-handle(const Teuchos::RefCountPtr<contents >& smartPtr) : SundanceUtils::Handle<contents >(smartPtr){;}
+  /** Construct a #handle with a raw pointer to a #contents */ \
+  handle(SundanceUtils::Handleable<contents >* rawPtr) : SundanceUtils::Handle<contents >(rawPtr) {;} \
+  /** Construct a #handle with a smart pointer to a #contents */ \
+  handle(const Teuchos::RefCountPtr<contents >& smartPtr) : SundanceUtils::Handle<contents >(smartPtr){;}
 
 
 
@@ -64,145 +65,218 @@ handle(const Teuchos::RefCountPtr<contents >& smartPtr) : SundanceUtils::Handle<
 
 namespace SundanceUtils
 {
-  using namespace Teuchos;
+using namespace Teuchos;
+using std::endl;
 
-  /**
-   * Class SundanceUtils::Handle provides a general implementation
-   * of the common features of reference-counted handles.
+/** This traits class is used to extract the non-const version of
+ * a template argument. The generic case returns the template argument. */
+template <class X>
+class ConstHandleTraits
+{
+public:
+  typedef X NonconstType;
+};
+
+
+/** Specialization of CHT to types "const X". The nonconst type can
+ * be extracted from the template argument. */
+template <class X>
+class ConstHandleTraits<const X>
+{
+public:
+  typedef X NonconstType;
+};
+
+
+/**
+ * Class SundanceUtils::Handle provides a general implementation
+ * of the common features of reference-counted handles.
+ */
+template <class PointerType>
+class Handle : public ObjectWithVerbosityBase
+{
+public:
+  /** Empty ctor  */
+  Handle() : ptr_() {;}
+
+  /** Construct from a smart pointer */
+  Handle(const RefCountPtr<PointerType>& _ptr) : ptr_(_ptr) {;}
+
+  /** Construct from a raw pointer to a Handleable.  */
+  Handle(Handleable<PointerType>* rawPtr) : ptr_(rawPtr->getRcp()) {;}
+
+  /** Read-only access to the underlying smart pointer. */
+  const RefCountPtr<PointerType>& ptr() const {return ptr_;}
+
+  /** Read-write access to the underlying smart pointer. */
+  RefCountPtr<PointerType>& ptr() {return ptr_;}
+
+  /** 
+   * Print to a stream using the Printable interface. 
+   * If the contents of the handle cannot be 
+   * downcasted or crosscasted to a Printable*, an exception
+   * will be thrown 
    */
-  template <class PointerType>
-  class Handle : public Describable
-  {
-  public:
-    /** Empty ctor  */
-    Handle() : ptr_() {;}
-
-    /** Construct from a smart pointer */
-    Handle(const RefCountPtr<PointerType>& _ptr) : ptr_(_ptr) {;}
-
-    /** Construct from a raw pointer to a Handleable.  */
-    Handle(Handleable<PointerType>* rawPtr) : ptr_(rawPtr->getRcp()) {;}
-
-    /** Read-only access to the underlying smart pointer. */
-    const RefCountPtr<PointerType>& ptr() const {return ptr_;}
-
-    /** Read-write access to the underlying smart pointer. */
-    RefCountPtr<PointerType>& ptr() {return ptr_;}
-
-    /** 
-     * Print to a stream using the Printable interface. 
-     * If the contents of the handle cannot be 
-     * downcasted or crosscasted to a Printable*, an exception
-     * will be thrown 
-     */
-    void print(std::ostream& os) const ;
-
-    /** 
-     * Return a short descriptive string using the Describable interface.
-     * If the contents of the handle cannot be 
-     * downcasted or crosscasted to a Describable*, an exception
-     * will be thrown. 
-     */
-    std::string description() const ;
+  void print(std::ostream& os) const ;
 
 
-    /** */
-    void describe(
-      Teuchos::FancyOStream                &out_arg,
-      const Teuchos::EVerbosityLevel      verbLevel
-      ) const 
-      {
-        const Describable* p = dynamic_cast<const Describable*>(ptr().get());
-        if (p!=0) p->describe(out_arg, verbLevel);
-        else out_arg << description();
-      }
+  /** 
+   * Return a short descriptive string using the Describable interface.
+   * If the contents of the handle cannot be 
+   * downcasted or crosscasted to a Describable*, an exception
+   * will be thrown. 
+   */
+  std::string description() const ;
 
-
-    /** */
-    void setName(const std::string& name)
-      {
-        NamedObject* n = dynamic_cast<NamedObject*>(ptr_.get());
-        if (n!=0) n->setName(name);
-      }
-
-    /** */
-    std::string name() const 
-      {
-        NamedObject* n = dynamic_cast<NamedObject*>(ptr_.get());
-        if (n!=0) return n->name();
-        return "AnonymousHandle";
-      }
-
-    /** 
-     * Return the verbosity setting using the ObjectWithVerbosity
-     * interface. If the contents of the handle cannot be downcasted
-     * or crosscasted into an ObjectWithVerbosity, an exception will
-     * be thrown. 
-     */
-    int verb() const 
+  /** */
+  void setName(const std::string& name)
     {
-      const ObjectWithVerbosity<PointerType>* v 
-        = dynamic_cast<const ObjectWithVerbosity<PointerType>*>(ptr_.get());
-      
-      TEST_FOR_EXCEPTION(v==0, std::runtime_error,
-                         "Attempted to cast non-verbose "
-                         "pointer to an ObjectWithVerbosity");
-      return v->verb();
+      NamedObject* n = dynamic_cast<NamedObject*>(ptr_.get());
+      if (n!=0) n->setName(name);
     }
 
-    /** 
-     * Return a writeable reference to 
-     * the verbosity setting using the ObjectWithVerbosity
-     * interface. If the contents of the handle cannot be downcasted
-     * or crosscasted into an ObjectWithVerbosity, an exception will
-     * be thrown. 
-     */
-    int& verb() 
+  /** */
+  std::string name() const 
     {
-      ObjectWithVerbosity<PointerType>* v 
-        = dynamic_cast<ObjectWithVerbosity<PointerType>*>(ptr_.get());
-      
-      TEST_FOR_EXCEPTION(v==0, std::runtime_error,
-                         "Attempted to cast non-verbose "
-                         "pointer to an ObjectWithVerbosity");
-      return v->verb();
+      NamedObject* n = dynamic_cast<NamedObject*>(ptr_.get());
+      if (n!=0) return n->name();
+      return "AnonymousHandle";
     }
 
-    /** Writeable access to the class-wide verbosity setting for the handled type */
-    static int& classVerbosity() 
+  /** 
+   * Return the verbosity setting using the ObjectWithVerbosity
+   * interface. If the contents of the handle cannot be downcasted
+   * or crosscasted into an ObjectWithVerbosity, a value of
+   * zero will be returned.
+   */
+  int verb() const 
     {
-      return PointerType::classVerbosity();
+      const ObjectWithVerbosityBase* v 
+        = dynamic_cast<const ObjectWithVerbosityBase*>(ptr_.get());
+        
+      if (v) return v->verb();
+      return 0;
     }
 
-  private:
-    RefCountPtr<PointerType> ptr_;
-  };
+  /** 
+   * Set the verbosity level of the object using the  ObjectWithVerbosity
+   * interface. If the contents of the handle cannot be downcasted
+   * or crosscasted into an ObjectWithVerbosity, this call will be
+   * ignored and a warning printed.
+   */
+  void setVerbosity(int x) 
+    {
+      /* Hack warning: this is a trick to deal with the case where
+       * PointerType is const, e.g., someone has written a RCP<const X>. 
+       * In such a case the cast to a non-const OWVB would fail. 
+       * The ConstHandleTraits business lets us extract the underlying type
+       * (e.g., X) with which we can do a const cast. */
+      typedef typename ConstHandleTraits<PointerType>::NonconstType NC;
+      NC* p = const_cast<NC*>(ptr_.get());
+      ObjectWithVerbosityBase* v 
+        = dynamic_cast<ObjectWithVerbosityBase*>(p);
 
-  /* implementation of print() */
-  template <class PointerType> inline 
-  void Handle<PointerType>::print(std::ostream& os) const 
-  {
-    const NamedObject* n = dynamic_cast<const NamedObject*>(ptr_.get());
-    const Printable* p = dynamic_cast<const Printable*>(ptr_.get());
-    const Describable* d = dynamic_cast<const Describable*>(ptr_.get());
-      
-    if (p!=0) p->print(os);
-    else if (d!=0) os << description();
-    else if (n!=0) os << n->name();
-    else os << "NonprintableObject[" << ptr_.get() << "]";
-  }
+      if (v) v->setVerbosity(x);
+      else
+      {
+        Out::os() << "WARNING: cannot set verbosity of object=";
+        this->print(Out::os());
+        Out::os() << endl;
+      }
+    }
 
-  /* implementation of description() */
-  template <class PointerType> inline
-  std::string Handle<PointerType>::description() const 
+  /** Write a fallback description to be used in objects that are
+   * neither named, printable, or describable */
+  std::string fallbackDescription() const ;
+
+private:
+  RefCountPtr<PointerType> ptr_;
+};
+
+/* implementation of print() */
+template <class PointerType> inline 
+void Handle<PointerType>::print(std::ostream& os) const 
+{
+  const NamedObject* n = dynamic_cast<const NamedObject*>(ptr_.get());
+  const Printable* p = dynamic_cast<const Printable*>(ptr_.get());
+  const Describable* d = dynamic_cast<const Describable*>(ptr_.get());
+  const ObjectWithVerbosityBase* v 
+    = dynamic_cast<const ObjectWithVerbosityBase*>(ptr_.get());
+
+  if (v != 0)
   {
-    const Describable* p = dynamic_cast<const Describable*>(ptr_.get());
-    if (p!=0)
-      return p->description();
+    if (v->verb() == 0) 
+    {
+      if (n) os << n->name();
+      else if (d) os << d->description();
+      else if (p) p->print(os);
+      else os << fallbackDescription();
+    }
+    else if (v->verb()==1)
+    {
+      if (d) os << d->description();
+      else if (p) p->print(os);
+      else os << fallbackDescription();
+    }
     else
-      return "UndescribedObject[]";
+    {
+      if (p) p->print(os);
+      else os << fallbackDescription();
+    }
+  }
+  else
+  {
+    if (p!=0) p->print(os);
+    else if (d!=0) os << d->description();
+    else if (n!=0) os << n->name();
+    else os << fallbackDescription();
   }
 }
+
+/* implementation of description() */
+template <class PointerType> inline
+std::string Handle<PointerType>::description() const 
+{
+  const Describable* d = dynamic_cast<const Describable*>(ptr_.get());
+  const NamedObject* n = dynamic_cast<const NamedObject*>(ptr_.get());
+  const ObjectWithVerbosityBase* v 
+    = dynamic_cast<const ObjectWithVerbosityBase*>(ptr_.get());
+  TeuchosOStringStream oss;
+
+  if (v != 0)
+  {
+    if (v->verb() == 0) 
+    {
+      if (n) oss << n->name();
+      else if (d) oss << d->description();
+      else oss << fallbackDescription();
+    }
+    else
+    {
+      if (d) oss << d->description();
+      else oss << fallbackDescription();
+    }
+  }
+  else
+  {
+    if (d!=0) oss << d->description();
+    else if (n!=0) oss << n->name();
+    else oss << fallbackDescription();
+  }
+  return oss.str();
+}
+
+template <class PointerType> inline
+std::string Handle<PointerType>::fallbackDescription() const
+{
+  typedef typename ConstHandleTraits<PointerType>::NonconstType NC;
+  TeuchosOStringStream oss;
+
+  oss << "Handle[" << TypeNameTraits<NC>::name()
+      << ", ptr=" << ptr_.get() << "]";
+  return oss.str();
+}
+
 
 
 template <class PointerType> inline
@@ -212,9 +286,11 @@ std::ostream& operator<<(std::ostream& os, const SundanceUtils::Handle<PointerTy
   return os;
 }
 
+}
+
 #define STREAM_OUT(handleType) \
-inline ostream& operator<<(ostream& os, const handleType& h) \
-{h.print(os); return os;}
+                        inline std::ostream& operator<<(std::ostream& os, const handleType& h) \
+                        {h.print(os); return os;}
 
 
 

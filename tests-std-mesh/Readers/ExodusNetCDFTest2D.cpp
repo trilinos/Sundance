@@ -45,7 +45,6 @@ int main(int argc, char** argv)
       MeshSource mesher 
         = new ExodusNetCDFMeshReader("../../../tests-std-mesh/Readers/coarse-square.ncdf", meshType);
 
-      mesher.ptr()->verb() = VerbExtreme;
 
       Mesh mesh = mesher.getMesh();
 

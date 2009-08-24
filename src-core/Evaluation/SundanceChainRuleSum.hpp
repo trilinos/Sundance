@@ -105,7 +105,7 @@ private:
 
 
 /** */
-class ChainRuleSum : public SundanceUtils::ObjectWithVerbosity<Evaluator>
+class ChainRuleSum : public SundanceUtils::ObjectWithClassVerbosity<Evaluator>
 {
 public:
   /** */

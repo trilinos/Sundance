@@ -127,12 +127,12 @@ int main(int argc, char** argv)
     watchMe.deactivate();
 
     WatchFlag watchBC("watch BCs");
-    watchBC.setParam("integration setup", 6);
-    watchBC.setParam("integration", 6);
-    watchBC.setParam("fill", 6);
-    watchBC.setParam("evaluation", 6);
+    watchBC.setParam("integration setup", 0);
+    watchBC.setParam("integration", 0);
+    watchBC.setParam("fill", 0);
+    watchBC.setParam("evaluation", 0);
+    watchBC.deactivate();
     
-//    watchBC.deactivate();
 
 
     /* 
@@ -205,88 +205,87 @@ int main(int argc, char** argv)
     Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2, watchMe);
     /* Define the Dirichlet BC */
     Expr h = new CellDiameterExpr();
-    /////////////// divide by h
-      Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad4, watchBC);
+    Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad4, watchBC);
 
-      /* We can now set up the linear problem! */
-      LinearProblem prob(mesh, eqn, bc, v, u, vecType);
+    /* We can now set up the linear problem! */
+    LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 
 
-      ParameterXMLFileReader reader(solverFile);
-      ParameterList solverParams = reader.getParameters();
-      LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(solverParams);
+    ParameterXMLFileReader reader(solverFile);
+    ParameterList solverParams = reader.getParameters();
+    LinearSolver<double> solver 
+      = LinearSolverBuilder::createSolver(solverParams);
 
-      Expr soln = prob.solve(solver);
+    Expr soln = prob.solve(solver);
 
-      DiscreteSpace discSpace2(mesh, new Lagrange(2), vecType);
-      DiscreteSpace discSpace0(mesh, new Lagrange(0), vecType);
-      L2Projector proj1(discSpace2, soln-exactSoln);
-      double pid = MPIComm::world().getRank();
-      L2Projector proj2(discSpace0, pid);
-      Expr errorDisc = proj1.project();
-      Expr pidDisc = proj2.project();
-
+    DiscreteSpace discSpace2(mesh, new Lagrange(2), vecType);
+    DiscreteSpace discSpace0(mesh, new Lagrange(0), vecType);
+    L2Projector proj1(discSpace2, soln-exactSoln);
+    double pid = MPIComm::world().getRank();
+    L2Projector proj2(discSpace0, pid);
+    Expr errorDisc = proj1.project();
+    Expr pidDisc = proj2.project();
 
 
 
-      /* Write the field in VTK format */
-      FieldWriter w = new VTKWriter("Poisson2d");
-      w.addMesh(mesh);
-      w.addField("soln", new ExprFieldWrapper(soln[0]));
-      w.addField("error", new ExprFieldWrapper(errorDisc));
-      w.addField("rank", new ExprFieldWrapper(pidDisc));
-      w.write();
 
-      FieldWriter w2 = new VerboseFieldWriter("mesh");
-      w2.addMesh(mesh);
-      w2.write();
+    /* Write the field in VTK format */
+    FieldWriter w = new VTKWriter("Poisson2d");
+    w.addMesh(mesh);
+    w.addField("soln", new ExprFieldWrapper(soln[0]));
+    w.addField("error", new ExprFieldWrapper(errorDisc));
+    w.addField("rank", new ExprFieldWrapper(pidDisc));
+    w.write();
 
-      Expr err = exactSoln - soln;
-      Expr errExpr = Integral(interior, 
-        err*err,
-        quad4);
+    FieldWriter w2 = new VerboseFieldWriter("mesh");
+    w2.addMesh(mesh);
+    w2.write();
 
-      Expr derivErr = dx*(exactSoln-soln);
-      Expr derivErrExpr = Integral(interior, 
-        derivErr*derivErr, 
-        quad2);
+    Expr err = exactSoln - soln;
+    Expr errExpr = Integral(interior, 
+      err*err,
+      quad4);
 
-      
-
-      Expr fluxErrExpr = Integral(top, 
-        pow(dy*(soln-exactSoln), 2),
-        new GaussianQuadrature(2));
+    Expr derivErr = dx*(exactSoln-soln);
+    Expr derivErrExpr = Integral(interior, 
+      derivErr*derivErr, 
+      quad2);
 
       
-      watchBC.activate();
-      Expr exactFluxExpr = Integral(top, 
-        dy*exactSoln,
-        new GaussianQuadrature(2), watchBC);
 
-      Expr numFluxExpr = Integral(top, 
-        dy*soln,
-        new GaussianQuadrature(2));
+    Expr fluxErrExpr = Integral(top, 
+      pow(dy*(soln-exactSoln), 2),
+      new GaussianQuadrature(2));
 
+      
+    watchBC.deactivate();
+    Expr exactFluxExpr = Integral(top, 
+      dy*exactSoln,
+      new GaussianQuadrature(2), watchBC);
 
-      FunctionalEvaluator errInt(mesh, errExpr);
-      FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
-
-      double errorSq = errInt.evaluate();
-      cout << "error norm = " << sqrt(errorSq) << endl << endl;
-
-      double derivErrorSq = derivErrInt.evaluate();
-      cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
+    Expr numFluxExpr = Integral(top, 
+      dy*soln,
+      new GaussianQuadrature(2));
 
 
-      double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
-      cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
+    FunctionalEvaluator errInt(mesh, errExpr);
+    FunctionalEvaluator derivErrInt(mesh, derivErrExpr);
+
+    double errorSq = errInt.evaluate();
+    cout << "error norm = " << sqrt(errorSq) << endl << endl;
+
+    double derivErrorSq = derivErrInt.evaluate();
+    cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
 
 
-      cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
-      cout << "numerical flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;
+    double fluxErrorSq = evaluateIntegral(mesh, fluxErrExpr);
+    cout << "flux error norm = " << sqrt(fluxErrorSq) << endl << endl;
 
-      Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), 1.0e-9);
+
+    cout << "exact flux = " << evaluateIntegral(mesh, exactFluxExpr) << endl;
+    cout << "numerical flux = " << evaluateIntegral(mesh, numFluxExpr) << endl;
+
+    Sundance::passFailTest(sqrt(errorSq + derivErrorSq + fluxErrorSq), 1.0e-9);
 
   }
 	catch(exception& e)

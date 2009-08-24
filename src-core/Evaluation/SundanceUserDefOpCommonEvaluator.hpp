@@ -49,7 +49,7 @@ class EvalContext;
  * UserDefOpCommonEvaluator provides a single evaluation point for all
  * components of a vector-valued functor. 
  */
-class UserDefOpCommonEvaluator : public SundanceUtils::ObjectWithVerbosity<Evaluator>
+class UserDefOpCommonEvaluator : public SundanceUtils::ObjectWithClassVerbosity<Evaluator>
 {
 public:
   /** */

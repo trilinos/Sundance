@@ -37,7 +37,6 @@
 #include "Teuchos_MPIComm.hpp"
 #include "TSFLinearSolverDecl.hpp"
 #include "TSFBlockTriangularSolverDecl.hpp"
-#include "TSFBlockOperatorDecl.hpp"
 #include "TSFLinearCombinationDecl.hpp"
 #include "TSFProductVectorSpaceDecl.hpp"
 #include "TSFAztecSolver.hpp"
@@ -46,11 +45,12 @@
 #include "SundancePathUtils.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
 #include "TSFLinearCombinationImpl.hpp"
+#include "TSFSimpleBlockOpDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
 #include "TSFLinearSolverImpl.hpp"
-#include "TSFBlockOperatorImpl.hpp"
+#include "TSFSimpleBlockOpImpl.hpp"
 #include "TSFProductVectorSpaceImpl.hpp"
 #include "TSFBlockTriangularSolverImpl.hpp"
 
@@ -94,8 +94,7 @@ int main(int argc, char *argv[])
 
       VectorSpace<double> blockSpace = productSpace(space);
 
-      RefCountPtr<LinearOpBase<double> > op = rcp(new BlockOperator<double>(blockSpace, blockSpace));
-      LinearOperator<double> bigA = op;
+      LinearOperator<double> bigA = makeBlockOperator(blockSpace, blockSpace);
       Vector<double> bigRHS = blockSpace.createMember();
       Vector<double> bigX = blockSpace.createMember();
       

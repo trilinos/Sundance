@@ -258,7 +258,7 @@ void printQuad(std::ostream& os,
 
   os << tab << setw(5) << "i" << setw(w) << "w";;
   
-  for (unsigned int i=0; i<pts[0].dim(); i++)
+  for (int i=0; i<pts[0].dim(); i++)
   {
     os << setw(w) << names[i] ;
   }

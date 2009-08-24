@@ -11,29 +11,43 @@
 #include "TSFVectorDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "TSFLinearOperatorDecl.hpp"
+#include "TSFSimpleAddedOpDecl.hpp"
+#include "TSFSimpleComposedOpDecl.hpp"
+#include "TSFSimpleBlockOpDecl.hpp"
+#include "TSFSimpleScaledOpDecl.hpp"
+#include "TSFSimpleZeroOpDecl.hpp"
+#include "TSFSimpleIdentityOpDecl.hpp"
 #include "TSFLinearSolverDecl.hpp"
 #include "TSFPreconditionerFactory.hpp"
 #include "TSFPreconditioner.hpp"
 #include "TSFGenericLeftPreconditioner.hpp"
 #include "TSFGenericRightPreconditioner.hpp"
 #include "TSFProductVectorSpaceDecl.hpp"
-#include "TSFBlockOperatorDecl.hpp"
 #include "TSFGMRESSolver.hpp"
-#include "TSFBICGSTABSolver.hpp"
+#include "TSFBICGSTABSolverDecl.hpp"
 #include "TSFNOXSolver.H"
 #include "TSFLinearSolverBuilder.hpp"
+#include "TSFLinearCombinationDecl.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
 #include "PyTeuchos_Utils.hpp"
 //#include "PySundanceNOXSolverHandle.hpp"
 #include "PySundanceLinearSolver.hpp"
+
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFVectorSpaceImpl.hpp"
 #include "TSFVectorImpl.hpp"
+#include "TSFBICGSTABSolverImpl.hpp"
 #include "TSFLinearOperatorImpl.hpp"
 #include "TSFLinearSolverImpl.hpp"
 #include "TSFProductVectorSpaceImpl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
+#include "TSFSimpleBlockOpImpl.hpp"
+#include "TSFSimpleZeroOpImpl.hpp"
+#include "TSFSimpleIdentityOpImpl.hpp"
+#include "TSFSimpleAddedOpImpl.hpp"
+#include "TSFSimpleComposedOpImpl.hpp"
+#include "TSFSimpleScaledOpImpl.hpp"
 #endif
+
   %}
 
 
@@ -445,18 +459,13 @@ namespace TSFExtended
 
 }
 
-%rename(BlockOperator) makeBlockOperator;
-
 %inline %{
   /* Create block operator */
   TSFExtended::LinearOperator<double> 
-    makeBlockOperator(const TSFExtended::VectorSpace<double>& domain,
-                      const TSFExtended::VectorSpace<double>& range)
+    BlockOperator(const TSFExtended::VectorSpace<double>& domain,
+      const TSFExtended::VectorSpace<double>& range)
   {
-    RefCountPtr<TSFExtended::BlockOperator<double> > b 
-      = rcp(new TSFExtended::BlockOperator<double>(domain, range));
-
-    return LinearOperator<double>(b);
+    return makeBlockOperator(domain, range);
   }
 
   %}
@@ -471,6 +480,19 @@ namespace TSFExtended
     makeIdentityOperator(const TSFExtended::VectorSpace<double>& space)
   {
     return identityOperator(space);
+  }
+
+  %}
+
+%rename(ZeroOperator) makeZeroOperator;
+
+%inline %{
+  /* Create block operator */
+  TSFExtended::LinearOperator<double> 
+    makeZeroOperator(const TSFExtended::VectorSpace<double>& domain,
+      const TSFExtended::VectorSpace<double>& range)
+  {
+    return zeroOperator(domain, range);
   }
 
   %}

@@ -47,11 +47,13 @@
 #include "TSFLinearCombinationImpl.hpp"
 #include "TSFLinearOperatorDecl.hpp"
 #include "TSFVectorDecl.hpp"
+#include "TSFSimpleDiagonalOpDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFVectorImpl.hpp"
 #include "TSFLinearCombinationImpl.hpp"
 #include "TSFLinearOperatorImpl.hpp"
+#include "TSFSimpleDiagonalOpImpl.hpp"
 #endif
 
 using namespace SundanceStdFwk;
@@ -210,7 +212,9 @@ LinearEigenproblem::lumpedOperator(const LinearOperator<double>& M) const
   Vector<double> ones = M.domain().createMember();
   ones.setToConstant(1.0);
   Vector<double> m = M * ones;
-  return diagonalOperator(m);
+  LinearOperator<double> rtn = diagonalOperator(m);
+
+  return rtn;
 }
 
 

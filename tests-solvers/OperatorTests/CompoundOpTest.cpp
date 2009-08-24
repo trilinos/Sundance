@@ -30,31 +30,16 @@
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVectorDecl.hpp"
-#include "TSFLinearCombinationDecl.hpp"
-#include "TSFCommonOperatorsDecl.hpp"
-#include "TSFNonmemberOpHelpersDecl.hpp"
 #include "TSFLinearOperatorDecl.hpp"
-#include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
-#include "TSFEpetraVectorSpace.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFBICGSTABSolver.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFEpetraMatrix.hpp"
-#include "TSFMatrixLaplacian1D.hpp"
-#include "TSFRandomSparseMatrix.hpp"
+#include "TSFRandomSparseMatrixBuilderDecl.hpp"
 #include "TSFCompoundTester.hpp"
-#include "TSFLinearCombinationImpl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
-#include "TSFLinearSolverImpl.hpp"
-
-#include "TSFNonmemberOpHelpersImpl.hpp"
 #endif
 
 STREAM_OUT(Vector<double>)
@@ -78,10 +63,10 @@ int main(int argc, char *argv[])
       double onProcDensity = 0.5;
       double offProcDensity = 0.1;
 
-      RandomSparseMatrix<double> ABuilder(nLocalRows, nLocalRows, 
-                                          onProcDensity, offProcDensity, type);
-      RandomSparseMatrix<double> BBuilder(nLocalRows, nLocalRows, 
-                                          onProcDensity, offProcDensity, type);
+      RandomSparseMatrixBuilder<double> ABuilder(nLocalRows, nLocalRows, 
+        onProcDensity, offProcDensity, type);
+      RandomSparseMatrixBuilder<double> BBuilder(nLocalRows, nLocalRows, 
+        onProcDensity, offProcDensity, type);
 
       LinearOperator<double> A = ABuilder.getOp();
       LinearOperator<double> B = BBuilder.getOp();
@@ -90,9 +75,10 @@ int main(int argc, char *argv[])
       cerr << "B = " << endl << B << endl;
       
       CompoundTester<double> tester(A, B, 
-                                    TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
-                                    TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
-                                    TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 
      bool allPass =  tester.runAllTests();
      if (!allPass) stat = -1;

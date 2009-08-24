@@ -29,31 +29,15 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
-#include "TSFVectorDecl.hpp"
-#include "TSFLinearCombinationImpl.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
-#include "TSFEpetraVectorSpace.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFBICGSTABSolver.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
-#include "TSFEpetraMatrix.hpp"
-#include "TSFBlockOperatorDecl.hpp"
-#include "TSFMatrixLaplacian1D.hpp"
-#include "TSFRandomSparseMatrix.hpp"
 #include "TSFLinearCombinationTester.hpp"
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
-#include "TSFBlockOperatorImpl.hpp"
-#include "TSFCommonOperatorsImpl.hpp"
-#include "TSFNonmemberOpHelpersImpl.hpp"
-#include "TSFProductVectorSpaceImpl.hpp"
 #endif
 
 

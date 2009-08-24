@@ -64,7 +64,7 @@ namespace SundanceCore
                          public Teuchos::Describable,
                          public Noncopyable,
                          public ObjectWithInstanceID<CellFilterStub>,
-                         public ObjectWithVerbosity<CellFilterStub>
+                         public ObjectWithClassVerbosity<CellFilterStub>
     {
     public:
       /** Empty ctor */

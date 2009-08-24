@@ -54,7 +54,7 @@ namespace SundanceStdFwk
      * Grouper
      */
     class GrouperBase
-      : public SundanceUtils::ObjectWithVerbosity<GrouperBase>
+      : public SundanceUtils::ObjectWithClassVerbosity<GrouperBase>
     {
     public:
       /** */

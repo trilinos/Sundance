@@ -51,7 +51,7 @@ class ScalarExpr;
  * sum. This will be used to effect simplification
  * transformations on sum expressions.
  */
-class SymbolicTransformation : public ObjectWithVerbosity<SymbolicTransformation>
+class SymbolicTransformation : public ObjectWithClassVerbosity<SymbolicTransformation>
 {
 public:
   /** */

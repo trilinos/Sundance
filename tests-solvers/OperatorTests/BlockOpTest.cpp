@@ -36,8 +36,8 @@
 #include "Teuchos_MPIComm.hpp"
 #include "TSFEpetraMatrix.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
-#include "TSFRandomSparseMatrix.hpp"
-#include "TSFRandomBlockMatrix.hpp"
+#include "TSFRandomSparseMatrixBuilderDecl.hpp"
+#include "TSFRandomBlockMatrixBuilderDecl.hpp"
 #include "TSFCompoundTester.hpp"
 #include "SundanceOut.hpp"
 #include "TSFProductVectorSpaceDecl.hpp"
@@ -46,10 +46,8 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
 #include "TSFLinearCombinationImpl.hpp"
-#include "TSFBlockOperatorImpl.hpp"
-#include "TSFCommonOperatorsImpl.hpp"
-#include "TSFNonmemberOpHelpersImpl.hpp"
 #include "TSFProductVectorSpaceImpl.hpp"
+#include "TSFRandomBlockMatrixBuilderImpl.hpp"
 #endif
 
 
@@ -97,11 +95,11 @@ int main(int argc, char *argv[])
       double onProcDensity = 0.5;
       double offProcDensity = 0.1;
       
-      RandomBlockMatrix<double> builder(domain, range, 
-                                        blockDensity,
-                                        onProcDensity,
-                                        offProcDensity,
-                                        type);
+      RandomBlockMatrixBuilder<double> builder(domain, range, 
+        blockDensity,
+        onProcDensity,
+        offProcDensity,
+        type);
 
       LinearOperator<double> A = builder.getOp();
 

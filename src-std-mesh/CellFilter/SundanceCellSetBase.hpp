@@ -59,7 +59,7 @@ using namespace SundanceStdMesh::Internal;
      *
      * @see CellFilter
      **/
-    class CellSetBase : public SundanceUtils::ObjectWithVerbosity<CellSetBase>,
+    class CellSetBase : public SundanceUtils::ObjectWithClassVerbosity<CellSetBase>,
                         public SundanceUtils::Printable,
                         public Noncopyable,
                         public SundanceUtils::Handleable<CellSetBase>

@@ -123,10 +123,10 @@ private:
 };
 }
 
-namespace std
+namespace SundanceUtils
 {
 /** \relates Tabs stream insertion operator for tab */
-inline ostream& operator<<(ostream& os, const SundanceUtils::Tabs& t)
+inline std::ostream& operator<<(std::ostream& os, const Tabs& t)
 {
   t.print(os);
   return os;

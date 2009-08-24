@@ -58,7 +58,7 @@ using Teuchos::rcp;
 class BasisFamilyBase
   : public SundanceUtils::Handleable<BasisFamilyBase>,
     public SundanceUtils::Printable,
-    public SundanceUtils::ObjectWithVerbosity<BasisFamilyBase>,
+    public SundanceUtils::ObjectWithClassVerbosity<BasisFamilyBase>,
     public BasisDOFTopologyBase,
     public TensorBasisBase,
     public BasisReferenceEvaluationBase

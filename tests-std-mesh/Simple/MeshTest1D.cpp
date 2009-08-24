@@ -39,7 +39,6 @@ int main(int argc, char** argv)
 
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
 
-      mesher.ptr()->verb() = VerbExtreme;
 
 
       Mesh mesh = mesher.getMesh();

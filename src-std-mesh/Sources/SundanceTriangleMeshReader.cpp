@@ -35,7 +35,7 @@ TriangleMeshReader::TriangleMeshReader(const string& fname,
   parFilename_ = parFilename_ + ".par";
   sideFilename_ = sideFilename_ + ".side";
   
-  verb() = classVerbosity();
+  setVerbosity (classVerbosity() );
   //  verbosity() = 5;
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
@@ -64,7 +64,7 @@ TriangleMeshReader::TriangleMeshReader(const ParameterList& params)
   elemFilename_ = elemFilename_ + ".ele";
   parFilename_ = parFilename_ + ".par";
   
-  verb() = classVerbosity();
+  setVerbosity( classVerbosity() );
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
   

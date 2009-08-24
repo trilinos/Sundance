@@ -78,7 +78,7 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
     nFuncs_()
 {
   TimeMonitor timer(mixedDOFCtorTimer());
-  verb() = DOFMapBase::classVerbosity();
+  setVerbosity(DOFMapBase::classVerbosity());
   Tabs tab;
   SUNDANCE_VERB_LOW(tab << "building mixed DOF map");
 

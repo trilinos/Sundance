@@ -59,7 +59,7 @@ class Assembler;
  * be passed to a nonlinear solver such as NOX.
  */
 class NLOp 
-  : public SundanceUtils::ObjectWithVerbosity<NLOp>,
+  : public SundanceUtils::ObjectWithClassVerbosity<NLOp>,
     public TSFExtended::NonlinearOperatorBase<double>
 {
 public:

@@ -56,7 +56,7 @@ class EvalManager;
  * Base class for evaluator objects. Each EvaluatableExpr type will 
  * have an associated Evaluator subtype.
  */
-class Evaluator : public SundanceUtils::ObjectWithVerbosity<Evaluator>
+class Evaluator : public SundanceUtils::ObjectWithClassVerbosity<Evaluator>
 {
 public:
   /** */

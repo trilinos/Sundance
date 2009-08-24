@@ -62,7 +62,7 @@ namespace SundanceTesting
    *
    */
   class EvaluationTester 
-    : public SundanceUtils::ObjectWithVerbosity<EvaluationTester>
+    : public SundanceUtils::ObjectWithClassVerbosity<EvaluationTester>
   {
   public:
     /** */

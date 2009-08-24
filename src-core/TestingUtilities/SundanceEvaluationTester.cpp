@@ -62,7 +62,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
     unkIDToDiscreteIDMap_(),
     maxDiffOrder_(maxDiffOrder)
 {
-  verb() = classVerbosity();
+  setVerbosity(classVerbosity());
   Tabs tabs;
 
   SUNDANCE_VERB_LOW(tabs << "creating tester for expression " << e.toString());

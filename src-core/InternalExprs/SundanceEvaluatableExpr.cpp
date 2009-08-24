@@ -382,7 +382,6 @@ RefCountPtr<Array<Set<MultipleDeriv> > > EvaluatableExpr
 ::internalDetermineR(const EvalContext& context,
   const Array<Set<MultipleDeriv> >& RInput) const
 {
-  int verb = context.setupVerbosity();
   Tabs tab0;
   RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));

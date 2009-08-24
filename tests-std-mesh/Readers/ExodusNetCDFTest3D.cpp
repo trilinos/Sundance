@@ -45,7 +45,6 @@ int main(int argc, char** argv)
       MeshSource mesher 
         = new ExodusNetCDFMeshReader("../../../tests-std-mesh/Readers/wheel.ncdf", meshType);
 
-      mesher.ptr()->verb() = 0;
 
       Mesh mesh = mesher.getMesh();
 

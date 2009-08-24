@@ -375,7 +375,7 @@ class CellJacobianBatch;
  * </ul>
  */
 class MeshBase
-  : public SundanceUtils::ObjectWithVerbosity<MeshBase>
+  : public SundanceUtils::ObjectWithClassVerbosity<MeshBase>
   , public ObjectWithInstanceID<MeshBase>
 {
 public:

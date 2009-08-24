@@ -83,7 +83,7 @@ namespace SundanceStdMesh
                            public SundanceUtils::Printable,
                            public Teuchos::Describable,
                            public Noncopyable,
-                           public ObjectWithVerbosity<MeshSourceBase>
+                           public ObjectWithClassVerbosity<MeshSourceBase>
     {
     public:
       /** Construct with a mesh type and MPI communicator */

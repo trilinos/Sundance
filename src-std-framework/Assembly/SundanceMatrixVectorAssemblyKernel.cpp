@@ -31,13 +31,12 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "SundanceMatrixVectorAssemblyKernel.hpp"
-#include "TSFCommonOperatorsDecl.hpp"
+#include "TSFSimpleZeroOpDecl.hpp"
 
 
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
-#include "TSFCommonOperatorsImpl.hpp"
-#include "TSFBlockOperatorImpl.hpp"
+#include "TSFSimpleZeroOpImpl.hpp"
 #endif
 
 using namespace SundanceStdFwk;

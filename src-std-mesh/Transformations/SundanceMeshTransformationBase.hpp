@@ -85,7 +85,7 @@ namespace SundanceStdMesh
                            public SundanceUtils::Printable,
                            public Teuchos::Describable,
                            public Noncopyable,
-                           public SundanceUtils::ObjectWithVerbosity<MeshTransformationBase>
+                           public SundanceUtils::ObjectWithClassVerbosity<MeshTransformationBase>
     {
     public:
       /** Construct with a mesh type, which specifies

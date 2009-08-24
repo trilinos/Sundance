@@ -31,7 +31,7 @@ ExodusMeshReader::ExodusMeshReader(const string& fname,
   exoFilename_ = exoFilename_ + ".exo";
   parFilename_ = parFilename_ + ".pxo";
   
-  verb() = classVerbosity();
+  setVerbosity( classVerbosity() );
 
   SUNDANCE_OUT(this->verb() > 1,
                "exodus filename = " << exoFilename_);

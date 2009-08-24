@@ -176,6 +176,7 @@ const SymbolicFuncDescriptor* Deriv::sfdPtr() const
   /* return the nonzero pointer */
   if (symbFuncElem_) return symbFuncElem_;
   if (symbFunc_) return symbFunc_;
+  return symbFunc_; // -Wall
 }
 
 bool Deriv::isTestFunction() const 
@@ -240,6 +241,7 @@ RCP<const CommonFuncDataStub> Deriv::data() const
     "valid function");
   if (symbFuncElem_) return symbFuncElem_->commonData();
   if (symbFunc_) return symbFunc_->commonData();
+  return symbFunc_->commonData(); // -Wall
 }
 
 const FunctionIdentifier& Deriv::fid() const 
@@ -283,7 +285,6 @@ AlgebraSpecifier Deriv::derivAlgSpec(
   const AlgebraSpecifier& funcAlgSpec,
   const SpatialDerivSpecifier& d)
 {
-  SpatialDerivType sdt = d.type();
   if (d.derivOrder()==0) 
   {
     return funcAlgSpec;

@@ -287,7 +287,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
   }
   SUNDANCE_MSG3(verb, tab << endl << tab 
     << " ************* Finding nonzeros for expr " << endl << tab);
-  for (unsigned int i=0; i<=context.topLevelDiffOrder(); i++)
+  for (int i=0; i<=context.topLevelDiffOrder(); i++)
   {
     Tabs tab2;
     SUNDANCE_MSG4(verb, tab2 << "diff order=" << i << ", active funcs="

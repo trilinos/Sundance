@@ -116,7 +116,7 @@
 /* Solvers & stuff */
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
-#include "TSFBICGSTABSolver.hpp"
+#include "TSFBICGSTABSolverDecl.hpp"
 #include "TSFAztecSolver.hpp"
 #include "TSFLinearSolverImpl.hpp"
 #include "TSFLinearCombinationImpl.hpp"

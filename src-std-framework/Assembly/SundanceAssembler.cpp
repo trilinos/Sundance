@@ -55,7 +55,8 @@
 #include "TSFProductVectorSpaceDecl.hpp"
 #include "TSFLoadableBlockVector.hpp"
 #include "TSFPartitionedMatrixFactory.hpp"
-#include "TSFBlockOperatorDecl.hpp"
+#include "TSFBlockOperatorBaseDecl.hpp"
+#include "TSFSimpleBlockOpDecl.hpp"
 #include "SundanceAssemblyKernelBase.hpp"
 #include "SundanceVectorAssemblyKernel.hpp"
 #include "SundanceMatrixVectorAssemblyKernel.hpp"
@@ -63,7 +64,7 @@
 #include "SundanceFunctionalGradientAssemblyKernel.hpp"
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
-#include "TSFBlockOperatorImpl.hpp"
+#include "TSFSimpleBlockOpImpl.hpp"
 #endif
 
 
@@ -826,7 +827,7 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
     }
     else
     {
-      A = makeLinearOperator(new BlockOperator<double>(solnVecSpace(), rowVecSpace()));
+      A = makeBlockOperator(solnVecSpace(), rowVecSpace());
       for (int br=0; br<nRowBlocks; br++)
       {
         for (int bc=0; bc<nColBlocks; bc++)

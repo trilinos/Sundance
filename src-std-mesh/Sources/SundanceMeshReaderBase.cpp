@@ -50,7 +50,7 @@ bool MeshReaderBase::getNextLine(std::istream& is, string& line,
   bool rtn = false;
   while ((rtn=StrUtils::readLine(is, line)))
     {
-      SUNDANCE_OUT(this->verb() == 3,
+      SUNDANCE_OUT(this->verb() >= 3,
                    "read line [" << line << "]");
 
       if (line.length() > 0) line = StrUtils::before(line,comment);

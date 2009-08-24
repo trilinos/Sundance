@@ -78,7 +78,7 @@ namespace SundanceStdMesh
      *
      */
     class CellJacobianBatch 
-      : public SundanceUtils::ObjectWithVerbosity<CellJacobianBatch>
+      : public SundanceUtils::ObjectWithClassVerbosity<CellJacobianBatch>
     {
     public:
       /** empty ctor */

@@ -45,7 +45,7 @@ namespace SundanceStdMesh
      * and/or meshes to a stream. 
      */
     class FieldWriterBase : public SundanceUtils::Handleable<FieldWriterBase>,
-                            public SundanceUtils::ObjectWithVerbosity<FieldWriterBase>
+                            public SundanceUtils::ObjectWithClassVerbosity<FieldWriterBase>
     {
     public:
       /** */

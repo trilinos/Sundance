@@ -66,7 +66,7 @@ enum DerivState {ZeroDeriv, ConstantDeriv, VectorDeriv};
  *
  */
 class SparsitySuperset 
-  : public SundanceUtils::ObjectWithVerbosity<SparsitySuperset>
+  : public SundanceUtils::ObjectWithClassVerbosity<SparsitySuperset>
 {
 public:
           

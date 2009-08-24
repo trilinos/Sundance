@@ -38,7 +38,7 @@ BamgMeshReader::BamgMeshReader(const string& fname,
   meshFilename_ = meshFilename_ + ".mesh"; //new
   bbFilename_ = bbFilename_ + ".bb"; //new
   
-  verb() = classVerbosity();
+  setVerbosity( classVerbosity() );
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
   
@@ -74,7 +74,7 @@ BamgMeshReader::BamgMeshReader(const ParameterList& params)
   parFilename_ = parFilename_ + ".par";
   meshFilename_ = meshFilename_ + ".mesh"; //new
   
-  verb() = classVerbosity();
+  setVerbosity( classVerbosity() );
   SUNDANCE_OUT(this->verb() > 1,
                "node filename = " << nodeFilename_);
   

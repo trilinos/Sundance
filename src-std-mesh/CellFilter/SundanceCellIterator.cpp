@@ -71,7 +71,7 @@ CellIterator::CellIterator(const Mesh& mesh,
         case End:
           currentLID_ = mesh.numCells(cellDim);
         }
-      SUNDANCE_OUT(verbosity<CellFilter>() > 2, 
+      SUNDANCE_OUT(mesh.verb() > 2, 
                    "created implicit cell iterator with LID=" << currentLID_);
     }
   else 
@@ -84,7 +84,7 @@ CellIterator::CellIterator(const Mesh& mesh,
         case End:
           currentLID_ = mesh.numCells(cellDim);
         }
-      SUNDANCE_OUT(verbosity<CellFilter>() > 2, 
+      SUNDANCE_OUT(mesh.verb() > 2, 
                    "created implicit cell iterator with LID=" << currentLID_);
     }
 
@@ -110,8 +110,6 @@ CellIterator::CellIterator(const Set<int>* cells, CellIteratorPos pos)
     default:
       TEST_FOR_EXCEPT(1);
   }
-  SUNDANCE_OUT(verbosity<CellFilter>() > 2, 
-    "created explicit cell iterator");
 }
 
 

@@ -75,7 +75,7 @@ enum DerivSubsetSpecifier {AllNonzeros,
 class EvaluatableExpr : public virtual ScalarExpr,
                         public virtual EvaluatorFactory,
                         public virtual FuncSetAccumulator,
-                        public SundanceUtils::ObjectWithVerbosity<EvaluatableExpr>
+                        public SundanceUtils::ObjectWithClassVerbosity<EvaluatableExpr>
 {
   typedef OrderedQuartet<EvalContext, 
                          Set<MultiIndex>,

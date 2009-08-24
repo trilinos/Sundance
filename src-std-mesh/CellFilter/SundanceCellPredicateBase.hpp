@@ -64,7 +64,7 @@ using namespace SundanceStdMesh::Internal;
     class CellPredicateBase 
       : public SundanceUtils::Handleable<CellPredicateBase>,
         public Noncopyable,
-        public SundanceUtils::ObjectWithVerbosity<CellPredicateBase>
+        public SundanceUtils::ObjectWithClassVerbosity<CellPredicateBase>
     {
     public:
       /** Empty ctor */

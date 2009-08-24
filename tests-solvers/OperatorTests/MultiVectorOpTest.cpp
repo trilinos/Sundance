@@ -30,33 +30,22 @@
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVectorDecl.hpp"
-#include "TSFLinearCombinationDecl.hpp"
-#include "TSFLinearOperatorDecl.hpp"
-#include "TSFCommonOperatorsImpl.hpp"
-#include "TSFLoadableMatrix.hpp"
+#include "TSFLinearCombinationImpl.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
-#include "TSFEpetraVectorSpace.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
-#include "TSFBICGSTABSolver.hpp"
-#include "TSFProductVectorSpaceDecl.hpp"
+#include "Thyra_TestSpecifier.hpp"
 #include "TSFLinearOperatorDecl.hpp"
-#include "TSFEpetraMatrix.hpp"
-#include "TSFMultiVectorOperator.hpp"
-#include "TSFMatrixLaplacian1D.hpp"
-#include "TSFRandomSparseMatrix.hpp"
-#include "TSFCompoundTester.hpp"
+#include "TSFMultiVectorOperatorDecl.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
 #include "TSFVectorImpl.hpp"
+#include "TSFMultiVectorOperatorImpl.hpp"
 #endif
 
 
-STREAM_OUT(Vector<double>)
-//using namespace Teuchos;
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
 using Thyra::TestSpecifier;
@@ -115,7 +104,7 @@ int main(int argc, char *argv[])
       
       /* Apply the operator to the vector of weights */
       y2 = A * x;
-
+      
       double errA = (y1-y2).normInf();
 
       cout << "error in A*x = " << errA << endl;

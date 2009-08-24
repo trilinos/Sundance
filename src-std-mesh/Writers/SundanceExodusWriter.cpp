@@ -287,7 +287,7 @@ void ExodusWriter::writeFields(int exoid,
 #ifdef HAVE_SUNDANCE_EXODUS
   int nNodalFuncs = omnipresentFuncs().size();
   int nNodesetFuncs = pointScalarFields().size() - nNodalFuncs;
-  int nElemFuncs = cellScalarFields().size();
+
   int nNodesets = funcsForNodeset.size();
 
 

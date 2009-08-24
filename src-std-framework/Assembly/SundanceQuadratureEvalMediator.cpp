@@ -76,13 +76,16 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
   StdFwkEvalMediator::setCellType(cellType, maxCellType, isInternBdry);
 
   Tabs tab;
-  Out::os() << tab << "setCellType: cellType=" << cellType << endl;
-  Out::os() << tab << "integration spec: =" << integrationCellSpec() << endl;
-  if (isInternalBdry())
-  {
-    Out::os() << tab << "working on internal boundary" << endl;
-  }
 
+  SUNDANCE_MSG2(verb(), tab <<  "QuadEvalMed::setCellType: cellType=" 
+    << cellType);
+  SUNDANCE_MSG2(verb(), tab << "integration spec: =" 
+    << integrationCellSpec());
+  if (isInternalBdry()) 
+  {
+    SUNDANCE_MSG2(verb(), tab << "working on internal boundary");
+  }
+  
   TEST_FOR_EXCEPT(isInternalBdry() 
     && integrationCellSpec() != NoTermsNeedCofacets);
 
@@ -101,8 +104,8 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
   if (!quadPtsForReferenceCell_.containsKey(cellType))
   {
     Tabs tab1;
-    Out::os() << tab1 << "creating quad points for ref cell type=" 
-              << cellType << endl;
+    SUNDANCE_MSG2(verb(), tab1 << "creating quad points for ref cell type=" 
+      << cellType);
     RefCountPtr<Array<Point> > pts = rcp(new Array<Point>());
     RefCountPtr<Array<double> > wgts = rcp(new Array<double>()); 
     
@@ -231,9 +234,12 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
   CellType evalCellType = cellType();
   if (cellDim() != maxCellDim())
   {
-    Out::os() << tab << "alwaysUseCofacets = " 
-              << ElementIntegral::alwaysUseCofacets() << endl;
-    Out::os() << tab << "diffOrder = " << diffOrder << endl;
+    if (verb() >= 2)
+    {
+      Out::os() << tab << "alwaysUseCofacets = " 
+                << ElementIntegral::alwaysUseCofacets() << endl;
+      Out::os() << tab << "diffOrder = " << diffOrder << endl;
+    }
     if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
     {
       if (!cofacetCellsAreReady()) setupFacetTransformations();
@@ -244,7 +250,7 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
     }
   }
 
-  Out::os() << tab << "eval cell type = " << evalCellType << endl;
+  SUNDANCE_MSG2(verb(), tab << "eval cell type = " << evalCellType);
   typedef OrderedPair<BasisFamily, CellType> key;
 
   int nDerivResults = 1;
@@ -258,25 +264,28 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
 
     Array<Array<Array<Array<double> > > > tmp(nDerivResults);
     
-    Out::os() << tab << "numEvalCases = " << numEvaluationCases()
-              << endl;
-    Out::os() << tab << "diff order = " << diffOrder << endl;
-    Out::os() << tab << "cell type = " << cellType() << endl;
-    Out::os() << tab << "quad pt map = ";
-    if (evalCellType!=cellType())
-    { 
-      Out::os() << quadPtsReferredToMaxCell_ << endl;
-    }
-    else
+    if (verb() >= 2)
     {
-      Out::os() << quadPtsForReferenceCell_ << endl;
+      Out::os() << tab << "numEvalCases = " << numEvaluationCases()
+                << endl;
+      Out::os() << tab << "diff order = " << diffOrder << endl;
+      Out::os() << tab << "cell type = " << cellType() << endl;
+      Out::os() << tab << "quad pt map = ";
+      if (evalCellType!=cellType())
+      { 
+        Out::os() << quadPtsReferredToMaxCell_ << endl;
+      }
+      else
+      {
+        Out::os() << quadPtsForReferenceCell_ << endl;
+      }
     }
 
     for (int fc=0; fc<numEvaluationCases(); fc++)
     {
       Tabs tab1;
       (*rtn)[fc].resize(basis.dim());
-      Out::os() << tab1 << "fc = " << fc << endl;
+      SUNDANCE_MSG2(verb(), tab1 << "fc = " << fc);
 
       for (int r=0; r<nDerivResults; r++)
       {
@@ -291,14 +300,14 @@ RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
          * on the reference cell */
         if (evalCellType != cellType())
         {
-          Out::os() << tab1 << "referring to max cell" << endl;
+          SUNDANCE_MSG2(verb(), tab1 << "referring to max cell");
           basis.refEval(evalCellType, 
             (*(quadPtsReferredToMaxCell_.get(cellType())))[fc], 
             deriv, tmp[r], verb());
         }
         else
         {
-          Out::os() << tab1 << "computing on reference cell" << endl;
+          SUNDANCE_MSG2(verb(), tab1 << "computing on reference cell");
           basis.refEval(evalCellType, 
             (*(quadPtsForReferenceCell_.get(cellType()))), 
             deriv, tmp[r], verb());
@@ -540,9 +549,12 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       localValues = rcp(new Array<Array<double> >());
       if (cellDim() != maxCellDim())
       {
-        Out::os() << tab2 << "alwaysUseCofacets = " 
-                  << ElementIntegral::alwaysUseCofacets() << endl;
-        Out::os() << tab2 << "diffOrder = " << diffOrder << endl;
+        if (verb() >= 2)
+        {
+          Out::os() << tab2 << "alwaysUseCofacets = " 
+                    << ElementIntegral::alwaysUseCofacets() << endl;
+          Out::os() << tab2 << "diffOrder = " << diffOrder << endl;
+        }
         if (ElementIntegral::alwaysUseCofacets() || diffOrder>0)
         {
           if (!cofacetCellsAreReady()) setupFacetTransformations();

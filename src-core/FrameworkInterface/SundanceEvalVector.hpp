@@ -48,7 +48,7 @@ class TempStack;
  *
  */
 class EvalVector : public Noncopyable,
-                   public SundanceUtils::ObjectWithVerbosity<EvalVector>
+                   public SundanceUtils::ObjectWithClassVerbosity<EvalVector>
 {
   friend class EvalManager;
   friend class TempStack;

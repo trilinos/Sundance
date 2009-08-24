@@ -62,7 +62,7 @@ void MeshSourceBase
 Mesh MeshSourceBase::createMesh(int dim) const
 {
   cachedMesh_ = meshType_.createEmptyMesh(dim, comm_);
-  cachedMesh_.ptr()->verb() = verb();
+  cachedMesh_.ptr()->setVerbosity(verb());
   hasCachedMesh_ = true;
   
   return cachedMesh_;

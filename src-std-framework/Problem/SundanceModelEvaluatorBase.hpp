@@ -51,7 +51,7 @@ namespace Thyra
    * 
    */
   class SundanceModelEvaluator : public StateFuncModelEvaluatorBase<double>,
-                                 public SundanceUtils::ObjectWithVerbosity<SundanceModelEvaluator>
+                                 public SundanceUtils::ObjectWithClassVerbosity<SundanceModelEvaluator>
   {
   public:
     /** */

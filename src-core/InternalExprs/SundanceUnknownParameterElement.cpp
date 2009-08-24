@@ -56,7 +56,6 @@ UnknownParameterElement
 Set<MultipleDeriv> 
 UnknownParameterElement::internalFindW(int order, const EvalContext& context) const
 {
-  int verb = context.setupVerbosity();
   Tabs tab;
   SUNDANCE_MSG2(context.setupVerbosity(), 
     tab << "in UPE::internalFindW, order=" << order);
@@ -80,7 +79,6 @@ UnknownParameterElement::internalFindW(int order, const EvalContext& context) co
 Set<MultipleDeriv> 
 UnknownParameterElement::internalFindV(int order, const EvalContext& context) const
 {
-  int verb = context.setupVerbosity();
   Tabs tab;
   SUNDANCE_MSG2(context.setupVerbosity(), 
     tab << "UPE::internalFindV is a no-op");
@@ -93,7 +91,6 @@ UnknownParameterElement::internalFindV(int order, const EvalContext& context) co
 Set<MultipleDeriv> 
 UnknownParameterElement::internalFindC(int order, const EvalContext& context) const
 {
-  int verb = context.setupVerbosity();
   Tabs tab;
   SUNDANCE_MSG2(context.setupVerbosity(), 
     tab << "in UPE::internalFindC, order=" << order);

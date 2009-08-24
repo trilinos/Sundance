@@ -32,13 +32,51 @@ public:
     {return X::defaultVerbParams();}
 };
 
+
+/** 
+ * Abstract interface for getting/setting verbosity levels.
+ */
+class ObjectWithVerbosityBase
+{
+public:
+  /** */
+  virtual ~ObjectWithVerbosityBase(){}
+
+  /** */
+  virtual int verb() const = 0 ;
+
+  /** */
+  virtual void setVerbosity(int verb) = 0 ;
+};
+
+
+/** 
+ * Simple implementation of ObjectWithVerbosityBase interface
+ */
+class DefaultObjectWithVerbosity : public ObjectWithVerbosityBase
+{
+public:
+  /** */
+  DefaultObjectWithVerbosity(int verb=0) : verb_(verb) {}
+
+  /** */
+  virtual ~DefaultObjectWithVerbosity(){}
+
+  /** */
+  virtual int verb() const {return verb_;}
+
+  /** */
+  virtual void setVerbosity(int verb) {verb_ = verb;}
+private:
+  int verb_;
+};
+
+
 /**
- * ObjectWithVerbosity and the related verbosity() method
- * provide an interface for getting/setting
- * verbosity flags for classes or instances. 
+ * ObjectWithClassVerbosity and the related verbosity() method
+ * provide a method for getting/setting
+ * verbosity flags for entire classes.
  *
- * All objects start out with a verbosity setting of 0.
- * 
  * You can set verbosity for a single instance of a class, or for
  * the whole class. To set for an instance, use the verbosity()
  * member function, for example,
@@ -67,17 +105,12 @@ public:
  * 
  */
 template <class X>
-class ObjectWithVerbosity
+class ObjectWithClassVerbosity : public DefaultObjectWithVerbosity
 {
 public:
   /** \deprecated Construct, starting silent */
-  ObjectWithVerbosity(int verb=classVerbosity()) : verb_() {;}
-
-  /** */
-  int verb() const {return verb_;}
-
-  /** */
-  int& verb() {return verb_;}
+  ObjectWithClassVerbosity(int verb=classVerbosity())
+    : DefaultObjectWithVerbosity(verb) {;}
 
   /** \deprecated Writeable access to the default verbosity for the class */
   static int& classVerbosity() 
@@ -86,28 +119,12 @@ public:
       return rtn;
     }
 
-  /** */
-  static FancyOStream& os()
-    {
-      static RefCountPtr<std::ostream> os = rcp(&std::cout, false);
-      static RefCountPtr<FancyOStream> rtn = fancyOStream(os);
-      static bool first = true;
-      if (first)
-      {
-        rtn->setShowProcRank(true);
-        first = false;
-      }
-      return *rtn;
-    }
-  
-
-private:
-  /** */
-  int verb_;
 };
 
+
+
 /** 
- * \relates ObjectWithVerbosity
+ * \relates ObjectWithClassVerbosity
  * Global method for setting verbosity of a class
  */
 template <class X> int& verbosity() 
@@ -115,17 +132,17 @@ template <class X> int& verbosity()
   return X::classVerbosity();
 }
 
-template <class X> 
+template <class X>
 class ParameterControlledObjectWithVerbosity 
-  : public ObjectWithVerbosity<X> 
+  : public ObjectWithClassVerbosity<X>
 {
 public:
   /** \deprecated Construct, starting silent */
-  ParameterControlledObjectWithVerbosity() : ObjectWithVerbosity<X>() {;}
+  ParameterControlledObjectWithVerbosity() : ObjectWithClassVerbosity<X>() {;}
 
   /** Construct with a parameter list controlling the verbosity settings */
   ParameterControlledObjectWithVerbosity(const std::string& objName, const ParameterList& p)
-    : ObjectWithVerbosity<X>(),
+    : ObjectWithClassVerbosity<X>(),
     verbControlParams_() 
     {
       RefCountPtr<ParameterList> defaults = VerbosityTraits<X>::defaultVerbParams();

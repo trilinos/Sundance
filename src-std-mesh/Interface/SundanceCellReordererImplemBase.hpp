@@ -69,7 +69,7 @@ namespace SundanceStdMesh
      * and a past-the-end index. 
      */
     class CellReordererImplemBase 
-      : public SundanceUtils::ObjectWithVerbosity<CellReordererImplemBase>
+      : public SundanceUtils::ObjectWithClassVerbosity<CellReordererImplemBase>
     {
     public:
       /** Construct with a pointer to a mesh */

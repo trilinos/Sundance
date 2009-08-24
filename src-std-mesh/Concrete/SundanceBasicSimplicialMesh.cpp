@@ -102,8 +102,6 @@ BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
     neighbors_(),
     neighborsAreSynchronized_(false)
 {
-  verb() = MeshSource::classVerbosity();
-
   estimateNumVertices(1000);
   estimateNumElements(1000);
 

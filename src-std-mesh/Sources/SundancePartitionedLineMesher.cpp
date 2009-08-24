@@ -22,8 +22,6 @@ Mesh PartitionedLineMesher::fillMesh() const
 
   try
     {
-      //      MeshBase::classVerbosity() = 5;
-      //      ((PartitionedLineMesher*)this)->verb() = 5;
       SUNDANCE_OUT(this->verb() > 0,
                    "PartitionedLineMesher::fillLocalMesh() is meshing "
                    "interval [" << ax_ << ", " << bx_ << "]");

@@ -28,12 +28,9 @@
 
 #include "Teuchos_GlobalMPISession.hpp"
 #include "TSFVectorDecl.hpp"
-#include "TSFLinearCombinationDecl.hpp"
-#include "TSFLinearOperatorDecl.hpp"
 #include "TSFInverseOperatorDecl.hpp"
 #include "TSFLoadableMatrix.hpp"
 #include "TSFVectorType.hpp"
-#include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
