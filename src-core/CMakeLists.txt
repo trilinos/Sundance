@@ -303,11 +303,13 @@ APPEND_SET(HEADERS
   Spectral/SundanceSpectralBasis.hpp
   Spectral/SundanceSpectralBasisBase.hpp
   Spectral/SundanceSpectralExpr.hpp 
+  Spectral/SundanceSpectralPreprocessor.hpp 
   )
 
 APPEND_SET(SOURCES
   Spectral/SundanceHermiteSpectralBasis.cpp
   Spectral/SundanceSpectralExpr.cpp
+  Spectral/SundanceSpectralPreprocessor.cpp 
   )
 
 #

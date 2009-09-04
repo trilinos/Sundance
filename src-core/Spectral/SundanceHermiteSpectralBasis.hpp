@@ -91,6 +91,9 @@ namespace SundanceCore
 
     /* */
     GET_RCP(SpectralBasisBase);
+
+    /** Ordering operator */
+    virtual bool lessThan(const SpectralBasisBase* other) const ;
   };
 }
 

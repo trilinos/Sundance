@@ -220,6 +220,17 @@ bool ExprWithChildren::hasTestFunctions() const
   return false;
 }
 
+
+bool ExprWithChildren::hasUnkFunctions() const
+{
+  for (unsigned int i=0; i<children_.size(); i++)
+  {
+    if (evaluatableChild(i)->hasUnkFunctions()) return true;
+  }
+  return false;
+}
+
+
 void ExprWithChildren::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
 {
   for (unsigned int i=0; i<children_.size(); i++)

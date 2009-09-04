@@ -87,6 +87,9 @@ public:
   /** 
    * Indicate whether the expression contains test functions */
   virtual bool hasTestFunctions() const {return false;}
+  /** 
+   * Indicate whether the expression contains unknown functions */
+  virtual bool hasUnkFunctions() const {return false;}
 
   /** Indicate whether the expression is linear in the given 
    * functions */

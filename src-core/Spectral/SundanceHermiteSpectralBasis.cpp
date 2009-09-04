@@ -121,3 +121,18 @@ string HermiteSpectralBasis::toString() const
   return "HermiteSpectralBasis(" + Teuchos::toString(getDim())
     + ", " + Teuchos::toString(getOrder()) + ")";
 }
+
+
+bool HermiteSpectralBasis::lessThan(const SpectralBasisBase* other) const
+{
+  if (typeid(*this).before(typeid(*other))) return true;
+  if (typeid(*other).before(typeid(*this))) return false;
+
+  if (getDim() < other->getDim()) return true;
+  if (other->getDim() < getDim()) return false;
+
+  if (getOrder() < other->getOrder()) return true;
+  if (other->getOrder() < getOrder()) return false;
+
+  return false;
+}

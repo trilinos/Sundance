@@ -151,6 +151,10 @@ public:
    * If any child contains a test, return true. */
   virtual bool hasTestFunctions() const ;
 
+  /** Test whether this expr contains an unknown function. 
+   * If any child contains an unknown, return true. */
+  virtual bool hasUnkFunctions() const ;
+
   /** */
   virtual void showSparsity(ostream& os, 
     const EvalContext& context) const ;

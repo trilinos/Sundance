@@ -398,13 +398,6 @@ private:
     Expr& rtn) const ;
 
 
-  /** Try transformations of spectral addition */
-  bool tryAddSpectral(const Expr& L, const Expr& R, int sign,
-    Expr& rtn) const ;
-
-  /** Try transformations of complex multiplication */
-  bool tryMultiplySpectral(const Expr& L, const Expr& R, 
-    Expr& rtn) const ;
 
 
 #endif /* DOXYGEN_DEVELOPER_ONLY */

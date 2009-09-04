@@ -30,7 +30,7 @@
 
 #include "SundanceSumOfIntegrals.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
-#include "SundanceSpectralExpr.hpp"
+#include "SundanceSpectralPreprocessor.hpp"
 #include "SundanceTabs.hpp"
 
 using namespace SundanceCore;
@@ -52,9 +52,7 @@ SumOfIntegrals::SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
 
 Expr SumOfIntegrals::filterSpectral(const Expr& expr) const 
 {
-  const SpectralExpr* se = dynamic_cast<const SpectralExpr*>(expr.ptr().get());
-  if (se != 0) return se->getCoeff(0);
-  return expr;
+  return SpectralPreprocessor::projectSpectral(expr);
 }
 
 
@@ -71,11 +69,11 @@ void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
   if (rqcToExprMap_.containsKey(rqc))
   {
     Expr e = rqcToExprMap_.get(rqc);
-    rqcToExprMap_.put(rqc, e + sign*expr);
+    rqcToExprMap_.put(rqc, e + sign*ex);
   }
   else
   {
-    rqcToExprMap_.put(rqc, sign*expr);
+    rqcToExprMap_.put(rqc, sign*ex);
   }
 }
 

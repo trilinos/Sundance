@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceExpr.hpp"
+#include "SundanceScalarExpr.hpp"
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceFuncSetAccumulator.hpp"
 
@@ -49,11 +50,11 @@ namespace SundanceCore
    * Spectral Expression 
    */
 
-class SpectralExpr : public FuncSetAccumulator, public ExprBase
+class SpectralExpr : public FuncSetAccumulator, public ScalarExpr
   {
   private:
     Array<Expr> coeffs_;
-    RefCountPtr<SpectralBasis> sbasis_;
+    SpectralBasis sbasis_;
 
   public:
     /** Constructor*/
@@ -93,7 +94,16 @@ class SpectralExpr : public FuncSetAccumulator, public ExprBase
     bool hasTestFunctions() const ;
 
     /** */
+    bool hasUnkFunctions() const ;
+
+    /** */
     bool hasHungryDiffOp() const ;
+
+    /** Ordering operator for use in transforming exprs 
+     * to standard form */
+    bool lessThan(const ScalarExpr* other) const ;
+
+
     /** */
     virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
     

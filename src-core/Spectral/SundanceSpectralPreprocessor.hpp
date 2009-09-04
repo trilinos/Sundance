@@ -28,53 +28,85 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_SPECTRALBASISBASE_H
-#define SUNDANCE_SPECTRALBASISBASE_H
+#ifndef SUNDANCE_SPECTRAL_PREPROCESSOR_H
+#define SUNDANCE_SPECTRAL_PREPROCESSOR_H
 
 #include "SundanceDefs.hpp"
+#include "SundanceExpr.hpp"
 #include "Teuchos_Array.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "SundanceHandleable.hpp"
-#include "SundanceMap.hpp"
-
-
-
-using namespace std;
-using namespace SundanceUtils;
 
 namespace SundanceCore
 {
-  /** Base class for spectral bases. */
-  class SpectralBasisBase : public SundanceUtils::Handleable<SpectralBasisBase>
-  {
-  public:
-    /** Construct a basis */
-    SpectralBasisBase() {;}
-    
-    /** virtual dtor */
-    virtual ~SpectralBasisBase() {;}
 
-    /** Return the dimension of the Spectral Basis */
-    virtual int getDim() const = 0 ;
+using namespace SundanceUtils;
+using namespace Teuchos;
 
-    /** Return the order of the Spectral Basis */
-    virtual int getOrder() const = 0 ;
+class ProductExpr;
+class SumExpr;
+class UnaryMinus;
+class DiffOp;
+class MultiIndex;
+  
+using std::string;
+using std::ostream;
 
-    /** Return the maximum number of terms */
-    virtual int nterms() const = 0 ;
-    
-    /** Return the basis element stored in the basis array index */
-    virtual int getElement(int i) const = 0 ;
+/** */
+class SpectralPreprocessor
+{
+public:
 
-    /** Write a description to a string */
-    virtual string toString() const = 0 ;
+  /** */
+  static Expr projectSpectral(const Expr& e);
 
-    /** expectation operator */
-    virtual double expectation(int i, int j, int k) = 0 ; 
+  /** */
+  static Expr projectSpectral(const Array<Array<Expr> >& terms);
 
-    /** Ordering operator */
-    virtual bool lessThan(const SpectralBasisBase* other) const = 0;
-  };
+  /** */
+  static void parseProduct(const Array<Expr>& factors,
+    Expr& test, Expr& deterministic, Array<Expr>& spectral);
+
+  /** */
+  static bool isSpectralTest(const Expr& f);
+
+  /** */
+  static bool isSpectral(const Expr& f);
+
+  /** */
+  static void expandSpectral(const Expr& e, 
+    Array<Array<Expr> >& terms);
+
+  /** */
+  static bool hasSpectral(const Expr& e);
+
+  /** */
+  static void expandSpectralProduct(const ProductExpr* prod,
+    Array<Array<Expr> >& terms);
+
+  /** */
+  static void expandSpectralSum(const SumExpr* sum,
+    Array<Array<Expr> >& terms);
+
+  /** */
+  static void expandSpectralUnaryMinus(const UnaryMinus* u,
+    Array<Array<Expr> >& terms);
+
+  /** */
+  static void expandSpectralDiffOp(const DiffOp* d,
+    Array<Array<Expr> >& terms);
+
+  /** */
+  static void expandDerivative(const MultiIndex& mi,
+    const Array<Expr>& factors,
+    Array<Array<Expr> >& productRuleTerms);
+
+  /** */
+  static Expr takeDeriv(const Expr& f, const MultiIndex& mi);
+
+  /** */
+  static bool isZeroExpr(const Expr& f);
+};
+  
+
 }
 
 #endif

@@ -76,6 +76,9 @@ public:
    * functions. Default is to return false. This will be
    * overridden by TestFuncElement and ExprWithChildren. */
   virtual bool hasTestFunctions() const {return false;}
+  /** 
+   * Indicate whether the expression contains unknown functions */
+  virtual bool hasUnkFunctions() const {return false;}
 
   /** */
   string toString() const ;

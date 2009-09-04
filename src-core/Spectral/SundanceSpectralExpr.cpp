@@ -47,30 +47,25 @@ using namespace Teuchos;
 
 
 SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Array<Expr>& coeffs)
-  : ExprBase(), 
-    coeffs_(),
-    sbasis_()
+  : ScalarExpr(), 
+    coeffs_(coeffs),
+    sbasis_(sbasis)
 
 {
-  int nterms = sbasis.nterms();
-  coeffs_.resize(nterms);
-  for (int i=0; i<nterms; i++)
-    coeffs_[i] = coeffs[i];
-  sbasis_ = rcp(new SpectralBasis(sbasis));
+  TEST_FOR_EXCEPT(coeffs_.size() != (unsigned int) sbasis_.nterms());
 }
 
 
 SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Expr& coeffs)
-  : ExprBase(), 
+  : ScalarExpr(), 
     coeffs_(),
-    sbasis_()
+    sbasis_(sbasis)
 
 {
   int nterms = sbasis.nterms();
   coeffs_.resize(nterms);
   for (int i=0; i<nterms; i++)
     coeffs_[i] = coeffs[i];
-  sbasis_ = rcp(new SpectralBasis(sbasis));
 }
 
 void SpectralExpr::accumulateFuncSet(Set<int>& funcDofIDs, 
@@ -84,7 +79,7 @@ void SpectralExpr::accumulateFuncSet(Set<int>& funcDofIDs,
 
 SpectralBasis SpectralExpr::getSpectralBasis() const
 { 
-  return *sbasis_;
+  return sbasis_;
 }
 
 
@@ -109,6 +104,19 @@ bool SpectralExpr::hasTestFunctions() const
                          InternalError,
                          "expr " << toString() << " has a mix of test and "
                          "non-test coefficients");
+    }
+  return rtn;
+}
+
+bool SpectralExpr::hasUnkFunctions() const
+{
+  bool rtn = coeffs_[0].ptr()->hasUnkFunctions();
+  for (unsigned int i=1; i<coeffs_.size(); i++)
+    {
+      TEST_FOR_EXCEPTION(coeffs_[i].ptr()->hasUnkFunctions() != rtn,
+                         InternalError,
+                         "expr " << toString() << " has a mix of unk and "
+                         "non-unk coefficients");
     }
   return rtn;
 }
@@ -162,6 +170,21 @@ XMLObject SpectralExpr::toXML() const
       rtn.addChild(coeffs_[i].toXML());
     }
   return rtn;
+}
+
+
+bool  SpectralExpr::lessThan(const ScalarExpr* other) const
+{
+  const SpectralExpr* s = dynamic_cast<const SpectralExpr*>(other);
+  TEST_FOR_EXCEPTION(s==0, InternalError, "cast should never fail at this point");
+  if (coeffs_.size() < s->coeffs_.size()) return true;
+  if (coeffs_.size() > s->coeffs_.size()) return false;
+  for (unsigned int i=0; i<coeffs_.size(); i++)
+  {
+    if (coeffs_[i].lessThan(s->coeffs_[i])) return true;
+    if (s->coeffs_[i].lessThan(coeffs_[i])) return false;
+  }
+  return sbasis_.ptr()->lessThan(s->sbasis_.ptr().get());
 }
 
 

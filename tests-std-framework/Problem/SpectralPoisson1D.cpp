@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
+#include "SundanceSpectralPreprocessor.hpp"
 
 
 /** 
@@ -36,9 +37,49 @@
  */
 
 
+string expand(const Expr& e)
+{
+  Tabs tab;
+  Array<Array<Expr> > terms;
+  SpectralPreprocessor::expandSpectral(e, terms);
+  TeuchosOStringStream os;
+
+  os << endl << tab << "Terms: " << endl;
+  for (unsigned int i=0; i<terms.size(); i++)
+  {
+    Tabs tab1;
+    os << tab1 << "term=" << i << endl;
+    for (unsigned int j=0; j<terms[i].size(); j++)
+    {
+      Tabs tab2;
+      os << tab2 << "factor " << j << " = " << terms[i][j] << endl;
+    }
+  }
+
+  os << endl << tab << "projected expr: " << endl;
+  {
+    Tabs tab1;
+    os << tab1 << SpectralPreprocessor::projectSpectral(terms) << endl;
+  }
+
+  return os.str();
+}
+
+
+Expr LegendreP(int n, const Expr& x)
+{
+  TEST_FOR_EXCEPT(n<0);
+
+  if (n==0) return 1.0;
+  if (n==1) return x;
+  return ((2*(n-1)+1)*x*LegendreP(n-1,x) - (n-1)*LegendreP(n-2,x))/((double) n);
+  
+}
+
+
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
-  int main(int argc, char** argv)
+int main(int argc, char** argv)
 {
   try
   {
@@ -50,7 +91,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
     /* Create a mesh. It will be of type BasisSimplicialMesh, and will
      * be built using a PartitionedLineMesher. */
     MeshType meshType = new BasicSimplicialMeshType();
-    MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 32, meshType);
+    MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 64, meshType);
     Mesh mesh = mesher.getMesh();
 
     /* Create a cell filter that will identify the maximal cells
@@ -60,50 +101,97 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
     CellFilter leftPoint = points.subset(new LeftPointTest());
 
     /* Create the Spectral Basis */
-    int ndim = 2;
-    int order = 2;
+    int ndim = 1;
+    int order = 4;
 
     SpectralBasis sbasis = new HermiteSpectralBasis(ndim, order); 
 
-    cout << "created the spectral basis" << endl;
+    Out::os() << "created the spectral basis" << endl;
 
     /* Create the Spectral Unknown and test functions */
 
     Expr u = new UnknownFunction(new Lagrange(2),sbasis, "u");
     Expr v = new TestFunction(new Lagrange(2), sbasis, "v");
 
-    cout <<"Unknown and Test Functions " << endl; 
+    Out::os() <<"Unknown and Test Functions " << endl; 
+    Out::os() << "u=" << u << endl;
+    Out::os() << "v=" << v << endl;
 
     /* Create differential operator and coordinate function */
     Expr dx = new Derivative(0);
     Expr x = new CoordExpr(0);
 
     /* We need a quadrature rule for doing the integrations */
-    QuadratureFamily quad = new GaussianQuadrature(2);
+    QuadratureFamily quad = new GaussianQuadrature(8);
 
 
     /* Define the Stochastic RHS */
 
-    Array<Expr> Coeff(sbasis.nterms());  /* array of coefficients for the spectra expression */
-    Coeff[0] = 2.0;
-    for(int i=1; i<sbasis.nterms(); i++)
-    {
+    Array<Expr> Q(sbasis.nterms());
+    Q[0] = -211.0/100.0;
+    Q[1] = -33.0/25.0;
+    Q[2] = -16.0/25.0;
+    Q[3] = -3.0/50.0;
+    Q[4] = -1.0/200.0;
+    for (int i=5; i<sbasis.nterms(); i++) Q[i] = 0.0;
 
-      cout << i<< endl;
-      Coeff[i] = 0.0;
+    Array<Expr> K(sbasis.nterms());
+    Array<Expr> w(sbasis.nterms());
+    double p2 = 1.0;
+    double p10 = 1.0;
+    for (int n=0; n<sbasis.nterms(); n++)
+    {
+      if (n <= sbasis.nterms()/2) 
+      {
+        K[n]=1.0/p2;
+        w[n]=x*(2.0-x)/p10;
+      }
+      else 
+      {
+        K[n]=0.0;
+        w[n]=0.0;
+      }
+      p2 = 2.0*p2;
+      p10 = 10.0*p10;
     }
 
-    Expr F = new SpectralExpr(sbasis, Coeff);
+    for (int k=0; k<sbasis.nterms(); k++)
+    {
+      Tabs tab1;
+      Out::os() << tab1 << "--------------------------------------------"
+                << endl;
+      Out::os() << tab1 << "k=" << k << endl;
+      for (int i=0; i<sbasis.nterms(); i++)
+      {
+        Tabs tab2;
+        Out::os() << tab2 << "\t";
+        for (int j=0; j<sbasis.nterms(); j++)
+        {
+          Out::os() << sbasis.expectation(i,j,k) << " \t" ;
+        }
+        Out::os() << endl;
+      }
+    }
 
-    cout << "created F" << endl ;
+
+    Expr q = new SpectralExpr(sbasis, Q);
+    Expr kappa = new SpectralExpr(sbasis, K);
+
+    WatchFlag watch("watch");
+    watch.setParam("integration setup", 0);
+    watch.setParam("integration", 0);
+    watch.setParam("fill", 0);
+    watch.setParam("setup", 0);
+    watch.setParam("evaluation", 0);
+    watch.setParam("symbolic preprocessing", 0);
+    watch.deactivate();
 
     /* Define the weak form */
-    Expr eqn = Integral(interior, -(dx*v)*(dx*u) - F*v, quad);
+    Expr eqn = Integral(interior, kappa*(dx*v)*(dx*u) + v*q, quad,watch);
     /* Define the Dirichlet BC */
     Expr bc = EssentialBC(leftPoint, v*u, quad);
 
-      
-    cout << "done eq and bc " << endl;
+    Out::os() << "done eq and bc " << endl;
 
 
     /* We can now set up the linear problem! */
@@ -117,7 +205,7 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
       ParameterXMLFileReader reader("bicgstab.xml");
 #endif
     ParameterList solverParams = reader.getParameters();
-    cout << "params = " << solverParams << endl;
+    Out::os() << "params = " << solverParams << endl;
 
 
     LinearSolver<double> solver 
@@ -126,37 +214,27 @@ CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
     Expr soln = prob.solve(solver);
 
 
-    Expr zz = Integral(interior, soln[0], quad);
-    double totalU = evaluateIntegral(mesh, zz);
-    cerr << "integral(u[0]) = " << totalU << endl;
-
-    Expr exactSoln = x*(x-2.0);
-    Expr err = pow(soln[0] - exactSoln, 2.0);
-    for (int i=1; i<sbasis.nterms(); i++)
+    double totErrSq = 0.0;
+    FieldWriter writer = new MatlabWriter("SpectralPoisson1DSoln");
+    writer.addMesh(mesh);
+    for (int i=0; i<sbasis.nterms(); i++)
     {
-      err = err + pow(soln[i], 2.0);
+      Expr err = soln[i]-w[i];
+      Expr errExpr = Integral(interior, err*err,
+        new GaussianQuadrature(8));
+      double errorSq = evaluateIntegral(mesh, errExpr);
+      totErrSq += errorSq;
+      Out::os() << "error norm [" << i << "] = " 
+                << sqrt(errorSq) << endl << endl;
+      writer.addField("u["+Teuchos::toString(i)+"]", 
+        new ExprFieldWrapper(soln[i]));
     }
+    writer.write();
+      
         
 
-    Expr errExpr = Integral(interior, 
-      err,
-      new GaussianQuadrature(4));
-
-    Expr derivErr = dx*(exactSoln-soln[0]);
-    Expr derivErrExpr = Integral(interior, 
-      pow(dx*(soln[0]-exactSoln), 2),
-      new GaussianQuadrature(2));
-
-    double errorSq = evaluateIntegral(mesh, errExpr);
-    cout << "error norm = " << sqrt(errorSq) << endl << endl;
-
-
-
-    double derivErrorSq = evaluateIntegral(mesh, derivErrExpr);
-    cout << "deriv error norm = " << sqrt(derivErrorSq) << endl << endl;
-
     double tol = 1.0e-12;
-    Sundance::passFailTest(sqrt(errorSq + derivErrorSq), tol);
+    Sundance::passFailTest(sqrt(totErrSq), tol);
   }
 	catch(exception& e)
   {

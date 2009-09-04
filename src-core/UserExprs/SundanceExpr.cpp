@@ -74,18 +74,6 @@ static Time& unaryMinusTimer()
   return *rtn;
 }
 
-static Time& trySumSpectralTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("test for spectral sum"); 
-  return *rtn;
-}
-static Time& tryMultiplySpectralTimer() 
-{
-  static RefCountPtr<Time> rtn 
-    = TimeMonitor::getNewTimer("test for spectral product"); 
-  return *rtn;
-}
 
 static Time& trySumComplexTimer() 
 {
@@ -301,159 +289,6 @@ bool Expr::tryMultiplyComplex(const Expr& L, const Expr& R,
   }
 }
 
-bool Expr::tryAddSpectral(const Expr& L, const Expr& R, int sign,
-  Expr& rtn) const
-{
-  TimeMonitor t(trySumSpectralTimer());
-  TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
-    "non-scalar exprs should have been reduced before "
-    "call to tryAddSpectral(). Left=" << L << " right="
-    << R);
-  
-  const SpectralExpr* lse 
-    = dynamic_cast<const SpectralExpr*>(L.ptr().get());
-  
-  const SpectralExpr* rse 
-    = dynamic_cast<const SpectralExpr*>(R.ptr().get());
-  
-  if (lse != 0 && rse != 0) /* spectral + spectral */
-  {
-    SpectralBasis basis = lse->getSpectralBasis();
-    Array<Expr> coeff(basis.nterms());
-    for (int i=0; i<basis.nterms(); i++) 
-    {
-      if (sign > 0) coeff[i] = lse->getCoeff(i) + rse->getCoeff(i);
-      else coeff[i] = lse->getCoeff(i) - rse->getCoeff(i);
-    }
-    rtn = new SpectralExpr(basis, coeff);
-    return true;
-  }
-  else if (lse != 0) /* spectral + scalar */
-  {
-    SpectralBasis basis = lse->getSpectralBasis();
-    Array<Expr> coeff(basis.nterms());
-    if (sign > 0) coeff[0] = lse->getCoeff(0) + R;
-    else coeff[0] = lse->getCoeff(0) - R;
-    for (int i=1; i<basis.nterms(); i++) 
-    {
-      coeff[i] = lse->getCoeff(i);
-    }
-    rtn = new SpectralExpr(basis, coeff);
-    return true;
-  }
-  else if (rse != 0) /* scalar + spectral */
-  {
-
-    SpectralBasis basis = rse->getSpectralBasis();
-    Array<Expr> coeff(basis.nterms());
-    if (sign > 0) coeff[0] = L + rse->getCoeff(0);
-    else coeff[0] = L - rse->getCoeff(0);
-    for (int i=1; i<basis.nterms(); i++) 
-    {
-      if (sign > 0) coeff[i] = rse->getCoeff(i);
-      else coeff[i] = -rse->getCoeff(i);
-    }
-    rtn = new SpectralExpr(basis, coeff);
-    return true;
-  }
-  else
-  {
-    /* if neither is spectral, do nothing here */
-    return false;
-  }
-}
-
-
-
-bool Expr::tryMultiplySpectral(const Expr& L, const Expr& R, 
-  Expr& rtn) const
-{
-  TimeMonitor t(tryMultiplySpectralTimer());
-  TEST_FOR_EXCEPTION(L.size() != 1 || R.size() != 1, InternalError, 
-    "non-scalar exprs should have been reduced before "
-    "call to tryMultiplySpectral(). Left=" << L << " right="
-    << R);
-  
-  const SpectralExpr* lse 
-    = dynamic_cast<const SpectralExpr*>(L.ptr().get());
-  
-  const SpectralExpr* rse 
-    = dynamic_cast<const SpectralExpr*>(R.ptr().get());
-
-  
-  if (lse != 0 && rse != 0) /* spectral * spectral */
-  {
-    TEST_FOR_EXCEPTION(lse->hasTestFunctions() && rse->hasTestFunctions(),
-      RuntimeError,
-      "product of two test functions detected: L=" << L
-      << ", R=" << R);
-    if (rse->hasTestFunctions()) /* move test function to left */
-    {
-      return tryMultiplySpectral(R, L, rtn);
-    }
-    if (lse->hasTestFunctions()) /* if left has a test function, do dot product */
-    {
-      rtn = lse->spectralDotProduct(rse);
-      return true;
-    }
-    SpectralBasis basis1 = lse->getSpectralBasis();
-    SpectralBasis basis2 = rse->getSpectralBasis();
-    Array<Expr> coeff(basis1.nterms());
-
-    TEST_FOR_EXCEPTION((basis1.nterms() != basis2.nterms()) 
-      || (basis1.getDim() != basis2.getDim()) 
-      || (basis1.getOrder() != basis2.getOrder()), 
-      InternalError,
-      "The two spectral expressions should have the "
-      "same basis ");
-      
-    for(int i=0; i<basis1.nterms(); i++)
-    {
-      coeff[i] = 0.0;
-      for (int n=0; n<basis1.nterms(); n++)
-      {
-        for(int m=0; m<basis1.nterms(); m++)
-        {
-          double w = basis1.expectation(basis1.getElement(n),
-            basis1.getElement(m), i)
-            /basis1.expectation(0,i,i);
-          if (w==0.0) continue;
-          coeff[i] = coeff[i]+w*lse->getCoeff(n) * rse->getCoeff(m);
-        }
-      }
-    }
-    rtn = new SpectralExpr(basis1, coeff);
-    return true;
-  }
-  else if (lse != 0) /* spectral * scalar */
-  {
-    SpectralBasis basis = lse->getSpectralBasis();
-    Array<Expr> coeff(basis.nterms());
-    for (int i=0; i<basis.nterms(); i++) 
-    {
-      coeff[i] = lse->getCoeff(i) * R;
-    }
-    rtn = new SpectralExpr(basis, coeff);
-    return true;
-  }
-  else if (rse != 0) /* scalar * spectral */
-  {
-    SpectralBasis basis = rse->getSpectralBasis();
-    Array<Expr> coeff(basis.nterms());
-    for (int i=0; i<basis.nterms(); i++) 
-    {
-      coeff[i] = L * rse->getCoeff(i);
-    }
-    rtn = new SpectralExpr(basis, coeff);
-    return true;
-  }
-  else
-  {
-    /* if neither is spectral, do nothing here */
-    return false;
-  }
-}
-
 
 
 
@@ -480,9 +315,6 @@ Expr Expr::operator+(const Expr& other) const
   {
     TEUCHOS_FUNC_TIME_MONITOR("plus branch 2");
     Expr rtn;
-    /* Try to thread addition over the coefficients of a spectral 
-     * expansion */
-    if (tryAddSpectral((*this)[0], other[0], 1, rtn)) return rtn;
     /* Try to thread addition over real and imaginary parts */
     if (tryAddComplex((*this)[0], other[0], 1, rtn)) return rtn;
     /* Otherwise, do a simple scalar-scalar sum */
@@ -513,9 +345,6 @@ Expr Expr::operator-(const Expr& other) const
   {
     TEUCHOS_FUNC_TIME_MONITOR("minus branch 2");
     Expr rtn;
-    /* Try to thread subtraction over the coefficients of a spectral 
-     * expansion */
-    if (tryAddSpectral((*this)[0], other[0], -1, rtn)) return rtn;
     /* Try to thread subtraction over real and imaginary parts */
     if (tryAddComplex((*this)[0], other[0], -1, rtn)) return rtn;
     /* Otherwise, do a simple scalar-scalar sum */
@@ -572,12 +401,6 @@ Expr Expr::operator*(const Expr& other) const
   if (this->size() == 1 && other.size()==1)
   {
     Expr rtn;
-    /* Try to thread multiplication over the coefficients of a spectral 
-     * expansion */
-    if (tryMultiplySpectral((*this)[0], other[0], rtn)) 
-    {
-      return rtn;
-    }
     /* Try to do complex multiplication */
     if (tryMultiplyComplex((*this)[0], other[0], rtn)) 
     {
