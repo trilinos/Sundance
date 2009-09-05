@@ -233,7 +233,7 @@ int main(int argc, char** argv)
       
         
 
-    double tol = 1.0e-12;
+    double tol = 1.0e-10;
     Sundance::passFailTest(sqrt(totErrSq), tol);
   }
 	catch(exception& e)
