@@ -67,7 +67,7 @@ void VTKWriter::lowLevelWrite(const string& filename, bool isPHeader) const
       f = f + ".vtu";
     }
   
-  SUNDANCE_OUT(this->verb() > 0, "writing VTK file " << f);
+  SUNDANCE_VERB_MEDIUM("writing VTK file " << f);
 
   std::ofstream os(f.c_str());
 
@@ -181,16 +181,32 @@ void VTKWriter::writeCells(ostream& os) const
   int dummySign;
 
   os << conn.header() << std::endl;
+  CellType cellType = mesh().cellType(dim);
   
   for (int c=0; c<nc; c++)
     {
-      int nNodes = dim+1;
-      
-      for (int i=0; i<nNodes; i++)
-        {
-          os << " " << mesh().facetLID(dim,c,0,i,dummySign);
-        }
-      os << std::endl;
+      int nNodes = mesh().numFacets( dim , c , 0 );
+
+		switch(cellType)
+			{
+			case TriangleCell: case LineCell: case TetCell:
+			      for (int i=0; i<nNodes; i++)
+			        {
+			          os << " " << mesh().facetLID(dim,c,0,i,dummySign);
+			        }
+			      os << std::endl;
+				break;
+			case QuadCell:  // for quads we have different order
+		          os << " " << mesh().facetLID(dim,c,0,0,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,1,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,3,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,2,dummySign);
+		          os << std::endl;
+				break;
+            default:
+            	 TEST_FOR_EXCEPTION(true, RuntimeError, "call type " << cellType <<
+            			 " not handled in VTKWriter::writeCells()");
+			}
     }
   
   os << conn.footer() << std::endl;
@@ -219,7 +235,6 @@ void VTKWriter::writeCells(ostream& os) const
 
   os << types.header() << std::endl;
 
-  CellType cellType = mesh().cellType(dim);
   for (int c=0; c<nc; c++)
     {
 
@@ -290,6 +305,7 @@ void VTKWriter::writeCellData(ostream& os, bool isPHeader) const
       writeDataArray(os, cellScalarNames()[i], cellScalarFields()[i], isPHeader, false);
     }
 
+  /* ---- vector plot works intermeadaty for VTK's */
   for (int i=0; i<cellVectorNames().length(); i++)
     {
       writeDataArray(os, cellVectorNames()[i], cellVectorFields()[i], isPHeader, false);
@@ -312,8 +328,8 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
   
   if (expr->numElems() > 1)
     {
-      xml.addAttribute("NumberOfComponents", 
-                       Teuchos::toString(expr->numElems()));
+	  // Since we are plotting always in 3D the vector components have 3 component and not "expr->numElems()"
+      xml.addAttribute("NumberOfComponents", "3" );
     }
   
   os << xml.header() << std::endl;
@@ -326,29 +342,19 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
         {
           int numNodes = mesh().numCells(0);
 
-          /*
-          Array<int> cellLID(numNodes);
-          Array<int> vals;
-
-          for (int c=0; c<numNodes; c++) cellLID[c] = c;
-
-          expr->getData(0, cellLID, vals, undefinedVal);
-
-          for (unsigned int i=0; i<vals.size(); i++)
-            {
-              os << (float) vals[i] << std::endl;
-            }
-          
-           */ 
           for (int i=0; i<numNodes; i++)
             {
-              for (int j=0; j<expr->numElems(); j++)
+              for (int j=0; j < expr->numElems(); j++)
                 {
                   if (expr->isDefined(0,i,j))
                     os << (float) expr->getData(0, i, j) << std::endl;
                   else
                     os << undefinedValue() << std::endl;
                 }
+              // write the rest with 0.0 if it is a zero component
+              if (expr->numElems() > 1)
+            	  for (int j= expr->numElems(); j < 3 ; j++)
+            		  os << "0.0 " << std::endl;
             }
         }
       else
@@ -358,13 +364,17 @@ void VTKWriter::writeDataArray(ostream& os, const string& name,
           
           for (int c=0; c<nc; c++)
             {
-              for (int j=0; j<expr->numElems(); j++)
+              for (int j=0; j < expr->numElems(); j++)
                 {
                   if (expr->isDefined(dim,c,j))
                     os << (float) expr->getData(dim, c, j) << std::endl;
                   else
                     os << undefinedValue() << std::endl;
                 }
+              // write the rest with 0.0 if it is a zero component
+              if (expr->numElems() > 1)
+            	  for (int j= expr->numElems(); j < 3 ; j++)
+            		  os << "0.0 " << std::endl;
             }
         }
     }

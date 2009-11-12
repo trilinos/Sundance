@@ -28,65 +28,54 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_GAUSSIANQUADRATURE_H
-#define SUNDANCE_GAUSSIANQUADRATURE_H
+#ifndef SUNDANCE_QUADQUADRATURE_H
+#define SUNDANCE_QUADQUADRATURE_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "SundanceQuadratureFamilyBase.hpp"
+#include "Teuchos_Array.hpp"
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
   using namespace Teuchos;
-  using namespace Internal;
-
-  /** 
-   * Family of optimal Gaussian integration rules, e.g., Gauss-Legendre on 
-   * lines, Dunavant on triangles. 
-   */
-  class GaussianQuadrature : public QuadratureFamilyBase
+  namespace Internal
   {
-  public:
-    /** */
-    GaussianQuadrature(int order);
+    /**
+     * Get abscissas and weights for Gaussian quadrature on quadletaral
+     */
 
-    /** */
-    virtual ~GaussianQuadrature(){;}
+    class QuadQuadrature
+    {
+    public:
+      static void getPoints(int order, Array<double>& wgt,
+                            Array<double>& x,
+                            Array<double>& y);
+
+      static bool test(int p);
 
 
-    /** */
-    virtual XMLObject toXML() const ;
+    private:
 
-    /** Describable interface */
-    virtual string description() const 
-    {return "GaussianQuadrature[order=" + Teuchos::toString(order()) 
-         +  "]";}
+      static void getNonsymmetricPoints(int order, Array<double>& wgt,
+                                        Array<double>& x,
+                                        Array<double>& y);
 
-    /* handleable boilerplate */
-    GET_RCP(QuadratureFamilyStub);
+      static bool getSymmetricPoints(int order, Array<double>& wgt,
+                                     Array<double>& x,
+                                     Array<double>& y);
 
-  protected:
-    /** compute a rule for the reference line cell */
-    virtual void getLineRule(Array<Point>& quadPoints,
-                             Array<double>& quadWeights) const ;
+      static void permute(int m, const Array<double>& q,
+                          Array<Array<double> >& qPerm);
 
-    /** compute a rule for the reference triangle cell */
-    virtual void getTriangleRule(Array<Point>& quadPoints,
-                                 Array<double>& quadWeights) const ;
+      static double exact(int a, int b, int c);
 
-    /** compute a rule for the reference quad cell */
-     virtual void getQuadRule(Array<Point>& quadPoints,
-                                  Array<double>& quadWeights) const ;
+      static double fact(int x);
 
-    /** compute a rule for the reference tet cell */
-    virtual void getTetRule(Array<Point>& quadPoints,
-                            Array<double>& quadWeights) const ;
-
-  };
+    };
+  }
 }
 
+#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

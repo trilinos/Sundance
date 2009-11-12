@@ -50,21 +50,25 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
   : expr_(expr),
     df_(),
     discreteSpace_(),
-    map_(),
+    //map_(),
     indices_(),
+    Expr_size_(1),
     isPointData_(true)
 {
-  if (expr.size()==1)
-    {
-      const DiscreteFunction* df 
-        = dynamic_cast<const DiscreteFunction*>(expr[0].ptr().get());
-      const DiscreteFuncElement* dfe 
-        = dynamic_cast<const DiscreteFuncElement*>(expr[0].ptr().get());
+	int index = 0;
+	Expr_size_ = expr.size();
+	// Now it is independent of the size of the size of the Expression
+	for(index = 0 ; index < Expr_size_ ; index++)
+	{
+	  const DiscreteFunction* df
+	        = dynamic_cast<const DiscreteFunction*>(expr[index].ptr().get());
+	  const DiscreteFuncElement* dfe
+	        = dynamic_cast<const DiscreteFuncElement*>(expr[index].ptr().get());
       if (df != 0)
         {
           discreteSpace_ = df->discreteSpace();
-          map_ = df->map();
-          indices_ = tuple(0);
+          //map_ = df->map();
+          indices_.append(tuple(0));
           BasisFamily basis = discreteSpace_.basis()[0];
           const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
           if (lagr != 0 && lagr->order()==0) isPointData_ = false;
@@ -78,9 +82,9 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
                              "ExprFieldWrapper ctor argument "
                              << expr << " is not a discrete function");
           discreteSpace_ = f->discreteSpace();
-          map_ = f->map();
-          indices_ = tuple(dfe->myIndex());
-          BasisFamily basis = discreteSpace_.basis()[indices_[0]];
+          //map_ = f->map();
+          indices_.append(tuple(dfe->myIndex()));
+          BasisFamily basis = discreteSpace_.basis()[indices_[index][0]];
           const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
           if (lagr != 0 && lagr->order()==0) isPointData_ = false;
           df_ = f;
@@ -93,11 +97,6 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
                              "function");
         }
     }
-  else
-    {
-      TEST_FOR_EXCEPTION(expr.size() != 1, RuntimeError,
-                         "non-scalar expr given to ExprFieldWrapper ctor");
-    }
 }
 
 
@@ -105,49 +104,24 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
 {
   Array<int> dofs;
 
-  map_->getDOFsForCell(cellDim, cellID, indices_[elem], dofs);
+  discreteSpace_.map()->getDOFsForCell(cellDim, cellID, indices_[elem][0] , dofs); //indecies[elem][0] should be OK!
+
+  //cout << "Arguments ExprFieldWrapper::getData " << cellDim << "," << cellID << "," << elem << std::endl;
 
   TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
                      "too many DOFs found in ExprFieldWrapper::getData()");
 
-  TEST_FOR_EXCEPTION(dofs.size() == 0, RuntimeError,
-                     "no DOFs found in ExprFieldWrapper::getData()");
-
   return df_->ghostView()->getElement(dofs[0]);
 }
 
-/*
-void ExprFieldWrapper::getData(int cellDim, const Array<int>& cellLID, 
-                               const double& undefinedVal,
-                               std::vector<double>& vals) const 
-{
-  Array<Array<int> > dofs;
-  Array<int> nNodes;
-  Set<int> reqFuncs;
-  for (int i=0; i<indices_.size(); i++) funcs.put(indices_[i]);
 
-  RefCountPtr<const Set<int> > allowedFuncs 
-    = map_->allowedFuncsOnCellBatch(cellDim, cellLID);
-
-  if (reqFuncs.set
-
-  
-
-  vals.resize(cellLID.size() * indices_.size());
-
-  RefCountPtr<const MapStructure> ms 
-    = map_->getDOFsForCellBatch(cellDim, cellLID, funcs, dofs, nNodes);
-
-  const int* globalIndices = &(dofs[0][0]);
-  df_->ghostView()->getElements(globalIndices, 
-
-  return df_->ghostView()->getElement(dofs[0]);
-}
-*/
-    
 bool ExprFieldWrapper::isDefined(int cellDim, int cellID, int elem) const
 {
+  // this works only for the first
   RefCountPtr<const Set<int> > allowedFuncs 
-    = map_->allowedFuncsOnCellBatch(cellDim, tuple(cellID));
-  return allowedFuncs->contains(indices_[elem]);
+    = discreteSpace_.map()->allowedFuncsOnCellBatch(cellDim, tuple(cellID));
+
+  //cout << "Arguments ExprFieldWrapper::isDefined" << cellDim << "," << cellID << "," << elem << std::endl;
+
+  return allowedFuncs->contains(indices_[elem][0]);
 }

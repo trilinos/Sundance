@@ -32,6 +32,7 @@
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceGauss1D.hpp"
 #include "SundanceTriangleQuadrature.hpp"
+#include "SundanceQuadQuadrature.hpp"
 #include "SundanceTetQuadrature.hpp"
 
 using namespace SundanceStdFwk;
@@ -61,6 +62,7 @@ bool GaussianQuadratureType::supportsCellType(const CellType& cellType) const
     case PointCell:
     case LineCell:
     case TriangleCell:
+    case QuadCell:
     case TetCell:
       return true;
     default:
@@ -102,6 +104,8 @@ bool GaussianQuadratureType::supports(const CellType& cellType, int order) const
     case LineCell:
       return true;
     case TriangleCell:
+      return true;
+    case QuadCell:
       return true;
     case TetCell:
       return TetQuadrature::supportsOrder(order);

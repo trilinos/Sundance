@@ -31,6 +31,16 @@ ADD_OPTION_AND_DEFINE(TPL_ENABLE_ExodusII
   "Enable ExodusII reader in Sundance (requires ExodusII TPL)."
   OFF )
 
+# ========== Peano configuration ===============
+IF(TPL_ENABLE_PEANO)
+  ADD_OPTION_AND_DEFINE(TPL_ENABLE_PEANO
+     HAVE_SUNDANCE_PEANO
+    "Enable Peano Mesh in Sundance (requires Peano TPL)."
+    OFF )  
+  INCLUDE_DIRECTORIES(${PEANO_INCLUDE_DIRS}) 
+  LINK_DIRECTORIES(${PEANO_LIBRARY_DIRS}/libpeano.a)
+ENDIF()
+# ============ end of Peano configuration ================
 
 IF(${Proj}_VERBOSE_CONFIGURE)
   PRINT_VAR(HAVE_SUNDANCE_EXODUS)

@@ -76,6 +76,15 @@ bool Lagrange::supportsCellTypePair(
         default:
           return false;
       }
+    case QuadCell:
+        switch(cellType){
+          case QuadCell:
+          case LineCell:
+          case PointCell:
+             return true;
+          default:
+             return false;
+        }
     case TetCell:
       switch(cellType)
       {
@@ -122,6 +131,20 @@ int Lagrange::nReferenceDOFs(
             return 10;
           default:
             TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
+                               << " not implemented in Lagrange basis");
+            return -1; // -Wall
+          }
+      }
+    case QuadCell:{
+        switch(order_) {
+          case 0:
+            return 1;
+          case 1:
+            return 4;
+          case 2:
+            return 9;
+          default:
+            TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_
                                << " not implemented in Lagrange basis");
             return -1; // -Wall
           }
@@ -183,6 +206,23 @@ void Lagrange::getReferenceDOFs(
             dofs[2] = tuple<Aint>(makeRange(3+3*n, 3+3*n));
           }
         return;
+      }
+    case QuadCell:{ // TODO: ask Kevin about Q0 (P0)
+         dofs.resize(3);
+    	 // dofs[0] are DOFs at Points
+    	 dofs[0] = tuple<Aint>(tuple(0), tuple(1), tuple(2), tuple(3));
+    	 if (order() == 2)
+    	 {
+    	   // dofs[1] are the DOFs on the line
+    	   dofs[1] = tuple<Aint>(tuple(4), tuple(5), tuple(6), tuple(7));
+    	   //dofs[2] are DOFs inside the Cell
+           dofs[2] = tuple<Aint>(tuple(8));
+    	 } else {
+    	   dofs[1] = tuple(Array<int>(), Array<int>(),
+    		                 Array<int>(), Array<int>());
+           dofs[2] = tuple(Array<int>());
+    	 }
+         return;
       }
     case TetCell:
       {
@@ -253,6 +293,12 @@ void Lagrange::refEval(
           evalOnTriangle(pts[i], deriv, result[0][i]);
         }
       return;
+    case QuadCell:
+      for (int i=0; i<pts.length(); i++)
+       {
+          evalOnquad(pts[i], deriv, result[0][i]);
+       }
+       return;
     case TetCell:
       for (int i=0; i<pts.length(); i++)
         {
@@ -415,6 +461,77 @@ void Lagrange::evalOnTriangle(const Point& pt,
 		}
 }
 
+void Lagrange::evalOnquad(const Point& pt,
+	    const MultiIndex& deriv,
+	    Array<double>& result) const {
+
+	ADReal x = ADReal(pt[0], 0, 2);
+	ADReal y = ADReal(pt[1], 1, 2);
+	ADReal one(1.0, 2);
+
+  Array<ADReal> tmp;
+
+  SUNDANCE_OUT(this->verb() > 3, "x=" << x.value() << " y="
+               << y.value());
+
+	switch(order_)
+		{
+		case 0:
+            result.resize(1);
+            tmp.resize(1);
+			tmp[0] = one;
+			break;
+		case 1:
+            result.resize(4);
+            tmp.resize(4);
+			tmp[0] = (1.0 - x)*(1.0 - y);
+			tmp[1] = x*(1.0 - y);
+			tmp[2] = (1.0 - x)*y;
+			tmp[3] = x*y; //These are the 4 basis functions for the first order
+			break;
+		case 2:
+            result.resize(9);
+            tmp.resize(9);
+                   //9  -9  -9   9  -6   0  -6   0   4
+			tmp[0] = 9.0 - 9.0*x - 9.0*y + 9.0*x*y - 6.0*(x*x -1)*(y-1)
+					- 6.0*(x-1)*(y*y-1)                     + 4.0*(x*x-1)*(y*y-1);
+			       //6  -3  -6   3  -6   0  -3   1   4
+			tmp[1] = 6.0 - 3.0*x - 6.0*y + 3.0*x*y - 6.0*(x*x -1)*(y-1)
+                    - 3.0*(x-1)*(y*y-1) + 1.0*(x+1)*(y*y-1) + 4.0*(x*x-1)*(y*y-1);
+			       //6  -6  -3   3  -3   1  -6   0   4
+			tmp[2] = 6.0 - 6.0*x - 3.0*y + 3.0*x*y - 3.0*(x*x -1)*(y-1) + 1.0*(x*x -1)*(y+1)
+					-6.0*(x-1)*(y*y-1) +                    + 4.0*(x*x-1)*(y*y-1);
+			       //4  -2  -2   1  -3   1  -3   1   4
+			tmp[3] = 4.0 - 2.0*x - 2.0*y + 1.0*x*y - 3.0*(x*x -1)*(y-1) + 1.0*(x*x -1)*(y+1)
+					- 3.0*(x-1)*(y*y-1) + 1.0*(x+1)*(y*y-1) + 4.0*(x*x-1)*(y*y-1);
+			       //-12   12   12  -12   12    0    8    0   -8
+			tmp[4] = -12.0 + 12.0*x + 12.0*y - 12.0*x*y + 12.0*(x*x -1)*(y-1)
+					+ 8.0*(x-1)*(y*y-1)                     - 8.0*(x*x-1)*(y*y-1);
+			       //-12   12   12  -12    8    0   12    0   -8
+			tmp[5] = -12.0 + 12.0*x + 12.0*y - 12.0*x*y + 8.0*(x*x -1)*(y-1)
+					+ 12.0*(x-1)*(y*y-1)                    - 8.0*(x*x-1)*(y*y-1);
+			       //-8   4   8  -4   8   0   6  -2  -8
+			tmp[6] = -8.0 + 4.0*x + 8.0*y - 4.0*x*y + 8.0*(x*x -1)*(y-1)
+					+ 6.0*(x-1)*(y*y-1) - 2.0*(x+1)*(y*y-1) - 8.0*(x*x-1)*(y*y-1);
+			       //-8   8   4  -4   6  -2   8   0  -8
+			tmp[7] = -8.0 + 8.0*x + 4.0*y - 4.0*x*y + 6.0*(x*x -1)*(y-1) - 2.0*(x*x -1)*(y+1)
+					+ 8.0*(x-1)*(y*y-1)                     - 8.0*(x*x-1)*(y*y-1);
+			       //16  -16  -16   16  -16   -0  -16   -0   16
+			tmp[8] = 16.0 - 16.0*x - 16.0*y + 16.0*x*y - 16.0*(x*x -1)*(y-1)
+					- 16.0*(x-1)*(y*y-1)                    + 16.0*(x*x-1)*(y*y-1);
+		default:{}
+		}
+
+	 for (int i=0; i<tmp.length(); i++) {
+		 SUNDANCE_OUT(this->verb() > 3 ,
+                   "tmp[" << i << "]=" << tmp[i].value()
+                   << " grad=" << tmp[i].gradient());
+		if (deriv.order()==0)
+				result[i] = tmp[i].value();
+		else
+                result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+	}
+}
 
 void Lagrange::evalOnTet(const Point& pt, 
 												 const MultiIndex& deriv,

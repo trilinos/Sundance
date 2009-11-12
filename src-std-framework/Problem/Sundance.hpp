@@ -76,6 +76,10 @@
 #include "SundanceMeshBuilder.hpp"
 #include "SundanceBamgMeshReader.hpp"
 
+#if HAVE_SUNDANCE_PEANO
+#include "SundancePeanoMeshType.hpp"
+#include "SundancePeanoMesher.hpp"
+#endif
 
 /* Cell filters */
 #include "SundanceCellFilter.hpp"

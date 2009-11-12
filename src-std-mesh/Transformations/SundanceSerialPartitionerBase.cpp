@@ -8,7 +8,6 @@ using namespace SundanceStdMesh::Internal;
 using namespace Teuchos;
 using namespace SundanceUtils;
 
-using SundanceUtils::Map;
 using std::endl;
 using std::cout;
 using std::cerr;
@@ -235,7 +234,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const
   Array<Mesh> rtn(np);
   for (int p=0; p<np; p++)
   {
-    Map<int, int> oldLIDToNewLIDMap;
+	SundanceUtils::Map<int, int> oldLIDToNewLIDMap;
     MeshType type = new BasicSimplicialMeshType();
     rtn[p] = type.createEmptyMesh(mesh.spatialDim(), MPIComm::world());
 

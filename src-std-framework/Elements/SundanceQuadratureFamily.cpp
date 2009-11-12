@@ -88,6 +88,9 @@ void QuadratureFamily::getFacetPoints(const CellType& cellType,
     case TriangleCell:
       getTriangleFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
       break;
+    case QuadCell:
+      getQuadFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
+      break;
     case TetCell:
       getTetFacetQuad(facetDim, facetIndex, quadPoints, quadWeights);
       break;
@@ -168,7 +171,60 @@ void QuadratureFamily::getTriangleFacetQuad(int facetDim,
     }
 }
 
+void QuadratureFamily::getQuadFacetQuad(int facetDim,
+                           int facetIndex,
+                           Array<Point>& quadPoints,
+                           Array<double>& quadWeights) const {
 
+	  TEST_FOR_EXCEPTION(facetDim > 1, RuntimeError,
+	                     "Invalid facet dimension " << facetDim
+	                     << " in getQuadFacetQuad()");
+
+	  TEST_FOR_EXCEPTION(facetIndex < 0 || facetIndex > 3, RuntimeError,
+	                     "Invalid facet index " << facetIndex
+	                     << " in getQuadFacetQuad()");
+	  if (facetDim==1)
+	    {
+	      Array<Point> facetPts;
+	      Array<double> facetWts;
+	      getPoints(LineCell, facetPts, facetWts);
+	      quadPoints.resize(facetPts.size());
+	      quadWeights.resize(facetWts.size());
+	      for (unsigned int i=0; i<facetPts.size(); i++)
+	        {
+	          if (facetIndex==0) // the 4 edges of the Quad
+	            {               // Numbering is important, if Edge Numbering in QuadCell changes, change this as well
+	              quadPoints[i] = Point(facetPts[i][0], 0.0);
+	              quadWeights[i] = facetWts[i];
+	            }
+	          else if (facetIndex==1)
+	            {
+	              quadPoints[i] = Point(0.0 , facetPts[i][0]);
+	              quadWeights[i] = facetWts[i];
+	            }
+	          else if (facetIndex==2)
+	          	{
+	              quadPoints[i] = Point(1.0, facetPts[i][0]);
+	              quadWeights[i] = facetWts[i];
+	          	}
+	          else
+	            {
+	          	  quadPoints[i] = Point(facetPts[i][0], 1.0);
+	          	  quadWeights[i] = facetWts[i];
+	            }
+	        }
+	    }
+	  else
+	    {
+	      quadPoints.resize(1);
+	      quadWeights.resize(1);
+	      quadWeights[0] = 1.0;
+	      if (facetIndex==0) quadPoints[0] = Point(0.0, 0.0);
+	      else if (facetIndex==1) quadPoints[0] = Point(1.0, 0.0);
+	      else if (facetIndex==2) quadPoints[0] = Point(0.0, 1.0);
+	      else quadPoints[0] = Point(1.0, 1.0);
+	    }
+}
 
 void QuadratureFamily::getTetFacetQuad(int facetDim,
                                        int facetIndex,

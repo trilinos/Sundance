@@ -70,6 +70,9 @@ namespace SundanceStdFwk
       virtual bool isDefined(int cellDim, int cellID, int elem) const ;
 
       /** */
+      virtual int numElems() const {return Expr_size_;}
+
+      /** */
       virtual bool isPointData() const {return isPointData_;}
 
       /* */
@@ -78,23 +81,26 @@ namespace SundanceStdFwk
        * Return the cell filter on which this field is defined 
        */
       virtual const CellFilter& domain() const 
-        {
-          return discreteSpace_.cellFilters(indices_[0]);
+        { // here we return only the first element ()
+          return discreteSpace_.cellFilters(indices_[0][0]);
         }
 
     public:
       Expr expr_;
 
-      const DiscreteFunctionData* df_;
+       // this field should be unique for all the variables
+       const DiscreteFunctionData* df_;
 
-      DiscreteSpace discreteSpace_;
+       DiscreteSpace discreteSpace_;
 
-      RefCountPtr<DOFMapBase> map_;
-      
-      Array<int> indices_;
+       // ---- this field can be expicitly asked -----
+       //RefCountPtr<DOFMapBase> map_;
 
-      bool isPointData_;
+       Array< Array<int> > indices_;
 
+       int Expr_size_;
+
+       bool isPointData_;
     };
   }
 }

@@ -102,8 +102,21 @@ void FieldWriterBase::addField(const string& name,
 
   if (expr->numElems() > 1)
     {
-      TEST_FOR_EXCEPTION(expr->numElems() > 1, RuntimeError,
-                         "FieldWriterBase::addField not ready for vector fields");
+      //TEST_FOR_EXCEPTION(expr->numElems() > 1, RuntimeError,
+      //                   "FieldWriterBase::addField not ready for vector fields");
+
+	  std::cout << "WARNING! : expr->numElems() > 1 , FieldWriterBase::addField only VTK can plot vector field " << std::endl;
+	  std::cout << "WARNING! : All expressions(in the list of the expressions) must be of the same kind!!! " << std::endl;
+	  /* Vector field plotting should be implemented for VTK files */
+	  /* We assume that all the expressions are the same !!!! */
+	  if (expr->isPointData()){
+		  pointVectorFields_.append(expr);
+		  pointVectorNames_.append(fieldName);
+	  }else{
+		  cellVectorFields_.append(expr);
+		  cellVectorNames_.append(fieldName);
+	  }
+
     } 
   else if (expr->isPointData()) 
     {

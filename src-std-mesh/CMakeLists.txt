@@ -126,6 +126,18 @@ APPEND_SET(SOURCES
   Concrete/SundanceBasicVertexView.cpp
   )
 
+IF(HAVE_SUNDANCE_PEANO) 
+# ========= if Peano grid is defined then we compile the corresponding files =========
+  MESSAGE(STATUS,"Compile with PEANO") 
+  APPEND_SET(HEADERS
+  Concrete/SundancePeanoMeshType.hpp
+  Concrete/SundancePeanoMesh.hpp
+  )
+  APPEND_SET(SOURCES
+  Concrete/SundancePeanoMesh.cpp
+  )
+ENDIF()  
+
 #
 # Mesh Source files
 #
@@ -158,7 +170,16 @@ APPEND_SET(SOURCES
   Sources/SundanceTriangleMeshReader.cpp
   Sources/SundanceBamgMeshReader.cpp
   )
-
+  
+IF(HAVE_SUNDANCE_PEANO) 
+# ========= if Peano grid is defined then we compile the corresponding files =========
+  APPEND_SET(HEADERS
+  Sources/SundancePeanoMesher.hpp
+  )
+  APPEND_SET(SOURCES
+  Sources/SundancePeanoMesher.cpp
+  )
+ENDIF()  
 #
 # Mesh Transformation files
 #
