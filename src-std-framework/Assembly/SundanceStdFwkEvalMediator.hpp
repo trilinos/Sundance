@@ -130,6 +130,10 @@ namespace SundanceStdFwk
       /** */
       bool isInternalBdry() const {return isInternalBdry_;}
 
+      /** */
+      bool forbidCofacetIntegrations() const 
+        {return forbidCofacetIntegrations_;}
+
 
     protected:
       const Mesh& mesh() const {return mesh_;}
@@ -167,6 +171,8 @@ namespace SundanceStdFwk
       CellType maxCellType_;
 
       bool isInternalBdry_;
+
+      bool forbidCofacetIntegrations_;
 
       RefCountPtr<const Array<int> > cellLID_;
 

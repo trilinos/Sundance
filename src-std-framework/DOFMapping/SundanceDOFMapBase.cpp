@@ -57,24 +57,24 @@ DOFMapBase::DOFMapBase(const Mesh& mesh,
 
 
 void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
-                                int funcID,
-                                Array<int>& dofs) const
+  int funcID,
+  Array<int>& dofs) const
 {
   TimeMonitor timer(dofLookupTimer());
   
   Array<Array<int> > allDofs;
   Array<int> nNodes;
   RefCountPtr<const MapStructure> s 
-    = getDOFsForCellBatch(cellDim, tuple(cellLID), makeSet(funcID), allDofs, nNodes);
+    = getDOFsForCellBatch(cellDim, tuple(cellLID), makeSet(funcID), allDofs, nNodes,0);
 
 
   int chunkNumber = s->chunkForFuncID(funcID);
   int funcIndex = s->indexForFuncID(funcID);
   dofs.resize(nNodes[chunkNumber]);
   for (int i=0; i<nNodes[chunkNumber]; i++)
-    {
-      dofs[i] = allDofs[chunkNumber][nNodes[chunkNumber]*funcIndex + i];
-    }
+  {
+    dofs[i] = allDofs[chunkNumber][nNodes[chunkNumber]*funcIndex + i];
+  }
 }
 
 Time& DOFMapBase::dofLookupTimer() 

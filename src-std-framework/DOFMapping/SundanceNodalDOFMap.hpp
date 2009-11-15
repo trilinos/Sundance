@@ -38,67 +38,65 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace SundanceUtils;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+namespace Internal
+{
+using namespace Teuchos;
 
-    /** 
-     * 
-     */
-    class NodalDOFMap : public SpatiallyHomogeneousDOFMapBase
-    {
-    public:
-      /** */
-      NodalDOFMap(const Mesh& mesh, int nFuncs,
-        const CellFilter& maxCellFilter, 
-        const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
+/** 
+ * 
+ */
+class NodalDOFMap : public SpatiallyHomogeneousDOFMapBase
+{
+public:
+  /** */
+  NodalDOFMap(const Mesh& mesh, int nFuncs,
+    const CellFilter& maxCellFilter, 
+    const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
       
-      /** */
-      virtual ~NodalDOFMap(){;}
+  /** */
+  virtual ~NodalDOFMap(){;}
 
-      /** */
-      RefCountPtr<const MapStructure> 
-      getDOFsForCellBatch(int cellDim,
-                          const Array<int>& cellLID,
-                          const Set<int>& requestedFuncSet,
-                          Array<Array<int> >& dofs,
-                          Array<int>& nNodes) const ;
+  /** */
+  RefCountPtr<const MapStructure> 
+  getDOFsForCellBatch(int cellDim,
+    const Array<int>& cellLID,
+    const Set<int>& requestedFuncSet,
+    Array<Array<int> >& dofs,
+    Array<int>& nNodes,
+    int verb) const ;
 
-      /** */
-      RefCountPtr<const MapStructure> mapStruct() const 
-      {return structure_;}
+  /** */
+  RefCountPtr<const MapStructure> mapStruct() const 
+    {return structure_;}
 
-      /** */
-      int nFuncs() const {return nFuncs_;}
+  /** */
+  int nFuncs() const {return nFuncs_;}
 
-    protected:
+protected:
 
-      void init();
+  void init();
 
-      void computeOffsets(int localCount)  ;
+  void computeOffsets(int localCount)  ;
 
-      void shareRemoteDOFs(const Array<Array<int> >& remoteNodes);
+  void shareRemoteDOFs(const Array<Array<int> >& remoteNodes);
 
-      CellFilter maxCellFilter_;
-      int dim_;
-      int nFuncs_;
-      int nElems_;
-      int nNodes_;
-      int nNodesPerElem_;
-      Array<int> elemDofs_;
-      Array<int> nodeDofs_;
-      RefCountPtr<const MapStructure> structure_;
-    };
-  }
+  CellFilter maxCellFilter_;
+  int dim_;
+  int nFuncs_;
+  int nElems_;
+  int nNodes_;
+  int nNodesPerElem_;
+  Array<int> elemDofs_;
+  Array<int> nodeDofs_;
+  RefCountPtr<const MapStructure> structure_;
+};
+}
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

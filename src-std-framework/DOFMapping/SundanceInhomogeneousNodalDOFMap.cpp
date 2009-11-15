@@ -445,12 +445,18 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
   const Array<int>& cellLID,
   const Set<int>& requestedFuncSet,
   Array<Array<int> >& dofs,
-  Array<int>& nNodes) const 
+  Array<int>& nNodes,
+  int verb) const 
 {
   TimeMonitor timer(batchedDofLookupTimer());
+  Tabs tab0;
+
+  SUNDANCE_MSG2(verb, tab0 << "in InhomNodalDOFMap::getDOFsForCellBatch()");
 
   if (cellDim==0)
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb, tab1 << "cell dim = " << cellDim);
     bool isHomogeneous = true;
     int firstFuncSet = nodeToFuncSetIndexMap_[cellLID[0]];
     for (unsigned int c=0; c<cellLID.size(); c++)
@@ -486,8 +492,11 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
   }
   else if (cellDim==dim_)
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb, tab1 << "cell dim = " << cellDim);
     bool isHomogeneous = true;
     int firstFuncSet = elemToFuncSetIndexMap_[cellLID[0]];
+    SUNDANCE_MSG2(verb, tab1 << "first func set = " << firstFuncSet);
     for (unsigned int c=0; c<cellLID.size(); c++)
     {
       if (elemToFuncSetIndexMap_[cellLID[c]] != firstFuncSet) 
@@ -503,9 +512,16 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
 
     if (isHomogeneous)
     {
+      Tabs tab2;
       Array<int> facetLID;
       Array<int> facetOrientations;
       mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);
+      if (verb >= 2)
+      {
+        Out::os() << tab2 << "cellLID = " << cellLID << endl;
+        Out::os() << tab2 << "facetLID = " << facetLID << endl;
+        Out::os() << tab2 << "elem func sets = " << elemFuncSets_ << endl;
+      }
       const Set<int>& funcSet = elemFuncSets_[firstFuncSet];
       TEST_FOR_EXCEPT(requestedFuncSet.setDifference(funcSet).size() != 0);
       Array<int> funcs = funcSet.elements();
@@ -526,6 +542,8 @@ InhomogeneousNodalDOFMap::getDOFsForCellBatch(int cellDim,
   }
   else
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb, tab1 << "cell dim = " << cellDim);
     Array<int> facetLID;
     Array<int> facetOrientations;
     mesh().getFacetLIDs(cellDim, cellLID, 0, facetLID, facetOrientations);

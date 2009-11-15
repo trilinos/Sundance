@@ -32,9 +32,6 @@
 #define SUNDANCE_INCREMENTALLYCREATABLEMESH_H
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshBase.hpp"
@@ -53,8 +50,9 @@ namespace SundanceStdMesh
     public:
       /** Construct an empty mesh of the given dimension, distributed over
        * processors in the MPI communicator*/
-      IncrementallyCreatableMesh(int dim, const MPIComm& comm)
-        : MeshBase(dim, comm) {;}
+      IncrementallyCreatableMesh(int dim, const MPIComm& comm, 
+        const MeshEntityOrder& meshOrder)
+        : MeshBase(dim, comm, meshOrder) {;}
 
       /** virtual dtor */
       virtual ~IncrementallyCreatableMesh(){;}
@@ -96,7 +94,6 @@ namespace SundanceStdMesh
   }
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 
 #endif

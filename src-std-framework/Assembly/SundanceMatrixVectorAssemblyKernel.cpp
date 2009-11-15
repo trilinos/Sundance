@@ -62,33 +62,33 @@ void MatrixVectorAssemblyKernel::init(
   int numColBlocks = colMap.size();
 
   for (int br=0; br<numRowBlocks; br++)
-    {
-      Vector<double> vecBlock; 
+  {
+    Vector<double> vecBlock; 
 
-      mat_[br].resize(numColBlocks);
-      for (int bc=0; bc<numColBlocks; bc++)
-        {
-          LinearOperator<double> matBlock;
-          if (partitionBCs && numRowBlocks==1 && numColBlocks==1)
-          {
-            matBlock = A;
-          }
-          else
-          {
-            matBlock = A.getBlock(br, bc);
-          }
-          if (matBlock.ptr().get() == 0) continue;
-          const SimpleZeroOp<double>* zp
-            = dynamic_cast<const SimpleZeroOp<double>*>(matBlock.ptr().get());
-          if (zp) continue;
-          mat_[br][bc] 
-            = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(matBlock.ptr().get());
-          TEST_FOR_EXCEPTION(mat_[br][bc]==0, RuntimeError,
-                             "matrix block (" << br << ", " << bc 
-                             << ") is not loadable in Assembler::assemble()");
-          mat_[br][bc]->zero();
-        }
+    mat_[br].resize(numColBlocks);
+    for (int bc=0; bc<numColBlocks; bc++)
+    {
+      LinearOperator<double> matBlock;
+      if (partitionBCs && numRowBlocks==1 && numColBlocks==1)
+      {
+        matBlock = A;
+      }
+      else
+      {
+        matBlock = A.getBlock(br, bc);
+      }
+      if (matBlock.ptr().get() == 0) continue;
+      const SimpleZeroOp<double>* zp
+        = dynamic_cast<const SimpleZeroOp<double>*>(matBlock.ptr().get());
+      if (zp) continue;
+      mat_[br][bc] 
+        = dynamic_cast<TSFExtended::LoadableMatrix<double>* >(matBlock.ptr().get());
+      TEST_FOR_EXCEPTION(mat_[br][bc]==0, RuntimeError,
+        "matrix block (" << br << ", " << bc 
+        << ") is not loadable in Assembler::assemble()");
+      mat_[br][bc]->zero();
     }
+  }
   SUNDANCE_MSG2(verb(), tab << "end MVAssemblyKernel::init()");
 }
 
@@ -149,7 +149,7 @@ void MatrixVectorAssemblyKernel::prepareForWorkSet(
   buildLocalDOFMaps(mediator, intCellSpec, requiredTests);
 
   SUNDANCE_MSG2(verb(), tab0 << "building column DOF maps");
-  cmb_.buildLocalDOFMaps(mediator, intCellSpec, requiredUnks);
+  cmb_.buildLocalDOFMaps(mediator, intCellSpec, requiredUnks, verb());
 
   SUNDANCE_MSG1(verb(), tab0 << "done MatrixVectorAssemblyKernel::prepareForWorkSet()");
 }

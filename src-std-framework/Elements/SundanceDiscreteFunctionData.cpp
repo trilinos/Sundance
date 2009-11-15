@@ -61,7 +61,7 @@ DiscreteFunctionData::DiscreteFunctionData(const DiscreteSpace& space)
 {}
 
 DiscreteFunctionData::DiscreteFunctionData(const DiscreteSpace& space, 
-                                   const double& constantValue)
+  const double& constantValue)
   : DiscreteFuncDataStub(), 
     space_(space),
     vector_(space_.createVector()),
@@ -72,7 +72,7 @@ DiscreteFunctionData::DiscreteFunctionData(const DiscreteSpace& space,
 }
 
 DiscreteFunctionData::DiscreteFunctionData(const DiscreteSpace& space, 
-                                   const Vector<double>& vector)
+  const Vector<double>& vector)
   : DiscreteFuncDataStub(), 
     space_(space),
     vector_(vector),
@@ -86,8 +86,8 @@ const DiscreteFunctionData* DiscreteFunctionData::getData(const DiscreteFuncElem
   RCP<const DiscreteFunctionData> rtn 
     = rcp_dynamic_cast<const DiscreteFunctionData>(dfe->commonData());
   TEST_FOR_EXCEPTION(rtn.get()==0, RuntimeError, 
-                     "cast to DiscreteFunctionData* failed for "
-                     "discrete function element " << dfe->toXML());
+    "cast to DiscreteFunctionData* failed for "
+    "discrete function element " << dfe->toXML());
   return rtn.get();
 }
 
@@ -100,24 +100,24 @@ void DiscreteFunctionData::setVector(const Vector<double>& vec)
 void DiscreteFunctionData::updateGhosts() const
 {
   if (!ghostsAreValid_)
-    {
-      space_.importGhosts(vector_, ghostView_);
-      ghostsAreValid_ = true;
-    }
+  {
+    space_.importGhosts(vector_, ghostView_);
+    ghostsAreValid_ = true;
+  }
 }
 
 
 RefCountPtr<const MapStructure> DiscreteFunctionData
 ::getLocalValues(int cellDim, 
-                 const Array<int>& cellLID,
-                 Array<Array<double> >& localValues) const 
+  const Array<int>& cellLID,
+  Array<Array<double> >& localValues) const 
 {
   Tabs tab;
 
   if (Evaluator::classVerbosity() > 3)
-    {
-      cerr << tab << "getting DF local values" << endl;
-    }
+  {
+    cerr << tab << "getting DF local values" << endl;
+  }
   updateGhosts();
 
   const RefCountPtr<DOFMapBase>& map = space_.map();
@@ -125,18 +125,18 @@ RefCountPtr<const MapStructure> DiscreteFunctionData
   Array<int> nNodes;
 
   RefCountPtr<const Set<int> > requestedFuncs = map->allowedFuncsOnCellBatch(cellDim,
-                                                                             cellLID);
+    cellLID);
 
   RefCountPtr<const MapStructure> s = map->getDOFsForCellBatch(cellDim, cellLID,
-                                                               *requestedFuncs,
-                                                               dofs, nNodes);
+    *requestedFuncs,
+    dofs, nNodes, Evaluator::classVerbosity());
   localValues.resize(s->numBasisChunks());
   for (unsigned int b=0; b<nNodes.size(); b++)
-    {
-      int nFuncs = s->numFuncs(b);
-      localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
-      ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
-    }
+  {
+    int nFuncs = s->numFuncs(b);
+    localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
+    ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
+  }
 
   return s;
 }

@@ -63,15 +63,16 @@ NodalDOFMap::NodalDOFMap(const Mesh& mesh,
 
 RefCountPtr<const MapStructure> 
 NodalDOFMap::getDOFsForCellBatch(int cellDim,
-                                 const Array<int>& cellLID,
-                                 const Set<int>& requestedFuncSet,
-                                 Array<Array<int> >& dofs,
-                                 Array<int>& nNodes) const
+  const Array<int>& cellLID,
+  const Set<int>& requestedFuncSet,
+  Array<Array<int> >& dofs,
+  Array<int>& nNodes,
+  int verbosity) const
 {
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
-  SUNDANCE_OUT(this->verb() > 3, 
+  SUNDANCE_OUT(verbosity > 3, 
                tab << "NodalDOFMap::getDOFsForCellBatch(): cellDim=" << cellDim
                << " cellLID=" << cellLID);
 

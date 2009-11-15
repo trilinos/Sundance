@@ -59,6 +59,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.hpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceEdgeLocalizedBasis.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.hpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.hpp \
@@ -90,6 +91,7 @@ $(top_srcdir)/src-std-framework/Elements/SundanceClosedNewtonCotesType.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunction.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteFunctionData.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceDiscreteSpace.cpp \
+$(top_srcdir)/src-std-framework/Elements/SundanceEdgeLocalizedBasis.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATExpansion.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATLagrange.cpp \
 $(top_srcdir)/src-std-framework/Elements/SundanceFIATP1NC.cpp \

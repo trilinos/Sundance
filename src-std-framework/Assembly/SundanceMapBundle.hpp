@@ -88,7 +88,8 @@ public:
   void buildLocalDOFMaps(
     const RefCountPtr<StdFwkEvalMediator>& mediator,
     IntegrationCellSpecifier intCellSpec,
-    const Array<Set<int> >& requiredFuncs) ;
+    const Array<Set<int> >& requiredFuncs,
+    int verbosity) ;
 
   /** 
    *

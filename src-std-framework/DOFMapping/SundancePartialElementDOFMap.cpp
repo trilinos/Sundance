@@ -65,19 +65,20 @@ PartialElementDOFMap::PartialElementDOFMap(const Mesh& mesh,
 
 RefCountPtr<const MapStructure> 
 PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
-                                          const Array<int>& cellLID,
-                                          const Set<int>& requestedFuncSet,
-                                          Array<Array<int> >& dofs,
-                                          Array<int>& nNodes) const
+  const Array<int>& cellLID,
+  const Set<int>& requestedFuncSet,
+  Array<Array<int> >& dofs,
+  Array<int>& nNodes,
+  int verbosity) const
 {
   TimeMonitor timer(batchedDofLookupTimer());
 
 
   Tabs tab;
-  SUNDANCE_OUT(this->verb() > 3, 
-               tab << "PartialElementDOFMap::getDOFsForCellBatch(): cellDim=" 
-               << cellDim
-               << " cellLID=" << cellLID);
+  SUNDANCE_OUT(verbosity > 3, 
+    tab << "PartialElementDOFMap::getDOFsForCellBatch(): cellDim=" 
+    << cellDim
+    << " cellLID=" << cellLID);
 
 
   dofs.resize(1);
@@ -88,38 +89,38 @@ PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
 
 
   if (cellDim == dim_)
-    {
-      dofs[0].resize(nCells * nFuncs_);
-      Array<int>& dof0 = dofs[0];
+  {
+    dofs[0].resize(nCells * nFuncs_);
+    Array<int>& dof0 = dofs[0];
       
-      for (int c=0; c<nCells; c++)
-        {
-          for (int i=0; i<nFuncs_; i++)
-            {
-              dof0[c*nFuncs_ + i] = elemDofs_[cellLID[c]*nFuncs_+i];
-            }
-        }
+    for (int c=0; c<nCells; c++)
+    {
+      for (int i=0; i<nFuncs_; i++)
+      {
+        dof0[c*nFuncs_ + i] = elemDofs_[cellLID[c]*nFuncs_+i];
+      }
     }
+  }
   else
-    {
-      dofs[0].resize(nCells * nFuncs_);
-      Array<int> cofacetLIDs(nCells);
+  {
+    dofs[0].resize(nCells * nFuncs_);
+    Array<int> cofacetLIDs(nCells);
       
-      for (int c=0; c<nCells; c++)
-        {
-          TEST_FOR_EXCEPTION(mesh().numMaxCofacets(cellDim, cellLID[c]) > 1,
-                             RuntimeError,
-                             "Attempt to do a trace of a L0 basis on a "
-                             "lower-dimensional cell having more than one "
-                             "maximal cofacets");
-          int myFacetIndex = -1;
-          cofacetLIDs[c] = mesh().maxCofacetLID(cellDim, cellLID[c],
-                                                0, myFacetIndex);
-        }
-
-      getDOFsForCellBatch(dim_, cofacetLIDs, requestedFuncSet, dofs,
-                          nNodes);
+    for (int c=0; c<nCells; c++)
+    {
+      TEST_FOR_EXCEPTION(mesh().numMaxCofacets(cellDim, cellLID[c]) > 1,
+        RuntimeError,
+        "Attempt to do a trace of a L0 basis on a "
+        "lower-dimensional cell having more than one "
+        "maximal cofacets");
+      int myFacetIndex = -1;
+      cofacetLIDs[c] = mesh().maxCofacetLID(cellDim, cellLID[c],
+        0, myFacetIndex);
     }
+
+    getDOFsForCellBatch(dim_, cofacetLIDs, requestedFuncSet, dofs,
+      nNodes, verbosity);
+  }
 
   return structure_;
 }
@@ -144,24 +145,24 @@ void PartialElementDOFMap::init()
   CellSet maxCells = subdomain_.getCells(mesh());
 
   for (CellIterator iter=maxCells.begin(); iter != maxCells.end(); iter++)
+  {
+    int cellLID = *iter;
+    /* the cell may be owned by another processor */
+    if (isRemote(cellDim, cellLID, owner))
     {
-      int cellLID = *iter;
-      /* the cell may be owned by another processor */
-      if (isRemote(cellDim, cellLID, owner))
-        {
-          int elemGID = mesh().mapLIDToGID(cellDim, cellLID);
-          remoteElems[owner].append(elemGID);
-        }                  
-      else /* we can assign a DOF locally */
-        {
-          /* assign DOFs */
-          for (int i=0; i<nFuncs_; i++)
-            {
-              elemDofs_[cellLID*nFuncs_ + i] = nextDOF;
-              nextDOF++;
-            }
-        }
+      int elemGID = mesh().mapLIDToGID(cellDim, cellLID);
+      remoteElems[owner].append(elemGID);
+    }                  
+    else /* we can assign a DOF locally */
+    {
+      /* assign DOFs */
+      for (int i=0; i<nFuncs_; i++)
+      {
+        elemDofs_[cellLID*nFuncs_ + i] = nextDOF;
+        nextDOF++;
+      }
     }
+  }
   
   /* Compute offsets for each processor */
   int localCount = nextDOF;
@@ -174,15 +175,15 @@ void PartialElementDOFMap::init()
 
 RefCountPtr<const Set<int> > PartialElementDOFMap
 ::allowedFuncsOnCellBatch(int cellDim,
-                          const Array<int>& cellLID) const 
+  const Array<int>& cellLID) const 
 {
   static RefCountPtr<const Set<int> > empty = rcp(new Set<int>());
 
   if (cellDim != dim_) return empty;
   for (unsigned int i=0; i<cellLID.size(); i++)
-    {
-      if (elemDofs_[cellLID[i]*nFuncs_] < 0) return empty;
-    }
+  {
+    if (elemDofs_[cellLID[i]*nFuncs_] < 0) return empty;
+  }
   return allFuncs_;
 }
 
@@ -194,21 +195,21 @@ void PartialElementDOFMap::computeOffsets(int localCount)
   int myOffset = 0;
   int np = mesh().comm().getNProc();
   if (np > 1)
-    {
-      MPIContainerComm<int>::accumulate(localCount, dofOffsets, totalDOFCount,
-                                        mesh().comm());
-      myOffset = dofOffsets[mesh().comm().getRank()];
+  {
+    MPIContainerComm<int>::accumulate(localCount, dofOffsets, totalDOFCount,
+      mesh().comm());
+    myOffset = dofOffsets[mesh().comm().getRank()];
 
-      int nDofs = nElems_ * nFuncs_;
-      for (int i=0; i<nDofs; i++)
-        {
-          if (elemDofs_[i] >= 0) elemDofs_[i] += myOffset;
-        }
-    }
-  else
+    int nDofs = nElems_ * nFuncs_;
+    for (int i=0; i<nDofs; i++)
     {
-      totalDOFCount = localCount;
+      if (elemDofs_[i] >= 0) elemDofs_[i] += myOffset;
     }
+  }
+  else
+  {
+    totalDOFCount = localCount;
+  }
   
   setLowestLocalDOF(myOffset);
   setNumLocalDOFs(localCount);
@@ -229,84 +230,84 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
   Array<Array<int> > incomingDOFs;
 
   SUNDANCE_OUT(this->verb() > 2,  
-               "p=" << mesh().comm().getRank()
-               << "synchronizing DOFs for cells of dimension 0");
+    "p=" << mesh().comm().getRank()
+    << "synchronizing DOFs for cells of dimension 0");
   SUNDANCE_OUT(this->verb() > 2,  
-               "p=" << mesh().comm().getRank()
-               << " sending cell reqs d=0, GID=" 
-               << outgoingCellRequests);
+    "p=" << mesh().comm().getRank()
+    << " sending cell reqs d=0, GID=" 
+    << outgoingCellRequests);
 
   /* share the cell requests */
   MPIContainerComm<int>::allToAll(outgoingCellRequests, 
-                                  incomingCellRequests,
-                                  mesh().comm());
+    incomingCellRequests,
+    mesh().comm());
   
   /* get DOF numbers for the zeroth function index on every node that's been 
    * requested by someone else */
   for (int p=0; p<np; p++)
+  {
+    if (p==rank) continue;
+    const Array<int>& requestsFromProc = incomingCellRequests[p];
+    int nReq = requestsFromProc.size();
+
+    SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
+      << " recv'd from proc=" << p
+      << " reqs for DOFs for cells " 
+      << requestsFromProc);
+
+    outgoingDOFs[p].resize(nReq);
+
+    for (int c=0; c<nReq; c++)
     {
-      if (p==rank) continue;
-      const Array<int>& requestsFromProc = incomingCellRequests[p];
-      int nReq = requestsFromProc.size();
-
-      SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
-                            << " recv'd from proc=" << p
-                            << " reqs for DOFs for cells " 
-                            << requestsFromProc);
-
-      outgoingDOFs[p].resize(nReq);
-
-      for (int c=0; c<nReq; c++)
-        {
-          int GID = requestsFromProc[c];
-          SUNDANCE_OUT(this->verb() > 3,  
-                       "p=" << rank
-                       << " processing zero-cell with GID=" << GID); 
-          int LID = mesh().mapGIDToLID(cellDim, GID);
-          SUNDANCE_OUT(this->verb() > 3,  
-                       "p=" << rank
-                       << " LID=" << LID << " dofs=" 
-                       << elemDofs_[LID*nFuncs_]);
-          outgoingDOFs[p][c] = elemDofs_[LID*nFuncs_];
-          SUNDANCE_OUT(this->verb() > 3,  
-                       "p=" << rank
-                       << " done processing cell with GID=" << GID);
-        }
+      int GID = requestsFromProc[c];
+      SUNDANCE_OUT(this->verb() > 3,  
+        "p=" << rank
+        << " processing zero-cell with GID=" << GID); 
+      int LID = mesh().mapGIDToLID(cellDim, GID);
+      SUNDANCE_OUT(this->verb() > 3,  
+        "p=" << rank
+        << " LID=" << LID << " dofs=" 
+        << elemDofs_[LID*nFuncs_]);
+      outgoingDOFs[p][c] = elemDofs_[LID*nFuncs_];
+      SUNDANCE_OUT(this->verb() > 3,  
+        "p=" << rank
+        << " done processing cell with GID=" << GID);
     }
+  }
 
   SUNDANCE_OUT(this->verb() > 2,  
-               "p=" << mesh().comm().getRank()
-               << "answering DOF requests for cells of dimension 0");
+    "p=" << mesh().comm().getRank()
+    << "answering DOF requests for cells of dimension 0");
 
   /* share the DOF numbers */
   MPIContainerComm<int>::allToAll(outgoingDOFs,
-                                  incomingDOFs,
-                                  mesh().comm());
+    incomingDOFs,
+    mesh().comm());
 
   SUNDANCE_OUT(this->verb() > 2,  
-               "p=" << mesh().comm().getRank()
-               << "communicated DOF answers for cells of dimension 0" );
+    "p=" << mesh().comm().getRank()
+    << "communicated DOF answers for cells of dimension 0" );
 
   
   /* now assign the DOFs from the other procs */
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
+  {
+    if (p==mesh().comm().getRank()) continue;
+    const Array<int>& dofsFromProc = incomingDOFs[p];
+    int numCells = dofsFromProc.size();
+    for (int c=0; c<numCells; c++)
     {
-      if (p==mesh().comm().getRank()) continue;
-      const Array<int>& dofsFromProc = incomingDOFs[p];
-      int numCells = dofsFromProc.size();
-      for (int c=0; c<numCells; c++)
-        {
-          int cellGID = outgoingCellRequests[p][c];
-          int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
-          int dof = dofsFromProc[c];
-          for (int i=0; i<nFuncs_; i++)
-            {
-              elemDofs_[cellLID*nFuncs_ + i] = dof+i;
-              addGhostIndex(dof+i);
-            }
-        }
+      int cellGID = outgoingCellRequests[p][c];
+      int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
+      int dof = dofsFromProc[c];
+      for (int i=0; i<nFuncs_; i++)
+      {
+        elemDofs_[cellLID*nFuncs_ + i] = dof+i;
+        addGhostIndex(dof+i);
+      }
     }
+  }
 }
 
 

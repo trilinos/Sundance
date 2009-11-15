@@ -194,7 +194,6 @@ ElementIntegral::ElementIntegral(int spatialDim,
   bool okToRestrictTestToBdry = basisRestrictableToBoundary(testBasis);
   bool okToRestrictUnkToBdry = basisRestrictableToBoundary(unkBasis);
 
-
   if (dim != spatialDim)
   {
     if (isInternalBdry)

@@ -115,7 +115,8 @@ void LocalDOFMap::fillBlock(int b, const RefCountPtr<DOFMapBase>& globalMap,
     *cellLID_,
     requiredFuncs[b],
     localDOFs(b),
-    nLocalNodesPerChunk(b));
+    nLocalNodesPerChunk(b),
+    verb_);
 }
 
 std::ostream& LocalDOFMap::print(std::ostream& os) const

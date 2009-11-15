@@ -60,18 +60,13 @@ Expr CellNormalExpr(int dimension, const std::string& name)
 
 Expr CellTangentExpr(int dimension, const std::string& name)
 {
-  Array<Expr> space(dimension-1);
-  for (int i=0; i<dimension-1; i++)
+  Array<Expr> comp(dimension);
+  for (int i=0; i<dimension; i++)
   {
-    Array<Expr> comps(dimension);
-    for (int j=0; j<dimension; j++)
-    {
-      comps[i] = new CellVectorExpr(i, j, dimension, name + "("
-        + Teuchos::toString(i) + ", " + Teuchos::toString(j) + ")");
-    }
-    space[i] = new ListExpr(comps);
+    comp[i] = new CellVectorExpr(i, 0, dimension, name + "("
+        + Teuchos::toString(i) + ")");
   }
-  return new ListExpr(space);
+  return new ListExpr(comp);
 }
 
 }

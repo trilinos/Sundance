@@ -38,35 +38,37 @@
 
 namespace SundanceStdMesh
 {
-  using namespace Teuchos;
+using namespace Teuchos;
 using namespace SundanceUtils;
   
-  /**
-   * BasicSimplicialMeshType is used to create
-   * BasicSimplicialMesh objects.
-   */
-  class BasicSimplicialMeshType : public MeshTypeBase
-  {
-  public:
-    /** Empty ctor */
-    BasicSimplicialMeshType() {;}
+/**
+ * BasicSimplicialMeshType is used to create
+ * BasicSimplicialMesh objects.
+ */
+class BasicSimplicialMeshType : public MeshTypeBase
+{
+public:
+  /** Empty ctor */
+  BasicSimplicialMeshType(const MeshEntityOrder& order=ExodusMeshOrder) 
+    : order_(order) {;}
 
-    /** virtual dtor */
-    virtual ~BasicSimplicialMeshType(){;}
+  /** virtual dtor */
+  virtual ~BasicSimplicialMeshType(){;}
 
-    /** Create a mesh of the given dimension */
-    virtual RefCountPtr<MeshBase> createEmptyMesh(int dim,
-                                                  const MPIComm& comm) const 
-    {return rcp(new BasicSimplicialMesh(dim, comm));}
+  /** Create a mesh of the given dimension */
+  virtual RefCountPtr<MeshBase> createEmptyMesh(int dim,
+    const MPIComm& comm) const 
+    {return rcp(new BasicSimplicialMesh(dim, comm, order_));}
 
-    /** */
-    string description() const {return "BasicSimplicialMeshType";}
+  /** */
+  string description() const {return "BasicSimplicialMeshType";}
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-    /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshTypeBase> getRcp() {return rcp(this);}
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
+  /** Return a ref count pointer to self */
+  virtual RefCountPtr<MeshTypeBase> getRcp() {return rcp(this);}
+
+private:
+  MeshEntityOrder order_;
       
-  };
+};
 }
 #endif

@@ -39,6 +39,7 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceInhomogeneousNodalDOFMap.hpp"
 #include "SundanceCellFilter.hpp"
+#include "SundanceDimensionalCellFilter.hpp"
 #include "SundanceCellSet.hpp"
 #include "SundanceCFMeshPair.hpp"
 #include "Teuchos_Time.hpp"
@@ -456,36 +457,59 @@ bool DOFMapBuilder::hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis)
 bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh, 
   const Array<Set<CellFilter> >& filters) const
 {
+  int maxFilterDim = 0;
   Set<Set<CellFilter> > distinctSets;
   for (unsigned int i=0; i<filters.size(); i++)
   {
+    for (Set<CellFilter>::const_iterator iter=filters[i].begin();
+         iter != filters[i].end(); iter++)
+    {
+      int dim = iter->dimension(mesh);
+      if (dim > maxFilterDim) maxFilterDim = dim;
+    }
     distinctSets.put(filters[i]);
-
   }
+
   for (Set<Set<CellFilter> >::const_iterator 
          iter=distinctSets.begin(); iter != distinctSets.end(); iter++)
   {
-    if (!isWholeDomain(mesh, *iter)) return false;
+    if (!isWholeDomain(mesh, maxFilterDim, *iter)) return false;
   }
 
   return true;
 }
 
 bool DOFMapBuilder::isWholeDomain(const Mesh& mesh, 
+  int maxFilterDim,
   const Set<CellFilter>& filters) const
 {
-  CellFilter allMax = new MaximalCellFilter();
+  CellFilter allMax;
+  if (maxFilterDim==mesh.spatialDim()) allMax = new MaximalCellFilter();
+  else allMax = new DimensionalCellFilter(maxFilterDim);
+
   CellSet remainder = allMax.getCells(mesh);
 
   for (Set<CellFilter>::const_iterator 
          i=filters.begin(); i!=filters.end(); i++)
   {
     const CellFilter& cf = *i;
-    if (0 != dynamic_cast<const MaximalCellFilter*>(cf.ptr().get()))
+    if (maxFilterDim==mesh.spatialDim())
     {
-      return true;
+      if (0 != dynamic_cast<const MaximalCellFilter*>(cf.ptr().get()))
+      {
+        return true;
+      }
     }
-    if (cf.dimension(mesh) != mesh.spatialDim()) continue;
+    else
+    {
+      const DimensionalCellFilter* dcf 
+        = dynamic_cast<const DimensionalCellFilter*>(cf.ptr().get());
+      if (0 != dcf && dcf->dimension(mesh) == maxFilterDim) 
+      {
+        return true;
+      }
+    }
+    if (cf.dimension(mesh) != maxFilterDim) continue;
     CellSet cells = cf.getCells(mesh);
     remainder = remainder.setDifference(cells);
     if (remainder.begin() == remainder.end()) return true;
@@ -731,7 +755,7 @@ void DOFMapBuilder::markBCRows(int block)
     Array<int> nNodes;
 
     RefCountPtr<const MapStructure> s 
-      = rowMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes);
+      = rowMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes,0);
     int offset = rowMap->lowestLocalDOF();
     int high = offset + rowMap->numLocalDOFs();
       
@@ -805,7 +829,7 @@ void DOFMapBuilder::markBCCols(int block)
     Array<int> nNodes;
 
     RefCountPtr<const MapStructure> s 
-      = colMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes);
+      = colMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes,0);
     int offset = colMap->lowestLocalDOF();
     int high = offset + colMap->numLocalDOFs();
       

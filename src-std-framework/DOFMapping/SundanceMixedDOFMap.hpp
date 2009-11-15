@@ -75,7 +75,8 @@ public:
     const Array<int>& cellLID,
     const Set<int>& requestedFuncSet,
     Array<Array<int> >& dofs,
-    Array<int>& nNodes) const ;
+    Array<int>& nNodes,
+    int verbosity) const ;
 
   /** */
   RefCountPtr<const MapStructure> mapStruct() const 

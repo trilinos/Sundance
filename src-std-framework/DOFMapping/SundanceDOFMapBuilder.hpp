@@ -114,6 +114,7 @@ public:
     const Array<Set<CellFilter> >& filters) const ;
 
   bool isWholeDomain(const Mesh& mesh,
+    int maxFilterDim,
     const Set<CellFilter>& filters) const ;
 
   CellFilter getMaxCellFilter(const Array<Set<CellFilter> >& filters) const ;

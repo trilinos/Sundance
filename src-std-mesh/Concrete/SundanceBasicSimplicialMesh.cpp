@@ -70,8 +70,9 @@ static Time& getJacobianTimer()
 
 //#define SKIP_FACES
 
-BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm)
-	: IncrementallyCreatableMesh(dim, comm),
+BasicSimplicialMesh::BasicSimplicialMesh(int dim, const MPIComm& comm, 
+  const MeshEntityOrder& order)
+	: IncrementallyCreatableMesh(dim, comm, order),
     numCells_(dim+1),
     points_(),
     edgeVerts_(2),

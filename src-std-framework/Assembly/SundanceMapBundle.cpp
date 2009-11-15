@@ -116,15 +116,17 @@ const RefCountPtr<LocalDOFMap>& MapBundle::chooseMap(
 void MapBundle::buildLocalDOFMaps(
   const RefCountPtr<StdFwkEvalMediator>& mediator,
   IntegrationCellSpecifier intCellSpec,
-  const Array<Set<int> >& requiredFuncs)
+  const Array<Set<int> >& requiredFuncs,
+  int verbosity)
 {
   Tabs tab;
-  int verbosity = mediator->verb();
 
   int numBlocks = dofMap_.size();
 
   localDOFMap_->markAsUnused();
   cofacetLocalDOFMap_->markAsUnused();
+  localDOFMap_->setVerbosity(verbosity);
+  cofacetLocalDOFMap_->setVerbosity(verbosity);
 
   int maxCellDim = mediator->maxCellDim();
   int cellDim = mediator->cellDim();

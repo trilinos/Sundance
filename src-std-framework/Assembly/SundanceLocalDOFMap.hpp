@@ -101,6 +101,9 @@ public:
   void fillBlock(int b, const RefCountPtr<DOFMapBase>& globalMap,
     const Array<Set<int> >& requiredFunc);
 
+  /** */
+  void setVerbosity(int v) const {verb_ = v;}
+
 private:
 
 
@@ -120,7 +123,7 @@ private:
   void verifyValidBlock(int b) const ;
 
 
-  int verb_;
+  mutable int verb_;
   Array<int> isUsed_;
   bool hasCells_;
   RefCountPtr<Array<Array<int> > > nLocalNodesPerChunk_;

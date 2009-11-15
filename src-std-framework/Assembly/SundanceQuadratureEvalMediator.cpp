@@ -86,10 +86,10 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
     SUNDANCE_MSG2(verb(), tab << "working on internal boundary");
   }
   
-  TEST_FOR_EXCEPT(isInternalBdry() 
+  TEST_FOR_EXCEPT(isInternalBdry()
     && integrationCellSpec() != NoTermsNeedCofacets);
 
-  if (cellType != maxCellType && !isInternalBdry())
+  if (cellType != maxCellType && !forbidCofacetIntegrations())
   {
     numEvaluationCases_ = numFacets(maxCellType, cellDim());
   }
@@ -179,23 +179,34 @@ void QuadratureEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 {
   Tabs tabs;
   SUNDANCE_MSG2(verb(),tabs 
-    << "QuadratureEvalMediator evaluating cell normal expr " 
+    << "QuadratureEvalMediator evaluating cell vector expr " 
     << expr->toString());
 
   int nQuad = numQuadPts(cellType());
   int nCells = cellLID()->size();
 
+  vec->resize(nQuad*nCells);
+
   SUNDANCE_MSG3(verb(),tabs << "number of quad pts=" << nQuad);
-  Array<Point> normals;
-  mesh().outwardNormals(*cellLID(), normals);
   int dir = expr->componentIndex();
 
-  vec->resize(nQuad*nCells);
+  Array<Point> vectors;
+  if (expr->isNormal())
+  { 
+    mesh().outwardNormals(*cellLID(), vectors);
+  }
+  else
+  {
+    TEST_FOR_EXCEPTION(cellDim() != 1, RuntimeError,
+      "unable to compute tangent vectors for cell dim = " << cellDim());
+    mesh().tangentsToEdges(*cellLID(), vectors);
+  }
+    
   double * const xx = vec->start();
   int k=0;
   for (int c=0; c<nCells; c++)
   {
-    double n = normals[c][dir];
+    double n = vectors[c][dir];
     for (int q=0; q<nQuad; q++, k++) 
     {
       xx[k] = n;

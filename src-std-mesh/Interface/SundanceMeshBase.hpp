@@ -44,6 +44,10 @@
 
 namespace SundanceStdMesh {
 
+
+/** Identifier for ordering convention */
+enum MeshEntityOrder {UFCMeshOrder, ExodusMeshOrder};
+
 class MaximalCofacetBatch;
 
 namespace Internal {
@@ -384,7 +388,8 @@ public:
   //@{
 
   /** \brief . */
-  MeshBase(int dim, const MPIComm& comm);
+  MeshBase(int dim, const MPIComm& comm, 
+    const MeshEntityOrder& meshOrder);
   
   /** \brief . */
   virtual ~MeshBase(){;}
@@ -393,6 +398,9 @@ public:
 
   /** \name Topological Information */
   //@{
+
+  /** \brief Get the ordering convention used by this mesh */
+  const MeshEntityOrder& meshOrder() const {return order_;}
   
   /** \brief Get the spatial dimension of the mesh
    *
@@ -781,7 +789,20 @@ public:
       const Array<int>& cellLIDs,
       Array<Point>& outwardNormals
       ) const ;
-  
+
+  /** 
+   * Get tangent vectors for a batch of edges
+   *
+   * \param cellLIDs [in] LIDs for the cells whose tangents are to be
+   * computed. 
+   * \param tangentVectors [out] Unit tangents for each cell
+   */
+  virtual void tangentsToEdges(
+    const Array<int>& cellLIDs,
+    Array<Point>& tangenVectors
+    ) const ;
+      
+
   /** \brief Map points from a reference cell to physical points for a batch
    * of cells.
    *
@@ -920,6 +941,8 @@ private:
   int dim_;
 
   MPIComm comm_;
+
+  MeshEntityOrder order_;
 
   RefCountPtr<CellReordererImplemBase> reorderer_;
 

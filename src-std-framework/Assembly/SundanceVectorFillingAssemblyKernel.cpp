@@ -110,7 +110,8 @@ void VectorFillingAssemblyKernel::buildLocalDOFMaps(
   IntegrationCellSpecifier intCellSpec,
   const Array<Set<int> >& requiredFuncs) 
 {
-  mapBundle_.buildLocalDOFMaps(mediator, intCellSpec, requiredFuncs);
+  mapBundle_.buildLocalDOFMaps(mediator, intCellSpec, requiredFuncs,
+    verb());
 }
 
 

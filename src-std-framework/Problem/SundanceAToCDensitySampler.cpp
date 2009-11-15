@@ -116,7 +116,7 @@ void AToCDensitySampler::init()
   Set<int> funcs = makeSet(0);
   Array<Array<int> > dofs;
   Array<int> nNodes;
-  dofMap->getDOFsForCellBatch(dim_, cellLID, funcs, dofs, nNodes);
+  dofMap->getDOFsForCellBatch(dim_, cellLID, funcs, dofs, nNodes,0);
   
   const Array<int>& dofs0 = dofs[0];
   for (unsigned int c=0; c<cellLID.size(); c++)

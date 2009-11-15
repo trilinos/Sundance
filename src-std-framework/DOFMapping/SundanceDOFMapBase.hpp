@@ -239,7 +239,8 @@ namespace SundanceStdFwk
         int cellDim, const Array<int>& cellLIDs,
         const Set<int>& requestedFuncSet,
         Array<Array<int> >& dofs,
-        Array<int>& nNodes
+        Array<int>& nNodes,
+        int verb
         ) const = 0 ;
 
       /** \brief Return the set of a function IDs for a batch of cells for

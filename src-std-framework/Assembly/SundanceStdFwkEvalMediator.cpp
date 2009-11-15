@@ -55,6 +55,7 @@ StdFwkEvalMediator::StdFwkEvalMediator(const Mesh& mesh, int cellDim)
     cellType_(NullCell),
     maxCellType_(NullCell),
     isInternalBdry_(false),
+    forbidCofacetIntegrations_(false),
     cellLID_(),
     JVol_(rcp(new CellJacobianBatch())),
     JTrans_(rcp(new CellJacobianBatch())),
@@ -82,6 +83,8 @@ void StdFwkEvalMediator::setCellType(const CellType& cellType,
   cacheIsValid() = false; 
   jCacheIsValid_=false;
   cofacetCellsAreReady_ = false;
+  forbidCofacetIntegrations_ = isInternalBdry_ ;
+//    && !ElementIntegral::alwaysUseCofacets();
 }
 
 

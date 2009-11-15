@@ -109,7 +109,9 @@ public:
    * to standard form */
   virtual bool lessThan(const ScalarExpr* other) const = 0 ;
 
+
 protected:
+private:
 };
 }
 

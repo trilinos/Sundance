@@ -38,75 +38,74 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using SundanceUtils::Map;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace SundanceUtils;
+using SundanceUtils::Map;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+namespace Internal
+{
+using namespace Teuchos;
 
-    /** 
-     * PartialElementDOFMap is a DOF map specialized to the case of element-based
-     * DOFs on a subset of cells in the domain. All elements must have the same
-     * set of functions. 
-     */
-    class PartialElementDOFMap : public DOFMapBase
-    {
-    public:
-      /** */
-      PartialElementDOFMap(const Mesh& mesh, 
-                           const CellFilter& subdomain,
-                           int nFuncs,
-  const ParameterList& verbParams);
+/** 
+ * PartialElementDOFMap is a DOF map specialized to the case of element-based
+ * DOFs on a subset of cells in the domain. All elements must have the same
+ * set of functions. 
+ */
+class PartialElementDOFMap : public DOFMapBase
+{
+public:
+  /** */
+  PartialElementDOFMap(const Mesh& mesh, 
+    const CellFilter& subdomain,
+    int nFuncs,
+    const ParameterList& verbParams);
       
-      /** */
-      virtual ~PartialElementDOFMap(){;}
+  /** */
+  virtual ~PartialElementDOFMap(){;}
 
-      /** */
-      RefCountPtr<const MapStructure> 
-      getDOFsForCellBatch(int cellDim,
-                          const Array<int>& cellLID,
-                          const Set<int>& requestedFuncSet,
-                          Array<Array<int> >& dofs,
-                          Array<int>& nNodes) const ;
+  /** */
+  RefCountPtr<const MapStructure> 
+  getDOFsForCellBatch(int cellDim,
+    const Array<int>& cellLID,
+    const Set<int>& requestedFuncSet,
+    Array<Array<int> >& dofs,
+    Array<int>& nNodes,
+    int verbosity) const ;
 
-      /** */
-      RefCountPtr<const Set<int> >
-      allowedFuncsOnCellBatch(int cellDim,
-                              const Array<int>& cellLID) const ;
+  /** */
+  RefCountPtr<const Set<int> >
+  allowedFuncsOnCellBatch(int cellDim,
+    const Array<int>& cellLID) const ;
 
-      /** */
-      const Array<CellFilter>& funcDomains() const {return funcDomains_;}
+  /** */
+  const Array<CellFilter>& funcDomains() const {return funcDomains_;}
 
-      /** */
-      virtual void print(ostream& os) const ;
+  /** */
+  virtual void print(ostream& os) const ;
 
 
-    protected:
+protected:
 
-      void init();
+  void init();
 
-      void computeOffsets(int localCount)  ;
+  void computeOffsets(int localCount)  ;
 
-      void shareRemoteDOFs(const Array<Array<int> >& remoteElems);
+  void shareRemoteDOFs(const Array<Array<int> >& remoteElems);
 
-      int dim_;
-      int nFuncs_;
-      int nElems_;
-      CellFilter subdomain_;
-      Array<CellFilter> funcDomains_;
-      Array<int> elemDofs_;
-      RefCountPtr<MapStructure> structure_;
-      RefCountPtr<const Set<int> > allFuncs_;
-    };
-  }
+  int dim_;
+  int nFuncs_;
+  int nElems_;
+  CellFilter subdomain_;
+  Array<CellFilter> funcDomains_;
+  Array<int> elemDofs_;
+  RefCountPtr<MapStructure> structure_;
+  RefCountPtr<const Set<int> > allFuncs_;
+};
+}
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

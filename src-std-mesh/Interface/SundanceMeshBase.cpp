@@ -40,9 +40,11 @@ using namespace Teuchos;
 using namespace SundanceUtils;
 
 
-MeshBase::MeshBase(int dim, const MPIComm& comm) 
+MeshBase::MeshBase(int dim, const MPIComm& comm, 
+  const MeshEntityOrder& order) 
   : dim_(dim), 
     comm_(comm),
+    order_(order),
     reorderer_(Mesh::defaultReorderer().createInstance(this))
 {;}
 
@@ -61,69 +63,92 @@ Point MeshBase::centroid(int cellDim, int cellLID) const
 }
 
 void MeshBase::outwardNormals(
-			      const Array<int>& cellLIDs,
-			      Array<Point>& outwardNormals
-			      ) const 
+  const Array<int>& cellLIDs,
+  Array<Point>& outwardNormals
+  ) const 
 {
   int D = spatialDim();
   outwardNormals.resize(cellLIDs.size());
   for (unsigned int c=0; c<cellLIDs.size(); c++)
+  {
+    int f=-1;
+    TEST_FOR_EXCEPTION(numMaxCofacets(D-1, cellLIDs[c]) > 1, 
+      RuntimeError,
+      "cell #" << cellLIDs[c] << " is not a boundary cell");
+    int maxLID = maxCofacetLID(D-1, cellLIDs[c], 0, f);
+    Point cInterior = centroid(D, maxLID);
+    Point cBdry = centroid(D-1, cellLIDs[c]);
+    Point q = cBdry - cInterior;
+    Point s;
+    if (D==1) 
     {
-      int f=-1;
-      TEST_FOR_EXCEPTION(numMaxCofacets(D-1, cellLIDs[c]) > 1, 
-			 RuntimeError,
-			 "cell #" << cellLIDs[c] << " is not a boundary cell");
-      int maxLID = maxCofacetLID(D-1, cellLIDs[c], 0, f);
-      Point cInterior = centroid(D, maxLID);
-      Point cBdry = centroid(D-1, cellLIDs[c]);
-      Point q = cBdry - cInterior;
-      Point s;
-      if (D==1) 
-	{
-	  s = Point(1.0);
-	}
-      else if (D==2)
-	{
-	  Point A = nodePosition(facetLID(D-1, cellLIDs[c], 0, 0, f));
-	  Point B = nodePosition(facetLID(D-1, cellLIDs[c], 0, 1, f));
-	  Point t = B - A;
-	  s = Point(-t[1], t[0]);
-	}
-      else 
-	{
-	  Point A = nodePosition(facetLID(D-1, cellLIDs[c], 0, 0, f));
-	  Point B = nodePosition(facetLID(D-1, cellLIDs[c], 0, 1, f));
-	  Point C = nodePosition(facetLID(D-1, cellLIDs[c], 0, 2, f));
-	  s = cross(B-A, C-A);
-	}
-      if (q * s > 0.0)
-	{
-	  outwardNormals[c] = s/::sqrt(s*s);
-	}
-      else
-	{
-	  outwardNormals[c] = -s/::sqrt(s*s);
-	}
+      s = Point(1.0);
     }
+    else if (D==2)
+    {
+      Point A = nodePosition(facetLID(D-1, cellLIDs[c], 0, 0, f));
+      Point B = nodePosition(facetLID(D-1, cellLIDs[c], 0, 1, f));
+      Point t = B - A;
+      s = Point(-t[1], t[0]);
+    }
+    else 
+    {
+      Point A = nodePosition(facetLID(D-1, cellLIDs[c], 0, 0, f));
+      Point B = nodePosition(facetLID(D-1, cellLIDs[c], 0, 1, f));
+      Point C = nodePosition(facetLID(D-1, cellLIDs[c], 0, 2, f));
+      s = cross(B-A, C-A);
+    }
+    if (q * s > 0.0)
+    {
+      outwardNormals[c] = s/::sqrt(s*s);
+    }
+    else
+    {
+      outwardNormals[c] = -s/::sqrt(s*s);
+    }
+  }
 }
 
+
+void  MeshBase::tangentsToEdges(
+  const Array<int>& cellLIDs,
+  Array<Point>& tangentVectors
+  ) const 
+{
+  TEST_FOR_EXCEPT(spatialDim() <= 1);
+
+  tangentVectors.resize(cellLIDs.size());
+
+  for (unsigned int c=0; c<cellLIDs.size(); c++)
+  {
+    int fOrient=1;
+    Point A = nodePosition(facetLID(1, cellLIDs[c], 0, 0, fOrient));
+    Point B = nodePosition(facetLID(1, cellLIDs[c], 0, 1, fOrient));
+    Point t = B - A;
+    tangentVectors[c] = t/(sqrt(t*t));
+  }
+}
+
+
+
+
 void MeshBase::getFacetArray(int cellDim, int cellLID, int facetDim, 
-                             Array<int>& facetLIDs,
-                             Array<int>& facetOrientations) const
+  Array<int>& facetLIDs,
+  Array<int>& facetOrientations) const
 {
   int nf = numFacets(cellDim, cellLID, facetDim);
   facetLIDs.resize(nf);
   facetOrientations.resize(nf);
   for (int f=0; f<nf; f++) 
-    {
-      facetLIDs[f] = facetLID(cellDim, cellLID, facetDim, f, 
-                              facetOrientations[f]);
-    }
+  {
+    facetLIDs[f] = facetLID(cellDim, cellLID, facetDim, f, 
+      facetOrientations[f]);
+  }
 }
 
 
 void MeshBase::getLabels(int cellDim, const Array<int>& cellLID, 
-                         Array<int>& labels) const
+  Array<int>& labels) const
 {
   labels.resize(cellLID.size());
   for (unsigned int i=0; i<cellLID.size(); i++) labels[i] = label(cellDim, cellLID[i]);

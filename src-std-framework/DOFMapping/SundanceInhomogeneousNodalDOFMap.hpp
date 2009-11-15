@@ -42,94 +42,95 @@
 
 namespace SundanceStdFwk
 {
-  using namespace SundanceUtils;
-  using SundanceUtils::Map;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace SundanceUtils;
+using SundanceUtils::Map;
+using namespace SundanceStdMesh;
+using namespace SundanceStdMesh::Internal;
+namespace Internal
+{
+using namespace Teuchos;
 
-    /** 
-     * 
-     */
-    class InhomogeneousNodalDOFMap : public DOFMapBase
-    {
-    public:
-      /** */
-      InhomogeneousNodalDOFMap(const Mesh& mesh, 
-        const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap, const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
+/** 
+ * 
+ */
+class InhomogeneousNodalDOFMap : public DOFMapBase
+{
+public:
+  /** */
+  InhomogeneousNodalDOFMap(const Mesh& mesh, 
+    const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap, const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
       
-      /** */
-      virtual ~InhomogeneousNodalDOFMap(){;}
+  /** */
+  virtual ~InhomogeneousNodalDOFMap(){;}
 
-      /** */
-      RefCountPtr<const MapStructure> 
-      getDOFsForCellBatch(int cellDim,
-                          const Array<int>& cellLID,
-                          const Set<int>& requestedFuncSet,
-                          Array<Array<int> >& dofs,
-                          Array<int>& nNodes) const ;
+  /** */
+  RefCountPtr<const MapStructure> 
+  getDOFsForCellBatch(int cellDim,
+    const Array<int>& cellLID,
+    const Set<int>& requestedFuncSet,
+    Array<Array<int> >& dofs,
+    Array<int>& nNodes,
+    int verb) const ;
 
-      /** */
-      void getFunctionDofs(int cellDim,
-                           const Array<int>& cellLID,
-                           const Array<int>& facetLID,
-                           const Array<int>& funcs,
-                           Array<Array<int> >& dofs) const ;
+  /** */
+  void getFunctionDofs(int cellDim,
+    const Array<int>& cellLID,
+    const Array<int>& facetLID,
+    const Array<int>& funcs,
+    Array<Array<int> >& dofs) const ;
 
-      /** */
-      RefCountPtr<const Set<int> >
-      allowedFuncsOnCellBatch(int cellDim,
-                              const Array<int>& cellLID) const ;
+  /** */
+  RefCountPtr<const Set<int> >
+  allowedFuncsOnCellBatch(int cellDim,
+    const Array<int>& cellLID) const ;
 
-      /** */
-      const Array<CellFilter>& funcDomains() const {return funcDomains_;}
+  /** */
+  const Array<CellFilter>& funcDomains() const {return funcDomains_;}
 
-      /** */
-      virtual void print(ostream& os) const ;
+  /** */
+  virtual void print(ostream& os) const ;
 
 
-    protected:
+protected:
 
-      /** */
-      Array<int> dofsOnCell(int cellDim, int cellLID, const Set<int>& reqFuncs) const ;
+  /** */
+  Array<int> dofsOnCell(int cellDim, int cellLID, const Set<int>& reqFuncs) const ;
                               
 
-      void init();
+  void init();
 
-      void computeOffsets(int localCount)  ;
+  void computeOffsets(int localCount)  ;
 
-      void shareRemoteDOFs(const Array<Array<int> >& remoteNodes);
+  void shareRemoteDOFs(const Array<Array<int> >& remoteNodes);
 
-      void assignNode(int fLID,
-                      int funcComboIndex,
-                      int dofOffset,
-                      int nFuncs,
-                      Array<Array<int> >& remoteNodes,
-                      Array<int>& hasProcessedCell,
-                      int& nextDOF) ;
+  void assignNode(int fLID,
+    int funcComboIndex,
+    int dofOffset,
+    int nFuncs,
+    Array<Array<int> >& remoteNodes,
+    Array<int>& hasProcessedCell,
+    int& nextDOF) ;
 
-      int dim_;
-      RCP<BasisDOFTopologyBase> basis_;
-      int nTotalFuncs_;
-      Array<CellFilter> funcDomains_;
+  int dim_;
+  RCP<BasisDOFTopologyBase> basis_;
+  int nTotalFuncs_;
+  Array<CellFilter> funcDomains_;
 
-      Array<Array<int> > nodeDofs_;
-      Array<Array<int> > elemDofs_;
-      Array<int> nodeToFuncSetIndexMap_;
-      Array<int> elemToFuncSetIndexMap_;
-      Array<Set<int> > elemFuncSets_;
-      Array<Set<int> > nodalFuncSets_;
-      Array<int> nodeToOffsetMap_;
-      Array<int> elemToOffsetMap_;
+  Array<Array<int> > nodeDofs_;
+  Array<Array<int> > elemDofs_;
+  Array<int> nodeToFuncSetIndexMap_;
+  Array<int> elemToFuncSetIndexMap_;
+  Array<Set<int> > elemFuncSets_;
+  Array<Set<int> > nodalFuncSets_;
+  Array<int> nodeToOffsetMap_;
+  Array<int> elemToOffsetMap_;
 
-      Array<Array<int> > funcIndexWithinNodeFuncSet_;
+  Array<Array<int> > funcIndexWithinNodeFuncSet_;
 
-      Array<RefCountPtr<const MapStructure> > elemStructure_;
-      Array<RefCountPtr<const MapStructure> > nodeStructure_;
-    };
-  }
+  Array<RefCountPtr<const MapStructure> > elemStructure_;
+  Array<RefCountPtr<const MapStructure> > nodeStructure_;
+};
+}
 }
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */

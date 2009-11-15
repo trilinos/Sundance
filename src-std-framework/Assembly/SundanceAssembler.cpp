@@ -1607,7 +1607,7 @@ void Assembler::getGraph(int br, int bc,
         RefCountPtr<const MapStructure> rowMapStruct 
           = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
             requiredVars[br], *testLocalDOFs,
-            numTestNodes);
+            numTestNodes, this->verb());
         if (rowMap_[br].get()==colMap_[bc].get())
         {
           unkLocalDOFs = testLocalDOFs;
@@ -1618,7 +1618,7 @@ void Assembler::getGraph(int br, int bc,
         {
           colMapStruct = colMap_[br]->getDOFsForCellBatch(dim, *workSet, 
             requiredUnks[bc], 
-            *unkLocalDOFs, numUnkNodes);
+            *unkLocalDOFs, numUnkNodes, this->verb());
         }
 
         if (pairs.get() != 0)
@@ -1868,7 +1868,7 @@ void Assembler
         = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
           requiredVars[br],
           *testLocalDOFs,
-          numTestNodes);
+          numTestNodes, this->verb());
 
       if (rowMap_[br].get()==colMap_[bc].get())
       {
@@ -1880,7 +1880,7 @@ void Assembler
       {
         colMapStruct = colMap_[bc]->getDOFsForCellBatch(dim, *workSet, 
           requiredUnks[bc],
-          *unkLocalDOFs, numUnkNodes);
+          *unkLocalDOFs, numUnkNodes, this->verb());
       }
 
           
