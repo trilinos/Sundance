@@ -96,6 +96,17 @@ bool Lagrange::supportsCellTypePair(
         default:
           return false;
       }
+    case BrickCell:
+      switch(cellType)
+      {
+        case BrickCell:
+        case QuadCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
     default:
       return false;
   }
@@ -142,7 +153,8 @@ int Lagrange::nReferenceDOFs(
           case 1:
             return 4;
           case 2:
-            return 9;
+            return 8; // was 9 before
+                      // !!! ---- change here also if one changes the number of unknowns ----
           default:
             TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_
                                << " not implemented in Lagrange basis");
@@ -160,6 +172,22 @@ int Lagrange::nReferenceDOFs(
             return 10;
           default:
             TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
+                               << " not implemented in Lagrange basis");
+            return -1; // -Wall
+          }
+
+      }
+    case BrickCell:
+      {switch(order_)
+          {
+          case 0:
+            return 1;
+          case 1:
+            return 8;
+          case 2:
+            return 20;
+          default:
+            TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_
                                << " not implemented in Lagrange basis");
             return -1; // -Wall
           }
@@ -216,7 +244,9 @@ void Lagrange::getReferenceDOFs(
     	   // dofs[1] are the DOFs on the line
     	   dofs[1] = tuple<Aint>(tuple(4), tuple(5), tuple(6), tuple(7));
     	   //dofs[2] are DOFs inside the Cell
-           dofs[2] = tuple<Aint>(tuple(8));
+
+    	   dofs[2] = tuple(Array<int>());
+           //dofs[2] = tuple<Aint>(tuple(8));
     	 } else {
     	   dofs[1] = tuple(Array<int>(), Array<int>(),
     		                 Array<int>(), Array<int>());
@@ -243,6 +273,28 @@ void Lagrange::getReferenceDOFs(
                         Array<int>(), Array<int>());
         dofs[3] = tuple(Array<int>());
         return;
+      }
+    case BrickCell:{
+         dofs.resize(4);
+    	 // dofs[0] are DOFs at Points
+    	 dofs[0] = tuple<Aint>(tuple(0), tuple(1), tuple(2), tuple(3),
+    			               tuple(4), tuple(5), tuple(6), tuple(7));
+    	 if (order() == 2)
+    	 {
+    	   // dofs[1] are the DOFs on the line
+    	   dofs[1] = tuple<Aint>( tuple(8), tuple(9) , tuple(10), tuple(11),
+    			                 tuple(12), tuple(13), tuple(14), tuple(15),
+    			                 tuple(16), tuple(17), tuple(18), tuple(19));
+    	   //dofs[2] are DOFs on the faces
+    	 } else {
+    	   dofs[1] = tuple(Array<int>(), Array<int>(), Array<int>(), Array<int>(),
+    			           Array<int>(), Array<int>(), Array<int>(), Array<int>(),
+    			           Array<int>(), Array<int>(), Array<int>(), Array<int>());
+    	 }
+         dofs[2] = tuple(Array<int>(), Array<int>(), Array<int>(), Array<int>(),
+                         Array<int>(), Array<int>() );
+         dofs[3] = tuple(Array<int>());
+         return;
       }
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
@@ -304,6 +356,12 @@ void Lagrange::refEval(
         {
           evalOnTet(pts[i], deriv, result[0][i]);
         }
+      return;
+    case BrickCell:
+        for (int i=0; i<pts.length(); i++)
+          {
+            evalOnBrick(pts[i], deriv, result[0][i]);
+          }
       return;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError,
@@ -489,7 +547,8 @@ void Lagrange::evalOnquad(const Point& pt,
 			tmp[2] = (1.0 - x)*y;
 			tmp[3] = x*y; //These are the 4 basis functions for the first order
 			break;
-		case 2:
+		case 2: //The basis functions calculated with Octave / Matlab
+			/*
             result.resize(9);
             tmp.resize(9);
                    //9  -9  -9   9  -6   0  -6   0   4
@@ -518,7 +577,33 @@ void Lagrange::evalOnquad(const Point& pt,
 					+ 8.0*(x-1)*(y*y-1)                     - 8.0*(x*x-1)*(y*y-1);
 			       //16  -16  -16   16  -16   -0  -16   -0   16
 			tmp[8] = 16.0 - 16.0*x - 16.0*y + 16.0*x*y - 16.0*(x*x -1)*(y-1)
-					- 16.0*(x-1)*(y*y-1)                    + 16.0*(x*x-1)*(y*y-1);
+					- 16.0*(x-1)*(y*y-1)                    + 16.0*(x*x-1)*(y*y-1);*/
+	        result.resize(8);
+	        tmp.resize(8);
+	               //5  -5  -5   5  -2   0  -2   0
+			tmp[0] = 5.0 - 5.0*x - 5.0*y + 5.0*x*y - 2.0*(x*x -1)*(y-1)
+					- 2.0*(x-1)*(y*y-1);
+			       //2   1  -2  -1  -2   0   1   1
+			tmp[1] = 2.0 + 1.0*x - 2.0*y - 1.0*x*y - 2.0*(x*x -1)*(y-1)
+	                + 1.0*(x-1)*(y*y-1) + 1.0*(x+1)*(y*y-1);
+			       //2  -2   1  -1   1   1  -2   0
+			tmp[2] = 2.0 - 2.0*x + 1.0*y - 1.0*x*y + 1.0*(x*x -1)*(y-1) + 1.0*(x*x -1)*(y+1)
+					- 2.0*(x-1)*(y*y-1);
+			       //0   2   2  -3   1   1   1   1
+			tmp[3] =      2.0*x + 2.0*y - 3.0*x*y + 1.0*(x*x -1)*(y-1) + 1.0*(x*x -1)*(y+1)
+					+ 1.0*(x-1)*(y*y-1)  + 1.0*(x+1)*(y*y-1);
+			       //-4   4   4  -4   4   0   0   0
+			tmp[4] = -4.0 + 4.0*x + 4.0*y - 4.0*x*y + 4.0*(x*x -1)*(y-1);
+
+			       //-4   4   4  -4  -0   0   4   0
+			tmp[5] = -4.0 + 4.0*x + 4.0*y - 4.0*x*y
+					+ 4.0*(x-1)*(y*y-1);
+			       //0  -4   0   4  -0  -0  -2  -2
+			tmp[6] =      - 4.0*x         + 4.0*x*y
+					- 2.0*(x-1)*(y*y-1)  - 2.0*(x+1)*(y*y-1);
+			       //0   0  -4   4  -2  -2   0   0
+			tmp[7] =             - 4.0*y + 4.0*x*y - 2.0*(x*x -1)*(y-1) - 2.0*(x*x -1)*(y+1);
+			break;
 		default:{}
 		}
 
@@ -566,7 +651,7 @@ void Lagrange::evalOnTet(const Point& pt,
 			tmp[0] = (1.0-x-y-z)*(1.0-2.0*x-2.0*y-2.0*z);
 			tmp[1] = 2.0*x*(x-0.5);
 			tmp[2] = 2.0*y*(y-0.5);
-			tmp[3] = 2.0*z*(z-0.5); 
+			tmp[3] = 2.0*z*(z-0.5);
 			tmp[4] = 4.0*x*(1.0-x-y-z);
 			tmp[5] = 4.0*x*y;
 			tmp[6] = 4.0*y*(1.0-x-y-z);
@@ -586,6 +671,219 @@ void Lagrange::evalOnTet(const Point& pt,
 		{
 			if (deriv.order()==0) result[i] = tmp[i].value();
 			else 
+				result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+		}
+}
+
+void Lagrange::evalOnBrick(const Point& pt,
+												 const MultiIndex& deriv,
+												 Array<double>& result) const
+{
+	ADReal x = ADReal(pt[0], 0, 3);
+	ADReal y = ADReal(pt[1], 1, 3);
+	ADReal z = ADReal(pt[2], 2, 3);
+	ADReal one(1.0, 3);
+
+
+	Array<ADReal> tmp(result.length());
+
+	switch(order_)
+		{
+		case 0:
+            tmp.resize(1);
+            result.resize(1);
+			tmp[0] = one;
+			break;
+		case 1: // tri linear basis functions for bricks
+            result.resize(8);
+            tmp.resize(8);
+			tmp[0] = (1.0 - x)*(1.0 - y)*(1.0 - z);
+			tmp[1] = (x)*(1.0 - y)*(1.0 - z);
+			tmp[2] = (1.0 - x)*(y)*(1.0 - z);
+			tmp[3] = (x)*(y)*(1.0 - z);
+			tmp[4] = (1.0 - x)*(1.0 - y)*(z);
+			tmp[5] = (x)*(1.0 - y)*(z);
+			tmp[6] = (1.0 - x)*(y)*(z);
+			tmp[7] = (x)*(y)*(z);
+			break;
+		case 2: // second order function in 3D
+	        result.resize(20);
+	        tmp.resize(20);
+
+			// general form of the Lagrange polynom
+
+			// 1.0 + 1.0*x + 1.0*y + 1.0*z + 1.0*x*y + 1.0*x*z + 1.0*y*z + 1.0*x*y*z
+		   //+ 1.0*(x*x - 1)*(y-1)*(z-1) + 1.0*(x*x - 1)*(y-1)*(z+1) + 1.0*(x*x - 1)*(y+1)*(z-1) + 1.0*(x*x - 1)*(y+1)*(z+1)
+		   //+ 1.0*(y*y - 1)*(x-1)*(z-1) + 1.0*(y*y - 1)*(x-1)*(z+1) + 1.0*(y*y - 1)*(x+1)*(z-1) + 1.0*(y*y - 1)*(x+1)*(z+1)
+		   //+ 1.0*(z*z - 1)*(x-1)*(y-1) + 1.0*(z*z - 1)*(x-1)*(y+1) + 1.0*(z*z - 1)*(x+1)*(y-1) + 1.0*(z*z - 1)*(x+1)*(y+1);
+
+             // 7  -7  -7  -7   7   7   7  -7
+			tmp[0] = 7.0 - 7.0*x - 7.0*y - 7.0*z + 7.0*x*y + 7.0*x*z + 7.0*y*z - 7.0*x*y*z
+			// 2   0   0   0
+				   + 2.0*(x*x - 1)*(y-1)*(z-1)
+		    // 2   0   0   0
+				   + 2.0*(y*y - 1)*(x-1)*(z-1)
+		    // 2   0   0   0
+				   + 2.0*(z*z - 1)*(x-1)*(y-1);
+
+			// 2   3  -2  -2  -3  -3   2   3
+			tmp[1] = 2.0 + 3.0*x - 2.0*y - 2.0*z - 3.0*x*y - 3.0*x*z + 2.0*y*z + 3.0*x*y*z
+            //2   0   0   0
+					+ 2.0*(x*x - 1)*(y-1)*(z-1)
+		    //-1   0  -1   0
+					- 1.0*(y*y - 1)*(x-1)*(z-1)                             - 1.0*(y*y - 1)*(x+1)*(z-1)
+			//-1   0  -1    0
+                    - 1.0*(z*z - 1)*(x-1)*(y-1)                             - 1.0*(z*z - 1)*(x+1)*(y-1);
+
+            // 2  -2   3  -2  -3   2  -3   3
+			tmp[2] = 2.0 - 2.0*x + 3.0*y - 2.0*z - 3.0*x*y + 2.0*x*z - 3.0*y*z + 3.0*x*y*z
+				   // -1   0  -1   0
+				   - 1.0*(x*x - 1)*(y-1)*(z-1)                             - 1.0*(x*x - 1)*(y+1)*(z-1)
+				   //  2   0   0   0
+				   + 2.0*(y*y - 1)*(x-1)*(z-1)
+				   // -1  -1   0   0
+				   - 1.0*(z*z - 1)*(x-1)*(y-1) - 1.0*(z*z - 1)*(x-1)*(y+1);
+
+			 //0   2   2   0  -1  -2  -2  1
+			tmp[3] =       2.0*x + 2.0*y       - 1.0*x*y - 2.0*x*z - 2.0*y*z + 1.0*x*y*z
+					//-1   0  -1   0
+					- 1.0*(x*x - 1)*(y-1)*(z-1)                             - 1.0*(x*x - 1)*(y+1)*(z-1)
+                    //-1   0  -1   0
+					- 1.0*(y*y - 1)*(x-1)*(z-1)                             - 1.0*(y*y - 1)*(x+1)*(z-1)
+					//0.5   0.5   0.5   0.5
+					+ 0.5*(z*z - 1)*(x-1)*(y-1) + 0.5*(z*z - 1)*(x-1)*(y+1) + 0.5*(z*z - 1)*(x+1)*(y-1) + 0.5*(z*z - 1)*(x+1)*(y+1);
+
+			// 2  -2  -2   3   2  -3  -3   3
+			tmp[4] = 2.0 - 2.0*x - 2.0*y + 3.0*z + 2.0*x*y - 3.0*x*z - 3.0*y*z + 3.0*x*y*z
+					 //-1  -1   0   0
+					 - 1.0*(x*x - 1)*(y-1)*(z-1) - 1.0*(x*x - 1)*(y-1)*(z+1)
+					 //-1  -1   0   0
+					 - 1.0*(y*y - 1)*(x-1)*(z-1) - 1.0*(y*y - 1)*(x-1)*(z+1)
+					 //2   0   0   0
+					 + 2.0*(z*z - 1)*(x-1)*(y-1);
+
+            // 0   2   0   2  -2  -1  -2  1
+			tmp[5] =      + 2.0*x +      + 2.0*z - 2.0*x*y - 1.0*x*z - 2.0*y*z + 1.0*x*y*z
+					//-1  -1   0  0
+					- 1.0*(x*x - 1)*(y-1)*(z-1) - 1.0*(x*x - 1)*(y-1)*(z+1)
+					//0.5   0.5  0.5  0.5
+					+ 0.5*(y*y - 1)*(x-1)*(z-1) + 0.5*(y*y - 1)*(x-1)*(z+1) + 0.5*(y*y - 1)*(x+1)*(z-1) + 0.5*(y*y - 1)*(x+1)*(z+1)
+					// -1   0  -1   0
+					- 1.0*(z*z - 1)*(x-1)*(y-1)                             - 1.0*(z*z - 1)*(x+1)*(y-1);
+
+			//0   0   2   2  -2  -2  -1   1
+			tmp[6] =            2.0*y + 2.0*z - 2.0*x*y - 2.0*x*z - 1.0*y*z + 1.0*x*y*z
+				   //0.5   0.5   0.5   0.5
+			       + 0.5*(x*x - 1)*(y-1)*(z-1) + 0.5*(x*x - 1)*(y-1)*(z+1) + 0.5*(x*x - 1)*(y+1)*(z-1) + 0.5*(x*x - 1)*(y+1)*(z+1)
+			       //-1  -1   0   0
+				   - 1.0*(y*y - 1)*(x-1)*(z-1) - 1.0*(y*y - 1)*(x-1)*(z+1)
+				   //-1  -1   0   0
+				   - 1.0*(z*z - 1)*(x-1)*(y-1) - 1.0*(z*z - 1)*(x-1)*(y+1);
+
+			//   0   0   0   0   2   2   2  -5
+			tmp[7] =                             2.0*x*y + 2.0*x*z + 2.0*y*z - 5.0*x*y*z
+				   //0.5   0.5   0.5   0.5
+				   + 0.5*(x*x - 1)*(y-1)*(z-1) + 0.5*(x*x - 1)*(y-1)*(z+1) + 0.5*(x*x - 1)*(y+1)*(z-1) + 0.5*(x*x - 1)*(y+1)*(z+1)
+				   //0.5   0.5  0.5   0.5
+				   + 0.5*(y*y - 1)*(x-1)*(z-1) + 0.5*(y*y - 1)*(x-1)*(z+1) + 0.5*(y*y - 1)*(x+1)*(z-1) + 0.5*(y*y - 1)*(x+1)*(z+1)
+				   //0.5   0.5   0.5   0.5
+				   + 0.5*(z*z - 1)*(x-1)*(y-1) + 0.5*(z*z - 1)*(x-1)*(y+1) + 0.5*(z*z - 1)*(x+1)*(y-1) + 0.5*(z*z - 1)*(x+1)*(y+1);
+
+            // -4   4   4   4  -4  -4  -4   4
+			tmp[8] = -4.0 + 4.0*x + 4.0*y + 4.0*z - 4.0*x*y - 4.0*x*z - 4.0*y*z + 4.0*x*y*z
+				   //-4   0   0   0
+				   - 4.0*(x*x - 1)*(y-1)*(z-1);
+				   //0   0   0   0
+				   //0   0   0   0
+
+			// -4   4   4   4  -4  -4  -4   4
+			tmp[9] = -4.0 + 4.0*x + 4.0*y + 4.0*z - 4.0*x*y - 4.0*x*z - 4.0*y*z + 4.0*x*y*z
+				   // 0   0   0   0
+				   //-4   0   0   0
+				   - 4.0*(y*y - 1)*(x-1)*(z-1);
+				   // 0   0   0   0
+
+			//  -4   4   4   4  -4  -4  -4   4
+			tmp[10] = -4.0 + 4.0*x + 4.0*y + 4.0*z - 4.0*x*y - 4.0*x*z - 4.0*y*z + 4.0*x*y*z
+					//-0   0   0  -0
+				    //-0   0   0  -0
+					//-4   0   0   0
+					- 4.0*(z*z - 1)*(x-1)*(y-1);
+
+            // 0  -4   0   0   4   4   0  -4
+			tmp[11] =     - 4.0*x           + 4.0*x*y + 4.0*x*z          - 4.0*x*y*z
+					 //0   0   0   0
+					 //2   0   2  -0
+					 + 2.0*(y*y - 1)*(x-1)*(z-1)                             + 2.0*(y*y - 1)*(x+1)*(z-1);
+					 // 0   0   0   0
+
+            //0  -4   0   0   4   4   0  -4
+			tmp[12] =     - 4.0*x             + 4.0*x*y + 4.0*x*z         - 4.0*x*y*z
+					 //0   0   0  -0
+					 //-0   0   0  -0
+					 //2   0   2   0
+					 + 2.0*(z*z - 1)*(x-1)*(y-1)                         + 2.0*(z*z - 1)*(x+1)*(y-1);
+
+			//0   0  -4   0   4   0   4  -4
+			tmp[13] =            - 4.0*y       + 4.0*x*y        + 4.0*y*z - 4.0*x*y*z
+					// 2   0   2   0
+					+ 2.0*(x*x - 1)*(y-1)*(z-1)                      + 2.0*(x*x - 1)*(y+1)*(z-1);
+					// 0   0   0   0
+					// 0   0   0   0
+
+			//0  -0  -4   0   4   0   4  -4
+			tmp[14] =              - 4.0*y         + 4.0*x*y        + 4.0*y*z - 4.0*x*y*z
+					 //-0  -0   0  -0
+					 //-0   0   0  -0
+					 // 2   2   0   0
+					 + 2.0*(z*z - 1)*(x-1)*(y-1) + 2.0*(z*z - 1)*(x-1)*(y+1);
+			//0   0   0   0  -4   0   0   4
+			tmp[15] =                            - 4.0*x*y                    + 4.0*x*y*z
+					//-0   0   0  -0
+					//-0   0   0  -0
+					//-1  -1  -1  -1
+					- 1.0*(z*z - 1)*(x-1)*(y-1) - 1.0*(z*z - 1)*(x-1)*(y+1) - 1.0*(z*z - 1)*(x+1)*(y-1) - 1.0*(z*z - 1)*(x+1)*(y+1);
+			//0   0   0  -4   0   4   4  -4
+			tmp[16] =                 - 4.0*z       + 4.0*x*z + 4.0*y*z - 4.0*x*y*z
+					// 2   2   0   0
+					+ 2.0*(x*x - 1)*(y-1)*(z-1) + 2.0*(x*x - 1)*(y-1)*(z+1);
+					// 0   0   0   0
+					// 0   0   0   0
+
+			//0   0   0  -4   0   4   4  -4
+			tmp[17] =             - 4.0*z        + 4.0*x*z + 4.0*y*z - 4.0*x*y*z
+					//  0   0   0   0
+					//  2   2   0  -0
+					+ 2.0*(y*y - 1)*(x-1)*(z-1) + 2.0*(y*y - 1)*(x-1)*(z+1);
+					//  0   0   0   0
+
+			//0   0   0  -0   0  -4   0   4
+			tmp[18] =                                        - 4.0*x*z         + 4.0*x*y*z
+					//0   0  -0   0
+					//-1  -1  -1  -1
+					- 1.0*(y*y - 1)*(x-1)*(z-1) - 1.0*(y*y - 1)*(x-1)*(z+1) - 1.0*(y*y - 1)*(x+1)*(z-1) - 1.0*(y*y - 1)*(x+1)*(z+1);
+					//0   0   0   0
+
+			// 0   0   0   0   0   0  -4   4
+			tmp[19] =                                                - 4.0*y*z + 4.0*x*y*z
+					//-1  -1  -1  -1
+					- 1.0*(x*x - 1)*(y-1)*(z-1) - 1.0*(x*x - 1)*(y-1)*(z+1) - 1.0*(x*x - 1)*(y+1)*(z-1) - 1.0*(x*x - 1)*(y+1)*(z+1);
+					//0   0   0   0
+					//0   0   0   0
+
+			break;
+		default:
+#ifndef TRILINOS_7
+			SUNDANCE_ERROR("Lagrange::evalOnBrick poly order > 2");
+#else
+			SUNDANCE_ERROR7("Lagrange::evalOnBrick poly order > 2");
+#endif
+		}
+
+	for (int i=0; i<tmp.length(); i++)
+		{
+			if (deriv.order()==0) result[i] = tmp[i].value();
+			else
 				result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
 		}
 }

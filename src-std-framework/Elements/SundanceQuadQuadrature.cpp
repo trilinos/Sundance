@@ -31,7 +31,7 @@ bool QuadQuadrature::getSymmetricPoints(int order, Array<double>& wgt,
 	Array<int> multiplicity;
 	Array<Array<double> > q;
 
-	if (order==1)
+	if (order==0) // the order of the polynome which interpolates exactly
 		{
 			multiplicity = tuple(1);
 			np = 1;
@@ -39,7 +39,7 @@ bool QuadQuadrature::getSymmetricPoints(int order, Array<double>& wgt,
 			q.resize(1);
 			q[0] = tuple(1.0/2.0, 1.0/2.0 );
 		}
-	else if (order==2)
+	else if (order==1)
 		{
 			multiplicity = tuple(4);
 			np = 4;
@@ -47,9 +47,6 @@ bool QuadQuadrature::getSymmetricPoints(int order, Array<double>& wgt,
 			q.resize(1);
 			q[0] = tuple( 1.0/3.0 , 2.0/3.0 );
 		}
-    // TODO: implement higher order quadrature for quad (low priority)
-	// but then higher orders can be done then with getNonsymmetricPoints() functions
-	// this should work for higher orders as well
 	else
 		{
       return false;

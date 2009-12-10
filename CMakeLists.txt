@@ -38,7 +38,8 @@ IF(TPL_ENABLE_PEANO)
     "Enable Peano Mesh in Sundance (requires Peano TPL)."
     OFF )  
   INCLUDE_DIRECTORIES(${PEANO_INCLUDE_DIRS}) 
-  LINK_DIRECTORIES(${PEANO_LIBRARY_DIRS}/libpeano.a)
+  LINK_DIRECTORIES(${PEANO_LIBRARY_DIRS}/libpeano2D.a)
+  LINK_DIRECTORIES(${PEANO_LIBRARY_DIRS}/libpeano3D.a)
 ENDIF()
 # ============ end of Peano configuration ================
 

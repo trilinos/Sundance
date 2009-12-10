@@ -85,6 +85,10 @@ namespace SundanceStdFwk
     virtual void getTetRule(Array<Point>& quadPoints,
                             Array<double>& quadWeights) const ;
 
+    /** compute a rule for the reference brick cell */
+    virtual void getBrickRule(Array<Point>& quadPoints,
+                            Array<double>& quadWeights) const ;
+
   };
 }
 

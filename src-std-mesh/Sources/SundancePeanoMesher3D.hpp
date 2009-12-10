@@ -30,57 +30,61 @@
 
 
 /*
- * SundancePeanoMesher.h
+ * SundancePeanoMesher3D.h
  *
- *  Created on: Sep 16, 2009
+ *  Created on: Dec 3, 2009
  *      Author: benk
  */
 
-#ifndef SUNDANCE_PEANOMESHER_H_
-#define SUNDANCE_PEANOMESHER_H_
+#ifndef SUNDANCE_PEANOMESHER3D_H_
+#define SUNDANCE_PEANOMESHER3D_H_
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshSourceBase.hpp"
-#include "SundancePeanoMesh.hpp"
+#include "SundancePeanoMesh3D.hpp"
 
 
 namespace SundanceStdMesh
 {
-class PeanoMesher : public MeshSourceBase
+class PeanoMesher3D : public MeshSourceBase
   {
   public:
     /**
      * Set up meshing, for the Peano mesh
      * position_x
      * position_y
+     * position_z
      * offset_x
      * offset_y
+     * offset_z
      * resolution,
      */
-	PeanoMesher(double position_x, double position_y,
-                        double offset_x , double offset_y,
+	PeanoMesher3D(double position_x, double position_y, double position_z,
+                double offset_x ,  double offset_y,   double offset_z,
                         double resolution,
                         const MeshType& meshType,
                         const MPIComm& comm = MPIComm::world())
       :
       MeshSourceBase(meshType, comm),
-      _position_x(position_x), _position_y(position_y),
-      _offset_x(offset_x), _offset_y(offset_y),
+      _position_x(position_x), _position_y(position_y), _position_z(position_z),
+      _offset_x(offset_x), _offset_y(offset_y), _offset_z(offset_z),
       _resolution(resolution) {;}
 
 
     /** Create a rectangle mesher from a ParameterList */
-	PeanoMesher(const ParameterList& params);
+	PeanoMesher3D(const ParameterList& params);
 
     /** */
-    virtual ~PeanoMesher() {;}
+    virtual ~PeanoMesher3D() {;}
 
     /** Print a short descriptive string */
     virtual string description() const
     {return "SundancePeanoMesher[pos x =" + Teuchos::toString(_position_x)
        + ", pos y=" + Teuchos::toString(_position_y)
-       + ", offset x=" + Teuchos::toString(_offset_x) +
+       + ", pos z=" + Teuchos::toString(_position_z)
+       + ", offset x=" + Teuchos::toString(_offset_x)
        + ", offset y=" + Teuchos::toString(_offset_y)
+       + ", offset z=" + Teuchos::toString(_offset_z)
        + ", resolution=" + Teuchos::toString(_resolution)+ "]";}
 
 
@@ -100,14 +104,18 @@ class PeanoMesher : public MeshSourceBase
     double _position_x;
     /** The Y coordinate of the origin point (lower left)*/
     double _position_y;
+    /** The Z coordinate of the origin point (lower left)*/
+    double _position_z;
     /** The offset (length) of the grid in the X direction*/
     double _offset_x;
     /** The offset (length) of the grid in the Y direction*/
     double _offset_y;
+    /** The offset (length) of the grid in the Z direction*/
+    double _offset_z;
     /** The resolution in each dimension, since we do not want to have stretched elements*/
     double _resolution;
 
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
   };
 }
-#endif /* SUNDANCE_PEANOMESHER_H_ */
+#endif /* SUNDANCE_PEANOMESHER3D_H_ */

@@ -34,6 +34,7 @@
 #include "SundanceTriangleQuadrature.hpp"
 #include "SundanceQuadQuadrature.hpp"
 #include "SundanceTetQuadrature.hpp"
+#include "SundanceBrickQuadrature.hpp"
 
 using namespace SundanceStdFwk;
 using namespace SundanceUtils;
@@ -64,6 +65,7 @@ bool GaussianQuadratureType::supportsCellType(const CellType& cellType) const
     case TriangleCell:
     case QuadCell:
     case TetCell:
+    case BrickCell:
       return true;
     default:
       return false;
@@ -109,6 +111,8 @@ bool GaussianQuadratureType::supports(const CellType& cellType, int order) const
       return true;
     case TetCell:
       return TetQuadrature::supportsOrder(order);
+    case BrickCell:
+       return true;
     default:
       return false;
     }

@@ -62,6 +62,7 @@ APPEND_SET(HEADERS
   Elements/SundanceTetQuadrature.hpp
   Elements/SundanceTriangleQuadrature.hpp
   Elements/SundanceQuadQuadrature.hpp
+  Elements/SundanceBrickQuadrature.hpp
   Elements/SundanceUnknownFunction.hpp
   Elements/SundanceUnknownFunctionData.hpp
   )
@@ -91,6 +92,7 @@ APPEND_SET(SOURCES
   Elements/SundanceTetQuadrature.cpp
   Elements/SundanceTriangleQuadrature.cpp
   Elements/SundanceQuadQuadrature.cpp
+  Elements/SundanceBrickQuadrature.cpp
   Elements/SundanceUnknownFunction.cpp
   Elements/SundanceUnknownFunctionData.cpp
   )

@@ -109,6 +109,11 @@ private:
   void evalOnTet(const Point& pt,
     const MultiIndex& deriv,
     Array<double>& result) const ;
+
+  /** evaluate on a tet cell  */
+  void evalOnBrick(const Point& pt,
+    const MultiIndex& deriv,
+    Array<double>& result) const ;
 };
 }
 

@@ -1,12 +1,41 @@
+/* @HEADER@ */
+// ************************************************************************
+//
+//                              Sundance
+//                 Copyright (2005) Sandia Corporation
+//
+// Copyright (year first published) Sandia Corporation.  Under the terms
+// of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
+// retains certain rights in this software.
+//
+// This library is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of the
+// License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+// USA
+// Questions? Contact Kevin Long (krlong@sandia.gov),
+// Sandia National Laboratories, Livermore, California, USA
+//
+// ************************************************************************
+/* @HEADER@ */
 /*
- * SundancePeanoMesh.h
+ * SundancePeanoMesh2D.h
  *
  *  Created on: Sep 8, 2009
  *      Author: benk
  */
 
-#ifndef SUNDANCEPEANOMESH_H_
-#define SUNDANCEPEANOMESH_H_
+#ifndef SUNDANCEPEANOMESH2D_H_
+#define SUNDANCEPEANOMESH2D_H_
 
 #include "SundanceDefs.hpp"
 #include "SundanceMeshBase.hpp"
@@ -14,24 +43,22 @@
 #include "SundancePoint.hpp"
 #include "SundanceCellType.hpp"
 
-#include "SundancePeanoInterface.h"
-#include "SundanceCellInterface.h"
-#include "SundanceVertexInterface.h"
+#include "SundancePeanoInterface2D.h"
 
 namespace SundanceStdMesh
 {
 namespace Internal
   {
-  class PeanoMesh : public MeshBase{
+  class PeanoMesh2D : public MeshBase{
   public:
 
 	/**
 	 * The constuctor for the Peano grid*/
-    PeanoMesh(int dim,
+	  PeanoMesh2D(int dim,
     		  const MPIComm& comm);
 
     /**
-     * The constuctor for the Peano grid*/
+     * The constuctor for the Peano grid in 2D*/
 	void createMesh(
 			  double position_x,
 			  double position_y,
@@ -39,7 +66,8 @@ namespace Internal
 			  double offset_y,
 			  double resolution);
 
-	virtual ~PeanoMesh();
+	/** Dtor */
+	virtual ~PeanoMesh2D();
 
     /**
      * Get the number of cells having dimension dim
@@ -236,7 +264,7 @@ namespace Internal
 	 const MPIComm& _comm;
 
 	 /** This pointer is the pointer to the 2 dimensional Peano mesh*/
-	 SundancePeanoInterface *_peanoMesh;
+	 SundancePeanoInterface2D *_peanoMesh;
 
 	 /** The unique resolution in each dimension */
 	 double _uniqueResolution;
@@ -247,4 +275,4 @@ namespace Internal
   };
   }
 }
-#endif /* SUNDANCEPEANOMESH_H_ */
+#endif /* SUNDANCEPEANOMESH2D_H_ */

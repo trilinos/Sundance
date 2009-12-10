@@ -203,6 +203,17 @@ void VTKWriter::writeCells(ostream& os) const
 		          os << " " << mesh().facetLID(dim,c,0,2,dummySign);
 		          os << std::endl;
 				break;
+			case BrickCell:  // for quads we have different order
+		          os << " " << mesh().facetLID(dim,c,0,0,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,1,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,2,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,3,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,4,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,5,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,6,dummySign);
+		          os << " " << mesh().facetLID(dim,c,0,7,dummySign);
+		          os << std::endl;
+				break;
             default:
             	 TEST_FOR_EXCEPTION(true, RuntimeError, "call type " << cellType <<
             			 " not handled in VTKWriter::writeCells()");
@@ -249,6 +260,9 @@ void VTKWriter::writeCells(ostream& os) const
 					break;
 				case TetCell:
 					vtkCode = 10;
+					break;
+				case BrickCell:
+					vtkCode = 11;
 					break;
         default:
           TEST_FOR_EXCEPTION(true, RuntimeError,

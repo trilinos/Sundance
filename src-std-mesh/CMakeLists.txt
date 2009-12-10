@@ -130,11 +130,14 @@ IF(HAVE_SUNDANCE_PEANO)
 # ========= if Peano grid is defined then we compile the corresponding files =========
   MESSAGE(STATUS,"Compile with PEANO") 
   APPEND_SET(HEADERS
-  Concrete/SundancePeanoMeshType.hpp
-  Concrete/SundancePeanoMesh.hpp
+  Concrete/SundancePeanoMeshType2D.hpp
+  Concrete/SundancePeanoMeshType3D.hpp
+  Concrete/SundancePeanoMesh2D.hpp
+  Concrete/SundancePeanoMesh3D.hpp
   )
   APPEND_SET(SOURCES
-  Concrete/SundancePeanoMesh.cpp
+  Concrete/SundancePeanoMesh2D.cpp
+  Concrete/SundancePeanoMesh3D.cpp
   )
 ENDIF()  
 
@@ -174,10 +177,12 @@ APPEND_SET(SOURCES
 IF(HAVE_SUNDANCE_PEANO) 
 # ========= if Peano grid is defined then we compile the corresponding files =========
   APPEND_SET(HEADERS
-  Sources/SundancePeanoMesher.hpp
+  Sources/SundancePeanoMesher2D.hpp
+  Sources/SundancePeanoMesher3D.hpp
   )
   APPEND_SET(SOURCES
-  Sources/SundancePeanoMesher.cpp
+  Sources/SundancePeanoMesher2D.cpp
+  Sources/SundancePeanoMesher3D.cpp
   )
 ENDIF()  
 #

@@ -27,41 +27,54 @@
 //
 // ************************************************************************
 /* @HEADER@ */
+
 /*
- * SundancePeanoMesher.cpp
+ * SundancePeanoMeshType3D.hpp
  *
  *  Created on: Sep 16, 2009
  *      Author: benk
  */
 
-#include "SundancePeanoMesher.hpp"
+#ifndef SUNDANCE_PEANOMESHTYPE3D_HPP_
+#define SUNDANCE_PEANOMESHTYPE3D_HPP_
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+#include "SundanceDefs.hpp"
+#include "SundanceMeshBase.hpp"
+#include "SundancePeanoMesh3D.hpp"
 
-using namespace Teuchos;
-using namespace SundanceUtils;
-
-
-PeanoMesher::PeanoMesher(const ParameterList& params)
-: MeshSourceBase(params),
-  _position_x(params.get<double>("position_x")),
-  _position_y(params.get<double>("position_y")),
-  _offset_x(params.get<int>("offset_x")),
-  _offset_y(params.get<double>("offset_y")),
-  _resolution(params.get<double>("resolution"))
+namespace SundanceStdMesh
 {
-	// nothing to do here
+  using namespace Teuchos;
+  using namespace SundanceUtils;
+
+  /**
+   * PeanoMeshType is used to create
+   * PeanoMesh objects.
+   */
+  class PeanoMeshType3D : public MeshTypeBase
+  {
+  public:
+    /** Empty ctor */
+	  PeanoMeshType3D() {;}
+
+    /** virtual dtor */
+    virtual ~PeanoMeshType3D(){;}
+
+    /** Create a mesh of the given dimension */
+    virtual RefCountPtr<MeshBase> createEmptyMesh(int dim,
+                                                  const MPIComm& comm) const
+    // this line is never used since we create directly the mesh at the Mesher
+    {return rcp(new PeanoMesh3D(dim, comm));}
+
+    /** */
+    string description() const {return "PeanoMeshType3D";}
+
+#ifndef DOXYGEN_DEVELOPER_ONLY
+    /** Return a ref count pointer to self */
+    virtual RefCountPtr<MeshTypeBase> getRcp() {return rcp(this);}
+#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
+  };
 }
 
-Mesh PeanoMesher::fillMesh() const
-{
-	// here we create the Peano grid and return to the Sundance
-	PeanoMesh *peanogrid;
-	Mesh mesh = createMesh(2);
-	// get the pointer to the Peano grid, and then create (in a complicated manner 2Xsmart pointers)
-	peanogrid = (PeanoMesh*) mesh.ptr().get();
-	peanogrid->createMesh( _position_x , _position_y , _offset_x , _offset_y , _resolution );
-	return (mesh); // at this stage the Peano grid is completly created
-}
-
+#endif /* SUNDANCEPEANOMESHTYPE3D_HPP_ */

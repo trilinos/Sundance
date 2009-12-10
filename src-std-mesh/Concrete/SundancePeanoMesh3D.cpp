@@ -28,13 +28,13 @@
 // ************************************************************************
 /* @HEADER@ */
 /*
- * SundancePeanoMesh.cpp
+ * SundancePeanoMesh3D.cpp
  *
  *  Created on: Sep 8, 2009
  *      Author: benk
  */
 
-#include "SundancePeanoMesh.hpp"
+#include "SundancePeanoMesh3D.hpp"
 
 #include "SundanceMeshType.hpp"
 #include "SundanceCellJacobianBatch.hpp"
@@ -56,77 +56,77 @@ using namespace SundanceUtils;
 //#define printf(msg)
 //#define SUNDANCE_VERB_HIGH(msg) printf(msg);printf("\n");
 
-Point PeanoMesh::returnPoint(0.0 , 0.0);
+Point PeanoMesh3D::returnPoint(0.0 , 0.0 , 0.0);
 
-PeanoMesh::PeanoMesh(int dim, const MPIComm& comm)
+PeanoMesh3D::PeanoMesh3D(int dim, const MPIComm& comm)
 : MeshBase(dim, comm),_dimension(dim), _comm(comm)
  ,_peanoMesh(NULL)
 {
 	_uniqueResolution = 1.0;
 }
 
-void PeanoMesh::createMesh(
+void PeanoMesh3D::createMesh(
                       double position_x,
 			          double position_y,
+			          double position_z,
 			          double offset_x,
 			          double offset_y,
+			          double offset_z,
 			          double resolution
 ){
-      double position[PEANO_DIMENSIONS];
-      double offset[PEANO_DIMENSIONS];
-      double res[PEANO_DIMENSIONS];
+      double position[3];
+      double offset[3];
+      double res[3];
 
       // setting the values of the ctor argument
-      position[0] = position_x; position[1] = position_y;
-      offset[0] = offset_x;     offset[1] = offset_y;
-      res[0] = resolution;      res[1] = resolution;
+      position[0] = position_x; position[1] = position_y;  position[2] = position_z;
+      offset[0] = offset_x;     offset[1] = offset_y;      offset[2] = offset_z;
+      res[0] = resolution;      res[1] = resolution;       res[2] = resolution;
 
 
       // this is a 2D case
       // call the ctor for the Peano mesh
-      SUNDANCE_VERB_LOW(" create Peano Mesh ... ");
-      _dimension = PEANO_DIMENSIONS;
+      SUNDANCE_VERB_LOW(" create Peano Mesh 3D ... ");
+      _dimension = 3;
       // here we create the Peano grid
-      _peanoMesh = new SundancePeanoInterface( position , offset , res );
+      _peanoMesh = new SundancePeanoInterface3D( position , offset , res );
       _uniqueResolution = _peanoMesh->returnUniqueResolution();
 
-      SUNDANCE_VERB_LOW(" Peano Mesh created ... \n");
-      _peanoMesh->plotVTK("Peano.vtk");
-      SUNDANCE_VERB_LOW(" After Plot ... \n");
+      SUNDANCE_VERB_LOW(" Peano Mesh created 3D ... \n");
+      _peanoMesh->plotVTK("Peano3D");
+      SUNDANCE_VERB_LOW(" After Plot 3D ... \n");
 }
 
-PeanoMesh::~PeanoMesh() {
+PeanoMesh3D::~PeanoMesh3D() {
 	//delete _peanoMesh;
 }
 
 
-int PeanoMesh::numCells(int dim) const  {
-	//printf("PeanoMesh::numCells(int dim):%d   dim:%d \n",_peanoMesh->numCells(dim),dim);
+int PeanoMesh3D::numCells(int dim) const  {
+	//printf("PeanoMesh3D::numCells(int dim):%d   dim:%d \n",_peanoMesh->numCells(dim),dim);
 	return _peanoMesh->numCells(dim);
 }
 
-Point PeanoMesh::nodePosition(int i) const {
+Point PeanoMesh3D::nodePosition(int i) const {
 	//SUNDANCE_VERB_HIGH("nodePosition(int i)");
-	//printf("PeanoMesh::nodePosition(int i)   i:%d \n", i);
+	//printf("PeanoMesh3D::nodePosition(int i)   i:%d \n", i);
 	double* coords;
 	coords = _peanoMesh->nodePositionView(i);
-	PeanoMesh::returnPoint[0] = coords[0];
-	PeanoMesh::returnPoint[1] = coords[1];
 	// set the values
-	if (PEANO_DIMENSIONS == 3){
-		PeanoMesh::returnPoint[2] = coords[2];
-	}
-	return PeanoMesh::returnPoint;
+	PeanoMesh3D::returnPoint[0] = coords[0];
+	PeanoMesh3D::returnPoint[1] = coords[1];
+	PeanoMesh3D::returnPoint[2] = coords[2];
+    return PeanoMesh3D::returnPoint;
 }
 
-const double* PeanoMesh::nodePositionView(int i) const {
-	//printf("PeanoMesh::nodePositionView(int i)   i:%d \n", i);
+const double* PeanoMesh3D::nodePositionView(int i) const {
+	//printf("PeanoMesh3D::nodePositionView(int i)   i:%d \n", i);
 	//SUNDANCE_VERB_HIGH("nodePosition(int i)");
 	nodePosition(i);
-	return &(PeanoMesh::returnPoint[0]);
+	return &(PeanoMesh3D::returnPoint[0]);
 }
 
-void PeanoMesh::getJacobians(int cellDim, const Array<int>& cellLID,
+void PeanoMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
                           CellJacobianBatch& jBatch) const
 {
 	  //printf("cellDim:%d  _uniqueResolution:%f ",cellDim, _uniqueResolution);
@@ -137,10 +137,10 @@ void PeanoMesh::getJacobians(int cellDim, const Array<int>& cellLID,
 	  jBatch.resize(cellLID.size(), spatialDim(), cellDim);
 	  if (cellDim < spatialDim()) // they need the Jacobian of a lower dinemsional element
 	  {
-		  //printf("PeanoMesh::getJacobians() cellDim < spatialDim() \n");
+		  //printf("PeanoMesh3D::getJacobians() cellDim < spatialDim() \n");
 		   for (int i=0; i<nCells; i++)
 		    {
-		     //printf("PeanoMesh::getJacobian() cellDim < spatialDim() cellDim:%d , ret:%f \n",cellDim , _uniqueResolution);
+		     //printf("PeanoMesh3D::getJacobian() cellDim < spatialDim() cellDim:%d , ret:%f \n",cellDim , _uniqueResolution);
 		      double* detJ = jBatch.detJ(i);
 		      switch(cellDim)
 		      {
@@ -162,7 +162,7 @@ void PeanoMesh::getJacobians(int cellDim, const Array<int>& cellLID,
 		    SUNDANCE_VERB_HIGH("cellDim == spatialDim()");
 		    for (unsigned int i=0; i<cellLID.size(); i++)
 		    {
-			  //printf("PeanoMesh::getJacobian() cellDim == spatialDim() cellDim:%d , ret:%f \n",cellDim , _uniqueResolution);
+			  //printf("PeanoMesh3D::getJacobian() cellDim == spatialDim() cellDim:%d , ret:%f \n",cellDim , _uniqueResolution);
 		      double* J = jBatch.jVals(i);
 		      switch(cellDim)
 		      {
@@ -193,7 +193,7 @@ void PeanoMesh::getJacobians(int cellDim, const Array<int>& cellLID,
 	  }
 }
 
-void PeanoMesh::getCellDiameters(int cellDim, const Array<int>& cellLID,
+void PeanoMesh3D::getCellDiameters(int cellDim, const Array<int>& cellLID,
                               Array<double>& cellDiameters) const {
 	 TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
@@ -201,7 +201,7 @@ void PeanoMesh::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	  cellDiameters.resize(cellLID.size());
 	  if (cellDim < spatialDim())
 	  {
-		//printf("PeanoMesh::getCellDiameters(), cellDim < spatialDim() \n ");
+		//printf("PeanoMesh3D::getCellDiameters(), cellDim < spatialDim() \n ");
 	    for (unsigned int i=0; i<cellLID.size(); i++)
 	    {
 	      switch(cellDim)
@@ -223,7 +223,7 @@ void PeanoMesh::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	  }
 	  else
 	  {
-		//printf("PeanoMesh::getCellDiameters(), cellDim == spatialDim() \n ");
+		//printf("PeanoMesh3D::getCellDiameters(), cellDim == spatialDim() \n ");
 	    for (unsigned int i=0; i<cellLID.size(); i++)
 	    {
 	      switch(cellDim)
@@ -243,11 +243,11 @@ void PeanoMesh::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	  }
 }
 
-void PeanoMesh::pushForward(int cellDim, const Array<int>& cellLID,
+void PeanoMesh3D::pushForward(int cellDim, const Array<int>& cellLID,
                          const Array<Point>& refQuadPts,
                          Array<Point>& physQuadPts) const {
 
-	  //printf("PeanoMesh::pushForward cellDim:%d\n",cellDim);
+	  //printf("PeanoMesh3D::pushForward cellDim:%d\n",cellDim);
 	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
 	    "cellDim=" << cellDim
 	    << " is not in expected range [0, " << spatialDim()
@@ -299,33 +299,33 @@ void PeanoMesh::pushForward(int cellDim, const Array<int>& cellLID,
 	  }
 }
 
-int PeanoMesh::ownerProcID(int cellDim, int cellLID) const  {
+int PeanoMesh3D::ownerProcID(int cellDim, int cellLID) const  {
 	 SUNDANCE_VERB_HIGH("ownerProcID()"); return 0; }
 
 
-int PeanoMesh::numFacets(int cellDim, int cellLID,
+int PeanoMesh3D::numFacets(int cellDim, int cellLID,
                       int facetDim) const  {
 	SUNDANCE_VERB_HIGH("numFacets()");
     return _peanoMesh->numFacets(cellDim, cellLID, facetDim);
 }
 
 
-int PeanoMesh::facetLID(int cellDim, int cellLID,
+int PeanoMesh3D::facetLID(int cellDim, int cellLID,
                      int facetDim, int facetIndex,
                      int& facetOrientation) const  {
     int LID;
     LID = _peanoMesh->facetLID( cellDim,cellLID, facetDim, facetIndex, facetOrientation);
-  	//printf("PeanoMesh::facetLID  cellDim: %d , cellLID: %d , facetDim %d , facetIndex:%d  %d\n" , cellDim , cellLID , facetDim , facetIndex , LID );
+  	//printf("PeanoMesh3D::facetLID  cellDim: %d , cellLID: %d , facetDim %d , facetIndex:%d  %d\n" , cellDim , cellLID , facetDim , facetIndex , LID );
 	return LID;
 }
 
-void PeanoMesh::getFacetLIDs(int cellDim,
+void PeanoMesh3D::getFacetLIDs(int cellDim,
                           const Array<int>& cellLID,
                           int facetDim,
                           Array<int>& facetLID,
                           Array<int>& facetSign) const {
 	  SUNDANCE_VERB_HIGH("getFacetLIDs()");
-	  //printf("PeanoMesh::getFacetLIDs()  cellDim:%d  cellLID.size():%d  facetDim:%d\n" , cellDim, (int)cellLID.size() , facetDim);
+	  //printf("PeanoMesh3D::getFacetLIDs()  cellDim:%d  cellLID.size():%d  facetDim:%d\n" , cellDim, (int)cellLID.size() , facetDim);
       int LID = 0 , cLID , facetOrientation ;
       int ptr = 0;
 
@@ -346,11 +346,11 @@ void PeanoMesh::getFacetLIDs(int cellDim,
 	  }
 }
 
-const int* PeanoMesh::elemZeroFacetView(int cellLID) const {
+const int* PeanoMesh3D::elemZeroFacetView(int cellLID) const {
 	return _peanoMesh->elemZeroFacetView(cellLID);
 }
 
-int PeanoMesh::numMaxCofacets(int cellDim, int cellLID) const  {
+int PeanoMesh3D::numMaxCofacets(int cellDim, int cellLID) const  {
 	  //SUNDANCE_VERB_HIGH("numMaxCofacets()");
       int coFacetCounter;
       coFacetCounter = _peanoMesh->numMaxCofacets( cellDim, cellLID);
@@ -358,7 +358,7 @@ int PeanoMesh::numMaxCofacets(int cellDim, int cellLID) const  {
 	  return coFacetCounter;
 }
 
-int PeanoMesh::maxCofacetLID(int cellDim, int cellLID,
+int PeanoMesh3D::maxCofacetLID(int cellDim, int cellLID,
                        int cofacetIndex,
                        int& facetIndex) const  {
 	  int rtn;
@@ -368,42 +368,44 @@ int PeanoMesh::maxCofacetLID(int cellDim, int cellLID,
 	  return rtn;
 }
 
-void PeanoMesh::getMaxCofacetLIDs(const Array<int>& cellLIDs,
+void PeanoMesh3D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
   MaximalCofacetBatch& cofacets) const {
-    TEST_FOR_EXCEPTION(true, InternalError," PeanoMesh::getMaxCofacetLIDs() not implemented yet");
-	//TODO: Implement this
+    TEST_FOR_EXCEPTION(true, InternalError," PeanoMesh3D::getMaxCofacetLIDs() not implemented yet");
+	//TODO: Implement this, uses only in ExodusWriter::writeMesh
 }
 
 
-void PeanoMesh::getCofacets(int cellDim, int cellLID,
+void PeanoMesh3D::getCofacets(int cellDim, int cellLID,
                  int cofacetDim, Array<int>& cofacetLIDs) const {
-    TEST_FOR_EXCEPTION(true, InternalError," PeanoMesh::getCofacets() not implemented yet");
-	//TODO: Implement this
+    int tmpVect[12] , nrCofacets;
+    _peanoMesh->getCofacets( cellDim, cellLID, cofacetDim, &tmpVect[0], nrCofacets);
+    cofacetLIDs.resize(nrCofacets);
+    for (int ii = 0 ; ii < nrCofacets ; ii++ ) cofacetLIDs[ii] = tmpVect[ii];
 }
 
 
-int PeanoMesh::mapGIDToLID(int cellDim, int globalIndex) const  {
+int PeanoMesh3D::mapGIDToLID(int cellDim, int globalIndex) const  {
 	SUNDANCE_VERB_HIGH("mapGIDToLID()");
 	// in the serial implementation GID = LID
 	// in the parallel version this should be done differently
 	return globalIndex;
 }
 
-bool PeanoMesh::hasGID(int cellDim, int globalIndex) const {
+bool PeanoMesh3D::hasGID(int cellDim, int globalIndex) const {
 	SUNDANCE_VERB_HIGH("hasGID()");
 	// since currently we have a serial implementation , this is always true
 	// in the parallel version this function has to be implemented differetly
 	return true;
 }
 
-int PeanoMesh::mapLIDToGID(int cellDim, int localIndex) const  {
+int PeanoMesh3D::mapLIDToGID(int cellDim, int localIndex) const  {
 	SUNDANCE_VERB_HIGH("mapLIDToGID()");
 	// at the current stage we have only serial implementation,
 	// parallel implementation will(should) come soon
 	return localIndex;
 }
 
-CellType PeanoMesh::cellType(int cellDim) const  {
+CellType PeanoMesh3D::cellType(int cellDim) const  {
 	//printf("cellType() cellDim:%d\n",cellDim);
 	 switch(cellDim)
 	  {
@@ -416,11 +418,11 @@ CellType PeanoMesh::cellType(int cellDim) const  {
 	  }
 }
 
-int PeanoMesh::label(int cellDim, int cellLID) const {
+int PeanoMesh3D::label(int cellDim, int cellLID) const {
    return _peanoMesh->label( cellDim, cellLID);
 }
 
-void PeanoMesh::getLabels(int cellDim, const Array<int>& cellLID,
+void PeanoMesh3D::getLabels(int cellDim, const Array<int>& cellLID,
 		Array<int>& labels) const {
     int tmpIndex;
     SUNDANCE_VERB_HIGH("getLabels()");
@@ -432,7 +434,7 @@ void PeanoMesh::getLabels(int cellDim, const Array<int>& cellLID,
     }
 }
 
-Set<int> PeanoMesh::getAllLabelsForDimension(int cellDim) const {
+Set<int> PeanoMesh3D::getAllLabelsForDimension(int cellDim) const {
 	  Set<int>                 rtn;
 	  int                      tmpIndex;
 	  SUNDANCE_VERB_HIGH("getAllLabelsForDimension()");
@@ -443,7 +445,7 @@ Set<int> PeanoMesh::getAllLabelsForDimension(int cellDim) const {
 	  return rtn;
 }
 
-void PeanoMesh::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const {
+void PeanoMesh3D::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const {
     int                      tmpIndex , tmpLabel;
 	SUNDANCE_VERB_HIGH("getLIDsForLabel()");
     for (tmpIndex = 0 ; tmpIndex < _peanoMesh->numCells(cellDim) ; tmpIndex++){
@@ -452,18 +454,18 @@ void PeanoMesh::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) co
     }
 }
 
-void PeanoMesh::setLabel(int cellDim, int cellLID, int label) {
+void PeanoMesh3D::setLabel(int cellDim, int cellLID, int label) {
 	_peanoMesh->setLabel(cellDim, cellLID, label);
 }
 
 
-void PeanoMesh::assignIntermediateCellGIDs(int cellDim) {
+void PeanoMesh3D::assignIntermediateCellGIDs(int cellDim) {
 	SUNDANCE_VERB_HIGH("assignIntermediateCellGIDs()");
 	// in this method we could do synchronization between processors, not usede now
 }
 
 
-bool PeanoMesh::hasIntermediateGIDs(int dim) const {
+bool PeanoMesh3D::hasIntermediateGIDs(int dim) const {
 	SUNDANCE_VERB_HIGH("hasIntermediateGIDs()");
 	return true; // true means they have been synchronized ... not used now
 }
