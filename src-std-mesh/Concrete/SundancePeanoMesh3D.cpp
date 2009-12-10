@@ -58,8 +58,9 @@ using namespace SundanceUtils;
 
 Point PeanoMesh3D::returnPoint(0.0 , 0.0 , 0.0);
 
-PeanoMesh3D::PeanoMesh3D(int dim, const MPIComm& comm)
-: MeshBase(dim, comm),_dimension(dim), _comm(comm)
+PeanoMesh3D::PeanoMesh3D(int dim, const MPIComm& comm,
+	    const MeshEntityOrder& order )
+: MeshBase(dim, comm , order),_dimension(dim), _comm(comm)
  ,_peanoMesh(NULL)
 {
 	_uniqueResolution = 1.0;

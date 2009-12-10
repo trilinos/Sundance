@@ -55,7 +55,8 @@ namespace SundanceStdMesh
   {
   public:
     /** Empty ctor */
-	  PeanoMeshType2D() {;}
+	  PeanoMeshType2D(const MeshEntityOrder& order=ExodusMeshOrder)
+	    : order_(order) {;}
 
     /** virtual dtor */
     virtual ~PeanoMeshType2D(){;}
@@ -64,7 +65,7 @@ namespace SundanceStdMesh
     virtual RefCountPtr<MeshBase> createEmptyMesh(int dim,
                                                   const MPIComm& comm) const
     // this line is never used since we create directly the mesh at the Mesher
-    {return rcp(new PeanoMesh2D(dim, comm));}
+    {return rcp(new PeanoMesh2D(dim, comm, order_));}
 
     /** */
     string description() const {return "PeanoMeshType2D";}
@@ -73,6 +74,9 @@ namespace SundanceStdMesh
     /** Return a ref count pointer to self */
     virtual RefCountPtr<MeshTypeBase> getRcp() {return rcp(this);}
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
+
+  private:
+    MeshEntityOrder order_;
 
   };
 }

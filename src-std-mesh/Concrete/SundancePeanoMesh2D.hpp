@@ -55,7 +55,8 @@ namespace Internal
 	/**
 	 * The constuctor for the Peano grid*/
 	  PeanoMesh2D(int dim,
-    		  const MPIComm& comm);
+    		  const MPIComm& comm,
+    		  const MeshEntityOrder& order);
 
     /**
      * The constuctor for the Peano grid in 2D*/
