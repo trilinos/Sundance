@@ -99,7 +99,7 @@ string PySundanceCellPredicate::description() const
   Py_DECREF(result); // All done with returned result object
   
   char* str = 0;
-  int len = 0;
+  Py_ssize_t len = 0;
   PyString_AsStringAndSize(result, &str, &len);
 
   return string(str);

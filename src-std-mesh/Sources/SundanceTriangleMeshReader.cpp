@@ -281,8 +281,11 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
   /* size point-related arrays */
 	Array<int> ptIndices(nPoints);
 	Array<bool> usedPoint(nPoints);
-	nodeAttributes()->resize(nPoints);
-
+	nodeAttributes()->resize(nAttributes);
+  for (int i=0; i<nAttributes; i++)
+  {
+    (*nodeAttributes())[i].resize(nPoints);
+  }
 	offset_=-1;
 	bool first = true;
 
@@ -332,10 +335,9 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
       ptIndices[count] 
         = mesh.addVertex(ptGID[count], pt, ptOwner[count], ptLabel);
 
-      (*nodeAttributes())[count].resize(nAttributes);
 			for (int i=0; i<nAttributes; i++)
 				{
-					(*nodeAttributes())[count][i] = atof(tokens[dimension+1+i]);
+					(*nodeAttributes())[i][count] = atof(tokens[dimension+1+i]);
 				}
 		}
   return mesh;

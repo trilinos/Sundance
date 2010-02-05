@@ -134,20 +134,24 @@ void ExodusWriter::writeMesh(int exoid,
 
   
   /* initialize the output file */
+  int nElemBlocks = mesh().numLabels(dim);
+
   ierr = ex_put_init(
     exoid, 
     filename().c_str(), 
     dim,
     mesh().numCells(0), 
     nElems,
-    mesh().numLabels(dim), 
+    nElemBlocks, 
     numNS,
     numSS
     );
+  TEST_FOR_EXCEPT(ierr<0);
 
 
   /* write the vertices */
   int nPts = mesh().numCells(0);
+
   Array<double> x(nPts);
   Array<double> y(nPts);
   Array<double> z(nPts * (dim > 2));
@@ -195,7 +199,6 @@ void ExodusWriter::writeMesh(int exoid,
 
   /* write the element blocks */
   Array<int> blockLabels = mesh().getAllLabelsForDimension(dim).elements();
-  cout << "block labels =" << blockLabels << endl;
   int nodesPerElem = dim+1;
   std::string eType = elemType(mesh().cellType(dim));
   for (unsigned int b=0; b<blockLabels.size(); b++)
@@ -209,23 +212,23 @@ void ExodusWriter::writeMesh(int exoid,
     mesh().getFacetLIDs(dim, blockElemLIDs, 0, nodeLIDs, orient);
     offset(nodeLIDs);
     ierr = ex_put_elem_block(
-      exoid, blockLabels[b], eType.c_str(), 
+      exoid, blockLabels[b]+1, eType.c_str(), 
       numElemsThisBlock, nodesPerElem, numBlockAttr
       );
 
-    ierr = ex_put_elem_conn(exoid, blockLabels[b], &(nodeLIDs[0]));
+    TEST_FOR_EXCEPT(ierr < 0);
+    ierr = ex_put_elem_conn(exoid, blockLabels[b]+1, &(nodeLIDs[0]));
+    TEST_FOR_EXCEPT(ierr < 0);
   }
 
 
   TEST_FOR_EXCEPT(ierr < 0);
   
   /* write the side sets */
-  cout << "writing side sets" << endl;
   
   for (unsigned int ss=0; ss<ssLabels.size(); ss++)
   {
     if (ssLabels[ss]==0) continue;
-    cout << "ss=" << ss << " label=" << ssLabels[ss] << endl;
     Array<int> sideLIDs;
     RCP<Array<int> > elemLIDs = rcp(new Array<int>());
     RCP<Array<int> > facets = rcp(new Array<int>());
@@ -247,7 +250,6 @@ void ExodusWriter::writeMesh(int exoid,
   }
   
   TEST_FOR_EXCEPT(ierr < 0);
-  cout << "writing node sets" << endl;
 
   
   if (nsID.size() > 0U)
@@ -286,6 +288,7 @@ void ExodusWriter::writeFields(int exoid,
 
 #ifdef HAVE_SUNDANCE_EXODUS
   int nNodalFuncs = omnipresentFuncs().size();
+
   int nNodesetFuncs = pointScalarFields().size() - nNodalFuncs;
 
   int nNodesets = funcsForNodeset.size();
@@ -338,6 +341,12 @@ void ExodusWriter::writeFields(int exoid,
   
 
   int ierr;
+
+  if (nNodalFuncs > 0)
+  {
+    ierr = ex_put_var_param(exoid, "N", nNodalFuncs);
+    TEST_FOR_EXCEPT(ierr < 0);
+  }
   if (nNodesets > 0)
   {
     ierr = ex_put_var_param(exoid, "M", nNodesetFuncs);
@@ -347,9 +356,6 @@ void ExodusWriter::writeFields(int exoid,
       nNodesetFuncs, &(nodesetFuncTruthTable[0]));
     TEST_FOR_EXCEPT(ierr < 0);
     
-    ierr = ex_put_var_param(exoid, "N", nNodalFuncs);
-    TEST_FOR_EXCEPT(ierr < 0);
-
     Array<std::string> nsFuncNames(nNodesetFuncs);
     Array<const char*> nsNameP;
     

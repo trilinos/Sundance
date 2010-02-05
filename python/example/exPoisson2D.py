@@ -101,7 +101,7 @@ def main():
 
   print "max err = ", error
 
-  tol = 1.0e-10
+  tol = 1.0e-8
   passFailTest(error, tol)
 
 

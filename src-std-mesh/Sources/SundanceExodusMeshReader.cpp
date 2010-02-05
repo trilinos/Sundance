@@ -280,11 +280,46 @@ Mesh ExodusMeshReader::fillMesh() const
     }
   }
 
+
+  /* Read the nodal attributes */
+  int nNodalVars = 0;
+  ierr = ex_get_var_param(exoID, "N", &nNodalVars);
+  TEST_FOR_EXCEPT(ierr < 0);
+
+  Array<Array<double> >& funcVals = *nodeAttributes();
+  funcVals.resize(nNodalVars);
+
+  for (int i=0; i<nNodalVars; i++)
+  {
+    int t = 1;
+    funcVals[i].resize(mesh.numCells(0));
+    ierr = ex_get_nodal_var(exoID, t, i+1, mesh.numCells(0), &(funcVals[i][0]));
+    TEST_FOR_EXCEPT(ierr < 0);
+  }
+
+  /* Read the element attributes */
+  int nElemVars = 0;
+  ierr = ex_get_var_param(exoID, "E", &nElemVars);
+  TEST_FOR_EXCEPT(ierr < 0);
+
+  Array<Array<double> >& eFuncVals = *elemAttributes();
+  eFuncVals.resize(nElemVars);
+
+  for (int i=0; i<nElemVars; i++)
+  {
+    int t = 1;
+    eFuncVals[i].resize(mesh.numCells(mesh.spatialDim()));
+    ierr = ex_get_elem_var(exoID, t, i+1, 1, mesh.numCells(mesh.spatialDim()), &(eFuncVals[i][0]));
+    TEST_FOR_EXCEPT(ierr < 0);
+  }
+
   ierr = ex_close(exoID);
   TEST_FOR_EXCEPT(ierr < 0);
+
 #endif
 	return mesh;
 }
+
 
 
 

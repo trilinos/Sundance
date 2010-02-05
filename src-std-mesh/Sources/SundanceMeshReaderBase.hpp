@@ -98,6 +98,8 @@ namespace SundanceStdMesh
                        char comment) const ;
     private:
       std::string filename_;
+      mutable int nVertexVars_;
+      mutable Array<double> vertexVars_;
     };
   }
 }

@@ -42,11 +42,11 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(PySundanceSolverCopyFiles
     noxSolver.py
   )
 
+# Disable Poisson2D because of a memory error when cleaning up Aztec
 
 
 SET(PAR_TEST_LIST
   Poisson1D
-  Poisson2D
   RadDiff1D
   Helmholtz1D
   VorticityStokes2D
