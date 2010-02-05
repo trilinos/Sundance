@@ -48,6 +48,8 @@
 #include "TSFSimpleScaledOpImpl.hpp"
 #endif
 
+#include "TSFHack.hpp"
+
   %}
 
 
@@ -281,8 +283,8 @@ namespace TSFExtended
   class VectorType
   {
   public:
-    VectorType();
     ~VectorType();
+    VectorType();
 
     %extend
     {

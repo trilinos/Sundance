@@ -17,6 +17,7 @@ APPEND_SET(HEADERS
   PySundanceCellPredicate.hpp
   PySundanceLinearSolver.hpp
   PyTeuchos_Utils.hpp
+  TSFHack.hpp
   )
 
 APPEND_SET(SOURCES
