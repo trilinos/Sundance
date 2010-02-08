@@ -36,6 +36,7 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
 #include "Thyra_TestSpecifier.hpp"
+#include "Thyra_DefaultSpmdVectorSpace.hpp"
 #include "TSFLinearOperatorDecl.hpp"
 #include "TSFMultiVectorOperatorDecl.hpp"
 
