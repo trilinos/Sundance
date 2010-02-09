@@ -78,7 +78,7 @@ int main(int argc, char** argv)
       MeshType meshType = new BasicSimplicialMeshType();
 
       MeshSource mesher 
-        = new ExodusMeshReader("../../../tests-std-mesh/Readers/wheel", meshType);
+        = new ExodusMeshReader("plate3D-0", meshType);
 
 
 
