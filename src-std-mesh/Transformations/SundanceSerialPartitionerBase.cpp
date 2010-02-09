@@ -181,7 +181,9 @@ void SerialPartitionerBase::getOffProcData(int p,
 }
 
 
-Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const 
+Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
+  Array<SundanceUtils::Map<int, int> >& oldElemLIDToNewLIDMaps,
+  Array<SundanceUtils::Map<int, int> >& oldVertLIDToNewLIDMaps) const 
 {
   int dim = mesh.spatialDim();
 
@@ -232,9 +234,14 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const
 
   /* Now we make NP submeshes */
   Array<Mesh> rtn(np);
+  oldVertLIDToNewLIDMaps.resize(np);
+  oldElemLIDToNewLIDMaps.resize(np);
   for (int p=0; p<np; p++)
   {
-	SundanceUtils::Map<int, int> oldLIDToNewLIDMap;
+    SundanceUtils::Map<int, int>& oldVertLIDToNewLIDMap 
+      = oldVertLIDToNewLIDMaps[p];
+    SundanceUtils::Map<int, int>& oldElemLIDToNewLIDMap 
+      = oldElemLIDToNewLIDMaps[p];
     MeshType type = new BasicSimplicialMeshType();
     rtn[p] = type.createEmptyMesh(mesh.spatialDim(), MPIComm::world());
 
@@ -246,7 +253,8 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const
       int oldLID = procNodes[p][n];
       int newGID = remappedNodes[oldLID];
       unusedVertGID.put(newGID);
-      rtn[p].addVertex(newGID, mesh.nodePosition(oldLID), p, 0);
+      int newLID = rtn[p].addVertex(newGID, mesh.nodePosition(oldLID), p, 0);
+      oldVertLIDToNewLIDMap.put(oldLID, newLID);
     }
 
     /* add the off-processor nodes */
@@ -256,7 +264,8 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const
       int nodeOwnerProc = nodeAssignments[oldLID];
       int newGID = remappedNodes[oldLID];
       unusedVertGID.put(newGID);
-      rtn[p].addVertex(newGID, mesh.nodePosition(oldLID), nodeOwnerProc, 0);
+      int newLID = rtn[p].addVertex(newGID, mesh.nodePosition(oldLID), nodeOwnerProc, 0);
+      oldVertLIDToNewLIDMap.put(oldLID, newLID);
     }
     
     /* add the on-processor elements */
@@ -273,7 +282,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const
         if (unusedVertGID.contains(vertGIDs[v])) unusedVertGID.erase(newGID);
       }
       int newLID = rtn[p].addElement(newGID, vertGIDs, p, 1);
-      oldLIDToNewLIDMap.put(oldLID, newLID);
+      oldElemLIDToNewLIDMap.put(oldLID, newLID);
     }
     
     /* add the off-processor elements */
@@ -291,7 +300,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const
         if (unusedVertGID.contains(vertGIDs[v])) unusedVertGID.erase(newGID);
       }
       int newLID = rtn[p].addElement(newGID, vertGIDs, elemOwnerProc, 1);
-      oldLIDToNewLIDMap.put(oldLID, newLID);
+      oldElemLIDToNewLIDMap.put(oldLID, newLID);
 
 //      TEST_FOR_EXCEPTION(unusedVertGID.size() != 0, InternalError,
 //        "unused vertices=" << unusedVertGID);
@@ -335,9 +344,8 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np) const
                * vertex sets in the new submesh. */
               Set<int> newVertSet = arrayToSet(newVerts);
               
-
               /* Find the cofacet in the new submesh */
-              int newElemLID = oldLIDToNewLIDMap.get(cofLID);
+              int newElemLID = oldElemLIDToNewLIDMap.get(cofLID);
 
               /* Get the d-facets of the element in the new submesh */
               Array<int> submeshFacets;

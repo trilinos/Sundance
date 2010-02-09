@@ -32,6 +32,7 @@
 #define SUNDANCE_SERIALPARTITIONERBASE_H
 
 #include "SundanceDefs.hpp"
+#include "SundanceMap.hpp"
 #include "SundanceMesh.hpp"
 #include "SundanceMeshType.hpp"
 #include "SundanceHandle.hpp"
@@ -60,7 +61,10 @@ public:
     Array<int>& assignments) const = 0 ;
 
   /** */
-  Array<Mesh> makeMeshParts(const Mesh& mesh, int np) const ;
+  Array<Mesh> makeMeshParts(const Mesh& mesh, int np,
+    Array<SundanceUtils::Map<int, int> >& oldElemLIDToNewLIDMap,
+    Array<SundanceUtils::Map<int, int> >& oldVertLIDToNewLIDMap
+    ) const ;
 
   /** */
   void getOffProcData(int p, 
