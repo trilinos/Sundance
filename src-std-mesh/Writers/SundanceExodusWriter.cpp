@@ -73,7 +73,7 @@ void ExodusWriter::write() const
 
 
   Array<CellFilter> nsFilters;
-  Array<int> omniFuncs;
+  Array<int> omniNodalFuncs;
   Array<RefCountPtr<Array<int> > > funcsForNodeset;
   Array<RefCountPtr<Array<int> > > nodesForNodeset;
   Array<int> nsID;
@@ -81,14 +81,26 @@ void ExodusWriter::write() const
   Array<int> nsNodePtr;
   RefCountPtr<Array<int> > allNodes=rcp(new Array<int>());
 
+  Array<CellFilter> blockFilters;
+  Array<int> omniElemFuncs;
+  Array<RefCountPtr<Array<int> > > funcsForBlock;
+  Array<RefCountPtr<Array<int> > > elemsForBlock;
+  Array<int> blockID;
+  Array<int> nElemsPerBlock;
+  Array<int> blockElemPtr;
+  RefCountPtr<Array<int> > allElems=rcp(new Array<int>());
+
   
-  findNodeSets(nsFilters, omniFuncs, funcsForNodeset,
+  findNodeSets(nsFilters, omniNodalFuncs, funcsForNodeset,
     nodesForNodeset, nsID, nsNodesPerSet, nsNodePtr, allNodes);
+
+  findBlocks(blockFilters, omniElemFuncs, funcsForBlock,
+    elemsForBlock, blockID, nElemsPerBlock, blockElemPtr, allElems);
   
-  writeMesh(exoid, nsFilters, omniFuncs, funcsForNodeset,
-    nodesForNodeset, nsID, nsNodesPerSet, nsNodePtr, allNodes );
+  writeMesh(exoid, nsFilters, nsID, nsNodesPerSet, nsNodePtr, allNodes );
   
-  writeFields(exoid, nsFilters, omniFuncs, funcsForNodeset,
+  writeFields(exoid, nsFilters, omniNodalFuncs, omniElemFuncs, 
+    funcsForNodeset,
     nodesForNodeset, nsID);
 
 
@@ -107,9 +119,6 @@ void ExodusWriter::offset(Array<int>& x) const
 
 void ExodusWriter::writeMesh(int exoid, 
   const Array<CellFilter>& nodesetFilters,
-  const Array<int>& omnipresentFuncs,
-  const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
-  const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
   const Array<int>& nsID,
   const Array<int>& nNodesPerSet,
   const Array<int>& nsNodePtr,
@@ -280,14 +289,16 @@ void ExodusWriter::writeMesh(int exoid,
 
 void ExodusWriter::writeFields(int exoid, 
   const Array<CellFilter>& nodesetFilters,
-  const Array<int>& omnipresentFuncs,
+  const Array<int>& omnipresentNodalFuncs,
+  const Array<int>& omnipresentElemFuncs,
   const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
   const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
   const Array<int>& nsID) const 
 {
 
 #ifdef HAVE_SUNDANCE_EXODUS
-  int nNodalFuncs = omnipresentFuncs().size();
+  int nNodalFuncs = omnipresentNodalFuncs().size();
+  int nElemFuncs = omnipresentElemFuncs().size();
 
   int nNodesetFuncs = pointScalarFields().size() - nNodalFuncs;
 
@@ -347,6 +358,14 @@ void ExodusWriter::writeFields(int exoid,
     ierr = ex_put_var_param(exoid, "N", nNodalFuncs);
     TEST_FOR_EXCEPT(ierr < 0);
   }
+
+  if (nElemFuncs > 0)
+  {
+    ierr = ex_put_var_param(exoid, "E", nElemFuncs);
+    TEST_FOR_EXCEPT(ierr < 0);
+  }
+
+
   if (nNodesets > 0)
   {
     ierr = ex_put_var_param(exoid, "M", nNodesetFuncs);
@@ -371,13 +390,21 @@ void ExodusWriter::writeFields(int exoid,
 
 
   Array<std::string> nodalFuncNames(nNodalFuncs);
+  Array<std::string> elemFuncNames(nElemFuncs);
   Array<const char*> nNameP;
+  Array<const char*> eNameP;
   
   for (int i=0; i<nNodalFuncs; i++)
   {
-    nodalFuncNames[i] = pointScalarNames()[omnipresentFuncs[i]];
+    nodalFuncNames[i] = pointScalarNames()[omnipresentNodalFuncs[i]];
   }
   getCharpp(nodalFuncNames, nNameP);  
+  
+  for (int i=0; i<nElemFuncs; i++)
+  {
+    elemFuncNames[i] = cellScalarNames()[omnipresentElemFuncs[i]];
+  }
+  getCharpp(elemFuncNames, eNameP);  
   
   if (nNodalFuncs > 0)
   {
@@ -390,7 +417,7 @@ void ExodusWriter::writeFields(int exoid,
     
     for (int i=0; i<nNodalFuncs; i++)
     {
-      int f = omnipresentFuncs[i];
+      int f = omnipresentNodalFuncs[i];
       pointScalarFields()[f]->getDataBatch(0, nodeID, tuple(f), funcVals);
       int t = 1;
       int numNodes = funcVals.size();
@@ -415,6 +442,29 @@ void ExodusWriter::writeFields(int exoid,
       }
     }
   }
+
+  if (nElemFuncs > 0)
+  {
+    ierr = ex_put_var_names(exoid, "E", nElemFuncs, (char**)&(eNameP[0]));
+    TEST_FOR_EXCEPT(ierr < 0);
+    
+    Array<double> funcVals;
+    int dim = mesh().spatialDim();
+    Array<int> elemID(mesh().numCells(dim));
+    for (int i=0; i<mesh().numCells(dim); i++) elemID[i]=i;
+    
+    for (int i=0; i<nElemFuncs; i++)
+    {
+      int f = omnipresentElemFuncs[i];
+      cellScalarFields()[f]->getDataBatch(dim, elemID, tuple(f), funcVals);
+      int t = 1;
+      int numElems = funcVals.size();
+      ierr = ex_put_elem_var(exoid, t, i+1, 1, numElems, &(funcVals[0]));
+      TEST_FOR_EXCEPT(ierr < 0);
+    }
+  }
+
+
 #else
   TEST_FOR_EXCEPTION(true, RuntimeError, "Exodus not enabled");
 #endif
@@ -485,7 +535,7 @@ void ExodusWriter::findNodeSets(
   RefCountPtr<Array<int> > allNodes
   ) const 
 {
-  int verb = 4;
+  int verb = 0;
 
   const Array<RefCountPtr<FieldBase> >& f = pointScalarFields();
   CellFilter maximal = new MaximalCellFilter();
@@ -559,6 +609,94 @@ void ExodusWriter::findNodeSets(
   }
 
   SUNDANCE_MSG2(verb, "all nodes = " << *allNodes);
+}
+
+
+
+void ExodusWriter::findBlocks(
+  Array<CellFilter>& blockFilters,
+  Array<int>& omnipresentFuncs,
+  Array<RefCountPtr<Array<int> > >& funcsForBlock,
+  Array<RefCountPtr<Array<int> > >& elemsForBlock,
+  Array<int>& blockIDs,
+  Array<int>& nElemsPerBlock,
+  Array<int>& elemBlockPtr,
+  RefCountPtr<Array<int> > allElems
+  ) const 
+{
+  int verb=0;
+  const Array<RefCountPtr<FieldBase> >& f = cellScalarFields();
+  CellFilter maximal = new MaximalCellFilter();
+
+  nElemsPerBlock.resize(0);
+  elemBlockPtr.resize(0);
+  blockIDs.resize(0);
+
+  Map<CellFilter, RefCountPtr<Array<int> > > tmp;
+
+  for (unsigned int i=0; i<f.size(); i++)
+  {
+    const CellFilter& cf = f[i]->domain(); 
+    if (cf==maximal) 
+    {
+      SUNDANCE_MSG2(verb, "function #" << i << " is defined on all nodes");
+      omnipresentFuncs.append(i);
+      continue;
+    }
+    if (!tmp.containsKey(cf))
+    {
+      RefCountPtr<Array<int> > a = rcp(new Array<int>());
+      tmp.put(cf, a);
+    }
+    SUNDANCE_MSG2(verb, "function #" << i << " is defined on CF " << cf);
+    tmp[cf]->append(i);
+  }
+
+  int blockID=1;
+  int blockPtr=0;
+  blockFilters.resize(0);
+  funcsForBlock.resize(0);
+  elemsForBlock.resize(0);
+
+  for (Map<CellFilter, RefCountPtr<Array<int> > >::const_iterator
+         i=tmp.begin(); i!=tmp.end(); i++)
+  {
+    const CellFilter& cf = i->first;
+    blockFilters.append(cf);
+    funcsForBlock.append(i->second);
+    RefCountPtr<Array<int> > cells 
+      = cellSetToLIDArray(cf.getCells(mesh()));
+    elemsForBlock.append(cells);
+    int nn = cells->size();
+    nElemsPerBlock.append(nn);
+    blockIDs.append(blockID++);
+    elemBlockPtr.append(blockPtr);
+    blockPtr += nn;
+  }
+
+  SUNDANCE_MSG2(verb, "block IDs = " << blockIDs);
+  SUNDANCE_MSG2(verb, "num elems = " << nElemsPerBlock);
+  SUNDANCE_MSG2(verb, "block pointers = " << elemBlockPtr);
+
+
+  int numElems = blockPtr;
+  allElems->resize(numElems);
+
+  int k=0;
+  for (unsigned int i=0; i<blockIDs.size(); i++)
+  {
+    SUNDANCE_MSG2(verb, "block " << i << " funcs = " 
+      << *funcsForBlock[i]);
+    SUNDANCE_MSG2(verb, "block " << i 
+      << " elems = " << *elemsForBlock[i]);
+    const Array<int>& myCells = *(elemsForBlock[i]);
+    for (unsigned int c=0; c<myCells.size(); c++)
+    {
+      (*allElems)[k++] = myCells[c];
+    }
+  }
+
+  SUNDANCE_MSG2(verb, "all elems = " << *allElems);
 }
 
 void ExodusWriter::getCharpp(const Array<std::string>& s, Array<const char*>& p) const

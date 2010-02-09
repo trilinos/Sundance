@@ -77,6 +77,18 @@ namespace SundanceStdMesh
       RefCountPtr<Array<int> > allNodes
       ) const ;
 
+    /** */
+    void findBlocks(
+      Array<CellFilter>& blockFilters,
+      Array<int>& omnipresentFuncs,
+      Array<RefCountPtr<Array<int> > >& funcsForBlock,
+      Array<RefCountPtr<Array<int> > >& elemsForBlock,
+      Array<int>& elemIDs,
+      Array<int>& nElemsPerBlock,
+      Array<int>& blockElemPtr,
+      RefCountPtr<Array<int> > allElems
+      ) const ;
+
 
 
     /** */
@@ -88,9 +100,6 @@ namespace SundanceStdMesh
     /** */
     void writeMesh(int exoID, 
       const Array<CellFilter>& nodesetFilters,
-      const Array<int>& omnipresentFuncs,
-      const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
-      const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
       const Array<int>& nsID,
       const Array<int>& nNodesPerSet,
       const Array<int>& nsNodePtr,
@@ -99,7 +108,8 @@ namespace SundanceStdMesh
     /** */
     void writeFields(int exoID, 
       const Array<CellFilter>& nodesetFilters,
-      const Array<int>& omnipresentFuncs,
+      const Array<int>& omnipresentNodalFuncs,
+      const Array<int>& omnipresentElemFuncs,
       const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
       const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
       const Array<int>& nsID) const ;
