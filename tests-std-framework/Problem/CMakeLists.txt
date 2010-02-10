@@ -8,6 +8,7 @@ SET(DisabledTests
   transientOneZoneEddy2D
   PoissonBoltzmannDemo3D
   NoxAlgebraic 
+  NonlinAlgebraic 
   PartitionedPoisson1D 
 )
 
@@ -43,7 +44,6 @@ SET(MPITests
              HighOrderPoisson2D
              HighOrderProjection1D 
              HighOrderProjection2D 
-             NonlinAlgebraic 
              NoxPoisson1D 
              PoissonBoltzmann2D
              UserDefAlgebraic 
