@@ -43,6 +43,7 @@ SET(MPITests
              HighOrderPoisson2D
              HighOrderProjection1D 
              HighOrderProjection2D 
+             NonlinAlgebraic 
              NoxPoisson1D 
              PoissonBoltzmann2D
              UserDefAlgebraic 

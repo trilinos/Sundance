@@ -230,7 +230,7 @@ computeJacobianAndFunction(Vector<double>& functionValue) const
   discreteU0_->setVector(currentEvalPt());
 
   Array<Vector<double> > mv(1);
-  mv[0] = functionValue;
+  mv[0].acceptCopyOf(currentEvalPt());
   assembler_->assemble(J_, mv);
   functionValue.acceptCopyOf(mv[0]);
 
