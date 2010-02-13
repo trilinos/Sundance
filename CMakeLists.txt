@@ -31,6 +31,13 @@ ADD_OPTION_AND_DEFINE(TPL_ENABLE_ExodusII
   "Enable ExodusII reader in Sundance (requires ExodusII TPL)."
   OFF )
 
+ADD_OPTION_AND_DEFINE(Sundance_ENABLE_EXTERNAL_CHACO
+  HAVE_SUNDANCE_CHACO
+  "Enable file-based chaco partitioning in Sundance (requires chaco executable in path)."
+  OFF )
+
+
+
 # ========== Peano configuration ===============
 IF(TPL_ENABLE_PEANO)
   ADD_OPTION_AND_DEFINE(TPL_ENABLE_PEANO
@@ -45,6 +52,8 @@ ENDIF()
 
 IF(${Proj}_VERBOSE_CONFIGURE)
   PRINT_VAR(HAVE_SUNDANCE_EXODUS)
+  PRINT_VAR(HAVE_SUNDANCE_PYTHON)
+  PRINT_VAR(HAVE_SUNDANCE_CHACO)
 ENDIF()
 
 #
