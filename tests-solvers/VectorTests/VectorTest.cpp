@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         }
 
       VectorSpace<double> space = type.createSpace(dimension, n, 
-                                                   &(localRows[0]));
+        &(localRows[0]), MPIComm::world());
 
       VectorTester<double> tester(space, TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 

@@ -85,3 +85,8 @@ MeshType& MeshSource::defaultMeshType()
   static MeshType rtn = new BasicSimplicialMeshType(); 
   return rtn;
 }
+
+const MPIComm& MeshSource::comm() const
+{
+  return ptr()->comm();
+}

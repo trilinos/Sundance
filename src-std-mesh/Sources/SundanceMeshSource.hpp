@@ -85,6 +85,9 @@ namespace SundanceStdMesh
      */
     static MeshType& defaultMeshType() ;
 
+    /** access to the MPI communicator */
+    const MPIComm& comm() const ;
+
 #ifndef DOXYGEN_DEVELOPER_ONLY
     static bool& staggerOutput() {static bool rtn=false; return rtn;}
 #endif

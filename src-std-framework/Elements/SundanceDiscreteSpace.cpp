@@ -243,6 +243,7 @@ void DiscreteSpace::init(
   const RefCountPtr<Array<int> >& isBCIndex, 
   bool partitionBCs)
 {
+  Out::os() << "in DS::init()" << endl;
   basis_ = basis;
   subdomains_ = regions;
   Array<RCP<BasisDOFTopologyBase> > basisTop(basis.size());
@@ -250,6 +251,7 @@ void DiscreteSpace::init(
   {
     basisTop[b] = rcp_dynamic_cast<BasisDOFTopologyBase>(basis[b].ptr());
   }
+
   if (map_.get()==0) 
     {
       Array<Set<CellFilter> > cf(regions.size());
@@ -264,12 +266,14 @@ void DiscreteSpace::init(
   {
     initImporter();
   }
+  Out::os() << "done DS::init()" << endl;
 }
 
 void DiscreteSpace::initVectorSpace(
   const RefCountPtr<Array<int> >& isBCIndex, 
   bool partitionBCs)
 {
+  Out::os() << "in DS::initVS()" << endl;
   TEST_FOR_EXCEPTION(map_.get()==0, InternalError,
     "uninitialized map");
 
@@ -303,10 +307,10 @@ void DiscreteSpace::initVectorSpace(
     const int* intDofPtr = vecPtr(interiorDofs);
     Out::os() << "creating BC space" << endl;
     VectorSpace<double> bcSpace = vecType_.createSpace(nTotalBCDofs, nBCDofs,
-      bcDofPtr);
+      bcDofPtr, mesh().comm());
     Out::os() << "bc space = " << bcSpace << endl;
     VectorSpace<double> interiorSpace = vecType_.createSpace(nTotalInteriorDofs, nDof-nBCDofs,
-      intDofPtr);
+      intDofPtr, mesh().comm());
     Out::os() << "int space = " << interiorSpace << endl;
 
     vecSpace_ = productSpace<double>(interiorSpace, bcSpace);
@@ -316,14 +320,18 @@ void DiscreteSpace::initVectorSpace(
     Array<int> dofs(nDof);
     for (int i=0; i<nDof; i++) dofs[i] = lowDof + i;
     
+    Out::os() << "creating VS" << endl;
     vecSpace_ = vecType_.createSpace(map_->numDOFs(),
       map_->numLocalDOFs(),
-      &(dofs[0]));
+      &(dofs[0]), mesh().comm());
+    Out::os() << "done creating VS" << endl;
   }
+  Out::os() << "done DS::initVS()" << endl;
 }
 
 void DiscreteSpace::initImporter()
 {
+  Out::os() << "in DS::initImporter()" << endl;
   TEST_FOR_EXCEPTION(map_.get()==0, InternalError,
     "uninitialized map");
   TEST_FOR_EXCEPTION(vecSpace_.ptr().get()==0, InternalError,
@@ -336,6 +344,7 @@ void DiscreteSpace::initImporter()
   int* ghosts = 0;
   if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
   ghostImporter_ = vecType_.createGhostImporter(vecSpace_, nGhost, ghosts);
+  Out::os() << "done DS::initImporter()" << endl;
 }
 
 
