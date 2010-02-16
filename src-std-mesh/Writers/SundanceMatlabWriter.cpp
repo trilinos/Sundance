@@ -33,6 +33,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 #include "Teuchos_XMLObject.hpp"
+#include <iomanip>
 
 
 
@@ -46,6 +47,7 @@ using namespace Teuchos;
 
 void MatlabWriter::write() const 
 {
+  using std::setw;
   std::ofstream os(filename().c_str());
   int numNodes = mesh().numCells(0);
           
@@ -53,12 +55,12 @@ void MatlabWriter::write() const
     {
       const Point& x = mesh().nodePosition(i);
       for (int d=0; d<x.dim(); d++) 
-        os << x[d] << " ";
+        os << setw(8) << x[d];
 
       for (unsigned int j=0; j<pointScalarFields().size(); j++)
         {
           const RefCountPtr<FieldBase>& expr = pointScalarFields()[j];
-          if (j>0) os << " " ;
+          os << setw(16);
           os << expr->getData(0, i, 0);
         }
       os << std::endl;
