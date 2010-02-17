@@ -41,7 +41,9 @@ SET(MPITests
              Coupled1D
              CrankNicolsonHeat1D
              HighOrderPoisson1D
+             HighOrderPoissonBernstein1D
              HighOrderPoisson2D
+             HighOrderPoissonBernstein2D
              HighOrderProjection1D 
              HighOrderProjection2D 
              NoxPoisson1D 

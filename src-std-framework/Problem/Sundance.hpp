@@ -101,6 +101,7 @@
 
 /* FE  */
 #include "SundanceBasisFamily.hpp"
+#include "SundanceBernstein.hpp"
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceLagrange.hpp"
 #include "SundanceGaussianQuadrature.hpp"

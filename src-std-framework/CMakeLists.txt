@@ -38,6 +38,7 @@ APPEND_SET(HEADERS
   Elements/SundanceBasisFamilyBase.hpp
   Elements/SundanceBasisFamily.hpp
   Elements/SundanceBasisReferenceEvaluationBase.hpp
+  Elements/SundanceBernstein.hpp
   Elements/SundanceBubble.hpp
   Elements/SundanceClosedNewtonCotes.hpp
   Elements/SundanceClosedNewtonCotesType.hpp
@@ -70,6 +71,7 @@ APPEND_SET(HEADERS
 APPEND_SET(SOURCES
   Elements/SundanceBasisFamily.cpp
   Elements/SundanceBasisFamilyBase.cpp
+  Elements/SundanceBernstein.cpp
   Elements/SundanceBubble.cpp
   Elements/SundanceClosedNewtonCotes.cpp
   Elements/SundanceClosedNewtonCotesType.cpp
