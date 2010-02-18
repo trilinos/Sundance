@@ -229,6 +229,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/Writers)
 
 APPEND_SET(HEADERS
+  Writers/SundanceCellLIDMappedFieldWrapper.hpp
   Writers/SundanceExodusWriter.hpp
   Writers/SundanceFieldBase.hpp
   Writers/SundanceFieldWriter.hpp

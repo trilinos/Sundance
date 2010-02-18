@@ -50,8 +50,6 @@ namespace SundanceStdMesh
 class Mesh;
 using SundanceStdFwk::CellFilter;
 
-namespace Internal
-{
 using SundanceUtils::Map;
 using Teuchos::Array;
 using Teuchos::RefCountPtr;
@@ -95,7 +93,7 @@ public:
   virtual const CellFilter& domain() const ;
 
 };
-}
+
 using SundanceStdFwk::Internal::CellSet;
 using SundanceStdFwk::CellFilter;
 

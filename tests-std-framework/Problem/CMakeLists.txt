@@ -40,6 +40,8 @@ SET(MPITests
              Helmholtz1D
              Coupled1D
              CrankNicolsonHeat1D
+             FieldIOTest
+             BlockStochPoissonTest1D
              HighOrderPoisson1D
              HighOrderPoissonBernstein1D
              HighOrderPoisson2D

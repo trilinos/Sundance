@@ -236,10 +236,12 @@ APPEND_SET(HEADERS
   Problem/SundanceLinearEigenproblem.hpp
   Problem/SundanceLinearProblem.hpp
   Problem/SundanceLinearSolveDriver.hpp
+  Problem/SundanceMeshIOUtils.hpp
   Problem/SundanceModelEvaluatorBase.hpp
   Problem/SundanceNLPModelEvaluator.hpp
   Problem/SundanceNLOp.hpp
   Problem/SundanceRivaraDriver.hpp
+  Problem/SundanceStochBlockJacobiSolver.hpp
   Problem/SundanceNonlinearProblem.hpp 
   )
 
@@ -255,10 +257,12 @@ APPEND_SET(SOURCES
   Problem/SundanceLinearEigenproblem.cpp
   Problem/SundanceLinearProblem.cpp
   Problem/SundanceLinearSolveDriver.cpp
+  Problem/SundanceMeshIOUtils.cpp
   Problem/SundanceModelEvaluatorBase.cpp
   Problem/SundanceNLPModelEvaluator.cpp
   Problem/SundanceNLOp.cpp
   Problem/SundanceRivaraDriver.cpp
+  Problem/SundanceStochBlockJacobiSolver.cpp
   Problem/SundanceNonlinearProblem.cpp
   )
 
