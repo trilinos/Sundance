@@ -25,11 +25,15 @@
 
 /* </Ignore> */
 
+
+#if defined(HAVE_SUNDANCE_EXODUS) && defined(Trilinos_DATA_DIR)
+
 int main(int argc, char** argv)
 {
   try
   {
     Sundance::init(&argc, &argv);
+
 
     MPIComm world = MPIComm::world();
 #ifdef HAVE_MPI
@@ -91,11 +95,23 @@ int main(int argc, char** argv)
   {
     Sundance::handleException(e);
   }
-  Sundance::finalize(); 
+  Sundance::finalize(); return Sundance::testStatus(); 
 }
     
 
-    
+#else // don't have exodus
+
+
+int main(int argc, char** argv)
+{
+  Sundance::init(&argc, &argv);
+  std::cout << "dummy FieldIOTest PASSED. Enable exodus to run the actual test" << std::endl;
+  Sundance::finalize();
+  return 0;
+}
+
+
+#endif
 
     
     

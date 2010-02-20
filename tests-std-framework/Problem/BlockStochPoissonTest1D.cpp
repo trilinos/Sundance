@@ -181,13 +181,16 @@ int main(int argc, char** argv)
         Out::os() << "mode i=" << i << " error=" << sqrt(errSq) << endl;
     }
     
-
+    double tol = 1.0e-12;
+    
+    Sundance::passFailTest(sqrt(totalErr2), tol);
+    
   }
 	catch(exception& e)
   {
     Sundance::handleException(e);
   }
-  Sundance::finalize(); 
+  Sundance::finalize(); return Sundance::testStatus(); 
 }
     
 
