@@ -26,8 +26,8 @@ int main(int argc, char** argv)
       VectorType<double> vecType = new EpetraVectorType();
 
       MeshType meshType = new BasicSimplicialMeshType();
-      int nx = 64;
-      int ny = 64;
+      int nx = 32;
+      int ny = 32;
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, npx, 
         0.0,  1.0, ny, npy, meshType);
       Mesh mesh = mesher.getMesh();
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
 
       double err = sqrt(uErrorSq + lambdaErrorSq + alphaErrorSq);
 
-      double tol = 0.01;
+      double tol = 0.05;
       Sundance::passFailTest(err, tol);
 
     }

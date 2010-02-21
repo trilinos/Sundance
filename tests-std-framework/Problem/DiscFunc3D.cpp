@@ -165,7 +165,7 @@ int main(int argc, char** argv)
 int main(int argc, char** argv)
 {
   Sundance::init(&argc, &argv);
-  std::cout << "dummy PoissonDemo3D PASSED. Enable exodus to run the actual test" << std::endl;
+  std::cout << "dummy DiscFunc3D PASSED. Enable exodus to run the actual test" << std::endl;
   Sundance::finalize();
   return 0;
 }

@@ -161,6 +161,7 @@ int main(int argc, char** argv)
       watchBC.setParam("integration", 6);
       watchBC.setParam("fill", 6);
       watchBC.setParam("evaluation", 6);
+      watchBC.deactivate();
 
       Expr bc = EssentialBC(side4, v*(u-exactSoln), quad4)
         + EssentialBC(side6, v*(u-exactSoln), quad4, watchBC);

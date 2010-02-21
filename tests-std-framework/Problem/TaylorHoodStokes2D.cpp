@@ -57,8 +57,8 @@ int main(int argc, char** argv)
 
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedRectangleMesher. */
-      int nx = 32;
-      int ny = 32;
+      int nx = 8;
+      int ny = 8;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedRectangleMesher(0.0, 1.0, nx, np,
                                                          0.0, 1.0, ny, 1,
@@ -147,9 +147,9 @@ int main(int argc, char** argv)
       FunctionalEvaluator errInt(mesh, errExpr);
 
       double errorSq = errInt.evaluate();
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
+      cerr << "velocity error norm = " << sqrt(errorSq) << endl << endl;
 
-      Sundance::passFailTest(errorSq, 1.0e-6);
+      Sundance::passFailTest(sqrt(errorSq), 1.0e-3);
 
     }
 	catch(exception& e)
