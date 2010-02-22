@@ -112,7 +112,7 @@ namespace Sundance
   Sundance::BasisArray 
     BasisList(const Sundance::BasisFamily& a)
   {
-    return tuple(a);
+    return Array<BasisFamily>(tuple(a));
   }
 
   /* */
@@ -120,7 +120,7 @@ namespace Sundance
     BasisList(const Sundance::BasisFamily& a,
               const Sundance::BasisFamily& b)
   {
-    return tuple(a,b);
+    return Array<BasisFamily>(tuple(a,b));
   }
 
   /* */
@@ -129,7 +129,7 @@ namespace Sundance
               const Sundance::BasisFamily& b,
               const Sundance::BasisFamily& c)
   {
-    return tuple(a,b,c);
+    return  Array<BasisFamily>(tuple(a,b,c));
   }
 
   /* */
@@ -139,7 +139,7 @@ namespace Sundance
               const Sundance::BasisFamily& c,
               const Sundance::BasisFamily& d)
   {
-    return tuple(a,b,c,d);
+    return  Array<BasisFamily>(tuple(a,b,c,d));
   }
 
   /* */
@@ -150,7 +150,7 @@ namespace Sundance
               const Sundance::BasisFamily& d,
               const Sundance::BasisFamily& e)
   {
-    return tuple(a,b,c,d,e);
+    return  Array<BasisFamily>(tuple(a,b,c,d,e));
   }
                                       
   %}

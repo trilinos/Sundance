@@ -40,6 +40,7 @@ namespace Sundance
 {
 using Teuchos::XMLObject;
 using Teuchos::tuple;
+using Teuchos::Array;
 
 class CommonFuncDataStub;
 
@@ -132,7 +133,7 @@ public:
 /** \relates BasisFamily */
 inline Array<BasisFamily> List(const BasisFamily& a, const BasisFamily& b)
 {
-  return tuple(a,b);
+  return Array<BasisFamily>(tuple(a,b));
 }
 
 /** \relates BasisFamily */

@@ -65,7 +65,7 @@ class Block
   Sundance::BlockArray 
     BlockList(const Sundance::Block& a)
   {
-    return tuple(a);
+    return Array<Block>(tuple(a));
   }
 
   /* */
@@ -73,7 +73,7 @@ class Block
     BlockList(const Sundance::Block& a,
               const Sundance::Block& b)
   {
-    return tuple(a,b);
+    return Array<Block>(tuple(a,b));
   }
 
   /* */
@@ -82,7 +82,7 @@ class Block
               const Sundance::Block& b,
               const Sundance::Block& c)
   {
-    return tuple(a,b,c);
+    return Array<Block>(tuple(a,b,c));
   }
 
   /* */
@@ -92,7 +92,7 @@ class Block
               const Sundance::Block& c,
               const Sundance::Block& d)
   {
-    return tuple(a,b,c,d);
+    return Array<Block>( tuple(a,b,c,d) );
   }
 
   /* */
@@ -103,7 +103,7 @@ class Block
               const Sundance::Block& d,
               const Sundance::Block& e)
   {
-    return tuple(a,b,c,d,e);
+    return Array<Block>(tuple(a,b,c,d,e));
   }
                                       
   %}

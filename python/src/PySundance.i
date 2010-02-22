@@ -24,13 +24,9 @@
 
 
 %inline %{
-  bool passFailTest(double err, double tol)
-  {
-    return Sundance::Sundance::passFailTest(err, tol);
-  }
 
 
-  void skipTimingOutput() {Sundance::skipTimingOutput()=true;}
+  void skipTimingOutput() {SundanceGlobal::skipTimingOutput()=true;}
 
   %}
 
@@ -38,6 +34,7 @@
 %include "std_string.i"
 namespace Sundance
 {
+  bool passFailTest(double err, double tol);
   std::string searchForFile(const std::string& name);
 }
 
