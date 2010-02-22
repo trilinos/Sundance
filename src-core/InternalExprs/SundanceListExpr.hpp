@@ -35,9 +35,9 @@
 #include "SundanceExpr.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
 
@@ -68,10 +68,10 @@ public:
   Expr join(const Expr& other) const ;
 
   /** */
-  unsigned int size() const ;
+  int size() const ;
 
   /** */
-  unsigned int totalSize() const ;
+  int totalSize() const ;
 
   /** Write a simple text description suitable 
    * for output to a terminal */
@@ -85,7 +85,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 private:
   Array<Expr> elements_;

@@ -45,9 +45,9 @@
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using namespace Teuchos;
 
   using std::string;
@@ -62,19 +62,19 @@ namespace SundanceCore
     public:
       /** construct with an argument and the functor defining the operation */
       UserDefOp(const Expr& args,
-                const RefCountPtr<const UserDefFunctor>& functor);
+                const RCP<const UserDefFunctor>& functor);
 
       /** virtual destructor */
       virtual ~UserDefOp() {;}
 
       /** */
-      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+      virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 
     private:
     
       /** */
-      static Array<RefCountPtr<ScalarExpr> > getScalarArgs(const Expr& args);
+      static Array<RCP<ScalarExpr> > getScalarArgs(const Expr& args);
     
     };
 }

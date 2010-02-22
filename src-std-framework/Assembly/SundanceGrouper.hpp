@@ -36,42 +36,31 @@
 #include "SundanceIntegralGroup.hpp"
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+using namespace Teuchos;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+/** 
+ * Grouper
+ */
+class GrouperBase
+  : public ObjectWithClassVerbosity<GrouperBase>
+{
+public:
+  /** */
+  GrouperBase() {;}
 
-    /** 
-     * Grouper
-     */
-    class GrouperBase
-      : public SundanceUtils::ObjectWithClassVerbosity<GrouperBase>
-    {
-    public:
-      /** */
-      GrouperBase() {;}
+  /** */
+  virtual ~GrouperBase(){;}
 
-      /** */
-      virtual ~GrouperBase(){;}
-
-      /** */
-      virtual void findGroups(const RefCountPtr<SparsitySuperset>& sparsity,
-                              Array<IntegralGroup>& groups) const = 0 ;
+  /** */
+  virtual void findGroups(const RCP<SparsitySuperset>& sparsity,
+    Array<IntegralGroup>& groups) const = 0 ;
                               
-    };
+};
 
-  }
+
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

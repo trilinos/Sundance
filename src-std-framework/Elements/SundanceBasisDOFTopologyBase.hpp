@@ -36,11 +36,11 @@
 #include "Teuchos_Array.hpp"
 #include "Teuchos_Describable.hpp"
 
-namespace SundanceStdFwk {
+namespace Sundance {
 
 
 using Teuchos::Array;
-using SundanceStdMesh::CellType;
+using Sundance::CellType;
 
 /** 
  * Abstract interface for specification of the topology of degree-of-freedom
@@ -223,7 +223,7 @@ public:
 };
 
 
-} // namespace SundanceStdFwk
+} // namespace Sundance
 
 
 #endif

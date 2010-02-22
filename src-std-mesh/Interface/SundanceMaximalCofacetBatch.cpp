@@ -31,9 +31,9 @@
 #include "SundanceMaximalCofacetBatch.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceStdMesh;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 MaximalCofacetBatch::MaximalCofacetBatch()
   : cofacetLIDs_(2),

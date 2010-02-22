@@ -15,16 +15,16 @@
 #include "SundanceVTKWriter.hpp"
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }

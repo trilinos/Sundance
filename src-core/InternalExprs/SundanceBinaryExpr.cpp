@@ -31,15 +31,15 @@
 #include "SundanceBinaryExpr.hpp"
 #include "SundanceExpr.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
-BinaryExpr::BinaryExpr(const RefCountPtr<ScalarExpr>& left,
-  const RefCountPtr<ScalarExpr>& right, int sign)
+BinaryExpr::BinaryExpr(const RCP<ScalarExpr>& left,
+  const RCP<ScalarExpr>& right, int sign)
 	: ExprWithChildren(tuple(left, right)), 
     sign_(sign)
 {}

@@ -48,10 +48,10 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceCollectiveExceptionCheck.hpp"
 
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceStdMesh;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 //#define printf(msg)
 //#define SUNDANCE_VERB_HIGH(msg) printf(msg);printf("\n");
@@ -161,7 +161,7 @@ void PeanoMesh3D::getJacobians(int cellDim, const Array<int>& cellLID,
 	  }else{ // they request the complete Jacoby matrix for this bunch of elements
 		    //Array<double> J(cellDim*cellDim);
 		    SUNDANCE_VERB_HIGH("cellDim == spatialDim()");
-		    for (unsigned int i=0; i<cellLID.size(); i++)
+		    for (int i=0; i<cellLID.size(); i++)
 		    {
 			  //printf("PeanoMesh3D::getJacobian() cellDim == spatialDim() cellDim:%d , ret:%f \n",cellDim , _uniqueResolution);
 		      double* J = jBatch.jVals(i);
@@ -203,7 +203,7 @@ void PeanoMesh3D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	  if (cellDim < spatialDim())
 	  {
 		//printf("PeanoMesh3D::getCellDiameters(), cellDim < spatialDim() \n ");
-	    for (unsigned int i=0; i<cellLID.size(); i++)
+	    for (int i=0; i<cellLID.size(); i++)
 	    {
 	      switch(cellDim)
 	      {
@@ -225,7 +225,7 @@ void PeanoMesh3D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	  else
 	  {
 		//printf("PeanoMesh3D::getCellDiameters(), cellDim == spatialDim() \n ");
-	    for (unsigned int i=0; i<cellLID.size(); i++)
+	    for (int i=0; i<cellLID.size(); i++)
 	    {
 	      switch(cellDim)
 	      {
@@ -260,7 +260,7 @@ void PeanoMesh3D::pushForward(int cellDim, const Array<int>& cellLID,
 
 	  if (physQuadPts.size() > 0) physQuadPts.resize(0);
 	  physQuadPts.reserve(cellLID.size() * refQuadPts.size());
-	  for (unsigned int i=0; i<cellLID.size(); i++)
+	  for (int i=0; i<cellLID.size(); i++)
 	  {
     	int tmp , tmp_index;
 	    int lid = cellLID[i];
@@ -334,7 +334,7 @@ void PeanoMesh3D::getFacetLIDs(int cellDim,
       facetLID.resize(cellLID.size() * nf);
       facetSign.resize(cellLID.size() * nf);
 	  // At this moment we just use the previous function
-	  for (unsigned int i = 0 ; i < cellLID.size() ; i++){
+	  for (int i = 0 ; i < cellLID.size() ; i++){
 		  cLID = cellLID[i];
 	      for (int f=0; f<nf; f++, ptr++) {
 	    	  // we use this->facetLID caz facetLID is already used as variable

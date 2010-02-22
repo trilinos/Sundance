@@ -39,13 +39,7 @@
 #include "SundanceObjectWithVerbosity.hpp"
 
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using SundanceUtils::Map;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -67,7 +61,7 @@ public:
   virtual ~PartialElementDOFMap(){;}
 
   /** */
-  RefCountPtr<const MapStructure> 
+  RCP<const MapStructure> 
   getDOFsForCellBatch(int cellDim,
     const Array<int>& cellLID,
     const Set<int>& requestedFuncSet,
@@ -76,7 +70,7 @@ public:
     int verbosity) const ;
 
   /** */
-  RefCountPtr<const Set<int> >
+  RCP<const Set<int> >
   allowedFuncsOnCellBatch(int cellDim,
     const Array<int>& cellLID) const ;
 
@@ -101,10 +95,10 @@ protected:
   CellFilter subdomain_;
   Array<CellFilter> funcDomains_;
   Array<int> elemDofs_;
-  RefCountPtr<MapStructure> structure_;
-  RefCountPtr<const Set<int> > allFuncs_;
+  RCP<MapStructure> structure_;
+  RCP<const Set<int> > allFuncs_;
 };
-}
+
 }
 
 

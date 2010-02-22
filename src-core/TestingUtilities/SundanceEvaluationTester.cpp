@@ -39,10 +39,10 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceMultiIndex.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace SundanceTesting;
 
 using namespace Teuchos;
@@ -78,7 +78,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
   /* find the unknown functions in the expression           */
   /* ------------------------------------------------------ */
   Array<Expr> unks;
-  RefCountPtr<Set<int> > unkID = rcp(new Set<int>());
+  RCP<Set<int> > unkID = rcp(new Set<int>());
 
   SUNDANCE_VERB_LOW(tabs << "finding unknowns...");
 
@@ -124,7 +124,7 @@ EvaluationTester::EvaluationTester(const Expr& e, int maxDiffOrder)
   Array<Expr> uDisc;
   Array<Expr> uEval;
 
-  for (unsigned int i=0; i<unks.size(); i++)
+  for (int i=0; i<unks.size(); i++)
   {
     Tabs tabs1;
     const UnknownFuncElement* fe 
@@ -230,7 +230,7 @@ double EvaluationTester::evaluate() const
   Tabs tabs;
 
   Array<double> constantResults;
-  Array<RefCountPtr<EvalVector> > vectorResults;
+  Array<RCP<EvalVector> > vectorResults;
 
   
   SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
@@ -316,7 +316,7 @@ double EvaluationTester::evaluate() const
     }
       
     double fieldDerivs = 1.0;
-    for (unsigned int k=0; k<fieldIndex.size(); k++)
+    for (int k=0; k<fieldIndex.size(); k++)
     {
       fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
     }
@@ -358,7 +358,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
   }
 
   Array<double> constantResults;
-  Array<RefCountPtr<EvalVector> > vectorResults;
+  Array<RCP<EvalVector> > vectorResults;
 
   
   SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
@@ -420,7 +420,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs) const
     }
       
     double fieldDerivs = 1.0;
-    for (unsigned int k=0; k<fieldIndex.size(); k++)
+    for (int k=0; k<fieldIndex.size(); k++)
     {
       fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
     }
@@ -477,7 +477,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
   }
 
   Array<double> constantResults;
-  Array<RefCountPtr<EvalVector> > vectorResults;
+  Array<RCP<EvalVector> > vectorResults;
 
   
   SUNDANCE_VERB_MEDIUM(tabs << endl << tabs << "evaluating...");
@@ -540,7 +540,7 @@ double EvaluationTester::evaluate(Array<double>& firstDerivs,
       
       
     double fieldDerivs = 1.0;
-    for (unsigned int k=0; k<fieldIndex.size(); k++)
+    for (int k=0; k<fieldIndex.size(); k++)
     {
       fieldDerivs *= tem_->evalDummyBasis(fieldIndex[k], mi[k]);
     }

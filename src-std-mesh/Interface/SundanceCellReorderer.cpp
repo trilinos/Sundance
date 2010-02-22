@@ -31,12 +31,12 @@
 #include "SundanceCellReorderer.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceStdMesh;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
-RefCountPtr<CellReordererImplemBase>
+RCP<CellReordererImplemBase>
 CellReorderer::createInstance(const MeshBase* mesh) const
 {
   return ptr()->createInstance(mesh);

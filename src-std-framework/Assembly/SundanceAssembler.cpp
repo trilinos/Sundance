@@ -69,26 +69,26 @@
 
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 static Time& assemblyTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("assembly"); 
   return *rtn;
 }
 
 static Time& assemblerCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("assembler ctor"); 
   return *rtn;
 }
@@ -96,21 +96,21 @@ static Time& assemblerCtorTimer()
 
 static Time& configTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("matrix config"); 
   return *rtn;
 }
 
 static Time& graphBuildTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("matrix graph determination"); 
   return *rtn;
 }
 
 static Time& colSearchTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("graph column processing"); 
   return *rtn;
 }
@@ -119,29 +119,29 @@ static Time& colSearchTimer()
 
 static Time& matAllocTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("matrix allocation"); 
   return *rtn;
 }
 
 static Time& matFinalizeTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("matrix graph packing"); 
   return *rtn;
 }
 
 static Time& graphFlatteningTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("tmp graph flattening"); 
   return *rtn;
 }
 
 
-RefCountPtr<ParameterList> Assembler::defaultVerbParams()
+RCP<ParameterList> Assembler::defaultVerbParams()
 {
-  static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Assembler"));
+  static RCP<ParameterList> rtn = rcp(new ParameterList("Assembler"));
   static int first = true;
   if (first)
   {
@@ -156,7 +156,7 @@ RefCountPtr<ParameterList> Assembler::defaultVerbParams()
 
 Assembler
 ::Assembler(const Mesh& mesh, 
-  const RefCountPtr<EquationSet>& eqn,
+  const RCP<EquationSet>& eqn,
   const Array<VectorType<double> >& rowVectorType,
   const Array<VectorType<double> >& colVectorType,
   bool partitionBCs,
@@ -201,7 +201,7 @@ Assembler
 
 Assembler
 ::Assembler(const Mesh& mesh, 
-  const RefCountPtr<EquationSet>& eqn,
+  const RCP<EquationSet>& eqn,
   const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<Assembler>("Assembler", verbParams),
     partitionBCs_(false),
@@ -243,7 +243,7 @@ Assembler
 }
 
 void Assembler::init(const Mesh& mesh, 
-  const RefCountPtr<EquationSet>& eqn)
+  const RCP<EquationSet>& eqn)
 {
   Tabs tab0(0);
 
@@ -258,7 +258,7 @@ void Assembler::init(const Mesh& mesh,
 
 
   /* Create an integral grouper */
-  RefCountPtr<GrouperBase> grouper 
+  RCP<GrouperBase> grouper 
     = rcp(new TrivialGrouper());
 
 
@@ -284,7 +284,7 @@ void Assembler::init(const Mesh& mesh,
     isBCCol_ = mapBuilder.isBCCol();
     lowestRow_.resize(eqn_->numVarBlocks());
     /* create discrete space for each block */
-    for (unsigned int b=0; b<eqn_->numVarBlocks(); b++) 
+    for (int b=0; b<eqn_->numVarBlocks(); b++) 
     {
       Tabs tab2;
       lowestRow_[b] = rowMap_[b]->lowestLocalDOF();
@@ -314,7 +314,7 @@ void Assembler::init(const Mesh& mesh,
     SUNDANCE_MSG2(verb, tab1 << "building column spaces");
     colMap_ = mapBuilder.colMap();
     /* create discrete space for each block */
-    for (unsigned int b=0; b<eqn_->numUnkBlocks(); b++) 
+    for (int b=0; b<eqn_->numUnkBlocks(); b++) 
     {
       Tabs tab2;
       externalColSpace_[b] 
@@ -390,7 +390,7 @@ void Assembler::init(const Mesh& mesh,
   SUNDANCE_MSG1(verb, tab0 << endl 
     << tab0 << "=== setting up non-BC region-quadrature combinations");
 
-  for (unsigned int r=0; r<eqn->regionQuadCombos().size(); r++)
+  for (int r=0; r<eqn->regionQuadCombos().size(); r++)
   {
     Tabs tab1;
     Tabs tab12;
@@ -483,7 +483,7 @@ void Assembler::init(const Mesh& mesh,
       /* Get the "sparsity superset" which is a description of all 
        * derivatives that must be computed by this expression in the
        * present context */
-      const RefCountPtr<SparsitySuperset>& sparsity 
+      const RCP<SparsitySuperset>& sparsity 
         = ee->sparsitySuperset(context);
       SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
 
@@ -529,7 +529,7 @@ void Assembler::init(const Mesh& mesh,
   SUNDANCE_MSG1(verb, tab0 << endl 
     << tab0 << "=== setting up BC region-quadrature combinations");
   
-  for (unsigned int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
+  for (int r=0; r<eqn->bcRegionQuadCombos().size(); r++)
   {
     Tabs tab1;
     const RegionQuadCombo& rqc = eqn->bcRegionQuadCombos()[r];
@@ -609,7 +609,7 @@ void Assembler::init(const Mesh& mesh,
       contexts_[compType].append(context);
       const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
       evalExprs_[compType].append(ee);
-      const RefCountPtr<SparsitySuperset>& sparsity 
+      const RCP<SparsitySuperset>& sparsity 
         = ee->sparsitySuperset(context);
       SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
 
@@ -677,7 +677,7 @@ IntegrationCellSpecifier Assembler::whetherToUseCofacets(
 
   bool allTermsNeedCofacets = true;
   bool noTermsNeedCofacets = true;
-  for (unsigned int g=0; g<groups.size(); g++)
+  for (int g=0; g<groups.size(); g++)
   {
     Tabs tab1;
     switch(groups[g]->usesMaximalCofacets()) 
@@ -734,7 +734,7 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
 
   /* Get the vector spaces for each block of equations */
   Array<VectorSpace<double> > vs(eqn_->numVarBlocks());
-  for (unsigned int i=0; i<eqn_->numVarBlocks(); i++)
+  for (int i=0; i<eqn_->numVarBlocks(); i++)
   {
     vs[i] = privateRowSpace_[i]->vecSpace();
   }
@@ -752,7 +752,7 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
   }
 
   /* Create each vector in the multivector */
-  for (unsigned int i=0; i<b.size(); i++)
+  for (int i=0; i<b.size(); i++)
   {
     /* Create the vector. Recall that the vector space is a factory used to 
      * create a vector of specified size and distribution */
@@ -763,7 +763,7 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
     {
       /* configure the blocks */
       Vector<double> vecBlock;
-      for (unsigned int br=0; br<eqn_->numVarBlocks(); br++)
+      for (int br=0; br<eqn_->numVarBlocks(); br++)
       {
         configureVectorBlock(br, vecBlock);
         b[i].setBlock(br, vecBlock);
@@ -868,7 +868,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   VectorSpace<double> rowSpace = privateRowSpace_[br]->vecSpace();
   VectorSpace<double> colSpace = privateColSpace_[bc]->vecSpace();
 
-  RefCountPtr<MatrixFactory<double> > matFactory ;
+  RCP<MatrixFactory<double> > matFactory ;
 
   if (partitionBCs_)
   {
@@ -942,14 +942,14 @@ void Assembler::displayEvaluationResults(
   const EvalContext& context, 
   const EvaluatableExpr* evalExpr, 
   const Array<double>& constantCoeffs, 
-  const Array<RefCountPtr<EvalVector> >& vectorCoeffs) const 
+  const Array<RCP<EvalVector> >& vectorCoeffs) const 
 {
   Tabs tab;
   FancyOStream& os = Out::os();
 
   os << tab << "evaluation results: " << endl;
 
-  const RefCountPtr<SparsitySuperset>& sparsity 
+  const RCP<SparsitySuperset>& sparsity 
     = evalExpr->sparsitySuperset(context);
   
   sparsity->print(os, vectorCoeffs, constantCoeffs);
@@ -958,7 +958,7 @@ void Assembler::displayEvaluationResults(
 
 
 void Assembler::assemblyLoop(const ComputationType& compType,
-  RefCountPtr<AssemblyKernelBase> kernel) const
+  RCP<AssemblyKernelBase> kernel) const
 {
   Tabs tab;
   int verb = 0;
@@ -972,13 +972,13 @@ void Assembler::assemblyLoop(const ComputationType& compType,
    * of pointers to cell objects, cell iterators, or whatever is needed to
    * work with something like a Peano curve data structure. */
   SUNDANCE_MSG2(verb, tab << "work set size is " << workSetSize()); 
-  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  RCP<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
   /* Allocate isLocalFlag array, which distinguishes between local
    * and non-local cells in the workset. This is used to prevent 
    * adding multiple copies of zero-form values for border cells. */
-  RefCountPtr<Array<int> > isLocalFlag = rcp(new Array<int>());
+  RCP<Array<int> > isLocalFlag = rcp(new Array<int>());
   isLocalFlag->reserve(workSetSize());
 
   /* Declare objects for storage of coefficient evaluation results 
@@ -986,11 +986,11 @@ void Assembler::assemblyLoop(const ComputationType& compType,
    * is the object in which a vector of numerical values for a 
    * given functional derivative are returned from an evaluation of
    * a symbolic DAG. */
-  Array<RefCountPtr<EvalVector> > vectorCoeffs;
+  Array<RCP<EvalVector> > vectorCoeffs;
   Array<double> constantCoeffs;
 
   /* Create an object in which to store local integration results */
-  RefCountPtr<Array<double> > localValues = rcp(new Array<double>());
+  RCP<Array<double> > localValues = rcp(new Array<double>());
 
   /* Get the symbolic specification of the current computation.
    * The "context" is simply a unique ID used to distinguish different
@@ -1019,7 +1019,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
   int oldKernelVerb = kernel->verb();
   
   /* Looping over RQCs */
-  for (unsigned int r=0; r<rqc_.size(); r++)
+  for (int r=0; r<rqc_.size(); r++)
   {
       Tabs tab0;
 
@@ -1149,7 +1149,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
          * the reserved size). */
         workSet->resize(0);
         isLocalFlag->resize(0);
-        for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+        for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
         {
           workSet->append(*iter);
           /* we need the isLocalFlag values so that we can ignore contributions
@@ -1253,7 +1253,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       
         /* Loop over the integral groups */
         SUNDANCE_MSG2(rqcVerb, tab1 << "----- looping over integral groups");
-        for (unsigned int g=0; g<groups[r].size(); g++)
+        for (int g=0; g<groups[r].size(); g++)
         {
           Tabs tab2;
           SUNDANCE_MSG2(rqcVerb, tab2 << endl << tab2 
@@ -1312,7 +1312,7 @@ void Assembler::assemble(LinearOperator<double>& A,
 
   configureMatrix(A, mv);
   
-  RefCountPtr<AssemblyKernelBase> kernel 
+  RCP<AssemblyKernelBase> kernel 
     = rcp(new MatrixVectorAssemblyKernel(
             rowMap_, isBCRow_, lowestRow_,
             colMap_, isBCCol_, lowestCol_,
@@ -1324,7 +1324,7 @@ void Assembler::assemble(LinearOperator<double>& A,
   SUNDANCE_MSG1(verb, tab << "matrix=" << A);
   if (verb>0) A.print(Out::os());
   SUNDANCE_MSG1(verb, tab << "vectors=" << mv);
-  for (unsigned int i=0; i<mv.size(); i++) 
+  for (int i=0; i<mv.size(); i++) 
   {
     SUNDANCE_MSG1(verb, tab << "vectors #" << i);
     if (verb>0) mv[i].print(Out::os());
@@ -1353,7 +1353,7 @@ void Assembler::assembleSensitivities(LinearOperator<double>& A,
   configureMatrix(A, mv);
   
   
-  RefCountPtr<AssemblyKernelBase> kernel 
+  RCP<AssemblyKernelBase> kernel 
     = rcp(new MatrixVectorAssemblyKernel(
             rowMap_, isBCRow_, lowestRow_,
             colMap_, isBCCol_, lowestCol_,
@@ -1390,7 +1390,7 @@ void Assembler::assemble(Array<Vector<double> >& mv) const
   configureVector(mv);
   
   /* Create an assembly kernel that knows how to fill a vector */
-  RefCountPtr<AssemblyKernelBase> kernel 
+  RCP<AssemblyKernelBase> kernel 
     = rcp(new VectorAssemblyKernel(
             rowMap_, isBCRow_, lowestRow_,
             mv, partitionBCs_, 0));
@@ -1421,7 +1421,7 @@ void Assembler::evaluate(double& value, Array<Vector<double> >& gradient) const
 
   value = 0.0;
   
-  RefCountPtr<AssemblyKernelBase> kernel 
+  RCP<AssemblyKernelBase> kernel 
     = rcp(new FunctionalGradientAssemblyKernel(
             mesh_.comm(),
             rowMap_, isBCRow_, lowestRow_,
@@ -1454,7 +1454,7 @@ void Assembler::evaluate(double& value) const
 
   value = 0.0;
   
-  RefCountPtr<AssemblyKernelBase> kernel 
+  RCP<AssemblyKernelBase> kernel 
     = rcp(new FunctionalAssemblyKernel(mesh_.comm(), &value, verb));
 
   assemblyLoop(FunctionalOnly, kernel);
@@ -1479,13 +1479,13 @@ void Assembler::getGraph(int br, int bc,
 
 
 
-  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  RCP<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
-  RefCountPtr<Array<Array<int> > > testLocalDOFs 
+  RCP<Array<Array<int> > > testLocalDOFs 
     = rcp(new Array<Array<int> >());
 
-  RefCountPtr<Array<Array<int> > > unkLocalDOFs
+  RCP<Array<Array<int> > > unkLocalDOFs
     = rcp(new Array<Array<int> >());
 
   SUNDANCE_VERB_HIGH(tab << "Creating graph: there are " << rowMap_[br]->numLocalDOFs()
@@ -1497,7 +1497,7 @@ void Assembler::getGraph(int br, int bc,
 
   {
     TimeMonitor timer2(colSearchTimer());
-    for (unsigned int d=0; d<eqn_->numRegions(); d++)
+    for (int d=0; d<eqn_->numRegions(); d++)
     {
       Tabs tab0;
       CellFilter domain = eqn_->region(d);
@@ -1506,17 +1506,17 @@ void Assembler::getGraph(int br, int bc,
       SUNDANCE_OUT(this->verb() > 2, 
         tab0 << "cell set " << domain
         << " isBCRegion=" << eqn_->isBCRegion(d));
-      unsigned int dim = domain.dimension(mesh_);
+      int dim = domain.dimension(mesh_);
       CellSet cells = domain.getCells(mesh_);
 
-      RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
+      RCP<Set<OrderedPair<int, int> > > pairs ;
       if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
       SUNDANCE_OUT(this->verb() > 2 && pairs.get() != 0, 
         tab0 << "non-BC pairs = "
         << *pairs);
        
-      RefCountPtr<Set<OrderedPair<int, int> > > bcPairs ;
+      RCP<Set<OrderedPair<int, int> > > bcPairs ;
       if (eqn_->isBCRegion(d))
       {
         if (eqn_->hasBCVarUnkPairs(domain)) 
@@ -1576,7 +1576,7 @@ void Assembler::getGraph(int br, int bc,
       Array<Array<int> > unksForTests(unksForTestsSet.size());
       Array<Array<int> > bcUnksForTests(bcUnksForTestsSet.size());
 
-      for (unsigned int t=0; t<unksForTests.size(); t++)
+      for (int t=0; t<unksForTests.size(); t++)
       {
         unksForTests[t] = unksForTestsSet[t].elements();
         bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
@@ -1596,15 +1596,15 @@ void Assembler::getGraph(int br, int bc,
       {
         /* build a work set */
         workSet->resize(0);
-        for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+        for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
         {
           workSet->append(*iter);
         }
 
         int nCells = workSet->size();
 
-        RefCountPtr<const MapStructure> colMapStruct; 
-        RefCountPtr<const MapStructure> rowMapStruct 
+        RCP<const MapStructure> colMapStruct; 
+        RCP<const MapStructure> rowMapStruct 
           = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
             requiredVars[br], *testLocalDOFs,
             numTestNodes, this->verb());
@@ -1632,7 +1632,7 @@ void Assembler::getGraph(int br, int bc,
               int testFuncIndex = rowMapStruct->indexForFuncID(t);
               int nTestNodes = numTestNodes[tChunk];
               const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
-              for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
+              for (int uit=0; uit<unksForTests[t].size(); uit++)
               {
                 Tabs tab2;
                 int u = unksForTests[t][uit];
@@ -1670,7 +1670,7 @@ void Assembler::getGraph(int br, int bc,
               int testFuncIndex = rowMapStruct->indexForFuncID(t);
               int nTestNodes = numTestNodes[tChunk];
               const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
-              for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
+              for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
               {
                 Tabs tab2;
                 int u = bcUnksForTests[t][uit];
@@ -1704,12 +1704,12 @@ void Assembler::getGraph(int br, int bc,
   
   {
     TimeMonitor t2(graphFlatteningTimer());
-    unsigned int nLocalRows = rowMap_[br]->numLocalDOFs();
+    int nLocalRows = rowMap_[br]->numLocalDOFs();
 
-    unsigned int nnz = 0;
+    int nnz = 0;
     rowPtrs.resize(nLocalRows);
     nnzPerRow.resize(rowMap_[br]->numLocalDOFs());
-    for (unsigned int i=0; i<nLocalRows; i++) 
+    for (int i=0; i<nLocalRows; i++) 
     {
       rowPtrs[i] = nnz;
       nnzPerRow[i] = tmpGraph[i].size();
@@ -1718,7 +1718,7 @@ void Assembler::getGraph(int br, int bc,
 
     graphData.resize(nnz);
     int* base = &(graphData[0]);
-    for (unsigned int i=0; i<nLocalRows; i++)
+    for (int i=0; i<nLocalRows; i++)
     {
       //        tmpGraph[i].fillArray(base + rowPtrs[i]);
       int* rowBase = base + rowPtrs[i];
@@ -1744,20 +1744,20 @@ void Assembler
   Tabs tab;
 
 
-  RefCountPtr<Array<int> > workSet = rcp(new Array<int>());
+  RCP<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
 
-  RefCountPtr<Array<Array<int> > > testLocalDOFs 
+  RCP<Array<Array<int> > > testLocalDOFs 
     = rcp(new Array<Array<int> >());
 
-  RefCountPtr<Array<Array<int> > > unkLocalDOFs
+  RCP<Array<Array<int> > > unkLocalDOFs
     = rcp(new Array<Array<int> >());
 
   SUNDANCE_VERB_LOW(tab << "Creating graph: there are " << rowMap_[br]->numLocalDOFs()
     << " local equations");
 
 
-  for (unsigned int d=0; d<eqn_->numRegions(); d++)
+  for (int d=0; d<eqn_->numRegions(); d++)
   {
     Tabs tab0;
     CellFilter domain = eqn_->region(d);
@@ -1768,17 +1768,17 @@ void Assembler
     SUNDANCE_OUT(this->verb() > 2, 
       tab0 << "cell set " << domain
       << " isBCRegion=" << eqn_->isBCRegion(d));
-    unsigned int dim = domain.dimension(mesh_);
+    int dim = domain.dimension(mesh_);
     CellSet cells = domain.getCells(mesh_);
 
-    RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
+    RCP<Set<OrderedPair<int, int> > > pairs ;
     if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
     SUNDANCE_OUT(this->verb() > 2 && pairs.get() != 0, 
       tab0 << "non-BC pairs = "
       << *pairs);
        
-    RefCountPtr<Set<OrderedPair<int, int> > > bcPairs ;
+    RCP<Set<OrderedPair<int, int> > > bcPairs ;
     if (eqn_->isBCRegion(d))
     {
       if (eqn_->hasBCVarUnkPairs(domain)) 
@@ -1839,7 +1839,7 @@ void Assembler
     Array<Array<int> > unksForTests(unksForTestsSet.size());
     Array<Array<int> > bcUnksForTests(bcUnksForTestsSet.size());
 
-    for (unsigned int t=0; t<unksForTests.size(); t++)
+    for (int t=0; t<unksForTests.size(); t++)
     {
       unksForTests[t] = unksForTestsSet[t].elements();
       bcUnksForTests[t] = bcUnksForTestsSet[t].elements();
@@ -1856,15 +1856,15 @@ void Assembler
     {
       /* build a work set */
       workSet->resize(0);
-      for (unsigned int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
+      for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
       {
         workSet->append(*iter);
       }
 
       int nCells = workSet->size();
 
-      RefCountPtr<const MapStructure> colMapStruct; 
-      RefCountPtr<const MapStructure> rowMapStruct 
+      RCP<const MapStructure> colMapStruct; 
+      RCP<const MapStructure> rowMapStruct 
         = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
           requiredVars[br],
           *testLocalDOFs,
@@ -1888,7 +1888,7 @@ void Assembler
       {
         for (int c=0; c<nCells; c++)
         {
-          for (unsigned int tIndex=0; tIndex<localVars.size(); tIndex++)
+          for (int tIndex=0; tIndex<localVars.size(); tIndex++)
           {
             int t = localVars[tIndex];
             int tChunk = rowMapStruct->chunkForFuncID(t);
@@ -1896,7 +1896,7 @@ void Assembler
             int testFuncIndex = rowMapStruct->indexForFuncID(t);
             int nTestNodes = numTestNodes[tChunk];
             const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
-            for (unsigned int uit=0; uit<unksForTests[t].size(); uit++)
+            for (int uit=0; uit<unksForTests[t].size(); uit++)
             {
               Tabs tab2;
               int u = unksForTests[t][uit];
@@ -1922,7 +1922,7 @@ void Assembler
       {
         for (int c=0; c<nCells; c++)
         {
-          for (unsigned int tIndex=0; tIndex<localVars.size(); tIndex++)
+          for (int tIndex=0; tIndex<localVars.size(); tIndex++)
           {
             int t = localVars[tIndex];
             int tChunk = rowMapStruct->chunkForFuncID(t);
@@ -1930,7 +1930,7 @@ void Assembler
             int testFuncIndex = rowMapStruct->indexForFuncID(t);
             int nTestNodes = numTestNodes[tChunk];
             const Array<int>& testDOFs = (*testLocalDOFs)[tChunk];
-            for (unsigned int uit=0; uit<bcUnksForTests[t].size(); uit++)
+            for (int uit=0; uit<bcUnksForTests[t].size(); uit++)
             {
               Tabs tab2;
               int u = bcUnksForTests[t][uit];
@@ -1961,16 +1961,16 @@ void Assembler
 Array<Array<int> > Assembler::findNonzeroBlocks() const
 {
   Array<Array<int> > rtn(eqn_->numVarBlocks());
-  for (unsigned int br=0; br<rtn.size(); br++)
+  for (int br=0; br<rtn.size(); br++)
   {
     rtn[br].resize(eqn_->numUnkBlocks());
-    for (unsigned int bc=0; bc<rtn[br].size(); bc++)
+    for (int bc=0; bc<rtn[br].size(); bc++)
     {
       rtn[br][bc] = 0 ;
     }
   }
 
-  for (unsigned int d=0; d<eqn_->numRegions(); d++)
+  for (int d=0; d<eqn_->numRegions(); d++)
   {
     Tabs tab0;
     CellFilter domain = eqn_->region(d);
@@ -1978,14 +1978,14 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
       tab0 << "cell set " << domain
       << " isBCRegion=" << eqn_->isBCRegion(d));
 
-    RefCountPtr<Set<OrderedPair<int, int> > > pairs ;
+    RCP<Set<OrderedPair<int, int> > > pairs ;
     if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
     SUNDANCE_OUT(this->verb() > 2 && pairs.get() != 0, 
       tab0 << "non-BC pairs = "
       << *pairs);
        
-    RefCountPtr<Set<OrderedPair<int, int> > > bcPairs ;
+    RCP<Set<OrderedPair<int, int> > > bcPairs ;
     if (eqn_->isBCRegion(d))
     {
       if (eqn_->hasBCVarUnkPairs(domain)) 
@@ -2046,7 +2046,7 @@ VectorSpace<double> Assembler::solnVecSpace() const
 {
   Array<VectorSpace<double> > rtn(eqn_->numUnkBlocks());
 
-  for (unsigned int i=0; i<rtn.size(); i++)
+  for (int i=0; i<rtn.size(); i++)
   {
     rtn[i] = solutionSpace()[i]->vecSpace();
   }
@@ -2063,7 +2063,7 @@ VectorSpace<double> Assembler::rowVecSpace() const
 {
   Array<VectorSpace<double> > rtn(eqn_->numVarBlocks());
 
-  for (unsigned int i=0; i<rtn.size(); i++)
+  for (int i=0; i<rtn.size(); i++)
   {
     rtn[i] = rowSpace()[i]->vecSpace();
   }
@@ -2087,7 +2087,7 @@ Vector<double> Assembler
   SUNDANCE_CHECK_ARRAY_SIZE_MATCH(internalBlock, bcBlock);
   SUNDANCE_CHECK_ARRAY_SIZE_MATCH(internalBlock, privateColSpace_);
 
-  for (unsigned int i=0; i<internalBlock.size(); i++)
+  for (int i=0; i<internalBlock.size(); i++)
   {
     VectorSpace<double> partSpace = privateColSpace_[i]->vecSpace();
     Vector<double> in = partSpace.createMember();
@@ -2103,7 +2103,7 @@ Vector<double> Assembler
   {
     VectorSpace<double> rtnSpace = productSpace(spaces);
     Vector<double> rtn = rtnSpace.createMember();
-    for (unsigned int i=0; i<spaces.size(); i++)
+    for (int i=0; i<spaces.size(); i++)
     {
       rtn.setBlock(i, v[i]);
     }
@@ -2118,8 +2118,8 @@ Vector<double> Assembler
 
 
 
-unsigned int& Assembler::workSetSize()
+int& Assembler::workSetSize()
 {
-  static unsigned int rtn = defaultWorkSetSize(); 
+  static int rtn = defaultWorkSetSize(); 
   return rtn;
 }

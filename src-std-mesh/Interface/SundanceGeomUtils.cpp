@@ -34,12 +34,12 @@
 #include "SundanceSet.hpp"
 #include <queue>
 
-using namespace SundanceStdMesh;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   bool cellContainsPoint(const Mesh& mesh, int cellDim, int cellLID, 
                          const double* x, Array<int>& facetLID)
@@ -213,11 +213,11 @@ namespace SundanceStdMesh
                         const Array<int>& facetLID,
                         std::list<int>& rtn)
   {
-    for (unsigned int f=0; f<facetLID.size(); f++)
+    for (int f=0; f<facetLID.size(); f++)
       {
         Array<int> cofacets;
         mesh.getCofacets(0, facetLID[f], cellDim, cofacets);
-        for (unsigned int c=0; c<cofacets.size(); c++)
+        for (int c=0; c<cofacets.size(); c++)
           {
             if (cofacets[c] != cellLID) rtn.push_back(cofacets[c]);
           }

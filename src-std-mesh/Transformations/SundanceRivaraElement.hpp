@@ -10,7 +10,7 @@
 #include "Teuchos_RefCountPtr.hpp"
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   namespace Rivara
   {
@@ -25,16 +25,16 @@ namespace SundanceStdMesh
     {
     public:
       Element(RivaraMesh* mesh,
-        const RefCountPtr<Node>& a,
-        const RefCountPtr<Node>& b,
-        const RefCountPtr<Node>& c,
+        const RCP<Node>& a,
+        const RCP<Node>& b,
+        const RCP<Node>& c,
         int ownerProc, int label);
 
       Element(RivaraMesh* mesh,
-        const RefCountPtr<Node>& a,
-        const RefCountPtr<Node>& b,
-        const RefCountPtr<Node>& c,
-        const RefCountPtr<Node>& d,
+        const RCP<Node>& a,
+        const RCP<Node>& b,
+        const RCP<Node>& c,
+        const RCP<Node>& d,
         int ownerProc, int label);
 
 
@@ -78,18 +78,18 @@ namespace SundanceStdMesh
       /**
        * Return the element's nodes
        */
-      const Array<RefCountPtr<Node> >& nodes() const
+      const Array<RCP<Node> >& nodes() const
       {return nodes_;}
 
       /** */
-      const RefCountPtr<Edge>& edge(int i) const {return edges_[i];}
+      const RCP<Edge>& edge(int i) const {return edges_[i];}
       /** */
-      RefCountPtr<Edge> edge(int i) {return edges_[i];}
+      RCP<Edge> edge(int i) {return edges_[i];}
       
       /** */
-      const RefCountPtr<Face>& face(int i) const {return faces_[i];}
+      const RCP<Face>& face(int i) const {return faces_[i];}
       /** */
-      RefCountPtr<Face> face(int i) {return faces_[i];}
+      RCP<Face> face(int i) {return faces_[i];}
 
       /** */
       bool hasNoEdgeLabels() const ;
@@ -105,11 +105,11 @@ namespace SundanceStdMesh
 
       int label_;
 
-      Array<RefCountPtr<Node> > nodes_;
+      Array<RCP<Node> > nodes_;
 
-      Array<RefCountPtr<Edge> > edges_;
+      Array<RCP<Edge> > edges_;
 
-      Array<RefCountPtr<Face> > faces_;
+      Array<RCP<Face> > faces_;
 
       Array<int> edgeSigns_;
 

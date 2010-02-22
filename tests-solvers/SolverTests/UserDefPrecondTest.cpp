@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
 
 #ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(SundanceUtils::searchForFile("SolverParameters/userPrecParams.xml"));
+      ParameterXMLFileReader reader(Sundance::searchForFile("SolverParameters/userPrecParams.xml"));
 #else
       ParameterXMLFileReader reader("userPrecParams.xml");
 #endif

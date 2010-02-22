@@ -21,16 +21,16 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceStringEvalMediator.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
-using SundanceCore::List;
+using Sundance::List;
 
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }

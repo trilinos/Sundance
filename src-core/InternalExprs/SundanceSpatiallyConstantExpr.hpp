@@ -35,9 +35,9 @@
 #include "SundanceDiscreteFuncDataStub.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 /** */
 class SpatiallyConstantExpr : public virtual EvaluatableExpr,
                               public virtual GenericEvaluatorFactory<SpatiallyConstantExpr, ConstantEvaluator>

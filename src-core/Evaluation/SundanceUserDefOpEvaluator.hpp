@@ -39,7 +39,7 @@
 #include "SundanceChainRuleEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-namespace SundanceCore 
+namespace Sundance 
 {
 
 class UserDefOpElement;
@@ -53,7 +53,7 @@ class UserDefOpEvaluator : public ChainRuleEvaluator
 public:
   /** */
   UserDefOpEvaluator(const UserDefOpElement* expr,
-    const RefCountPtr<const UserDefOpCommonEvaluator>& commonEval,
+    const RCP<const UserDefOpCommonEvaluator>& commonEval,
     const EvalContext& context);
 
   /** */
@@ -63,10 +63,10 @@ public:
   /** */
   virtual void 
   evalArgDerivs(const EvalManager& mgr,
-    const Array<RefCountPtr<Array<double> > >& constArgRes,
-    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
+    const Array<RCP<Array<double> > >& constArgRes,
+    const Array<RCP<Array<RCP<EvalVector> > > >& vArgResults,
     Array<double>& constArgDerivs,
-    Array<RefCountPtr<EvalVector> >& varArgDerivs) const ;
+    Array<RCP<EvalVector> >& varArgDerivs) const ;
 
      
         
@@ -92,7 +92,7 @@ private:
   Array<int> argValueIndex_;
   Array<int> argValueIsConstant_;
   const UserDefFunctorElement* functor_;
-  RefCountPtr<const UserDefOpCommonEvaluator> commonEval_;
+  RCP<const UserDefOpCommonEvaluator> commonEval_;
   int maxOrder_;
   int numVarArgDerivs_;
   int numConstArgDerivs_;

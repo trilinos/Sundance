@@ -34,9 +34,9 @@
 #include "SundanceEnumTypeField.hpp"
 #include "SundanceMultiIndex.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 /** */
 enum SpatialDerivType {IdentitySDT, PartialSDT, NormalSDT, DivSDT};
@@ -105,9 +105,9 @@ private:
 namespace std
 {
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const SundanceCore::SpatialDerivSpecifier& sds);
+ostream& operator<<(ostream& os, const Sundance::SpatialDerivSpecifier& sds);
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const SundanceCore::SpatialDerivType& sdt);
+ostream& operator<<(ostream& os, const Sundance::SpatialDerivType& sdt);
 }
 
 

@@ -34,9 +34,9 @@
 #include "SundanceBinaryExpr.hpp"
 #include "SundanceSumEvaluator.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
 
@@ -50,8 +50,8 @@ class SumExpr : public BinaryExpr,
 {
 public:
   /** */
-  SumExpr(const RefCountPtr<ScalarExpr>& a, 
-    const RefCountPtr<ScalarExpr>& b, int sign);
+  SumExpr(const RCP<ScalarExpr>& a, 
+    const RCP<ScalarExpr>& b, int sign);
 
   /** virtual dtor */
   virtual ~SumExpr() {;}
@@ -83,7 +83,7 @@ public:
   virtual bool isQuadraticForm(const Expr& u) const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
           
   /** */
   const Map<Expr, int>& getSumTree() const {return sumTree_;}

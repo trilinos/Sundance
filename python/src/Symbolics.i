@@ -26,7 +26,7 @@
 
 %feature("autodoc");
 
-namespace SundanceCore
+namespace Sundance
 {
   class Expr
   {
@@ -38,10 +38,10 @@ namespace SundanceCore
     void setParameterValue(const double& val);
 
     /** Number of elements in top level of list */
-    unsigned int size() const ;
+    int size() const ;
 
     /** Total number of elements in list. */
-    unsigned int totalSize() const ;
+    int totalSize() const ;
     
     /** Append a new element to this list */
     void append(const Expr& expr);
@@ -77,21 +77,21 @@ namespace SundanceCore
     /* Return the Spectral Basis */
     SpectralBasis getSpectralBasis() const
     {
-      return SundanceCore::getSpectralBasis(*self);
+      return Sundance::getSpectralBasis(*self);
     }
 
     /* Return the coefficient of the nth spectral basis term */
     Expr getSpectralCoeff(int n) const
     {
-      return SundanceCore::getSpectralCoeff(n, *self);
+      return Sundance::getSpectralCoeff(n, *self);
     }
 
-    double integral(const SundanceStdFwk::CellFilter& domain,
-                    const SundanceStdMesh::Mesh& mesh,
-                    const SundanceStdFwk::QuadratureFamily& quad)
+    double integral(const Sundance::CellFilter& domain,
+                    const Sundance::Mesh& mesh,
+                    const Sundance::QuadratureFamily& quad)
     {
       Expr I = Integral(domain, *self, quad);
-      return SundanceStdFwk::evaluateIntegral(mesh, I);
+      return Sundance::evaluateIntegral(mesh, I);
     }
 
     Expr __pow__(const double& ex)
@@ -99,27 +99,27 @@ namespace SundanceCore
       return pow(*self, ex);
     }
 
-    Expr __add__(const SundanceCore::Expr& other) 
+    Expr __add__(const Sundance::Expr& other) 
     {
-      SundanceCore::Expr rtn = self->operator+(other);
+      Sundance::Expr rtn = self->operator+(other);
       return rtn;
     }
 
-    Expr __sub__(const SundanceCore::Expr& other) 
+    Expr __sub__(const Sundance::Expr& other) 
     {
-      SundanceCore::Expr rtn = self->operator-(other);
+      Sundance::Expr rtn = self->operator-(other);
       return rtn;
     }
 
-    Expr __mul__(const SundanceCore::Expr& other) 
+    Expr __mul__(const Sundance::Expr& other) 
     {
-      SundanceCore::Expr rtn = self->operator*(other);
+      Sundance::Expr rtn = self->operator*(other);
       return rtn;
     }
 
-    Expr __div__(const SundanceCore::Expr& other) 
+    Expr __div__(const Sundance::Expr& other) 
     {
-      SundanceCore::Expr rtn = self->operator/(other);
+      Sundance::Expr rtn = self->operator/(other);
       return rtn;
     }
 
@@ -129,49 +129,49 @@ namespace SundanceCore
 
     Expr __add__(const double& other) 
     {
-      SundanceCore::Expr rtn = self->operator+(other);
+      Sundance::Expr rtn = self->operator+(other);
       return rtn;
     }
 
     Expr __sub__(const double& other) 
     {
-      SundanceCore::Expr rtn = self->operator-(other);
+      Sundance::Expr rtn = self->operator-(other);
       return rtn;
     }
 
     Expr __mul__(const double& other) 
     {
-      SundanceCore::Expr rtn = self->operator*(other);
+      Sundance::Expr rtn = self->operator*(other);
       return rtn;
     }
 
     Expr __div__(const double& other) 
     {
-      SundanceCore::Expr rtn = self->operator/(other);
+      Sundance::Expr rtn = self->operator/(other);
       return rtn;
     }
 
     Expr __add__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = self->operator+(other);
+      Sundance::Expr rtn = self->operator+(other);
       return rtn;
     }
 
     Expr __sub__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = self->operator-(other);
+      Sundance::Expr rtn = self->operator-(other);
       return rtn;
     }
 
     Expr __mul__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = self->operator*(other);
+      Sundance::Expr rtn = self->operator*(other);
       return rtn;
     }
 
     Expr __div__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = self->operator/(other);
+      Sundance::Expr rtn = self->operator/(other);
       return rtn;
     }
 
@@ -179,62 +179,62 @@ namespace SundanceCore
 
     Expr __radd__(const double& other) 
     {
-      SundanceCore::Expr rtn = other + *self;
+      Sundance::Expr rtn = other + *self;
       return rtn;
     }
 
     Expr __rsub__(const double& other) 
     {
-      SundanceCore::Expr rtn = other - *self;
+      Sundance::Expr rtn = other - *self;
       return rtn;
     }
 
     Expr __rmul__(const double& other) 
     {
-      SundanceCore::Expr rtn = other * (*self);
+      Sundance::Expr rtn = other * (*self);
       return rtn;
     }
 
     Expr __rdiv__(const double& other) 
     {
-      SundanceCore::Expr rtn = other / (*self);
+      Sundance::Expr rtn = other / (*self);
       return rtn;
     }
 
     Expr __radd__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = other + *self;
+      Sundance::Expr rtn = other + *self;
       return rtn;
     }
 
     Expr __rsub__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = other - *self;
+      Sundance::Expr rtn = other - *self;
       return rtn;
     }
 
     Expr __rmul__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = other * (*self);
+      Sundance::Expr rtn = other * (*self);
       return rtn;
     }
 
     Expr __rdiv__(const complex<double>& other) 
     {
-      SundanceCore::Expr rtn = other / (*self);
+      Sundance::Expr rtn = other / (*self);
       return rtn;
     }
 
     Expr __div__(const double& other) 
     {
-      SundanceCore::Expr rtn = (*self)/other;
+      Sundance::Expr rtn = (*self)/other;
       return rtn;
     }
 
     /* unary operations */
     Expr __neg__() 
     {
-      SundanceCore::Expr rtn = self->operator-();
+      Sundance::Expr rtn = self->operator-();
       return rtn;
     }
 
@@ -265,7 +265,7 @@ namespace SundanceCore
     }
 
     /* get the discrete space associated with an expression */
-    SundanceStdFwk::DiscreteSpace discSpace() const
+    Sundance::DiscreteSpace discSpace() const
     {
       /* cast to a discrete function. The validity of the cast
        * is checked within discFunc(). */
@@ -302,7 +302,7 @@ namespace SundanceCore
   Expr fabs(const Expr& x);
   Expr sign(const Expr& x);
 
-  SundanceCore::Expr SundanceCore::exp(const SundanceCore::Expr& x);
+  Sundance::Expr Sundance::exp(const Sundance::Expr& x);
   Expr log(const Expr& x);
   Expr sqrt(const Expr& x);
 
@@ -352,114 +352,114 @@ Expr CellTangentExpr(int dimension, const std::string& name);
 
 %inline %{
   /* Create an unknown function */
-  SundanceCore::Expr makeUnknownFunction(const SundanceStdFwk::BasisFamily& b,
+  Sundance::Expr makeUnknownFunction(const Sundance::BasisFamily& b,
                                          const std::string& name)
   {
-    return new SundanceStdFwk::UnknownFunction(b, name);
+    return new Sundance::UnknownFunction(b, name);
   }
   %}
 %inline %{
   /* Create an unknown function */
-  SundanceCore::Expr makeUnknownFunction(const SundanceStdFwk::BasisFamily& b,
-                                         const SundanceCore::SpectralBasis& sb,
+  Sundance::Expr makeUnknownFunction(const Sundance::BasisFamily& b,
+                                         const Sundance::SpectralBasis& sb,
                                          const std::string& name)
   {
-    return new SundanceStdFwk::UnknownFunction(b, sb, name);
+    return new Sundance::UnknownFunction(b, sb, name);
   }
   %}
 %inline %{
   /* Create an unknown function */
-  SundanceCore::Expr makeUnknownFunction(const SundanceStdFwk::BasisFamily& b,
-                                         const SundanceCore::SpectralBasis& sb)
+  Sundance::Expr makeUnknownFunction(const Sundance::BasisFamily& b,
+                                         const Sundance::SpectralBasis& sb)
   {
-    return new SundanceStdFwk::UnknownFunction(b, sb);
+    return new Sundance::UnknownFunction(b, sb);
   }
   %}
 
 %inline %{
   /* Create an unknown function */
-  SundanceCore::Expr makeUnknownFunction(const SundanceStdFwk::BasisFamily& b)
+  Sundance::Expr makeUnknownFunction(const Sundance::BasisFamily& b)
   {
-    return new SundanceStdFwk::UnknownFunction(b);
+    return new Sundance::UnknownFunction(b);
   }
   %}
 
 
 %inline %{
   /* Create a test function */
-  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b,
+  Sundance::Expr makeTestFunction(const Sundance::BasisFamily& b,
                                       const std::string& name)
   {
-    return new SundanceStdFwk::TestFunction(b, name);
+    return new Sundance::TestFunction(b, name);
   }
   %}
 
 
 %inline %{
   /* Create a test function */
-  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b)
+  Sundance::Expr makeTestFunction(const Sundance::BasisFamily& b)
   {
-    return new SundanceStdFwk::TestFunction(b);
+    return new Sundance::TestFunction(b);
   }
   %}
 
 %inline %{
   /* Create an unknown function */
-  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b,
-                                      const SundanceCore::SpectralBasis& sb,
+  Sundance::Expr makeTestFunction(const Sundance::BasisFamily& b,
+                                      const Sundance::SpectralBasis& sb,
                                       const std::string& name)
   {
-    return new SundanceStdFwk::TestFunction(b, sb, name);
+    return new Sundance::TestFunction(b, sb, name);
   }
   %}
 %inline %{
   /* Create an unknown function */
-  SundanceCore::Expr makeTestFunction(const SundanceStdFwk::BasisFamily& b,
-                                      const SundanceCore::SpectralBasis& sb)
+  Sundance::Expr makeTestFunction(const Sundance::BasisFamily& b,
+                                      const Sundance::SpectralBasis& sb)
   {
-    return new SundanceStdFwk::TestFunction(b, sb);
+    return new Sundance::TestFunction(b, sb);
   }
   %}
 
 %inline %{
   /* Create a coordinate expression */
-  SundanceCore::Expr makeCoordExpr(int dir)
+  Sundance::Expr makeCoordExpr(int dir)
   {
-    return new SundanceCore::CoordExpr(dir);
+    return new Sundance::CoordExpr(dir);
   }
   %}
 
 %inline %{
   /* Create a cell diameter expression */
-  SundanceCore::Expr makeCellDiameterExpr()
+  Sundance::Expr makeCellDiameterExpr()
   {
-    return new SundanceCore::CellDiameterExpr();
+    return new Sundance::CellDiameterExpr();
   }
   %}
 
 
 %inline %{
   /* Create a differential operator */
-  SundanceCore::Expr makeDerivative(int dir)
+  Sundance::Expr makeDerivative(int dir)
   {
-    return new SundanceCore::Derivative(dir);
+    return new Sundance::Derivative(dir);
   }
   %}
 
 
 %inline %{
   /* Create a differential operator */
-  SundanceCore::Expr makeParameter(const double& val)
+  Sundance::Expr makeParameter(const double& val)
   {
-    return new SundanceCore::Parameter(val);
+    return new Sundance::Parameter(val);
   }
   %}
 
 
 %inline %{
   /* Create a differential operator */
-  SundanceCore::Expr makeParameter(const double& val, const std::string& name)
+  Sundance::Expr makeParameter(const double& val, const std::string& name)
   {
-    return new SundanceCore::Parameter(val, name);
+    return new Sundance::Parameter(val, name);
   }
   %}

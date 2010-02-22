@@ -36,15 +36,15 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 DerivOfSymbFunc::DerivOfSymbFunc(const MultiIndex& op, 
-  const RefCountPtr<ScalarExpr>& arg)
+  const RCP<ScalarExpr>& arg)
   : DiffOp(op, arg), argFid_(FunctionIdentifier())
 {
   const SymbolicFuncElement* f 

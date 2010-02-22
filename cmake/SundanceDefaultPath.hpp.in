@@ -31,10 +31,11 @@
 #ifndef SUNDANCEDEFAULTPATH_H
 #define SUNDANCEDEFAULTPATH_H
 
-using std::string;
 
-namespace SundanceUtils
+
+namespace Sundance
 {
+using std::string;  
 inline string defaultSundancePath()
 { 
   static string installDir = "@CMAKE_INSTALL_PREFIX@";

@@ -39,60 +39,56 @@
 #include "SundancePositionalCellPredicate.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  using namespace Teuchos;
-  using namespace Internal;
+using namespace Teuchos;
   
-    /** 
-     * User-level handle for predicates (deriving from CellPredicateBase)
-     * used to decide whether
-     * a given cell passes a CellFilter.
-     */
-  class CellPredicate : public SundanceUtils::Handle<CellPredicateBase>
-  {
-    public:
+  
+/** 
+ * User-level handle for predicates (deriving from CellPredicateBase)
+ * used to decide whether
+ * a given cell passes a CellFilter.
+ */
+class CellPredicate : public Sundance::Handle<CellPredicateBase>
+{
+public:
     
-    /* handle boilerplate */
-    HANDLE_CTORS(CellPredicate, CellPredicateBase);
+  /* handle boilerplate */
+  HANDLE_CTORS(CellPredicate, CellPredicateBase);
 
-    /** construct from a positional cell predicate functor */
-    CellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func);
+  /** construct from a positional cell predicate functor */
+  CellPredicate(const RCP<CellPredicateFunctorBase>& func);
 
-    /** construct from a positional cell predicate functor */
-    CellPredicate(SundanceUtils::Handleable<CellPredicateFunctorBase>* func);
+  /** construct from a positional cell predicate functor */
+  CellPredicate(Sundance::Handleable<CellPredicateFunctorBase>* func);
 
-    /** write to XML */
-    XMLObject toXML() const {return ptr()->toXML();}
+  /** write to XML */
+  XMLObject toXML() const {return ptr()->toXML();}
 
-    /** */
-    string description() const {return ptr()->description();}
+  /** */
+  string description() const {return ptr()->description();}
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
-    /** set the mesh on which cells are to be tested */
-    void setMesh(const Mesh& mesh, int cellDim) const 
+
+  /** set the mesh on which cells are to be tested */
+  void setMesh(const Mesh& mesh, int cellDim) const 
     {ptr()->setMesh(mesh, cellDim);}
 
-    /** compare to another predicate, used for placement in STL containers */
-    bool operator<(const CellPredicate& other) const ;
+  /** compare to another predicate, used for placement in STL containers */
+  bool operator<(const CellPredicate& other) const ;
 
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */    
-    };
+};
 
 }
 
 namespace std
 {
-  inline ostream& operator<<(ostream& os, const SundanceStdFwk::CellPredicate& pred)
-  {
-    os << pred.toXML() << endl;
-    return os;
-  }
+inline ostream& operator<<(ostream& os, const Sundance::CellPredicate& pred)
+{
+  os << pred.toXML() << endl;
+  return os;
+}
 }
 
 

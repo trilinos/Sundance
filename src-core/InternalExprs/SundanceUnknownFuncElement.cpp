@@ -31,15 +31,15 @@
 #include "SundanceUnknownFuncElement.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 UnknownFuncElement
-::UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
+::UnknownFuncElement(const RCP<const UnknownFuncDataStub>& data,
   const string& name,
   const string& suffix,
   const FunctionIdentifier& fid)

@@ -35,30 +35,16 @@
 #include "SundanceCellType.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
+using namespace Teuchos;
+
 class EquationSet;
 class SparsitySuperset;
 class MultiIndex;
 class MultipleDeriv;
-}
-
-
-
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-
 class QuadratureFamily;
 class BasisFamily;
-
-namespace Internal
-{
-using namespace Teuchos;
-
 class IntegralGroup;
 
 
@@ -81,7 +67,7 @@ public:
     const CellType& cellType,
     int cellDim,
     const QuadratureFamily& quad,
-    const RefCountPtr<SparsitySuperset>& sparsity,
+    const RCP<SparsitySuperset>& sparsity,
     bool isInternalBdry,
     Array<RCP<IntegralGroup> >& groups) const = 0 ;
 
@@ -119,7 +105,6 @@ private:
   int transformVerb_;
 };
 
-}
 }
 
 

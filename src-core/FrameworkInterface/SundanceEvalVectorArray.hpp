@@ -39,9 +39,9 @@
 #include "Teuchos_Array.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 class SparsitySuperset;
@@ -49,17 +49,17 @@ class SparsitySuperset;
 /**
  *
  */
-class EvalVectorArray : public Array<RefCountPtr<EvalVector> >
+class EvalVectorArray : public Array<RCP<EvalVector> >
 {
 public:
   /** */
   EvalVectorArray();
 
   /** */
-  void copy(const RefCountPtr<EvalVectorArray>& other) ;
+  void copy(const RCP<EvalVectorArray>& other) ;
 
   /** */
-  void steal(const RefCountPtr<EvalVectorArray>& other);
+  void steal(const RCP<EvalVectorArray>& other);
 
   /** */
   ostream& print(ostream& os, const SparsitySuperset* derivs) const ;

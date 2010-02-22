@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
 
 #ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(SundanceUtils::searchForFile("SolverParameters/poissonParams.xml"));
+      ParameterXMLFileReader reader(Sundance::searchForFile("SolverParameters/poissonParams.xml"));
 #else
       ParameterXMLFileReader reader("poissonParams.xml");
 #endif

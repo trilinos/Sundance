@@ -35,54 +35,50 @@
 #include "SundanceQuadratureTypeBase.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
 
-  /** 
-   * QuadratureFamily is a geometry-independent specification of
-   * a method by which quadrature is to be carried out. For example,
-   * a GaussianQuadrature family will generate Gaussian
-   * quadrature points on any cell type.
-   */
-  class QuadratureType : public SundanceUtils::Handle<QuadratureTypeBase>
-  {
-  public:
-    /* */
-    HANDLE_CTORS(QuadratureType, QuadratureTypeBase);
+/** 
+ * QuadratureFamily is a geometry-independent specification of
+ * a method by which quadrature is to be carried out. For example,
+ * a GaussianQuadrature family will generate Gaussian
+ * quadrature points on any cell type.
+ */
+class QuadratureType : public Sundance::Handle<QuadratureTypeBase>
+{
+public:
+  /* */
+  HANDLE_CTORS(QuadratureType, QuadratureTypeBase);
 
-    /** */
-    XMLObject toXML() const {return ptr()->toXML();}
+  /** */
+  XMLObject toXML() const {return ptr()->toXML();}
 
-    /** Indicate whether the given cell type is supported at any order */
-    bool supportsCellType(const CellType& cellType) const 
+  /** Indicate whether the given cell type is supported at any order */
+  bool supportsCellType(const CellType& cellType) const 
     {return ptr()->supportsCellType(cellType);}
     
-    /** Indicate whether the given cell type is supported at the
-     * specified order */
-    bool supports(const CellType& cellType, int order) const 
+  /** Indicate whether the given cell type is supported at the
+   * specified order */
+  bool supports(const CellType& cellType, int order) const 
     {return ptr()->supports(cellType, order);}
     
-    /** Return the max quadrature order available on the given cell type */
-    int maxOrder(const CellType& cellType) const 
+  /** Return the max quadrature order available on the given cell type */
+  int maxOrder(const CellType& cellType) const 
     {return ptr()->maxOrder(cellType);}
 
-    /** Indicate whether there is a maximum order for quadrature rules
-     * available on the given cell type. */
-    bool hasLimitedOrder(const CellType& cellType) const 
+  /** Indicate whether there is a maximum order for quadrature rules
+   * available on the given cell type. */
+  bool hasLimitedOrder(const CellType& cellType) const 
     {return ptr()->hasLimitedOrder(cellType);}
 
-    /** Create a quadrature family of the specified order */
-    QuadratureFamily createQuadFamily(int order) const 
+  /** Create a quadrature family of the specified order */
+  QuadratureFamily createQuadFamily(int order) const 
     {return ptr()->createQuadFamily(order);}
 
-    /** */
-    int findValidOrder(const CellType& cellType, int minReqOrder) const ;
-  private:
-  };
+  /** */
+  int findValidOrder(const CellType& cellType, int minReqOrder) const ;
+private:
+};
 }
 
 #endif

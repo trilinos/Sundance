@@ -56,24 +56,24 @@
 #include "TSFSimpleDiagonalOpImpl.hpp"
 #endif
 
-using namespace SundanceStdFwk;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
 
 static Time& normalizationTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("Eigenfunction normalization"); 
   return *rtn;
 }
 
 static Time& makeEigensystemTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("Building eigensystem stiffness matrix"); 
   return *rtn;
 }
@@ -186,7 +186,7 @@ Array<Expr> LinearEigenproblem::makeEigenfunctions(
   Array<Expr> x(ev.size());
   CellFilter interior = new MaximalCellFilter();
   QuadratureFamily q = new GaussianQuadrature(2);
-  for (unsigned int i=0; i<ev.size(); i++) 
+  for (int i=0; i<ev.size(); i++) 
   {
     x[i] = new DiscreteFunction(discSpace_, ev[i], "ev[" + Teuchos::toString(i)+"]");
     double N = 1.0;

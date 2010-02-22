@@ -37,9 +37,9 @@
 
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -57,9 +57,9 @@ void MatlabWriter::write() const
       for (int d=0; d<x.dim(); d++) 
         os << setw(8) << x[d];
 
-      for (unsigned int j=0; j<pointScalarFields().size(); j++)
+      for (int j=0; j<pointScalarFields().size(); j++)
         {
-          const RefCountPtr<FieldBase>& expr = pointScalarFields()[j];
+          const RCP<FieldBase>& expr = pointScalarFields()[j];
           os << setw(16);
           os << expr->getData(0, i, 0);
         }

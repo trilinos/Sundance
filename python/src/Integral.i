@@ -21,11 +21,11 @@
 
 %inline %{
   /* */
-  SundanceCore::Expr makeIntegral(const SundanceStdFwk::CellFilter& domain,
-                                  const SundanceCore::Expr& integrand,
-                                  const SundanceStdFwk::QuadratureFamily& quad)
+  Sundance::Expr makeIntegral(const Sundance::CellFilter& domain,
+                                  const Sundance::Expr& integrand,
+                                  const Sundance::QuadratureFamily& quad)
   {
-    return SundanceCore::Integral(domain, integrand, quad);
+    return Sundance::Integral(domain, integrand, quad);
   }
   %}
 
@@ -33,11 +33,11 @@
 
 %inline %{
   /* */
-  SundanceCore::Expr makeEssentialBC(const SundanceStdFwk::CellFilter& domain,
-                                     const SundanceCore::Expr& integrand,
-                                     const SundanceStdFwk::QuadratureFamily& quad)
+  Sundance::Expr makeEssentialBC(const Sundance::CellFilter& domain,
+                                     const Sundance::Expr& integrand,
+                                     const Sundance::QuadratureFamily& quad)
   {
-    return SundanceCore::EssentialBC(domain, integrand, quad);
+    return Sundance::EssentialBC(domain, integrand, quad);
   }
   %}
 

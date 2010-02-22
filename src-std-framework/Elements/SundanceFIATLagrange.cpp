@@ -31,7 +31,7 @@
 #include "SundanceFIATLagrange.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceStdFwk;
+using namespace Sundance;
 using namespace Teuchos;
 
 #ifdef HAVE_FIAT

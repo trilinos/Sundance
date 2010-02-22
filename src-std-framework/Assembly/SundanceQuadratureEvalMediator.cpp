@@ -44,13 +44,13 @@
 #include "Teuchos_BLAS.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -106,8 +106,8 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
     Tabs tab1;
     SUNDANCE_MSG2(verb(), tab1 << "creating quad points for ref cell type=" 
       << cellType);
-    RefCountPtr<Array<Point> > pts = rcp(new Array<Point>());
-    RefCountPtr<Array<double> > wgts = rcp(new Array<double>()); 
+    RCP<Array<Point> > pts = rcp(new Array<Point>());
+    RCP<Array<double> > wgts = rcp(new Array<double>()); 
     
     quad_.getPoints(cellType, *pts, *wgts);
     quadPtsForReferenceCell_.put(cellType, pts);
@@ -117,9 +117,9 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
 
   if (!isInternalBdry())
   {
-    RefCountPtr<Array<Array<Point> > > facetPts 
+    RCP<Array<Array<Point> > > facetPts 
       = rcp(new Array<Array<Point> >(numEvaluationCases()));
-    RefCountPtr<Array<Array<double> > > facetWgts 
+    RCP<Array<Array<double> > > facetWgts 
       = rcp(new Array<Array<double> >(numEvaluationCases()));
 
     for (int fc=0; fc<numEvaluationCases(); fc++)
@@ -147,7 +147,7 @@ int QuadratureEvalMediator::numQuadPts(const CellType& ct) const
 }
 
 void QuadratureEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
-  RefCountPtr<EvalVector>& vec) const 
+  RCP<EvalVector>& vec) const 
 {
   Tabs tabs;
   SUNDANCE_MSG2(verb(),tabs 
@@ -175,7 +175,7 @@ void QuadratureEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 }
 
 void QuadratureEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
-  RefCountPtr<EvalVector>& vec) const 
+  RCP<EvalVector>& vec) const 
 {
   Tabs tabs;
   SUNDANCE_MSG2(verb(),tabs 
@@ -215,7 +215,7 @@ void QuadratureEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 }
 
 void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
-  RefCountPtr<EvalVector>& vec) const 
+  RCP<EvalVector>& vec) const 
 {
   Tabs tabs;
   SUNDANCE_MSG2(verb(),tabs 
@@ -236,11 +236,11 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
   }
 }
 
-RefCountPtr<Array<Array<Array<double> > > > QuadratureEvalMediator
+RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
 ::getFacetRefBasisVals(const BasisFamily& basis, int diffOrder) const
 {
   Tabs tab;
-  RefCountPtr<Array<Array<Array<double> > > > rtn ;
+  RCP<Array<Array<Array<double> > > > rtn ;
 
   CellType evalCellType = cellType();
   if (cellDim() != maxCellDim())
@@ -362,7 +362,7 @@ Array<Array<double> >* QuadratureEvalMediator
 ::getRefBasisVals(const BasisFamily& basis, int diffOrder) const
 {
   Tabs tab;
-  RefCountPtr<Array<Array<Array<double> > > > fRtn 
+  RCP<Array<Array<Array<double> > > > fRtn 
     = getFacetRefBasisVals(basis, diffOrder);
   return &((*fRtn)[0]);
 }
@@ -371,7 +371,7 @@ Array<Array<double> >* QuadratureEvalMediator
 void QuadratureEvalMediator
 ::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
   const Array<MultiIndex>& multiIndices,
-  Array<RefCountPtr<EvalVector> >& vec) const
+  Array<RCP<EvalVector> >& vec) const
 {
   const DiscreteFunctionData* f = DiscreteFunctionData::getData(expr);
   TEST_FOR_EXCEPTION(f==0, InternalError,
@@ -384,7 +384,7 @@ void QuadratureEvalMediator
   int nQuad = numQuadPts(cellType());
   int myIndex = expr->myIndex();
 
-  for (unsigned int i=0; i<multiIndices.size(); i++)
+  for (int i=0; i<multiIndices.size(); i++)
   {
     Tabs tab1;
     const MultiIndex& mi = multiIndices[i];
@@ -409,7 +409,7 @@ void QuadratureEvalMediator
         SUNDANCE_MSG2(verb(),tab2 << "reusing function cache");
       }
 
-      const RefCountPtr<const MapStructure>& mapStruct = mapStructCache()[f];
+      const RCP<const MapStructure>& mapStruct = mapStructCache()[f];
       int chunk = mapStruct->chunkForFuncID(myIndex);
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
@@ -418,7 +418,7 @@ void QuadratureEvalMediator
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
-      const RefCountPtr<Array<Array<double> > >& cacheVals 
+      const RCP<Array<Array<double> > >& cacheVals 
         = fCache()[f];
 
       SUNDANCE_MSG4(verb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
@@ -431,7 +431,7 @@ void QuadratureEvalMediator
       SUNDANCE_MSG3(verb(),tab2 << "cell size=" << cellSize << ", offset=" 
         << offset);
       int k = 0;
-      for (unsigned int c=0; c<cellLID()->size(); c++)
+      for (int c=0; c<cellLID()->size(); c++)
       {
         for (int q=0; q<nQuad; q++, k++)
         {
@@ -444,7 +444,7 @@ void QuadratureEvalMediator
         vec[i]->print(cerr);
         computePhysQuadPts();
         k=0;
-        for (unsigned int c=0; c<cellLID()->size(); c++)
+        for (int c=0; c<cellLID()->size(); c++)
         {
           Out::os() << tab2 << "-------------------------------------------"
                     << endl;
@@ -471,7 +471,7 @@ void QuadratureEvalMediator
         SUNDANCE_MSG3(verb(),tab2 << "reusing function cache");
       }
 
-      RefCountPtr<const MapStructure> mapStruct = mapStructCache()[f];
+      RCP<const MapStructure> mapStruct = mapStructCache()[f];
       int chunk = mapStruct->chunkForFuncID(myIndex);
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
@@ -481,7 +481,7 @@ void QuadratureEvalMediator
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
-      const RefCountPtr<Array<Array<double> > >& cacheVals 
+      const RCP<Array<Array<double> > >& cacheVals 
         = dfCache()[f];
 
       SUNDANCE_MSG4(verb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
@@ -498,7 +498,7 @@ void QuadratureEvalMediator
       SUNDANCE_MSG3(verb(),tab2 << "dim=" << dim << ", pDir=" << pDir
         << ", cell size=" << cellSize << ", offset=" 
         << offset);
-      for (unsigned int c=0; c<cellLID()->size(); c++)
+      for (int c=0; c<cellLID()->size(); c++)
       {
         for (int q=0; q<nQuad; q++, k++)
         {
@@ -511,7 +511,7 @@ void QuadratureEvalMediator
         vec[i]->print(cerr);
         computePhysQuadPts();
         k=0;
-        for (unsigned int c=0; c<cellLID()->size(); c++)
+        for (int c=0; c<cellLID()->size(); c++)
         {
           Out::os() << tab2 << "-------------------------------------------"
                     << endl;
@@ -544,8 +544,8 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
   int flops = 0;
   double jFlops = CellJacobianBatch::totalFlops();
 
-  RefCountPtr<Array<Array<double> > > localValues;
-  RefCountPtr<const MapStructure> mapStruct;
+  RCP<Array<Array<double> > > localValues;
+  RCP<const MapStructure> mapStruct;
 
   Teuchos::BLAS<int,double> blas;
 
@@ -598,7 +598,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     }
   }
 
-  RefCountPtr<Array<Array<double> > > cacheVals;
+  RCP<Array<Array<double> > > cacheVals;
 
   if (mi.order()==0)
   {
@@ -693,7 +693,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       SUNDANCE_MSG2(verb(), 
         tab2 << "evaluating by reference to maximal cell");
       
-      RefCountPtr<Array<Array<Array<double> > > > refFacetBasisValues 
+      RCP<Array<Array<Array<double> > > > refFacetBasisValues 
         = getFacetRefBasisVals(basis, mi.order());
       /* Note: even though we're ultimately not evaluating on 
        * maxCellType() here, use maxCellType() for both arguments
@@ -805,7 +805,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       SUNDANCE_MSG2(verb(), tab2 << "Jacobian batch spatial dim=" << J.spatialDim());
     
       int nRhs = nQuad * nFuncs;
-      for (unsigned int c=0; c<cellLID()->size(); c++)
+      for (int c=0; c<cellLID()->size(); c++)
       {
         double* rhsPtr = &(C[(nRhs * nDir)*c]);
         J.applyInvJ(c, 0, rhsPtr, nRhs, false);
@@ -842,7 +842,7 @@ void QuadratureEvalMediator::computePhysQuadPts() const
       SUNDANCE_MSG3(verb(), tab1 << "num cofacets = " << cofacetCellLID()->size());
       Array<Point> tmp;
       Array<int> cell(1);
-      for (unsigned int c=0; c<cellLID()->size(); c++)
+      for (int c=0; c<cellLID()->size(); c++)
       {
         cell[0] = (*cofacetCellLID())[c];
         int facetIndex = facetIndices()[c];
@@ -850,7 +850,7 @@ void QuadratureEvalMediator::computePhysQuadPts() const
           =  (*(quadPtsReferredToMaxCell_.get(cellType())))[facetIndex];
         tmp.resize(refFacetPts.size());
         mesh().pushForward(maxCellDim(), cell, refFacetPts, tmp);
-        for (unsigned int q=0; q<tmp.size(); q++)
+        for (int q=0; q<tmp.size(); q++)
         {
           physQuadPts_.append(tmp[q]);
         }
@@ -878,11 +878,11 @@ void QuadratureEvalMediator::print(ostream& os) const
     Tabs tab0;
     os << tab0 << "Physical quadrature points" << endl;
     int i=0;
-    for (unsigned int c=0; c<cellLID()->size(); c++)
+    for (int c=0; c<cellLID()->size(); c++)
     {
       Tabs tab1;
       os << tab1 << "cell " << c << endl;
-      for (unsigned int q=0; q<physQuadPts_.size()/cellLID()->size(); q++, i++)
+      for (int q=0; q<physQuadPts_.size()/cellLID()->size(); q++, i++)
       {
         Tabs tab2;
         os << tab2 << "q=" << q << " " << physQuadPts_[i] << endl;

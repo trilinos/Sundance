@@ -39,10 +39,10 @@
 #include "SundanceExprBase.hpp"
 #include "SundanceExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;

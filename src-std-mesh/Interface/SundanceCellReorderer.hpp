@@ -32,43 +32,39 @@
 #define SUNDANCE_CELLREORDERER_H
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceCellReordererBase.hpp"
 #include "SundanceHandle.hpp"
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-  using namespace Teuchos;
-using namespace SundanceUtils;
-  using namespace Internal;
+using namespace Teuchos;
   
-  class Mesh;
-  /**
-   * User-level handle class for abstract specification of
-   * cell reordering algorithms.
-   *
-   * <h4> Examples </h4>
-   *
-   * \code
-   * CellReorderer bfs = new BreadthFirstReorderer();
-   * mesh.setReorderer(bfs);
-   * \endcode
-   */
-  class CellReorderer
-    : public SundanceUtils::Handle<CellReordererFactoryBase>
-  {
-  public:
-    HANDLE_CTORS(CellReorderer, CellReordererFactoryBase);
+  
+class Mesh;
+/**
+ * User-level handle class for abstract specification of
+ * cell reordering algorithms.
+ *
+ * <h4> Examples </h4>
+ *
+ * \code
+ * CellReorderer bfs = new BreadthFirstReorderer();
+ * mesh.setReorderer(bfs);
+ * \endcode
+ */
+class CellReorderer
+  : public Sundance::Handle<CellReordererFactoryBase>
+{
+public:
+  HANDLE_CTORS(CellReorderer, CellReordererFactoryBase);
       
-    /** */
-    RefCountPtr<CellReordererImplemBase> 
-    createInstance(const MeshBase* mesh) const ;
-  };
+  /** */
+  RCP<CellReordererImplemBase> 
+  createInstance(const MeshBase* mesh) const ;
+};
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

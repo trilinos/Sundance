@@ -30,9 +30,9 @@
 
 #include "SundanceLabelCellPredicate.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 bool LabelCellPredicate::lessThan(const CellPredicateBase* other) const
@@ -50,7 +50,7 @@ void LabelCellPredicate::testBatch(const Array<int>& cellLID,
                                    Array<int>& results) const
 {
   mesh().getLabels(cellDim(), cellLID, results);
-  for (unsigned int i=0; i<cellLID.size(); i++)
+  for (int i=0; i<cellLID.size(); i++)
     {
       results[i] = (results[i] == labelIndex_);
     }

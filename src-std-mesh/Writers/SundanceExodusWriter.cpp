@@ -41,13 +41,8 @@
 #endif
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
+using namespace Sundance;
 using namespace Teuchos;
-
 using namespace std;
 
 
@@ -74,21 +69,21 @@ void ExodusWriter::write() const
 
   Array<CellFilter> nsFilters;
   Array<int> omniNodalFuncs;
-  Array<RefCountPtr<Array<int> > > funcsForNodeset;
-  Array<RefCountPtr<Array<int> > > nodesForNodeset;
+  Array<RCP<Array<int> > > funcsForNodeset;
+  Array<RCP<Array<int> > > nodesForNodeset;
   Array<int> nsID;
   Array<int> nsNodesPerSet;
   Array<int> nsNodePtr;
-  RefCountPtr<Array<int> > allNodes=rcp(new Array<int>());
+  RCP<Array<int> > allNodes=rcp(new Array<int>());
 
   Array<CellFilter> blockFilters;
   Array<int> omniElemFuncs;
-  Array<RefCountPtr<Array<int> > > funcsForBlock;
-  Array<RefCountPtr<Array<int> > > elemsForBlock;
+  Array<RCP<Array<int> > > funcsForBlock;
+  Array<RCP<Array<int> > > elemsForBlock;
   Array<int> blockID;
   Array<int> nElemsPerBlock;
   Array<int> blockElemPtr;
-  RefCountPtr<Array<int> > allElems=rcp(new Array<int>());
+  RCP<Array<int> > allElems=rcp(new Array<int>());
 
   
   findNodeSets(nsFilters, omniNodalFuncs, funcsForNodeset,
@@ -113,7 +108,7 @@ void ExodusWriter::write() const
 
 void ExodusWriter::offset(Array<int>& x) const
 {
-  for (unsigned int i=0; i<x.size(); i++) x[i]++;
+  for (int i=0; i<x.size(); i++) x[i]++;
 }
 
 
@@ -122,7 +117,7 @@ void ExodusWriter::writeMesh(int exoid,
   const Array<int>& nsID,
   const Array<int>& nNodesPerSet,
   const Array<int>& nsNodePtr,
-  const RefCountPtr<Array<int> >& allNodes) const
+  const RCP<Array<int> >& allNodes) const
 {
 #ifdef HAVE_SUNDANCE_EXODUS
 
@@ -134,7 +129,7 @@ void ExodusWriter::writeMesh(int exoid,
   Array<int> ssLabels = mesh().getAllLabelsForDimension(dim-1).elements();
   int numSS = 0;
 
-  for (unsigned int ss=0; ss<ssLabels.size(); ss++) 
+  for (int ss=0; ss<ssLabels.size(); ss++) 
   {
     if (ssLabels[ss] != 0) numSS++;
   }
@@ -210,7 +205,7 @@ void ExodusWriter::writeMesh(int exoid,
   Array<int> blockLabels = mesh().getAllLabelsForDimension(dim).elements();
   int nodesPerElem = dim+1;
   std::string eType = elemType(mesh().cellType(dim));
-  for (unsigned int b=0; b<blockLabels.size(); b++)
+  for (int b=0; b<blockLabels.size(); b++)
   {
     int numBlockAttr = 0;
     Array<int> blockElemLIDs;
@@ -235,7 +230,7 @@ void ExodusWriter::writeMesh(int exoid,
   
   /* write the side sets */
   
-  for (unsigned int ss=0; ss<ssLabels.size(); ss++)
+  for (int ss=0; ss<ssLabels.size(); ss++)
   {
     if (ssLabels[ss]==0) continue;
     Array<int> sideLIDs;
@@ -261,7 +256,7 @@ void ExodusWriter::writeMesh(int exoid,
   TEST_FOR_EXCEPT(ierr < 0);
 
   
-  if (nsID.size() > 0U)
+  if (nsID.size() > 0)
   {
     /* write the node sets */
     Array<int> nsDistPerSet(nsID.size(), 0);
@@ -291,8 +286,8 @@ void ExodusWriter::writeFields(int exoid,
   const Array<CellFilter>& nodesetFilters,
   const Array<int>& omnipresentNodalFuncs,
   const Array<int>& omnipresentElemFuncs,
-  const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
-  const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+  const Array<RCP<Array<int> > >& funcsForNodeset,
+  const Array<RCP<Array<int> > >& nodesForNodeset,
   const Array<int>& nsID) const 
 {
 
@@ -312,7 +307,7 @@ void ExodusWriter::writeFields(int exoid,
   for (int i=0; i<nNodesets; i++)
   {
     const Array<int>& f = *(funcsForNodeset[i]);
-    for (unsigned int j=0; j<f.size(); j++)
+    for (int j=0; j<f.size(); j++)
     {
       nsFuncSet.put(f[j]);
       if (funcToNSMap.containsKey(f[j]))
@@ -326,7 +321,7 @@ void ExodusWriter::writeFields(int exoid,
     }
   }
   Array<int> nsFuncs = nsFuncSet.elements();
-  TEST_FOR_EXCEPT(nsFuncs.size() != (unsigned int) nNodesetFuncs);
+  TEST_FOR_EXCEPT(nsFuncs.size() != nNodesetFuncs);
 
   Map<int, int > funcIDToNSFuncIndex;
   for (int i=0; i<nNodesetFuncs; i++) funcIDToNSFuncIndex.put(nsFuncs[i],i);
@@ -340,7 +335,7 @@ void ExodusWriter::writeFields(int exoid,
   Array<int> nodesetFuncTruthTable(nNodesetFuncs * nNodesets, 0);
   for (int i=0; i<nNodesetFuncs; i++)
   {
-    for (unsigned int j=0; j<nsFuncNodesets[i].size(); j++)
+    for (int j=0; j<nsFuncNodesets[i].size(); j++)
     {
       int ns = nsFuncNodesets[i][j];
       nodesetFuncTruthTable[ns*nNodesetFuncs + i] = 1;
@@ -430,7 +425,7 @@ void ExodusWriter::writeFields(int exoid,
       const Array<int>& ns = nsFuncNodesets[i];
       int fid = nsFuncs[i];
       
-      for (unsigned int s=0; s<ns.size(); s++)
+      for (int s=0; s<ns.size(); s++)
       {
         const Array<int>& nodes = *(nodesForNodeset[ns[s]]);
         pointScalarFields()[fid]->getDataBatch(0, nodes, tuple(fid), funcVals);
@@ -527,26 +522,26 @@ void ExodusWriter::writeParallelInfo(const string& parfile) const
 void ExodusWriter::findNodeSets(
   Array<CellFilter>& nodesetFilters,
   Array<int>& omnipresentFuncs,
-  Array<RefCountPtr<Array<int> > >& funcsForNodeset,
-  Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+  Array<RCP<Array<int> > >& funcsForNodeset,
+  Array<RCP<Array<int> > >& nodesForNodeset,
   Array<int>& nsID,
   Array<int>& nNodesPerSet,
   Array<int>& nsNodePtr,
-  RefCountPtr<Array<int> > allNodes
+  RCP<Array<int> > allNodes
   ) const 
 {
   int verb = 0;
 
-  const Array<RefCountPtr<FieldBase> >& f = pointScalarFields();
+  const Array<RCP<FieldBase> >& f = pointScalarFields();
   CellFilter maximal = new MaximalCellFilter();
 
   nNodesPerSet.resize(0);
   nsNodePtr.resize(0);
   nsID.resize(0);
 
-  Map<CellFilter, RefCountPtr<Array<int> > > tmp;
+  Map<CellFilter, RCP<Array<int> > > tmp;
 
-  for (unsigned int i=0; i<f.size(); i++)
+  for (int i=0; i<f.size(); i++)
   {
     const CellFilter& cf = f[i]->domain(); 
     if (cf==maximal) 
@@ -557,7 +552,7 @@ void ExodusWriter::findNodeSets(
     }
     if (!tmp.containsKey(cf))
     {
-      RefCountPtr<Array<int> > a = rcp(new Array<int>());
+      RCP<Array<int> > a = rcp(new Array<int>());
       tmp.put(cf, a);
     }
     SUNDANCE_MSG2(verb, "function #" << i << " is defined on CF " << cf);
@@ -570,13 +565,13 @@ void ExodusWriter::findNodeSets(
   funcsForNodeset.resize(0);
   nodesForNodeset.resize(0);
 
-  for (Map<CellFilter, RefCountPtr<Array<int> > >::const_iterator
+  for (Map<CellFilter, RCP<Array<int> > >::const_iterator
          i=tmp.begin(); i!=tmp.end(); i++)
   {
     const CellFilter& cf = i->first;
     nodesetFilters.append(cf);
     funcsForNodeset.append(i->second);
-    RefCountPtr<Array<int> > cells 
+    RCP<Array<int> > cells 
       = cellSetToLIDArray(connectedNodeSet(cf, mesh()));
     nodesForNodeset.append(cells);
     int nn = cells->size();
@@ -595,14 +590,14 @@ void ExodusWriter::findNodeSets(
   allNodes->resize(numNodes);
 
   int k=0;
-  for (unsigned int i=0; i<nsID.size(); i++)
+  for (int i=0; i<nsID.size(); i++)
   {
     SUNDANCE_MSG2(verb, "node set " << i << " funcs = " 
       << *funcsForNodeset[i]);
     SUNDANCE_MSG2(verb, "node set " << i 
       << " nodes = " << *nodesForNodeset[i]);
     const Array<int>& myCells = *(nodesForNodeset[i]);
-    for (unsigned int c=0; c<myCells.size(); c++)
+    for (int c=0; c<myCells.size(); c++)
     {
       (*allNodes)[k++] = myCells[c];
     }
@@ -616,25 +611,25 @@ void ExodusWriter::findNodeSets(
 void ExodusWriter::findBlocks(
   Array<CellFilter>& blockFilters,
   Array<int>& omnipresentFuncs,
-  Array<RefCountPtr<Array<int> > >& funcsForBlock,
-  Array<RefCountPtr<Array<int> > >& elemsForBlock,
+  Array<RCP<Array<int> > >& funcsForBlock,
+  Array<RCP<Array<int> > >& elemsForBlock,
   Array<int>& blockIDs,
   Array<int>& nElemsPerBlock,
   Array<int>& elemBlockPtr,
-  RefCountPtr<Array<int> > allElems
+  RCP<Array<int> > allElems
   ) const 
 {
   int verb=0;
-  const Array<RefCountPtr<FieldBase> >& f = cellScalarFields();
+  const Array<RCP<FieldBase> >& f = cellScalarFields();
   CellFilter maximal = new MaximalCellFilter();
 
   nElemsPerBlock.resize(0);
   elemBlockPtr.resize(0);
   blockIDs.resize(0);
 
-  Map<CellFilter, RefCountPtr<Array<int> > > tmp;
+  Map<CellFilter, RCP<Array<int> > > tmp;
 
-  for (unsigned int i=0; i<f.size(); i++)
+  for (int i=0; i<f.size(); i++)
   {
     const CellFilter& cf = f[i]->domain(); 
     if (cf==maximal) 
@@ -645,7 +640,7 @@ void ExodusWriter::findBlocks(
     }
     if (!tmp.containsKey(cf))
     {
-      RefCountPtr<Array<int> > a = rcp(new Array<int>());
+      RCP<Array<int> > a = rcp(new Array<int>());
       tmp.put(cf, a);
     }
     SUNDANCE_MSG2(verb, "function #" << i << " is defined on CF " << cf);
@@ -658,13 +653,13 @@ void ExodusWriter::findBlocks(
   funcsForBlock.resize(0);
   elemsForBlock.resize(0);
 
-  for (Map<CellFilter, RefCountPtr<Array<int> > >::const_iterator
+  for (Map<CellFilter, RCP<Array<int> > >::const_iterator
          i=tmp.begin(); i!=tmp.end(); i++)
   {
     const CellFilter& cf = i->first;
     blockFilters.append(cf);
     funcsForBlock.append(i->second);
-    RefCountPtr<Array<int> > cells 
+    RCP<Array<int> > cells 
       = cellSetToLIDArray(cf.getCells(mesh()));
     elemsForBlock.append(cells);
     int nn = cells->size();
@@ -683,14 +678,14 @@ void ExodusWriter::findBlocks(
   allElems->resize(numElems);
 
   int k=0;
-  for (unsigned int i=0; i<blockIDs.size(); i++)
+  for (int i=0; i<blockIDs.size(); i++)
   {
     SUNDANCE_MSG2(verb, "block " << i << " funcs = " 
       << *funcsForBlock[i]);
     SUNDANCE_MSG2(verb, "block " << i 
       << " elems = " << *elemsForBlock[i]);
     const Array<int>& myCells = *(elemsForBlock[i]);
-    for (unsigned int c=0; c<myCells.size(); c++)
+    for (int c=0; c<myCells.size(); c++)
     {
       (*allElems)[k++] = myCells[c];
     }
@@ -702,7 +697,7 @@ void ExodusWriter::findBlocks(
 void ExodusWriter::getCharpp(const Array<std::string>& s, Array<const char*>& p) const
 {
   p.resize(s.size());
-  for (unsigned int i=0; i<p.size(); i++) p[i] = s[i].c_str();
+  for (int i=0; i<p.size(); i++) p[i] = s[i].c_str();
 }
 
 

@@ -34,11 +34,9 @@
 #include "SundanceDefs.hpp"
 #include <iostream>
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 using namespace Teuchos;
-namespace Internal
-{
   
 
 /** */
@@ -61,7 +59,7 @@ inline std::ostream& operator<<(
   }
   return os;
 }
-}
+
 }
 
 

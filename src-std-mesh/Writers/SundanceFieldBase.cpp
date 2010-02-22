@@ -34,15 +34,15 @@
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceMesh.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
-using SundanceStdFwk::Internal::CellSet;
-using SundanceStdFwk::Internal::CellIterator;
-using SundanceStdFwk::CellFilter;
-using SundanceStdFwk::MaximalCellFilter;
+using Sundance::CellSet;
+using Sundance::CellIterator;
+using Sundance::CellFilter;
+using Sundance::MaximalCellFilter;
 
 
 void FieldBase::getDataBatch(
@@ -56,9 +56,9 @@ void FieldBase::getDataBatch(
   int nFunc = funcElem.size();
   batch.resize(cellID.size() * funcElem.size());
 
-  for (unsigned int c=0; c<cellID.size(); c++)
+  for (int c=0; c<cellID.size(); c++)
   {
-    for (unsigned int f=0; f<funcElem.size(); f++)
+    for (int f=0; f<funcElem.size(); f++)
     {
       batch[c*nFunc + f] = getData(cellDim, cellID[c], f);
     }
@@ -72,10 +72,10 @@ const CellFilter& FieldBase::domain() const
 }
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 
-using SundanceStdFwk::Internal::CellSet;
+using Sundance::CellSet;
 
 CellSet connectedNodeSet(const CellFilter& f, const Mesh& mesh)
 {
@@ -98,7 +98,7 @@ CellSet connectedNodeSet(const CellFilter& f, const Mesh& mesh)
 
   Set<int> nodeSet;
 
-  for (unsigned int i=0; i<nodes.size(); i++)
+  for (int i=0; i<nodes.size(); i++)
   {
     nodeSet.put(nodes[i]);
   }
@@ -107,9 +107,9 @@ CellSet connectedNodeSet(const CellFilter& f, const Mesh& mesh)
 }
 
 
-RefCountPtr<Array<int> > cellSetToLIDArray(const CellSet& cs)
+RCP<Array<int> > cellSetToLIDArray(const CellSet& cs)
 {
-  RefCountPtr<Array<int> > cellLID = rcp(new Array<int>());
+  RCP<Array<int> > cellLID = rcp(new Array<int>());
 
   for (CellIterator i=cs.begin(); i!=cs.end(); i++)
   {

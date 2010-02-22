@@ -5,7 +5,7 @@
 #include "SundanceUnaryEvaluator.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-namespace SundanceCore 
+namespace Sundance 
 {
 class DerivOfSymbFunc;
 class DiscreteFuncElementEvaluator;
@@ -26,7 +26,7 @@ public:
   /** */
   virtual void internalEval(const EvalManager& mgr,
     Array<double>& constantResults,
-    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+    Array<RCP<EvalVector> >& vectorResults) const ;
 
   /** We need a specialized resetting method for diff op
    * evaluators that also resets the discrete func evaluators
@@ -45,7 +45,7 @@ private:
 
   int constResultIndex_;
 
-  RefCountPtr<SparsitySuperset> funcSparsitySuperset_;
+  RCP<SparsitySuperset> funcSparsitySuperset_;
 }; 
 }
 

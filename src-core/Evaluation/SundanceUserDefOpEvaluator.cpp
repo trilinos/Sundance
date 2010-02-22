@@ -37,9 +37,9 @@
 #include "SundanceOut.hpp"
 #include "SundanceUserDefOp.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -48,7 +48,7 @@ using namespace Teuchos;
 
 UserDefOpEvaluator
 ::UserDefOpEvaluator(const UserDefOpElement* expr,
-                     const RefCountPtr<const UserDefOpCommonEvaluator>& commonEval,
+                     const RCP<const UserDefOpCommonEvaluator>& commonEval,
                      const EvalContext& context)
   : ChainRuleEvaluator(expr, context),
     argValueIndex_(expr->numChildren()),
@@ -65,7 +65,7 @@ UserDefOpEvaluator
                     << expr->toString());
   Array<int> orders = findRequiredOrders(expr, context);
 
-  for (unsigned int i=0; i<orders.size(); i++) 
+  for (int i=0; i<orders.size(); i++) 
     {
       if (orders[i] > maxOrder_) maxOrder_ = orders[i];
     }
@@ -185,10 +185,10 @@ Array<int> UserDefOpEvaluator::findRequiredOrders(const ExprWithChildren* expr,
 
 void UserDefOpEvaluator
 ::evalArgDerivs(const EvalManager& mgr,
-                const Array<RefCountPtr<Array<double> > >& constArgVals,
-                const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& varArgVals,
+                const Array<RCP<Array<double> > >& constArgVals,
+                const Array<RCP<Array<RCP<EvalVector> > > >& varArgVals,
                 Array<double>& constArgDerivs,
-                Array<RefCountPtr<EvalVector> >& varArgDerivs) const
+                Array<RCP<EvalVector> >& varArgDerivs) const
 {
   if (!commonEval()->cacheIsValid())
     {

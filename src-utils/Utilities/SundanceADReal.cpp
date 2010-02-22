@@ -2,7 +2,7 @@
 #include "SundanceExceptions.hpp"
 
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 ADReal ADReal::operator-() const
@@ -156,7 +156,7 @@ ADReal ADReal::operator/(const double& other) const
 }
 
 
-namespace SundanceUtils
+namespace Sundance
 {
 ADReal operator+(const double& scalar, const ADReal& a)
 {

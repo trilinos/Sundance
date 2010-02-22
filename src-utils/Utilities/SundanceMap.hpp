@@ -36,7 +36,7 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 
@@ -71,20 +71,20 @@ namespace SundanceUtils
 
 namespace std
 {
-   /** \relates SundanceUtils::Map 
+   /** \relates Sundance::Map 
     * Write to a stream
     */
   template<class Key, class Value, class Compare> inline
-    std::ostream& operator<<(std::ostream& os, const SundanceUtils::Map<Key, Value, Compare>& m)
+    std::ostream& operator<<(std::ostream& os, const Sundance::Map<Key, Value, Compare>& m)
     {
-      typename SundanceUtils::Map<Key, Value, Compare>::const_iterator iter;
+      typename Sundance::Map<Key, Value, Compare>::const_iterator iter;
 
       os << "Map[";
-      unsigned int k = 0 ;
+      int k = 0 ;
       for (iter=m.begin(); iter != m.end(); iter++, k++)
         {
           os << "{" << (*iter).first << ", " << (*iter).second << "}";
-          if (k < m.size()-1) os << ", ";
+          if (k < (int) m.size()-1) os << ", ";
         }
       os << "]";
       return os;

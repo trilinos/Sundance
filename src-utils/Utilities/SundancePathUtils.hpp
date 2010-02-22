@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceUtils
+namespace Sundance
 {
   /** */
   std::string searchForFile(const std::string& name) ;    

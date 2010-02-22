@@ -36,12 +36,10 @@
 #include "SundanceMap.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-  
   using namespace Teuchos;
-  using namespace SundanceUtils;
-  using namespace Internal;
+  
   /**
    * ExodusNetCDFMeshReader reads a mesh from a NetCDF dump of an Exodus file.
    * This will often be less efficient than reading from an exodus file
@@ -73,15 +71,13 @@ namespace SundanceStdMesh
     {return "ExodusNetCDFMeshReader[file=" + filename() + "]";}
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshSourceBase> getRcp() {return rcp(this);}
+    virtual RCP<MeshSourceBase> getRcp() {return rcp(this);}
 
   private:
 
     
                       
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
   };
 }
 

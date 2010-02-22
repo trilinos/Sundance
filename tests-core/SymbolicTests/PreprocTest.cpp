@@ -5,11 +5,11 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "Teuchos_TestingHelpers.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
-using SundanceCore::List;
+using Sundance::List;
 
 
 #define TEST_THROW(code, passFail) \

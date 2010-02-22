@@ -43,26 +43,26 @@
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 #define SUNDANCE_UNARY_OP(opName, functorName, description) \
 /** \relates Expr description */\
 inline Expr opName(const Expr& expr) \
 {\
-RefCountPtr<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());\
+RCP<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());\
     TEST_FOR_EXCEPTION(arg.get()==0, RuntimeError,\
                        "non-scalar argument in " #opName " function");\
     return new NonlinearUnaryOp(arg, rcp(new functorName()));\
 }
 
-namespace SundanceCore
+namespace Sundance
 {
   inline Expr pow(const Expr& expr, const double& p)
   {
-    RefCountPtr<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());
+    RCP<ScalarExpr> arg = rcp_dynamic_cast<ScalarExpr>(expr[0].ptr());
     TEST_FOR_EXCEPTION(arg.get()==0, RuntimeError,
                        "non-scalar argument in pow function");
     return new NonlinearUnaryOp(arg, rcp(new PowerFunctor(p)));

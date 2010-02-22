@@ -30,8 +30,8 @@
 
 #include "SundanceSpatialDerivSpecifier.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 
 
@@ -147,7 +147,7 @@ SpatialDerivSpecifier SpatialDerivSpecifier::derivWrtMultiIndex(const MultiIndex
 namespace std
 {
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const SundanceCore::SpatialDerivSpecifier& sds)
+ostream& operator<<(ostream& os, const Sundance::SpatialDerivSpecifier& sds)
 {
   os << sds.type();
   if (sds.isPartial()) os << "(d=" << sds.mi() << ")";
@@ -157,7 +157,7 @@ ostream& operator<<(ostream& os, const SundanceCore::SpatialDerivSpecifier& sds)
 
 
 /** \relates SpatialDerivSpecifier */
-ostream& operator<<(ostream& os, const SundanceCore::SpatialDerivType& sdt)
+ostream& operator<<(ostream& os, const Sundance::SpatialDerivType& sdt)
 {
   static Array<string> names = tuple<string>("Identity", "Partial", "Normal", "Divergence");
   os << names[sdt];

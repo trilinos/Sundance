@@ -39,9 +39,9 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include "SundanceDiscreteFunctionStub.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
     
 
@@ -62,7 +62,7 @@ class SymbolicFunc : public ListExpr, public SymbolicFuncDescriptor,
 public:
   /** Ctor records common data but initializes list to empty */
   SymbolicFunc(const FunctionWithID& fid, 
-    const RefCountPtr<const CommonFuncDataStub>& data);
+    const RCP<const CommonFuncDataStub>& data);
 
   /** virtual destructor */
   virtual ~SymbolicFunc() {;}
@@ -78,15 +78,15 @@ public:
    * the functional derivatives that arise in a nonlinear expression
    * being linearized about \f$u_0\f$. 
    */
-  void substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const ;
+  void substituteFunction(const RCP<DiscreteFunctionStub>& u0) const ;
 
   /** */
-  const RefCountPtr<const CommonFuncDataStub>& commonData() const 
+  const RCP<const CommonFuncDataStub>& commonData() const 
     {return commonData_;}
   
 
 private:
-  RefCountPtr<const CommonFuncDataStub> commonData_;
+  RCP<const CommonFuncDataStub> commonData_;
 
 };
 }

@@ -42,9 +42,9 @@
 #include "SundanceEvaluatableExpr.hpp"
 #include "SundanceZeroExpr.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -129,7 +129,7 @@ DiffOpEvaluator
       SUNDANCE_MSG3(verb, tab1 << "function term coeffs = " << funcTermCoeffs);
 
       
-      if (funcTermCoeffs.size()==0U)
+      if (funcTermCoeffs.size()==0)
       {
         SUNDANCE_MSG3(verb, tab1 << "no direct chain rule terms");
       }
@@ -269,7 +269,7 @@ DiffOpEvaluator
       Set<MultipleDeriv> isolatedTerms 
         = RArg.intersection(backedDerivs(resultDeriv, W1Arg, verb));
       
-      if (isolatedTerms.size()==0U)
+      if (isolatedTerms.size()==0)
       {
         SUNDANCE_MSG3(verb, tab1 << "no indirect chain rule terms");
       }
@@ -316,14 +316,14 @@ DiffOpEvaluator
                   << endl;
             
         Out::os() << tab2 << "constant coeff functions: " << endl;
-        for (unsigned int j=0; j<constantFuncCoeffs_[i].size(); j++)
+        for (int j=0; j<constantFuncCoeffs_[i].size(); j++)
         {
           Tabs tab3;
           Out::os() << tab3 << "func=" << constantCoeffFuncIndices_[i][j]
                     << " mi=" << constantCoeffFuncMi_[i][j] << endl;
         } 
         Out::os() << tab2 << "vector coeff functions: " << endl;
-        for (unsigned int j=0; j<vectorFuncCoeffs_[i].size(); j++)
+        for (int j=0; j<vectorFuncCoeffs_[i].size(); j++)
         {
           Tabs tab3;
           Out::os() << tab3 << "func=" << vectorCoeffFuncIndices_[i][j]
@@ -418,14 +418,14 @@ Set<MultipleDeriv> DiffOpEvaluator
 
 void DiffOpEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
-  Array<RefCountPtr<EvalVector> >& vectorResults)  const
+  Array<RCP<EvalVector> >& vectorResults)  const
 {
   Tabs tabs;
   SUNDANCE_MSG1(mgr.verb(), tabs << "DiffOpEvaluator::eval() expr=" 
     << expr()->toString());
 
   /* evaluate the argument */
-  Array<RefCountPtr<EvalVector> > argVectorResults;
+  Array<RCP<EvalVector> > argVectorResults;
   Array<double> argConstantResults;
 
   SUNDANCE_MSG2(mgr.verb(), tabs << "evaluating operand");
@@ -445,9 +445,9 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
   /* evaluate the required discrete functions */
   SUNDANCE_MSG2(mgr.verb(), tabs << "evaluating discrete functions, num funcs= " << funcEvaluators_.size());
 
-  Array<Array<RefCountPtr<EvalVector> > > funcVectorResults(funcEvaluators_.size());
+  Array<Array<RCP<EvalVector> > > funcVectorResults(funcEvaluators_.size());
   Array<double> funcConstantResults;
-  for (unsigned int i=0; i<funcEvaluators_.size(); i++)
+  for (int i=0; i<funcEvaluators_.size(); i++)
   {
     funcEvaluators_[i]->eval(mgr, funcConstantResults, funcVectorResults[i]);
   }
@@ -467,7 +467,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
     SUNDANCE_MSG2(mgr.verb(), tab1 << "have " <<  constantMonomials_[i].size()
       << " constant monomials");
     double constantVal = 0.0;
-    for (unsigned int j=0; j<constantMonomials_[i].size(); j++)
+    for (int j=0; j<constantMonomials_[i].size(); j++)
     {
       SUNDANCE_MSG2(mgr.verb(), tab1 << "adding in constant monomial (index "
         << constantMonomials_[i][j] 
@@ -482,18 +482,18 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
       continue;
     }
 
-    RefCountPtr<EvalVector> result;
+    RCP<EvalVector> result;
     bool vecHasBeenAllocated = false;
 
     /* add in the vector monomials */
     const Array<int>& vm = vectorMonomials_[i];
     SUNDANCE_MSG2(mgr.verb(), tab1 << "have " << vm.size() 
       << " vector monomials");
-    for (unsigned int j=0; j<vm.size(); j++)
+    for (int j=0; j<vm.size(); j++)
     {
       Tabs tab2;
 
-      const RefCountPtr<EvalVector>& v = argVectorResults[vm[j]];
+      const RCP<EvalVector>& v = argVectorResults[vm[j]];
 
       SUNDANCE_MSG2(mgr.verb(), tab2 << "found term " << v->str());
 
@@ -524,13 +524,13 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
     const Array<int>& cf = constantFuncCoeffs_[i];
     SUNDANCE_MSG2(mgr.verb(), tab1 << "adding " << cf.size()
       << " func terms with constant coeffs");
-    for (unsigned int j=0; j<cf.size(); j++)
+    for (int j=0; j<cf.size(); j++)
     {
       Tabs tab2;
       const double& coeff = argConstantResults[cf[j]];
       int fIndex = constantCoeffFuncIndices_[i][j];
       int miIndex = constantCoeffFuncMi_[i][j];
-      const RefCountPtr<EvalVector>& fValue 
+      const RCP<EvalVector>& fValue 
         = funcVectorResults[fIndex][miIndex];
 
       SUNDANCE_MSG2(mgr.verb(), tab2 << "found term: coeff= " 
@@ -585,14 +585,14 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
     const Array<int>& vf = vectorFuncCoeffs_[i];
     SUNDANCE_MSG2(mgr.verb(), tab1 << "adding " << vf.size()
       << " func terms with vector coeffs");
-    for (unsigned int j=0; j<vf.size(); j++)
+    for (int j=0; j<vf.size(); j++)
     {
       Tabs tab2;
 
-      const RefCountPtr<EvalVector>& coeff = argVectorResults[vf[j]];
+      const RCP<EvalVector>& coeff = argVectorResults[vf[j]];
       int fIndex = vectorCoeffFuncIndices_[i][j];
       int miIndex = vectorCoeffFuncMi_[i][j];
-      const RefCountPtr<EvalVector>& fValue 
+      const RCP<EvalVector>& fValue 
         = funcVectorResults[fIndex][miIndex];
 
       SUNDANCE_MSG2(mgr.verb(), tab2 << "found term: coeff= " 
@@ -634,7 +634,7 @@ void DiffOpEvaluator::internalEval(const EvalManager& mgr,
 void DiffOpEvaluator::resetNumCalls() const 
 {
   argEval()->resetNumCalls();
-  for (unsigned int i=0; i<funcEvaluators_.size(); i++) 
+  for (int i=0; i<funcEvaluators_.size(); i++) 
   {
     funcEvaluators_[i]->resetNumCalls();
   }

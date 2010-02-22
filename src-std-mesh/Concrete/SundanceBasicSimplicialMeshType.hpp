@@ -36,10 +36,9 @@
 #include "SundanceMeshBase.hpp"
 #include "SundanceBasicSimplicialMesh.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceUtils;
   
 /**
  * BasicSimplicialMeshType is used to create
@@ -56,7 +55,7 @@ public:
   virtual ~BasicSimplicialMeshType(){;}
 
   /** Create a mesh of the given dimension */
-  virtual RefCountPtr<MeshBase> createEmptyMesh(int dim,
+  virtual RCP<MeshBase> createEmptyMesh(int dim,
     const MPIComm& comm) const 
     {return rcp(new BasicSimplicialMesh(dim, comm, order_));}
 
@@ -64,7 +63,7 @@ public:
   string description() const {return "BasicSimplicialMeshType";}
 
   /** Return a ref count pointer to self */
-  virtual RefCountPtr<MeshTypeBase> getRcp() {return rcp(this);}
+  virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}
 
 private:
   MeshEntityOrder order_;

@@ -36,13 +36,13 @@
 #include "SundanceExpr.hpp"
 #include "SundanceCellFilter.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
   using namespace Teuchos;
 
   /**
@@ -118,9 +118,9 @@ namespace SundanceStdFwk
     Array<double> low_;
     Array<double> high_;
     Array<double> dx_;
-    RefCountPtr<Array<int> > table_;
+    RCP<Array<int> > table_;
     CellFilter subdomain_;
-    mutable Array<RefCountPtr<Set<int> > > neighborSet_;
+    mutable Array<RCP<Set<int> > > neighborSet_;
   };
 }
 

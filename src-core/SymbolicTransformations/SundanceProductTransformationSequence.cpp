@@ -33,27 +33,27 @@
 #include "SundanceScalarExpr.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 ProductTransformationSequence::ProductTransformationSequence()
   : ProductTransformation(), 
-    Array<RefCountPtr<ProductTransformation> >()
+    Array<RCP<ProductTransformation> >()
 {;}
 
-bool ProductTransformationSequence::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                                const RefCountPtr<ScalarExpr>& right,
-                                                RefCountPtr<ScalarExpr>& rtn) const
+bool ProductTransformationSequence::doTransform(const RCP<ScalarExpr>& left, 
+                                                const RCP<ScalarExpr>& right,
+                                                RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_MSG2(this->verb(),
                "testing whether to transform product: " << std::endl
                << "left = " << left->toString() << std::endl
                << "right = " << right->toString());
 
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       if ((*this)[i]->doTransform(left, right, rtn)) return true;
     }

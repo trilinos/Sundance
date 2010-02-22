@@ -30,15 +30,15 @@
 
 #include "SundanceTestFuncElement.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 TestFuncElement
-::TestFuncElement(const RefCountPtr<const TestFuncDataStub>& data,
+::TestFuncElement(const RCP<const TestFuncDataStub>& data,
   const string& name,
   const string& suffix,
   const FunctionIdentifier& fid)

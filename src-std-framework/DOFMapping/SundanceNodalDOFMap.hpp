@@ -38,12 +38,7 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -62,7 +57,7 @@ public:
   virtual ~NodalDOFMap(){;}
 
   /** */
-  RefCountPtr<const MapStructure> 
+  RCP<const MapStructure> 
   getDOFsForCellBatch(int cellDim,
     const Array<int>& cellLID,
     const Set<int>& requestedFuncSet,
@@ -71,7 +66,7 @@ public:
     int verb) const ;
 
   /** */
-  RefCountPtr<const MapStructure> mapStruct() const 
+  RCP<const MapStructure> mapStruct() const 
     {return structure_;}
 
   /** */
@@ -93,9 +88,9 @@ protected:
   int nNodesPerElem_;
   Array<int> elemDofs_;
   Array<int> nodeDofs_;
-  RefCountPtr<const MapStructure> structure_;
+  RCP<const MapStructure> structure_;
 };
-}
+
 }
 
 

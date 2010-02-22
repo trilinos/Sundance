@@ -36,10 +36,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -67,7 +67,7 @@ void ChainRuleSum::addTerm(int argDerivIndex,
 
 void ChainRuleSum
 ::evalConstant(const EvalManager& mgr,
-               const Array<RefCountPtr<Array<double> > >& constantArgResults,
+               const Array<RCP<Array<double> > >& constantArgResults,
                const Array<double>& constantArgDerivs,
                double& result) const
 {
@@ -79,7 +79,7 @@ void ChainRuleSum
       const double& argDeriv = constantArgDerivs[argDerivIndex(i)];
       const Array<DerivProduct>& sumOfDerivProducts = terms(i);
       double innerSum = 0.0;
-      for (unsigned int j=0; j<sumOfDerivProducts.size(); j++)
+      for (int j=0; j<sumOfDerivProducts.size(); j++)
         {
           double prod = 1.0;
           const DerivProduct& p = sumOfDerivProducts[j];
@@ -97,16 +97,16 @@ void ChainRuleSum
 
 void ChainRuleSum
 ::evalVar(const EvalManager& mgr,
-          const Array<RefCountPtr<Array<double> > >& constantArgResults,
-          const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > > & vArgResults,
+          const Array<RCP<Array<double> > >& constantArgResults,
+          const Array<RCP<Array<RCP<EvalVector> > > > & vArgResults,
           const Array<double>& constantArgDerivs,
-          const Array<RefCountPtr<EvalVector> >& varArgDerivs,
-          RefCountPtr<EvalVector>& varResult) const
+          const Array<RCP<EvalVector> >& varArgDerivs,
+          RCP<EvalVector>& varResult) const
 {
   Tabs tabs;
   SUNDANCE_VERB_HIGH(tabs << "ChainRuleSum::evalVar()");
   int vecSize=-1;
-  for (unsigned int i=0; i<varArgDerivs.size(); i++)
+  for (int i=0; i<varArgDerivs.size(); i++)
     {
       int s = varArgDerivs[i]->length();
       TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, InternalError,
@@ -114,9 +114,9 @@ void ChainRuleSum
                          << " and " << s);
       vecSize = s;
     } 
-  for (unsigned int i=0; i<vArgResults.size(); i++)
+  for (int i=0; i<vArgResults.size(); i++)
     {
-      for (unsigned int j=0; j<vArgResults[i]->size(); j++)
+      for (int j=0; j<vArgResults[i]->size(); j++)
         {
           int s = (*(vArgResults[i]))[j]->length();
           TEST_FOR_EXCEPTION(vecSize != -1 && s != vecSize, InternalError,
@@ -135,7 +135,7 @@ void ChainRuleSum
     {
       Tabs tab1;
       SUNDANCE_VERB_HIGH(tab1 << "term=" << i << " of " << numTerms());
-      RefCountPtr<EvalVector> innerSum = mgr.popVector();
+      RCP<EvalVector> innerSum = mgr.popVector();
       innerSum->resize(vecSize);
       innerSum->setToConstant(0.0);
       const Array<DerivProduct>& sumOfDerivProducts = terms(i);
@@ -143,7 +143,7 @@ void ChainRuleSum
       SUNDANCE_VERB_HIGH(tab1 << "inner sum init = " << *innerSum
                          << ", num terms = " << terms(i).size());
 
-      for (unsigned int j=0; j<sumOfDerivProducts.size(); j++)
+      for (int j=0; j<sumOfDerivProducts.size(); j++)
         {
           Tabs tab2;
           SUNDANCE_VERB_HIGH(tab2 << "dp=" << j << " of " << sumOfDerivProducts.size());
@@ -183,7 +183,7 @@ void ChainRuleSum
               const IndexPair& ip0 = p.variable(0);
               const EvalVector* v0 
                 = (*(vArgResults[ip0.argIndex()]))[ip0.valueIndex()].get();
-              RefCountPtr<EvalVector> tmp = v0->clone();
+              RCP<EvalVector> tmp = v0->clone();
               for (int k=1; k<p.numVariables(); k++)
                 {
                   const IndexPair& ip1 = p.variable(k);

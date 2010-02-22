@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 /** 
  * \relates EquationSet

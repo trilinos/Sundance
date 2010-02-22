@@ -36,15 +36,12 @@
 #include "SundanceOrderedHandle.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceCore {class CommonFuncDataStub;}
-
-namespace SundanceStdFwk
+namespace Sundance
 {
 using Teuchos::XMLObject;
 using Teuchos::tuple;
-using SundanceUtils::OrderedHandle;
-using SundanceCore::CommonFuncDataStub;
-using SundanceUtils::Handle;
+
+class CommonFuncDataStub;
 
 /** 
  * BasisFamily is the user-level handle class for specifying the basis with
@@ -115,7 +112,7 @@ public:
   bool isHCurlBasis() const {return ptr()->isHCurlBasis();}
 
   /** Sum up the dim() values for array of bases. */
-  static unsigned int size(const Array<BasisFamily>& b) ;
+  static int size(const Array<BasisFamily>& b) ;
 
   /** Extract the basis from an expression */
   static BasisFamily getBasis(const RCP<const CommonFuncDataStub>& funcData);
@@ -220,7 +217,7 @@ inline Array<BasisFamily> replicate(const BasisFamily& b, int n)
 inline Array<BasisFamily> replicate(const Array<BasisFamily>& b, int n)
 {
   Array<BasisFamily> rtn(n*b.size());
-  for (unsigned int i=0; i<n*b.size(); i++) rtn[i] = b[0];
+  for (int i=0; i<n*b.size(); i++) rtn[i] = b[0];
   return rtn;
 }
 
@@ -235,12 +232,6 @@ public:
     : Array<BasisFamily>(a) 
     {;}
 
-#ifndef TRILINOS_8
-  template <int n>
-  BasisArray(const Teuchos::Tuple<BasisFamily, n>& a) 
-    : Array<BasisFamily>(a) 
-    {;}
-#endif
 };
 
 

@@ -36,9 +36,9 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 

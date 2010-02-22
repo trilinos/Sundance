@@ -36,40 +36,34 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceFuncWithBasis.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+using namespace Teuchos;
 
-  
-  namespace Internal
-  {
-    /** 
-     * UnknownFunctionData contains the specification of an unknown
-     * function's basis.
-     */
-    class UnknownFunctionData : public UnknownFuncDataStub
-    {
-    public:
-      /** */
-      UnknownFunctionData(const Array<BasisFamily>& basis)
-        : basis_(basis) {;}
+/** 
+ * UnknownFunctionData contains the specification of an unknown
+ * function's basis.
+ */
+class UnknownFunctionData : public UnknownFuncDataStub
+{
+public:
+  /** */
+  UnknownFunctionData(const Array<BasisFamily>& basis)
+    : basis_(basis) {;}
 
-      /** */
-      virtual ~UnknownFunctionData(){;}
+  /** */
+  virtual ~UnknownFunctionData(){;}
       
-      /** */
-      const Array<BasisFamily>& basis() const {return basis_;}
+  /** */
+  const Array<BasisFamily>& basis() const {return basis_;}
 
-      /** */
-      static const UnknownFunctionData* getData(const UnknownFuncElement* ufe);
-    private:
-      Array<BasisFamily> basis_;
-    };
+  /** */
+  static const UnknownFunctionData* getData(const UnknownFuncElement* ufe);
+private:
+  Array<BasisFamily> basis_;
+};
 
-  }
+
 }
 
 

@@ -35,61 +35,58 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceQuadratureFamilyBase.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Teuchos;
-  using namespace Internal;
-
-  /** 
-   * Family of optimal Gaussian integration rules, e.g., Gauss-Legendre on 
-   * lines, Dunavant on triangles. 
-   */
-  class GaussianQuadrature : public QuadratureFamilyBase
-  {
-  public:
-    /** */
-    GaussianQuadrature(int order);
-
-    /** */
-    virtual ~GaussianQuadrature(){;}
+using namespace Teuchos;
 
 
-    /** */
-    virtual XMLObject toXML() const ;
+/** 
+ * Family of optimal Gaussian integration rules, e.g., Gauss-Legendre on 
+ * lines, Dunavant on triangles. 
+ */
+class GaussianQuadrature : public QuadratureFamilyBase
+{
+public:
+  /** */
+  GaussianQuadrature(int order);
 
-    /** Describable interface */
-    virtual string description() const 
+  /** */
+  virtual ~GaussianQuadrature(){;}
+
+
+  /** */
+  virtual XMLObject toXML() const ;
+
+  /** Describable interface */
+  virtual string description() const 
     {return "GaussianQuadrature[order=" + Teuchos::toString(order()) 
-         +  "]";}
+        +  "]";}
 
-    /* handleable boilerplate */
-    GET_RCP(QuadratureFamilyStub);
+  /* handleable boilerplate */
+  GET_RCP(QuadratureFamilyStub);
 
-  protected:
-    /** compute a rule for the reference line cell */
-    virtual void getLineRule(Array<Point>& quadPoints,
-                             Array<double>& quadWeights) const ;
+protected:
+  /** compute a rule for the reference line cell */
+  virtual void getLineRule(Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** compute a rule for the reference triangle cell */
-    virtual void getTriangleRule(Array<Point>& quadPoints,
-                                 Array<double>& quadWeights) const ;
+  /** compute a rule for the reference triangle cell */
+  virtual void getTriangleRule(Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** compute a rule for the reference quad cell */
-     virtual void getQuadRule(Array<Point>& quadPoints,
-                                  Array<double>& quadWeights) const ;
+  /** compute a rule for the reference quad cell */
+  virtual void getQuadRule(Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** compute a rule for the reference tet cell */
-    virtual void getTetRule(Array<Point>& quadPoints,
-                            Array<double>& quadWeights) const ;
+  /** compute a rule for the reference tet cell */
+  virtual void getTetRule(Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** compute a rule for the reference brick cell */
-    virtual void getBrickRule(Array<Point>& quadPoints,
-                            Array<double>& quadWeights) const ;
+  /** compute a rule for the reference brick cell */
+  virtual void getBrickRule(Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-  };
+};
 }
 
 

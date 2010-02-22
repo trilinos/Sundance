@@ -31,8 +31,8 @@
 
 #include "SundanceAbstractEvalMediator.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 
 

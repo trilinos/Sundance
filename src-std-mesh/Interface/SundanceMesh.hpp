@@ -39,19 +39,17 @@
 #include "SundanceCellReorderer.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-
 using namespace Teuchos;
-using namespace SundanceUtils;
-using namespace Internal;
+
 
 /**
  * Mesh is the user-level object representing discrete geometry. 
  * The Mesh class is a handle to a MeshBase, which is an abstract interface
  * for meshes. 
  */
-class Mesh : public SundanceUtils::Handle<MeshBase>
+class Mesh : public Sundance::Handle<MeshBase>
 {
 public:
 

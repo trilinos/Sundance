@@ -40,7 +40,7 @@
 #include "FIAT.hpp"
 #endif
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   /** 
    * Lagrange basis, implemented through the FIAT element library
@@ -98,7 +98,7 @@ namespace SundanceStdFwk
     // this has to be mutable because lookups on maps
     // are non-const :/ and otherwise seemingly const methods
     // like tabulation and nNodes die at compile-time
-    mutable SundanceUtils::Map<CellType,FIAT::RCP<FIAT::LagrangeElement> > fiatElems_;
+    mutable Sundance::Map<CellType,FIAT::RCP<FIAT::LagrangeElement> > fiatElems_;
 #endif
   };
 

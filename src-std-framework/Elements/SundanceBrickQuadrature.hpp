@@ -34,38 +34,33 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace Teuchos;
-  namespace Internal
-  {
-    /**
-     * Get abscissas and weights for Gaussian quadrature on Brick cells
-     */
+using namespace Teuchos;
+/**
+ * Get abscissas and weights for Gaussian quadrature on Brick cells
+ */
 
-    class BrickQuadrature
-    {
-    public:
-      static void getPoints(int order, Array<double>& wgt,
-                            Array<double>& x,
-                            Array<double>& y,
-                            Array<double>& z);
+class BrickQuadrature
+{
+public:
+  static void getPoints(int order, Array<double>& wgt,
+    Array<double>& x,
+    Array<double>& y,
+    Array<double>& z);
 
-      static bool test(int p);
+  static bool test(int p);
 
 
-    private:
+private:
 
-      static double exact(int a, int b, int c);
+  static double exact(int a, int b, int c);
 
-      static double fact(int x);
+  static double fact(int x);
 
-    };
-  }
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

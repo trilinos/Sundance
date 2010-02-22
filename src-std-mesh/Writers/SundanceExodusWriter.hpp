@@ -36,7 +36,7 @@
 #include "SundanceFieldWriterBase.hpp"
 #include "SundanceCellType.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * ExodusWriter writes a mesh or fields to an ExodusII file
@@ -55,7 +55,7 @@ namespace SundanceStdMesh
     virtual void write() const ;
 
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<FieldWriterBase> getRcp() {return rcp(this);}
+    virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
 
     /** */
     void writeParallelInfo(const string& filename) const ;
@@ -69,24 +69,24 @@ namespace SundanceStdMesh
     void findNodeSets(
       Array<CellFilter>& nodesetFilters,
       Array<int>& omnipresentFuncs,
-      Array<RefCountPtr<Array<int> > >& funcsForNodeset,
-      Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+      Array<RCP<Array<int> > >& funcsForNodeset,
+      Array<RCP<Array<int> > >& nodesForNodeset,
       Array<int>& nsID,
       Array<int>& nNodesPerSet,
       Array<int>& nsNodePtr,
-      RefCountPtr<Array<int> > allNodes
+      RCP<Array<int> > allNodes
       ) const ;
 
     /** */
     void findBlocks(
       Array<CellFilter>& blockFilters,
       Array<int>& omnipresentFuncs,
-      Array<RefCountPtr<Array<int> > >& funcsForBlock,
-      Array<RefCountPtr<Array<int> > >& elemsForBlock,
+      Array<RCP<Array<int> > >& funcsForBlock,
+      Array<RCP<Array<int> > >& elemsForBlock,
       Array<int>& elemIDs,
       Array<int>& nElemsPerBlock,
       Array<int>& blockElemPtr,
-      RefCountPtr<Array<int> > allElems
+      RCP<Array<int> > allElems
       ) const ;
 
 
@@ -103,15 +103,15 @@ namespace SundanceStdMesh
       const Array<int>& nsID,
       const Array<int>& nNodesPerSet,
       const Array<int>& nsNodePtr,
-      const RefCountPtr<Array<int> >& allNodes) const ;
+      const RCP<Array<int> >& allNodes) const ;
 
     /** */
     void writeFields(int exoID, 
       const Array<CellFilter>& nodesetFilters,
       const Array<int>& omnipresentNodalFuncs,
       const Array<int>& omnipresentElemFuncs,
-      const Array<RefCountPtr<Array<int> > >& funcsForNodeset,
-      const Array<RefCountPtr<Array<int> > >& nodesForNodeset,
+      const Array<RCP<Array<int> > >& funcsForNodeset,
+      const Array<RCP<Array<int> > >& nodesForNodeset,
       const Array<int>& nsID) const ;
     
     

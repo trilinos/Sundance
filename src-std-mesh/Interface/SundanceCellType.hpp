@@ -31,11 +31,11 @@
 #ifndef CELLTOPOLOGYCODE_H
 #define CELLTOPOLOGYCODE_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceStdMesh {
+namespace Sundance 
+{
 
 /** \defgroup Sundance_CellType_grp Cell Type Description
  */
@@ -117,9 +117,8 @@ inline std::ostream& operator<<(std::ostream& os, const CellType& c)
   return os;
 }
   
-} // namespace SundanceStdMesh
+} // namespace Sundance
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
 
 #endif
 

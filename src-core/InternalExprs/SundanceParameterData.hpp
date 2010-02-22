@@ -36,7 +36,7 @@
 #include "SundanceDiscreteFuncDataStub.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
 /** 
  * ParameterData is the specialization of DiscreteFuncDataStub to the

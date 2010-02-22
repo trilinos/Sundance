@@ -39,9 +39,9 @@
 #include "TSFSimpleZeroOpImpl.hpp"
 #endif
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using std::setw;
@@ -50,8 +50,8 @@ using std::endl;
 
 
 void MatrixVectorAssemblyKernel::init(
-  const Array<RefCountPtr<DOFMapBase> >& rowMap,
-  const Array<RefCountPtr<DOFMapBase> >& colMap,
+  const Array<RCP<DOFMapBase> >& rowMap,
+  const Array<RCP<DOFMapBase> >& colMap,
   LinearOperator<double> A,
   bool partitionBCs)
 {
@@ -97,7 +97,7 @@ void MatrixVectorAssemblyKernel::init(
 void MatrixVectorAssemblyKernel::fill(
   bool isBC, 
   const IntegralGroup& group,
-  const RefCountPtr<Array<double> >& localValues) 
+  const RCP<Array<double> >& localValues) 
 {
   Tabs tab0;
   SUNDANCE_MSG1(verb(), tab0 << "in MatrixVectorAssemblyKernel::fill()");
@@ -135,7 +135,7 @@ void MatrixVectorAssemblyKernel::fill(
 void MatrixVectorAssemblyKernel::prepareForWorkSet(
   const Array<Set<int> >& requiredTests,
   const Array<Set<int> >& requiredUnks,
-  RefCountPtr<StdFwkEvalMediator> mediator)
+  RCP<StdFwkEvalMediator> mediator)
 {
   Tabs tab0;
   SUNDANCE_MSG1(verb(), tab0 
@@ -174,7 +174,7 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
 
   int nCells = rmb().nCells();
 
-  for (unsigned int t=0; t<testID.size(); t++)
+  for (int t=0; t<testID.size(); t++)
   {
     Tabs tab1;
     int br = testBlock[t];
@@ -186,7 +186,7 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
       << tab1 << "num cells = " << nCells << endl
       << tab1 << "using cofacet cells = " << useCofacetCells);
 
-    const RefCountPtr<DOFMapBase>& rowMap = rmb().dofMap(br);
+    const RCP<DOFMapBase>& rowMap = rmb().dofMap(br);
     int lowestLocalRow = rmb().lowestLocalIndex(br);
     int highestRowIndex = lowestLocalRow + rowMap->numLocalDOFs();
     int testChunk = rmb().mapStruct(br, 
@@ -223,7 +223,7 @@ void MatrixVectorAssemblyKernel::insertLocalMatrixBatch(
       }
     }
     
-    for (unsigned int u=0; u<unkID.size(); u++)
+    for (int u=0; u<unkID.size(); u++)
     {      
       Tabs tab2;
       int bc = unkBlock[u];
@@ -301,7 +301,7 @@ void MatrixVectorAssemblyKernel::writeLSMs(
   FancyOStream& os = Out::os();
 
   int nCells = rmb().nCells();
-  RefCountPtr<const Array<int> > workSet = rmb().workSet(blockRow, useCofacetCells);
+  RCP<const Array<int> > workSet = rmb().workSet(blockRow, useCofacetCells);
 
   int lr = 0;
 

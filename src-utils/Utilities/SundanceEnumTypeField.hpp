@@ -34,7 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceExceptions.hpp"
 
-namespace SundanceUtils
+namespace Sundance
 {
 
 template <typename T> class EnumTypeField

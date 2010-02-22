@@ -39,13 +39,13 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -53,7 +53,7 @@ using std::endl;
 using std::setw;
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 double evaluateIntegral(const Mesh& mesh, const Expr& expr,
   const ParameterList& verbParams)
@@ -73,7 +73,7 @@ FunctionalEvaluator::FunctionalEvaluator()
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& integral,
   const ParameterList& verbParams)
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
     assembler_(),
     varValues_(),
     vecType_(),
@@ -84,7 +84,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   Expr params;
 
   
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, params, params, fields, fields));
   
   
@@ -99,7 +99,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& varValues,
   const VectorType<double>& vectorType,
   const ParameterList& verbParams)
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
     assembler_(),
     varValues_(varValues),
     vecType_(vectorType),
@@ -110,7 +110,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   Array<Expr> fixed;
   Expr params;
   
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, fixed, fixed));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false, verbSublist("Assembler")));
@@ -126,7 +126,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& fieldValues,
   const VectorType<double>& vectorType,
   const ParameterList& verbParams)
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
     assembler_(),
     varValues_(varEvalPts),
     vecType_(vectorType),
@@ -139,7 +139,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
 
   Expr params;
   
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, f, f0));
 
   assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false, verbSublist("Assembler")));
@@ -165,7 +165,7 @@ Expr FunctionalEvaluator::evalGradient(double& value) const
   Vector<double> g = evalGradientVector(value);
 
   Array<Expr> rtn(assembler_->rowSpace().size());
-  for (unsigned int i=0; i<rtn.size(); i++)
+  for (int i=0; i<rtn.size(); i++)
   {
     string name = "gradient";
     if (rtn.size() > 1) name += "[" + Teuchos::toString(i) + "]";
@@ -199,8 +199,8 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   Vector<double> x0 = x.copy();
   Vector<double> gf = dg->getVector();
 
-  RefCountPtr<GhostView<double> > xView = df->ghostView();
-  RefCountPtr<GhostView<double> > gradF0View = dg->ghostView();
+  RCP<GhostView<double> > xView = df->ghostView();
+  RCP<GhostView<double> > gradF0View = dg->ghostView();
 
 
   TEST_FOR_EXCEPTION(xView.get() == 0, RuntimeError, 
@@ -290,9 +290,9 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
 
 
 
-RefCountPtr<ParameterList> FunctionalEvaluator::defaultVerbParams()
+RCP<ParameterList> FunctionalEvaluator::defaultVerbParams()
 {
-  static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Functional Evaluator"));
+  static RCP<ParameterList> rtn = rcp(new ParameterList("Functional Evaluator"));
   static int first = true;
   if (first)
   {

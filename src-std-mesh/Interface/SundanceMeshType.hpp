@@ -36,40 +36,36 @@
 #include "SundanceMesh.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-  //  using namespace Teuchos;
-  using namespace SundanceUtils;
-  
+/**
+ * Class MeshType is a user-level object for specification of which
+ * internal mesh representation is to be used when building or reading
+ * a mesh. An example of using a MeshType to control the creation 
+ * of a mesh with a TriangleMeshReader is as follows: 
+ * \code
+ * MeshType meshType = new BasicSimplicialMeshType();
+ * MeshSource meshSrc = new TriangleMeshReader("meshFile", meshType, MPIComm::world());
+ * \endcode
+ * The internal representation of the mesh will be as a BasicSimplicialMesh
+ * object. 
+ */
+class MeshType : public Sundance::Handle<MeshTypeBase>
+{
+public:
+  /** Construct an empty mesh type object */
+  MeshType();
 
-  /**
-   * Class MeshType is a user-level object for specification of which
-   * internal mesh representation is to be used when building or reading
-   * a mesh. An example of using a MeshType to control the creation 
-   * of a mesh with a TriangleMeshReader is as follows: 
-   * \code
-   * MeshType meshType = new BasicSimplicialMeshType();
-   * MeshSource meshSrc = new TriangleMeshReader("meshFile", meshType, MPIComm::world());
-   * \endcode
-   * The internal representation of the mesh will be as a BasicSimplicialMesh
-   * object. 
-   */
-  class MeshType : public SundanceUtils::Handle<Internal::MeshTypeBase>
-  {
-  public:
-    /** Construct an empty mesh type object */
-    MeshType();
+  /** Construct from a raw pointer to a mesh type subtype */
+  MeshType(Sundance::Handleable<MeshTypeBase>* rawPtr);
 
-    /** Construct from a raw pointer to a mesh type subtype */
-    MeshType(SundanceUtils::Handleable<Internal::MeshTypeBase>* rawPtr);
+  /** Construct from a smart pointer to a mesh type subtype */
+  MeshType(const RCP<MeshTypeBase>& smartPtr);
 
-    /** Construct from a smart pointer to a mesh type subtype */
-    MeshType(const RefCountPtr<Internal::MeshTypeBase>& smartPtr);
-
-    /** Create a mesh of the given dimension */
-    Mesh createEmptyMesh(int dim, const MPIComm& comm) const ;
+  /** Create a mesh of the given dimension */
+  Mesh createEmptyMesh(int dim, const MPIComm& comm) const ;
     
-  };
+};
 }
 
 #endif

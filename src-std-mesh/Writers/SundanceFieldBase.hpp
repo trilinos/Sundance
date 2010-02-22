@@ -39,24 +39,24 @@
 
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 class CellFilter;
 }
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 class Mesh;
-using SundanceStdFwk::CellFilter;
+using Sundance::CellFilter;
 
-using SundanceUtils::Map;
+using Sundance::Map;
 using Teuchos::Array;
 using Teuchos::RefCountPtr;
 /**
  *
  */
-class FieldBase : public SundanceUtils::Handleable<FieldBase>
+class FieldBase : public Sundance::Handleable<FieldBase>
 {
 public:
   /** */
@@ -94,11 +94,11 @@ public:
 
 };
 
-using SundanceStdFwk::Internal::CellSet;
-using SundanceStdFwk::CellFilter;
+using Sundance::CellSet;
+using Sundance::CellFilter;
 
 CellSet connectedNodeSet(const CellFilter& f, const Mesh& mesh);
-RefCountPtr<Array<int> > cellSetToLIDArray(const CellSet& cs);
+RCP<Array<int> > cellSetToLIDArray(const CellSet& cs);
 }
 
 #endif

@@ -36,16 +36,16 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 
-ProductExpr::ProductExpr(const RefCountPtr<ScalarExpr>& left,
-  const RefCountPtr<ScalarExpr>& right)
+ProductExpr::ProductExpr(const RCP<ScalarExpr>& left,
+  const RCP<ScalarExpr>& right)
 	: BinaryExpr(left, right, 1)
 {}
 

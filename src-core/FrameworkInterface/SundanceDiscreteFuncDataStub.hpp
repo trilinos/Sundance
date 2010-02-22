@@ -36,7 +36,7 @@
 #include "SundanceCommonFuncDataStub.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
 /** 
  * DiscreteFuncDataStub is a placeholder for data to be shared between

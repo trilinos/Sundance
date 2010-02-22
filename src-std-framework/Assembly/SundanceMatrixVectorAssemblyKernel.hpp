@@ -34,15 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceVectorFillingAssemblyKernel.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -54,11 +46,11 @@ class MatrixVectorAssemblyKernel : public VectorFillingAssemblyKernel
 public:
   /** */
   MatrixVectorAssemblyKernel(
-    const Array<RefCountPtr<DOFMapBase> >& rowMap,
-    const Array<RefCountPtr<Array<int> > >& isBCRow,
+    const Array<RCP<DOFMapBase> >& rowMap,
+    const Array<RCP<Array<int> > >& isBCRow,
     const Array<int>& lowestLocalRow,
-    const Array<RefCountPtr<DOFMapBase> >& colMap,
-    const Array<RefCountPtr<Array<int> > >& isBCCol,
+    const Array<RCP<DOFMapBase> >& colMap,
+    const Array<RCP<Array<int> > >& isBCCol,
     const Array<int>& lowestLocalCol,
     LinearOperator<double> A,
     Array<Vector<double> > b,
@@ -76,19 +68,19 @@ public:
   void prepareForWorkSet(
     const Array<Set<int> >& requiredTests,
     const Array<Set<int> >& requiredUnks,
-    RefCountPtr<StdFwkEvalMediator> mediator) ;
+    RCP<StdFwkEvalMediator> mediator) ;
 
   /** */
   void fill(bool isBC,
     const IntegralGroup& group,
-    const RefCountPtr<Array<double> >& localValues) ;
+    const RCP<Array<double> >& localValues) ;
 
 protected:
 
   /** */
   void init(
-  const Array<RefCountPtr<DOFMapBase> >& rowMap,
-  const Array<RefCountPtr<DOFMapBase> >& colMap,
+  const Array<RCP<DOFMapBase> >& rowMap,
+  const Array<RCP<DOFMapBase> >& colMap,
   LinearOperator<double> A,
   bool partitionBCs);
 
@@ -125,7 +117,6 @@ private:
   mutable MapBundle cmb_;
 };
 
-}
 }
 
 

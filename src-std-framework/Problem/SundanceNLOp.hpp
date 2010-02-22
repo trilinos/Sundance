@@ -41,25 +41,19 @@
 #include "TSFVectorDecl.hpp"
 #include "TSFVectorType.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
 using namespace Teuchos;
-namespace Internal
-{
+
 class Assembler;
-}
+
 
 /** 
  * NLOp encapsulates a discrete nonlinear problem, and can
  * be passed to a nonlinear solver such as NOX.
  */
 class NLOp 
-  : public SundanceUtils::ObjectWithClassVerbosity<NLOp>,
+  : public ObjectWithClassVerbosity<NLOp>,
     public TSFExtended::NonlinearOperatorBase<double>
 {
 public:
@@ -83,7 +77,7 @@ public:
 
 
   /** */
-  NLOp(const RefCountPtr<Assembler>& assembler, 
+  NLOp(const RCP<Assembler>& assembler, 
     const Expr& u0);
 
   /** Compute the residual and Jacobian at the current evaluation point */
@@ -122,7 +116,7 @@ public:
 private:
       
   /** */
-  RefCountPtr<Assembler> assembler_;
+  RCP<Assembler> assembler_;
 
   /** */
   mutable TSFExtended::LinearOperator<double> J_;

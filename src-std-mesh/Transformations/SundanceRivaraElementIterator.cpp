@@ -4,7 +4,7 @@
 #include "SundanceRivaraNode.hpp"
 
 
-using namespace SundanceStdMesh::Rivara;
+using namespace Sundance::Rivara;
 using namespace Teuchos;
 
 

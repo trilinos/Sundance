@@ -38,35 +38,31 @@
 #include "SundanceBoundaryCellPredicate.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  
-  using namespace Teuchos;
+using namespace Teuchos;
 
-  /** 
-   * BoundaryCellFilter identifies all cells of dimension \f$D-1\f$
-   on the boundary. The boundary cells can be identified topologically
-   as those cells of \f$D-1\f$ having only one cofacet.
-  */
-  class BoundaryCellFilter : public SubsetCellFilter
-  {
-  public:
-    /** */
-    BoundaryCellFilter() 
-      : SubsetCellFilter(new SideCellFilter(),
-                         new BoundaryCellPredicate())
+/** 
+ * BoundaryCellFilter identifies all cells of dimension \f$D-1\f$
+ on the boundary. The boundary cells can be identified topologically
+ as those cells of \f$D-1\f$ having only one cofacet.
+*/
+class BoundaryCellFilter : public SubsetCellFilter
+{
+public:
+  /** */
+  BoundaryCellFilter() 
+    : SubsetCellFilter(new SideCellFilter(),
+      new BoundaryCellPredicate())
     {setName("Boundary");}
 
-    /** */
-    virtual ~BoundaryCellFilter(){;}
+  /** */
+  virtual ~BoundaryCellFilter(){;}
 
-    /* */
-    GET_RCP(CellFilterStub);
+  /* */
+  GET_RCP(CellFilterStub);
 
-  };
+};
 }
 
 

@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     LinearOperator<double> C = identityOperator<double>(A.domain());
 
     /* Create the factory for building the multi-timestep operators */
-    RefCountPtr<DefaultLTIProblemFactory<double> > fact
+    RCP<DefaultLTIProblemFactory<double> > fact
       = rcp(new DefaultLTIProblemFactory<double>(nSteps));
     fact->init(A, C);
 

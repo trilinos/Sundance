@@ -24,9 +24,9 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceStringEvalMediator.hpp"
 
-using namespace SundanceUtils;
-using SundanceCore::List;
-using namespace SundanceCore;
+using namespace Sundance;
+using Sundance::List;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -34,14 +34,14 @@ using namespace Teuchos;
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
 
 static Time& doitTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("doit"); 
   return *rtn;
 }
@@ -65,7 +65,7 @@ void doVariations(const Expr& e,
   EvalManager mgr;
   mgr.setRegion(region);
 
-  static RefCountPtr<AbstractEvalMediator> mediator 
+  static RCP<AbstractEvalMediator> mediator 
     = rcp(new StringEvalMediator());
 
   mgr.setMediator(mediator);
@@ -90,7 +90,7 @@ void doVariations(const Expr& e,
   Tabs tab;
 
   Array<double> constantResults;
-  Array<RefCountPtr<EvalVector> > vectorResults;
+  Array<RCP<EvalVector> > vectorResults;
 
   ev->evaluate(mgr, constantResults, vectorResults);
 
@@ -112,7 +112,7 @@ void doGradient(const Expr& e,
   EvalManager mgr;
   mgr.setRegion(region);
 
-  static RefCountPtr<AbstractEvalMediator> mediator 
+  static RCP<AbstractEvalMediator> mediator 
     = rcp(new StringEvalMediator());
 
   mgr.setMediator(mediator);
@@ -134,10 +134,10 @@ void doGradient(const Expr& e,
   //  cerr << tab << *ev->sparsitySuperset(region) << endl;
   //  ev->showSparsity(cerr, region);
 
-  // RefCountPtr<EvalVectorArray> results;
+  // RCP<EvalVectorArray> results;
 
   Array<double> constantResults;
-  Array<RefCountPtr<EvalVector> > vectorResults;
+  Array<RCP<EvalVector> > vectorResults;
 
   ev->evaluate(mgr, constantResults, vectorResults);
 
@@ -160,7 +160,7 @@ void doFunctional(const Expr& e,
   EvalManager mgr;
   mgr.setRegion(region);
 
-  static RefCountPtr<AbstractEvalMediator> mediator 
+  static RCP<AbstractEvalMediator> mediator 
     = rcp(new StringEvalMediator());
 
   mgr.setMediator(mediator);
@@ -180,10 +180,10 @@ void doFunctional(const Expr& e,
   //  cerr << tab << *ev->sparsitySuperset(region) << endl;
   //  ev->showSparsity(cerr, region);
 
-  // RefCountPtr<EvalVectorArray> results;
+  // RCP<EvalVectorArray> results;
 
   Array<double> constantResults;
-  Array<RefCountPtr<EvalVector> > vectorResults;
+  Array<RCP<EvalVector> > vectorResults;
 
   ev->evaluate(mgr, constantResults, vectorResults);
 
@@ -323,8 +323,6 @@ int main(int argc, char** argv)
     GlobalMPISession session(&argc, &argv);
 
     TimeMonitor t(totalTimer());
-
-    int maxDiffOrder = 2;
 
     verbosity<SymbolicTransformation>() = 0;
     verbosity<Evaluator>() = 0;

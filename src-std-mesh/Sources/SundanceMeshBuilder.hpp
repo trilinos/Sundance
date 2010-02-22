@@ -37,7 +37,7 @@
 #include "SundanceMeshSource.hpp"
 #include "Teuchos_ParameterList.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   class MeshBuilder 
   {

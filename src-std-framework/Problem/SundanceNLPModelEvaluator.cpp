@@ -70,7 +70,7 @@ void SundanceNLPModelEvaluator::initialize(const Expr& paramExpr,
   sensProb_ = sensProb;
   obj_ = objective;
   objEval_ = obj_.evaluator(stateExpr, stateExprVal);
-  RefCountPtr<const Thyra::VectorSpaceBase<double> > pSpace
+  RCP<const Thyra::VectorSpaceBase<double> > pSpace
     = rcp(new Thyra::DefaultSpmdVectorSpace<double>(paramExpr_.size()));
   paramSpace_ = pSpace;
 }
@@ -92,7 +92,7 @@ Vector<double> SundanceNLPModelEvaluator::getInitialParameters() const
     {
       double tempinitParams;
       TEST_FOR_EXCEPT(initParams_.size() != rtn.space().dim());
-      //      for (unsigned int i=0; i<initParams_.size(); i++)
+      //      for (int i=0; i<initParams_.size(); i++)
       for (int i=0; i<initParams_.size(); i++)
         {
           tempinitParams = initParams_[i];
@@ -128,7 +128,7 @@ void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec
   /* set the symbolic parameter values to the input parameters */
   if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tabs << "parameters are: ")
     {
-      for (unsigned int i=0; i<paramExpr_.size(); i++)
+      for (int i=0; i<paramExpr_.size(); i++)
 	{
 	  Tabs tab2;
 	  Expr p_i = paramExpr_[i];
@@ -176,7 +176,7 @@ void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec
 
   /* compute the derivatives of the constraint residual wrt the parameters */
   if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tabs << "computing sensitivities...");
-  for (unsigned int i=0; i<paramExpr_.size(); i++)
+  for (int i=0; i<paramExpr_.size(); i++)
     {
       df_dp[i] = sensProb_[i].getRHS();
     }
@@ -210,7 +210,7 @@ void SundanceNLPModelEvaluator::internalEvalModel(const Vector<double>& stateVec
 Array<double> SundanceNLPModelEvaluator::parameters() const
 {
   Array<double> rtn;
-  for (unsigned int i=0; i<paramExpr_.size(); i++)
+  for (int i=0; i<paramExpr_.size(); i++)
     {
       const SpatiallyConstantExpr* sce 
         = dynamic_cast<const SpatiallyConstantExpr*>(paramExpr_[i].ptr().get());
@@ -226,7 +226,7 @@ Array<double> SundanceNLPModelEvaluator
   string str = getParameter<string>(params, paramName);
   Array<string> toks = StrUtils::stringTokenizer(str);
   Array<double> rtn(toks.size());
-  for (unsigned int i=0; i<toks.size(); i++)
+  for (int i=0; i<toks.size(); i++)
     {
       rtn[i] = StrUtils::atof(toks[i]);
     }
@@ -238,7 +238,7 @@ Expr SundanceNLPModelEvaluator
 ::solveForward(const ParameterList& fwdParams) const
 {
 
-  RefCountPtr<TSFExtended::NonlinearOperatorBase<double> > p 
+  RCP<TSFExtended::NonlinearOperatorBase<double> > p 
     = rcp(&prob_, false);
   TSFExtended::NonlinearOperator<double> prob = p;
 
@@ -261,7 +261,7 @@ Expr SundanceNLPModelEvaluator
   Array<double> designParams = paramArray(fwdParams, "Design Parameters");
   TEST_FOR_EXCEPT(designParams.size() != paramExpr_.size());
                      
-  for (unsigned int i=0; i<paramExpr_.size(); i++)
+  for (int i=0; i<paramExpr_.size(); i++)
     {
       Tabs tab2;
       Expr p_i = paramExpr_[i];
@@ -273,7 +273,7 @@ Expr SundanceNLPModelEvaluator
   /* run the continuation loop */
   for (int i=0; i<numContSteps; i++)
     {
-      for (unsigned int j=0; j<numContinuationParameters(); j++)
+      for (int j=0; j<numContinuationParameters(); j++)
         {
           Expr c = continuationParameters(j);
           Expr cFinal = finalContinuationValues(j);

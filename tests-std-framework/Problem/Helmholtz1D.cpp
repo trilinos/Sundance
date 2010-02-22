@@ -31,7 +31,7 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
 
-using namespace SundanceCore;
+using namespace Sundance;
 
 /** 
  * Solves the Helmholtz equation in 1D

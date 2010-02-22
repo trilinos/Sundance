@@ -37,9 +37,9 @@
 #include "Teuchos_MPIContainerComm.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 NodalDOFMap::NodalDOFMap(const Mesh& mesh, 
@@ -61,7 +61,7 @@ NodalDOFMap::NodalDOFMap(const Mesh& mesh,
 }
 
 
-RefCountPtr<const MapStructure> 
+RCP<const MapStructure> 
 NodalDOFMap::getDOFsForCellBatch(int cellDim,
   const Array<int>& cellLID,
   const Set<int>& requestedFuncSet,

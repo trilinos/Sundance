@@ -36,11 +36,11 @@
 
 #include "SundancePeanoMesher2D.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 PeanoMesher2D::PeanoMesher2D(const ParameterList& params)

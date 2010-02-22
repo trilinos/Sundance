@@ -53,7 +53,7 @@
 
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace TSFExtended;
 using namespace TSFExtendedOps;
 using Thyra::TestSpecifier;
@@ -76,13 +76,13 @@ int main(int argc, char *argv[])
       Array<VectorSpace<double> > domainBlocks(domainBlockSizes.size());
       Array<VectorSpace<double> > rangeBlocks(rangeBlockSizes.size());
 
-      for (unsigned int i=0; i<domainBlocks.size(); i++)
+      for (int i=0; i<domainBlocks.size(); i++)
         {
           domainBlocks[i] = type.createEvenlyPartitionedSpace(MPIComm::world(),
                                                               domainBlockSizes[i]);
         }
 
-      for (unsigned int i=0; i<rangeBlocks.size(); i++)
+      for (int i=0; i<rangeBlocks.size(); i++)
         {
           rangeBlocks[i] = type.createEvenlyPartitionedSpace(MPIComm::world(),
                                                              rangeBlockSizes[i]);
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
       Thyra::randomize(-1.0, 1.0, x.ptr().get());
 
       Array<Vector<double> > xBlock(domain.numBlocks());
-      for (unsigned int i=0; i<xBlock.size(); i++)
+      for (int i=0; i<xBlock.size(); i++)
         {
           xBlock[i] = x.getBlock(i);
         }
@@ -133,11 +133,11 @@ int main(int argc, char *argv[])
       Out::os() << "------------------------------------------------------------" << endl;
       Out::os() << "computing A*x block-by-block..." << endl;
       Array<Vector<double> > yBlock(range.numBlocks());
-      for (unsigned int i=0; i<yBlock.size(); i++)
+      for (int i=0; i<yBlock.size(); i++)
         {
           yBlock[i] = range.getBlock(i).createMember();
           yBlock[i].zero();
-          for (unsigned int j=0; j<xBlock.size(); j++)
+          for (int j=0; j<xBlock.size(); j++)
             {
               LinearOperator<double> Aij = A.getBlock(i,j);
               if (Aij.ptr().get() != 0)

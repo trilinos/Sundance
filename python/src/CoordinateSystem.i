@@ -17,7 +17,7 @@
 %include "exception.i"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   
 
@@ -40,25 +40,25 @@ namespace SundanceStdFwk
 
 %inline %{
   /* Create a maximal cell filter */
-  SundanceStdFwk::CoordinateSystem makeCartesianCoordinateSystem()
+  Sundance::CoordinateSystem makeCartesianCoordinateSystem()
   {
-    return new SundanceStdFwk::CartesianCoordinateSystem();
+    return new Sundance::CartesianCoordinateSystem();
   }
   %}
  
 %inline %{
   /* Create a maximal cell filter */
-  SundanceStdFwk::CoordinateSystem makeMeridionalCylindricalCoordinateSystem()
+  Sundance::CoordinateSystem makeMeridionalCylindricalCoordinateSystem()
   {
-    return new SundanceStdFwk::MeridionalCylindricalCoordinateSystem();
+    return new Sundance::MeridionalCylindricalCoordinateSystem();
   }
   %}
  
 %inline %{
   /* Create a maximal cell filter */
-  SundanceStdFwk::CoordinateSystem makeRadialSphericalCoordinateSystem()
+  Sundance::CoordinateSystem makeRadialSphericalCoordinateSystem()
   {
-    return new SundanceStdFwk::RadialSphericalCoordinateSystem();
+    return new Sundance::RadialSphericalCoordinateSystem();
   }
   %}
  

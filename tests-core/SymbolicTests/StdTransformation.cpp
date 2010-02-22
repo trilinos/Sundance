@@ -9,8 +9,8 @@
 #include "SundanceOut.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 bool checkStringForms(const Expr& e1, const Expr& e2)

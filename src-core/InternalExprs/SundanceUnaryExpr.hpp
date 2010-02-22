@@ -35,9 +35,9 @@
 #include "SundanceExprWithChildren.hpp"
 #include "SundanceExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
 
@@ -49,7 +49,7 @@ class UnaryExpr : public ExprWithChildren
 {
 public:
   /** construct with the argument */
-  UnaryExpr(const RefCountPtr<ScalarExpr>& arg);
+  UnaryExpr(const RCP<ScalarExpr>& arg);
 
   /** virtual dtor */
   virtual ~UnaryExpr() {;}

@@ -70,17 +70,17 @@
 
 using namespace TSFExtended;
 using namespace Teuchos;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
 
     /* --------- evaluate integrals over elements ----------- */
       
-    RefCountPtr<Array<double> > A = rcp(new Array<double>());
+    RCP<Array<double> > A = rcp(new Array<double>());
           
     QuadratureFamily quad = new GaussianQuadrature(4);
     Array<double> quadWeights;

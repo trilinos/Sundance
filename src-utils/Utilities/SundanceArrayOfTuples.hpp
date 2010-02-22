@@ -33,7 +33,7 @@
 
 #include "Teuchos_Array.hpp"
 
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 

@@ -40,48 +40,37 @@
 #include "SundanceMap.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace Teuchos;
-
-namespace Internal
+namespace Sundance
 {
 
 
 /** 
  * 
  */
-class DOFMapBuilder : public SundanceUtils::ParameterControlledObjectWithVerbosity<DOFMapBase>
+class DOFMapBuilder : public ParameterControlledObjectWithVerbosity<DOFMapBase>
 {
 public:
   /** */
   DOFMapBuilder(const ParameterList& verbParams=*DOFMapBase::defaultVerbParams());
   /** */
-  DOFMapBuilder(const Mesh& mesh, const RefCountPtr<FunctionSupportResolver>& fsr, 
+  DOFMapBuilder(const Mesh& mesh, const RCP<FunctionSupportResolver>& fsr, 
     bool findBCCols, const ParameterList& verbParams=*DOFMapBase::defaultVerbParams());
 
   /** */
-  const Array<RefCountPtr<DOFMapBase> >& rowMap() const {return rowMap_;}
+  const Array<RCP<DOFMapBase> >& rowMap() const {return rowMap_;}
 
   /** */
-  const Array<RefCountPtr<DOFMapBase> >& colMap() const {return colMap_;}
+  const Array<RCP<DOFMapBase> >& colMap() const {return colMap_;}
 
   /** */
-  const Array<RefCountPtr<Array<int> > >& isBCRow() const {return isBCRow_;}
+  const Array<RCP<Array<int> > >& isBCRow() const {return isBCRow_;}
 
   /** */
-  const Array<RefCountPtr<Array<int> > >& isBCCol() const {return isBCCol_;}
+  const Array<RCP<Array<int> > >& isBCCol() const {return isBCCol_;}
 
 
   /** */
-  const Array<RefCountPtr<std::set<int> > >& remoteBCCols() const 
+  const Array<RCP<std::set<int> > >& remoteBCCols() const 
     {return remoteBCCols_;}
 
   Array<Array<RCP<BasisDOFTopologyBase> > > testBasisTopologyArray() const ;
@@ -96,7 +85,7 @@ public:
 
 
 
-  RefCountPtr<DOFMapBase> makeMap(const Mesh& mesh,
+  RCP<DOFMapBase> makeMap(const Mesh& mesh,
     const Array<RCP<BasisDOFTopologyBase> >& basis,
     const Array<Set<CellFilter> >& filters) ;
 
@@ -135,23 +124,23 @@ public:
   const RCP<FunctionSupportResolver>& fsr() const {return fsr_;}
 
   /** */
-  SundanceUtils::Map<Set<int>, Set<CellFilter> > 
+  Sundance::Map<Set<int>, Set<CellFilter> > 
   buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
     const Array<CellFilter>& regions,
     const Mesh& mesh) const ;
         
   void getSubdomainUnkFuncMatches(const FunctionSupportResolver& fsr,
-    Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const ;
+    Array<Sundance::Map<CellFilter, Set<int> > >& fmap) const ;
         
   void getSubdomainVarFuncMatches(const FunctionSupportResolver& fsr,
-    Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const ;
+    Array<Sundance::Map<CellFilter, Set<int> > >& fmap) const ;
 
-  Array<SundanceUtils::Map<Set<int>, CellFilter> > 
+  Array<Sundance::Map<Set<int>, CellFilter> > 
   funcDomains(const Mesh& mesh,
-    const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
-    SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap) const ;
+    const Sundance::Map<CellFilter, Set<int> >& fmap,
+    Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellSet> >& inputToChildrenMap) const ;
 
-  SundanceUtils::Map<CellFilter, Set<int> > domainToFuncSetMap(const Array<Set<CellFilter> >& filters) const ;
+  Sundance::Map<CellFilter, Set<int> > domainToFuncSetMap(const Array<Set<CellFilter> >& filters) const ;
 
 private:
 
@@ -178,28 +167,27 @@ private:
 
   Mesh mesh_;
 
-  RefCountPtr<FunctionSupportResolver> fsr_;
+  RCP<FunctionSupportResolver> fsr_;
 
-  Array<RefCountPtr<DOFMapBase> > rowMap_;
+  Array<RCP<DOFMapBase> > rowMap_;
 
-  Array<RefCountPtr<DOFMapBase> > colMap_;
+  Array<RCP<DOFMapBase> > colMap_;
 
-  Array<RefCountPtr<Array<int> > > isBCRow_;
+  Array<RCP<Array<int> > > isBCRow_;
 
-  Array<RefCountPtr<Array<int> > > isBCCol_;
+  Array<RCP<Array<int> > > isBCCol_;
 
-  Array<RefCountPtr<std::set<int> > > remoteBCCols_;
+  Array<RCP<std::set<int> > > remoteBCCols_;
 
 };
-}
-/** \relates DOFMapBuilder */
-Array<Array<BasisFamily> > testBasisArray(const RefCountPtr<FunctionSupportResolver>& fsr) ;
 
 /** \relates DOFMapBuilder */
-Array<Array<BasisFamily> > unkBasisArray(const RefCountPtr<FunctionSupportResolver>& fsr) ;
+Array<Array<BasisFamily> > testBasisArray(const RCP<FunctionSupportResolver>& fsr) ;
+
+/** \relates DOFMapBuilder */
+Array<Array<BasisFamily> > unkBasisArray(const RCP<FunctionSupportResolver>& fsr) ;
 
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

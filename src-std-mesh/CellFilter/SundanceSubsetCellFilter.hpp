@@ -37,64 +37,53 @@
 #include "SundanceCellFilterBase.hpp"
 #include "SundanceCellPredicate.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  
-  namespace Internal 
-  {
-    using namespace Teuchos;
+using namespace Teuchos;
 
-    /** */
-    class SubsetCellFilter : public CellFilterBase 
-    {
-    public:
-      /** */
-      SubsetCellFilter(const CellFilter& superset,
-                       const CellPredicate& predicate);
+/** */
+class SubsetCellFilter : public CellFilterBase 
+{
+public:
+  /** */
+  SubsetCellFilter(const CellFilter& superset,
+    const CellPredicate& predicate);
 
-      /** */
-      virtual ~SubsetCellFilter(){;}
+  /** */
+  virtual ~SubsetCellFilter(){;}
 
-      /** Return the dimension of the cells that will be identified
-       * by this filter when acting on the given mesh */
-      virtual int dimension(const Mesh& mesh) const 
-      {return superset_.dimension(mesh);}
+  /** Return the dimension of the cells that will be identified
+   * by this filter when acting on the given mesh */
+  virtual int dimension(const Mesh& mesh) const 
+    {return superset_.dimension(mesh);}
 
-      /** */
-      virtual XMLObject toXML() const ;
+  /** */
+  virtual XMLObject toXML() const ;
 
-      /** */
-      virtual bool lessThan(const CellFilterStub* other) const ;
+  /** */
+  virtual bool lessThan(const CellFilterStub* other) const ;
 
-      /** */
-      virtual string description() const 
-      {return "Subset(predicate=" + predicate_.description() 
-          + ", super=" + superset_.description()+")";}
+  /** */
+  virtual string description() const 
+    {return "Subset(predicate=" + predicate_.description() 
+        + ", super=" + superset_.description()+")";}
 
 
-      /* */
-      GET_RCP(CellFilterStub);
+  /* */
+  GET_RCP(CellFilterStub);
     
 
-    protected:
-      /** */
-      virtual CellSet internalGetCells(const Mesh& mesh) const ;
+protected:
+  /** */
+  virtual CellSet internalGetCells(const Mesh& mesh) const ;
 
-    private:
-      /** */
-      CellFilter superset_;
+private:
+  /** */
+  CellFilter superset_;
 
-      /** */
-      CellPredicate predicate_;
-    };
-  }
+  /** */
+  CellPredicate predicate_;
+};
 }
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

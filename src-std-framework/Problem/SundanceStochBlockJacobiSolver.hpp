@@ -7,7 +7,7 @@
 using TSFExtended::LinearSolver;
 using TSFExtended::LinearOperator;
 using TSFExtended::Vector;
-using SundanceCore::SpectralBasis;
+using Sundance::SpectralBasis;
 
 class StochBlockJacobiSolver
 {

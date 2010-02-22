@@ -1,7 +1,7 @@
 #include "PySundanceCellPredicate.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 PySundanceCellPredicate::PySundanceCellPredicate(PyObject* functor) 
   : py_functor_(functor), evalOpCallback_(), descrCallback_()

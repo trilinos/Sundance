@@ -39,114 +39,107 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceDOFMapBase.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace Teuchos;
 
-    /** 
-     * A HomogeneousDOFMap is a DOF map for the special (and common)
-     * case in which every function has the same basis and is defined
-     * on every cell in the mesh. 
-     */
-    class HomogeneousDOFMap : public DOFMapBase
-    {
-    public:
-      /** */
-      HomogeneousDOFMap(const Mesh& mesh, 
-                        const BasisFamily& basis,
-                        int numFuncs);
+/** 
+ * A HomogeneousDOFMap is a DOF map for the special (and common)
+ * case in which every function has the same basis and is defined
+ * on every cell in the mesh. 
+ */
+class HomogeneousDOFMap : public DOFMapBase
+{
+public:
+  /** */
+  HomogeneousDOFMap(const Mesh& mesh, 
+    const BasisFamily& basis,
+    int numFuncs);
                         
-      /** */
-      HomogeneousDOFMap(const Mesh& mesh, 
-                        const BasisFamily& basis,
-                        const Array<CellFilter>& subregions,
-                        int numFuncs);
+  /** */
+  HomogeneousDOFMap(const Mesh& mesh, 
+    const BasisFamily& basis,
+    const Array<CellFilter>& subregions,
+    int numFuncs);
 
-      /** */
-      virtual ~HomogeneousDOFMap(){;}
+  /** */
+  virtual ~HomogeneousDOFMap(){;}
 
 
      
 
       
 
-      /** */
-      virtual void getDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
-                                       Array<int>& dofs,  
-                                       Array<Array<int> >& funcIDs,
-                                       Array<int>& nNodes) const ;
+  /** */
+  virtual void getDOFsForCellBatch(int cellDim, const Array<int>& cellLID,
+    Array<int>& dofs,  
+    Array<Array<int> >& funcIDs,
+    Array<int>& nNodes) const ;
 
 
-      /** */
-      virtual void print(ostream& os) const ;
+  /** */
+  virtual void print(ostream& os) const ;
 
-    private:
+private:
 
-      /** */
-      void allocate(const Mesh& mesh, 
-                    const BasisFamily& basis,
-                    int numFuncs);
+  /** */
+  void allocate(const Mesh& mesh, 
+    const BasisFamily& basis,
+    int numFuncs);
       
-      /** */
-      void buildMaximalDofTable() const ;
+  /** */
+  void buildMaximalDofTable() const ;
 
-      /** */
-      bool hasBeenAssigned(int cellDim, int cellLID) const 
-      {return dofs_[cellDim][cellLID][0] != uninitializedVal();}
+  /** */
+  bool hasBeenAssigned(int cellDim, int cellLID) const 
+    {return dofs_[cellDim][cellLID][0] != uninitializedVal();}
 
-      /** */
-      void initMap();
+  /** */
+  void initMap();
 
-      /** */
-      void setDOFs(int cellDim, int cellLID, 
-                   int& nextDOF, bool isRemote=false);
+  /** */
+  void setDOFs(int cellDim, int cellLID, 
+    int& nextDOF, bool isRemote=false);
 
-      /** */
-      void shareDOFs(int cellDim,
-                     const Array<Array<int> >& outgoingCellRequests);
+  /** */
+  void shareDOFs(int cellDim,
+    const Array<Array<int> >& outgoingCellRequests);
 
-      /** */
-      void computeOffsets(int dim, int localCount);
+  /** */
+  void computeOffsets(int dim, int localCount);
 
-      /** */
-      const Array<int>& funcIDList() const {return funcIDOnCellSet(0);}
+  /** */
+  const Array<int>& funcIDList() const {return funcIDOnCellSet(0);}
 
-      static int uninitializedVal() {return -1;}
+  static int uninitializedVal() {return -1;}
 
-      int dim_;
+  int dim_;
 
-      Array<Array<Array<int> > > dofs_;
+  Array<Array<Array<int> > > dofs_;
 
-      mutable Array<int> maximalDofs_;
+  mutable Array<int> maximalDofs_;
 
-      mutable bool haveMaximalDofs_;
+  mutable bool haveMaximalDofs_;
 
-      Array<Array<Array<Array<int> > > > localNodePtrs_;
+  Array<Array<Array<Array<int> > > > localNodePtrs_;
 
-      Array<int> nNodesPerCell_;
+  Array<int> nNodesPerCell_;
 
-      Array<int> totalNNodesPerCell_;
+  Array<int> totalNNodesPerCell_;
 
-      Array<Array<int> > numFacets_;
+  Array<Array<int> > numFacets_;
 
-      Array<Array<int> > originalFacetOrientation_;
+  Array<Array<int> > originalFacetOrientation_;
 
-      bool basisIsContinuous_;
+  bool basisIsContinuous_;
 
       
-    };
-  }
+};
 }
 
+
                   
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
 
 
 #endif

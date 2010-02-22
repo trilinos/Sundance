@@ -31,10 +31,10 @@
 #include "SundanceParameter.hpp"
 #include "SundanceSymbolicFunc.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 Parameter::Parameter(const double& value, const string& name)
@@ -51,7 +51,7 @@ void Parameter::setValue(const double& value)
 const double& Parameter::value() const {return data()->value();}
 
 
-RefCountPtr<Array<Set<MultipleDeriv> > > Parameter
+RCP<Array<Set<MultipleDeriv> > > Parameter
 ::internalDetermineR(const EvalContext& context,
                      const Array<Set<MultipleDeriv> >& RInput) const
 {

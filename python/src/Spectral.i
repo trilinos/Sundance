@@ -19,7 +19,7 @@
 %include "exception.i"
 
 
-namespace SundanceCore
+namespace Sundance
 {
   class SpectralBasis
   {
@@ -59,22 +59,22 @@ namespace SundanceCore
 
 %inline %{
   /* Create a Hermite basis */
-  SundanceCore::SpectralBasis makeHermiteSpectralBasis(int dim, int order)
+  Sundance::SpectralBasis makeHermiteSpectralBasis(int dim, int order)
   {
-    return new SundanceCore::HermiteSpectralBasis(dim, order);
+    return new Sundance::HermiteSpectralBasis(dim, order);
   }
 
   /* Create a Hermite basis */
-  SundanceCore::SpectralBasis makeHermiteSpectralBasis(int dim, int order, int nterms)
+  Sundance::SpectralBasis makeHermiteSpectralBasis(int dim, int order, int nterms)
   {
-    return new SundanceCore::HermiteSpectralBasis(dim, order, nterms);
+    return new Sundance::HermiteSpectralBasis(dim, order, nterms);
   }
 
   /* Create a spectral expression */
-  SundanceCore::Expr makeSpectralExpr(const SundanceCore::SpectralBasis& sb, 
-                                      const SundanceCore::Expr& coeffs)
+  Sundance::Expr makeSpectralExpr(const Sundance::SpectralBasis& sb, 
+                                      const Sundance::Expr& coeffs)
   {
-    return new SundanceCore::SpectralExpr(sb, coeffs);
+    return new Sundance::SpectralExpr(sb, coeffs);
   }
 
 

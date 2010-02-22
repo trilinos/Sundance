@@ -37,9 +37,9 @@
 
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using std::setw;
@@ -47,14 +47,14 @@ using std::endl;
       
 static Time& vecInsertTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("vector insertion"); 
   return *rtn;
 }
 
 VectorFillingAssemblyKernel::VectorFillingAssemblyKernel(
-  const Array<RefCountPtr<DOFMapBase> >& dofMap,
-  const Array<RefCountPtr<Array<int> > >& isBCIndex,
+  const Array<RCP<DOFMapBase> >& dofMap,
+  const Array<RCP<Array<int> > >& isBCIndex,
   const Array<int>& lowestLocalIndex,
   Array<Vector<double> >& b,
   bool partitionBCs,
@@ -71,7 +71,7 @@ VectorFillingAssemblyKernel::VectorFillingAssemblyKernel(
   
   int numBlocks = dofMap.size();
 
-  for (unsigned int i=0; i<b_.size(); i++)
+  for (int i=0; i<b_.size(); i++)
   {
     vec_[i].resize(numBlocks);
     for (int block=0; block<numBlocks; block++)
@@ -106,7 +106,7 @@ VectorFillingAssemblyKernel::VectorFillingAssemblyKernel(
 
 
 void VectorFillingAssemblyKernel::buildLocalDOFMaps(
-  const RefCountPtr<StdFwkEvalMediator>& mediator,
+  const RCP<StdFwkEvalMediator>& mediator,
   IntegrationCellSpecifier intCellSpec,
   const Array<Set<int> >& requiredFuncs) 
 {
@@ -132,7 +132,7 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
   const MapBundle& mb = mapBundle_;
   int nCells = mb.nCells();
 
-  for (unsigned int i=0; i<funcID.size(); i++)
+  for (int i=0; i<funcID.size(); i++)
   {
     Tabs tab1;
     SUNDANCE_MSG2(verb(), tab1 << "function ID = "<< funcID[i] 
@@ -147,7 +147,7 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
      * so that we can find the appropriate DOF information */
     int block = funcBlock[i];
 
-    const RefCountPtr<DOFMapBase>& dofMap = mb.dofMap(block);
+    const RCP<DOFMapBase>& dofMap = mb.dofMap(block);
     int lowestLocalRow = mb.lowestLocalIndex(block);
 
     int chunk = mb.mapStruct(block, useCofacetCells)->chunkForFuncID(funcID[i]);
@@ -170,7 +170,7 @@ void VectorFillingAssemblyKernel::insertLocalVectorBatch(
 
     /* At this point, we can start to load the elements */
     int r=0;
-    RefCountPtr<TSFExtended::LoadableVector<double> > vecBlock 
+    RCP<TSFExtended::LoadableVector<double> > vecBlock 
       = vec_[mvIndices[i]][block];
 
     FancyOStream& os = Out::os();

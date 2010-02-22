@@ -41,7 +41,7 @@
 #include "TSFVectorType.hpp"
 #include "TSFSolverState.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 
 class LinearSolveDriver
@@ -53,7 +53,7 @@ public:
 
   /** */
   Expr formSolutionExpr(const Array<Vector<double> >& solnVector,
-    const Array<RefCountPtr<DiscreteSpace> >& solutionSpace,
+    const Array<RCP<DiscreteSpace> >& solutionSpace,
     const Array<Array<string> >& names,
     int verb) const ;
 
@@ -61,7 +61,7 @@ public:
   SolverState<double> solve(const LinearSolver<double>& solver,
     const LinearOperator<double>& A,
     const Array<Vector<double> >& rhs,
-    const Array<RefCountPtr<DiscreteSpace> >& solutionSpace,
+    const Array<RCP<DiscreteSpace> >& solutionSpace,
     const Array<Array<string> >& names,
     int verb,
     Expr& soln) const ;

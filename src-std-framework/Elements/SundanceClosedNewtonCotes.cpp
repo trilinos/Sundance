@@ -32,11 +32,11 @@
 #include "SundanceTriangleQuadrature.hpp"
 #include "SundanceTetQuadrature.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 ClosedNewtonCotes::ClosedNewtonCotes()
@@ -74,7 +74,7 @@ void ClosedNewtonCotes::getTriangleRule(Array<Point>& quadPoints,
                       8.0/60.0, 3.0/60.0, 8.0/60.0,
                       27.0/60.0);
 
-	for (unsigned int i=0; i<quadWeights.size(); i++)
+	for (int i=0; i<quadWeights.size(); i++)
 		{
 			quadWeights[i] *=  0.5;
 		}

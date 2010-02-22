@@ -31,7 +31,7 @@
 #ifndef SUNDANCE_TENSORBASISBASE_H
 #define SUNDANCE_TENSORBASISBASE_H
 
-namespace SundanceStdFwk {
+namespace Sundance {
 
 /** 
  *
@@ -65,7 +65,7 @@ public:
 
 
 
-} // namespace SundanceStdFwk
+} // namespace Sundance
 
 
 #endif

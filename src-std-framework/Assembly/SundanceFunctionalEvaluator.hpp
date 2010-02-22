@@ -36,30 +36,20 @@
 #include "TSFVectorImpl.hpp"
 #include "TSFVectorType.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-class Mesh;
-}
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
 using namespace TSFExtended;
-
-namespace Internal
-{
 using namespace Teuchos;
+
+class Mesh;
 class Assembler;
 
 /** 
  * 
  */
 class FunctionalEvaluator 
-  : public SundanceUtils::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>
+  : public Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>
 {
 public:
   /** */
@@ -99,7 +89,7 @@ public:
   double fdGradientCheck(double h) const ;
           
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams();
+  static RCP<ParameterList> defaultVerbParams();
 
 private:
 
@@ -107,7 +97,7 @@ private:
   Vector<double> evalGradientVector(double& value) const ;
       
   /** */
-  RefCountPtr<Assembler> assembler_;
+  RCP<Assembler> assembler_;
       
   /** */
   mutable Expr varValues_;
@@ -119,10 +109,10 @@ private:
   mutable Array<Vector<double> > gradient_;
       
 };
-}
+
 /** */
 double evaluateIntegral(const Mesh& mesh, const Expr& expr,
-  const ParameterList& verbParams = *Internal::FunctionalEvaluator::defaultVerbParams());
+  const ParameterList& verbParams = *FunctionalEvaluator::defaultVerbParams());
 
 
 }

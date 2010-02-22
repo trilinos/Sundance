@@ -37,9 +37,7 @@
 #include <list>
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 
@@ -53,7 +51,7 @@ namespace SundanceUtils
     IntHashSet();
 
     /** */
-    void setCapacity(unsigned int capacity);
+    void setCapacity(int capacity);
 
     /** */
     inline void put(int x) 
@@ -90,5 +88,4 @@ namespace SundanceUtils
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 #endif

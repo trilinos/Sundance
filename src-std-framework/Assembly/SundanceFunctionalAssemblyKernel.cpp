@@ -36,9 +36,9 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::setw;
@@ -73,7 +73,7 @@ void FunctionalAssemblyKernel::postLoopFinalization()
 void FunctionalAssemblyKernel::fill(
   bool isBC, 
   const IntegralGroup& group,
-  const RefCountPtr<Array<double> >& localValues) 
+  const RCP<Array<double> >& localValues) 
 {
   Tabs tab;
   SUNDANCE_MSG2(verb(), tab << "adding local increment " << (*localValues)[0]

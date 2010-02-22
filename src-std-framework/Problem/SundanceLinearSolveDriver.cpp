@@ -41,13 +41,13 @@
 
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using namespace std;
@@ -57,7 +57,7 @@ SolverState<double>
 LinearSolveDriver::solve(const LinearSolver<double>& solver,
   const LinearOperator<double>& A,
   const Array<Vector<double> >& rhs,
-  const Array<RefCountPtr<DiscreteSpace> >& solutionSpace,
+  const Array<RCP<DiscreteSpace> >& solutionSpace,
   const Array<Array<string> >& names,
   int verb,
   Expr& soln) const
@@ -66,7 +66,7 @@ LinearSolveDriver::solve(const LinearSolver<double>& solver,
   Array<Vector<double> > solnVec(rhs.size());
   SolverState<double> state;
 
-  for (unsigned int i=0; i<rhs.size(); i++)
+  for (int i=0; i<rhs.size(); i++)
   {
     Tabs tab1;
 
@@ -142,24 +142,24 @@ LinearSolveDriver::solve(const LinearSolver<double>& solver,
 
 Expr LinearSolveDriver::formSolutionExpr(
   const Array<Vector<double> >& solnVector,
-  const Array<RefCountPtr<DiscreteSpace> >& solutionSpace,
+  const Array<RCP<DiscreteSpace> >& solutionSpace,
   const Array<Array<string> >& names,
   int verb) const
 {
   Array<Expr> cols(solnVector.size());
 
-  for (unsigned int m=0; m<solnVector.size(); m++)
+  for (int m=0; m<solnVector.size(); m++)
   {
     Array<Expr> col(solutionSpace.size());
 
-    for (unsigned int i=0; i<col.size(); i++)
+    for (int i=0; i<col.size(); i++)
     {
       string name = names[m][i];
-      if (col.size() > 1U) name += "[" + Teuchos::toString(i) + "]";
+      if (col.size() > 1) name += "[" + Teuchos::toString(i) + "]";
       col[i] = new DiscreteFunction(*(solutionSpace[i]),
         solnVector[m].getBlock(i), name);
     }
-    if (col.size() > 1U)
+    if (col.size() > 1)
     {
       cols[m] = new ListExpr(col);
     }
@@ -169,7 +169,7 @@ Expr LinearSolveDriver::formSolutionExpr(
     }
   }
 
-  if (cols.size() > 1U)
+  if (cols.size() > 1)
   {
     return new ListExpr(cols);;
   }
@@ -186,7 +186,7 @@ void LinearSolveDriver::writeIntoSolutionExpr(
   int verb) const 
 {
   TEST_FOR_EXCEPT(soln.size() != solnVector.size());
-  for (unsigned int i=0; i<solnVector.size(); i++)
+  for (int i=0; i<solnVector.size(); i++)
   {
     Expr u = soln[i];
     DiscreteFunction::discFunc(u)->setVector(solnVector[i]);

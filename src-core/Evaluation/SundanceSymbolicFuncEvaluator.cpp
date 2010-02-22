@@ -41,10 +41,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -180,7 +180,7 @@ SymbolicFuncElementEvaluator
 void SymbolicFuncElementEvaluator
 ::internalEval(const EvalManager& mgr,
                Array<double>& constantResults,
-               Array<RefCountPtr<EvalVector> >& vectorResults) const 
+               Array<RCP<EvalVector> >& vectorResults) const 
 {
   Tabs tabs;
   
@@ -196,7 +196,7 @@ void SymbolicFuncElementEvaluator
   /* Evaluate discrete functions if necessary */
   if (p_==0 && df_ != 0 && mi_.size() > 0)
     {
-      for (unsigned int i=0; i<mi_.size(); i++)
+      for (int i=0; i<mi_.size(); i++)
         {
           vectorResults[i] = mgr.popVector();
           TEST_FOR_EXCEPTION(!vectorResults[i]->isValid(), 
@@ -210,14 +210,14 @@ void SymbolicFuncElementEvaluator
     }
   if (p_!=0 && mi_.size() > 0)
     {
-      Array<RefCountPtr<EvalVector> > paramVectorResults;
+      Array<RCP<EvalVector> > paramVectorResults;
       Array<double> paramConstResults;
       pEval_->eval(mgr, paramConstResults, paramVectorResults);
       constantResults[paramValuePtrs_[0]] = paramConstResults[0];
     }
 
   /* Set the known one entries to one */
-  for (unsigned int i=0; i<onePtrs_.size(); i++)
+  for (int i=0; i<onePtrs_.size(); i++)
     {
       constantResults[onePtrs_[i]] = 1.0;
     }

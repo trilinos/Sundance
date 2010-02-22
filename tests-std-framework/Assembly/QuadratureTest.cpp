@@ -32,11 +32,11 @@
 #include "SundanceTriangleQuadrature.hpp"
 #include "SundanceTetQuadrature.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
       Array<int> tetFailures;
 
       cerr << "------------- testing triangle rules -------------------"  << endl;
-      for (unsigned int i=0; i<validTriOrders.size(); i++)
+      for (int i=0; i<validTriOrders.size(); i++)
 				{
           int p = validTriOrders[i];
 					bool pass = TriangleQuadrature::test(p);
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 				}
       cerr << "------------- testing tet rules -------------------"  << endl;
           
-      for (unsigned int i=0; i<validTetOrders.size(); i++)
+      for (int i=0; i<validTetOrders.size(); i++)
 				{
           int p = validTetOrders[i];
 					bool pass = TetQuadrature::test(p);

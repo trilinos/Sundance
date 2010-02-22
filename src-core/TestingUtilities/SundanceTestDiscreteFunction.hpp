@@ -39,10 +39,10 @@
 
 namespace SundanceTesting
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
 
   /** 
    *
@@ -69,7 +69,7 @@ namespace SundanceTesting
 
 
   private:
-    RefCountPtr<TestDiscreteFuncData> data_;
+    RCP<TestDiscreteFuncData> data_;
   };
 
 }

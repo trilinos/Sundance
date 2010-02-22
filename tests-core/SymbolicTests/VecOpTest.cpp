@@ -21,16 +21,16 @@
 #include "SundanceStringEvalMediator.hpp"
 #include "SundanceEvaluationTester.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace SundanceTesting;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 
       TempStack s(1);
 
-      typedef RefCountPtr<EvalVector> Vec;
+      typedef RCP<EvalVector> Vec;
 
       Vec A = s.popVector();
       Vec B = s.popVector();

@@ -34,38 +34,27 @@
 #include "SundanceDefs.hpp"
 #include "SundanceBasisFamilyBase.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace Teuchos;
-  
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  
-  namespace Internal
-  {
-    /** 
-     * Base class for scalar-valued basis families
-     */
-    class ScalarBasis : public BasisFamilyBase
-    {
-    public:
-      /** */
-      ScalarBasis(){;}
+using namespace Teuchos;
 
-      /** */
-      virtual ~ScalarBasis(){;}
+/** 
+ * Base class for scalar-valued basis families
+ */
+class ScalarBasis : public BasisFamilyBase
+{
+public:
+  /** */
+  ScalarBasis(){;}
 
-      /** Return the spatial dimension of the basis */
-      virtual int dim() const {return 1;}
-    };
-  }
+  /** */
+  virtual ~ScalarBasis(){;}
+
+  /** Return the spatial dimension of the basis */
+  virtual int dim() const {return 1;}
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

@@ -36,10 +36,10 @@
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 
 EvaluatorFactory::EvaluatorFactory()
@@ -84,9 +84,9 @@ Evaluator* EvaluatorFactory::commonCreate(const EvaluatableExpr* expr,
 }
 
 
-RefCountPtr<EvaluatorFactory>&  EvaluatorFactory::defaultEvaluator()
+RCP<EvaluatorFactory>&  EvaluatorFactory::defaultEvaluator()
 {
-  static RefCountPtr<EvaluatorFactory> rtn 
+  static RCP<EvaluatorFactory> rtn 
     = rcp(new InstructionCachingEvaluatorFactory());
   return rtn;
 }

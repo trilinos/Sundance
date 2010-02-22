@@ -38,16 +38,9 @@
 #include "Teuchos_Array.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
-{
+using namespace Sundance;
 using namespace Teuchos;
 
 /** 
@@ -281,7 +274,6 @@ private:
   BasisFamily unkBasis_;
       
 };
-}
 }
 
 

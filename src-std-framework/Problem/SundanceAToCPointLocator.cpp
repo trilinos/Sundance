@@ -35,13 +35,13 @@
 #include "Teuchos_ScalarTraits.hpp"
 #include <queue>
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -50,7 +50,7 @@ using namespace Teuchos;
 
 static Time& pointLocatorCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("point locator ctor"); 
   return *rtn;
 }
@@ -83,7 +83,7 @@ AToCPointLocator::AToCPointLocator(const Mesh& mesh,
       Array<int> facetLIDs;
       Array<int> facetOri;
       mesh.getFacetArray(dim_, cellLID, 0, facetLIDs, facetOri);
-      for (unsigned int f=0; f<facetLIDs.size(); f++)
+      for (int f=0; f<facetLIDs.size(); f++)
         {
           Point x = mesh.nodePosition(facetLIDs[f]);
           for (int d=0; d<dim_; d++)
@@ -168,7 +168,7 @@ void AToCPointLocator::getGridRange(const Mesh& mesh, int cellDim, int cellLID,
                               * reasonable index size in any one dimension */
     }
 
-  for (unsigned int f=0; f<facetLIDs.size(); f++)
+  for (int f=0; f<facetLIDs.size(); f++)
     {
       Point x = mesh.nodePosition(facetLIDs[f]);
       for (int d=0; d<cellDim; d++)
@@ -195,7 +195,7 @@ void AToCPointLocator::fillMaximalNeighbors(int cellLID,
         {
           Array<int> cofacets;
           mesh_.getCofacets(0, facetLID[f], dim_, cofacets);
-          for (unsigned int c=0; c<cofacets.size(); c++)
+          for (int c=0; c<cofacets.size(); c++)
             {
               if (cofacets[c] != cellLID) neighborSet_[cellLID]->put(cofacets[c]);
             }

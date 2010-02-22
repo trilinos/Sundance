@@ -33,17 +33,17 @@
 #include "SundanceSymbolicTransformation.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 SymbolicTransformation::SymbolicTransformation()
 {}
 
-RefCountPtr<ScalarExpr> SymbolicTransformation::chooseSign(int sign, 
-                                                           const RefCountPtr<ScalarExpr>& expr) 
+RCP<ScalarExpr> SymbolicTransformation::chooseSign(int sign, 
+                                                           const RCP<ScalarExpr>& expr) 
 {
   /* return expr if sign == 1, -expr if sign == -1. No other
    * cases should happen. */
@@ -54,7 +54,7 @@ RefCountPtr<ScalarExpr> SymbolicTransformation::chooseSign(int sign,
     case -1:
       {
         Expr e = -Expr::handle(expr);
-        RefCountPtr<ScalarExpr> rtn = rcp_dynamic_cast<ScalarExpr>(e.ptr());
+        RCP<ScalarExpr> rtn = rcp_dynamic_cast<ScalarExpr>(e.ptr());
         TEST_FOR_EXCEPTION(rtn.get() == NULL, InternalError,
                            "Non-scalar expr "
                            << e.toString() 
@@ -86,9 +86,9 @@ Expr SymbolicTransformation::chooseSign(int sign,
   return expr;
 }
 
-RefCountPtr<ScalarExpr> SymbolicTransformation::getScalar(const Expr& expr)
+RCP<ScalarExpr> SymbolicTransformation::getScalar(const Expr& expr)
 {
-  RefCountPtr<ScalarExpr> s = rcp_dynamic_cast<ScalarExpr>(expr.ptr());
+  RCP<ScalarExpr> s = rcp_dynamic_cast<ScalarExpr>(expr.ptr());
 
   TEST_FOR_EXCEPTION(s.get()==NULL, InternalError,
                      "non-scalar detected in SymbolicTransformation::getScalar");

@@ -34,16 +34,16 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 ExplicitFunctionalDerivativeElement
 ::ExplicitFunctionalDerivativeElement(
-  const RefCountPtr<ScalarExpr>& arg,
+  const RCP<ScalarExpr>& arg,
   const Deriv& fd
   )
   : UnaryExpr(arg), fd_(fd)
@@ -86,7 +86,7 @@ Evaluator* ExplicitFunctionalDerivativeElement
 
 
 
-RefCountPtr<Array<Set<MultipleDeriv> > > 
+RCP<Array<Set<MultipleDeriv> > > 
 ExplicitFunctionalDerivativeElement
 ::internalDetermineR(const EvalContext& context,
                            const Array<Set<MultipleDeriv> >& RInput) const
@@ -96,12 +96,12 @@ ExplicitFunctionalDerivativeElement
   SUNDANCE_MSG3(verb, tab0 << "ExplicitFunctionalDerivativeElement::internalDetermineR for=" << toString());
   SUNDANCE_MSG3(verb, tab0 << "RInput = " << RInput );
 
-  RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
+  RCP<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
   
   {
     Tabs tab1;
-    for (unsigned int i=0; i<RInput.size(); i++)
+    for (int i=0; i<RInput.size(); i++)
       {
         Tabs tab2;
         const Set<MultipleDeriv>& Wi = findW(i, context);
@@ -112,11 +112,11 @@ ExplicitFunctionalDerivativeElement
     Array<Set<MultipleDeriv> > RArg(RInput.size()+1);
     MultipleDeriv me(fd_);
     
-    for (unsigned int order=1; order<=RInput.size(); order++)
+    for (int order=1; order<=RInput.size(); order++)
       {
         Tabs tab2;
         SUNDANCE_MSG3(verb, tab2 << "order = " << order);
-        if (RInput[order-1].size() == 0U) continue;
+        if (RInput[order-1].size() == 0) continue;
         const Set<MultipleDeriv>& WArg = evaluatableArg()->findW(order, context);
         const Set<MultipleDeriv>& RMinus = (*rtn)[order-1];
 

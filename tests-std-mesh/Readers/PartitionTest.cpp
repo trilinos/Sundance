@@ -17,16 +17,16 @@
 #include "SundanceVTKWriter.hpp"
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 using namespace std;
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 
       int np = 4;
 
-      RefCountPtr<SerialPartitionerBase> part 
+      RCP<SerialPartitionerBase> part 
         = rcp(new FileIOChacoPartitioner("part"));
 
       Array<Mesh> submesh = part->makeMeshParts(mesh, np);

@@ -31,10 +31,10 @@
 #include "SundanceCellType.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 
   std::string toString(const CellType& cellType)

@@ -32,11 +32,11 @@
 #include "SundanceProductTransformation.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 ProductTransformation::ProductTransformation()
   : SymbolicTransformation()

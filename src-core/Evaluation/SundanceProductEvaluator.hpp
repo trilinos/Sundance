@@ -7,7 +7,7 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 
-namespace SundanceCore 
+namespace Sundance 
 {
 /**
  *
@@ -26,7 +26,7 @@ public:
   /** */
   virtual void internalEval(const EvalManager& mgr,
     Array<double>& constantResults,
-    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+    Array<RCP<EvalVector> >& vectorResults) const ;
 
 
   /** */

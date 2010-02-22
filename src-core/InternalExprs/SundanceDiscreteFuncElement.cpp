@@ -33,16 +33,16 @@
 
 #include "SundanceDeriv.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 DiscreteFuncElement
-::DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
+::DiscreteFuncElement(const RCP<DiscreteFuncDataStub>& data,
   const string& name,
   const string& suffix,
   const FunctionIdentifier& fid, int myIndex)
@@ -54,7 +54,7 @@ DiscreteFuncElement
 {}
 
 
-RefCountPtr<Array<Set<MultipleDeriv> > > DiscreteFuncElement
+RCP<Array<Set<MultipleDeriv> > > DiscreteFuncElement
 ::internalDetermineR(const EvalContext& context,
                      const Array<Set<MultipleDeriv> >& RInput) const
 {

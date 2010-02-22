@@ -36,9 +36,9 @@
 #include "SundanceMultiIndex.hpp"
 #include "Teuchos_XMLObject.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -75,7 +75,7 @@ public:
   const MultiIndex& multiIndex() const {return m_;}
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   /** Ordering operator for use in transforming exprs to standard form */
   virtual bool lessThan(const ScalarExpr* other) const ;

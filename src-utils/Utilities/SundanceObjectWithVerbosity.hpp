@@ -12,7 +12,7 @@
 #include "Teuchos_FancyOStream.hpp"
 
 
-namespace SundanceUtils
+namespace Sundance
 {
 using Teuchos::RefCountPtr;
 using Teuchos::rcp;
@@ -28,7 +28,7 @@ template <class X>
 class VerbosityTraits
 {
 public:
-  static RefCountPtr<ParameterList> defaultVerbParams()
+  static RCP<ParameterList> defaultVerbParams()
     {return X::defaultVerbParams();}
 };
 
@@ -145,7 +145,7 @@ public:
     : ObjectWithClassVerbosity<X>(),
     verbControlParams_() 
     {
-      RefCountPtr<ParameterList> defaults = VerbosityTraits<X>::defaultVerbParams();
+      RCP<ParameterList> defaults = VerbosityTraits<X>::defaultVerbParams();
       TEST_FOR_EXCEPTION(defaults->name() != objName, std::runtime_error,
         "mismatched ParameterList names for verbosity control: expected "
         << defaults->name() << ", got " << objName);
@@ -193,9 +193,9 @@ public:
   const ParameterList params() const {return *verbControlParams_;}
 
   /** */
-  RefCountPtr<ParameterList> modifiableParams() const {return verbControlParams_;}
+  RCP<ParameterList> modifiableParams() const {return verbControlParams_;}
 private:
-  RefCountPtr<ParameterList> verbControlParams_;
+  RCP<ParameterList> verbControlParams_;
 };
 
 

@@ -69,18 +69,18 @@
 
 using namespace TSFExtended;
 using namespace Teuchos;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -136,8 +136,8 @@ int main(int argc, char** argv)
       
     Array<int> dummy;
     double coeff = 1.0;
-    RefCountPtr<Array<double> > A = rcp(new Array<double>());
-    RefCountPtr<Array<double> > B = rcp(new Array<double>());
+    RCP<Array<double> > A = rcp(new Array<double>());
+    RCP<Array<double> > B = rcp(new Array<double>());
 
     QuadratureFamily q4 = new GaussianQuadrature(4);
 
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
           Tabs tab;
           RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, isInternalBdry, verb);
           A->resize(JBatch.numCells() * ref.nNodes());
-          for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+          for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
           ref.transformOneForm(JBatch, JBatch, dummy, coeff, A);
           cerr << tab << "transformed reference element" << endl;
           if (dp>0) cerr << tab << "test diff direction=" << t << endl;
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
           QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, isInternalBdry, verb);
           Array<double> quadCoeff(2*quad.nQuad(), 1.0);
           B->resize(JBatch.numCells() * quad.nNodes());
-          for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+          for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
           quad.transformOneForm(JBatch, JBatch, dummy, &(quadCoeff[0]), B);
           cerr << tab << "transformed quad element" << endl;
           if (dp>0) cerr << tab << "test diff direction =" << t << endl;
@@ -260,7 +260,7 @@ int main(int argc, char** argv)
                 RefIntegral ref(dim, cellType, dim, cellType, P, alpha,
                   dp, Q, beta, dq, isInternalBdry, verb);
                 A->resize(JBatch.numCells() * ref.nNodes());
-                for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+                for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
                 ref.transformTwoForm(JBatch, JBatch, dummy, coeff, A);
                 cerr << tab << "transformed ref element" << endl;
                 cerr << tab << "test diff order = " << dp << endl;
@@ -290,7 +290,7 @@ int main(int argc, char** argv)
                   dp, Q, beta, dq, q4, isInternalBdry, verb);
                 Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                 B->resize(JBatch.numCells() * quad.nNodes());
-                for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+                for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
                 quad.transformTwoForm(JBatch, JBatch, dummy, &(quadCoeff[0]), B);
 
                 cerr << tab << "transformed quad element" << endl;

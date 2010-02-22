@@ -32,9 +32,9 @@
 #include "SundanceTabs.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 CellSetBase::CellSetBase(const Mesh& mesh, int cellDim,

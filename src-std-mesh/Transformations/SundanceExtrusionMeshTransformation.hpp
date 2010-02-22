@@ -34,12 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshTransformationBase.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   
-  using namespace Teuchos;
-using namespace SundanceUtils;
-  using namespace Internal;
   /**
    * ExtrusionMeshTransformation extrudes a 2D mesh to 3D. 
    */
@@ -67,9 +64,8 @@ using namespace SundanceUtils;
        + ", nz=" + Teuchos::toString(nzLevels_) + "]";}
       
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshTransformationBase> getRcp() {return rcp(this);}
+    virtual RCP<MeshTransformationBase> getRcp() {return rcp(this);}
 
   private:
     
@@ -82,9 +78,6 @@ using namespace SundanceUtils;
     /** */
     int nzLevels_;
     
-    
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
   };
 }
 

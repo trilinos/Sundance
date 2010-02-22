@@ -41,9 +41,9 @@
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -56,7 +56,7 @@ class UserDefFunctorElement
 {
 public:
   /** ctor */
-  UserDefFunctorElement(const RefCountPtr<const UserDefFunctor>& functor,
+  UserDefFunctorElement(const RCP<const UserDefFunctor>& functor,
     int myIndex);
 
   /** */
@@ -75,8 +75,8 @@ public:
 
   /** */
   void getArgDerivIndices(const Array<int>& orders,
-    SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
-    SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
+    Sundance::Map<MultiSet<int>, int>& varArgDerivs,
+    Sundance::Map<MultiSet<int>, int>& constArgDerivs) const ;
 
   /** */
   int numArgs() const {return master_->domainDim();}
@@ -97,7 +97,7 @@ public:
 
 
 private:
-  const RefCountPtr<const UserDefFunctor> master_;
+  const RCP<const UserDefFunctor> master_;
   const int myIndex_;
 };
 

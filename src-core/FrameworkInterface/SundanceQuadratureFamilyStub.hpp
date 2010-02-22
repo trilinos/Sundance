@@ -39,14 +39,14 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_XMLObject.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 class QuadratureFamilyStub 
-  : public SundanceUtils::Handleable<QuadratureFamilyStub>,
-    public SundanceUtils::Printable,
+  : public Sundance::Handleable<QuadratureFamilyStub>,
+    public Sundance::Printable,
     public Teuchos::Describable,
     public Noncopyable
 {
@@ -82,11 +82,11 @@ public:
   //@}
 
   /** */
-  virtual RefCountPtr<QuadratureFamilyStub> getRcp() {return rcp(this);}
+  virtual RCP<QuadratureFamilyStub> getRcp() {return rcp(this);}
 
   /** */
-  static RefCountPtr<QuadratureFamilyStub>& defaultQuadrature()
-    {static RefCountPtr<QuadratureFamilyStub> rtn
+  static RCP<QuadratureFamilyStub>& defaultQuadrature()
+    {static RCP<QuadratureFamilyStub> rtn
         = rcp(new QuadratureFamilyStub(1)); return rtn;}
       
 private:

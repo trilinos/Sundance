@@ -35,9 +35,9 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -83,7 +83,7 @@ UnaryMinusEvaluator
 void UnaryMinusEvaluator
 ::internalEval(const EvalManager& mgr,
                Array<double>& constantResults,
-               Array<RefCountPtr<EvalVector> >& vectorResults) const
+               Array<RCP<EvalVector> >& vectorResults) const
 {
   Tabs tab;
   SUNDANCE_MSG1(mgr.verb(),
@@ -101,12 +101,12 @@ void UnaryMinusEvaluator
                            constantResults);
     }
 
-  for (unsigned int i=0; i<constantResults.size(); i++)
+  for (int i=0; i<constantResults.size(); i++)
     {
       constantResults[i] *= -1;
     }
 
-  for (unsigned int i=0; i<vectorResults.size(); i++)
+  for (int i=0; i<vectorResults.size(); i++)
     {
       vectorResults[i]->multiply_S(-1.0);
     }

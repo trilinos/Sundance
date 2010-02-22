@@ -43,13 +43,13 @@
 #include "TSFLinearCombinationImpl.hpp"
 #endif
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
 using namespace TSFExtended;
@@ -57,7 +57,7 @@ using namespace TSFExtended;
 
 static Time& nlpCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("NLOp ctor"); 
   return *rtn;
 }
@@ -97,7 +97,7 @@ NLOp::NLOp(const Mesh& mesh,
   Expr fixedParamValues;
   Expr fixedFieldValues;
 
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(test.flattenSpectral()), tuple(unk.flattenSpectral()), tuple(u0),
         unkParams, unkParamValues,
         fixedParams, fixedParamValues,
@@ -142,7 +142,7 @@ NLOp::NLOp(const Mesh& mesh,
   Expr unkParamValues;
   Expr fixedFieldValues;
 
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(
             eqn, bc, tuple(test.flattenSpectral()), 
             tuple(unk.flattenSpectral()), tuple(u0), 
@@ -165,7 +165,7 @@ NLOp::NLOp(const Mesh& mesh,
 }
 
 
-NLOp::NLOp(const RefCountPtr<Assembler>& assembler, 
+NLOp::NLOp(const RCP<Assembler>& assembler, 
   const Expr& u0)
   : NonlinearOperatorBase<double>(),
     assembler_(assembler),
@@ -367,10 +367,10 @@ computeSensitivities(const LinearSolver<double>& solver) const
   Expr sens;
   int vrb = 0;
   Array<Array<string> > names(params_.size());
-  for (unsigned int i=0; i<params_.size(); i++)
+  for (int i=0; i<params_.size(); i++)
   {
     names[i].resize(u0_.size());
-    for (unsigned int j=0; j<u0_.size(); j++) 
+    for (int j=0; j<u0_.size(); j++) 
       names[i][j]="sens(" + u0_[j].toString() + ", " + params_[i].toString() + ")";
     mv[i].scale(-1.0);
   }

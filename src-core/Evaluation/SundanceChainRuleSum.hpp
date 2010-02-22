@@ -36,7 +36,7 @@
 #include "SundanceEvaluator.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceCore 
+namespace Sundance 
 {
 
 using namespace Teuchos;
@@ -105,7 +105,7 @@ private:
 
 
 /** */
-class ChainRuleSum : public SundanceUtils::ObjectWithClassVerbosity<Evaluator>
+class ChainRuleSum : public ObjectWithClassVerbosity<Evaluator>
 {
 public:
   /** */
@@ -121,17 +121,17 @@ public:
 
   /** */
   void evalConstant(const EvalManager& mgr,
-    const Array<RefCountPtr<Array<double> > >& constantArgResults,
+    const Array<RCP<Array<double> > >& constantArgResults,
     const Array<double>& constantArgDerivs,
     double& constResult) const ;
 
   /** */
   void evalVar(const EvalManager& mgr,
-    const Array<RefCountPtr<Array<double> > >& constantArgResults,
-    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > > & vArgResults,
+    const Array<RCP<Array<double> > >& constantArgResults,
+    const Array<RCP<Array<RCP<EvalVector> > > > & vArgResults,
     const Array<double>& constantArgDerivs,
-    const Array<RefCountPtr<EvalVector> >& varArgDerivs,
-    RefCountPtr<EvalVector>& varResult) const ;
+    const Array<RCP<EvalVector> >& varArgDerivs,
+    RCP<EvalVector>& varResult) const ;
 
   /** */
   int resultIndex() const {return resultIndex_;}

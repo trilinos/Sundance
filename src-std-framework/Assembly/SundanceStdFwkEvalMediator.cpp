@@ -35,13 +35,13 @@
 #include "SundanceExceptions.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -95,7 +95,7 @@ void StdFwkEvalMediator::setIntegrationSpec(
 }
 
 void StdFwkEvalMediator::setCellBatch(
-  const RefCountPtr<const Array<int> >& cellLID) 
+  const RCP<const Array<int> >& cellLID) 
 {
   cellLID_ = cellLID; 
   cacheIsValid() = false; 
@@ -130,7 +130,7 @@ void StdFwkEvalMediator::setupFacetTransformations() const
   maxCellLIDs_->resize(cells.size());
   cofacetCellsAreReady_ = true;
 
-  for (unsigned int c=0; c<cells.size(); c++)
+  for (int c=0; c<cells.size(); c++)
     {
       (*maxCellLIDs_)[c] 
         = mesh_.maxCofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);

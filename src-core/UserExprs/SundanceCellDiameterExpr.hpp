@@ -34,10 +34,10 @@
 #include "SundanceEvaluatorFactory.hpp"
 #include "SundanceCellDiameterEvaluator.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
 
   /**
    * Expression that returns a characteristic size for each cell on 
@@ -72,7 +72,7 @@ namespace SundanceCore
     internalFindW(int order, const EvalContext& context) const ;
 
     /** */
-    virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+    virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
     /** Ordering operator for use in transforming exprs to standard form */
     virtual bool lessThan(const ScalarExpr* other) const ;

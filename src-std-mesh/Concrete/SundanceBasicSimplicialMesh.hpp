@@ -42,9 +42,7 @@
 #include "Teuchos_Array.hpp"
 #include "Teuchos_Hashtable.hpp"
 
-namespace SundanceStdMesh
-{
-namespace Internal
+namespace Sundance
 {
 
 /**
@@ -560,7 +558,6 @@ private:
 
 
 };
-}
 
 }
 

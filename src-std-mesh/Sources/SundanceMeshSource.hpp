@@ -36,7 +36,7 @@
 
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * MeshSource is the user-level interface for objects such as
@@ -54,17 +54,17 @@ namespace SundanceStdMesh
    * MeshSource meshSrc = new TriangleMeshReader("meshFile", meshType, MPIComm::world());
    * \endcode
    */
-  class MeshSource : public SundanceUtils::Handle<MeshSourceBase>
+  class MeshSource : public Sundance::Handle<MeshSourceBase>
   {
   public:
     /** Construct an empty mesh source object */
     MeshSource();
 
     /** Construct from a raw pointer to a mesh source subtype */
-    MeshSource(SundanceUtils::Handleable<MeshSourceBase>* rawPtr);
+    MeshSource(Sundance::Handleable<MeshSourceBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh source subtype */
-    MeshSource(const RefCountPtr<MeshSourceBase>& smartPtr);
+    MeshSource(const RCP<MeshSourceBase>& smartPtr);
 
     /** Create and return a mesh */
     Mesh getMesh() const ;
@@ -72,8 +72,8 @@ namespace SundanceStdMesh
     /** Get any attributes associated with the nodes and elements in the
      * mesh. If no attributes exist, the arrays are empty. If the mesh
      * does not exist, it will be created with a cell to getMesh(). */
-    void getAttributes(RefCountPtr<Array<Array<double> > >& nodeAttributes,
-                       RefCountPtr<Array<Array<double> > >& elemAttributes) const ;
+    void getAttributes(RCP<Array<Array<double> > >& nodeAttributes,
+                       RCP<Array<Array<double> > >& elemAttributes) const ;
 
     /** Return the mesh type to be used by default if no MeshType
      * is given in a MeshSource subtype ctor. The default mesh type
@@ -88,9 +88,7 @@ namespace SundanceStdMesh
     /** access to the MPI communicator */
     const MPIComm& comm() const ;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
     static bool& staggerOutput() {static bool rtn=false; return rtn;}
-#endif
 
   private:
   };

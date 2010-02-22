@@ -2,12 +2,12 @@
 #include "SundanceUnknownFunctionStub.hpp"
 #include "SundanceCombinatorialUtils.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
-using SundanceCore::List;
+using Sundance::List;
 
 
 void write(const MultipleDeriv& md,
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
           Array<int> s(l, nArgs);
           Array<Array<int> > distinctQ = indexCombinations(s);
           Set<MultiSet<int> > q;
-          for (unsigned int p=0; p<distinctQ.size(); p++)
+          for (int p=0; p<distinctQ.size(); p++)
             {
               q.put(makeMultiSet(distinctQ[p]));
             }
@@ -78,7 +78,7 @@ void write(const MultipleDeriv& md,
   if (factor != 1) cout << factor << "*";
   bool firstTerm = true;
   
-  for (unsigned int j=0; j<K.size(); j++)
+  for (int j=0; j<K.size(); j++)
     {
       if (!firstTerm) cout << "*";
       firstTerm = false;

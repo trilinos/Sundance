@@ -35,9 +35,9 @@
 #include "SundanceUnknownParameterElement.hpp"
 #include "SundanceSymbolicFunc.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -56,7 +56,7 @@ public:
   virtual ~UnknownParameter() {;}
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 };
 }

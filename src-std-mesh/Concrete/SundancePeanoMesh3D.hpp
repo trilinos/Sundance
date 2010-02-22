@@ -45,10 +45,9 @@
 
 #include "SundancePeanoInterface3D.h"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-namespace Internal
-  {
+
   class PeanoMesh3D : public MeshBase{
   public:
 
@@ -275,6 +274,6 @@ namespace Internal
 	 static Point returnPoint;
 
   };
-  }
+
 }
 #endif /* SUNDANCEPEANOMESH3D_H_ */

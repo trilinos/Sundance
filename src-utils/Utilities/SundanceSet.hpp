@@ -36,10 +36,9 @@
 #include <set>
 #include <algorithm>
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
 
-namespace SundanceUtils
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -139,10 +138,10 @@ public:
     {return set_.equal_range(x);}
 
   /** */
-  size_type size() const {return set_.size();}
+  int size() const {return set_.size();}
 
   /** */
-  size_type max_size() const {return set_.max_size();}
+  int max_size() const {return set_.max_size();}
 
   /** */
   bool empty() const {return set_.empty();}
@@ -264,7 +263,7 @@ std::ostream& Set<Key, Compare>::toStream(std::ostream& os) const
 {
   typename Set<Key, Compare>::const_iterator iter;
 
-  unsigned int k = 0;
+  int k = 0;
   os << "{";
   for (iter=this->begin(); iter != this->end(); iter++, k++)
   {
@@ -417,11 +416,11 @@ template <typename Key, typename Compare> bool operator>=(
 
 namespace std
 {
-/** \relates SundanceUtils::Set */
+/** \relates Sundance::Set */
 template<class Key, class Compare> inline
-ostream& operator<<(ostream& os, const SundanceUtils::Set<Key, Compare>& m)
+ostream& operator<<(ostream& os, const Sundance::Set<Key, Compare>& m)
 {return m.toStream(os);}
 }
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
+
 #endif

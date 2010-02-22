@@ -41,9 +41,9 @@
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -129,7 +129,7 @@ public:
     {
       Set<int> idSet;
 
-      for (unsigned int i=0; i<u.size(); i++)
+      for (int i=0; i<u.size(); i++)
       {
         /* make sure all input functions have the correct type */
         const T* uPtr = dynamic_cast<const T*>(u[i].ptr().get());
@@ -148,9 +148,9 @@ public:
 
         /* Check that the evaluation point is either a discrete function
          * or a zero expression. */
-        RefCountPtr<DiscreteFuncElement> u0Ptr
+        RCP<DiscreteFuncElement> u0Ptr
           = rcp_dynamic_cast<DiscreteFuncElement>(u0[i].ptr());
-        RefCountPtr<ZeroExpr> u0ZeroPtr
+        RCP<ZeroExpr> u0ZeroPtr
           = rcp_dynamic_cast<ZeroExpr>(u0[i].ptr());
         TEST_FOR_EXCEPTION(u0Ptr.get()==NULL && u0ZeroPtr.get()==NULL,
           RuntimeError,
@@ -180,7 +180,7 @@ public:
     {
       Set<int> paramID;
 
-      for (unsigned int i=0; i<alpha.size(); i++)
+      for (int i=0; i<alpha.size(); i++)
       {
         /* ensure everyone has the correct type */
         const T* aPtr = dynamic_cast<const T*>(alpha[i].ptr().get());
@@ -195,7 +195,7 @@ public:
           << alpha.toString());
         paramID.put(fid);
 
-        RefCountPtr<Parameter> a0Ptr
+        RCP<Parameter> a0Ptr
           = rcp_dynamic_cast<Parameter>(alpha0[i].ptr());
         TEST_FOR_EXCEPTION(a0Ptr.get()==NULL,
           RuntimeError,

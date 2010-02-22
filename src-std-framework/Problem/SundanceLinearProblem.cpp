@@ -43,13 +43,13 @@
 #endif
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using namespace std;
@@ -57,7 +57,7 @@ using namespace std;
 
 static Time& lpCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("LinearProblem ctor"); 
   return *rtn;
 }
@@ -81,7 +81,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const VectorType<double>& vecType,
   const ParameterList& verbParams,
   bool partitionBCs)
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
     assembler_(),
     A_(),
     rhs_(1),
@@ -93,7 +93,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr v = test.flattenSpectral();
 
   Array<Expr> zero(u.size());
-  for (unsigned int i=0; i<u.size(); i++) 
+  for (int i=0; i<u.size(); i++) 
   {
     Expr z = new ZeroExpr();
     zero[i] = z;
@@ -110,7 +110,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Array<Expr> fixedFieldValues;
 
 
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
         unkParams, unkParamValues,
         fixedParams, fixedParamValues,
@@ -130,7 +130,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const VectorType<double>& vecType, 
   const ParameterList& verbParams,
   bool partitionBCs)
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
     assembler_(),
     A_(),
     rhs_(1),
@@ -143,7 +143,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr alpha = unkParams.flattenSpectral();
   Expr alpha0 = unkParamVals.flattenSpectral();
   Array<Expr> zero(u.size());
-  for (unsigned int i=0; i<u.size(); i++) 
+  for (int i=0; i<u.size(); i++) 
   {
     Expr z = new ZeroExpr();
     zero[i] = z;
@@ -155,7 +155,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Array<Expr> fixedFields;
   Expr fixedParams;
   
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, tuple(v), tuple(u), tuple(u0),
         alpha, alpha0,
         fixedParams, fixedParams, 
@@ -174,7 +174,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const BlockArray& unk, 
   const ParameterList& verbParams,
   bool partitionBCs)
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
     assembler_(),
     A_(),
     rhs_(1),
@@ -189,18 +189,18 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Array<VectorType<double> > testVecType(test.size());
   Array<VectorType<double> > unkVecType(unk.size());
 
-  for (unsigned int i=0; i<test.size(); i++)
+  for (int i=0; i<test.size(); i++)
   {
     v[i] = test[i].expr().flattenSpectral();
     testVecType[i] = test[i].vecType();
   }
 
-  for (unsigned int i=0; i<unk.size(); i++)
+  for (int i=0; i<unk.size(); i++)
   {
     u[i] = unk[i].expr().flattenSpectral();
     unkVecType[i] = unk[i].vecType();
     Array<Expr> zero(u[i].size());
-    for (unsigned int j=0; j<u[i].size(); j++) 
+    for (int j=0; j<u[i].size(); j++) 
     {
       Expr z = new ZeroExpr();
       zero[j] = z;
@@ -217,7 +217,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr fixedParamValues;
   Array<Expr> fixedFieldValues;
   
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0,
         unkParams, unkParamValues,
         fixedParams, fixedParamValues,
@@ -237,7 +237,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const Expr& unkParamVals,   
   const ParameterList& verbParams,
   bool partitionBCs)
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
     assembler_(),
     A_(),
     rhs_(1),
@@ -251,18 +251,18 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Array<VectorType<double> > testVecType(test.size());
   Array<VectorType<double> > unkVecType(unk.size());
 
-  for (unsigned int i=0; i<test.size(); i++)
+  for (int i=0; i<test.size(); i++)
   {
     v[i] = test[i].expr().flattenSpectral();
     testVecType[i] = test[i].vecType();
   }
 
-  for (unsigned int i=0; i<unk.size(); i++)
+  for (int i=0; i<unk.size(); i++)
   {
     u[i] = unk[i].expr().flattenSpectral();
     unkVecType[i] = unk[i].vecType();
     Array<Expr> zero(u[i].size());
-    for (unsigned int j=0; j<u[i].size(); j++) 
+    for (int j=0; j<u[i].size(); j++) 
     {
       Expr z = new ZeroExpr();
       zero[j] = z;
@@ -276,7 +276,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   Expr fixedParamValues;
   Array<Expr> fixedFieldValues;
   
-  RefCountPtr<EquationSet> eqnSet 
+  RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(eqn, bc, v, u, u0,
         unkParams.flattenSpectral(), 
         unkParamVals.flattenSpectral(),
@@ -287,20 +287,20 @@ LinearProblem::LinearProblem(const Mesh& mesh,
       verbSublist("Assembler")));
 }
 
-LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler,
+LinearProblem::LinearProblem(const RCP<Assembler>& assembler,
   const ParameterList& verbParams) 
-  : SundanceUtils::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
+  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
     assembler_(assembler),
     A_(),
     rhs_(1),
     names_()
 {  
   TimeMonitor timer(lpCtorTimer());
-  const RefCountPtr<EquationSet>& eqn = assembler->eqnSet();
+  const RCP<EquationSet>& eqn = assembler->eqnSet();
   names_.resize(eqn->numUnkBlocks());
-  for (unsigned int i=0; i<eqn->numUnkBlocks(); i++)
+  for (int i=0; i<eqn->numUnkBlocks(); i++)
   {
-    for (unsigned int j=0; j<eqn->numUnks(i); j++) 
+    for (int j=0; j<eqn->numUnks(i); j++) 
     {
 //          names_[i].append(eqn->unkFunc(i,j).toString());
       names_[i].append("u(" + Teuchos::toString(i) + ", "
@@ -310,20 +310,20 @@ LinearProblem::LinearProblem(const RefCountPtr<Assembler>& assembler,
 }
 
 /* Return the map from cells and functions to row indices */
-const RefCountPtr<DOFMapBase>& LinearProblem::rowMap(int blockRow) const 
+const RCP<DOFMapBase>& LinearProblem::rowMap(int blockRow) const 
 {return assembler_->rowMap()[blockRow];}
     
 /* Return the map from cells and functions to column indices */
-const RefCountPtr<DOFMapBase>& LinearProblem::colMap(int blockCol) const 
+const RCP<DOFMapBase>& LinearProblem::colMap(int blockCol) const 
 {return assembler_->colMap()[blockCol];}
 
 /* Return the discrete space in which solutions live */
-const Array<RefCountPtr<DiscreteSpace> >& LinearProblem::solnSpace() const 
+const Array<RCP<DiscreteSpace> >& LinearProblem::solnSpace() const 
 {return assembler_->solutionSpace();}
     
 /* Return the set of row indices marked as 
  * essential boundary conditions */
-const RefCountPtr<Set<int> >& LinearProblem::bcRows(int blockRow) const 
+const RCP<Set<int> >& LinearProblem::bcRows(int blockRow) const 
 {return assembler_->bcRows()[blockRow];}
 
 /* Return the number of block rows in the problem  */
@@ -357,7 +357,7 @@ Expr LinearProblem::solve(const LinearSolver<double>& solver) const
   SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building system");
 
   assembler_->assemble(A_, rhs_);
-  for (unsigned int i=0; i<rhs_.size(); i++)
+  for (int i=0; i<rhs_.size(); i++)
     rhs_[i].scale(-1.0);
 
   SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() solving system");
@@ -391,7 +391,7 @@ SolverState<double> LinearProblem
   SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building system");
 
   assembler_->assemble(A_, rhs_);
-  for (unsigned int i=0; i<rhs_.size(); i++)
+  for (int i=0; i<rhs_.size(); i++)
   {
     rhs_[i].scale(-1.0);
   }
@@ -420,9 +420,9 @@ Expr LinearProblem::formSolutionExpr(const Array<Vector<double> >& vec) const
 
 
 
-RefCountPtr<ParameterList> LinearProblem::defaultVerbParams()
+RCP<ParameterList> LinearProblem::defaultVerbParams()
 {
-  static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Linear Problem"));
+  static RCP<ParameterList> rtn = rcp(new ParameterList("Linear Problem"));
   static int first = true;
   if (first)
   {

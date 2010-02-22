@@ -20,20 +20,20 @@
 
 
 %{
-  SundanceStdFwk::BasisArray pyListToBasisArray(PyObject* lst)
+  Sundance::BasisArray pyListToBasisArray(PyObject* lst)
   {
     PyObject_Print(lst, stderr, Py_PRINT_RAW);
     TEST_FOR_EXCEPTION(!PyList_Check(lst), RuntimeError, 
                        "Expecting a python list as argument to conversion to basis array");
     int n = PyList_Size(lst);
-    SundanceStdFwk::BasisArray rtn(n);
+    Sundance::BasisArray rtn(n);
     
     for (int i=0; i<n; i++)
     {
       PyObject *obj_i = PyList_GetItem(lst,i);
-      SundanceStdFwk::BasisFamily *basis_i = 0;
+      Sundance::BasisFamily *basis_i = 0;
       SWIG_Python_ConvertPtr(obj_i, (void**) &basis_i, 
-                             SWIGTYPE_p_SundanceStdFwk__BasisFamily, 
+                             SWIGTYPE_p_Sundance__BasisFamily, 
                              SWIG_POINTER_EXCEPTION | 0);
       rtn[i] = *basis_i;
     }
@@ -41,12 +41,12 @@
     return rtn;
   }
 
-  SundanceStdMesh::Mesh pyObjToMesh(PyObject* obj)
+  Sundance::Mesh pyObjToMesh(PyObject* obj)
   {
-    SundanceStdMesh::Mesh rtn;
-    SundanceStdMesh::Mesh* meshPtr = 0;
+    Sundance::Mesh rtn;
+    Sundance::Mesh* meshPtr = 0;
     SWIG_Python_ConvertPtr(obj, (void**) &meshPtr, 
-                             SWIGTYPE_p_SundanceStdMesh__Mesh, 
+                             SWIGTYPE_p_Sundance__Mesh, 
                              SWIG_POINTER_EXCEPTION | 0);
     rtn = *meshPtr;
     return rtn;
@@ -66,7 +66,7 @@
 %}
 
 /*
-%typemap(in) (const SundanceStdFwk::BasisArray& basis)(SundanceStdFwk::BasisArray basis)
+%typemap(in) (const Sundance::BasisArray& basis)(Sundance::BasisArray basis)
 {
   cerr << "in basis array typemap" << endl;
   basis = pyListToBasisArray($input);
@@ -76,11 +76,11 @@
 
 
 
-%typemap(in) (const SundanceStdMesh::Mesh& mesh, 
-              const SundanceStdFwk::BasisArray& basis,
+%typemap(in) (const Sundance::Mesh& mesh, 
+              const Sundance::BasisArray& basis,
               const TSFExtended::VectorType<double>& vecType)
-  (SundanceStdMesh::Mesh mesh,
-   SundanceStdFwk::BasisArray basis,
+  (Sundance::Mesh mesh,
+   Sundance::BasisArray basis,
    TSFExtended::VectorType<double> vecType)
 {
   cerr << "in (mesh, basis, vecType) typemap" << endl;
@@ -100,7 +100,7 @@
  
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 
   
@@ -110,45 +110,45 @@ namespace SundanceStdFwk
   {
   public:
     /* */
-    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
+    DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisFamily& basis,
                   const TSFExtended::VectorType<double>& vecType);
     /* */
-    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
-                  const SundanceStdFwk::BasisArray& basis,
+    DiscreteSpace(const Sundance::Mesh& mesh, 
+                  const Sundance::BasisArray& basis,
                   const TSFExtended::VectorType<double>& vecType);
     /* */
-    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
-                  const SundanceStdFwk::BasisArray& basis,
-                  const SundanceStdFwk::CellFilterArray& domains,
+    DiscreteSpace(const Sundance::Mesh& mesh, 
+                  const Sundance::BasisArray& basis,
+                  const Sundance::CellFilterArray& domains,
                   const TSFExtended::VectorType<double>& vecType);
     /* */
-    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
+    DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisFamily& basis,
                   const SpectralBasis& sb,
                   const TSFExtended::VectorType<double>& vecType);
     /** */
-    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
+    DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisFamily& basis,
                   const CellFilter& regions,
                   const TSFExtended::VectorType<double>& vecType);
 
 
     /** */
-    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
+    DiscreteSpace(const Sundance::Mesh& mesh, 
                   const BasisArray& basis,
                   const CellFilter& regions,
                   const TSFExtended::VectorType<double>& vecType);
     /* */
-    DiscreteSpace(const SundanceStdMesh::Mesh& mesh, 
-                  const SundanceStdFwk::BasisArray& basis,
+    DiscreteSpace(const Sundance::Mesh& mesh, 
+                  const Sundance::BasisArray& basis,
                   const SpectralBasis& sb,
                   const TSFExtended::VectorType<double>& vecType);
     /* */
     ~DiscreteSpace();
 
     /* */
-    const SundanceStdMesh::Mesh& mesh() const ;
+    const Sundance::Mesh& mesh() const ;
 
     /* */
     TSFExtended::VectorSpace<double> vecSpace() const ;
@@ -164,17 +164,17 @@ namespace SundanceStdFwk
   public:
     /* */
     L2Projector(const DiscreteSpace& space, 
-                const SundanceCore::Expr& expr);
+                const Sundance::Expr& expr);
     /* */
     L2Projector(const DiscreteSpace& space, 
-                const SundanceCore::Expr& expr,
+                const Sundance::Expr& expr,
                 const TSFExtended::LinearSolver<double>& solver);
 
     /* */
     ~L2Projector();
 
     /* */
-    SundanceCore::Expr project() const ;
+    Sundance::Expr project() const ;
 
     /* */
     const LinearProblem& prob() const ;
@@ -185,7 +185,7 @@ namespace SundanceStdFwk
 
 
 %inline %{
-  void printVecBasis(const SundanceStdFwk::BasisArray& basis)
+  void printVecBasis(const Sundance::BasisArray& basis)
   {
     cerr << "vector basis = " << basis << endl;
   }
@@ -194,14 +194,14 @@ namespace SundanceStdFwk
 
 /*
 %inline %{
-  void printVecBasis(int i, const SundanceStdFwk::BasisArray& basis)
+  void printVecBasis(int i, const Sundance::BasisArray& basis)
   {
     cerr << i << " vector basis = " << basis << endl;
   }
   %}
 
 %inline %{
-  void printVecBasis(const SundanceStdFwk::BasisArray& basis, int i)
+  void printVecBasis(const Sundance::BasisArray& basis, int i)
   {
     cerr << "vector basis = " << basis << " " << i << endl;
   }
@@ -216,40 +216,40 @@ namespace SundanceStdFwk
 
 %inline %{
   /* Create a discrete function */
-  SundanceCore::Expr makeDiscreteFunction(const SundanceStdFwk::DiscreteSpace& space,
+  Sundance::Expr makeDiscreteFunction(const Sundance::DiscreteSpace& space,
                                           const TSFExtended::Vector<double>& vec)
   {
-    return new SundanceStdFwk::DiscreteFunction(space, vec);
+    return new Sundance::DiscreteFunction(space, vec);
   }
   %}
 
 %inline %{
   /* Create a discrete function */
-  SundanceCore::Expr makeDiscreteFunction(const SundanceStdFwk::DiscreteSpace& space,
+  Sundance::Expr makeDiscreteFunction(const Sundance::DiscreteSpace& space,
                                           const double& val)
   {
-    return new SundanceStdFwk::DiscreteFunction(space, val);
+    return new Sundance::DiscreteFunction(space, val);
   }
   %}
 
 
 %inline %{
   /* Create a discrete function */
-  SundanceCore::Expr makeDiscreteFunction(const SundanceStdFwk::DiscreteSpace& space,
+  Sundance::Expr makeDiscreteFunction(const Sundance::DiscreteSpace& space,
                                           const TSFExtended::Vector<double>& vec,
                                           const std::string& name)
   {
-    return new SundanceStdFwk::DiscreteFunction(space, vec, name);
+    return new Sundance::DiscreteFunction(space, vec, name);
   }
   %}
 
 %inline %{
   /* Create a discrete function */
-  SundanceCore::Expr makeDiscreteFunction(const SundanceStdFwk::DiscreteSpace& space,
+  Sundance::Expr makeDiscreteFunction(const Sundance::DiscreteSpace& space,
                                           const double& val,
                                           const std::string& name)
   {
-    return new SundanceStdFwk::DiscreteFunction(space, val, name);
+    return new Sundance::DiscreteFunction(space, val, name);
   }
   %}
 

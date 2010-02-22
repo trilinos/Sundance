@@ -35,10 +35,8 @@
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
-using Teuchos::Array;
-using Teuchos::RCP;
-
-namespace SundanceStdMesh {
+namespace Sundance {
+using namespace Teuchos;
 
 /** 
  * MaximalCofacetBatch is used to store the maximal cofacets

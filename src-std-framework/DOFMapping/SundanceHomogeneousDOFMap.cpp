@@ -37,22 +37,22 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 static Time& dofLookupTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("unbatched dof lookup"); 
   return *rtn;
 }
 
 static Time& dofBatchLookupTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("batched dof lookup"); 
   return *rtn;
 }
@@ -101,7 +101,7 @@ HomogeneousDOFMap::HomogeneousDOFMap(const Mesh& mesh,
 {
   verbosity() = DOFMapBase::classVerbosity();
   
-  for (unsigned int r=0; r<subregions.size(); r++)
+  for (int r=0; r<subregions.size(); r++)
     {
       cellSets().append(subregions[r].getCells(mesh));
       cellDimOnCellSets().append(subregions[r].dimension(mesh));
@@ -187,7 +187,7 @@ void HomogeneousDOFMap::allocate(const Mesh& mesh,
         {
           dofs_[d][c].resize(funcIDList().size() * nNodesPerCell_[d]);
           /* set everything to uninitializedVal() */
-          for (unsigned int i=0; i<dofs_[d][c].size(); i++) 
+          for (int i=0; i<dofs_[d][c].size(); i++) 
             {
               dofs_[d][c][i] = uninitializedVal();
             }
@@ -375,7 +375,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
       SUNDANCE_OUT(this->verb() > 3,  
                    "p=" << mesh().comm().getRank() << " recv'd from proc=" << p
                    << " reqs for DOFs for cells " << requestsFromProc);
-      for (unsigned int c=0; c<nReq; c++)
+      for (int c=0; c<nReq; c++)
         {
           int GID = requestsFromProc[c];
           SUNDANCE_OUT(this->verb() > 3,  
@@ -424,7 +424,7 @@ void HomogeneousDOFMap::shareDOFs(int cellDim,
           blockSize = 2;
         }
 
-      for (unsigned int c=0; c<dofsFromProc.size()/blockSize; c++)
+      for (int c=0; c<dofsFromProc.size()/blockSize; c++)
         {
           int cellGID = outgoingCellRequests[p][c];
           int cellLID = mesh().mapGIDToLID(cellDim, cellGID);
@@ -468,7 +468,7 @@ void HomogeneousDOFMap::setDOFs(int cellDim, int cellLID,
 void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim, 
                                             const Array<int>& cellLID,
                                             Array<int>& dofs,
-                                            unsigned int& nNodes) const 
+                                            int& nNodes) const 
 {
   TimeMonitor timer(dofBatchLookupTimer());
 
@@ -494,7 +494,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
       int nf = funcIDList().size();
       dofs.resize(totalNNodesPerCell_[cellDim] * cellLID.size() * nf);
       
-      for (unsigned int c=0; c<cellLID.size(); c++)
+      for (int c=0; c<cellLID.size(); c++)
         {
           Tabs tab1;
           SUNDANCE_VERB_EXTREME(tab1 << "cell=" << c);
@@ -502,7 +502,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
             {
               Tabs tab2;
               SUNDANCE_VERB_EXTREME(tab2 << "f= " << fid);
-              for (unsigned int n=0; n<nNodes; n++) 
+              for (int n=0; n<nNodes; n++) 
                 {
                   Tabs tab3;
                   dofs[(fid*nCells + c)*nNodes + n] 
@@ -539,7 +539,7 @@ void HomogeneousDOFMap::getDOFsForCellBatch(int cellDim,
   
       nNodes = totalNNodesPerCell_[cellDim];
       
-      for (unsigned int c=0; c<cellLID.size(); c++)
+      for (int c=0; c<cellLID.size(); c++)
         {
           Tabs tab2;
           SUNDANCE_VERB_EXTREME(tab2 << "cell=" << c);
@@ -665,7 +665,7 @@ void HomogeneousDOFMap::buildMaximalDofTable() const
 
   Array<int> cellLID(nCells);
 
-  for (unsigned int c=0; c<cellLID.size(); c++) cellLID[c]=c;
+  for (int c=0; c<cellLID.size(); c++) cellLID[c]=c;
   
   for (int d=0; d<cellDim; d++) 
     {
@@ -796,11 +796,11 @@ void HomogeneousDOFMap::computeOffsets(int dim, int localCount)
       comm().synchronize();
     }
 
-  for (unsigned int c=0; c<dofs_[dim].size(); c++)
+  for (int c=0; c<dofs_[dim].size(); c++)
     {
       if (hasBeenAssigned(dim, c))
         {
-          for (unsigned int n=0; n<dofs_[dim][c].size(); n++) 
+          for (int n=0; n<dofs_[dim][c].size(); n++) 
             {
               dofs_[dim][c][n] += myOffset;
             }
@@ -851,7 +851,7 @@ void HomogeneousDOFMap::print(ostream& os) const
                   Tabs tabs2;
                   os << tabs2 << "Cell LID=" << c << " GID=" 
                      << mesh().mapLIDToGID(d, c) << endl;
-                  for (unsigned int f=0; f<funcIDList().size(); f++)
+                  for (int f=0; f<funcIDList().size(); f++)
                     {
                       Tabs tabs3;
                       Array<int> dofs;
@@ -861,7 +861,7 @@ void HomogeneousDOFMap::print(ostream& os) const
                       if (false)
                         {
                           os << tabs3 << "{";
-                          for (unsigned int i=0; i<dofs.size(); i++)
+                          for (int i=0; i<dofs.size(); i++)
                             {
                               if (i != 0) os << ", ";
                               if (isLocalDOF(dofs[i])) os << "L";

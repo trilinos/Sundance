@@ -96,7 +96,7 @@ public:
   Vector<double> exactSoln(const double& t) const ;
 
 private:
-  RefCountPtr<GhostImporter<double> > importer_;
+  RCP<GhostImporter<double> > importer_;
   double h_;
   VectorType<double> vecType_;
   VectorSpace<double> vecSpace_;
@@ -199,8 +199,8 @@ void IDAHeat::computeResidual(const double& time,
   /* Initialize rr to uu, to take care of boundary equations. */
   resid.acceptCopyOf(u);
 
-  RefCountPtr<GhostView<double> > gu;
-  RefCountPtr<GhostView<double> > guDot;
+  RCP<GhostView<double> > gu;
+  RCP<GhostView<double> > guDot;
   importer_->importView(u, gu);
   importer_->importView(uDot, guDot);
 

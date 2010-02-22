@@ -1,12 +1,12 @@
 #include "SundanceStdMathFunctors.hpp"
 #include "Teuchos_GlobalMPISession.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 template <class F> bool functorTest(int nx, double tol)
 {
-  RefCountPtr<UnaryFunctor> f = rcp(new F());
+  RCP<UnaryFunctor> f = rcp(new F());
 
   return f->test(nx, tol);
 }

@@ -38,10 +38,10 @@
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 using std::string;
 
 /** 

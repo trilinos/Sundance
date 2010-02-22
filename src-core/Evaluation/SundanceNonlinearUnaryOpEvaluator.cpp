@@ -35,9 +35,9 @@
 #include "SundanceOut.hpp"
 #include "SundanceNonlinearUnaryOp.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -107,10 +107,10 @@ NonlinearUnaryOpEvaluator
 
 void NonlinearUnaryOpEvaluator
 ::evalArgDerivs(const EvalManager& mgr,
-                const Array<RefCountPtr<Array<double> > >& constArgRes,
-                const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
+                const Array<RCP<Array<double> > >& constArgRes,
+                const Array<RCP<Array<RCP<EvalVector> > > >& vArgResults,
                 Array<double>& constArgDerivs,
-                Array<RefCountPtr<EvalVector> >& varArgDerivs) const
+                Array<RCP<EvalVector> >& varArgDerivs) const
 {
   Tabs tabs;
   SUNDANCE_MSG1(mgr.verb(), tabs 
@@ -149,7 +149,7 @@ void NonlinearUnaryOpEvaluator
       SUNDANCE_MSG2(mgr.verb(), 
         tab1 << "num vector results =" << vArgResults.size());
 
-      const Array<RefCountPtr<EvalVector> >& av = *(vArgResults[0]);
+      const Array<RCP<EvalVector> >& av = *(vArgResults[0]);
 
       SUNDANCE_MSG2(mgr.verb(), 
         tab1 << "av size=" << av.size());

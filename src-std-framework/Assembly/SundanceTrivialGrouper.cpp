@@ -40,13 +40,13 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -56,7 +56,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   const CellType& cellType,
   int cellDim,
   const QuadratureFamily& quad,
-  const RefCountPtr<SparsitySuperset>& sparsity,
+  const RCP<SparsitySuperset>& sparsity,
   bool isInternalBdry,
   Array<RCP<IntegralGroup> >& groups) const
 {
@@ -79,12 +79,12 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   bool doGroups = true;
   if (cellType != maxCellType) doGroups = false;
 
-  typedef SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RefCountPtr<ElementIntegral> > > twoFormMap;
-  typedef SundanceUtils::Map<OrderedTriple<int,int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneFormMap;
-  SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RefCountPtr<ElementIntegral> > > twoForms;
-  SundanceUtils::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<int> > twoFormResultIndices;
-  SundanceUtils::Map<OrderedTriple<int,int,BasisFamily>, Array<RefCountPtr<ElementIntegral> > > oneForms;
-  SundanceUtils::Map<OrderedTriple<int,int,BasisFamily>, Array<int> > oneFormResultIndices;
+  typedef Sundance::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RCP<ElementIntegral> > > twoFormMap;
+  typedef Sundance::Map<OrderedTriple<int,int,BasisFamily>, Array<RCP<ElementIntegral> > > oneFormMap;
+  Sundance::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RCP<ElementIntegral> > > twoForms;
+  Sundance::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<int> > twoFormResultIndices;
+  Sundance::Map<OrderedTriple<int,int,BasisFamily>, Array<RCP<ElementIntegral> > > oneForms;
+  Sundance::Map<OrderedTriple<int,int,BasisFamily>, Array<int> > oneFormResultIndices;
 
   for (int i=0; i<sparsity->numDerivs(); i++)
   {
@@ -98,7 +98,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       
     if (d.order()==0) 
     {
-      RefCountPtr<ElementIntegral> integral ;
+      RCP<ElementIntegral> integral ;
       int resultIndex;
       if (sparsity->isConstant(i))
       {
@@ -205,8 +205,8 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         SUNDANCE_MSG3(setupVerb(), tab << "coeff is non-constant");
       }
 
-      RefCountPtr<ElementIntegral> integral;
-      RefCountPtr<ElementIntegral> transposedIntegral;
+      RCP<ElementIntegral> integral;
+      RCP<ElementIntegral> transposedIntegral;
       int resultIndex;
       if (sparsity->isConstant(i))
       {
@@ -401,7 +401,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       int unkID = eqn.reducedUnkID(rawUnkID);
       int testBlock = eqn.blockForVarID(rawTestID);
       int unkBlock = eqn.blockForUnkID(rawUnkID);
-      const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
+      const Array<RCP<ElementIntegral> >& integrals = i->second;
       const Array<int>& resultIndices 
         = twoFormResultIndices.get(i->first);
       SUNDANCE_MSG2(setupVerb(), tab3 << "creating two-form integral group" << std::endl
@@ -413,7 +413,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
         << tab3 << "unkBasis=" << unkBasis << std::endl
         << tab3 << "resultIndices=" << resultIndices);
       Array<MultipleDeriv> grpDerivs;
-      for (unsigned int j=0; j<resultIndices.size(); j++)
+      for (int j=0; j<resultIndices.size(); j++)
       {
         MultipleDeriv d = sparsity->deriv(resultIndices[j]);
         SUNDANCE_MSG2(setupVerb(), tab3 << "deriv " << j << " " 
@@ -434,14 +434,14 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       int mvIndex = i->first.b();
       int testID = eqn.reducedVarID(rawTestID);
       int testBlock = eqn.blockForVarID(rawTestID);
-      const Array<RefCountPtr<ElementIntegral> >& integrals = i->second;
+      const Array<RCP<ElementIntegral> >& integrals = i->second;
       const Array<int>& resultIndices 
         = oneFormResultIndices.get(i->first);
       SUNDANCE_MSG2(setupVerb(), tab3 << "creating one-form integral group" << std::endl
         << tab3 << "testID=" << testID << std::endl
         << tab3 << "resultIndices=" << resultIndices);
       Array<MultipleDeriv> grpDerivs;
-      for (unsigned int j=0; j<resultIndices.size(); j++)
+      for (int j=0; j<resultIndices.size(); j++)
       {
         MultipleDeriv d = sparsity->deriv(resultIndices[j]);
         SUNDANCE_MSG2(setupVerb(), tab3 << "deriv " << j << " " 

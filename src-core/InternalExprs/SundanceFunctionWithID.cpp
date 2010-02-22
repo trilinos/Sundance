@@ -31,8 +31,7 @@
 
 #include "SundanceFunctionWithID.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 

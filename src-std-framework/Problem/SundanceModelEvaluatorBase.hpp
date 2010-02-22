@@ -40,18 +40,18 @@
 
 namespace Thyra
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
   using namespace Teuchos;
 
   /** 
    * 
    */
   class SundanceModelEvaluator : public StateFuncModelEvaluatorBase<double>,
-                                 public SundanceUtils::ObjectWithClassVerbosity<SundanceModelEvaluator>
+                                 public ObjectWithClassVerbosity<SundanceModelEvaluator>
   {
   public:
     /** */
@@ -61,22 +61,22 @@ namespace Thyra
     virtual ~SundanceModelEvaluator() {;}
 
     /** Get the space of state variables */
-    RefCountPtr<const VectorSpaceBase<double> > get_x_space() const 
+    RCP<const VectorSpaceBase<double> > get_x_space() const 
     {return stateSpace().ptr();}
 
     /** Get the range space of the constraints */
-    RefCountPtr<const VectorSpaceBase<double> > get_f_space() const 
+    RCP<const VectorSpaceBase<double> > get_f_space() const 
     {return constraintSpace().ptr();}
 
     /** Get the space of model parameters */
-    RefCountPtr<const VectorSpaceBase<double> > get_p_space(int i) const 
+    RCP<const VectorSpaceBase<double> > get_p_space(int i) const 
     {
       TEST_FOR_EXCEPTION(i != 0, RuntimeError, "invalid index for parameter space");
       return paramSpace().ptr();
     }
 
     /** Get the range space of the objective function */
-    RefCountPtr<const VectorSpaceBase<double> > get_g_space(int i) const 
+    RCP<const VectorSpaceBase<double> > get_g_space(int i) const 
     {
       TEST_FOR_EXCEPTION(i != 0, RuntimeError, "invalid index for objective space");
       return objectiveSpace_.ptr();
@@ -86,7 +86,7 @@ namespace Thyra
     InArgs<double> getNominalValues() const;
 
     /** Create an object for df/dx */
-    RefCountPtr<LinearOpBase<double> > create_W_op() const 
+    RCP<LinearOpBase<double> > create_W_op() const 
     {return createW().ptr();}
 
     /** Create a container for the input arguments */

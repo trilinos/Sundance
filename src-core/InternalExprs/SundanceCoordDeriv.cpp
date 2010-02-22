@@ -33,10 +33,10 @@
 #include "SundanceDeriv.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore::Internal;
+using namespace Sundance;
 using namespace Teuchos;
 
 CoordDeriv::CoordDeriv(int dir)

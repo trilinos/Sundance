@@ -43,10 +43,10 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using namespace Thyra;
@@ -136,7 +136,7 @@ void L2Projector::init(const DiscreteSpace& space,
   Expr v = new TestFunction(space.basis()[0], "dummy_v[0]");
   Expr u = new UnknownFunction(space.basis()[0], "dummy_u[0]");
   
-  for (unsigned int i=1; i<space.basis().size(); i++)
+  for (int i=1; i<space.basis().size(); i++)
     {
       v.append(new TestFunction(space.basis()[i], "dummy_v[" 
                                 + Teuchos::toString(i)+"]"));
@@ -149,7 +149,7 @@ void L2Projector::init(const DiscreteSpace& space,
   Expr eqn = 0.0;
   Expr J = coordSys.jacobian();
 
-  for (unsigned int i=0; i<space.basis().size(); i++)
+  for (int i=0; i<space.basis().size(); i++)
     {
       eqn = eqn + Integral(space.cellFilters(i), 
                            J*v[i]*(u[i]-expr[i]), 

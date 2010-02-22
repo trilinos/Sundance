@@ -31,7 +31,7 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the Poisson-Boltzmann equation in 2D
  */

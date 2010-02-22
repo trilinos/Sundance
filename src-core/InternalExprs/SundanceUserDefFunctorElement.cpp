@@ -32,15 +32,15 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 UserDefFunctorElement
-::UserDefFunctorElement(const RefCountPtr<const UserDefFunctor>& master,
+::UserDefFunctorElement(const RCP<const UserDefFunctor>& master,
                         int myIndex)
   : master_(master), myIndex_(myIndex)
 {}

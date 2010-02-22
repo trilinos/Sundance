@@ -35,17 +35,17 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using std::setw;
 using std::endl;
       
 VectorAssemblyKernel::VectorAssemblyKernel(
-  const Array<RefCountPtr<DOFMapBase> >& dofMap,
-  const Array<RefCountPtr<Array<int> > >& isBCIndex,
+  const Array<RCP<DOFMapBase> >& dofMap,
+  const Array<RCP<Array<int> > >& isBCIndex,
   const Array<int>& lowestLocalIndex,
   Array<Vector<double> >& b,
   bool partitionBCs,
@@ -59,7 +59,7 @@ VectorAssemblyKernel::VectorAssemblyKernel(
 void VectorAssemblyKernel::fill(
   bool isBC, 
   const IntegralGroup& group,
-  const RefCountPtr<Array<double> >& localValues) 
+  const RCP<Array<double> >& localValues) 
 {
   Tabs tab0;
   SUNDANCE_MSG1(verb(), tab0 << "in VectorAssemblyKernel::fill()");
@@ -82,7 +82,7 @@ void VectorAssemblyKernel::fill(
 void VectorAssemblyKernel:: prepareForWorkSet(
   const Array<Set<int> >& requiredTests,
   const Array<Set<int> >& /* requiredUnks */,
-  RefCountPtr<StdFwkEvalMediator> mediator)
+  RCP<StdFwkEvalMediator> mediator)
 {
   Tabs tab0;
   SUNDANCE_MSG1(verb(), tab0 

@@ -36,9 +36,9 @@
 #include "SundanceSymbolicFuncElement.hpp"
 #include "SundanceTestFuncDataStub.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -52,7 +52,7 @@ class TestFuncElement : public SymbolicFuncElement
 {
 public:
   /** */
-  TestFuncElement(const RefCountPtr<const TestFuncDataStub>& commonData,
+  TestFuncElement(const RCP<const TestFuncDataStub>& commonData,
     const string& name,
     const string& suffix, const FunctionIdentifier& fid);
 
@@ -83,7 +83,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
       
 private:
 };

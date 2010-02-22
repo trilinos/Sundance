@@ -36,21 +36,16 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceTestFuncElement.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+
+namespace Sundance
+{
 using namespace Teuchos;
 
-
-namespace std
-{
-string describeFunction(const SundanceCore::Expr& f)
+std::string describeFunction(const Expr& f)
 {
   TEST_FOR_EXCEPT(f.ptr().get()==0);
 
-  if (f.size() == 1U)
+  if (f.size() == 1)
   {
     const FuncElementBase* fe = dynamic_cast<const FuncElementBase*>(f[0].ptr().get());
     TEST_FOR_EXCEPTION(fe==0, RuntimeError, "expected a FuncElementBase, "
@@ -88,9 +83,9 @@ string describeFunction(const SundanceCore::Expr& f)
   else
   {
     string rtn = "{";
-    for (unsigned int i=0; i<f.size(); i++)
+    for (int i=0; i<f.size(); i++)
     {
-      if (i != 0U) rtn += ", ";
+      if (i != 0) rtn += ", ";
       rtn += describeFunction(f[i]);
     }
     rtn += "}";

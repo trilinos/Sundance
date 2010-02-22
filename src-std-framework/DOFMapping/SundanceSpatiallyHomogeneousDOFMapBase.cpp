@@ -33,9 +33,9 @@
 #include "SundanceOut.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -45,7 +45,7 @@ SpatiallyHomogeneousDOFMapBase
   const ParameterList& verbParams)
   : DOFMapBase(mesh, verbParams), allowedFuncs_(), funcDomains_()
 {
-  RefCountPtr<Set<int> > f = rcp(new Set<int>());
+  RCP<Set<int> > f = rcp(new Set<int>());
   for (int i=0; i<nTotalFuncs; i++) f->put(i);
   allowedFuncs_ = f;
   CellFilter cf = new MaximalCellFilter();
@@ -59,7 +59,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
 
   Tabs tabs;
   int dim = mesh().spatialDim();
-  RefCountPtr<const MapStructure> s = mapStruct();
+  RCP<const MapStructure> s = mapStruct();
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
     {
@@ -88,7 +88,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                       Array<int> facetDirs;
                       mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
                       Array<int> facetGIDs(facetLIDs.size());
-                      for (unsigned int v=0; v<facetLIDs.size(); v++)
+                      for (int v=0; v<facetLIDs.size(); v++)
                         {
                           facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
                         }
@@ -97,7 +97,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                     }
                   for (int b=0; b<s->numBasisChunks(); b++)
                     {
-                      for (unsigned int f=0; f<s->funcs(b).size(); f++)
+                      for (int f=0; f<s->funcs(b).size(); f++)
                         {
                           Tabs tabs3;
                           Array<int> dofs;
@@ -107,7 +107,7 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
                           if (false)
                             {
                               os << tabs3 << "{";
-                              for (unsigned int i=0; i<dofs.size(); i++)
+                              for (int i=0; i<dofs.size(); i++)
                                 {
                                   if (i != 0) os << ", ";
                                   if (isLocalDOF(dofs[i])) os << "L";

@@ -39,7 +39,7 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 
@@ -54,7 +54,7 @@ namespace SundanceUtils
   public:
     /** ctor */
     UnaryFunctor(const string& name, 
-                 const RefCountPtr<FunctorDomain>& domain 
+                 const RCP<FunctorDomain>& domain 
                  = rcp(new UnboundedDomain())) 
       : name_(name), h_(fdStep()), domain_(domain) {;}
 
@@ -125,14 +125,14 @@ namespace SundanceUtils
 
     static double& fdStep() {static double rtn = 1.0e-3; return rtn;}
 
-    const RefCountPtr<FunctorDomain>& domain() const 
+    const RCP<FunctorDomain>& domain() const 
     {return domain_;}
   private:
     string name_;
 
     double h_;
 
-    RefCountPtr<FunctorDomain> domain_;
+    RCP<FunctorDomain> domain_;
   };
 }
 
@@ -140,11 +140,11 @@ namespace SundanceUtils
 #define SUNDANCE_UNARY_FUNCTOR(opName, functorName, description, domain, \
                                funcDefinition, firstDerivDefinition,    \
                                secondDerivDefinition)                   \
-  class functorName : public SundanceUtils::UnaryFunctor                \
+  class functorName : public Sundance::UnaryFunctor                \
   {                                                                     \
   public:                                                               \
     /** ctor for description functor */                                 \
-    functorName() : SundanceUtils::UnaryFunctor(#opName, rcp(new domain)) {;} \
+    functorName() : Sundance::UnaryFunctor(#opName, rcp(new domain)) {;} \
       /** virtual dtor */                                               \
       virtual ~functorName(){;}                                         \
       /** Evaluate function at an array of values */                    \
@@ -240,11 +240,11 @@ namespace SundanceUtils
 #define SUNDANCE_UNARY_FUNCTOR3(opName, functorName, description, domain, \
                                funcDefinition, firstDerivDefinition,    \
                                 secondDerivDefinition, thirdDerivDefinition) \
-  class functorName : public SundanceUtils::UnaryFunctor                \
+  class functorName : public Sundance::UnaryFunctor                \
   {                                                                     \
   public:                                                               \
     /** ctor for description functor */                                 \
-    functorName() : SundanceUtils::UnaryFunctor(#opName, rcp(new domain)) {;} \
+    functorName() : Sundance::UnaryFunctor(#opName, rcp(new domain)) {;} \
       /** virtual dtor */                                               \
       virtual ~functorName(){;}                                         \
       /** Evaluate function at an array of values */                    \

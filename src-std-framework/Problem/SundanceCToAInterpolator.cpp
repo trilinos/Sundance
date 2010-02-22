@@ -34,20 +34,20 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 
 static Time& particleInterpolationTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("particle interpolation"); 
   return *rtn;
 }
@@ -97,7 +97,7 @@ void CToAInterpolator::updateField(const Expr& field)
 
   const Array<int>& dofs0 = dofs[0];
 
-  for (unsigned int c=0; c<cellLID.size(); c++)
+  for (int c=0; c<cellLID.size(); c++)
   {
     for (int n=0; n<nFacets_; n++)
     {

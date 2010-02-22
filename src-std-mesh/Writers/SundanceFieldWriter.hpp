@@ -35,7 +35,7 @@
 #include "SundanceFieldWriterBase.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * FieldWriter is the user level object for writing fields and meshes
@@ -56,7 +56,7 @@ namespace SundanceStdMesh
    * writer.write();
    * \endcode
    */
-  class FieldWriter : public SundanceUtils::Handle<FieldWriterBase>
+  class FieldWriter : public Sundance::Handle<FieldWriterBase>
   {
   public:
     /* Boilerplate handle ctors */

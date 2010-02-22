@@ -1,10 +1,10 @@
 #include "SundanceCollectiveExceptionCheck.hpp"
 #include "Teuchos_MPIComm.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
-namespace SundanceUtils
+namespace Sundance
 {
   void reportFailure(const MPIComm& comm)
   {

@@ -36,9 +36,9 @@
 
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -330,7 +330,7 @@ void VTKWriter::writeCellData(ostream& os, bool isPHeader) const
 
 
 void VTKWriter::writeDataArray(ostream& os, const string& name, 
-                               const RefCountPtr<FieldBase>& expr, bool isPHeader, bool isPointData) const 
+                               const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const 
 {
   string PHeader = "";
   if (isPHeader) PHeader="P";

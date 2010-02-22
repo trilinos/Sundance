@@ -35,7 +35,7 @@ using Teuchos::ParameterList;
 using std::string;
 using std::ifstream;
 
-namespace SundanceUtils
+namespace Sundance
 {
 ParameterList mergeParamLists(const ParameterList& pDef, 
   const ParameterList& pIn)

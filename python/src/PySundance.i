@@ -26,7 +26,7 @@
 %inline %{
   bool passFailTest(double err, double tol)
   {
-    return SundanceStdFwk::Sundance::passFailTest(err, tol);
+    return Sundance::Sundance::passFailTest(err, tol);
   }
 
 
@@ -36,7 +36,7 @@
 
 
 %include "std_string.i"
-namespace SundanceUtils
+namespace Sundance
 {
   std::string searchForFile(const std::string& name);
 }
@@ -50,7 +50,7 @@ namespace SundanceUtils
 
     void write(const std::string& s) 
       {
-        SundanceUtils::Out::os() << s;
+        Sundance::Out::os() << s;
       }
   };
   %}

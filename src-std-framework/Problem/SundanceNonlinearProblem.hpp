@@ -35,20 +35,20 @@
 #include "SundanceNLOp.hpp"
 #include "TSFNOXSolver.H"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
   using namespace Teuchos;
 
     /** 
      * NonlinearProblem encapsulates a discrete nonlinear problem
      */
   class NonlinearProblem 
-    : public SundanceUtils::ObjectWithClassVerbosity<NonlinearProblem>
+    : public ObjectWithClassVerbosity<NonlinearProblem>
     {
     public:
       /** Empty ctor */
@@ -71,7 +71,7 @@ namespace SundanceStdFwk
 
 
       /** */
-      NonlinearProblem(const RefCountPtr<Assembler>& assembler, 
+      NonlinearProblem(const RCP<Assembler>& assembler, 
         const Expr& u0);
 
       /** Compute direct sensitivities to parameters */
@@ -90,7 +90,7 @@ namespace SundanceStdFwk
     private:
       
       /** */
-      RefCountPtr<NLOp> op_;
+      RCP<NLOp> op_;
 
     };
 }

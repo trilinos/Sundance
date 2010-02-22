@@ -7,11 +7,11 @@
 #include "exodusII.h"
 #endif 
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace std;
 
 ExodusMeshReader::ExodusMeshReader(const string& fname,
@@ -343,7 +343,7 @@ void ExodusMeshReader::readParallelInfo(Array<int>& ptGID,
      * distribution */
     if (nProc() > 1)
     {
-      RefCountPtr<std::ifstream> parStream 
+      RCP<std::ifstream> parStream 
         = openFile(parFilename_, "parallel info");
      
       /* read the number of processors and the processor rank in 

@@ -40,16 +40,16 @@
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceUnaryExpr.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 
 
-ExprWithChildren::ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& children)
+ExprWithChildren::ExprWithChildren(const Array<RCP<ScalarExpr> >& children)
 	: EvaluatableExpr(), 
     children_(children),
     contextToQWMap_(4),
@@ -65,7 +65,7 @@ bool ExprWithChildren::lessThan(const ScalarExpr* other) const
   if (children_.size() < c->children_.size()) return true;
   if (children_.size() > c->children_.size()) return false;
   
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
     Expr me = Expr::handle(children_[i]);
     Expr you = Expr::handle(c->children_[i]);
@@ -79,7 +79,7 @@ bool ExprWithChildren::lessThan(const ScalarExpr* other) const
 
 bool ExprWithChildren::isConstant() const
 {
-  for (unsigned int i=0; i<children_.size(); i++) 
+  for (int i=0; i<children_.size(); i++) 
   {
     if (!children_[i]->isConstant()) return false;
   }
@@ -88,7 +88,7 @@ bool ExprWithChildren::isConstant() const
 
 bool ExprWithChildren::isIndependentOf(const Expr& u) const
 {
-  for (unsigned int i=0; i<children_.size(); i++) 
+  for (int i=0; i<children_.size(); i++) 
   {
     if (!children_[i]->isIndependentOf(u)) return false;
   }
@@ -132,7 +132,7 @@ bool ExprWithChildren::hasDiscreteFunctions() const
 void ExprWithChildren::accumulateFuncSet(Set<int>& funcIDs, 
   const Set<int>& activeSet) const
 {
-  for (unsigned int i=0; i<children_.size(); i++) 
+  for (int i=0; i<children_.size(); i++) 
   {
     children_[i]->accumulateFuncSet(funcIDs, activeSet);
   }
@@ -141,7 +141,7 @@ void ExprWithChildren::accumulateFuncSet(Set<int>& funcIDs,
 void ExprWithChildren::registerSpatialDerivs(const EvalContext& context, 
   const Set<MultiIndex>& miSet) const
 {
-  for (unsigned int i=0; i<children_.size(); i++) 
+  for (int i=0; i<children_.size(); i++) 
   {
     evaluatableChild(i)->registerSpatialDerivs(context, miSet);
   }
@@ -162,7 +162,7 @@ void ExprWithChildren::setupEval(const EvalContext& context) const
    * them when I create my own evaluator */
   if (ss->numDerivs() > 0)
   {
-    for (unsigned int i=0; i<children_.size(); i++)
+    for (int i=0; i<children_.size(); i++)
     {
       Tabs tabs1;
       SUNDANCE_MSG3(verb, tabs1 << "creating evaluator for child " 
@@ -173,7 +173,7 @@ void ExprWithChildren::setupEval(const EvalContext& context) const
 
   if (!evaluators().containsKey(context))
   {
-    RefCountPtr<Evaluator> eval;
+    RCP<Evaluator> eval;
     if (ss->numDerivs()>0)
     {
       eval = rcp(createEvaluator(this, context));
@@ -192,7 +192,7 @@ void ExprWithChildren::showSparsity(ostream& os,
   Tabs tab0;
   os << tab0 << "Node: " << toString() << endl;
   sparsitySuperset(context)->print(os);
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
     Tabs tab1;
     os << tab1 << "Child " << i << endl;
@@ -203,7 +203,7 @@ void ExprWithChildren::showSparsity(ostream& os,
 
 bool ExprWithChildren::everyTermHasTestFunctions() const
 {
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
     if (evaluatableChild(i)->everyTermHasTestFunctions()) return true;
   }
@@ -213,7 +213,7 @@ bool ExprWithChildren::everyTermHasTestFunctions() const
 
 bool ExprWithChildren::hasTestFunctions() const
 {
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
     if (evaluatableChild(i)->hasTestFunctions()) return true;
   }
@@ -223,7 +223,7 @@ bool ExprWithChildren::hasTestFunctions() const
 
 bool ExprWithChildren::hasUnkFunctions() const
 {
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
     if (evaluatableChild(i)->hasUnkFunctions()) return true;
   }
@@ -233,9 +233,9 @@ bool ExprWithChildren::hasUnkFunctions() const
 
 void ExprWithChildren::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
 {
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
-    const RefCountPtr<ExprBase>& e = children_[i];
+    const RCP<ExprBase>& e = children_[i];
     const UnknownFuncElement* u 
       = dynamic_cast<const UnknownFuncElement*>(e.get());
     if (u != 0)
@@ -256,9 +256,9 @@ void ExprWithChildren::getUnknowns(Set<int>& unkID, Array<Expr>& unks) const
 
 void ExprWithChildren::getTests(Set<int>& varID, Array<Expr>& vars) const
 {
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
-    const RefCountPtr<ExprBase>& e = children_[i];
+    const RCP<ExprBase>& e = children_[i];
     const TestFuncElement* u 
       = dynamic_cast<const TestFuncElement*>(e.get());
     if (u != 0)
@@ -290,7 +290,7 @@ int ExprWithChildren::countNodes() const
   int count = EvaluatableExpr::countNodes();
 
   /* count children */
-  for (unsigned int i=0; i<children_.size(); i++)
+  for (int i=0; i<children_.size(); i++)
   {
     if (!evaluatableChild(i)->nodesHaveBeenCounted())
     {
@@ -313,7 +313,7 @@ ExprWithChildren::product(const Array<int>& J, const Array<int>& K,
   Set<MultipleDeriv> rtn 
     = evaluatableChild(J[0])->findDerivSubset(K[0], dss, context);
   
-  for (unsigned int i=1; i<J.size(); i++)
+  for (int i=1; i<J.size(); i++)
   {
     const Set<MultipleDeriv>& S 
       = evaluatableChild(J[i])->findDerivSubset(K[i], dss, context);
@@ -372,7 +372,7 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
       SUNDANCE_MSG5(verb, tab2 << "J=" << J);
       SUNDANCE_MSG5(verb, tab2 << "K=" << K);
 
-      for (unsigned int k=0; k<K.size(); k++)
+      for (int k=0; k<K.size(); k++)
       {
         Tabs tab3;
         Set<MultipleDeriv> RProd = product(J, K[k], 
@@ -395,7 +395,7 @@ ExprWithChildren::internalFindV(int order, const EvalContext& context) const
       SUNDANCE_MSG5(verb, tab2 << "J=" << J);
       SUNDANCE_MSG5(verb, tab2 << "K=" << K);
 
-      for (unsigned int k=0; k<K.size(); k++)
+      for (int k=0; k<K.size(); k++)
       {
         Tabs tab3;
         Set<MultipleDeriv> RProd = product(J, K[k], 
@@ -467,7 +467,7 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
       SUNDANCE_MSG5(verb, tab2 << "J=" << J);
       SUNDANCE_MSG5(verb, tab2 << "K=" << K);
 
-      for (unsigned int k=0; k<K.size(); k++)
+      for (int k=0; k<K.size(); k++)
       {
         Tabs tab3;
         Set<MultipleDeriv> RProd = product(J, K[k], 
@@ -501,7 +501,7 @@ ExprWithChildren::internalFindC(int order, const EvalContext& context) const
       SUNDANCE_MSG5(verb, tab2 << "J=" << J);
       SUNDANCE_MSG5(verb, tab2 << "K=" << K);
 
-      for (unsigned int k=0; k<K.size(); k++)
+      for (int k=0; k<K.size(); k++)
       {
         Tabs tab3;
         Set<MultipleDeriv> RProd = product(J, K[k], 
@@ -620,7 +620,7 @@ ExprWithChildren::internalFindW(int order, const EvalContext& context) const
       Array<int> J = j->elements();
       const Array<Array<int> >& K = comp[J.size()-1];
 
-      for (unsigned int k=0; k<K.size(); k++)
+      for (int k=0; k<K.size(); k++)
       {
         Set<MultipleDeriv> WProd = product(J, K[k], AllNonzeros, context);
         rtn.merge(WProd);
@@ -808,13 +808,13 @@ bool ExprWithChildren::childIsRequired(int index, int diffOrder,
   return true;
 }
 
-RefCountPtr<Array<Set<MultipleDeriv> > > ExprWithChildren
+RCP<Array<Set<MultipleDeriv> > > ExprWithChildren
 ::internalDetermineR(const EvalContext& context,
   const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tab0;
   int verb = context.setupVerbosity();
-  RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
+  RCP<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
 
   SUNDANCE_MSG3(verb, tab0 << "in internalDetermineR() for " << toString());
@@ -822,9 +822,9 @@ RefCountPtr<Array<Set<MultipleDeriv> > > ExprWithChildren
 
 
 
-  for (unsigned int i=0; i<RInput.size(); i++)
+  for (int i=0; i<RInput.size(); i++)
   {
-    if (RInput[i].size()==0U) continue;
+    if (RInput[i].size()==0) continue;
     const Set<MultipleDeriv>& Wi = findW(i, context);
     (*rtn)[i] = RInput[i].intersection(Wi);
   }
@@ -973,7 +973,7 @@ void ExprWithChildren::displayNonzeros(ostream& os, const EvalContext& context) 
 }
 
 
-namespace SundanceCore {
+namespace Sundance {
  
 Array<Array<std::pair<int, Array<MultipleDeriv> > > >  
 chainRuleDerivsOfArgs(int nArgs,
@@ -992,9 +992,9 @@ chainRuleDerivsOfArgs(int nArgs,
   }
       
   /* count orders of each functional deriv in c */
-  SundanceUtils::Map<Deriv, int> counts;
+  Sundance::Map<Deriv, int> counts;
   Array<Deriv> d;
-  typedef SundanceUtils::Map<Deriv, int>::const_iterator iter;
+  typedef Sundance::Map<Deriv, int>::const_iterator iter;
   for (MultipleDeriv::const_iterator i=c.begin(); i!=c.end(); i++)
   {
     if (!counts.containsKey(*i)) counts.put(*i, 1);
@@ -1017,7 +1017,7 @@ chainRuleDerivsOfArgs(int nArgs,
 
 
   Array<Array<Array<Array<int> > > > all;
-  for (unsigned int i=0; i<ic.size(); i++)
+  for (int i=0; i<ic.size(); i++)
   {
     bool good = true;
     int numFuncs = ic[i].size();
@@ -1054,7 +1054,7 @@ chainRuleDerivsOfArgs(int nArgs,
   }
 
       
-  for (unsigned int p=0; p<all.size(); p++)
+  for (int p=0; p<all.size(); p++)
   {
     Array<std::pair<int, Array<MultipleDeriv> > > terms;
     for (int j=0; j<nArgs; j++)
@@ -1064,7 +1064,7 @@ chainRuleDerivsOfArgs(int nArgs,
       for (int k=0; k<b[j]; k++)
       {
         MultipleDeriv md;
-        for (unsigned int i=0; i<all[p].size(); i++)
+        for (int i=0; i<all[p].size(); i++)
         {
           int order = all[p][i][j][k];
           if (order > 0)
@@ -1074,7 +1074,7 @@ chainRuleDerivsOfArgs(int nArgs,
         }
         if (md.order() > 0) factors.second.append(md);
       }
-      if (factors.second.size() > 0U) terms.append(factors);
+      if (factors.second.size() > 0) terms.append(factors);
     }
     rtn.append(terms);
   }
@@ -1088,11 +1088,11 @@ Array<Array<Array<int> > > bStructure(const Array<int>& b,
 {
   Array<Array<Array<int> > > rtn(tmp.size());
       
-  for (unsigned int p=0; p<tmp.size(); p++)
+  for (int p=0; p<tmp.size(); p++)
   {
     int count=0;
 	  rtn[p].resize(b.size());
-    for (unsigned int j=0; j<b.size(); j++)
+    for (int j=0; j<b.size(); j++)
     {
       rtn[p][j].resize(b[j]);
       for (int k=0; k<b[j]; k++, count++)
@@ -1116,7 +1116,7 @@ chainRuleTerms(int s,
   Array<Array<int> > indexTuples = distinctIndexTuples(s, allL.size());
 
   Array<Array<MultipleDeriv> > allLTuples;
-  for (unsigned int i=0; i<indexTuples.size(); i++)
+  for (int i=0; i<indexTuples.size(); i++)
   {
     Array<MultipleDeriv> t(s);
     for (int p=0; p<s; p++) t[p] = allL[indexTuples[i][p]];
@@ -1124,9 +1124,9 @@ chainRuleTerms(int s,
   }
 
   Array<OrderedPair<Array<MultiSet<int> >, Array<MultipleDeriv> > > rtn;
-  for (unsigned int i=0; i<allLTuples.size(); i++)
+  for (int i=0; i<allLTuples.size(); i++)
   {
-    for (unsigned int j=0; j<allK.size(); j++)
+    for (int j=0; j<allK.size(); j++)
     {
       MultipleDeriv result;
       for (int p=0; p<s; p++)
@@ -1192,7 +1192,7 @@ int chainRuleMultiplicity(const MultipleDeriv& nu,
   const Array<MultipleDeriv>& L)
 {
   int rtn = factorial(nu);
-  for (unsigned int i=0; i<K.size(); i++)
+  for (int i=0; i<K.size(); i++)
   {
     rtn = rtn/factorial(K[i]);
     int lFact = factorial(L[i]);

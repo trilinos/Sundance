@@ -36,9 +36,9 @@
 #include "SundanceFunctionIdentifier.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 class SymbolicFunc;
 class Parameter;
@@ -295,7 +295,7 @@ Deriv divergenceDeriv(const SymbolicFunc* symbFunc);
 namespace std
 {
 /** \relates Deriv */
-inline ostream& operator<<(ostream& os,  const SundanceCore::Deriv& d)
+inline ostream& operator<<(ostream& os,  const Sundance::Deriv& d)
 {
   os << d.toString(); return os;
 }

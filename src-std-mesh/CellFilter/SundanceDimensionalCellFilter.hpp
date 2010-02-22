@@ -36,68 +36,62 @@
 #include "SundanceCellFilterBase.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  using namespace Teuchos;
-  using namespace Internal;
+using namespace Teuchos;
+  
 
 
-  /**
-   * DimensionalCellFilter is a filter that identifies all cells of a 
-   * specified dimension. 
-   *
-   * <h4> Example: </h4> get all faces in a 3D mesh
-   *
-   * \code
-   * Mesh myMesh = myReader.getMesh();
-   * CellFilter faceFilter = new DimensionalCellFilter(2);
-   * CellSet faces = faceFilter.getCells(myMesh);
-   * \endcode
-   */
-  class DimensionalCellFilter : public CellFilterBase 
-  {
-  public:
-    /** */
-    DimensionalCellFilter(int dim);
+/**
+ * DimensionalCellFilter is a filter that identifies all cells of a 
+ * specified dimension. 
+ *
+ * <h4> Example: </h4> get all faces in a 3D mesh
+ *
+ * \code
+ * Mesh myMesh = myReader.getMesh();
+ * CellFilter faceFilter = new DimensionalCellFilter(2);
+ * CellSet faces = faceFilter.getCells(myMesh);
+ * \endcode
+ */
+class DimensionalCellFilter : public CellFilterBase 
+{
+public:
+  /** */
+  DimensionalCellFilter(int dim);
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
+  /** */
+  virtual ~DimensionalCellFilter(){;}
 
-    /** */
-    virtual ~DimensionalCellFilter(){;}
+  /** */
+  virtual int dimension(const Mesh& mesh) const {return dim_;}
 
-    /** */
-    virtual int dimension(const Mesh& mesh) const {return dim_;}
+  /** */
+  virtual XMLObject toXML() const ;
 
-    /** */
-    virtual XMLObject toXML() const ;
+  /** */
+  virtual string typeName() const {return "DimensionalCellFilter";}
 
-    /** */
-    virtual string typeName() const {return "DimensionalCellFilter";}
-
-    /** */
-    virtual string description() const 
+  /** */
+  virtual string description() const 
     {return "Cells(d=" + Teuchos::toString(dim_) + ")";}
 
-    /** */
-    virtual bool lessThan(const CellFilterStub* other) const ;
+  /** */
+  virtual bool lessThan(const CellFilterStub* other) const ;
 
-    /* */
-    GET_RCP(CellFilterStub);
+  /* */
+  GET_RCP(CellFilterStub);
 
-  protected:
-    /** get the cells */
-    virtual CellSet internalGetCells(const Mesh& mesh) const ;
+protected:
+  /** get the cells */
+  virtual CellSet internalGetCells(const Mesh& mesh) const ;
     
-  private:
+private:
     
-    int dim_;
+  int dim_;
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
-  };
+};
 
 }
 

@@ -31,8 +31,6 @@
 #ifndef SUNDANCE_IMPLICITCELLSET_H
 #define SUNDANCE_IMPLICITCELLSET_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceCellSetBase.hpp"
 #include "SundanceMap.hpp"
@@ -41,57 +39,49 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceMesh.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace Teuchos;
 
-    /** 
-     * ImplicitCellSet is a cell set subtype where the set of cell LIDs
-     * is never stored. Iteration is done by simply advancing the 
-     * LID by one. 
-     * 
-     * @see CellFilter, CellSetBase, CellIterator 
-     **/
-    class ImplicitCellSet : public CellSetBase
-    {
-    public:
+/** 
+ * ImplicitCellSet is a cell set subtype where the set of cell LIDs
+ * is never stored. Iteration is done by simply advancing the 
+ * LID by one. 
+ * 
+ * @see CellFilter, CellSetBase, CellIterator 
+ **/
+class ImplicitCellSet : public CellSetBase
+{
+public:
 
-      /** Construct with a mesh */
-      ImplicitCellSet(const Mesh& mesh, int cellDim,
-                      const CellType& cellType);
+  /** Construct with a mesh */
+  ImplicitCellSet(const Mesh& mesh, int cellDim,
+    const CellType& cellType);
 
-      /** Returns an iterator pointing to the first element
-       * in the set. */
-      virtual CellIterator begin() const ;
+  /** Returns an iterator pointing to the first element
+   * in the set. */
+  virtual CellIterator begin() const ;
 
-      /** Returns a past-the-end iterator */
-      virtual CellIterator end() const ;
+  /** Returns a past-the-end iterator */
+  virtual CellIterator end() const ;
 
-      /** */
-      bool internalLessThan(const CellSetBase* other) const ;
+  /** */
+  bool internalLessThan(const CellSetBase* other) const ;
 
-      /** \name Printable interface */
-      //@{
-      /** Print to a stream */
-      virtual void print(ostream& os) const ;
-      //@}
+  /** \name Printable interface */
+  //@{
+  /** Print to a stream */
+  virtual void print(ostream& os) const ;
+  //@}
 
-      /* Handleable interface */
-      GET_RCP(CellSetBase);
+  /* Handleable interface */
+  GET_RCP(CellSetBase);
 
 
-    private:
-      int maxLID_;
-    };
-  }
-
+private:
+  int maxLID_;
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

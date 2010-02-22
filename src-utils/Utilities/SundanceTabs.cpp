@@ -30,7 +30,7 @@
 
 #include "SundanceTabs.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 Tabs::Tabs(bool jump)

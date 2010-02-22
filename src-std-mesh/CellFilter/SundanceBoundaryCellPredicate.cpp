@@ -30,9 +30,9 @@
 
 #include "SundanceBoundaryCellPredicate.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 bool BoundaryCellPredicate::lessThan(const CellPredicateBase* other) const
@@ -50,7 +50,7 @@ void BoundaryCellPredicate::testBatch(const Array<int>& cellLID,
                                         Array<int>& results) const
 {
   results.resize(cellLID.size());
-  for (unsigned int c=0; c<cellLID.size(); c++)
+  for (int c=0; c<cellLID.size(); c++)
     {
       results[c] = (mesh().numMaxCofacets(cellDim(), cellLID[c]) == 1);
     }

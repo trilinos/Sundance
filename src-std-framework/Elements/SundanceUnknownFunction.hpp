@@ -37,41 +37,37 @@
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceSpectralBasis.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Internal;
+using namespace Teuchos;
 
   
 
-  /** 
-   * UnknownFunction represents an unknown function in a finite
-   * element problem. Unknown functions can be scalar or vector valued, as
-   * determined at runtime through the type of basis with which
-   * they are constructed.
-   */
-  class UnknownFunction : public UnknownFunctionStub,
-                          public FuncWithBasis
-  {
-  public:
-    /** */
-    UnknownFunction(const BasisFamily& basis, const string& name="");
+/** 
+ * UnknownFunction represents an unknown function in a finite
+ * element problem. Unknown functions can be scalar or vector valued, as
+ * determined at runtime through the type of basis with which
+ * they are constructed.
+ */
+class UnknownFunction : public UnknownFunctionStub,
+                        public FuncWithBasis
+{
+public:
+  /** */
+  UnknownFunction(const BasisFamily& basis, const string& name="");
 
-    /** */
-    UnknownFunction(const BasisFamily& basis, 
-                    const SpectralBasis& spBasis,
-                    const string& name="");
+  /** */
+  UnknownFunction(const BasisFamily& basis, 
+    const SpectralBasis& spBasis,
+    const string& name="");
 
 
-    /** virtual destructor */
-    virtual ~UnknownFunction() {;}
+  /** virtual destructor */
+  virtual ~UnknownFunction() {;}
 
-    /* boilerplate */
-    GET_RCP(ExprBase);
-  };
+  /* boilerplate */
+  GET_RCP(ExprBase);
+};
 
 }
 

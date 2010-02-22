@@ -45,11 +45,11 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 using std::string;
 using std::ostream;
@@ -75,7 +75,7 @@ enum DerivSubsetSpecifier {AllNonzeros,
 class EvaluatableExpr : public virtual ScalarExpr,
                         public virtual EvaluatorFactory,
                         public virtual FuncSetAccumulator,
-                        public SundanceUtils::ObjectWithClassVerbosity<EvaluatableExpr>
+                        public ObjectWithClassVerbosity<EvaluatableExpr>
 {
   typedef OrderedQuartet<EvalContext, 
                          Set<MultiIndex>,
@@ -100,7 +100,7 @@ public:
    */
   void evaluate(const EvalManager& mgr,
     Array<double>& constantResults,
-    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+    Array<RCP<EvalVector> >& vectorResults) const ;
   //@}
 
   /** \name Preprocessing */
@@ -115,7 +115,7 @@ public:
 
   /** Return the set of all nonzero derivatives
    * required in the given context */
-  RefCountPtr<SparsitySuperset> sparsitySuperset(const EvalContext& context) const ;
+  RCP<SparsitySuperset> sparsitySuperset(const EvalContext& context) const ;
 
   //@}
       
@@ -127,7 +127,7 @@ public:
   static const EvaluatableExpr* getEvalExpr(const Expr& expr);
 
   /** Return the evaluator to be used for the given context */
-  const RefCountPtr<Evaluator>& evaluator(const EvalContext& context) const; 
+  const RCP<Evaluator>& evaluator(const EvalContext& context) const; 
 
   /** */
   virtual void showSparsity(ostream& os, 
@@ -156,7 +156,7 @@ public:
   virtual bool nodesHaveBeenCounted() const {return nodesHaveBeenCounted_;}
 
   /** */
-  static unsigned int maxFuncDiffOrder() {static int rtn=3; return rtn;}
+  static int maxFuncDiffOrder() {static int rtn=3; return rtn;}
 
 
   /** */
@@ -232,7 +232,7 @@ public:
     const Array<Set<MultipleDeriv> >& RInput) const ;
 
   /** */
-  virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+  virtual RCP<Array<Set<MultipleDeriv> > > 
   internalDetermineR(const EvalContext& context,
     const Array<Set<MultipleDeriv> >& RInput) const ;
 
@@ -257,14 +257,14 @@ protected:
 
   /** Record the evaluator to be used for the given context */
   void registerEvaluator(const EvalContext& context,
-    const RefCountPtr<Evaluator>& evaluator) const 
+    const RCP<Evaluator>& evaluator) const 
     {return evaluators_.put(context, evaluator);}
 
   /** */
   static bool isEvaluatable(const ExprBase* expr);
 
   /** */
-  Map<EvalContext, RefCountPtr<Evaluator> >& evaluators() const 
+  Map<EvalContext, RCP<Evaluator> >& evaluators() const 
     {return evaluators_;}
 
 
@@ -285,13 +285,13 @@ private:
   /** 
    * evaluators, indexed by context 
    */
-  mutable Map<EvalContext, RefCountPtr<Evaluator> > evaluators_;
+  mutable Map<EvalContext, RCP<Evaluator> > evaluators_;
 
   /** 
    * supersets of nonzero derivatives to be computed, index by
    * context
    */
-  mutable Map<EvalContext, RefCountPtr<SparsitySuperset> > sparsity_;
+  mutable Map<EvalContext, RCP<SparsitySuperset> > sparsity_;
 
   /** Polynomial order of the dependency upon each coordinate direction */
   Array<int> orderOfDependency_;

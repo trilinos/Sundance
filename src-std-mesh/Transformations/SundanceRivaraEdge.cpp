@@ -3,13 +3,13 @@
 #include "SundanceRivaraNode.hpp"
 #include "SundanceRivaraMesh.hpp"
 
-using namespace SundanceStdMesh::Rivara;
+using namespace Sundance::Rivara;
 using namespace Teuchos;
 
 
 
-Edge::Edge(const RefCountPtr<Node>& a,
-           const RefCountPtr<Node>& b)
+Edge::Edge(const RCP<Node>& a,
+           const RCP<Node>& b)
   : label_(-1),nodes_(tuple(a,b)), elements_(), midpoint_(),
 		ownerProc_()
 {
@@ -44,7 +44,7 @@ void Edge::getUnrefinedCofacets(Array<Element*>& c) const
     }
 }
 
-RefCountPtr<Node> Edge::bisect(RivaraMesh* mesh)
+RCP<Node> Edge::bisect(RivaraMesh* mesh)
 {
   /* if we've already been bisected, return the existing midpoint node */
   if (!(midpoint_.get() == 0))
@@ -60,8 +60,8 @@ RefCountPtr<Node> Edge::bisect(RivaraMesh* mesh)
   mesh->addNode(midpoint_);
 
   int s;
-  RefCountPtr<Edge> sub1 = mesh->tryEdge(nodes_[0], midpoint_, s);
-  RefCountPtr<Edge> sub2 = mesh->tryEdge(midpoint_, nodes_[1], s);
+  RCP<Edge> sub1 = mesh->tryEdge(nodes_[0], midpoint_, s);
+  RCP<Edge> sub2 = mesh->tryEdge(midpoint_, nodes_[1], s);
   sub1->setParent(this);
   sub2->setParent(this);
 

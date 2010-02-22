@@ -37,7 +37,7 @@
 #include "SundanceMeshType.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 /**
  * Base class for mesh partitioners that run in serial
@@ -62,8 +62,8 @@ public:
 
   /** */
   Array<Mesh> makeMeshParts(const Mesh& mesh, int np,
-    Array<SundanceUtils::Map<int, int> >& oldElemLIDToNewLIDMap,
-    Array<SundanceUtils::Map<int, int> >& oldVertLIDToNewLIDMap
+    Array<Sundance::Map<int, int> >& oldElemLIDToNewLIDMap,
+    Array<Sundance::Map<int, int> >& oldVertLIDToNewLIDMap
     ) const ;
 
   /** */

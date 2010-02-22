@@ -39,18 +39,9 @@
 
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-namespace Internal
-{
-  
-
-
 /** 
  * IntegralGroup collects together several integrals having common properties that
  * can be used either to eliminate redundant computations or to share storage
@@ -67,7 +58,7 @@ class IntegralGroup
 {
 public:
   /** */
-  IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
+  IntegralGroup(const Array<RCP<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
     int verb);
 
@@ -75,7 +66,7 @@ public:
   IntegralGroup(const Array<int>& testID,
     const Array<int>& testBlock,
     const Array<int>& mvIndices,
-    const Array<RefCountPtr<ElementIntegral> >& integrals,
+    const Array<RCP<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
     const Array<MultipleDeriv>& derivs,
     int verb);
@@ -85,7 +76,7 @@ public:
     const Array<int>& testBlock,
     const Array<int>& unkID,
     const Array<int>& unkBlock,
-    const Array<RefCountPtr<ElementIntegral> >& integrals,
+    const Array<RCP<ElementIntegral> >& integrals,
     const Array<int>& resultIndices,
     const Array<MultipleDeriv>& derivs,
     int verb);
@@ -139,9 +130,9 @@ public:
     const CellJacobianBatch& JVol,
     const Array<int>& isLocalFlag,
     const Array<int>& facetNum, 
-    const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
+    const Array<RCP<EvalVector> >& vectorCoeffs,
     const Array<double>& constantCoeffs,
-    RefCountPtr<Array<double> >& A) const ;
+    RCP<Array<double> >& A) const ;
 
 
   /** */
@@ -158,9 +149,9 @@ public:
 
 private:
   /** */
-  int findIntegrationVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const ;
+  int findIntegrationVerb(const Array<RCP<ElementIntegral> >& integrals) const ;
   /** */
-  int findTransformVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const ;
+  int findTransformVerb(const Array<RCP<ElementIntegral> >& integrals) const ;
   /** */
   int integrationVerb_;
 
@@ -192,7 +183,7 @@ private:
   Array<int> mvIndices_;
 
   /** */
-  Array<RefCountPtr<ElementIntegral> > integrals_;
+  Array<RCP<ElementIntegral> > integrals_;
 
   /** */
   Array<int> resultIndices_;
@@ -208,7 +199,6 @@ private:
 };
 
 
-}
 }
 
 

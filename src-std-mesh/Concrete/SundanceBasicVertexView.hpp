@@ -34,12 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceStdMesh
-{
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceUtils;
 
 /**
  * VertexView is a read-only "view" of a cell's vertices, where the 
@@ -105,16 +102,15 @@ inline bool VertexView::operator==(const VertexView& other) const
 
 
 }
-}
 
 namespace Teuchos
 {
 /** \relates VertexView */
-inline int hashCode(const SundanceStdMesh::Internal::VertexView& v) 
+inline int hashCode(const Sundance::VertexView& v) 
 {return v.hashCode();}
 
 /** \relates VertexView */
-inline string toString(const SundanceStdMesh::Internal::VertexView& v) 
+inline string toString(const Sundance::VertexView& v) 
 {return v.toString();}
 }
 

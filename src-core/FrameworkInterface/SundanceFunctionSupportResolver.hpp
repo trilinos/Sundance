@@ -39,7 +39,7 @@
 #include "SundanceCellFilterStub.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
 
 class SumOfIntegrals;
@@ -66,34 +66,34 @@ public:
   /** \name Getting information about functions */
   //@{
   /** Returns the number of variational function blocks */
-  unsigned int numVarBlocks() const {return varFuncs_.size();}
+  int numVarBlocks() const {return varFuncs_.size();}
 
   /** Returns the number of unknown function blocks */
-  unsigned int numUnkBlocks() const {return unkFuncs_.size();}
+  int numUnkBlocks() const {return unkFuncs_.size();}
 
   /** Returns the number of unknown parameters */
-  unsigned int numUnkParams() const {return unkParams_.size();}
+  int numUnkParams() const {return unkParams_.size();}
 
   /** Returns the number of fixed parameters */
-  unsigned int numFixedParams() const {return fixedParams_.size();}
+  int numFixedParams() const {return fixedParams_.size();}
 
   /** Returns the number of variational functions in this block */
-  unsigned int numVars(int block) const {return varFuncs_[block].size();}
+  int numVars(int block) const {return varFuncs_[block].size();}
 
   /** Returns the number of unk functions in this block */
-  unsigned int numUnks(int block) const {return unkFuncs_[block].size();}
+  int numUnks(int block) const {return unkFuncs_[block].size();}
 
   /** Returns the number of variational function IDs in this block.
    * This will differ from the number of variational functions in cases
    * where a vector field uses a single vector-valued basis rather
    * than scalar bases for each component. */
-  unsigned int numVarIDs(int block) const {return varFuncData_[block].size();}
+  int numVarIDs(int block) const {return varFuncData_[block].size();}
 
   /** Returns the number of unk function IDs in this block.
    * This will differ from the number of unknown functions in cases
    * where a vector field uses a single vector-valued basis rather
    * than scalar bases for each component. */ 
-  unsigned int numUnkIDs(int block) const {return unkFuncData_[block].size();}
+  int numUnkIDs(int block) const {return unkFuncData_[block].size();}
 
   /** Returns the data for the i-th variational function in block b */
   RCP<const CommonFuncDataStub> varFuncData(int b, int i) const {return varFuncData_[b][i];}
@@ -221,10 +221,10 @@ public:
   //@{
   /** Returns the number of regions on which pieces of the equation
    * or BCs are defined. */
-  unsigned int numRegions() const {return regions_.size();}
+  int numRegions() const {return regions_.size();}
       
   /** Returns the d-th region for this equation set */
-  const RefCountPtr<CellFilterStub>& region(int d) const 
+  const RCP<CellFilterStub>& region(int d) const 
     {return regions_[d].ptr();}
 
   /** Returns the index of the given region */
@@ -428,7 +428,7 @@ private:
 };
 
 /** */
-RefCountPtr<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f);
+RCP<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f);
 
 }
  

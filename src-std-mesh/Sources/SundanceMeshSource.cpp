@@ -6,16 +6,16 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 static Time& getMeshTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("get mesh"); 
   return *rtn;
 }
@@ -29,7 +29,7 @@ MeshSource::MeshSource(Handleable<MeshSourceBase>* rawPtr)
 {}
 
 
-MeshSource::MeshSource(const RefCountPtr<MeshSourceBase>& smartPtr)
+MeshSource::MeshSource(const RCP<MeshSourceBase>& smartPtr)
   : Handle<MeshSourceBase>(smartPtr)
 {}
 
@@ -72,8 +72,8 @@ Mesh MeshSource::getMesh() const
   return rtn;
 }
 
-void MeshSource::getAttributes(RefCountPtr<Array<Array<double> > >& nodeAttributes,
-                               RefCountPtr<Array<Array<double> > >& elemAttributes) const
+void MeshSource::getAttributes(RCP<Array<Array<double> > >& nodeAttributes,
+                               RCP<Array<Array<double> > >& elemAttributes) const
 {
   getMesh();
   ptr()->getAttributes(nodeAttributes, elemAttributes);

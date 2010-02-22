@@ -6,7 +6,7 @@
 
 /* <Ignore> */
 #include "Sundance.hpp"
-using SundanceCore::List;
+using Sundance::List;
 
 #if defined(HAVE_SUNDANCE_EXODUS)
 
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 
     /* Define the weak form */
     //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-    Expr one = new SundanceCore::Parameter(1.0);
+    Expr one = new Sundance::Parameter(1.0);
     Expr exactSoln = 2.0*x+y;
     Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2, watchMe);
     /* Define the Dirichlet BC */

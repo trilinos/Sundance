@@ -9,7 +9,7 @@
 namespace TSFExtended
 {
   class PySundanceLinearSolver : public LinearSolverBase<double>,
-                                 public SundanceUtils::Handleable<LinearSolverBase<double> >
+                                 public Sundance::Handleable<LinearSolverBase<double> >
   {
   public:
     /** */

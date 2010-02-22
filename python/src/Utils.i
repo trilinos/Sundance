@@ -23,7 +23,7 @@
     
       argv[i] = NULL; //Lam 7.0 requires last arg to be NULL  
   
-      int error = SundanceStdFwk::Sundance::init(&argc, &argv);
+      int error = Sundance::Sundance::init(&argc, &argv);
       if (error != 0) {
         PyErr_SetString(PyExc_RuntimeError, "error");   
         return NULL;
@@ -34,7 +34,7 @@
   
   PyObject* Finalize() {  
 
-      int error = SundanceStdFwk::Sundance::finalize();
+      int error = Sundance::Sundance::finalize();
        if (error != 0) {
          PyErr_SetString(PyExc_RuntimeError, "error");    //raise ValueError, errmsg
          return NULL;

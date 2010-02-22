@@ -32,7 +32,7 @@
 #include "SundanceCellVectorExpr.hpp"
 #include "SundanceEvaluator.hpp"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the Poisson equation in 2D on the unit disk
  */

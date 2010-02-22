@@ -33,9 +33,9 @@
 
 #include "SundanceConstantExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 class ZeroExpr : public ConstantExpr
 {
 public:
@@ -56,7 +56,7 @@ public:
           
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 protected:
 private:
 };

@@ -39,181 +39,167 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceDiscreteFunction.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
-
-namespace SundanceStdFwk
-
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using SundanceUtils::Map;
+using namespace Teuchos;
 
-  namespace Internal
-  {
-    using namespace Teuchos;
+/** 
+ * StdFwkEvalMediator evaluates mesh-dependent functions in the 
+ * standard framework. A number of subtypes are supported: 
+ * QuadratureEvalMediator, which does evaluation on quadrature points,  
+ * and NodalEvalMediator, which does evaluation at nodal points.  */
 
-    /** 
-     * StdFwkEvalMediator evaluates mesh-dependent functions in the 
-     * standard framework. A number of subtypes are supported: 
-     * QuadratureEvalMediator, which does evaluation on quadrature points,  
-     * and NodalEvalMediator, which does evaluation at nodal points.  */
+class StdFwkEvalMediator : public AbstractEvalMediator,
+                           public Sundance::Printable
+{
+public:
+  /** */
+  StdFwkEvalMediator(const Mesh& mesh, int cellDim);
 
-    class StdFwkEvalMediator : public AbstractEvalMediator,
-                               public SundanceUtils::Printable
-    {
-    public:
-      /** */
-      StdFwkEvalMediator(const Mesh& mesh, int cellDim);
+  /** */
+  virtual ~StdFwkEvalMediator(){;}
 
-      /** */
-      virtual ~StdFwkEvalMediator(){;}
+  /** */
+  void setCellBatch(const RCP<const Array<int> >& cellLID);
 
-      /** */
-      void setCellBatch(const RefCountPtr<const Array<int> >& cellLID);
-
-      /** */
-      void setIntegrationSpec(IntegrationCellSpecifier intCellSpec);
+  /** */
+  void setIntegrationSpec(IntegrationCellSpecifier intCellSpec);
 
 
-      /** Update the cell type */
-      virtual void setCellType(const CellType& cellType,
-        const CellType& maxCellType,
-        bool isInternalBdry) ;
+  /** Update the cell type */
+  virtual void setCellType(const CellType& cellType,
+    const CellType& maxCellType,
+    bool isInternalBdry) ;
 
-      /** Return the Jacobian to be used in computing the volume of cells
+  /** Return the Jacobian to be used in computing the volume of cells
       being integrated. This will not necessarily be the same as the
       Jacobian used for transformations of vectors: when integrating
       derivatives over boundaries, the volume is the volume of the facet,
       while the transformations are computed on the maximal cofacets. */
-      const CellJacobianBatch& JVol() const {return *JVol_;}
+  const CellJacobianBatch& JVol() const {return *JVol_;}
 
-      /** Return the Jacobian to be used in derivative transformations. */
-      const CellJacobianBatch& JTrans() const ;
+  /** Return the Jacobian to be used in derivative transformations. */
+  const CellJacobianBatch& JTrans() const ;
 
-      /** When evaluating derivatives on boundaries, we evaluate basis
+  /** When evaluating derivatives on boundaries, we evaluate basis
       functions on the maximal cofacets of the boundary cells. This function
       returns the facet index, relative to the maximal cofacet, of each
       boundary cell in the batch.  */
-      const Array<int>& facetIndices() const {return *facetIndices_;}
+  const Array<int>& facetIndices() const {return *facetIndices_;}
 
-      /** */
-      const Array<int>& maxCellLIDs() const {return *maxCellLIDs_;}
+  /** */
+  const Array<int>& maxCellLIDs() const {return *maxCellLIDs_;}
 
-      /** */
-      int cellDim() const {return cellDim_;}
+  /** */
+  int cellDim() const {return cellDim_;}
 
-      /** */
-      int maxCellDim() const {return mesh_.spatialDim();}
+  /** */
+  int maxCellDim() const {return mesh_.spatialDim();}
 
-      /** */
-      const CellType& cellType() const {return cellType_;}
+  /** */
+  const CellType& cellType() const {return cellType_;}
 
-      /** */
-      const CellType& maxCellType() const {return maxCellType_;}
+  /** */
+  const CellType& maxCellType() const {return maxCellType_;}
 
-      /** */
-      const RefCountPtr<const Array<int> >& cellLID() const {return cellLID_;}
+  /** */
+  const RCP<const Array<int> >& cellLID() const {return cellLID_;}
 
-      /** */
-      const RefCountPtr<Array<int> >& cofacetCellLID() const {return maxCellLIDs_;}
+  /** */
+  const RCP<Array<int> >& cofacetCellLID() const {return maxCellLIDs_;}
 
-      /** */
-      IntegrationCellSpecifier integrationCellSpec() const {return intCellSpec_;}
+  /** */
+  IntegrationCellSpecifier integrationCellSpec() const {return intCellSpec_;}
 
-      /** */
-      bool cofacetCellsAreReady() const {return cofacetCellsAreReady_;}
+  /** */
+  bool cofacetCellsAreReady() const {return cofacetCellsAreReady_;}
 
-      /** */
-      bool isInternalBdry() const {return isInternalBdry_;}
+  /** */
+  bool isInternalBdry() const {return isInternalBdry_;}
 
-      /** */
-      bool forbidCofacetIntegrations() const 
-        {return forbidCofacetIntegrations_;}
+  /** */
+  bool forbidCofacetIntegrations() const 
+    {return forbidCofacetIntegrations_;}
 
 
-    protected:
-      const Mesh& mesh() const {return mesh_;}
+protected:
+  const Mesh& mesh() const {return mesh_;}
 
-      bool& cacheIsValid() const {return cacheIsValid_;}
+  bool& cacheIsValid() const {return cacheIsValid_;}
 
-      /** */
-      void setupFacetTransformations() const ;
+  /** */
+  void setupFacetTransformations() const ;
 
-      /** */
-      Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& fCache() const {return fCache_;}
-      /** */
-      Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& dfCache() const {return dfCache_;}
-      /** */
-      Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > >& localValueCache() const {return localValueCache_;}
+  /** */
+  Map<const DiscreteFunctionData*, RCP<Array<Array<double> > > >& fCache() const {return fCache_;}
+  /** */
+  Map<const DiscreteFunctionData*, RCP<Array<Array<double> > > >& dfCache() const {return dfCache_;}
+  /** */
+  Map<const DiscreteFunctionData*, RCP<Array<Array<double> > > >& localValueCache() const {return localValueCache_;}
 
-      /** */
-      Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> >& mapStructCache() const
-      {return mapStructCache_;}
+  /** */
+  Map<const DiscreteFunctionData*, RCP<const MapStructure> >& mapStructCache() const
+    {return mapStructCache_;}
 
-      /** */
-      Map<const DiscreteFunctionData*, bool>& fCacheIsValid() const {return fCacheIsValid_;}
-      /** */
-      Map<const DiscreteFunctionData*, bool>& dfCacheIsValid() const {return dfCacheIsValid_;}
-      /** */
-      Map<const DiscreteFunctionData*, bool>& localValueCacheIsValid() const {return localValueCacheIsValid_;}
+  /** */
+  Map<const DiscreteFunctionData*, bool>& fCacheIsValid() const {return fCacheIsValid_;}
+  /** */
+  Map<const DiscreteFunctionData*, bool>& dfCacheIsValid() const {return dfCacheIsValid_;}
+  /** */
+  Map<const DiscreteFunctionData*, bool>& localValueCacheIsValid() const {return localValueCacheIsValid_;}
       
-    private:
-      Mesh mesh_;
+private:
+  Mesh mesh_;
 
-      int cellDim_;
+  int cellDim_;
 
-      CellType cellType_;
+  CellType cellType_;
 
-      CellType maxCellType_;
+  CellType maxCellType_;
 
-      bool isInternalBdry_;
+  bool isInternalBdry_;
 
-      bool forbidCofacetIntegrations_;
+  bool forbidCofacetIntegrations_;
 
-      RefCountPtr<const Array<int> > cellLID_;
+  RCP<const Array<int> > cellLID_;
 
-      mutable IntegrationCellSpecifier intCellSpec_;
+  mutable IntegrationCellSpecifier intCellSpec_;
 
-      mutable RefCountPtr<CellJacobianBatch> JVol_;
+  mutable RCP<CellJacobianBatch> JVol_;
 
-      mutable RefCountPtr<CellJacobianBatch> JTrans_;
+  mutable RCP<CellJacobianBatch> JTrans_;
 
-      mutable RefCountPtr<Array<int> > facetIndices_;
+  mutable RCP<Array<int> > facetIndices_;
 
-      mutable RefCountPtr<Array<int> > maxCellLIDs_;
+  mutable RCP<Array<int> > maxCellLIDs_;
 
-      mutable bool cofacetCellsAreReady_;
+  mutable bool cofacetCellsAreReady_;
 
-      mutable bool cacheIsValid_;
+  mutable bool cacheIsValid_;
 
-      mutable bool jCacheIsValid_;
+  mutable bool jCacheIsValid_;
 
 
 
-      /** */
-      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > fCache_;
-      /** */
-      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > dfCache_; 
-      /** */
-      mutable Map<const DiscreteFunctionData*, RefCountPtr<Array<Array<double> > > > localValueCache_;
-      /** */
-      mutable Map<const DiscreteFunctionData*, RefCountPtr<const MapStructure> > mapStructCache_;
+  /** */
+  mutable Map<const DiscreteFunctionData*, RCP<Array<Array<double> > > > fCache_;
+  /** */
+  mutable Map<const DiscreteFunctionData*, RCP<Array<Array<double> > > > dfCache_; 
+  /** */
+  mutable Map<const DiscreteFunctionData*, RCP<Array<Array<double> > > > localValueCache_;
+  /** */
+  mutable Map<const DiscreteFunctionData*, RCP<const MapStructure> > mapStructCache_;
 
-      /** */
-      mutable Map<const DiscreteFunctionData*, bool> fCacheIsValid_;
-      /** */
-      mutable Map<const DiscreteFunctionData*, bool> dfCacheIsValid_;
-      /** */
-      mutable Map<const DiscreteFunctionData*, bool> localValueCacheIsValid_;
+  /** */
+  mutable Map<const DiscreteFunctionData*, bool> fCacheIsValid_;
+  /** */
+  mutable Map<const DiscreteFunctionData*, bool> dfCacheIsValid_;
+  /** */
+  mutable Map<const DiscreteFunctionData*, bool> localValueCacheIsValid_;
 
-    };
-  }
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

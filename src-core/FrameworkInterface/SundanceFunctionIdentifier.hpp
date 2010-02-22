@@ -33,7 +33,7 @@
 
 #include "SundanceAlgebraSpecifier.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 
 /** 
@@ -120,7 +120,7 @@ FunctionIdentifier makeFuncID(int tensorOrder);
 namespace std
 {
 /** \relates FunctionIdentifier */
-ostream& operator<<(ostream& os, const SundanceCore::FunctionIdentifier& fid);
+ostream& operator<<(ostream& os, const Sundance::FunctionIdentifier& fid);
 }
 
 #endif

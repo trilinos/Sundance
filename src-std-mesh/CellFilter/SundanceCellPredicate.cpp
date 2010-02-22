@@ -31,13 +31,13 @@
 #include "SundanceCellPredicate.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
-CellPredicate::CellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func)
+CellPredicate::CellPredicate(const RCP<CellPredicateFunctorBase>& func)
   : Handle<CellPredicateBase>(new PositionalCellPredicate(func))
 {;}
 

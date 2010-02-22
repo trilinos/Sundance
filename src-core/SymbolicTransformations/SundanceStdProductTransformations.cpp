@@ -47,11 +47,11 @@
 #include "SundanceDerivOfSymbFunc.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 
 StdProductTransformations::StdProductTransformations()
@@ -73,9 +73,9 @@ StdProductTransformations::StdProductTransformations()
   append(rcp(new RearrangeLeftProductWithConstant()));
 }
 
-bool RemoveZeroFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                        const RefCountPtr<ScalarExpr>& right,
-                                        RefCountPtr<ScalarExpr>& rtn) const
+bool RemoveZeroFromProduct::doTransform(const RCP<ScalarExpr>& left, 
+                                        const RCP<ScalarExpr>& right,
+                                        RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveZerofromProduct");
@@ -115,9 +115,9 @@ bool RemoveZeroFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
   return false;
 }
 
-bool RemoveOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                       const RefCountPtr<ScalarExpr>& right,
-                                       RefCountPtr<ScalarExpr>& rtn) const
+bool RemoveOneFromProduct::doTransform(const RCP<ScalarExpr>& left, 
+                                       const RCP<ScalarExpr>& right,
+                                       RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveOnefromProduct");
@@ -158,9 +158,9 @@ bool RemoveOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
 }
 
 
-bool RemoveMinusOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                            const RefCountPtr<ScalarExpr>& right,
-                                            RefCountPtr<ScalarExpr>& rtn) const
+bool RemoveMinusOneFromProduct::doTransform(const RCP<ScalarExpr>& left, 
+                                            const RCP<ScalarExpr>& right,
+                                            RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, 
                "trying RemoveOnefromProduct");
@@ -200,9 +200,9 @@ bool RemoveMinusOneFromProduct::doTransform(const RefCountPtr<ScalarExpr>& left,
   return false;
 }
 
-bool MoveConstantsToLeftOfProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                               const RefCountPtr<ScalarExpr>& right,
-                                               RefCountPtr<ScalarExpr>& rtn) const
+bool MoveConstantsToLeftOfProduct::doTransform(const RCP<ScalarExpr>& left, 
+                                               const RCP<ScalarExpr>& right,
+                                               RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, 
                "trying MoveConstantsToLeftOfProduct");
@@ -225,9 +225,9 @@ bool MoveConstantsToLeftOfProduct::doTransform(const RefCountPtr<ScalarExpr>& le
   return false;
 }
 
-bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                               const RefCountPtr<ScalarExpr>& right,
-                                               RefCountPtr<ScalarExpr>& rtn) const
+bool MoveUnaryMinusOutsideProduct::doTransform(const RCP<ScalarExpr>& left, 
+                                               const RCP<ScalarExpr>& right,
+                                               RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, 
                "trying MoveUnaryMinusOutsideProduct");
@@ -278,9 +278,9 @@ bool MoveUnaryMinusOutsideProduct::doTransform(const RefCountPtr<ScalarExpr>& le
   return false;
 }
 
-bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left, 
-  const RefCountPtr<ScalarExpr>& right,
-  RefCountPtr<ScalarExpr>& rtn) const
+bool MultiplyConstants::doTransform(const RCP<ScalarExpr>& left, 
+  const RCP<ScalarExpr>& right,
+  RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, 
                "trying MultiplyConstants");
@@ -312,9 +312,9 @@ bool MultiplyConstants::doTransform(const RefCountPtr<ScalarExpr>& left,
   return false;
 }
 
-bool AssociateHungryDiffOpWithOperand::doTransform(const RefCountPtr<ScalarExpr>& left, 
-  const RefCountPtr<ScalarExpr>& right,
-  RefCountPtr<ScalarExpr>& rtn) const
+bool AssociateHungryDiffOpWithOperand::doTransform(const RCP<ScalarExpr>& left, 
+  const RCP<ScalarExpr>& right,
+  RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, 
                "trying AssociateHungryDiffOpWithOperand");
@@ -345,9 +345,9 @@ bool AssociateHungryDiffOpWithOperand::doTransform(const RefCountPtr<ScalarExpr>
   return false;
 }
 
-bool KillDiffOpOnConstant::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                       const RefCountPtr<ScalarExpr>& right,
-                                       RefCountPtr<ScalarExpr>& rtn) const
+bool KillDiffOpOnConstant::doTransform(const RCP<ScalarExpr>& left, 
+                                       const RCP<ScalarExpr>& right,
+                                       RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, "trying KillDiffOpOnConstant");
 
@@ -385,9 +385,9 @@ bool KillDiffOpOnConstant::doTransform(const RefCountPtr<ScalarExpr>& left,
   return false;
 }
 
-bool BringConstantOutsideDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                             const RefCountPtr<ScalarExpr>& right,
-                                             RefCountPtr<ScalarExpr>& rtn) const
+bool BringConstantOutsideDiffOp::doTransform(const RCP<ScalarExpr>& left, 
+                                             const RCP<ScalarExpr>& right,
+                                             RCP<ScalarExpr>& rtn) const
 {
   
   SUNDANCE_OUT(this->verb() > 1,  "trying BringConstantOutsideDiffOp");
@@ -413,9 +413,9 @@ bool BringConstantOutsideDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left
   return false;
 }
 
-bool DistributeSumOfDiffOps::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                         const RefCountPtr<ScalarExpr>& right,
-                                         RefCountPtr<ScalarExpr>& rtn) const
+bool DistributeSumOfDiffOps::doTransform(const RCP<ScalarExpr>& left, 
+                                         const RCP<ScalarExpr>& right,
+                                         RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1,"trying DistributeSumOfDiffOps");
 
@@ -442,9 +442,9 @@ bool DistributeSumOfDiffOps::doTransform(const RefCountPtr<ScalarExpr>& left,
   return false;
 }
 
-bool ApplySimpleDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                    const RefCountPtr<ScalarExpr>& right,
-                                    RefCountPtr<ScalarExpr>& rtn) const
+bool ApplySimpleDiffOp::doTransform(const RCP<ScalarExpr>& left, 
+                                    const RCP<ScalarExpr>& right,
+                                    RCP<ScalarExpr>& rtn) const
 {
   SUNDANCE_OUT(this->verb() > 1, "trying ApplySimpleDiffOp");
 
@@ -470,9 +470,9 @@ bool ApplySimpleDiffOp::doTransform(const RefCountPtr<ScalarExpr>& left,
   return false;
 }
 
-bool RearrangeRightProductWithConstant::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                                    const RefCountPtr<ScalarExpr>& right,
-                                                    RefCountPtr<ScalarExpr>& rtn) const
+bool RearrangeRightProductWithConstant::doTransform(const RCP<ScalarExpr>& left, 
+                                                    const RCP<ScalarExpr>& right,
+                                                    RCP<ScalarExpr>& rtn) const
 {
   /* Transform several cases in which the right operand is a product
    * involving a constant. */
@@ -533,9 +533,9 @@ bool RearrangeRightProductWithConstant::doTransform(const RefCountPtr<ScalarExpr
 }
 
 
-bool RearrangeLeftProductWithConstant::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                                   const RefCountPtr<ScalarExpr>& right,
-                                                   RefCountPtr<ScalarExpr>& rtn) const
+bool RearrangeLeftProductWithConstant::doTransform(const RCP<ScalarExpr>& left, 
+                                                   const RCP<ScalarExpr>& right,
+                                                   RCP<ScalarExpr>& rtn) const
 {
   /* transform cases in which the left operand is a product, exactly
    * one of whose operands is a constant. Because of the preceding 
@@ -593,9 +593,9 @@ bool RearrangeLeftProductWithConstant::doTransform(const RefCountPtr<ScalarExpr>
 }
 
 
-bool TakeConstantUnderIntegralSign::doTransform(const RefCountPtr<ScalarExpr>& left, 
-                                         const RefCountPtr<ScalarExpr>& right,
-                                         RefCountPtr<ScalarExpr>& rtn) const
+bool TakeConstantUnderIntegralSign::doTransform(const RCP<ScalarExpr>& left, 
+                                         const RCP<ScalarExpr>& right,
+                                         RCP<ScalarExpr>& rtn) const
 {
   const SumOfIntegrals* sLeft 
     = dynamic_cast<const SumOfIntegrals*>(left.get());

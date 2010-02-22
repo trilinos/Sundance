@@ -39,20 +39,17 @@
 #include "SundancePrintable.hpp"
 #include "Teuchos_Describable.hpp"
 
-namespace SundanceStdMesh
-{
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceUtils;
 
 /**
  * Factory class to instantiate cell reorderers for specific meshes
  */
 class CellReordererFactoryBase 
-  : public SundanceUtils::Handleable<CellReordererFactoryBase>, 
+  : public Sundance::Handleable<CellReordererFactoryBase>, 
     public Noncopyable,
-    public SundanceUtils::Printable,
+    public Sundance::Printable,
     public Teuchos::Describable
 {
 public:
@@ -94,7 +91,7 @@ public:
     }
       
 };
-}
+
 }
 
 

@@ -35,7 +35,7 @@
 #include "SundanceMeshTransformationBase.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * MeshTransformation is the user-level interface for mesh filters, i.e.,
@@ -57,17 +57,17 @@ namespace SundanceStdMesh
    * Mesh mesh3D = extruder.apply(mesh2D);
    * \endcode
    */
-  class MeshTransformation : public SundanceUtils::Handle<MeshTransformationBase>
+  class MeshTransformation : public Sundance::Handle<MeshTransformationBase>
   {
   public:
     /** Construct an empty mesh filter object */
     MeshTransformation();
 
     /** Construct from a raw pointer to a mesh filter subtype */
-    MeshTransformation(SundanceUtils::Handleable<MeshTransformationBase>* rawPtr);
+    MeshTransformation(Sundance::Handleable<MeshTransformationBase>* rawPtr);
 
     /** Construct from a smart pointer to a mesh filter subtype */
-    MeshTransformation(const RefCountPtr<MeshTransformationBase>& smartPtr);
+    MeshTransformation(const RCP<MeshTransformationBase>& smartPtr);
 
     /** apply the filter to create a new mesh */
     Mesh apply(const Mesh& inputMesh) const ;

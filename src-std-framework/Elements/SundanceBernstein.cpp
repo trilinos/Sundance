@@ -36,18 +36,16 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 Bernstein::Bernstein(int order)
   : order_(order)
 {
-TEST_FOR_EXCEPTION(order < 0, RuntimeError,
-                     "invalid polynomial order=" << order
-                     << " in Bernstein ctor");
+  TEST_FOR_EXCEPTION(order < 0, RuntimeError,
+    "invalid polynomial order=" << order
+    << " in Bernstein ctor");
 }
 
 bool Bernstein::supportsCellTypePair(
@@ -103,36 +101,36 @@ int Bernstein::nReferenceDOFs(
   ) const
 {
   switch(cellType)
-    {
+  {
     case PointCell:
       return 1;
     case LineCell:
       return 1 + order_;
     case TriangleCell:
-      {
-	return (order_+1)*(order_+2)/2;
-      }
+    {
+      return (order_+1)*(order_+2)/2;
+    }
     case TetCell:
-      {switch(order_)
-          {
-          case 0:
-            return 1;
-          case 1:
-            return 4;
-          case 2:
-            return 10;
-          default:
-            TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
-                               << " not implemented in Bernstein basis");
-            return -1; // -Wall
-          }
-
+    {switch(order_)
+      {
+        case 0:
+          return 1;
+        case 1:
+          return 4;
+        case 2:
+          return 10;
+        default:
+          TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
+            << " not implemented in Bernstein basis");
+          return -1; // -Wall
       }
+
+    }
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in Bernstein basis");
+        << cellType << " not implemented in Bernstein basis");
       return -1; // -Wall
-    }
+  }
 }
 
 void Bernstein::getReferenceDOFs(
@@ -143,7 +141,7 @@ void Bernstein::getReferenceDOFs(
   const int N=(order()+1)*(order()+2)/2;
   typedef Array<int> Aint;
   switch(cellType)
-    {
+  {
     case PointCell:
       dofs.resize(1);
       dofs[0] = tuple<Aint>(tuple(0));
@@ -154,74 +152,74 @@ void Bernstein::getReferenceDOFs(
       dofs[1] = tuple<Aint>(makeRange(1, order()-1));
       return;
     case TriangleCell:
+    {
+      dofs.resize(3);
+      dofs[0] = tuple<Aint>(tuple(0),tuple(N-order()-1),tuple(N-1));
+      if (order()>1)
       {
-	dofs.resize(3);
-	dofs[0] = tuple<Aint>(tuple(0),tuple(N-order()-1),tuple(N-1));
-	if (order()>1)
-	  {
-	    // order() - 1 dof per edge
-	    Aint dof0(order()-1);
-	    Aint dof1; // will fill in with range
-	    Aint dof2(order()-1);
+        // order() - 1 dof per edge
+        Aint dof0(order()-1);
+        Aint dof1; // will fill in with range
+        Aint dof2(order()-1);
 
-	    // first edge (from vertex 0 to 1
-	    int inc = 2;
-	    dof0[0] = 1;
-	    for (int i=1;i<order()-1;i++) 
+        // first edge (from vertex 0 to 1
+        int inc = 2;
+        dof0[0] = 1;
+        for (int i=1;i<order()-1;i++) 
 	      {
-		dof0[i] = dof0[i-1]+inc;
-		inc++;
+          dof0[i] = dof0[i-1]+inc;
+          inc++;
 	      }
 
-	    // second edge runs from vertex 1 to 2
-	    dof1 = makeRange(N-order(),N-2);
+        // second edge runs from vertex 1 to 2
+        dof1 = makeRange(N-order(),N-2);
 
-	    // third edge runs from vertex 2 to vertex 0
-	    inc = 3;
-	    dof2[order()-2] = 2;
-	    for (int i=order()-3;i>=0;i--)
+        // third edge runs from vertex 2 to vertex 0
+        inc = 3;
+        dof2[order()-2] = 2;
+        for (int i=order()-3;i>=0;i--)
 	      {
-		dof2[i] = dof2[i+1]+inc;
-		inc++;
+          dof2[i] = dof2[i+1]+inc;
+          inc++;
 	      }
 	    
-	    dofs[1] = tuple<Aint>(dof0,dof1,dof2);
-	  }
-	else
-	  {
-	    dofs[1] = tuple(Array<int>());
-	  }
-	if (order()>2)
-	  {
-	    Array<int> internaldofs;
-	    int bfcur = 0;
-	    int internalbfcur=0;
-	    for (int alpha1=order();alpha1>=0;alpha1--)
-	      {
-		for (int alpha2=order()-alpha1;alpha2>=0;alpha2--)
-		  {
-		    int alpha3 = order()-alpha1-alpha2;
-		    if (alpha1*alpha2*alpha3>0) {
-		      internaldofs.append(bfcur);
-		    }
-		    bfcur++;
-		  }
-	      }
-	    dofs[2] = tuple(internaldofs);
-	  }
-	else
-	  {
-	    dofs[2] = tuple(Array<int>());
-	  }
-	return;
+        dofs[1] = tuple<Aint>(dof0,dof1,dof2);
       }
-    case TetCell:
+      else
       {
+        dofs[1] = tuple(Array<int>());
       }
+      if (order()>2)
+      {
+        Array<int> internaldofs;
+        int bfcur = 0;
+        //int internalbfcur=0; // Commented out unused variable -- KL
+        for (int alpha1=order();alpha1>=0;alpha1--)
+	      {
+          for (int alpha2=order()-alpha1;alpha2>=0;alpha2--)
+          {
+            int alpha3 = order()-alpha1-alpha2;
+            if (alpha1*alpha2*alpha3>0) {
+              internaldofs.append(bfcur);
+            }
+            bfcur++;
+          }
+	      }
+        dofs[2] = tuple(internaldofs);
+      }
+      else
+      {
+        dofs[2] = tuple(Array<int>());
+      }
+      return;
+    }
+    case TetCell:
+    {
+    }
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in Bernstein basis");
-    }
+        << cellType << " not implemented in Bernstein basis");
+  }
 }
 
 
@@ -251,41 +249,41 @@ void Bernstein::refEval(
   result[0].resize(pts.length());
 
   switch(cellType)
-    {
+  {
     case PointCell:
       result[0] = tuple<Adouble>(tuple(1.0));
       return;
     case LineCell:
       for (int i=0; i<pts.length(); i++)
-        {
-          evalOnLine(pts[i], deriv, result[0][i]);
-        }
+      {
+        evalOnLine(pts[i], deriv, result[0][i]);
+      }
       return;
     case TriangleCell:
       for (int i=0; i<pts.length(); i++)
-        {
-          evalOnTriangle(pts[i], deriv, result[0][i]);
-        }
+      {
+        evalOnTriangle(pts[i], deriv, result[0][i]);
+      }
       return;
     case TetCell:
       for (int i=0; i<pts.length(); i++)
-        {
-          evalOnTet(pts[i], deriv, result[0][i]);
-        }
+      {
+        evalOnTet(pts[i], deriv, result[0][i]);
+      }
       return;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError,
-                         "Bernstein::refEval() unimplemented for cell type "
-                         << cellType);
+        "Bernstein::refEval() unimplemented for cell type "
+        << cellType);
 
-    }
+  }
 }
 
 /* ---------- evaluation on different cell types -------------- */
 
 void Bernstein::evalOnLine(const Point& pt, 
-			   const MultiIndex& deriv,
-			   Array<double>& result) const
+  const MultiIndex& deriv,
+  Array<double>& result) const
 {
   ADReal x = ADReal(pt[0], 0, 1);
   ADReal one(1.0, 1);
@@ -295,39 +293,39 @@ void Bernstein::evalOnLine(const Point& pt,
   Array<double> x0(order()+1);
   
   if (order_ == 0)
-    {
-      tmp[0] = one;
-    }
+  {
+    tmp[0] = one;
+  }
   else
+  {
+    double binom_cur = 1.0;
+    for (int i=0; i<=order_; i++)
     {
-      double binom_cur = 1.0;
-      for (int i=0; i<=order_; i++)
-        {
-	  tmp[i] = one;
+      tmp[i] = one;
 
-	  for (int j=0;j<order_-i;j++) 
+      for (int j=0;j<order_-i;j++) 
 	    {
 	      tmp[i] *= (1-x);
 	    }
-	  for (int j=0;j<i;j++) 
+      for (int j=0;j<i;j++) 
 	    {
 	      tmp[i] *= x;
 	    }
-	  tmp[i] *= binom_cur;
-	  binom_cur *= double(order()-i) / double(i+1);
-        }
+      tmp[i] *= binom_cur;
+      binom_cur *= double(order()-i) / double(i+1);
     }
+  }
   
   for (int i=0; i<tmp.length(); i++)
-    {
-      if (deriv.order()==0) result[i] = tmp[i].value();
-      else result[i] = tmp[i].gradient()[0];
-    }
+  {
+    if (deriv.order()==0) result[i] = tmp[i].value();
+    else result[i] = tmp[i].gradient()[0];
+  }
 }
 
 void Bernstein::evalOnTriangle(const Point& pt, 
-			       const MultiIndex& deriv,
-			       Array<double>& result) const
+  const MultiIndex& deriv,
+  Array<double>& result) const
 
 {
   ADReal x = ADReal(pt[0], 0, 2);
@@ -337,7 +335,7 @@ void Bernstein::evalOnTriangle(const Point& pt,
   Array<ADReal> tmp;
 
   SUNDANCE_OUT(this->verb() > 3, "x=" << x.value() << " y="
-               << y.value());
+    << y.value());
  
   if(order_==0) {
     result.resize(1);
@@ -357,55 +355,55 @@ void Bernstein::evalOnTriangle(const Point& pt,
     int bfcur = 0;
 
     for (int alpha1=order();alpha1>=0;alpha1--) 
+    {
+      for (int alpha2 = order()-alpha1;alpha2>=0;alpha2--)
       {
-	for (int alpha2 = order()-alpha1;alpha2>=0;alpha2--)
-	  {
-	    int alpha3 = order() - alpha1 - alpha2;
-	    tmp[bfcur] = one;
-	    for (int i=0;i<alpha1;i++)
+        int alpha3 = order() - alpha1 - alpha2;
+        tmp[bfcur] = one;
+        for (int i=0;i<alpha1;i++)
 	      {
-		tmp[bfcur] *= b1;
+          tmp[bfcur] *= b1;
 	      }
-	    for (int i=0;i<alpha2;i++) 
+        for (int i=0;i<alpha2;i++) 
 	      {
-		tmp[bfcur] *= b2;
+          tmp[bfcur] *= b2;
 	      }
-	    for (int i=0;i<alpha3;i++)
+        for (int i=0;i<alpha3;i++)
 	      {
-		tmp[bfcur] *= b3;
+          tmp[bfcur] *= b3;
 	      }
-	    for (int i=2;i<=order();i++)
+        for (int i=2;i<=order();i++)
 	      {
-		tmp[bfcur] *= (double) i;
+          tmp[bfcur] *= (double) i;
 	      }
-	    for (int i=2;i<=alpha1;i++) 
+        for (int i=2;i<=alpha1;i++) 
 	      {
-		tmp[bfcur] /= (double) i;
+          tmp[bfcur] /= (double) i;
 	      }
-	    for (int i=2;i<=alpha2;i++) 
+        for (int i=2;i<=alpha2;i++) 
 	      {
-		tmp[bfcur] /= (double) i;
+          tmp[bfcur] /= (double) i;
 	      }
-	    for (int i=2;i<=alpha3;i++) 
+        for (int i=2;i<=alpha3;i++) 
 	      {
-		tmp[bfcur] /= (double) i;
+          tmp[bfcur] /= (double) i;
 	      }
-	    bfcur++;
-	  }
+        bfcur++;
       }
+    }
   }
 
   for (int i=0; i<tmp.length(); i++)
-    {
-      if (deriv.order()==0) result[i] = tmp[i].value();
-      else 
-	result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
-    }
+  {
+    if (deriv.order()==0) result[i] = tmp[i].value();
+    else 
+      result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+  }
 }
 
 void Bernstein::evalOnTet(const Point& pt, 
-			  const MultiIndex& deriv,
-			  Array<double>& result) const
+  const MultiIndex& deriv,
+  Array<double>& result) const
 {
   ADReal x = ADReal(pt[0], 0, 3);
   ADReal y = ADReal(pt[1], 1, 3);
@@ -415,21 +413,21 @@ void Bernstein::evalOnTet(const Point& pt,
   Array<ADReal> tmp(result.length());
 
   if(order_==0)
-    {
-      tmp.resize(1);
-      result.resize(1);
-      tmp[0] = one;
-    }
+  {
+    tmp.resize(1);
+    result.resize(1);
+    tmp[0] = one;
+  }
   else
-    {
-    }
+  {
+  }
 
   for (int i=0; i<tmp.length(); i++)
-    {
-      if (deriv.order()==0) result[i] = tmp[i].value();
-      else 
-	result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
-    }
+  {
+    if (deriv.order()==0) result[i] = tmp[i].value();
+    else 
+      result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+  }
 }
 
 

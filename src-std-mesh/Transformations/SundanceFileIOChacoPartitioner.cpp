@@ -1,11 +1,11 @@
 #include "SundanceFileIOChacoPartitioner.hpp"
 #include "Teuchos_StrUtils.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 using std::ofstream;
 using std::ifstream;
@@ -28,9 +28,9 @@ void FileIOChacoPartitioner::writeGraph(const Mesh& mesh) const
 
   os << neighbors.size() << " " << nEdges << endl;
 
-  for (unsigned int i=0; i<neighbors.size(); i++)
+  for (int i=0; i<neighbors.size(); i++)
   {
-    for (unsigned int j=0; j<neighbors[i].size(); j++) 
+    for (int j=0; j<neighbors[i].size(); j++) 
     {
       if (j > 0) os << " ";
       os << neighbors[i][j]+1; // need unit offset here for Chaco

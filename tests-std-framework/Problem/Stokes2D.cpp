@@ -31,7 +31,7 @@
 #include "Sundance.hpp"
 #include "SundanceEvaluator.hpp"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the Stokes equation in 2D
  */

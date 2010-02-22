@@ -38,9 +38,9 @@
 #include "SundanceNullCellFilter.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 bool CellFilter::isNullCellFilter() const 
@@ -188,7 +188,7 @@ CellFilter CellFilter::subset(const CellPredicate& pred) const
 }
 
 
-CellFilter CellFilter::subset(const RefCountPtr<CellPredicateFunctorBase>& test) const
+CellFilter CellFilter::subset(const RCP<CellPredicateFunctorBase>& test) const
 {
   CellFilter rtn = new SubsetCellFilter(*this, CellPredicate(test));
   cfbPtr()->registerSubset(rtn);

@@ -32,7 +32,7 @@
 #include "SundanceDefs.hpp"
 #include <string>
 
-namespace SundanceUtils
+namespace Sundance
 {
 /**
  * NamedObject provides an interface for getting and setting 

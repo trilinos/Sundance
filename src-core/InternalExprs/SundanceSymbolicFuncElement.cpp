@@ -38,10 +38,10 @@
 #include "SundanceTabs.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -175,7 +175,7 @@ SymbolicFuncElement::internalFindC(int order, const EvalContext& context) const
 }
 
 
-RefCountPtr<Array<Set<MultipleDeriv> > > SymbolicFuncElement
+RCP<Array<Set<MultipleDeriv> > > SymbolicFuncElement
 ::internalDetermineR(const EvalContext& context,
                      const Array<Set<MultipleDeriv> >& RInput) const
 {
@@ -209,7 +209,7 @@ void SymbolicFuncElement::substituteZero() const
 }
 
 void SymbolicFuncElement
-::substituteFunction(const RefCountPtr<DiscreteFuncElement>& u0) const
+::substituteFunction(const RCP<DiscreteFuncElement>& u0) const
 {
   evalPt_ = u0;
 }
@@ -219,7 +219,7 @@ void SymbolicFuncElement
 bool SymbolicFuncElement::isIndependentOf(const Expr& u) const 
 {
   Expr uf = u.flatten();
-  for (unsigned int i=0; i<uf.size(); i++)
+  for (int i=0; i<uf.size(); i++)
   {
     const ExprBase* p = uf[i].ptr().get();
     const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);
@@ -234,7 +234,7 @@ bool SymbolicFuncElement::isIndependentOf(const Expr& u) const
 bool SymbolicFuncElement::isLinearForm(const Expr& u) const
 {
   Expr uf = u.flatten();
-  for (unsigned int i=0; i<uf.size(); i++)
+  for (int i=0; i<uf.size(); i++)
   {
     const ExprBase* p = uf[i].ptr().get();
     const SymbolicFuncElement* f = dynamic_cast<const SymbolicFuncElement*>(p);

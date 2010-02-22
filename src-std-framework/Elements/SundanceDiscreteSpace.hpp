@@ -40,20 +40,20 @@
 #include "TSFVectorSpaceDecl.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 class FunctionSupportResolver;
 }
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using namespace Teuchos;
   using namespace TSFExtended;
-  using namespace SundanceStdMesh;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Internal;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  
 
   /** 
    * DiscreteSpace represents a discrete finite-element space (i.e., 
@@ -90,13 +90,13 @@ namespace SundanceStdFwk
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                  const RefCountPtr<DOFMapBase>& map,
+                  const RCP<DOFMapBase>& map,
                   const VectorType<double>& vecType);
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-      const RefCountPtr<DOFMapBase>& map,
-      const RefCountPtr<Array<int> >& bcIndices,
+      const RCP<DOFMapBase>& map,
+      const RCP<Array<int> >& bcIndices,
       const VectorType<double>& vecType);
 
     /** */
@@ -110,11 +110,11 @@ namespace SundanceStdFwk
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-      const RefCountPtr<FunctionSupportResolver>& fsr,
+      const RCP<FunctionSupportResolver>& fsr,
       const VectorType<double>& vecType);
 
     /** */
-    const RefCountPtr<DOFMapBase>& map() const {return map_;}
+    const RCP<DOFMapBase>& map() const {return map_;}
 
     /** return the number of functions */
     int nFunc() const {return basis_.size();}
@@ -139,7 +139,7 @@ namespace SundanceStdFwk
 
     /** */
     void importGhosts(const Vector<double>& x,
-                      RefCountPtr<GhostView<double> >& ghostView) const ;
+                      RCP<GhostView<double> >& ghostView) const ;
 
     /** */
     void getAllowedFuncs(const CellFilter& cf, Set<int>& funcs) const ;
@@ -155,7 +155,7 @@ namespace SundanceStdFwk
     /** */
     void init(const Array<CellFilter>& regions,
       const BasisArray& basis,
-      const RefCountPtr<Array<int> >& isBCIndex, 
+      const RCP<Array<int> >& isBCIndex, 
       bool partitionBCs);
 
     /** */
@@ -163,7 +163,7 @@ namespace SundanceStdFwk
 
     /** */
     void initVectorSpace(
-      const RefCountPtr<Array<int> >& isBCIndex, 
+      const RCP<Array<int> >& isBCIndex, 
       bool partitionBCs);
     
     /** */
@@ -171,7 +171,7 @@ namespace SundanceStdFwk
 
 
     /** */
-    RefCountPtr<DOFMapBase> map_;
+    RCP<DOFMapBase> map_;
 
     /** */
     Mesh mesh_;
@@ -189,7 +189,7 @@ namespace SundanceStdFwk
     VectorType<double> vecType_;
 
     /** */
-    RefCountPtr<GhostImporter<double> > ghostImporter_;
+    RCP<GhostImporter<double> > ghostImporter_;
   };
 
 }

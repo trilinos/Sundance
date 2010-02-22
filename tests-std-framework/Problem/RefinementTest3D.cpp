@@ -4,7 +4,7 @@
 #include "SundanceBubble.hpp"
 #include "SundanceExodusWriter.hpp"
 
-using namespace SundanceStdMesh::Rivara;
+using namespace Sundance::Rivara;
 
 CELL_PREDICATE(LeftPointTest, {return fabs(x[0]+1.0) < 1.0e-10;}) 
 CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})

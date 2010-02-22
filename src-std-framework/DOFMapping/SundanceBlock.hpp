@@ -36,12 +36,8 @@
 #include "TSFVectorType.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceCore;
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
   using namespace Teuchos;
   using namespace TSFExtended;
   
@@ -80,11 +76,6 @@ namespace SundanceStdFwk
     /** explicit conversion needed for python wrappers */
     BlockArray(int n) : Array<Block>(n) {;}
 
-#ifndef TRILINOS_8
-    /** */
-    template <int n>
-    BlockArray(const Teuchos::Tuple<Block, n>& a) : Array<Block>(a) {;}
-#endif
   };
 
   /** \relates Block */

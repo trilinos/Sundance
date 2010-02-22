@@ -34,10 +34,10 @@
 #include "SundanceSpectralExpr.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -45,7 +45,7 @@ using namespace Teuchos;
 DiscreteFunctionStub::DiscreteFunctionStub(const string& name, 
   int tensorOrder,
   int dim, 
-  const RefCountPtr<DiscreteFuncDataStub>& data,
+  const RCP<DiscreteFuncDataStub>& data,
   int listIndex)
   : ListExpr(), data_(data)
 {
@@ -55,7 +55,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name,
 void DiscreteFunctionStub::initTensor(const string& name, 
   int tensorOrder,
   int dim, 
-  const RefCountPtr<DiscreteFuncDataStub>& data,
+  const RCP<DiscreteFuncDataStub>& data,
   int listIndex)
 {
   FunctionIdentifier myFid = makeFuncID(tensorOrder);
@@ -84,7 +84,7 @@ void DiscreteFunctionStub::initTensorSpectral(const string& name,
   const SpectralBasis& sbasis, 
   int tensorOrder,
   int dim, 
-  const RefCountPtr<DiscreteFuncDataStub>& data,
+  const RCP<DiscreteFuncDataStub>& data,
   int listIndexOffset)
 {
   Array<FunctionIdentifier> cFid(sbasis.nterms());
@@ -134,12 +134,12 @@ void DiscreteFunctionStub::initTensorSpectral(const string& name,
 
 DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name, 
   const Array<std::pair<int,int> >& tensorStructure,
-  const RefCountPtr<DiscreteFuncDataStub>& data)
+  const RCP<DiscreteFuncDataStub>& data)
   : ListExpr(), data_(data)
 {
-  TEST_FOR_EXCEPT(name.size() != tensorStructure.size() && name.size()!=1U);
+  TEST_FOR_EXCEPT(name.size() != tensorStructure.size() && name.size()!=1);
 
-  if (tensorStructure.size()==1U)
+  if (tensorStructure.size()==1)
   {
     int tensorOrder = tensorStructure[0].first;
     int dim = tensorStructure[0].second;
@@ -147,10 +147,10 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
   }
   else
   {
-    for (unsigned int i=0; i<tensorStructure.size(); i++)
+    for (int i=0; i<tensorStructure.size(); i++)
     {
       string nm;
-      if (name.size()==1U) nm = name[0] + "[" + Teuchos::toString(i) + "]";
+      if (name.size()==1) nm = name[0] + "[" + Teuchos::toString(i) + "]";
       else nm = name[i];
       append(new DiscreteFunctionStub(
                nm,
@@ -165,7 +165,7 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
 
 DiscreteFunctionStub::DiscreteFunctionStub(const string& name, 
   const SpectralBasis& sbasis, int tensorOrder, int dim,
-  const RefCountPtr<DiscreteFuncDataStub>& data,
+  const RCP<DiscreteFuncDataStub>& data,
   int listIndex)
   : ListExpr(), data_(data)
 {
@@ -177,11 +177,11 @@ DiscreteFunctionStub::DiscreteFunctionStub(const string& name,
 DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name, 
   const SpectralBasis& sbasis,  
   const Array<std::pair<int,int> >& tensorStructure,
-  const RefCountPtr<DiscreteFuncDataStub>& data)
+  const RCP<DiscreteFuncDataStub>& data)
   : ListExpr(), data_(data)
 {
   TEST_FOR_EXCEPT(name.size() != tensorStructure.size());
-   if (tensorStructure.size()==1U)
+   if (tensorStructure.size()==1)
   {
     int tensorOrder = tensorStructure[0].first;
     int dim = tensorStructure[0].second;
@@ -189,10 +189,10 @@ DiscreteFunctionStub::DiscreteFunctionStub(const Array<string>& name,
   }
   else
   {
-    for (unsigned int i=0; i<tensorStructure.size(); i++)
+    for (int i=0; i<tensorStructure.size(); i++)
     {
       string nm;
-      if (name.size()==1U) nm = name[0] + "[" + Teuchos::toString(i) + "]";
+      if (name.size()==1) nm = name[0] + "[" + Teuchos::toString(i) + "]";
       else nm = name[i];
       append(new DiscreteFunctionStub(
                nm,

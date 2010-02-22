@@ -37,9 +37,9 @@
 #include "Teuchos_MPIContainerComm.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 PartialElementDOFMap::PartialElementDOFMap(const Mesh& mesh, 
@@ -63,7 +63,7 @@ PartialElementDOFMap::PartialElementDOFMap(const Mesh& mesh,
 }
 
 
-RefCountPtr<const MapStructure> 
+RCP<const MapStructure> 
 PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
   const Array<int>& cellLID,
   const Set<int>& requestedFuncSet,
@@ -173,14 +173,14 @@ void PartialElementDOFMap::init()
 }
 
 
-RefCountPtr<const Set<int> > PartialElementDOFMap
+RCP<const Set<int> > PartialElementDOFMap
 ::allowedFuncsOnCellBatch(int cellDim,
   const Array<int>& cellLID) const 
 {
-  static RefCountPtr<const Set<int> > empty = rcp(new Set<int>());
+  static RCP<const Set<int> > empty = rcp(new Set<int>());
 
   if (cellDim != dim_) return empty;
-  for (unsigned int i=0; i<cellLID.size(); i++)
+  for (int i=0; i<cellLID.size(); i++)
   {
     if (elemDofs_[cellLID[i]*nFuncs_] < 0) return empty;
   }

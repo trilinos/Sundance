@@ -7,9 +7,9 @@
 #include "Teuchos_TimeMonitor.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceStdMesh::Rivara;
-using namespace SundanceUtils;
-using SundanceUtils::Map;
+using namespace Sundance::Rivara;
+using namespace Sundance;
+using Sundance::Map;
 
 using namespace Teuchos;
 using std::endl;
@@ -19,7 +19,7 @@ using std::endl;
 
 static Time& refKernelTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("mesh refinement kernel"); 
   return *rtn;
 }
@@ -42,7 +42,7 @@ void RivaraMesh::refine()
     }
 }
 
-int RivaraMesh::addNode(const RefCountPtr<Node>& node)
+int RivaraMesh::addNode(const RCP<Node>& node)
 {
   int lid = nodes_.length();
   node->setLocalIndex(lid);
@@ -57,11 +57,11 @@ int RivaraMesh::addVertex(
   int globalIndex, const Point& x, 
   int ownerProcID, int label)
 {
-  RefCountPtr<Node> node = rcp(new Node(globalIndex, x, ownerProcID, label));
+  RCP<Node> node = rcp(new Node(globalIndex, x, ownerProcID, label));
   return addNode(node);
 }
 
-void RivaraMesh::addElement(const RefCountPtr<Element>& tri)
+void RivaraMesh::addElement(const RCP<Element>& tri)
 {
   elements_.append(tri);
 }
@@ -74,7 +74,7 @@ int RivaraMesh::addElement(
   int label)
 {
   int lid = elements_.size();
-  RefCountPtr<Element> elem;
+  RCP<Element> elem;
 
   switch(vertexGIDs.size())
   {
@@ -101,8 +101,8 @@ int RivaraMesh::addElement(
   
 }
 
-RefCountPtr<Edge> RivaraMesh::tryEdge(const RefCountPtr<Node>& a,
-                                          const RefCountPtr<Node>& b,
+RCP<Edge> RivaraMesh::tryEdge(const RCP<Node>& a,
+                                          const RCP<Node>& b,
                                           int& edgeSign)
 {
   int i = a->localIndex();
@@ -122,7 +122,7 @@ RefCountPtr<Edge> RivaraMesh::tryEdge(const RefCountPtr<Node>& a,
     }
   else
     {
-      RefCountPtr<Edge> rtn = rcp(new Edge(a,b));
+      RCP<Edge> rtn = rcp(new Edge(a,b));
       edgeSign = 1;
       int k = edges_.length();
       edges_.append(rtn);
@@ -132,10 +132,10 @@ RefCountPtr<Edge> RivaraMesh::tryEdge(const RefCountPtr<Node>& a,
 }
 
 
-RefCountPtr<Face> RivaraMesh::tryFace(
-  const RefCountPtr<Node>& a,
-  const RefCountPtr<Node>& b,
-  const RefCountPtr<Node>& c)
+RCP<Face> RivaraMesh::tryFace(
+  const RCP<Node>& a,
+  const RCP<Node>& b,
+  const RCP<Node>& c)
 {
   FaceNodes f(a,b,c);
 
@@ -147,7 +147,7 @@ RefCountPtr<Face> RivaraMesh::tryFace(
   else
   {
     faceLID = faces_.size();
-    RefCountPtr<Face> newFace = rcp(new Face(a,b,c));
+    RCP<Face> newFace = rcp(new Face(a,b,c));
     faceToLIDMap_.put(newFace->nodes(), faceLID);
     faces_.append(newFace);
   }
@@ -157,10 +157,10 @@ RefCountPtr<Face> RivaraMesh::tryFace(
 
 
 
-const RefCountPtr<Face>& RivaraMesh::getFace(
-  const RefCountPtr<Node>& a,
-  const RefCountPtr<Node>& b,
-  const RefCountPtr<Node>& c) const 
+const RCP<Face>& RivaraMesh::getFace(
+  const RCP<Node>& a,
+  const RCP<Node>& b,
+  const RCP<Node>& c) const 
 {
   FaceNodes f(a,b,c);
   return faces_[faceToLIDMap_.get(f)];

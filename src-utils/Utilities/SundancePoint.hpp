@@ -37,9 +37,9 @@
 
 
 
-namespace SundanceUtils
+namespace Sundance
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using std::string;
 
   using std::ostream;
@@ -102,11 +102,11 @@ namespace SundanceUtils
 
 namespace std
 {
-  ostream& operator<<(ostream& os, const SundanceUtils::Point& p);
+  ostream& operator<<(ostream& os, const Sundance::Point& p);
 
 }
 
-namespace SundanceUtils
+namespace Sundance
 {
   inline Point operator*(const double& a, const Point& p);
 
@@ -301,7 +301,7 @@ namespace SundanceUtils
 
 namespace Teuchos
 {
-  inline string toString(const SundanceUtils::Point& x)
+  inline string toString(const Sundance::Point& x)
     {
       return x.toString();
     }
@@ -309,7 +309,7 @@ namespace Teuchos
 
 namespace std
 {
-  ostream& operator<<(ostream& os, const SundanceUtils::Point& p);
+  ostream& operator<<(ostream& os, const Sundance::Point& p);
 }
 
 

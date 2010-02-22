@@ -35,7 +35,7 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 

@@ -39,16 +39,16 @@
 #include "SundanceNoncopyable.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 class TempStack;
 /**
  *
  */
 class EvalVector : public Noncopyable,
-                   public SundanceUtils::ObjectWithClassVerbosity<EvalVector>
+                   public ObjectWithClassVerbosity<EvalVector>
 {
   friend class EvalManager;
   friend class TempStack;
@@ -59,7 +59,7 @@ private:
   EvalVector(TempStack* s);
 
   /** */
-  EvalVector(TempStack* s, const RefCountPtr<Array<double> >& data,
+  EvalVector(TempStack* s, const RCP<Array<double> >& data,
     const string& str);
 
 
@@ -276,11 +276,11 @@ public:
    * Apply a unary function
    */
   void applyUnaryOperator(const UnaryFunctor* func, 
-    Array<RefCountPtr<EvalVector> >& opDerivs);
+    Array<RCP<EvalVector> >& opDerivs);
       
       
   /** */
-  RefCountPtr<EvalVector> clone() const ;
+  RCP<EvalVector> clone() const ;
 
   /** */
   void resize(int n);
@@ -316,7 +316,7 @@ private:
 
   mutable TempStack* s_;
 
-  RefCountPtr<Array<double> > data_;
+  RCP<Array<double> > data_;
 
   string str_;
 
@@ -329,7 +329,7 @@ private:
 namespace std
 {
 inline ostream& operator<<(ostream& os, 
-  const SundanceCore::EvalVector& vec)
+  const Sundance::EvalVector& vec)
 {
   vec.print(os);
   return os;

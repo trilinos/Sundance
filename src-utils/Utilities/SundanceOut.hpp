@@ -42,7 +42,7 @@ namespace Teuchos
 {
 template <class T> class Array;
 }
-namespace SundanceUtils
+namespace Sundance
 {
 class Tabs;
 using namespace Teuchos;
@@ -68,8 +68,8 @@ public:
 
   static FancyOStream& os()
     {
-      static RefCountPtr<std::ostream> os = rcp(&std::cout, false);
-      static RefCountPtr<FancyOStream> rtn = fancyOStream(os);
+      static RCP<std::ostream> os = rcp(&std::cout, false);
+      static RCP<FancyOStream> rtn = fancyOStream(os);
       static bool first = true;
       if (first)
       {
@@ -82,7 +82,7 @@ public:
   static FancyOStream& root()
     {
       static bool isRoot = MPIComm::world().getRank()==0;
-      static RefCountPtr<FancyOStream> blackHole
+      static RCP<FancyOStream> blackHole
         = rcp(new FancyOStream(rcp(new oblackholestream())));
 
       if (isRoot)
@@ -99,7 +99,7 @@ public:
 
 private:
   static bool& hasLogFile() {static bool rtn=false; return rtn;}
-  static RefCountPtr<std::ostream>& logFile() {static RefCountPtr<std::ostream> rtn; return rtn;}
+  static RCP<std::ostream>& logFile() {static RCP<std::ostream> rtn; return rtn;}
       
 };
 

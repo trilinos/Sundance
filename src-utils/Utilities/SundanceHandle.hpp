@@ -53,17 +53,17 @@
   * The macro will also create appropriate doxygen for the handle ctors */
 #define HANDLE_CTORS(handle, contents) \
   /** Empty ctor */ \
-handle() : SundanceUtils::Handle<contents >() {;} \
+handle() : Sundance::Handle<contents >() {;} \
   /** Construct a #handle with a raw pointer to a #contents */ \
-  handle(SundanceUtils::Handleable<contents >* rawPtr) : SundanceUtils::Handle<contents >(rawPtr) {;} \
+  handle(Sundance::Handleable<contents >* rawPtr) : Sundance::Handle<contents >(rawPtr) {;} \
   /** Construct a #handle with a smart pointer to a #contents */ \
-  handle(const Teuchos::RefCountPtr<contents >& smartPtr) : SundanceUtils::Handle<contents >(smartPtr){;}
+  handle(const Teuchos::RCP<contents >& smartPtr) : Sundance::Handle<contents >(smartPtr){;}
 
 
 
 
 
-namespace SundanceUtils
+namespace Sundance
 {
 using namespace Teuchos;
 using std::endl;
@@ -89,7 +89,7 @@ public:
 
 
 /**
- * Class SundanceUtils::Handle provides a general implementation
+ * Class Sundance::Handle provides a general implementation
  * of the common features of reference-counted handles.
  */
 template <class PointerType>
@@ -100,16 +100,16 @@ public:
   Handle() : ptr_() {;}
 
   /** Construct from a smart pointer */
-  Handle(const RefCountPtr<PointerType>& _ptr) : ptr_(_ptr) {;}
+  Handle(const RCP<PointerType>& _ptr) : ptr_(_ptr) {;}
 
   /** Construct from a raw pointer to a Handleable.  */
   Handle(Handleable<PointerType>* rawPtr) : ptr_(rawPtr->getRcp()) {;}
 
   /** Read-only access to the underlying smart pointer. */
-  const RefCountPtr<PointerType>& ptr() const {return ptr_;}
+  const RCP<PointerType>& ptr() const {return ptr_;}
 
   /** Read-write access to the underlying smart pointer. */
-  RefCountPtr<PointerType>& ptr() {return ptr_;}
+  RCP<PointerType>& ptr() {return ptr_;}
 
   /** 
    * Print to a stream using the Printable interface. 
@@ -190,7 +190,7 @@ public:
   std::string fallbackDescription() const ;
 
 private:
-  RefCountPtr<PointerType> ptr_;
+  RCP<PointerType> ptr_;
 };
 
 /* implementation of print() */
@@ -280,7 +280,7 @@ std::string Handle<PointerType>::fallbackDescription() const
 
 
 template <class PointerType> inline
-std::ostream& operator<<(std::ostream& os, const SundanceUtils::Handle<PointerType>& h)
+std::ostream& operator<<(std::ostream& os, const Sundance::Handle<PointerType>& h)
 {
   h.print(os);
   return os;

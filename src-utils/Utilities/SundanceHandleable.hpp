@@ -36,7 +36,7 @@
 /** Handleable<##Base> interface */ \
 virtual Teuchos::RCP<Base > getRcp() {return rcp(this);}
 
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 
@@ -64,7 +64,7 @@ namespace SundanceUtils
     virtual ~Handleable(){;}
 
     /** Return a safely-created RefCountPtr to the base type */
-    virtual RefCountPtr<Base> getRcp() = 0 ;
+    virtual RCP<Base> getRcp() = 0 ;
     
   };
   

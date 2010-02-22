@@ -35,15 +35,7 @@
 #include "SundanceVectorFillingAssemblyKernel.hpp"
 #include "SundanceFunctionalAssemblyKernel.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -56,8 +48,8 @@ class FunctionalGradientAssemblyKernel : public AssemblyKernelBase
 public:
   /** */
   FunctionalGradientAssemblyKernel(const MPIComm& comm,
-    const Array<RefCountPtr<DOFMapBase> >& dofMap,
-    const Array<RefCountPtr<Array<int> > >& isBCIndex,
+    const Array<RCP<DOFMapBase> >& dofMap,
+    const Array<RCP<Array<int> > >& isBCIndex,
     const Array<int>& lowestLocalIndex,
     Array<Vector<double> >& grad,
     bool partitionBCs,
@@ -68,7 +60,7 @@ public:
       vecKernel_(rcp(new VectorAssemblyKernel(dofMap, isBCIndex,
             lowestLocalIndex, grad, partitionBCs, verb)))
     {
-      TEST_FOR_EXCEPTION(grad.size() != 1U, InternalError,
+      TEST_FOR_EXCEPTION(grad.size() != 1, InternalError,
         "assembly target in FunctionalGradientAssemblyKernel should not "
         "be a multivector");
     }
@@ -77,7 +69,7 @@ public:
   void prepareForWorkSet(
     const Array<Set<int> >& requiredTests,
     const Array<Set<int> >& requiredUnks,
-    RefCountPtr<StdFwkEvalMediator> mediator) 
+    RCP<StdFwkEvalMediator> mediator) 
     {
       funcKernel_->prepareForWorkSet(requiredTests, requiredUnks, mediator);
       vecKernel_->prepareForWorkSet(requiredTests, requiredUnks, mediator);
@@ -86,7 +78,7 @@ public:
   /** */
   void fill(bool isBC,
     const IntegralGroup& group,
-    const RefCountPtr<Array<double> >& localValues) 
+    const RCP<Array<double> >& localValues) 
     {
       if (group.isOneForm())
       {
@@ -110,11 +102,11 @@ public:
     }
 
 private:
-  RefCountPtr<FunctionalAssemblyKernel> funcKernel_;
-  RefCountPtr<VectorAssemblyKernel> vecKernel_;
+  RCP<FunctionalAssemblyKernel> funcKernel_;
+  RCP<VectorAssemblyKernel> vecKernel_;
 };
 
-}
+
 }
 
 

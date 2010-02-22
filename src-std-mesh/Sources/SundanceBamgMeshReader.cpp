@@ -3,11 +3,8 @@
 #include "SundanceExceptions.hpp"
 #include "Teuchos_StrUtils.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 BamgMeshReader::BamgMeshReader(const string& fname,
@@ -117,8 +114,8 @@ void BamgMeshReader::readParallelInfo(Array<int>& ptGID,
                                       Array<int>& cellGID, 
                                       Array<int>& cellOwner) const
 {
-  unsigned int nPoints;
-  unsigned int nElems;
+  int nPoints;
+  int nElems;
   string line;
   Array<string> tokens;
   try
@@ -133,7 +130,7 @@ void BamgMeshReader::readParallelInfo(Array<int>& ptGID,
        * distribution */
       if (nProc() > 1)
         {
-          RefCountPtr<std::ifstream> parStream 
+          RCP<std::ifstream> parStream 
             = openFile(parFilename_, "parallel info");
      
           /* read the number of processors and the processor rank in 
@@ -179,7 +176,7 @@ void BamgMeshReader::readParallelInfo(Array<int>& ptGID,
           ptGID.resize(nPoints);
           ptOwner.resize(nPoints);
 
-          for (unsigned int i=0; i<nPoints; i++)
+          for (int i=0; i<nPoints; i++)
             {
               getNextLine(*parStream, line, tokens, '#');
 
@@ -213,7 +210,7 @@ void BamgMeshReader::readParallelInfo(Array<int>& ptGID,
 
           cellGID.resize(nElems);
           cellOwner.resize(nElems);
-          for (unsigned int i=0; i<nElems; i++)
+          for (int i=0; i<nElems; i++)
             {
               getNextLine(*parStream, line, tokens, '#');
 
@@ -247,7 +244,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
   Mesh mesh;
   string line;
   Array<string> tokens;
-  unsigned int nPoints=0;
+  int nPoints=0;
 
   /* Open the mesh file so we can read in the nodes and elements */
 	
@@ -257,7 +254,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 
     /*
 
-    RefCountPtr<std::ifstream> nodeStream = openFile(nodeFilename_, "node info");
+    RCP<std::ifstream> nodeStream = openFile(nodeFilename_, "node info");
     // read the header line //
     getNextLine(*nodeStream, line, tokens, '#');
     TEST_FOR_EXCEPTION(tokens.length() != 4, RuntimeError,
@@ -343,7 +340,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
     /////////// here's the Bamg reader for reading nodes /////////////
     std::cerr << "starting to read meshFile" << std::endl;
 
-    RefCountPtr<std::ifstream> meshStream = openFile(meshFilename_, 
+    RCP<std::ifstream> meshStream = openFile(meshFilename_, 
                                                 "node & elem info");
     //Array<string> liners = StrUtils::readFile(meshStream, '#');
     Array<string> liners = StrUtils::readFile(*meshStream, '#');
@@ -355,20 +352,20 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                  "reading nodes from " + meshFilename_);
 
     // extract dimension, nodes, elements (triangles) from lines
-    unsigned int dimension=0;
-    unsigned int dimensionIndex = 0;
-    unsigned int lineIndex = 0;
-    unsigned int verticesIndex = 0;
-    unsigned int edgesIndex = 0;
-    unsigned int triangleIndex = 0;
-    unsigned int nCells=0;
+    int dimension=0;
+    int dimensionIndex = 0;
+    int lineIndex = 0;
+    int verticesIndex = 0;
+    int edgesIndex = 0;
+    int triangleIndex = 0;
+    int nCells=0;
     std::cerr << "DimensionIndex = " << dimensionIndex << std::endl;
 
     //int linerssize = liners.size();
-    unsigned int linerssize = liners.length();
+    int linerssize = liners.length();
     std::cerr << "number of lines in liners = " << linerssize << std::endl;
 
-    for (unsigned int i = lineIndex; i < linerssize; i++)
+    for (int i = lineIndex; i < linerssize; i++)
       {
         tokens = StrUtils::stringTokenizer(liners[i]);
         std::cerr << "test: i = " << i << "tokens[0] = " << tokens[0] << std::endl;
@@ -399,7 +396,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         lineIndex = dimensionIndex + 2;
       }
 
-    for (unsigned int i = lineIndex; i < liners.size(); i++)
+    for (int i = lineIndex; i < liners.size(); i++)
       {
         tokens = StrUtils::stringTokenizer(liners[i]);
         if (tokens[0] == "Vertices") verticesIndex = i;
@@ -412,7 +409,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         std::cerr << "nPoints = " << nPoints << std::endl;
         ptGID.resize(nPoints);
         ptOwner.resize(nPoints);
-        for (unsigned int i=0; i<nPoints; i++)
+        for (int i=0; i<nPoints; i++)
           {
             ptGID[i] = i;
             ptOwner[i] = 0;
@@ -431,26 +428,26 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
     ///// read the velocity data from bb file if bbAttr_ = true ////////////
       if (bbAttr_)
         {
-          RefCountPtr<std::ifstream> bbStream = openFile(bbFilename_, 
+          RCP<std::ifstream> bbStream = openFile(bbFilename_, 
                                                     "velocity info");
           Array<string> bbliners = StrUtils::readFile(*bbStream, '#');
 
           //extract dimension, # solutions, # vertices, solution type 
           //from first line
 
-          unsigned int bbdimension;
-          unsigned int bbnumSolns;
-          unsigned int bbnumPoints=0;
-          unsigned int bbsolnType;
-          unsigned int bbdimensionIndex = 0;
-          unsigned int bblineIndex = 0;
+          int bbdimension;
+          int bbnumSolns;
+          int bbnumPoints=0;
+          int bbsolnType;
+          int bbdimensionIndex = 0;
+          int bblineIndex = 0;
           //          int bbverticesIndex = 0;
           std::cerr << "bbDimensionIndex = " << bbdimensionIndex << std::endl;
 
-          unsigned int bblinerssize = bbliners.size();
+          int bblinerssize = bbliners.size();
           std::cerr << "number of lines in bbliners = " << bblinerssize << std::endl;
 
-          for (unsigned int i = bblineIndex; i < bblinerssize; i++)
+          for (int i = bblineIndex; i < bblinerssize; i++)
             {
               Array<string> bbtokens = StrUtils::stringTokenizer(bbliners[i]);
               if(bbtokens.length() > 0) //read first nonblank line
@@ -493,7 +490,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 
           //assume solution data starts immediately below header 
           //and has no blank lines
-          for (unsigned int i = bblineIndex; i < bbnumPoints + bblineIndex; i++) 
+          for (int i = bblineIndex; i < bbnumPoints + bblineIndex; i++) 
             {
               Array<string> bbtokens = StrUtils::stringTokenizer(bbliners[i]);
               if (bbtokens.length() == 0) 
@@ -521,7 +518,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
       //////////// got velocity vector ///////////////////////
   
 
-      unsigned int nAttributes = 0; // value from Triangle .node file
+      int nAttributes = 0; // value from Triangle .node file
       if (bbAttr_) nAttributes = numbbAttr; // expect two velocities per node
       std::cerr << "nAttributes = " << nAttributes << std::endl;
       //      int nBdryMarkers = 1; // unused - commented out - KL
@@ -529,8 +526,8 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 
       //Mesh mesh(dimension); /old
       mesh = createMesh(dimension);
-      unsigned int count=0;
-      unsigned int offset=0; 
+      int count=0;
+      int offset=0; 
       //initialization--will later set = 1 since Bamg #'s count from 1, not 0
       Array<bool> usedPoint(nPoints);
 
@@ -540,7 +537,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
       //bool first = true;// unused - commented out - KL
 
       /* now we can add the point to the mesh */
-      for (unsigned int i = lineIndex; i < liners.size(); i++)  
+      for (int i = lineIndex; i < liners.size(); i++)  
         //proceed to read nodes, forget bdry markers
         {
           tokens = StrUtils::stringTokenizer(liners[i]);
@@ -576,7 +573,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                 = mesh.addVertex(ptGID[count], pt, ptOwner[count], ptLabel);
 	  
               (*nodeAttributes())[count].resize(nAttributes);
-              for (unsigned int i=0; i<nAttributes; i++)
+              for (int i=0; i<nAttributes; i++)
                 {
                   //(*nodeAttributes())[count][i] = atof(tokens[dimension+1+i]);
                   if(i == 0) (*nodeAttributes())[count][i] = velVector[count];
@@ -603,7 +600,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 
       std::cerr << "lineIndex = " << lineIndex << "; triangleIndex = " 
            << triangleIndex << std::endl;
-      for (unsigned int i = lineIndex; i < liners.size(); i++)
+      for (int i = lineIndex; i < liners.size(); i++)
         {
           tokens = StrUtils::stringTokenizer(liners[i]);
           if (tokens[0] == "Triangles") {triangleIndex = i; break;}
@@ -628,7 +625,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
           elemGID.resize(nCells);
           elemOwner.resize(nCells);
           std::cerr << "nCells = " << nCells << std::endl;
-          for (unsigned int i=0; i<nCells; i++)
+          for (int i=0; i<nCells; i++)
             {
               elemGID[i] = i;
               elemOwner[i] = 0;
@@ -655,7 +652,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         /*
    
         // Open the element file //
-        RefCountPtr<std::ifstream> elemStream = openFile(elemFilename_, "element info");
+        RCP<std::ifstream> elemStream = openFile(elemFilename_, "element info");
 
         getNextLine(*elemStream, line, tokens, '#');
      
@@ -739,13 +736,13 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         SUNDANCE_OUT(this->verb() > 3, 
                      "done reading nodes, ready to read elements from " + meshFilename_);
 
-        unsigned int nElems = nCells;
-        unsigned int ptsPerElem = dimension + 1;
+        int nElems = nCells;
+        int ptsPerElem = dimension + 1;
         elemGID.resize(nElems);
         elemOwner.resize(nElems);
         offset = 1; //assume Bamg node #'s start with 1, not 0
 
-        for (unsigned int i=0; i<nElems; i++)
+        for (int i=0; i<nElems; i++)
           {
             elemGID[i] = i;
             elemOwner[i] = 0;
@@ -755,7 +752,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         elemAttributes()->resize(nElems);
         count = 0;
 
-        unsigned int dim = mesh.spatialDim(); //should equal dimension
+        int dim = mesh.spatialDim(); //should equal dimension
         Array<int> nodes(dim+1); 
         if (dim != dimension) std::cerr << "ERROR: dim = " << dim << "!= dimension = "
                                    << dimension << std::endl;
@@ -763,7 +760,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
         std::cerr << "lineIndex = " << lineIndex << std::endl;
         std::cerr << "size of liners = " << liners.size() << std::endl;
         std::cerr << "lineIndex+nCells-1 = " << lineIndex+nCells-1 << std::endl;
-        for (unsigned int i = lineIndex; i < liners.size();i++) 
+        for (int i = lineIndex; i < liners.size();i++) 
           //proceed to read elements, forget bdry markers
           {
             tokens = StrUtils::stringTokenizer(liners[i]);
@@ -777,7 +774,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                                                   << " " << tokens[1] << " " 
                                                   << tokens[2] << std::endl;
 
-                for (unsigned int d=0; d<=dim; d++)
+                for (int d=0; d<=dim; d++)
                   {
                     //nodes[d] = ptGID[atoi(tokens[d+1])-offset]; 
                     //a Triangle .ele file reads the element no. first, 
@@ -792,7 +789,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
                 mesh.addElement(elemGID[count], nodes, elemOwner[count], elemLabel);
        
                 (*elemAttributes())[count].resize(nAttributes);
-                for (unsigned int i=0; i<nAttributes; i++)
+                for (int i=0; i<nAttributes; i++)
                   {
                     //(*elemAttributes())[count][i] = atof(tokens[1+ptsPerElem+i]);
                     //offset by 1 since a Triangle .ele file reads the 
@@ -820,7 +817,7 @@ Mesh BamgMeshReader::readMesh(Array<int>& ptGID,
 Array<Array<double> > BamgMeshReader::getVelocityField(const string& bbFilename) const
 // read .bb file for 2-D velocity field & return a ListExpr for the field //
 {
-RefCountPtr<std::ifstream> bbStream = openFile(bbFilename_, "velocity info");
+RCP<std::ifstream> bbStream = openFile(bbFilename_, "velocity info");
 Array<string> liners = StrUtils::readFile(*bbStream, '#');
 
 //extract dimension, # solutions, # vertices, solution type from first line

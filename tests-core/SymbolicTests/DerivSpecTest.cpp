@@ -10,7 +10,7 @@
 #include "Teuchos_TestingHelpers.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace std;
 
 #define TEST_THROW(code, passFail) \
@@ -21,19 +21,19 @@ using namespace std;
 
 Deriv funcDeriv(const Expr& u, const MultiIndex& mi = MultiIndex(0,0,0))
 {
-  if (u.size()==1U)
+  if (u.size()==1)
   {
     const SymbolicFuncElement* sfe 
       = dynamic_cast<const SymbolicFuncElement*>(u[0].ptr().get());
     TEST_FOR_EXCEPT(sfe==0);
-    return SundanceCore::funcDeriv(sfe, mi);
+    return Sundance::funcDeriv(sfe, mi);
   }
   else
   {
     const SymbolicFunc* sf 
       = dynamic_cast<const SymbolicFunc*>(u.ptr().get());
     TEST_FOR_EXCEPT(sf==0);
-    return SundanceCore::funcDeriv(sf);
+    return Sundance::funcDeriv(sf);
   }
 }
 
@@ -73,7 +73,7 @@ bool testVecFunction()
   int verb=1;
 
   /* make a vector function */
-  unsigned int dim = 3;
+  int dim = 3;
   Expr u = new UnknownFunctionStub("u", 1, 3);
   Expr phi = new UnknownFunctionStub("u", 0, 1);
   Expr v = new TestFunctionStub("v", 1, 3);

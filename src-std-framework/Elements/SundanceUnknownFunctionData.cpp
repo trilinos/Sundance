@@ -32,11 +32,11 @@
 #include "SundanceOut.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 

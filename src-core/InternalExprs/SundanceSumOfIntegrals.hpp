@@ -44,12 +44,12 @@
 #include "SundanceRegionQuadCombo.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
-using SundanceUtils::Map;
+using Sundance::Map;
 
 class SpatiallyConstantExpr;
 
@@ -69,18 +69,18 @@ class SumOfIntegrals : public ScalarExpr
 {
 public:
   /** Construct given an integral over a single region */
-  SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
+  SumOfIntegrals(const RCP<CellFilterStub>& region,
     const Expr& expr,
-    const RefCountPtr<QuadratureFamilyStub>& quad,
+    const RCP<QuadratureFamilyStub>& quad,
     const WatchFlag& watch);
 
   /** */
   virtual ~SumOfIntegrals(){;}
 
   /** Add another term to this integral */
-  void addTerm(const RefCountPtr<CellFilterStub>& region,
+  void addTerm(const RCP<CellFilterStub>& region,
     const Expr& expr,
-    const RefCountPtr<QuadratureFamilyStub>& quad, 
+    const RCP<QuadratureFamilyStub>& quad, 
     const WatchFlag& watch,
     int sign) ;
 
@@ -97,7 +97,7 @@ public:
   int numRQC() const {return rqcToExprMap_.size();}
 
   /** */
-  const SundanceUtils::Map<RegionQuadCombo, Expr>& rqcToExprMap() const
+  const Sundance::Map<RegionQuadCombo, Expr>& rqcToExprMap() const
     {return rqcToExprMap_;}
 
   /** Return the set of unknown or variational
@@ -111,7 +111,7 @@ public:
 
   /** Return a null cell filter of a type consistent with the
    * other filters in this integral */
-  RefCountPtr<CellFilterStub> nullRegion() const ;
+  RCP<CellFilterStub> nullRegion() const ;
 
   /** Indicate whether the expression is independent of the given 
    * functions */
@@ -150,7 +150,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   /** Ordering operator for use in transforming exprs to standard form */
   virtual bool lessThan(const ScalarExpr* other) const ;
@@ -164,7 +164,7 @@ protected:
   Expr filterSpectral(const Expr& ex) const ;
 private:
 
-  SundanceUtils::Map<RegionQuadCombo, Expr> rqcToExprMap_;
+  Sundance::Map<RegionQuadCombo, Expr> rqcToExprMap_;
 };
 }
 

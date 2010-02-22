@@ -35,9 +35,9 @@
 #include "SundanceEvaluatableExpr.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -51,11 +51,11 @@ class FunctionalPolynomial : public EvaluatableExpr
 {
 public:
   /** ctor */
-  FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr);
+  FunctionalPolynomial(const RCP<ScalarExpr>& expr);
   /** ctor */
-  FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr> >& funcs,
+  FunctionalPolynomial(const Map<int, RCP<ScalarExpr> >& funcs,
     const Map<int, Set<MultiIndex> >& funcMultiIndices,
-    const Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > & coeffs);
+    const Array<Map<MultipleDeriv, RCP<ScalarExpr> > > & coeffs);
 
   /** virtual destructor */
   virtual ~FunctionalPolynomial() {;}
@@ -68,31 +68,31 @@ public:
       
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   /** */
   virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,
     const EvalContext& context) const ;
 
   /** */
-  RefCountPtr<FunctionalPolynomial> addPoly(const FunctionalPolynomial* other,
+  RCP<FunctionalPolynomial> addPoly(const FunctionalPolynomial* other,
     int sign) const ;
 
   /** */
-  RefCountPtr<FunctionalPolynomial> multiplyPoly(const FunctionalPolynomial* other) const ;
+  RCP<FunctionalPolynomial> multiplyPoly(const FunctionalPolynomial* other) const ;
 
   /** */
-  RefCountPtr<FunctionalPolynomial> multiplyScalar(const RefCountPtr<ScalarExpr>& alpha) const ;
+  RCP<FunctionalPolynomial> multiplyScalar(const RCP<ScalarExpr>& alpha) const ;
 
   /** */
-  RefCountPtr<FunctionalPolynomial> addFunction(const RefCountPtr<ScalarExpr>& u,
+  RCP<FunctionalPolynomial> addFunction(const RCP<ScalarExpr>& u,
     int sign) const ;
 
   /** */
   static bool isConvertibleToPoly(const ScalarExpr* expr) ;
 
   /** */
-  static RefCountPtr<FunctionalPolynomial> toPoly(const RefCountPtr<ScalarExpr>& expr);
+  static RCP<FunctionalPolynomial> toPoly(const RCP<ScalarExpr>& expr);
 
 
   /** Write a simple text description suitable 
@@ -111,13 +111,13 @@ public:
 private:
 
   /** */
-  Map<int, RefCountPtr<ScalarExpr> > funcs_;
+  Map<int, RCP<ScalarExpr> > funcs_;
 
   /** */
   Map<int, Set<MultiIndex> > funcMultiIndices_;
 
   /** */
-  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > coeffs_;
+  Array<Map<MultipleDeriv, RCP<ScalarExpr> > > coeffs_;
 
   /** */
   Array<Set<MultipleDeriv> > keys_;

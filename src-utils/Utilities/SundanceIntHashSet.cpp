@@ -2,7 +2,7 @@
 #include "SundanceExceptions.hpp"
 
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 IntHashSet::IntHashSet()
@@ -11,7 +11,7 @@ IntHashSet::IntHashSet()
     size_(0)
 {;}
 
-void IntHashSet::setCapacity(unsigned int capacity)
+void IntHashSet::setCapacity(int capacity)
 {
   capacity_ = capacity;
   data_.resize(capacity_);
@@ -34,7 +34,7 @@ bool IntHashSet::contains(int x) const
 void IntHashSet::fillArray(int* a) const
 {
   int k = 0;
-  for (unsigned int i=0; i<data_.size(); i++)
+  for (int i=0; i<data_.size(); i++)
     {
       for (std::list<int>::const_iterator 
              j=data_[i].begin(); j!=data_[i].end(); j++, k++)

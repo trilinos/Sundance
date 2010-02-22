@@ -35,9 +35,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSet.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using SundanceUtils::Set;
+using Sundance::Set;
 
 /**
  * This abstract class defines the interface for accumulating 

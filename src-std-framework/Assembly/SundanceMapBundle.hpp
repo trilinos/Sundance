@@ -35,17 +35,10 @@
 #include "SundanceLocalDOFMap.hpp"
 #include "SundanceIntegrationCellSpecifier.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
+
 class DOFMapBase;
 class StdFwkEvalMediator;
 
@@ -75,8 +68,8 @@ class MapBundle
 public:
   /** */
   MapBundle(
-    const Array<RefCountPtr<DOFMapBase> >& dofMap,
-    const Array<RefCountPtr<Array<int> > >& isBCIndex,
+    const Array<RCP<DOFMapBase> >& dofMap,
+    const Array<RCP<Array<int> > >& isBCIndex,
     const Array<int>& lowestLocalIndex,
     bool partitionBCs,
     int verb
@@ -86,7 +79,7 @@ public:
    * Build fast lookup tables of DOFs for local cells.
    */
   void buildLocalDOFMaps(
-    const RefCountPtr<StdFwkEvalMediator>& mediator,
+    const RCP<StdFwkEvalMediator>& mediator,
     IntegrationCellSpecifier intCellSpec,
     const Array<Set<int> >& requiredFuncs,
     int verbosity) ;
@@ -94,17 +87,17 @@ public:
   /** 
    *
    */
-  RefCountPtr<const Array<int> > workSet(int block, bool useCofacets) const ;
+  RCP<const Array<int> > workSet(int block, bool useCofacets) const ;
 
   /** 
    * Return the global DOF map for the b-th block
    */
-  const RefCountPtr<DOFMapBase>& dofMap(int b) const {return dofMap_[b];}
+  const RCP<DOFMapBase>& dofMap(int b) const {return dofMap_[b];}
 
   /**
    * Return the bc indicator array for the b-th block 
    */
-  const RefCountPtr<Array<int> >& isBCIndex(int b) const 
+  const RCP<Array<int> >& isBCIndex(int b) const 
     {return isBCIndex_[b];}
 
   /**
@@ -119,17 +112,17 @@ public:
    * Select a local DOF map according to whether cofacet cells or ordinary
    * cells should be used.
    */
-  const RefCountPtr<LocalDOFMap>& chooseMap(
+  const RCP<LocalDOFMap>& chooseMap(
     int block, bool useCofacets) const ;
 
   /** 
    * 
    */
-  const RefCountPtr<const MapStructure>& mapStruct(
+  const RCP<const MapStructure>& mapStruct(
     int block,
     bool useCofacetCells) const 
     {
-      const RefCountPtr<const LocalDOFMap>& choice = chooseMap(block, useCofacetCells);
+      const RCP<const LocalDOFMap>& choice = chooseMap(block, useCofacetCells);
       return choice->mapStruct(block);
     }
 
@@ -141,7 +134,7 @@ public:
     bool useCofacetCells,
     int chunk) const 
     {
-      const RefCountPtr<const LocalDOFMap>& choice = chooseMap(block, useCofacetCells);
+      const RCP<const LocalDOFMap>& choice = chooseMap(block, useCofacetCells);
       return choice->localDOFs(block)[chunk];
     }
 
@@ -153,7 +146,7 @@ public:
     bool useCofacetCells,
     int chunk) const 
     {
-      const RefCountPtr<const LocalDOFMap>& choice = chooseMap(block, useCofacetCells);
+      const RCP<const LocalDOFMap>& choice = chooseMap(block, useCofacetCells);
       return choice->nLocalNodesPerChunk(block)[chunk];
     }
 
@@ -164,20 +157,19 @@ public:
 
 private:
   int verb_;
-  Array<RefCountPtr<DOFMapBase> > dofMap_; 
-  Array<RefCountPtr<Array<int> > > isBCIndex_;
+  Array<RCP<DOFMapBase> > dofMap_; 
+  Array<RCP<Array<int> > > isBCIndex_;
   Array<int> lowestLocalIndex_;
   
   /** localDOFMap is the compact map built w/o cofacet DOFs. Either
    * this map or the cofacet map might be used in a given calculation */
-  RefCountPtr<LocalDOFMap> localDOFMap_;
+  RCP<LocalDOFMap> localDOFMap_;
   /** localDOFMap is the compact map built with cofacet DOFs */
-  RefCountPtr<LocalDOFMap> cofacetLocalDOFMap_;
+  RCP<LocalDOFMap> cofacetLocalDOFMap_;
 };
 
 
 
-}
 }
 
 

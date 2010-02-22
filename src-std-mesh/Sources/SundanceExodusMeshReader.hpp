@@ -36,12 +36,10 @@
 #include "SundanceMap.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-  
   using namespace Teuchos;
-  using namespace SundanceUtils;
-  using namespace Internal;
+  
   /**
    * ExodusMeshReader reads a mesh from an ExodusII file.
    */
@@ -64,10 +62,8 @@ namespace SundanceStdMesh
     virtual string description() const 
     {return "ExodusMeshReader[file=" + filename() + "]";}
 
-
-#ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshSourceBase> getRcp() {return rcp(this);}
+    virtual RCP<MeshSourceBase> getRcp() {return rcp(this);}
 
   private:
     /** */
@@ -79,9 +75,7 @@ namespace SundanceStdMesh
     /** */
     string parFilename_;
     
-                      
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
-  };
+                        };
 }
 
 #endif

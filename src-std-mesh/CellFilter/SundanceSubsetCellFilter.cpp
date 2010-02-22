@@ -34,9 +34,9 @@
 #include "SundanceOrderedTuple.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 SubsetCellFilter::SubsetCellFilter(const CellFilter& superset,
@@ -106,7 +106,7 @@ CellSet SubsetCellFilter::internalGetCells(const Mesh& mesh) const
   Array<int> testResults(cellLID.size());
   pred->testBatch(cellLID, testResults);
 
-  for (unsigned int i=0; i<cellLID.size(); i++)
+  for (int i=0; i<cellLID.size(); i++)
     {
       SUNDANCE_OUT(this->verb() > 2,
                    "SubsetCellFilter is testing " << cellLID[i]);

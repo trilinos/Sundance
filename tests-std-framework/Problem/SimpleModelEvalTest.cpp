@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     cout << "exact solution: " << exact << endl;
     cout << "numerical solution: " << soln << endl;
     double error = 0.0;
-    for (unsigned int i=0; i<exact.size(); i++) error += pow(exact[i]-soln[i], 2.0);
+    for (int i=0; i<exact.size(); i++) error += pow(exact[i]-soln[i], 2.0);
     error = sqrt(error);
 
     bool OK = solution_status == MoochoSolver::SOLVE_RETURN_SOLVED;
@@ -168,7 +168,7 @@ SimpleSundanceModel::SimpleSundanceModel(const VectorType<double>& vecType)
   Expr v = new TestFunction(new Lagrange(2), "v");
 
   /* Create differential operator and coordinate function */
-  Expr dx = new SundanceCore::Derivative(0);
+  Expr dx = new Sundance::Derivative(0);
   Expr x = new CoordExpr(0);
 
   const double pi = 4.0*atan(1.0);
@@ -176,9 +176,9 @@ SimpleSundanceModel::SimpleSundanceModel(const VectorType<double>& vecType)
   Expr source = 0.0;
   Array<Expr> a(4);
 
-  for (unsigned int i=1; i<=a.size(); i++) 
+  for (int i=1; i<=a.size(); i++) 
   {
-    a[i-1] = new SundanceCore::Parameter(1.0);
+    a[i-1] = new Sundance::Parameter(1.0);
     source = source + pi*pi*i*i* a[i-1] * sin(i*pi*x);
   }
   Expr alpha = new ListExpr(a);
@@ -203,7 +203,7 @@ SimpleSundanceModel::SimpleSundanceModel(const VectorType<double>& vecType)
   /* Write the sensitivity problems by hand. This will be unnecessary once
    * parametric differentiation is online. */
   Array<LinearProblem> sensProb(alpha.size());
-  for (unsigned int i=0; i<alpha.size(); i++)
+  for (int i=0; i<alpha.size(); i++)
   { 
     double w = (i+1)*(i+1)*pi*pi;
     Expr sensEqn = Integral(interior, 
@@ -215,7 +215,7 @@ SimpleSundanceModel::SimpleSundanceModel(const VectorType<double>& vecType)
 
   Expr sourceBasis = List(sin(pi*x), sin(2.0*pi*x), sin(3.0*pi*x), sin(4.0*pi*x));
   Expr uStar = 0.0;
-  for (unsigned int i=0; i<exactSoln().size(); i++)
+  for (int i=0; i<exactSoln().size(); i++)
   {
     uStar = uStar - sourceBasis[i] * exactSoln()[i];
   }

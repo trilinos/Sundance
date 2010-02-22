@@ -39,41 +39,35 @@
 #include "SundanceNoncopyable.hpp"
 #include "SundanceMeshBase.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdMesh
+namespace Sundance
 {
-  namespace Internal
-  {
-    using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Teuchos;
 
-    /**
-     * MeshTypeBase is a factory class for empty meshes, allowing generic
-     * mesh sources to build a mesh of user-specified type. 
-     */
-    class MeshTypeBase : public SundanceUtils::Handleable<MeshTypeBase>,
-                         public SundanceUtils::Printable,
-                         public Teuchos::Describable,
-                         public Noncopyable
-    {
-    public:
-      /** Empty ctor */
-      MeshTypeBase() {;}
+/**
+ * MeshTypeBase is a factory class for empty meshes, allowing generic
+ * mesh sources to build a mesh of user-specified type. 
+ */
+class MeshTypeBase : public Sundance::Handleable<MeshTypeBase>,
+                     public Sundance::Printable,
+                     public Teuchos::Describable,
+                     public Noncopyable
+{
+public:
+  /** Empty ctor */
+  MeshTypeBase() {;}
 
-      /** virtual dtor */
-      virtual ~MeshTypeBase(){;}
+  /** virtual dtor */
+  virtual ~MeshTypeBase(){;}
 
-      /** Create a mesh of the given dimension */
-      virtual RefCountPtr<MeshBase> createEmptyMesh(int dim,
-                                                    const MPIComm& comm) const = 0 ;
+  /** Create a mesh of the given dimension */
+  virtual RCP<MeshBase> createEmptyMesh(int dim,
+    const MPIComm& comm) const = 0 ;
 
-      /** */
-      virtual void print(ostream& os) const {os << description();}
-    };
-  }
+  /** */
+  virtual void print(ostream& os) const {os << description();}
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
+
 
 #endif

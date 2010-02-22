@@ -30,7 +30,7 @@
 
 #include "Sundance.hpp"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the coupled equations
  *

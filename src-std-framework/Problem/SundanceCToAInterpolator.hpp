@@ -38,13 +38,13 @@
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceAToCPointLocator.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
   using namespace Teuchos;
   using namespace Thyra;
 
@@ -71,10 +71,10 @@ namespace SundanceStdFwk
       std::vector<double>& results) const 
       {
         Teuchos::Array<double> in(positions.size());
-        for (unsigned int i=0; i<in.size(); i++) in[i] = positions[i];
+        for (int i=0; i<in.size(); i++) in[i] = positions[i];
         Teuchos::Array<double> out;
         interpolate(in, out);
-        for (unsigned int i=0; i<out.size(); i++) results[i] = out[i];
+        for (int i=0; i<out.size(); i++) results[i] = out[i];
       }
 
     /** */
@@ -86,7 +86,7 @@ namespace SundanceStdFwk
     int dim_;
     int nFacets_;
     int rangeDim_;
-    RefCountPtr<Array<double> > elemToVecValuesMap_;
+    RCP<Array<double> > elemToVecValuesMap_;
     AToCPointLocator locator_;
   };
 }

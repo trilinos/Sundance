@@ -5,7 +5,7 @@
 #include "SundancePositionalCellPredicate.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   class PySundanceCellPredicate : public CellPredicateFunctorBase
 
@@ -20,7 +20,7 @@ namespace SundanceStdFwk
     GET_RCP(CellPredicateFunctorBase);
 
     /** */
-    bool operator()(const SundanceUtils::Point& x) const ;
+    bool operator()(const Sundance::Point& x) const ;
 
     /** */
     string description() const ;
@@ -37,8 +37,8 @@ namespace SundanceStdFwk
 
   private:
     PyObject* py_functor_;
-    mutable RefCountPtr<PySundanceCallback>  evalOpCallback_;
-    mutable RefCountPtr<PySundanceCallback>  descrCallback_;
+    mutable RCP<PySundanceCallback>  evalOpCallback_;
+    mutable RCP<PySundanceCallback>  descrCallback_;
   };
 }
 #endif // 

@@ -38,10 +38,10 @@
 
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -52,7 +52,7 @@ SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Array<Expr>& coeff
     sbasis_(sbasis)
 
 {
-  TEST_FOR_EXCEPT(coeffs_.size() != (unsigned int) sbasis_.nterms());
+  TEST_FOR_EXCEPT(coeffs_.size() != sbasis_.nterms());
 }
 
 
@@ -71,7 +71,7 @@ SpectralExpr::SpectralExpr(const SpectralBasis& sbasis, const Expr& coeffs)
 void SpectralExpr::accumulateFuncSet(Set<int>& funcDofIDs, 
   const Set<int>& activeSet) const
 {
-  for (unsigned int i=0; i<coeffs_.size(); i++)
+  for (int i=0; i<coeffs_.size(); i++)
   {
     dynamic_cast<const ScalarExpr*>(coeffs_[i].ptr().get())->accumulateFuncSet(funcDofIDs, activeSet);
   }
@@ -91,14 +91,14 @@ Expr SpectralExpr::getCoeff(int i) const
 Expr SpectralExpr::spectralDotProduct(const SpectralExpr* other) const
 {
   Expr rtn = coeffs_[0] * other->coeffs_[0];
-  for (unsigned int i=1; i<coeffs_.size(); i++) rtn = rtn + coeffs_[i]*other->coeffs_[i];
+  for (int i=1; i<coeffs_.size(); i++) rtn = rtn + coeffs_[i]*other->coeffs_[i];
   return rtn;
 }
 
 bool SpectralExpr::hasTestFunctions() const
 {
   bool rtn = coeffs_[0].ptr()->hasTestFunctions();
-  for (unsigned int i=1; i<coeffs_.size(); i++)
+  for (int i=1; i<coeffs_.size(); i++)
     {
       TEST_FOR_EXCEPTION(coeffs_[i].ptr()->hasTestFunctions() != rtn,
                          InternalError,
@@ -111,7 +111,7 @@ bool SpectralExpr::hasTestFunctions() const
 bool SpectralExpr::hasUnkFunctions() const
 {
   bool rtn = coeffs_[0].ptr()->hasUnkFunctions();
-  for (unsigned int i=1; i<coeffs_.size(); i++)
+  for (int i=1; i<coeffs_.size(); i++)
     {
       TEST_FOR_EXCEPTION(coeffs_[i].ptr()->hasUnkFunctions() != rtn,
                          InternalError,
@@ -123,7 +123,7 @@ bool SpectralExpr::hasUnkFunctions() const
 
 bool SpectralExpr::hasHungryDiffOp() const
 {
-  for (unsigned int i=0; i<coeffs_.size(); i++)
+  for (int i=0; i<coeffs_.size(); i++)
     {
       Expr re = coeffs_[i].real();
       Expr im = coeffs_[i].imag();
@@ -141,7 +141,7 @@ bool SpectralExpr::hasHungryDiffOp() const
 ostream& SpectralExpr::toText(ostream& os, bool paren) const
 {
   os << "SpectralExpr{";
-  for (unsigned int i=0; i<coeffs_.size(); i++)
+  for (int i=0; i<coeffs_.size(); i++)
     {
       coeffs_[i].ptr()->toText(os, paren);
       if (i < coeffs_.size()-1) os << ", ";
@@ -153,7 +153,7 @@ ostream& SpectralExpr::toText(ostream& os, bool paren) const
 ostream& SpectralExpr::toLatex(ostream& os, bool paren) const
 {
   os << "\\{";
-  for (unsigned int i=0; i<coeffs_.size(); i++)
+  for (int i=0; i<coeffs_.size(); i++)
     {
       coeffs_[i].ptr()->toLatex(os, paren);
       if (i < coeffs_.size()-1) os << ", ";
@@ -179,7 +179,7 @@ bool  SpectralExpr::lessThan(const ScalarExpr* other) const
   TEST_FOR_EXCEPTION(s==0, InternalError, "cast should never fail at this point");
   if (coeffs_.size() < s->coeffs_.size()) return true;
   if (coeffs_.size() > s->coeffs_.size()) return false;
-  for (unsigned int i=0; i<coeffs_.size(); i++)
+  for (int i=0; i<coeffs_.size(); i++)
   {
     if (coeffs_[i].lessThan(s->coeffs_[i])) return true;
     if (s->coeffs_[i].lessThan(coeffs_[i])) return false;
@@ -188,7 +188,7 @@ bool  SpectralExpr::lessThan(const ScalarExpr* other) const
 }
 
 
-namespace SundanceCore
+namespace Sundance
 {
   /** */
   Expr getSpectralCoeff(int i, const Expr& e)

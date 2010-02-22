@@ -25,7 +25,7 @@
 %include "exception.i"
 
 
-namespace SundanceUtils
+namespace Sundance
 {
   class Point
   {
@@ -49,7 +49,7 @@ namespace SundanceUtils
   }
 }
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   class Mesh
   {
@@ -91,48 +91,48 @@ namespace SundanceStdMesh
 
 %inline %{
   /* Create a line mesher */
-  SundanceStdMesh::MeshSource makePartitionedLineMesher(double ax, 
+  Sundance::MeshSource makePartitionedLineMesher(double ax, 
                                   double bx, 
                                   int nx)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::PartitionedLineMesher(ax, bx, nx, 
-                              new SundanceStdMesh::BasicSimplicialMeshType());
+                              new Sundance::BasicSimplicialMeshType());
   }
   %}
 
 %inline %{
   /* Create a rectangle mesher */
-  SundanceStdMesh::MeshSource makePartitionedRectangleMesher(double ax, double bx, 
+  Sundance::MeshSource makePartitionedRectangleMesher(double ax, double bx, 
                                                              int nx, int npx,
                                                              double ay, double by,
                                                              int ny, int npy)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::PartitionedRectangleMesher(ax, bx, nx, npx, ay, by, ny, npy,
-                                   new SundanceStdMesh::BasicSimplicialMeshType());
+                                   new Sundance::BasicSimplicialMeshType());
   }
   %}
 
 
 %inline %{
   /* Create an exodus reader */
-  SundanceStdMesh::MeshSource makeExodusNetCDFMeshReader(const std::string& filename)
+  Sundance::MeshSource makeExodusNetCDFMeshReader(const std::string& filename)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::ExodusNetCDFMeshReader(filename,
-                               new SundanceStdMesh::BasicSimplicialMeshType());
+                               new Sundance::BasicSimplicialMeshType());
   }
   %}
 
 
 %inline %{
   /* Create an exodus reader */
-  SundanceStdMesh::MeshSource makeExodusMeshReader(const std::string& filename)
+  Sundance::MeshSource makeExodusMeshReader(const std::string& filename)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::ExodusMeshReader(filename,
-        new SundanceStdMesh::BasicSimplicialMeshType());
+        new Sundance::BasicSimplicialMeshType());
   }
   %}
 
@@ -141,11 +141,11 @@ namespace SundanceStdMesh
 
 %inline %{
   /* Create a triangle reader */
-  SundanceStdMesh::MeshSource makeTriangleMeshReader(const std::string& filename)
+  Sundance::MeshSource makeTriangleMeshReader(const std::string& filename)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::TriangleMeshReader(filename,
-                               new SundanceStdMesh::BasicSimplicialMeshType());
+                               new Sundance::BasicSimplicialMeshType());
   }
   %}
 

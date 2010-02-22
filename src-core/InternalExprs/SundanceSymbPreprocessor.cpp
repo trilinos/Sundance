@@ -46,8 +46,8 @@
 #include "SundanceOut.hpp"
 #include "Teuchos_Utils.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -70,7 +70,7 @@ DerivSet SymbPreprocessor::setupFwdProblem(const Expr& expr,
   Expr zero;
   Expr v = tests.flatten();
   Array<Expr> z(v.size());
-  for (unsigned int i=0; i<v.size(); i++) z[i] = new ZeroExpr();
+  for (int i=0; i<v.size(); i++) z[i] = new ZeroExpr();
   zero = new ListExpr(z);
 
   return setupVariations(expr, 
@@ -101,7 +101,7 @@ DerivSet SymbPreprocessor::setupSensitivities(const Expr& expr,
   Expr zero;
   Expr v = tests.flatten();
   Array<Expr> z(v.size());
-  for (unsigned int i=0; i<v.size(); i++) z[i] = new ZeroExpr();
+  for (int i=0; i<v.size(); i++) z[i] = new ZeroExpr();
   zero = new ListExpr(z);
 
   return setupVariations(expr, 
@@ -253,7 +253,7 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
    * variables */
 
   SUNDANCE_MSG5(verb, tab << "forming active set");
-  Array<SundanceUtils::Set<MultiSet<int> > > activeFuncIDs(3);
+  Array<Sundance::Set<MultiSet<int> > > activeFuncIDs(3);
   if (context.needsDerivOrder(0)) activeFuncIDs[0].put(MultiSet<int>());
   if (context.topLevelDiffOrder() >= 1)
   {
@@ -342,14 +342,14 @@ DerivSet SymbPreprocessor::setupVariations(const Expr& expr,
 }
 
 
-namespace SundanceCore
+namespace Sundance
 {
 Expr makeZeros(const Expr& v)
 {
   Array<Expr> z(v.size());
-  for (unsigned int i=0; i<v.size(); i++) 
+  for (int i=0; i<v.size(); i++) 
   {
-    if (v[i].size()==1U) z[i] = new ZeroExpr();
+    if (v[i].size()==1) z[i] = new ZeroExpr();
     else z[i] = makeZeros(v[i]);
   }
   return new ListExpr(z);

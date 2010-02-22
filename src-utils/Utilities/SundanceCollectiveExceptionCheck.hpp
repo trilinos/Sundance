@@ -35,7 +35,7 @@
 #include "Teuchos_MPIComm.hpp"
 
 
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 

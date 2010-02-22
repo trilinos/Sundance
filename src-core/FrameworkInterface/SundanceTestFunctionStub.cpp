@@ -34,10 +34,10 @@
 #include "SundanceSpectralExpr.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -45,7 +45,7 @@ using namespace Teuchos;
 TestFunctionStub::TestFunctionStub(const string& name, 
   int tensorOrder,
   int dim, 
-  const RefCountPtr<const TestFuncDataStub>& data)
+  const RCP<const TestFuncDataStub>& data)
   : SymbolicFunc(makeFuncID(tensorOrder), 
     rcp_dynamic_cast<const CommonFuncDataStub>(data)), data_(data)
 {
@@ -72,7 +72,7 @@ TestFunctionStub::TestFunctionStub(const string& name,
 
 TestFunctionStub::TestFunctionStub(const string& name, 
   const SpectralBasis& sbasis, int tensorOrder, int dim,
-  const RefCountPtr<const TestFuncDataStub>& data)
+  const RCP<const TestFuncDataStub>& data)
   :  SymbolicFunc(makeFuncID(tensorOrder), 
     rcp_dynamic_cast<const CommonFuncDataStub>(data)), data_(data)
 {

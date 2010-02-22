@@ -58,7 +58,7 @@ int main(int argc, char** argv)
         MeshType meshType = new BasicSimplicialMeshType();
         MeshSource mesher = new ExodusMeshReader(infile, meshType, self);
 
-        RefCountPtr<SerialPartitionerBase> part 
+        RCP<SerialPartitionerBase> part 
           = rcp(new FileIOChacoPartitioner("part"));
 
         serialPartition(part, numProc, mesher, infile);

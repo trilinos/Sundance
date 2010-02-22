@@ -40,20 +40,20 @@
 #include "TSFVectorDecl.hpp"
 #include "TSFVectorType.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 /**
  *
  */
 class Functional
-  : public SundanceUtils::ParameterControlledObjectWithVerbosity<Functional>
+  : public Sundance::ParameterControlledObjectWithVerbosity<Functional>
 {
 public:
   /** */
@@ -107,7 +107,7 @@ public:
   const Mesh& mesh() const {return mesh_;}
     
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams();
+  static RCP<ParameterList> defaultVerbParams();
                                   
 
 private:

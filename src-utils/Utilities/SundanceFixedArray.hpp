@@ -36,7 +36,7 @@
 #include <iostream>
 #include <algorithm>
 
-namespace SundanceUtils
+namespace Sundance
 {
 
 /**
@@ -133,7 +133,7 @@ namespace std
 {
 /** \relates FixedArray */
 template <int N, class T> 
-ostream& operator<<(ostream& os, const SundanceUtils::FixedArray<N, T>& f)
+ostream& operator<<(ostream& os, const Sundance::FixedArray<N, T>& f)
 {
   os << "{";
   for (int i=0; i<N; i++) 

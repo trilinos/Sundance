@@ -36,19 +36,19 @@
 #include "SundanceDefs.hpp"
 #include "SundanceCellPredicateBase.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-
+using namespace Teuchos;
 
 #define NEW_CELL_PREDICATE(name)  \
   class name : public CellPredicateFunctorBase,  \
-               public SundanceUtils::Handleable<CellPredicateFunctorBase>  \
+               public Sundance::Handleable<CellPredicateFunctorBase>  \
   {  \
   public:  \
     name() : CellPredicateFunctorBase(#name) {} \
-      virtual ~name() {}  \
-      virtual bool operator()(const Point& x) const; \
-        GET_RCP(CellPredicateFunctorBase);  \
+    virtual ~name() {}  \
+    virtual bool operator()(const Point& x) const; \
+    GET_RCP(CellPredicateFunctorBase);  \
   }; \
   \
   bool name::operator()(const Point& x) const
@@ -56,81 +56,78 @@ namespace SundanceStdFwk
 
 #define CELL_PREDICATE_(name, code) \
   class name : public CellPredicateFunctorBase, \
-               public SundanceUtils::Handleable<CellPredicateFunctorBase> \
+               public Sundance::Handleable<CellPredicateFunctorBase> \
   { \
   public:\
     name() : CellPredicateFunctorBase(#name){;}            \
-      virtual ~name(){;}\
-      virtual bool operator()(const Point& x) const code \
-        GET_RCP(CellPredicateFunctorBase);\
+    virtual ~name(){;}\
+    virtual bool operator()(const Point& x) const code \
+    GET_RCP(CellPredicateFunctorBase);\
   }
 
 
 #define CELL_PREDICATE(name, code) CELL_PREDICATE_(name, code);
 
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace Teuchos;
 
+
+
+/** */
+class CellPredicateFunctorBase
+{
+public:
+  /** */
+  CellPredicateFunctorBase(const string& name="Functor(" + Teuchos::toString(topID()) + ")")
+    : name_(name) {;}
 
   /** */
-  class CellPredicateFunctorBase
-  {
-  public:
-    /** */
-    CellPredicateFunctorBase(const string& name="Functor(" + Teuchos::toString(topID()) + ")")
-      : name_(name) {;}
+  virtual ~CellPredicateFunctorBase(){;}
 
-    /** */
-    virtual ~CellPredicateFunctorBase(){;}
+  /** */
+  virtual bool operator()(const Point& x) const = 0 ;
 
-    /** */
-    virtual bool operator()(const Point& x) const = 0 ;
-
-    /** */
-    virtual string description() const {return name_;}
-  private:
-    static int& topID() {static int rtn=0; rtn++; return rtn;}
-    string name_;
-  };
+  /** */
+  virtual string description() const {return name_;}
+private:
+  static int& topID() {static int rtn=0; rtn++; return rtn;}
+  string name_;
+};
 
   
-  /** 
-   * PositionalCellPredicate tests whether the cell's nodes satisfy
-   * a condition on their positions.
-   */
-  class PositionalCellPredicate : public Internal::CellPredicateBase 
-  {
-  public:
+/** 
+ * PositionalCellPredicate tests whether the cell's nodes satisfy
+ * a condition on their positions.
+ */
+class PositionalCellPredicate : public CellPredicateBase 
+{
+public:
       
-    /** Construct with a function of positions */
-    PositionalCellPredicate(const RefCountPtr<CellPredicateFunctorBase>& func) 
-      : CellPredicateBase(), func_(func) 
+  /** Construct with a function of positions */
+  PositionalCellPredicate(const RCP<CellPredicateFunctorBase>& func) 
+    : CellPredicateBase(), func_(func) 
     {;}
 
-    /** virtual dtor */
-    virtual ~PositionalCellPredicate(){;}
+  /** virtual dtor */
+  virtual ~PositionalCellPredicate(){;}
       
-    /** Test the predicate on a batch of cells */
-    virtual void testBatch(const Array<int>& cellLID,
-                           Array<int>& results) const ;
+  /** Test the predicate on a batch of cells */
+  virtual void testBatch(const Array<int>& cellLID,
+    Array<int>& results) const ;
 
-    /** Write to XML */
-    virtual XMLObject toXML() const ;
+  /** Write to XML */
+  virtual XMLObject toXML() const ;
 
-    /** comparison */
-    virtual bool lessThan(const CellPredicateBase* other) const ;
+  /** comparison */
+  virtual bool lessThan(const CellPredicateBase* other) const ;
 
-    /** */
-    virtual string description() const {return func_->description();}
+  /** */
+  virtual string description() const {return func_->description();}
 
-    /* */
-    GET_RCP(CellPredicateBase);
+  /* */
+  GET_RCP(CellPredicateBase);
 
-  private:
-    RefCountPtr<CellPredicateFunctorBase> func_;
-  };
+private:
+  RCP<CellPredicateFunctorBase> func_;
+};
 
 }
 

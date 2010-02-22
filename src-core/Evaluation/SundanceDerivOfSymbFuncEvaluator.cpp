@@ -40,9 +40,9 @@
 #include "SundanceDiscreteFuncEvaluator.hpp"
 #include "SundanceZeroExpr.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -168,7 +168,7 @@ DerivOfSymbFuncEvaluator
 
 void DerivOfSymbFuncEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
-  Array<RefCountPtr<EvalVector> >& vectorResults)  const
+  Array<RCP<EvalVector> >& vectorResults)  const
 {
   Tabs tabs;
   SUNDANCE_MSG1(mgr.verb(), tabs << "DerivOfSymbFuncEvaluator::eval() expr=" 
@@ -194,7 +194,7 @@ void DerivOfSymbFuncEvaluator::internalEval(const EvalManager& mgr,
       Tabs tabs1;
       SUNDANCE_MSG2(mgr.verb(), tabs1 << "evaluating argument");
       /* evaluate the argument */
-      Array<RefCountPtr<EvalVector> > funcVectorResults;
+      Array<RCP<EvalVector> > funcVectorResults;
       Array<double> funcConstantResults;
       
       funcEvaluator_[0]->eval(mgr, 

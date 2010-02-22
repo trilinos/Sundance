@@ -35,7 +35,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceFieldWriterBase.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * VTKWriter writes a mesh or fields to a VTK file
@@ -55,7 +55,7 @@ namespace SundanceStdMesh
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<FieldWriterBase> getRcp() {return rcp(this);}
+    virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
 
 
   private:
@@ -76,7 +76,7 @@ namespace SundanceStdMesh
 
     /** */
     void writeDataArray(ostream& os, const string& name,
-                        const RefCountPtr<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
+                        const RCP<FieldBase>& expr, bool isPHeader, bool isPointData) const ;
 #endif /* DOXYGEN_DEVELOPER_ONLY */
   };
 }

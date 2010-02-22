@@ -26,14 +26,14 @@
 
 
 using namespace Teuchos;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore::Internal;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
-namespace SundanceStdFwk {
+namespace Sundance {
   void checkbasis( BasisFamily &b1 , BasisFamily &b2 );
 }

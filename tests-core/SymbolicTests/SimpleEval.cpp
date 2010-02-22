@@ -23,23 +23,21 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceStringEvalMediator.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
-using SundanceCore::List;
 
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
 
 static Time& doitTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("doit"); 
   return *rtn;
 }
@@ -56,7 +54,7 @@ void doit(const Expr& e,
   EvalManager mgr;
   mgr.setRegion(region);
 
-  static RefCountPtr<AbstractEvalMediator> mediator 
+  static RCP<AbstractEvalMediator> mediator 
     = rcp(new StringEvalMediator());
 
   mgr.setMediator(mediator);
@@ -83,7 +81,7 @@ void doit(const Expr& e,
   Out::os() << tab << *ev->sparsitySuperset(region) << endl;
 
   Array<double> constantResults;
-  Array<RefCountPtr<EvalVector> > vectorResults;
+  Array<RCP<EvalVector> > vectorResults;
 
   Out::os() << tab << "evaluating..." << endl;
   ev->evaluate(mgr, constantResults, vectorResults);
@@ -153,7 +151,6 @@ int main(int argc, char** argv)
 
 
 
-    int maxDiffOrder=2;
 //      tests.append(v*u);
 //      tests.append((dx*v)*(dx*u));
     tests.append((dx*v));
@@ -167,9 +164,9 @@ int main(int argc, char** argv)
       EvalContext context(rqc, makeSet(1,2), EvalContext::nextID());
       context.setSetupVerbosity(5);
       testExpr(tests[i], 
-        SundanceCore::List(v),
-        SundanceCore::List(u),
-        SundanceCore::List(zero),
+        Sundance::List(v),
+        Sundance::List(u),
+        Sundance::List(zero),
         context);
     }
 

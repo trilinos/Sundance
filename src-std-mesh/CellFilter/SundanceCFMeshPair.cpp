@@ -40,15 +40,15 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 static Time& csPartitionTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("cell set partitioning"); 
   return *rtn;
 }
@@ -119,7 +119,7 @@ CFMeshPair CFMeshPair::intersection(const CFMeshPair& other) const
 }
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   Array<CFMeshPair> resolvePair(const CFMeshPair& a, 
                                 const CFMeshPair& b)
@@ -137,15 +137,15 @@ namespace SundanceStdFwk
   Array<CFMeshPair> resolveSets(const Array<CFMeshPair>& s)
   {
 
-    if (s.size() == 1U) return s;
+    if (s.size() == 1) return s;
 
     Array<CFMeshPair> T = tuple(s[0]);
     
-    for (unsigned int i=0; i<s.size(); i++)
+    for (int i=0; i<s.size(); i++)
       {
         CFMeshPair A = s[i];
         Array<CFMeshPair> TN;
-        for (unsigned int j=0; j<T.size(); j++)
+        for (int j=0; j<T.size(); j++)
           {
             Array<CFMeshPair> p = resolvePair(A, T[j]);
             if (!p[0].isEmpty())
@@ -177,7 +177,7 @@ namespace SundanceStdFwk
     Array<CFMeshPair> cf(filters.size());
 
     TEST_FOR_EXCEPT(filters.size() != funcs.size());
-    for (unsigned int i=0; i<filters.size(); i++)
+    for (int i=0; i<filters.size(); i++)
       {
         cf[i] = CFMeshPair(filters[i], mesh, funcs[i]);
       }

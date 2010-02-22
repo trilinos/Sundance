@@ -37,9 +37,9 @@
 #include <string>
 #include <stdexcept>
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using std::runtime_error;
 using namespace Teuchos;
 using std::string;
@@ -107,17 +107,17 @@ namespace Teuchos
 {
 using std::string;
 
-/** \relates SundanceCore::MultiIndex */
-inline string toString(const SundanceCore::MultiIndex& h)
+/** \relates Sundance::MultiIndex */
+inline string toString(const Sundance::MultiIndex& h)
 {return h.toString();}
 
 }
 
 namespace std
 {
-/** \relates SundanceCore::MultiIndex */
+/** \relates Sundance::MultiIndex */
 inline ostream& operator<<(ostream& os, 
-  const SundanceCore::MultiIndex& h)
+  const Sundance::MultiIndex& h)
 {
   os << h.toString();
   return os;

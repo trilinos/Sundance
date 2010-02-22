@@ -9,15 +9,15 @@
 #include "Teuchos_RefCountPtr.hpp"
 
 using namespace Teuchos;
-namespace SundanceStdMesh
+namespace Sundance
 {
 namespace Rivara
 {
 class Element;
 class RivaraMesh;
 
-using SundanceUtils::Set;
-using SundanceUtils::makeSet;
+using Sundance::Set;
+using Sundance::makeSet;
 using Teuchos::Array;
 using Teuchos::RefCountPtr;
 
@@ -27,9 +27,9 @@ class FaceNodes
 public:
   /** */
   FaceNodes(
-    const RefCountPtr<Node>& a, 
-    const RefCountPtr<Node>& b,
-    const RefCountPtr<Node>& c)
+    const RCP<Node>& a, 
+    const RCP<Node>& b,
+    const RCP<Node>& c)
     : nodeLIDSet_(rcp(new Set<int>(makeSet(a->localIndex(), b->localIndex(), c->localIndex()))))
     {}
 
@@ -44,7 +44,7 @@ public:
   const Set<int>& nodes() const {return *nodeLIDSet_;}
 
 private:
-  RefCountPtr<Set<int> > nodeLIDSet_;
+  RCP<Set<int> > nodeLIDSet_;
 };
 
 /**
@@ -58,9 +58,9 @@ public:
    * Construct with three nodes
    */
   Face(
-    const RefCountPtr<Node>& a, 
-    const RefCountPtr<Node>& b,
-    const RefCountPtr<Node>& c
+    const RCP<Node>& a, 
+    const RCP<Node>& b,
+    const RCP<Node>& c
     )
     : label_(-1), 
       globalIndex_(-1), 

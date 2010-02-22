@@ -24,7 +24,7 @@
 %include "exception.i"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   class BasisFamily
   {
@@ -83,72 +83,72 @@ namespace SundanceStdFwk
 
 %inline %{
   /* Create a Lagrange basis function */
-  SundanceStdFwk::BasisFamily makeLagrange(int order)
+  Sundance::BasisFamily makeLagrange(int order)
   {
-    return new SundanceStdFwk::Lagrange(order);
+    return new Sundance::Lagrange(order);
   }
 #ifdef HAVE_FIAT
-  SundanceStdFwk::BasisFamily makeFIATLagrange(int order)
+  Sundance::BasisFamily makeFIATLagrange(int order)
   {
 
-    return new SundanceStdFwk::FIATLagrange(order);
+    return new Sundance::FIATLagrange(order);
   }
 
-  SundanceStdFwk::BasisFamily makeFIATScalarAdapter(PyObject *py_basis ,
+  Sundance::BasisFamily makeFIATScalarAdapter(PyObject *py_basis ,
 						    int order)
   {
-    return new SundanceStdFwk::FIATScalarAdapter(py_basis,order);
+    return new Sundance::FIATScalarAdapter(py_basis,order);
   }
 
 #endif
   /* */
-  SundanceStdFwk::BasisArray 
+  Sundance::BasisArray 
     BasisList()
   {
     return BasisArray();
   }
 
   /* */
-  SundanceStdFwk::BasisArray 
-    BasisList(const SundanceStdFwk::BasisFamily& a)
+  Sundance::BasisArray 
+    BasisList(const Sundance::BasisFamily& a)
   {
     return tuple(a);
   }
 
   /* */
-  SundanceStdFwk::BasisArray 
-    BasisList(const SundanceStdFwk::BasisFamily& a,
-              const SundanceStdFwk::BasisFamily& b)
+  Sundance::BasisArray 
+    BasisList(const Sundance::BasisFamily& a,
+              const Sundance::BasisFamily& b)
   {
     return tuple(a,b);
   }
 
   /* */
-  SundanceStdFwk::BasisArray 
-    BasisList(const SundanceStdFwk::BasisFamily& a,
-              const SundanceStdFwk::BasisFamily& b,
-              const SundanceStdFwk::BasisFamily& c)
+  Sundance::BasisArray 
+    BasisList(const Sundance::BasisFamily& a,
+              const Sundance::BasisFamily& b,
+              const Sundance::BasisFamily& c)
   {
     return tuple(a,b,c);
   }
 
   /* */
-  SundanceStdFwk::BasisArray 
-    BasisList(const SundanceStdFwk::BasisFamily& a,
-              const SundanceStdFwk::BasisFamily& b,
-              const SundanceStdFwk::BasisFamily& c,
-              const SundanceStdFwk::BasisFamily& d)
+  Sundance::BasisArray 
+    BasisList(const Sundance::BasisFamily& a,
+              const Sundance::BasisFamily& b,
+              const Sundance::BasisFamily& c,
+              const Sundance::BasisFamily& d)
   {
     return tuple(a,b,c,d);
   }
 
   /* */
-  SundanceStdFwk::BasisArray 
-    BasisList(const SundanceStdFwk::BasisFamily& a,
-              const SundanceStdFwk::BasisFamily& b,
-              const SundanceStdFwk::BasisFamily& c,
-              const SundanceStdFwk::BasisFamily& d,
-              const SundanceStdFwk::BasisFamily& e)
+  Sundance::BasisArray 
+    BasisList(const Sundance::BasisFamily& a,
+              const Sundance::BasisFamily& b,
+              const Sundance::BasisFamily& c,
+              const Sundance::BasisFamily& d,
+              const Sundance::BasisFamily& e)
   {
     return tuple(a,b,c,d,e);
   }

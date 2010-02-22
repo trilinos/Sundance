@@ -42,7 +42,7 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-namespace SundanceCore 
+namespace Sundance 
 {
 class CoordExpr;
 
@@ -56,7 +56,7 @@ class EvalManager;
  * Base class for evaluator objects. Each EvaluatableExpr type will 
  * have an associated Evaluator subtype.
  */
-class Evaluator : public SundanceUtils::ObjectWithClassVerbosity<Evaluator>
+class Evaluator : public ObjectWithClassVerbosity<Evaluator>
 {
 public:
   /** */
@@ -73,7 +73,7 @@ public:
    */
   void eval(const EvalManager& mgr,
     Array<double>& constantResults,
-    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+    Array<RCP<EvalVector> >& vectorResults) const ;
 
   /** Reset the number of calls to zero. This should be called
    * at the beginning of every new evaluation cycle. */
@@ -83,7 +83,7 @@ public:
   virtual void 
   internalEval(const EvalManager& mgr,
     Array<double>& constantResults,
-    Array<RefCountPtr<EvalVector> >& vectorResults) const = 0 ;
+    Array<RCP<EvalVector> >& vectorResults) const = 0 ;
 
   /** Add one to the number of clients. */
   void addClient() {numClients_++;}
@@ -97,11 +97,11 @@ public:
       
 
   /** */
-  const SundanceUtils::Map<int, int>& constantIndexMap() const 
+  const Sundance::Map<int, int>& constantIndexMap() const 
     {return constantIndexMap_;}
 
   /** */
-  const SundanceUtils::Map<int, int>& vectorIndexMap() const 
+  const Sundance::Map<int, int>& vectorIndexMap() const 
     {return vectorIndexMap_;}
 protected:
 
@@ -130,13 +130,13 @@ private:
 
   mutable int numCalls_;
 
-  mutable Array<RefCountPtr<EvalVector> > vectorResultCache_;
+  mutable Array<RCP<EvalVector> > vectorResultCache_;
 
   mutable Array<double> constantResultCache_;
 
-  SundanceUtils::Map<int, int> constantIndexMap_;
+  Sundance::Map<int, int> constantIndexMap_;
 
-  SundanceUtils::Map<int, int> vectorIndexMap_;
+  Sundance::Map<int, int> vectorIndexMap_;
 
   Array<int> vectorIndices_;
 

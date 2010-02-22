@@ -73,9 +73,9 @@ int main(int argc, char** argv)
       Expr v = new TestFunction(new Lagrange(1), sbasis, "v");
 
       /* Create the stochastic input function. */
-      Expr a0 = new SundanceCore::Parameter(1.0);
-      Expr a1 = new SundanceCore::Parameter(0.1);
-      Expr a2 = new SundanceCore::Parameter(0.01);
+      Expr a0 = new Sundance::Parameter(1.0);
+      Expr a1 = new Sundance::Parameter(0.1);
+      Expr a2 = new Sundance::Parameter(0.01);
       Expr alpha = new SpectralExpr(sbasis, tuple(a0, a1, a2));
 
       /* Create a discrete space, and discretize the function 1.0 on it */

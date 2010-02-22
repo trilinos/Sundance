@@ -37,7 +37,7 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 
-namespace SundanceCore 
+namespace Sundance 
 {
 class NonlinearUnaryOp;
     
@@ -56,10 +56,10 @@ public:
 
   /** */
   virtual void evalArgDerivs(const EvalManager& mgr,
-    const Array<RefCountPtr<Array<double> > >& constArgRes,
-    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgResults,
+    const Array<RCP<Array<double> > >& constArgRes,
+    const Array<RCP<Array<RCP<EvalVector> > > >& vArgResults,
     Array<double>& constArgDerivs,
-    Array<RefCountPtr<EvalVector> >& varArgDerivs) const;
+    Array<RCP<EvalVector> >& varArgDerivs) const;
       
   /** */
   TEUCHOS_TIMER(evalTimer, "nonlinear unary op arg evaluation");

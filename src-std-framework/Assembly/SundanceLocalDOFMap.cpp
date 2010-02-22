@@ -34,9 +34,9 @@
 #include "SundanceLocalDOFMap.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -49,7 +49,7 @@ LocalDOFMap::LocalDOFMap(int numBlocks, int verb)
     isUsed_(numBlocks),
     hasCells_(false),
     nLocalNodesPerChunk_(rcp(new Array<Array<int> >(numBlocks))),
-    mapStruct_(rcp(new Array<RefCountPtr<const MapStructure> >(numBlocks))),
+    mapStruct_(rcp(new Array<RCP<const MapStructure> >(numBlocks))),
     localDOFs_(rcp(new Array<Array<Array<int> > >(numBlocks))),
     cellLID_(),
     activeCellDim_(-1),
@@ -91,7 +91,7 @@ void LocalDOFMap::verifyValidBlock(int b) const
 void LocalDOFMap::setCells(
   int activeCellDim, 
   int maxCellDim,
-  const RefCountPtr<const Array<int> >& cellLID)
+  const RCP<const Array<int> >& cellLID)
 {
   activeCellDim_ = activeCellDim;
   maxCellDim_ = maxCellDim_;
@@ -100,7 +100,7 @@ void LocalDOFMap::setCells(
 }
 
 
-void LocalDOFMap::fillBlock(int b, const RefCountPtr<DOFMapBase>& globalMap,
+void LocalDOFMap::fillBlock(int b, const RCP<DOFMapBase>& globalMap,
   const Array<Set<int> >& requiredFuncs)
 {
   Tabs tab;
@@ -147,7 +147,7 @@ std::ostream& LocalDOFMap::print(std::ostream& os) const
       const Array<Array<int> >& dofs = localDOFs(b);
       int nChunks = mapStruct(b)->numBasisChunks();
       
-      for (unsigned int c=0; c<cellLID_->size(); c++)
+      for (int c=0; c<cellLID_->size(); c++)
       {
         Tabs tab2;
         os << tab2 << "cell LID=" << (*cellLID_)[c] << endl;

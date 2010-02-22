@@ -36,53 +36,50 @@
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceQuadratureTypeBase.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Teuchos;
-  using namespace Internal;
+using namespace Teuchos;
+  
 
-  /** 
-   * Family of optimal Gaussian integration rules, e.g., Gauss-Legendre on 
-   * lines, Dunavant on triangles. 
-   */
-  class GaussianQuadratureType : public QuadratureTypeBase
-  {
-  public:
-    /** */
-    GaussianQuadratureType();
+/** 
+ * Family of optimal Gaussian integration rules, e.g., Gauss-Legendre on 
+ * lines, Dunavant on triangles. 
+ */
+class GaussianQuadratureType : public QuadratureTypeBase
+{
+public:
+  /** */
+  GaussianQuadratureType();
 
-    /** */
-    virtual ~GaussianQuadratureType(){;}
+  /** */
+  virtual ~GaussianQuadratureType(){;}
 
-    /** Indicate whether the given cell type is supported at any order */
-    virtual bool supportsCellType(const CellType& cellType) const ;
+  /** Indicate whether the given cell type is supported at any order */
+  virtual bool supportsCellType(const CellType& cellType) const ;
     
-    /** Indicate whether the given cell type is supported at the
-     * specified order */
-    virtual bool supports(const CellType& cellType, int order) const ;
+  /** Indicate whether the given cell type is supported at the
+   * specified order */
+  virtual bool supports(const CellType& cellType, int order) const ;
     
-    /** Return the max quadrature order available on the given cell type */
-    virtual int maxOrder(const CellType& cellType) const ;
+  /** Return the max quadrature order available on the given cell type */
+  virtual int maxOrder(const CellType& cellType) const ;
 
-    /** Indicate whether there is a maximum order for quadrature rules
-     * available on the given cell type. */
-    virtual bool hasLimitedOrder(const CellType& cellType) const ;
+  /** Indicate whether there is a maximum order for quadrature rules
+   * available on the given cell type. */
+  virtual bool hasLimitedOrder(const CellType& cellType) const ;
 
-    /** Create a quadrature family of the specified order */
-    virtual QuadratureFamily createQuadFamily(int order) const ;
+  /** Create a quadrature family of the specified order */
+  virtual QuadratureFamily createQuadFamily(int order) const ;
 
-    /** */
-    virtual XMLObject toXML() const ;
+  /** */
+  virtual XMLObject toXML() const ;
 
-    /* handleable boilerplate */
-    GET_RCP(QuadratureTypeBase);
+  /* handleable boilerplate */
+  GET_RCP(QuadratureTypeBase);
 
-  protected:
+protected:
 
-  };
+};
 }
 
 

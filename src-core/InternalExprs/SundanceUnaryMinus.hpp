@@ -36,9 +36,9 @@
 #include "SundanceUnaryMinusEvaluator.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using namespace Teuchos;
   using std::string;
 
@@ -48,7 +48,7 @@ namespace SundanceCore
         {
         public:
           /** construct with the argument */
-          UnaryMinus(const RefCountPtr<ScalarExpr>& arg);
+          UnaryMinus(const RCP<ScalarExpr>& arg);
 
           /** virtual dtor */
           virtual ~UnaryMinus() {;}
@@ -93,7 +93,7 @@ namespace SundanceCore
                                                    const EvalContext& context) const ;
 
           /** */
-          virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+          virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
         };
     }

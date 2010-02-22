@@ -37,10 +37,10 @@
 
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -133,7 +133,7 @@ int SparsitySuperset::getIndex(const MultipleDeriv& d) const
 
 
 void SparsitySuperset::print(ostream& os,
-                             const Array<RefCountPtr<EvalVector> >& vecResults,
+                             const Array<RCP<EvalVector> >& vecResults,
                              const Array<double>& constantResults) const 
 {
   Tabs tabs;
@@ -141,7 +141,7 @@ void SparsitySuperset::print(ostream& os,
   /* find the maximum size of the string reps of the derivatives.
    * We'll use this to set the field width for printing derivatives. */
   int maxlen = 25;
-  for (unsigned int i=0; i<derivs_.size(); i++)
+  for (int i=0; i<derivs_.size(); i++)
     {
       int s = derivs_[i].toString().length();
       if (s > maxlen) maxlen = s;
@@ -151,7 +151,7 @@ void SparsitySuperset::print(ostream& os,
   int vecIndex=0;
   int constIndex = 0;
   os << tabs << "Results Superset" << std::endl;
-  for (unsigned int i=0; i<derivs_.size(); i++)
+  for (int i=0; i<derivs_.size(); i++)
     {
       os << tabs << i << "\t\t";
       os.width(maxlen);
@@ -190,7 +190,7 @@ void SparsitySuperset::print(ostream& os) const
   /* find the maximum size of the string reps of the derivatives.
    * We'll use this to set the field width for printing derivatives. */
   int maxlen = 25;
-  for (unsigned int i=0; i<derivs_.size(); i++)
+  for (int i=0; i<derivs_.size(); i++)
     {
       int s = derivs_[i].toString().length();
       if (s > maxlen) maxlen = s;
@@ -198,7 +198,7 @@ void SparsitySuperset::print(ostream& os) const
 
 
   os << tabs << "SparsitySuperset" << std::endl;
-  for (unsigned int i=0; i<derivs_.size(); i++)
+  for (int i=0; i<derivs_.size(); i++)
     {
       os << tabs << i << "\tderiv=\t";
       os.width(maxlen);

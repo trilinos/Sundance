@@ -1,7 +1,7 @@
 #include "SundancePoint.hpp"
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 

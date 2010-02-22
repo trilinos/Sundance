@@ -39,99 +39,94 @@
 #include "SundanceDiscreteSpace.hpp"
 #include "TSFVectorDecl.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Internal;
+using namespace Teuchos;
+  
 
-  /** 
-   * DiscreteFunction represents a function that is discretized
-   * on a finite-element space.
-   */
-  class DiscreteFunction : public DiscreteFunctionStub,
-                           public FuncWithBasis
-  {
-  public:
-    /** */
-    DiscreteFunction(const DiscreteSpace& space, const string& name="");
+/** 
+ * DiscreteFunction represents a function that is discretized
+ * on a finite-element space.
+ */
+class DiscreteFunction : public DiscreteFunctionStub,
+                         public FuncWithBasis
+{
+public:
+  /** */
+  DiscreteFunction(const DiscreteSpace& space, const string& name="");
 
-    /** */
-    DiscreteFunction(const DiscreteSpace& space, const Vector<double>& vec, 
-                     const string& name="");
+  /** */
+  DiscreteFunction(const DiscreteSpace& space, const Vector<double>& vec, 
+    const string& name="");
 
-    /** */
-    DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
-                     const string& name="");
-    /** */
-    DiscreteFunction(const DiscreteSpace& space, const Array<string>& names);
+  /** */
+  DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
+    const string& name="");
+  /** */
+  DiscreteFunction(const DiscreteSpace& space, const Array<string>& names);
 
-    /** */
-    DiscreteFunction(const DiscreteSpace& space, const Vector<double>& vec, 
-                     const Array<string>& names);
+  /** */
+  DiscreteFunction(const DiscreteSpace& space, const Vector<double>& vec, 
+    const Array<string>& names);
 
-    /** */
-    DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
-                     const Array<string>& name);
+  /** */
+  DiscreteFunction(const DiscreteSpace& space, const double& constantValue,
+    const Array<string>& name);
 
-    /** */
-    static const DiscreteFunction* discFunc(const Expr& expr);
+  /** */
+  static const DiscreteFunction* discFunc(const Expr& expr);
 
 
-    /** */
-    static DiscreteFunction* discFunc(Expr& expr);
+  /** */
+  static DiscreteFunction* discFunc(Expr& expr);
 
-    /** */
-    void updateGhosts() const ;
+  /** */
+  void updateGhosts() const ;
 
-    /** */
-    void setVector(const Vector<double>& vec);
+  /** */
+  void setVector(const Vector<double>& vec);
 
-    /** */
-    const Vector<double>& getVector() const 
+  /** */
+  const Vector<double>& getVector() const 
     {return data_->getVector();}
 
-    /** */
-    const DiscreteSpace& discreteSpace() const 
+  /** */
+  const DiscreteSpace& discreteSpace() const 
     {return data_->discreteSpace();}
 
-    /** */
-    const Mesh& mesh() const {return discreteSpace().mesh();}
+  /** */
+  const Mesh& mesh() const {return discreteSpace().mesh();}
 
-    /** */
-    const RefCountPtr<DOFMapBase>& map() const {return discreteSpace().map();}
+  /** */
+  const RCP<DOFMapBase>& map() const {return discreteSpace().map();}
 
 
-    RefCountPtr<GhostView<double> >  ghostView() const 
+  RCP<GhostView<double> >  ghostView() const 
     {return data_->ghostView();}
 
-    const DiscreteFunctionData* data() const {return data_.get();}
+  const DiscreteFunctionData* data() const {return data_.get();}
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-    /** virtual destructor */
-    virtual ~DiscreteFunction() {;}
+  /** virtual destructor */
+  virtual ~DiscreteFunction() {;}
 
-    /* boilerplate */
-    GET_RCP(ExprBase);
-
-
-    /** */
-    RefCountPtr<const MapStructure> getLocalValues(int cellDim, 
-                                                   const Array<int>& cellLID,
-                                                   Array<Array<double> >& localValues) const ;
+  /* boilerplate */
+  GET_RCP(ExprBase);
 
 
-  private:
-    /** */
-    RCP<DiscreteFuncDataStub> getRCP(DiscreteFunctionData* ptr);
+  /** */
+  RCP<const MapStructure> getLocalValues(int cellDim, 
+    const Array<int>& cellLID,
+    Array<Array<double> >& localValues) const ;
 
-    RefCountPtr<DiscreteFunctionData> data_;
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-  };
+private:
+  /** */
+  RCP<DiscreteFuncDataStub> getRCP(DiscreteFunctionData* ptr);
+
+  RCP<DiscreteFunctionData> data_;
+
+};
 
 }
 

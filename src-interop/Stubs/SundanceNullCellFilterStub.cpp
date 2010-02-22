@@ -33,11 +33,8 @@
 #include "SundanceOut.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-
-using namespace SundanceCore;
-using namespace SundanceCore;
+namespace Sundance
+{
 using namespace Teuchos;
 
 
@@ -48,9 +45,9 @@ bool NullCellFilterStub::lessThan(const CellFilterStub* other) const
 {
   const NullCellFilterStub* ncf = dynamic_cast<const NullCellFilterStub*>(other);
   TEST_FOR_EXCEPTION(ncf==0, RuntimeError,
-                     "argument " << other->description() 
-                     << " to NullCellFilter::lessThan() could not be cast "
-                     "to a NullCellFilter*");
+    "argument " << other->description() 
+    << " to NullCellFilter::lessThan() could not be cast "
+    "to a NullCellFilter*");
   /* All null cell filters are equivalent */
   return false;
 }
@@ -60,4 +57,5 @@ XMLObject NullCellFilterStub::toXML() const
 {
   XMLObject rtn("NullCellFilterStub");
   return rtn;
+}
 }

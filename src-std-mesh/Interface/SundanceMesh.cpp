@@ -38,10 +38,10 @@
 #include "SundanceTabs.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceStdMesh;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 
@@ -203,10 +203,10 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
                    * the facets by GID and preserving the pairing of.
                    * GIDs and owners.
                    */
-                  SundanceUtils::Map<int, int> remoteFacetToOwnerMap;
-                  SundanceUtils::Map<int, int> localFacetToOwnerMap;
-                  SundanceUtils::Map<int, Set<int> > remoteFacetToNodesMap;
-                  SundanceUtils::Map<int, Set<int> > localFacetToNodesMap;
+                  Sundance::Map<int, int> remoteFacetToOwnerMap;
+                  Sundance::Map<int, int> localFacetToOwnerMap;
+                  Sundance::Map<int, Set<int> > remoteFacetToNodesMap;
+                  Sundance::Map<int, Set<int> > localFacetToNodesMap;
 
                   for (int f=0; f<nFacets[d]; f++)
                     {
@@ -221,8 +221,8 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
                       if (d > 0)
                         {
                           int numNodes = numFacets(d, 0, 0);
-                          SundanceUtils::Set<int> localNodes;
-                          SundanceUtils::Set<int> remoteNodes;
+                          Sundance::Set<int> localNodes;
+                          Sundance::Set<int> remoteNodes;
                            for (int v=0; v<numNodes; v++)
                             {
                               int nodeLID = facetLID(d, lfLID, 0, v, dir);
@@ -237,7 +237,7 @@ bool Mesh::checkCellConsistency(ostream& os, int dim) const
                     }
                   /* Now that the facets are in sorted order, we can 
                    * compare them */
-                  for (SundanceUtils::Map<int,int>::const_iterator 
+                  for (Sundance::Map<int,int>::const_iterator 
                          rf=remoteFacetToOwnerMap.begin(), 
                          lf=localFacetToOwnerMap.begin();
                        rf != remoteFacetToOwnerMap.end();
@@ -301,7 +301,7 @@ bool Mesh::testIdentity(ostream& os,
 {
   Tabs tab;
   bool ok = true;
-  for (unsigned int i=0; i<a.size(); i++)
+  for (int i=0; i<a.size(); i++)
     {
       if (a[i] != b[i]) ok = false;
     }

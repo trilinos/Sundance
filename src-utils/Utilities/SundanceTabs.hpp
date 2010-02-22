@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceUtils
+namespace Sundance
 {
 /**
  * Tabbing utility for output. Constructing a new Tabs object automatically
@@ -123,7 +123,7 @@ private:
 };
 }
 
-namespace SundanceUtils
+namespace Sundance
 {
 /** \relates Tabs stream insertion operator for tab */
 inline std::ostream& operator<<(std::ostream& os, const Tabs& t)

@@ -34,16 +34,16 @@
 #include "SundanceUnknownFuncElement.hpp"
 #include "SundanceExplicitFunctionalDerivativeElement.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
-using namespace SundanceCore;
+using namespace Sundance;
 
-Expr SundanceCore::FunctionalDerivative(const Expr& F, const Expr& u)
+Expr Sundance::FunctionalDerivative(const Expr& F, const Expr& u)
 {
-  if (F.size() == 1U && u.size()==1U)
+  if (F.size() == 1 && u.size()==1)
   {
-    RefCountPtr<ScalarExpr> arg = SymbolicTransformation::getScalar(F[0]);
+    RCP<ScalarExpr> arg = SymbolicTransformation::getScalar(F[0]);
 
     const UnknownFuncElement* uPtr
       = dynamic_cast<const UnknownFuncElement*>(u[0].ptr().get());
@@ -52,10 +52,10 @@ Expr SundanceCore::FunctionalDerivative(const Expr& F, const Expr& u)
     
     return new ExplicitFunctionalDerivativeElement(arg, fd);
   }
-  else if (F.size() > 1U)
+  else if (F.size() > 1)
   {
     Array<Expr> rtnList(F.size());
-    for (unsigned int i=0; i<rtnList.size(); i++)
+    for (int i=0; i<rtnList.size(); i++)
     {
       rtnList[i] = FunctionalDerivative(F[i], u);
     }
@@ -64,7 +64,7 @@ Expr SundanceCore::FunctionalDerivative(const Expr& F, const Expr& u)
   else 
   {
     Array<Expr> rtnList(u.size());
-    for (unsigned int i=0; i<rtnList.size(); i++)
+    for (int i=0; i<rtnList.size(); i++)
     {
       rtnList[i] = FunctionalDerivative(F, u[i]);
     }

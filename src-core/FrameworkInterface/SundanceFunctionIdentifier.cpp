@@ -31,8 +31,8 @@
 #include "SundanceFunctionIdentifier.hpp"
 #include "SundanceOrderedTuple.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 FunctionIdentifier::FunctionIdentifier()
   : dofID_(-1), algSpec_(ScalarAT)
@@ -102,7 +102,7 @@ FunctionIdentifier FunctionIdentifier::createComponent(int d) const
   return FunctionIdentifier(this, coordAlgebraSpec(d));
 }
 
-namespace SundanceCore
+namespace Sundance
 {
 
 FunctionIdentifier makeFuncID(int tensorOrder)
@@ -123,7 +123,7 @@ namespace std
 {
 
 ostream& operator<<(ostream& os, 
-  const SundanceCore::FunctionIdentifier& fid)
+  const Sundance::FunctionIdentifier& fid)
 {
   os << "FuncID(dofID=" << fid.dofID() << ", component type=" << fid.algSpec() << ")";
   return os;

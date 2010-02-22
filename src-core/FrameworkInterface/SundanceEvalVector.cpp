@@ -35,8 +35,8 @@
 #include "SundanceOut.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
 
@@ -52,7 +52,7 @@ EvalVector::EvalVector(TempStack* s)
 }
 
 
-EvalVector::EvalVector(TempStack* s, const RefCountPtr<Array<double> >& data,
+EvalVector::EvalVector(TempStack* s, const RCP<Array<double> >& data,
                        const string& str)
   : s_(s),
     data_(s->popVectorData()),
@@ -85,7 +85,7 @@ void EvalVector::resize(int n)
   data_->resize(n);
 }
 
-RefCountPtr<EvalVector> EvalVector::clone() const
+RCP<EvalVector> EvalVector::clone() const
 {
   return rcp(new EvalVector(s_, data_, str_));
 }
@@ -720,7 +720,7 @@ void EvalVector::setTo_SV(const double& alpha,
 }
 
 void EvalVector::applyUnaryOperator(const UnaryFunctor* func, 
-                                    Array<RefCountPtr<EvalVector> >& opDerivs)
+                                    Array<RCP<EvalVector> >& opDerivs)
 {
   //TimeMonitor t(evalVecTimer());
   int n = data_->size();

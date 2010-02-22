@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
       
       /* create a replicated vector space for the small space of columns */
       int nVecs = 3;
-      RefCountPtr<const VectorSpaceBase<double> > rs =
+      RCP<const VectorSpaceBase<double> > rs =
         Thyra::defaultSpmdVectorSpace<double>(nVecs);
       VectorSpace<double> replSpace = rs;
 

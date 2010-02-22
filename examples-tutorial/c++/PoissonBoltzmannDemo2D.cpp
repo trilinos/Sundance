@@ -29,7 +29,7 @@
 
 #include "Sundance.hpp"
 #include "SundanceElementIntegral.hpp"
-using SundanceCore::List;
+using Sundance::List;
 
 // This test depends on Exodus, so skip it if Expdus hasn't been enabled. 
 #if defined(HAVE_SUNDANCE_EXODUS)
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
     // This next line is just a hack to deal with some 
     // transitional code in the
     // element integration logic. 
-    SundanceStdFwk::Internal::ElementIntegral::alwaysUseCofacets() = false;
+    Sundance::ElementIntegral::alwaysUseCofacets() = false;
 
     /* 
      * Creation of vector type

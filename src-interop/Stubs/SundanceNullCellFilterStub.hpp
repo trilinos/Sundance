@@ -7,53 +7,50 @@
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace Internal;
+using namespace Teuchos;
   
-  namespace Internal
-  {
-    /** 
-     *
-     * <h4> Notes for framework interface implementors </h4>
-     *
-     *  
-     */
-    class NullCellFilterStub : public CellFilterStub
-    {
-    public:
-      /** Empty ctor */
-      NullCellFilterStub();
+  
+/** 
+ *
+ * <h4> Notes for framework interface implementors </h4>
+ *
+ *  
+ */
+class NullCellFilterStub : public CellFilterStub
+{
+public:
+  /** Empty ctor */
+  NullCellFilterStub();
 
-      /** virtual dtor */
-      virtual ~NullCellFilterStub(){;}
+  /** virtual dtor */
+  virtual ~NullCellFilterStub(){;}
 
-      /** Write to XML */
-      virtual XMLObject toXML() const ;
+  /** Write to XML */
+  virtual XMLObject toXML() const ;
 
-      /** Ordering for storage in STL maps */
-      virtual bool lessThan(const CellFilterStub* other) const ;
+  /** Ordering for storage in STL maps */
+  virtual bool lessThan(const CellFilterStub* other) const ;
 
-      /** \name Printable interface */
-      //@{
-      /** Print to a stream */
-      virtual void print(std::ostream& os) const {os << toXML();}
-      //@}
+  /** \name Printable interface */
+  //@{
+  /** Print to a stream */
+  virtual void print(std::ostream& os) const {os << toXML();}
+  //@}
 
-      /** \name Describable interface */
-      //@{
-      /** Print to a stream */
-      virtual string description() const 
-      {return "NullCellFilterStub";}
-      //@}
+  /** \name Describable interface */
+  //@{
+  /** Print to a stream */
+  virtual string description() const 
+    {return "NullCellFilterStub";}
+  //@}
 
-      /** */
-      virtual RefCountPtr<CellFilterStub> getRcp() {return rcp(this);}
+  /** */
+  virtual RCP<CellFilterStub> getRcp() {return rcp(this);}
 
-    };
-  }
+};
+
 }
 
 

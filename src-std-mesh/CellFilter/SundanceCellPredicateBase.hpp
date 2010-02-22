@@ -42,76 +42,71 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include <typeinfo>
 
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  using namespace Teuchos;
+using namespace Teuchos;
   
-  namespace Internal
-  {
-    /** 
-     * CellPredicateBase is the base class for predicate objects
-     * that test cells
-     * against some condition. A simulation developer needing
-     * some specialized method for identifying cells might implement
-     * a custom cell predicate by extending this function. However,
-     * the most common cases, selection by cell label or cell position,
-     * have already been implemented 
-     * in LabelCellPredicate and PositionalCellPredicate.
-     */
-    class CellPredicateBase 
-      : public SundanceUtils::Handleable<CellPredicateBase>,
-        public Noncopyable,
-        public SundanceUtils::ObjectWithClassVerbosity<CellPredicateBase>
-    {
-    public:
-      /** Empty ctor */
-      CellPredicateBase();
+/** 
+ * CellPredicateBase is the base class for predicate objects
+ * that test cells
+ * against some condition. A simulation developer needing
+ * some specialized method for identifying cells might implement
+ * a custom cell predicate by extending this function. However,
+ * the most common cases, selection by cell label or cell position,
+ * have already been implemented 
+ * in LabelCellPredicate and PositionalCellPredicate.
+ */
+class CellPredicateBase 
+  : public Sundance::Handleable<CellPredicateBase>,
+    public Noncopyable,
+    public ObjectWithClassVerbosity<CellPredicateBase>
+{
+public:
+  /** Empty ctor */
+  CellPredicateBase();
 
-      /** virtual dtor */
-      virtual ~CellPredicateBase(){;}
+  /** virtual dtor */
+  virtual ~CellPredicateBase(){;}
       
-      /** Test the predicate on a batch of cells */
-      virtual void testBatch(const Array<int>& cellLID,
-                             Array<int>& results) const = 0 ;
+  /** Test the predicate on a batch of cells */
+  virtual void testBatch(const Array<int>& cellLID,
+    Array<int>& results) const = 0 ;
 
       
-      /** Set the current mesh and dimension on which cells are to be tested */
-      virtual void setMesh(const Mesh& mesh, int cellDim) const 
-      {mesh_ = mesh; cellDim_ = cellDim;}
+  /** Set the current mesh and dimension on which cells are to be tested */
+  virtual void setMesh(const Mesh& mesh, int cellDim) const 
+    {mesh_ = mesh; cellDim_ = cellDim;}
 
-      /** Write to XML */
-      virtual XMLObject toXML() const = 0 ;
+  /** Write to XML */
+  virtual XMLObject toXML() const = 0 ;
 
-      /** */
-      virtual bool lessThan(const CellPredicateBase* other) const = 0 ;
+  /** */
+  virtual bool lessThan(const CellPredicateBase* other) const = 0 ;
 
-      /** */
-      virtual string description() const = 0 ;
-
-
-      /** */
-      virtual string typeName() const {return typeid(*this).name();}
-    protected:
-
-      /** */
-      const Mesh& mesh() const {return mesh_;}
+  /** */
+  virtual string description() const = 0 ;
 
 
-      /** */
-      int cellDim() const {return cellDim_;}
+  /** */
+  virtual string typeName() const {return typeid(*this).name();}
+protected:
 
-    private:
-      mutable Mesh mesh_;
-
-      mutable int cellDim_;
-
+  /** */
+  const Mesh& mesh() const {return mesh_;}
 
 
-    };
-  }
+  /** */
+  int cellDim() const {return cellDim_;}
+
+private:
+  mutable Mesh mesh_;
+
+  mutable int cellDim_;
+
+
+
+};
+
 }
 
 #endif

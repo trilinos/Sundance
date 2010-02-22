@@ -38,21 +38,21 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 static Time& mixedDOFCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("mixed DOF map init"); 
   return *rtn;
 }
 static Time& maxDOFBuildTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("max-cell dof table init"); 
   return *rtn;
 }
@@ -82,7 +82,7 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
   Tabs tab;
   SUNDANCE_VERB_LOW(tab << "building mixed DOF map");
 
-  SundanceUtils::Map<OrderedHandle<BasisDOFTopologyBase>, int> basisToChunkMap;
+  Sundance::Map<OrderedHandle<BasisDOFTopologyBase>, int> basisToChunkMap;
   Array<RCP<BasisDOFTopologyBase> > chunkBases;
   Array<Array<int> > chunkFuncs;
   
@@ -109,7 +109,7 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
   structure_ = rcp(new MapStructure(basis.size(), chunkBases, chunkFuncs));
 
   nFuncs_.resize(chunkBases.size());
-  for (unsigned int i=0; i<nFuncs_.size(); i++) 
+  for (int i=0; i<nFuncs_.size(); i++) 
     nFuncs_[i] = chunkFuncs[i].size();
 
   allocate(mesh);
@@ -274,7 +274,7 @@ void MixedDOFMap::initMap()
    * third cell number. */
   Array<Array<Array<int> > > remoteCells(mesh().spatialDim()+1);
 
-  for (unsigned int d=0; d<remoteCells.size(); d++) 
+  for (int d=0; d<remoteCells.size(); d++) 
     remoteCells[d].resize(mesh().comm().getNProc());
   
   /* Loop over maximal cells in the order specified by the cell iterator.
@@ -556,7 +556,7 @@ void MixedDOFMap::setDOFs(int basisChunk, int cellDim, int cellLID,
 
 
 
-RefCountPtr<const MapStructure> MixedDOFMap
+RCP<const MapStructure> MixedDOFMap
 ::getDOFsForCellBatch(int cellDim,
   const Array<int>& cellLID,
   const Set<int>& requestedFuncSet,
@@ -884,9 +884,9 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
     comm().synchronize();
   }
 
-  for (unsigned int chunk=0; chunk<dofs_[dim].size(); chunk++)
+  for (int chunk=0; chunk<dofs_[dim].size(); chunk++)
   {
-    for (unsigned int n=0; n<dofs_[dim][chunk].size(); n++)
+    for (int n=0; n<dofs_[dim][chunk].size(); n++)
     {
       if (dofs_[dim][chunk][n] >= 0) dofs_[dim][chunk][n] += myOffset;
     }
@@ -914,12 +914,12 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
 void MixedDOFMap::checkTable() const 
 {
   int bad = 0;
-  for (unsigned int d=0; d<dofs_.size(); d++)
+  for (int d=0; d<dofs_.size(); d++)
   {
-    for (unsigned int chunk=0; chunk<dofs_[d].size(); chunk++)
+    for (int chunk=0; chunk<dofs_[d].size(); chunk++)
     {
       const Array<int>& dofs = dofs_[d][chunk];
-      for (unsigned int n=0; n<dofs.size(); n++)
+      for (int n=0; n<dofs.size(); n++)
       {
         if (dofs[n] < 0) bad = 1;
       }

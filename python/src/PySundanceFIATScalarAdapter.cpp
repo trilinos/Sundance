@@ -2,8 +2,8 @@
 #include <stack>
 #include <iostream>
 using namespace std;
-using namespace SundanceStdFwk;
-using namespace SundanceStdMesh;
+using namespace Sundance;
+using namespace Sundance;
 
 
 static int line_sdvert_to_fvert[] = {0,1};
@@ -36,7 +36,7 @@ static CellType sdim_to_cellType[] =
 #define HAVE_PY_FIAT
 #ifdef HAVE_PY_FIAT
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 FIATScalarAdapter::FIATScalarAdapter( PyObject *pyfamilyclass ,
   int order ) :
@@ -165,11 +165,11 @@ void FIATScalarAdapter::getReferenceDOFs(const CellType& maximalCellType,
     int cd = dimension( cellType );
     const Array<Array<Array<int> > >& dofs_cur = dof_[cd-1];
     dofs.resize( dofs_cur.size() );
-    for (unsigned i=0;i<dofs_cur.size();i++) {
+    for (i=0;i<dofs_cur.size();i++) {
       dofs[i].resize( dofs_cur[i].size() );
-      for (unsigned j=0;j<dofs_cur[i].size();j++) {
+      for (j=0;j<dofs_cur[i].size();j++) {
         dofs[i][j].resize( dofs_cur[i][j].size() );
-        for (unsigned k=0;k<dofs_cur[i][j].size();k++) {
+        for (k=0;k<dofs_cur[i][j].size();k++) {
           dofs[i][j][k] = dofs_cur[i][j][k];
         }
       }
@@ -234,12 +234,12 @@ void FIATScalarAdapter::refEval(
  
     result[0].resize( pts.size() );
     int nn = nReferenceDOFs( maximalCellType, cellType );
-    for (unsigned i=0;i<pts.size();i++) {
+    for (i=0;i<pts.size();i++) {
       result[0][i].resize(nn);
     }
  
 // 			cout << "result sizes" << endl;
-//  			for (unsigned i=0;i<result.size();i++) {
+//  			for (i=0;i<result.size();i++) {
 //  				cout << result[0][i].size() << endl;
 //  			}
 // 			cout << "making points" << endl;
@@ -248,7 +248,7 @@ void FIATScalarAdapter::refEval(
     TEST_FOR_EXCEPTION( !py_list_of_points , RuntimeError, 
       "Unable to create list" );
     to_decref.push( py_list_of_points );
-    for (unsigned i=0;i<pts.size();i++) {
+    for (int i=0;i<pts.size();i++) {
       // Create a Python tuple for the point, converting from
       // Sundance (0,1)-based coordinates to FIAT (-1,1)-based 
       // coordinates
@@ -343,14 +343,14 @@ void FIATScalarAdapter::refEval(
 
     int cur = 0;
     int **sd_to_fiat_spd = sd_to_fiat[spatialDim];
-    for (unsigned d=0;d<=(unsigned)cellDim;d++) {
+    for (d=0;d<=(unsigned)cellDim;d++) {
 //				cout << "copying points for dimension " << d << endl;
       int *sd_to_fiat_spd_d = sd_to_fiat_spd[d];
       for (int e=0;e<numFacets(cellType,d);e++) {
 //					cout << "\tcopying points for facet " << e << endl;
         int fiat_e = sd_to_fiat_spd_d[e];
 //					cout << "fiat_e: " << fiat_e << endl;
-        for (unsigned n=0;n<dofs[d][e].size();n++) {
+        for (int n=0;n<dofs[d][e].size();n++) {
 //						cout << "\t\tcopying points for local bf " << n << endl;
 //						cout << "\t\tcur " << cur << endl;
           for (unsigned p=0;p<pts.size();p++) {

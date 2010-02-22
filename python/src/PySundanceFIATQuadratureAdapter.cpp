@@ -2,23 +2,23 @@
 #include <stack>
 
 using namespace std;
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 //#ifdef FOOBAR_FIAT_QUADRATURE
 
-namespace SundanceStdFwk 
+namespace Sundance 
 {
   FIATQuadratureAdapter::FIATQuadratureAdapter( PyObject *py_quad_factory ,
 						int order ) :
     QuadratureFamilyBase( order ) , pts_(3) , wts_(3)
   {
     
-    for (unsigned i=0;i<3;i++) {
+    for (i=0;i<3;i++) {
       stack<PyObject *> to_decref;
       // call the factory function with shape and order
       // to get the FIAT quadrature rule for that shape
@@ -70,7 +70,7 @@ namespace SundanceStdFwk
       for (int j=0;j<num_points;j++) {
 	// Get a tuple that is the current point
 	PyObject *py_pt_cur = PyList_GetItem( py_quad_points , j );
-	for (unsigned k=0;k<i+1;k++) {
+	for (k=0;k<i+1;k++) {
 	  PyObject *py_pt_cur_k = PyTuple_GetItem( py_pt_cur , k );
 	  pts_[i][j][k] = PyFloat_AsDouble( py_pt_cur_k );
 	}
@@ -105,7 +105,7 @@ namespace SundanceStdFwk
     const Array<double>& wts = wts_[cellDim-1];
     quadPoints.resize( pts.size() );
     quadWeights.resize( wts.size() );
-    for (unsigned i=0;i<pts.size();i++) {
+    for (i=0;i<pts.size();i++) {
       quadPoints[i].resize( pts[i].dim() );
       for (int j=0;j<pts[i].dim();j++) {
 	quadPoints[i][j] = pts[i][j];

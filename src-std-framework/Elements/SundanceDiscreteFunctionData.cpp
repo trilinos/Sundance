@@ -42,11 +42,11 @@
 #endif
 
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -107,7 +107,7 @@ void DiscreteFunctionData::updateGhosts() const
 }
 
 
-RefCountPtr<const MapStructure> DiscreteFunctionData
+RCP<const MapStructure> DiscreteFunctionData
 ::getLocalValues(int cellDim, 
   const Array<int>& cellLID,
   Array<Array<double> >& localValues) const 
@@ -120,18 +120,18 @@ RefCountPtr<const MapStructure> DiscreteFunctionData
   }
   updateGhosts();
 
-  const RefCountPtr<DOFMapBase>& map = space_.map();
+  const RCP<DOFMapBase>& map = space_.map();
   static Array<Array<int> > dofs;
   Array<int> nNodes;
 
-  RefCountPtr<const Set<int> > requestedFuncs = map->allowedFuncsOnCellBatch(cellDim,
+  RCP<const Set<int> > requestedFuncs = map->allowedFuncsOnCellBatch(cellDim,
     cellLID);
 
-  RefCountPtr<const MapStructure> s = map->getDOFsForCellBatch(cellDim, cellLID,
+  RCP<const MapStructure> s = map->getDOFsForCellBatch(cellDim, cellLID,
     *requestedFuncs,
     dofs, nNodes, Evaluator::classVerbosity());
   localValues.resize(s->numBasisChunks());
-  for (unsigned int b=0; b<nNodes.size(); b++)
+  for (int b=0; b<nNodes.size(); b++)
   {
     int nFuncs = s->numFuncs(b);
     localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());

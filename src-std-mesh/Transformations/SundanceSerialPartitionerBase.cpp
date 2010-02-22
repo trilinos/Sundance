@@ -2,11 +2,11 @@
 #include "SundanceMap.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 using std::endl;
 using std::cout;
@@ -17,7 +17,7 @@ using std::cerr;
 Set<int> SerialPartitionerBase::arrayToSet(const Array<int>& a) const
 {
   Set<int> rtn;
-  for (unsigned int i=0; i<a.size(); i++) 
+  for (int i=0; i<a.size(); i++) 
   {
     rtn.put(a[i]);
   }
@@ -92,9 +92,9 @@ void SerialPartitionerBase::getNodeAssignments(int nProc,
   nodeAssignments.resize(vertElems_.size());
   nodeOwnerElems.resize(vertElems_.size());
 
-  for (unsigned int i=0; i<nodesPerProc.size(); i++) nodesPerProc[i] = 0;
+  for (int i=0; i<nodesPerProc.size(); i++) nodesPerProc[i] = 0;
 
-  for (unsigned int v=0; v<vertElems_.size(); v++)
+  for (int v=0; v<vertElems_.size(); v++)
   {
     /* assign the vertex to the highest-numbered cofacet */
     int ownerElem = max(vertElems_[v]);
@@ -109,9 +109,9 @@ void SerialPartitionerBase::getElemsPerProc(int nProc,
   Array<int>& elemsPerProc) const 
 {
   elemsPerProc.resize(nProc);
-  for (unsigned int i=0; i<elemsPerProc.size(); i++) elemsPerProc[i] = 0;
+  for (int i=0; i<elemsPerProc.size(); i++) elemsPerProc[i] = 0;
 
-  for (unsigned int e=0; e<elemAssignments.size(); e++)
+  for (int e=0; e<elemAssignments.size(); e++)
   {
     elemsPerProc[elemAssignments[e]]++;
   }
@@ -124,7 +124,7 @@ void SerialPartitionerBase::remapEntities(const Array<int>& assignments,
   Array<Array<int> > procBuckets(nProc);
   entityMap.resize(assignments.size());
 
-  for (unsigned int i=0; i<assignments.size(); i++)
+  for (int i=0; i<assignments.size(); i++)
   {
     procBuckets[assignments[i]].append(i);
   }
@@ -133,7 +133,7 @@ void SerialPartitionerBase::remapEntities(const Array<int>& assignments,
   
   for (int p=0; p<nProc; p++)
   {
-    for (unsigned int i=0; i<procBuckets[p].size(); i++)
+    for (int i=0; i<procBuckets[p].size(); i++)
     {
       int lid = procBuckets[p][i];
       entityMap[lid] = g++;
@@ -149,7 +149,7 @@ void SerialPartitionerBase::getOffProcData(int p,
   Set<int>& offProcElems) const
 {
   /* first pass: find off-proc nodes required by on-proc elems */
-  for (unsigned int e=0; e<elemAssignments.size(); e++)
+  for (int e=0; e<elemAssignments.size(); e++)
   {
     if (elemAssignments[e] != p) continue;
     for (Set<int>::const_iterator v=elemVerts_[e].begin(); v!=elemVerts_[e].end(); v++)
@@ -159,7 +159,7 @@ void SerialPartitionerBase::getOffProcData(int p,
   }
 
   /* second pass: find off-proc elems required by the on-proc nodes */
-  for (unsigned int v=0; v<nodeAssignments.size(); v++)
+  for (int v=0; v<nodeAssignments.size(); v++)
   {
     if (nodeAssignments[v] != p) continue;
     const Set<int>& v2e = vertElems_[v];
@@ -182,8 +182,8 @@ void SerialPartitionerBase::getOffProcData(int p,
 
 
 Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
-  Array<SundanceUtils::Map<int, int> >& oldElemLIDToNewLIDMaps,
-  Array<SundanceUtils::Map<int, int> >& oldVertLIDToNewLIDMaps) const 
+  Array<Sundance::Map<int, int> >& oldElemLIDToNewLIDMaps,
+  Array<Sundance::Map<int, int> >& oldVertLIDToNewLIDMaps) const 
 {
   int dim = mesh.spatialDim();
 
@@ -222,12 +222,12 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
   remapEntities(elemAssignments, np, remappedElems);
   remapEntities(nodeAssignments, np, remappedNodes);
 
-  for (unsigned int e=0; e<elemAssignments.size(); e++)
+  for (int e=0; e<elemAssignments.size(); e++)
   {
     procElems[elemAssignments[e]].append(e);
   }
 
-  for (unsigned int n=0; n<nodeAssignments.size(); n++)
+  for (int n=0; n<nodeAssignments.size(); n++)
   {
     procNodes[nodeAssignments[n]].append(n);
   }
@@ -238,9 +238,9 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
   oldElemLIDToNewLIDMaps.resize(np);
   for (int p=0; p<np; p++)
   {
-    SundanceUtils::Map<int, int>& oldVertLIDToNewLIDMap 
+    Sundance::Map<int, int>& oldVertLIDToNewLIDMap 
       = oldVertLIDToNewLIDMaps[p];
-    SundanceUtils::Map<int, int>& oldElemLIDToNewLIDMap 
+    Sundance::Map<int, int>& oldElemLIDToNewLIDMap 
       = oldElemLIDToNewLIDMaps[p];
     MeshType type = new BasicSimplicialMeshType();
     rtn[p] = type.createEmptyMesh(mesh.spatialDim(), MPIComm::world());
@@ -248,7 +248,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
     Set<int> unusedVertGID;
 
     /* add the on-processor nodes */
-    for (unsigned int n=0; n<procNodes[p].size(); n++)
+    for (int n=0; n<procNodes[p].size(); n++)
     {
       int oldLID = procNodes[p][n];
       int newGID = remappedNodes[oldLID];
@@ -258,7 +258,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
     }
 
     /* add the off-processor nodes */
-    for (unsigned int n=0; n<offProcNodes[p].size(); n++)
+    for (int n=0; n<offProcNodes[p].size(); n++)
     {
       int oldLID = offProcNodes[p][n];
       int nodeOwnerProc = nodeAssignments[oldLID];
@@ -269,14 +269,14 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
     }
     
     /* add the on-processor elements */
-    for (unsigned int e=0; e<procElems[p].size(); e++)
+    for (int e=0; e<procElems[p].size(); e++)
     {
       int oldLID = procElems[p][e];
       int newGID = remappedElems[oldLID];
       Array<int> vertGIDs;
       Array<int> orientations;
       mesh.getFacetArray(dim, oldLID, 0, vertGIDs, orientations);
-      for (unsigned int v=0; v<vertGIDs.size(); v++)
+      for (int v=0; v<vertGIDs.size(); v++)
       {
         vertGIDs[v] = remappedNodes[vertGIDs[v]];
         if (unusedVertGID.contains(vertGIDs[v])) unusedVertGID.erase(newGID);
@@ -286,7 +286,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
     }
     
     /* add the off-processor elements */
-    for (unsigned int e=0; e<offProcElems[p].size(); e++)
+    for (int e=0; e<offProcElems[p].size(); e++)
     {
       int oldLID = offProcElems[p][e];
       int newGID = remappedElems[oldLID];
@@ -294,7 +294,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
       Array<int> vertGIDs;
       Array<int> orientations;
       mesh.getFacetArray(dim, oldLID, 0, vertGIDs, orientations);
-      for (unsigned int v=0; v<vertGIDs.size(); v++)
+      for (int v=0; v<vertGIDs.size(); v++)
       {
         vertGIDs[v] = remappedNodes[vertGIDs[v]];
         if (unusedVertGID.contains(vertGIDs[v])) unusedVertGID.erase(newGID);
@@ -317,12 +317,12 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
         int label = *i;
         if (label == 0) continue;
         mesh.getLIDsForLabel(d, label, labeledCells);
-        for (unsigned int c=0; c<labeledCells.size(); c++)
+        for (int c=0; c<labeledCells.size(); c++)
         {
           int lid = labeledCells[c];
           Array<int> cofacets;
           mesh.getCofacets(d, lid, dim, cofacets);
-          for (unsigned int n=0; n<cofacets.size(); n++)
+          for (int n=0; n<cofacets.size(); n++)
           {
             int cofLID = cofacets[n];
             if (elemAssignments[cofLID]==p 
@@ -336,7 +336,7 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
               Array<int> newVerts;
               Array<int> orientation;
               mesh.getFacetArray(d, lid, 0, oldVerts, orientation);
-              for (unsigned int v=0; v<oldVerts.size(); v++)
+              for (int v=0; v<oldVerts.size(); v++)
               {
                 newVerts.append(remappedNodes[oldVerts[v]]);
               }
@@ -352,14 +352,14 @@ Array<Mesh> SerialPartitionerBase::makeMeshParts(const Mesh& mesh, int np,
               rtn[p].getFacetArray(dim, newElemLID, d, 
                 submeshFacets, orientation);
               int facetIndex = -1;
-              for (unsigned int df=0; df<submeshFacets.size(); df++)
+              for (int df=0; df<submeshFacets.size(); df++)
               {
                 /* Get the vertices of this d-facet */
                 int facetLID = submeshFacets[df];
                 Array<int> verts;
                 rtn[p].getFacetArray(d, facetLID, 0, verts, orientation);
                 Array<int> vertGID(verts.size());
-                for (unsigned int v=0; v<verts.size(); v++)
+                for (int v=0; v<verts.size(); v++)
                 {
                   vertGID[v] = rtn[p].mapLIDToGID(0, verts[v]);
                 }

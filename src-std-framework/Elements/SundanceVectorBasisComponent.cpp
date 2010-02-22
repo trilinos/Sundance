@@ -31,8 +31,8 @@
 #include "SundanceVectorBasisComponent.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceUtils;
-using namespace SundanceStdFwk;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 VectorBasisComponent::VectorBasisComponent(const BasisFamily& master, 

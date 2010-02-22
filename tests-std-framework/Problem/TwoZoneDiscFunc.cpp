@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 		{
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
-      SundanceStdFwk::Internal::ElementIntegral::alwaysUseCofacets() = false;
+      Sundance::ElementIntegral::alwaysUseCofacets() = false;
       int npx = -1;
       int npy = -1;
       PartitionedRectangleMesher::balanceXY(np, &npx, &npy);

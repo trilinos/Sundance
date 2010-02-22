@@ -36,7 +36,7 @@
 #include "SundanceExprWithChildren.hpp"
 #include "SundanceChainRuleSum.hpp"
 
-namespace SundanceCore 
+namespace Sundance 
 {
 /** 
  *
@@ -55,7 +55,7 @@ public:
   /** */
   virtual void internalEval(const EvalManager& mgr,
     Array<double>& constantResults,
-    Array<RefCountPtr<EvalVector> >& vectorResults) const ;
+    Array<RCP<EvalVector> >& vectorResults) const ;
 
   /** */
   int numChildren() const {return childEvaluators_.size();}
@@ -100,10 +100,10 @@ public:
    */
 
   virtual void evalArgDerivs(const EvalManager& mgr,
-    const Array<RefCountPtr<Array<double> > >& constDerivsOfArgs,
-    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& varDerivOfArgs,
+    const Array<RCP<Array<double> > >& constDerivsOfArgs,
+    const Array<RCP<Array<RCP<EvalVector> > > >& varDerivOfArgs,
     Array<double>& constArgDerivs,
-    Array<RefCountPtr<EvalVector> >& varArgDerivs) const = 0 ;
+    Array<RCP<EvalVector> >& varArgDerivs) const = 0 ;
 
 
   static Set<MultiSet<MultipleDeriv> > chainRuleBins(const MultipleDeriv& d,
@@ -145,11 +145,11 @@ protected:
 private:
 
       
-  Array<RefCountPtr<ChainRuleSum> > expansions_;
+  Array<RCP<ChainRuleSum> > expansions_;
 
-  Array<RefCountPtr<Evaluator> > childEvaluators_;
+  Array<RCP<Evaluator> > childEvaluators_;
 
-  Array<RefCountPtr<SparsitySuperset> > childSparsity_;
+  Array<RCP<SparsitySuperset> > childSparsity_;
 
   Map<MultiSet<int>, int> constArgDerivMap_;
 

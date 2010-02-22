@@ -30,10 +30,10 @@
 
 #include "SundanceZeroExpr.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 ZeroExpr::ZeroExpr()

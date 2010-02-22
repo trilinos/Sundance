@@ -40,15 +40,15 @@
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 class MultipleDeriv;
 /** */
 typedef OrderedPair<MultipleDeriv, MultipleDeriv> DerivPair; 
 
 /** */
-typedef SundanceUtils::Map<DerivPair, int> ProductRulePerms;
+typedef Sundance::Map<DerivPair, int> ProductRulePerms;
 /** Class MultipleDeriv is a multiple functional derivative operator
  * represented as a multiset of first-order derivatives.
  * The derivatives are each Deriv objects, so the multiple

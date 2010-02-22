@@ -6,14 +6,14 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include <stack>
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  
+  using namespace Sundance;
+  using namespace Sundance;
   using namespace Teuchos;
 
 

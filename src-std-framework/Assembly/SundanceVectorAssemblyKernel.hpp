@@ -34,15 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceVectorFillingAssemblyKernel.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -74,12 +66,12 @@ public:
    * \param verb verbosity level
    */
   VectorAssemblyKernel(
-  const Array<RefCountPtr<DOFMapBase> >& dofMap,
-  const Array<RefCountPtr<Array<int> > >& isBCIndex,
-  const Array<int>& lowestLocalIndex,
-  Array<Vector<double> >& b,
-  bool partitionBCs,
-  int verb
+    const Array<RCP<DOFMapBase> >& dofMap,
+    const Array<RCP<Array<int> > >& isBCIndex,
+    const Array<int>& lowestLocalIndex,
+    Array<Vector<double> >& b,
+    bool partitionBCs,
+    int verb
     );
 
   /** */
@@ -89,16 +81,15 @@ public:
   virtual void prepareForWorkSet(
     const Array<Set<int> >& requiredTests,
     const Array<Set<int> >& requiredUnks,
-    RefCountPtr<StdFwkEvalMediator> mediator) ;
+    RCP<StdFwkEvalMediator> mediator) ;
 
   /** */
   virtual void fill(bool isBC,
     const IntegralGroup& group,
-    const RefCountPtr<Array<double> >& localValues) ;   
+    const RCP<Array<double> >& localValues) ;   
 
 };
 
-}
 }
 
 

@@ -33,16 +33,16 @@
 #include "SundanceSparsitySuperset.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
 
 EvalVectorArray::EvalVectorArray()
-  : Array<RefCountPtr<EvalVector> >()
+  : Array<RCP<EvalVector> >()
 {;}
 
-void EvalVectorArray::copy(const RefCountPtr<EvalVectorArray>& other)
+void EvalVectorArray::copy(const RCP<EvalVectorArray>& other)
 {
   resize(other->size());
 
@@ -52,7 +52,7 @@ void EvalVectorArray::copy(const RefCountPtr<EvalVectorArray>& other)
     }
 }
 
-void EvalVectorArray::steal(const RefCountPtr<EvalVectorArray>& other)
+void EvalVectorArray::steal(const RCP<EvalVectorArray>& other)
 {
   resize(other->size());
 

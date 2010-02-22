@@ -35,26 +35,26 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 UserDefOp::UserDefOp(const Expr& args,
-                     const RefCountPtr<const UserDefFunctor>& functor)
+                     const RCP<const UserDefFunctor>& functor)
   : ListExpr()
 {
   int nElems = functor->rangeDim();
-  Array<RefCountPtr<ScalarExpr> > scalarArgs = getScalarArgs(args);
+  Array<RCP<ScalarExpr> > scalarArgs = getScalarArgs(args);
 
-  RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > > 
-    commonEvaluatorsMap = rcp(new SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> >());
+  RCP<Sundance::Map<EvalContext, RCP<const UserDefOpCommonEvaluator> > > 
+    commonEvaluatorsMap = rcp(new Sundance::Map<EvalContext, RCP<const UserDefOpCommonEvaluator> >());
   
   for (int i=0; i<nElems; i++)
     {
-      RefCountPtr<UserDefFunctorElement> e 
+      RCP<UserDefFunctorElement> e 
         = rcp(new UserDefFunctorElement(functor, i));
       Expr elem = new UserDefOpElement(scalarArgs, commonEvaluatorsMap, e);
       append(elem);
@@ -63,12 +63,12 @@ UserDefOp::UserDefOp(const Expr& args,
 
 
 
-Array<RefCountPtr<ScalarExpr> > UserDefOp::getScalarArgs(const Expr& args)
+Array<RCP<ScalarExpr> > UserDefOp::getScalarArgs(const Expr& args)
 {
   Expr fargs = args.flatten();
-  Array<RefCountPtr<ScalarExpr> > sargs(fargs.size());
+  Array<RCP<ScalarExpr> > sargs(fargs.size());
   
-  for (unsigned int i=0; i<fargs.size(); i++)
+  for (int i=0; i<fargs.size(); i++)
     {
       sargs[i] = rcp_dynamic_cast<ScalarExpr>(fargs[i].ptr());
     }

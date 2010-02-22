@@ -114,7 +114,7 @@ int main(int argc, char** argv)
       /* Create differential operators, gradient, and coordinate functions */
       Expr dx = new Derivative(0);
       Expr dy = new Derivative(1);
-      Expr grad = SundanceCore::List(dx, dy);
+      Expr grad = Sundance::List(dx, dy);
       Expr x = new CoordExpr(0);
       Expr y = new CoordExpr(1);
 

@@ -3,9 +3,9 @@
 #include "SundanceRivaraEdge.hpp"
 #include "SundanceRivaraMesh.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Rivara;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance::Rivara;
+using namespace Sundance;
 
 Node::Node(int globalIndex, const Point& x, int ownerProc, int label)
   : label_(label), localIndex_(-1), globalIndex_(globalIndex), 

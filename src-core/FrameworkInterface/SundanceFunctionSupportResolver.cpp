@@ -39,8 +39,8 @@
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
 
@@ -137,9 +137,9 @@ FunctionSupportResolver::FunctionSupportResolver(
    * or UnknownFunction objects, as in a variational problem. 
    */
   bool varsAreTestFunctions = false;
-  for (unsigned int b=0; b<vars.size(); b++)
+  for (int b=0; b<vars.size(); b++)
   {
-    for (unsigned int i=0; i<vars[b].size(); i++)
+    for (int i=0; i<vars[b].size(); i++)
     {
       const TestFuncElement* t 
         = dynamic_cast<const TestFuncElement*>(vars[b][i].ptr().get());
@@ -193,12 +193,12 @@ FunctionSupportResolver::FunctionSupportResolver(
 
   /* map each var and unknown function's ID numbers to its
    * position in the input function lists */
-  for (unsigned int b=0; b<vars.size(); b++)
+  for (int b=0; b<vars.size(); b++)
   {
     Tabs tab2;
     unreducedVarID_[b].resize(vars[b].size());
     int k=0;
-    for (unsigned int i=0; i<vars[b].size(); i++)
+    for (int i=0; i<vars[b].size(); i++)
     {
       const FuncElementBase* t 
         = dynamic_cast<const FuncElementBase*>(vars[b][i].ptr().get());
@@ -218,12 +218,12 @@ FunctionSupportResolver::FunctionSupportResolver(
   /* set up func ID maps for unks */
   unkIDToReducedIDMap_.resize(unks.size());
   unreducedUnkID_.resize(unks.size());
-  for (unsigned int b=0; b<unks.size(); b++)
+  for (int b=0; b<unks.size(); b++)
   {
     Tabs tab2;
     unreducedUnkID_[b].resize(unks[b].size());
     int k=0;
-    for (unsigned int i=0; i<unks[b].size(); i++)
+    for (int i=0; i<unks[b].size(); i++)
     {
       const UnknownFuncElement* u 
         = dynamic_cast<const UnknownFuncElement*>(unks[b][i].ptr().get());
@@ -249,7 +249,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   
   /* set up func ID maps for unk parameters */
   unreducedUnkParamID_.resize(unkParams.size());
-  for (unsigned int i=0; i<unkParams.size(); i++)
+  for (int i=0; i<unkParams.size(); i++)
   {
     const UnknownParameterElement* u 
       = dynamic_cast<const UnknownParameterElement*>(unkParams[i].ptr().get());
@@ -269,7 +269,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   
   /* set up func ID maps for fixed parameters */
   unreducedFixedParamID_.resize(fixedParams.size());
-  for (unsigned int i=0; i<fixedParams.size(); i++)
+  for (int i=0; i<fixedParams.size(); i++)
   {
     const UnknownParameterElement* u 
       = dynamic_cast<const UnknownParameterElement*>(fixedParams[i].ptr().get());
@@ -289,7 +289,7 @@ FunctionSupportResolver::FunctionSupportResolver(
 
   /* Do the non-bc eqns first */
   SUNDANCE_MSG1(verb, tab1 << "processing integral terms");
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          r=integralSum_->rqcToExprMap().begin(); 
        r!=integralSum_->rqcToExprMap().end(); r++)
   {
@@ -335,7 +335,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   {
     /* functions found in the BCs both in the overall lists and 
      * also in the bc-specific lists */
-    for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+    for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
            r=bcSum_->rqcToExprMap().begin(); 
          r!=bcSum_->rqcToExprMap().end(); r++)
     {
@@ -382,7 +382,7 @@ FunctionSupportResolver::FunctionSupportResolver(
 
   reducedVarsOnRegions_.resize(regions_.size());
   reducedUnksOnRegions_.resize(regions_.size());
-  for (unsigned int r=0; r<regions_.size(); r++)
+  for (int r=0; r<regions_.size(); r++)
   {
     Tabs tab1;
     regionToIndexMap_.put(regions_[r], r);
@@ -441,7 +441,7 @@ FunctionSupportResolver::FunctionSupportResolver(
 Array<Expr> FunctionSupportResolver::flattenSpectral(const Array<Expr>& expr) const
 {
   Array<Expr> rtn(expr.size());
-  for (unsigned int i=0; i<expr.size(); i++)
+  for (int i=0; i<expr.size(); i++)
   {
     const Expr& e = expr[i];
     rtn[i] = flattenSpectral(e);
@@ -452,7 +452,7 @@ Array<Expr> FunctionSupportResolver::flattenSpectral(const Array<Expr>& expr) co
 Expr FunctionSupportResolver::flattenSpectral(const Expr& expr) const
 {
   Array<Expr> rtn(expr.size());
-  for (unsigned int i=0; i<expr.size(); i++)
+  for (int i=0; i<expr.size(); i++)
   {
     if (expr[i].size() == 1)
     {
@@ -564,10 +564,10 @@ bool FunctionSupportResolver::hasBCs() const
 }
 
 
-namespace SundanceCore
+namespace Sundance
 {
 
-RefCountPtr<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f)
+RCP<const CommonFuncDataStub> getSharedFunctionData(const FuncElementBase* f)
 {
   const UnknownFuncElement* u = dynamic_cast<const UnknownFuncElement*>(f);
   const TestFuncElement* t = dynamic_cast<const TestFuncElement*>(f);

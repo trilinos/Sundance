@@ -30,13 +30,13 @@
 
 #include "SundanceDerivSet.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
 
 DerivSet::DerivSet()
-  : SundanceUtils::Set<MultipleDeriv, increasingOrder<MultipleDeriv> >()
+  : Sundance::Set<MultipleDeriv, increasingOrder<MultipleDeriv> >()
 {}
 
 

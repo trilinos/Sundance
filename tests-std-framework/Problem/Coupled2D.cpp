@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <sys/unistd.h>
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the coupled equations
  *

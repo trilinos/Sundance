@@ -35,51 +35,45 @@
 #include "SundanceDefs.hpp"
 #include "SundanceDOFMapBase.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace Teuchos;
 
-    /** 
-     * 
-     */
-    class SpatiallyHomogeneousDOFMapBase : public DOFMapBase
-    {
-    public:
-      /** */
-      SpatiallyHomogeneousDOFMapBase(const Mesh& mesh, int nTotalFuncs, 
-        const ParameterList& verbParams = *DOFMapBase::defaultVerbParams()) ;
+/** 
+ * 
+ */
+class SpatiallyHomogeneousDOFMapBase : public DOFMapBase
+{
+public:
+  /** */
+  SpatiallyHomogeneousDOFMapBase(const Mesh& mesh, int nTotalFuncs, 
+    const ParameterList& verbParams = *DOFMapBase::defaultVerbParams()) ;
 
-      /** */
-      virtual ~SpatiallyHomogeneousDOFMapBase() {;}
+  /** */
+  virtual ~SpatiallyHomogeneousDOFMapBase() {;}
 
-      /** */
-      virtual RefCountPtr<const MapStructure> mapStruct() const = 0 ;
+  /** */
+  virtual RCP<const MapStructure> mapStruct() const = 0 ;
 
-      /** */
-      virtual RefCountPtr<const Set<int> >
-      allowedFuncsOnCellBatch(int cellDim,
-                              const Array<int>& cellLID) const 
-      {return allowedFuncs_;}
+  /** */
+  virtual RCP<const Set<int> >
+  allowedFuncsOnCellBatch(int cellDim,
+    const Array<int>& cellLID) const 
+    {return allowedFuncs_;}
 
-      /** */
-      bool isHomogeneous() const {return true;}
+  /** */
+  bool isHomogeneous() const {return true;}
 
-      /** */
-      void print(ostream& os) const ;
+  /** */
+  void print(ostream& os) const ;
 
-      /** */
-      const Array<CellFilter>& funcDomains() const {return funcDomains_;}
+  /** */
+  const Array<CellFilter>& funcDomains() const {return funcDomains_;}
 
-    private:
-      RefCountPtr<const Set<int> > allowedFuncs_;
-      Array<CellFilter> funcDomains_;
-    };
-  }
+private:
+  RCP<const Set<int> > allowedFuncs_;
+  Array<CellFilter> funcDomains_;
+};
 }
 
 #endif

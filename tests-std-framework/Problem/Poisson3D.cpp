@@ -35,7 +35,7 @@
 #include "SundanceExodusMeshReader.hpp"
 #include "SundanceElementIntegral.hpp"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the Poisson equation in 3D
  */
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 		{
       int depth = 0;
       bool useCCode = false;
-      SundanceStdFwk::Internal::ElementIntegral::alwaysUseCofacets() = false;
+      Sundance::ElementIntegral::alwaysUseCofacets() = false;
       Sundance::clp().setOption("depth", &depth, "expression depth");
       Sundance::clp().setOption("C", "symb", &useCCode, "Code type (C or symbolic)");
       Sundance::init(&argc, &argv);

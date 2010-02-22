@@ -31,10 +31,10 @@
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using std::ios_base;
 using std::setw;
@@ -144,7 +144,7 @@ void QuadratureFamily::getTriangleFacetQuad(int facetDim,
       getPoints(LineCell, facetPts, facetWts);
       quadPoints.resize(facetPts.size());
       quadWeights.resize(facetWts.size());
-      for (unsigned int i=0; i<facetPts.size(); i++)
+      for (int i=0; i<facetPts.size(); i++)
         {
           if (facetIndex==0)
             {
@@ -193,7 +193,7 @@ void QuadratureFamily::getQuadFacetQuad(int facetDim,
 	      getPoints(LineCell, facetPts, facetWts);
 	      quadPoints.resize(facetPts.size());
 	      quadWeights.resize(facetWts.size());
-	      for (unsigned int i=0; i<facetPts.size(); i++)
+	      for (int i=0; i<facetPts.size(); i++)
 	        {
 	          if (facetIndex==0) // the 4 edges of the Quad
 	            {               // Numbering is important, if Edge Numbering in QuadCell changes, change this as well
@@ -247,7 +247,7 @@ void QuadratureFamily::getTetFacetQuad(int facetDim,
       getPoints(TriangleCell, facetPts, facetWts);
       quadPoints.resize(facetPts.size());
       quadWeights.resize(facetWts.size());
-      for (unsigned int i=0; i<facetPts.size(); i++)
+      for (int i=0; i<facetPts.size(); i++)
         {
           double s = facetPts[i][0];
           double t = facetPts[i][1];
@@ -312,7 +312,7 @@ void QuadratureFamily::getBrickFacetQuad(int facetDim,
       getPoints(QuadCell, facetPts, facetWts);
       quadPoints.resize(facetPts.size());
       quadWeights.resize(facetWts.size());
-      for (unsigned int i=0; i<facetPts.size(); i++)
+      for (int i=0; i<facetPts.size(); i++)
         {
           if (facetIndex==0) // the 6 faces of the Brick
             {// Numbering is important, if Edge Numbering in BrickCell changes, change this as well
@@ -357,7 +357,7 @@ void QuadratureFamily::getBrickFacetQuad(int facetDim,
       getPoints(LineCell, facetPts, facetWts);
       quadPoints.resize(facetPts.size());
       quadWeights.resize(facetWts.size());
-      for (unsigned int i=0; i<facetPts.size(); i++)
+      for (int i=0; i<facetPts.size(); i++)
         {
           if (facetIndex==0) // the 6 faces of the Brick
             {// Numbering is important, if Edge Numbering in BrickCell changes, change this as well
@@ -404,7 +404,7 @@ void QuadratureFamily::getBrickFacetQuad(int facetDim,
 }
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 void printQuad(std::ostream& os, 
   const Array<Point>& pts, const Array<double>& wgts)
@@ -413,7 +413,7 @@ void printQuad(std::ostream& os,
   static Array<string> names = tuple<string>("x", "y", "z");
   TEST_FOR_EXCEPT(pts.size() != wgts.size());
   
-  TEST_FOR_EXCEPT(pts.size() < 1U);
+  TEST_FOR_EXCEPT(pts.size() < 1);
 
   int dim = pts[0].dim();
 
@@ -431,7 +431,7 @@ void printQuad(std::ostream& os,
   }
   os << endl;
   os.setf(ios_base::right);    
-  for (unsigned int i=0; i<pts.size(); i++)
+  for (int i=0; i<pts.size(); i++)
   {
     os << tab << setw(5) << i << setw(w) << setprecision(prec) << wgts[i];
     for (int d=0; d<dim; d++)

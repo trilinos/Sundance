@@ -36,9 +36,9 @@
 #include "Teuchos_MPIContainerComm.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -64,7 +64,7 @@ void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
   
   Array<Array<int> > allDofs;
   Array<int> nNodes;
-  RefCountPtr<const MapStructure> s 
+  RCP<const MapStructure> s 
     = getDOFsForCellBatch(cellDim, tuple(cellLID), makeSet(funcID), allDofs, nNodes,0);
 
 
@@ -79,14 +79,14 @@ void DOFMapBase::getDOFsForCell(int cellDim, int cellLID,
 
 Time& DOFMapBase::dofLookupTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("unbatched dof lookup"); 
   return *rtn;
 }
 
 Time& DOFMapBase::batchedDofLookupTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("batched dof lookup"); 
   return *rtn;
 }

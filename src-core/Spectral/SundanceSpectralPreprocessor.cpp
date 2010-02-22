@@ -43,15 +43,15 @@
 
 static Time& spectralExpansionTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("spectral expansion"); 
   return *rtn;
 }
 
 
 using namespace std;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 Expr SpectralPreprocessor::projectSpectral(const Expr& e)
@@ -73,7 +73,7 @@ Expr SpectralPreprocessor::projectSpectral(
 {
   Expr rtn = 0.0;
   
-  for (unsigned int t=0; t<terms.size(); t++)
+  for (int t=0; t<terms.size(); t++)
   {
     Expr test;
     Expr deterministic;
@@ -94,7 +94,7 @@ Expr SpectralPreprocessor::projectSpectral(
       testCoeffs.append(specTest->getCoeff(i));
     } 
 
-    for (unsigned int i=0; i<specs.size(); i++)
+    for (int i=0; i<specs.size(); i++)
     {
       const SpectralExpr* s 
         = dynamic_cast<const SpectralExpr*>(specs[i].ptr().get());
@@ -108,14 +108,14 @@ Expr SpectralPreprocessor::projectSpectral(
       specCoeffs.append(c);
     }
 
-    if (specs.size()==0U)
+    if (specs.size()==0)
     {
       for (int i=0; i<testBasis.nterms(); i++)
       {
         rtn = rtn + testCoeffs[i]*deterministic;
       } 
     }
-    else if (specs.size()==1U)
+    else if (specs.size()==1)
     {
       for (int i=0; i<testBasis.nterms(); i++)
       {
@@ -142,7 +142,7 @@ Expr SpectralPreprocessor::projectSpectral(
     }
     else
     {
-      TEST_FOR_EXCEPTION(specs.size() > 2U, RuntimeError,
+      TEST_FOR_EXCEPTION(specs.size() > 2, RuntimeError,
         "not ready to work with more than two spectral unks");
     }
   }
@@ -157,7 +157,7 @@ void SpectralPreprocessor::parseProduct(const Array<Expr>& factors,
   bool hasTest = false;
   Expr det = 1.0;
 
-  for (unsigned int i=0; i<factors.size(); i++)
+  for (int i=0; i<factors.size(); i++)
   {
     const Expr& f = factors[i];
     if (isSpectralTest(f)) 
@@ -310,13 +310,13 @@ void SpectralPreprocessor::expandSpectralProduct(const ProductExpr* prod,
   expandSpectral(prod->left(), L);
   expandSpectral(prod->right(), R);
 
-  for (unsigned int i=0; i<L.size(); i++)
+  for (int i=0; i<L.size(); i++)
   {
-    for (unsigned int j=0; j<R.size(); j++)
+    for (int j=0; j<R.size(); j++)
     {
       Array<Expr> t;
-      for (unsigned int p=0; p<L[i].size(); p++) t.append(L[i][p]);
-      for (unsigned int q=0; q<R[j].size(); q++) t.append(R[j][q]);
+      for (int p=0; p<L[i].size(); p++) t.append(L[i][p]);
+      for (int q=0; q<R[j].size(); q++) t.append(R[j][q]);
       terms.append(t);
     }
   }
@@ -332,11 +332,11 @@ void SpectralPreprocessor::expandSpectralSum(const SumExpr* sum,
   expandSpectral(sum->left(), L);
   expandSpectral(sum->sign()*(sum->right()), R);
 
-  for (unsigned int i=0; i<L.size(); i++)
+  for (int i=0; i<L.size(); i++)
   {
     terms.append(L[i]);
   }
-  for (unsigned int i=0; i<R.size(); i++)
+  for (int i=0; i<R.size(); i++)
   {
     terms.append(R[i]);
   }
@@ -348,11 +348,11 @@ void SpectralPreprocessor::expandSpectralUnaryMinus(const UnaryMinus* u,
   Array<Array<Expr> > A;
   expandSpectral(u->arg(), A);
 
-  for (unsigned int i=0; i<A.size(); i++)
+  for (int i=0; i<A.size(); i++)
   {
     Array<Expr> t;
     t.append(Expr(-1.0));
-    for (unsigned int j=0; j<A[i].size(); j++)
+    for (int j=0; j<A[i].size(); j++)
     {
       t.append(A[i][j]);
     }
@@ -366,11 +366,11 @@ void SpectralPreprocessor::expandSpectralDiffOp(const DiffOp* d,
   Array<Array<Expr> > A;
   expandSpectral(d->arg(), A);
 
-  for (unsigned int i=0; i<A.size(); i++)
+  for (int i=0; i<A.size(); i++)
   {
     Array<Array<Expr> > dA;
     expandDerivative(d->mi(), A[i], dA);
-    for (unsigned int j=0; j<dA.size(); j++) terms.append(dA[j]);
+    for (int j=0; j<dA.size(); j++) terms.append(dA[j]);
   }
 }
 
@@ -379,11 +379,11 @@ void SpectralPreprocessor::expandDerivative(const MultiIndex& mi,
   const Array<Expr>& factors,
   Array<Array<Expr> >& productRuleTerms)
 {
-  for (unsigned int i=0; i<factors.size(); i++)
+  for (int i=0; i<factors.size(); i++)
   {
     Array<Expr> df;
     bool isZero = false;
-    for (unsigned int j=0; j<factors.size(); j++) 
+    for (int j=0; j<factors.size(); j++) 
     {
       if (j!=i) df.append(factors[j]);
       else 

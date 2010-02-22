@@ -3,7 +3,7 @@
 
 #include "SundanceFieldBase.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 
 using Teuchos::Array;

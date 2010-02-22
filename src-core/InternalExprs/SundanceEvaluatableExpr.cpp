@@ -39,8 +39,8 @@
 #include "SundanceOut.hpp"
 #include "Teuchos_Utils.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -96,7 +96,7 @@ const Set<MultiIndex>& EvaluatableExpr
   return activeSpatialDerivMap_[context];
 }
 
-RefCountPtr<SparsitySuperset> 
+RCP<SparsitySuperset> 
 EvaluatableExpr::sparsitySuperset(const EvalContext& context) const 
 {
   Tabs tab;
@@ -104,7 +104,7 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
   SUNDANCE_MSG2(context.setupVerbosity(), 
     tab << "getting sparsity superset for " << toString());
 
-  RefCountPtr<SparsitySuperset> rtn;
+  RCP<SparsitySuperset> rtn;
 
   if (sparsity_.containsKey(context))
   {
@@ -129,7 +129,7 @@ EvaluatableExpr::sparsitySuperset(const EvalContext& context) const
 
 
 
-const RefCountPtr<Evaluator>&
+const RCP<Evaluator>&
 EvaluatableExpr::evaluator(const EvalContext& context) const 
 {
   TEST_FOR_EXCEPTION(!evaluators_.containsKey(context), RuntimeError, 
@@ -139,7 +139,7 @@ EvaluatableExpr::evaluator(const EvalContext& context) const
 
 void EvaluatableExpr::evaluate(const EvalManager& mgr,
   Array<double>& constantResults,
-  Array<RefCountPtr<EvalVector> >& vectorResults) const
+  Array<RCP<EvalVector> >& vectorResults) const
 {
   TimeMonitor timer(evalTimer());
   evaluator(mgr.getRegion())->eval(mgr, constantResults, vectorResults);
@@ -156,7 +156,7 @@ void EvaluatableExpr::setupEval(const EvalContext& context) const
     SUNDANCE_MSG2(verb, tabs << "creating new evaluator...");
     SUNDANCE_MSG2(verb, tabs << "my sparsity superset = " 
       << *sparsitySuperset(context));
-    RefCountPtr<Evaluator> eval;
+    RCP<Evaluator> eval;
     if (sparsitySuperset(context)->numDerivs()>0)
     {
       SUNDANCE_MSG2(verb, tabs << "calling createEvaluator()");
@@ -359,12 +359,12 @@ void EvaluatableExpr::determineR(const EvalContext& context,
   const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tabs;
-  RefCountPtr<Array<Set<MultipleDeriv> > > additionToR 
+  RCP<Array<Set<MultipleDeriv> > > additionToR 
     =  internalDetermineR(context, RInput);
   
-  for (unsigned int i=0; i<RInput.size(); i++)
+  for (int i=0; i<RInput.size(); i++)
   {
-    if ((*additionToR)[i].size()==0U) continue;
+    if ((*additionToR)[i].size()==0) continue;
     if (!contextToDSSMap_[RequiredNonzeros][i].containsKey(context))
     {
       contextToDSSMap_[RequiredNonzeros][i].put(context, (*additionToR)[i]); 
@@ -378,21 +378,21 @@ void EvaluatableExpr::determineR(const EvalContext& context,
 
 }
 
-RefCountPtr<Array<Set<MultipleDeriv> > > EvaluatableExpr
+RCP<Array<Set<MultipleDeriv> > > EvaluatableExpr
 ::internalDetermineR(const EvalContext& context,
   const Array<Set<MultipleDeriv> >& RInput) const
 {
   Tabs tab0;
-  RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
+  RCP<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
 
   SUNDANCE_VERB_HIGH( tab0 << "EE::internalDetermineR() for " << toString() );
   SUNDANCE_VERB_HIGH( tab0 << "RInput = " << RInput );
 
-  for (unsigned int i=0; i<RInput.size(); i++)
+  for (int i=0; i<RInput.size(); i++)
   {
     Tabs tab1;
-    if (RInput[i].size()==0U) continue;
+    if (RInput[i].size()==0) continue;
     const Set<MultipleDeriv>& Wi = findW(i, context);
     SUNDANCE_VERB_EXTREME( tab1 << "W[" << i << "] = " << Wi );
     (*rtn)[i] = RInput[i].intersection(Wi);
@@ -413,7 +413,7 @@ Array<Set<MultipleDeriv> > EvaluatableExpr
   Tabs tabs;
   SUNDANCE_MSG4(verb, tabs << "in EE::computeInputR()");
   Array<Set<MultipleDeriv> > rtn(funcIDCombinations.size());
-  for (unsigned int order=0; order<funcIDCombinations.size(); order++)
+  for (int order=0; order<funcIDCombinations.size(); order++)
   {
     Tabs tabs1;
     SUNDANCE_MSG4(verb, tabs << "order=" << order);

@@ -34,11 +34,11 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSumTransformationSequence.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 using std::string;
 using std::ostream;
@@ -67,9 +67,9 @@ public:
   virtual ~IdentifyPolynomialSum(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
 
 /** 
@@ -85,9 +85,9 @@ public:
   virtual ~ReorderSum(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
     
 
@@ -113,9 +113,9 @@ public:
   virtual ~RemoveUnaryMinusFromSum(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
     
 /** 
@@ -134,9 +134,9 @@ public:
   virtual ~RemoveZeroFromSum(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
 
 /** 
@@ -152,9 +152,9 @@ public:
   virtual ~SumConstants(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
 
 /** 
@@ -173,9 +173,9 @@ public:
   virtual ~MoveConstantsToLeftOfSum(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
 
 
@@ -199,9 +199,9 @@ public:
   virtual ~RearrangeRightSumWithConstant(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
 
 /** 
@@ -224,9 +224,9 @@ public:
   virtual ~RearrangeLeftSumWithConstant(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
 
 
@@ -243,9 +243,9 @@ public:
   virtual ~SumIntegrals(){;}
 
   /** */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 };
 }
 

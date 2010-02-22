@@ -40,10 +40,10 @@
 #include "SundanceTestFuncElement.hpp"
  
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 Deriv::Deriv()
@@ -311,7 +311,7 @@ AlgebraSpecifier Deriv::derivAlgSpec(
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
 
 Deriv coordDeriv(int d) 

@@ -39,7 +39,7 @@
 
 
 
-namespace SundanceUtils
+namespace Sundance
 {
 using Teuchos::ParameterList;
   /** 

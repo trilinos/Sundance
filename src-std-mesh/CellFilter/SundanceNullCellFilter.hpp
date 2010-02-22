@@ -36,50 +36,41 @@
 #include "SundanceCellFilterBase.hpp"
 #include "SundanceNullCellFilterStub.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace Teuchos;
 
-    /** 
-     * NullCellFilter is used as a placeholder cell filter
-     * in those equations defined
-     * independently of geometry, i.e., equations involving only
-     * global parameters.
-     **/
-  class NullCellFilter : public SundanceCore::NullCellFilterStub
-    {
-    public:
-      /** */
-      NullCellFilter();
+/** 
+ * NullCellFilter is used as a placeholder cell filter
+ * in those equations defined
+ * independently of geometry, i.e., equations involving only
+ * global parameters.
+ **/
+class NullCellFilter : public Sundance::NullCellFilterStub
+{
+public:
+  /** */
+  NullCellFilter();
 
-      /** */
-      virtual ~NullCellFilter(){;}
+  /** */
+  virtual ~NullCellFilter(){;}
 
-      /** */
-      virtual XMLObject toXML() const ;
+  /** */
+  virtual XMLObject toXML() const ;
 
-      /** Return the dimension of the cells that will be identified
-       * by this filter when acting on the given mesh */
-      virtual int dimension(const Mesh& mesh) const ;
+  /** Return the dimension of the cells that will be identified
+   * by this filter when acting on the given mesh */
+  virtual int dimension(const Mesh& mesh) const ;
 
-      /* */
-      GET_RCP(CellFilterStub);
+  /* */
+  GET_RCP(CellFilterStub);
     
-    protected:
+protected:
 
-      /** */
-      virtual CellSet internalGetCells(const Mesh& mesh) const ;
-    };
-  }
+  /** */
+  virtual CellSet internalGetCells(const Mesh& mesh) const ;
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

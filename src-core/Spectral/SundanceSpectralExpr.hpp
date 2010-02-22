@@ -37,10 +37,10 @@
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceFuncSetAccumulator.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using namespace Teuchos;
   
   using std::string;
@@ -105,7 +105,7 @@ class SpectralExpr : public FuncSetAccumulator, public ScalarExpr
 
 
     /** */
-    virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+    virtual RCP<ExprBase> getRcp() {return rcp(this);}
     
 
   };

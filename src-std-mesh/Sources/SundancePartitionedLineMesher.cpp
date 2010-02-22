@@ -2,11 +2,11 @@
 #include "SundanceOut.hpp"
 #include "SundanceCollectiveExceptionCheck.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 PartitionedLineMesher::PartitionedLineMesher(const ParameterList& params)

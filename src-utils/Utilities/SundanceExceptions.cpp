@@ -30,7 +30,7 @@
 
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 
 InternalError::InternalError(const std::string& msg)
   : std::logic_error(msg)

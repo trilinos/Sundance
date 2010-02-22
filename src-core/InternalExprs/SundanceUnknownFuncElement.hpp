@@ -37,9 +37,9 @@
 #include "SundanceUnknownFuncDataStub.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 using namespace Teuchos;
 
@@ -54,7 +54,7 @@ class UnknownFuncElement : public SymbolicFuncElement
 {
 public:
   /** */
-  UnknownFuncElement(const RefCountPtr<const UnknownFuncDataStub>& data,
+  UnknownFuncElement(const RCP<const UnknownFuncDataStub>& data,
     const string& name,
     const string& suffix,
     const FunctionIdentifier& fid);
@@ -73,7 +73,7 @@ public:
   virtual bool lessThan(const ScalarExpr* other) const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
       
 private:
 };

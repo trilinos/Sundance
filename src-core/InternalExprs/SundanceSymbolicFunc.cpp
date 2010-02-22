@@ -35,21 +35,21 @@
 #include "SundanceDerivSet.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 SymbolicFunc::SymbolicFunc(const FunctionWithID& fid, 
-    const RefCountPtr<const CommonFuncDataStub>& data)
+    const RCP<const CommonFuncDataStub>& data)
   : ListExpr(), FunctionWithID(fid), commonData_(data)
 {}
 
 
 void SymbolicFunc::substituteZero() const 
 {
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());
@@ -62,14 +62,14 @@ void SymbolicFunc::substituteZero() const
 }
 
 void SymbolicFunc
-::substituteFunction(const RefCountPtr<DiscreteFunctionStub>& u0) const
+::substituteFunction(const RCP<DiscreteFunctionStub>& u0) const
 {
   TEST_FOR_EXCEPTION(this->size() != u0->size(), InternalError,
                      "Mismatch between sizes of symbolic " << toString()
                      << " and discrete func " << u0->toString()
                      << " in substituteFunction()");
 
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       const SymbolicFuncElement* u 
         = dynamic_cast<const SymbolicFuncElement*>(element(i).ptr().get());
@@ -78,7 +78,7 @@ void SymbolicFunc
                          << element(i).toString() 
                          << " detected in SymbolicFunc::substituteFunction()");
 
-      RefCountPtr<DiscreteFuncElement> df 
+      RCP<DiscreteFuncElement> df 
         = rcp_dynamic_cast<DiscreteFuncElement>(u0->element(i).ptr());
       u->substituteFunction(df);
     }

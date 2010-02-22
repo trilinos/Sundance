@@ -40,12 +40,12 @@
 
 
 using namespace std;
-using namespace SundanceUtils;
+using namespace Sundance;
 
-namespace SundanceCore
+namespace Sundance
 {
   /** Base class for spectral bases. */
-  class SpectralBasisBase : public SundanceUtils::Handleable<SpectralBasisBase>
+  class SpectralBasisBase : public Sundance::Handleable<SpectralBasisBase>
   {
   public:
     /** Construct a basis */

@@ -33,9 +33,9 @@
 
 #include "SundanceEnumTypeField.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 /** */
 enum AlgebraType {VectorAT, NormalAT, CoordCompAT, ScalarAT};
@@ -99,9 +99,9 @@ AlgebraSpecifier coordAlgebraSpec(int dir);
 namespace std
 {
 /** \relates AlgebraSpecifier */
-ostream& operator<<(ostream& os, const SundanceCore::AlgebraSpecifier& vcs);
+ostream& operator<<(ostream& os, const Sundance::AlgebraSpecifier& vcs);
 /** \relates AlgebraSpecifier */
-ostream& operator<<(ostream& os, const SundanceCore::AlgebraType& vct);
+ostream& operator<<(ostream& os, const Sundance::AlgebraType& vct);
 }
 
 

@@ -36,9 +36,9 @@
 #include "SundanceEvalVector.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 class CoordExpr;
 class CellDiameterExpr;
 class CellVectorExpr;
@@ -71,23 +71,23 @@ public:
   /** Evaluate the given coordinate expression, putting
    * its numerical values in the given EvalVector. */
   virtual void evalCoordExpr(const CoordExpr* expr,
-    RefCountPtr<EvalVector>& vec) const = 0 ;
+    RCP<EvalVector>& vec) const = 0 ;
 
   /** Evaluate the given discrete function, putting
    * its numerical values in the given EvalVector. */
   virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
     const Array<MultiIndex>& mi,
-    Array<RefCountPtr<EvalVector> >& vec) const = 0 ;
+    Array<RCP<EvalVector> >& vec) const = 0 ;
 
   /** Evaluate the given cell diameter expression, putting
    * its numerical values in the given EvalVector. */
   virtual void evalCellDiameterExpr(const CellDiameterExpr* expr,
-    RefCountPtr<EvalVector>& vec) const = 0 ;
+    RCP<EvalVector>& vec) const = 0 ;
 
   /** Evaluate the given cell vector expression, putting
    * its numerical values in the given EvalVector. */
   virtual void evalCellVectorExpr(const CellVectorExpr* expr,
-    RefCountPtr<EvalVector>& vec) const = 0 ;
+    RCP<EvalVector>& vec) const = 0 ;
 private:
   int verb_;
 };

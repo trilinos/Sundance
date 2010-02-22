@@ -25,17 +25,17 @@
 #include "SundanceStringEvalMediator.hpp"
 #include "SundanceEvaluationTester.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace SundanceTesting;
-using namespace SundanceCore;
-using SundanceCore::List;
-using namespace SundanceCore;
+using namespace Sundance;
+using Sundance::List;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -300,7 +300,7 @@ int main(int argc, char** argv)
       isOK = ::fabs(f3-f4) < tol && isOK;
       isOK = ::fabs(f5-f6) < tol && isOK;
       isOK = ::fabs(f7-f8) < tol && isOK;
-      for (unsigned int i=0; i<df1.size(); i++)
+      for (int i=0; i<df1.size(); i++)
         {
           isOK = isOK && ::fabs(df2[i]-df1[i]) < tol;
           isOK = isOK && ::fabs(df5[i]-df6[i]) < tol;

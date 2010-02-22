@@ -41,9 +41,9 @@
 #include "SundanceSymbolicFuncDescriptor.hpp"
 #include "SundanceCommonFuncDataStub.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
     class DiscreteFuncElement;
     using namespace Teuchos;
 
@@ -91,7 +91,7 @@ namespace SundanceCore
        * the functional derivatives that arise in a nonlinear expression
        * being linearized about \f$u_0\f$. 
        */
-      void substituteFunction(const RefCountPtr<DiscreteFuncElement>& u0) const ;
+      void substituteFunction(const RCP<DiscreteFuncElement>& u0) const ;
 
       /** Return the point in function space at which this symbolic 
        * function is to be evaluated. */
@@ -124,7 +124,7 @@ namespace SundanceCore
       internalFindC(int order, const EvalContext& context) const ;
 
       /** */
-      virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+      virtual RCP<Array<Set<MultipleDeriv> > > 
       internalDetermineR(const EvalContext& context,
                          const Array<Set<MultipleDeriv> >& RInput) const ;
       /** */
@@ -143,12 +143,12 @@ namespace SundanceCore
       virtual bool isLinearForm(const Expr& u) const ;
       
       /** */
-      virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+      virtual RCP<ExprBase> getRcp() {return rcp(this);}
       
     private:
       RCP<const CommonFuncDataStub> commonData_;
 
-      mutable RefCountPtr<EvaluatableExpr> evalPt_;
+      mutable RCP<EvaluatableExpr> evalPt_;
 
       mutable Array<int> evalPtDerivSetIndices_;
     };

@@ -29,7 +29,7 @@
 
 #include "Sundance.hpp"
 #include "SundanceElementIntegral.hpp"
-using SundanceCore::List;
+using Sundance::List;
 
 // This test depends on Exodus, so skip it if Expdus hasn't been enabled. 
 #if defined(HAVE_SUNDANCE_EXODUS)
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
     // This next line is just a hack to deal with some 
     // transitional code in the
     // element integration logic. 
-    SundanceStdFwk::Internal::ElementIntegral::alwaysUseCofacets() = false;
+    Sundance::ElementIntegral::alwaysUseCofacets() = false;
     /* 
      * <Header level="subsubsection" name="vector_type">
      * Creation of vector type
@@ -309,95 +309,95 @@ int main(int argc, char** argv)
      * 
      */
     
-      ParameterXMLFileReader reader(solverFile);
-      ParameterList solverParams = reader.getParameters();
-      LinearSolver<double> solver 
-        = LinearSolverBuilder::createSolver(solverParams);
+    ParameterXMLFileReader reader(solverFile);
+    ParameterList solverParams = reader.getParameters();
+    LinearSolver<double> solver 
+      = LinearSolverBuilder::createSolver(solverParams);
 
-      Expr soln = prob.solve(solver);
+    Expr soln = prob.solve(solver);
 
-      /* 
-       * <Header level="subsubsection" name="vizout">
-       * Visualization output
-       * </Header>
-       * Output to storage or visualization files is done using an 
-       * abstract \verb+FieldWriter+ interface. \verb+FieldWriter+
-       * concrete types include \verb+VTKWriter+ for output to 
-       * unstructured VTK format,  \verb+MatlabWriter+ for output
-       * of simple column-oriented files for 1D problems, and
-       * \verb+VerboseFieldWriter+ for a verbose dump showing facet
-       * and cofacet relations.
-       *
-       * In this example, we use \verb+VTKWriter+. The solution as rendered
-       * by Paraview is shown in figure~\ref{F:PoissonDemoSoln}.
-       * \begin{figure}[h]
-       * \begin{center}\includegraphics[width=4.0in]{plateWithHole3D.jpg}
-       * \caption{
-       * Solution to 3D Poisson example problem.
-       * }
-       * \label{F:PoissonDemoSoln}
-       * \end{center}\end{figure}
-       * 
-       */
-      FieldWriter w = new VTKWriter("PoissonDemo3D");
-      w.addMesh(mesh);
-      w.addField("soln", new ExprFieldWrapper(soln[0]));
-      w.write();
+    /* 
+     * <Header level="subsubsection" name="vizout">
+     * Visualization output
+     * </Header>
+     * Output to storage or visualization files is done using an 
+     * abstract \verb+FieldWriter+ interface. \verb+FieldWriter+
+     * concrete types include \verb+VTKWriter+ for output to 
+     * unstructured VTK format,  \verb+MatlabWriter+ for output
+     * of simple column-oriented files for 1D problems, and
+     * \verb+VerboseFieldWriter+ for a verbose dump showing facet
+     * and cofacet relations.
+     *
+     * In this example, we use \verb+VTKWriter+. The solution as rendered
+     * by Paraview is shown in figure~\ref{F:PoissonDemoSoln}.
+     * \begin{figure}[h]
+     * \begin{center}\includegraphics[width=4.0in]{plateWithHole3D.jpg}
+     * \caption{
+     * Solution to 3D Poisson example problem.
+     * }
+     * \label{F:PoissonDemoSoln}
+     * \end{center}\end{figure}
+     * 
+     */
+    FieldWriter w = new VTKWriter("PoissonDemo3D");
+    w.addMesh(mesh);
+    w.addField("soln", new ExprFieldWrapper(soln[0]));
+    w.write();
 
 
-      /* 
-       * <Header level="subsubsection" name="postproc">
-       * Postprocessing
-       * </Header>
-       *
-       * Postprocessing can be done using the same symbolic language
-       * as was used for the problem specification. Here, we define
-       * an integral giving the flux, then evaluate it on the mesh. 
-       */
-      Expr n = CellNormalExpr(3, "n");
-      Expr fluxExpr 
-        = Integral(east + west, (n*grad)*soln, quad2); 
-      double flux = evaluateIntegral(mesh, fluxExpr);
-      Out::os() << "numerical flux = " << flux << endl;
+    /* 
+     * <Header level="subsubsection" name="postproc">
+     * Postprocessing
+     * </Header>
+     *
+     * Postprocessing can be done using the same symbolic language
+     * as was used for the problem specification. Here, we define
+     * an integral giving the flux, then evaluate it on the mesh. 
+     */
+    Expr n = CellNormalExpr(3, "n");
+    Expr fluxExpr 
+      = Integral(east + west, (n*grad)*soln, quad2); 
+    double flux = evaluateIntegral(mesh, fluxExpr);
+    Out::os() << "numerical flux = " << flux << endl;
 
-      /* 
-       * Let's compute a few other quantities, such as the centroid of
-       * the mesh:
-       */
-      Expr xCMExpr = Integral(interior, x, quad2);
-      Expr yCMExpr = Integral(interior, y, quad2);
-      Expr zCMExpr = Integral(interior, z, quad2);
-      double xCM = evaluateIntegral(mesh, xCMExpr);
-      double yCM = evaluateIntegral(mesh, yCMExpr);
-      double zCM = evaluateIntegral(mesh, zCMExpr);
-      Out::os() << "centroid = (" << xCM << ", " << yCM 
-                << ", " << zCM << ")" << endl;
+    /* 
+     * Let's compute a few other quantities, such as the centroid of
+     * the mesh:
+     */
+    Expr xCMExpr = Integral(interior, x, quad2);
+    Expr yCMExpr = Integral(interior, y, quad2);
+    Expr zCMExpr = Integral(interior, z, quad2);
+    double xCM = evaluateIntegral(mesh, xCMExpr);
+    double yCM = evaluateIntegral(mesh, yCMExpr);
+    double zCM = evaluateIntegral(mesh, zCMExpr);
+    Out::os() << "centroid = (" << xCM << ", " << yCM 
+              << ", " << zCM << ")" << endl;
 
-      /*
-       * Next, compute the first Fourier sine 
-       * coefficient of the solution on the
-       * hole.
-       */
-      Expr r = sqrt(x*x + y*y);
-      Expr sinPhi = y/r;
-      Expr fourierSin1Expr = Integral(hole, sinPhi*soln, quad2);
-      double fourierSin1 = evaluateIntegral(mesh, fourierSin1Expr);
-      Out::os() << "fourier sin m=1 = " << fourierSin1 << endl;
+    /*
+     * Next, compute the first Fourier sine 
+     * coefficient of the solution on the
+     * hole.
+     */
+    Expr r = sqrt(x*x + y*y);
+    Expr sinPhi = y/r;
+    Expr fourierSin1Expr = Integral(hole, sinPhi*soln, quad2);
+    double fourierSin1 = evaluateIntegral(mesh, fourierSin1Expr);
+    Out::os() << "fourier sin m=1 = " << fourierSin1 << endl;
 
-      /*
-       * Check that the flux is acceptably close to zero. This
-       * is just a sanity check to ensure the code doesn't get completely 
-       * broken after a change to the library. 
-       */
-      Sundance::passFailTest(fabs(flux), 1.0e-3);
+    /*
+     * Check that the flux is acceptably close to zero. This
+     * is just a sanity check to ensure the code doesn't get completely 
+     * broken after a change to the library. 
+     */
+    Sundance::passFailTest(fabs(flux), 1.0e-3);
 
-      /*
-       * <Header level="subsubsection" name="finalize">
-       * Finalization boilerplate
-       * </Header>
-       * Finally, we have boilerplate code for exception handling
-       * and finalization. 
-       */
+    /*
+     * <Header level="subsubsection" name="finalize">
+     * Finalization boilerplate
+     * </Header>
+     * Finally, we have boilerplate code for exception handling
+     * and finalization. 
+     */
 
   }
 	catch(exception& e) 

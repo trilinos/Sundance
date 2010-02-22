@@ -31,15 +31,15 @@
 #include "SundanceListExpr.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 static Time& appendToListTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("append to list"); 
   return *rtn;
 }
@@ -62,10 +62,10 @@ Expr ListExpr::flatten() const
 {
   Expr rtn = new ListExpr();
 
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       Expr e = element(i).flatten();
-      for (unsigned int j=0; j<e.size(); j++)
+      for (int j=0; j<e.size(); j++)
         {
           rtn.append(e[j]);
         }
@@ -78,7 +78,7 @@ Expr ListExpr::join(const Expr& other) const
 {
   Expr rtn = new ListExpr(elements_);
   
-  for (unsigned int i=0; i<other.size(); i++)
+  for (int i=0; i<other.size(); i++)
     {
       rtn.append(other[i]);
     }
@@ -86,16 +86,16 @@ Expr ListExpr::join(const Expr& other) const
   return rtn;
 }
 
-unsigned int ListExpr::size() const
+int ListExpr::size() const
 {
   return elements_.size();
 }
 
-unsigned int ListExpr::totalSize() const 
+int ListExpr::totalSize() const 
 {
-  unsigned int rtn = 0;
+  int rtn = 0;
 
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       rtn += elements_[i].totalSize();
     }
@@ -106,7 +106,7 @@ unsigned int ListExpr::totalSize() const
 ostream& ListExpr::toText(ostream& os, bool paren) const
 {
   os << "{";
-  for (unsigned int i=0; i<elements_.size(); i++)
+  for (int i=0; i<elements_.size(); i++)
     {
       elements_[i].ptr()->toText(os, paren);
       if (i < elements_.size()-1) os << ", ";
@@ -118,7 +118,7 @@ ostream& ListExpr::toText(ostream& os, bool paren) const
 ostream& ListExpr::toLatex(ostream& os, bool paren) const
 {
   os << "\\{";
-  for (unsigned int i=0; i<elements_.size(); i++)
+  for (int i=0; i<elements_.size(); i++)
     {
       elements_[i].ptr()->toLatex(os, paren);
       if (i < elements_.size()-1) os << ", ";

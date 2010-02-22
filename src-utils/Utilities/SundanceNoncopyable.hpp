@@ -33,7 +33,7 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceUtils
+namespace Sundance
 {
   /**
    * Noncopyable has a private copy ctor and assignment operator, which

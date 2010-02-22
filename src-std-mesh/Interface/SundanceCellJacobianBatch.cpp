@@ -35,10 +35,10 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceStdMesh;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 /* declare LAPACK subroutines */
@@ -56,14 +56,14 @@ extern "C"
 
 static Time& jacobianInversionTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("jacobian inversion"); 
   return *rtn;
 }
 
 static Time& jacobianFactoringTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("jacobian factoring"); 
   return *rtn;
 }

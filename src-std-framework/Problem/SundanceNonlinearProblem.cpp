@@ -41,13 +41,13 @@
 #endif
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
 using namespace TSFExtended;
@@ -55,7 +55,7 @@ using namespace TSFExtended;
 
 static Time& nlpCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("NonlinearProblem ctor"); 
   return *rtn;
 }
@@ -94,7 +94,7 @@ NonlinearProblem::NonlinearProblem(const Mesh& mesh,
 {}
 
 
-NonlinearProblem::NonlinearProblem(const RefCountPtr<Assembler>& assembler, 
+NonlinearProblem::NonlinearProblem(const RCP<Assembler>& assembler, 
                                    const Expr& u0)
   : op_(rcp(new NLOp(assembler, u0)))
 {}

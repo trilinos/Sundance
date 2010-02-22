@@ -41,11 +41,11 @@
 #include "SundanceDiffOpEvaluator.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
 class Expr;
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -58,7 +58,7 @@ class DiffOp : public UnaryExpr
 {
 public:
   /** ctor */
-  DiffOp(const MultiIndex& op, const RefCountPtr<ScalarExpr>& arg);
+  DiffOp(const MultiIndex& op, const RCP<ScalarExpr>& arg);
 
   /** virtual destructor */
   virtual ~DiffOp() {;}
@@ -128,7 +128,7 @@ public:
 
 
   /** */
-  virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+  virtual RCP<Array<Set<MultipleDeriv> > > 
   internalDetermineR(const EvalContext& context,
     const Array<Set<MultipleDeriv> >& RInput) const ;
 
@@ -147,7 +147,7 @@ public:
 
   /** Get the functions that are required in the evaluation
    * of the multiple deriv d */
-  const SundanceUtils::Set<Deriv>& requiredFunctions(const MultipleDeriv& d) const 
+  const Sundance::Set<Deriv>& requiredFunctions(const MultipleDeriv& d) const 
     {return requiredFunctions_[d];}
 
   /** */
@@ -159,7 +159,7 @@ public:
      
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 
   /** */
@@ -185,7 +185,7 @@ private:
 
   Deriv myCoordDeriv_;
 
-  mutable Map<MultipleDeriv, SundanceUtils::Set<Deriv>, 
+  mutable Map<MultipleDeriv, Sundance::Set<Deriv>, 
               increasingOrder<MultipleDeriv> > requiredFunctions_;
 
   mutable bool ignoreFuncTerms_;

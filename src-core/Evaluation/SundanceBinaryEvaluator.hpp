@@ -36,7 +36,7 @@
 #include "SundanceEvaluatableExpr.hpp"
 #include "SundanceEvalManager.hpp"
 
-namespace SundanceCore 
+namespace Sundance 
 {
 class EvalContext;
   
@@ -79,11 +79,11 @@ public:
 protected:
       
   /** */
-  const RefCountPtr<SparsitySuperset>& leftSparsity() const 
+  const RCP<SparsitySuperset>& leftSparsity() const 
     {return leftSparsity_;}
       
   /** */
-  const RefCountPtr<SparsitySuperset>& rightSparsity() const 
+  const RCP<SparsitySuperset>& rightSparsity() const 
     {return rightSparsity_;}
 
   /** */
@@ -93,17 +93,17 @@ protected:
   const EvaluatableExpr* rightExpr() const {return rightExpr_;}
 
   /** */
-  const RefCountPtr<Evaluator>& leftEval() const {return leftEval_;}
+  const RCP<Evaluator>& leftEval() const {return leftEval_;}
 
   /** */
-  const RefCountPtr<Evaluator>& rightEval() const {return rightEval_;}
+  const RCP<Evaluator>& rightEval() const {return rightEval_;}
 
   /** */
   void evalChildren(const EvalManager& mgr,
     Array<double>& leftConstResults,
-    Array<RefCountPtr<EvalVector> >& leftVecResults,
+    Array<RCP<EvalVector> >& leftVecResults,
     Array<double>& rightConstResults,
-    Array<RefCountPtr<EvalVector> >& rightVecResults) const 
+    Array<RCP<EvalVector> >& rightVecResults) const 
     {
       Tabs tabs;
       SUNDANCE_MSG2(mgr.verb(), 
@@ -124,13 +124,13 @@ private:
 
   const EvaluatableExpr* rightExpr_;
 
-  RefCountPtr<SparsitySuperset> leftSparsity_;
+  RCP<SparsitySuperset> leftSparsity_;
 
-  RefCountPtr<SparsitySuperset> rightSparsity_;
+  RCP<SparsitySuperset> rightSparsity_;
 
-  RefCountPtr<Evaluator> leftEval_;
+  RCP<Evaluator> leftEval_;
 
-  RefCountPtr<Evaluator> rightEval_;
+  RCP<Evaluator> rightEval_;
 };
 }
 

@@ -36,18 +36,15 @@
 #include "Teuchos_Array.hpp"
 
 
-namespace SundanceUtils {class Point;}
-namespace SundanceCore {class SpatialDerivSpecifier;}
-namespace SundanceCore {class MultiIndex;}
+namespace Sundance {class Point;}
+namespace Sundance {class SpatialDerivSpecifier;}
+namespace Sundance {class MultiIndex;}
 
-namespace SundanceStdFwk {
-
+namespace Sundance 
+{
+using namespace Teuchos;
 
 using Teuchos::Array;
-using SundanceUtils::Point;
-using SundanceStdMesh::CellType;
-using SundanceCore::SpatialDerivSpecifier;
-using SundanceCore::MultiIndex;
 
 
 /** 

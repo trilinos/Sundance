@@ -4,11 +4,11 @@
 #include "SundanceOut.hpp"
 
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 MeshReaderBase::MeshReaderBase(const ParameterList& params)
@@ -61,11 +61,11 @@ bool MeshReaderBase::getNextLine(std::istream& is, string& line,
   return rtn;
 }
 
-RefCountPtr<std::ifstream> MeshReaderBase::openFile(const string& fname, 
+RCP<std::ifstream> MeshReaderBase::openFile(const string& fname, 
                                                const string& description) const
 {
   string f = searchForFile(fname);
-  RefCountPtr<std::ifstream> rtn = rcp(new std::ifstream(f.c_str()));
+  RCP<std::ifstream> rtn = rcp(new std::ifstream(f.c_str()));
 
   SUNDANCE_OUT(this->verb() > 2,
                "trying to open " << description << " file " << f);

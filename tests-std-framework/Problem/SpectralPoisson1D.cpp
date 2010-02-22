@@ -45,11 +45,11 @@ string expand(const Expr& e)
   TeuchosOStringStream os;
 
   os << endl << tab << "Terms: " << endl;
-  for (unsigned int i=0; i<terms.size(); i++)
+  for (int i=0; i<terms.size(); i++)
   {
     Tabs tab1;
     os << tab1 << "term=" << i << endl;
-    for (unsigned int j=0; j<terms[i].size(); j++)
+    for (int j=0; j<terms[i].size(); j++)
     {
       Tabs tab2;
       os << tab2 << "factor " << j << " = " << terms[i][j] << endl;

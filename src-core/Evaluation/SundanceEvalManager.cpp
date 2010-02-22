@@ -41,10 +41,10 @@
 
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 EvalManager::EvalManager()
@@ -60,7 +60,7 @@ void EvalManager::setVerbosity(int verb)
 }
 
 void EvalManager::evalCoordExpr(const CoordExpr* expr,
-                                RefCountPtr<EvalVector>& result) const 
+                                RCP<EvalVector>& result) const 
 {
 
   TimeMonitor timer(coordEvalTimer());
@@ -72,7 +72,7 @@ void EvalManager::evalCoordExpr(const CoordExpr* expr,
 
 
 void EvalManager::evalCellDiameterExpr(const CellDiameterExpr* expr,
-                                RefCountPtr<EvalVector>& result) const 
+                                RCP<EvalVector>& result) const 
 {
   TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
                      "uninitialized mediator in "
@@ -82,7 +82,7 @@ void EvalManager::evalCellDiameterExpr(const CellDiameterExpr* expr,
 
 
 void EvalManager::evalCellVectorExpr(const CellVectorExpr* expr,
-                                RefCountPtr<EvalVector>& result) const 
+                                RCP<EvalVector>& result) const 
 {
   TEST_FOR_EXCEPTION(mediator() == 0, InternalError,
                      "uninitialized mediator in "
@@ -93,7 +93,7 @@ void EvalManager::evalCellVectorExpr(const CellVectorExpr* expr,
 
 void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                           const Array<MultiIndex>& mi,
-                                          Array<RefCountPtr<EvalVector> >& result) const 
+                                          Array<RCP<EvalVector> >& result) const 
 {
   TimeMonitor timer(discFuncEvalTimer());
 
@@ -105,7 +105,7 @@ void EvalManager::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
 }
 
 
-RefCountPtr<EvalVector> EvalManager::popVector() const
+RCP<EvalVector> EvalManager::popVector() const
 {
   return stack().popVector();
 }

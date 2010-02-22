@@ -36,9 +36,9 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -199,7 +199,7 @@ SumEvaluator::SumEvaluator(const SumExpr* se,
 void SumEvaluator
 ::internalEval(const EvalManager& mgr,
                Array<double>& constantResults,
-               Array<RefCountPtr<EvalVector> >& vectorResults) const 
+               Array<RCP<EvalVector> >& vectorResults) const 
 { 
   //  TimeMonitor timer(evalTimer());
   Tabs tabs;
@@ -208,8 +208,8 @@ void SumEvaluator
                tabs << "SumEvaluator::eval() expr=" << expr()->toString());
 
   /* evaluate the children */
-  Array<RefCountPtr<EvalVector> > leftVectorResults; 
-  Array<RefCountPtr<EvalVector> > rightVectorResults; 
+  Array<RCP<EvalVector> > leftVectorResults; 
+  Array<RCP<EvalVector> > rightVectorResults; 
   Array<double> leftConstResults;
   Array<double> rightConstResults;
   evalChildren(mgr, leftConstResults, leftVectorResults,
@@ -229,7 +229,7 @@ void SumEvaluator
   vectorResults.resize(this->sparsity()->numVectorDerivs());
 
   /* Do constant terms with left=0 */
-  for (unsigned int i=0; i<singleRightConstant_.size(); i++)
+  for (int i=0; i<singleRightConstant_.size(); i++)
     {
       Tabs tab1;
       constantResults[singleRightConstant_[i][0]]
@@ -241,7 +241,7 @@ void SumEvaluator
     }
 
   /* Do constant terms with right=0 */
-  for (unsigned int i=0; i<singleLeftConstant_.size(); i++)
+  for (int i=0; i<singleLeftConstant_.size(); i++)
     {
       Tabs tab1;
       constantResults[singleLeftConstant_[i][0]]
@@ -254,7 +254,7 @@ void SumEvaluator
     }
 
   /* Do vector terms with left=0 */
-  for (unsigned int i=0; i<singleRightVector_.size(); i++)
+  for (int i=0; i<singleRightVector_.size(); i++)
     {
       Tabs tab1;
       if (sign_ < 0.0) rightVectorResults[singleRightVector_[i][1]]->multiply_S(sign_);
@@ -268,7 +268,7 @@ void SumEvaluator
     }
 
   /* Do vector terms with right=0 */
-  for (unsigned int i=0; i<singleLeftVector_.size(); i++)
+  for (int i=0; i<singleLeftVector_.size(); i++)
     { 
       Tabs tab1;
       vectorResults[singleLeftVector_[i][0]]
@@ -281,7 +281,7 @@ void SumEvaluator
     }
 
   /** Do constant-constant terms */
-  for (unsigned int i=0; i<ccSums_.size(); i++)
+  for (int i=0; i<ccSums_.size(); i++)
     {
       Tabs tab1;
       constantResults[ccSums_[i][0]]
@@ -294,10 +294,10 @@ void SumEvaluator
     }
 
   /** Do constant-vector sums */
-  for (unsigned int i=0; i<cvSums_.size(); i++)
+  for (int i=0; i<cvSums_.size(); i++)
     {
       Tabs tab1;
-      RefCountPtr<EvalVector>& v = rightVectorResults[cvSums_[i][2]];
+      RCP<EvalVector>& v = rightVectorResults[cvSums_[i][2]];
       SUNDANCE_MSG2(mgr.verb(), tab1 << "doing c-v sum for " 
                            << vectorResultDeriv(cvSums_[i][0])
                            << ": L=" << leftConstResults[cvSums_[i][1]] 
@@ -315,10 +315,10 @@ void SumEvaluator
     }
 
   /* Do vector-constant sums */
-  for (unsigned int i=0; i<vcSums_.size(); i++)
+  for (int i=0; i<vcSums_.size(); i++)
     {
       Tabs tab1;
-      RefCountPtr<EvalVector>& v = leftVectorResults[vcSums_[i][1]] ;
+      RCP<EvalVector>& v = leftVectorResults[vcSums_[i][1]] ;
       SUNDANCE_MSG2(mgr.verb(), tab1 << "doing v-c sum for " 
                            << vectorResultDeriv(vcSums_[i][0])
                            << ": L=" << leftVectorResults[vcSums_[i][1]]->str()
@@ -329,10 +329,10 @@ void SumEvaluator
     }
 
   /* Do vector-vector sums */
-  for (unsigned int i=0; i<vvSums_.size(); i++)
+  for (int i=0; i<vvSums_.size(); i++)
     {
       Tabs tab1;
-      RefCountPtr<EvalVector>& v = leftVectorResults[vvSums_[i][1]];
+      RCP<EvalVector>& v = leftVectorResults[vvSums_[i][1]];
       SUNDANCE_MSG2(mgr.verb(), tab1 << "doing v-v sum for " 
                            << vectorResultDeriv(vvSums_[i][0])
                            << ": L=" 

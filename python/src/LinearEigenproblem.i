@@ -18,7 +18,7 @@
 %include "std_complex.i"
 %include "exception.i"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 
 class Eigensolution
@@ -31,7 +31,7 @@ public:
   int numEigenfunctions() const ;
 
   /** */
-  const SundanceCore::Expr& eigenfunction(int i) const ;
+  const Sundance::Expr& eigenfunction(int i) const ;
 
   /** */
   const std::complex<double>& eigenvalue(int i) const 
@@ -76,28 +76,28 @@ namespace TSFExtended
 
 
  
-namespace SundanceStdFwk
+namespace Sundance
 { 
 class LinearEigenproblem
 {
 public:
   /** */
-  LinearEigenproblem(const SundanceStdMesh::Mesh& mesh, 
-    const SundanceCore::Expr& eqn,
-    const SundanceCore::Expr& v, 
-    const SundanceCore::Expr& u,
+  LinearEigenproblem(const Sundance::Mesh& mesh, 
+    const Sundance::Expr& eqn,
+    const Sundance::Expr& v, 
+    const Sundance::Expr& u,
     const TSFExtended::VectorType<double>& vecType);
   /** */
   LinearEigenproblem(
-    const SundanceStdMesh::Mesh& mesh, const SundanceCore::Expr& eqn,
-    const SundanceCore::Expr& v, const SundanceCore::Expr& u,
+    const Sundance::Mesh& mesh, const Sundance::Expr& eqn,
+    const Sundance::Expr& v, const Sundance::Expr& u,
     const TSFExtended::VectorType<double>& vecType,
     bool lumpMass) ;
   /** */
   LinearEigenproblem(
-    const SundanceStdMesh::Mesh& mesh, const SundanceCore::Expr& eqn,
-    const SundanceCore::Expr& massExpr,
-    const SundanceCore::Expr& v, const SundanceCore::Expr& u,
+    const Sundance::Mesh& mesh, const Sundance::Expr& eqn,
+    const Sundance::Expr& massExpr,
+    const Sundance::Expr& v, const Sundance::Expr& u,
     const TSFExtended::VectorType<double>& vecType,
     bool lumpMass) ;
     

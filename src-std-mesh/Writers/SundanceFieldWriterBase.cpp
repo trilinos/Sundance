@@ -34,9 +34,9 @@
 #include "SundanceTabs.hpp"
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -95,7 +95,7 @@ void FieldWriterBase::addMesh(const Mesh& mesh)
 }
 
 void FieldWriterBase::addField(const string& name, 
-                               const RefCountPtr<FieldBase>& expr) 
+                               const RCP<FieldBase>& expr) 
 {
 
   string fieldName = name;

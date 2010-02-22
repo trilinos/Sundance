@@ -33,13 +33,13 @@
 #include <cmath>
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-using SundanceCore::Expr;
+using Sundance::Expr;
 using namespace Teuchos;
 
 class CoordinateSystemBase : 
-  public SundanceUtils::Handleable<CoordinateSystemBase>
+  public Sundance::Handleable<CoordinateSystemBase>
 {
 public:
   /** */
@@ -59,7 +59,7 @@ public:
 };
 
 
-class CoordinateSystem : public SundanceUtils::Handle<CoordinateSystemBase>
+class CoordinateSystem : public Sundance::Handle<CoordinateSystemBase>
 {
 public:
   /* boilerplate handle ctors */
@@ -96,7 +96,7 @@ public:
 
   
   /** */
-  virtual RefCountPtr<CoordinateSystemBase> getRcp() {return rcp(this);}
+  virtual RCP<CoordinateSystemBase> getRcp() {return rcp(this);}
 };
 
 
@@ -121,7 +121,7 @@ public:
     };
   
   /** */
-  virtual RefCountPtr<CoordinateSystemBase> getRcp() {return rcp(this);}
+  virtual RCP<CoordinateSystemBase> getRcp() {return rcp(this);}
 
 private:
   Expr r_;
@@ -151,7 +151,7 @@ public:
 
   
   /** */
-  virtual RefCountPtr<CoordinateSystemBase> getRcp() {return rcp(this);}
+  virtual RCP<CoordinateSystemBase> getRcp() {return rcp(this);}
 private:
   Expr r_;
 };

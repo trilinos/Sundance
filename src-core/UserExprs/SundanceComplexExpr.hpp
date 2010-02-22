@@ -36,9 +36,9 @@
 #include "SundanceExpr.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using namespace Teuchos;
 
 
@@ -76,7 +76,7 @@ namespace SundanceCore
     {os << real() << "+i" << imag(); return os;}
 
     /** */
-    virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+    virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   protected:
 

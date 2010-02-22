@@ -35,15 +35,15 @@
 #include "SundanceOut.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
 
 Expr CellNormalExpr(int dimension, const std::string& name)

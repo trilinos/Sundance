@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
       int rank = session.getRank();
       int nProc = session.getNProc();
 
-      unsigned int seed = 12345;
+      int seed = 12345;
       for (int i=0; i<rank; i++) seed = (seed * 371761) % 5476181;
       cout << "seed = " << seed << endl;
       srand48(seed);

@@ -2,11 +2,11 @@
 #include "SundanceOut.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 ExodusNetCDFMeshReader::ExodusNetCDFMeshReader(const string& fname,
@@ -32,7 +32,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
 {
   Mesh mesh;
 
-  RefCountPtr<std::ifstream> is = openFile(filename(), "NetCDF");
+  RCP<std::ifstream> is = openFile(filename(), "NetCDF");
 
   string line;
   Array<string> tokens;
@@ -52,16 +52,16 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                      "ExodusNetCDF reader expected to find [dimension:] as first "
                      "token, found " << tokens[0]);
   
-  unsigned int nElem = 0;
-  unsigned int nNodes = 0;
-  unsigned int nElemBlocks = 0;
-  unsigned int nSideSets = 0;
-  unsigned int nNodeSets = 0;
-  unsigned int dimension = 0 ;
-  Array<unsigned int> blockSizes;
-  Array<unsigned int> sideSetSizes;
-  Array<unsigned int> nodeSetSizes;
-  Array<unsigned int> nodesPerElem;
+  int nElem = 0;
+  int nNodes = 0;
+  int nElemBlocks = 0;
+  int nSideSets = 0;
+  int nNodeSets = 0;
+  int dimension = 0 ;
+  Array<int> blockSizes;
+  Array<int> sideSetSizes;
+  Array<int> nodeSetSizes;
+  Array<int> nodesPerElem;
   while (true)
     {
       getNextLine(*is, line, tokens, '#');
@@ -110,7 +110,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         }
       else
         {
-          for (unsigned int i=0; i<nElemBlocks; i++)
+          for (int i=0; i<nElemBlocks; i++)
             {
               if (keyword=="num_el_in_blk" + Teuchos::toString(i+1))
                 {
@@ -123,7 +123,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                   break;
                 }
             }
-          for (unsigned int i=0; i<nSideSets; i++)
+          for (int i=0; i<nSideSets; i++)
             {
               if (keyword=="num_side_ss" + Teuchos::toString(i+1))
                 {
@@ -131,7 +131,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                   break;
                 }
             }
-          for (unsigned int i=0; i<nNodeSets; i++)
+          for (int i=0; i<nNodeSets; i++)
             {
               if (keyword=="num_nod_ns" + Teuchos::toString(i+1))
                 {
@@ -181,7 +181,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
       if (tokens[0]=="coord")
         {
           bool done = false;
-          for (unsigned int i=1; i<tokens.size(); i++)
+          for (int i=1; i<tokens.size(); i++)
             {
               if (tokens[i] == "=") continue;
               if (tokens[i] == ";") 
@@ -199,7 +199,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                   break;
                 }
 
-              for (unsigned int i=0; i<tokens.size(); i++)
+              for (int i=0; i<tokens.size(); i++)
                 {
                   if (tokens[i] == "=") continue;
                   if (tokens[i] == ";") 
@@ -213,13 +213,13 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
           continue;
         }
       /* see if the line lists connectivity data for a block */
-      for (unsigned int b=0; b<nElemBlocks; b++)
+      for (int b=0; b<nElemBlocks; b++)
         {
           if (tokens[0] == "connect" + Teuchos::toString(b+1))
             {
               connect[b].reserve(blockSizes[b]);
               bool done = false;
-              for (unsigned int i=1; i<tokens.size(); i++)
+              for (int i=1; i<tokens.size(); i++)
                 {
                   if (tokens[i] == "=") continue;
                   if (tokens[i] == ";") 
@@ -237,7 +237,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                       break;
                     }
 
-                  for (unsigned int i=0; i<tokens.size(); i++)
+                  for (int i=0; i<tokens.size(); i++)
                     {
                       if (tokens[i] == "=") continue;
                       if (tokens[i] == ";") 
@@ -253,13 +253,13 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         }
 
       /* see if the line lists side set element numbers */
-      for (unsigned int s=0; s<nSideSets; s++)
+      for (int s=0; s<nSideSets; s++)
         {
           if (tokens[0] == "elem_ss" + Teuchos::toString(s+1))
             {
               sideSetElems[s].reserve(sideSetSizes[s]);
               bool done = false;
-              for (unsigned int i=1; i<tokens.size(); i++)
+              for (int i=1; i<tokens.size(); i++)
                 {
                   if (tokens[i] == "=") continue;
                   if (tokens[i] == ";") 
@@ -277,7 +277,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                       break;
                     }
 
-                  for (unsigned int i=0; i<tokens.size(); i++)
+                  for (int i=0; i<tokens.size(); i++)
                     {
                       if (tokens[i] == "=") continue;
                       if (tokens[i] == ";") 
@@ -293,13 +293,13 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         }
 
       /* see if the line lists side set facet numbers */
-      for (unsigned int s=0; s<nSideSets; s++)
+      for (int s=0; s<nSideSets; s++)
         {
           if (tokens[0] == "side_ss" + Teuchos::toString(s+1))
             {
               sideSetFacets[s].reserve(sideSetSizes[s]);
               bool done = false;
-              for (unsigned int i=1; i<tokens.size(); i++)
+              for (int i=1; i<tokens.size(); i++)
                 {
                   if (tokens[i] == "=") continue;
                   if (tokens[i] == ";") 
@@ -316,7 +316,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                       doneWithData = true;
                       break;
                     }
-                  for (unsigned int i=0; i<tokens.size(); i++)
+                  for (int i=0; i<tokens.size(); i++)
                     {
                       if (tokens[i] == "=") continue;
                       if (tokens[i] == ";") 
@@ -332,13 +332,13 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
         }
 
       /* see if the line lists node set node numbers */
-      for (unsigned int s=0; s<nNodeSets; s++)
+      for (int s=0; s<nNodeSets; s++)
         {
           if (tokens[0] == "node_ns" + Teuchos::toString(s+1))
             {
               nodeSetNodes[s].reserve(nodeSetSizes[s]);
               bool done = false;
-              for (unsigned int i=1; i<tokens.size(); i++)
+              for (int i=1; i<tokens.size(); i++)
                 {
                   if (tokens[i] == "=") continue;
                   if (tokens[i] == ";") 
@@ -355,7 +355,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
                       doneWithData = true;
                       break;
                     }
-                  for (unsigned int i=0; i<tokens.size(); i++)
+                  for (int i=0; i<tokens.size(); i++)
                     {
                       if (tokens[i] == "=") continue;
                       if (tokens[i] == ";") 
@@ -380,13 +380,13 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   TEST_FOR_EXCEPTION(dimension * nNodes != coords.size(), RuntimeError,
                      "bad coordinate array in exodus reader");
 
-  for (unsigned int b=0; b<nElemBlocks; b++)
+  for (int b=0; b<nElemBlocks; b++)
     {
       TEST_FOR_EXCEPTION(blockSizes[b]*nodesPerElem[b] != connect[b].size(), RuntimeError,
                          "bad connectivity array for block " << b << " in exodus reader");
     }
 
-  for (unsigned int s=0; s<nSideSets; s++)
+  for (int s=0; s<nSideSets; s++)
     {
       TEST_FOR_EXCEPTION(sideSetElems[s].size() != sideSetFacets[s].size(), RuntimeError,
                          "inconsistent side set specification for ss=" << s 
@@ -394,7 +394,7 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
     }
 
   /* add the points to the mesh */
-  for (unsigned int n=0; n<nNodes; n++)
+  for (int n=0; n<nNodes; n++)
     {
       Point x;
       if (dimension==2)
@@ -411,10 +411,10 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
 
   /* add the elements */
   int lid=0;
-  for (unsigned int b=0; b<nElemBlocks; b++)
+  for (int b=0; b<nElemBlocks; b++)
     {
       int n = 0;
-      for (unsigned int e=0; e<blockSizes[b]; e++, n+=nodesPerElem[b], lid++)
+      for (int e=0; e<blockSizes[b]; e++, n+=nodesPerElem[b], lid++)
         {
           if (dimension==2)
             {
@@ -431,9 +431,9 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
   
   /* label the side sets */
 
-  for (unsigned int s=0; s<nSideSets; s++)
+  for (int s=0; s<nSideSets; s++)
     {
-      for (unsigned int n=0; n<sideSetSizes[s]; n++)
+      for (int n=0; n<sideSetSizes[s]; n++)
         {
           int elemID = sideSetElems[s][n];
           int facetNum = sideSetFacets[s][n];
@@ -444,9 +444,9 @@ Mesh ExodusNetCDFMeshReader::fillMesh() const
     }
 
   /* label the node sets */
-  for (unsigned int s=0; s<nNodeSets; s++)
+  for (int s=0; s<nNodeSets; s++)
     {
-      for (unsigned int n=0; n<nodeSetSizes[s]; n++)
+      for (int n=0; n<nodeSetSizes[s]; n++)
         {
           int nodeNum = nodeSetNodes[s][n]-1;
           mesh.setLabel(0, nodeNum, s+1);

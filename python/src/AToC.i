@@ -21,7 +21,7 @@
 %template(doubleVector) std::vector<double>;
 %template(intVector) std::vector<int>;
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   
 
@@ -30,7 +30,7 @@ namespace SundanceStdFwk
   {
   public:
     /* */
-    AToCPointLocator(const SundanceStdMesh::Mesh& mesh, 
+    AToCPointLocator(const Sundance::Mesh& mesh, 
                      const CellFilter& subdomain,
                      const std::vector<int>& nx);
 
@@ -50,16 +50,16 @@ namespace SundanceStdFwk
                        const TSFExtended::VectorType<double>& vecType);
 
     /** */
-    SundanceCore::Expr sample(const std::vector<double>& positions,
+    Sundance::Expr sample(const std::vector<double>& positions,
                               const double& particleWeight) const ;
 
     /** */
-    SundanceCore::Expr resetCounts() const ;
+    Sundance::Expr resetCounts() const ;
 
     /** */
     void addToCounts(const std::vector<double>& positions,
                      const double& particleWeight,
-                     SundanceCore::Expr density) const ;
+                     Sundance::Expr density) const ;
   };
 
 
@@ -68,14 +68,14 @@ namespace SundanceStdFwk
   public:
     /** */
     CToAInterpolator(const AToCPointLocator& locator,
-                     const SundanceCore::Expr& field);
+                     const Sundance::Expr& field);
 
     /** */
     void interpolate(const std::vector<double>& positions,
       std::vector<double>& results) const ;
 
     /** */
-    void updateField(const SundanceCore::Expr& field) ;
+    void updateField(const Sundance::Expr& field) ;
   };
   
 

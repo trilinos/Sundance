@@ -50,30 +50,17 @@
 #include "SundanceComputationType.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
+using namespace Teuchos;
+
 class EquationSet;
 class EvaluatableExpr;
 class EvalManager;
 class EvalVector;
-}
-
-
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
 class DiscreteSpace;
 class DiscreteFunction;
 class CellFilter;
-
-namespace Internal
-{
-using namespace Teuchos;
 class DOFMapBase;
 class IntegralGroup;
 class StdFwkEvalMediator;
@@ -86,13 +73,13 @@ typedef std::set<int> ColSetType;
  * 
  */
 class Assembler 
-  : public SundanceUtils::ParameterControlledObjectWithVerbosity<Assembler>
+  : public ParameterControlledObjectWithVerbosity<Assembler>
 {
 public:
   /** */
   Assembler(
     const Mesh& mesh, 
-    const RefCountPtr<EquationSet>& eqn,
+    const RCP<EquationSet>& eqn,
     const Array<VectorType<double> >& rowVectorType,
     const Array<VectorType<double> >& colVectorType,
     bool partitionBCs,
@@ -102,23 +89,23 @@ public:
   /** */
   Assembler(
     const Mesh& mesh, 
-    const RefCountPtr<EquationSet>& eqn,
+    const RCP<EquationSet>& eqn,
     const ParameterList& verbParams= *defaultVerbParams());
       
   /** */
-  const Array<RefCountPtr<DOFMapBase> >& rowMap() const 
+  const Array<RCP<DOFMapBase> >& rowMap() const 
     {return rowMap_;}
 
   /** */
-  const Array<RefCountPtr<DOFMapBase> >& colMap() const 
+  const Array<RCP<DOFMapBase> >& colMap() const 
     {return colMap_;}
 
   /** */
-  const Array<RefCountPtr<DiscreteSpace> >& solutionSpace() const 
+  const Array<RCP<DiscreteSpace> >& solutionSpace() const 
     {return externalColSpace_;}
 
   /** */
-  const Array<RefCountPtr<DiscreteSpace> >& rowSpace() const 
+  const Array<RCP<DiscreteSpace> >& rowSpace() const 
     {return externalRowSpace_;}
 
   /** */
@@ -128,7 +115,7 @@ public:
   VectorSpace<double> rowVecSpace() const ;
 
   /** */
-  const Array<RefCountPtr<Set<int> > >& bcRows() {return bcRows_;}
+  const Array<RCP<Set<int> > >& bcRows() {return bcRows_;}
 
   /** Allocate, but do not fill, the matrix */
   TSFExtended::LinearOperator<double> allocateMatrix() const ;
@@ -153,7 +140,7 @@ public:
   void evaluate(double& value) const ;
 
   /** */
-  static unsigned int& workSetSize() ;
+  static int& workSetSize() ;
 
       
   /** */
@@ -169,7 +156,7 @@ public:
   /** */
   void flushConfiguration() 
     {
-      numConfiguredColumns_ = 0U;
+      numConfiguredColumns_ = 0;
       matNeedsConfiguration_ = true;
     }
 
@@ -185,18 +172,18 @@ public:
   static bool& matrixEliminatesRepeatedCols() {static bool x = false; return x;}
 
   /** */
-  const RefCountPtr<EquationSet>& eqnSet() const 
+  const RCP<EquationSet>& eqnSet() const 
     {return eqn_;}
 
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams();
+  static RCP<ParameterList> defaultVerbParams();
 
 
 private:
 
   /** */
   void init(const Mesh& mesh, 
-    const RefCountPtr<EquationSet>& eqn);
+    const RCP<EquationSet>& eqn);
 
   /** */
   bool detectInternalBdry(int cellDim, const CellFilter& filter) const ;
@@ -206,11 +193,11 @@ private:
     const EvalContext& context, 
     const EvaluatableExpr* evalExpr, 
     const Array<double>& constantCoeffs, 
-    const Array<RefCountPtr<EvalVector> >& vectorCoeffs) const ;
+    const Array<RCP<EvalVector> >& vectorCoeffs) const ;
 
   /** */
   void assemblyLoop(const ComputationType& compType,
-    RefCountPtr<AssemblyKernelBase> kernel) const ;
+    RCP<AssemblyKernelBase> kernel) const ;
 
 
   /** */
@@ -248,27 +235,27 @@ private:
       
   mutable bool matNeedsFinalization_;
 
-  mutable unsigned int numConfiguredColumns_;
+  mutable int numConfiguredColumns_;
 
   Mesh mesh_;
 
-  RefCountPtr<EquationSet> eqn_;
+  RCP<EquationSet> eqn_;
 
-  Array<RefCountPtr<DOFMapBase> > rowMap_;
+  Array<RCP<DOFMapBase> > rowMap_;
 
-  Array<RefCountPtr<DOFMapBase> > colMap_;
+  Array<RCP<DOFMapBase> > colMap_;
 
-  Array<RefCountPtr<DiscreteSpace> > externalRowSpace_;
+  Array<RCP<DiscreteSpace> > externalRowSpace_;
 
-  Array<RefCountPtr<DiscreteSpace> > externalColSpace_;
+  Array<RCP<DiscreteSpace> > externalColSpace_;
 
-  Array<RefCountPtr<DiscreteSpace> > privateRowSpace_;
+  Array<RCP<DiscreteSpace> > privateRowSpace_;
 
-  Array<RefCountPtr<DiscreteSpace> > privateColSpace_;
+  Array<RCP<DiscreteSpace> > privateColSpace_;
 
-  Array<RefCountPtr<Set<int> > > bcRows_;
+  Array<RCP<Set<int> > > bcRows_;
 
-  Array<RefCountPtr<Set<int> > > bcCols_;
+  Array<RCP<Set<int> > > bcCols_;
 
   Array<RegionQuadCombo> rqc_;
 
@@ -280,17 +267,17 @@ private:
 
   Map<ComputationType, Array<Array<RCP<IntegralGroup> > > > groups_;
 
-  Array<RefCountPtr<StdFwkEvalMediator> > mediators_;
+  Array<RCP<StdFwkEvalMediator> > mediators_;
 
   Map<ComputationType, Array<const EvaluatableExpr*> > evalExprs_;
 
-  RefCountPtr<EvalManager> evalMgr_;
+  RCP<EvalManager> evalMgr_;
 
-  Array<RefCountPtr<Array<int> > > isBCRow_;
+  Array<RCP<Array<int> > > isBCRow_;
 
-  Array<RefCountPtr<Array<int> > > isBCCol_;
+  Array<RCP<Array<int> > > isBCCol_;
 
-  Array<RefCountPtr<std::set<int> > > remoteBCCols_;
+  Array<RCP<std::set<int> > > remoteBCCols_;
 
   Array<int> lowestRow_;
 
@@ -308,10 +295,10 @@ private:
 
   Map<ComputationType, Array<IntegrationCellSpecifier> > rqcRequiresMaximalCofacets_;
 
-  Array<RefCountPtr<PartitionedToMonolithicConverter> > converter_;
+  Array<RCP<PartitionedToMonolithicConverter> > converter_;
 
 };
-}
+
 }
 
 

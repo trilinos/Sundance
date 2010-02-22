@@ -39,11 +39,11 @@
 #include <algorithm>
 
 
-namespace SundanceCore
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceUtils;
-using SundanceUtils::Set;
+using namespace Sundance;
+using Sundance::Set;
 using std::string;
 using std::max_element;
 
@@ -120,7 +120,7 @@ public:
 private:
   int setupVerbosity_;
   int maxDiffOrder_;
-  RefCountPtr<OrderedTriple<Set<int>, int, RegionQuadCombo> > data_;
+  RCP<OrderedTriple<Set<int>, int, RegionQuadCombo> > data_;
 };
 
 }
@@ -128,9 +128,9 @@ private:
 
 namespace std
 {
-/** \relates SundanceCore::EvalContext */
+/** \relates Sundance::EvalContext */
 inline ostream& operator<<(ostream& os, 
-  const SundanceCore::EvalContext& c)
+  const Sundance::EvalContext& c)
 {
   os << c.toString();
   return os;
@@ -141,8 +141,8 @@ namespace Teuchos
 {
 using std::string;
 
-/** \relates SundanceCore::EvalContext */
-inline string toString(const SundanceCore::EvalContext& h)
+/** \relates Sundance::EvalContext */
+inline string toString(const Sundance::EvalContext& h)
 {return h.toString();}
 
 }

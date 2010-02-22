@@ -36,7 +36,7 @@
 #include "SundanceDefs.hpp"
 
 
-namespace SundanceUtils
+namespace Sundance
 {
   class VersionString
   {

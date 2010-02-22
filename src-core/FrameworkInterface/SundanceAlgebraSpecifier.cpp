@@ -31,9 +31,9 @@
 #include "SundanceAlgebraSpecifier.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace std;
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -83,7 +83,7 @@ namespace std
 {
 
 ostream& operator<<(ostream& os, 
-  const SundanceCore::AlgebraType& at)
+  const Sundance::AlgebraType& at)
 {
   switch(at)
   {
@@ -105,7 +105,7 @@ ostream& operator<<(ostream& os,
   return os;
 }
 
-ostream& operator<<(ostream& os, const SundanceCore::AlgebraSpecifier& as)
+ostream& operator<<(ostream& os, const Sundance::AlgebraSpecifier& as)
 {
   os << as.type();
   if (as.isCoordinateComponent()) os << "(d=" << as.direction() << ")";
@@ -115,7 +115,7 @@ ostream& operator<<(ostream& os, const SundanceCore::AlgebraSpecifier& as)
 
 }
 
-namespace SundanceCore
+namespace Sundance
 {
 
 /** \relates AlgebraSpecifier */

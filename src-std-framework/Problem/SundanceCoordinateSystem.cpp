@@ -1,11 +1,11 @@
 #include "SundanceCoordinateSystem.hpp"
 
-using namespace SundanceStdFwk;
+using namespace Sundance;
 
 CoordinateSystem 
 CoordinateSystemBuilder::makeCoordinateSystem(const std::string& name)
 {
-  RefCountPtr<CoordinateSystemBase> rtn;
+  RCP<CoordinateSystemBase> rtn;
 
   if (name=="Cartesian")
   {

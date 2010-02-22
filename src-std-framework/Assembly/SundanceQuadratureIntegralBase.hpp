@@ -34,15 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceElementIntegral.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore::Internal;
-  
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
     
@@ -99,7 +91,7 @@ public:
     const Array<int>& isLocalFlag,
     const Array<int>& facetNum,
     const double* const coeff,
-    RefCountPtr<Array<double> >& A) const 
+    RCP<Array<double> >& A) const 
     {
       if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
       else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
@@ -112,21 +104,21 @@ public:
     const Array<int>& isLocalFlag,
     const Array<int>& facetIndex,
     const double* const coeff,
-    RefCountPtr<Array<double> >& A) const = 0;
+    RCP<Array<double> >& A) const = 0;
       
   /** */
   virtual void transformTwoForm(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol,
     const Array<int>& facetIndex,
     const double* const coeff,
-    RefCountPtr<Array<double> >& A) const = 0;
+    RCP<Array<double> >& A) const = 0;
       
   /** */
   virtual void transformOneForm(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol,
     const Array<int>& facetIndex,
     const double* const coeff,
-    RefCountPtr<Array<double> >& A) const = 0;
+    RCP<Array<double> >& A) const = 0;
       
       
   /** */
@@ -141,7 +133,7 @@ protected:
   int nQuad_;
       
 };
-}
+
 }
 
 

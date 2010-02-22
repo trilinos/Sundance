@@ -36,7 +36,7 @@
 #include "SundanceSerialPartitionerBase.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * This partitioner makes a system call to run Chaco, passing partitioning

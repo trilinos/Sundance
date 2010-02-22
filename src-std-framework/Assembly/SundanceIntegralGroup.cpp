@@ -35,26 +35,26 @@
 #include "SundanceTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 static Time& integrationTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("integration"); 
   return *rtn;
 }
 
 
 IntegralGroup
-::IntegralGroup(const Array<RefCountPtr<ElementIntegral> >& integrals,
+::IntegralGroup(const Array<RCP<ElementIntegral> >& integrals,
   const Array<int>& resultIndices,
   int verb)
   : integrationVerb_(findIntegrationVerb(integrals)),
@@ -79,7 +79,7 @@ IntegralGroup
   bool noneReqMaximalCofacets = true;
   bool someReqMaximalCofacets = false;
 
-  for (unsigned int i=0; i<integrals_.size(); i++)
+  for (int i=0; i<integrals_.size(); i++)
   {
     Tabs tab1;
     SUNDANCE_MSG2(verb, tab1 << "integral #" << i << ", numFacetCases="
@@ -121,7 +121,7 @@ IntegralGroup
 ::IntegralGroup(const Array<int>& testID,
   const Array<int>& testBlock,
   const Array<int>& mvIndices,
-  const Array<RefCountPtr<ElementIntegral> >& integrals,
+  const Array<RCP<ElementIntegral> >& integrals,
   const Array<int>& resultIndices,
   const Array<MultipleDeriv>& derivs,
   int verb)
@@ -147,7 +147,7 @@ IntegralGroup
   bool noneReqMaximalCofacets = true;
   bool someReqMaximalCofacets = false;
 
-  for (unsigned int i=0; i<integrals.size(); i++)
+  for (int i=0; i<integrals.size(); i++)
   {
     int nt = integrals[i]->nNodesTest();
     if (i > 0) 
@@ -194,7 +194,7 @@ IntegralGroup
   const Array<int>& testBlock,
   const Array<int>& unkID,
   const Array<int>& unkBlock,
-  const Array<RefCountPtr<ElementIntegral> >& integrals,
+  const Array<RCP<ElementIntegral> >& integrals,
   const Array<int>& resultIndices,
   const Array<MultipleDeriv>& derivs,
   int verb)
@@ -220,7 +220,7 @@ IntegralGroup
   bool noneReqMaximalCofacets = true;
   bool someReqMaximalCofacets = false;
 
-  for (unsigned int i=0; i<integrals.size(); i++)
+  for (int i=0; i<integrals.size(); i++)
   {
     Tabs tab1;
     SUNDANCE_MSG2(verb, tab1 << "integral #" << i << ", numFacetCases="
@@ -275,9 +275,9 @@ bool IntegralGroup
   const CellJacobianBatch& JVol,
   const Array<int>& isLocalFlag, 
   const Array<int>& facetIndex, 
-  const Array<RefCountPtr<EvalVector> >& vectorCoeffs,
+  const Array<RCP<EvalVector> >& vectorCoeffs,
   const Array<double>& constantCoeffs,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   TimeMonitor timer(integrationTimer());
   Tabs tab0(0);
@@ -298,7 +298,7 @@ bool IntegralGroup
   if (integrationVerb() >=5) writeTable(Out::os(), tab0, *A, 6);
 
   /* do the integrals */
-  for (unsigned int i=0; i<integrals_.size(); i++)
+  for (int i=0; i<integrals_.size(); i++)
   {
     Tabs tab1;
     SUNDANCE_MSG1(integrationVerb(), tab1 << "group member i=" << i 
@@ -351,10 +351,10 @@ bool IntegralGroup
 }
 
 
-int IntegralGroup::findIntegrationVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const
+int IntegralGroup::findIntegrationVerb(const Array<RCP<ElementIntegral> >& integrals) const
 {
   int rtn = 0;
-  for (unsigned int i=0; i<integrals.size(); i++)
+  for (int i=0; i<integrals.size(); i++)
   {
     rtn = std::max(rtn, integrals[i]->integrationVerb());
   }
@@ -362,10 +362,10 @@ int IntegralGroup::findIntegrationVerb(const Array<RefCountPtr<ElementIntegral> 
 }
 
 
-int IntegralGroup::findTransformVerb(const Array<RefCountPtr<ElementIntegral> >& integrals) const
+int IntegralGroup::findTransformVerb(const Array<RCP<ElementIntegral> >& integrals) const
 {
   int rtn = 0;
-  for (unsigned int i=0; i<integrals.size(); i++)
+  for (int i=0; i<integrals.size(); i++)
   {
     rtn = std::max(rtn, integrals[i]->transformVerb());
   }

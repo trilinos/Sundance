@@ -36,16 +36,15 @@
 #include "SundanceMesh.hpp"
 #include "SundanceFieldBase.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-  namespace Internal
-  {
+using namespace Teuchos;
     /**
      * FieldWriterBase is a base class for objects that write fields
      * and/or meshes to a stream. 
      */
-    class FieldWriterBase : public SundanceUtils::Handleable<FieldWriterBase>,
-                            public SundanceUtils::ObjectWithClassVerbosity<FieldWriterBase>
+    class FieldWriterBase : public Sundance::Handleable<FieldWriterBase>,
+                            public ObjectWithClassVerbosity<FieldWriterBase>
     {
     public:
       /** */
@@ -62,7 +61,7 @@ namespace SundanceStdMesh
 
       /** add a field, tagging it with the given string as a name */
       virtual void addField(const string& name, 
-                            const RefCountPtr<FieldBase>& field) ;
+                            const RCP<FieldBase>& field) ;
 
       /** */
       virtual void write() const = 0 ;
@@ -99,11 +98,11 @@ namespace SundanceStdMesh
       const Array<string>& comments() const {return comments_;}
       Array<string>& comments() {return comments_;}
 
-      const Array<RefCountPtr<FieldBase> >& pointScalarFields() const {return pointScalarFields_;}
-      Array<RefCountPtr<FieldBase> >& pointScalarFields() {return pointScalarFields_;}
+      const Array<RCP<FieldBase> >& pointScalarFields() const {return pointScalarFields_;}
+      Array<RCP<FieldBase> >& pointScalarFields() {return pointScalarFields_;}
 
-      const Array<RefCountPtr<FieldBase> >& cellScalarFields() const {return cellScalarFields_;}
-      Array<RefCountPtr<FieldBase> >& cellScalarFields() {return cellScalarFields_;}
+      const Array<RCP<FieldBase> >& cellScalarFields() const {return cellScalarFields_;}
+      Array<RCP<FieldBase> >& cellScalarFields() {return cellScalarFields_;}
 
       const Array<string>& pointScalarNames() const {return pointScalarNames_;}
       Array<string>& pointScalarNames() {return pointScalarNames_;}
@@ -111,11 +110,11 @@ namespace SundanceStdMesh
       const Array<string>& cellScalarNames() const {return cellScalarNames_;}
       Array<string>& cellScalarNames() {return cellScalarNames_;}
 
-      const Array<RefCountPtr<FieldBase> >& pointVectorFields() const {return pointVectorFields_;}
-      Array<RefCountPtr<FieldBase> >& pointVectorFields() {return pointVectorFields_;}
+      const Array<RCP<FieldBase> >& pointVectorFields() const {return pointVectorFields_;}
+      Array<RCP<FieldBase> >& pointVectorFields() {return pointVectorFields_;}
 
-      const Array<RefCountPtr<FieldBase> >& cellVectorFields() const {return cellVectorFields_;}
-      Array<RefCountPtr<FieldBase> >& cellVectorFields() {return cellVectorFields_;}
+      const Array<RCP<FieldBase> >& cellVectorFields() const {return cellVectorFields_;}
+      Array<RCP<FieldBase> >& cellVectorFields() {return cellVectorFields_;}
 
       const Array<string>& pointVectorNames() const {return pointVectorNames_;}
       Array<string>& pointVectorNames() {return pointVectorNames_;}
@@ -138,10 +137,10 @@ namespace SundanceStdMesh
 
       Array<string> comments_;
 
-      Array<RefCountPtr<FieldBase> > pointScalarFields_;
-      Array<RefCountPtr<FieldBase> > cellScalarFields_;
-      Array<RefCountPtr<FieldBase> > pointVectorFields_;
-      Array<RefCountPtr<FieldBase> > cellVectorFields_;
+      Array<RCP<FieldBase> > pointScalarFields_;
+      Array<RCP<FieldBase> > cellScalarFields_;
+      Array<RCP<FieldBase> > pointVectorFields_;
+      Array<RCP<FieldBase> > cellVectorFields_;
       Array<string> pointScalarNames_;
       Array<string> cellScalarNames_;
       Array<string> pointVectorNames_;
@@ -149,7 +148,6 @@ namespace SundanceStdMesh
 
       double undefinedValue_;
     };
-  }
 }
 
 

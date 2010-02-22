@@ -46,10 +46,10 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceEvalManager.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace SundanceTesting;
 
 using namespace Teuchos;
@@ -67,7 +67,7 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
   EvalManager::stack().setVecSize(1);
 
   Expr f = fields.flatten();
-  for (unsigned int i=0; i<f.size(); i++)
+  for (int i=0; i<f.size(); i++)
     {
       const DiscreteFuncElement* u0 
         = dynamic_cast<const DiscreteFuncElement*>(f[i].ptr().get());
@@ -93,7 +93,7 @@ TestEvalMediator::TestEvalMediator(const Expr& fields)
 
 
 void TestEvalMediator::evalCoordExpr(const CoordExpr* expr,
-                                     RefCountPtr<EvalVector>& vec) const
+                                     RCP<EvalVector>& vec) const
 {
   Tabs tabs;
   SUNDANCE_MSG1(verb(), tabs << "evaluating coord expr " << expr->toXML().toString());
@@ -110,7 +110,7 @@ void TestEvalMediator::evalCoordExpr(const CoordExpr* expr,
 }
 
 void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
-                                     RefCountPtr<EvalVector>& vec) const
+                                     RCP<EvalVector>& vec) const
 {
   Tabs tabs;
 
@@ -128,7 +128,7 @@ void TestEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 
 
 void TestEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
-                                     RefCountPtr<EvalVector>& vec) const
+                                     RCP<EvalVector>& vec) const
 {
   Tabs tabs;
 
@@ -168,7 +168,7 @@ void TestEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 void TestEvalMediator
 ::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                           const Array<MultiIndex>& mi,
-                          Array<RefCountPtr<EvalVector> >& vec) const 
+                          Array<RCP<EvalVector> >& vec) const 
 {
   static Array<string> coordNames;
 
@@ -198,7 +198,7 @@ void TestEvalMediator
 
   int fieldIndex = funcIdToFieldNumberMap_.get(expr->fid().dofID());
   
-  for (unsigned int i=0; i<mi.size(); i++)
+  for (int i=0; i<mi.size(); i++)
     {
       if (mi[i].order()==0)
         {
@@ -219,7 +219,7 @@ void TestEvalMediator
   if (verb() > 0)
     {
       Out::os() << tabs << "results:" << endl;
-      for (unsigned int i=0; i<mi.size(); i++)
+      for (int i=0; i<mi.size(); i++)
         {
           Tabs tab1;
           Out::os() << tab1 << "mi=" << mi[i].toString() 

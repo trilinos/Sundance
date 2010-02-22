@@ -132,7 +132,7 @@ int main(int argc, char** argv)
       cerr.flush();
 
       NonlinearOperator<double> F 
-        = new NonlinearProblem(mesh, MassEqn+MomEqn, leftbc+rightbc, SundanceCore::List(u,v),SundanceCore::List(p,q) , u0, vecType);
+        = new NonlinearProblem(mesh, MassEqn+MomEqn, leftbc+rightbc, Sundance::List(u,v),Sundance::List(p,q) , u0, vecType);
     
       //      F.verbosity() = VerbExtreme;
       /* Get the initial guess */

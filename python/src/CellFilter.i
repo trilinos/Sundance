@@ -21,109 +21,107 @@
 %include "std_vector.i"
 %include "exception.i"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 
-  class CellPredicate
+class CellPredicate
+{
+public:
+  CellPredicate();
+  ~CellPredicate();
+
+
+};
+
+%extend CellPredicate
+{
+  std::string __str__() 
   {
-  public:
-    CellPredicate();
-    ~CellPredicate();
-
-
-  };
-
-  %extend CellPredicate
-  {
-    std::string __str__() 
-    {
-      std::string rtn; 
-      std::stringstream os;
-      self->print(os);
-      rtn = os.str();
-      return rtn;
-    }
+    std::string rtn; 
+    std::stringstream os;
+    self->print(os);
+    rtn = os.str();
+    return rtn;
   }
+}
 
-  namespace Internal
-  {
-    class CellSet
+class CellSet
+{
+public:
+  CellSet();
+  ~CellSet();
+
+  %extend 
     {
-    public:
-      CellSet();
-      ~CellSet();
-
-      %extend 
+      std::string __str__() 
       {
-        std::string __str__() 
-        {
-          std::string rtn; 
-          std::stringstream os;
-          self->print(os);
-          rtn = os.str();
-          return rtn;
-        }
+        std::string rtn; 
+        std::stringstream os;
+        self->print(os);
+        rtn = os.str();
+        return rtn;
       }
-    };
-  }
+    }
+};
 
-  class CellFilter
-  {
-  public:
-    CellFilter();
-    ~CellFilter();
+
+class CellFilter
+{
+public:
+  CellFilter();
+  ~CellFilter();
 
     
-    Internal::CellSet getCells(const SundanceStdMesh::Mesh& mesh) const ;
-    int dimension(const SundanceStdMesh::Mesh& mesh) const ;
+  CellSet getCells(const Sundance::Mesh& mesh) const ;
+  int dimension(const Sundance::Mesh& mesh) const ;
 
-    CellFilter labeledSubset(int label) const ;
+  CellFilter labeledSubset(int label) const ;
 
-    CellFilter intersection(const CellFilter& other) const ;
-  };
+  CellFilter intersection(const CellFilter& other) const ;
+};
 
-  %extend CellFilter
+%extend CellFilter
+{
+  using namespace std;
+  string __str__() 
   {
-    using namespace std;
-    string __str__() 
-    {
-      string rtn; 
-      stringstream os;
-      self->print(os);
-      rtn = os.str();
-      return rtn;
-    }
-
-    CellFilter subset(PyObject* functor) const
-    {
-      Teuchos::RefCountPtr<SundanceStdFwk::CellPredicateFunctorBase> f 
-        = Teuchos::rcp(new SundanceStdFwk::PySundanceCellPredicate(functor));
-      CellPredicate p = new SundanceStdFwk::PositionalCellPredicate(f);
-      return self->subset(p);
-    }
-
-    CellFilter __add__(const CellFilter& other) const
-    {
-      return self->operator+(other);
-    }
-
-    CellFilter __sub__(const CellFilter& other) const
-    {
-      return self->operator-(other);
-    }
+    string rtn; 
+    stringstream os;
+    self->print(os);
+    rtn = os.str();
+    return rtn;
   }
 
-
-  class CellFilterArray
+  CellFilter subset(PyObject* functor) const
   {
-  public:
-    CellFilterArray();
-    ~CellFilterArray();
+    Teuchos::RCP<Sundance::CellPredicateFunctorBase> f 
+      = Teuchos::rcp(new Sundance::PySundanceCellPredicate(functor));
+    CellPredicate p = new Sundance::PositionalCellPredicate(f);
+    return self->subset(p);
+  }
 
-    unsigned int size() const ;
+  CellFilter __add__(const CellFilter& other) const
+  {
+    return self->operator+(other);
+  }
 
-    void append(const CellFilter& x);
-  };
+  CellFilter __sub__(const CellFilter& other) const
+  {
+    return self->operator-(other);
+  }
+}
+
+
+class CellFilterArray
+{
+public:
+  CellFilterArray();
+  ~CellFilterArray();
+
+  int size() const ;
+
+  void append(const CellFilter& x);
+};
 
 }
 
@@ -134,36 +132,36 @@ namespace SundanceStdFwk
 
 %inline %{
   /* Create a maximal cell filter */
-  SundanceStdFwk::CellFilter makeMaximalCellFilter()
+  Sundance::CellFilter makeMaximalCellFilter()
   {
-    return new SundanceStdFwk::MaximalCellFilter();
+    return new Sundance::MaximalCellFilter();
   }
   %}
 
 
 %inline %{
   /* Create a boundary cell filter */
-  SundanceStdFwk::CellFilter makeBoundaryCellFilter()
+  Sundance::CellFilter makeBoundaryCellFilter()
   {
-    return new SundanceStdFwk::BoundaryCellFilter();
+    return new Sundance::BoundaryCellFilter();
   }
   %}
 
 %inline %{
   /* Create a dimensional cell ftiler */
-  SundanceStdFwk::CellFilter makeDimensionalCellFilter(int i)
+  Sundance::CellFilter makeDimensionalCellFilter(int i)
   {
-    return new SundanceStdFwk::DimensionalCellFilter(i);
+    return new Sundance::DimensionalCellFilter(i);
   }
   %}
 
 %inline %{
   /*  */
-  SundanceStdFwk::CellPredicate makePyFunctorCellPredicate(PyObject* functor)
+  Sundance::CellPredicate makePyFunctorCellPredicate(PyObject* functor)
   {
-    Teuchos::RefCountPtr<SundanceStdFwk::CellPredicateFunctorBase> f 
-      = Teuchos::rcp(new SundanceStdFwk::PySundanceCellPredicate(functor));
-    return new SundanceStdFwk::PositionalCellPredicate(f);
+    Teuchos::RCP<Sundance::CellPredicateFunctorBase> f 
+      = Teuchos::rcp(new Sundance::PySundanceCellPredicate(functor));
+    return new Sundance::PositionalCellPredicate(f);
   }
   %}
 
@@ -171,48 +169,48 @@ namespace SundanceStdFwk
 
 %inline %{
   /*  */
-  SundanceStdFwk::CellFilterArray CellFilterList()
+  Sundance::CellFilterArray CellFilterList()
   {
     return CellFilterArray();
   }
   /*  */
-  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a)
+  Sundance::CellFilterArray CellFilterList(const Sundance::CellFilter& a)
   {
-    return SundanceStdFwk::List(a);
+    return Sundance::List(a);
   }
 
   /*  */
-  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
-                                 const SundanceStdFwk::CellFilter& b)
+  Sundance::CellFilterArray CellFilterList(const Sundance::CellFilter& a,
+    const Sundance::CellFilter& b)
   {
-    return SundanceStdFwk::List(a, b);
+    return Sundance::List(a, b);
   }
 
   /*  */
-  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
-                                 const SundanceStdFwk::CellFilter& b,
-                                 const SundanceStdFwk::CellFilter& c)
+  Sundance::CellFilterArray CellFilterList(const Sundance::CellFilter& a,
+    const Sundance::CellFilter& b,
+    const Sundance::CellFilter& c)
   {
-    return SundanceStdFwk::List(a, b, c);
+    return Sundance::List(a, b, c);
   }
 
   /*  */
-  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
-                                 const SundanceStdFwk::CellFilter& b,
-                                 const SundanceStdFwk::CellFilter& c,
-                                 const SundanceStdFwk::CellFilter& d)
+  Sundance::CellFilterArray CellFilterList(const Sundance::CellFilter& a,
+    const Sundance::CellFilter& b,
+    const Sundance::CellFilter& c,
+    const Sundance::CellFilter& d)
   {
-    return SundanceStdFwk::List(a, b, c, d);
+    return Sundance::List(a, b, c, d);
   }
 
   /*  */
-  SundanceStdFwk::CellFilterArray CellFilterList(const SundanceStdFwk::CellFilter& a,
-                                 const SundanceStdFwk::CellFilter& b,
-                                 const SundanceStdFwk::CellFilter& c,
-                                 const SundanceStdFwk::CellFilter& d,
-                                 const SundanceStdFwk::CellFilter& e)
+  Sundance::CellFilterArray CellFilterList(const Sundance::CellFilter& a,
+    const Sundance::CellFilter& b,
+    const Sundance::CellFilter& c,
+    const Sundance::CellFilter& d,
+    const Sundance::CellFilter& e)
   {
-    return SundanceStdFwk::List(a, b, c, d, e);
+    return Sundance::List(a, b, c, d, e);
   }
 
   %}

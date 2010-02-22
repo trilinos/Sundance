@@ -16,7 +16,7 @@
 %include "exception.i"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   class QuadratureFamily
   {
@@ -44,15 +44,15 @@ namespace SundanceStdFwk
 
 %inline %{
   /* Create a Gaussian quadrature object */
-  SundanceStdFwk::QuadratureFamily makeGaussianQuadrature(int order)
+  Sundance::QuadratureFamily makeGaussianQuadrature(int order)
   {
-    return new SundanceStdFwk::GaussianQuadrature(order);
+    return new Sundance::GaussianQuadrature(order);
   }
 
-  /*  SundanceStdFwk::FIATQuadratureAdapter 
+  /*  Sundance::FIATQuadratureAdapter 
   	makeFIATQuadratureAdapter(PyObject *py_quad_factory , int order)
   {
-    return new SundanceStdFwk::FIATQuadratureAdapter(factor,order);
+    return new Sundance::FIATQuadratureAdapter(factor,order);
     }*/
   
   %}

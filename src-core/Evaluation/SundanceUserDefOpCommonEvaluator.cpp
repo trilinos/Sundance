@@ -37,10 +37,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -97,8 +97,8 @@ UserDefOpCommonEvaluator
 
 void UserDefOpCommonEvaluator
 ::evalAllComponents(const EvalManager& mgr,
-                    const Array<RefCountPtr<Array<double> > >& constArgVals,
-                    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgVals) const 
+                    const Array<RCP<Array<double> > >& constArgVals,
+                    const Array<RCP<Array<RCP<EvalVector> > > >& vArgVals) const 
 {
   Tabs tab0;
   int numPoints = EvalManager::stack().vecSize();
@@ -111,9 +111,9 @@ void UserDefOpCommonEvaluator
 
   /* Get an array of pointers for the argument vectors.
    * If some of the arguments are constant, copy them into vectors. */
-  Array<RefCountPtr<EvalVector> > argVals(argValueIndex_.size());
+  Array<RCP<EvalVector> > argVals(argValueIndex_.size());
   Array<double*> argPtrs(argValueIndex_.size());
-  for (unsigned int q=0; q<argValueIndex_.size(); q++)
+  for (int q=0; q<argValueIndex_.size(); q++)
     {
       Tabs tab1;
       if (argValueIsConstant_[q]) 

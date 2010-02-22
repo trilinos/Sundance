@@ -139,7 +139,7 @@ namespace Thyra
     /** */
     Expr continuationParameters(int i) const {return contParams_[i];}
     /** */
-    unsigned int numContinuationParameters() const {return contParams_.size();}
+    int numContinuationParameters() const {return contParams_.size();}
 
     /** */
     Expr finalContinuationValues(int i) const {return finalContParams_[i];}

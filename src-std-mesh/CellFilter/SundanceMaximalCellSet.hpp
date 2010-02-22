@@ -35,42 +35,34 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceCellSetBase.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  namespace Internal {}
-  using namespace Internal;
-  using namespace Teuchos;
+using namespace Teuchos;
+
+/** */
+class MaximalCellSet : public CellSetBase 
+{
+public:
+  /** */
+  MaximalCellSet();
 
   /** */
-  class MaximalCellSet : public CellSetBase 
-  {
-  public:
-    /** */
-    MaximalCellSet();
+  virtual ~MaximalCellSet(){;}
 
-    /** */
-    virtual ~MaximalCellSet(){;}
+  /** */
+  virtual XMLObject toXML() const ;
 
-    /** */
-    virtual XMLObject toXML() const ;
+  /** */
+  virtual string typeName() const {return "MaximalCellSet";}
 
-    /** */
-    virtual string typeName() const {return "MaximalCellSet";}
+  /** */
+  virtual bool lessThan(const CellSetBase* other) const ;
 
-    /** */
-    virtual bool lessThan(const CellSetBase* other) const ;
-
-    /** */
-    virtual RefCountPtr<CellSetBase> getRcp() {return rcp(this);}
-  };
+  /** */
+  virtual RCP<CellSetBase> getRcp() {return rcp(this);}
+};
 
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

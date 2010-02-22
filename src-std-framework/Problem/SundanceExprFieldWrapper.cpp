@@ -35,13 +35,13 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -118,7 +118,7 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
 bool ExprFieldWrapper::isDefined(int cellDim, int cellID, int elem) const
 {
   // this works only for the first
-  RefCountPtr<const Set<int> > allowedFuncs 
+  RCP<const Set<int> > allowedFuncs 
     = discreteSpace_.map()->allowedFuncsOnCellBatch(cellDim, tuple(cellID));
 
   //cout << "Arguments ExprFieldWrapper::isDefined" << cellDim << "," << cellID << "," << elem << std::endl;

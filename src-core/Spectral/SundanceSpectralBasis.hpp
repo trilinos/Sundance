@@ -41,12 +41,12 @@
 
 
 using namespace std;
-using namespace SundanceUtils;
+using namespace Sundance;
 
-namespace SundanceCore
+namespace Sundance
 {
   /** Doxygen doc for SpectralBasis */
-  class SpectralBasis : public SundanceUtils::Handle<SpectralBasisBase>
+  class SpectralBasis : public Sundance::Handle<SpectralBasisBase>
   {
   public:
     /* boilerplate handle ctors */
@@ -75,8 +75,8 @@ namespace SundanceCore
 
 namespace std
 {
-  /** \relates  SundanceCore::SpectralBasis */
-  inline ostream& operator<<(ostream& os, const SundanceCore::SpectralBasis& s)
+  /** \relates  Sundance::SpectralBasis */
+  inline ostream& operator<<(ostream& os, const Sundance::SpectralBasis& s)
   {
     os << s.toString();
     return os;

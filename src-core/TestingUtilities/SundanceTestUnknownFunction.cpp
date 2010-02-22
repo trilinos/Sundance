@@ -36,10 +36,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace SundanceTesting;
 
 using namespace Teuchos;

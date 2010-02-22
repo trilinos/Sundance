@@ -34,9 +34,9 @@
 #include "SundanceTabs.hpp"
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -45,7 +45,7 @@ void VerboseFieldWriter::write() const
   int nProc = mesh().comm().getNProc();
   int myRank = mesh().comm().getRank();
 
-  RefCountPtr<ostream> osp;
+  RCP<ostream> osp;
   if (filename().length()==0)
     {
       osp = rcp(&std::cout, false);

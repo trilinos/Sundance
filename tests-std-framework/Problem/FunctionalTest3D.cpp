@@ -33,7 +33,7 @@
 #include "SundanceFunctional.hpp"
 #include "Teuchos_XMLParameterListWriter.hpp"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  *
  */

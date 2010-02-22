@@ -33,7 +33,7 @@
 
 #include "TSFNOXSolver.H"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the Navier-Stokes equations on the lid-driver cavity
  */
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
       Expr y = new CoordExpr(1);
 
       /* A parameter expression for the Reynolds number */
-      Expr reynolds = new SundanceCore::Parameter(20.0);
+      Expr reynolds = new Sundance::Parameter(20.0);
 
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad1 = new GaussianQuadrature(1);
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
         + EssentialBC(top, vOmega*psi, quad2) ;
 
       BasisFamily L1 = new Lagrange(1);
-      DiscreteSpace discSpace(mesh, SundanceStdFwk::List(L1, L1), vecType);
+      DiscreteSpace discSpace(mesh, Sundance::List(L1, L1), vecType);
       Expr u0 = new DiscreteFunction(discSpace, 0.0, "u0");
 
       /* Create a TSF NonlinearOperator object */

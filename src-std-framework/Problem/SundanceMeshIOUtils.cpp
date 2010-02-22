@@ -1,11 +1,11 @@
 #include "SundanceMeshIOUtils.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-using namespace SundanceStdMesh;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -28,13 +28,12 @@ Expr readNodalFields(const MeshSource& mesher, const Mesh& mesh,
   /* get from the discrete function a pointer to the underlying
    * vector and a pointer to the node-to-dof map. */
   Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
-  const RefCountPtr<DOFMapBase>& dofMap 
+  const RCP<DOFMapBase>& dofMap 
     = DiscreteFunction::discFunc(u0)->map();
   
   /* run through the data, putting each entry into its correct place in
    * the vector as indexed by the dof number, NOT the node number. */
   Array<int> dofs(1);
-  double fVal;
   for (int i=0; i<mesh.numCells(0); i++)
   {
     for (int f=0; f<nAttrs; f++)
@@ -100,13 +99,12 @@ Expr readSerialGridField(const string& gridFile,
   /* get from the discrete function a pointer to the underlying
    * vector and a pointer to the node-to-dof map. */
   Vector<double> vec = DiscreteFunction::discFunc(u0)->getVector();
-  const RefCountPtr<DOFMapBase>& dofMap 
+  const RCP<DOFMapBase>& dofMap 
     = DiscreteFunction::discFunc(u0)->map();
   
   /* run through the data, putting each entry into its correct place in
    * the vector as indexed by the dof number, NOT the node number. */
   Array<int> dofs(1);
-  double fVal;
   for (int i=0; i<mesh.numCells(0); i++)
   {
     for (int f=0; f<nAttrs; f++)
@@ -225,8 +223,8 @@ void serialPartition(
   /* Set up maps between old (unpartitioned) and new (partitioned) element
    * and vertex indices. These will be needed to transfer fields, if any,
    * to the partitioned mesh */
-  Array<SundanceUtils::Map<int, int> > oldElemLIDToNewLIDMaps;
-  Array<SundanceUtils::Map<int, int> > oldVertLIDToNewLIDMaps;
+  Array<Sundance::Map<int, int> > oldElemLIDToNewLIDMaps;
+  Array<Sundance::Map<int, int> > oldVertLIDToNewLIDMaps;
 
   /* Carry out the partitioning */
   Array<Mesh> submesh = part->makeMeshParts(mesh, numProc,

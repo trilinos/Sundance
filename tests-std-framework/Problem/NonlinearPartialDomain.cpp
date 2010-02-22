@@ -138,6 +138,7 @@ int main(int argc, char** argv)
       Expr err2 = Integral(D, pow(dx*(u0[0] - x), 2.0), quad);
       FunctionalEvaluator err2Int(mesh, err);
       double error2Sq = err2Int.evaluate();
+      cerr << "derivative error norm = " << sqrt(error2Sq) << endl << endl;
 
       /* Write the field in VTK format */
       FieldWriter w = new VTKWriter("PartialDomain2d");

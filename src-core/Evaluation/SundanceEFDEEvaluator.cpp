@@ -35,10 +35,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -128,7 +128,7 @@ EFDEEvaluator::EFDEEvaluator(
 
 void EFDEEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
-  Array<RefCountPtr<EvalVector> >& vectorResults) const 
+  Array<RCP<EvalVector> >& vectorResults) const 
 {
   TimeMonitor timer(efdeEvalTimer());
   Tabs tabs;
@@ -143,7 +143,7 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
   vectorResults.resize(varValIndexToArgIndexMap_.size());
 
   /* evaluate the argument */
-  Array<RefCountPtr<EvalVector> > argVectorResults;
+  Array<RCP<EvalVector> > argVectorResults;
   Array<double> argConstantResults;
 
   evalOperand(mgr, argConstantResults, argVectorResults);
@@ -158,16 +158,16 @@ void EFDEEvaluator::internalEval(const EvalManager& mgr,
     }
 
 
-  for (unsigned int i=0; i<constantResults.size(); i++)
+  for (int i=0; i<constantResults.size(); i++)
   {
     constantResults[i] = argConstantResults[constValIndexToArgIndexMap_[i]];
   }
 
   
-  for (unsigned int i=0; i<vectorResults.size(); i++)
+  for (int i=0; i<vectorResults.size(); i++)
   {
     vectorResults[i] = mgr.popVector();
-    const RefCountPtr<EvalVector>& v = argVectorResults[varValIndexToArgIndexMap_[i]];
+    const RCP<EvalVector>& v = argVectorResults[varValIndexToArgIndexMap_[i]];
     vectorResults[i]->setTo_V(v.get());
   }
 

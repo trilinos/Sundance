@@ -3,7 +3,7 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   namespace Rivara
     {

@@ -36,9 +36,9 @@
 #include "SundanceNoncopyable.hpp"
 #include <stack>
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 /**
  * TempStack provides a stack of temporary variables for use during
  * evaluation. 
@@ -84,13 +84,13 @@ public:
   TempStack(int vecSize);
 
   /** Push vector data onto the stack */
-  void pushVectorData(const RefCountPtr<Array<double> >& vecData) ;
+  void pushVectorData(const RCP<Array<double> >& vecData) ;
 
   /** Pop vector data from the stack */
-  RefCountPtr<Array<double> > popVectorData() ;
+  RCP<Array<double> > popVectorData() ;
 
   /** Get a new vector (which will often reuse stack data) */
-  RefCountPtr<EvalVector> popVector() 
+  RCP<EvalVector> popVector() 
     {return rcp(new EvalVector(this));}
 
   /** */
@@ -112,7 +112,7 @@ private:
           
   int vecSize_;
 
-  std::stack<RefCountPtr<Array<double> > > stack_;
+  std::stack<RCP<Array<double> > > stack_;
 
   int numVecsAllocated_;
 

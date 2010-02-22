@@ -31,17 +31,17 @@
 #include "SundanceSumOfBCs.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using std::endl;
 
-SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterStub>& region,
+SumOfBCs::SumOfBCs(const RCP<CellFilterStub>& region,
   const Expr& expr,
-  const RefCountPtr<QuadratureFamilyStub>& quad,
+  const RCP<QuadratureFamilyStub>& quad,
   const WatchFlag& watch)
   : SumOfIntegrals(region, expr, quad, watch)
 {;}
@@ -53,7 +53,7 @@ SumOfBCs::SumOfBCs(const RefCountPtr<CellFilterStub>& region,
 ostream& SumOfBCs::toText(ostream& os, bool paren) const
 {
   os << "Sum of BCs[" << endl;
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap().begin(); i!=rqcToExprMap().end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
@@ -78,7 +78,7 @@ ostream& SumOfBCs::toLatex(ostream& os, bool paren) const
 XMLObject SumOfBCs::toXML() const 
 {
   XMLObject rtn("SumOfBCs");
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap().begin(); i!=rqcToExprMap().end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;

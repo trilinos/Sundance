@@ -38,15 +38,8 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using SundanceUtils::Map;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -64,7 +57,7 @@ public:
   virtual ~InhomogeneousNodalDOFMap(){;}
 
   /** */
-  RefCountPtr<const MapStructure> 
+  RCP<const MapStructure> 
   getDOFsForCellBatch(int cellDim,
     const Array<int>& cellLID,
     const Set<int>& requestedFuncSet,
@@ -80,7 +73,7 @@ public:
     Array<Array<int> >& dofs) const ;
 
   /** */
-  RefCountPtr<const Set<int> >
+  RCP<const Set<int> >
   allowedFuncsOnCellBatch(int cellDim,
     const Array<int>& cellLID) const ;
 
@@ -127,12 +120,10 @@ protected:
 
   Array<Array<int> > funcIndexWithinNodeFuncSet_;
 
-  Array<RefCountPtr<const MapStructure> > elemStructure_;
-  Array<RefCountPtr<const MapStructure> > nodeStructure_;
+  Array<RCP<const MapStructure> > elemStructure_;
+  Array<RCP<const MapStructure> > nodeStructure_;
 };
 }
-}
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

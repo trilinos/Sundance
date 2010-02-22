@@ -37,41 +37,35 @@
 #include "SundanceFuncWithBasis.hpp"
 #include "SundanceSpectralBasis.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Internal;
+using namespace Teuchos;
 
-  /** 
-   * TestFunction represents a test function in a finite
-   * element problem. Test functions can be scalar or vector valued, as
-   * determined at runtime through the type of basis with which
-   * they are constructed.
-   */
-  class TestFunction : public TestFunctionStub,
-                       public FuncWithBasis
-  {
-  public:
-    /** */
-    TestFunction(const BasisFamily& basis, const string& name="");
+/** 
+ * TestFunction represents a test function in a finite
+ * element problem. Test functions can be scalar or vector valued, as
+ * determined at runtime through the type of basis with which
+ * they are constructed.
+ */
+class TestFunction : public TestFunctionStub,
+                     public FuncWithBasis
+{
+public:
+  /** */
+  TestFunction(const BasisFamily& basis, const string& name="");
 
-    /** */
-    TestFunction(const BasisFamily& basis, 
-                 const SpectralBasis& spBasis,
-                 const string& name="");
+  /** */
+  TestFunction(const BasisFamily& basis, 
+    const SpectralBasis& spBasis,
+    const string& name="");
     
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-    /** virtual destructor */
-    virtual ~TestFunction() {;}
+  /** virtual destructor */
+  virtual ~TestFunction() {;}
 
-    /* boilerplate */
-    GET_RCP(ExprBase);
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-  };
+  /* boilerplate */
+  GET_RCP(ExprBase);
+};
 
 }
 

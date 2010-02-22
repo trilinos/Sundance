@@ -9,11 +9,11 @@
 #include "SundanceRivaraElementIterator.hpp"
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 namespace Rivara
 {
-using SundanceUtils::Map;
+using Sundance::Map;
 using std::stack;
 
 
@@ -22,26 +22,26 @@ class RivaraMesh
 public:
   RivaraMesh(int dim, const MPIComm& comm);
 
-  int addNode(const RefCountPtr<Node>& node);
+  int addNode(const RCP<Node>& node);
   int addVertex(int globalIndex, const Point& x, int ownerProcID, int label);
 
-  void addElement(const RefCountPtr<Element>& tri);
+  void addElement(const RCP<Element>& tri);
   int addElement(int globalIndex, const Array<int>& vertexGIDs, int ownerProc,
     int label);
 
-  RefCountPtr<Edge> tryEdge(const RefCountPtr<Node>& a,
-    const RefCountPtr<Node>& b,
+  RCP<Edge> tryEdge(const RCP<Node>& a,
+    const RCP<Node>& b,
     int& edgeSign);
 
-  RefCountPtr<Face> tryFace(const RefCountPtr<Node>& a,
-    const RefCountPtr<Node>& b,
-    const RefCountPtr<Node>& c);
+  RCP<Face> tryFace(const RCP<Node>& a,
+    const RCP<Node>& b,
+    const RCP<Node>& c);
 
-  const RefCountPtr<Face>& getFace(const RefCountPtr<Node>& a,
-    const RefCountPtr<Node>& b,
-    const RefCountPtr<Node>& c) const ;
+  const RCP<Face>& getFace(const RCP<Node>& a,
+    const RCP<Node>& b,
+    const RCP<Node>& c) const ;
 
-  const RefCountPtr<Node>& node(int i) const {return nodes_[i];}
+  const RCP<Node>& node(int i) const {return nodes_[i];}
 
   int numNodes() const {return nodes_.length();}
 
@@ -57,7 +57,7 @@ public:
 
   friend class ElementIterator;
 
-  RefCountPtr<Element> element(int i) const {return elements_[i];}
+  RCP<Element> element(int i) const {return elements_[i];}
 
   int numRootElements() const {return elements_.length();}
 
@@ -74,13 +74,13 @@ private:
   
   int nextGID_;
 
-  Array<RefCountPtr<Node> > nodes_;
+  Array<RCP<Node> > nodes_;
 
-  Array<RefCountPtr<Edge> > edges_;
+  Array<RCP<Edge> > edges_;
 
-  Array<RefCountPtr<Face> > faces_;
+  Array<RCP<Face> > faces_;
 
-  Array<RefCountPtr<Element> > elements_;
+  Array<RCP<Element> > elements_;
 
   Array<Map<int, int> > nodeToEdgeMap_;
 

@@ -22,18 +22,18 @@
 #include "SundanceSymbPreprocessor.hpp"
 #include "SundanceEquationSet.hpp"
 
-using SundanceCore::List;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using Sundance::List;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
-RefCountPtr<ScalarExpr> expr2scalar(const Expr& e)
+RCP<ScalarExpr> expr2scalar(const Expr& e)
 {
   return rcp_dynamic_cast<ScalarExpr>(e[0].ptr());
 }
 
-RefCountPtr<FunctionalPolynomial> expr2poly(const Expr& e)
+RCP<FunctionalPolynomial> expr2poly(const Expr& e)
 {
   return FunctionalPolynomial::toPoly(expr2scalar(e));
 }
@@ -55,13 +55,13 @@ int main(int argc, char** argv)
       Expr v = new UnknownFunctionStub("v");
       Expr w = new UnknownFunctionStub("w");
       
-      RefCountPtr<FunctionalPolynomial> p 
+      RCP<FunctionalPolynomial> p 
         = rcp(new FunctionalPolynomial(expr2scalar(u)));
       
-      RefCountPtr<FunctionalPolynomial> q 
+      RCP<FunctionalPolynomial> q 
         = rcp(new FunctionalPolynomial(expr2scalar(w)));
       
-      RefCountPtr<FunctionalPolynomial> r
+      RCP<FunctionalPolynomial> r
         = rcp(new FunctionalPolynomial(expr2scalar(w)));
 
       p = p->multiplyPoly(expr2poly(v).get());

@@ -34,10 +34,10 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceStdMesh;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 MeshBase::MeshBase(int dim, const MPIComm& comm, 
@@ -69,7 +69,7 @@ void MeshBase::outwardNormals(
 {
   int D = spatialDim();
   outwardNormals.resize(cellLIDs.size());
-  for (unsigned int c=0; c<cellLIDs.size(); c++)
+  for (int c=0; c<cellLIDs.size(); c++)
   {
     int f=-1;
     TEST_FOR_EXCEPTION(numMaxCofacets(D-1, cellLIDs[c]) > 1, 
@@ -119,7 +119,7 @@ void  MeshBase::tangentsToEdges(
 
   tangentVectors.resize(cellLIDs.size());
 
-  for (unsigned int c=0; c<cellLIDs.size(); c++)
+  for (int c=0; c<cellLIDs.size(); c++)
   {
     int fOrient=1;
     Point A = nodePosition(facetLID(1, cellLIDs[c], 0, 0, fOrient));
@@ -151,7 +151,7 @@ void MeshBase::getLabels(int cellDim, const Array<int>& cellLID,
   Array<int>& labels) const
 {
   labels.resize(cellLID.size());
-  for (unsigned int i=0; i<cellLID.size(); i++) labels[i] = label(cellDim, cellLID[i]);
+  for (int i=0; i<cellLID.size(); i++) labels[i] = label(cellDim, cellLID[i]);
 }
 
 

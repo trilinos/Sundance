@@ -22,7 +22,7 @@
 %include "exception.i"
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   class FieldWriter
   {
@@ -34,9 +34,9 @@ namespace SundanceStdMesh
 
     %extend 
     {
-      void addField(const std::string& name, const SundanceCore::Expr& f)
+      void addField(const std::string& name, const Sundance::Expr& f)
       {
-        self->addField(name, new SundanceStdFwk::Internal::ExprFieldWrapper(f));
+        self->addField(name, new Sundance::ExprFieldWrapper(f));
       }
     }
 
@@ -55,27 +55,27 @@ namespace SundanceStdMesh
 
 %inline %{
   /* Create a VTK writer */
-  SundanceStdMesh::FieldWriter makeVTKWriter(const std::string& filename)
+  Sundance::FieldWriter makeVTKWriter(const std::string& filename)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::VTKWriter(filename);
   }
   %}
 
 %inline %{
   /* Create a Triangle writer */
-  SundanceStdMesh::FieldWriter makeTriangleWriter(const std::string& filename)
+  Sundance::FieldWriter makeTriangleWriter(const std::string& filename)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::TriangleWriter(filename);
   }
   %}
 
 %inline %{
   /* Create a Matlab writer */
-  SundanceStdMesh::FieldWriter makeMatlabWriter(const std::string& filename)
+  Sundance::FieldWriter makeMatlabWriter(const std::string& filename)
   {
-    return new SundanceStdMesh
+    return new Sundance
       ::MatlabWriter(filename);
   }
   %}

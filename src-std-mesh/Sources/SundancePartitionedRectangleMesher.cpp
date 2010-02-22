@@ -1,11 +1,11 @@
 #include "SundancePartitionedRectangleMesher.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 PartitionedRectangleMesher::PartitionedRectangleMesher(const ParameterList& params)
   : MeshSourceBase(params),
@@ -97,7 +97,7 @@ Mesh PartitionedRectangleMesher::fillMesh() const
 
 
 	Array<Array<int> > pts(highestVisiblePtX-lowestVisiblePtX+1);
-	for (unsigned int i=0; i<pts.size(); i++) pts[i].resize(highestVisiblePtY-lowestVisiblePtY+1);
+	for (int i=0; i<pts.size(); i++) pts[i].resize(highestVisiblePtY-lowestVisiblePtY+1);
 
 	int globalIndex = 0;
 

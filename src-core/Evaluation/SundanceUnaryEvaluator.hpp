@@ -36,7 +36,7 @@
 #include "SundanceEvaluatableExpr.hpp"
 
 
-namespace SundanceCore 
+namespace Sundance 
 {
 class EvalContext;
 
@@ -92,20 +92,20 @@ public:
 protected:
 
   /** */
-  const RefCountPtr<SparsitySuperset>& argSparsitySuperset() const 
+  const RCP<SparsitySuperset>& argSparsitySuperset() const 
     {return argSparsitySuperset_;}
       
   /** */
   const EvaluatableExpr* argExpr() const {return argExpr_;}
 
   /** */
-  const RefCountPtr<Evaluator>& argEval() const {return argEval_;}
+  const RCP<Evaluator>& argEval() const {return argEval_;}
       
 
   /** */
   void evalOperand(const EvalManager& mgr,
     Array<double>& argConstantResults,
-    Array<RefCountPtr<EvalVector> >& argVectorResults) const 
+    Array<RCP<EvalVector> >& argVectorResults) const 
     {
       Tabs tabs;
       SUNDANCE_MSG1(this->verb(),  tabs << "UnaryEvaluator: evaluating operand: ");
@@ -115,9 +115,9 @@ protected:
 private:
   const EvaluatableExpr* argExpr_;
 
-  RefCountPtr<SparsitySuperset> argSparsitySuperset_;
+  RCP<SparsitySuperset> argSparsitySuperset_;
 
-  RefCountPtr<Evaluator> argEval_;
+  RCP<Evaluator> argEval_;
 };
 }
 

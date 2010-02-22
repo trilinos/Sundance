@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 
       /* Parameters */
       Expr p = new UnknownParameter("p");
-      Expr p0 = new SundanceCore::Parameter(2.0);
+      Expr p0 = new Sundance::Parameter(2.0);
 
       /* Forcing term */
       Expr f = p * (p*x*(2.0*x*x - 3.0*x + 1.0) + 2.0);

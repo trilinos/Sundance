@@ -31,25 +31,25 @@
 #include "SundanceIntegral.hpp"
 #include "SundanceSumOfIntegrals.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 
-Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
+Expr Sundance::Integral(const Handle<CellFilterStub>& domain,
   const Expr& integrand,
   const WatchFlag& watch)
 {
-  RefCountPtr<QuadratureFamilyStub> quad 
+  RCP<QuadratureFamilyStub> quad 
     = QuadratureFamilyStub::defaultQuadrature(); 
 
   return new SumOfIntegrals(domain.ptr(), Re(integrand), quad, watch);
 }
 
-Expr SundanceCore::Integral(const Handle<CellFilterStub>& domain,
+Expr Sundance::Integral(const Handle<CellFilterStub>& domain,
   const Expr& integrand,
   const Handle<QuadratureFamilyStub>& quad,
     const WatchFlag& watch)

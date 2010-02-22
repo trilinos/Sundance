@@ -36,7 +36,7 @@
 #include "SundanceCommonFuncDataStub.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
 /** 
  * TestFuncDataStub is a placeholder for data to be shared between

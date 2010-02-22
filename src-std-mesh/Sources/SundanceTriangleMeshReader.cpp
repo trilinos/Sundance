@@ -2,11 +2,11 @@
 #include "SundanceOut.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 TriangleMeshReader::TriangleMeshReader(const string& fname,
@@ -116,7 +116,7 @@ void TriangleMeshReader::readParallelInfo(Array<int>& ptGID,
        * distribution */
       if (nProc() > 1)
         {
-          RefCountPtr<std::ifstream> parStream 
+          RCP<std::ifstream> parStream 
             = openFile(parFilename_, "parallel info");
      
           /* read the number of processors and the processor rank in 
@@ -230,7 +230,7 @@ Mesh TriangleMeshReader::readNodes(Array<int>& ptGID,
 
   /* Open the node file so we can read in the nodes */
 	
-	RefCountPtr<std::ifstream> nodeStream = openFile(nodeFilename_, "node info");
+	RCP<std::ifstream> nodeStream = openFile(nodeFilename_, "node info");
 	
   /* read the header line */
   getNextLine(*nodeStream, line, tokens, '#');
@@ -354,7 +354,7 @@ void TriangleMeshReader::readElems(Mesh& mesh,
       Array<string> tokens;
       /* Open the element file */
 	
-      RefCountPtr<std::ifstream> elemStream = openFile(elemFilename_, "element info");
+      RCP<std::ifstream> elemStream = openFile(elemFilename_, "element info");
 
       getNextLine(*elemStream, line, tokens, '#');
 
@@ -453,7 +453,7 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
       string line;  
       Array<string> tokens;
       /* Open the side file */
-      RefCountPtr<std::ifstream> sideStream;
+      RCP<std::ifstream> sideStream;
 
       try
         {

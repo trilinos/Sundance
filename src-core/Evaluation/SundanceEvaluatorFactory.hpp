@@ -33,9 +33,9 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 class Evaluator;
 class EvalContext;
 class EvaluatableExpr;

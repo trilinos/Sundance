@@ -32,55 +32,47 @@
 #ifndef SUNDANCE_BOUNDARYCELLPREDICATE_H
 #define SUNDANCE_BOUNDARYCELLPREDICATE_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceCellPredicateBase.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace Teuchos;
+using namespace Teuchos;
 
   
-  namespace Internal
-  {
-    /** 
-     * BoundaryCellPredicate tests whether a cell is on the 
-     * boundary of the domain
-     */
-    class BoundaryCellPredicate : public CellPredicateBase 
-    {
-    public:
-      /** Empty ctor */
-      BoundaryCellPredicate() {;}
+/** 
+ * BoundaryCellPredicate tests whether a cell is on the 
+ * boundary of the domain
+ */
+class BoundaryCellPredicate : public CellPredicateBase 
+{
+public:
+  /** Empty ctor */
+  BoundaryCellPredicate() {;}
 
-      /** virtual dtor */
-      virtual ~BoundaryCellPredicate(){;}
+  /** virtual dtor */
+  virtual ~BoundaryCellPredicate(){;}
       
-      /** Test the predicate on a batch of cells */
-      virtual void testBatch(const Array<int>& cellLID,
-                             Array<int>& results) const ;
+  /** Test the predicate on a batch of cells */
+  virtual void testBatch(const Array<int>& cellLID,
+    Array<int>& results) const ;
 
 
-      /** Write to XML */
-      virtual XMLObject toXML() const ;
+  /** Write to XML */
+  virtual XMLObject toXML() const ;
 
-      /** comparison */
-      virtual bool lessThan(const CellPredicateBase* other) const ;
+  /** comparison */
+  virtual bool lessThan(const CellPredicateBase* other) const ;
 
-      /** */
-      virtual string description() const {return "Boundary";}
+  /** */
+  virtual string description() const {return "Boundary";}
 
-      /* */
-      GET_RCP(CellPredicateBase);
+  /* */
+  GET_RCP(CellPredicateBase);
 
-    private:
-    };
-  }
+private:
+};
 }
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

@@ -39,15 +39,15 @@
 #include "SundanceUnaryExpr.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 
-FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
+FunctionalPolynomial::FunctionalPolynomial(const RCP<ScalarExpr>& expr)
   : funcs_(),
     funcMultiIndices_(),
     coeffs_(),
@@ -87,7 +87,7 @@ FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
       funcMultiIndices_.put(funcID, miSet);
 
       Expr coeff = 1.0;
-      RefCountPtr<ScalarExpr> cPtr = rcp_dynamic_cast<ScalarExpr>(coeff.ptr());
+      RCP<ScalarExpr> cPtr = rcp_dynamic_cast<ScalarExpr>(coeff.ptr());
 
       coeffs_.resize(2);
       keys_.resize(2);
@@ -102,17 +102,17 @@ FunctionalPolynomial::FunctionalPolynomial(const RefCountPtr<ScalarExpr>& expr)
 }
 
 
-FunctionalPolynomial::FunctionalPolynomial(const Map<int, RefCountPtr<ScalarExpr> >& funcs,
+FunctionalPolynomial::FunctionalPolynomial(const Map<int, RCP<ScalarExpr> >& funcs,
                                            const Map<int, Set<MultiIndex> >& funcMultiIndices,
-                                           const Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > & coeffs)
+                                           const Array<Map<MultipleDeriv, RCP<ScalarExpr> > > & coeffs)
   : funcs_(funcs),
     funcMultiIndices_(funcMultiIndices),
     coeffs_(coeffs),
     keys_(coeffs.size())
 {
-  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
+  typedef Map<MultipleDeriv, RCP<ScalarExpr> > termMap;
 
-  for (unsigned int i=0; i < coeffs_.size(); i++)
+  for (int i=0; i < coeffs_.size(); i++)
     {
       for (termMap::const_iterator 
              j = coeffs_[i].begin(); j != coeffs_[i].end(); j++)
@@ -133,19 +133,19 @@ FunctionalPolynomial::internalFindW(int order, const EvalContext& context) const
 }
 
 
-RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
+RCP<FunctionalPolynomial> FunctionalPolynomial::
 addPoly(const FunctionalPolynomial* other, int sign) const 
 {
-  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
-  Map<int, RefCountPtr<ScalarExpr> > newFuncs = funcs_;
+  typedef Map<MultipleDeriv, RCP<ScalarExpr> > termMap;
+  Map<int, RCP<ScalarExpr> > newFuncs = funcs_;
   Map<int, Set<MultiIndex> > newFuncMultiIndices = funcMultiIndices_;
-  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > newCoeffs = coeffs_;
+  Array<Map<MultipleDeriv, RCP<ScalarExpr> > > newCoeffs = coeffs_;
 
   if (other->coeffs_.size() > coeffs_.size()) 
     newCoeffs.resize(other->coeffs_.size());
 
 
-  for (unsigned int i=0; i < other->coeffs_.size(); i++)
+  for (int i=0; i < other->coeffs_.size(); i++)
     {
       
       for (termMap::const_iterator 
@@ -175,7 +175,7 @@ addPoly(const FunctionalPolynomial* other, int sign) const
         }
     }
   
-  for (Map<int, RefCountPtr<ScalarExpr> >::const_iterator 
+  for (Map<int, RCP<ScalarExpr> >::const_iterator 
          i = other->funcs_.begin(); i != other->funcs_.end(); i++)
     {
       newFuncs.put(i->first, i->second);
@@ -193,19 +193,19 @@ addPoly(const FunctionalPolynomial* other, int sign) const
   return rcp(new FunctionalPolynomial(newFuncs, newFuncMultiIndices, newCoeffs));
 }
 
-RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
+RCP<FunctionalPolynomial> FunctionalPolynomial::
 multiplyPoly(const FunctionalPolynomial* other) const 
 {
-  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
-  Map<int, RefCountPtr<ScalarExpr> > newFuncs;
+  typedef Map<MultipleDeriv, RCP<ScalarExpr> > termMap;
+  Map<int, RCP<ScalarExpr> > newFuncs;
   Map<int, Set<MultiIndex> > newFuncMultiIndices;
-  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > newCoeffs;
+  Array<Map<MultipleDeriv, RCP<ScalarExpr> > > newCoeffs;
 
   newCoeffs.resize(coeffs_.size() + other->coeffs_.size() - 1);
 
-  for (unsigned int i=0; i < coeffs_.size(); i++)
+  for (int i=0; i < coeffs_.size(); i++)
     {
-      for (unsigned int j = 0; j<other->coeffs_.size(); j++)
+      for (int j = 0; j<other->coeffs_.size(); j++)
         {
           for (termMap::const_iterator 
                  me = coeffs_[i].begin(); me != coeffs_[i].end(); me++)
@@ -237,12 +237,12 @@ multiplyPoly(const FunctionalPolynomial* other) const
         }
     }
   
-  for (Map<int, RefCountPtr<ScalarExpr> >::const_iterator 
+  for (Map<int, RCP<ScalarExpr> >::const_iterator 
          i = funcs_.begin(); i != funcs_.end(); i++)
     {
       newFuncs.put(i->first, i->second);
     }
-  for (Map<int, RefCountPtr<ScalarExpr> >::const_iterator 
+  for (Map<int, RCP<ScalarExpr> >::const_iterator 
          i = other->funcs_.begin(); i != other->funcs_.end(); i++)
     {
       newFuncs.put(i->first, i->second);
@@ -269,23 +269,23 @@ multiplyPoly(const FunctionalPolynomial* other) const
   return rcp(new FunctionalPolynomial(newFuncs, newFuncMultiIndices, newCoeffs));
 }
 
-RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
-addFunction(const RefCountPtr<ScalarExpr>& u, int sign) const 
+RCP<FunctionalPolynomial> FunctionalPolynomial::
+addFunction(const RCP<ScalarExpr>& u, int sign) const 
 {
-  RefCountPtr<FunctionalPolynomial> other = rcp(new FunctionalPolynomial(u));
+  RCP<FunctionalPolynomial> other = rcp(new FunctionalPolynomial(u));
   return addPoly(other.get(), sign);
 }
 
-RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::
-multiplyScalar(const RefCountPtr<ScalarExpr>& alpha) const 
+RCP<FunctionalPolynomial> FunctionalPolynomial::
+multiplyScalar(const RCP<ScalarExpr>& alpha) const 
 {
-  typedef Map<MultipleDeriv, RefCountPtr<ScalarExpr> > termMap;
+  typedef Map<MultipleDeriv, RCP<ScalarExpr> > termMap;
 
-  Array<Map<MultipleDeriv, RefCountPtr<ScalarExpr> > > newCoeffs = coeffs_;
+  Array<Map<MultipleDeriv, RCP<ScalarExpr> > > newCoeffs = coeffs_;
 
   Expr alphaExpr = Expr::handle(alpha);
 
-  for (unsigned int i=0; i < coeffs_.size(); i++)
+  for (int i=0; i < coeffs_.size(); i++)
     {
       for (termMap::const_iterator 
              j = coeffs_[i].begin(); j != coeffs_[i].end(); j++)
@@ -332,7 +332,7 @@ bool FunctionalPolynomial::isConvertibleToPoly(const ScalarExpr* expr)
 }
 
 
-RefCountPtr<FunctionalPolynomial> FunctionalPolynomial::toPoly(const RefCountPtr<ScalarExpr>& expr)
+RCP<FunctionalPolynomial> FunctionalPolynomial::toPoly(const RCP<ScalarExpr>& expr)
 {
   const FunctionalPolynomial* p
     = dynamic_cast<const FunctionalPolynomial*>(expr.get());
@@ -359,9 +359,9 @@ ostream& FunctionalPolynomial::toLatex(ostream& os, bool paren) const
 XMLObject FunctionalPolynomial::toXML() const
 {
   XMLObject rtn("Polynomial");
-  for (unsigned int order=0; order<coeffs_.size(); order++)
+  for (int order=0; order<coeffs_.size(); order++)
     {
-      for (Map<MultipleDeriv, RefCountPtr<ScalarExpr> >::const_iterator
+      for (Map<MultipleDeriv, RCP<ScalarExpr> >::const_iterator
              i = coeffs_[order].begin(); i != coeffs_[order].end(); i++)
         {
           const MultipleDeriv& key = i->first;

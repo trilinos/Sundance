@@ -34,9 +34,9 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 /**
  * LoadableVector is the interface through which a framework

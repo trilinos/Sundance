@@ -42,12 +42,12 @@
 #include "SundanceOrderedHandle.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 using std::string;
-using SundanceUtils::Map;
+using Sundance::Map;
 
 /** */
 typedef OrderedTriple<OrderedHandle<CellFilterStub>,
@@ -71,8 +71,8 @@ public:
   /** */
   RegionQuadCombo();
   /** */
-  RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
-    const RefCountPtr<QuadratureFamilyStub>& quad,
+  RegionQuadCombo(const RCP<CellFilterStub>& domain,
+    const RCP<QuadratureFamilyStub>& quad,
     const WatchFlag& watch = WatchFlag());
 
   /** */
@@ -87,10 +87,10 @@ public:
     {return id_ < other.id_;}
 
   /** */
-  const RefCountPtr<CellFilterStub>& domain() const {return domain_;}
+  const RCP<CellFilterStub>& domain() const {return domain_;}
 
   /** */
-  const RefCountPtr<QuadratureFamilyStub>& quad() const 
+  const RCP<QuadratureFamilyStub>& quad() const 
     {return quad_;}
 
   /** */
@@ -103,17 +103,17 @@ private:
   int id_;
 
   /** */
-  RefCountPtr<CellFilterStub> domain_;
+  RCP<CellFilterStub> domain_;
 
   /** */
-  RefCountPtr<QuadratureFamilyStub> quad_;
+  RCP<QuadratureFamilyStub> quad_;
 
   /** */
   WatchFlag watch_;
           
   /** */
-  static int getID(const RefCountPtr<CellFilterStub>& domain,
-    const RefCountPtr<QuadratureFamilyStub>& quad,
+  static int getID(const RCP<CellFilterStub>& domain,
+    const RCP<QuadratureFamilyStub>& quad,
     const WatchFlag& watch);
 
   /** */
@@ -127,9 +127,9 @@ private:
 
 namespace std
 {
-/** \relates SundanceCore::RegionQuadCombo*/
+/** \relates Sundance::RegionQuadCombo*/
 inline ostream& operator<<(ostream& os, 
-  const SundanceCore::RegionQuadCombo& c)
+  const Sundance::RegionQuadCombo& c)
 {
   os << c.toString();
   return os;
@@ -140,8 +140,8 @@ namespace Teuchos
 {
 using std::string;
 
-/** \relates SundanceCore::RegionQuadCombo */
-inline string toString(const SundanceCore::RegionQuadCombo& h)
+/** \relates Sundance::RegionQuadCombo */
+inline string toString(const Sundance::RegionQuadCombo& h)
 {return h.toString();}
 
 }

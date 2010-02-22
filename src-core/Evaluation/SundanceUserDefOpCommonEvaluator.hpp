@@ -40,7 +40,7 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-namespace SundanceCore {
+namespace Sundance {
 
 class UserDefOpElement;
 class EvalContext;
@@ -49,7 +49,7 @@ class EvalContext;
  * UserDefOpCommonEvaluator provides a single evaluation point for all
  * components of a vector-valued functor. 
  */
-class UserDefOpCommonEvaluator : public SundanceUtils::ObjectWithClassVerbosity<Evaluator>
+class UserDefOpCommonEvaluator : public ObjectWithClassVerbosity<Evaluator>
 {
 public:
   /** */
@@ -62,8 +62,8 @@ public:
 
   /** Evaluate all vector components at the specified argument values. */
   void evalAllComponents(const EvalManager& mgr,
-    const Array<RefCountPtr<Array<double> > >& constArgDerivVals,
-    const Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > >& vArgDerivVals) const ;
+    const Array<RCP<Array<double> > >& constArgDerivVals,
+    const Array<RCP<Array<RCP<EvalVector> > > >& vArgDerivVals) const ;
 
       
       
@@ -74,7 +74,7 @@ public:
 
   /** Get the cached vector-valued argument derivative values
    * for the specified vector component */
-  const Array<RefCountPtr<EvalVector> >& varArgDerivCache(int elemIndex) const 
+  const Array<RCP<EvalVector> >& varArgDerivCache(int elemIndex) const 
     {return varArgDerivCache_[elemIndex];}
 
   /** Indicate whether the cached argument derivative values are valid */
@@ -102,8 +102,8 @@ private:
   mutable int maxOrder_;
   Array<int> argValueIndex_;
   Array<int> argValueIsConstant_;
-  mutable Array<RefCountPtr<Array<double> > > constArgDerivCache_;
-  mutable Array<Array<RefCountPtr<EvalVector> > > varArgDerivCache_;
+  mutable Array<RCP<Array<double> > > constArgDerivCache_;
+  mutable Array<Array<RCP<EvalVector> > > varArgDerivCache_;
   mutable bool cacheIsValid_;
   const UserDefFunctor* functor_;
       

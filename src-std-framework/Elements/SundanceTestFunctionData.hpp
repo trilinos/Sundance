@@ -36,40 +36,35 @@
 #include "SundanceTestFuncElement.hpp"
 #include "SundanceFuncWithBasis.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+using namespace Teuchos;
 
-  
-  namespace Internal
-  {
-    /** 
-     * TestFunctionData contains the specification of a test
-     * function's basis.
-     */
-    class TestFunctionData : public TestFuncDataStub
-    {
-    public:
-      /** */
-      TestFunctionData(const Array<BasisFamily>& basis)
-        : basis_(basis) {;}
 
-      /** */
-      virtual ~TestFunctionData(){;}
+/** 
+ * TestFunctionData contains the specification of a test
+ * function's basis.
+ */
+class TestFunctionData : public TestFuncDataStub
+{
+public:
+  /** */
+  TestFunctionData(const Array<BasisFamily>& basis)
+    : basis_(basis) {;}
+
+  /** */
+  virtual ~TestFunctionData(){;}
       
-      /** */
-      const Array<BasisFamily>& basis() const {return basis_;}
+  /** */
+  const Array<BasisFamily>& basis() const {return basis_;}
 
-      /** */
-      static const TestFunctionData* getData(const TestFuncElement* ufe);
-    private:
-      Array<BasisFamily> basis_;
-    };
+  /** */
+  static const TestFunctionData* getData(const TestFuncElement* ufe);
+private:
+  Array<BasisFamily> basis_;
+};
 
-  }
+
 }
 
 

@@ -36,15 +36,7 @@
 #include "TSFLoadableVector.hpp"
 #include "SundanceMapBundle.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -75,12 +67,12 @@ public:
    * \param verb verbosity level
    */
   VectorFillingAssemblyKernel(
-  const Array<RefCountPtr<DOFMapBase> >& dofMap,
-  const Array<RefCountPtr<Array<int> > >& isBCIndex,
-  const Array<int>& lowestLocalIndex,
-  Array<Vector<double> >& b,
-  bool partitionBCs,
-  int verb
+    const Array<RCP<DOFMapBase> >& dofMap,
+    const Array<RCP<Array<int> > >& isBCIndex,
+    const Array<int>& lowestLocalIndex,
+    Array<Vector<double> >& b,
+    bool partitionBCs,
+    int verb
     );
 
   /** */
@@ -102,7 +94,7 @@ protected:
    * Build fast lookup tables of DOFs for local cells.
    */
   void buildLocalDOFMaps(
-    const RefCountPtr<StdFwkEvalMediator>& mediator,
+    const RCP<StdFwkEvalMediator>& mediator,
     IntegrationCellSpecifier intCellSpec,
     const Array<Set<int> >& requiredFuncs)  ;
 
@@ -115,15 +107,13 @@ private:
   /** Multivector to be filled */
   Array<Vector<double> > b_;   
   /** Loadable view of the multivector to be filled */
-  Array<Array<RefCountPtr<LoadableVector<double> > > > vec_;
+  Array<Array<RCP<LoadableVector<double> > > > vec_;
   /** The map bundle collects together several DOF-mapping data structures */
   mutable MapBundle mapBundle_;
 
 };
 
 
-
-}
 }
 
 

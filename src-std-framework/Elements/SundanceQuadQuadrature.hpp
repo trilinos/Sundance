@@ -34,48 +34,44 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace Teuchos;
-  namespace Internal
-  {
-    /**
-     * Get abscissas and weights for Gaussian quadrature on quadletaral
-     */
-
-    class QuadQuadrature
-    {
-    public:
-      static void getPoints(int order, Array<double>& wgt,
-                            Array<double>& x,
-                            Array<double>& y);
-
-      static bool test(int p);
+using namespace Teuchos;
 
 
-    private:
+/**
+ * Get abscissas and weights for Gaussian quadrature on quadletaral
+ */
 
-      static void getNonsymmetricPoints(int order, Array<double>& wgt,
-                                        Array<double>& x,
-                                        Array<double>& y);
+class QuadQuadrature
+{
+public:
+  static void getPoints(int order, Array<double>& wgt,
+    Array<double>& x,
+    Array<double>& y);
 
-      static bool getSymmetricPoints(int order, Array<double>& wgt,
-                                     Array<double>& x,
-                                     Array<double>& y);
+  static bool test(int p);
 
-      static void permute(int m, const Array<double>& q,
-                          Array<Array<double> >& qPerm);
 
-      static double exact(int a, int b, int c);
+private:
 
-      static double fact(int x);
+  static void getNonsymmetricPoints(int order, Array<double>& wgt,
+    Array<double>& x,
+    Array<double>& y);
 
-    };
-  }
+  static bool getSymmetricPoints(int order, Array<double>& wgt,
+    Array<double>& x,
+    Array<double>& y);
+
+  static void permute(int m, const Array<double>& q,
+    Array<Array<double> >& qPerm);
+
+  static double exact(int a, int b, int c);
+
+  static double fact(int x);
+
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

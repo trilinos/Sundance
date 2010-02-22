@@ -36,9 +36,9 @@
 #include "SundanceDiscreteFuncDataStub.hpp"
 #include "SundanceSpectralBasis.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using std::string;
 using std::ostream;
 

@@ -32,7 +32,7 @@
 #include "SundanceBernstein.hpp"
 #include "SundanceEvaluator.hpp"
 
-using SundanceCore::List;
+using Sundance::List;
 /** 
  * Solves the Poisson equation in 2D using high-order Bernstein interpolation
  */
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
       Expr bc = EssentialBC(bottom+top+left+right, v*(u-exactSoln), quad);
 
 
-      //      SundanceStdFwk::Internal::DOFMapBase::classVerbosity() = VerbExtreme;
+      //      Sundance::DOFMapBase::classVerbosity() = VerbExtreme;
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 

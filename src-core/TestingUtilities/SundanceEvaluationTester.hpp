@@ -53,16 +53,16 @@
 
 namespace SundanceTesting
 {
-  using namespace SundanceUtils;
+  using namespace Sundance;
   using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
 
   /** 
    *
    */
   class EvaluationTester 
-    : public SundanceUtils::ObjectWithClassVerbosity<EvaluationTester>
+    : public ObjectWithClassVerbosity<EvaluationTester>
   {
   public:
     /** */
@@ -91,10 +91,10 @@ namespace SundanceTesting
     RegionQuadCombo rqc_;
     EvalContext context_;
     EvalManager mgr_;
-    RefCountPtr<AbstractEvalMediator> mediator_;
+    RCP<AbstractEvalMediator> mediator_;
     mutable TestEvalMediator* tem_;
     const EvaluatableExpr* ev_;
-    RefCountPtr<SparsitySuperset> sparsity_;
+    RCP<SparsitySuperset> sparsity_;
     Map<int, int> unkIDToDiscreteIDMap_;
     int maxDiffOrder_;
   };

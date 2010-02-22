@@ -42,10 +42,9 @@
 #include "SundanceMeshBase.hpp"
 #include "SundancePeanoMesh2D.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   using namespace Teuchos;
-  using namespace SundanceUtils;
 
   /**
    * PeanoMeshType is used to create
@@ -62,7 +61,7 @@ namespace SundanceStdMesh
     virtual ~PeanoMeshType2D(){;}
 
     /** Create a mesh of the given dimension */
-    virtual RefCountPtr<MeshBase> createEmptyMesh(int dim,
+    virtual RCP<MeshBase> createEmptyMesh(int dim,
                                                   const MPIComm& comm) const
     // this line is never used since we create directly the mesh at the Mesher
     {return rcp(new PeanoMesh2D(dim, comm, order_));}
@@ -72,7 +71,7 @@ namespace SundanceStdMesh
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshTypeBase> getRcp() {return rcp(this);}
+    virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
 
   private:

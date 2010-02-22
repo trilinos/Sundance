@@ -22,7 +22,7 @@
 %include "std_vector.i"
 %include "exception.i"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 class NonlinearProblem
 {
@@ -32,16 +32,16 @@ public:
 
   /** Construct with a mesh, equation set, bcs, test and unknown funcs,
    * and a vector type */
-  NonlinearProblem(const SundanceStdMesh::Mesh& mesh, const SundanceCore::Expr& eqn, const SundanceCore::Expr& bc,
-    const SundanceCore::Expr& test, const SundanceCore::Expr& unk, const SundanceCore::Expr& u0, 
+  NonlinearProblem(const Sundance::Mesh& mesh, const Sundance::Expr& eqn, const Sundance::Expr& bc,
+    const Sundance::Expr& test, const Sundance::Expr& unk, const Sundance::Expr& u0, 
     const TSFExtended::VectorType<double>& vecType,
     bool partitionBCs = false);
 
   /** Construct with a mesh, equation set, bcs, test and unknown funcs,
    * parameters, and a vector type */
-  NonlinearProblem(const SundanceStdMesh::Mesh& mesh, const SundanceCore::Expr& eqn, const SundanceCore::Expr& bc,
-    const SundanceCore::Expr& test, const SundanceCore::Expr& unk, const SundanceCore::Expr& u0, 
-    const SundanceCore::Expr& params, const SundanceCore::Expr& paramVals,  
+  NonlinearProblem(const Sundance::Mesh& mesh, const Sundance::Expr& eqn, const Sundance::Expr& bc,
+    const Sundance::Expr& test, const Sundance::Expr& unk, const Sundance::Expr& u0, 
+    const Sundance::Expr& params, const Sundance::Expr& paramVals,  
     const TSFExtended::VectorType<double>& vecType,
     bool partitionBCs = false);
 
@@ -49,16 +49,16 @@ public:
   
 
   /** Compute direct sensitivities to parameters */
-  SundanceCore::Expr computeSensitivities(const TSFExtended::LinearSolver<double>& solver) const ;
+  Sundance::Expr computeSensitivities(const TSFExtended::LinearSolver<double>& solver) const ;
 
   /** Solve the nonlinear problem */
   NOX::StatusTest::StatusType solve(const TSFExtended::NOXSolver& solver) const ;
 
   /** Return the current evaluation point as a Sundance expression */
-  SundanceCore::Expr getU0() const ;
+  Sundance::Expr getU0() const ;
 
   /** Set an initial guess */
-  void setInitialGuess(const SundanceCore::Expr& u0New);
+  void setInitialGuess(const Sundance::Expr& u0New);
 };
 
 }

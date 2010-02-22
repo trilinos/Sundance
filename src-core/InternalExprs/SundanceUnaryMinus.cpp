@@ -30,13 +30,13 @@
 
 #include "SundanceUnaryMinus.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
-UnaryMinus::UnaryMinus(const RefCountPtr<ScalarExpr>& arg)
+UnaryMinus::UnaryMinus(const RCP<ScalarExpr>& arg)
   : UnaryExpr(arg)
 {}
 

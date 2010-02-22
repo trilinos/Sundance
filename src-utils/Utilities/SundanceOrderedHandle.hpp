@@ -40,35 +40,35 @@
 /** Empty ctor */ \
 handle() : OrderedHandle<contents >() {;} \
 /** Construct a #handle with a raw pointer to a #contents */ \
-handle(SundanceUtils::Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
+handle(Sundance::Handleable<contents >* rawPtr) : OrderedHandle<contents >(rawPtr) {;} \
 /** Construct a #handle with a smart pointer to a #contents */ \
-handle(const RefCountPtr<contents >& smartPtr) : OrderedHandle<contents >(smartPtr){;}
+handle(const RCP<contents >& smartPtr) : OrderedHandle<contents >(smartPtr){;}
 
 
 
 
-namespace SundanceUtils
+namespace Sundance
 {
   using namespace Teuchos;
 
   /**
-   * Class OrderedHandle is an extension to SundanceUtils::Handle that 
+   * Class OrderedHandle is an extension to Sundance::Handle that 
    * includes a comparison operator ("<" operator) so that
    * the handle can be used in ordered containers such as STL maps and sets.
    */
   template <class PointerType>
-  class OrderedHandle : public SundanceUtils::Handle<PointerType>
+  class OrderedHandle : public Sundance::Handle<PointerType>
   {
   public:
     /** empty ctor */
-    OrderedHandle() : SundanceUtils::Handle<PointerType>() {;}
+    OrderedHandle() : Sundance::Handle<PointerType>() {;}
 
     /** Construct from a raw ptr */
-    OrderedHandle(SundanceUtils::Handleable<PointerType>* rawPtr) : SundanceUtils::Handle<PointerType>(rawPtr) {;}
+    OrderedHandle(Sundance::Handleable<PointerType>* rawPtr) : Sundance::Handle<PointerType>(rawPtr) {;}
 
     /** Construct from a smart ptr*/
-    OrderedHandle(const RefCountPtr<PointerType>& smartPtr) 
-      : SundanceUtils::Handle<PointerType>(smartPtr) {;}
+    OrderedHandle(const RCP<PointerType>& smartPtr) 
+      : Sundance::Handle<PointerType>(smartPtr) {;}
 
     /** comparison operator */
     bool operator<(const OrderedHandle<PointerType>& other) const 
@@ -127,7 +127,7 @@ namespace std
   /** \relates OrderedHandle */
   template <class P> inline 
   std::ostream& operator<<(std::ostream& os, 
-                           const SundanceUtils::OrderedHandle<P>& h)
+                           const Sundance::OrderedHandle<P>& h)
   {
     h.print(os);
     return os;

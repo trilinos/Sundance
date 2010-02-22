@@ -44,10 +44,10 @@
 
 namespace SundanceTesting
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using SundanceUtils::Map;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using Sundance::Map;
   /**
    *
    */
@@ -82,23 +82,23 @@ namespace SundanceTesting
     /** Evaluate the given coordinate expression, putting
      * its numerical values in the given LoadableVector. */
     virtual void evalCoordExpr(const CoordExpr* expr,
-                               RefCountPtr<EvalVector>& vec) const ;
+                               RCP<EvalVector>& vec) const ;
 
     /** Evaluate the given cell diameter expression, putting
      * its numerical values in the given EvalVector. */
     virtual void evalCellDiameterExpr(const CellDiameterExpr* expr,
-                                      RefCountPtr<EvalVector>& vec) const ;
+                                      RCP<EvalVector>& vec) const ;
 
     /** Evaluate the given cell vector expression, putting
      * its numerical values in the given EvalVector. */
     virtual void evalCellVectorExpr(const CellVectorExpr* expr,
-                                      RefCountPtr<EvalVector>& vec) const ;
+                                      RCP<EvalVector>& vec) const ;
 
     /** Evaluate the given discrete function, putting
      * its numerical values in the given LoadableVector. */
     virtual void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                                          const Array<MultiIndex>& mi,
-                                         Array<RefCountPtr<EvalVector> >& vec) const ;
+                                         Array<RCP<EvalVector> >& vec) const ;
 
     double evalDummyBasis(int m, const MultiIndex& mi) const ;
 

@@ -44,32 +44,7 @@
 
 namespace Teuchos {}
 
-namespace SundanceUtils {}
-
-namespace SundanceCore 
-{
-  namespace Internal{}
-}
-
-namespace SundanceStdMesh
-{
-  namespace Internal{}
-}
-
-#ifdef TRILINOS_8
-
-namespace Teuchos {
-
-template<typename T>
-std::vector<T>& createVector( Array<T> &a ) { return a; }
-
-template<typename T>
-const std::vector<T>& createVector( const Array<T> &a ) { return a; }
-
-} // namespace Teuchos
-
-#endif // TRILINOS_8
-
+namespace Sundance {}
 
 
 

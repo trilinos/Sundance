@@ -11,16 +11,16 @@
 
   %}
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 class Block
   {
   public:
     /** */
-    Block(const SundanceCore::Expr& expr, const TSFExtended::VectorType<double>& vecType);
+    Block(const Sundance::Expr& expr, const TSFExtended::VectorType<double>& vecType);
 
     /** */
-    const SundanceCore::Expr& expr() const ;
+    const Sundance::Expr& expr() const ;
 
     /** */
     const TSFExtended::VectorType<double>& vecType() const ;
@@ -62,46 +62,46 @@ class Block
 
 %inline %{
 /* */
-  SundanceStdFwk::BlockArray 
-    BlockList(const SundanceStdFwk::Block& a)
+  Sundance::BlockArray 
+    BlockList(const Sundance::Block& a)
   {
     return tuple(a);
   }
 
   /* */
-  SundanceStdFwk::BlockArray 
-    BlockList(const SundanceStdFwk::Block& a,
-              const SundanceStdFwk::Block& b)
+  Sundance::BlockArray 
+    BlockList(const Sundance::Block& a,
+              const Sundance::Block& b)
   {
     return tuple(a,b);
   }
 
   /* */
-  SundanceStdFwk::BlockArray 
-    BlockList(const SundanceStdFwk::Block& a,
-              const SundanceStdFwk::Block& b,
-              const SundanceStdFwk::Block& c)
+  Sundance::BlockArray 
+    BlockList(const Sundance::Block& a,
+              const Sundance::Block& b,
+              const Sundance::Block& c)
   {
     return tuple(a,b,c);
   }
 
   /* */
-  SundanceStdFwk::BlockArray 
-    BlockList(const SundanceStdFwk::Block& a,
-              const SundanceStdFwk::Block& b,
-              const SundanceStdFwk::Block& c,
-              const SundanceStdFwk::Block& d)
+  Sundance::BlockArray 
+    BlockList(const Sundance::Block& a,
+              const Sundance::Block& b,
+              const Sundance::Block& c,
+              const Sundance::Block& d)
   {
     return tuple(a,b,c,d);
   }
 
   /* */
-  SundanceStdFwk::BlockArray 
-    BlockList(const SundanceStdFwk::Block& a,
-              const SundanceStdFwk::Block& b,
-              const SundanceStdFwk::Block& c,
-              const SundanceStdFwk::Block& d,
-              const SundanceStdFwk::Block& e)
+  Sundance::BlockArray 
+    BlockList(const Sundance::Block& a,
+              const Sundance::Block& b,
+              const Sundance::Block& c,
+              const Sundance::Block& d,
+              const Sundance::Block& e)
   {
     return tuple(a,b,c,d,e);
   }
@@ -113,42 +113,42 @@ class Block
 %include "std_vector.i"
 %include "exception.i"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
   
-  typedef RefCountPtr<DOFMapBase> DOFMap;
+  typedef RCP<DOFMapBase> DOFMap;
 
   class LinearProblem
   {
   public:
-    LinearProblem(const SundanceStdMesh::Mesh& mesh, 
-                  const SundanceCore::Expr& eqn,
-                  const SundanceCore::Expr& bc,
-                  const SundanceCore::Expr& v, 
-                  const SundanceCore::Expr& u,
+    LinearProblem(const Sundance::Mesh& mesh, 
+                  const Sundance::Expr& eqn,
+                  const Sundance::Expr& bc,
+                  const Sundance::Expr& v, 
+                  const Sundance::Expr& u,
                   const TSFExtended::VectorType<double>& vecType);
 
-    LinearProblem(const SundanceStdMesh::Mesh& mesh, 
-                  const SundanceCore::Expr& eqn,
-                  const SundanceCore::Expr& bc,
-                  const SundanceStdFwk::BlockArray& v, 
-                  const SundanceStdFwk::BlockArray& u);
+    LinearProblem(const Sundance::Mesh& mesh, 
+                  const Sundance::Expr& eqn,
+                  const Sundance::Expr& bc,
+                  const Sundance::BlockArray& v, 
+                  const Sundance::BlockArray& u);
 
     TSFExtended::Vector<double> getSingleRHS() const ;
 
     TSFExtended::LinearOperator<double> getOperator() const ;
 
-    SundanceCore::Expr solve(const TSFExtended::LinearSolver<double>& solver) const ;
+    Sundance::Expr solve(const TSFExtended::LinearSolver<double>& solver) const ;
 
   };
 
   %extend LinearProblem {
-    SundanceCore::Expr solve(PyObject* pySolver)
+    Sundance::Expr solve(PyObject* pySolver)
     {
       TSFExtended::PySundanceLinearSolver* tmp  
         = new TSFExtended::PySundanceLinearSolver(pySolver);
       
-      Teuchos::RefCountPtr<TSFExtended::LinearSolverBase<double> > 
+      Teuchos::RCP<TSFExtended::LinearSolverBase<double> > 
         r = rcp(tmp);
 
       TSFExtended::LinearSolver<double> cxxSolver = r;

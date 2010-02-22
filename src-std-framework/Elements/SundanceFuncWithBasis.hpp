@@ -34,36 +34,36 @@
 #include "SundanceDefs.hpp"
 #include "SundanceBasisFamily.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  namespace Internal
-  {
-    /** 
-     * 
-     */
-    class FuncWithBasis
-    {
-    public:
-      /** */
-      FuncWithBasis(const BasisFamily& basis) : basis_(tuple(basis)) {;}
+class Expr;
 
-      /** */
-      FuncWithBasis(const Array<BasisFamily>& basis) :basis_(basis) {;}
+/** 
+ * 
+ */
+class FuncWithBasis
+{
+public:
+  /** */
+  FuncWithBasis(const BasisFamily& basis) : basis_(tuple(basis)) {;}
 
-      /** */
-      const Array<BasisFamily>& basis() const {return basis_;}
+  /** */
+  FuncWithBasis(const Array<BasisFamily>& basis) :basis_(basis) {;}
 
-    private:
-      /** */
-      Array<BasisFamily> basis_;
-    };
-  }
+  /** */
+  const Array<BasisFamily>& basis() const {return basis_;}
+
+private:
+  /** */
+  Array<BasisFamily> basis_;
+};
+
+/** */
+std::string describeFunction(const Expr& f);
+
 }
 
-namespace SundanceCore {class Expr;}
-namespace std
-{
-string describeFunction(const SundanceCore::Expr& f);
-}
+
+
 
 #endif

@@ -41,9 +41,9 @@
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -51,7 +51,7 @@ using std::ostream;
 
 
 /** */
-class ExprBase : public SundanceUtils::Handleable<ExprBase>
+class ExprBase : public Sundance::Handleable<ExprBase>
 {
 public:
   /** empty ctor */

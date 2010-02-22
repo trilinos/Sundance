@@ -3,7 +3,7 @@
 #include "Teuchos_GlobalMPISession.hpp"
 #include "Teuchos_Time.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 int main(int argc, char** argv)

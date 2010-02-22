@@ -34,15 +34,15 @@
 #include "SundanceTabs.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 
-UnaryExpr::UnaryExpr(const RefCountPtr<ScalarExpr>& arg)
+UnaryExpr::UnaryExpr(const RCP<ScalarExpr>& arg)
 	: ExprWithChildren(tuple(arg))
 {}
 

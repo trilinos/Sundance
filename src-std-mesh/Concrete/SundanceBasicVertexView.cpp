@@ -2,9 +2,9 @@
 #include "Teuchos_Utils.hpp"
 
 using namespace Teuchos;
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 string VertexView::toString() const
 {
@@ -39,12 +39,12 @@ int VertexView::hashCode() const
   int* p = *base_ + offset_*length_;
 
   unsigned char* key = reinterpret_cast<unsigned char*>(p);
-  size_t key_len = length_ * sizeof(int);
+  unsigned int key_len = length_ * sizeof(int);
 
   /* Jenkins hash */
 
   unsigned int hash = 0;
-  size_t i;
+  int i;
   
   for (i = 0; i < key_len; i++) {
     hash += key[i];

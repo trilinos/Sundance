@@ -31,8 +31,6 @@
 #ifndef SUNDANCE_CELLSETBASE_H
 #define SUNDANCE_CELLSETBASE_H
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 #include "SundanceDefs.hpp"
 #include "SundanceSet.hpp"
 #include "SundanceMap.hpp"
@@ -44,75 +42,68 @@
 #include "SundanceHandleable.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-  namespace Internal
-  {
-    using namespace Teuchos;
+using namespace Teuchos;
 
-    /** 
-     * CellSetBase is the base class for cell sets. There are two cell
-     * set subtypes: ExplicitCellSet and ImplicitCellSet.
-     *
-     * @see CellFilter
-     **/
-    class CellSetBase : public SundanceUtils::ObjectWithClassVerbosity<CellSetBase>,
-                        public SundanceUtils::Printable,
-                        public Noncopyable,
-                        public SundanceUtils::Handleable<CellSetBase>
-    {
-    public:
-      /** Construct, initializing to an empty set */
-      CellSetBase(const Mesh& mesh, int cellDim,
-                  const CellType& cellType);
+/** 
+ * CellSetBase is the base class for cell sets. There are two cell
+ * set subtypes: ExplicitCellSet and ImplicitCellSet.
+ *
+ * @see CellFilter
+ **/
+class CellSetBase : public ObjectWithClassVerbosity<CellSetBase>,
+                    public Sundance::Printable,
+                    public Noncopyable,
+                    public Sundance::Handleable<CellSetBase>
+{
+public:
+  /** Construct, initializing to an empty set */
+  CellSetBase(const Mesh& mesh, int cellDim,
+    const CellType& cellType);
 
-      /** Return an iterator pointing to the first element in the set */
-      virtual CellIterator begin() const = 0 ;
+  /** Return an iterator pointing to the first element in the set */
+  virtual CellIterator begin() const = 0 ;
 
-      /** Return an iterator containing the past-the-end value */
-      virtual CellIterator end() const = 0 ;
+  /** Return an iterator containing the past-the-end value */
+  virtual CellIterator end() const = 0 ;
 
-      /** Return the type of cells in this set */
-      const CellType& cellType(const CellType& cellType) const
-      {return cellType_;}
+  /** Return the type of cells in this set */
+  const CellType& cellType(const CellType& cellType) const
+    {return cellType_;}
 
-      /** The ID number of the mesh in which these cells exist */
-      int meshID() const {return mesh_.id();}
+  /** The ID number of the mesh in which these cells exist */
+  int meshID() const {return mesh_.id();}
 
-      /** The dimension of the cells contained in this set */
-      int dimension() const {return dim_;}
+  /** The dimension of the cells contained in this set */
+  int dimension() const {return dim_;}
       
-      /** The mesh in which these cells exist */
-      const Mesh& mesh() const {return mesh_;}
+  /** The mesh in which these cells exist */
+  const Mesh& mesh() const {return mesh_;}
 
-      /** The type of the cells contained in this set */
-      const CellType& cellType() const {return cellType_;}
+  /** The type of the cells contained in this set */
+  const CellType& cellType() const {return cellType_;}
 
-      /** */
-      bool lessThan(const CellSetBase* other) const ;
+  /** */
+  bool lessThan(const CellSetBase* other) const ;
 
-      /** */
-      virtual bool internalLessThan(const CellSetBase* other) const = 0 ;
+  /** */
+  virtual bool internalLessThan(const CellSetBase* other) const = 0 ;
 
-    private:
+private:
 
-      /** the mesh in which the set exists */
-      Mesh mesh_;
+  /** the mesh in which the set exists */
+  Mesh mesh_;
 
-      /** the type of cell in the set */
-      CellType cellType_;
+  /** the type of cell in the set */
+  CellType cellType_;
 
-      /** the dimension of the cells in the set */
-      int dim_;
+  /** the dimension of the cells in the set */
+  int dim_;
       
-    };
-  }
-
+};
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

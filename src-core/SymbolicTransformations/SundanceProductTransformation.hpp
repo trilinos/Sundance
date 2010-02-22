@@ -34,9 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSymbolicTransformation.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -70,9 +70,9 @@ public:
    * the transformed expression. 
    * 
    */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    RefCountPtr<ScalarExpr>& rtn) const = 0 ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    RCP<ScalarExpr>& rtn) const = 0 ;
 };
 }
 

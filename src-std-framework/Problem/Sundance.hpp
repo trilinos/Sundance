@@ -147,48 +147,50 @@
 #include "SundanceCToAInterpolator.hpp"
 
 
-using namespace TSFExtendedOps;
-using namespace TSFExtended;
-using namespace Teuchos;
-using namespace SundanceStdFwk;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceUtils;
-
 /* do explicit qualification of List to avoid conflicts
  * with the unfriendly lack of namespaces in MPI2C++
  */
-using SundanceCore::List;
 
-
-
-namespace SundanceStdFwk
+namespace Sundance
 {
+
+using namespace TSFExtendedOps;
+using namespace TSFExtended;
+using namespace Teuchos;
+using Sundance::List;
+
+
 /**
  * Class Sundance provides several static methods for
  * managing the environment of a simulation. Every simulation code
  * should begin with a call to Sundance::init() and end with
  * a call to Sundance::finalize().
  */
-class Sundance
+class SundanceGlobal
 {
 public:
-  static void setOption(const string& optionName, 
-    int& value, 
+
+  /** */
+  static void setOption(const string& optionName,
+    int& value,
     const string& helpMsg);
 
-  static void setOption(const string& optionName, 
-    string& value, 
+  /** */
+  static void setOption(const string& optionName,
+    string& value,
     const string& helpMsg);
 
-  static void setOption(const string& optionName, 
-    double& value, 
+  /** */
+  static void setOption(const string& optionName,
+    double& value,
     const string& helpMsg);
 
-  static void setOption(const string& optionTrueName, 
-    const string& optionFalseName, 
-    bool& value, 
+  /** */
+  static void setOption(const string& optionTrueName,
+    const string& optionFalseName,
+    bool& value,
     const string& helpMsg);
+
 
   /** 
    * Do initialization steps such as starting MPI (if necessary), 
@@ -223,11 +225,6 @@ public:
     bool status, double error, double tol);
 
 
-  static int verbosity(const string& str);
-
-  /** */
-  static void setSettings(const XMLObject& xml);
-
   /** Set to true if a message should be written by each processor
    * at startup. */
   static bool& showStartupMessage();
@@ -247,17 +244,59 @@ public:
 private:
   static bool checkTest(double error, double tol);
 
-  static void setSettings(const string& settingsFile);
 
-
-
-  static RefCountPtr<GlobalMPISession> globalMPISession(int* argc, char*** argv)
+  static RCP<GlobalMPISession> globalMPISession(int* argc, char*** argv)
     {
-      static RefCountPtr<GlobalMPISession> rtn 
+      static RCP<GlobalMPISession> rtn 
         = rcp(new GlobalMPISession(argc, argv, &std::cerr)); 
       return rtn;
     }
 };
+
+
+/** \relates SundanceGlobal */
+void handleException(std::exception& e);
+
+/** \relates SundanceGlobal */
+bool passFailTest(double error, double tol);
+
+/** \relates SundanceGlobal */
+bool passFailTest(const string& statusMsg,
+  bool status, double error, double tol);
+
+/** \relates SundanceGlobal */
+int& testStatus() ;
+
+/** \relates SundanceGlobal */
+CommandLineProcessor& clp() ;
+
+/** \relates SundanceGlobal */
+int init(int* argc, char*** argv);
+
+/** \relates SundanceGlobal */
+int finalize();
+
+
+/** */
+void setOption(const string& optionName,
+  int& value,
+  const string& helpMsg);
+
+/** */
+void setOption(const string& optionName,
+  string& value,
+  const string& helpMsg);
+
+/** */
+void setOption(const string& optionName,
+  double& value,
+  const string& helpMsg);
+
+/** */
+void setOption(const string& optionTrueName,
+  const string& optionFalseName,
+  bool& value,
+  const string& helpMsg);
 
 }
 

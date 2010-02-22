@@ -33,10 +33,10 @@
 
 #include "SundanceExpr.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 FuncElementBase::FuncElementBase(const string& rootName,

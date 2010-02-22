@@ -43,9 +43,9 @@
 
 
 using namespace std;
-using namespace SundanceUtils;
+using namespace Sundance;
 
-namespace SundanceCore
+namespace Sundance
 {
   /** Multidimensional Hermite spectral basis.
    * See, e.g., Ghanem and Spanos.
@@ -59,7 +59,7 @@ namespace SundanceCore
     int dim_;
     int order_;
     int maxterms_;
-    RefCountPtr<cijk> cijk_;
+    RCP<cijk> cijk_;
   public:
     /** Construct a full order basis */
     HermiteSpectralBasis(int dim, int order);

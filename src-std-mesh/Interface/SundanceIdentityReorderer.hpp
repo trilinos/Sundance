@@ -38,14 +38,9 @@
 #include "SundanceCellReordererBase.hpp"
 #include "SundanceHandleable.hpp"
 
-namespace SundanceStdMesh
-{
-  
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
-using namespace SundanceUtils;
-using Teuchos::RCP;
 
 /**
  * The identity reorderer walks through cells in whatever
@@ -63,19 +58,21 @@ public:
   /** */
   virtual int advance(int currentLID) const {return currentLID+1;}
 };
-}
+
 
 /** */
 class IdentityReorderer 
-  : public Internal::GenericCellReordererFactory<Internal::IdentityReordererImplem>
+  : public GenericCellReordererFactory<IdentityReordererImplem>
 {
 public:
   IdentityReorderer(){;}
 
   virtual ~IdentityReorderer(){;}
 
-  GET_RCP(Internal::CellReordererFactoryBase);
+  GET_RCP(CellReordererFactoryBase);
 };
+
+
 }
 
 

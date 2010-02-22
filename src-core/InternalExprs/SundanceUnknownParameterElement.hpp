@@ -38,9 +38,9 @@
 #include "SundanceUnknownFuncDataStub.hpp"
 #include "SundanceSpatiallyConstantExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 using namespace Teuchos;
 
@@ -98,7 +98,7 @@ public:
   bool isParameter() const {return true;}
 
   /** */
-  RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  RCP<ExprBase> getRcp() {return rcp(this);}
       
 private:
 

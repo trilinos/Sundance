@@ -35,9 +35,9 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 using std::string;
   
@@ -65,15 +65,15 @@ public:
     {static bool rtn=false; return rtn;}
 
   /** Returns -expr if sign == -1, otherwise returns expr */
-  static RefCountPtr<ScalarExpr> chooseSign(int sign, 
-    const RefCountPtr<ScalarExpr>& expr);
+  static RCP<ScalarExpr> chooseSign(int sign, 
+    const RCP<ScalarExpr>& expr);
 
   /** Returns -expr if sign == -1, otherwise returns expr */
   static Expr chooseSign(int sign, 
     const Expr& expr);
 
   /** extract the underlying ScalarExpr from an Expr. */
-  static RefCountPtr<ScalarExpr> getScalar(const Expr& expr); 
+  static RCP<ScalarExpr> getScalar(const Expr& expr); 
 };
 }
 

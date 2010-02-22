@@ -34,12 +34,10 @@
 #include "SundanceDefs.hpp"
 #include "SundanceMeshReaderBase.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-  
   using namespace Teuchos;
-  using namespace SundanceUtils;
-  using namespace Internal;
+  
   /**
    * TriangleMeshReader reads a mesh stored in Shewchuk's Triangle format.
    * This format is documented at 
@@ -111,9 +109,8 @@ namespace SundanceStdMesh
     {return "TriangleMeshReader[file=" + filename() + "]";}
       
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshSourceBase> getRcp() {return rcp(this);}
+    virtual RCP<MeshSourceBase> getRcp() {return rcp(this);}
 
   private:
     /** */
@@ -147,7 +144,6 @@ namespace SundanceStdMesh
 
     /** */
     mutable int offset_;
-#endif  /* DOXYGEN_DEVELOPER_ONLY */   
   };
 }
 

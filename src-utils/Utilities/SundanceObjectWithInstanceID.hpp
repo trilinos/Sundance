@@ -36,7 +36,7 @@
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceUtils
+namespace Sundance
 {
     /**
      * ObjectWithInstanceID provides a common method for the

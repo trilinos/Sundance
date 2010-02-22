@@ -44,7 +44,7 @@
 #include "SundancePeanoMesh3D.hpp"
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 class PeanoMesher3D : public MeshSourceBase
   {
@@ -88,9 +88,8 @@ class PeanoMesher3D : public MeshSourceBase
        + ", resolution=" + Teuchos::toString(_resolution)+ "]";}
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<MeshSourceBase> getRcp() {return rcp(this);}
+    virtual RCP<MeshSourceBase> getRcp() {return rcp(this);}
 
 
   protected:
@@ -115,7 +114,7 @@ class PeanoMesher3D : public MeshSourceBase
     /** The resolution in each dimension, since we do not want to have stretched elements*/
     double _resolution;
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
   };
 }
 #endif /* SUNDANCE_PEANOMESHER3D_H_ */

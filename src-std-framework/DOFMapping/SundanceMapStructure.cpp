@@ -34,9 +34,9 @@
 #include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+
+namespace Sundance
+{
 using namespace Teuchos;
 using std::endl;
 using std::setw;
@@ -79,15 +79,15 @@ void MapStructure::init(int nTotalFuncs,
                      "mismatched number of basis chunks=" << bases.size()
                      << " and number of function chunks=" << funcs.size());
 
-  for (unsigned int f=0; f<indexForFuncID_.size(); f++) 
+  for (int f=0; f<indexForFuncID_.size(); f++) 
     {
       indexForFuncID_[f] = -1;
       chunkForFuncID_[f] = -1;
     }
 
-  for (unsigned int b=0; b<funcs_.size(); b++)
+  for (int b=0; b<funcs_.size(); b++)
     {
-      for (unsigned int f=0; f<funcs_[b].size(); f++)
+      for (int f=0; f<funcs_[b].size(); f++)
         {
           int fid = funcs_[b][f];
           TEST_FOR_EXCEPTION(fid >= nTotalFuncs, InternalError,
@@ -139,11 +139,6 @@ std::ostream& MapStructure::print(std::ostream& os) const
 }
 
 
-namespace SundanceStdFwk{
-namespace Internal
-{
-
-
 Array<RCP<BasisDOFTopologyBase> > replicate(
   const RCP<BasisDOFTopologyBase>& model,
   int n)
@@ -153,5 +148,5 @@ Array<RCP<BasisDOFTopologyBase> > replicate(
   return rtn;
 }
 
-}}
+} // end namespace Sundance
 

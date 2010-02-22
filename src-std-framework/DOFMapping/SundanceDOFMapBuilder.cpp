@@ -46,38 +46,38 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 static Time& DOFBuilderCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("DOF map building"); 
   return *rtn;
 }
 
 static Time& cellFilterReductionTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("cell filter reduction"); 
   return *rtn;
 }
 
 static Time& findFuncDomainTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("finding func domains"); 
   return *rtn;
 }
 
 DOFMapBuilder::DOFMapBuilder(const Mesh& mesh, 
-  const RefCountPtr<FunctionSupportResolver>& fsr, bool findBCCols,
+  const RCP<FunctionSupportResolver>& fsr, bool findBCCols,
   const ParameterList& verbParams)
   : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
     mesh_(mesh),
@@ -102,20 +102,20 @@ DOFMapBuilder::DOFMapBuilder(const ParameterList& verbParams)
     remoteBCCols_()
 {}
 
-RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
+RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   const Array<RCP<BasisDOFTopologyBase> >& basis,
   const Array<Set<CellFilter> >& filters) 
 {
   TimeMonitor timer(DOFBuilderCtorTimer());
   SUNDANCE_LEVEL1("setup", "in DOFMapBuilder::makeMap()");
-  for (unsigned int i=0; i<basis.size(); i++)
+  for (int i=0; i<basis.size(); i++)
   {
     SUNDANCE_LEVEL2("setup", "i=" << i 
       << " basis=" << basis[i]->description()
       << " filters=" << filters[i]);
   }
 
-  RefCountPtr<DOFMapBase> rtn;
+  RCP<DOFMapBase> rtn;
 
   if (allowNodalMap() && hasOmnipresentNodalMap(basis, mesh, filters))
   {
@@ -139,10 +139,10 @@ RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   else if (hasNodalBasis(basis))
   {
     SUNDANCE_LEVEL2("setup", "creating inhomogeneous nodal map");
-    SundanceUtils::Map<CellFilter, Set<int> > fmap = domainToFuncSetMap(filters);
-    SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> > inputChildren;
+    Sundance::Map<CellFilter, Set<int> > fmap = domainToFuncSetMap(filters);
+    Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellSet> > inputChildren;
 
-    Array<SundanceUtils::Map<Set<int>, CellFilter> > disjoint 
+    Array<Sundance::Map<Set<int>, CellFilter> > disjoint 
       = DOFMapBuilder::funcDomains(mesh, fmap, inputChildren);
 
     rtn = rcp(new InhomogeneousNodalDOFMap(mesh, disjoint, params()));
@@ -155,11 +155,11 @@ RefCountPtr<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
 }
 
 
-SundanceUtils::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(const Array<Set<CellFilter> >& filters) const 
+Sundance::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(const Array<Set<CellFilter> >& filters) const 
 {
   SUNDANCE_LEVEL2("setup", "in DOFMapBuilder::domainToFuncSetMap()");
   Map<CellFilter, Set<int> > rtn;
-  for (unsigned int i=0; i<filters.size(); i++)
+  for (int i=0; i<filters.size(); i++)
   {
     const Set<CellFilter>& s = filters[i];
     for (Set<CellFilter>::const_iterator j=s.begin(); j!=s.end(); j++)
@@ -188,11 +188,11 @@ SundanceUtils::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(cons
 
 void DOFMapBuilder
 ::getSubdomainUnkFuncMatches(const FunctionSupportResolver& fsr,
-  Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const 
+  Array<Sundance::Map<CellFilter, Set<int> > >& fmap) const 
 {
   fmap.resize(fsr.numUnkBlocks());
   
-  for (unsigned int r=0; r<fsr.numRegions(); r++)
+  for (int r=0; r<fsr.numRegions(); r++)
   {
     CellFilter subreg = fsr.region(r);
     Set<int> funcs = fsr.unksOnRegion(r).setUnion(fsr.bcUnksOnRegion(r));
@@ -213,11 +213,11 @@ void DOFMapBuilder
 
 void DOFMapBuilder
 ::getSubdomainVarFuncMatches(const FunctionSupportResolver& fsr,
-  Array<SundanceUtils::Map<CellFilter, Set<int> > >& fmap) const 
+  Array<Sundance::Map<CellFilter, Set<int> > >& fmap) const 
 {
   fmap.resize(fsr.numVarBlocks());
   
-  for (unsigned int r=0; r<fsr.numRegions(); r++)
+  for (int r=0; r<fsr.numRegions(); r++)
   {
     CellFilter subreg = fsr.region(r);
     Set<int> funcs = fsr.varsOnRegion(r).setUnion(fsr.bcVarsOnRegion(r));
@@ -236,16 +236,16 @@ void DOFMapBuilder
   }
 }
 
-Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
+Array<Sundance::Map<Set<int>, CellFilter> > DOFMapBuilder
 ::funcDomains(const Mesh& mesh,
-  const SundanceUtils::Map<CellFilter, Set<int> >& fmap,
-  SundanceUtils::Map<CellFilter, SundanceUtils::Map<Set<int>, CellSet> >& inputToChildrenMap) const 
+  const Sundance::Map<CellFilter, Set<int> >& fmap,
+  Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellSet> >& inputToChildrenMap) const 
 {
   TimeMonitor timer(findFuncDomainTimer());
   Array<Array<CellFilter> > filters(mesh.spatialDim()+1);
   Array<Array<Set<int> > > funcs(mesh.spatialDim()+1);
 
-  for (SundanceUtils::Map<CellFilter, Set<int> >::const_iterator 
+  for (Sundance::Map<CellFilter, Set<int> >::const_iterator 
          i=fmap.begin(); i!=fmap.end(); i++)
   {
     int d = i->first.dimension(mesh);
@@ -253,23 +253,23 @@ Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
     funcs[d].append(i->second);
   }
   Array<Array<CFMeshPair> > tmp(mesh.spatialDim()+1);
-  for (unsigned int d=0; d<tmp.size(); d++)
+  for (int d=0; d<tmp.size(); d++)
   {
-    if (filters[d].size() != 0U)
+    if (filters[d].size() != 0)
       tmp[d] = findDisjointFilters(filters[d], funcs[d], mesh);
   }
 
-  for (unsigned int d=0; d<tmp.size(); d++)
+  for (int d=0; d<tmp.size(); d++)
   {
-    for (unsigned int r=0; r<tmp[d].size(); r++)
+    for (int r=0; r<tmp[d].size(); r++)
     {
-      for (unsigned int p=0; p<filters[d].size(); p++)
+      for (int p=0; p<filters[d].size(); p++)
       {
         if (tmp[d][r].filter().isSubsetOf(filters[d][p], mesh)) 
         {
           if (inputToChildrenMap.containsKey(filters[d][p]))
           {
-            SundanceUtils::Map<Set<int>, CellSet>& m 
+            Sundance::Map<Set<int>, CellSet>& m 
               = inputToChildrenMap[filters[d][p]];
             if (m.containsKey(tmp[d][r].funcs()))
             {
@@ -282,7 +282,7 @@ Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
           }
           else
           {
-            SundanceUtils::Map<Set<int>, CellSet> m;
+            Sundance::Map<Set<int>, CellSet> m;
             m.put(tmp[d][r].funcs(), tmp[d][r].cellSet());
             inputToChildrenMap.put(filters[d][p], m);
           }
@@ -291,11 +291,11 @@ Array<SundanceUtils::Map<Set<int>, CellFilter> > DOFMapBuilder
     }
   }
 
-  Array<SundanceUtils::Map<Set<int>, CellFilter> > rtn(mesh.spatialDim()+1);
-  for (unsigned int d=0; d<tmp.size(); d++)
+  Array<Sundance::Map<Set<int>, CellFilter> > rtn(mesh.spatialDim()+1);
+  for (int d=0; d<tmp.size(); d++)
   {
-    if (tmp[d].size() == 0U) continue;
-    for (unsigned int i=0; i<tmp[d].size(); i++)
+    if (tmp[d].size() == 0) continue;
+    for (int i=0; i<tmp[d].size(); i++)
     {
       const Set<int>& f = tmp[d][i].funcs();
       const CellFilter& cf = tmp[d][i].filter();
@@ -328,7 +328,7 @@ void DOFMapBuilder::init(bool findBCCols)
   Array<Array<RCP<BasisDOFTopologyBase> > > testBasis = testBasisTopologyArray();
   Array<Array<Set<CellFilter> > > testRegions = testCellFilters();
 
-  for (unsigned int br=0; br<fsr_->numVarBlocks(); br++)
+  for (int br=0; br<fsr_->numVarBlocks(); br++)
   {
     SUNDANCE_LEVEL2("setup", "making map for block row=" << br);
     rowMap_[br] = makeMap(mesh_, testBasis[br], testRegions[br]);
@@ -340,7 +340,7 @@ void DOFMapBuilder::init(bool findBCCols)
   Array<Array<RCP<BasisDOFTopologyBase> > > unkBasis = unkBasisTopologyArray();
   Array<Array<Set<CellFilter> > > unkRegions = unkCellFilters();
 
-  for (unsigned int bc=0; bc<fsr_->numUnkBlocks(); bc++)
+  for (int bc=0; bc<fsr_->numUnkBlocks(); bc++)
   {
     if (isSymmetric(bc))
     {
@@ -362,7 +362,7 @@ void DOFMapBuilder::extractUnkSetsFromFSR(const FunctionSupportResolver& fsr,
 {
   funcSets.resize(fsr.numRegions());
   regions.resize(fsr.numRegions());
-  for (unsigned int r=0; r<fsr.numRegions(); r++)
+  for (int r=0; r<fsr.numRegions(); r++)
   {
     regions[r] = fsr.region(r);
     funcSets[r] = fsr.unksOnRegion(r).setUnion(fsr.bcUnksOnRegion(r));
@@ -375,21 +375,21 @@ void DOFMapBuilder::extractVarSetsFromFSR(const FunctionSupportResolver& fsr,
 {
   funcSets.resize(fsr.numRegions());
   regions.resize(fsr.numRegions());
-  for (unsigned int r=0; r<fsr.numRegions(); r++)
+  for (int r=0; r<fsr.numRegions(); r++)
   {
     regions[r] = fsr.region(r);
     funcSets[r] = fsr.varsOnRegion(r).setUnion(fsr.bcVarsOnRegion(r));
   }
 }
 
-SundanceUtils::Map<Set<int>, Set<CellFilter> > 
+Sundance::Map<Set<int>, Set<CellFilter> > 
 DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
   const Array<CellFilter>& regions,
   const Mesh& mesh) const 
 {
-  SundanceUtils::Map<Set<int>, Set<CellFilter> > tmp;
+  Sundance::Map<Set<int>, Set<CellFilter> > tmp;
   
-  for (unsigned int r=0; r<regions.size(); r++)
+  for (int r=0; r<regions.size(); r++)
   {
     const CellFilter& reg = regions[r];
     if (!tmp.containsKey(funcSets[r]))
@@ -401,9 +401,9 @@ DOFMapBuilder::buildFuncSetToCFSetMap(const Array<Set<int> >& funcSets,
   
   /* eliminate overlap between cell filters */
   
-  SundanceUtils::Map<Set<int>, Set<CellFilter> > rtn=tmp;
+  Sundance::Map<Set<int>, Set<CellFilter> > rtn=tmp;
   /*
-    for (SundanceUtils::Map<Set<int>, Set<CellFilter> >::const_iterator 
+    for (Sundance::Map<Set<int>, Set<CellFilter> >::const_iterator 
     i=tmp.begin(); i!=tmp.end(); i++)
     {
     rtn.put(i->first, reduceCellFilters(mesh, i->second));
@@ -424,7 +424,7 @@ bool DOFMapBuilder::hasOmnipresentNodalMap(const Array<RCP<BasisDOFTopologyBase>
 bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters) const
 {
   Set<CellFilter> first = filters[0];
-  for (unsigned int i=1; i<filters.size(); i++) 
+  for (int i=1; i<filters.size(); i++) 
   {
     if (! (filters[i] == first) ) return false;
   }
@@ -433,7 +433,7 @@ bool DOFMapBuilder::hasCommonDomain(const Array<Set<CellFilter> >& filters) cons
 
 bool DOFMapBuilder::hasNodalBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const
 {
-  for (unsigned int i=0; i<basis.size(); i++)
+  for (int i=0; i<basis.size(); i++)
   {
     const Lagrange* lagr 
       = dynamic_cast<const Lagrange*>(basis[0].get());
@@ -445,7 +445,7 @@ bool DOFMapBuilder::hasNodalBasis(const Array<RCP<BasisDOFTopologyBase> >& basis
 
 bool DOFMapBuilder::hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis) const
 {
-  for (unsigned int i=0; i<basis.size(); i++)
+  for (int i=0; i<basis.size(); i++)
   {
     const Lagrange* lagr 
       = dynamic_cast<const Lagrange*>(basis[0].get());
@@ -459,7 +459,7 @@ bool DOFMapBuilder::allFuncsAreOmnipresent(const Mesh& mesh,
 {
   int maxFilterDim = 0;
   Set<Set<CellFilter> > distinctSets;
-  for (unsigned int i=0; i<filters.size(); i++)
+  for (int i=0; i<filters.size(); i++)
   {
     for (Set<CellFilter>::const_iterator iter=filters[i].begin();
          iter != filters[i].end(); iter++)
@@ -522,10 +522,10 @@ bool DOFMapBuilder::isWholeDomain(const Mesh& mesh,
 
 CellFilter DOFMapBuilder::getMaxCellFilter(const Array<Set<CellFilter> >& filters) const
 {
-  for (unsigned int i=0; i<filters.size(); i++)
+  for (int i=0; i<filters.size(); i++)
   {
     const Set<CellFilter>& cfs = filters[i];
-    if (cfs.size() != 1U) continue;
+    if (cfs.size() != 1) continue;
     const CellFilter& cf = *cfs.begin();
     if (0 != dynamic_cast<const MaximalCellFilter*>(cf.ptr().get()))
       return cf;
@@ -540,9 +540,9 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
 {
   Array<Array<Set<CellFilter> > > rtn(fsr_->numVarBlocks());
 
-  for (unsigned int b=0; b<fsr_->numVarBlocks(); b++)
+  for (int b=0; b<fsr_->numVarBlocks(); b++)
   {
-    for (unsigned int i=0; i<fsr_->numVarIDs(b); i++) 
+    for (int i=0; i<fsr_->numVarIDs(b); i++) 
     {
       int testID = fsr_->unreducedVarID(b, i);
       Set<CellFilter> s;
@@ -551,7 +551,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::testCellFilters() const
       for (Set<OrderedHandle<CellFilterStub> >::const_iterator 
              j=cfs.begin(); j!=cfs.end(); j++)
       {
-        RefCountPtr<CellFilterBase> cfb 
+        RCP<CellFilterBase> cfb 
           = rcp_dynamic_cast<CellFilterBase>(j->ptr());
         TEST_FOR_EXCEPT(cfb.get()==0);
         CellFilter cf = j->ptr();
@@ -569,9 +569,9 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
 {
   Array<Array<Set<CellFilter> > > rtn(fsr_->numUnkBlocks());
 
-  for (unsigned int b=0; b<fsr_->numUnkBlocks(); b++)
+  for (int b=0; b<fsr_->numUnkBlocks(); b++)
   {
-    for (unsigned int i=0; i<fsr_->numUnkIDs(b); i++) 
+    for (int i=0; i<fsr_->numUnkIDs(b); i++) 
     {
       int unkID = fsr_->unreducedUnkID(b, i);
       Set<CellFilter> s;
@@ -580,7 +580,7 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
       for (Set<OrderedHandle<CellFilterStub> >::const_iterator 
              j=cfs.begin(); j!=cfs.end(); j++)
       {
-        RefCountPtr<CellFilterBase> cfb 
+        RCP<CellFilterBase> cfb 
           = rcp_dynamic_cast<CellFilterBase>(j->ptr());
         TEST_FOR_EXCEPT(cfb.get()==0);
         CellFilter cf = j->ptr();
@@ -597,9 +597,9 @@ Array<Array<Set<CellFilter> > > DOFMapBuilder::unkCellFilters() const
 Array<Array<RCP<BasisDOFTopologyBase> > > DOFMapBuilder::testBasisTopologyArray() const 
 {
   Array<Array<RCP<BasisDOFTopologyBase> > > rtn(fsr_->numVarBlocks());
-  for (unsigned int b=0; b<fsr_->numVarBlocks(); b++)
+  for (int b=0; b<fsr_->numVarBlocks(); b++)
   {
-    for (unsigned int i=0; i<fsr_->numVarIDs(b); i++) 
+    for (int i=0; i<fsr_->numVarIDs(b); i++) 
     {
       rtn[b].append(BasisFamily::getBasisTopology(fsr_->varFuncData(b, i)));
     }
@@ -610,9 +610,9 @@ Array<Array<RCP<BasisDOFTopologyBase> > > DOFMapBuilder::testBasisTopologyArray(
 Array<Array<RCP<BasisDOFTopologyBase> > > DOFMapBuilder::unkBasisTopologyArray() const 
 {
   Array<Array<RCP<BasisDOFTopologyBase> > > rtn(fsr_->numUnkBlocks());
-  for (unsigned int b=0; b<fsr_->numUnkBlocks(); b++)
+  for (int b=0; b<fsr_->numUnkBlocks(); b++)
   {
-    for (unsigned int i=0; i<fsr_->numUnkIDs(b); i++) 
+    for (int i=0; i<fsr_->numUnkIDs(b); i++) 
     {
       rtn[b].append(BasisFamily::getBasisTopology(fsr_->unkFuncData(b, i)));
     }
@@ -694,7 +694,7 @@ bool DOFMapBuilder::isSymmetric(int b) const
 
   if (fsr_->numVarIDs(b) != fsr_->numUnkIDs(b)) return false;
 
-  for (unsigned int i=0; i<fsr_->numVarIDs(b); i++) 
+  for (int i=0; i<fsr_->numVarIDs(b); i++) 
   {
     BasisFamily basis1 = BasisFamily::getBasis(fsr_->varFuncData(b,i));
     BasisFamily basis2 = BasisFamily::getBasis(fsr_->unkFuncData(b,i));
@@ -716,11 +716,11 @@ void DOFMapBuilder::markBCRows(int block)
   Array<int>& isBC = *isBCRow_[block];
   for (int i=0; i<ndof; i++) isBC[i] = false;
 
-  RefCountPtr<Array<int> > cellLID = rcp(new Array<int>());
-  Array<RefCountPtr<Array<int> > > cellBatches;
-  const RefCountPtr<DOFMapBase>& rowMap = rowMap_[block];
+  RCP<Array<int> > cellLID = rcp(new Array<int>());
+  Array<RCP<Array<int> > > cellBatches;
+  const RCP<DOFMapBase>& rowMap = rowMap_[block];
 
-  for (unsigned int r=0; r<fsr_->numRegions(); r++)
+  for (int r=0; r<fsr_->numRegions(); r++)
   {
     /* find the cells in this region */
     CellFilter region = fsr_->region(r);
@@ -734,7 +734,7 @@ void DOFMapBuilder::markBCRows(int block)
     {
       cellLID->append(*c);
     }
-    if (cellLID->size() == 0U) continue;
+    if (cellLID->size() == 0) continue;
       
     /* find the functions that appear in BCs on this region */
     const Set<int>& allBcFuncs = fsr_->bcVarsOnRegion(r);
@@ -754,19 +754,19 @@ void DOFMapBuilder::markBCRows(int block)
     Array<Array<int> > dofs;
     Array<int> nNodes;
 
-    RefCountPtr<const MapStructure> s 
+    RCP<const MapStructure> s 
       = rowMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes,0);
     int offset = rowMap->lowestLocalDOF();
     int high = offset + rowMap->numLocalDOFs();
       
-    for (unsigned int c=0; c<cellLID->size(); c++)
+    for (int c=0; c<cellLID->size(); c++)
     {
       for (int b=0; b< s->numBasisChunks(); b++)
       {
         int nFuncs = s->numFuncs(b);
         for (int n=0; n<nNodes[b]; n++)
         {
-          for (unsigned int f=0; f<bcFuncID.size(); f++)
+          for (int f=0; f<bcFuncID.size(); f++)
           {
             int chunk = s->chunkForFuncID(bcFuncID[f]);
             if (chunk != b) continue;
@@ -790,11 +790,11 @@ void DOFMapBuilder::markBCCols(int block)
   Array<int>& isBC = *isBCCol_[block];
   for (int i=0; i<ndof; i++) isBC[i] = false;
 
-  RefCountPtr<Array<int> > cellLID = rcp(new Array<int>());
-  Array<RefCountPtr<Array<int> > > cellBatches;
-  const RefCountPtr<DOFMapBase>& colMap = colMap_[block];
+  RCP<Array<int> > cellLID = rcp(new Array<int>());
+  Array<RCP<Array<int> > > cellBatches;
+  const RCP<DOFMapBase>& colMap = colMap_[block];
 
-  for (unsigned int r=0; r<fsr_->numRegions(); r++)
+  for (int r=0; r<fsr_->numRegions(); r++)
   {
     /* find the cells in this region */
     CellFilter region = fsr_->region(r);
@@ -808,7 +808,7 @@ void DOFMapBuilder::markBCCols(int block)
     {
       cellLID->append(*c);
     }
-    if (cellLID->size() == 0U) continue;
+    if (cellLID->size() == 0) continue;
       
     /* find the functions that appear in BCs on this region */
     const Set<int>& allBcFuncs = fsr_->bcUnksOnRegion(r);
@@ -828,19 +828,19 @@ void DOFMapBuilder::markBCCols(int block)
     Array<Array<int> > dofs;
     Array<int> nNodes;
 
-    RefCountPtr<const MapStructure> s 
+    RCP<const MapStructure> s 
       = colMap->getDOFsForCellBatch(dim, *cellLID, bcFuncs, dofs, nNodes,0);
     int offset = colMap->lowestLocalDOF();
     int high = offset + colMap->numLocalDOFs();
       
-    for (unsigned int c=0; c<cellLID->size(); c++)
+    for (int c=0; c<cellLID->size(); c++)
     {
       for (int b=0; b< s->numBasisChunks(); b++)
       {
         int nFuncs = s->numFuncs(b);
         for (int n=0; n<nNodes[b]; n++)
         {
-          for (unsigned int f=0; f<bcFuncID.size(); f++)
+          for (int f=0; f<bcFuncID.size(); f++)
           {
             int chunk = s->chunkForFuncID(bcFuncID[f]);
             if (chunk != b) continue;
@@ -863,15 +863,15 @@ void DOFMapBuilder::markBCCols(int block)
 
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 
 Array<Array<BasisFamily> > testBasisArray(const RCP<FunctionSupportResolver>& fsr) 
 {
   Array<Array<BasisFamily> > rtn(fsr->numVarBlocks());
-  for (unsigned int b=0; b<fsr->numVarBlocks(); b++)
+  for (int b=0; b<fsr->numVarBlocks(); b++)
   {
-    for (unsigned int i=0; i<fsr->numVarIDs(b); i++) 
+    for (int i=0; i<fsr->numVarIDs(b); i++) 
     {
       rtn[b].append(BasisFamily::getBasis(fsr->varFuncData(b, i)));
     }
@@ -883,9 +883,9 @@ Array<Array<BasisFamily> > testBasisArray(const RCP<FunctionSupportResolver>& fs
 Array<Array<BasisFamily> > unkBasisArray(const RCP<FunctionSupportResolver>& fsr) 
 {
   Array<Array<BasisFamily> > rtn(fsr->numUnkBlocks());
-  for (unsigned int b=0; b<fsr->numUnkBlocks(); b++)
+  for (int b=0; b<fsr->numUnkBlocks(); b++)
   {
-    for (unsigned int i=0; i<fsr->numUnkIDs(b); i++) 
+    for (int i=0; i<fsr->numUnkIDs(b); i++) 
     {
       rtn[b].append(BasisFamily::getBasis(fsr->unkFuncData(b, i)));
     }

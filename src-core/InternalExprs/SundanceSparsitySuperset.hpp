@@ -44,9 +44,9 @@
 #include "Teuchos_Array.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 /**
@@ -66,7 +66,7 @@ enum DerivState {ZeroDeriv, ConstantDeriv, VectorDeriv};
  *
  */
 class SparsitySuperset 
-  : public SundanceUtils::ObjectWithClassVerbosity<SparsitySuperset>
+  : public ObjectWithClassVerbosity<SparsitySuperset>
 {
 public:
           
@@ -126,7 +126,7 @@ public:
   void print(ostream& os) const ;
   /** */
   void print(ostream& os, 
-    const Array<RefCountPtr<EvalVector> >& vecResults,
+    const Array<RCP<EvalVector> >& vecResults,
     const Array<double>& constantResults) const ;
 
   /** */
@@ -152,7 +152,7 @@ private:
 
   /** Map from deriv to position of the derivative's
    * value in the results array */
-  SundanceUtils::Map<MultipleDeriv, int> derivToIndexMap_;
+  Sundance::Map<MultipleDeriv, int> derivToIndexMap_;
 
   /** The list of functional derivatives whose values are
    * stored in this results set */
@@ -180,7 +180,7 @@ namespace std
 {
 /** \relates SparsitySuperset */
 inline std::ostream& operator<<(std::ostream& os,
-  const SundanceCore::SparsitySuperset& s)
+  const Sundance::SparsitySuperset& s)
 {
   s.print(os);
   return os;

@@ -41,9 +41,9 @@
 #include "SundanceExprWithChildren.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -59,7 +59,7 @@ class ExplicitFunctionalDerivativeElement
 public:
   /** */
   ExplicitFunctionalDerivativeElement(
-    const RefCountPtr<ScalarExpr>& arg,
+    const RCP<ScalarExpr>& arg,
     const Deriv& fd
     );
             
@@ -82,7 +82,7 @@ public:
 
 
   /** */
-  virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+  virtual RCP<Array<Set<MultipleDeriv> > > 
   internalDetermineR(const EvalContext& context,
     const Array<Set<MultipleDeriv> >& RInput) const ;
 
@@ -97,7 +97,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   /** */
   void reset() const ;

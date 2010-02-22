@@ -34,10 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceBasisFamily.hpp"
 
-namespace SundanceStdFwk {
+namespace Sundance {
 
-
-using Teuchos::RefCountPtr;
+using namespace Teuchos;
 
 /** 
  * This class is for the representation of a single component
@@ -123,7 +122,7 @@ private:
 };
 
 
-} // namespace SundanceStdFwk
+} // namespace Sundance
 
 
 #endif

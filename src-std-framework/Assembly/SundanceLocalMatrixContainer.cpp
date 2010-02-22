@@ -33,8 +33,8 @@
 #include "SundanceTabs.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 
 
@@ -47,7 +47,7 @@ LocalMatrixContainer::LocalMatrixContainer(const Array<int>& isTwoForm,
     unkID_(unkID),
     coeffs_(coeffs)
 {
-  for (unsigned int i=workspace().size(); i<isTwoForm.size(); i++)
+  for (int i=workspace().size(); i<isTwoForm.size(); i++)
     {
       workspace().append(rcp(new Array<double>()));
       workspace()[i]->reserve(1000);

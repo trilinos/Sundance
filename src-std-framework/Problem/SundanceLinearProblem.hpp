@@ -35,26 +35,18 @@
 #include "SundanceLinearSolveDriver.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
 using namespace Teuchos;
 
-namespace Internal
-{
 class Assembler;
-}
 
 /** 
  * LinearProblem encapsulates all information needed to form
  * a discrete linear problem. 
  */
 class LinearProblem 
-  : public SundanceUtils::ParameterControlledObjectWithVerbosity<LinearProblem>
+  : public Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>
 {
 public:
   /** Empty ctor */
@@ -93,7 +85,7 @@ public:
     bool partitionBCs = false);
 
   /** */
-  LinearProblem(const RefCountPtr<Assembler>& assembler,
+  LinearProblem(const RCP<Assembler>& assembler,
     const ParameterList& verbParams = *defaultVerbParams());
 
   /** Solve the problem using the specified solver algorithm */
@@ -113,18 +105,18 @@ public:
   LinearOperator<double> getOperator() const ;
 
   /** Return the map from cells and functions to row indices */
-  const RefCountPtr<DOFMapBase>& rowMap(int blockRow) const ;
+  const RCP<DOFMapBase>& rowMap(int blockRow) const ;
     
   /** Return the map from cells and functions to column indices */
-  const RefCountPtr<DOFMapBase>& colMap(int blockCol) const ;
+  const RCP<DOFMapBase>& colMap(int blockCol) const ;
 
   /** Return the discrete space in which solutions live */
-  const Array<RefCountPtr<DiscreteSpace> >& solnSpace() const ;
+  const Array<RCP<DiscreteSpace> >& solnSpace() const ;
 
     
   /** Return the set of row indices marked as 
    * essential boundary conditions */
-  const RefCountPtr<Set<int> >& bcRows(int blockRow) const ;
+  const RCP<Set<int> >& bcRows(int blockRow) const ;
 
   /** Return the number of block rows in the problem  */
   int numBlockRows() const ;
@@ -162,14 +154,14 @@ public:
 
     
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams();
+  static RCP<ParameterList> defaultVerbParams();
 
 
 private:
 
       
   /** */
-  RefCountPtr<Assembler> assembler_;
+  RCP<Assembler> assembler_;
 
   /** */
   mutable LinearOperator<double> A_;

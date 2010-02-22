@@ -7,7 +7,7 @@
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   namespace Rivara
   {
@@ -27,8 +27,8 @@ namespace SundanceStdMesh
       /**
        * Construct with two nodes
        */
-      Edge(const RefCountPtr<Node>& a,
-        const RefCountPtr<Node>& b);
+      Edge(const RCP<Node>& a,
+        const RCP<Node>& b);
 
       /**
        * Add an element to the list of elements containing this edge
@@ -49,9 +49,9 @@ namespace SundanceStdMesh
        * Bisect the edge.
        * @return a new node created at the midpoint of the edge
        */
-      RefCountPtr<Node> bisect(RivaraMesh* mesh);
+      RCP<Node> bisect(RivaraMesh* mesh);
 
-      const RefCountPtr<Node>& node(int i) const {return nodes_[i];}
+      const RCP<Node>& node(int i) const {return nodes_[i];}
 
       int ownerProc() const {return ownerProc_;}
 
@@ -77,10 +77,10 @@ namespace SundanceStdMesh
     private:
 
       int label_;
-      Array<RefCountPtr<Node> > nodes_;
+      Array<RCP<Node> > nodes_;
       Array<Element*> elements_;
 
-      RefCountPtr<Node> midpoint_;
+      RCP<Node> midpoint_;
 
       int ownerProc_;
     };

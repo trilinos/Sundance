@@ -34,15 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceQuadratureIntegralBase.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -99,21 +91,21 @@ public:
 				 const Array<int>& isLocalFlag,
 				 const Array<int>& facetIndex,
 				 const double* const coeff,
-				 RefCountPtr<Array<double> >& A) const ;
+				 RCP<Array<double> >& A) const ;
       
   /** */
   virtual void transformTwoForm(const CellJacobianBatch& JTrans,
 				const CellJacobianBatch& JVol,
 				const Array<int>& facetIndex,
 				const double* const coeff,
-				RefCountPtr<Array<double> >& A) const ;
+				RCP<Array<double> >& A) const ;
       
   /** */
   void transformOneForm(const CellJacobianBatch& JTrans,
 			const CellJacobianBatch& JVol,
 			const Array<int>& facetIndex,
 			const double* const coeff,
-			RefCountPtr<Array<double> >& A) const ;
+			RCP<Array<double> >& A) const ;
 
 private:
 
@@ -123,7 +115,7 @@ private:
     const Array<int>& facetIndex,
     const double* const GPtr,
     const double* const coeff,
-    RefCountPtr<Array<double> >& A) const ;
+    RCP<Array<double> >& A) const ;
 
   /** Do the integration by transforming to physical coordinates 
    * at each quadrature point, and then summing */
@@ -131,7 +123,7 @@ private:
     const Array<int>& facetIndex,
     const double* const GPtr,
     const double* const coeff,
-    RefCountPtr<Array<double> >& A) const ;
+    RCP<Array<double> >& A) const ;
 
   /** Determine whether to do this batch of integrals using the
    * sum-first method or the sum-last method */
@@ -180,7 +172,7 @@ private:
   bool useSumFirstMethod_;
       
 };
-}
+
 }
 
 

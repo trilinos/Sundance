@@ -38,15 +38,15 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 DiffOp::DiffOp(const MultiIndex& op, 
-  const RefCountPtr<ScalarExpr>& arg)
+  const RCP<ScalarExpr>& arg)
   : UnaryExpr(arg), mi_(op), myCoordDeriv_(coordDeriv(op.firstOrderDirection())), requiredFunctions_(),
     ignoreFuncTerms_(false)
 {}
@@ -132,7 +132,7 @@ void DiffOp::requestMultiIndexAtEvalPoint(const MultiIndex& mi,
 }
 
 
-RefCountPtr<Array<Set<MultipleDeriv> > > 
+RCP<Array<Set<MultipleDeriv> > > 
 DiffOp::internalDetermineR(const EvalContext& context,
   const Array<Set<MultipleDeriv> >& RInput) const
 {
@@ -142,12 +142,12 @@ DiffOp::internalDetermineR(const EvalContext& context,
   SUNDANCE_MSG3(verb, tab0 << "DiffOp::internalDetermineR for=" << toString());
   SUNDANCE_MSG3(verb, tab0 << "RInput = " << RInput );
 
-  RefCountPtr<Array<Set<MultipleDeriv> > > rtn 
+  RCP<Array<Set<MultipleDeriv> > > rtn 
     = rcp(new Array<Set<MultipleDeriv> >(RInput.size()));
   
   {
     Tabs tab1;
-    for (unsigned int i=0; i<RInput.size(); i++)
+    for (int i=0; i<RInput.size(); i++)
     {
       Tabs tab2;
       const Set<MultipleDeriv>& Wi = findW(i, context);
@@ -165,7 +165,7 @@ DiffOp::internalDetermineR(const EvalContext& context,
 
 
     
-    for (unsigned int order=0; order<RInput.size(); order++)
+    for (int order=0; order<RInput.size(); order++)
     {
       Tabs tab2;
       const Set<MultipleDeriv>& WArgPlus = evaluatableArg()->findW(order+1, context);

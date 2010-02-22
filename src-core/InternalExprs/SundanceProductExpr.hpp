@@ -36,9 +36,9 @@
 #include "SundanceBinaryExpr.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -52,8 +52,8 @@ class ProductExpr : public BinaryExpr
 {
 public:
   /** */
-  ProductExpr(const RefCountPtr<ScalarExpr>& a, 
-    const RefCountPtr<ScalarExpr>& b);
+  ProductExpr(const RCP<ScalarExpr>& a, 
+    const RCP<ScalarExpr>& b);
 
   /** virtual dtor */
   virtual ~ProductExpr() {;}
@@ -121,7 +121,7 @@ public:
     }
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 protected:
   /** */
   virtual bool parenthesizeSelf() const {return true;}

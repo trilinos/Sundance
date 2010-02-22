@@ -3,11 +3,11 @@
 #include "SundanceOut.hpp"
 #include "SundanceBasicSimplicialMeshType.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 MeshSourceBase::MeshSourceBase(const MeshType& meshType,
@@ -52,8 +52,8 @@ Mesh MeshSourceBase::getMesh() const
 }
 
 void MeshSourceBase
-::getAttributes(RefCountPtr<Array<Array<double> > >& nodeAttributes,
-                RefCountPtr<Array<Array<double> > >& elemAttributes) const
+::getAttributes(RCP<Array<Array<double> > >& nodeAttributes,
+                RCP<Array<Array<double> > >& elemAttributes) const
 {
   nodeAttributes = nodeAttributes_;
   elemAttributes = elemAttributes_;

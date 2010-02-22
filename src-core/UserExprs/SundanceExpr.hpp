@@ -41,13 +41,13 @@
 #include <complex>
 
 
-namespace SundanceCore
+namespace Sundance
 {
 
 class ScalarExpr;
 class FuncElementBase;
 
-using namespace SundanceUtils;
+using namespace Sundance;
 /**
  * User-level expression class. Expr is a handle to a
  * reference-counted pointer to a ExprBase subtype. As such,
@@ -192,7 +192,7 @@ using namespace SundanceUtils;
  * Cell diameter expressions are scalar valued.
  * </ul>
  */
-class Expr : public SundanceUtils::Handle<ExprBase>
+class Expr : public Sundance::Handle<ExprBase>
 {
 public:
   /* boilerplate handle ctors */
@@ -247,10 +247,10 @@ public:
   const Expr& operator[](int i) const ;
       
   /** Number of elements in top level of list */
-  unsigned int size() const ;
+  int size() const ;
 
   /** Total number of elements in list. */
-  unsigned int totalSize() const ;
+  int totalSize() const ;
 
   /** Append a new element to this list */
   void append(const Expr& expr);
@@ -335,20 +335,20 @@ public:
   static bool& showAllParens() {static bool rtn = false; return rtn;}
 
   /** Create a new handle for an existing ptr.  */
-  static Expr handle(const RefCountPtr<ExprBase>& ptr)
+  static Expr handle(const RCP<ExprBase>& ptr)
     {return Expr(ptr);}
 
   /** */
   static Time& opTimer() 
     {
-      static RefCountPtr<Time> rtn 
+      static RCP<Time> rtn 
         = TimeMonitor::getNewTimer("Expr symbolic ops"); 
       return *rtn;
     }
   /** */
   static Time& outputTimer() 
     {
-      static RefCountPtr<Time> rtn 
+      static RCP<Time> rtn 
         = TimeMonitor::getNewTimer("Expr output"); 
       return *rtn;
     }
@@ -366,7 +366,7 @@ public:
   bool sameAs(const Expr& other) const ;
 
   /** */
-  SundanceUtils::Map<Expr, int> getSumTree() const ;
+  Sundance::Map<Expr, int> getSumTree() const ;
 
 
 

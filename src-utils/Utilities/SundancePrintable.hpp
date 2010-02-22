@@ -32,7 +32,7 @@
 #include "SundanceDefs.hpp"
 #include <iostream>
 
-namespace SundanceUtils
+namespace Sundance
 {
   /**
    * Printable defines an interface for writing an object to a stream. 

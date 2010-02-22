@@ -37,9 +37,9 @@
 #include "SundanceDerivOfSymbFuncEvaluator.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -54,7 +54,7 @@ class DerivOfSymbFunc : public DiffOp
 public:
   /** ctor */
   DerivOfSymbFunc(const MultiIndex& op, 
-    const RefCountPtr<ScalarExpr>& arg);
+    const RCP<ScalarExpr>& arg);
 
   /** virtual destructor */
   virtual ~DerivOfSymbFunc() {;}
@@ -63,7 +63,7 @@ public:
   const FunctionIdentifier& argFid() const {return argFid_;}
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   /** */
   virtual Evaluator* createEvaluator(const EvaluatableExpr* expr,

@@ -36,81 +36,76 @@
 #include "SundanceCellSet.hpp"
 #include "SundanceCellFilterBase.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace Teuchos;
+using namespace Teuchos;
   
 
-  /** 
-   * 
-   */
-  class CFMeshPair 
-  {
-  public:
-    /** */
-    CFMeshPair();
-    /** */
-    CFMeshPair(const CellFilter& cf,
-               const Mesh& mesh,
-               const Set<int>& funcs);
-
-    /** */
-    bool operator<(const CFMeshPair& other) const ;
-
-    /** */
-    bool isEmpty() const ;
-
-    /** */
-    const CellFilter& filter() const {return filter_;}
-
-    /** */
-    const Mesh& mesh() const {return mesh_;}
-
-    /** */
-    const CellSet& cellSet() const {return cellSet_;}
-
-    /** */
-    const Set<int>& funcs() const {return funcs_;}
-
-    /** */
-    CFMeshPair setMinus(const CFMeshPair& other) const ;
-
-    /** */
-    CFMeshPair intersection(const CFMeshPair& other) const ;
-
-  private:
-    CellFilter filter_;
-    Mesh mesh_;
-    CellSet cellSet_;
-    Set<int> funcs_;
-  };
+/** 
+ * 
+ */
+class CFMeshPair 
+{
+public:
+  /** */
+  CFMeshPair();
+  /** */
+  CFMeshPair(const CellFilter& cf,
+    const Mesh& mesh,
+    const Set<int>& funcs);
 
   /** */
-  Array<CFMeshPair> resolvePair(const CFMeshPair& a, 
-                                const CFMeshPair& b);
-  /** */
-  Array<CFMeshPair> resolveSets(const Array<CFMeshPair>& s);
+  bool operator<(const CFMeshPair& other) const ;
 
   /** */
-  Array<CFMeshPair>
-  findDisjointFilters(const Array<CellFilter>& filters,
-                      const Array<Set<int> >& funcs,
-                      const Mesh& mesh);
+  bool isEmpty() const ;
+
+  /** */
+  const CellFilter& filter() const {return filter_;}
+
+  /** */
+  const Mesh& mesh() const {return mesh_;}
+
+  /** */
+  const CellSet& cellSet() const {return cellSet_;}
+
+  /** */
+  const Set<int>& funcs() const {return funcs_;}
+
+  /** */
+  CFMeshPair setMinus(const CFMeshPair& other) const ;
+
+  /** */
+  CFMeshPair intersection(const CFMeshPair& other) const ;
+
+private:
+  CellFilter filter_;
+  Mesh mesh_;
+  CellSet cellSet_;
+  Set<int> funcs_;
+};
+
+/** */
+Array<CFMeshPair> resolvePair(const CFMeshPair& a, 
+  const CFMeshPair& b);
+/** */
+Array<CFMeshPair> resolveSets(const Array<CFMeshPair>& s);
+
+/** */
+Array<CFMeshPair>
+findDisjointFilters(const Array<CellFilter>& filters,
+  const Array<Set<int> >& funcs,
+  const Mesh& mesh);
+
+
+inline std::ostream& operator<<(std::ostream& os, 
+  const CFMeshPair& c)
+{
+  os << c.filter().getCells(c.mesh());
+  return os;
 }
 
 
-namespace std
-{
-  inline ostream& operator<<(ostream& os, 
-                             const SundanceStdFwk::CFMeshPair& c)
-  {
-    os << c.filter().getCells(c.mesh());
-    return os;
-  }
 }
 
 

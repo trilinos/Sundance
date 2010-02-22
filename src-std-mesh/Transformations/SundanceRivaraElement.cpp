@@ -6,15 +6,15 @@
 
 
 
-using namespace SundanceStdMesh::Rivara;
+using namespace Sundance::Rivara;
 using namespace Teuchos;
 using std::endl;
 
 
 Element::Element(RivaraMesh* mesh,
-                 const RefCountPtr<Node>& a,
-                 const RefCountPtr<Node>& b,
-                 const RefCountPtr<Node>& c,
+                 const RCP<Node>& a,
+                 const RCP<Node>& b,
+                 const RCP<Node>& c,
   int ownerProc,
   int label)
   : label_(label),
@@ -36,10 +36,10 @@ Element::Element(RivaraMesh* mesh,
 }
 
 Element::Element(RivaraMesh* mesh,
-                 const RefCountPtr<Node>& a,
-                 const RefCountPtr<Node>& b,
-                 const RefCountPtr<Node>& c,
-                 const RefCountPtr<Node>& d,
+                 const RCP<Node>& a,
+                 const RCP<Node>& b,
+                 const RCP<Node>& c,
+                 const RCP<Node>& d,
   int ownerProc,
   int label)
   : label_(label),
@@ -132,7 +132,7 @@ void Element::refine(RivaraMesh* mesh, double maxArea)
 			 * Nodes a and b are on the longest edge.
 			 * Node c is opposite the longest edge.
 			 */
-			RefCountPtr<Node> a, b, c;
+			RCP<Node> a, b, c;
 			if (edgeSigns_[e] > 0)
 				{
 					a = edges_[e]->node(0);
@@ -153,7 +153,7 @@ void Element::refine(RivaraMesh* mesh, double maxArea)
 
 			/* bisect the edge, creating a new node at the midpoint and two child
 			 * edges */
-			RefCountPtr<Node> mid = edges_[e]->bisect(mesh);
+			RCP<Node> mid = edges_[e]->bisect(mesh);
 
 			/* create the triangles defined by bisecting the longest edge */
 			sub1 = new Element(mesh, a, mid, c, ownerProc_, label_);
@@ -166,7 +166,7 @@ void Element::refine(RivaraMesh* mesh, double maxArea)
 			 * Nodes c and d are on the edge that does not intersect the 
 			 * longest edge.
 			 */
-			RefCountPtr<Node> a, b, c, d;
+			RCP<Node> a, b, c, d;
 			if (edgeSigns_[e] > 0)
 				{
 					a = edges_[e]->node(0);
@@ -180,8 +180,8 @@ void Element::refine(RivaraMesh* mesh, double maxArea)
 			/* find the edge whose nodes are not on the longest edge */
 			for (int i=0; i<edges_.length(); i++)
 				{
-					const RefCountPtr<Node>& node1 = edges_[i]->node(0);
-					const RefCountPtr<Node>& node2 = edges_[i]->node(1);
+					const RCP<Node>& node1 = edges_[i]->node(0);
+					const RCP<Node>& node2 = edges_[i]->node(1);
 					if (node1.get()==a.get() || node1.get()==b.get()
 							|| node2.get()==a.get() || node2.get()==b.get())
 						{
@@ -202,7 +202,7 @@ void Element::refine(RivaraMesh* mesh, double maxArea)
 
 			/* bisect the edge, creating a new node at the midpoint and two child
 			 * edges */
-			RefCountPtr<Node> mid = edges_[e]->bisect(mesh);
+			RCP<Node> mid = edges_[e]->bisect(mesh);
 
 			/* create the tets defined by bisecting the longest edge */
 			sub1 = new Element(mesh, a, mid, c, d, ownerProc_, label_);
@@ -213,15 +213,15 @@ void Element::refine(RivaraMesh* mesh, double maxArea)
       
       if (label_ != -1)
       {
-        RefCountPtr<Face> abc = mesh->getFace(a,b,c);
-        RefCountPtr<Face> abd = mesh->getFace(a,b,d);
-        RefCountPtr<Face> acd = mesh->getFace(a,c,d);
-        RefCountPtr<Face> bcd = mesh->getFace(b,c,d);
+        RCP<Face> abc = mesh->getFace(a,b,c);
+        RCP<Face> abd = mesh->getFace(a,b,d);
+        RCP<Face> acd = mesh->getFace(a,c,d);
+        RCP<Face> bcd = mesh->getFace(b,c,d);
         
-        RefCountPtr<Face> amd = mesh->getFace(a,mid,d);
-        RefCountPtr<Face> amc = mesh->getFace(a,mid,c);
-        RefCountPtr<Face> bmc = mesh->getFace(b,mid,c);
-        RefCountPtr<Face> bmd = mesh->getFace(b,mid,d);
+        RCP<Face> amd = mesh->getFace(a,mid,d);
+        RCP<Face> amc = mesh->getFace(a,mid,c);
+        RCP<Face> bmc = mesh->getFace(b,mid,c);
+        RCP<Face> bmd = mesh->getFace(b,mid,d);
         
         amd->setLabel(abd->label());
         amc->setLabel(abc->label());
@@ -255,7 +255,7 @@ void Element::refine(RivaraMesh* mesh, double maxArea)
     sub2->refine(mesh, maxArea);
 }
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 inline Point cross3(const Point& a, const Point& b)
 {

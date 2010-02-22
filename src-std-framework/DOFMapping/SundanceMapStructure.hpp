@@ -36,18 +36,15 @@
 #include "Teuchos_Array.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-class BasisDOFTopologyBase;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
+class BasisDOFTopologyBase;
 
+/** 
+ * 
+ */
 class MapStructure
 {
 public:
@@ -104,18 +101,14 @@ Array<RCP<BasisDOFTopologyBase> > replicate(
   const RCP<BasisDOFTopologyBase>& model,
   int n);
 
-}
-}
 
 
-namespace SundanceStdFwk{
-namespace Internal
-{
+/** \relates MapStructure */
 inline std::ostream& operator<<(std::ostream& os,
   const MapStructure& m)
 {
   return m.print(os);
 }
 
-}}
+}
 #endif

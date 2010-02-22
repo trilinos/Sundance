@@ -37,15 +37,15 @@
 
 
 
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
 
 
-SumExpr::SumExpr(const RefCountPtr<ScalarExpr>& left,
-  const RefCountPtr<ScalarExpr>& right, int sign)
+SumExpr::SumExpr(const RCP<ScalarExpr>& left,
+  const RCP<ScalarExpr>& right, int sign)
 	: BinaryExpr(left, right, sign), sumTree_()
 {
   /*

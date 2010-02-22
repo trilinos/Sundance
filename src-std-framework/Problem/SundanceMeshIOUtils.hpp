@@ -5,7 +5,7 @@
 #include "SundanceFileIOChacoPartitioner.hpp"
 #include "SundanceCellLIDMappedFieldWrapper.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 
 /** Read the node-based fields from a mesher */

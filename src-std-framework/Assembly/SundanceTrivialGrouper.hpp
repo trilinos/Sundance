@@ -34,15 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceGrouperBase.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -65,13 +57,13 @@ public:
     const CellType& cellType,
     int cellDim,
     const QuadratureFamily& quad,
-    const RefCountPtr<SparsitySuperset>& sparsity,
+    const RCP<SparsitySuperset>& sparsity,
     bool isInternalBdry,                              
     Array<RCP<IntegralGroup> >& groups) const ;
                               
 };
 
-}
+
 }
 
 

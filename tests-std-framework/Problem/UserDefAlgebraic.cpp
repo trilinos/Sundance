@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 
       /* Create a discrete space, and discretize the function 1.5 on it */
       BasisFamily L1 = new Lagrange(1);
-      DiscreteSpace discSpace(mesh, SundanceStdFwk::List(L1, L1), vecType);
+      DiscreteSpace discSpace(mesh, Sundance::List(L1, L1), vecType);
       Expr u0 = new DiscreteFunction(discSpace, 1.5, "u0");
 
       Expr f1 = new UserDefOp(List(u1, u2), rcp(new F1()));

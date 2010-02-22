@@ -43,9 +43,9 @@
 #include "SundanceUserDefOpEvaluator.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -61,9 +61,9 @@ class UserDefOpElement : virtual public ExprWithChildren
 {
 public:
   /** */
-  UserDefOpElement(const Array<RefCountPtr<ScalarExpr> >& args,
-    const RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > >& evalMap,
-    const RefCountPtr<const UserDefFunctorElement>& functorElement);
+  UserDefOpElement(const Array<RCP<ScalarExpr> >& args,
+    const RCP<Sundance::Map<EvalContext, RCP<const UserDefOpCommonEvaluator> > >& evalMap,
+    const RCP<const UserDefFunctorElement>& functorElement);
 
   /** virtual destructor */
   virtual ~UserDefOpElement() {;}
@@ -83,7 +83,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   /** Access to the functor underlying this object */
   const UserDefFunctorElement* functorElement() const 
@@ -98,18 +98,18 @@ public:
 
   /** */
   virtual void getArgDerivIndices(const Array<int>& orders,
-    SundanceUtils::Map<MultiSet<int>, int>& varArgDerivs,
-    SundanceUtils::Map<MultiSet<int>, int>& constArgDerivs) const ;
+    Sundance::Map<MultiSet<int>, int>& varArgDerivs,
+    Sundance::Map<MultiSet<int>, int>& constArgDerivs) const ;
 
 protected:
   /** Get an evaluator that will be common to all vector elements of 
    * this operator */
-  RefCountPtr<const UserDefOpCommonEvaluator> 
+  RCP<const UserDefOpCommonEvaluator> 
   getCommonEvaluator(const EvalContext& context) const ;
           
 private:
-  mutable RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > > commonEvaluatorsMap_;
-  const RefCountPtr<const UserDefFunctorElement> functorElement_;
+  mutable RCP<Sundance::Map<EvalContext, RCP<const UserDefOpCommonEvaluator> > > commonEvaluatorsMap_;
+  const RCP<const UserDefFunctorElement> functorElement_;
 };
 }
 

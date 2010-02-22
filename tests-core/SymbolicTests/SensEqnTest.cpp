@@ -14,12 +14,10 @@
 
 
 
-using namespace SundanceUtils;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
-using SundanceCore::List;
+using Sundance::List;
 
 int main()
 {
@@ -60,7 +58,7 @@ int main()
   Out::os() << "num unk params=" << eqn.numUnkParams() << endl;
   Out::os() << "num fixed params=" << eqn.numFixedParams() << endl;
 
-  for (unsigned int r=0; r<eqn.numRegions(); r++)
+  for (int r=0; r<eqn.numRegions(); r++)
   {
     const RegionQuadCombo& rqc = eqn.regionQuadCombos()[r];
     const DerivSet& derivs = eqn.nonzeroFunctionalDerivs(Sensitivities, rqc);

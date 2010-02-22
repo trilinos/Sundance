@@ -96,7 +96,7 @@ int main(int argc, char** argv)
     
     DOFMapBuilder builder(mesh, fsr, false);
 
-    for (unsigned int br = 0; br<builder.rowMap().size(); br++)
+    for (int br = 0; br<builder.rowMap().size(); br++)
     {
       RCP<DOFMapBase> rm = builder.rowMap()[br];
       rm->print(Out::os());

@@ -30,15 +30,15 @@
 
 #include "SundanceNonlinearUnaryOp.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
-NonlinearUnaryOp::NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg,
-  const RefCountPtr<UnaryFunctor>& op)
+NonlinearUnaryOp::NonlinearUnaryOp(const RCP<ScalarExpr>& arg,
+  const RCP<UnaryFunctor>& op)
   : UnaryExpr(arg), op_(op)
 {
 }

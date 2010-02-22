@@ -9,7 +9,7 @@
 #include "Teuchos_RefCountPtr.hpp"
 
 
-namespace SundanceUtils
+namespace Sundance
 {
 Teuchos::ParameterList mergeParamLists(
   const Teuchos::ParameterList& pDefault, 

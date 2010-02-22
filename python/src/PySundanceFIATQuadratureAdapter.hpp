@@ -36,13 +36,9 @@
 #include "SundanceQuadratureFamilyBase.hpp"
 #include "Python.h"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore::Internal;
   using namespace Teuchos;
-  using namespace Internal;
 
   /** 
    * Family of optimal Gaussian integration rules, e.g., Gauss-Legendre on 

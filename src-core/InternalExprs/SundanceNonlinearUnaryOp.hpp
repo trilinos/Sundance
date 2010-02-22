@@ -42,9 +42,9 @@
 #include "SundanceNonlinearUnaryOpEvaluator.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -58,8 +58,8 @@ class NonlinearUnaryOp : public UnaryExpr,
 {
 public:
   /** construct with an argument and the functor defining the operation */
-  NonlinearUnaryOp(const RefCountPtr<ScalarExpr>& arg, 
-    const RefCountPtr<UnaryFunctor>& op);
+  NonlinearUnaryOp(const RCP<ScalarExpr>& arg, 
+    const RCP<UnaryFunctor>& op);
 
   /** virtual destructor */
   virtual ~NonlinearUnaryOp() {;}
@@ -75,7 +75,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 
   /** Access to the operator */
@@ -87,7 +87,7 @@ public:
 
 private:
       
-  RefCountPtr<UnaryFunctor> op_;
+  RCP<UnaryFunctor> op_;
 
 };
 }

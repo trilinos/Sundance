@@ -11,7 +11,7 @@
   %}
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 class Functional
   {
@@ -20,39 +20,39 @@ class Functional
     Functional(){;}
 
     /** */
-    Functional(const SundanceStdMesh::Mesh& mesh, 
-      const SundanceCore::Expr& integral, 
+    Functional(const Sundance::Mesh& mesh, 
+      const Sundance::Expr& integral, 
       const TSFExtended::VectorType<double>& vecType);
 
     /** */
-    Functional(const SundanceStdMesh::Mesh& mesh, 
-      const SundanceCore::Expr& integral, 
-      const SundanceCore::Expr& essentialBC,
+    Functional(const Sundance::Mesh& mesh, 
+      const Sundance::Expr& integral, 
+      const Sundance::Expr& essentialBC,
       const TSFExtended::VectorType<double>& vecType);
 
     /** */
     NonlinearProblem
-    nonlinearVariationalProb(const SundanceCore::Expr& var,
-                             const SundanceCore::Expr& varEvalPts,
-                             const SundanceCore::Expr& unk,
-                             const SundanceCore::Expr& unkEvalPts,
-                             const SundanceCore::Expr& fixed,
-                             const SundanceCore::Expr& fixedEvalPts) const ;
+    nonlinearVariationalProb(const Sundance::Expr& var,
+                             const Sundance::Expr& varEvalPts,
+                             const Sundance::Expr& unk,
+                             const Sundance::Expr& unkEvalPts,
+                             const Sundance::Expr& fixed,
+                             const Sundance::Expr& fixedEvalPts) const ;
 
 
     /** */
-    FunctionalEvaluator evaluator(const SundanceCore::Expr& var,
-                                  const SundanceCore::Expr& varEvalPts,
-                                  const SundanceCore::Expr& fixed,
-                                  const SundanceCore::Expr& fixedEvalPts) const ;
+    FunctionalEvaluator evaluator(const Sundance::Expr& var,
+                                  const Sundance::Expr& varEvalPts,
+                                  const Sundance::Expr& fixed,
+                                  const Sundance::Expr& fixedEvalPts) const ;
 
 
     /** */
-    FunctionalEvaluator evaluator(const SundanceCore::Expr& var,
-                                  const SundanceCore::Expr& varEvalPts) const ;
+    FunctionalEvaluator evaluator(const Sundance::Expr& var,
+                                  const Sundance::Expr& varEvalPts) const ;
 
     /** */
-    const SundanceStdMesh::Mesh& mesh() const ;
+    const Sundance::Mesh& mesh() const ;
 };
 
 class FunctionalEvaluator 
@@ -63,25 +63,25 @@ public:
   FunctionalEvaluator();
 
   /** */
-  FunctionalEvaluator(const SundanceStdMesh::Mesh& mesh, 
-    const SundanceCore::Expr& integral,
+  FunctionalEvaluator(const Sundance::Mesh& mesh, 
+    const Sundance::Expr& integral,
     const Teuchos::ParameterList& verbParams = *defaultVerbParams());
   /** */
-  FunctionalEvaluator(const SundanceStdMesh::Mesh& mesh, 
-    const SundanceCore::Expr& integral,
-    const SundanceCore::Expr& bcs,
-    const SundanceCore::Expr& var,
-    const SundanceCore::Expr& varEvalPts,
+  FunctionalEvaluator(const Sundance::Mesh& mesh, 
+    const Sundance::Expr& integral,
+    const Sundance::Expr& bcs,
+    const Sundance::Expr& var,
+    const Sundance::Expr& varEvalPts,
     const TSFExtended::VectorType<double>& vectorType,
     const Teuchos::ParameterList& verbParams = *defaultVerbParams());
   /** */
-  FunctionalEvaluator(const SundanceStdMesh::Mesh& mesh, 
-    const SundanceCore::Expr& integral,
-    const SundanceCore::Expr& bcs,
-    const SundanceCore::Expr& vars,
-    const SundanceCore::Expr& varEvalPts,
-    const SundanceCore::Expr& fields,
-    const SundanceCore::Expr& fieldValues,
+  FunctionalEvaluator(const Sundance::Mesh& mesh, 
+    const Sundance::Expr& integral,
+    const Sundance::Expr& bcs,
+    const Sundance::Expr& vars,
+    const Sundance::Expr& varEvalPts,
+    const Sundance::Expr& fields,
+    const Sundance::Expr& fieldValues,
     const TSFExtended::VectorType<double>& vectorType,
     const Teuchos::ParameterList& verbParams = *defaultVerbParams());
 
@@ -90,7 +90,7 @@ public:
   double evaluate() const ;
 
   /** */
-  SundanceCore::Expr evalGradient(double& value) const ;
+  Sundance::Expr evalGradient(double& value) const ;
 
   /** */
   double fdGradientCheck(double h) const ;

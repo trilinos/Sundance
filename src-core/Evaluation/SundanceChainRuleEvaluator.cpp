@@ -39,10 +39,10 @@
 #include "SundanceOut.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -69,7 +69,7 @@ ChainRuleEvaluator::ChainRuleEvaluator(const ExprWithChildren* expr,
   }
 }
 
-SundanceUtils::Map<OrderedPair<int, int>, Array<Array<int> > >& ChainRuleEvaluator::compMap()
+Sundance::Map<OrderedPair<int, int>, Array<Array<int> > >& ChainRuleEvaluator::compMap()
 {
   static Map<OrderedPair<int, int>, Array<Array<int> > > rtn;
   return rtn;
@@ -151,7 +151,7 @@ double ChainRuleEvaluator::stirling2(int n, int k) const
 MultipleDeriv ChainRuleEvaluator::makeMD(const Array<Deriv>& d) 
 {
   MultipleDeriv rtn;
-  for (unsigned int i=0; i<d.size(); i++)
+  for (int i=0; i<d.size(); i++)
   {
     rtn.put(d[i]);
   }
@@ -167,10 +167,10 @@ Set<MultiSet<MultipleDeriv> > ChainRuleEvaluator::chainRuleBins(const MultipleDe
 
   Set<MultiSet<MultipleDeriv> > rtn;
 
-  for (unsigned int i=0; i<bins.size(); i++)
+  for (int i=0; i<bins.size(); i++)
   {
     MultiSet<MultipleDeriv> b;
-    for (unsigned int j=0; j<bins[i].size(); j++)
+    for (int j=0; j<bins[i].size(); j++)
     {
       b.put(makeMD(bins[i][j]));
     }
@@ -309,7 +309,7 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
 
 
       
-    RefCountPtr<ChainRuleSum> sum 
+    RCP<ChainRuleSum> sum 
       = rcp(new ChainRuleSum(*md, resultIndex, resultIsConstant));
 
     const MultipleDeriv& nu = *md;
@@ -355,16 +355,16 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
             SUNDANCE_MSG3(verb, tab5 << "weight=" << weight);
             DerivProduct prod(weight);
             bool termIsZero = false;
-            for (unsigned int j=0; j<K.size(); j++)
+            for (int j=0; j<K.size(); j++)
             {
               for (MultiSet<int>::const_iterator 
                      k=K[j].begin(); k!=K[j].end(); k++)
               {
                 int argIndex = *k;
                 const MultipleDeriv& derivOfArg = L[j];
-                const RefCountPtr<SparsitySuperset>& argSp 
+                const RCP<SparsitySuperset>& argSp 
                   = childSparsity_[argIndex];
-                const RefCountPtr<Evaluator>& argEv
+                const RCP<Evaluator>& argEv
                   = childEvaluators_[argIndex];
                                
                 int rawValIndex = argSp->getIndex(derivOfArg);
@@ -418,7 +418,7 @@ void ChainRuleEvaluator::init(const ExprWithChildren* expr,
 
 void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   Array<double>& constantResults,
-  Array<RefCountPtr<EvalVector> >& vectorResults) const 
+  Array<RCP<EvalVector> >& vectorResults) const 
 {
   TimeMonitor timer(chainRuleEvalTimer());
   Tabs tabs;
@@ -439,11 +439,11 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   SUNDANCE_MSG3(mgr.verb(),tabs << "num var results: " 
     << this->sparsity()->numVectorDerivs());
 
-  Array<RefCountPtr<Array<double> > > constantArgResults(numChildren());
-  Array<RefCountPtr<Array<RefCountPtr<EvalVector> > > > varArgResults(numChildren());
+  Array<RCP<Array<double> > > constantArgResults(numChildren());
+  Array<RCP<Array<RCP<EvalVector> > > > varArgResults(numChildren());
 
   Array<double> constantArgDerivs;
-  Array<RefCountPtr<EvalVector> > varArgDerivs;
+  Array<RCP<EvalVector> > varArgDerivs;
 
   for (int i=0; i<numChildren(); i++)
   {
@@ -452,7 +452,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
       << i);
                          
     constantArgResults[i] = rcp(new Array<double>());
-    varArgResults[i] = rcp(new Array<RefCountPtr<EvalVector> >());
+    varArgResults[i] = rcp(new Array<RCP<EvalVector> >());
     childEvaluators_[i]->eval(mgr, *(constantArgResults[i]), 
       *(varArgResults[i]));
     if (mgr.verb() > 2)
@@ -460,7 +460,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
       Out::os() << tabs << "constant arg #" << i << 
         " results:" << *(constantArgResults[i]) << endl;
       Out::os() << tabs << "variable arg #" << i << " derivs:" << endl;
-      for (unsigned int j=0; j<varArgResults[i]->size(); j++)
+      for (int j=0; j<varArgResults[i]->size(); j++)
       {
         Tabs tab1;
         Out::os() << tab1 << j << " ";
@@ -478,7 +478,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   {
     Out::os() << tabs << "constant arg derivs:" << constantArgDerivs << endl;
     Out::os() << tabs << "variable arg derivs:" << endl;
-    for (unsigned int i=0; i<varArgDerivs.size(); i++)
+    for (int i=0; i<varArgDerivs.size(); i++)
     {
       Tabs tab1;
       Out::os() << tab1 << i << " ";
@@ -488,7 +488,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
   }
   
 
-  for (unsigned int i=0; i<expansions_.size(); i++)
+  for (int i=0; i<expansions_.size(); i++)
   {
     Tabs tab1;
     int resultIndex = expansions_[i]->resultIndex();
@@ -544,7 +544,7 @@ void ChainRuleEvaluator::internalEval(const EvalManager& mgr,
 
 
 
-namespace SundanceCore {
+namespace Sundance {
 
 MultipleDeriv makeDeriv(const Expr& a)
 {
@@ -609,4 +609,4 @@ MultipleDeriv makeDeriv(const Expr& a, const Expr& b, const Expr& c)
   return rtn;
 }
 
-} // namespace SundanceCore
+} // namespace Sundance

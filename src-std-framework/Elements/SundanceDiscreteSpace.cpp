@@ -36,12 +36,12 @@
 #include "TSFProductVectorSpaceImpl.hpp"
 #include "Teuchos_MPIContainerComm.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 const int* vecPtr(const Array<int>& x)
@@ -124,8 +124,8 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-  const RefCountPtr<DOFMapBase>& map,
-  const RefCountPtr<Array<int> >& bcIndices,
+  const RCP<DOFMapBase>& map,
+  const RCP<Array<int> >& bcIndices,
   const VectorType<double>& vecType)
   : map_(map), 
     mesh_(mesh),
@@ -139,7 +139,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const RefCountPtr<DOFMapBase>& map,
+                             const RCP<DOFMapBase>& map,
                              const VectorType<double>& vecType)
   : map_(map), 
     mesh_(mesh),
@@ -184,7 +184,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-      const RefCountPtr<FunctionSupportResolver>& fsr,
+      const RCP<FunctionSupportResolver>& fsr,
       const VectorType<double>& vecType)
   : map_(), 
     mesh_(mesh), 
@@ -200,7 +200,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
   map_ = builder.colMap()[0];
   Array<Set<CellFilter> > cf = builder.unkCellFilters()[0];
 
-  for (unsigned int i=0; i<cf.size(); i++)
+  for (int i=0; i<cf.size(); i++)
   {
     Array<Array<CellFilter> > dimCF(mesh.spatialDim()+1);
     for (Set<CellFilter>::const_iterator 
@@ -214,7 +214,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     {
       if (dimCF[d].size() == 0) continue;
       CellFilter f = dimCF[d][0];
-      for (unsigned int j=1; j<dimCF[d].size(); j++)
+      for (int j=1; j<dimCF[d].size(); j++)
       {
         f = f + dimCF[d][j];
       }
@@ -222,7 +222,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
       break;
     }
   }
-  RefCountPtr<Array<int> > dummyBCIndices;
+  RCP<Array<int> > dummyBCIndices;
   
 
   initVectorSpace(dummyBCIndices, partitionBCs);
@@ -233,20 +233,20 @@ void DiscreteSpace::init(
   const Array<CellFilter>& regions,
   const BasisArray& basis)
 {
-  RefCountPtr<Array<int> > dummyBCIndices;
+  RCP<Array<int> > dummyBCIndices;
   init(regions, basis, dummyBCIndices, false);
 }
 
 void DiscreteSpace::init(
   const Array<CellFilter>& regions,
   const BasisArray& basis,
-  const RefCountPtr<Array<int> >& isBCIndex, 
+  const RCP<Array<int> >& isBCIndex, 
   bool partitionBCs)
 {
   basis_ = basis;
   subdomains_ = regions;
   Array<RCP<BasisDOFTopologyBase> > basisTop(basis.size());
-  for (unsigned int b=0; b<basis.size(); b++)
+  for (int b=0; b<basis.size(); b++)
   {
     basisTop[b] = rcp_dynamic_cast<BasisDOFTopologyBase>(basis[b].ptr());
   }
@@ -254,7 +254,7 @@ void DiscreteSpace::init(
   if (map_.get()==0) 
     {
       Array<Set<CellFilter> > cf(regions.size());
-      for (unsigned int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
+      for (int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
       DOFMapBuilder b;
       map_ = b.makeMap(mesh_, basisTop, cf);
     }
@@ -268,7 +268,7 @@ void DiscreteSpace::init(
 }
 
 void DiscreteSpace::initVectorSpace(
-  const RefCountPtr<Array<int> >& isBCIndex, 
+  const RCP<Array<int> >& isBCIndex, 
   bool partitionBCs)
 {
   TEST_FOR_EXCEPTION(map_.get()==0, InternalError,
@@ -329,7 +329,7 @@ void DiscreteSpace::initImporter()
   TEST_FOR_EXCEPTION(vecType_.ptr().get()==0, InternalError,
     "uninitialized vector type");
   
-  RefCountPtr<Array<int> > ghostIndices = map_->ghostIndices();
+  RCP<Array<int> > ghostIndices = map_->ghostIndices();
   int nGhost = ghostIndices->size();
   int* ghosts = 0;
   if (nGhost!=0) ghosts = &((*ghostIndices)[0]);
@@ -347,7 +347,7 @@ Array<CellFilter> DiscreteSpace::maximalRegions(int n) const
 
 
 void DiscreteSpace::importGhosts(const Vector<double>& x,
-                                 RefCountPtr<GhostView<double> >& ghostView) const
+                                 RCP<GhostView<double> >& ghostView) const
 {
   ghostImporter_->importView(x, ghostView);
 }

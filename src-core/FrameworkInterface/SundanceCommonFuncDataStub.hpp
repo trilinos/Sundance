@@ -34,7 +34,7 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 /** 
  * CommonFuncDataStub is a placeholder for data to be shared between

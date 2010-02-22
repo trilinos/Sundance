@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
       /* create the nox solver */
 
 #ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(SundanceUtils::searchForFile("SolverParameters/nox.xml"));
+      ParameterXMLFileReader reader(Sundance::searchForFile("SolverParameters/nox.xml"));
 #else
       ParameterXMLFileReader reader("nox.xml");
 #endif

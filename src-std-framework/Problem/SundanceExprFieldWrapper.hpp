@@ -32,9 +32,6 @@
 #define SUNDANCE_EXPRFIELDWRAPPER_H
 
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-
 #include "SundanceDefs.hpp"
 #include "SundanceHandleable.hpp"
 #include "SundanceFieldBase.hpp"
@@ -42,70 +39,64 @@
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceExpr.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  namespace Internal
-  {
-    using namespace SundanceCore;
-    using namespace SundanceCore;
-    using namespace SundanceStdMesh;
-    using namespace SundanceStdMesh::Internal;
+using namespace Teuchos;
+
     
-    /**
-     *
-     */
-    class ExprFieldWrapper : public FieldBase
-    {
-    public:
-      /** */
-      ExprFieldWrapper(const Expr& expr) ;
+/**
+ *
+ */
+class ExprFieldWrapper : public FieldBase
+{
+public:
+  /** */
+  ExprFieldWrapper(const Expr& expr) ;
 
-      /** virtual dtor */
-      virtual ~ExprFieldWrapper(){;}
+  /** virtual dtor */
+  virtual ~ExprFieldWrapper(){;}
 
-      /** */
-      virtual double getData(int cellDim, int cellID, int elem) const ;
+  /** */
+  virtual double getData(int cellDim, int cellID, int elem) const ;
 
-      /** */
-      virtual bool isDefined(int cellDim, int cellID, int elem) const ;
+  /** */
+  virtual bool isDefined(int cellDim, int cellID, int elem) const ;
 
-      /** */
-      virtual int numElems() const {return Expr_size_;}
+  /** */
+  virtual int numElems() const {return Expr_size_;}
 
-      /** */
-      virtual bool isPointData() const {return isPointData_;}
+  /** */
+  virtual bool isPointData() const {return isPointData_;}
 
-      /* */
-      GET_RCP(FieldBase);
-      /**
-       * Return the cell filter on which this field is defined 
-       */
-      virtual const CellFilter& domain() const 
-        { // here we return only the first element ()
-          return discreteSpace_.cellFilters(indices_[0][0]);
-        }
+  /* */
+  GET_RCP(FieldBase);
+  /**
+   * Return the cell filter on which this field is defined 
+   */
+  virtual const CellFilter& domain() const 
+    { // here we return only the first element ()
+      return discreteSpace_.cellFilters(indices_[0][0]);
+    }
 
-    public:
-      Expr expr_;
+public:
+  Expr expr_;
 
-       // this field should be unique for all the variables
-       const DiscreteFunctionData* df_;
+  // this field should be unique for all the variables
+  const DiscreteFunctionData* df_;
 
-       DiscreteSpace discreteSpace_;
+  DiscreteSpace discreteSpace_;
 
-       // ---- this field can be expicitly asked -----
-       //RefCountPtr<DOFMapBase> map_;
+  // ---- this field can be expicitly asked -----
+  //RCP<DOFMapBase> map_;
 
-       Array< Array<int> > indices_;
+  Array< Array<int> > indices_;
 
-       int Expr_size_;
+  int Expr_size_;
 
-       bool isPointData_;
-    };
-  }
+  bool isPointData_;
+};
 }
 
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

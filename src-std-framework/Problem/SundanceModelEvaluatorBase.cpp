@@ -148,12 +148,12 @@ void SundanceModelEvaluator
   
 
   /* df/dp */
-  RefCountPtr<MultiVectorBase<double> > df_dp_mv 
+  RCP<MultiVectorBase<double> > df_dp_mv 
     = outArgs.get_DfDp(0).getDerivativeMultiVector().getMultiVector();
   Array<Vector<double> > df_dp(get_p_space(0)->dim());
   if (df_dp_mv.get() != 0)
     {
-      for (unsigned int i=0; i<df_dp.size(); i++)
+      for (int i=0; i<df_dp.size(); i++)
         {
           df_dp[i] = df_dp_mv->col(0);
         }
@@ -162,7 +162,7 @@ void SundanceModelEvaluator
   
 
   /* dg/dp */
-  RefCountPtr<MultiVectorBase<double> > dg_dp_trans_mv 
+  RCP<MultiVectorBase<double> > dg_dp_trans_mv 
     = outArgs.get_DgDp(0,0).getDerivativeMultiVector().getMultiVector();
   Vector<double> dg_dp_T;
   if (dg_dp_trans_mv.get() != 0)
@@ -171,7 +171,7 @@ void SundanceModelEvaluator
     }
 
   /* dg/dx */
-  RefCountPtr<MultiVectorBase<double> > dg_dx_trans_mv 
+  RCP<MultiVectorBase<double> > dg_dx_trans_mv 
     = outArgs.get_DgDx(0).getDerivativeMultiVector().getMultiVector();
   Vector<double> dg_dx_T;
   if (dg_dx_trans_mv.get() != 0)
@@ -205,7 +205,7 @@ void SundanceModelEvaluator
     {
       Tabs tab2;
       if (MPIComm::world().getRank()==0) SUNDANCE_VERB_MEDIUM(tab2 << "df_dp multivector was requested");
-      for (unsigned int i=0; i<df_dp.size(); i++)
+      for (int i=0; i<df_dp.size(); i++)
         {
           Vector<double> col = df_dp_mv->col(i);
           col.acceptCopyOf(df_dp[i]);

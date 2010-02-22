@@ -38,9 +38,9 @@
 #include "SundanceLagrange.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -62,10 +62,10 @@ bool BasisFamily::operator==(const BasisFamily& other) const
   return !(*this < other || other < *this);
 }
 
-unsigned int BasisFamily::size(const Array<BasisFamily>& b)
+int BasisFamily::size(const Array<BasisFamily>& b)
 {
-  unsigned int rtn = 0;
-  for (unsigned int i=0; i<b.size(); i++) rtn += b[i].dim();
+  int rtn = 0;
+  for (int i=0; i<b.size(); i++) rtn += b[i].dim();
   return rtn;
 }
 
@@ -136,7 +136,7 @@ void BasisFamily::refEval(
   if (verbosity >= 4)
   {
     Tabs tab1;
-    for (unsigned int q=0; q<pts.size(); q++)
+    for (int q=0; q<pts.size(); q++)
     {
       Tabs tab2;
       Out::os() << tab1 << "evaluation point = " << pts[q] << endl;
@@ -155,7 +155,7 @@ void BasisFamily::refEval(
         }
         Out::os() << endl;
       }
-      for (unsigned int n=0; n<result[0][q].size(); n++)
+      for (int n=0; n<result[0][q].size(); n++)
       {
         Out::os() << tab2 << setw(5) << n;
         for (int d=0; d<nComps; d++)
@@ -169,14 +169,14 @@ void BasisFamily::refEval(
 }
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
 
 Array<std::pair<int, int> > 
 vectorDimStructure(const Array<BasisFamily>& basis)
 {
   Array<std::pair<int, int> > rtn;
-  for (unsigned int i=0; i<basis.size(); i++) 
+  for (int i=0; i<basis.size(); i++) 
   {
     rtn.append(std::pair<int, int>(basis[i].tensorOrder(), basis[i].dim()));
   }

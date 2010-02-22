@@ -37,9 +37,9 @@
 #include "SundanceDiscreteFuncEvaluator.hpp"
 #include "SundanceDiscreteFuncDataStub.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 using namespace Teuchos;
@@ -62,7 +62,7 @@ class DiscreteFuncElement : public virtual EvaluatableExpr,
 {
 public:
   /** */
-  DiscreteFuncElement(const RefCountPtr<DiscreteFuncDataStub>& data,
+  DiscreteFuncElement(const RCP<DiscreteFuncDataStub>& data,
     const string& name,
     const string& suffix,
     const FunctionIdentifier& fid,
@@ -116,7 +116,7 @@ public:
   internalFindC(int order, const EvalContext& context) const ;
 
   /** */
-  virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+  virtual RCP<Array<Set<MultipleDeriv> > > 
   internalDetermineR(const EvalContext& context,
     const Array<Set<MultipleDeriv> >& RInput) const ;
 
@@ -127,14 +127,14 @@ public:
   const Set<MultiIndex>& multiIndexSet() const {return miSet_;}
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
   /** */
   bool lessThan(const ScalarExpr* other) const ;
       
 private:
 
-  RefCountPtr<DiscreteFuncDataStub> commonData_;
+  RCP<DiscreteFuncDataStub> commonData_;
 
   mutable Set<MultiIndex> miSet_;
 

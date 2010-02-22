@@ -7,13 +7,13 @@
 #include "Teuchos_Array.hpp"
 
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 namespace Rivara
 {
 class Element;
 class Edge;
-using SundanceUtils::Point;
+using Sundance::Point;
 using Teuchos::Array;
 
 /**

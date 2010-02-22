@@ -34,45 +34,42 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace Teuchos;
-  namespace Internal
-  {
-    /**
-     * Get abscissas and weights for Gaussian quadrature on tetrahedra
-     */
+using namespace Teuchos;
 
-    class TetQuadrature
-    {
-    public:
-      static void getPoints(int order, Array<double>& wgt,
-                            Array<double>& x,
-                            Array<double>& y,
-                            Array<double>& z);
+/**
+ * Get abscissas and weights for Gaussian quadrature on tetrahedra
+ */
 
-      static int maxOrder() {return 6;}
+class TetQuadrature
+{
+public:
+  static void getPoints(int order, Array<double>& wgt,
+    Array<double>& x,
+    Array<double>& y,
+    Array<double>& z);
 
-      static bool supportsOrder(int order);
+  static int maxOrder() {return 6;}
 
+  static bool supportsOrder(int order);
 
 
-      static bool test(int p);
-    private:
 
-      static void permute(int m, const Array<double>& q,
-                          Array<Array<double> >& qPerm);
+  static bool test(int p);
+private:
+
+  static void permute(int m, const Array<double>& q,
+    Array<Array<double> >& qPerm);
 
 
-      static double exact(int a, int b, int c, int d);
+  static double exact(int a, int b, int c, int d);
 
-      static double fact(int x);
-    };
-  }
+  static double fact(int x);
+};
+
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

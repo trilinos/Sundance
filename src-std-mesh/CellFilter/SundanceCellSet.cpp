@@ -37,9 +37,9 @@
 #include <algorithm>
 #include <iterator>
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -141,7 +141,7 @@ bool CellSet::areFacetsOf(const CellSet& other) const
       int cellLID = *i;
       mesh().getCofacets(myDim, cellLID, cofacetDim, cofacetLIDs);
       Set<int> cofacetSet;
-      for (unsigned int c=0; c<cofacetLIDs.size(); c++)
+      for (int c=0; c<cofacetLIDs.size(); c++)
         {
           int cf = cofacetLIDs[c];
           cofacetSet.put(cf);

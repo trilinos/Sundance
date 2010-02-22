@@ -38,9 +38,7 @@
 #include "SundanceOut.hpp"
 #include "SundanceADReal.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -206,7 +204,7 @@ void RaviartThomas::refEval(
         ADReal x = ADReal(pts[i][0],0,2);
         ADReal y = ADReal(pts[i][1],1,2);
         ADReal one(1.0,2);
-        ADReal rt2(sqrt(2.0),2);
+        ADReal rt2(std::sqrt(2.0),2);
         result[0][i].resize(3);
         result[1][i].resize(3);
         tmp0[0] = x;

@@ -2,7 +2,7 @@
 #include "Teuchos_GlobalMPISession.hpp"
 
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -36,7 +36,7 @@ void write(const MultiSet<int>& x,
 {
   std::cout << "---- Compositions of " << x << " ------------------"
        << std::endl;
-  for (unsigned int i=0; i<y.size(); i++)
+  for (int i=0; i<y.size(); i++)
     {
       std::cout << y[i] << std::endl;
     }
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
                 {
                   Array<Array<int> > a = nonNegCompositions(m, k);
                   std::cout << m << " " << k << " " << std::endl;
-                  for (unsigned int l=0; l<a.size(); l++)
+                  for (int l=0; l<a.size(); l++)
                     {
                       std::cout << "         " << a[l] << std::endl;
                     }
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
           std::cout << "-------- index combs ---- " << std::endl;
           Array<int> s = tuple(2,3,2);
           Array<Array<int> > C = indexCombinations(s);
-          for (unsigned int m=0; m<C.size(); m++)
+          for (int m=0; m<C.size(); m++)
             {
               std::cout << C[m] << std::endl;
             }
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 
       std::cout << "num choices = " << x.size() << std::endl;
 
-      for (unsigned int i=0; i<x.size(); i++) 
+      for (int i=0; i<x.size(); i++) 
         {
           if ((i % 5)==0) std::cout << std::endl;
           std::cout << x[i] << std::endl;

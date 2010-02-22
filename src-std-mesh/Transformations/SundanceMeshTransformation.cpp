@@ -1,10 +1,10 @@
 #include "SundanceMeshTransformation.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 
@@ -17,7 +17,7 @@ MeshTransformation::MeshTransformation(Handleable<MeshTransformationBase>* rawPt
 {}
 
 
-MeshTransformation::MeshTransformation(const RefCountPtr<MeshTransformationBase>& smartPtr)
+MeshTransformation::MeshTransformation(const RCP<MeshTransformationBase>& smartPtr)
   : Handle<MeshTransformationBase>(smartPtr)
 {}
 

@@ -47,7 +47,7 @@
   TeuchosOStringStream omsg; \
 	omsg << __FILE__ << ":" << __LINE__ << ": " \
        << ": " << msg; \
-  throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 #define SUNDANCE_ERROR(msg) \
@@ -57,7 +57,7 @@
        << ": " << msg; \
   const std::string &omsgstr = omsg.str(); \
   TestForException_break(omsgstr); \
-  throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 
@@ -66,7 +66,7 @@
   TeuchosOStringStream omsg; \
 	omsg << e.what() << std::endl \
   << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
-  throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 #define SUNDANCE_TRACE_MSG(e, msg)                      \
@@ -75,26 +75,26 @@
 	omsg << e.what() << std::endl \
   << "caught in " << __FILE__ << ":" << __LINE__ << std::endl ; \
   omsg << msg << std::endl; \
-  throw SundanceUtils::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
+  throw Sundance::RuntimeError(TEUCHOS_OSTRINGSTREAM_GET_C_STR(omsg)); \
 }
 
 #define SUNDANCE_BOUNDSCHECK(i, low, high, msg) \
 { \
-  TEST_FOR_EXCEPTION( i < low || i > high, SundanceUtils::RuntimeError, \
+  TEST_FOR_EXCEPTION( i < low || i > high, Sundance::RuntimeError, \
                      "Bounds violation: " << #i << "is out of range [" \
                       << #low << ", " << #high << "]") \
 }
 
 #define SUNDANCE_CHECK_ARRAY_SIZE_MATCH(a1, a2) \
   {\
-    TEST_FOR_EXCEPTION(a1.size() != a2.size(), SundanceUtils::RuntimeError, \
+    TEST_FOR_EXCEPTION(a1.size() != a2.size(), Sundance::RuntimeError, \
       "Mismatched array sizes: size(" << #a1 << ")=" << a1.size() \
       << " size(" << #a2 << ")=" << a2.size() << ". Expected equal sizes");\
   }
 
 
 
-namespace SundanceUtils
+namespace Sundance
 {
   /**
    * InternalError is thrown when an "impossible" case is detected

@@ -39,10 +39,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -63,7 +63,7 @@ Evaluator::Evaluator()
 
 void Evaluator::eval(const EvalManager& mgr,
                      Array<double>& constantResults,
-                     Array<RefCountPtr<EvalVector> >& vectorResults) const
+                     Array<RCP<EvalVector> >& vectorResults) const
 {
   Tabs tabs;
 
@@ -89,7 +89,7 @@ void Evaluator::eval(const EvalManager& mgr,
     {
       SUNDANCE_VERB_MEDIUM(tabs << "cloning cached results");
       vectorResults.resize(vectorResultCache_.size());
-      for (unsigned int i=0; i < vectorResults.size(); i++)
+      for (int i=0; i < vectorResults.size(); i++)
         {
           vectorResults[i] = vectorResultCache_[i]->clone();
         }

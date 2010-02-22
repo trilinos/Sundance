@@ -35,15 +35,7 @@
 #include "SundanceAssemblyKernelBase.hpp"
 #include "Teuchos_MPIComm.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -60,7 +52,7 @@ public:
   /** */
   virtual void fill(bool isBC,
     const IntegralGroup& group,
-    const RefCountPtr<Array<double> >& localValues) ;  
+    const RCP<Array<double> >& localValues) ;  
 
   /** */
   void postLoopFinalization();
@@ -72,7 +64,7 @@ private:
 };
 
 }
-}
+
 
 
 

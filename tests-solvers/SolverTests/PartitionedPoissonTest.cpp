@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
       VectorType<double> type = new EpetraVectorType();
 
 #ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(SundanceUtils::searchForFile("poissonParams.xml"));
+      ParameterXMLFileReader reader(Sundance::searchForFile("poissonParams.xml"));
 #else
       ParameterXMLFileReader reader("poissonParams.xml");
 #endif
@@ -126,9 +126,9 @@ int main(int argc, char *argv[])
       int nLocalRows = 3 * nx;
       int nTotalRows = nProc * nLocalRows;
       int lowestLocalRow = nLocalRows * rank;
-      RefCountPtr<Array<int> > isBCRow = rcp(new Array<int>(nLocalRows, 0));
-      RefCountPtr<Array<int> > isBCCol = rcp(new Array<int>(nLocalRows, 0));
-      RefCountPtr<set<int> > remoteBCCols = rcp(new set<int>());
+      RCP<Array<int> > isBCRow = rcp(new Array<int>(nLocalRows, 0));
+      RCP<Array<int> > isBCCol = rcp(new Array<int>(nLocalRows, 0));
+      RCP<set<int> > remoteBCCols = rcp(new set<int>());
 
       for (int i=0; i<nx; i++)
       {
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
         type,
         MPIComm::world());
 
-      RefCountPtr<MatrixFactory<double> > mf 
+      RCP<MatrixFactory<double> > mf 
         = rcp(new PartitionedMatrixFactory(domain, lowestLocalRow,
             isBCCol, remoteBCCols, type,
             range, lowestLocalRow, isBCRow, type));

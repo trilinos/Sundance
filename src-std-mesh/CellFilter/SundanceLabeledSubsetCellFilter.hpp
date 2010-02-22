@@ -35,62 +35,55 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceCellFilterBase.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
- using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  namespace Internal {}
-  using namespace Internal;
-  using namespace Teuchos;
+using namespace Teuchos;
+
+/** */
+class LabeledSubsetCellFilter : public CellFilterBase 
+{
+public:
+  /** */
+  LabeledSubsetCellFilter(const CellFilter& superset,
+    const string& label);
 
   /** */
-  class LabeledSubsetCellFilter : public CellFilterBase 
-  {
-  public:
-    /** */
-    LabeledSubsetCellFilter(const CellFilter& superset,
-                            const string& label);
+  virtual ~LabeledSubsetCellFilter(){;}
 
-    /** */
-    virtual ~LabeledSubsetCellFilter(){;}
+  /** */
+  virtual XMLObject toXML() const ;
 
-    /** */
-    virtual XMLObject toXML() const ;
+  /** */
+  virtual string typeName() const {return "LabeledSubsetCellFilter";}
 
-    /** */
-    virtual string typeName() const {return "LabeledSubsetCellFilter";}
+  /** */
+  virtual bool lessThan(const CellFilterStub* other) const ;
 
-    /** */
-    virtual bool lessThan(const CellFilterStub* other) const ;
+  /** */
+  virtual RCP<CellFilterBase> getRcp() {return rcp(this);}
 
-    /** */
-    virtual RefCountPtr<CellFilterBase> getRcp() {return rcp(this);}
-
-    /** */
-    virtual string description() const 
+  /** */
+  virtual string description() const 
     {return "LabeledSubset(label=" + label_ + ", super=" + superset_.description()+")";}
     
 
 
-    /** */
-    string label() const {return label_;}
+  /** */
+  string label() const {return label_;}
 
-  protected:
-    /** */
-    virtual CellSet internalGetCells(const Mesh& mesh) const ;
+protected:
+  /** */
+  virtual CellSet internalGetCells(const Mesh& mesh) const ;
 
-    /** */
-    string label_;
+  /** */
+  string label_;
 
-    /** */
-    CellFilter superset_;
-  };
+  /** */
+  CellFilter superset_;
+};
 
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

@@ -7,11 +7,11 @@
 #include "SundanceRivaraMesh.hpp"
 #include "SundanceExpr.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
 
 class Mesh;
-using SundanceCore::Expr;
+using Sundance::Expr;
 
 class RefinementTransformation : public MeshTransformationBase
 {
@@ -36,10 +36,10 @@ private:
   void meshToRivara(
     const Mesh& mesh,
     Array<int>& lidMap,
-    RefCountPtr<Rivara::RivaraMesh>& rivMesh) const ;
+    RCP<Rivara::RivaraMesh>& rivMesh) const ;
 
   /** */
-  Mesh rivaraToMesh(const RefCountPtr<Rivara::RivaraMesh>& rivMesh,
+  Mesh rivaraToMesh(const RCP<Rivara::RivaraMesh>& rivMesh,
     const MPIComm& comm) const ;
 
   MeshType meshType_;

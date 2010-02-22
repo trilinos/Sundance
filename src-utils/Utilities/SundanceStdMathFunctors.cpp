@@ -32,7 +32,7 @@
 #include "SundanceStdMathFunctors.hpp"
 #include "Teuchos_Utils.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 

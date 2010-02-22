@@ -35,9 +35,9 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -416,7 +416,7 @@ ProductEvaluator::ProductEvaluator(const ProductExpr* expr,
 void ProductEvaluator
 ::internalEval(const EvalManager& mgr,
                Array<double>& constantResults,
-               Array<RefCountPtr<EvalVector> >& vectorResults) const
+               Array<RCP<EvalVector> >& vectorResults) const
 {
   Tabs tabs;
 
@@ -425,8 +425,8 @@ void ProductEvaluator
     << expr()->toString());
 
   /* evaluate the children */
-  Array<RefCountPtr<EvalVector> > leftVectorResults; 
-  Array<RefCountPtr<EvalVector> > rightVectorResults; 
+  Array<RCP<EvalVector> > leftVectorResults; 
+  Array<RCP<EvalVector> > rightVectorResults; 
   Array<double> leftConstantResults;
   Array<double> rightConstantResults;
   evalChildren(mgr, leftConstantResults, leftVectorResults,
@@ -451,11 +451,11 @@ void ProductEvaluator
 
   for (int order=maxOrder_; order>=0; order--)
     {
-      for (unsigned int i=0; i<resultIndex_[order].size(); i++)
+      for (int i=0; i<resultIndex_[order].size(); i++)
         {
           double constantVal = 0.0;
           const Array<Array<int> >& ccTerms = ccTerms_[order][i];
-          for (unsigned int j=0; j<ccTerms.size(); j++)
+          for (int j=0; j<ccTerms.size(); j++)
             {
               /* add L*R*multiplicity to result */
               constantVal += leftConstantResults[ccTerms[j][0]] 
@@ -473,7 +473,7 @@ void ProductEvaluator
            * for the result. If we can reuse one of the operands' results
            * as workspace, great. If not, we'll need to allocate a new
            * vector. */
-          RefCountPtr<EvalVector> result;
+          RCP<EvalVector> result;
           if (hasWorkspace_[order][i])
             {
               int index = workspaceIndex_[order][i];
@@ -489,7 +489,7 @@ void ProductEvaluator
                     }
                   else
                     {
-                      const RefCountPtr<EvalVector>& coeff 
+                      const RCP<EvalVector>& coeff 
                         = rightVectorResults[coeffIndex];
                       result->multiply_V(coeff.get());
                     }
@@ -504,7 +504,7 @@ void ProductEvaluator
                     }
                   else
                     {
-                      const RefCountPtr<EvalVector>& coeff 
+                      const RCP<EvalVector>& coeff 
                         = leftVectorResults[coeffIndex];
                       result->multiply_V(coeff.get());
                     }
@@ -637,7 +637,7 @@ void ProductEvaluator
           const Array<Array<int> >& vcTerms = vcTerms_[order][i];
           const Array<Array<int> >& vvTerms = vvTerms_[order][i];
 
-          for (unsigned int j=0; j<cvTerms.size(); j++)
+          for (int j=0; j<cvTerms.size(); j++)
             {
               SUNDANCE_MSG3(mgr.verb(), tabs << "adding c-v term " << cvTerms[j]);
               
@@ -654,7 +654,7 @@ void ProductEvaluator
                 }
             } 
 
-          for (unsigned int j=0; j<vcTerms.size(); j++)
+          for (int j=0; j<vcTerms.size(); j++)
             {
               SUNDANCE_MSG3(mgr.verb(), tabs << "adding v-c term " << vcTerms[j]);
 
@@ -671,7 +671,7 @@ void ProductEvaluator
                 }
             }
 
-          for (unsigned int j=0; j<vvTerms.size(); j++)
+          for (int j=0; j<vvTerms.size(); j++)
             {
               SUNDANCE_MSG3(mgr.verb(), tabs << "adding v-v term " << vvTerms[j]);
 

@@ -37,9 +37,9 @@
 #include "SundanceScalarExpr.hpp"
 #include "SundanceExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
 
@@ -54,7 +54,7 @@ class ExprWithChildren : public virtual EvaluatableExpr
 {
 public:
   /** construct with a list of child operands */
-  ExprWithChildren(const Array<RefCountPtr<ScalarExpr> >& children);
+  ExprWithChildren(const Array<RCP<ScalarExpr> >& children);
 
   /** virtual dtor */
   virtual ~ExprWithChildren() {;}
@@ -185,7 +185,7 @@ public:
     int index) const ;
 
   /** */
-  virtual RefCountPtr<Array<Set<MultipleDeriv> > > 
+  virtual RCP<Array<Set<MultipleDeriv> > > 
   internalDetermineR(const EvalContext& context,
     const Array<Set<MultipleDeriv> >& RInput) const ;
 
@@ -213,7 +213,7 @@ public:
   virtual bool lessThan(const ScalarExpr* other) const ;
 
 private:
-  Array<RefCountPtr<ScalarExpr> > children_;
+  Array<RCP<ScalarExpr> > children_;
 
   static Map<int, Set<MultiSet<int> > >& cachedI_N()
     {static Map<int, Set<MultiSet<int> > > rtn; return rtn;}

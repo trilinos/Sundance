@@ -35,7 +35,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceFieldWriterBase.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * VerboseFieldWriter dumps every imaginable bit of information
@@ -56,7 +56,7 @@ namespace SundanceStdMesh
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<FieldWriterBase> getRcp() {return rcp(this);}
+    virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
 #endif /* DOXYGEN_DEVELOPER_ONLY */
   };
 }

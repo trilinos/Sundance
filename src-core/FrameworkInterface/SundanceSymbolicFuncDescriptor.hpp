@@ -34,7 +34,7 @@
 
 #include "SundanceDefs.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 /**
  * This is a base class for functions or elements that need to report

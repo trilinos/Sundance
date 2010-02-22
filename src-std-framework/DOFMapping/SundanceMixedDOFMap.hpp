@@ -38,19 +38,11 @@
 #include "SundanceCellFilter.hpp"
 #include "SundanceSpatiallyHomogeneousDOFMapBase.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-
-class BasisDOFTopologyBase;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
+
+class BasisDOFTopologyBase;
 
 /** 
  * A MixedDOFMap is a DOF map for the case where 
@@ -70,7 +62,7 @@ public:
   virtual ~MixedDOFMap(){;}
 
   /** */
-  RefCountPtr<const MapStructure> 
+  RCP<const MapStructure> 
   getDOFsForCellBatch(int cellDim,
     const Array<int>& cellLID,
     const Set<int>& requestedFuncSet,
@@ -79,7 +71,7 @@ public:
     int verbosity) const ;
 
   /** */
-  RefCountPtr<const MapStructure> mapStruct() const 
+  RCP<const MapStructure> mapStruct() const 
     {return structure_;}
 
   /** */
@@ -223,16 +215,12 @@ private:
   Array<Array<int> > hasBeenAssigned_;
 
   /** */
-  RefCountPtr<const MapStructure> structure_;
+  RCP<const MapStructure> structure_;
 
   /** */
   Array<int> nFuncs_;
 };
 }
-}
 
                   
-#endif  /* DOXYGEN_DEVELOPER_ONLY */  
-
-
 #endif

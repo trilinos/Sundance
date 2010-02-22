@@ -54,15 +54,7 @@
 #include "TSFPartitionedMatrixFactory.hpp"
 #include "TSFPartitionedToMonolithicConverter.hpp"
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -106,7 +98,7 @@ public:
   virtual void prepareForWorkSet(
     const Array<Set<int> >& requiredTests,
     const Array<Set<int> >& requiredUnks,
-    RefCountPtr<StdFwkEvalMediator> mediator) {;}
+    RCP<StdFwkEvalMediator> mediator) {;}
 
   /** 
    * Adds the results of the current integral
@@ -118,7 +110,7 @@ public:
    */
   virtual void fill(bool isBC,
     const IntegralGroup& group,
-    const RefCountPtr<Array<double> >& localValues) = 0 ;  
+    const RCP<Array<double> >& localValues) = 0 ;  
 
   /** 
    * Hook to do any finalization steps after the main assembly loop, 
@@ -139,7 +131,7 @@ private:
 
 
 }
-}
+
 
 
 

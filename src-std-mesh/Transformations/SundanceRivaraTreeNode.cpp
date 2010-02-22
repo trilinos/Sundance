@@ -1,9 +1,9 @@
 #include "SundanceRivaraTreeNode.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceStdMesh::Rivara;
-using namespace SundanceStdMesh;
-using namespace SundanceUtils;
+using namespace Sundance::Rivara;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 TreeNode::TreeNode()

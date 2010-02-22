@@ -35,10 +35,10 @@
 #include "SundanceExpr.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 class ProductExpr;

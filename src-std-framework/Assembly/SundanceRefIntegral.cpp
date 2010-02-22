@@ -37,13 +37,13 @@
 #include "SundanceTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::ios_base;
@@ -63,7 +63,7 @@ int dgemm_(const char* transA, const char* transB,
 
 static Time& refIntegrationTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("ref integration"); 
   return *rtn;
 }
@@ -96,7 +96,7 @@ RefIntegral::RefIntegral(int spatialDim,
 
   quad.getPoints(cellType, quadPts, quadWeights);  
 
-  for (unsigned int q=0; q<quadWeights.size(); q++) W_[0][0] += quadWeights[q];
+  for (int q=0; q<quadWeights.size(); q++) W_[0][0] += quadWeights[q];
 }
 
 RefIntegral::RefIntegral(int spatialDim,
@@ -142,7 +142,7 @@ RefIntegral::RefIntegral(int spatialDim,
     W_[fc].resize(nRefDerivTest() * nNodesTest());
 
     /* initialize values of integrals to zero */
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
     Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
   
@@ -183,7 +183,7 @@ RefIntegral::RefIntegral(int spatialDim,
       }
     }    
 
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
 
     addFlops(3*nQuad*nRefDerivTest()*nNodesTest() + W_[fc].size());
   }
@@ -273,7 +273,7 @@ RefIntegral::RefIntegral(int spatialDim,
       << nFacetCases() << "-------");
     
     W_[fc].resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
     Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
     Array<Array<Array<Array<double> > > > unkBasisVals(nRefDerivUnk());
@@ -334,7 +334,7 @@ RefIntegral::RefIntegral(int spatialDim,
     SUNDANCE_MSG2(setupVerb(), tab1 << "...done");
     addFlops(4*nQuad*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
       + W_[fc].size());
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
   }
 
   SUNDANCE_MSG1(setupVerb(), tab0 
@@ -390,7 +390,7 @@ RefIntegral::RefIntegral(int spatialDim,
 void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
   const Array<int>& isLocalFlag,  
   const double& coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
 
@@ -440,7 +440,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   const CellJacobianBatch& JVol,
   const Array<int>& facetIndex,
   const double& coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
   TEST_FOR_EXCEPTION(order() != 1, InternalError,
@@ -519,7 +519,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   const CellJacobianBatch& JVol,
   const Array<int>& facetIndex, 
   const double& coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   TimeMonitor timer(refIntegrationTimer());
   TEST_FOR_EXCEPTION(order() != 2, InternalError,

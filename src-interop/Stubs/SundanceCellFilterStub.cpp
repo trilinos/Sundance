@@ -33,11 +33,11 @@
 #include "SundanceOut.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 CellFilterStub::CellFilterStub()
@@ -50,7 +50,7 @@ XMLObject CellFilterStub::toXML() const
   return rtn;
 }
 
-RefCountPtr<CellFilterStub> CellFilterStub::makeNullRegion() const
+RCP<CellFilterStub> CellFilterStub::makeNullRegion() const
 {
   return rcp(new NullCellFilterStub());
 }

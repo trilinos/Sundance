@@ -35,42 +35,39 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceQuadratureFamilyBase.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace Teuchos;
-  using namespace Internal;
+using namespace Teuchos;
+  
 
-  /** 
-   * Closed Newton-Cotes quadrature rules for lines and triangles
-   */
-  class ClosedNewtonCotes : public QuadratureFamilyBase
-  {
-  public:
-    /** */
-    ClosedNewtonCotes();
+/** 
+ * Closed Newton-Cotes quadrature rules for lines and triangles
+ */
+class ClosedNewtonCotes : public QuadratureFamilyBase
+{
+public:
+  /** */
+  ClosedNewtonCotes();
 
-    /** */
-    virtual ~ClosedNewtonCotes(){;}
+  /** */
+  virtual ~ClosedNewtonCotes(){;}
 
-    /** */
-    virtual XMLObject toXML() const ;
+  /** */
+  virtual XMLObject toXML() const ;
 
-    /* handleable boilerplate */
-    GET_RCP(QuadratureFamilyStub);
+  /* handleable boilerplate */
+  GET_RCP(QuadratureFamilyStub);
 
-  protected:
-    /** compute a rule for the reference line cell */
-    virtual void getLineRule(Array<Point>& quadPoints,
-                             Array<double>& quadWeights) const ;
+protected:
+  /** compute a rule for the reference line cell */
+  virtual void getLineRule(Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** compute a rule for the reference triangle cell */
-    virtual void getTriangleRule(Array<Point>& quadPoints,
-                                 Array<double>& quadWeights) const ;
+  /** compute a rule for the reference triangle cell */
+  virtual void getTriangleRule(Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-  };
+};
 }
 
 

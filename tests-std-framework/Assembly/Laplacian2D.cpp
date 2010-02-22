@@ -69,17 +69,17 @@
 
 using namespace TSFExtended;
 using namespace Teuchos;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -124,9 +124,9 @@ int main(int argc, char** argv)
           Tabs tab;
           BasisFamily P = new Lagrange(p);
       
-          RefCountPtr<Array<double> > A = rcp(new Array<double>());
-          RefCountPtr<Array<double> > Bxx = rcp(new Array<double>());
-          RefCountPtr<Array<double> > Byy = rcp(new Array<double>());
+          RCP<Array<double> > A = rcp(new Array<double>());
+          RCP<Array<double> > Bxx = rcp(new Array<double>());
+          RCP<Array<double> > Byy = rcp(new Array<double>());
 
           Array<double> constCoeff = tuple(1.0, 1.0);
 

@@ -35,7 +35,7 @@
 #include "SundanceEvaluator.hpp"
 #include "SundanceEvaluatableExpr.hpp"
 
-namespace SundanceCore 
+namespace Sundance 
 {
 class EvalContext;
 
@@ -62,7 +62,7 @@ public:
 
       
   /** */
-  const RefCountPtr<SparsitySuperset>& sparsity() const {return sparsity_;}
+  const RCP<SparsitySuperset>& sparsity() const {return sparsity_;}
 
 protected:
   /** */
@@ -83,7 +83,7 @@ protected:
 private:
   const ExprType* expr_;
 
-  RefCountPtr<SparsitySuperset> sparsity_;
+  RCP<SparsitySuperset> sparsity_;
 };
    
 }

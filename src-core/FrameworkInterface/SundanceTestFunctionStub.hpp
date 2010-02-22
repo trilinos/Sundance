@@ -38,9 +38,9 @@
 #include "SundanceSpectralBasis.hpp"
 #include "SundanceSpectralExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 class DiscreteFunctionStub;
 

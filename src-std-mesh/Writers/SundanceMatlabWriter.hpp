@@ -35,7 +35,7 @@
 #include "SundanceDefs.hpp"
 #include "SundanceFieldWriterBase.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
   /**
    * MatlabWriter writes a 1D mesh to a matlab file
@@ -55,7 +55,7 @@ namespace SundanceStdMesh
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
     /** Return a ref count pointer to self */
-    virtual RefCountPtr<FieldWriterBase> getRcp() {return rcp(this);}
+    virtual RCP<FieldWriterBase> getRcp() {return rcp(this);}
 
 
   private:

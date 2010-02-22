@@ -37,85 +37,75 @@
 #include "SundanceDiscreteSpace.hpp"
 #include "TSFVectorDecl.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace Teuchos;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+using namespace Teuchos;
 
-  namespace Internal
-  {
+/** 
+ * DiscreteFunctionData 
+ */
+class DiscreteFunctionData : public DiscreteFuncDataStub
+{
+public:
+  /** */
+  DiscreteFunctionData(const DiscreteSpace& space);
 
-    /** 
-     * DiscreteFunctionData 
-     */
-    class DiscreteFunctionData : public DiscreteFuncDataStub
-    {
-    public:
-      /** */
-      DiscreteFunctionData(const DiscreteSpace& space);
+  /** */
+  DiscreteFunctionData(const DiscreteSpace& space, 
+    const TSFExtended::Vector<double>& vec);
 
-      /** */
-      DiscreteFunctionData(const DiscreteSpace& space, 
-                           const TSFExtended::Vector<double>& vec);
+  /** */
+  DiscreteFunctionData(const DiscreteSpace& space, const double& constantValue);
 
-      /** */
-      DiscreteFunctionData(const DiscreteSpace& space, const double& constantValue);
+  /** virtual destructor */
+  virtual ~DiscreteFunctionData() {;}
 
-      /** virtual destructor */
-      virtual ~DiscreteFunctionData() {;}
+  /** */
+  void updateGhosts() const ;
 
-      /** */
-      void updateGhosts() const ;
+  /** */
+  void setVector(const Vector<double>& vec);
 
-      /** */
-      void setVector(const Vector<double>& vec);
+  /** */
+  const Vector<double>& getVector() const {return vector_;}
 
-      /** */
-      const Vector<double>& getVector() const {return vector_;}
+  /** */
+  const DiscreteSpace& discreteSpace() const {return space_;}
 
-      /** */
-      const DiscreteSpace& discreteSpace() const {return space_;}
+  /** */
+  const Mesh& mesh() const {return space_.mesh();}
 
-      /** */
-      const Mesh& mesh() const {return space_.mesh();}
+  /** */
+  const RCP<DOFMapBase>& map() const {return space_.map();}
 
-      /** */
-      const RefCountPtr<DOFMapBase>& map() const {return space_.map();}
-
-      /** */
-      RefCountPtr<const MapStructure> getLocalValues(int cellDim, 
-                                                     const Array<int>& cellLID,
-                                                     Array<Array<double> >& localValues) const ;
+  /** */
+  RCP<const MapStructure> getLocalValues(int cellDim, 
+    const Array<int>& cellLID,
+    Array<Array<double> >& localValues) const ;
 
 
-      /** */
-      RefCountPtr<GhostView<double> > ghostView() const 
-      {updateGhosts(); return ghostView_;}
+  /** */
+  RCP<GhostView<double> > ghostView() const 
+    {updateGhosts(); return ghostView_;}
 
-      /** */
-      const BasisArray& basis() const {return space_.basis();}
+  /** */
+  const BasisArray& basis() const {return space_.basis();}
 
-      /** */
-      static const DiscreteFunctionData* getData(const DiscreteFuncElement* ufe);
+  /** */
+  static const DiscreteFunctionData* getData(const DiscreteFuncElement* ufe);
 
 
-    private:
+private:
 
-      DiscreteSpace space_;
+  DiscreteSpace space_;
 
-      Vector<double> vector_;
+  Vector<double> vector_;
 
-      mutable RefCountPtr<GhostView<double> > ghostView_;
+  mutable RCP<GhostView<double> > ghostView_;
 
-      mutable bool ghostsAreValid_;
+  mutable bool ghostsAreValid_;
 
-#endif /* DOXYGEN_DEVELOPER_ONLY */
-    };
-  }
+};
 }
 
 

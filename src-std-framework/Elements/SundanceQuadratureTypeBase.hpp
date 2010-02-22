@@ -40,50 +40,45 @@
 #include "Teuchos_XMLObject.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace Teuchos;
+using namespace Teuchos;
 
-  /** 
-   * QuadratureTypeBase 
-   */
-  class QuadratureTypeBase 
-    : public SundanceUtils::Handleable<QuadratureTypeBase>
-  {
-  public:
-    /** */
-    QuadratureTypeBase() {;}
+/** 
+ * QuadratureTypeBase 
+ */
+class QuadratureTypeBase 
+  : public Sundance::Handleable<QuadratureTypeBase>
+{
+public:
+  /** */
+  QuadratureTypeBase() {;}
 
-    /** */
-    virtual ~QuadratureTypeBase(){;}
+  /** */
+  virtual ~QuadratureTypeBase(){;}
 
-    /** */
-    virtual XMLObject toXML() const = 0 ;
+  /** */
+  virtual XMLObject toXML() const = 0 ;
 
-    /** Indicate whether the given cell type is supported at any order */
-    virtual bool supportsCellType(const CellType& cellType) const = 0 ;
+  /** Indicate whether the given cell type is supported at any order */
+  virtual bool supportsCellType(const CellType& cellType) const = 0 ;
 
-    /** Indicate whether the given cell type is supported at the
-     * specified order */
-    virtual bool supports(const CellType& cellType, int order) const = 0 ;
+  /** Indicate whether the given cell type is supported at the
+   * specified order */
+  virtual bool supports(const CellType& cellType, int order) const = 0 ;
 
-    /** Indicate whether there is a maximum order for quadrature rules
-     * available on the given cell type. */
-    virtual bool hasLimitedOrder(const CellType& cellType) const = 0 ;
+  /** Indicate whether there is a maximum order for quadrature rules
+   * available on the given cell type. */
+  virtual bool hasLimitedOrder(const CellType& cellType) const = 0 ;
 
-    /** Return the max quadrature order available on the given cell type */
-    virtual int maxOrder(const CellType& cellType) const {return -1;}
+  /** Return the max quadrature order available on the given cell type */
+  virtual int maxOrder(const CellType& cellType) const {return -1;}
 
-    /** Create a quadrature family of the specified order */
-    virtual QuadratureFamily createQuadFamily(int order) const = 0 ;
+  /** Create a quadrature family of the specified order */
+  virtual QuadratureFamily createQuadFamily(int order) const = 0 ;
       
-  private:
-  };
+private:
+};
 }
 
                   

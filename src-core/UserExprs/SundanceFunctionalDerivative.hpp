@@ -35,9 +35,9 @@
 #include "SundanceExpr.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 using namespace Teuchos;
 

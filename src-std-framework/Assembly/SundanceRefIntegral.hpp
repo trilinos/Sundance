@@ -34,17 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceElementIntegral.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
 
-namespace SundanceStdFwk
-{
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
 
-namespace Internal
+namespace Sundance
 {
 using namespace Teuchos;
 
@@ -130,7 +122,7 @@ public:
     const Array<int>& isLocalFlag,
     const Array<int>& facetNum,
     const double& coeff,
-    RefCountPtr<Array<double> >& A) const 
+    RCP<Array<double> >& A) const 
     {
       if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
       else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
@@ -142,20 +134,20 @@ public:
     const CellJacobianBatch& JVol,
     const Array<int>& facetNum, 
     const double& coeff,
-    RefCountPtr<Array<double> >& A) const ;
+    RCP<Array<double> >& A) const ;
 
   /** */
   void transformOneForm(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol,
     const Array<int>& facetNum, 
     const double& coeff,
-    RefCountPtr<Array<double> >& A) const ;
+    RCP<Array<double> >& A) const ;
 
   /** */
   void transformZeroForm(const CellJacobianBatch& JVol,
     const Array<int>& isLocalFlag,
     const double& coeff,
-    RefCountPtr<Array<double> >& A) const ;
+    RCP<Array<double> >& A) const ;
   /** */
   inline double& value(int facetCase, int testDerivDir, int testNode,
     int unkDerivDir, int unkNode)
@@ -197,9 +189,9 @@ private:
 
       
 };
-}
+
 }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
+
 
 #endif

@@ -35,13 +35,13 @@
 #include "SundanceTabs.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -62,7 +62,7 @@ int dgemm_(const char* transA, const char* transB,
 
 static Time& quadratureTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("quadrature"); 
   return *rtn;
 }
@@ -282,7 +282,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
     addFlops(3*nQuad()*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
       + W_[fc].size());
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
     
   }
 
@@ -294,7 +294,7 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
   const Array<int>& isLocalFlag,
   const Array<int>& facetIndex,
   const double* const coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
   Tabs tabs;
@@ -365,7 +365,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   const CellJacobianBatch& JVol,
   const Array<int>& facetIndex,
   const double* const coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
   Tabs tabs;
@@ -455,7 +455,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   const CellJacobianBatch& JVol,
   const Array<int>& facetIndex,
   const double* const coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   TimeMonitor timer(quadratureTimer());
   Tabs tabs;
@@ -533,7 +533,7 @@ void QuadratureIntegral
   const Array<int>& facetIndex,
   const double* const GPtr,
   const double* const coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   double* aPtr = &((*A)[0]);
   double* coeffPtr = (double*) coeff;
@@ -600,7 +600,7 @@ void QuadratureIntegral
   const Array<int>& facetIndex,
   const double* const GPtr,
   const double* const coeff,
-  RefCountPtr<Array<double> >& A) const
+  RCP<Array<double> >& A) const
 {
   double* aPtr = &((*A)[0]);
   int transSize = 0; 

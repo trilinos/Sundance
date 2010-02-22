@@ -96,8 +96,8 @@ int main(int argc, char** argv)
 
       int nSteps = 100;
       double dt = 0.1/((double) nSteps);
-      Expr t = new SundanceCore::Parameter(0.0);
-      Expr tPrev = new SundanceCore::Parameter(0.0);
+      Expr t = new Sundance::Parameter(0.0);
+      Expr tPrev = new Sundance::Parameter(0.0);
 
       Expr HBdryNext = List(sin(x)*cos(y), -cos(x)*sin(y))*exp(-t);
       Expr HBdryPrev = List(sin(x)*cos(y), -cos(x)*sin(y))*exp(-tPrev);
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
       Functional sq(mesh, sqResid, vecType);
       
       Expr dum;
-      Expr zero = new SundanceCore::ZeroExpr();
+      Expr zero = new Sundance::ZeroExpr();
       Expr u = List(H1x, H1y, E1Next);
       Expr v0 = List(zero,zero,zero);
       LinearProblem stepProb = sq.linearVariationalProb(u, v0, u, dum, dum);

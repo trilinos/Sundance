@@ -34,11 +34,11 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -62,14 +62,14 @@ TempStack::TempStack()
 {}
 
 
-void TempStack::pushVectorData(const RefCountPtr<Array<double> >& vecData)
+void TempStack::pushVectorData(const RCP<Array<double> >& vecData)
 {
   stack_.push(vecData);
 }
 
-RefCountPtr<Array<double> > TempStack::popVectorData()
+RCP<Array<double> > TempStack::popVectorData()
 {
-  RefCountPtr<Array<double> > data;
+  RCP<Array<double> > data;
   if (stack_.empty())
     {
       numVecsAllocated_++;

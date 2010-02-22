@@ -42,7 +42,7 @@
 #include "SundanceCellReorderer.hpp"
 #include "SundanceCellReordererImplemBase.hpp"
 
-namespace SundanceStdMesh {
+namespace Sundance {
 
 
 /** Identifier for ordering convention */
@@ -50,10 +50,8 @@ enum MeshEntityOrder {UFCMeshOrder, ExodusMeshOrder};
 
 class MaximalCofacetBatch;
 
-namespace Internal {
-
 using namespace Teuchos;
-using namespace SundanceUtils;
+
 class CellJacobianBatch;
 
 
@@ -328,7 +326,7 @@ class CellJacobianBatch;
  * package or into Teuchos.
  *
  * <li>Inherit MeshBase from Teuchos::VerboseObject instead of
- * SundanceUtils::ObjectWithVerbosity.
+ * ObjectWithVerbosity.
  *
  * <li>Remove any concrete implementations and data from this base interface
  * to provide a clean abstract interface.  This would include removing the
@@ -379,7 +377,7 @@ class CellJacobianBatch;
  * </ul>
  */
 class MeshBase
-  : public SundanceUtils::ObjectWithClassVerbosity<MeshBase>
+  : public ObjectWithClassVerbosity<MeshBase>
   , public ObjectWithInstanceID<MeshBase>
 {
 public:
@@ -944,12 +942,11 @@ private:
 
   MeshEntityOrder order_;
 
-  RefCountPtr<CellReordererImplemBase> reorderer_;
+  RCP<CellReordererImplemBase> reorderer_;
 
 };
 
-} // namespace Internal
 
-} // namespace SundanceStdMesh
+} // namespace Sundance
 
 #endif

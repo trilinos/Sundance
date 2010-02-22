@@ -32,23 +32,23 @@
 #include "SundanceSumTransformationSequence.hpp"
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 SumTransformationSequence::SumTransformationSequence()
   : SumTransformation(), 
-    Array<RefCountPtr<SumTransformation> >()
+    Array<RCP<SumTransformation> >()
 {;}
 
 bool SumTransformationSequence
-::doTransform(const RefCountPtr<ScalarExpr>& left, 
-  const RefCountPtr<ScalarExpr>& right,
-  int sign, RefCountPtr<ScalarExpr>& rtn) const
+::doTransform(const RCP<ScalarExpr>& left, 
+  const RCP<ScalarExpr>& right,
+  int sign, RCP<ScalarExpr>& rtn) const
 {
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
     {
       if ((*this)[i]->doTransform(left, right, sign, rtn)) return true;
     }

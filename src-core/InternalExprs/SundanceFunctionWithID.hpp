@@ -36,7 +36,7 @@
 #include "SundanceFunctionIdentifier.hpp"
 #include "SundanceFuncSetAccumulator.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
 /**
  * This is a base class for functions or elements that need an ID object

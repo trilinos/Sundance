@@ -32,10 +32,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -104,7 +104,7 @@ void PointwiseUserDefFunctor1::evaluationCallback(int nPoints, int maxDiffOrder,
           eval1(xp, fp, dfp);
         }
       else eval0(xp, fp);
-      for (unsigned int j=0; j<f.size(); j++) out[j][i] = fp[j];
+      for (int j=0; j<f.size(); j++) out[j][i] = fp[j];
     }
 }
 
@@ -174,7 +174,7 @@ void PointwiseUserDefFunctor2::evaluationCallback(int nPoints, int maxDiffOrder,
         {
           TEST_FOR_EXCEPT(true);
         }
-      for (unsigned int j=0; j<f.size(); j++) out[j][i] = fp[j];
+      for (int j=0; j<f.size(); j++) out[j][i] = fp[j];
     }
 }
 

@@ -40,23 +40,23 @@
 #include "TSFVectorImpl.hpp"
 #endif
 
-using namespace SundanceStdMesh;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
 static Time& getLocalValsTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("DF getLocalValues"); 
   return *rtn;
 }
 static Time& dfCtorTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("DF ctor"); 
   return *rtn;
 }
@@ -148,7 +148,7 @@ void DiscreteFunction::updateGhosts() const
 }
 
 
-RefCountPtr<const MapStructure> DiscreteFunction::getLocalValues(int cellDim, 
+RCP<const MapStructure> DiscreteFunction::getLocalValues(int cellDim, 
                                                                  const Array<int>& cellLID,
                                                                  Array<Array<double> >& localValues) const 
 {

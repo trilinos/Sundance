@@ -38,17 +38,10 @@
 #include "SundanceCellType.hpp"
 #include "SundancePoint.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-using namespace SundanceUtils;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
 using namespace Teuchos;
 
-namespace Internal
-{
 /** 
  * QuadratureFamilyBase extends QuadratureFamilyStub to provide
  * an interface for getting quadrature points for a given cell type. 
@@ -103,7 +96,7 @@ protected:
     Array<double>& quadWeights) const ;
 private:
 };
-}
+
 }
 
 #endif

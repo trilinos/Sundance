@@ -38,9 +38,9 @@
 #include "SundanceNoncopyable.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 class CoordExpr;
 class MultiIndex;
 class DiscreteFuncElement;
@@ -61,23 +61,23 @@ public:
 
   /** */
   void evalCoordExpr(const CoordExpr* expr,
-    RefCountPtr<EvalVector>&  result) const ;
+    RCP<EvalVector>&  result) const ;
 
   /** */
   void evalCellDiameterExpr(const CellDiameterExpr* expr,
-    RefCountPtr<EvalVector>&  result) const ;
+    RCP<EvalVector>&  result) const ;
 
   /** */
   void evalCellVectorExpr(const CellVectorExpr* expr,
-    RefCountPtr<EvalVector>&  result) const ;
+    RCP<EvalVector>&  result) const ;
 
   /** */
   void evalDiscreteFuncElement(const DiscreteFuncElement* expr,
     const Array<MultiIndex>& mi,
-    Array<RefCountPtr<EvalVector> >& result) const ;
+    Array<RCP<EvalVector> >& result) const ;
 
   /** */
-  void setMediator(const RefCountPtr<AbstractEvalMediator>& med) 
+  void setMediator(const RCP<AbstractEvalMediator>& med) 
     {mediator_ = med;}
 
   /** */
@@ -111,7 +111,7 @@ public:
 
 
   /** */
-  RefCountPtr<EvalVector> popVector() const ;
+  RCP<EvalVector> popVector() const ;
 
   /** */
   TEUCHOS_TIMER(coordEvalTimer, "coord function evaluation");
@@ -124,7 +124,7 @@ private:
 
   EvalContext region_;
 
-  RefCountPtr<AbstractEvalMediator> mediator_;
+  RCP<AbstractEvalMediator> mediator_;
 
 };
 

@@ -32,12 +32,12 @@
 #include "SundanceTabs.hpp"
 #include "Teuchos_Array.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
 
 
-namespace SundanceUtils
+namespace Sundance
 {
 
 void writeTable(std::ostream& os, const Tabs& tab,

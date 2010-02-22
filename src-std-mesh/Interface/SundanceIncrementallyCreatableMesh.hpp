@@ -37,61 +37,59 @@
 #include "SundanceMeshBase.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceStdMesh
+namespace Sundance
 {
-  namespace Internal
-  {
-    /**
-     * IncrementallyCreatableMesh is an interface for the creation of meshes
-     * by adding vertices, then elements.
-     */
-    class IncrementallyCreatableMesh : public MeshBase
-    {
-    public:
-      /** Construct an empty mesh of the given dimension, distributed over
-       * processors in the MPI communicator*/
-      IncrementallyCreatableMesh(int dim, const MPIComm& comm, 
-        const MeshEntityOrder& meshOrder)
-        : MeshBase(dim, comm, meshOrder) {;}
+/**
+ * IncrementallyCreatableMesh is an interface for the creation of meshes
+ * by adding vertices, then elements.
+ */
+class IncrementallyCreatableMesh : public MeshBase
+{
+public:
+  /** Construct an empty mesh of the given dimension, distributed over
+   * processors in the MPI communicator*/
+  IncrementallyCreatableMesh(int dim, const MPIComm& comm, 
+    const MeshEntityOrder& meshOrder)
+    : MeshBase(dim, comm, meshOrder) {;}
 
-      /** virtual dtor */
-      virtual ~IncrementallyCreatableMesh(){;}
+  /** virtual dtor */
+  virtual ~IncrementallyCreatableMesh(){;}
 
-      /** Optional preallocation of space for an estimated number of vertices */
-      virtual void estimateNumVertices(int nPts) {;}
+  /** Optional preallocation of space for an estimated number of vertices */
+  virtual void estimateNumVertices(int nPts) {;}
 
-      /** Optional preallocation of space for an estimated number of elements */
-      virtual void estimateNumElements(int nElems) {;}
+  /** Optional preallocation of space for an estimated number of elements */
+  virtual void estimateNumElements(int nElems) {;}
 
       
 
-       /** 
-        * Add new new vertex to the mesh.
-        * \param globalIndex the GID of the new vertex
-        * \param x the spatial position of the new vertex
-        * \param ownerProcID the processor that "owns" this vertex 
-        * \param label a label for this vertex (optionally used in setting loads, boundary
-        * conditions, etc)
-        * \return the LID of the vertex.
-        */
-      virtual int addVertex(int globalIndex, const Point& x,
-                            int ownerProcID, int label) = 0 ;
+  /** 
+   * Add new new vertex to the mesh.
+   * \param globalIndex the GID of the new vertex
+   * \param x the spatial position of the new vertex
+   * \param ownerProcID the processor that "owns" this vertex 
+   * \param label a label for this vertex (optionally used in setting loads, boundary
+   * conditions, etc)
+   * \return the LID of the vertex.
+   */
+  virtual int addVertex(int globalIndex, const Point& x,
+    int ownerProcID, int label) = 0 ;
 
-      /** 
-       * Add a new element to the mesh.
-       * \param globalIndex the GID of the new element
-       * \param vertexGIDs tuple of GIDs for the vertices defining this element. 
-       * \param ownerProcID the processor that "owns" this element
-       * \param label a label for this element (optionally used in setting loads, 
-       * material properties, etc)
-       * \return the LID of the element
-       */
-      virtual int addElement(int globalIndex, const Array<int>& vertexGIDs,
-                             int ownerProcID, int label) = 0 ;
+  /** 
+   * Add a new element to the mesh.
+   * \param globalIndex the GID of the new element
+   * \param vertexGIDs tuple of GIDs for the vertices defining this element. 
+   * \param ownerProcID the processor that "owns" this element
+   * \param label a label for this element (optionally used in setting loads, 
+   * material properties, etc)
+   * \return the LID of the element
+   */
+  virtual int addElement(int globalIndex, const Array<int>& vertexGIDs,
+    int ownerProcID, int label) = 0 ;
   
 
-    };
-  }
+};
+
 }
 
 

@@ -38,9 +38,9 @@
 #include "SundanceSet.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 /**
  * DerivSet is a set of multiple derivatives, sorted by 
  * increasing differentiation order.
@@ -48,7 +48,7 @@ using namespace SundanceUtils;
  * The sorting is important because we should evaluate derivatives
  * of products in decreasing order of differentiation order.
  */
-class DerivSet : public SundanceUtils::Set<MultipleDeriv,
+class DerivSet : public Sundance::Set<MultipleDeriv,
                                            increasingOrder<MultipleDeriv> >
 {
 public:
@@ -60,9 +60,9 @@ public:
 
 namespace Teuchos
 {
-using namespace SundanceUtils;
-using namespace SundanceCore;
-inline string toString(const SundanceCore::DerivSet& d)
+using namespace Sundance;
+using namespace Sundance;
+inline string toString(const Sundance::DerivSet& d)
 {
   return d.toString();
 }

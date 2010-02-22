@@ -3,11 +3,11 @@
 # include "winmath.h"
 #endif
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 Gauss1D::Gauss1D(int n)

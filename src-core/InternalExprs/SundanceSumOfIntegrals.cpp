@@ -33,16 +33,16 @@
 #include "SundanceSpectralPreprocessor.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
-SumOfIntegrals::SumOfIntegrals(const RefCountPtr<CellFilterStub>& region,
+SumOfIntegrals::SumOfIntegrals(const RCP<CellFilterStub>& region,
   const Expr& expr,
-  const RefCountPtr<QuadratureFamilyStub>& quad,
+  const RCP<QuadratureFamilyStub>& quad,
   const WatchFlag& watch)
   : ScalarExpr(), rqcToExprMap_()
 {
@@ -57,9 +57,9 @@ Expr SumOfIntegrals::filterSpectral(const Expr& expr) const
 
 
 
-void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
+void SumOfIntegrals::addTerm(const RCP<CellFilterStub>& regionPtr,
   const Expr& expr,
-  const RefCountPtr<QuadratureFamilyStub>& quadPtr, 
+  const RCP<QuadratureFamilyStub>& quadPtr, 
   const WatchFlag& watch, int sign)
 {
   Expr ex = filterSpectral(expr);
@@ -79,7 +79,7 @@ void SumOfIntegrals::addTerm(const RefCountPtr<CellFilterStub>& regionPtr,
 
 void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign) 
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=other->rqcToExprMap_.begin(); i!=other->rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
@@ -91,8 +91,8 @@ void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign)
 void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr) 
 {
   double a = expr->value();
-  SundanceUtils::Map<RegionQuadCombo, Expr> newMap;
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  Sundance::Map<RegionQuadCombo, Expr> newMap;
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -103,8 +103,8 @@ void SumOfIntegrals::multiplyByConstant(const SpatiallyConstantExpr* expr)
 
 void SumOfIntegrals::changeSign()
 {
-  SundanceUtils::Map<RegionQuadCombo, Expr> newMap;
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  Sundance::Map<RegionQuadCombo, Expr> newMap;
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -116,7 +116,7 @@ void SumOfIntegrals::changeSign()
 Set<int> SumOfIntegrals::funcsOnRegion(const OrderedHandle<CellFilterStub>& d, const Set<int>& funcSet) const 
 {
   Set<int> rtn;
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
@@ -130,7 +130,7 @@ Set<int> SumOfIntegrals::funcsOnRegion(const OrderedHandle<CellFilterStub>& d, c
 
 bool SumOfIntegrals::integralHasTestFunctions(const OrderedHandle<CellFilterStub>& d) const 
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
@@ -143,9 +143,9 @@ bool SumOfIntegrals::integralHasTestFunctions(const OrderedHandle<CellFilterStub
 
 
 
-RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
+RCP<CellFilterStub> SumOfIntegrals::nullRegion() const
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
@@ -159,12 +159,12 @@ RefCountPtr<CellFilterStub> SumOfIntegrals::nullRegion() const
                      "SumOfIntegrals::nullRegion() called on a sum "
                      "of integrals with no non-null regions");
 
-  return RefCountPtr<CellFilterStub>();
+  return RCP<CellFilterStub>();
 }
 
 bool SumOfIntegrals::isIndependentOf(const Expr& u) const
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -175,7 +175,7 @@ bool SumOfIntegrals::isIndependentOf(const Expr& u) const
 
 bool SumOfIntegrals::isLinearForm(const Expr& u) const
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -186,7 +186,7 @@ bool SumOfIntegrals::isLinearForm(const Expr& u) const
 
 bool SumOfIntegrals::isQuadraticForm(const Expr& u) const
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -198,7 +198,7 @@ bool SumOfIntegrals::isQuadraticForm(const Expr& u) const
 
 bool SumOfIntegrals::everyTermHasTestFunctions() const
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -210,7 +210,7 @@ bool SumOfIntegrals::everyTermHasTestFunctions() const
 
 bool SumOfIntegrals::isLinearInTests() const
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -221,7 +221,7 @@ bool SumOfIntegrals::isLinearInTests() const
 
 bool SumOfIntegrals::hasTestFunctions() const
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     Expr e = i->second;
@@ -235,7 +235,7 @@ bool SumOfIntegrals::hasTestFunctions() const
 ostream& SumOfIntegrals::toText(ostream& os, bool paren) const
 {
   os << "Sum of Integrals[" << endl;
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
@@ -260,7 +260,7 @@ ostream& SumOfIntegrals::toLatex(ostream& os, bool paren) const
 XMLObject SumOfIntegrals::toXML() const 
 {
   XMLObject rtn("SumOfIntegrals");
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;
@@ -287,7 +287,7 @@ bool SumOfIntegrals::lessThan(const ScalarExpr* other) const
 
 bool SumOfIntegrals::hasWatchedTerm() const 
 {
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
   {
     const RegionQuadCombo& rqc = i->first;

@@ -35,9 +35,9 @@
 #include "SundanceSumTransformation.hpp"
 #include "Teuchos_Array.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 using std::string;
@@ -48,7 +48,7 @@ using std::ostream;
  * to be applied to a sum, producing a transformed expression. 
  */
 class SumTransformationSequence : public SumTransformation,
-                                  public Array<RefCountPtr<SumTransformation> >
+                                  public Array<RCP<SumTransformation> >
 {
 public:
   /** */
@@ -68,9 +68,9 @@ public:
    * trying to apply all transformations in sequence. If one
    * succeeds, we exit immediately with true.
    */
-  virtual bool doTransform(const RefCountPtr<ScalarExpr>& left, 
-    const RefCountPtr<ScalarExpr>& right,
-    int sign, RefCountPtr<ScalarExpr>& rtn) const ;
+  virtual bool doTransform(const RCP<ScalarExpr>& left, 
+    const RCP<ScalarExpr>& right,
+    int sign, RCP<ScalarExpr>& rtn) const ;
 
         
 };

@@ -35,79 +35,75 @@
 #include "SundanceQuadratureFamilyBase.hpp"
 #include "SundanceHandle.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  
-  using namespace SundanceUtils;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
 
-  /** 
-   * QuadratureFamily is a geometry-independent specification of
-   * a method by which quadrature is to be carried out. For example,
-   * a GaussianQuadrature family will generate Gaussian
-   * quadrature points on any cell type.
-   */
-  class QuadratureFamily : public SundanceUtils::Handle<QuadratureFamilyStub>
-  {
-  public:
-    /* */
-    HANDLE_CTORS(QuadratureFamily, QuadratureFamilyStub);
-    /** */
-    XMLObject toXML() const ;
+/** 
+ * QuadratureFamily is a geometry-independent specification of
+ * a method by which quadrature is to be carried out. For example,
+ * a GaussianQuadrature family will generate Gaussian
+ * quadrature points on any cell type.
+ */
+class QuadratureFamily : public Sundance::Handle<QuadratureFamilyStub>
+{
+public:
+  /* */
+  HANDLE_CTORS(QuadratureFamily, QuadratureFamilyStub);
+  /** */
+  XMLObject toXML() const ;
 
-    /** */
-    int order() const ;
+  /** */
+  int order() const ;
 
-    /** Returns the number of points in a rule of the given cell type 
-         WARNING: this is slow.  Call it once and store the result. 
-          TODO: make it pure virtual and override with queries in
-          the derived classes, making them supply the information.  */
-    int getNumPoints( const CellType& cellType ) const;
+  /** Returns the number of points in a rule of the given cell type 
+      WARNING: this is slow.  Call it once and store the result. 
+      TODO: make it pure virtual and override with queries in
+      the derived classes, making them supply the information.  */
+  int getNumPoints( const CellType& cellType ) const;
 
 
-    /** Get the quadrature points and weights for the given cell type */
-    void getPoints(const CellType& cellType, 
-                   Array<Point>& quadPoints,
-                   Array<double>& quadWeights) const ;
+  /** Get the quadrature points and weights for the given cell type */
+  void getPoints(const CellType& cellType, 
+    Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** Get quadrature points and weights for integration on a facet of a cell */
-    void getFacetPoints(const CellType& cellType, 
-                        int facetDim,
-                        int facetIndex,
-                        Array<Point>& quadPoints,
-                        Array<double>& quadWeights) const ;
+  /** Get quadrature points and weights for integration on a facet of a cell */
+  void getFacetPoints(const CellType& cellType, 
+    int facetDim,
+    int facetIndex,
+    Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-  private:
-    /** Get quad points for a facet of a line */
-    void getLineFacetQuad(int facetDim,
-                          int facetIndex,
-                          Array<Point>& quadPoints,
-                          Array<double>& quadWeights) const ;
-    /** Get quad points for a facet of a triangle */
-    void getTriangleFacetQuad(int facetDim,
-                              int facetIndex,
-                              Array<Point>& quadPoints,
-                              Array<double>& quadWeights) const ;
+private:
+  /** Get quad points for a facet of a line */
+  void getLineFacetQuad(int facetDim,
+    int facetIndex,
+    Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
+  /** Get quad points for a facet of a triangle */
+  void getTriangleFacetQuad(int facetDim,
+    int facetIndex,
+    Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** Get quad points for a facet of a quadlateral */
-    void getQuadFacetQuad(int facetDim,
-                              int facetIndex,
-                              Array<Point>& quadPoints,
-                              Array<double>& quadWeights) const ;
+  /** Get quad points for a facet of a quadlateral */
+  void getQuadFacetQuad(int facetDim,
+    int facetIndex,
+    Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** Get quad points for a facet of a tet */
-    void getTetFacetQuad(int facetDim,
-                         int facetIndex,
-                         Array<Point>& quadPoints,
-                         Array<double>& quadWeights) const ;
+  /** Get quad points for a facet of a tet */
+  void getTetFacetQuad(int facetDim,
+    int facetIndex,
+    Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
 
-    /** Get quad points for a facet of a Brick cell */
-     void getBrickFacetQuad(int facetDim,
-                          int facetIndex,
-                          Array<Point>& quadPoints,
-                          Array<double>& quadWeights) const ;
-  };
+  /** Get quad points for a facet of a Brick cell */
+  void getBrickFacetQuad(int facetDim,
+    int facetIndex,
+    Array<Point>& quadPoints,
+    Array<double>& quadWeights) const ;
+};
 
 
 /** \relates QuadratureFamily */

@@ -15,9 +15,9 @@ template <typename T> class Array
 public:
   Array(int n);
 
-  unsigned int size() const ;
+  int size() const ;
 
-  void resize(unsigned int newsize);
+  void resize(int newsize);
 
   %extend
    {

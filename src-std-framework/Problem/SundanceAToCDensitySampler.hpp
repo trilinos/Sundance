@@ -38,13 +38,13 @@
 #include "SundanceDiscreteSpace.hpp"
 #include "SundanceAToCPointLocator.hpp"
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-  using namespace SundanceUtils;
-  using namespace SundanceStdMesh;
-  using namespace SundanceStdMesh::Internal;
-  using namespace SundanceCore;
-  using namespace SundanceCore;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
+  using namespace Sundance;
   using namespace Teuchos;
   using namespace Thyra;
 
@@ -87,7 +87,7 @@ namespace SundanceStdFwk
     DiscreteSpace discSpace_;
     int dim_;
     Mesh mesh_;
-    RefCountPtr<Array<int> > elemToVecIndexMap_;
+    RCP<Array<int> > elemToVecIndexMap_;
     Expr elemWeights_;
     Vector<double> elemWeightVec_;
     AToCPointLocator locator_;

@@ -68,25 +68,25 @@
 
 using namespace TSFExtended;
 using namespace Teuchos;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
 
-unsigned int iPow(unsigned int base, unsigned int exponent)
+int iPow(int base, int exponent)
 {
   int rtn = 1;
-  for (unsigned int i=0; i<exponent; i++)
+  for (int i=0; i<exponent; i++)
   {
     rtn *= base;
   }
@@ -104,23 +104,23 @@ int main(int argc, char** argv)
     TimeMonitor t(totalTimer());
     Tabs tab0;
 
-    unsigned int pMax = 3;
-    unsigned int maxDim=2;
+    int pMax = 3;
+    int maxDim=2;
     double tol = 1.0e-13;
     int maxDiffOrder = 0;
     int numErrors = 0;
       
     QuadratureFamily quad = new GaussianQuadrature(4);
 
-    for (unsigned int p=1; p<=pMax; p++)
+    for (int p=1; p<=pMax; p++)
     {
       Tabs tab1;
       cerr << tab1 << "Polynomial order p=" << p << endl;
-      for (unsigned int spatialDim=0; spatialDim<=maxDim; spatialDim++)
+      for (int spatialDim=0; spatialDim<=maxDim; spatialDim++)
       {
         Tabs tab2;
         cerr << tab2 << "spatial dimension =" << spatialDim << endl;
-        for (unsigned int cellDim=0; cellDim<=spatialDim; cellDim++)
+        for (int cellDim=0; cellDim<=spatialDim; cellDim++)
         {   
           Tabs tab3;
           cerr << tab3 << "cell dimension =" << cellDim << endl;
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
             Tabs tab4;
             cerr << tab4 << "differentiation order = " << d << endl;
                       
-            for (unsigned int dir=0; dir<iPow(cellDim, d); dir++)
+            for (int dir=0; dir<iPow(cellDim, d); dir++)
             {
               Tabs tab5;
               cerr << tab5 << "direction = " << dir << endl;

@@ -3,37 +3,37 @@
 #include "SundanceRivaraMesh.hpp"
 #include "SundanceExprFieldWrapper.hpp"
 
-using namespace SundanceStdMesh;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
-using namespace SundanceStdMesh::Rivara;
-using SundanceStdFwk::Internal::ExprFieldWrapper;
+using namespace Sundance::Rivara;
+using Sundance::ExprFieldWrapper;
 
 
 static Time& refTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("mesh refinement"); 
   return *rtn;
 }
 
 static Time& m2rTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("mesh to rivara copy"); 
   return *rtn;
 }
 
 static Time& r2mTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("rivara to mesh copy"); 
   return *rtn;
 }
 
 static Time& volSetTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("refinement stack building"); 
   return *rtn;
 }
@@ -47,7 +47,7 @@ Mesh RefinementTransformation::apply(const Mesh& inputMesh) const
   MPIComm comm = inputMesh.comm();
   int numElems = inputMesh.numCells(dim);
 
-  RefCountPtr<RivaraMesh> rivMesh = rcp(new RivaraMesh(dim, comm));
+  RCP<RivaraMesh> rivMesh = rcp(new RivaraMesh(dim, comm));
 
   Array<int> lidMap;
 
@@ -87,7 +87,7 @@ Mesh RefinementTransformation::apply(const Mesh& inputMesh) const
 void RefinementTransformation::meshToRivara(
   const Mesh& mesh, 
   Array<int>& lidMap,
-  RefCountPtr<RivaraMesh>& rivMesh) const 
+  RCP<RivaraMesh>& rivMesh) const 
 {
   TimeMonitor timer(m2rTimer());
   int dim = mesh.spatialDim();
@@ -139,7 +139,7 @@ void RefinementTransformation::meshToRivara(
 }
 
 
-Mesh RefinementTransformation::rivaraToMesh(const RefCountPtr<RivaraMesh>& rivMesh,
+Mesh RefinementTransformation::rivaraToMesh(const RCP<RivaraMesh>& rivMesh,
   const MPIComm& comm) const 
 {
   TimeMonitor timer(r2mTimer());
@@ -150,7 +150,7 @@ Mesh RefinementTransformation::rivaraToMesh(const RefCountPtr<RivaraMesh>& rivMe
 
   for (int n=0; n<numNodes; n++)
   {
-    const RefCountPtr<Node>& node = rivMesh->node(n);
+    const RCP<Node>& node = rivMesh->node(n);
     const Point& x = node->pt();
     int gid = node->globalIndex();
     int ownerProcID = node->ownerProc();
@@ -173,9 +173,9 @@ Mesh RefinementTransformation::rivaraToMesh(const RefCountPtr<RivaraMesh>& rivMe
     const Element* e = iter.getNextElement();
     int ownerProcID = e->ownerProc();
     int label = e->label();
-    const Array<RefCountPtr<Node> >& nodes = e->nodes();
+    const Array<RCP<Node> >& nodes = e->nodes();
 
-    for (unsigned int i=0; i<nodes.size(); i++)
+    for (int i=0; i<nodes.size(); i++)
     {
       verts[i] = nodes[i]->globalIndex();
     }

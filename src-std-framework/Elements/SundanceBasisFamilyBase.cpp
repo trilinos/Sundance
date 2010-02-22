@@ -31,8 +31,8 @@
 #include "SundanceBasisFamilyBase.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 

@@ -31,9 +31,9 @@
 #include "SundanceLabeledSubsetCellFilter.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 LabeledSubsetCellFilter::LabeledSubsetCellFilter(const CellFilter& superset,

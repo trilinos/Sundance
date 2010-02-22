@@ -37,10 +37,9 @@
 #include "SundanceDOFMapBase.hpp"
 
 
-namespace SundanceStdFwk
+namespace Sundance
 {
-namespace Internal
-{
+
 /** 
  * LocalDOFMap bundles several compact tables used for fast lookup of
  * local DOFs. 
@@ -53,7 +52,7 @@ public:
 
   /** */
   void setCells(int cellDim, int maxCellDim,
-    const RefCountPtr<const Array<int> >& cellLID);
+    const RCP<const Array<int> >& cellLID);
 
   /** */
   int nCells() const ;
@@ -74,7 +73,7 @@ public:
   bool hasCells() const {return hasCells_;}
 
   /** */
-  const RefCountPtr<const Array<int> >& cellLIDs() const {return cellLID_;}
+  const RCP<const Array<int> >& cellLIDs() const {return cellLID_;}
 
   /** */
   void markAsUsed(int b) {isUsed_[b] = true;}
@@ -87,7 +86,7 @@ public:
     {return (*nLocalNodesPerChunk_)[b];}
 
   /** */
-  const RefCountPtr<const MapStructure>& mapStruct(int b) const 
+  const RCP<const MapStructure>& mapStruct(int b) const 
     {return (*mapStruct_)[b];}
 
   /** */
@@ -98,7 +97,7 @@ public:
   std::ostream& print(std::ostream& os) const ;
 
   /** */
-  void fillBlock(int b, const RefCountPtr<DOFMapBase>& globalMap,
+  void fillBlock(int b, const RCP<DOFMapBase>& globalMap,
     const Array<Set<int> >& requiredFunc);
 
   /** */
@@ -112,7 +111,7 @@ private:
     {return (*nLocalNodesPerChunk_)[b];}
 
   /** */
-  RefCountPtr<const MapStructure>& mapStruct(int b) 
+  RCP<const MapStructure>& mapStruct(int b) 
     {return (*mapStruct_)[b];}
 
   /** */
@@ -126,26 +125,22 @@ private:
   mutable int verb_;
   Array<int> isUsed_;
   bool hasCells_;
-  RefCountPtr<Array<Array<int> > > nLocalNodesPerChunk_;
-  RefCountPtr<Array<RefCountPtr<const MapStructure> > > mapStruct_;  
-  RefCountPtr<Array<Array<Array<int> > > > localDOFs_;
-  RefCountPtr<const Array<int> > cellLID_;
+  RCP<Array<Array<int> > > nLocalNodesPerChunk_;
+  RCP<Array<RCP<const MapStructure> > > mapStruct_;  
+  RCP<Array<Array<Array<int> > > > localDOFs_;
+  RCP<const Array<int> > cellLID_;
   int activeCellDim_;
   int maxCellDim_;
 };
 
-}
-}
 
-namespace SundanceStdFwk{
-namespace Internal
-{
+/** \relates LocalDOFMap */
 inline std::ostream& operator<<(std::ostream& os,
   const LocalDOFMap& m)
 {
   return m.print(os);
 }
-}
+
 }
 
 

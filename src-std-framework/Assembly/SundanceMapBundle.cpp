@@ -34,20 +34,20 @@
 #include "SundanceDOFMapBase.hpp"
 #include "SundanceStdFwkEvalMediator.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
       
 
 MapBundle::MapBundle(
-  const Array<RefCountPtr<DOFMapBase> >& dofMap,
-  const Array<RefCountPtr<Array<int> > >& isBCIndex,
+  const Array<RCP<DOFMapBase> >& dofMap,
+  const Array<RCP<Array<int> > >& isBCIndex,
   const Array<int>& lowestLocalIndex,
   bool partitionBCs,
   int verb
@@ -84,14 +84,14 @@ int MapBundle::nCells() const
   }
 }
 
-RefCountPtr<const Array<int> > MapBundle::workSet(int block,
+RCP<const Array<int> > MapBundle::workSet(int block,
   bool useCofacets) const
 {
   return chooseMap(block, useCofacets)->cellLIDs();
 }
 
 
-const RefCountPtr<LocalDOFMap>& MapBundle::chooseMap(
+const RCP<LocalDOFMap>& MapBundle::chooseMap(
   int block, bool useCofacets) const
 {
   if (useCofacets)
@@ -114,7 +114,7 @@ const RefCountPtr<LocalDOFMap>& MapBundle::chooseMap(
 
 
 void MapBundle::buildLocalDOFMaps(
-  const RefCountPtr<StdFwkEvalMediator>& mediator,
+  const RCP<StdFwkEvalMediator>& mediator,
   IntegrationCellSpecifier intCellSpec,
   const Array<Set<int> >& requiredFuncs,
   int verbosity)

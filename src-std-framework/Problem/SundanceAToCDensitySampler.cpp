@@ -36,20 +36,20 @@
 #include "SundanceDiscreteFuncElement.hpp"
 #include <queue>
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 
 static Time& densitySamplingTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("density sampling"); 
   return *rtn;
 }
@@ -111,7 +111,7 @@ void AToCDensitySampler::init()
       cellLID.append(*i);
     }
 
-  const RefCountPtr<DOFMapBase>& dofMap = discSpace_.map();
+  const RCP<DOFMapBase>& dofMap = discSpace_.map();
 
   Set<int> funcs = makeSet(0);
   Array<Array<int> > dofs;
@@ -119,7 +119,7 @@ void AToCDensitySampler::init()
   dofMap->getDOFsForCellBatch(dim_, cellLID, funcs, dofs, nNodes,0);
   
   const Array<int>& dofs0 = dofs[0];
-  for (unsigned int c=0; c<cellLID.size(); c++)
+  for (int c=0; c<cellLID.size(); c++)
     {
       int vecIndex = dofs0[c];
       int lid = cellLID[c];
@@ -137,10 +137,10 @@ void AToCDensitySampler::init()
 
 Point AToCDensitySampler::vec2point(const std::vector<double>& x) const
 {
-  if (x.size()==1U) return Point(x[0]);
+  if (x.size()==1) return Point(x[0]);
   else if (x.size()==2U) return Point(x[0], x[1]);
   else if (x.size()==3U) return Point(x[0], x[1], x[2]);
-  TEST_FOR_EXCEPT(x.size() < 1U || x.size() > 3U);
+  TEST_FOR_EXCEPT(x.size() < 1 || x.size() > 3U);
   return Point();
 }
 

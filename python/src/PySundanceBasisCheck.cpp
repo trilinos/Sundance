@@ -41,37 +41,37 @@
 
 
 using namespace Teuchos;
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 
-unsigned int iPow(unsigned int base, unsigned int exponent)
+int iPow(int base, int exponent)
 {
   int rtn = 1;
-  for (unsigned int i=0; i<exponent; i++)
+  for (int i=0; i<exponent; i++)
     {
       rtn *= base;
     }
   return rtn;
 }
 
-namespace SundanceStdFwk {
+namespace Sundance {
 void checkbasis( BasisFamily &b1 , BasisFamily &b2 )
 {
-  unsigned int maxDim=3;
+  int maxDim=3;
   double tol = 1.0e-13;
   int maxDiffOrder = 0;
   int numErrors = 0;
   QuadratureFamily quad = new GaussianQuadrature(4);
   
-  for (unsigned int spatialDim=1; spatialDim<=maxDim; spatialDim++) {
+  for (int spatialDim=1; spatialDim<=maxDim; spatialDim++) {
     cerr << "\t" << "spatial dimension =" << spatialDim << endl;
-    for (unsigned int cellDim=0; cellDim<=spatialDim; cellDim++) { 
+    for (int cellDim=0; cellDim<=spatialDim; cellDim++) { 
       cerr << "\t\t" << "cell dimension =" << cellDim << endl;
       CellType cellType;
       if (cellDim==0) cellType=PointCell;
@@ -86,7 +86,7 @@ void checkbasis( BasisFamily &b1 , BasisFamily &b2 )
       for (int d=0; d<=maxDiffOrder; d++) {
 	if (cellDim==0 && d>0) continue;
 	cerr << "\t\t\t" << "differentiation order = " << d << endl;
-	for (unsigned int dir=0; dir<iPow(cellDim, d); dir++) {
+	for (int dir=0; dir<iPow(cellDim, d); dir++) {
 	  cerr << "\t\t\t\t" << "direction = " << dir << endl;
 	  MultiIndex mi;
 	  mi[dir]=d;

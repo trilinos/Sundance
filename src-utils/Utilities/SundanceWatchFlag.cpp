@@ -31,14 +31,14 @@
 #include "SundanceWatchFlag.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 
 
 WatchFlag::WatchFlag(const std::string& name,
   const ParameterList& params)
   : name_(name), params_(rcp(new ParameterList(params)))
 {
-  if (name_.size() > 0U) isActiveMap().put(name, true);
+  if (name_.size() > 0) isActiveMap().put(name, true);
   else isActiveMap().put(name, false);
 }
 

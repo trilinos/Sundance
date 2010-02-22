@@ -38,10 +38,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
 using namespace std;
@@ -53,7 +53,7 @@ StringEvalMediator::StringEvalMediator()
 {}
 
 void StringEvalMediator::evalCoordExpr(const CoordExpr* expr,
-                                       RefCountPtr<EvalVector>& vec) const
+                                       RCP<EvalVector>& vec) const
 {
   SUNDANCE_MSG1(verb(), 
     "evaluating coord expr " << expr->toString());
@@ -64,7 +64,7 @@ void StringEvalMediator::evalCoordExpr(const CoordExpr* expr,
 }
 
 void StringEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
-                                              RefCountPtr<EvalVector>& vec) const
+                                              RCP<EvalVector>& vec) const
 {
   SUNDANCE_MSG1(verb(), 
     "evaluating cell diameter expr " << expr->toXML().toString());
@@ -75,7 +75,7 @@ void StringEvalMediator::evalCellDiameterExpr(const CellDiameterExpr* expr,
 }
 
 void StringEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
-                                              RefCountPtr<EvalVector>& vec) const
+                                              RCP<EvalVector>& vec) const
 {
   SUNDANCE_MSG1(verb(), "evaluating cell vector expr " << expr->toXML().toString());
   
@@ -87,7 +87,7 @@ void StringEvalMediator::evalCellVectorExpr(const CellVectorExpr* expr,
 void StringEvalMediator
 ::evalDiscreteFuncElement(const DiscreteFuncElement* expr,
                           const Array<MultiIndex>& mi,
-                          Array<RefCountPtr<EvalVector> >& vec) const 
+                          Array<RCP<EvalVector> >& vec) const 
 {
   static Array<string> coordNames;
 
@@ -101,7 +101,7 @@ void StringEvalMediator
 
   string funcName = expr->name();
   
-  for (unsigned int i=0; i<mi.size(); i++)
+  for (int i=0; i<mi.size(); i++)
     {
       vec[i]->resize(1);
       vec[i]->start()[0]=0.0;

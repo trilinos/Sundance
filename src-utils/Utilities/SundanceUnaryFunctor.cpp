@@ -31,7 +31,7 @@
 #include "SundanceUnaryFunctor.hpp"
 #include "SundanceTabs.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 void UnaryFunctor::eval1(const double* const x, 

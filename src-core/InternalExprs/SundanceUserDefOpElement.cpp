@@ -34,16 +34,16 @@
 #include "SundanceTabs.hpp"
 #include "SundanceOut.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
-UserDefOpElement::UserDefOpElement(const Array<RefCountPtr<ScalarExpr> >& args,
-  const RefCountPtr<SundanceUtils::Map<EvalContext, RefCountPtr<const UserDefOpCommonEvaluator> > >& evalMap,
-  const RefCountPtr<const UserDefFunctorElement>& functorElement)
+UserDefOpElement::UserDefOpElement(const Array<RCP<ScalarExpr> >& args,
+  const RCP<Sundance::Map<EvalContext, RCP<const UserDefOpCommonEvaluator> > >& evalMap,
+  const RCP<const UserDefFunctorElement>& functorElement)
   : ExprWithChildren(args), 
     commonEvaluatorsMap_(evalMap),
     functorElement_(functorElement)
@@ -59,7 +59,7 @@ void UserDefOpElement::getArgDerivIndices(const Array<int>& orders,
 
   int counter = 0;
 
-  for (unsigned int o=0; o<orders.size(); o++)
+  for (int o=0; o<orders.size(); o++)
   {
     int order = orders[o];
       
@@ -136,7 +136,7 @@ Evaluator* UserDefOpElement::createEvaluator(const EvaluatableExpr* expr,
 
 
 
-RefCountPtr<const UserDefOpCommonEvaluator> 
+RCP<const UserDefOpCommonEvaluator> 
 UserDefOpElement::getCommonEvaluator(const EvalContext& context) const 
 {
   if (!commonEvaluatorsMap_->containsKey(context))

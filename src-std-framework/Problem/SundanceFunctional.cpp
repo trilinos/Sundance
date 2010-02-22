@@ -40,10 +40,10 @@
 #include "SundanceEquationSet.hpp"
 #include "SundanceAssembler.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceCore;
-using namespace SundanceStdMesh;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
@@ -85,7 +85,7 @@ LinearProblem Functional::linearVariationalProb(
 {
 
   Array<Expr> zero(unk.size());
-  for (unsigned int i=0; i<unk.size(); i++) 
+  for (int i=0; i<unk.size(); i++) 
     {
       Expr z = new ZeroExpr();
       zero[i] = z;
@@ -98,14 +98,14 @@ LinearProblem Functional::linearVariationalProb(
   Expr unkParamValues;
   Expr fixedParamValues;
 
-  RefCountPtr<EquationSet> eqn 
+  RCP<EquationSet> eqn 
     = rcp(new EquationSet(integral_, bc_, 
                           tuple(var), tuple(varEvalPts),
                           tuple(unk), tuple(unkEvalPts), 
                           unkParams, unkParamValues,
                           tuple(fixed), tuple(fixedEvalPts)));
 
-  RefCountPtr<Assembler> assembler 
+  RCP<Assembler> assembler 
     = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false, verbSublist("Assembler")));
 
   return LinearProblem(assembler);
@@ -125,14 +125,14 @@ NonlinearProblem Functional
   Expr unkParamValues;
   Expr fixedParamValues;
 
-  RefCountPtr<EquationSet> eqn 
+  RCP<EquationSet> eqn 
     = rcp(new EquationSet(integral_, bc_, 
                           tuple(var), tuple(varEvalPts),
                           tuple(unk), tuple(unkEvalPts), 
                           fixedParams, fixedParamValues,
                           tuple(fixed), tuple(fixedEvalPts)));
 
-  RefCountPtr<Assembler> assembler 
+  RCP<Assembler> assembler 
     = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false, verbSublist("Assembler")));
 
   return NonlinearProblem(assembler, unkEvalPts);
@@ -168,9 +168,9 @@ FunctionalEvaluator Functional::evaluator(const Expr& var,
 
 
 
-RefCountPtr<ParameterList> Functional::defaultVerbParams()
+RCP<ParameterList> Functional::defaultVerbParams()
 {
-  static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Functional"));
+  static RCP<ParameterList> rtn = rcp(new ParameterList("Functional"));
   static int first = true;
   if (first)
   {

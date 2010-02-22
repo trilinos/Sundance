@@ -113,7 +113,7 @@ int main(int argc, char** argv)
         = LinearSolverBuilder::createSolver(solverParams);
 
       /* define an expression for the exact solution */
-      Expr t = new SundanceCore::Parameter(0.0);
+      Expr t = new Sundance::Parameter(0.0);
       Expr uExact = exp(-t) * sin(x);
       Expr errExpr = Integral(interior, 
                               pow(u0-uExact, 2),

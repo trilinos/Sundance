@@ -41,24 +41,18 @@
 #include "SundanceTypeUtils.hpp"
 #include "Teuchos_XMLObject.hpp"
 
-namespace SundanceStdFwk {
+namespace Sundance {
 
-
-using Teuchos::Array;
-using SundanceUtils::Point;
-using SundanceStdMesh::CellType;
-using SundanceCore::MultiIndex;
-using Teuchos::RefCountPtr;
-using Teuchos::rcp;
+using namespace Teuchos;
 
 
 /** 
  *
  */
 class BasisFamilyBase
-  : public SundanceUtils::Handleable<BasisFamilyBase>,
-    public SundanceUtils::Printable,
-    public SundanceUtils::ObjectWithClassVerbosity<BasisFamilyBase>,
+  : public Sundance::Handleable<BasisFamilyBase>,
+    public Sundance::Printable,
+    public ObjectWithClassVerbosity<BasisFamilyBase>,
     public BasisDOFTopologyBase,
     public TensorBasisBase,
     public BasisReferenceEvaluationBase
@@ -144,7 +138,7 @@ public:
 
 
 
-} // namespace SundanceStdFwk
+} // namespace Sundance
 
 
 #endif

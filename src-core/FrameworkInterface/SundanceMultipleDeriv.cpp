@@ -31,8 +31,8 @@
 #include "SundanceMultipleDeriv.hpp"
 #include "SundanceSymbolicFuncElement.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 MultipleDeriv::MultipleDeriv()
@@ -245,7 +245,7 @@ int MultipleDeriv::pow2(int n)
 {
   static Array<int> p2(1,1);
 
-  if ((unsigned int) n >= p2.size())
+  if (n >= p2.size())
   {
     int oldN = p2.size(); 
     for (int i=oldN; i<=n; i++) p2.push_back(p2[i-1]*2);
@@ -256,7 +256,7 @@ int MultipleDeriv::pow2(int n)
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
 Set<MultipleDeriv> applyTx(const Set<MultipleDeriv>& s,
   const MultiIndex& x)
@@ -339,7 +339,7 @@ Set<MultipleDeriv> applyZx(const Set<MultipleDeriv>& W,
     
 int factorial(const MultipleDeriv& ms)
 {
-  SundanceUtils::Map<Deriv, int> counts;
+  Sundance::Map<Deriv, int> counts;
     
   for (MultipleDeriv::const_iterator i=ms.begin(); i!=ms.end(); i++)
   {
@@ -348,7 +348,7 @@ int factorial(const MultipleDeriv& ms)
   }
 
   int rtn = 1;
-  for (SundanceUtils::Map<Deriv, int>::const_iterator
+  for (Sundance::Map<Deriv, int>::const_iterator
          i=counts.begin(); i!=counts.end(); i++)
   {
     int f = 1;

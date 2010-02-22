@@ -31,10 +31,10 @@
 #include "SundanceTabs.hpp"
 #include "SundanceRegionQuadCombo.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
-using namespace SundanceCore;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -42,14 +42,14 @@ RegionQuadCombo::RegionQuadCombo()
   : id_(-1), domain_(), quad_(), watch_()
 {;}
 
-RegionQuadCombo::RegionQuadCombo(const RefCountPtr<CellFilterStub>& domain,
-  const RefCountPtr<QuadratureFamilyStub>& quad,
+RegionQuadCombo::RegionQuadCombo(const RCP<CellFilterStub>& domain,
+  const RCP<QuadratureFamilyStub>& quad,
   const WatchFlag& watch)
   : id_(getID(domain, quad,watch)), domain_(domain), quad_(quad), watch_(watch)
 {;}
 
-int RegionQuadCombo::getID(const RefCountPtr<CellFilterStub>& domain,
-  const RefCountPtr<QuadratureFamilyStub>& quad,
+int RegionQuadCombo::getID(const RCP<CellFilterStub>& domain,
+  const RCP<QuadratureFamilyStub>& quad,
   const WatchFlag& watch)
 {
   RegTriple p(domain, quad, watch);
@@ -76,9 +76,9 @@ string RegionQuadCombo::toString() const
   return oss.str();
 }
 
-SundanceUtils::Map<RegTriple, int>& RegionQuadCombo::domainAndQuadToIDMap()
+Sundance::Map<RegTriple, int>& RegionQuadCombo::domainAndQuadToIDMap()
 {
-  static SundanceUtils::Map<RegTriple, int> rtn = SundanceUtils::Map<RegTriple, int>();
+  static Sundance::Map<RegTriple, int> rtn = Sundance::Map<RegTriple, int>();
   return rtn;
 }
 

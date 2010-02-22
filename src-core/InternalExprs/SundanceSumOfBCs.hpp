@@ -34,9 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "SundanceSumOfIntegrals.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
 
@@ -48,9 +48,9 @@ class SumOfBCs : public SumOfIntegrals
 {
 public:
   /** Construct given an integral over a single region */
-  SumOfBCs(const RefCountPtr<CellFilterStub>& region,
+  SumOfBCs(const RCP<CellFilterStub>& region,
     const Expr& expr,
-    const RefCountPtr<QuadratureFamilyStub>& quad,
+    const RCP<QuadratureFamilyStub>& quad,
     const WatchFlag& watch);
 
   /** */
@@ -67,7 +67,7 @@ public:
   virtual XMLObject toXML() const ;
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 private:
 };

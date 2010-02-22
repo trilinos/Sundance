@@ -40,9 +40,9 @@
 #include "SundanceObjectWithVerbosity.hpp"
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
 
@@ -337,7 +337,7 @@ public:
     const ParameterList& verbParams = *defaultVerbParams());
 
   /** */
-  EquationSet(const RefCountPtr<FunctionSupportResolver>& fsr,
+  EquationSet(const RCP<FunctionSupportResolver>& fsr,
     const Array<Expr>& varLinearizationPts,
     const Array<Expr>& unkLinearizationPts, 
     const Expr& paramValues,
@@ -350,10 +350,10 @@ public:
   //@{
   /** Returns the number of regions on which pieces of the equation
    * or BCs are defined. */
-  unsigned int numRegions() const ;
+  int numRegions() const ;
       
   /** Returns the d-th region for this equation set */
-  const RefCountPtr<CellFilterStub>& region(int d) const ;
+  const RCP<CellFilterStub>& region(int d) const ;
 
   /** Returns the index of the given region */
   int indexForRegion(const OrderedHandle<CellFilterStub>& region) const ;
@@ -393,14 +393,14 @@ public:
   /** Returns the (var, unk) pairs appearing on the given domain.
    * This is required for determining the sparsity structure of the
    * matrix */
-  const RefCountPtr<Set<OrderedPair<int, int> > >& varUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
+  const RCP<Set<OrderedPair<int, int> > >& varUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
     {return varUnkPairsOnRegions_.get(domain);}
       
 
   /** Returns the (var, unk) pairs appearing on the given domain.
    * This is required for determining the sparsity structure of the
    * matrix */
-  const RefCountPtr<Set<OrderedPair<int, int> > >& bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const ;
+  const RCP<Set<OrderedPair<int, int> > >& bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const ;
 
 
   /** Returns the integrand on the rqc r. */
@@ -415,7 +415,7 @@ public:
   bool hasActiveWatchFlag() const ;
 
   /** */
-  const RefCountPtr<FunctionSupportResolver>& fsr() const {return fsr_;}
+  const RCP<FunctionSupportResolver>& fsr() const {return fsr_;}
 
   //@}
       
@@ -449,32 +449,32 @@ public:
   /** \name Getting information about functions */
   //@{
   /** Returns the number of variational function blocks */
-  unsigned int numVarBlocks() const ;
+  int numVarBlocks() const ;
 
   /** Returns the number of unknown function blocks */
-  unsigned int numUnkBlocks() const ;
+  int numUnkBlocks() const ;
 
   /** Returns the number of unknown parameters */
-  unsigned int numUnkParams() const ;
+  int numUnkParams() const ;
 
   /** Returns the number of fixed parameters */
-  unsigned int numFixedParams() const ;
+  int numFixedParams() const ;
 
   /** Returns the number of variational functions in this block */
-  unsigned int numVars(int block) const ;
+  int numVars(int block) const ;
 
   /** Returns the number of unk functions in this block */
-  unsigned int numUnks(int block) const ;
+  int numUnks(int block) const ;
 
   /** Returns the number of variational function IDs in this block.
    * See the comment in FSR.hpp for an explanation of the difference 
    * between this and numVars(). */
-  unsigned int numVarIDs(int block) const ;
+  int numVarIDs(int block) const ;
 
   /** Returns the number of unk function IDs in this block.
    * See the comment in FSR.hpp for an explanation of the difference 
    * between this and numVars().  */
-  unsigned int numUnkIDs(int block) const ;
+  int numUnkIDs(int block) const ;
 
   /** Returns the i-th variational function in block b */
   RCP<const CommonFuncDataStub> varFuncData(int b, int i) const ;
@@ -623,9 +623,9 @@ public:
 
 
   /** */
-  static RefCountPtr<ParameterList> defaultVerbParams()
+  static RCP<ParameterList> defaultVerbParams()
     {
-      static RefCountPtr<ParameterList> rtn = rcp(new ParameterList("Equation Set"));
+      static RCP<ParameterList> rtn = rcp(new ParameterList("Equation Set"));
       static int first = true;
       if (first)
       {
@@ -667,17 +667,17 @@ private:
 
   /** The FunctionSupportResolver deals with associating functions with
    * subdomains */
-  RefCountPtr<FunctionSupportResolver> fsr_;
+  RCP<FunctionSupportResolver> fsr_;
 
   /** Map from cell filter to pairs of (varID, unkID) appearing
    * on those cells. This is needed to construct the sparsity pattern
    * of the matrix. */
-  Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > varUnkPairsOnRegions_;
+  Map<OrderedHandle<CellFilterStub>, RCP<Set<OrderedPair<int, int> > > > varUnkPairsOnRegions_;
 
   /** Map from cell filter to pairs of (varID, unkID) appearing
    * on those cells. This is needed to construct the sparsity pattern
    * of the matrix. */
-  Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > > bcVarUnkPairsOnRegions_;
+  Map<OrderedHandle<CellFilterStub>, RCP<Set<OrderedPair<int, int> > > > bcVarUnkPairsOnRegions_;
 
   /** */
   Array<RegionQuadCombo> regionQuadCombos_;

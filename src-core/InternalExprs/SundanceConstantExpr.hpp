@@ -33,9 +33,9 @@
 
 #include "SundanceSpatiallyConstantExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 /**
  * ConstantExpr contains an immutable constant, to be distinguished
@@ -85,7 +85,7 @@ public:
 
 
   /** */
-  virtual RefCountPtr<ExprBase> getRcp() {return rcp(this);}
+  virtual RCP<ExprBase> getRcp() {return rcp(this);}
 
 
 protected:

@@ -35,7 +35,7 @@
 #include "Teuchos_RefCountPtr.hpp"
 #include "SundanceBasisFamilyBase.hpp"
 
-namespace SundanceStdFwk 
+namespace Sundance 
 {
 /** 
  * Lagrange basis 

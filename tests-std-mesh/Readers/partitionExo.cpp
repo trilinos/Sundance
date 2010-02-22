@@ -18,16 +18,16 @@
 #include "Teuchos_CommandLineProcessor.hpp"
 
 
-using namespace SundanceUtils;
-using namespace SundanceStdMesh;
-using namespace SundanceStdMesh::Internal;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 using namespace std;
 
 static Time& totalTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -68,8 +68,8 @@ int main(int argc, char** argv)
     }
     else
     {
-      TEST_FOR_EXCEPT(infile.length()==0U);
-      TEST_FOR_EXCEPT(outfile.length()==0U);
+      TEST_FOR_EXCEPT(infile.length()==0);
+      TEST_FOR_EXCEPT(outfile.length()==0);
       TEST_FOR_EXCEPT(numProc<=1);
 
 
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 
       Mesh mesh = mesher.getMesh();
 
-      RefCountPtr<SerialPartitionerBase> part 
+      RCP<SerialPartitionerBase> part 
         = rcp(new FileIOChacoPartitioner("part"));
 
       Array<Mesh> submesh = part->makeMeshParts(mesh, numProc);

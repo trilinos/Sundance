@@ -33,11 +33,11 @@
 #include "SundanceTriangleQuadrature.hpp"
 #include "SundanceTetQuadrature.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceUtils;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 ClosedNewtonCotesType::ClosedNewtonCotesType()

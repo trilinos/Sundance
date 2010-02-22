@@ -30,9 +30,9 @@
 
 #include "SundancePositionalCellPredicate.hpp"
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 bool PositionalCellPredicate::lessThan(const CellPredicateBase* other) const
@@ -53,7 +53,7 @@ void PositionalCellPredicate::testBatch(const Array<int>& cellLID,
 
   if (cellDim()==0)
     {
-      for (unsigned int i=0; i<cellLID.size(); i++)
+      for (int i=0; i<cellLID.size(); i++)
         {
           results[i] = (*func_)(mesh().nodePosition(cellLID[i]));
         }
@@ -64,7 +64,7 @@ void PositionalCellPredicate::testBatch(const Array<int>& cellLID,
       Array<int> facetSigns;
       int nf = mesh().numFacets(cellDim(), cellLID[0], 0);
       mesh().getFacetLIDs(cellDim(), cellLID, 0, facetLIDs, facetSigns);
-      for (unsigned int c=0; c<cellLID.size(); c++)
+      for (int c=0; c<cellLID.size(); c++)
         {
           results[c] = true;
           for (int f=0; f<nf; f++)

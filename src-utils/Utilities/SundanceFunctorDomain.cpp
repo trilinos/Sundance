@@ -31,7 +31,7 @@
 #include "SundanceFunctorDomain.hpp"
 #include "SundanceExceptions.hpp"
 
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 
 

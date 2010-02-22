@@ -35,9 +35,9 @@
 #include "SundanceExprWithChildren.hpp"
 #include "SundanceExpr.hpp"
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 using namespace Teuchos;
 using std::string;
 
@@ -49,8 +49,8 @@ class BinaryExpr : public ExprWithChildren
 {
 public:
   /** construct with left and right operands */
-  BinaryExpr(const RefCountPtr<ScalarExpr>& left,
-    const RefCountPtr<ScalarExpr>& right, int sign);
+  BinaryExpr(const RCP<ScalarExpr>& left,
+    const RCP<ScalarExpr>& right, int sign);
 
   /** virtual dtor */
   virtual ~BinaryExpr() {;}

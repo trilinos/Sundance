@@ -47,8 +47,8 @@
  
 
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+
+using namespace Sundance;
 using namespace Teuchos;
 
 EquationSet::EquationSet(const Expr& eqns, 
@@ -374,7 +374,7 @@ void EquationSet::init(
 
   /* Do the non-bc eqns first */
   SUNDANCE_MSG1(verb, tab1 << "processing integral terms");
-  for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          r=integralSum->rqcToExprMap().begin(); 
        r!=integralSum->rqcToExprMap().end(); r++)
   {
@@ -438,7 +438,7 @@ void EquationSet::init(
             MatrixAndVector);
       }
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
-      if (nonzeros.size()==0U) 
+      if (nonzeros.size()==0) 
       {
         rqcToSkip_[MatrixAndVector].put(rqc);
         continue;
@@ -492,7 +492,7 @@ void EquationSet::init(
             VectorOnly);
       }
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
-      if (nonzeros.size()==0U) 
+      if (nonzeros.size()==0) 
       {
         rqcToSkip_[VectorOnly].put(rqc);
         continue;
@@ -523,7 +523,7 @@ void EquationSet::init(
           context,
           Sensitivities);
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
-      if (nonzeros.size()==0U) 
+      if (nonzeros.size()==0) 
       {
         rqcToSkip_[Sensitivities].put(rqc);
         continue;
@@ -595,7 +595,7 @@ void EquationSet::init(
           FunctionalOnly);
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
 
-      if (nonzeros.size()==0U) 
+      if (nonzeros.size()==0) 
       {
         rqcToSkip_[FunctionalOnly].put(rqc);
         continue;
@@ -622,7 +622,7 @@ void EquationSet::init(
 
       SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
 
-      if (nonzeros.size()==0U) 
+      if (nonzeros.size()==0) 
       {
         rqcToSkip_[FunctionalAndGradient].put(rqc);
         continue;
@@ -637,7 +637,7 @@ void EquationSet::init(
   {
     /* functions found in the BCs both in the overall lists and 
      * also in the bc-specific lists */
-    for (SundanceUtils::Map<RegionQuadCombo, Expr>::const_iterator 
+    for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
            r=bcSum->rqcToExprMap().begin(); 
          r!=bcSum->rqcToExprMap().end(); r++)
     {
@@ -699,7 +699,7 @@ void EquationSet::init(
               MatrixAndVector);
         }
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
-        if (nonzeros.size()==0U) 
+        if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[MatrixAndVector].put(rqc);
           continue;
@@ -754,7 +754,7 @@ void EquationSet::init(
               VectorOnly);
         }
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
-        if (nonzeros.size()==0U) 
+        if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[VectorOnly].put(rqc);
           continue;
@@ -790,7 +790,7 @@ void EquationSet::init(
             Sensitivities);
 
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
-        if (nonzeros.size()==0U) 
+        if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[Sensitivities].put(rqc);
           continue;
@@ -862,7 +862,7 @@ void EquationSet::init(
             FunctionalOnly);
 
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);                  
-        if (nonzeros.size()==0U) 
+        if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[FunctionalOnly].put(rqc);
           continue;
@@ -890,10 +890,10 @@ void EquationSet::init(
             toList(fixedFields), 
             toList(fixedFieldValues),
             context,
-          FunctionalAndGradient);
+            FunctionalAndGradient);
 
         SUNDANCE_MSG2(rqcVerb, tab3 << "nonzeros are " << nonzeros);
-        if (nonzeros.size()==0U) 
+        if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[FunctionalAndGradient].put(rqc);
           continue;
@@ -930,8 +930,8 @@ void EquationSet
     "for domain " << domain);
   SUNDANCE_MSG2(verb, tab << "isBC=" << isBC);
   
-  RefCountPtr<Set<OrderedPair<int, int> > > funcPairs;
-  Map<OrderedHandle<CellFilterStub>, RefCountPtr<Set<OrderedPair<int, int> > > >* theMap;
+  RCP<Set<OrderedPair<int, int> > > funcPairs;
+  Map<OrderedHandle<CellFilterStub>, RCP<Set<OrderedPair<int, int> > > >* theMap;
 
   if (isBC) 
   {
@@ -1001,11 +1001,11 @@ void EquationSet
 
 bool EquationSet::hasActiveWatchFlag() const 
 {
-  for (unsigned int i=0; i<regionQuadCombos().size(); i++)
+  for (int i=0; i<regionQuadCombos().size(); i++)
   {
     if (regionQuadCombos()[i].watch().isActive()) return true;
   }
-  for (unsigned int i=0; i<bcRegionQuadCombos().size(); i++)
+  for (int i=0; i<bcRegionQuadCombos().size(); i++)
   {
     if (bcRegionQuadCombos()[i].watch().isActive()) return true;
   }
@@ -1015,7 +1015,7 @@ bool EquationSet::hasActiveWatchFlag() const
 Array<Expr> EquationSet::flattenSpectral(const Array<Expr>& expr) const
 {
   Array<Expr> rtn(expr.size());
-  for (unsigned int i=0; i<expr.size(); i++)
+  for (int i=0; i<expr.size(); i++)
   {
     const Expr& e = expr[i];
     rtn[i] = flattenSpectral(e);
@@ -1026,7 +1026,7 @@ Array<Expr> EquationSet::flattenSpectral(const Array<Expr>& expr) const
 Expr EquationSet::flattenSpectral(const Expr& expr) const
 {
   Array<Expr> rtn(expr.size());
-  for (unsigned int i=0; i<expr.size(); i++)
+  for (int i=0; i<expr.size(); i++)
   {
     if (expr[i].size() == 1)
     {
@@ -1057,14 +1057,14 @@ Expr EquationSet::flattenSpectral(const Expr& expr) const
                   
 }
 
-const RefCountPtr<Set<OrderedPair<int, int> > >& EquationSet::
+const RCP<Set<OrderedPair<int, int> > >& EquationSet::
 bcVarUnkPairs(const OrderedHandle<CellFilterStub>& domain) const 
 {
   TEST_FOR_EXCEPTION(!bcVarUnkPairsOnRegions_.containsKey(domain),
     InternalError,
     "equation set does not have a var-unk pair list for "
     "bc region " << domain);
-  const RefCountPtr<Set<OrderedPair<int, int> > >& rtn 
+  const RCP<Set<OrderedPair<int, int> > >& rtn 
     = bcVarUnkPairsOnRegions_.get(domain);
 
   TEST_FOR_EXCEPTION(rtn.get()==0, InternalError, 
@@ -1202,43 +1202,43 @@ int EquationSet::indexForRegion(const OrderedHandle<CellFilterStub>& region) con
   return fsr_->indexForRegion(region);
 }
 
-unsigned int EquationSet::numRegions() const {return fsr_->numRegions();}
+int EquationSet::numRegions() const {return fsr_->numRegions();}
 
-const RefCountPtr<CellFilterStub>& EquationSet::region(int d) const 
+const RCP<CellFilterStub>& EquationSet::region(int d) const 
 {return fsr_->region(d);}
 
 
 
 /* Returns the number of variational function blocks */
-unsigned int EquationSet::numVarBlocks() const 
+int EquationSet::numVarBlocks() const 
 {return fsr_->numVarBlocks();}
 
 /* Returns the number of unknown function blocks */
-unsigned int EquationSet::numUnkBlocks() const 
+int EquationSet::numUnkBlocks() const 
 {return fsr_->numUnkBlocks();}
 
 /* Returns the number of unknown parameters */
-unsigned int EquationSet::numUnkParams() const 
+int EquationSet::numUnkParams() const 
 {return fsr_->numUnkParams();}
 
 /* Returns the number of fixed parameters */
-unsigned int EquationSet::numFixedParams() const 
+int EquationSet::numFixedParams() const 
 {return fsr_->numFixedParams();}
 
 /* Returns the number of variational functions in this block */
-unsigned int EquationSet::numVars(int block) const 
+int EquationSet::numVars(int block) const 
 {return fsr_->numVars(block);}
 
 /* Returns the number of unk functions in this block */
-unsigned int EquationSet::numUnks(int block) const 
+int EquationSet::numUnks(int block) const 
 {return fsr_->numUnks(block);}
 
 /* Returns the number of variational function IDs in this block */
-unsigned int EquationSet::numVarIDs(int block) const 
+int EquationSet::numVarIDs(int block) const 
 {return fsr_->numVarIDs(block);}
 
 /* Returns the number of unk function IDs in this block */
-unsigned int EquationSet::numUnkIDs(int block) const 
+int EquationSet::numUnkIDs(int block) const 
 {return fsr_->numUnkIDs(block);}
 
 /* Returns the i-th variational function in block b */

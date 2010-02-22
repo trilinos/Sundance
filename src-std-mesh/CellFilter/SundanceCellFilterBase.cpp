@@ -32,10 +32,10 @@
 #include "SundanceOut.hpp"
 
 
-using namespace SundanceStdFwk;
-using namespace SundanceStdFwk::Internal;
-using namespace SundanceCore;
-using namespace SundanceCore;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
+using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -65,7 +65,7 @@ void CellFilterBase::registerSubset(const CellFilter& sub) const
 void CellFilterBase::registerLabeledSubset(int label, const CellFilter& sub) const
 {
   labeledSubsets_.put(label, sub);
-  for (SundanceUtils::Map<int, CellFilter>::const_iterator 
+  for (Sundance::Map<int, CellFilter>::const_iterator 
          iter=labeledSubsets_.begin(); iter != labeledSubsets_.end(); iter++)
     {
       if (iter->first == label) continue;

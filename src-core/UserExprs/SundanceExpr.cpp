@@ -54,22 +54,22 @@
 #include "SundanceTestFuncElement.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace SundanceCore;
-using namespace SundanceUtils;
+using namespace Sundance;
+using namespace Sundance;
 
 using namespace Teuchos;
-using namespace SundanceCore;
+using namespace Sundance;
 
 static Time& sumTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("symbolic sum"); 
   return *rtn;
 }
 
 static Time& unaryMinusTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("symbolic unary minus"); 
   return *rtn;
 }
@@ -77,14 +77,14 @@ static Time& unaryMinusTimer()
 
 static Time& trySumComplexTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("test for complex sum"); 
   return *rtn;
 }
 
 static Time& tryMultiplyComplexTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("test for complex product"); 
   return *rtn;
 }
@@ -93,18 +93,18 @@ static Time& tryMultiplyComplexTimer()
 
 static Time& prodTimer() 
 {
-  static RefCountPtr<Time> rtn 
+  static RCP<Time> rtn 
     = TimeMonitor::getNewTimer("symbolic product"); 
   return *rtn;
 }
 
 
 Expr::Expr(const double& c)
-	: SundanceUtils::Handle<ExprBase>(new ConstantExpr(c))
+	: Sundance::Handle<ExprBase>(new ConstantExpr(c))
 {}
 
 Expr::Expr(const complex<double>& c)
-	: SundanceUtils::Handle<ExprBase>(new ComplexExpr(new ConstantExpr(c.real()),
+	: Sundance::Handle<ExprBase>(new ComplexExpr(new ConstantExpr(c.real()),
       new ConstantExpr(c.imag())))
 {}
 
@@ -163,8 +163,8 @@ bool Expr::operator<(const Expr& other) const
 
 bool Expr::lessThan(const Expr& other) const
 {
-  RefCountPtr<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
-  RefCountPtr<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
+  RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
+  RCP<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
 
   TEST_FOR_EXCEPTION(sThis.get()==0, InternalError,
     "ordering not defined for non-scalar expression "
@@ -201,9 +201,9 @@ bool Expr::lessThan(const Expr& other) const
   return sThis->lessThan(sOther.get());
 }
 
-SundanceUtils::Map<Expr, int> Expr::getSumTree() const
+Sundance::Map<Expr, int> Expr::getSumTree() const
 {
-  RefCountPtr<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
+  RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
 
   TEST_FOR_EXCEPTION(sThis.get()==0, InternalError,
     "etSumTree() not defined for non-scalar expression "
@@ -217,13 +217,13 @@ SundanceUtils::Map<Expr, int> Expr::getSumTree() const
   }
   else if (u != 0)
   {
-    SundanceUtils::Map<Expr, int> rtn;
+    Sundance::Map<Expr, int> rtn;
     rtn.put(u->arg(), -1);
     return rtn;
   }
   else
   {
-    SundanceUtils::Map<Expr, int> rtn;
+    Sundance::Map<Expr, int> rtn;
     rtn.put(*this, 1);
     return rtn;
   }
@@ -305,7 +305,7 @@ Expr Expr::operator+(const Expr& other) const
     TEST_FOR_EXCEPTION(this->size() != other.size(), RuntimeError,
       "mismatched list structures in operands L="
       << *this << ", R=" << other);
-    for (unsigned int i=0; i<this->size(); i++)
+    for (int i=0; i<this->size(); i++)
     {
       rtn[i] = (*this)[i] + other[i];
     }
@@ -335,7 +335,7 @@ Expr Expr::operator-(const Expr& other) const
     TEST_FOR_EXCEPTION(this->size() != other.size(), RuntimeError,
       "mismatched list structures in operands L="
       << *this << ", R=" << other);
-    for (unsigned int i=0; i<this->size(); i++)
+    for (int i=0; i<this->size(); i++)
     {
       rtn[i] = (*this)[i] - other[i];
     }
@@ -356,9 +356,9 @@ Expr Expr::operator-(const Expr& other) const
 Expr Expr::sum(const Expr& other, int sign) const 
 {
   TEUCHOS_FUNC_TIME_MONITOR("Expr::sum()");
-  RefCountPtr<ScalarExpr> rtn;
-  RefCountPtr<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
-  RefCountPtr<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
+  RCP<ScalarExpr> rtn;
+  RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
+  RCP<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
 
   TEST_FOR_EXCEPTION(ptr().get()==NULL, InternalError,
     "Expr::sum() detected null this pointer");
@@ -415,7 +415,7 @@ Expr Expr::operator*(const Expr& other) const
   if (this->size()==1)
   {
     Array<Expr> rtn(other.size());
-    for (unsigned int i=0; i<other.size(); i++)
+    for (int i=0; i<other.size(); i++)
     {
       rtn[i] = (*this)[0] * other[i];
     }
@@ -426,7 +426,7 @@ Expr Expr::operator*(const Expr& other) const
   if (other.size()==1)
   {
     Array<Expr> rtn(this->size());
-    for (unsigned int i=0; i<this->size(); i++)
+    for (int i=0; i<this->size(); i++)
     {
       rtn[i] = (*this)[i] * other[0];
     }
@@ -439,7 +439,7 @@ Expr Expr::operator*(const Expr& other) const
   {
     Expr rtn = new ZeroExpr();
 
-    for (unsigned int i=0; i<this->size(); i++)
+    for (int i=0; i<this->size(); i++)
     {
       rtn = rtn + (*this)[i]*other[i];
     }
@@ -448,9 +448,9 @@ Expr Expr::operator*(const Expr& other) const
 
   /* if the left operand is a rectangular matrix and the 
    * right operand is a vector */
-  unsigned int cols = (*this)[0].size();
+  int cols = (*this)[0].size();
   bool rectangular = true;
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
   {
     if ((*this)[i].size() != cols) rectangular = false;
   }
@@ -466,7 +466,7 @@ Expr Expr::operator*(const Expr& other) const
     << other.toString());
   
   Array<Expr> rtn(this->size());
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
   {
     rtn[i] = (*this)[i] * other;
   }
@@ -476,16 +476,16 @@ Expr Expr::operator*(const Expr& other) const
 
 Expr Expr::divide(const Expr& other) const 
 {
-  RefCountPtr<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
+  RCP<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
   Expr recip = new NonlinearUnaryOp(sOther, rcp(new StdReciprocal()));
   return (*this)[0].multiply(recip);
 }
 
 Expr Expr::multiply(const Expr& other) const 
 {
-  RefCountPtr<ScalarExpr> rtn;
-  RefCountPtr<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
-  RefCountPtr<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
+  RCP<ScalarExpr> rtn;
+  RCP<ScalarExpr> sThis = rcp_dynamic_cast<ScalarExpr>(ptr());
+  RCP<ScalarExpr> sOther = rcp_dynamic_cast<ScalarExpr>(other.ptr());
 
   TEST_FOR_EXCEPTION(sThis.get()==NULL, InternalError,
     "Expr::multiply(): Left operand " << toString() 
@@ -567,7 +567,7 @@ Expr Expr::operator-() const
     }
     else /* no special structure, so return a UnaryMinusExpr */
     {
-      RefCountPtr<ScalarExpr> sThis 
+      RCP<ScalarExpr> sThis 
         = rcp_dynamic_cast<ScalarExpr>((*this)[0].ptr());
       TEST_FOR_EXCEPTION(sThis.get()==NULL, InternalError,
         "Expr::operator-(): Operand " << (*this)[0].toString() 
@@ -579,7 +579,7 @@ Expr Expr::operator-() const
 
   /* otherwise, distribute the sign change over the list */
   Array<Expr> rtn(this->size());
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
   {
     rtn[i] = -((*this)[i]);
   }
@@ -639,7 +639,7 @@ Expr Expr::operator/(const Expr& other) const
 
   /* otherwise, divide each element of the left by the right operand */
   Array<Expr> rtn(this->size());
-  for (unsigned int i=0; i<this->size(); i++)
+  for (int i=0; i<this->size(); i++)
   {
     rtn[i] = (*this)[i] / other;
   }
@@ -721,7 +721,7 @@ Expr Expr::flatten() const
 Expr Expr::flattenSpectral() const
 {
   Array<Expr> rtn(size());
-  for (unsigned int i=0; i<size(); i++)
+  for (int i=0; i<size(); i++)
   {
     if ((*this)[i].size() == 1)
     {
@@ -751,7 +751,7 @@ Expr Expr::flattenSpectral() const
   return r.flatten();
 }
 
-unsigned int Expr::size() const
+int Expr::size() const
 {
   if (ptr().get()==0) return 0;
 
@@ -764,7 +764,7 @@ unsigned int Expr::size() const
   return 1;
 }
 
-unsigned int Expr::totalSize() const
+int Expr::totalSize() const
 {
   if (ptr().get()==0) return 0;
 
@@ -787,7 +787,7 @@ Expr Expr::real() const
   else if (size() > 1)
   {
     Array<Expr> rtn(size());
-    for (unsigned int i=0; i<size(); i++)
+    for (int i=0; i<size(); i++)
     {
       rtn[i] = (*this)[i].real();
     }
@@ -809,7 +809,7 @@ Expr Expr::imag() const
   else if (size() > 1)
   {
     Array<Expr> rtn(size());
-    for (unsigned int i=0; i<size(); i++)
+    for (int i=0; i<size(); i++)
     {
       rtn[i] = (*this)[i].imag();
     }
@@ -835,7 +835,7 @@ Expr Expr::conj() const
   else
   {
     Array<Expr> rtn(size());
-    for (unsigned int i=0; i<size(); i++)
+    for (int i=0; i<size(); i++)
     {
       rtn[i] = (*this)[i].conj();
     }
@@ -997,9 +997,9 @@ const FuncElementBase* Expr::funcElement() const
 
 
 
-namespace SundanceCore
+namespace Sundance
 {
-using namespace SundanceUtils;
+using namespace Sundance;
 
 Expr Complex(const Expr& re, const Expr& im)
 {
@@ -1011,10 +1011,10 @@ Expr Complex(const Expr& re, const Expr& im)
     "recursively defined complex number. Real part="
     << re << ", imaginary part=" << im);
 
-  if (re.totalSize() > 1U)
+  if (re.totalSize() > 1)
   {
     Array<Expr> rtn(re.size());
-    for (unsigned int i=0; i<re.size(); i++)
+    for (int i=0; i<re.size(); i++)
     {
       rtn[i] = Complex(re[i], im[i]);
     }
@@ -1110,7 +1110,7 @@ Expr gradient(int dim)
 Expr div(const Expr& f)
 {
   Expr rtn = 0.0;
-  for (unsigned int i=0; i<f.size(); i++)
+  for (int i=0; i<f.size(); i++)
   {
     Expr d = new Derivative(i);
     rtn = rtn + d*f[i];
@@ -1125,10 +1125,10 @@ Expr cross(const Expr& a, const Expr& b)
     "mismatched vector sizes in cross(a,b): a.size()=" << a.size()
     << ", b.size()=" << b.size());
 
-  TEST_FOR_EXCEPTION(a.size() < 2U || a.size() > 3U, RuntimeError,
+  TEST_FOR_EXCEPTION(a.size() < 2 || a.size() > 3, RuntimeError,
     "cross(a,b) undefined for dim=" << a.size());
 
-  if (a.size()==2U)
+  if (a.size()==2)
   {
     return a[0]*b[1] - a[1]*b[0];
   }
