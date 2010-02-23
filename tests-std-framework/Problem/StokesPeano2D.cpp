@@ -32,7 +32,6 @@
 #include "SundancePeanoMeshType2D.hpp"
 #include "SundancePeanoMesher2D.hpp"
 
-using Sundance;
 /** 
  * Solves the Stokes equation in 2D
  */

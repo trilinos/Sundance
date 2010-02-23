@@ -6,7 +6,6 @@
 
 /* <Ignore> */
 #include "Sundance.hpp"
-using Sundance;
 
 #ifdef HAVE_SUNDANCE_PEANO
 #ifdef HAVE_SUNDANCE_PEANO_NO_2D
@@ -49,10 +48,6 @@ int main(int argc, char** argv)
     unsigned int ny = 2;
     string meshFile="builtin";
     string solverFile = "aztec-ml.xml";
-    Sundance::setOption("meshFile", meshFile, "mesh file");
-    Sundance::setOption("nx", nx, "number of elements in x");
-    Sundance::setOption("ny", ny, "number of elements in y");
-    Sundance::setOption("solver", solverFile, "name of XML file for solver");
 
     Sundance::init(&argc, &argv);
     unsigned int np = MPIComm::world().getNProc();
@@ -188,7 +183,7 @@ int main(int argc, char** argv)
 
     /* Define the weak form */
     //Expr eqn = Integral(interior, (grad*v)*(grad*u) + v, quad);
-    Expr one = new SundanceCore::Parameter(1.0);
+    Expr one = new Sundance::Parameter(1.0);
     Expr exactSoln = 2.0*x+y;
     Expr eqn = Integral(interior, (grad*u)*(grad*v), quad2, watchMe);
     /* Define the Dirichlet BC */

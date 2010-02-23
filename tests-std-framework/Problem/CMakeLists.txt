@@ -29,6 +29,9 @@ SET(SerialTests
   NonlinearPDECOTest2D
   FunctionalTest 
   TwoZoneDiscFunc
+  PoissonPeano2D
+  PoissonPeano3D
+  StokesPeano2D 
 )
 
 
