@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
         {
           space[i] = A.domain();
           x[i] = A.domain().createMember();
-          Thyra::randomize(-ST::one(),+ST::one(),x[i].ptr().get());          
+          Thyra::randomize(-ST::one(),+ST::one(),x[i].ptr().ptr());          
         }
 
       VectorSpace<double> blockSpace = productSpace(space);

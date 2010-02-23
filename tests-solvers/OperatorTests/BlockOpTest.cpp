@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
       Vector<double> x = domain.createMember();
       Out::os() << "randomizing trial vector" << endl;
-      Thyra::randomize(-1.0, 1.0, x.ptr().get());
+      Thyra::randomize(-1.0, 1.0, x.ptr().ptr());
 
       Array<Vector<double> > xBlock(domain.numBlocks());
       for (int i=0; i<xBlock.size(); i++)

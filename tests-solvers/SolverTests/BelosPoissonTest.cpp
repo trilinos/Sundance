@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     int nProcs = MPIComm::world().getNProc();
       
 
-    Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
+    Thyra::randomize(-ST::one(),+ST::one(),x.ptr().ptr());
 #ifdef TRILINOS_6
     if (myRank==0) x[0] = 0.0;
     if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;

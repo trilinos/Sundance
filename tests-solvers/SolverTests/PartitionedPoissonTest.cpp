@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 
 
       Vector<double> x = A.domain().createMember();
-      Thyra::randomize(-ST::one(),+ST::one(),x.ptr().get());
+      Thyra::randomize(-ST::one(),+ST::one(),x.ptr().ptr());
 
       Vector<double> b = A*x;
 
