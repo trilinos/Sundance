@@ -51,7 +51,8 @@ Expr Sundance::EssentialBC(const Handle<CellFilterStub>& domain,
       return integrand;
     }
   RCP<QuadratureFamilyStub> quad = QuadratureFamilyStub::defaultQuadrature();
-  return new SumOfBCs(domain.ptr(), Re(integrand), quad, watch);
+  return new SumOfBCs(domain.ptr(), Re(integrand), quad,
+		  ParametrizedCurve::returnDummyCurve() , watch);
 }
 
 Expr Sundance::EssentialBC(const Handle<CellFilterStub>& domain,
@@ -65,5 +66,22 @@ Expr Sundance::EssentialBC(const Handle<CellFilterStub>& domain,
     {
       return integrand;
     }
-  return new SumOfBCs(domain.ptr(), Re(integrand), quad.ptr(), watch);
+  return new SumOfBCs(domain.ptr(), Re(integrand), quad.ptr(),
+		  ParametrizedCurve::returnDummyCurve(), watch);
+}
+
+
+Expr Sundance::EssentialBC(const Handle<CellFilterStub>& domain,
+   const Expr& integrand,
+   const Handle<QuadratureFamilyStub>& quad,
+   const ParametrizedCurve& curve,
+   const WatchFlag& watch)
+{
+  const ZeroExpr* z = dynamic_cast<const ZeroExpr*>(integrand.ptr().get());
+  const ConstantExpr* c = dynamic_cast<const ConstantExpr*>(integrand.ptr().get());
+  if (z != 0 || (c != 0 && c->value()==0.0))
+    {
+      return integrand;
+    }
+  return new SumOfBCs(domain.ptr(), Re(integrand), quad.ptr(), curve, watch);
 }

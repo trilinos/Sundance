@@ -70,17 +70,11 @@
 using namespace TSFExtended;
 using namespace Teuchos;
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 
 
 static Time& totalTimer() 
 {
-  static RCP<Time> rtn 
+  static RCP<Time> rtn
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -159,10 +153,17 @@ int main(int argc, char** argv)
         {
           int alpha = t;
           Tabs tab;
-          RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, isInternalBdry, verb);
+
+          ParametrizedCurve curve = new DummyParametrizedCurve();
+          MeshType meshType = new BasicSimplicialMeshType();
+          MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
+          Mesh mesh = mesher.getMesh();
+          RCP<Array<int> > cellLIDs;
+
+          RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, q4 , isInternalBdry, curve, mesh ,verb);
           A->resize(JBatch.numCells() * ref.nNodes());
-          for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
-          ref.transformOneForm(JBatch, JBatch, dummy, coeff, A);
+          for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+          ref.transformOneForm(JBatch, JBatch, dummy, cellLIDs , coeff, A);
           cerr << tab << "transformed reference element" << endl;
           if (dp>0) cerr << tab << "test diff direction=" << t << endl;
           for (int cell=0; cell<nCells; cell++)
@@ -175,11 +176,11 @@ int main(int argc, char** argv)
             }
             cerr << "}" << endl;
           }
-          QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, isInternalBdry, verb);
+          QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, isInternalBdry, curve, mesh, verb);
           Array<double> quadCoeff(2*quad.nQuad(), 1.0);
           B->resize(JBatch.numCells() * quad.nNodes());
-          for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
-          quad.transformOneForm(JBatch, JBatch, dummy, &(quadCoeff[0]), B);
+          for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+          quad.transformOneForm(JBatch, JBatch, dummy, cellLIDs , &(quadCoeff[0]), B);
           cerr << tab << "transformed quad element" << endl;
           if (dp>0) cerr << tab << "test diff direction =" << t << endl;
           for (int cell=0; cell<nCells; cell++)
@@ -253,15 +254,22 @@ int main(int argc, char** argv)
               if (dq==1) numUnkDir = dim;
               for (int u=0; u<numUnkDir; u++)
               {
+                   ParametrizedCurve curve = new DummyParametrizedCurve();
+                   MeshType meshType = new BasicSimplicialMeshType();
+                   MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
+                   Mesh mesh = mesher.getMesh();
+                   QuadratureFamily quad_1 = new GaussianQuadrature(2);
+                   RCP<Array<int> > cellLIDs;
+
                 Tabs tab;
                 //                              if (p==0 || q==0 || dp==0 || dq==0 || u==1
                 //  || t==1) continue;
                 int beta = u;
                 RefIntegral ref(dim, cellType, dim, cellType, P, alpha,
-                  dp, Q, beta, dq, isInternalBdry, verb);
+                  dp, Q, beta, dq, quad_1 , isInternalBdry, curve , mesh , verb);
                 A->resize(JBatch.numCells() * ref.nNodes());
-                for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
-                ref.transformTwoForm(JBatch, JBatch, dummy, coeff, A);
+                for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+                ref.transformTwoForm(JBatch, JBatch, dummy, cellLIDs , coeff, A);
                 cerr << tab << "transformed ref element" << endl;
                 cerr << tab << "test diff order = " << dp << endl;
                 if (dp>0) cerr << tab << "t=dx(" << t << ")" << endl;
@@ -287,11 +295,11 @@ int main(int argc, char** argv)
 
 
                 QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha,
-                  dp, Q, beta, dq, q4, isInternalBdry, verb);
+                  dp, Q, beta, dq, q4, isInternalBdry,curve , mesh , verb);
                 Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                 B->resize(JBatch.numCells() * quad.nNodes());
-                for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
-                quad.transformTwoForm(JBatch, JBatch, dummy, &(quadCoeff[0]), B);
+                for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+                quad.transformTwoForm(JBatch, JBatch, dummy, cellLIDs , &(quadCoeff[0]), B);
 
                 cerr << tab << "transformed quad element" << endl;
                 cerr << tab << "test diff order = " << dp << endl;

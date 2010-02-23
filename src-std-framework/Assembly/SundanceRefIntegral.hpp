@@ -35,9 +35,9 @@
 #include "SundanceElementIntegral.hpp"
 
 
-
 namespace Sundance
 {
+
 using namespace Teuchos;
 
 /** 
@@ -82,7 +82,10 @@ public:
     const CellType& maxCellType,
     int dim, 
     const CellType& cellType,
+    const QuadratureFamily& quad_in,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** Construct a reference one-form */
@@ -93,7 +96,10 @@ public:
     const BasisFamily& testBasis,
     int alpha,
     int testDerivOrder,
+    const QuadratureFamily& quad_in,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** Construct a reference two-form */
@@ -107,7 +113,10 @@ public:
     const BasisFamily& unkBasis,
     int beta,
     int unkDerivOrder,
+    const QuadratureFamily& quad_in,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** virtual dtor */
@@ -121,18 +130,20 @@ public:
     const CellJacobianBatch& JVol,
     const Array<int>& isLocalFlag,
     const Array<int>& facetNum,
+    const RCP<Array<int> >& cellLIDs,
     const double& coeff,
-    RCP<Array<double> >& A) const 
+    RCP<Array<double> >& A) const
     {
-      if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
-      else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
-      else transformZeroForm(JVol, isLocalFlag, coeff, A);
+      if (order()==2) transformTwoForm(JTrans, JVol, facetNum, cellLIDs, coeff, A);
+      else if (order()==1) transformOneForm(JTrans, JVol, facetNum, cellLIDs, coeff, A);
+      else transformZeroForm(JVol, isLocalFlag, cellLIDs, coeff, A);
     }
 
   /** */
   void transformTwoForm(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol,
     const Array<int>& facetNum, 
+    const RCP<Array<int> >& cellLIDs,
     const double& coeff,
     RCP<Array<double> >& A) const ;
 
@@ -140,22 +151,23 @@ public:
   void transformOneForm(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol,
     const Array<int>& facetNum, 
+    const RCP<Array<int> >& cellLIDs,
     const double& coeff,
     RCP<Array<double> >& A) const ;
 
   /** */
   void transformZeroForm(const CellJacobianBatch& JVol,
     const Array<int>& isLocalFlag,
+    const RCP<Array<int> >& cellLIDs,
     const double& coeff,
     RCP<Array<double> >& A) const ;
+
   /** */
   inline double& value(int facetCase, int testDerivDir, int testNode,
     int unkDerivDir, int unkNode)
     {return W_[facetCase][unkNode + nNodesUnk()*testNode 
         + nNodes()*(unkDerivDir 
           + nRefDerivUnk()*testDerivDir)];}
-
-      
 
   /** */
   inline const double& value(int facetCase, 
@@ -170,7 +182,6 @@ public:
   /** */
   inline double& value(int facetCase, int testDerivDir, int testNode)
     {return W_[facetCase][nNodesTest()*testDerivDir + testNode];}
-
 
   /** */
   inline const double& value(int facetCase, 
@@ -187,11 +198,23 @@ private:
 
   Array<Array<double> > W_;
 
-      
+  /** For ACI (ACI = Adaptive Cell Integration), store the reference integral values for one form
+   * The indexes facet, quadPoints, nRefDerivTest , nNodesTest */
+  Array<Array<Array<Array<double> > > > W_ACI_F1_;
+
+  /** For ACI (ACI = Adaptive Cell Integration), store the reference integral values for two form
+   * The indexes facet, quadPoints, nRefDerivTest , nNodesTest , nRefDerivUnk , nNodesUnk */
+  Array<Array<Array<Array<Array<Array<double> > > > > > W_ACI_F2_;
+
+  /** The quadrature family needed for special integration */
+  QuadratureFamily quad_;
+
+  /** The quadrature points*/
+  Array<Point> quadPts_;
+
+  /** The standard weights (in case of ACI these might change)*/
+  Array<double> quadWeights_;
 };
-
 }
-
-
 
 #endif

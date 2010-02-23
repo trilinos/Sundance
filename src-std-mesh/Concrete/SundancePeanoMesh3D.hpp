@@ -47,7 +47,6 @@
 
 namespace Sundance
 {
-
   class PeanoMesh3D : public MeshBase{
   public:
 
@@ -274,6 +273,5 @@ namespace Sundance
 	 static Point returnPoint;
 
   };
-
-}
+  }
 #endif /* SUNDANCEPEANOMESH3D_H_ */

@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceSumOfIntegrals.hpp"
+#include "SundanceParametrizedCurve.hpp"
 
 namespace Sundance
 {
@@ -51,6 +52,7 @@ public:
   SumOfBCs(const RCP<CellFilterStub>& region,
     const Expr& expr,
     const RCP<QuadratureFamilyStub>& quad,
+    const ParametrizedCurve& curve,
     const WatchFlag& watch);
 
   /** */

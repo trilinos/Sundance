@@ -34,10 +34,6 @@
 #include "SundanceTabs.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 SumOfIntegrals::SumOfIntegrals(const RCP<CellFilterStub>& region,
@@ -46,7 +42,16 @@ SumOfIntegrals::SumOfIntegrals(const RCP<CellFilterStub>& region,
   const WatchFlag& watch)
   : ScalarExpr(), rqcToExprMap_()
 {
-  addTerm(region, expr, quad, watch, 1);
+   addTerm(region, expr, quad, ParametrizedCurve::returnDummyCurve() , watch, 1);
+}
+
+SumOfIntegrals::SumOfIntegrals(const RCP<CellFilterStub>& region,
+  const Expr& expr,
+  const RCP<QuadratureFamilyStub>& quad,
+  const ParametrizedCurve& curve,
+  const WatchFlag& watch)  : ScalarExpr(), rqcToExprMap_()
+{
+  addTerm(region, expr, quad, curve , watch, 1);
 }
 
 
@@ -60,11 +65,12 @@ Expr SumOfIntegrals::filterSpectral(const Expr& expr) const
 void SumOfIntegrals::addTerm(const RCP<CellFilterStub>& regionPtr,
   const Expr& expr,
   const RCP<QuadratureFamilyStub>& quadPtr, 
+  const ParametrizedCurve& paramCurve,
   const WatchFlag& watch, int sign)
 {
   Expr ex = filterSpectral(expr);
 
-  RegionQuadCombo rqc(regionPtr, quadPtr, watch);
+  RegionQuadCombo rqc(regionPtr, quadPtr, paramCurve ,watch);
 
   if (rqcToExprMap_.containsKey(rqc))
   {
@@ -77,6 +83,7 @@ void SumOfIntegrals::addTerm(const RCP<CellFilterStub>& regionPtr,
   }
 }
 
+
 void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign) 
 {
   for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
@@ -84,7 +91,7 @@ void SumOfIntegrals::merge(const SumOfIntegrals* other, int sign)
   {
     const RegionQuadCombo& rqc = i->first;
     const Expr& e = i->second;
-    addTerm(rqc.domain(), e, rqc.quad(), rqc.watch(), sign);
+    addTerm(rqc.domain(), e, rqc.quad(), rqc.paramCurve() , rqc.watch(), sign);
   }
 }
 

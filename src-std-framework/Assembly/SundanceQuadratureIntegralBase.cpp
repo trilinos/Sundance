@@ -62,8 +62,10 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
   const CellType& cellType,
   const QuadratureFamily& quad,
   bool isInternalBdry,
+  const ParametrizedCurve& globalCurve,
+  const Mesh& mesh,
   int verb)
-  : ElementIntegral(spatialDim, maxCellType, dim, cellType, isInternalBdry, 
+: ElementIntegral(spatialDim, maxCellType, dim, cellType, isInternalBdry, globalCurve, mesh,
     verb),
     nQuad_(0)
 {
@@ -79,9 +81,11 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
   int testDerivOrder,
   const QuadratureFamily& quad,
   bool isInternalBdry,
+  const ParametrizedCurve& globalCurve,
+  const Mesh& mesh,
   int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
-    testBasis, alpha, testDerivOrder, isInternalBdry, verb),
+	testBasis, alpha, testDerivOrder, isInternalBdry, globalCurve, mesh, verb),
     nQuad_(0)
 {
 
@@ -102,10 +106,12 @@ QuadratureIntegralBase::QuadratureIntegralBase(int spatialDim,
   int unkDerivOrder,
   const QuadratureFamily& quad,
   bool isInternalBdry,
+  const ParametrizedCurve& globalCurve,
+  const Mesh& mesh,
   int verb)
   : ElementIntegral(spatialDim, maxCellType, dim, cellType, 
     testBasis, alpha, testDerivOrder, 
-    unkBasis, beta, unkDerivOrder, isInternalBdry, verb), 
+    unkBasis, beta, unkDerivOrder, isInternalBdry, globalCurve, mesh, verb),
     nQuad_(0)
 {
 

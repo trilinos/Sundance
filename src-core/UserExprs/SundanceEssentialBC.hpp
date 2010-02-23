@@ -37,6 +37,7 @@
 #include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceCellFilterStub.hpp"
 #include "SundanceHandle.hpp"
+#include "SundanceParametrizedCurve.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
 
@@ -57,6 +58,12 @@ namespace Sundance
     const Handle<QuadratureFamilyStub>& quad,
     const WatchFlag& watch=WatchFlag());
 
+  /** \relates Expr */
+  Expr EssentialBC(const Handle<CellFilterStub>& domain,
+    const Expr& integrand,
+    const Handle<QuadratureFamilyStub>& quad,
+    const ParametrizedCurve& curve,
+    const WatchFlag& watch=WatchFlag());
   
 }
 

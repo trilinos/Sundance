@@ -65,6 +65,17 @@ public:
   /* handleable boilerplate */
   GET_RCP(QuadratureFamilyStub);
 
+  /** This methos is for the ACI integration */
+  virtual void getPoints(const CellType& cellType ,
+  									 int cellDim,
+  	                                 int celLID ,
+  	                	             int facetIndex ,
+  	                                 const Mesh& mesh ,
+  	                                 const ParametrizedCurve& globalCurve ,
+  	                                 Array<Point>& quadPoints ,
+  	                                 Array<double>& quadWeights ,
+  	                                 bool &isCut) const ;
+
 protected:
   /** compute a rule for the reference line cell */
   virtual void getLineRule(Array<Point>& quadPoints,

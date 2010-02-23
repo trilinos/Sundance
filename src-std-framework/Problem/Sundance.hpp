@@ -59,6 +59,11 @@
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
 
+/* Parametrized Curves */
+#include "SundanceCircle.hpp"
+#include "SundanceDummyParametrizedCurve.hpp"
+#include "SundanceParametrizedCurve.hpp"
+
 /* Meshes */
 #include "SundanceMesh.hpp"
 #include "SundanceMeshType.hpp"
@@ -76,11 +81,17 @@
 #include "SundanceMeshBuilder.hpp"
 #include "SundanceBamgMeshReader.hpp"
 
-#if HAVE_SUNDANCE_PEANO
-#include "SundancePeanoMeshType2D.hpp"
-#include "SundancePeanoMesher2D.hpp"
-#include "SundancePeanoMeshType3D.hpp"
-#include "SundancePeanoMesher3D.hpp"
+#ifdef HAVE_SUNDANCE_PEANO
+	#ifdef HAVE_SUNDANCE_PEANO_NO_2D
+	#else
+		#include "SundancePeanoMeshType2D.hpp"
+		#include "SundancePeanoMesher2D.hpp"
+	#endif
+	#ifdef HAVE_SUNDANCE_PEANO_NO_3D
+	#else
+		#include "SundancePeanoMeshType3D.hpp"
+		#include "SundancePeanoMesher3D.hpp"
+	#endif
 #endif
 
 /* Cell filters */

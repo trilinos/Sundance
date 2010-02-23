@@ -56,3 +56,12 @@ Expr Sundance::Integral(const Handle<CellFilterStub>& domain,
 {
   return new SumOfIntegrals(domain.ptr(), Re(integrand), quad.ptr(),watch);
 }
+
+Expr Sundance::Integral(const Handle<CellFilterStub>& domain,
+  const Expr& integrand,
+  const Handle<QuadratureFamilyStub>& quad,
+  const ParametrizedCurve& curve,
+    const WatchFlag& watch)
+{
+  return new SumOfIntegrals(domain.ptr(), Re(integrand), quad.ptr(), curve , watch);
+}

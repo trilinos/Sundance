@@ -46,8 +46,13 @@ APPEND_SET(HEADERS
   Elements/SundanceDiscreteFunctionData.hpp
   Elements/SundanceDiscreteSpace.hpp
   Elements/SundanceEdgeLocalizedBasis.hpp
+  Elements/SundanceFeketeBrickQuadrature.hpp
+  Elements/SundanceFeketeQuadQuadrature.hpp
+  Elements/SundanceFeketeQuadratureType.hpp
+  Elements/SundanceFeketeTriangleQuadrature.hpp
   Elements/SundanceFuncWithBasis.hpp
   Elements/SundanceGauss1D.hpp
+  Elements/SundanceGaussLobatto1D.hpp
   Elements/SundanceGaussianQuadrature.hpp
   Elements/SundanceGaussianQuadratureType.hpp
   Elements/SundanceLagrange.hpp
@@ -79,8 +84,13 @@ APPEND_SET(SOURCES
   Elements/SundanceDiscreteFunctionData.cpp
   Elements/SundanceDiscreteSpace.cpp
   Elements/SundanceEdgeLocalizedBasis.cpp
+  Elements/SundanceFeketeBrickQuadrature.cpp
+  Elements/SundanceFeketeQuadQuadrature.cpp
+  Elements/SundanceFeketeQuadratureType.cpp
+  Elements/SundanceFeketeTriangleQuadrature.cpp
   Elements/SundanceFuncWithBasis.cpp
   Elements/SundanceGauss1D.cpp
+  Elements/SundanceGaussLobatto1D.cpp
   Elements/SundanceGaussianQuadrature.cpp
   Elements/SundanceGaussianQuadratureType.cpp
   Elements/SundanceLagrange.cpp

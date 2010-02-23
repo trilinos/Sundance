@@ -38,6 +38,8 @@
 #include "SundanceCellPredicateBase.hpp"
 #include "SundancePositionalCellPredicate.hpp"
 #include "SundanceHandle.hpp"
+#include "SundanceParametrizedCurve.hpp"
+#include "SundanceCellCurvePredicate.hpp"
 
 namespace Sundance
 {
@@ -61,6 +63,9 @@ public:
 
   /** construct from a positional cell predicate functor */
   CellPredicate(Sundance::Handleable<CellPredicateFunctorBase>* func);
+
+  /** construct from a positional cell predicate functor */
+  CellPredicate(ParametrizedCurve& curve, CurveCellFilterMode filterMode);
 
   /** write to XML */
   XMLObject toXML() const {return ptr()->toXML();}

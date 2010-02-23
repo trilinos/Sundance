@@ -36,17 +36,34 @@ ADD_OPTION_AND_DEFINE(Sundance_ENABLE_EXTERNAL_CHACO
   "Enable file-based chaco partitioning in Sundance (requires chaco executable in path)."
   OFF )
 
-
-
 # ========== Peano configuration ===============
-IF(TPL_ENABLE_PEANO)
-  ADD_OPTION_AND_DEFINE(TPL_ENABLE_PEANO
+IF(TPL_ENABLE_Peano)
+  ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano
      HAVE_SUNDANCE_PEANO
     "Enable Peano Mesh in Sundance (requires Peano TPL)."
     OFF )  
-  INCLUDE_DIRECTORIES(${PEANO_INCLUDE_DIRS}) 
-  LINK_DIRECTORIES(${PEANO_LIBRARY_DIRS}/libpeano2D.a)
-  LINK_DIRECTORIES(${PEANO_LIBRARY_DIRS}/libpeano3D.a)
+  INCLUDE_DIRECTORIES(${Peano_INCLUDE_DIRS}) 
+  
+  IF (TPL_ENABLE_Peano_NO_2D)
+    ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano_NO_2D
+      HAVE_SUNDANCE_PEANO_NO_2D
+     "Turn OFF Peano 2D"
+     ON )
+  ELSE()
+    # LINK_DIRECTORIES( ${Peano_LIBRARY_DIRS}/libpeano2D.a )
+    # PEANO_ADD_LIBRARY(peano2D)
+  ENDIF()
+  
+  IF (TPL_ENABLE_Peano_NO_3D)
+    ADD_OPTION_AND_DEFINE(TPL_ENABLE_Peano_NO_3D
+      HAVE_SUNDANCE_PEANO_NO_3D
+     "Turn OFF Peano 3D"
+     ON )
+  ELSE()
+    # LINK_DIRECTORIES( ${Peano_LIBRARY_DIRS}/libpeano3D.a )
+    # PEANO_ADD_LIBRARY(peano3D) 
+  ENDIF()
+     
 ENDIF()
 # ============ end of Peano configuration ================
 

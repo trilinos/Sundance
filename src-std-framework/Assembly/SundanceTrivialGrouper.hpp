@@ -59,7 +59,10 @@ public:
     const QuadratureFamily& quad,
     const RCP<SparsitySuperset>& sparsity,
     bool isInternalBdry,                              
-    Array<RCP<IntegralGroup> >& groups) const ;
+    Array<RCP<IntegralGroup> >& groups,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh) const ;
+
                               
 };
 

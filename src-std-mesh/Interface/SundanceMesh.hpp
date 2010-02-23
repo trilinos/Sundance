@@ -396,6 +396,30 @@ public:
    * logic rather than as a check on the validity of a user's mesh. */
   bool checkConsistency(ostream& os) const ;
 
+  /** \name Special Weights Storage for Adaptive Cell Integration */
+   //@{
+  /** returns the status of the special weights if they are valid <br>
+    *  These weights are usually computed for one setting of the curve (Adaptive Cell Integration)*/
+  bool& IsSpecialWeightValid() {return ptr()->IsSpecialWeightValid();}
+
+  /** specifies if the special weights are valid <br>
+   *  if this is false then usually the special weights have to be recomputed */
+  void setSpecialWeightValid(bool& val) { ptr()->setSpecialWeightValid(val);}
+
+  /** removes the special weights */
+  void removeSecialWeights(int& dim, int& cellLID) {ptr()->removeSecialWeights( dim, cellLID);}
+
+  /** verifies if the specified cell with the given dimension has special weights */
+  bool hasSpecialWeight(int& dim, int& cellLID) {return ptr()->hasSpecialWeight( dim, cellLID); }
+
+  /** Sets the special weights */
+  void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) {ptr()->setSpecialWeight(dim, cellLID, w);}
+
+  /** Returns the special weights */
+  void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) {ptr()->getSpecialWeight(dim, cellLID, w);}
+   //@}
+
+
 private:
   /** */
   IncrementallyCreatableMesh* creatableMesh();

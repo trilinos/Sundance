@@ -36,12 +36,6 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 
@@ -268,13 +262,12 @@ IntegralGroup
 }
 
 
-
-
 bool IntegralGroup
 ::evaluate(const CellJacobianBatch& JTrans,
   const CellJacobianBatch& JVol,
   const Array<int>& isLocalFlag, 
   const Array<int>& facetIndex, 
+  const RCP<Array<int> >& cellLIDs,
   const Array<RCP<EvalVector> >& vectorCoeffs,
   const Array<double>& constantCoeffs,
   RCP<Array<double> >& A) const
@@ -318,7 +311,7 @@ bool IntegralGroup
       double f = constantCoeffs[resultIndices_[i]];
       SUNDANCE_MSG2(integrationVerb(),
         tab2 << "Coefficient is " << f);
-      ref->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
+      ref->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f, A);
     }
     else 
     {
@@ -339,7 +332,7 @@ bool IntegralGroup
         tab3 << "coefficients are " <<  vectorCoeffs[resultIndices_[i]]->str());
 
       const double* const f = vectorCoeffs[resultIndices_[i]]->start();
-      quad->transform(JTrans, JVol, isLocalFlag, facetIndex, f, A);
+      quad->transform(JTrans, JVol, isLocalFlag, facetIndex, cellLIDs , f, A);
     }
     SUNDANCE_MSG4(integrationVerb(),
       tab1 << "i=" << i << " integral values=");

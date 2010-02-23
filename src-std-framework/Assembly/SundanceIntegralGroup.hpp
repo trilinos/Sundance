@@ -130,6 +130,7 @@ public:
     const CellJacobianBatch& JVol,
     const Array<int>& isLocalFlag,
     const Array<int>& facetNum, 
+    const RCP<Array<int> >& cellLIDs,
     const Array<RCP<EvalVector> >& vectorCoeffs,
     const Array<double>& constantCoeffs,
     RCP<Array<double> >& A) const ;

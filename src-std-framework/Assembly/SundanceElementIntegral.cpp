@@ -34,12 +34,6 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 using std::endl;
@@ -63,6 +57,8 @@ ElementIntegral::ElementIntegral(int spatialDim,
   int dim, 
   const CellType& cellType,
   bool isInternalBdry,
+  const ParametrizedCurve& globalCurve,
+  const Mesh& mesh,
   int verb)
   : setupVerb_(verb),
     integrationVerb_(0),
@@ -85,7 +81,9 @@ ElementIntegral::ElementIntegral(int spatialDim,
     maxCellType_(maxCellType),
     evalCellType_(cellType),
     testBasis_(),
-    unkBasis_()
+    unkBasis_(),
+    globalCurve_(globalCurve),
+    mesh_(mesh)
 {
   /* if we're integrating a derivative along a facet, we need to refer back
    * to the maximal cell. */
@@ -104,6 +102,8 @@ ElementIntegral::ElementIntegral(int spatialDim,
   int alpha,
   int testDerivOrder,
   bool isInternalBdry,
+  const ParametrizedCurve& globalCurve,
+  const Mesh& mesh,
   int verb)
   : setupVerb_(verb),
     integrationVerb_(0),
@@ -126,7 +126,9 @@ ElementIntegral::ElementIntegral(int spatialDim,
     maxCellType_(maxCellType),
     evalCellType_(cellType),
     testBasis_(testBasis),
-    unkBasis_()
+    unkBasis_(),
+    globalCurve_(globalCurve),
+    mesh_(mesh)
 {
   /* if we're integrating a derivative along a facet, we 
    * may need to refer back to the maximal cell. */
@@ -165,6 +167,8 @@ ElementIntegral::ElementIntegral(int spatialDim,
   int beta,
   int unkDerivOrder,
   bool isInternalBdry,
+  const ParametrizedCurve& globalCurve,
+  const Mesh& mesh,
   int verb)
   : setupVerb_(verb),
     integrationVerb_(0),
@@ -187,7 +191,9 @@ ElementIntegral::ElementIntegral(int spatialDim,
     maxCellType_(maxCellType),
     evalCellType_(cellType),
     testBasis_(testBasis),
-    unkBasis_(unkBasis)
+    unkBasis_(unkBasis),
+    globalCurve_(globalCurve),
+    mesh_(mesh)
 {
   /* if we're integrating a derivative along a facet, we may need to refer back
    * to the maximal cell. */

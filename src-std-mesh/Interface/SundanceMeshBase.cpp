@@ -45,9 +45,10 @@ MeshBase::MeshBase(int dim, const MPIComm& comm,
   : dim_(dim), 
     comm_(comm),
     order_(order),
-    reorderer_(Mesh::defaultReorderer().createInstance(this))
-{;}
-
+    reorderer_(Mesh::defaultReorderer().createInstance(this)),
+    validWeights_(true),
+    specialWeights_()
+{ specialWeights_.resize(dim_); }
 
 
 

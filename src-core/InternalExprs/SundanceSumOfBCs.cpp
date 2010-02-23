@@ -32,23 +32,16 @@
 #include "SundanceTabs.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 using std::endl;
 
 SumOfBCs::SumOfBCs(const RCP<CellFilterStub>& region,
   const Expr& expr,
   const RCP<QuadratureFamilyStub>& quad,
+  const ParametrizedCurve& curve,
   const WatchFlag& watch)
-  : SumOfIntegrals(region, expr, quad, watch)
+  : SumOfIntegrals(region, expr, quad, curve, watch)
 {;}
-
-
-
-
 
 ostream& SumOfBCs::toText(ostream& os, bool paren) const
 {

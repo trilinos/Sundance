@@ -70,16 +70,10 @@
 using namespace TSFExtended;
 using namespace Teuchos;
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 
 static Time& totalTimer() 
 {
-  static RCP<Time> rtn 
+  static RCP<Time> rtn
     = TimeMonitor::getNewTimer("total"); 
   return *rtn;
 }
@@ -132,22 +126,29 @@ int main(int argc, char** argv)
 
           Array<int> alpha = tuple(0,1);
           Array<int> beta = tuple(0,1);
-          RefIntegral ref(dim, dim, cellType, P, alpha, 1, P, beta, 1, isInternalBdry);          
+          ParametrizedCurve curve = new DummyParametrizedCurve();
+           MeshType meshType = new BasicSimplicialMeshType();
+           MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 10, meshType);
+           Mesh mesh = mesher.getMesh();
+           QuadratureFamily quad_1 = new GaussianQuadrature(2);
+           RCP<Array<int> > cellLIDs;
+
+          RefIntegral ref(dim, dim, cellType, P, alpha, 1, P, beta,quad_1, 1, isInternalBdry , curve , mesh);
           QuadratureIntegral qxx(dim, dim, cellType, P, tuple(0), 1, 
-                                 P, tuple(0), 1, q4, isInternalBdry);                    
+                                 P, tuple(0), 1, q4, curve , mesh,isInternalBdry);
           QuadratureIntegral qyy(dim, dim, cellType, P, tuple(1), 1, 
-                                 P, tuple(1), 1, q4, isInternalBdry);          
+                                 P, tuple(1), 1, q4, curve , mesh,isInternalBdry);
 
           int nq = qxx.nQuad();
           Array<double> varCoeff(nq, 1.0);
 
           cerr << "============================= Doing reference integration =========== " << endl;
 
-          ref.transformTwoForm(JBatch, constCoeff, A);
+          ref.transformTwoForm(JBatch, constCoeff, cellLIDs, A);
           cerr << "============================= Doing quad integration xx =========== " << endl;
-          qxx.transformTwoForm(JBatch, &(varCoeff[0]), Bxx);
+          qxx.transformTwoForm(JBatch, &(varCoeff[0]), cellLIDs , Bxx);
           cerr << "============================= Doing quad integration yy =========== " << endl;
-          qyy.transformTwoForm(JBatch, &(varCoeff[0]), Byy);
+          qyy.transformTwoForm(JBatch, &(varCoeff[0]), cellLIDs , Byy);
 
           cerr << "============================= Done integration =========== " << endl;
           cerr << tab << "transformed reference element" << endl;

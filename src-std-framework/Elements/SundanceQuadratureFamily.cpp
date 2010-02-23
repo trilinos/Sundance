@@ -62,6 +62,29 @@ void QuadratureFamily::getPoints(const CellType& cellType,
   q->getPoints(cellType, quadPoints, quadWeights);
 }
 
+void QuadratureFamily::getPoints(const CellType& cellType ,
+		                         int cellDim,
+	                             int celLID ,
+	            	             int facetIndex ,
+                                 const Mesh& mesh ,
+                                 const ParametrizedCurve& globalCurve ,
+                                 Array<Point>& quadPoints ,
+                                 Array<double>& quadWeights ,
+                                 bool& isCut) const
+{
+
+  const QuadratureFamilyBase* q
+   = dynamic_cast<const QuadratureFamilyBase*>(ptr().get());
+
+  TEST_FOR_EXCEPTION(q==0, InternalError,
+                     "QuadratureFamilyStub pointer" << toXML().toString()
+                      << " could not be cast to a QuadratureFamilyBase ptr");
+
+  q->getPoints(cellType, cellDim , celLID , facetIndex ,
+  	  mesh , globalCurve , quadPoints, quadWeights , isCut);
+
+}
+
 XMLObject QuadratureFamily::toXML() const 
 {
   return ptr()->toXML();

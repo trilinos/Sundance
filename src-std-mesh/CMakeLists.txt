@@ -48,6 +48,7 @@ APPEND_SET(HEADERS
   CellFilter/SundancePositionalCellPredicate.hpp
   CellFilter/SundanceSideCellFilter.hpp
   CellFilter/SundanceSubsetCellFilter.hpp
+  CellFilter/SundanceCellCurvePredicate.hpp
   )
 
 APPEND_SET(SOURCES
@@ -70,6 +71,7 @@ APPEND_SET(SOURCES
   CellFilter/SundancePositionalCellPredicate.cpp
   CellFilter/SundanceSideCellFilter.cpp
   CellFilter/SundanceSubsetCellFilter.cpp
+  CellFilter/SundanceCellCurvePredicate.cpp
   )
 
 #
@@ -126,19 +128,30 @@ APPEND_SET(SOURCES
   Concrete/SundanceBasicVertexView.cpp
   )
 
+
 IF(HAVE_SUNDANCE_PEANO) 
-# ========= if Peano grid is defined then we compile the corresponding files =========
-  MESSAGE(STATUS,"Compile with PEANO") 
-  APPEND_SET(HEADERS
-  Concrete/SundancePeanoMeshType2D.hpp
-  Concrete/SundancePeanoMeshType3D.hpp
-  Concrete/SundancePeanoMesh2D.hpp
-  Concrete/SundancePeanoMesh3D.hpp
-  )
-  APPEND_SET(SOURCES
-  Concrete/SundancePeanoMesh2D.cpp
-  Concrete/SundancePeanoMesh3D.cpp
-  )
+# ========= if Peano grid is defined then we compile the corresponding files ========= 
+  IF (HAVE_SUNDANCE_PEANO_NO_2D)
+  ELSE()
+    APPEND_SET(HEADERS
+    Concrete/SundancePeanoMeshType2D.hpp
+    Concrete/SundancePeanoMesh2D.hpp
+    )
+    APPEND_SET(SOURCES
+    Concrete/SundancePeanoMesh2D.cpp
+    )
+  ENDIF()
+  
+  IF (HAVE_SUNDANCE_PEANO_NO_3D)
+  ELSE()
+    APPEND_SET(HEADERS
+    Concrete/SundancePeanoMeshType3D.hpp
+    Concrete/SundancePeanoMesh3D.hpp
+    )
+    APPEND_SET(SOURCES
+    Concrete/SundancePeanoMesh3D.cpp
+    )
+  ENDIF()
 ENDIF()  
 
 #
@@ -176,14 +189,25 @@ APPEND_SET(SOURCES
   
 IF(HAVE_SUNDANCE_PEANO) 
 # ========= if Peano grid is defined then we compile the corresponding files =========
-  APPEND_SET(HEADERS
-  Sources/SundancePeanoMesher2D.hpp
-  Sources/SundancePeanoMesher3D.hpp
-  )
-  APPEND_SET(SOURCES
-  Sources/SundancePeanoMesher2D.cpp
-  Sources/SundancePeanoMesher3D.cpp
-  )
+  IF (HAVE_SUNDANCE_PEANO_NO_2D)
+  ELSE()
+    APPEND_SET(HEADERS
+    Sources/SundancePeanoMesher2D.hpp
+    )
+    APPEND_SET(SOURCES
+    Sources/SundancePeanoMesher2D.cpp
+    )
+  ENDIF()
+  
+  IF (HAVE_SUNDANCE_PEANO_NO_3D)
+  ELSE()
+    APPEND_SET(HEADERS
+    Sources/SundancePeanoMesher3D.hpp
+    )
+    APPEND_SET(SOURCES
+    Sources/SundancePeanoMesher3D.cpp
+    )
+  ENDIF()
 ENDIF()  
 #
 # Mesh Transformation files

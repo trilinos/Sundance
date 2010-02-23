@@ -40,6 +40,7 @@
 #include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceOrderedTuple.hpp"
 #include "SundanceOrderedHandle.hpp"
+#include "SundanceParametrizedCurve.hpp"
 
 
 namespace Sundance
@@ -70,10 +71,13 @@ class RegionQuadCombo
 public:
   /** */
   RegionQuadCombo();
+
   /** */
   RegionQuadCombo(const RCP<CellFilterStub>& domain,
     const RCP<QuadratureFamilyStub>& quad,
+    const ParametrizedCurve& paramCurve = ParametrizedCurve::returnDummyCurve(),
     const WatchFlag& watch = WatchFlag());
+
 
   /** */
   inline bool operator==(const RegionQuadCombo& other) const
@@ -97,6 +101,10 @@ public:
   const WatchFlag& watch() const 
     {return watch_;}
 
+  /** */
+   const ParametrizedCurve& paramCurve() const
+     {return paramCurve_;}
+
 private:
 
   /** */
@@ -107,6 +115,9 @@ private:
 
   /** */
   RCP<QuadratureFamilyStub> quad_;
+
+  /** Such RQC might have one curve */
+  ParametrizedCurve paramCurve_;
 
   /** */
   WatchFlag watch_;

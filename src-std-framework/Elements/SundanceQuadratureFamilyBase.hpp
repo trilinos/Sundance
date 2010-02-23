@@ -37,6 +37,8 @@
 #include "SundanceQuadratureFamilyStub.hpp"
 #include "SundanceCellType.hpp"
 #include "SundancePoint.hpp"
+#include "SundanceParametrizedCurve.hpp"
+#include "SundanceMesh.hpp"
 
 namespace Sundance
 {
@@ -72,6 +74,23 @@ public:
     Array<Point>& quadPoints,
     Array<double>& quadWeights) const ;
       
+  /** This method is used for the Adaptive Cell Integration, which returns
+   * special quadrature weights for cells which are cut by the curve <br>
+   * The quadPoints and the quadWeights are set to the default values.
+   * (quadrature without the curve , no curve)
+   * quadWeights will be changed depending on the curve, if the curve cuts the cell
+   * isCut should be set by this method, if it is true then the quadWeights will be
+   * used for quadrature of the cell */
+  virtual void getPoints(const CellType& cellType ,
+	int cellDim,
+	int celLID ,
+    int facetIndex ,
+    const Mesh& mesh ,
+    const ParametrizedCurve& globalCurve ,
+    Array<Point>& quadPoints ,
+    Array<double>& quadWeights,
+    bool& isCut) const ;
+
 protected:
 
   /** compute a rule for the reference line cell */

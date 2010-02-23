@@ -74,6 +74,18 @@ public:
     Array<Point>& quadPoints,
     Array<double>& quadWeights) const ;
 
+  /** Get the quadrature points and weights for the given cell type ,
+   * which might be cut by a curve in the case of, see class for more info */
+  void getPoints(const CellType& cellType ,
+  		       int cellDim,
+	               int celLID,
+	               int facetIndex ,
+                 const Mesh& mesh ,
+                 const ParametrizedCurve& globalCurve ,
+                 Array<Point>& quadPoints ,
+                 Array<double>& quadWeights ,
+                 bool& isCut) const ;
+
 private:
   /** Get quad points for a facet of a line */
   void getLineFacetQuad(int facetDim,

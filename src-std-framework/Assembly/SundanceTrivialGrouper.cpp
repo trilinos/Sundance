@@ -58,7 +58,9 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   const QuadratureFamily& quad,
   const RCP<SparsitySuperset>& sparsity,
   bool isInternalBdry,
-  Array<RCP<IntegralGroup> >& groups) const
+  Array<RCP<IntegralGroup> >& groups,
+  const ParametrizedCurve& globalCurve,
+  const Mesh& mesh) const
 {
   Tabs tab(0);
 
@@ -103,13 +105,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       if (sparsity->isConstant(i))
       {
         integral = rcp(new RefIntegral(spatialDim, maxCellType, 
-            cellDim, cellType, isInternalBdry, setupVerb()));
+                cellDim, cellType, quad , isInternalBdry, globalCurve , mesh , setupVerb()));
         resultIndex = constCount++;
       }
       else
       {
         integral = rcp(new QuadratureIntegral(spatialDim, maxCellType, 
-            cellDim, cellType, quad, isInternalBdry,
+                cellDim, cellType, quad, isInternalBdry, globalCurve , mesh ,
             setupVerb()));
         resultIndex = vecCount++;
       }
@@ -220,7 +222,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           integral = rcp(new RefIntegral(spatialDim, maxCellType, 
               cellDim, cellType,
               testBasis, alpha, 
-              miTest.order(), isInternalBdry, setupVerb()));
+              miTest.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
         }
         else
         {
@@ -237,13 +239,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           integral = rcp(new RefIntegral(spatialDim, maxCellType,
               cellDim, cellType,
               testBasis, alpha, miTest.order(),
-              unkBasis, beta, miUnk.order(), isInternalBdry, setupVerb()));
+              unkBasis, beta, miUnk.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
           if (transposeNeeded)
           {
             transposedIntegral = rcp(new RefIntegral(spatialDim, maxCellType,
                 cellDim, cellType,
                 unkBasis, beta, miUnk.order(),
-                testBasis, alpha, miTest.order(), isInternalBdry, setupVerb()));
+                testBasis, alpha, miTest.order(), quad , isInternalBdry, globalCurve , mesh ,setupVerb()));
           }
         }
         resultIndex = constCount++;
@@ -260,7 +262,7 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
               cellDim, cellType,
               testBasis, alpha, 
-              miTest.order(), quad, isInternalBdry, setupVerb()));
+              miTest.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
         }
         else
         {
@@ -279,13 +281,13 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
               testBasis, alpha, 
               miTest.order(),
               unkBasis, beta, 
-              miUnk.order(), quad, isInternalBdry, setupVerb()));
+              miUnk.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
           if (transposeNeeded)
           {
             transposedIntegral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                 cellDim, cellType,
                 unkBasis, beta, miUnk.order(),
-                testBasis, alpha, miTest.order(), quad, isInternalBdry, setupVerb()));
+                testBasis, alpha, miTest.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
           }
         }
         resultIndex = vecCount++;

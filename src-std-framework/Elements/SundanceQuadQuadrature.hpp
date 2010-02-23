@@ -34,44 +34,33 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
+#ifndef DOXYGEN_DEVELOPER_ONLY
+
 namespace Sundance
 {
-using namespace Teuchos;
+  using namespace Teuchos;
+
+    /**
+     * Get abscissas and weights for Gaussian quadrature on quadrilateral
+     */
+
+    class QuadQuadrature
+    {
+    public:
+      static void getPoints(int order, Array<double>& wgt,
+                            Array<double>& x,
+                            Array<double>& y);
+
+      static bool test(int p);
 
 
-/**
- * Get abscissas and weights for Gaussian quadrature on quadletaral
- */
+    private:
 
-class QuadQuadrature
-{
-public:
-  static void getPoints(int order, Array<double>& wgt,
-    Array<double>& x,
-    Array<double>& y);
+      static double exact(int a, int b);
 
-  static bool test(int p);
-
-
-private:
-
-  static void getNonsymmetricPoints(int order, Array<double>& wgt,
-    Array<double>& x,
-    Array<double>& y);
-
-  static bool getSymmetricPoints(int order, Array<double>& wgt,
-    Array<double>& x,
-    Array<double>& y);
-
-  static void permute(int m, const Array<double>& q,
-    Array<Array<double> >& qPerm);
-
-  static double exact(int a, int b, int c);
-
-  static double fact(int x);
-
-};
+    };
 }
 
+#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

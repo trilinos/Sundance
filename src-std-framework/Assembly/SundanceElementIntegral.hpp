@@ -35,6 +35,8 @@
 #include "SundanceCellJacobianBatch.hpp"
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceBasisFamily.hpp"
+#include "SundanceParametrizedCurve.hpp"
+#include "SundanceMesh.hpp"
 #include "Teuchos_Array.hpp"
 
 
@@ -56,6 +58,8 @@ public:
     int dim, 
     const CellType& cellType,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** Construct a one-form */
@@ -67,6 +71,8 @@ public:
     int alpha,
     int testDerivOrder,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** Construct a two-form */
@@ -81,6 +87,8 @@ public:
     int beta,
     int unkDerivOrder,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** virtual dtor */
@@ -273,6 +281,14 @@ private:
 
   BasisFamily unkBasis_;
       
+protected:
+
+  /** The curve which might be used for adaptive integration method */
+  const ParametrizedCurve globalCurve_;
+
+  /** The curve which might be used for adaptive integration method */
+  const Mesh mesh_;
+
 };
 }
 

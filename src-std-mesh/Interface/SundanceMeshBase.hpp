@@ -34,6 +34,7 @@
 #include "SundanceDefs.hpp"
 #include "SundancePoint.hpp"
 #include "SundanceSet.hpp"
+#include "SundanceMap.hpp"
 #include "SundanceCellType.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceObjectWithInstanceID.hpp"
@@ -918,6 +919,44 @@ public:
 
   //@}
 
+  /** \name Store special weights in the mesh (for Adaptive Cell Integration) */
+    //@{
+
+    /** returns the status of the special weights if they are valid <br>
+     *  These weights are usually computed for one setting of the curve (Adaptive Cell Integration)*/
+    bool& IsSpecialWeightValid() {return validWeights_;}
+
+    /** specifies if the special weights are valid <br>
+     *  if this is false then usually the special weights have to be recomputed */
+    void setSpecialWeightValid(bool& val) { validWeights_ = val;}
+
+    /** removes the special weights */
+    void removeSecialWeights(int& dim, int& cellLID) {
+    	Array<double> nothing;
+    	nothing.resize(0);
+    	specialWeights_[dim].put(cellLID,nothing);
+    }
+
+    /** verifies if the specified cell with the given dimension has special weights */
+    bool hasSpecialWeight(int& dim, int& cellLID) {
+    	if (specialWeights_[dim].containsKey(cellLID))
+            return ((specialWeights_[dim].get(cellLID)).size() > 1);
+    	else
+    		return false;
+    }
+
+    /** Sets the special weights */
+    void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
+    	specialWeights_[dim].put(cellLID,w);
+    }
+
+    /** Returns the special weights */
+    void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
+    	w = specialWeights_[dim].get(cellLID);
+    }
+    //@}
+
+
   /** \name Output */
   //@{
 
@@ -943,6 +982,12 @@ private:
   MeshEntityOrder order_;
 
   RCP<CellReordererImplemBase> reorderer_;
+
+  /** flag to indicate if the weights stored are valid */
+  bool validWeights_;
+
+  /** Object to store the special weights for integration */
+  Array < Sundance::Map< int , Array<double> > > specialWeights_;
 
 };
 

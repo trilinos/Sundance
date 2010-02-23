@@ -492,7 +492,7 @@ void Assembler::init(const Mesh& mesh,
       Array<RCP<IntegralGroup> > groups;
       grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
-        cellType, cellDim, quad, sparsity, isInternalBdry, groups);
+    	        cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
       grouper->setVerbosity(0,0,0);
       groups_[compType].append(groups);
 
@@ -616,7 +616,7 @@ void Assembler::init(const Mesh& mesh,
       Array<RCP<IntegralGroup> > groups;
       grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
       grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
-        cellType, cellDim, quad, sparsity, isInternalBdry, groups);
+    	        cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
       grouper->setVerbosity(0,0,0);
       groups_[compType].append(groups);
       IntegrationCellSpecifier cellSpec 
@@ -1263,7 +1263,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
           /* Do the integrals. The integration results will be written into
            * the array "localValues". */
           const RCP<IntegralGroup>& group = groups[r][g];
-          if (!group->evaluate(JTrans, JVol, *isLocalFlag, facetIndices, 
+          if (!group->evaluate(JTrans, JVol, *isLocalFlag, facetIndices, workSet,
               vectorCoeffs, constantCoeffs, localValues)) continue;
           /* add the integration results into the output objects by a call
            * to the kernel's fill() function. We need to pass isBCRqc to the kernel

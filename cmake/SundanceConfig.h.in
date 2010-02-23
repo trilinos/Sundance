@@ -1,5 +1,14 @@
 /* src-utils/SundanceConfig.h.in.  CMake version */
 
+/* define if we want to use Peano */
+#cmakedefine HAVE_SUNDANCE_PEANO
+
+/* define if we want not to use 2D Peano */
+#cmakedefine HAVE_SUNDANCE_PEANO_NO_2D
+
+/* define if we want not to use 3D Peano */
+#cmakedefine HAVE_SUNDANCE_PEANO_NO_3D
+
 /* define if we want to use Exodus */
 #cmakedefine HAVE_SUNDANCE_EXODUS
 

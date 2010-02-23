@@ -53,6 +53,8 @@ public:
     const CellType& cellType,
     const QuadratureFamily& quad,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** Construct a one form to be computed by quadrature */
@@ -65,6 +67,8 @@ public:
     int testDerivOrder,
     const QuadratureFamily& quad,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
       
   /** Construct a two-form to be computed by quadrature */
@@ -80,6 +84,8 @@ public:
     int unkDerivOrder,
     const QuadratureFamily& quad,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
       
   /** virtual dtor */
@@ -90,12 +96,13 @@ public:
     const CellJacobianBatch& JVol,
     const Array<int>& isLocalFlag,
     const Array<int>& facetNum,
+    const RCP<Array<int> >& cellLIDs,
     const double* const coeff,
     RCP<Array<double> >& A) const 
     {
-      if (order()==2) transformTwoForm(JTrans, JVol, facetNum, coeff, A);
-      else if (order()==1) transformOneForm(JTrans, JVol, facetNum, coeff, A);
-      else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, coeff, A);
+      if (order()==2) transformTwoForm(JTrans, JVol, facetNum, cellLIDs,coeff, A);
+      else if (order()==1) transformOneForm(JTrans, JVol, facetNum, cellLIDs,coeff, A);
+      else transformZeroForm(JTrans, JVol, isLocalFlag, facetNum, cellLIDs,coeff, A);
     }
       
   /** */
@@ -103,6 +110,7 @@ public:
     const CellJacobianBatch& JVol,
     const Array<int>& isLocalFlag,
     const Array<int>& facetIndex,
+    const RCP<Array<int> >& cellLIDs,
     const double* const coeff,
     RCP<Array<double> >& A) const = 0;
       
@@ -110,6 +118,7 @@ public:
   virtual void transformTwoForm(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol,
     const Array<int>& facetIndex,
+    const RCP<Array<int> >& cellLIDs,
     const double* const coeff,
     RCP<Array<double> >& A) const = 0;
       
@@ -117,6 +126,7 @@ public:
   virtual void transformOneForm(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol,
     const Array<int>& facetIndex,
+    const RCP<Array<int> >& cellLIDs,
     const double* const coeff,
     RCP<Array<double> >& A) const = 0;
       

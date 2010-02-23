@@ -36,6 +36,7 @@
 
 namespace Sundance
 {
+
 using namespace Teuchos;
 
 /** 
@@ -53,6 +54,8 @@ public:
     const CellType& cellType,
     const QuadratureFamily& quad,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** Construct a one form to be computed by quadrature */
@@ -65,6 +68,8 @@ public:
     int testDerivOrder,
     const QuadratureFamily& quad,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** Construct a two-form to be computed by quadrature */
@@ -80,6 +85,8 @@ public:
     int unkDerivOrder,
     const QuadratureFamily& quad,
     bool isInternalBdry,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh,
     int verb);
 
   /** virtual dtor */
@@ -90,6 +97,7 @@ public:
 				 const CellJacobianBatch& JVol,
 				 const Array<int>& isLocalFlag,
 				 const Array<int>& facetIndex,
+				 const RCP<Array<int> >& cellLIDs,
 				 const double* const coeff,
 				 RCP<Array<double> >& A) const ;
       
@@ -97,6 +105,7 @@ public:
   virtual void transformTwoForm(const CellJacobianBatch& JTrans,
 				const CellJacobianBatch& JVol,
 				const Array<int>& facetIndex,
+			    const RCP<Array<int> >& cellLIDs,
 				const double* const coeff,
 				RCP<Array<double> >& A) const ;
       
@@ -104,6 +113,7 @@ public:
   void transformOneForm(const CellJacobianBatch& JTrans,
 			const CellJacobianBatch& JVol,
 			const Array<int>& facetIndex,
+		    const RCP<Array<int> >& cellLIDs,
 			const double* const coeff,
 			RCP<Array<double> >& A) const ;
 
@@ -113,6 +123,7 @@ private:
    * points and then transforming the sum to physical quantities.  */
   void transformSummingFirst(int nCells,
     const Array<int>& facetIndex,
+    const RCP<Array<int> >& cellLIDs,
     const double* const GPtr,
     const double* const coeff,
     RCP<Array<double> >& A) const ;
@@ -121,6 +132,7 @@ private:
    * at each quadrature point, and then summing */
   void transformSummingLast(int nCells,
     const Array<int>& facetIndex,
+    const RCP<Array<int> >& cellLIDs,
     const double* const GPtr,
     const double* const coeff,
     RCP<Array<double> >& A) const ;
@@ -171,8 +183,23 @@ private:
   /* */
   bool useSumFirstMethod_;
       
-};
+  /** For ACI (ACI = Adaptive Cell Integration), store the reference integral values for one form
+   * The indexes facet, quadPoints, nRefDerivTest , nNodesTest */
+  Array<Array<Array<Array<double> > > > W_ACI_F1_;
 
+  /** For ACI (ACI = Adaptive Cell Integration), store the reference integral values for two form
+   * The indexes facet, quadPoints, nRefDerivTest , nNodesTest , nRefDerivUnk , nNodesUnk */
+  Array<Array<Array<Array<Array<Array<double> > > > > > W_ACI_F2_;
+
+  /** The quadrature family needed for special integration (ACI)*/
+  QuadratureFamily quad_;
+
+  /** The quadrature points*/
+  Array < Array<Point> > quadPts_;
+
+  /** The standard weights (in case of ACI these might change)*/
+  Array < Array<double> > quadWeights_;
+};
 }
 
 

@@ -45,6 +45,9 @@ CellPredicate::CellPredicate(Handleable<CellPredicateFunctorBase>* func)
   : Handle<CellPredicateBase>(new PositionalCellPredicate(func->getRcp()))
 {;}
 
+CellPredicate::CellPredicate(ParametrizedCurve& curve, CurveCellFilterMode filterMode)
+  : Handle<CellPredicateBase>(new CellCurvePredicate(curve , filterMode))
+{;}
 
 
 bool CellPredicate::operator<(const CellPredicate& other) const

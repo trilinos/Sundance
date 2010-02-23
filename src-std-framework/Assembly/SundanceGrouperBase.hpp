@@ -33,6 +33,8 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceCellType.hpp"
+#include "SundanceParametrizedCurve.hpp"
+#include "SundanceMesh.hpp"
 #include "Teuchos_RefCountPtr.hpp"
 
 namespace Sundance
@@ -69,7 +71,10 @@ public:
     const QuadratureFamily& quad,
     const RCP<SparsitySuperset>& sparsity,
     bool isInternalBdry,
-    Array<RCP<IntegralGroup> >& groups) const = 0 ;
+    Array<RCP<IntegralGroup> >& groups,
+    const ParametrizedCurve& globalCurve,
+    const Mesh& mesh ) const = 0 ;
+
 
   /** */
   void setVerbosity(

@@ -49,9 +49,7 @@
 #include "SundanceCollectiveExceptionCheck.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
-using namespace Sundance;
 
 //#define printf(msg)
 //#define SUNDANCE_VERB_HIGH(msg) printf(msg);printf("\n");
@@ -89,7 +87,7 @@ void PeanoMesh2D::createMesh(
       _dimension = 2;
       // here we create the Peano grid
       _peanoMesh = new SundancePeanoInterface2D( position , offset , res );
-      _uniqueResolution = _peanoMesh->returnUniqueResolution();
+      _uniqueResolution = _peanoMesh->returnResolution(0);
 
       SUNDANCE_VERB_LOW(" Peano Mesh created ... \n");
       //_peanoMesh->plotVTK("Peano2D");
@@ -133,6 +131,10 @@ void PeanoMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 	  TEST_FOR_EXCEPTION(cellDim < 0 || cellDim > spatialDim(), InternalError,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	  int nCells = cellLID.size();
+	  int tmp , tmp_index , tmp_index1;
+	  Point pnt(0.0,0.0);
+	  Point pnt1(0.0,0.0);
+
 	  jBatch.resize(cellLID.size(), spatialDim(), cellDim);
 	  if (cellDim < spatialDim()) // they need the Jacobian of a lower dinemsional element
 	  {
@@ -146,47 +148,36 @@ void PeanoMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 		        case 0: *detJ = 1.0;
 		          break;
 		        case 1:
-		          *detJ = _uniqueResolution; // the length of (each) edge
-		        break;
-		        case 2:
-		          *detJ = _uniqueResolution*_uniqueResolution; //TODO: the are of the face (not twice the area as it is in the BSM!!)
+			    	 tmp_index  = this->facetLID(cellDim,  cellLID[i] , 0 , 0 , tmp );
+			    	 tmp_index1 = this->facetLID(cellDim,  cellLID[i] , 0 , 1 , tmp );
+			    	 pnt = nodePosition(tmp_index);
+			    	 pnt1 = nodePosition(tmp_index1);
+			    	 pnt = pnt1 - pnt;
+		             *detJ = sqrt(pnt * pnt); // the length of the edge
 		        break;
 		        default:
 		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
-		            "cellDim=" << cellDim << " in BasicSimplicialMesh::getJacobians()");
+		            "cellDim=" << cellDim << " in PeanoMesh2D::getJacobians()");
 		      }
 		    }
 	  }else{ // they request the complete Jacoby matrix for this bunch of elements
 		    //Array<double> J(cellDim*cellDim);
 		    SUNDANCE_VERB_HIGH("cellDim == spatialDim()");
-		    for (int i=0; i<cellLID.size(); i++)
+		    for (unsigned int i=0; i<(unsigned int)cellLID.size(); i++)
 		    {
 			  //printf("PeanoMesh2D::getJacobian() cellDim == spatialDim() cellDim:%d , ret:%f \n",cellDim , _uniqueResolution);
 		      double* J = jBatch.jVals(i);
 		      switch(cellDim)
 		      {
-		        case 0:
-		          J[0] = 1.0; // point
-		          break;
-		        case 1:
-		          J[0] = _uniqueResolution;  // length in x direction of the line
-		        break;
 		        case 2:
-		          J[0] = _uniqueResolution;
+		          J[0] = _peanoMesh->returnResolution(0);
 		          J[1] = 0.0;  J[2] = 0.0;   //
-		          J[3] = _uniqueResolution; // the Jacobi of the quad,
-		        break;
-		        case 3:
-		          J[0] = _uniqueResolution;
-		          J[1] = 0.0; J[2] = 0.0; J[3] = 0.0;
-		          J[4] = _uniqueResolution;
-		          J[5] = 0.0; J[6] = 0.0; J[7] = 0.0;
-		          J[8] = _uniqueResolution; // the Jacobi of the tet
+		          J[3] = _peanoMesh->returnResolution(1); // the Jacobi of the quad,
 		        break;
 		        default:
 		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
 		            "cellDim=" << cellDim
-		            << " in BasicSimplicialMesh::getJacobians()");
+		            << " in SundancePeano2D::getJacobians()");
 		      }
 		    }
 	  }
@@ -198,45 +189,49 @@ void PeanoMesh2D::getCellDiameters(int cellDim, const Array<int>& cellLID,
 	    "cellDim=" << cellDim << " is not in expected range [0, " << spatialDim() << "]");
 	 SUNDANCE_VERB_HIGH("getCellDiameters()");
 	  cellDiameters.resize(cellLID.size());
+
+	  int tmp , tmp_index , tmp_index1;
+	  Point pnt(0.0,0.0);
+	  Point pnt1(0.0,0.0);
+
 	  if (cellDim < spatialDim())
 	  {
 		//printf("PeanoMesh2D::getCellDiameters(), cellDim < spatialDim() \n ");
-	    for (int i=0; i<cellLID.size(); i++)
+	    for (unsigned int i=0; i<(unsigned int)cellLID.size(); i++)
 	    {
 	      switch(cellDim)
 	      {
 	        case 0:
-	          cellDiameters[i] = 1.0;
+	             cellDiameters[i] = 1.0;
 	          break;
-	        case 1:
-	          cellDiameters[i] = _uniqueResolution; //length of the edge
-	        break;
-	        case 2:
-	          cellDiameters[i] = _uniqueResolution * _uniqueResolution; //area of the cell
+	        case 1:  //length of the edge
+		    	 tmp_index = this->facetLID(cellDim,  cellLID[i] , 0 , 0 , tmp );
+		    	 tmp_index1= this->facetLID(cellDim,  cellLID[i] , 0 , 1 , tmp );
+		    	 pnt = nodePosition(tmp_index);
+		    	 pnt1 = nodePosition(tmp_index1);
+		    	 pnt = pnt1 - pnt;
+		    	 cellDiameters[i] = sqrt(pnt * pnt); // the length of the edge
 	        break;
 	        default:
 	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
-	            "cellDim=" << cellDim << " in BasicSimplicialMesh::getCellDiameters()");
+	            "cellDim=" << cellDim << " in PeanoMesh2D::getCellDiameters()");
 	      }
 	    }
 	  }
 	  else
 	  {
 		//printf("PeanoMesh2D::getCellDiameters(), cellDim == spatialDim() \n ");
-	    for (int i=0; i<cellLID.size(); i++)
+	    for (unsigned int i=0; i<(unsigned int)cellLID.size(); i++)
 	    {
 	      switch(cellDim)
 	      {
-	        case 0:
-	          cellDiameters[i] = 1.0;
-	          break;
-	        case 1: case 2: case 3:
-	          cellDiameters[i] = _uniqueResolution;
+	        case 2:
+	          cellDiameters[i] = (_peanoMesh->returnResolution(0)+_peanoMesh->returnResolution(1))/2.0;
 	        break;
 	        default:
 	          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
 	            "cellDim=" << cellDim
-	            << " in BasicSimplicialMesh::getCellDiameters()");
+	            << " in PeanoMesh2D::getCellDiameters()");
 	      }
 	    }
 	  }
@@ -253,47 +248,38 @@ void PeanoMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
 	    << "]");
 
 	  int nQuad = refQuadPts.size();
+	  double start_point[2] , end_point[2];
 
 	  Array<double> J(cellDim*cellDim);
 
 	  if (physQuadPts.size() > 0) physQuadPts.resize(0);
 	  physQuadPts.reserve(cellLID.size() * refQuadPts.size());
-	  for (int i=0; i<cellLID.size(); i++)
+	  for (unsigned int i=0; i<(unsigned int)cellLID.size(); i++)
 	  {
-    	int tmp , tmp_index;
 	    int lid = cellLID[i];
+	    _peanoMesh->pushForward( cellDim, lid ,start_point , end_point );
+   	    Point pnt( start_point[0] , start_point[1] );
+   	    Point pnt1( end_point[0] , end_point[1] );
 	    switch(cellDim)
 	    {
 	      case 0: // integrate one point
-	         physQuadPts.append(nodePosition(lid));
+	         physQuadPts.append(pnt);
 	        break;
 	      case 1:{ // integrate on one line
-	    	 tmp_index = this->facetLID(cellDim,  lid , 0 , 0 , tmp );
-	    	 Point pnt(nodePosition(tmp_index));
 	         for (int q=0; q<nQuad; q++) {
-	           physQuadPts.append(pnt + refQuadPts[q][0]*_uniqueResolution);
-	         }
+	               physQuadPts.append(pnt + (pnt1-pnt)*refQuadPts[q][0]);
+	        	}
 	      break;}
 	      case 2:{
-		     tmp_index = this->facetLID(cellDim,  lid , 0 , 0 , tmp );
-		     Point pnt(nodePosition(tmp_index));
-	         for (int q=0; q<nQuad; q++) {
-	          	      physQuadPts.append( pnt
-	           	        + Point(refQuadPts[q][0]*_uniqueResolution,refQuadPts[q][1]*_uniqueResolution));
-	         }
-	      break;}
-	      case 3:{
-			  tmp_index = this->facetLID(cellDim,  lid , 0 , 0 , tmp );
-			  Point pnt(nodePosition(tmp_index));
-	          for (int q=0; q<nQuad; q++) {
-	          	      physQuadPts.append( pnt
-	           	        + Point(_uniqueResolution*refQuadPts[q][0],_uniqueResolution*refQuadPts[q][1],
-	           	        		_uniqueResolution*refQuadPts[q][2]));
-	          }
+		         for (int q=0; q<nQuad; q++) {
+		          	  physQuadPts.append( pnt
+		           	    + Point(refQuadPts[q][0]*_peanoMesh->returnResolution(0),
+		           	    		refQuadPts[q][1]*_peanoMesh->returnResolution(1)));
+		         }
 	      break;}
 	      default:
 	        TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
-	          "in BasicSimplicialMesh::getJacobians()");
+	          "in PeanoMesh2D::getJacobians()");
 	    }
 	  }
 }
@@ -332,7 +318,7 @@ void PeanoMesh2D::getFacetLIDs(int cellDim,
       facetLID.resize(cellLID.size() * nf);
       facetSign.resize(cellLID.size() * nf);
 	  // At this moment we just use the previous function
-	  for (int i = 0 ; i < cellLID.size() ; i++){
+	  for (unsigned int i = 0 ; i < (unsigned int)cellLID.size() ; i++){
 		  cLID = cellLID[i];
 	      for (int f=0; f<nf; f++, ptr++) {
 	    	  // we use this->facetLID caz facetLID is already used as variable

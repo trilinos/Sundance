@@ -343,6 +343,24 @@ APPEND_SET(SOURCES
   TestingUtilities/SundanceTestUnknownFunction.cpp
   )
 
+#
+# Parametrized curves
+#
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/ParametrizedCurves)
+
+APPEND_SET(HEADERS
+  ParametrizedCurves/SundanceCurveBase.hpp
+  ParametrizedCurves/SundanceCircle.hpp
+  ParametrizedCurves/SundanceParametrizedCurve.hpp
+  ParametrizedCurves/SundanceDummyParametrizedCurve.hpp
+  )
+
+APPEND_SET(SOURCES
+  ParametrizedCurves/SundanceCircle.cpp
+  ParametrizedCurves/SundanceParametrizedCurve.cpp
+  )
+
 IF (TPL_ENABLE_MPI)
 ENDIF()
 

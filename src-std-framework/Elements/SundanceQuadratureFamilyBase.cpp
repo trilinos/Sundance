@@ -75,6 +75,22 @@ void QuadratureFamilyBase::getPoints(const CellType& cellType,
     }
 }
 
+void QuadratureFamilyBase::getPoints(const CellType& cellType ,
+									 int cellDim,
+	                                 int celLID ,
+	                	             int facetIndex ,
+	                                 const Mesh& mesh ,
+	                                 const ParametrizedCurve& globalCurve ,
+	                                 Array<Point>& quadPoints ,
+	                                 Array<double>& quadWeights ,
+	                                 bool &isCut) const {
+#ifndef TRILINOS_7
+  SUNDANCE_ERROR("getPoints rule for ACI(Adaptive Cell Integration) not available for " << toXML());
+#else
+  SUNDANCE_ERROR7("getPoints rule for ACI(Adaptive Cell Integration) not available for " << toXML());
+#endif
+}
+
 void QuadratureFamilyBase::getLineRule(Array<Point>& /* quadPoints */,
                                        Array<double>& /* quadWeights */) const 
 {

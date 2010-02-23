@@ -36,10 +36,6 @@
 #include "SundanceBrickQuadrature.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 GaussianQuadrature::GaussianQuadrature(int order)
@@ -146,3 +142,45 @@ void GaussianQuadrature::getBrickRule(Array<Point>& quadPoints,
     }
 }
 
+void GaussianQuadrature::getPoints(const CellType& cellType ,
+									 int cellDim,
+	                                 int celLID ,
+	                	             int facetIndex ,
+	                                 const Mesh& mesh ,
+	                                 const ParametrizedCurve& globalCurve ,
+	                                 Array<Point>& quadPoints ,
+	                                 Array<double>& quadWeights ,
+	                                 bool &isCut) const {
+	// TODO: first implementation ...
+
+	// we say that the cell is always cut by the curve so these weights will be used
+	isCut = true;
+	Array<Point> tmpPoints = quadPoints;
+
+    Array<int> celLIDs(1);
+    celLIDs[0] = celLID;
+    // transform the ref points to real coordinates
+	mesh.pushForward( cellDim, celLIDs, quadPoints, tmpPoints );
+
+	quadWeights.resize(tmpPoints.size());
+    // simple weight calculation
+	for (int i=0 ; i < tmpPoints.size() ; i++){
+		quadWeights[i] = quadWeights[i] * globalCurve.integrationParameter(tmpPoints[i]);
+	}
+
+/*
+	Array<Point> vertices;
+    Array<int>  nodeLIDs;
+    Array<int>  orient;
+    int testcount = 1;
+
+    // Get coordinates
+    mesh.getFacetArray(cellDim, celLID, 0, nodeLIDs, orient);
+
+    vertices.resize(nodeLIDs.size());
+    for (int i=0; i<nodeLIDs.size(); i++) {
+    	vertices[i] = mesh.nodePosition(nodeLIDs[i]);
+    	SUNDANCE_MSG5(6, "Points [" << testcount << "/" << i << "] " << vertices[i]);
+    	testcount++;
+    }*/
+}

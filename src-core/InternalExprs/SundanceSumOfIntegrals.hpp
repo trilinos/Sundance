@@ -42,6 +42,7 @@
 #include "SundanceMap.hpp"
 #include "SundanceWatchFlag.hpp"
 #include "SundanceRegionQuadCombo.hpp"
+#include "SundanceParametrizedCurve.hpp"
 
 
 namespace Sundance
@@ -74,13 +75,21 @@ public:
     const RCP<QuadratureFamilyStub>& quad,
     const WatchFlag& watch);
 
+  /** Construct given an integral over a single region */
+  SumOfIntegrals(const RCP<CellFilterStub>& region,
+    const Expr& expr,
+    const RCP<QuadratureFamilyStub>& quad,
+    const ParametrizedCurve& curve,
+    const WatchFlag& watch);
+
   /** */
   virtual ~SumOfIntegrals(){;}
 
   /** Add another term to this integral */
   void addTerm(const RCP<CellFilterStub>& region,
     const Expr& expr,
-    const RCP<QuadratureFamilyStub>& quad, 
+    const RCP<QuadratureFamilyStub>& quad,
+    const ParametrizedCurve& paramCurve,
     const WatchFlag& watch,
     int sign) ;
 

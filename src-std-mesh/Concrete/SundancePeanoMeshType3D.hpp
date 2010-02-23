@@ -44,40 +44,40 @@
 
 namespace Sundance
 {
-using namespace Teuchos;
+  using namespace Teuchos;
 
-/**
- * PeanoMeshType is used to create
- * PeanoMesh objects.
- */
-class PeanoMeshType3D : public MeshTypeBase
-{
-public:
-  /** Empty ctor */
-  PeanoMeshType3D(const MeshEntityOrder& order=ExodusMeshOrder)
-    : order_(order) {;}
+  /**
+   * PeanoMeshType is used to create
+   * PeanoMesh objects.
+   */
+  class PeanoMeshType3D : public MeshTypeBase
+  {
+  public:
+    /** Empty ctor */
+	  PeanoMeshType3D(const MeshEntityOrder& order=ExodusMeshOrder)
+	    : order_(order) {;}
 
-  /** virtual dtor */
-  virtual ~PeanoMeshType3D(){;}
+    /** virtual dtor */
+    virtual ~PeanoMeshType3D(){;}
 
-  /** Create a mesh of the given dimension */
-  virtual RCP<MeshBase> createEmptyMesh(int dim,
-    const MPIComm& comm) const
-  // this line is never used since we create directly the mesh at the Mesher
+    /** Create a mesh of the given dimension */
+    virtual RCP<MeshBase> createEmptyMesh(int dim,
+                                                  const MPIComm& comm) const
+    // this line is never used since we create directly the mesh at the Mesher
     {return rcp(new PeanoMesh3D(dim, comm, order_));}
 
-  /** */
-  string description() const {return "PeanoMeshType3D";}
+    /** */
+    string description() const {return "PeanoMeshType3D";}
 
 #ifndef DOXYGEN_DEVELOPER_ONLY
-  /** Return a ref count pointer to self */
-  virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}
+    /** Return a ref count pointer to self */
+    virtual RCP<MeshTypeBase> getRcp() {return rcp(this);}
 #endif  /* DOXYGEN_DEVELOPER_ONLY */
 
-private:
-  MeshEntityOrder order_;
+  private:
+    MeshEntityOrder order_;
 
-};
+  };
 }
 
 #endif /* SUNDANCEPEANOMESHTYPE3D_HPP_ */

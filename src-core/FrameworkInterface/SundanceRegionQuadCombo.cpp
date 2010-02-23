@@ -32,21 +32,21 @@
 #include "SundanceRegionQuadCombo.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-
-using namespace Sundance;
 using namespace Teuchos;
 
 
 RegionQuadCombo::RegionQuadCombo()
-  : id_(-1), domain_(), quad_(), watch_()
+  : id_(-1), domain_(), quad_(), paramCurve_() , watch_()
 {;}
 
 RegionQuadCombo::RegionQuadCombo(const RCP<CellFilterStub>& domain,
   const RCP<QuadratureFamilyStub>& quad,
+  const ParametrizedCurve& paramCurve ,
   const WatchFlag& watch)
-  : id_(getID(domain, quad,watch)), domain_(domain), quad_(quad), watch_(watch)
+  : id_(getID(domain, quad,watch)), domain_(domain), quad_(quad),
+  paramCurve_(paramCurve) , watch_(watch)
 {;}
+
 
 int RegionQuadCombo::getID(const RCP<CellFilterStub>& domain,
   const RCP<QuadratureFamilyStub>& quad,
