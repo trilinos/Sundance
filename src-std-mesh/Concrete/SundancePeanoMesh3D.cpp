@@ -48,6 +48,8 @@
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceCollectiveExceptionCheck.hpp"
 
+#ifdef HAVE_SUNDANCE_PEANO
+
 using namespace Sundance;
 using namespace Teuchos;
 
@@ -496,3 +498,5 @@ bool PeanoMesh3D::hasIntermediateGIDs(int dim) const {
 	SUNDANCE_VERB_HIGH("hasIntermediateGIDs()");
 	return true; // true means they have been synchronized ... not used now
 }
+
+#endif

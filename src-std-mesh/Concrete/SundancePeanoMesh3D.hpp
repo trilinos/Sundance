@@ -43,6 +43,8 @@
 #include "SundancePoint.hpp"
 #include "SundanceCellType.hpp"
 
+#ifdef HAVE_SUNDANCE_PEANO
+
 #include "SundancePeanoInterface3D.h"
 
 namespace Sundance
@@ -274,4 +276,6 @@ namespace Sundance
 
   };
   }
+#endif
+
 #endif /* SUNDANCEPEANOMESH3D_H_ */

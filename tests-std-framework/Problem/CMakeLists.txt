@@ -29,6 +29,7 @@ SET(SerialTests
   NonlinearPDECOTest2D
   FunctionalTest 
   TwoZoneDiscFunc
+  PerforatedPlate
   PoissonPeano2D
   PoissonPeano3D
   StokesPeano2D 
