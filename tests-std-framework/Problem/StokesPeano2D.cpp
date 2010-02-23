@@ -29,8 +29,6 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
-#include "SundancePeanoMeshType2D.hpp"
-#include "SundancePeanoMesher2D.hpp"
 
 /** 
  * Solves the Stokes equation in 2D
