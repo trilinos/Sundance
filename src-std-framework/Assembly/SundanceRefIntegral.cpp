@@ -104,7 +104,7 @@ RefIntegral::RefIntegral(int spatialDim,
 
   quadWeights_ = quadWeights;
 
-  for (unsigned int q=0; q<quadWeights.size(); q++) {
+  for (int q=0; q<quadWeights.size(); q++) {
 	  W_[0][0] += quadWeights[q];
   }
 }
@@ -165,7 +165,7 @@ RefIntegral::RefIntegral(int spatialDim,
     W_[fc].resize(nRefDerivTest() * nNodesTest());
 
     /* initialize values of integrals to zero */
-    for (unsigned int i=0; i<W_[fc].size(); i++) { W_[fc][i]=0.0; }
+    for (int i=0; i<W_[fc].size(); i++) { W_[fc][i]=0.0; }
 
     Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
   
@@ -209,7 +209,7 @@ RefIntegral::RefIntegral(int spatialDim,
       }
     }    
 
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
 
     addFlops(3*nQuad*nRefDerivTest()*nNodesTest() + W_[fc].size());
   }
@@ -311,7 +311,7 @@ RefIntegral::RefIntegral(int spatialDim,
       << nFacetCases() << "-------");
     
     W_[fc].resize(nRefDerivTest() * nNodesTest()  * nRefDerivUnk() * nNodesUnk());
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i]=0.0;
 
     Array<Array<Array<Array<double> > > > testBasisVals(nRefDerivTest());
     Array<Array<Array<Array<double> > > > unkBasisVals(nRefDerivUnk());
@@ -377,7 +377,7 @@ RefIntegral::RefIntegral(int spatialDim,
     SUNDANCE_MSG2(setupVerb(), tab1 << "...done");
     addFlops(4*nQuad*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
       + W_[fc].size());
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
   }
 
   SUNDANCE_MSG1(setupVerb(), tab0 

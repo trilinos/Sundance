@@ -162,7 +162,7 @@ int main(int argc, char** argv)
 
           RefIntegral ref(dim, cellType, dim, cellType, P, alpha, dp, q4 , isInternalBdry, curve, mesh ,verb);
           A->resize(JBatch.numCells() * ref.nNodes());
-          for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+          for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
           ref.transformOneForm(JBatch, JBatch, dummy, cellLIDs , coeff, A);
           cerr << tab << "transformed reference element" << endl;
           if (dp>0) cerr << tab << "test diff direction=" << t << endl;
@@ -179,7 +179,7 @@ int main(int argc, char** argv)
           QuadratureIntegral quad(dim, cellType, dim, cellType, P, alpha, dp, q4, isInternalBdry, curve, mesh, verb);
           Array<double> quadCoeff(2*quad.nQuad(), 1.0);
           B->resize(JBatch.numCells() * quad.nNodes());
-          for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+          for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
           quad.transformOneForm(JBatch, JBatch, dummy, cellLIDs , &(quadCoeff[0]), B);
           cerr << tab << "transformed quad element" << endl;
           if (dp>0) cerr << tab << "test diff direction =" << t << endl;
@@ -268,7 +268,7 @@ int main(int argc, char** argv)
                 RefIntegral ref(dim, cellType, dim, cellType, P, alpha,
                   dp, Q, beta, dq, quad_1 , isInternalBdry, curve , mesh , verb);
                 A->resize(JBatch.numCells() * ref.nNodes());
-                for (unsigned int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
+                for (int ai=0; ai<A->size(); ai++) (*A)[ai]=0.0;
                 ref.transformTwoForm(JBatch, JBatch, dummy, cellLIDs , coeff, A);
                 cerr << tab << "transformed ref element" << endl;
                 cerr << tab << "test diff order = " << dp << endl;
@@ -298,7 +298,7 @@ int main(int argc, char** argv)
                   dp, Q, beta, dq, q4, isInternalBdry,curve , mesh , verb);
                 Array<double> quadCoeff(2*quad.nQuad(), 1.0);
                 B->resize(JBatch.numCells() * quad.nNodes());
-                for (unsigned int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
+                for (int ai=0; ai<B->size(); ai++) (*B)[ai]=0.0;
                 quad.transformTwoForm(JBatch, JBatch, dummy, cellLIDs , &(quadCoeff[0]), B);
 
                 cerr << tab << "transformed quad element" << endl;

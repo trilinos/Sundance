@@ -309,7 +309,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
 
     addFlops(3*nQuad()*nRefDerivTest()*nNodesTest()*nRefDerivUnk()*nNodesUnk()
       + W_[fc].size());
-    for (unsigned int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
+    for (int i=0; i<W_[fc].size(); i++) W_[fc][i] = chop(W_[fc][i]);
     
   }
 

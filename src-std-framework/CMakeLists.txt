@@ -47,6 +47,7 @@ APPEND_SET(HEADERS
   Elements/SundanceDiscreteSpace.hpp
   Elements/SundanceEdgeLocalizedBasis.hpp
   Elements/SundanceFeketeBrickQuadrature.hpp
+  Elements/SundanceFeketeQuadrature.hpp
   Elements/SundanceFeketeQuadQuadrature.hpp
   Elements/SundanceFeketeQuadratureType.hpp
   Elements/SundanceFeketeTriangleQuadrature.hpp
@@ -86,6 +87,7 @@ APPEND_SET(SOURCES
   Elements/SundanceEdgeLocalizedBasis.cpp
   Elements/SundanceFeketeBrickQuadrature.cpp
   Elements/SundanceFeketeQuadQuadrature.cpp
+  Elements/SundanceFeketeQuadrature.cpp
   Elements/SundanceFeketeQuadratureType.cpp
   Elements/SundanceFeketeTriangleQuadrature.cpp
   Elements/SundanceFuncWithBasis.cpp
