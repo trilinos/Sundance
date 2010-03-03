@@ -14,7 +14,6 @@ SET(Tests
         SensEqnTest 
         TestEval 
         PolynomialTest          
-        StdTransformation 
         VariationTest 
         testExpr
 )
