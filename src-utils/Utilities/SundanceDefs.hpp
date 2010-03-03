@@ -44,7 +44,23 @@
 
 namespace Teuchos {}
 
-namespace Sundance {}
+namespace Sundance 
+{
+  typedef Teuchos::Ordinal OrdType; 
+}
+
+namespace TSFExtended 
+{
+  typedef Sundance::OrdType OrdType; 
+}
+
+
+
+
+
+
+
+
 
 
 
