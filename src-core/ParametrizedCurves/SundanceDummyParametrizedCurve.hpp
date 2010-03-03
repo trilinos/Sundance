@@ -49,6 +49,13 @@ public:
 	virtual Expr getParams() const { return Expr();}
 
 	/** */
+	virtual void getIntegrationParams(Array<double>& alphas) const {
+		alphas.resize(2);
+		alphas[0] = 1.0;
+		alphas[1] = 1.0;
+	}
+
+	/** */
 	virtual double integrationParameter(const Point& evaluationPoint) const{ return 1.0;}
 
 	virtual double curveEquation(const Point& evaluationPoint) const { return 1.0; }

@@ -81,7 +81,7 @@ public:
    * quadWeights will be changed depending on the curve, if the curve cuts the cell
    * isCut should be set by this method, if it is true then the quadWeights will be
    * used for quadrature of the cell */
-  virtual void getPoints(const CellType& cellType ,
+  virtual void getAdaptedWeights(const CellType& cellType ,
 	int cellDim,
 	int celLID ,
     int facetIndex ,

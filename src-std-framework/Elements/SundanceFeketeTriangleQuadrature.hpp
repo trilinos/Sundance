@@ -34,41 +34,43 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace Sundance
 {
+
   using namespace Teuchos;
-    /**
-     * Get abscissas and weights for Gauss-Lobatto-like quadrature on triangles
-     * using a Fekete point approach
-     */
 
-    class FeketeTriangleQuadrature
-    {
-    public:
-      static void getPoints(int order, Array<double>& wgt,
-                            Array<double>& x,
-                            Array<double>& y);
+/**
+ * Get abscissas and weights for Fekete point quadrature on triangles
+ */
 
-      static bool test(int p);
+class FeketeTriangleQuadrature
+{
+public:
+	static void getPoints(int order, Array<double>& wgt, Array<double>& x,
+			Array<double>& y);
 
-      static int maxOrder() {return 9;}
+	static bool test(int p);
 
-      static bool supportsOrder(int order);
+	static int maxOrder()
+	{
+		return 9;
+	}
 
-    private:
+	static bool supportsOrder(int order);
 
-      static void permute(int m, const Array<double>& q,
-                          Array<Array<double> >& qPerm);
+	static void
+			evalPKDpolynomials(int order, double x, double y, double* resultPtr);
 
-      static double exact(int a, int b, int c);
+private:
 
-      static double fact(int x);
+	static void permute(int m, const Array<double>& q,
+			Array<Array<double> >& qPerm);
 
-    };
+	static double exact(int a, int b, int c);
+
+	static double fact(int x);
+
+};
 }
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

@@ -34,12 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace Sundance
 {
   using namespace Teuchos;
-
     /**
      * Get abscissas and weights for Gauss-Lobatto quadrature on quadrilateral
      * (Gauss-Lobatto points are Fekete points on tensor elements)
@@ -60,8 +57,7 @@ namespace Sundance
       static double exact(int a, int b);
 
     };
-}
+  }
 
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif

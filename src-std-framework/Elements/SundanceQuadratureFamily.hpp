@@ -76,10 +76,10 @@ public:
 
   /** Get the quadrature points and weights for the given cell type ,
    * which might be cut by a curve in the case of, see class for more info */
-  void getPoints(const CellType& cellType ,
-  		       int cellDim,
-	               int celLID,
-	               int facetIndex ,
+  void getAdaptedWeights(const CellType& cellType ,
+  		         int cellDim,
+	             int celLID,
+	             int facetIndex ,
                  const Mesh& mesh ,
                  const ParametrizedCurve& globalCurve ,
                  Array<Point>& quadPoints ,

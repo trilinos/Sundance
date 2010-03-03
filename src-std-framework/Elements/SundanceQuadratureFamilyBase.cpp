@@ -32,11 +32,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 void QuadratureFamilyBase::getPoints(const CellType& cellType, 
@@ -75,7 +70,7 @@ void QuadratureFamilyBase::getPoints(const CellType& cellType,
     }
 }
 
-void QuadratureFamilyBase::getPoints(const CellType& cellType ,
+void QuadratureFamilyBase::getAdaptedWeights(const CellType& cellType ,
 									 int cellDim,
 	                                 int celLID ,
 	                	             int facetIndex ,
@@ -85,9 +80,9 @@ void QuadratureFamilyBase::getPoints(const CellType& cellType ,
 	                                 Array<double>& quadWeights ,
 	                                 bool &isCut) const {
 #ifndef TRILINOS_7
-  SUNDANCE_ERROR("getPoints rule for ACI(Adaptive Cell Integration) not available for " << toXML());
+  SUNDANCE_ERROR("getAdaptedWeights rule for ACI(Adaptive Cell Integration) not available for " << toXML());
 #else
-  SUNDANCE_ERROR7("getPoints rule for ACI(Adaptive Cell Integration) not available for " << toXML());
+  SUNDANCE_ERROR7("getAdaptedWeights rule for ACI(Adaptive Cell Integration) not available for " << toXML());
 #endif
 }
 

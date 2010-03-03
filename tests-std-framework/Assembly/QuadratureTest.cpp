@@ -30,12 +30,9 @@
 
 #include "Sundance.hpp"
 #include "SundanceTriangleQuadrature.hpp"
+#include "SundanceFeketeTriangleQuadrature.hpp"
 #include "SundanceTetQuadrature.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
@@ -51,10 +48,15 @@ int main(int argc, char** argv)
       Array<int> validTetOrders = tuple(1, 2, 4, 6);
       int maxorder = 15;
       Array<int> validTriOrders(maxorder);
-      for (int i=0; i<maxorder; i++) validTriOrders[i] = i+1;
+      for (int i=0; i<maxorder; i++)
+    	  validTriOrders[i] = i+1;
+
+      Array<int> validFeketeTriOrders = tuple(1, 2, 3, 4, 5, 6, 9);
+
 
       Array<int> triFailures;
       Array<int> tetFailures;
+      Array<int> FeketeTriFailures;
 
       cerr << "------------- testing triangle rules -------------------"  << endl;
       for (int i=0; i<validTriOrders.size(); i++)
@@ -82,6 +84,21 @@ int main(int argc, char** argv)
             }
 				}
 
+      cerr << "--------- testing Fekete triangle rules ----------------" << endl;
+      for (int i = 0; i < validFeketeTriOrders.size(); i++)
+		{
+			int p = validFeketeTriOrders[i];
+			bool pass = FeketeTriangleQuadrature::test(p);
+			if (pass)
+				cerr << "order " << p << " PASSED" << endl;
+			else
+			{
+				cerr << "order " << p << " FAILED" << endl;
+				FeketeTriFailures.append(p);
+			}
+		}
+
+
       if (tetFailures.size()>0) 
         {
           cout << "failures detected for tets: orders " << tetFailures << endl;
@@ -104,6 +121,17 @@ int main(int argc, char** argv)
           cout << "tri tests PASSED" << endl;
         }
 
+		if (FeketeTriFailures.size() > 0)
+		{
+			cout << "failures detected for Fekete tris: orders "
+					<< FeketeTriFailures << endl;
+			cout << "Fekete tri tests FAILED" << endl;
+			stat = -1;
+		}
+		else
+		{
+			cout << "Fekete tri tests PASSED" << endl;
+		}
 
 		}
 	catch(exception& e)

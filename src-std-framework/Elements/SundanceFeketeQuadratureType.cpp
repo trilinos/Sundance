@@ -34,6 +34,7 @@
 #include "SundanceFeketeTriangleQuadrature.hpp"
 
 using namespace Sundance;
+using namespace Teuchos;
 
 FeketeQuadratureType::FeketeQuadratureType() :
 	QuadratureTypeBase()

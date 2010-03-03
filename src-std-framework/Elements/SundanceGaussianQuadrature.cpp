@@ -142,16 +142,16 @@ void GaussianQuadrature::getBrickRule(Array<Point>& quadPoints,
     }
 }
 
-void GaussianQuadrature::getPoints(const CellType& cellType ,
-									 int cellDim,
-	                                 int celLID ,
-	                	             int facetIndex ,
-	                                 const Mesh& mesh ,
-	                                 const ParametrizedCurve& globalCurve ,
-	                                 Array<Point>& quadPoints ,
-	                                 Array<double>& quadWeights ,
-	                                 bool &isCut) const {
-	// TODO: first implementation ...
+void GaussianQuadrature::getAdaptedWeights(const CellType& cellType ,
+									       int cellDim,
+	                                       int celLID ,
+	                	                   int facetIndex ,
+	                                       const Mesh& mesh ,
+	                                       const ParametrizedCurve& globalCurve ,
+	                                       Array<Point>& quadPoints ,
+	                                       Array<double>& quadWeights ,
+	                                       bool &isCut) const {
+	// First implementation ...
 
 	// we say that the cell is always cut by the curve so these weights will be used
 	isCut = true;

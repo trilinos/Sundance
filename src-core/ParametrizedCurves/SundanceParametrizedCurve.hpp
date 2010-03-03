@@ -75,6 +75,11 @@ public:
 		return ptr()->getParams();
 	}
 
+	/** List integration parameters for the FCM method*/
+	void getIntegrationParams(Array<double>& alphas) const {
+		return ptr()->getIntegrationParams(alphas);
+	}
+
 	/** Returns the integration parameter for the FCM method*/
 	double integrationParameter(const Point& evaluationPoint) const {
 		return ptr()->integrationParameter(evaluationPoint);

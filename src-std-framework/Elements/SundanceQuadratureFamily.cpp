@@ -62,7 +62,7 @@ void QuadratureFamily::getPoints(const CellType& cellType,
   q->getPoints(cellType, quadPoints, quadWeights);
 }
 
-void QuadratureFamily::getPoints(const CellType& cellType ,
+void QuadratureFamily::getAdaptedWeights(const CellType& cellType ,
 		                         int cellDim,
 	                             int celLID ,
 	            	             int facetIndex ,
@@ -80,7 +80,7 @@ void QuadratureFamily::getPoints(const CellType& cellType ,
                      "QuadratureFamilyStub pointer" << toXML().toString()
                       << " could not be cast to a QuadratureFamilyBase ptr");
 
-  q->getPoints(cellType, cellDim , celLID , facetIndex ,
+  q->getAdaptedWeights(cellType, cellDim , celLID , facetIndex ,
   	  mesh , globalCurve , quadPoints, quadWeights , isCut);
 
 }

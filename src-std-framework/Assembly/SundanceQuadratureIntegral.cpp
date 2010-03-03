@@ -366,7 +366,7 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
       if (globalCurve_.isCurveValid()){
 		quadWeightsTmp = quadWeights_[fc];
 		quadPointsTmp = quadPts_[fc];
-      	quad_.getPoints(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
+      	quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
       			globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
       	/* if we have special weights then do the same as before */
       	if (isCutByCurve){
@@ -401,7 +401,7 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
       if (globalCurve_.isCurveValid()){
 		quadWeightsTmp = quadWeights_[fc];
 		quadPointsTmp = quadPts_[fc];
-      	quad_.getPoints(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
+      	quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
       			globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
       	/* if we have special weights then do the same as before */
       	if (isCutByCurve){
@@ -477,7 +477,7 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
       	quadWeightsTmp = quadWeights_[fc];
         quadPointsTmp = quadPts_[fc];
   		/* call the special integration routine */
-  		quad_.getPoints(cellType(), dim(), (*cellLID)[c] , fc ,
+  		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
   				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
         if (isCutByCurve){
         	Array<double> wi;
@@ -603,7 +603,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
        	quadWeightsTmp = quadWeights_[fc];
          quadPointsTmp = quadPts_[fc];
    		/* call the special integration routine */
-   		quad_.getPoints(cellType(), dim(), (*cellLID)[c] , fc ,
+   		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
    				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
          if (isCutByCurve){
          	Array<double> wi;
@@ -737,7 +737,7 @@ void QuadratureIntegral
         quadWeightsTmp = quadWeights_[fc];
         quadPointsTmp = quadPts_[fc];
  		/* call the special integration routine */
- 		quad_.getPoints(cellType(), dim(), (*cellLID)[c] , fc ,
+ 		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
  				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
        if (isCutByCurve){
        	 Array<double> wi;
@@ -862,7 +862,7 @@ void QuadratureIntegral
         quadWeightsTmp = quadWeights_[fc];
         quadPointsTmp = quadPts_[fc];
  		/* call the special integration routine */
- 		quad_.getPoints(cellType(), dim(), (*cellLID)[c] , fc ,
+ 		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
  				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
        if (isCutByCurve){
        	 Array<double> wi;

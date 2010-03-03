@@ -66,7 +66,7 @@ public:
   GET_RCP(QuadratureFamilyStub);
 
   /** This methos is for the ACI integration */
-  virtual void getPoints(const CellType& cellType ,
+  virtual void getAdaptedWeights(const CellType& cellType ,
   									 int cellDim,
   	                                 int celLID ,
   	                	             int facetIndex ,

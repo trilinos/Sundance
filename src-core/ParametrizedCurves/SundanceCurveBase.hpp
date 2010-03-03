@@ -70,6 +70,16 @@ public:
 	virtual Expr getParams() const = 0 ;
 
 	/**
+	 * Return the integration parameters
+	 * @param alphas, integration parameters, first one corresponds to Equation > 0
+	 */
+	void getIntegrationParams(Array<double>& alphas) const {
+		alphas.resize(2);
+		alphas[0] = _alpha1;
+		alphas[1] = _alpha2;
+	}
+
+	/**
 	 * @param evaluationPoint the point where we want the alpha integration parameter <br>
 	 * The parameter alpha is used for the Adaptive Cell Integration
 	 * @return double the alpha parameter for the integration */

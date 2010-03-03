@@ -469,7 +469,7 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
         		/* call the special integration routine */
 				quadWeightsTmp = quadWeights_;
 				quadPointsTmp = quadPts_;
-        		quad_.getPoints(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
+        		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
         				globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
         		/* if we have special weights then do the same as before */
         		if (isCutByCurve){
@@ -506,7 +506,7 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
     		/* call the special integration routine */
         	quadWeightsTmp = quadWeights_;
             quadPointsTmp = quadPts_;
-    		quad_.getPoints(cellType(), dim(), (*cellLID)[c], fc , mesh_,
+    		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc , mesh_,
     				globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
     		/* if we do not have special weights then do the same as before */
     		if (isCutByCurve){
@@ -568,7 +568,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
       	quadWeightsTmp = quadWeights_;
         quadPointsTmp = quadPts_;
   		/* call the special integration routine */
-  		quad_.getPoints(cellType(), dim(), (*cellLIDs)[c] , fc ,
+  		quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c] , fc ,
   				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
         if (isCutByCurve){
         	Array<double> w;
@@ -628,7 +628,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
     		 /* call the special integration routine */
 	         quadWeightsTmp = quadWeights_;
 	         quadPointsTmp = quadPts_;
-    		 quad_.getPoints(cellType(), dim(), (*cellLIDs)[c], fc ,
+    		 quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
     				 mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve);
     		 if (isCutByCurve){
     			 Array<double> w;
@@ -672,7 +672,7 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
         	/* call the special integration routine */
         	quadWeightsTmp = quadWeights_;
             quadPointsTmp = quadPts_;
-     		quad_.getPoints(cellType(), dim(), (*cellLIDs)[c], fc ,
+     		quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
      				mesh_ , globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
       		if (isCutByCurve){
       			 Array<double> w;
@@ -743,7 +743,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   		/* call the special integration routine */
       	quadWeightsTmp = quadWeights_;
         quadPointsTmp = quadPts_;
-  		quad_.getPoints(cellType(), dim(), (*cellLIDs)[c] , fc ,
+  		quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c] , fc ,
   				mesh_, globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
         if (isCutByCurve){
         	Array<double> w;
@@ -825,12 +825,12 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
              double* gPtr = &(GPtr[c*nTransRows]);
              int oneI = 1;
        		 /* call the special integration routine */
-         	//SUNDANCE_MSG1(transformVerb(), tabs << "before quad_.getPoints");
+         	//SUNDANCE_MSG1(transformVerb(), tabs << "before quad_.getAdaptedWeights");
          	 quadWeightsTmp = quadWeights_;
              quadPointsTmp = quadPts_;
-       		 quad_.getPoints(cellType(), dim(), (*cellLIDs)[c], fc ,
+       		 quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
        				 mesh_,globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
-         	//SUNDANCE_MSG1(transformVerb(), tabs << "after quad_.getPoints");
+         	//SUNDANCE_MSG1(transformVerb(), tabs << "after quad_.getAdaptedWeights");
        		 if (isCutByCurve){
        			 Array<double> w;
        			 w.resize(nNodesUnk()*nNodesTest()*nRefDerivUnk()*nRefDerivTest());
@@ -881,7 +881,7 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
             /* call the special integration routine */
         	quadWeightsTmp = quadWeights_;
             quadPointsTmp = quadPts_;
-         	quad_.getPoints(cellType(), dim(), (*cellLIDs)[c], fc ,
+         	quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
          			mesh_, globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
          	if (isCutByCurve){
          		 Array<double> w;

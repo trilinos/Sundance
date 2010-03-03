@@ -34,12 +34,9 @@
 #include "SundanceDefs.hpp"
 #include "Teuchos_Array.hpp"
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
 namespace Sundance
 {
-
-using namespace Teuchos;
+  using namespace Teuchos;
 
 /**
  * Get abscissas and weights for Gauss-Lobatto quadrature on brick cells (cuboids)
@@ -60,7 +57,5 @@ private:
 
 };
 }
-
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 #endif
