@@ -116,6 +116,7 @@
 #include "SundanceQuadratureFamily.hpp"
 #include "SundanceLagrange.hpp"
 #include "SundanceGaussianQuadrature.hpp"
+#include "SundanceFeketeQuadrature.hpp"
 
 /* Spectral */
 #include "SundanceHermiteSpectralBasis.hpp"
