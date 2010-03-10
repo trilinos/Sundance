@@ -60,7 +60,7 @@ public:
   virtual ~AbstractEvalMediator(){;}
 
   /** */
-  void setVerbosity(int verb) 
+  void setVerbosity(int verb) const 
     {verb_ = verb;}
 
   /** */
@@ -89,7 +89,7 @@ public:
   virtual void evalCellVectorExpr(const CellVectorExpr* expr,
     RCP<EvalVector>& vec) const = 0 ;
 private:
-  int verb_;
+  mutable int verb_;
 };
 }
 

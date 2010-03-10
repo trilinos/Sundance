@@ -78,6 +78,7 @@ void StdFwkEvalMediator::setCellType(const CellType& cellType,
   bool isInternalBdry) 
 {
   cellType_=cellType; 
+  cellDim_ = dimension(cellType);
   maxCellType_ = maxCellType;
   isInternalBdry_ = isInternalBdry;
   cacheIsValid() = false; 
@@ -124,14 +125,24 @@ void StdFwkEvalMediator::setupFacetTransformations() const
 {
   Tabs tab;
   SUNDANCE_MSG2(verb(), tab << "setting up facet transformations");
+  Tabs tab1;
 
   const Array<int>& cells = *cellLID_;
+
+  SUNDANCE_MSG2(verb(), tab1 << "num cells in batch = " << cells.size());
+  SUNDANCE_MSG2(verb(), tab1 << "cell dim = " << cellDim());
+  SUNDANCE_MSG2(verb(), tab1 << "num d-cells in mesh = " << mesh_.numCells(cellDim()));
+  
+
   facetIndices_->resize(cells.size());
   maxCellLIDs_->resize(cells.size());
   cofacetCellsAreReady_ = true;
 
   for (int c=0; c<cells.size(); c++)
     {
+      Tabs tab2;
+      SUNDANCE_MSG2(verb(), tab2 << "c = " << c);
+      SUNDANCE_MSG2(verb(), tab2 << "cells[c] = " << cells[c]);
       (*maxCellLIDs_)[c] 
         = mesh_.maxCofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
     }

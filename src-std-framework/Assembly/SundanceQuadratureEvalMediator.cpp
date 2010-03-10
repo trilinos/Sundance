@@ -285,10 +285,16 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
       if (evalCellType!=cellType())
       { 
         Out::os() << quadPtsReferredToMaxCell_ << endl;
+        TEST_FOR_EXCEPTION(quadPtsReferredToMaxCell_.size() == 0,
+          RuntimeError,
+          "empty quadrature point map");
       }
       else
       {
         Out::os() << quadPtsForReferenceCell_ << endl;
+        TEST_FOR_EXCEPTION(quadPtsForReferenceCell_.size() == 0,
+          RuntimeError,
+          "empty quadrature point map");
       }
     }
 

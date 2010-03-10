@@ -28,6 +28,12 @@ public:
 
   /** */
   void solve(const Array<LinearOperator<double> >& KBlock,
+    const Array<int>& hasNonzeroMatrixBlock,
+    const Array<Vector<double> >& fBlock,
+    Array<Vector<double> >& xBlock) const ;
+
+  /** */
+  void solve(const Array<LinearOperator<double> >& KBlock,
     const Array<Vector<double> >& fBlock,
     Array<Vector<double> >& xBlock) const ;
 

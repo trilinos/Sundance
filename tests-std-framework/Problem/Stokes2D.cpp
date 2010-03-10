@@ -114,12 +114,20 @@ int main(int argc, char** argv)
                           + (h*h*beta)*(grad*q)*(grad*p) + q*(dx*ux+dy*uy),
                           quad2);
         
+      WatchFlag watchLeft("watch left");
+      WatchFlag watchTop("watch top");
+      WatchFlag watchBottom("watch bottom");
+      WatchFlag watchPeg("watch peg");
+      watchLeft.deactivate();
+      watchTop.deactivate();
+      watchBottom.deactivate();
+      watchPeg.deactivate();
       /* Define the Dirichlet BC */
       Expr uInflow = 0.5*(1.0-y*y);
-      Expr bc = EssentialBC(left, vx*(ux-uInflow) + vy*uy, quad2)
-        + EssentialBC(top, vx*ux + vy*uy, quad2)
-        + EssentialBC(bottom, vx*ux + vy*uy, quad2)
-        + EssentialBC(peg, p*q, quad2);
+      Expr bc = EssentialBC(left, vx*(ux-uInflow) + vy*uy, quad2, watchLeft)
+        + EssentialBC(top, vx*ux + vy*uy, quad2, watchTop)
+        + EssentialBC(bottom, vx*ux + vy*uy, quad2, watchBottom)
+        + EssentialBC(peg, p*q, quad2, watchPeg);
 
 
          

@@ -261,6 +261,8 @@ private:
 
   Map<ComputationType, Array<EvalContext> > contexts_;
 
+  Map<ComputationType, Array<int> > skipRqc_;
+
   Array<int> isBCRqc_;
 
   Array<int> isInternalBdry_;

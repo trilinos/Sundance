@@ -1,8 +1,22 @@
 #include "SundanceStochBlockJacobiSolver.hpp"
 #include "Sundance.hpp"
 
+
 void
 StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
+  const Array<Vector<double> >& fBlock,
+  Array<Vector<double> >& xBlock) const
+{
+  Array<int> hasNonzeroMatrix(KBlock.size());
+  for (int i=0; i<KBlock.size(); i++) hasNonzeroMatrix[i] = true;
+  
+  solve(KBlock, hasNonzeroMatrix, fBlock, xBlock);
+}
+
+
+void
+StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
+  const Array<int>& hasNonzeroMatrix,
   const Array<Vector<double> >& fBlock,
   Array<Vector<double> >& xBlock) const
 {
@@ -18,6 +32,8 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
 
   for (int i=0; i<P; i++)
   {
+    TEST_FOR_EXCEPTION(fBlock[0].ptr().get()==0, 
+      RuntimeError, "empty RHS vector block i=[" << i << "]");
     uPrev[i] = fBlock[0].copy();
     uCur[i] = fBlock[0].copy();
     uPrev[i].zero();
@@ -47,6 +63,7 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
           nVecAdds++;
         }
         if (j>=L) continue; 
+        if (!hasNonzeroMatrix[j]) continue;
         Vector<double> tmp = fBlock[0].copy();
         tmp.zero();
         bool blockIsNeeded = false;

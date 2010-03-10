@@ -342,6 +342,7 @@ void Assembler::init(const Mesh& mesh,
     groups_.put(MatrixAndVector, Array<Array<RCP<IntegralGroup> > >());
     rqcRequiresMaximalCofacets_.put(MatrixAndVector, 
       Array<IntegrationCellSpecifier>());
+    skipRqc_.put(MatrixAndVector, Array<int>());
     contexts_.put(MatrixAndVector, Array<EvalContext>());
     evalExprs_.put(MatrixAndVector, Array<const EvaluatableExpr*>());
 
@@ -349,6 +350,7 @@ void Assembler::init(const Mesh& mesh,
     groups_.put(VectorOnly, Array<Array<RCP<IntegralGroup> > >());
     rqcRequiresMaximalCofacets_.put(VectorOnly, 
       Array<IntegrationCellSpecifier>());
+    skipRqc_.put(VectorOnly, Array<int>());
     contexts_.put(VectorOnly, Array<EvalContext>());
     evalExprs_.put(VectorOnly, Array<const EvaluatableExpr*>());
 
@@ -361,6 +363,7 @@ void Assembler::init(const Mesh& mesh,
       groups_.put(Sensitivities, Array<Array<RCP<IntegralGroup> > >());
       rqcRequiresMaximalCofacets_.put(Sensitivities, 
         Array<IntegrationCellSpecifier>());
+      skipRqc_.put(Sensitivities, Array<int>());
       contexts_.put(Sensitivities, Array<EvalContext>());
       evalExprs_.put(Sensitivities, Array<const EvaluatableExpr*>());
       
@@ -372,12 +375,14 @@ void Assembler::init(const Mesh& mesh,
     groups_.put(FunctionalAndGradient, Array<Array<RCP<IntegralGroup> > >());
     rqcRequiresMaximalCofacets_.put(FunctionalAndGradient, 
       Array<IntegrationCellSpecifier>());
+    skipRqc_.put(FunctionalAndGradient, Array<int>());
     contexts_.put(FunctionalAndGradient, Array<EvalContext>());
     evalExprs_.put(FunctionalAndGradient, Array<const EvaluatableExpr*>());
     /* create tables for functional calculation */
     groups_.put(FunctionalOnly, Array<Array<RCP<IntegralGroup> > >());
     rqcRequiresMaximalCofacets_.put(FunctionalOnly, 
       Array<IntegrationCellSpecifier>());
+    skipRqc_.put(FunctionalOnly, Array<int>());
     contexts_.put(FunctionalOnly, Array<EvalContext>());
     evalExprs_.put(FunctionalOnly, Array<const EvaluatableExpr*>());
   }
@@ -421,7 +426,7 @@ void Assembler::init(const Mesh& mesh,
 
     SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 << "------------------------------------------------");
     SUNDANCE_MSG2(rqcVerb, tab1 << "initializing assembly for"
-      << endl << tab12 << "rqc=" 
+      << endl << tab12 << "r=" << r << " rqc=" 
       << rqc << endl << tab12 << endl << tab12 << "------------------------------"
       << endl << tab12 << "expr = " << expr
       << endl << tab12 << "------------------------------"
@@ -460,49 +465,60 @@ void Assembler::init(const Mesh& mesh,
       {
         SUNDANCE_MSG2(rqcVerb, tab2 << "RQC not needed for computation type  " 
           << compType);
-        continue;
+        skipRqc_[compType].append(true);
+        EvalContext dummy;
+        const EvaluatableExpr* dummyEx = 0;
+        Array<RCP<IntegralGroup> > dummyGroups;
+        IntegrationCellSpecifier dummyCellSpec ;
+        contexts_[compType].append(dummy);
+        evalExprs_[compType].append(dummyEx);
+        groups_[compType].append(dummyGroups);
+        rqcRequiresMaximalCofacets_[compType].append(dummyCellSpec);
       }
+      else
+      {
+        /* If we're to this point, we know the RQC is needed for this 
+         * computation type */
+        rqcUsed = true;
+        skipRqc_[compType].append(false);
 
-      /* If we're to this point, we know the RQC is needed for this 
-       * computation type */
-      rqcUsed = true;
+        /* Look up a "context" object that we'll use as a key for different
+         * evaluations of this expression */
+        EvalContext context = eqn->rqcToContext(compType, rqc);
 
-      /* Look up a "context" object that we'll use as a key for different
-       * evaluations of this expression */
-      EvalContext context = eqn->rqcToContext(compType, rqc);
+        SUNDANCE_MSG2(rqcVerb, tab2 << "context " << context.brief());
 
-      SUNDANCE_MSG2(rqcVerb, tab2 << "context " << context.brief());
+        /* Register the context */
+        contexts_[compType].append(context);
 
-      /* Register the context */
-      contexts_[compType].append(context);
+        /* Register the expression */
+        const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
+        evalExprs_[compType].append(ee);
 
-      /* Register the expression */
-      const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
-      evalExprs_[compType].append(ee);
+        /* Get the "sparsity superset" which is a description of all 
+         * derivatives that must be computed by this expression in the
+         * present context */
+        const RCP<SparsitySuperset>& sparsity 
+          = ee->sparsitySuperset(context);
+        SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
 
-      /* Get the "sparsity superset" which is a description of all 
-       * derivatives that must be computed by this expression in the
-       * present context */
-      const RCP<SparsitySuperset>& sparsity 
-        = ee->sparsitySuperset(context);
-      SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
+        /* We're now ready to create integration groups for doing the 
+         * integrals needed in this computation for the present RQC. */
+        Array<RCP<IntegralGroup> > groups;
+        grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
+        grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
+          cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
+        grouper->setVerbosity(0,0,0);
+        groups_[compType].append(groups);
 
-      /* We're now ready to create integration groups for doing the 
-       * integrals needed in this computation for the present RQC. */
-      Array<RCP<IntegralGroup> > groups;
-      grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
-      grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
-    	        cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
-      grouper->setVerbosity(0,0,0);
-      groups_[compType].append(groups);
-
-      /* Record whether or not integrations need to be done by reference
-       * to maximal cofacets. */ 
-      IntegrationCellSpecifier cellSpec 
-        = whetherToUseCofacets(groups, ee, 
-          cellDim==mesh_.spatialDim(), rqcVerb);
-      SUNDANCE_MSG2(rqcVerb, tab2 << "integration: " << cellSpec);
-      rqcRequiresMaximalCofacets_[compType].append(cellSpec);
+        /* Record whether or not integrations need to be done by reference
+         * to maximal cofacets. */ 
+        IntegrationCellSpecifier cellSpec 
+          = whetherToUseCofacets(groups, ee, 
+            cellDim==mesh_.spatialDim(), rqcVerb);
+        SUNDANCE_MSG2(rqcVerb, tab2 << "integration: " << cellSpec);
+        rqcRequiresMaximalCofacets_[compType].append(cellSpec);
+      }
       SUNDANCE_MSG2(rqcVerb, tab12
         << "done with computation type " << compType);
     }
@@ -511,7 +527,8 @@ void Assembler::init(const Mesh& mesh,
     TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "rqc=" << rqc 
       << " never used for any computation???");
     SUNDANCE_MSG2(rqcVerb, tab12 << "creating evaluation mediator for rqc=" 
-      << rqc << endl << tab12 << "expr = " << expr);
+      << rqc);
+    SUNDANCE_MSG2(rqcVerb, tab12 << "expr = " << expr);
 
     /* Finally, create an evaluation mediator for this RQC. The evaluation
      * mediator is the object through which symbolic objects refer to
@@ -558,7 +575,8 @@ void Assembler::init(const Mesh& mesh,
 
     SUNDANCE_MSG2(rqcVerb, tab1 << endl << tab1 
       << "------------------------------------------------");
-    SUNDANCE_MSG1(rqcVerb, tab1 << "initializing assembly for BC rqc=" 
+    SUNDANCE_MSG1(rqcVerb, tab1 << "initializing assembly for BC r=" << r
+      << " rqc=" 
       << rqc << endl << tab1 
       << "expr = " << expr);
       
@@ -593,48 +611,59 @@ void Assembler::init(const Mesh& mesh,
       {
         SUNDANCE_MSG2(rqcVerb, 
           tab2 << "this rqc not needed for computation type " << compType);
-        continue;
+        skipRqc_[compType].append(true);
+        EvalContext dummy;
+        const EvaluatableExpr* dummyEx = 0;
+        Array<RCP<IntegralGroup> > dummyGroups;
+        IntegrationCellSpecifier dummyCellSpec ;
+        contexts_[compType].append(dummy);
+        evalExprs_[compType].append(dummyEx);
+        groups_[compType].append(dummyGroups);
+        rqcRequiresMaximalCofacets_[compType].append(dummyCellSpec);
       }
+      else
+      {
+        /* If we're to this point, we know the RQC is needed for this 
+         * computation type */   
+        rqcUsed = true;
+        skipRqc_[compType].append(false);
 
-      /* If we're to this point, we know the RQC is needed for this 
-       * computation type */   
-      rqcUsed = true;
-
-      /* Look up a "context" object that we'll use as a key for different
-       * evaluations of this expression */
-      EvalContext context = eqn->bcRqcToContext(compType, rqc);
-      SUNDANCE_MSG2(rqcVerb, tab2 << "context " << context);
+        /* Look up a "context" object that we'll use as a key for different
+         * evaluations of this expression */
+        EvalContext context = eqn->bcRqcToContext(compType, rqc);
+        SUNDANCE_MSG2(rqcVerb, tab2 << "context " << context);
 
       
-      contexts_[compType].append(context);
-      const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
-      evalExprs_[compType].append(ee);
-      const RCP<SparsitySuperset>& sparsity 
-        = ee->sparsitySuperset(context);
-      SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
+        contexts_[compType].append(context);
+        const EvaluatableExpr* ee = EvaluatableExpr::getEvalExpr(expr);
+        evalExprs_[compType].append(ee);
+        const RCP<SparsitySuperset>& sparsity 
+          = ee->sparsitySuperset(context);
+        SUNDANCE_MSG3(rqcVerb, tab2 << "sparsity pattern " << *sparsity);
 
-      Array<RCP<IntegralGroup> > groups;
-      grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
-      grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
-    	        cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
-      grouper->setVerbosity(0,0,0);
-      groups_[compType].append(groups);
-      IntegrationCellSpecifier cellSpec 
-        = whetherToUseCofacets(groups, ee, 
-          cellDim==mesh_.spatialDim(), rqcVerb);
-      SUNDANCE_MSG2(rqcVerb, tab2 << "integration: " << cellSpec);
-      rqcRequiresMaximalCofacets_[compType].append(cellSpec);
-      SUNDANCE_MSG2(rqcVerb, tab1
-        << "done with computation type " << compType);
+        Array<RCP<IntegralGroup> > groups;
+        grouper->setVerbosity(integralCtorVerb, integrationVerb, integralTransformVerb);
+        grouper->findGroups(*eqn, maxCellType, mesh.spatialDim(),
+          cellType, cellDim, quad, sparsity, isInternalBdry, groups , rqc.paramCurve() , mesh_ );
+        grouper->setVerbosity(0,0,0);
+        groups_[compType].append(groups);
+        IntegrationCellSpecifier cellSpec 
+          = whetherToUseCofacets(groups, ee, 
+            cellDim==mesh_.spatialDim(), rqcVerb);
+        SUNDANCE_MSG2(rqcVerb, tab2 << "integration: " << cellSpec);
+        rqcRequiresMaximalCofacets_[compType].append(cellSpec);
+        SUNDANCE_MSG2(rqcVerb, tab1
+          << "done with computation type " << compType);
+      }
+      TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "BC rqc=" << rqc 
+        << " never used for any computation???");
+
+
+      SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
+        << rqc << endl << tab1 << "expr = " << expr);
+      mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
+            quad)));
     }
-    TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "BC rqc=" << rqc 
-      << " never used for any computation???");
-
-
-    SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
-      << rqc << endl << tab1 << "expr = " << expr);
-    mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
-          quad)));
     SUNDANCE_MSG2(rqcVerb, tab1 
       << "done with BC RQC");
   }
@@ -1006,6 +1035,9 @@ void Assembler::assemblyLoop(const ComputationType& compType,
   /* Get the expressions needed for this calculation */
   const Array<const EvaluatableExpr*>& evalExprs 
     = evalExprs_.get(compType);
+  /* Get the flags indicating shich, if any, RQCs are to be skipped in this
+   * calculation */
+  const Array<int>& skipRqc = skipRqc_.get(compType);
 
   
   /* === Start main loop. 
@@ -1018,267 +1050,281 @@ void Assembler::assemblyLoop(const ComputationType& compType,
    * reset it at the end of a loop iteration */
   int oldKernelVerb = kernel->verb();
   
+  TEST_FOR_EXCEPT(rqc_.size() != evalExprs.size());
+
   /* Looping over RQCs */
   for (int r=0; r<rqc_.size(); r++)
   {
-      Tabs tab0;
+    Tabs tab0;
 
-      /* Set the verbosity level for this RQC */
-      int rqcVerb = verb;
-      int evalVerb = 0;
+    /* Set the verbosity level for this RQC */
+    int rqcVerb = verb;
+    int evalVerb = 0;
 
-      /* Check for watch point, and set verbosity accordingly */
-      if (rqc_[r].watch().isActive()) 
-      {
-        rqcVerb=5;
-        evalVerb = rqc_[r].watch().param("evaluation");
-        kernel->setVerbosity(rqc_[r].watch().param("fill"));
-
-        SUNDANCE_MSG2(rqcVerb, tab0 << endl 
-          << tab0 << "-------------"
-          << endl << tab0 << " doing watched subregion=" 
-          << rqc_[r]);     
-      }
+    /* Check for watch point, and set verbosity accordingly */
+    if (rqc_[r].watch().isActive()) 
+    {
       Tabs tab01;
+      rqcVerb=5;
+      evalVerb = rqc_[r].watch().param("evaluation");
+      kernel->setVerbosity(rqc_[r].watch().param("fill"));
 
-      SUNDANCE_MSG2(rqcVerb, tab01 << "expr is " << evalExprs[r]->toString());
-      SUNDANCE_MSG2(rqcVerb, tab01 << "isBC= " << isBCRqc_[r]);
+      SUNDANCE_MSG2(rqcVerb, tab0 << endl 
+        << tab0 << "-------------"
+        << endl << tab0 << " doing watched subregion r=" << r << " rqc=" 
+        << rqc_[r]);    
+      if (skipRqc[r]) 
+      {
+        SUNDANCE_MSG2(rqcVerb, tab01 << "this rqc is not needed in comp type = " << compType);
+      }
+      else
+      {
+        SUNDANCE_MSG2(rqcVerb, tab01 << "expr is " << evalExprs[r]->toString());
+        SUNDANCE_MSG2(rqcVerb, tab01 << "isBC= " << isBCRqc_[r]); 
+      }
+    }
+    Tabs tab01;
 
     
-      /* Deciding whether we should skip this RQC in the current computation 
-       * type. For example, a certain boundary surface might appear in the
-       * computation of a functional but not in the state equation. */
-      if ((!isBCRqc_[r] && eqn_->skipRqc(compType, rqc_[r]))
-        || (isBCRqc_[r] && eqn_->skipBCRqc(compType, rqc_[r])))
-      {
-        SUNDANCE_MSG2(rqcVerb, "nothing to do for comp type " 
-          << compType);
-        continue;
-      }
+    /* Deciding whether we should skip this RQC in the current computation 
+     * type. For example, a certain boundary surface might appear in the
+     * computation of a functional but not in the state equation. */
+    if ((!isBCRqc_[r] && eqn_->skipRqc(compType, rqc_[r]))
+      || (isBCRqc_[r] && eqn_->skipBCRqc(compType, rqc_[r])))
+    {
+      Tabs tab012;
+      SUNDANCE_MSG2(rqcVerb, tab012 << "nothing to do for comp type " 
+        << compType);
+      continue;
+    }
 
-      /* specify the evaluation mediator for this RQC.
-       * Recall that the evaluation mediator is the object responsible for communication
-       * between the symbolic expression tree and discretization-dependent data structures
-       * such as discrete functions. 
-       *
-       * The evaluation manager is an object that is responsible for management
-       * of the symbolic evaluation; it controls allocation of memory for evaluation
-       * results, access to the evaluation mediator, and other administrative tasks. 
-       */
-      evalMgr_->setMediator(mediators_[r]);
-      /* Tell the manager which CellFilter and QuadratureFamily we're currently working with. 
-       * This is simply forwarded to the mediator, which needs to know the number
-       * of quadrature points as well as mesh properties such as cell dimension. */
-      evalMgr_->setRegion(contexts_.get(compType)[r]);
+    /* specify the evaluation mediator for this RQC.
+     * Recall that the evaluation mediator is the object responsible for communication
+     * between the symbolic expression tree and discretization-dependent data structures
+     * such as discrete functions. 
+     *
+     * The evaluation manager is an object that is responsible for management
+     * of the symbolic evaluation; it controls allocation of memory for evaluation
+     * results, access to the evaluation mediator, and other administrative tasks. 
+     */
+    evalMgr_->setMediator(mediators_[r]);
+    mediators_[r]->setVerbosity(rqcVerb);
+
+    /* Tell the manager which CellFilter and QuadratureFamily we're currently working with. 
+     * This is simply forwarded to the mediator, which needs to know the number
+     * of quadrature points as well as mesh properties such as cell dimension. */
+    evalMgr_->setRegion(contexts_.get(compType)[r]);
   
-      /* get the cell filter for the current RQC */
-      CellFilter filter = rqc_[r].domain();
-      /* Find the cells that "pass" the predicate in the filter. Note: a CellFilter
-       * will cache the cell sets it has computed, so the predicate computation will
-       * only be done once per mesh, regardless of how often this function is called. 
-       * Todo: the cache needs to be reset upon mesh refinement. 
-       */
-      CellSet cells = filter.getCells(mesh_);
-      /* Find the dimension of cells that pass the current filter. */
-      int cellDim = filter.dimension(mesh_);
-      /* Find the type of cells in the current filter. Note: we've assumed here that all
-       * cells have identical topology, and need to work out how to deal with 
-       * meshes with mxed cell types. That will usually be handled by grouping similar
-       * cells into "blocks" (as is done in Exodus files, for instance) in which case 
-       * will still work, but there should be an error check to ensure that that assumption
-       * is never violated. */ 
-      CellType cellType = mesh_.cellType(cellDim);
-      /* Get the cell type of the maximal-dimension cofacets, in case we need 
-       * integrals or DOF maps done on the maximal cofacets. Todo: this code will break
-       * for internal boundaries at the interface between cofacets of different types,
-       * e.g., a face joining a prism and a hex. Not sure how to handle that case. */
-      CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
+    /* get the cell filter for the current RQC */
+    CellFilter filter = rqc_[r].domain();
+    /* Find the cells that "pass" the predicate in the filter. Note: a CellFilter
+     * will cache the cell sets it has computed, so the predicate computation will
+     * only be done once per mesh, regardless of how often this function is called. 
+     * Todo: the cache needs to be reset upon mesh refinement. 
+     */
+    CellSet cells = filter.getCells(mesh_);
+    /* Find the dimension of cells that pass the current filter. */
+    int cellDim = filter.dimension(mesh_);
+    /* Find the type of cells in the current filter. Note: we've assumed here that all
+     * cells have identical topology, and need to work out how to deal with 
+     * meshes with mxed cell types. That will usually be handled by grouping similar
+     * cells into "blocks" (as is done in Exodus files, for instance) in which case 
+     * will still work, but there should be an error check to ensure that that assumption
+     * is never violated. */ 
+    CellType cellType = mesh_.cellType(cellDim);
+    /* Get the cell type of the maximal-dimension cofacets, in case we need 
+     * integrals or DOF maps done on the maximal cofacets. Todo: this code will break
+     * for internal boundaries at the interface between cofacets of different types,
+     * e.g., a face joining a prism and a hex. Not sure how to handle that case. */
+    CellType maxCellType = mesh_.cellType(mesh_.spatialDim());
 
-      SUNDANCE_MSG2(rqcVerb, tab01 << "cell type = " << cellType 
-        << ", cellDim = " << cellDim 
-        << ", max cell type = " << maxCellType 
-        << ", max cell dim = " << mesh_.spatialDim());
+    SUNDANCE_MSG2(rqcVerb, tab01 << "cell type = " << cellType 
+      << ", cellDim = " << cellDim 
+      << ", max cell type = " << maxCellType 
+      << ", max cell dim = " << mesh_.spatialDim());
 
 
-      /* Determine whether we need to refer to maximal cofacets for 
-       * some or all integrations and DOF mappings. */
-      IntegrationCellSpecifier intCellSpec
-        = rqcRequiresMaximalCofacets_.get(compType)[r];
-      SUNDANCE_MSG2(rqcVerb, tab01 
-        << "whether we need to refer to maximal cofacets: " << intCellSpec);
+    /* Determine whether we need to refer to maximal cofacets for 
+     * some or all integrations and DOF mappings. */
+    IntegrationCellSpecifier intCellSpec
+      = rqcRequiresMaximalCofacets_.get(compType)[r];
+    SUNDANCE_MSG2(rqcVerb, tab01 
+      << "whether we need to refer to maximal cofacets: " << intCellSpec);
 
-      /* Find the unknowns and variations appearing on the current domain. This
-       * information is stored in the EquationSet object.  */
-      const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
-      const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(filter);
+    /* Find the unknowns and variations appearing on the current domain. This
+     * information is stored in the EquationSet object.  */
+    const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(filter);
+    const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(filter);
 
-      /* Prepare for evaluation on the current domain:
-       * Tell the mediator whether maximal cofacets should be used (which will determine
-       * how discrete functions are computed). */
-      mediators_[r]->setIntegrationSpec(intCellSpec);
-      /*
-       * Tell the mediator the cell type, and whether we are on an internal
-       * boundary. We need to know if we're on an internal boundary so that 
-       * we can use DOF lookup logic that's capable of figuring out which
-       * of two cofacets contains DOF information for those functions defined
-       * on only one side of the boundary (as in, e.g., fluid-structure boundaries).
-       */
-      mediators_[r]->setCellType(cellType, maxCellType, isInternalBdry_[r]);    
-      /* Get the Evaluator object that will actually carry out calculations on
-       * the expression DAG in the current context (recall that a single expression
-       * may support multiple evaluators). */
-      const Evaluator* evaluator 
-        = evalExprs[r]->evaluator(contexts[r]).get();
+    /* Prepare for evaluation on the current domain:
+     * Tell the mediator whether maximal cofacets should be used (which will determine
+     * how discrete functions are computed). */
+    SUNDANCE_MSG2(rqcVerb, tab01 << "setting integration specifier in mediator");
+    mediators_[r]->setIntegrationSpec(intCellSpec);
+    /*
+     * Tell the mediator the cell type, and whether we are on an internal
+     * boundary. We need to know if we're on an internal boundary so that 
+     * we can use DOF lookup logic that's capable of figuring out which
+     * of two cofacets contains DOF information for those functions defined
+     * on only one side of the boundary (as in, e.g., fluid-structure boundaries).
+     */
+    SUNDANCE_MSG2(rqcVerb, tab01 << "setting cell type=" << cellType << " in mediator");
+    mediators_[r]->setCellType(cellType, maxCellType, isInternalBdry_[r]);    
+    /* Get the Evaluator object that will actually carry out calculations on
+     * the expression DAG in the current context (recall that a single expression
+     * may support multiple evaluators). */
+    const Evaluator* evaluator 
+      = evalExprs[r]->evaluator(contexts[r]).get();
 
-      /* Loop over cells in batches of the work set size.
-       * At present, we're accumulating cell indices into an array. That would
-       * need to be changed to work with Peano. */
-      CellIterator iter=cells.begin();
-      int workSetCounter = 0;
-      int myRank = mesh_.comm().getRank();
+    /* Loop over cells in batches of the work set size.
+     * At present, we're accumulating cell indices into an array. That would
+     * need to be changed to work with Peano. */
+    CellIterator iter=cells.begin();
+    int workSetCounter = 0;
+    int myRank = mesh_.comm().getRank();
 
-      SUNDANCE_MSG2(rqcVerb, tab01 << "----- looping over worksets");
-      while (iter != cells.end())
+    SUNDANCE_MSG2(rqcVerb, tab01 << "----- looping over worksets");
+    while (iter != cells.end())
+    {
+      Tabs tab1;
+      /* build up the work set: add cells until the work set size is 
+       * reached or we run out of cells. To begin with, empty both the
+       * workset array and the isLocalFlag array. Note that the reserve()
+       * method has been called previously, so that as we append cells
+       * to the array, no memory allocation is done (unless we run over 
+       * the reserved size). */
+      workSet->resize(0);
+      isLocalFlag->resize(0);
+      for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
       {
-        Tabs tab1;
-        /* build up the work set: add cells until the work set size is 
-         * reached or we run out of cells. To begin with, empty both the
-         * workset array and the isLocalFlag array. Note that the reserve()
-         * method has been called previously, so that as we append cells
-         * to the array, no memory allocation is done (unless we run over 
-         * the reserved size). */
-        workSet->resize(0);
-        isLocalFlag->resize(0);
-        for (int c=0; c<workSetSize() && iter != cells.end(); c++, iter++)
-        {
-          workSet->append(*iter);
-          /* we need the isLocalFlag values so that we can ignore contributions
-           * to zero-forms from off-processor elements */
-          isLocalFlag->append(myRank==mesh_.ownerProcID(cellDim, *iter));
-        }
-        /* The work set has now been accumulated */
-        SUNDANCE_MSG2(rqcVerb,
-          tab1 << "doing work set " << workSetCounter
-          << " consisting of " << workSet->size() << " cells");
-        {
-          Tabs tab2;
-          SUNDANCE_MSG4(rqcVerb, tab2 << "cells are " << *workSet);
-        }
-        workSetCounter++;
-
-        /* set the verbosity for the evaluation mediator */
-        if (evalVerb > 0)
-        { 
-          evalMgr_->setVerbosity(evalVerb);
-        }
-
-        /* Register the workset with the mediator. Internally, the mediator
-         * will look up the cell Jacobians and facet indices needed for this calculation. It 
-         * uses them for discrete function transformation. */
-        mediators_[r]->setCellBatch(workSet);
-        /* Get the Jacobians from the mediator, so that we can use the same Jacobian
-         * objects for discrete function transformation and for integral 
-         * transformation. The "volume" Jacobian is used to scale the integration
-         * cell volume by det(J). The "transformation" Jacobian is used to
-         * transform vectors. These will be the same, except for the case
-         * where we integrate on a facet but do transformations by reference to 
-         * a maximal cofacet. */
-        const CellJacobianBatch& JVol = mediators_[r]->JVol();
-        const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
-        /* Get from the mediator the facet indices for each cell. If I am integrating
-         * on a facet (e.g., a boundary cell) but getting DOFs or JTrans from
-         * a maximal cofacet, I need to know my index in the array of 
-         * that cofacet's facets. */
-        const Array<int>& facetIndices = mediators_[r]->facetIndices();
-
-        /* Reset the assembly kernel for the current workset. What happens at this
-         * step depends on the specific kernel being used. The kernel might, for instance,
-         * build local DOF maps for the current batch of cells. */
-        kernel->prepareForWorkSet(
-          requiredVars, 
-          requiredUnks, 
-          mediators_[r]);
-        
-        /* Evaluate the coefficient expressions. Recall that each coefficient
-         * appearing in an integral is a particular functional derivative of the
-         * integrand. The constant-valued coefficients are written into the
-         * constantCoeffs array, the variable coefficients into the vectorCoeffs
-         * array. 
-         *
-         * Recall that the eval manager contains the current evaluation mediator, so that
-         * by passing the evaluation manager as an argument to evaluate(), the evaluation
-         * is aware of the mediator and can therefore access discrete functions, etc.
-         */ 
-        evaluator->resetNumCalls();
-        SUNDANCE_MSG2(rqcVerb, tab1 
-          << "====== evaluating coefficient expressions") ;
-        try
-        {
-          evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
-        }
-        catch(std::exception& exc)
-        {
-          Tabs tabX;
-          SUNDANCE_BANNER1(10, tabX, 
-            "DETECTED EXCEPTION DURING EXPR EVALUATION CALL IN ASSEMBLY LOOP");
-          Tabs tabX1;
-          SUNDANCE_MSG1(10, tabX1 << "While working on RQC="
-            << rqc_[r]);
-          SUNDANCE_MSG1(10, tabX1 << "While evaluating expr="
-            << evalExprs[r]->toString());
-          throw (RuntimeError(exc.what()));
-        }
-
-        /* Optionally, print the evaluation results */
-        SUNDANCE_MSG2(rqcVerb, tab1 << "====== done evaluating expressions") ;
-        if (evalVerb > 2) 
-        {
-          displayEvaluationResults(contexts[r], evalExprs[r], constantCoeffs, 
-            vectorCoeffs);
-        }
-    
-        /* ---- Do the element integrals and insertions ------ */
-
-        /* The matrices used to transform integrals are built upon first use by 
-         * this workset, then cached because they may be needed for several 
-         * integrals on the same workset. As we're now in a new workset with
-         * new cells, they should be rebuilt if needed. This step informs all integrals
-         * that the cache is out of date. 
-         *
-         * Todo: this uses a static function that contains static data (via the "Meyers
-         * trick") and so is not thread-safe. If we want to do multithreaded parallelism
-         * for multicore architectures, this implementation will need to be changed.
-         */ 
-        ElementIntegral::invalidateTransformationMatrices();
-      
-        /* Loop over the integral groups */
-        SUNDANCE_MSG2(rqcVerb, tab1 << "----- looping over integral groups");
-        for (int g=0; g<groups[r].size(); g++)
-        {
-          Tabs tab2;
-          SUNDANCE_MSG2(rqcVerb, tab2 << endl << tab2 
-            << "--- evaluating integral group g=" << g << " of " 
-            << groups[r].size() );
-
-          /* Do the integrals. The integration results will be written into
-           * the array "localValues". */
-          const RCP<IntegralGroup>& group = groups[r][g];
-          if (!group->evaluate(JTrans, JVol, *isLocalFlag, facetIndices, workSet,
-              vectorCoeffs, constantCoeffs, localValues)) continue;
-          /* add the integration results into the output objects by a call
-           * to the kernel's fill() function. We need to pass isBCRqc to the kernel
-           * because it might handle BC rows differently. The integral group
-           * data structure contains information about which test and unknown
-           * functions were used in this integration, and so provides to the assembly
-           * kernel such information as is needed to look up the correct DOFs for this
-           * batch of integrals. */
-          kernel->fill(isBCRqc_[r], *group, localValues);
-        }
-        SUNDANCE_MSG2(rqcVerb, tab1 << "----- done looping over integral groups");
+        workSet->append(*iter);
+        /* we need the isLocalFlag values so that we can ignore contributions
+         * to zero-forms from off-processor elements */
+        isLocalFlag->append(myRank==mesh_.ownerProcID(cellDim, *iter));
       }
-      SUNDANCE_MSG2(rqcVerb, tab0 << "----- done looping over worksets");
-      /* reset the kernel verbosity to the default */
-      kernel->setVerbosity(oldKernelVerb);
+      /* The work set has now been accumulated */
+      SUNDANCE_MSG2(rqcVerb,
+        tab1 << "doing work set " << workSetCounter
+        << " consisting of " << workSet->size() << " cells");
+      {
+        Tabs tab2;
+        SUNDANCE_MSG4(rqcVerb, tab2 << "cells are " << *workSet);
+      }
+      workSetCounter++;
+
+      /* set the verbosity for the evaluation mediator */
+      if (evalVerb > 0)
+      { 
+        evalMgr_->setVerbosity(evalVerb);
+      }
+
+      /* Register the workset with the mediator. Internally, the mediator
+       * will look up the cell Jacobians and facet indices needed for this calculation. It 
+       * uses them for discrete function transformation. */
+      mediators_[r]->setCellBatch(workSet);
+      /* Get the Jacobians from the mediator, so that we can use the same Jacobian
+       * objects for discrete function transformation and for integral 
+       * transformation. The "volume" Jacobian is used to scale the integration
+       * cell volume by det(J). The "transformation" Jacobian is used to
+       * transform vectors. These will be the same, except for the case
+       * where we integrate on a facet but do transformations by reference to 
+       * a maximal cofacet. */
+      const CellJacobianBatch& JVol = mediators_[r]->JVol();
+      const CellJacobianBatch& JTrans = mediators_[r]->JTrans();
+      /* Get from the mediator the facet indices for each cell. If I am integrating
+       * on a facet (e.g., a boundary cell) but getting DOFs or JTrans from
+       * a maximal cofacet, I need to know my index in the array of 
+       * that cofacet's facets. */
+      const Array<int>& facetIndices = mediators_[r]->facetIndices();
+
+      /* Reset the assembly kernel for the current workset. What happens at this
+       * step depends on the specific kernel being used. The kernel might, for instance,
+       * build local DOF maps for the current batch of cells. */
+      kernel->prepareForWorkSet(
+        requiredVars, 
+        requiredUnks, 
+        mediators_[r]);
+        
+      /* Evaluate the coefficient expressions. Recall that each coefficient
+       * appearing in an integral is a particular functional derivative of the
+       * integrand. The constant-valued coefficients are written into the
+       * constantCoeffs array, the variable coefficients into the vectorCoeffs
+       * array. 
+       *
+       * Recall that the eval manager contains the current evaluation mediator, so that
+       * by passing the evaluation manager as an argument to evaluate(), the evaluation
+       * is aware of the mediator and can therefore access discrete functions, etc.
+       */ 
+      evaluator->resetNumCalls();
+      SUNDANCE_MSG2(rqcVerb, tab1 
+        << "====== evaluating coefficient expressions") ;
+      try
+      {
+        evalExprs[r]->evaluate(*evalMgr_, constantCoeffs, vectorCoeffs);
+      }
+      catch(std::exception& exc)
+      {
+        Tabs tabX;
+        SUNDANCE_BANNER1(10, tabX, 
+          "DETECTED EXCEPTION DURING EXPR EVALUATION CALL IN ASSEMBLY LOOP");
+        Tabs tabX1;
+        SUNDANCE_MSG1(10, tabX1 << "While working on RQC="
+          << rqc_[r]);
+        SUNDANCE_MSG1(10, tabX1 << "While evaluating expr="
+          << evalExprs[r]->toString());
+        throw (RuntimeError(exc.what()));
+      }
+
+      /* Optionally, print the evaluation results */
+      SUNDANCE_MSG2(rqcVerb, tab1 << "====== done evaluating expressions") ;
+      if (evalVerb > 2) 
+      {
+        displayEvaluationResults(contexts[r], evalExprs[r], constantCoeffs, 
+          vectorCoeffs);
+      }
+    
+      /* ---- Do the element integrals and insertions ------ */
+
+      /* The matrices used to transform integrals are built upon first use by 
+       * this workset, then cached because they may be needed for several 
+       * integrals on the same workset. As we're now in a new workset with
+       * new cells, they should be rebuilt if needed. This step informs all integrals
+       * that the cache is out of date. 
+       *
+       * Todo: this uses a static function that contains static data (via the "Meyers
+       * trick") and so is not thread-safe. If we want to do multithreaded parallelism
+       * for multicore architectures, this implementation will need to be changed.
+       */ 
+      ElementIntegral::invalidateTransformationMatrices();
+      
+      /* Loop over the integral groups */
+      SUNDANCE_MSG2(rqcVerb, tab1 << "----- looping over integral groups");
+      for (int g=0; g<groups[r].size(); g++)
+      {
+        Tabs tab2;
+        SUNDANCE_MSG2(rqcVerb, tab2 << endl << tab2 
+          << "--- evaluating integral group g=" << g << " of " 
+          << groups[r].size() );
+
+        /* Do the integrals. The integration results will be written into
+         * the array "localValues". */
+        const RCP<IntegralGroup>& group = groups[r][g];
+        if (!group->evaluate(JTrans, JVol, *isLocalFlag, facetIndices, workSet,
+            vectorCoeffs, constantCoeffs, localValues)) continue;
+        /* add the integration results into the output objects by a call
+         * to the kernel's fill() function. We need to pass isBCRqc to the kernel
+         * because it might handle BC rows differently. The integral group
+         * data structure contains information about which test and unknown
+         * functions were used in this integration, and so provides to the assembly
+         * kernel such information as is needed to look up the correct DOFs for this
+         * batch of integrals. */
+        kernel->fill(isBCRqc_[r], *group, localValues);
+      }
+      SUNDANCE_MSG2(rqcVerb, tab1 << "----- done looping over integral groups");
+    }
+    SUNDANCE_MSG2(rqcVerb, tab0 << "----- done looping over worksets");
+    /* reset the kernel verbosity to the default */
+    kernel->setVerbosity(oldKernelVerb);
   }
   SUNDANCE_MSG2(verb, tab << "----- done looping over rqcs");
 
