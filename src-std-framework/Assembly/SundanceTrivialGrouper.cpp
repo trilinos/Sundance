@@ -31,6 +31,7 @@
 #include "SundanceTrivialGrouper.hpp"
 #include "SundanceRefIntegral.hpp"
 #include "SundanceQuadratureIntegral.hpp"
+#include "SundanceMaximalQuadratureIntegral.hpp"
 #include "SundanceEquationSet.hpp"
 #include "SundanceIntegralGroup.hpp"
 #include "SundanceBasisFamily.hpp"
@@ -41,13 +42,8 @@
 #include "SundanceTabs.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
+
 
 
 void TrivialGrouper::findGroups(const EquationSet& eqn,
@@ -75,11 +71,15 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
   int vecCount=0;
   int constCount=0;
 
+  bool isMaximal = cellType == maxCellType;
+  bool useMaxIntegral = isMaximal;
+  
   /* turn off grouping for submaximal cells. This works around 
    * a bug detected by Rob Kirby that
    * shows up with Nitsche BCs in mixed-element discretizations */
   bool doGroups = true;
-  if (cellType != maxCellType) doGroups = false;
+  if (!isMaximal) doGroups = false;
+
 
   typedef Sundance::Map<OrderedQuartet<int, BasisFamily, int, BasisFamily>, Array<RCP<ElementIntegral> > > twoFormMap;
   typedef Sundance::Map<OrderedTriple<int,int,BasisFamily>, Array<RCP<ElementIntegral> > > oneFormMap;
@@ -110,9 +110,18 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
       }
       else
       {
-        integral = rcp(new QuadratureIntegral(spatialDim, maxCellType, 
-                cellDim, cellType, quad, isInternalBdry, globalCurve , mesh ,
-            setupVerb()));
+        if (useMaxIntegral)
+        {
+          integral = rcp(new MaximalQuadratureIntegral(maxCellType, 
+              quad, globalCurve , mesh ,
+              setupVerb()));
+        }
+        else
+        {
+          integral = rcp(new QuadratureIntegral(spatialDim, maxCellType, 
+              cellDim, cellType, quad, isInternalBdry, globalCurve , mesh ,
+              setupVerb()));
+        }
         resultIndex = vecCount++;
       }
       integral->setVerbosity(integrationVerb(), transformVerb());
@@ -259,12 +268,21 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             alpha = miTest.firstOrderDirection();
           }
-          integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
-              cellDim, cellType,
-              testBasis, alpha, 
-              miTest.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
+          if (useMaxIntegral)
+          {
+            integral = rcp(new MaximalQuadratureIntegral(maxCellType,
+                testBasis, alpha, 
+                miTest.order(), quad, globalCurve , mesh ,setupVerb()));
+          }
+          else
+          {
+            integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
+                cellDim, cellType,
+                testBasis, alpha, 
+                miTest.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
+          }
         }
-        else
+        else /* two-form */
         {
           int alpha=0;
           int beta=0;
@@ -276,18 +294,37 @@ void TrivialGrouper::findGroups(const EquationSet& eqn,
           {
             beta = miUnk.firstOrderDirection();
           }
-          integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
-              cellDim, cellType,
-              testBasis, alpha, 
-              miTest.order(),
-              unkBasis, beta, 
-              miUnk.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
-          if (transposeNeeded)
+          if (useMaxIntegral)
           {
-            transposedIntegral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
+            integral = rcp(new MaximalQuadratureIntegral(maxCellType,
+                testBasis, alpha, 
+                miTest.order(),
+                unkBasis, beta, 
+                miUnk.order(), quad, globalCurve , mesh ,setupVerb()));
+            if (transposeNeeded)
+            {
+              transposedIntegral = rcp(new MaximalQuadratureIntegral(maxCellType,
+                  unkBasis, beta, miUnk.order(),
+                  testBasis, alpha, miTest.order(), quad, 
+                  globalCurve , mesh ,setupVerb()));
+            }
+          }
+          else
+          {
+            integral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
                 cellDim, cellType,
-                unkBasis, beta, miUnk.order(),
-                testBasis, alpha, miTest.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
+                testBasis, alpha, 
+                miTest.order(),
+                unkBasis, beta, 
+                miUnk.order(), quad, isInternalBdry, globalCurve , mesh ,setupVerb()));
+            if (transposeNeeded)
+            {
+              transposedIntegral = rcp(new QuadratureIntegral(spatialDim, maxCellType,
+                  cellDim, cellType,
+                  unkBasis, beta, miUnk.order(),
+                  testBasis, alpha, miTest.order(), quad, 
+                  isInternalBdry, globalCurve , mesh ,setupVerb()));
+            }
           }
         }
         resultIndex = vecCount++;

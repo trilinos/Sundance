@@ -237,6 +237,12 @@ protected:
   void createOneFormTransformationMatrix(const CellJacobianBatch& JTrans,
     const CellJacobianBatch& JVol) const;
 
+  /** */
+  const Mesh& mesh() const {return mesh_;}
+
+  /** */
+  const ParametrizedCurve& globalCurve() const {return globalCurve_;}
+
 private:
 
   int setupVerb_;
@@ -281,8 +287,6 @@ private:
 
   BasisFamily unkBasis_;
       
-protected:
-
   /** The curve which might be used for adaptive integration method */
   const ParametrizedCurve globalCurve_;
 

@@ -163,6 +163,7 @@ APPEND_SET(HEADERS
   Assembly/SundanceLocalMatrixContainer.hpp
   Assembly/SundanceMapBundle.hpp
   Assembly/SundanceMatrixVectorAssemblyKernel.hpp
+  Assembly/SundanceMaximalQuadratureIntegral.hpp
   Assembly/SundanceQuadratureEvalMediator.hpp
   Assembly/SundanceQuadratureIntegral.hpp
   Assembly/SundanceQuadratureIntegralBase.hpp
@@ -207,6 +208,7 @@ APPEND_SET(SOURCES
   Assembly/SundanceLocalMatrixContainer.cpp
   Assembly/SundanceMapBundle.cpp
   Assembly/SundanceMatrixVectorAssemblyKernel.cpp
+  Assembly/SundanceMaximalQuadratureIntegral.cpp
   Assembly/SundanceQuadratureEvalMediator.cpp
   Assembly/SundanceQuadratureIntegral.cpp
   Assembly/SundanceQuadratureIntegralBase.cpp

@@ -70,7 +70,8 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
   const ParametrizedCurve& globalCurve,
   const Mesh& mesh,
   int verb)
-  : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, quad , isInternalBdry, globalCurve , mesh, verb),
+  : QuadratureIntegralBase(spatialDim, maxCellType, dim, cellType, quad, 
+    isInternalBdry, globalCurve, mesh, verb),
     W_(),
     useSumFirstMethod_(true)
 {
@@ -300,7 +301,7 @@ QuadratureIntegral::QuadratureIntegral(int spatialDim,
                 = chop(quadWeights[q] * testBasisVals[t][vecComp][q][nt] 
                   * unkBasisVals[u][vecComp][q][nu]);
               W_ACI_F2_[fc][q][t][nt][u][nu] =
-            	chop(testBasisVals[t][vecComp][q][nt] * unkBasisVals[u][vecComp][q][nu]);
+                chop(testBasisVals[t][vecComp][q][nt] * unkBasisVals[u][vecComp][q][nu]);
             }
           }
         }
@@ -363,18 +364,18 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
       double detJ = fabs(JVol.detJ()[c]);
       int fc = 0;
       /* ---------- ACI ----------- */
-      if (globalCurve_.isCurveValid()){
-		quadWeightsTmp = quadWeights_[fc];
-		quadPointsTmp = quadPts_[fc];
-      	quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
-      			globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
+      if (globalCurve().isCurveValid()){
+        quadWeightsTmp = quadWeights_[fc];
+        quadPointsTmp = quadPts_[fc];
+        quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh(),
+          globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
       	/* if we have special weights then do the same as before */
       	if (isCutByCurve){
-      	     for (int q=0; q<nQuad(); q++, coeffPtr++)
-      	      {
-      	    	  a += quadWeightsTmp[q]*(*coeffPtr)*detJ;
-      	      }
-      	      flops += 3*nQuad();
+          for (int q=0; q<nQuad(); q++, coeffPtr++)
+          {
+            a += quadWeightsTmp[q]*(*coeffPtr)*detJ;
+          }
+          flops += 3*nQuad();
       	}
       }
       /* ---------- End ACI ----------- */
@@ -396,18 +397,18 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
       }
       double detJ = fabs(JVol.detJ()[c]);
       int fc = facetIndex[c];
-	  const Array<double>& w = W_[facetIndex[c]];
+      const Array<double>& w = W_[facetIndex[c]];
       /* ---------- ACI ----------- */
-      if (globalCurve_.isCurveValid()){
-		quadWeightsTmp = quadWeights_[fc];
-		quadPointsTmp = quadPts_[fc];
-      	quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh_,
-      			globalCurve_, quadPointsTmp, quadWeightsTmp, isCutByCurve);
+      if (globalCurve().isCurveValid()){
+        quadWeightsTmp = quadWeights_[fc];
+        quadPointsTmp = quadPts_[fc];
+        quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh(),
+          globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
       	/* if we have special weights then do the same as before */
       	if (isCutByCurve){
-         	  for (int q=0; q<nQuad(); q++, coeffPtr++)
-         		  a += quadWeightsTmp[q]*(*coeffPtr)*detJ;
-         	  flops += 3*nQuad();
+          for (int q=0; q<nQuad(); q++, coeffPtr++)
+            a += quadWeightsTmp[q]*(*coeffPtr)*detJ;
+          flops += 3*nQuad();
       	} // end cut by curve
       	else{
        	  for (int q=0; q<nQuad(); q++, coeffPtr++)
@@ -415,7 +416,7 @@ void QuadratureIntegral::transformZeroForm(const CellJacobianBatch& JTrans,
        	  flops += 3*nQuad();
       	}
       } else {
-      /* ---------- End ACI ----------- */
+        /* ---------- End ACI ----------- */
     	  for (int q=0; q<nQuad(); q++, coeffPtr++)
     	  {
     		  a += w[q]*(*coeffPtr)*detJ;
@@ -473,12 +474,12 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
       SUNDANCE_MSG4(integrationVerb(), tab2 << "c=" << c << " detJ=" << detJ);
 
       /* ---------- ACI ----------- */
-      if (globalCurve_.isCurveValid()){
+      if (globalCurve().isCurveValid()){
       	quadWeightsTmp = quadWeights_[fc];
         quadPointsTmp = quadPts_[fc];
-  		/* call the special integration routine */
-  		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
-  				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
+        /* call the special integration routine */
+        quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
+          mesh() , globalCurve() , quadPointsTmp , quadWeightsTmp , isCutByCurve );
         if (isCutByCurve){
         	Array<double> wi;
         	wi.resize(nQuad() * nNodes()); //recalculate the special weights
@@ -487,36 +488,36 @@ void QuadratureIntegral::transformOneForm(const CellJacobianBatch& JTrans,
         		for (int q=0 ; q < quadWeightsTmp.size() ; q++)
         			//Indexing: testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)
         			wi[n + nNodes()*q] +=
-        			    chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][0][n]);
-            // if it is cut by curve then use this vector
-            for (int q=0; q<nQuad(); q++, coeffPtr++){
-          	 double f = (*coeffPtr)*detJ;
-         		  for (int n=0; n<nNodes(); n++){
-         			  aPtr[offset+n] += f*wi[n + nNodes()*q];
-         		  }
+                chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][0][n]);
+          // if it is cut by curve then use this vector
+          for (int q=0; q<nQuad(); q++, coeffPtr++){
+            double f = (*coeffPtr)*detJ;
+            for (int n=0; n<nNodes(); n++){
+              aPtr[offset+n] += f*wi[n + nNodes()*q];
+            }
          	}
-          } // end isCutByCurve
-          else {
-            for (int q=0; q<nQuad(); q++, coeffPtr++){
-            	 double f = (*coeffPtr)*detJ;
-           		  for (int n=0; n<nNodes(); n++){
-           			  aPtr[offset+n] += f*w[n + nNodes()*q];
-           		  }
-           	}
+        } // end isCutByCurve
+        else {
+          for (int q=0; q<nQuad(); q++, coeffPtr++){
+            double f = (*coeffPtr)*detJ;
+            for (int n=0; n<nNodes(); n++){
+              aPtr[offset+n] += f*w[n + nNodes()*q];
+            }
           }
+        }
       } else {
-      /* ---------- End ACI ----------- */
+        /* ---------- End ACI ----------- */
     	  for (int q=0; q<nQuad(); q++, coeffPtr++)
     	  {
     		  Tabs tab3;
     		  double f = (*coeffPtr)*detJ;
     		  SUNDANCE_MSG4(integrationVerb(), tab3 << "q=" << q << " coeff=" <<
-    				  *coeffPtr << " coeff*detJ=" << f);
+            *coeffPtr << " coeff*detJ=" << f);
     		  for (int n=0; n<nNodes(); n++)
     		  {
     			  Tabs tab4;
     			  SUNDANCE_MSG4(integrationVerb(), tab4 << "n=" << n << " w=" <<
-    					  w[n + nNodes()*q]);
+              w[n + nNodes()*q]);
     			  aPtr[offset+n] += f*w[n + nNodes()*q];
     		  }
     	  }
@@ -599,13 +600,13 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
       const Array<double>& w = W_[fc];
 
       /* ---------- ACI ----------- */
-      if (globalCurve_.isCurveValid()){
+      if (globalCurve().isCurveValid()){
        	quadWeightsTmp = quadWeights_[fc];
-         quadPointsTmp = quadPts_[fc];
-   		/* call the special integration routine */
-   		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
-   				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
-         if (isCutByCurve){
+        quadPointsTmp = quadPts_[fc];
+        /* call the special integration routine */
+        quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
+          mesh() , globalCurve() , quadPointsTmp , quadWeightsTmp , isCutByCurve );
+        if (isCutByCurve){
          	Array<double> wi;
          	wi.resize(nQuad() * nNodesTest() *nNodesUnk() ); //recalculate the special weights
         	for (int ii = 0 ; ii < wi.size() ; ii++ ) wi[ii] = 0.0;
@@ -616,32 +617,32 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
          				wi[nu + nNodesUnk()*(nt + nNodesTest()*q)] +=
          					chop(quadWeightsTmp[q] * W_ACI_F2_[fc][q][0][nt][0][nu]);
          	}
-            for (int q=0; q<nQuad(); q++, coeffPtr++){
-         	   double f = (*coeffPtr)*detJ;
-         	   for (int n=0; n<nNodes(); n++){
-         		   aPtr[offset+n] += f*wi[n + nNodes()*q];
-         	   }
+          for (int q=0; q<nQuad(); q++, coeffPtr++){
+            double f = (*coeffPtr)*detJ;
+            for (int n=0; n<nNodes(); n++){
+              aPtr[offset+n] += f*wi[n + nNodes()*q];
+            }
          	}
-           }// end isCutByCurve
-           else{
-               for (int q=0; q<nQuad(); q++, coeffPtr++){
-            	   double f = (*coeffPtr)*detJ;
-            	   for (int n=0; n<nNodes(); n++){
-            		   aPtr[offset+n] += f*w[n + nNodes()*q];
-            	   }
-            	}
-           }
-       } else {
-      /* ---------- End ACI ----------- */
-    	   for (int q=0; q<nQuad(); q++, coeffPtr++)
-    	   {
-    		   double f = (*coeffPtr)*detJ;
-    		   for (int n=0; n<nNodes(); n++)
-    		   {
-    			   aPtr[offset+n] += f*w[n + nNodes()*q];
-    		   }
-    	   }
-       }
+        }// end isCutByCurve
+        else{
+          for (int q=0; q<nQuad(); q++, coeffPtr++){
+            double f = (*coeffPtr)*detJ;
+            for (int n=0; n<nNodes(); n++){
+              aPtr[offset+n] += f*w[n + nNodes()*q];
+            }
+          }
+        }
+      } else {
+        /* ---------- End ACI ----------- */
+        for (int q=0; q<nQuad(); q++, coeffPtr++)
+        {
+          double f = (*coeffPtr)*detJ;
+          for (int n=0; n<nNodes(); n++)
+          {
+            aPtr[offset+n] += f*w[n + nNodes()*q];
+          }
+        }
+      }
     }
 
     addFlops( JVol.numCells() * (1 + nQuad() * (1 + 2*nNodes())) );
@@ -733,67 +734,67 @@ void QuadratureIntegral
     const Array<double>& w = W_[fc];
 
     /* ---------- ACI ----------- */
-    if (globalCurve_.isCurveValid()){
-        quadWeightsTmp = quadWeights_[fc];
-        quadPointsTmp = quadPts_[fc];
- 		/* call the special integration routine */
- 		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
- 				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
-       if (isCutByCurve){
-       	 Array<double> wi;
-         if (order()==1){ // one form integral
+    if (globalCurve().isCurveValid()){
+      quadWeightsTmp = quadWeights_[fc];
+      quadPointsTmp = quadPts_[fc];
+      /* call the special integration routine */
+      quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
+        mesh() , globalCurve() , quadPointsTmp , quadWeightsTmp , isCutByCurve );
+      if (isCutByCurve){
+        Array<double> wi;
+        if (order()==1){ // one form integral
         	wi.resize(nQuad() * nRefDerivTest() * nNodesTest()); //recalculate the special weights
         	for (int ii = 0 ; ii < wi.size() ; ii++ ) wi[ii] = 0.0;
         	for (int n = 0 ; n < nNodes() ; n++)
-        	   for (int t=0; t<nRefDerivTest(); t++)
-        		 for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-        			//Indexing: testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)
-        			wi[n + nNodes()*(t + nRefDerivTest()*q)] +=
+            for (int t=0; t<nRefDerivTest(); t++)
+              for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+                //Indexing: testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)
+                wi[n + nNodes()*(t + nRefDerivTest()*q)] +=
         					chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][t][n]);
-         }else{ // two from integrals
+        }else{ // two from integrals
         	wi.resize(nQuad() * nRefDerivTest() * nNodesTest()
-        			* nRefDerivUnk() * nNodesUnk() ); //recalculate the special weights
+            * nRefDerivUnk() * nNodesUnk() ); //recalculate the special weights
         	for (int ii = 0 ; ii < wi.size() ; ii++ ) wi[ii] = 0.0;
 
         	for (int t=0; t<nRefDerivTest(); t++)
-        	   for (int nt = 0 ; nt < nNodesTest() ; nt++){
-      	          for (int u=0; u<nRefDerivUnk(); u++)
-      	        	for (int nu=0; nu<nNodesUnk(); nu++)
-        			  for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-        				//Indexing: unkNode + nNodesUnk()*(testNode + nNodesTest()*
-        				//(unkDerivDir + nRefDerivUnk()*(testDerivDir + nRefDerivTest()*q)))
-        				wi[nu + nNodesUnk()*(nt + nNodesTest()*(u + nRefDerivUnk()*(t + nRefDerivTest()*q)))] +=
-        						chop(quadWeightsTmp[q] * W_ACI_F2_[fc][q][t][nt][u][nu]);
-        	}
-         }// end two form integral
-         for (int q=0; q<nQuad(); q++, coeffPtr++){
-        	 double f = (*coeffPtr);
-        	 for (int n=0; n<swSize; n++){
-        		 sumWorkspace[n] += f*wi[n + q*swSize];
-        	 }
-         }
-       }// end cut by curve
-       else{
-      	 for (int q=0; q<nQuad(); q++, coeffPtr++)
-      	 {
-      		 double f = (*coeffPtr);
-      		 for (int n=0; n<swSize; n++)
-      		 {
-      			 sumWorkspace[n] += f*w[n + q*swSize];
-      		 }
-      	 }
-       }
-     } else {
-    /* ---------- End ACI ----------- */
-    	 for (int q=0; q<nQuad(); q++, coeffPtr++)
-    	 {
-    		 double f = (*coeffPtr);
-    		 for (int n=0; n<swSize; n++)
-    		 {
-    			 sumWorkspace[n] += f*w[n + q*swSize];
-    		 }
-    	 }
-     }
+            for (int nt = 0 ; nt < nNodesTest() ; nt++){
+              for (int u=0; u<nRefDerivUnk(); u++)
+                for (int nu=0; nu<nNodesUnk(); nu++)
+                  for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+                    //Indexing: unkNode + nNodesUnk()*(testNode + nNodesTest()*
+                    //(unkDerivDir + nRefDerivUnk()*(testDerivDir + nRefDerivTest()*q)))
+                    wi[nu + nNodesUnk()*(nt + nNodesTest()*(u + nRefDerivUnk()*(t + nRefDerivTest()*q)))] +=
+                      chop(quadWeightsTmp[q] * W_ACI_F2_[fc][q][t][nt][u][nu]);
+            }
+        }// end two form integral
+        for (int q=0; q<nQuad(); q++, coeffPtr++){
+          double f = (*coeffPtr);
+          for (int n=0; n<swSize; n++){
+            sumWorkspace[n] += f*wi[n + q*swSize];
+          }
+        }
+      }// end cut by curve
+      else{
+        for (int q=0; q<nQuad(); q++, coeffPtr++)
+        {
+          double f = (*coeffPtr);
+          for (int n=0; n<swSize; n++)
+          {
+            sumWorkspace[n] += f*w[n + q*swSize];
+          }
+        }
+      }
+    } else {
+      /* ---------- End ACI ----------- */
+      for (int q=0; q<nQuad(); q++, coeffPtr++)
+      {
+        double f = (*coeffPtr);
+        for (int n=0; n<swSize; n++)
+        {
+          sumWorkspace[n] += f*w[n + q*swSize];
+        }
+      }
+    }
 
     /* transform the sum */
     const double * const gCell = &(GPtr[transSize*c]);
@@ -858,78 +859,78 @@ void QuadratureIntegral
     const Array<double>& w = W_[fc];
 
     /* ---------- ACI ----------- */
-    if (globalCurve_.isCurveValid()){
-        quadWeightsTmp = quadWeights_[fc];
-        quadPointsTmp = quadPts_[fc];
- 		/* call the special integration routine */
- 		quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
- 				mesh_ , globalCurve_ , quadPointsTmp , quadWeightsTmp , isCutByCurve );
-       if (isCutByCurve){
-       	 Array<double> wi;
-         if (order()==1){ // one form integral
+    if (globalCurve().isCurveValid()){
+      quadWeightsTmp = quadWeights_[fc];
+      quadPointsTmp = quadPts_[fc];
+      /* call the special integration routine */
+      quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c] , fc ,
+        mesh() , globalCurve() , quadPointsTmp , quadWeightsTmp , isCutByCurve );
+      if (isCutByCurve){
+        Array<double> wi;
+        if (order()==1){ // one form integral
         	wi.resize(nQuad() * nRefDerivTest() * nNodesTest()); //recalculate the special weights
         	for (int ii = 0 ; ii < wi.size() ; ii++ ) wi[ii] = 0.0;
         	for (int n = 0 ; n < nNodes() ; n++)
-        	   for (int t=0; t<nRefDerivTest(); t++)
-        		 for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-        			//Indexing: testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)
-        			wi[n + nNodes()*(t + nRefDerivTest()*q)] +=
+            for (int t=0; t<nRefDerivTest(); t++)
+              for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+                //Indexing: testNode + nNodesTest()*(testDerivDir + nRefDerivTest()*q)
+                wi[n + nNodes()*(t + nRefDerivTest()*q)] +=
         					chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][t][n]);
-         }else{ // two from integrals
+        }else{ // two from integrals
         	wi.resize(nQuad() * nRefDerivTest() * nNodesTest()
-        			* nRefDerivUnk() * nNodesUnk() ); //recalculate the special weights
+            * nRefDerivUnk() * nNodesUnk() ); //recalculate the special weights
         	for (int ii = 0 ; ii < wi.size() ; ii++ ) wi[ii] = 0.0;
 
         	for (int t=0; t<nRefDerivTest(); t++)
-        	   for (int nt = 0 ; nt < nNodesTest() ; nt++){
-      	          for (int u=0; u<nRefDerivUnk(); u++)
-      	        	for (int nu=0; nu<nNodesUnk(); nu++)
-        			  for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-        				//Indexing: unkNode + nNodesUnk()*(testNode + nNodesTest()*
-        				//(unkDerivDir + nRefDerivUnk()*(testDerivDir + nRefDerivTest()*q)))
-        				wi[nu + nNodesUnk()*(nt + nNodesTest()*(u + nRefDerivUnk()*(t + nRefDerivTest()*q)))] +=
-        						chop(quadWeightsTmp[q] * W_ACI_F2_[fc][q][t][nt][u][nu]);
-        	}
-         }// end two form integral
-         for (int q=0; q<nQuad(); q++){
-           double f = coeff[c*nQuad() + q];
-           for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
-
-           for (int n=0; n<nNodes(); n++){
-             for (int t=0; t<transSize; t++){
-               aCell[n] += jWorkspace[t]*wi[n + nNodes()*(t + transSize*q)];
-             }
-           }
-         }
-       }// end cut by curve
-       else{
-           for (int q=0; q<nQuad(); q++){
-              double f = coeff[c*nQuad() + q];
-              for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
-
-              for (int n=0; n<nNodes(); n++){
-                for (int t=0; t<transSize; t++){
-                  aCell[n] += jWorkspace[t]*w[n + nNodes()*(t + transSize*q)];
-                }
-              }
+            for (int nt = 0 ; nt < nNodesTest() ; nt++){
+              for (int u=0; u<nRefDerivUnk(); u++)
+                for (int nu=0; nu<nNodesUnk(); nu++)
+                  for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+                    //Indexing: unkNode + nNodesUnk()*(testNode + nNodesTest()*
+                    //(unkDerivDir + nRefDerivUnk()*(testDerivDir + nRefDerivTest()*q)))
+                    wi[nu + nNodesUnk()*(nt + nNodesTest()*(u + nRefDerivUnk()*(t + nRefDerivTest()*q)))] +=
+                      chop(quadWeightsTmp[q] * W_ACI_F2_[fc][q][t][nt][u][nu]);
             }
-       }
-     } else {
-    /* ---------- End ACI ----------- */
-    	 for (int q=0; q<nQuad(); q++)
-    	 {
-    		 double f = coeff[c*nQuad() + q];
-    		 for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
+        }// end two form integral
+        for (int q=0; q<nQuad(); q++){
+          double f = coeff[c*nQuad() + q];
+          for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
 
-    		 for (int n=0; n<nNodes(); n++)
-    		 {
-    			 for (int t=0; t<transSize; t++)
-    			 {
-    				 aCell[n] += jWorkspace[t]*w[n + nNodes()*(t + transSize*q)];
-    			 }
-    		 }
-    	 }
-     }
+          for (int n=0; n<nNodes(); n++){
+            for (int t=0; t<transSize; t++){
+              aCell[n] += jWorkspace[t]*wi[n + nNodes()*(t + transSize*q)];
+            }
+          }
+        }
+      }// end cut by curve
+      else{
+        for (int q=0; q<nQuad(); q++){
+          double f = coeff[c*nQuad() + q];
+          for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
+
+          for (int n=0; n<nNodes(); n++){
+            for (int t=0; t<transSize; t++){
+              aCell[n] += jWorkspace[t]*w[n + nNodes()*(t + transSize*q)];
+            }
+          }
+        }
+      }
+    } else {
+      /* ---------- End ACI ----------- */
+      for (int q=0; q<nQuad(); q++)
+      {
+        double f = coeff[c*nQuad() + q];
+        for (int t=0; t<transSize; t++) jWorkspace[t]=f*gCell[t];
+
+        for (int n=0; n<nNodes(); n++)
+        {
+          for (int t=0; t<transSize; t++)
+          {
+            aCell[n] += jWorkspace[t]*w[n + nNodes()*(t + transSize*q)];
+          }
+        }
+      }
+    }
   }
   int flops = nCells * nQuad() * transSize * (1 + 2*nNodes()) ;
   addFlops(flops);
