@@ -6,6 +6,7 @@ SET(DisabledTests
   RefinementTest3D
   FunctionalTest3D 
   transientOneZoneEddy2D
+  FOSLSMagnetostatics2D
   PoissonBoltzmannDemo3D
   NoxAlgebraic 
   NonlinAlgebraic 
@@ -24,7 +25,6 @@ SET(SerialTests
   LinearPartialDomain 
   NonlinearPartialDomain 
   AToCDensitySample
-  FOSLSMagnetostatics2D
   NonlinearPDECOTest1D
   NonlinearPDECOTest2D
   FunctionalTest 
