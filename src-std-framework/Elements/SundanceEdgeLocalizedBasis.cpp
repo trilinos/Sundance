@@ -42,13 +42,8 @@ using namespace Sundance;
 using namespace Teuchos;
 
 
-EdgeLocalizedBasis::EdgeLocalizedBasis(int order)
-  : order_(order)
-{
-TEST_FOR_EXCEPTION(order < 0, RuntimeError,
-                     "invalid polynomial order=" << order
-                     << " in EdgeLocalizedBasis ctor");
-}
+EdgeLocalizedBasis::EdgeLocalizedBasis()
+{}
 
 bool EdgeLocalizedBasis::supportsCellTypePair(
   const CellType& maximalCellType,
@@ -59,6 +54,8 @@ bool EdgeLocalizedBasis::supportsCellTypePair(
   {
     case TriangleCell:
     case TetCell:
+    case QuadCell:
+    case BrickCell:
       switch(cellType)
       {
         case LineCell:
@@ -73,7 +70,7 @@ bool EdgeLocalizedBasis::supportsCellTypePair(
 
 void EdgeLocalizedBasis::print(std::ostream& os) const 
 {
-  os << "EdgeLocalizedBasis(" << order_ << ")";
+  os << "EdgeLocalizedBasis()";
 }
 
 int EdgeLocalizedBasis::nReferenceDOFs(
@@ -83,12 +80,12 @@ int EdgeLocalizedBasis::nReferenceDOFs(
 {
   switch(cellType)
   {
+    case TriangleCell:
+      return 3;
     case LineCell:
-      return 1 + order_;
+      return 1;
     default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-        << cellType << " not implemented in EdgeLocalizedBasis basis");
-      return -1; // -Wall
+      return 0;
   }
 }
 
@@ -103,7 +100,13 @@ void EdgeLocalizedBasis::getReferenceDOFs(
     case LineCell:
       dofs.resize(2);
       dofs[0] = Array<Array<int> >();
-      dofs[1] = tuple<Aint>(makeRange(0, 1+order()));
+      dofs[1] = tuple<Aint>(tuple<int>(0));
+      return;
+    case TriangleCell:
+      dofs.resize(3);
+      dofs[0] = tuple(Array<int>());
+      dofs[1] = tuple<Aint>(tuple(0), tuple(1), tuple(2));
+      dofs[2] = tuple(Array<int>());
       return;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
@@ -112,15 +115,6 @@ void EdgeLocalizedBasis::getReferenceDOFs(
 }
 
 
-
-Array<int> EdgeLocalizedBasis::makeRange(int low, int high)
-{
-  if (high < low) return Array<int>();
-
-  Array<int> rtn(high-low+1);
-  for (int i=0; i<rtn.length(); i++) rtn[i] = low+i;
-  return rtn;
-}
 
 void EdgeLocalizedBasis::refEval(
   const CellType& cellType,
@@ -137,64 +131,123 @@ void EdgeLocalizedBasis::refEval(
   result.resize(1);
   result[0].resize(pts.length());
 
-  switch(cellType)
+  int dim = dimension(cellType);
+  
+  if (dim==0)
+  {
+    result[0] = tuple<Adouble>(tuple(1.0));
+  }
+  else if (dim==1)
+  {
+    for (int i=0; i<pts.length(); i++)
     {
-    case LineCell:
-      for (int i=0; i<pts.length(); i++)
-        {
-          evalOnLine(pts[i], deriv, result[0][i]);
-        }
-      return;
-    default:
-      TEST_FOR_EXCEPTION(true, RuntimeError,
-                         "EdgeLocalizedBasis::refEval() unimplemented for cell type "
-                         << cellType);
-
+      evalOnLine(pts[i], deriv, result[0][i]);
     }
+  }
+  else if (dim==2)
+  {
+    for (int i=0; i<pts.length(); i++)
+    {
+      evalOnTriangle(pts[i], deriv, result[0][i]);
+    }
+  }
+  else if (dim==3)
+  {
+    for (int i=0; i<pts.length(); i++)
+    {
+      evalOnTet(pts[i], deriv, result[0][i]);
+    }
+  }
 }
 
 /* ---------- evaluation on different cell types -------------- */
+
 
 void EdgeLocalizedBasis::evalOnLine(const Point& pt, 
 													const MultiIndex& deriv,
 													Array<double>& result) const
 {
-	ADReal x = ADReal(pt[0], 0, 1);
 	ADReal one(1.0, 1);
-	
-	result.resize(order()+1);
+	result.resize(1);
 	Array<ADReal> tmp(result.length());
-  Array<double> x0(order()+1);
 
-  if (order_ == 0)
-    {
-      tmp[0] = one;
-    }
-  else
-    {
-      x0[0] = 0.0;
-      x0[1] = 1.0;
-      for (int i=0; i<order_-1; i++)
-        {
-          x0[i+2] = (i+1.0)/order_;
-        }
-
-      for (int i=0; i<=order_; i++)
-        {
-          tmp[i] = one;
-          for (int j=0; j<=order_; j++)
-            {
-              if (i==j) continue;
-              tmp[i] *= (x - x0[j])/(x0[i]-x0[j]);
-            }
-        }
-    }
+  tmp[0] = one;
 
 	for (int i=0; i<tmp.length(); i++)
 		{
 			if (deriv.order()==0) result[i] = tmp[i].value();
-			else result[i] = tmp[i].gradient()[0];
+			else result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
 		}
 }
 
+void EdgeLocalizedBasis::evalOnTriangle(const Point& pt, 
+  const MultiIndex& deriv,
+  Array<double>& result) const
+{
+  ADReal x = ADReal(pt[0], 0, 2);
+	ADReal y = ADReal(pt[1], 1, 2);
+	ADReal one(1.0, 2);
+	ADReal zero(0.0, 2);
 
+  Array<ADReal> tmp;
+
+  SUNDANCE_OUT(this->verb() > 3, "x=" << x.value() << " y="
+    << y.value());
+
+  result.resize(3);
+  tmp.resize(3);
+
+  bool onEdge0 = std::fabs(pt[1]) < 1.0e-14;
+  bool onEdge1 = std::fabs(1.0-pt[0]-pt[1]) < 1.0e-14;
+  bool onEdge2 = std::fabs(pt[0]) < 1.0e-14;
+  
+  TEST_FOR_EXCEPTION(!(onEdge0 || onEdge1 || onEdge2),
+    RuntimeError,
+    "EdgeLocalizedBasis should not be evaluated at points not on edges");
+  
+  TEST_FOR_EXCEPTION((onEdge0 && onEdge1) || (onEdge1 && onEdge2)
+    || (onEdge2 && onEdge0), RuntimeError,
+    "Ambiguous edge in EdgeLocalizedBasis::evalOnTriangle()");
+
+  if (onEdge0)
+  {
+    tmp[0] = one;
+    tmp[1] = zero;
+    tmp[2] = zero;
+  }
+  if (onEdge1)
+  {
+    tmp[0] = zero;
+    tmp[1] = one;
+    tmp[2] = zero;
+  }
+  if (onEdge2)
+  {
+    tmp[0] = zero;
+    tmp[1] = zero;
+    tmp[2] = one;
+  }
+
+
+	for (int i=0; i<tmp.length(); i++)
+  {
+    SUNDANCE_OUT(this->verb() > 3,
+      "tmp[" << i << "]=" << tmp[i].value() 
+      << " grad=" << tmp[i].gradient());
+    if (deriv.order()==0) result[i] = tmp[i].value();
+    else 
+      result[i] = tmp[i].gradient()[deriv.firstOrderDirection()];
+  }
+  
+}
+
+
+
+
+void EdgeLocalizedBasis::evalOnTet(const Point& pt, 
+  const MultiIndex& deriv,
+  Array<double>& result) const
+{
+  TEST_FOR_EXCEPTION(true, RuntimeError,
+    "EdgeLocalizedBasis::evalOnTet not implemented");
+}

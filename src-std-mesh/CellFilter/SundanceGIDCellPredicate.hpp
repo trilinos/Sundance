@@ -28,79 +28,54 @@
 // ************************************************************************
 /* @HEADER@ */
 
-#ifndef SUNDANCE_EDGELOCALIZEDBASIS_H
-#define SUNDANCE_EDGELOCALIZEDBASIS_H
+
+#ifndef SUNDANCE_GIDCELLPREDICATE_H
+#define SUNDANCE_GIDCELLPREDICATE_H
 
 #include "SundanceDefs.hpp"
-#include "Teuchos_RefCountPtr.hpp"
-#include "SundanceBasisFamilyBase.hpp"
+#include "SundanceCellPredicateBase.hpp"
 
-namespace Sundance 
+namespace Sundance
 {
+using namespace Teuchos;
+  
 /** 
- * EdgeLocalizedBasis is a basis function defined only on edges. 
+ * GIDCellPredicate tests whether a cell's GID is contained
+ * in a specified set of GIDs. 
  */
-class EdgeLocalizedBasis : public ScalarBasis
+class GIDCellPredicate : public CellPredicateBase 
 {
 public:
-  /** */
-  EdgeLocalizedBasis();
+  /** Construct with a GID set */
+  GIDCellPredicate(int cellDim, const Set<int>& gids) 
+    : CellPredicateBase(), cellDim_(cellDim), gids_(gids){;}
 
-  /**   
-   * \brief Inform caller as to whether a given cell type is supported 
-   */
-  bool supportsCellTypePair(
-    const CellType& maximalCellType,
-    const CellType& cellType
-    ) const ;
+  /** virtual dtor */
+  virtual ~GIDCellPredicate(){;}
+      
+  /** Test the predicate on a batch of cells */
+  virtual void testBatch(const Array<int>& cellLID,
+    Array<int>& results) const ;
 
-  /** */
-  void print(std::ostream& os) const ;
+  /** Write to XML */
+  virtual XMLObject toXML() const ;
 
-  /** */
-  int order() const {return 0;}
-
-  /** return the number of nodes for this basis on the given cell type */
-  int nReferenceDOFs(
-    const CellType& maximalCellType,
-    const CellType& cellType
-    ) const ;
+  /** comparison */
+  virtual bool lessThan(const CellPredicateBase* other) const ;
 
   /** */
-  void getReferenceDOFs(
-    const CellType& maximalCellType,
-    const CellType& cellType,
-    Array<Array<Array<int> > >& dofs) const ;
+  virtual string description() const 
+    {return "GIDCellPredicate(" + gids_.toString() + ")";}
 
-  /** */
-  void refEval(
-    const CellType& cellType,
-    const Array<Point>& pts,
-    const SpatialDerivSpecifier& deriv,
-    Array<Array<Array<double> > >& result,
-    int verbosity=0) const ;
-
-
-  /* Handleable boilerplate */
-  GET_RCP(BasisFamilyBase);
+  /* */
+  GET_RCP(CellPredicateBase);
 
 private:
+  int cellDim_;
+  Set<int> gids_;
 
-  /** evaluate on a line cell  */
-  void evalOnLine(const Point& pt,
-    const MultiIndex& deriv,
-    Array<double>& result) const ;
-    
-  /** evaluate on a triangle cell  */
-  void evalOnTriangle(const Point& pt,
-    const MultiIndex& deriv,
-    Array<double>& result) const ;
-  /** evaluate on a tet cell  */
-  void evalOnTet(const Point& pt,
-    const MultiIndex& deriv,
-    Array<double>& result) const ;
-    
 };
+
 }
 
 #endif

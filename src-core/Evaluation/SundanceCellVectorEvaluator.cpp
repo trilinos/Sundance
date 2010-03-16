@@ -91,7 +91,7 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
 {
   Tabs tabs;
 
-  SUNDANCE_MSG2(mgr.verb(), tabs << "CellVectorEvaluator::eval() expr=" 
+  SUNDANCE_MSG1(mgr.verb(), tabs << "CellVectorEvaluator::eval() expr=" 
     << expr()->toString());
 
   SUNDANCE_MSG3(mgr.verb(), 
@@ -104,7 +104,7 @@ void CellVectorEvaluator::internalEval(const EvalManager& mgr,
   mgr.stack().setVecSize(vectorResults[0]->length());
   vectorResults[0]->setString(stringRep_);
 
-  if (mgr.verb() > 2)
+  if (mgr.verb() > 1)
   {
     Tabs tab1;
     Out::os() << tab1 << "results " << std::endl;

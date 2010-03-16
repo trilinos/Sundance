@@ -78,33 +78,39 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
   Tabs tab;
 
   SUNDANCE_MSG2(verb(), tab <<  "QuadEvalMed::setCellType: cellType=" 
-    << cellType);
+    << cellType << " cellDim=" << cellDim() << " maxCellType=" << maxCellType);
   SUNDANCE_MSG2(verb(), tab << "integration spec: =" 
     << integrationCellSpec());
+  SUNDANCE_MSG2(verb(), tab << "forbid cofacet integrations =" 
+    << forbidCofacetIntegrations());
   if (isInternalBdry()) 
   {
     SUNDANCE_MSG2(verb(), tab << "working on internal boundary");
   }
   
-  TEST_FOR_EXCEPT(isInternalBdry()
-    && integrationCellSpec() != NoTermsNeedCofacets);
+//  TEST_FOR_EXCEPT(isInternalBdry()
+//    && integrationCellSpec() != NoTermsNeedCofacets);
 
-  if (cellType != maxCellType && !forbidCofacetIntegrations())
+  if (cellType != maxCellType)
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb(), tab1 << "working out #facet cases"); 
     numEvaluationCases_ = numFacets(maxCellType, cellDim());
   }
   else 
   {
+    Tabs tab1;
+    SUNDANCE_MSG2(verb(), tab1 << "no need for facet cases; work on original cell"); 
     numEvaluationCases_ = 1;
   }
+  SUNDANCE_MSG2(verb(), tab << "num eval cases =" << numEvaluationCases_); 
 
   if (!isInternalBdry() 
     && quadPtsReferredToMaxCell_.containsKey(cellType)) return;
 
   if (!quadPtsForReferenceCell_.containsKey(cellType))
   {
-    Tabs tab1;
-    SUNDANCE_MSG2(verb(), tab1 << "creating quad points for ref cell type=" 
+    SUNDANCE_MSG2(verb(), tab << "creating quad points for ref cell type=" 
       << cellType);
     RCP<Array<Point> > pts = rcp(new Array<Point>());
     RCP<Array<double> > wgts = rcp(new Array<double>()); 
@@ -115,8 +121,10 @@ void QuadratureEvalMediator::setCellType(const CellType& cellType,
     numQuadPtsForCellType_.put(cellType, pts->size());
   }
 
-  if (!isInternalBdry())
+  if (!quadPtsReferredToMaxCell_.containsKey(cellType))
   {
+    SUNDANCE_MSG2(verb(), tab << "creating quad points for max cell type=" 
+      << maxCellType);
     RCP<Array<Array<Point> > > facetPts 
       = rcp(new Array<Array<Point> >(numEvaluationCases()));
     RCP<Array<Array<double> > > facetWgts 
@@ -285,17 +293,24 @@ RCP<Array<Array<Array<double> > > > QuadratureEvalMediator
       if (evalCellType!=cellType())
       { 
         Out::os() << quadPtsReferredToMaxCell_ << endl;
-        TEST_FOR_EXCEPTION(quadPtsReferredToMaxCell_.size() == 0,
-          RuntimeError,
-          "empty quadrature point map");
       }
       else
       {
         Out::os() << quadPtsForReferenceCell_ << endl;
-        TEST_FOR_EXCEPTION(quadPtsForReferenceCell_.size() == 0,
-          RuntimeError,
-          "empty quadrature point map");
       }
+    }
+
+    if (evalCellType!=cellType())
+    { 
+      TEST_FOR_EXCEPTION(quadPtsReferredToMaxCell_.size() == 0,
+        RuntimeError,
+        "empty quadrature point map (max cell)");
+    }
+    else
+    {
+      TEST_FOR_EXCEPTION(quadPtsForReferenceCell_.size() == 0,
+        RuntimeError,
+        "empty quadrature point map (ref cell)");
     }
 
     for (int fc=0; fc<numEvaluationCases(); fc++)

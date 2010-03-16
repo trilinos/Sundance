@@ -130,28 +130,37 @@ ElementIntegral::ElementIntegral(int spatialDim,
     globalCurve_(globalCurve),
     mesh_(mesh)
 {
+  Tabs tab0(0);
+  SUNDANCE_MSG2(setupVerb(), tab0 << "constructing 1-form ElementIntegral");
   /* if we're integrating a derivative along a facet, we 
    * may need to refer back to the maximal cell. */
   bool okToRestrictTestToBdry = basisRestrictableToBoundary(testBasis);
     
+  Tabs tab1;
+  SUNDANCE_MSG2(setupVerb(), tab1 << "dim=" << dim << " spatialDim=" << spatialDim);
   if (dim != spatialDim)
   {
     if (isInternalBdry)
     {
       TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
     }
-    else if (alwaysUseCofacets() || testDerivOrder>0)
+    if (alwaysUseCofacets() || testDerivOrder>0)
     {
+      Tabs tab2;
       evalCellType_ = maxCellType_;
       nFacetCases_ = numFacets(maxCellType, dim);
       nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
+      SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesTest=" << nNodesTest_);
       nNodes_ = nNodesTest_;
+      TEST_FOR_EXCEPT(nNodes_ == 0);
     }
     else
     {
       TEST_FOR_EXCEPT(!okToRestrictTestToBdry);
     }
   }
+
+  SUNDANCE_MSG2(setupVerb(), tab1 << "nNodes=" << nNodes_);
 }
 
 
@@ -195,30 +204,41 @@ ElementIntegral::ElementIntegral(int spatialDim,
     globalCurve_(globalCurve),
     mesh_(mesh)
 {
+  Tabs tab0(0);
+  SUNDANCE_MSG2(setupVerb(), tab0 << "constructing 2-form ElementIntegral");
   /* if we're integrating a derivative along a facet, we may need to refer back
    * to the maximal cell. */
   bool okToRestrictTestToBdry = basisRestrictableToBoundary(testBasis);
   bool okToRestrictUnkToBdry = basisRestrictableToBoundary(unkBasis);
 
+    
+  Tabs tab1;
+  SUNDANCE_MSG2(setupVerb(), tab1 << "dim=" << dim << " spatialDim=" << spatialDim);
   if (dim != spatialDim)
   {
     if (isInternalBdry)
     {
       TEST_FOR_EXCEPT(!(okToRestrictTestToBdry && okToRestrictUnkToBdry));   
     }
-    else if (alwaysUseCofacets() || testDerivOrder>0 || unkDerivOrder>0)
+    if (alwaysUseCofacets() || testDerivOrder>0 || unkDerivOrder>0)
     {
+      Tabs tab2;
       evalCellType_ = maxCellType_;
       nFacetCases_ = numFacets(maxCellType, dim);
       nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
+      SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesTest=" << nNodesTest_);
       nNodesUnk_ = unkBasis.nReferenceDOFs(maxCellType, maxCellType);
+      SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesUnk=" << nNodesUnk_);
       nNodes_ = nNodesTest_ * nNodesUnk_;
+      TEST_FOR_EXCEPT(nNodes_ == 0);
     }
     else
     {
       TEST_FOR_EXCEPT(okToRestrictTestToBdry != okToRestrictUnkToBdry);
     }
   }
+
+  SUNDANCE_MSG2(setupVerb(), tab1 << "nNodes=" << nNodes_);
 }
 
 
@@ -375,6 +395,7 @@ void ElementIntegral
   int flops = 0;
 
   int maxDim = JTrans.cellDim();
+  int cellDim = JVol.cellDim();
 
   if (testDerivOrder() == 1 && unkDerivOrder() == 1)
   {

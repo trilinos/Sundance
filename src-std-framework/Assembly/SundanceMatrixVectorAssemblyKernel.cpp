@@ -301,6 +301,7 @@ void MatrixVectorAssemblyKernel::writeLSMs(
   FancyOStream& os = Out::os();
 
   int nCells = rmb().nCells();
+
   RCP<const Array<int> > workSet = rmb().workSet(blockRow, useCofacetCells);
 
   int lr = 0;

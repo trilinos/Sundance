@@ -36,6 +36,7 @@
 #include "SundanceTestFunctionData.hpp"
 #include "SundanceDiscreteFunctionData.hpp"
 #include "SundanceLagrange.hpp"
+#include "SundanceEdgeLocalizedBasis.hpp"
 
 
 using namespace Sundance;
@@ -192,7 +193,8 @@ Array<std::pair<int, int> > vectorDimStructure(const BasisFamily& basis)
 bool basisRestrictableToBoundary(const BasisFamily& b)
 {
   const Lagrange* lag = dynamic_cast<const Lagrange*>(b.ptr().get());
-  return lag != 0;
+  const EdgeLocalizedBasis* elb = dynamic_cast<const EdgeLocalizedBasis*>(b.ptr().get());
+  return lag != 0 || elb != 0;
 }
 
 }

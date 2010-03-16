@@ -199,7 +199,7 @@ void DerivOfSymbFuncEvaluator::internalEval(const EvalManager& mgr,
       
       funcEvaluator_[0]->eval(mgr, 
         funcConstantResults, funcVectorResults);
-      if (mgr.verb() > 2)
+      if (mgr.verb() > 1)
         {
           Out::os() << tabs1 << "DerivOfSymbFunc results" << endl;
           funcSparsitySuperset_->print(Out::os(), funcVectorResults,

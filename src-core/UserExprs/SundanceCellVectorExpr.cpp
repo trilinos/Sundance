@@ -63,7 +63,7 @@ Expr CellTangentExpr(int dimension, const std::string& name)
   Array<Expr> comp(dimension);
   for (int i=0; i<dimension; i++)
   {
-    comp[i] = new CellVectorExpr(i, 0, dimension, name + "("
+    comp[i] = new CellVectorExpr(0, i, dimension, name + "("
         + Teuchos::toString(i) + ")");
   }
   return new ListExpr(comp);

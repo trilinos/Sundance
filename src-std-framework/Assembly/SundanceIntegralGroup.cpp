@@ -280,6 +280,10 @@ bool IntegralGroup
   SUNDANCE_MSG1(integrationVerb(), tab0 << "evaluating integral group with "
     << integrals_.size() << " integrals");
 
+  SUNDANCE_MSG3(integrationVerb(), 
+    tab0 << "num integration cells = " << JVol.numCells());
+  SUNDANCE_MSG3(integrationVerb(), 
+    tab0 << "num nodes in output = " << integrals_[0]->nNodes());
 
   /* initialize the return vector */
   if (integrals_[0]->nNodes() == -1) A->resize(1);

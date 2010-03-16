@@ -576,7 +576,7 @@ void QuadratureIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   TEST_FOR_EXCEPTION(order() != 2, InternalError,
     "QuadratureIntegral::transformTwoForm() called for form "
     "of order " << order());
-  SUNDANCE_MSG2(integrationVerb(), tabs << "doing one form by quadrature");
+  SUNDANCE_MSG2(integrationVerb(), tabs << "doing two form by quadrature");
   /* ---------- ACI ----------- */
   Array<double> quadWeightsTmp = quadWeights_[0];
   Array<Point> quadPointsTmp = quadPts_[0];

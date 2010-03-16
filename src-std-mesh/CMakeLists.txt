@@ -41,6 +41,7 @@ APPEND_SET(HEADERS
   CellFilter/SundanceDimensionalCellFilter.hpp
   CellFilter/SundanceExplicitCellIterator.hpp
   CellFilter/SundanceExplicitCellSet.hpp
+  CellFilter/SundanceGIDCellPredicate.hpp
   CellFilter/SundanceImplicitCellSet.hpp
   CellFilter/SundanceLabelCellPredicate.hpp
   CellFilter/SundanceMaximalCellFilter.hpp
@@ -64,6 +65,7 @@ APPEND_SET(SOURCES
   CellFilter/SundanceCFMeshPair.cpp
   CellFilter/SundanceDimensionalCellFilter.cpp
   CellFilter/SundanceExplicitCellSet.cpp
+  CellFilter/SundanceGIDCellPredicate.cpp
   CellFilter/SundanceImplicitCellSet.cpp
   CellFilter/SundanceLabelCellPredicate.cpp
   CellFilter/SundanceMaximalCellFilter.cpp
