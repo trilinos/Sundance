@@ -33,6 +33,7 @@
 #include "SundanceTabs.hpp"
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceLagrange.hpp"
+#include "SundanceEdgeLocalizedBasis.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
 
 using namespace Sundance;
@@ -61,42 +62,47 @@ ExprFieldWrapper::ExprFieldWrapper(const Expr& expr)
 	for(index = 0 ; index < Expr_size_ ; index++)
 	{
 	  const DiscreteFunction* df
-	        = dynamic_cast<const DiscreteFunction*>(expr[index].ptr().get());
+      = dynamic_cast<const DiscreteFunction*>(expr[index].ptr().get());
 	  const DiscreteFuncElement* dfe
-	        = dynamic_cast<const DiscreteFuncElement*>(expr[index].ptr().get());
-      if (df != 0)
-        {
-          discreteSpace_ = df->discreteSpace();
-          //map_ = df->map();
-          indices_.append(tuple(0));
-          BasisFamily basis = discreteSpace_.basis()[0];
-          const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
-          if (lagr != 0 && lagr->order()==0) isPointData_ = false;
-          df_ = df->data();
-        }
-      else if (dfe != 0)
-        {
-          const DiscreteFunctionData* f = DiscreteFunctionData::getData(dfe);
-
-          TEST_FOR_EXCEPTION(f == 0, RuntimeError,
-                             "ExprFieldWrapper ctor argument "
-                             << expr << " is not a discrete function");
-          discreteSpace_ = f->discreteSpace();
-          //map_ = f->map();
-          indices_.append(tuple(dfe->myIndex()));
-          BasisFamily basis = discreteSpace_.basis()[indices_[index][0]];
-          const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
-          if (lagr != 0 && lagr->order()==0) isPointData_ = false;
-          df_ = f;
-          
-        }
-      else
-        {
-          TEST_FOR_EXCEPTION(df == 0 && dfe == 0, RuntimeError,
-                             "ExprFieldWrapper ctor argument is not a discrete "
-                             "function");
-        }
+      = dynamic_cast<const DiscreteFuncElement*>(expr[index].ptr().get());
+    if (df != 0)
+    {
+      discreteSpace_ = df->discreteSpace();
+      //map_ = df->map();
+      indices_.append(tuple(0));
+      BasisFamily basis = discreteSpace_.basis()[0];
+      const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
+      if (lagr != 0 && lagr->order()==0) isPointData_ = false;
+      const EdgeLocalizedBasis* elb = dynamic_cast<const EdgeLocalizedBasis*>(basis.ptr().get());
+      if (elb!=0) isPointData_ = false;
+      df_ = df->data();
     }
+    else if (dfe != 0)
+    {
+      const DiscreteFunctionData* f = DiscreteFunctionData::getData(dfe);
+
+      TEST_FOR_EXCEPTION(f == 0, RuntimeError,
+        "ExprFieldWrapper ctor argument "
+        << expr << " is not a discrete function");
+      discreteSpace_ = f->discreteSpace();
+      //map_ = f->map();
+      indices_.append(tuple(dfe->myIndex()));
+      BasisFamily basis = discreteSpace_.basis()[indices_[index][0]];
+      const Lagrange* lagr = dynamic_cast<const Lagrange*>(basis.ptr().get());
+      if (lagr != 0 && lagr->order()==0) isPointData_ = false;      
+      const EdgeLocalizedBasis* elb = dynamic_cast<const EdgeLocalizedBasis*>(basis.ptr().get());
+      if (elb!=0) isPointData_ = false;
+
+      df_ = f;
+          
+    }
+    else
+    {
+      TEST_FOR_EXCEPTION(df == 0 && dfe == 0, RuntimeError,
+        "ExprFieldWrapper ctor argument is not a discrete "
+        "function");
+    }
+  }
 }
 
 
@@ -109,7 +115,7 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
   //cout << "Arguments ExprFieldWrapper::getData " << cellDim << "," << cellID << "," << elem << std::endl;
 
   TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
-                     "too many DOFs found in ExprFieldWrapper::getData()");
+    "too many DOFs found in ExprFieldWrapper::getData()");
 
   return df_->ghostView()->getElement(dofs[0]);
 }
