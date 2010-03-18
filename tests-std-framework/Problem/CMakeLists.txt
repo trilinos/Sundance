@@ -47,6 +47,7 @@ SET(MPITests
              FieldIOTest
              BlockStochPoissonTest1D
              HighOrderPoisson1D
+             HighOrderPoisson1DCubicHermite
              HighOrderPoissonBernstein1D
              HighOrderPoisson2D
              HighOrderPoissonBernstein2D

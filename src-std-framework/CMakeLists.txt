@@ -42,6 +42,7 @@ APPEND_SET(HEADERS
   Elements/SundanceBubble.hpp
   Elements/SundanceClosedNewtonCotes.hpp
   Elements/SundanceClosedNewtonCotesType.hpp
+  Elements/SundanceCubicHermite.hpp
   Elements/SundanceDiscreteFunction.hpp
   Elements/SundanceDiscreteFunctionData.hpp
   Elements/SundanceDiscreteSpace.hpp
@@ -81,6 +82,7 @@ APPEND_SET(SOURCES
   Elements/SundanceBubble.cpp
   Elements/SundanceClosedNewtonCotes.cpp
   Elements/SundanceClosedNewtonCotesType.cpp
+  Elements/SundanceCubicHermite.cpp
   Elements/SundanceDiscreteFunction.cpp
   Elements/SundanceDiscreteFunctionData.cpp
   Elements/SundanceDiscreteSpace.cpp
