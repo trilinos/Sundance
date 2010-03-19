@@ -28,6 +28,9 @@
 // ************************************************************************
 /* @HEADER@ */
 
+
+#ifdef DISABLE
+
 #include "Sundance.hpp"
 #include "SundanceCubicHermite.hpp"
 #include <unistd.h>
@@ -123,3 +126,12 @@ int main(int argc, char** argv)
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }
+
+#else
+
+int main()
+{
+  return 0;
+}
+
+#endif
