@@ -29,6 +29,7 @@
 /* @HEADER@ */
 
 
+#define DISABLE
 #ifndef DISABLE
 
 #include "Sundance.hpp"
