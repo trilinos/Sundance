@@ -94,18 +94,18 @@ int CubicHermite::nReferenceDOFs(
   ) const
 {
   switch(maximalCellType)
-    {
+  {
     case LineCell:
       switch(cellType)
-	{
-	case PointCell:
-	  return 2;
-	case LineCell:
-	  return 0;
-	default:
-	  TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
-	  return -1;
-	}
+      {
+        case PointCell:
+          return 2;
+        case LineCell:
+          return 4;
+        default:
+          TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
+          return -1;
+      }
       break;
 //     case TriangleCell:
 //       switch(cellType)
@@ -124,7 +124,7 @@ int CubicHermite::nReferenceDOFs(
     default:
       TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
       return -1;
-    }
+  }
   
 }
 
@@ -136,14 +136,14 @@ void CubicHermite::getReferenceDOFs(
   typedef Array<int> Aint;
   switch(cellType)
   {
-//   case PointCell:
-//     {
-//       dofs.resize(1);
-//       dofs[0] = tuple<Aint>(tuple(0));
-//       return;
-//     }
-//     break;
-  case LineCell:
+    case PointCell:
+    {
+      dofs.resize(1);
+      dofs[0] = tuple<Aint>(tuple(0,1));
+      return;
+    }
+    break;
+    case LineCell:
     {
       dofs.resize(2);
       dofs[0].resize(2);
@@ -158,9 +158,9 @@ void CubicHermite::getReferenceDOFs(
       return;
     }
     break;
-  default:
-    TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-		       << cellType << " not implemented in CubicHermite basis");
+    default:
+      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
+        << cellType << " not implemented in CubicHermite basis");
   }
 }
 
@@ -211,6 +211,7 @@ void CubicHermite::evalOnLine(const Point& pt,
   const MultiIndex& deriv,
   Array<double>& result) const
 {
+  result.resize(4);
   ADReal x = ADReal(pt[0],0,1);
   Array<ADReal> tmp(4);
 
@@ -220,16 +221,16 @@ void CubicHermite::evalOnLine(const Point& pt,
   tmp[3] = (-1+x)*x*x;
 
   for (int i=0; i<tmp.length(); i++)
+  {
+    if (deriv.order()==0) 
     {
-      if (deriv.order()==0) 
-	{
-	  result[i] = tmp[i].value();
-	}
-      else 
-	{
-	  result[i] = tmp[i].gradient()[0];
-	}
-    }  
+      result[i] = tmp[i].value();
+    }
+    else 
+    {
+      result[i] = tmp[i].gradient()[0];
+    }
+  }  
   return;
 }
 
@@ -238,6 +239,7 @@ void CubicHermite::evalOnTriangle(const Point& pt,
   Array<double>& result) const
 
 {
+  result.resize(10);
   ADReal x = ADReal(pt[0], 0, 2);
   ADReal y = ADReal(pt[1], 1, 2);
   ADReal one(1.0, 2);
@@ -275,7 +277,7 @@ void CubicHermite::evalOnTet(const Point& pt,
   ADReal z = ADReal(pt[2], 2, 3);
   ADReal one(1.0, 3);
   
-  
+  TEST_FOR_EXCEPT(true);
 }
 
 

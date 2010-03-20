@@ -29,7 +29,7 @@
 /* @HEADER@ */
 
 
-#ifdef DISABLE
+#ifndef DISABLE
 
 #include "Sundance.hpp"
 #include "SundanceCubicHermite.hpp"
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
       
       /* Create a mesh. It will be of type BasisSimplicialMesh, and will
        * be built using a PartitionedLineMesher. */
-      int nx = 32;
+      int nx = 1;
       MeshType meshType = new BasicSimplicialMeshType();
       MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, nx, meshType);
       Mesh mesh = mesher.getMesh();
@@ -79,13 +79,18 @@ int main(int argc, char** argv)
       /* We need a quadrature rule for doing the integrations */
       QuadratureFamily quad = new GaussianQuadrature(6);
 
+      WatchFlag watchMe("watch");
+      watchMe.setParam("evaluation", 5);
+      watchMe.setParam("integration setup", 5);
+      watchMe.setParam("integration", 5);
+
       /* Define the weak form */
       Expr exactSoln = pow(1.0 + x, p);
       Expr source = p*(p-1.0)*pow(1.0+x, p-2.0);
-      Expr eqn = Integral(interior, (dx*v)*(dx*u) + v*source, quad);
+      Expr eqn = Integral(interior, (dx*v)*(dx*u) + v*source, quad, watchMe);
       /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*(u-exactSoln), quad)
-        + EssentialBC(rightPoint, v*(u-exactSoln), quad);
+      Expr bc;// = EssentialBC(leftPoint, v*(u-exactSoln), quad)
+//        + EssentialBC(rightPoint, v*(u-exactSoln), quad);
 
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
@@ -93,7 +98,7 @@ int main(int argc, char** argv)
       cerr << "matrix = " << endl << prob.getOperator() << endl;
       cerr << "rhs = " << endl << prob.getRHS() << endl;
 
-
+      TEST_FOR_EXCEPT(true);
 #ifdef HAVE_CONFIG_H
       ParameterXMLFileReader reader(searchForFile("SolverParameters/bicgstab.xml"));
 #else
