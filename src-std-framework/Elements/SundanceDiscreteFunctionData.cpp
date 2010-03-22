@@ -131,11 +131,31 @@ RCP<const MapStructure> DiscreteFunctionData
     *requestedFuncs,
     dofs, nNodes, Evaluator::classVerbosity());
   localValues.resize(s->numBasisChunks());
-  for (int b=0; b<nNodes.size(); b++)
+  // test if we need any kind of transformation
+
+  if  (space_.getTransformation()->validTransformation())
   {
-    int nFuncs = s->numFuncs(b);
-    localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
-    ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
+	 for (int b=0; b<nNodes.size(); b++)
+	 {
+	    int nFuncs = s->numFuncs(b);
+	    localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
+
+	    // first get the dofs values, which later will be transformed
+        ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
+        // make transformation and fill the correct "localValues[b]" elements !!!! (if it is needed)
+	    // do the transformation for each function , ("nFuncs")
+	    space_.getTransformation()->getDoFsWithTransformation(
+	    		dofs[b] ,  b , dofs[b].size() , cellDim, cellLID ,ghostView_ , localValues[b] );
+	 }
+  }
+  else  // if we do not need transformation then do the normal thing
+  {
+	  for (int b=0; b<nNodes.size(); b++)
+	  {
+	    int nFuncs = s->numFuncs(b);
+	    localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
+        ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
+	  }
   }
 
   return s;

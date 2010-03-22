@@ -35,13 +35,8 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceEdgeLocalizedBasis.hpp"
 #include "SundanceDiscreteFuncElement.hpp"
+#include "SundanceHNDoFMapBase.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
@@ -112,12 +107,38 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
 
   discreteSpace_.map()->getDOFsForCell(cellDim, cellID, indices_[elem][0] , dofs); //indecies[elem][0] should be OK!
 
-  //cout << "Arguments ExprFieldWrapper::getData " << cellDim << "," << cellID << "," << elem << std::endl;
+  //cout << "Arguments ExprFieldWrapper::getData " << cellDim << "," << cellID << "," << elem << " DoFs:" << dofs <<std::endl;
 
   TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
     "too many DOFs found in ExprFieldWrapper::getData()");
 
-  return df_->ghostView()->getElement(dofs[0]);
+  // in case of hanging node the "dofs[0]" will be negative, in this case treate this case
+  // in case of general basis function this should not be changed, when there are nodal values
+  // Todo: if we do not have nodal values then we should do some extra things ...
+  if ( dofs[0] < 0)
+  {
+  	const HNDoFMapBase* HNMap
+  		    = dynamic_cast<const HNDoFMapBase*>((discreteSpace_.map()).get());
+    if (HNMap != 0 ){
+        Array<double> coefs;
+        double sum = 0.0;
+    	HNMap->getDOFsForCell( cellDim, cellID, indices_[elem][0] ,  dofs , coefs );
+    	for (int jj = 0 ; jj < dofs.size() ; jj++)
+    	{
+    		sum += coefs[jj] * df_->ghostView()->getElement(dofs[jj]); //sum up the contributions
+    	}
+    	// return the contribution of the global DoFs
+    	return sum;
+    }
+    else
+    {
+	  return 1.0;
+    }
+  }
+  else
+  {
+	  return df_->ghostView()->getElement(dofs[0]);
+  }
 }
 
 

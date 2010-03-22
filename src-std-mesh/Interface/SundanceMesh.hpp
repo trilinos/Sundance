@@ -396,18 +396,45 @@ public:
    * logic rather than as a check on the validity of a user's mesh. */
   bool checkConsistency(ostream& os) const ;
 
+  /** \name Functions for Mesh with hanging nodes */
+    //@{
+    /** Function returns true if the mesh allows hanging nodes (by refinement), false otherwise */
+    bool allowsHangingHodes() const { return ptr()->allowsHangingHodes(); }
+
+    /** Function returns true if the specified element is a "hanging" element
+     * false otherwise */
+    bool isElementHangingNode(int cellDim , int cellLID) const
+    		{ return ptr()->isElementHangingNode(cellDim , cellLID); }
+
+   /** Returns the index in the parent maxdim Cell of the refinement tree
+    * @param maxCellLID [in] the LID of the cell */
+    int indexInParent(int maxCellLID) const
+    		{ return ptr()->indexInParent(maxCellLID); }
+
+   /** How many children has a refined element. <br>
+    * This function provides information of either we have bi or trisection */
+   int maxChildren() const { return ptr()->maxChildren();}
+
+   /** Function returns the facets of the maxdim parent cell (needed for HN treatment) */
+   void returnParentFacets( int childCellLID , int dimFacets ,
+    		                         Array<int> &facetsLIDs , int &parentCellLIDs ) const {
+    	ptr()->returnParentFacets( childCellLID , dimFacets , facetsLIDs , parentCellLIDs );
+   }
+  //@}
+
+
   /** \name Special Weights Storage for Adaptive Cell Integration */
    //@{
   /** returns the status of the special weights if they are valid <br>
     *  These weights are usually computed for one setting of the curve (Adaptive Cell Integration)*/
-  bool& IsSpecialWeightValid() {return ptr()->IsSpecialWeightValid();}
+  bool IsSpecialWeightValid() {return ptr()->IsSpecialWeightValid();}
 
   /** specifies if the special weights are valid <br>
    *  if this is false then usually the special weights have to be recomputed */
   void setSpecialWeightValid(bool& val) { ptr()->setSpecialWeightValid(val);}
 
   /** removes the special weights */
-  void removeSecialWeights(int& dim, int& cellLID) {ptr()->removeSecialWeights( dim, cellLID);}
+  void removeSpecialWeights(int& dim, int& cellLID) {ptr()->removeSpecialWeights( dim, cellLID);}
 
   /** verifies if the specified cell with the given dimension has special weights */
   bool hasSpecialWeight(int& dim, int& cellLID) {return ptr()->hasSpecialWeight( dim, cellLID); }

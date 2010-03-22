@@ -35,6 +35,7 @@
 #include "SundanceLagrange.hpp"
 #include "SundanceMixedDOFMap.hpp"
 #include "SundanceNodalDOFMap.hpp"
+#include "SundanceNodalDOFMapHN.hpp"
 #include "SundancePartialElementDOFMap.hpp"
 #include "SundanceMaximalCellFilter.hpp"
 #include "SundanceInhomogeneousNodalDOFMap.hpp"
@@ -46,12 +47,6 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Sundance;
 using namespace Teuchos;
 
@@ -121,7 +116,13 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   {
     SUNDANCE_LEVEL2("setup", "creating omnipresent nodal map");
     CellFilter maxCells = getMaxCellFilter(filters);
-    rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells, params()));
+    // if the mesh allows hanging nodes then create different DOF Map
+    if (mesh.allowsHangingHodes()){
+      rtn = rcp(new NodalDOFMapHN(mesh, basis.size(), maxCells, params()));
+    }
+    else {
+      rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells, params()));
+    }
   }
   else if (hasCellBasis(basis) && hasCommonDomain(filters))
   {

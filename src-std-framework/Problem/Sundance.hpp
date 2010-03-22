@@ -80,6 +80,8 @@
 #include "SundanceExodusMeshReader.hpp"
 #include "SundanceMeshBuilder.hpp"
 #include "SundanceBamgMeshReader.hpp"
+#include "SundanceHNodeMesher2D.hpp"
+#include "SundanceHNodeMeshType2D.hpp"
 
 #ifdef HAVE_SUNDANCE_PEANO
 	#ifdef HAVE_SUNDANCE_PEANO_NO_2D

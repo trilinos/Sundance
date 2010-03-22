@@ -919,26 +919,59 @@ public:
 
   //@}
 
+
+
+  /** \name Functions for Mesh with hanging nodes */
+    //@{
+    /** Function returns true if the mesh allows hanging nodes (by refinement),
+     * false otherwise */
+    virtual bool allowsHangingHodes() const { return false; }
+
+    /** Function returns true if the specified element is a "hanging" element
+     * false otherwise <br>
+     * @param cellDim [in] should be between 0 , D-1
+     * @param cellLID [in] the local ID of the element */
+    virtual bool isElementHangingNode(int cellDim , int cellLID) const { return false; }
+
+    /** Returns the index in the parent maxdim Cell of the refinement tree
+     * @param maxCellLID [in] the LID of the cell */
+    virtual int indexInParent(int maxCellLID) const { return 0; }
+
+     /** How many children has a refined element. <br>
+      * This function provides information of either we have bi or trisection */
+     virtual int maxChildren() const { return 0;}
+
+    /** Function returns the facets of the parent cell (needed for HN treatment) <br>
+     * @param childCellLID [in] the LID of the maxdim cell, whos parents facets we want
+     * @param dimFacets [in] the dimension of the facets which we want to have
+     * @param facetsLIDs [out] the LID of the parents facets (all) in the defined order
+     * @param parentCellLIDs [out] the maxdim parent cell LID */
+    virtual void returnParentFacets( int childCellLID , int dimFacets ,
+    		                         Array<int> &facetsLIDs , int &parentCellLIDs ) const { }
+  //@}
+
+
+
   /** \name Store special weights in the mesh (for Adaptive Cell Integration) */
     //@{
 
     /** returns the status of the special weights if they are valid <br>
      *  These weights are usually computed for one setting of the curve (Adaptive Cell Integration)*/
-    bool& IsSpecialWeightValid() {return validWeights_;}
+    virtual bool IsSpecialWeightValid() {return validWeights_;}
 
     /** specifies if the special weights are valid <br>
      *  if this is false then usually the special weights have to be recomputed */
-    void setSpecialWeightValid(bool& val) { validWeights_ = val;}
+    virtual void setSpecialWeightValid(bool& val) { validWeights_ = val;}
 
     /** removes the special weights */
-    void removeSecialWeights(int& dim, int& cellLID) {
+    virtual void removeSpecialWeights(int& dim, int& cellLID) {
     	Array<double> nothing;
     	nothing.resize(0);
     	specialWeights_[dim].put(cellLID,nothing);
     }
 
     /** verifies if the specified cell with the given dimension has special weights */
-    bool hasSpecialWeight(int& dim, int& cellLID) {
+    virtual bool hasSpecialWeight(int& dim, int& cellLID) {
     	if (specialWeights_[dim].containsKey(cellLID))
             return ((specialWeights_[dim].get(cellLID)).size() > 1);
     	else
@@ -946,12 +979,12 @@ public:
     }
 
     /** Sets the special weights */
-    void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
+    virtual void setSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
     	specialWeights_[dim].put(cellLID,w);
     }
 
     /** Returns the special weights */
-    void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
+    virtual void getSpecialWeight(int& dim, int& cellLID, Array<double>& w) {
     	w = specialWeights_[dim].get(cellLID);
     }
     //@}

@@ -39,6 +39,8 @@
 #include "TSFVectorType.hpp"
 #include "TSFVectorSpaceDecl.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
+#include "SundanceDiscreteSpaceTransfBuilder.hpp"
+
 
 namespace Sundance
 {
@@ -50,10 +52,6 @@ namespace Sundance
   using namespace Sundance;
   using namespace Teuchos;
   using namespace TSFExtended;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  
 
   /** 
    * DiscreteSpace represents a discrete finite-element space (i.e., 
@@ -146,6 +144,11 @@ namespace Sundance
 
     /** */
     const CellFilter& cellFilters(int i) const {return subdomains_[i];}
+
+    /** Return the transformation builder */
+    const RCP<DiscreteSpaceTransfBuilder>& getTransformation() const
+    		{ return transformationBuilder_; }
+
   private:
 
     /** */
@@ -190,6 +193,10 @@ namespace Sundance
 
     /** */
     RCP<GhostImporter<double> > ghostImporter_;
+
+    /** Create one transformation builder */
+    RCP<DiscreteSpaceTransfBuilder> transformationBuilder_;
+
   };
 
 }

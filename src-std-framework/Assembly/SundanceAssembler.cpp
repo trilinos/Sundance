@@ -62,6 +62,7 @@
 #include "SundanceMatrixVectorAssemblyKernel.hpp"
 #include "SundanceFunctionalAssemblyKernel.hpp"
 #include "SundanceFunctionalGradientAssemblyKernel.hpp"
+#include "SundanceAssemblyTransformationBuilder.hpp"
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
 #include "TSFSimpleBlockOpImpl.hpp"
@@ -1045,6 +1046,9 @@ void Assembler::assemblyLoop(const ComputationType& compType,
    * (CellFilters) and quadrature rules.   */
   SUNDANCE_MSG1(verb, 
     tab << "---------- outer assembly loop over subregions");
+  //SUNDANCE_MSG3(verb, tab << "Row DoF:" << rowMap_.size());
+  //SUNDANCE_MSG3(verb, tab << "Column DoF:" << colMap_.size());
+  //SUNDANCE_MSG3(verb, tab << "Region Quadratic Comb:" << rqc_.size());
 
   /* Record the default kernel verbosity so that it if changes we can
    * reset it at the end of a loop iteration */
@@ -1311,6 +1315,15 @@ void Assembler::assemblyLoop(const ComputationType& compType,
         const RCP<IntegralGroup>& group = groups[r][g];
         if (!group->evaluate(JTrans, JVol, *isLocalFlag, facetIndices, workSet,
             vectorCoeffs, constantCoeffs, localValues)) continue;
+
+        /* Here we create the transformation object, if they are not needed
+         * there would be no operation done to the array of local stiffnes matrix */
+        AssemblyTransformationBuilder trafo( group , g , (localValues->size() / workSet->size()),
+        		                     cellType, maxCellType,
+        		                     rowMap_ , colMap_ , mesh_);
+        /* Do the actual transformation (transformations for Matrix)*/
+        trafo.applyTransformsToAssembly(JTrans, JVol, facetIndices, workSet, localValues);
+
         /* add the integration results into the output objects by a call
          * to the kernel's fill() function. We need to pass isBCRqc to the kernel
          * because it might handle BC rows differently. The integral group
