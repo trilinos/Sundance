@@ -105,6 +105,9 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
     }
   }
 
+  Tabs tab1;
+  SUNDANCE_VERB_MEDIUM(tab1 << "basis to chunk map = " << basisToChunkMap);
+
 
   structure_ = rcp(new MapStructure(basis.size(), chunkBases, chunkFuncs));
 
