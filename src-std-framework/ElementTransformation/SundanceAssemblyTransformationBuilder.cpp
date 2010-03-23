@@ -8,14 +8,11 @@
 #include "SundanceAssemblyTransformationBuilder.hpp"
 #include "SundanceHNDoFMapBase.hpp"
 
-namespace Sundance {
+using namespace Sundance;
 
 /* for Assembly transformations*/
-AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<IntegralGroup>& group ,
-	int groupIndex ,
-	int entryPerCell ,
-    CellType cellType ,
-    CellType maxCellType ,
+AssemblyTransformationBuilder::AssemblyTransformationBuilder(
+	const RCP<IntegralGroup>& group ,
 	const Array<RCP<DOFMapBase> >& rowMaps ,
 	const Array<RCP<DOFMapBase> >& colMaps ,
 	const Mesh& mesh):
@@ -32,13 +29,6 @@ AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<Integral
 	SUNDANCE_MSG2(verb(), "AssemblyTransformationBuilder::AssemblyTransformationBuilder initialized fields:" << mesh.allowsHangingHodes());
 	// make different transformations
     if (mesh.allowsHangingHodes()){
-
-    	// if the integration is not on a MaxCell then no HangingNode Trafo!
-    	// caz in some cases this would incease the size of the elem matrix
-    	if (cellType != maxCellType){
-        	hasTransformation_ = false;
-    		return;
-    	}
 
     	// we have HANGING NODES, create a corresponding transformation
     	hasTransformation_ = true;
@@ -108,11 +98,23 @@ AssemblyTransformationBuilder::~AssemblyTransformationBuilder() {
 }
 
 void AssemblyTransformationBuilder::applyTransformsToAssembly(
+		int groupIndex ,
+		int entryPerCell ,
+	    CellType cellType ,
+	    CellType maxCellType ,
 		const CellJacobianBatch& JTrans,
 	    const CellJacobianBatch& JVol,
 	    const Array<int>& facetNum,
 	    const RCP<Array<int> >& cellLIDs,
 	    RCP<Array<double> >& A){
+
+	// if the integration is not on a MaxCell then no HangingNode Trafo!
+	// caz in some cases this would incease the size of the elem matrix
+	if (cellType != maxCellType){
+    	hasTransformation_ = false;
+		return;
+	}
+
 
 	if (hasTransformation_){
 		// do the transformation with the pre and post transformation object
@@ -134,6 +136,4 @@ void AssemblyTransformationBuilder::applyTransformsToAssembly(
 		}
 	}
 	SUNDANCE_MSG2( verb() , " AssemblyTransformationBuilder::applyTransformsToAssembly ");
-}
-
 }

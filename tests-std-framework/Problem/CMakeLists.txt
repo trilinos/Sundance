@@ -30,6 +30,8 @@ SET(SerialTests
   FunctionalTest 
   TwoZoneDiscFunc
   PerforatedPlate
+  PerforatedPlate_QuadInt
+  Poisson2D_HN
   PoissonPeano2D
   PoissonPeano3D
   StokesPeano2D 

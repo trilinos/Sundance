@@ -27,10 +27,6 @@ public:
 	Hanging node mesh with Hermit base might be tricky ... */
 	AssemblyTransformationBuilder(
 			               const RCP<IntegralGroup>& group ,
-			               int groupIndex ,
-			               int entryPerCell ,
-			               CellType cellType ,
-			               CellType maxCellType ,
 			               const Array<RCP<DOFMapBase> >& rowMaps ,
 			               const Array<RCP<DOFMapBase> >& colMaps ,
 			               const Mesh& mesh);
@@ -41,6 +37,10 @@ public:
 
 	/** */
 	void applyTransformsToAssembly(
+            int groupIndex ,
+            int entryPerCell ,
+            CellType cellType ,
+            CellType maxCellType ,
 			const CellJacobianBatch& JTrans,
 		    const CellJacobianBatch& JVol,
 		    const Array<int>& facetNum,

@@ -449,44 +449,48 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
   int flops = 0;
   const Array<int>* cellLID = cellLIDs.get();
 
-  /* ---------- ACI ----------- */
-  Array<double> quadWeightsTmp = quadWeights_;
-  Array<Point> quadPointsTmp = quadPts_;
-  bool isCutByCurve;
-
-
   /* if we don't need to check whether elements are local, we
    * can streamline the loop. This will be the case when
    * we are evaluating a functional but not its gradient */
   double w = coeff * W_[0][0];
   if ((int) isLocalFlag.size()==0)
   {
-    for (int c=0; c<JVol.numCells(); c++)
-    {
-        int fc = 0;
-       	if (globalCurve().isCurveValid()){
-            /* ---------- ACI ----------- */
-        		/* call the special integration routine */
-				quadWeightsTmp = quadWeights_;
-				quadPointsTmp = quadPts_;
-        quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh(),
-        				globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
-        		/* if we have special weights then do the same as before */
-        		if (isCutByCurve){
-    				double sumweights = 0;
-    				for (int j=0; j < quadWeightsTmp.size(); j++) sumweights += chop(quadWeightsTmp[j]);
-        	        flops+=3+quadWeightsTmp.size();  //Todo: the curve stuff not counted
-        	        a += coeff * sumweights * fabs(JVol.detJ()[c]);
-        		} else {
-        	        flops+=2;  //Todo: the curve stuff not counted
-        	        a += w * fabs(JVol.detJ()[c]);
-        		}
-            /* ---------- End ACI ----------- */
-        } else {
-            flops+=2;
-            a += w * fabs(JVol.detJ()[c]);
-        }
-    }
+     	if (globalCurve().isCurveValid())
+     	{     /* ---------- ACI logic ----------- */
+
+     		Array<double> quadWeightsTmp = quadWeights_;
+     		Array<Point> quadPointsTmp = quadPts_;
+     		bool isCutByCurve;
+
+     		for (int c=0; c<JVol.numCells(); c++)
+     		{
+     			int fc = 0;
+   				/* call the special integration routine */
+   				quadWeightsTmp = quadWeights_;
+   				quadPointsTmp = quadPts_;
+   				quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc ,mesh(),
+   						globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
+   				/* if we have special weights then do the same as before */
+   				if (isCutByCurve){
+   					double sumweights = 0;
+   					for (int j=0; j < quadWeightsTmp.size(); j++) sumweights += chop(quadWeightsTmp[j]);
+   					flops+=3+quadWeightsTmp.size();  //Todo: the curve stuff not counted
+   					a += coeff * sumweights * fabs(JVol.detJ()[c]);
+   				} else {
+   					flops+=2;  //Todo: the curve stuff not counted
+   					a += w * fabs(JVol.detJ()[c]);
+   				}
+     		}
+     	}
+     	else /* -------- NO ACI logic ------- */
+     	{
+     		for (int c=0; c<JVol.numCells(); c++)
+     		{
+ 				flops+=2;
+ 				a += w * fabs(JVol.detJ()[c]);
+     		}
+     	}
+
   }
   else
   {
@@ -496,35 +500,47 @@ void RefIntegral::transformZeroForm(const CellJacobianBatch& JVol,
       << isLocalFlag.size()
       << " and JVol.numCells()=" << JVol.numCells());
 
-    for (int c=0; c<JVol.numCells(); c++)
-    {
       int fc = 0;
-      if (isLocalFlag[c]) 
-      {
-    	if (globalCurve().isCurveValid()){
-            /* ---------- ACI ----------- */
-    		/* call the special integration routine */
-        	quadWeightsTmp = quadWeights_;
-            quadPointsTmp = quadPts_;
-            quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc , mesh(),
-    				globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
-    		/* if we do not have special weights then do the same as before */
-    		if (isCutByCurve){
-				double sumweights = 0;
-				for (int j=0; j < quadWeightsTmp.size(); j++) sumweights += chop(quadWeightsTmp[j]);
-    	        flops+=3+quadWeightsTmp.size();  //Todo: the curve stuff not counted
-    	        a += coeff * sumweights * fabs(JVol.detJ()[c]);
-    		} else {
-    	        flops+=2;  //Todo: the curve stuff not counted
-    	        a += w * fabs(JVol.detJ()[c]);
+      if (globalCurve().isCurveValid())
+      {   /* ---------- ACI logic ----------- */
+    		Array<double> quadWeightsTmp = quadWeights_;
+     		Array<Point> quadPointsTmp = quadPts_;
+     		bool isCutByCurve;
+
+    		for (int c=0; c<JVol.numCells(); c++)
+    		{
+    		  if (isLocalFlag[c])
+    		  {
+
+    			/* call the special integration routine */
+    			quadWeightsTmp = quadWeights_;
+    			quadPointsTmp = quadPts_;
+    			quad_.getAdaptedWeights(cellType(), dim(), (*cellLID)[c], fc , mesh(),
+    					globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
+    			/* if we do not have special weights then do the same as before */
+    			if (isCutByCurve){
+    				double sumweights = 0;
+    				for (int j=0; j < quadWeightsTmp.size(); j++) sumweights += chop(quadWeightsTmp[j]);
+    				flops+=3+quadWeightsTmp.size();  //Todo: the curve stuff not counted
+    				a += coeff * sumweights * fabs(JVol.detJ()[c]);
+    			} else {
+    				flops+=2;  //Todo: the curve stuff not counted
+    				a += w * fabs(JVol.detJ()[c]);
+    			}
+    		  }
     		}
-        /* ---------- End ACI ----------- */
-    	} else {
-          flops+=2;
-          a += w * fabs(JVol.detJ()[c]);
     	}
-      }
-    }
+        else         /* ---------- NO ACI logic ----------- */
+    	{
+    		for (int c=0; c<JVol.numCells(); c++)
+    		{
+      		  if (isLocalFlag[c])
+      		  {
+    			flops+=2;
+    			a += w * fabs(JVol.detJ()[c]);
+      		  }
+    		}
+    	}
   }
   addFlops(flops);
 }
@@ -544,10 +560,6 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   SUNDANCE_MSG1(integrationVerb(),
     tabs << "doing one form by reference");
 
-  /** ---- ACI ---- */
-	Array<double> quadWeightsTmp = quadWeights_;
-	Array<Point> quadPointsTmp = quadPts_;
-	bool isCutByCurve = false;
 	int nfc = nFacetCases();
 
   /* If the derivative order is zero, the only transformation to be done 
@@ -556,43 +568,63 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
   {
     double* aPtr = &((*A)[0]);
     int count = 0;
-    int nfc = nFacetCases();
-    for (int c=0; c<JVol.numCells(); c++)
-    {
-      double detJ = coeff * fabs(JVol.detJ()[c]);
-      int fc = 0;
-      if (nfc != 1) fc = facetIndex[c];
+    if (globalCurve().isCurveValid())
+    {    /* ---------- ACI logic ----------- */
 
-      if (globalCurve().isCurveValid()){
-        /* ---------- ACI ----------- */
-      	quadWeightsTmp = quadWeights_;
-        quadPointsTmp = quadPts_;
-  		/* call the special integration routine */
-  		quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c] , fc ,
-        mesh() , globalCurve() , quadPointsTmp , quadWeightsTmp , isCutByCurve );
-        if (isCutByCurve){
-        	Array<double> w;
-        	w.resize(nNodesTest()); //recalculate the special weights
-        	for (int nt = 0 ; nt < nNodesTest() ; nt++){
-        		w[nt] = 0.0;
-        		for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-        			w[nt] += chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][0][nt]);
-        	}
-        	// do the integration here
-      	    for (int n=0; n<nNodes(); n++, count++)
-      	    {
-      		  aPtr[count] += detJ*w[n];
-      	    }
-        }
-        /* ---------- End ACI ----------- */
-  	  }
-      if (!(globalCurve().isCurveValid()) || (!isCutByCurve)){
-    	  const Array<double>& w = W_[fc];
-    	  for (int n=0; n<nNodes(); n++, count++)
-    	  {
+    	 Array<double> quadWeightsTmp = quadWeights_;
+    	 Array<Point> quadPointsTmp = quadPts_;
+    	 bool isCutByCurve = false;
+
+    	 for (int c=0; c<JVol.numCells(); c++)
+    	 {
+    	   double detJ = coeff * fabs(JVol.detJ()[c]);
+    	   int fc = 0;
+    	   if (nfc != 1) fc = facetIndex[c];
+
+    	   quadWeightsTmp = quadWeights_;
+    	   quadPointsTmp = quadPts_;
+    	   /* call the special integration routine */
+    	   quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c] , fc ,
+    			   mesh() , globalCurve() , quadPointsTmp , quadWeightsTmp , isCutByCurve );
+    	   if (isCutByCurve)
+    	   {
+    		   Array<double> w;
+    		   w.resize(nNodesTest()); //recalculate the special weights
+    		   for (int nt = 0 ; nt < nNodesTest() ; nt++){
+    			   w[nt] = 0.0;
+    			   for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+    				   w[nt] += chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][0][nt]);
+    		   }
+    		   // do the integration here
+    		   for (int n=0; n<nNodes(); n++, count++)
+    		   {
+    			   aPtr[count] += detJ*w[n];
+    		   }
+    	    }
+    	    else
+    	    {
+         		const Array<double>& w = W_[fc];
+    	    	for (int n=0; n<nNodes(); n++, count++)
+    	    	{
+    	    	  aPtr[count] += detJ*w[n];
+    	    	}
+    	    }
+    	 }
+    }
+    else         /* ---------- NO ACI logic ----------- */
+    {
+     	 for (int c=0; c<JVol.numCells(); c++)
+     	 {
+     	    double detJ = coeff * fabs(JVol.detJ()[c]);
+     	    int fc = 0;
+     	    if (nfc != 1) fc = facetIndex[c];
+
+     		const Array<double>& w = W_[fc];
+     		for (int n=0; n<nNodes(); n++, count++)
+     		{
     		  aPtr[count] += detJ*w[n];
-    	  }
-      }
+     		}
+     	 }
     }
     addFlops(JVol.numCells() * (nNodes() + 1));
   }
@@ -616,8 +648,13 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
       /* if we're on a maximal cell, we can do transformations 
        * for all cells in a single batch. 
        */
-      if (globalCurve().isCurveValid()){
-         /* ---------- ACI ----------- */
+      if (globalCurve().isCurveValid())
+      {   /* ---------- ACI logic ----------- */
+
+     	 Array<double> quadWeightsTmp = quadWeights_;
+     	 Array<Point> quadPointsTmp = quadPts_;
+     	 bool isCutByCurve = false;
+
     	 double* aPtr_tmp = &((*A)[0]);
     	 int count = 0;
     	 const int oneI = 1;
@@ -650,8 +687,9 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
     		 }
              count += nNodes();
     	 } // end from the for loop over the cells
-         /* ---------- End ACI ----------- */
-      } else {
+      }
+      else           /* ---------- NO ACI logic----------- */
+      {
       ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0][0]),
         &nNodes0, &(G(alpha())[0]), &nTransRows, &one, 
         &((*A)[0]), &nNodes0);
@@ -661,44 +699,57 @@ void RefIntegral::transformOneForm(const CellJacobianBatch& JTrans,
     {
       /* If we're on a lower-dimensional cell and have to transform, 
        * we've got to do each transformation using a different facet case */
-      int N = 1;
-      for (int c=0; c<JVol.numCells(); c++)
-      {
-        int fc = 0;
-        if (nfc != 1) fc = facetIndex[c];
-        double* aPtr = &((*A)[c*nNodes0]);
-        if (globalCurve().isCurveValid()){
-            /* ---------- ACI ----------- */
-        	/* call the special integration routine */
-        	quadWeightsTmp = quadWeights_;
-            quadPointsTmp = quadPts_;
-     		quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
-          mesh() , globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
-      		if (isCutByCurve){
-      			 Array<double> w;
-    			 w.resize(nRefDerivTest()*nNodes()); //recalculate the special weights
-				 for (int i = 0 ; i < nRefDerivTest()*nNodes() ; w[i] = 0.0 , i++);
-    		     for (int t=0; t<nRefDerivTest(); t++)
-    			   for (int nt = 0 ; nt < nNodesTest() ; nt++){
-    				 for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-    					 //Index formula: nNodesTest()*testDerivDir + testNode
-    					 w[nNodesTest()*t + nt] += chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][t][nt]);
-    			   }
-     		   ::dgemm_("N", "N", &nNodes0, &N , &nTransRows, &coeff, &(w[0]),
-     		      &nNodes0, &(G(alpha())[0]), &nTransRows, &one,
-     		      aPtr, &nNodes0);
-      	    }else{
-      	        ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
-      	          &nNodes0, &(G(alpha())[c*nTransRows]), &nTransRows, &one,
-      	          aPtr, &nNodes0);
-      		}
-            /* ---------- End ACI ----------- */
-        } else {
-        ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
-          &nNodes0, &(G(alpha())[c*nTransRows]), &nTransRows, &one, 
-          aPtr, &nNodes0);
+        if (globalCurve().isCurveValid())
+        {                 /* ---------- ACI logic ----------- */
+
+        	Array<double> quadWeightsTmp = quadWeights_;
+        	Array<Point> quadPointsTmp = quadPts_;
+        	bool isCutByCurve = false;
+
+            int N = 1;
+            for (int c=0; c<JVol.numCells(); c++)
+            {
+                int fc = 0;
+                if (nfc != 1) fc = facetIndex[c];
+                double* aPtr = &((*A)[c*nNodes0]);
+            	/* call the special integration routine */
+            	quadWeightsTmp = quadWeights_;
+            	quadPointsTmp = quadPts_;
+            	quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
+            			mesh() , globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
+            	if (isCutByCurve){
+            		Array<double> w;
+            		w.resize(nRefDerivTest()*nNodes()); //recalculate the special weights
+            		for (int i = 0 ; i < nRefDerivTest()*nNodes() ; w[i] = 0.0 , i++);
+            		for (int t=0; t<nRefDerivTest(); t++)
+            			for (int nt = 0 ; nt < nNodesTest() ; nt++){
+            				for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+            					//Index formula: nNodesTest()*testDerivDir + testNode
+            					w[nNodesTest()*t + nt] += chop(quadWeightsTmp[q] * W_ACI_F1_[fc][q][t][nt]);
+            			}
+            		::dgemm_("N", "N", &nNodes0, &N , &nTransRows, &coeff, &(w[0]),
+            				&nNodes0, &(G(alpha())[0]), &nTransRows, &one,
+            				aPtr, &nNodes0);
+            	}else{
+            		::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
+            				&nNodes0, &(G(alpha())[c*nTransRows]), &nTransRows, &one,
+            				aPtr, &nNodes0);
+            	}
+            }
         }
-      }// end from for loop over facets
+        else  /* ---------- NO ACI logic ----------- */
+        {
+            int N = 1;
+            for (int c=0; c<JVol.numCells(); c++)
+            {
+                int fc = 0;
+                if (nfc != 1) fc = facetIndex[c];
+                double* aPtr = &((*A)[c*nNodes0]);
+                ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
+                		&nNodes0, &(G(alpha())[c*nTransRows]), &nTransRows, &one,
+                		aPtr, &nNodes0);
+            }
+        }
     }
       
     addFlops(2 * nNodes0 * nCells * nTransRows);
@@ -720,59 +771,78 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
   Tabs tabs;  
   SUNDANCE_MSG1(transformVerb(), tabs << "doing two form by reference");
 
-  /** --- ACI --- */
-	Array<double> quadWeightsTmp = quadWeights_;
-	Array<Point> quadPointsTmp = quadPts_;
-	bool isCutByCurve = false;
-	int nfc = nFacetCases();
+  int nfc = nFacetCases();
 
 	  SUNDANCE_MSG1(transformVerb(), tabs << "doing two form by reference ... ");
   /* If the derivative orders are zero, the only transformation to be done 
    * is to multiply by the cell's Jacobian determinant */
   if (testDerivOrder() == 0 && unkDerivOrder() == 0)
   {
-    double* aPtr = &((*A)[0]);
-    int count = 0;
-    for (int c=0; c<JVol.numCells(); c++)
-    {
-      int fc = 0;
-      if (nFacetCases() != 1) fc = facetIndex[c];
+      if (globalCurve().isCurveValid())
+      {     /* ----------- ACI logic ------------ */
 
-      if (globalCurve().isCurveValid()){
-        /* ---------- ACI ----------- */
-  		/* call the special integration routine */
-      	quadWeightsTmp = quadWeights_;
-        quadPointsTmp = quadPts_;
-  		quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c] , fc ,
-        mesh(), globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
-        if (isCutByCurve){
-        	Array<double> w;
-        	int ci = 0;
-        	w.resize(nNodesTest()*nNodesUnk()); //recalculate the special weights
-        	for (int nt = 0 ; nt < nNodesTest() ; nt++)
-        		for(int nu=0 ; nu < nNodesUnk() ; nu++ , ci++){
-        			w[ci] = 0.0;
-        			for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-        				w[ci] += chop( quadWeightsTmp[q] * W_ACI_F2_[fc][q][0][nt][0][nu] );
-        		}
-        	// do the integration here
-      	    double detJ = coeff * fabs(JVol.detJ()[c]);
-      	    for (int n=0; n<nNodes(); n++, count++)
-      	    {
-      		  aPtr[count] += detJ*w[n];
-      	    }
-        }
+    	   Array<double> quadWeightsTmp = quadWeights_;
+    	   Array<Point> quadPointsTmp = quadPts_;
+    	   bool isCutByCurve = false;
+
+    	   double* aPtr = &((*A)[0]);
+    	   int count = 0;
+    	   for (int c=0; c<JVol.numCells(); c++)
+    	   {
+    	     int fc = 0;
+    	     if (nFacetCases() != 1) fc = facetIndex[c];
+
+    	     /* ---------- ACI ----------- */
+    	     /* call the special integration routine */
+    	     quadWeightsTmp = quadWeights_;
+    	     quadPointsTmp = quadPts_;
+    	     quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c] , fc ,
+    	    		 mesh(), globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
+    	     if (isCutByCurve){
+    	    	 Array<double> w;
+    	    	 int ci = 0;
+    	    	 w.resize(nNodesTest()*nNodesUnk()); //recalculate the special weights
+    	    	 for (int nt = 0 ; nt < nNodesTest() ; nt++)
+    	    		 for(int nu=0 ; nu < nNodesUnk() ; nu++ , ci++){
+    	    			 w[ci] = 0.0;
+    	    			 for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+    	    				 w[ci] += chop( quadWeightsTmp[q] * W_ACI_F2_[fc][q][0][nt][0][nu] );
+    	    		 }
+    	    	 // do the integration here
+    	    	 double detJ = coeff * fabs(JVol.detJ()[c]);
+    	    	 for (int n=0; n<nNodes(); n++, count++)
+    	    	 {
+    	    		 aPtr[count] += detJ*w[n];
+    	    	 }
+    	     }
+    	     else
+    	     {
+    	    	  const Array<double>& w = W_[fc];
+    	    	  double detJ = coeff * fabs(JVol.detJ()[c]);
+    	    	  for (int n=0; n<nNodes(); n++, count++)
+    	    	  {
+    	    		  aPtr[count] += detJ*w[n];
+    	    	  }
+    	     }
+    	   }
   	  }
-      /* ---------- End ACI ----------- */
-      if (!(globalCurve().isCurveValid()) || (!isCutByCurve)){
-    	  const Array<double>& w = W_[fc];
-    	  double detJ = coeff * fabs(JVol.detJ()[c]);
-    	  for (int n=0; n<nNodes(); n++, count++)
+      else        /* ---------- NO ACI logic----------- */
+      {
+    	  double* aPtr = &((*A)[0]);
+    	  int count = 0;
+    	  for (int c=0; c<JVol.numCells(); c++)
     	  {
-    		  aPtr[count] += detJ*w[n];
+    		  int fc = 0;
+    		  if (nFacetCases() != 1) fc = facetIndex[c];
+
+    		  const Array<double>& w = W_[fc];
+    		  double detJ = coeff * fabs(JVol.detJ()[c]);
+    		  for (int n=0; n<nNodes(); n++, count++)
+    		  {
+    			  aPtr[count] += detJ*w[n];
+    		  }
     	  }
       }
-    }
     addFlops(JVol.numCells() * (nNodes() + 1));
   }
   else
@@ -814,8 +884,13 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
       /* if we're on a maximal cell, we can do transformations 
        * for all cells in a single batch. 
        */
-      if (globalCurve().isCurveValid()){
-         /* ---------- ACI ----------- */
+      if (globalCurve().isCurveValid())
+      {          /* ---------- ACI logic ----------- */
+
+    	 Array<double> quadWeightsTmp = quadWeights_;
+    	 Array<Point> quadPointsTmp = quadPts_;
+    	 bool isCutByCurve = false;
+
        	 for (int c=0; c<JVol.numCells(); c++)
        	 {
              int fc = 0;
@@ -854,8 +929,9 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
        		        &(aPtr[0]), &nNodes0);
        		  }
        	 } // end from the for loop over the cells
-       /* ---------- End ACI ----------- */
-      } else {
+      }
+      else /* ---------- NO ACI ----------- */
+      {
         	 ::dgemm_("N", "N", &nNodes0, &nCells, &nTransRows, &coeff, &(W_[0][0]),
         		 &nNodes0, GPtr, &nTransRows, &one,
         		 &((*A)[0]), &nNodes0);
@@ -865,55 +941,71 @@ void RefIntegral::transformTwoForm(const CellJacobianBatch& JTrans,
     {
       /* If we're on a lower-dimensional cell and have to transform, 
        * we've got to do each transformation using a different facet case */
-      int N = 1;
-      for (int c=0; c<JVol.numCells(); c++)
-      {
-        int fc = 0;
-        if (nfc != 1) fc = facetIndex[c];
-        double* aPtr = &((*A)[c*nNodes0]);
-        double* gPtr = &(GPtr[c*nTransRows]);
-        SUNDANCE_MSG2(integrationVerb(),
-          tabs << "c=" << c << ", facet case=" << fc
-          << " W=" << W_[fc]);
-        if (globalCurve().isCurveValid()){
-        /* ---------- ACI ----------- */
+        if (globalCurve().isCurveValid())
+        {   /* ---------- ACI logic ----------- */
             int oneI = 1;
-            /* call the special integration routine */
-        	quadWeightsTmp = quadWeights_;
-            quadPointsTmp = quadPts_;
-         	quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
-            mesh(), globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
-         	if (isCutByCurve){
-         		 Array<double> w;
-         		 w.resize(nNodesUnk()*nNodesTest()*nRefDerivUnk()*nRefDerivTest());
-         		 for ( int i = 0 ; i < w.size() ; i++) w[i] = 0.0;
-         		 //recalculate the special weights
-         	     for (int t=0; t<nRefDerivTest(); t++){
-         	        for (int nt=0; nt<nNodesTest(); nt++)
-         	          for (int u=0; u<nRefDerivUnk(); u++)
-         	            for (int nu=0; nu<nNodesUnk(); nu++)
-         	            	for (int q=0 ; q < quadWeightsTmp.size() ; q++)
-         	                // unkNode + nNodesUnk()*testNode  + nNodes()*(unkDerivDir + nRefDerivUnk()*testDerivDir)
-         	                    w[nu + nNodesUnk()*nt  + nNodes()*(u + nRefDerivUnk()*t)] +=
-         	                    	chop( quadWeightsTmp[q]*W_ACI_F2_[fc][q][t][nt][u][nu] );
-         		 }
-        		 ::dgemm_("N", "N", &nNodes0, &oneI , &nTransRows, &coeff, &(w[0]),
-        		     &nNodes0, &(gPtr[0]), &nTransRows, &one,
-        		     &(aPtr[0]), &nNodes0);
-              }else{
-         		 ::dgemm_("N", "N", &nNodes0, &oneI , &nTransRows, &coeff, &(W_[fc][0]),
-         		     &nNodes0, &(gPtr[0]), &nTransRows, &one,
-         		     &(aPtr[0]), &nNodes0);
-         	  }
-        /* ---------- End ACI ----------- */
-        } else {
-        ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
-          &nNodes0, gPtr, &nTransRows, &one, 
-          aPtr, &nNodes0);
+            Array<double> quadWeightsTmp = quadWeights_;
+            Array<Point> quadPointsTmp = quadPts_;
+            bool isCutByCurve = false;
+
+            for (int c=0; c<JVol.numCells(); c++)
+            {
+              int fc = 0;
+              if (nfc != 1) fc = facetIndex[c];
+              double* aPtr = &((*A)[c*nNodes0]);
+              double* gPtr = &(GPtr[c*nTransRows]);
+              SUNDANCE_MSG2(integrationVerb(),
+                tabs << "c=" << c << ", facet case=" << fc
+                << " W=" << W_[fc]);
+
+              /* call the special integration routine */
+              quadWeightsTmp = quadWeights_;
+              quadPointsTmp = quadPts_;
+              quad_.getAdaptedWeights(cellType(), dim(), (*cellLIDs)[c], fc ,
+            		  mesh(), globalCurve(), quadPointsTmp, quadWeightsTmp, isCutByCurve);
+              if (isCutByCurve){
+            	  Array<double> w;
+            	  w.resize(nNodesUnk()*nNodesTest()*nRefDerivUnk()*nRefDerivTest());
+            	  for ( int i = 0 ; i < w.size() ; i++) w[i] = 0.0;
+            	  //recalculate the special weights
+            	  for (int t=0; t<nRefDerivTest(); t++){
+            		  for (int nt=0; nt<nNodesTest(); nt++)
+            			  for (int u=0; u<nRefDerivUnk(); u++)
+            				  for (int nu=0; nu<nNodesUnk(); nu++)
+            					  for (int q=0 ; q < quadWeightsTmp.size() ; q++)
+            						  // unkNode + nNodesUnk()*testNode  + nNodes()*(unkDerivDir + nRefDerivUnk()*testDerivDir)
+            						  w[nu + nNodesUnk()*nt  + nNodes()*(u + nRefDerivUnk()*t)] +=
+            								  chop( quadWeightsTmp[q]*W_ACI_F2_[fc][q][t][nt][u][nu] );
+            	  }
+            	  ::dgemm_("N", "N", &nNodes0, &oneI , &nTransRows, &coeff, &(w[0]),
+            			  &nNodes0, &(gPtr[0]), &nTransRows, &one,
+            			  &(aPtr[0]), &nNodes0);
+				  }else{
+					  ::dgemm_("N", "N", &nNodes0, &oneI , &nTransRows, &coeff, &(W_[fc][0]),
+							  &nNodes0, &(gPtr[0]), &nTransRows, &one,
+							  &(aPtr[0]), &nNodes0);
+				  }
+            }
         }
-      }
-          
-    }
+        else         /* ---------- NO ACI ----------- */
+        {
+            int N = 1;
+            for (int c=0; c<JVol.numCells(); c++)
+            {
+              int fc = 0;
+              if (nfc != 1) fc = facetIndex[c];
+              double* aPtr = &((*A)[c*nNodes0]);
+              double* gPtr = &(GPtr[c*nTransRows]);
+              SUNDANCE_MSG2(integrationVerb(),
+                tabs << "c=" << c << ", facet case=" << fc
+                << " W=" << W_[fc]);
+
+              ::dgemm_("N", "N", &nNodes0, &N, &nTransRows, &coeff, &(W_[fc][0]),
+            		  &nNodes0, gPtr, &nTransRows, &one,
+            		  aPtr, &nNodes0);
+            }
+        }
+    }// from else of (nFacetCases()==1)
       
     addFlops(2 * nNodes0 * nCells * nTransRows);
   }
