@@ -22,8 +22,8 @@ try
 	
         /* Meshing with PartitionedRectangleMesher. Gives only simplices
            unfortunately. We work on a nx1 x nx2 grid */
-        int nx1 = 30;
-        int nx2 = 40;
+        int nx1 = 15;
+        int nx2 = 20;
         MeshType meshType = new BasicSimplicialMeshType();
         MeshSource mesher = new PartitionedRectangleMesher(0.0,60.0,nx1,1,0.0,80.0,nx2,1,meshType);
         Mesh mesh = mesher.getMesh();
@@ -98,7 +98,7 @@ try
         double  F = -100;
 	
         /* Quadrature rule for numerical integration (not needed here)*/
-        QuadratureFamily quad_hi = new GaussianQuadrature(20);
+        QuadratureFamily quad_hi = new GaussianQuadrature(10);
         QuadratureFamily quad = new GaussianQuadrature(2);
 	
         /* Weak form of elastostatic problem (Principle of Virtual Displacements) */
