@@ -162,7 +162,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
   for (int d=0; d<=dim_; d++)
   {
     Tabs tab1;
-    SUNDANCE_VERB_MEDIUM(tab1 << "allocating d=" << d);
+    SUNDANCE_VERB_MEDIUM(tab << "allocating maps for cell dim=" << d);
     /* record the number of facets for each cell type so we're
      * not making a bunch of mesh calls */
     numFacets_[d].resize(d);
@@ -180,8 +180,9 @@ void MixedDOFMap::allocate(const Mesh& mesh)
     {
       Tabs tab2;
       SUNDANCE_VERB_MEDIUM(tab1 << "basis chunk=" << b);
+      SUNDANCE_VERB_MEDIUM(tab2 << "basis=" << basis(b)->description());
       int nNodes = basis(b).ptr()->nReferenceDOFs(mesh.cellType(dim_), mesh.cellType(d));
-      SUNDANCE_VERB_MEDIUM(tab1 << "nNodes per cell=" << nNodes);
+      SUNDANCE_VERB_MEDIUM(tab2 << "nNodes per cell=" << nNodes);
       if (nNodes == 0)
       {
         nNodesPerCell_[b][d] = 0;
@@ -196,8 +197,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
           localNodePtrs_[b][d]);
               
               
-        SUNDANCE_VERB_HIGH(tab1 << "node ptrs for basis " << basis(b)
-          << "and dimension " << d << " are " 
+        SUNDANCE_VERB_HIGH(tab2 << "node ptrs are " 
           << localNodePtrs_[b][d]);
               
         /* with the node pointers in hand, we can work out the number
@@ -224,9 +224,8 @@ void MixedDOFMap::allocate(const Mesh& mesh)
         tmpMesh.assignIntermediateCellGIDs(d);
       }
           
-      SUNDANCE_VERB_HIGH(tab1 << 
-        "num nodes for basis " << basis(b)
-        << "and dimension " << d << " is " 
+      SUNDANCE_VERB_HIGH(tab2 << 
+        "num nodes is " 
         << nNodesPerCell_[b][d]);
 
       totalNNodesPerCell_[b][d] = nNodesPerCell_[b][d];
@@ -236,6 +235,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
           += numFacets_[d][dd]*nNodesPerCell_[b][dd];
       }
       totalNDofsPerCell_[b][d] = totalNNodesPerCell_[b][d] * nFuncs(b);
+      SUNDANCE_VERB_HIGH(tab2 << "totalNDofsPerCell " << totalNDofsPerCell_[b][d]);
 
       if (nNodes > 0)
       {
@@ -695,6 +695,7 @@ RCP<const MapStructure> MixedDOFMap
             Tabs tab3;
             int facetID = facetLID[d][c*numFacets[d]+f];
             SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
+            if (localNodePtrs_[b][cellDim].size()==0) continue;
             int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
             //const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
             int* toPtr1 = &(dofs[b][dofsPerCell*c]);
@@ -782,8 +783,10 @@ void MixedDOFMap::buildMaximalDofTable() const
     SUNDANCE_VERB_EXTREME(tab1 << "doing interior nodes");
     for (int b=0; b<nBasisChunks(); b++)
     {
+      SUNDANCE_VERB_EXTREME(tab1 << "basis chunk=" << b); 
       if (nInteriorNodes[b]>0)
       {
+        SUNDANCE_VERB_EXTREME(tab1<< "nInteriorNodes = " <<nInteriorNodes[b]);
         //const int* fromPtr = getInitialDOFPtrForCell(dim_, cellLID[c], b);
         int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
         int nf = nFuncs(b);
@@ -815,6 +818,9 @@ void MixedDOFMap::buildMaximalDofTable() const
 
         for (int b=0; b<nBasisChunks(); b++)
         {
+          Tabs tab4;
+          SUNDANCE_VERB_EXTREME(tab4 << "basis chunk=" << b); 
+          SUNDANCE_VERB_EXTREME(tab4 << "num nodes per cell=" << nNodesPerCell_[b][d]); 
           int nf = nFuncs(b);
           if (nDofsPerCell_[b][d]==0) continue;
           int nFacetNodes = 0;
@@ -822,15 +828,21 @@ void MixedDOFMap::buildMaximalDofTable() const
             nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
           if (nFacetNodes == 0) continue;
           //  const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
+          SUNDANCE_VERB_EXTREME(tab4 << "dof table size=" << maximalDofs_[b].size()); 
           int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
           const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
           for (int func=0; func<nf; func++)
           {
+            Tabs tab5;
+            SUNDANCE_VERB_EXTREME(tab5 << "func=" << func); 
             if (d == 0 || nFacetNodes <= 1) /* orientation-independent */
             {
+              Tabs tab6;
               for (int n=0; n<nFacetNodes; n++)
               {
+                SUNDANCE_VERB_EXTREME(tab5 << "n=" << n); 
                 int ptr = nodePtr[n];
+                SUNDANCE_VERB_EXTREME(tab6 << "ptr=" << ptr); 
 
                 toPtr[func*nNodes[b] + ptr] 
                   = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
@@ -858,6 +870,8 @@ void MixedDOFMap::buildMaximalDofTable() const
   }
 
   haveMaximalDofs_ = true;
+
+  SUNDANCE_VERB_MEDIUM(tab << "done building dofs for maximal cells");
 }
 
 

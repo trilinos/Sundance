@@ -449,7 +449,7 @@ bool DOFMapBuilder::hasCellBasis(const Array<RCP<BasisDOFTopologyBase> >& basis)
   for (int i=0; i<basis.size(); i++)
   {
     const Lagrange* lagr 
-      = dynamic_cast<const Lagrange*>(basis[0].get());
+      = dynamic_cast<const Lagrange*>(basis[i].get());
     if (lagr==0 || lagr->order()!=0) return false;
   }
   return true;

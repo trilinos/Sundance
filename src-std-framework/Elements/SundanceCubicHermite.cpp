@@ -57,16 +57,16 @@ bool CubicHermite::supportsCellTypePair(
         default:
           return false;
       }
-//     case TriangleCell:
-//       switch(cellType)
-//       {
-//         case TriangleCell:
-//         case LineCell:
-//         case PointCell:
-//           return true;
-//         default:
-//           return false;
-//       }
+    case TriangleCell:
+      switch(cellType)
+      {
+        case TriangleCell:
+        case LineCell:
+        case PointCell:
+          return true;
+        default:
+          return false;
+      }
 //     case TetCell:
 //       switch(cellType)
 //       {
@@ -101,26 +101,26 @@ int CubicHermite::nReferenceDOFs(
         case PointCell:
           return 2;
         case LineCell:
-          return 4;
+          return 0;
         default:
           TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
           return -1;
       }
       break;
-//     case TriangleCell:
-//       switch(cellType)
-// 	{
-// 	case PointCell:
-// 	  return 3;
-// 	case LineCell:
-// 	  return 0;
-// 	case TriangleCell:
-// 	  return 1;
-// 	default:
-// 	  TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
-// 	  return -1;
-// 	}
-//       break;
+    case TriangleCell:
+      switch(cellType)
+      {
+        case PointCell:
+          return 3;
+        case LineCell:
+          return 0;
+        case TriangleCell:
+          return 1;
+        default:
+          TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
+          return -1;
+      }
+      break;
     default:
       TEST_FOR_EXCEPTION( true , std::invalid_argument , "illegal combination of cell type and maximal cell type" );
       return -1;
@@ -138,8 +138,14 @@ void CubicHermite::getReferenceDOFs(
   {
     case PointCell:
     {
+      std::cout << "woohoo" << std::endl;
+      std::cout << maximalCellType << std::endl;
       dofs.resize(1);
-      dofs[0] = tuple<Aint>(tuple(0,1));
+      if (maximalCellType==LineCell)
+        dofs[0] = tuple<Aint>(tuple(0,1));
+      else if (maximalCellType==TriangleCell)
+        dofs[0] = tuple<Aint>(tuple(0,1,2));
+      else TEST_FOR_EXCEPT(1);
       return;
     }
     break;
@@ -147,15 +153,49 @@ void CubicHermite::getReferenceDOFs(
     {
       dofs.resize(2);
       dofs[0].resize(2);
-      dofs[0][0].resize(2);
-      dofs[0][0][0] = 0;
-      dofs[0][0][1] = 1;
-      dofs[0][1].resize(2);
-      dofs[0][1][0] = 2;
-      dofs[0][1][1] = 3;
+      if (maximalCellType==LineCell)
+      {
+        dofs[0][0].resize(2);
+        dofs[0][0][0] = 0;
+        dofs[0][0][1] = 1;
+        dofs[0][1].resize(2);
+        dofs[0][1][0] = 2;
+        dofs[0][1][1] = 3;
+      }
+      else if (maximalCellType==TriangleCell)
+      {
+        dofs[0][0].resize(3);
+        dofs[0][0][0] = 0;
+        dofs[0][0][1] = 1;
+        dofs[0][0][2] = 2;
+        dofs[0][1].resize(3);
+        dofs[0][1][0] = 3;
+        dofs[0][1][1] = 4;
+        dofs[0][1][1] = 5;
+      }
+      else
+      {
+        TEST_FOR_EXCEPT(1);
+      }
       dofs[1].resize(1);
       dofs[1][0].resize(0);
       return;
+    }
+    break;
+    case TriangleCell:
+    {
+      dofs.resize(3);
+      dofs[0].resize(3);
+      dofs[0][0] = tuple(0,1,2);
+      dofs[0][1] = tuple(3,4,5);
+      dofs[0][2] = tuple(6,7,8);
+      dofs[1].resize(3);
+      dofs[1][0].resize(0);
+      dofs[1][1].resize(0);
+      dofs[1][2].resize(0);
+      dofs[2].resize(1);
+      dofs[2][0].resize(1);
+      dofs[2][0][0] = 9;
     }
     break;
     default:
@@ -191,12 +231,12 @@ void CubicHermite::refEval(
         evalOnLine(pts[i], deriv, result[0][i]);
       }
       return;
-//     case TriangleCell:
-//       for (int i=0; i<pts.length(); i++)
-//       {
-//         evalOnTriangle(pts[i], deriv, result[0][i]);
-//       }
-//       return;
+    case TriangleCell:
+      for (int i=0; i<pts.length(); i++)
+      {
+        evalOnTriangle(pts[i], deriv, result[0][i]);
+      }
+      return;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError,
         "CubicHermite::refEval() unimplemented for cell type "

@@ -122,6 +122,11 @@ int Lagrange::nReferenceDOFs(
   const CellType& cellType
   ) const
 {
+  if (order_==0)
+  {
+    if (maximalCellType != cellType) return 0;
+    return 1;
+  }
   switch(cellType)
     {
     case PointCell:
@@ -208,6 +213,22 @@ void Lagrange::getReferenceDOFs(
   Array<Array<Array<int> > >& dofs) const 
 {
   typedef Array<int> Aint;
+
+  if (order_==0)
+  {
+    int dim = dimension(cellType);
+    dofs.resize(dim+1);
+    for (int d=0; d<dim; d++)
+    {
+      Array<Array<int> > dd;
+      for (int f=0; f<numFacets(cellType, d); f++) dd.append(Array<int>());
+      dofs[d] = dd;
+    }
+    if (cellType!=PointCell) dofs[dim] = tuple<Aint>(tuple(0));
+    else dofs[dim] = tuple<Aint>(Array<int>());
+    return;
+  }
+
   switch(cellType)
     {
     case PointCell:

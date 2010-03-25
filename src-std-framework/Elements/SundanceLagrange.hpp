@@ -85,6 +85,10 @@ public:
   /* Handleable boilerplate */
   GET_RCP(BasisFamilyBase);
 
+  /** */
+  std::string description() const 
+    {return "Lagrange(" + Teuchos::toString(order()) + ")";}
+
 private:
   int order_;
 

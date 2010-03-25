@@ -454,16 +454,18 @@ void TriangleMeshReader::readSides(Mesh& mesh) const
       Array<string> tokens;
       /* Open the side file */
       RCP<std::ifstream> sideStream;
+      bool fileOK = false;
 
       try
         {
           sideStream = openFile(sideFilename_, "side info");
+          fileOK = true;
         }
       catch(std::exception& e) {;}
 
       /* Not all meshes will have sides files.
        * If the sides file doesn't exist, return. */
-      if (sideStream.get()==0 || *sideStream==0) 
+      if (!fileOK)
         {
           SUNDANCE_VERB_LOW("side file [" << sideFilename_ << "] not found");
           return;

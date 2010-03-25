@@ -178,6 +178,7 @@ APPEND_SET(HEADERS
   Sources/SundanceTriangleMeshReader.hpp
   Sources/SundanceBamgMeshReader.hpp 
   Sources/SundanceHNodeMesher2D.hpp
+  Sources/SundanceOneCellTestMesher.hpp
   )
 
 APPEND_SET(SOURCES
@@ -192,6 +193,7 @@ APPEND_SET(SOURCES
   Sources/SundanceTriangleMeshReader.cpp
   Sources/SundanceBamgMeshReader.cpp
   Sources/SundanceHNodeMesher2D.cpp
+  Sources/SundanceOneCellTestMesher.cpp
   )
   
 IF(HAVE_SUNDANCE_PEANO) 
