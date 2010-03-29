@@ -722,7 +722,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
        * evaluated using all DOFs from the maximal cell, not just
        * those on the facet.
        */
-      int nNodes = basis.nReferenceDOFs(maxCellType(), maxCellType());
+      int nNodes = basis.nReferenceDOFsWithFacets(maxCellType(), maxCellType());
       int nRowsA = nQuad*nDir;
       int nColsA = nNodes;
       int nColsB = nFuncs; 
@@ -755,7 +755,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
       Array<Array<double> >* refBasisValues 
         = getRefBasisVals(basis, diffOrder);
-      int nNodes = basis.nReferenceDOFs(maxCellType(), cellType());
+      int nNodes = basis.nReferenceDOFsWithFacets(maxCellType(), cellType());
       int nRowsA = nQuad*nDir;
       int nColsA = nNodes;
       int nColsB = nFuncs*nCells; 

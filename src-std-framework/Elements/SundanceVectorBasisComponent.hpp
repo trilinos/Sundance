@@ -93,12 +93,22 @@ public:
 
 
   /** */
-  int nReferenceDOFs(
+  int nReferenceDOFsWithFacets(
     const CellType& maximalCellType,
     const CellType& cellType
     ) const
     {
-      return master_.ptr()->nReferenceDOFs(maximalCellType, 
+      return master_.ptr()->nReferenceDOFsWithFacets(maximalCellType, 
+        cellType);
+    }
+
+  /** */
+  int nReferenceDOFsWithoutFacets(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const
+    {
+      return master_.ptr()->nReferenceDOFsWithoutFacets(maximalCellType, 
         cellType);
     }
 

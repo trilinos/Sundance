@@ -68,7 +68,7 @@ public:
     ) const ;
 
   /** */
-  virtual int nReferenceDOFs(
+  virtual int nReferenceDOFsWithoutFacets(
     const CellType& maximalCellType,
     const CellType& cellType
     ) const ;

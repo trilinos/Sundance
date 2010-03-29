@@ -70,10 +70,16 @@ int BasisFamily::size(const Array<BasisFamily>& b)
   return rtn;
 }
 
-int BasisFamily::nReferenceDOFs(const CellType& maximalCellType,
+int BasisFamily::nReferenceDOFsWithFacets(const CellType& maximalCellType,
   const CellType& cellType) const 
 {
-  return ptr()->nReferenceDOFs(maximalCellType, cellType);
+  return ptr()->nReferenceDOFsWithFacets(maximalCellType, cellType);
+}
+
+int BasisFamily::nReferenceDOFsWithoutFacets(const CellType& maximalCellType,
+  const CellType& cellType) const 
+{
+  return ptr()->nReferenceDOFsWithoutFacets(maximalCellType, cellType);
 }
 
 BasisFamily BasisFamily::getBasis(const RCP<const CommonFuncDataStub>& funcData)

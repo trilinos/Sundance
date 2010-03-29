@@ -195,7 +195,29 @@ public:
    * 
    * \return Number of DOFs associated with the cell type and its facets.    
    */
-  virtual int nReferenceDOFs(
+  virtual int nReferenceDOFsWithFacets(
+    const CellType& maximalCellType,
+    const CellType& cellType
+    ) const ;
+
+
+  /** \brief Return the total number of degrees of freedom associated with
+   * this basis on a specified cell type. Note: the count returned
+   * by this function DOES NOT include DOFs owned by facets of the specified
+   * reference cell. 
+   * 
+   *
+   * \param cellType 
+   *         [in] type of cell for which we want DOF information.
+   *
+   * \param maximalCellType
+   *         [in] maximal-dimension cell type to which the cell is connected.
+   *         For example, a triangle in 3D could be connected to a prism
+   *         or to a tetrahedron. 
+   * 
+   * \return Number of DOFs associated with the cell type.    
+   */
+  virtual int nReferenceDOFsWithoutFacets(
     const CellType& maximalCellType,
     const CellType& cellType
     ) const = 0;

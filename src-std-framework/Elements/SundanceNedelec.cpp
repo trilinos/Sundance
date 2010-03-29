@@ -86,11 +86,12 @@ void Nedelec::print(std::ostream& os) const
   os << "Nedelec()";
 }
 
-int Nedelec::nReferenceDOFs(
+int Nedelec::nReferenceDOFsWithoutFacets(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const
 {
+  TEST_FOR_EXCEPT(maximalCellType != TriangleCell);
   switch(cellType)
     {
     case PointCell:
@@ -98,7 +99,7 @@ int Nedelec::nReferenceDOFs(
     case LineCell:
       return 1;
     case TriangleCell:
-      return 3;
+      return 0;
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
                          << cellType << " not implemented in Nedelec basis");

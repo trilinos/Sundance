@@ -181,7 +181,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
       Tabs tab2;
       SUNDANCE_VERB_MEDIUM(tab1 << "basis chunk=" << b);
       SUNDANCE_VERB_MEDIUM(tab2 << "basis=" << basis(b)->description());
-      int nNodes = basis(b).ptr()->nReferenceDOFs(mesh.cellType(dim_), mesh.cellType(d));
+      int nNodes = basis(b).ptr()->nReferenceDOFsWithFacets(mesh.cellType(dim_), mesh.cellType(d));
       SUNDANCE_VERB_MEDIUM(tab2 << "nNodes per cell=" << nNodes);
       if (nNodes == 0)
       {

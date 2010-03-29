@@ -84,25 +84,18 @@ std::string RaviartThomas::description() const
   return "RaviartThomas()";
 }
 
-int RaviartThomas::nReferenceDOFs(
+int RaviartThomas::nReferenceDOFsWithoutFacets(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const
 {
-  switch(cellType)
+  if (dimension(cellType) == dimension(maximalCellType)-1)
   {
-    case PointCell:
-      return 0;
-    case LineCell:
-      return 2;
-    case TriangleCell:
-      return 3;
-    case TetCell:
-      return 4;
-    default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-        << cellType << " not implemented in RaviartThomas basis");
-      return -1; // -Wall
+    return 1;
+  }
+  else
+  {
+    return 0;
   }
 }
 

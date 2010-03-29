@@ -95,37 +95,47 @@ void Bernstein::print(std::ostream& os) const
   os << "Bernstein(" << order_ << ")";
 }
 
-int Bernstein::nReferenceDOFs(
+int Bernstein::nReferenceDOFsWithoutFacets(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const
 {
+  if (order_==0)
+  {
+    if (maximalCellType != cellType) return 0;
+    return 1;
+  }
+
   switch(cellType)
   {
     case PointCell:
       return 1;
     case LineCell:
-      return 1 + order_;
+      return order_-1;
     case TriangleCell:
-    {
-      return (order_+1)*(order_+2)/2;
-    }
+      if (order_ < 3) return 0;
+      if (order_ == 3) return 1;
+      TEST_FOR_EXCEPTION(order_>3, RuntimeError, 
+        "Bernstein order > 3 not implemented "
+        "for triangle cells");
+      return 0;
+    case QuadCell:
+      if (order_==1) return 0;
+      if (order_==2) return 1;
+      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+        "Bernstein order > 2 not implemented "
+        "for quad cells");
     case TetCell:
-    {switch(order_)
-      {
-        case 0:
-          return 1;
-        case 1:
-          return 4;
-        case 2:
-          return 10;
-        default:
-          TEST_FOR_EXCEPTION(true, RuntimeError, "order=" << order_ 
-            << " not implemented in Bernstein basis");
-          return -1; // -Wall
-      }
-
-    }
+      if (order_<=2) return 0;
+      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+        "Bernstein order > 2 not implemented "
+        "for tet cells");
+    case BrickCell:
+      if (order_<=1) return 0;
+      if (order_==2) return 1;
+      TEST_FOR_EXCEPTION(order_>2, RuntimeError, 
+        "Bernstein order > 2 not implemented "
+        "for brick cells");
     default:
       TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
         << cellType << " not implemented in Bernstein basis");

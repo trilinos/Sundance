@@ -76,6 +76,7 @@ APPEND_SET(HEADERS
   )
 
 APPEND_SET(SOURCES
+  Elements/SundanceBasisDOFTopologyBase.cpp
   Elements/SundanceBasisFamily.cpp
   Elements/SundanceBasisFamilyBase.cpp
   Elements/SundanceBernstein.cpp

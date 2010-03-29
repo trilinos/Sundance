@@ -114,7 +114,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
     nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
-    nNodesTest_(testBasis.nReferenceDOFs(maxCellType, cellType)),
+    nNodesTest_(testBasis.nReferenceDOFsWithFacets(maxCellType, cellType)),
     unkDerivOrder_(-1), 
     nRefDerivUnk_(-1),
     nNodesUnk_(-1),
@@ -149,7 +149,7 @@ ElementIntegral::ElementIntegral(int spatialDim,
       Tabs tab2;
       evalCellType_ = maxCellType_;
       nFacetCases_ = numFacets(maxCellType, dim);
-      nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
+      nNodesTest_ = testBasis.nReferenceDOFsWithFacets(maxCellType, maxCellType);
       SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesTest=" << nNodesTest_);
       nNodes_ = nNodesTest_;
       TEST_FOR_EXCEPT(nNodes_ == 0);
@@ -188,10 +188,10 @@ ElementIntegral::ElementIntegral(int spatialDim,
     nFacetCases_(1),
     testDerivOrder_(testDerivOrder), 
     nRefDerivTest_(ipow(spatialDim, testDerivOrder)),
-    nNodesTest_(testBasis.nReferenceDOFs(maxCellType, cellType)), 
+    nNodesTest_(testBasis.nReferenceDOFsWithFacets(maxCellType, cellType)), 
     unkDerivOrder_(unkDerivOrder), 
     nRefDerivUnk_(ipow(spatialDim, unkDerivOrder)),
-    nNodesUnk_(unkBasis.nReferenceDOFs(maxCellType, cellType)), 
+    nNodesUnk_(unkBasis.nReferenceDOFsWithFacets(maxCellType, cellType)), 
     nNodes_(nNodesTest_*nNodesUnk_),
     order_(2),
     alpha_(alpha),
@@ -225,9 +225,9 @@ ElementIntegral::ElementIntegral(int spatialDim,
       Tabs tab2;
       evalCellType_ = maxCellType_;
       nFacetCases_ = numFacets(maxCellType, dim);
-      nNodesTest_ = testBasis.nReferenceDOFs(maxCellType, maxCellType);
+      nNodesTest_ = testBasis.nReferenceDOFsWithFacets(maxCellType, maxCellType);
       SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesTest=" << nNodesTest_);
-      nNodesUnk_ = unkBasis.nReferenceDOFs(maxCellType, maxCellType);
+      nNodesUnk_ = unkBasis.nReferenceDOFsWithFacets(maxCellType, maxCellType);
       SUNDANCE_MSG2(setupVerb(), tab2 << "nNodesUnk=" << nNodesUnk_);
       nNodes_ = nNodesTest_ * nNodesUnk_;
       TEST_FOR_EXCEPT(nNodes_ == 0);

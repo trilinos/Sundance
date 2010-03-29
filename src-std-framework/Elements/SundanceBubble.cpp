@@ -91,53 +91,13 @@ void Bubble::print(std::ostream& os) const
   os << "Bubble(" << order_ << ")";
 }
 
-int Bubble::nReferenceDOFs(
+int Bubble::nReferenceDOFsWithoutFacets(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const
 {
-  switch(maximalCellType)
-    {
-    case PointCell:
-      return 0;
-    case LineCell:
-      switch (cellType)
-      {
-        case PointCell:
-          return 0;
-        case LineCell:
-          return 1;
-        default:
-          TEST_FOR_EXCEPT(true);
-      }
-    case TriangleCell:
-      switch(cellType)
-      {
-        case PointCell:
-        case LineCell:
-          return 0;
-        case TriangleCell:
-          return 1;
-        default:
-          TEST_FOR_EXCEPT(true);
-      }
-    case TetCell:
-      switch(cellType)
-      {
-        case PointCell:
-        case LineCell:
-        case TriangleCell:
-          return 0;
-        case TetCell:
-          return 1;
-        default:
-          TEST_FOR_EXCEPT(true);
-      }
-    default:
-      TEST_FOR_EXCEPTION(true, RuntimeError, "Cell type "
-                         << cellType << " not implemented in Bubble basis");
-      return -1; // -Wall
-    }
+  if (maximalCellType==cellType) return 1;
+  else return 0;
 }
 
 void Bubble::getReferenceDOFs(

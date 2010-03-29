@@ -50,7 +50,6 @@
 #include "SundanceDiscreteFunction.hpp"
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
-#include "SundanceFIATLagrange.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceQuadratureEvalMediator.hpp"
 #include "SundanceSymbPreprocessor.hpp"
@@ -135,11 +134,8 @@ int main(int argc, char** argv)
           quad.getPoints(cellType, qPts, qWts);
 
           BasisFamily b1 = new Lagrange(p);
-#ifdef HAVE_FIAT
-          BasisFamily b2 = new FIATLagrange(p);
-#else
           BasisFamily b2 = new Lagrange(p);
-#endif
+
           for (int d=0; d<=maxDiffOrder; d++)
           {
             if (cellDim==0 && d>0) continue;
@@ -160,8 +156,8 @@ int main(int argc, char** argv)
               cerr << tab5 << "computing basis2...";
               b2.ptr()->refEval(cellType, qPts, mi, values2);
               cerr << "done" << endl;
-              int nNodes1 = b1.ptr()->nReferenceDOFs(cellType, cellType);
-              int nNodes2 = b2.ptr()->nReferenceDOFs(cellType, cellType);
+              int nNodes1 = b1.ptr()->nReferenceDOFsWithFacets(cellType, cellType);
+              int nNodes2 = b2.ptr()->nReferenceDOFsWithFacets(cellType, cellType);
               cerr << tab5 << "num nodes: basis1=" << nNodes1
                    << " basis2=" << nNodes2 << endl;
               if (nNodes1 != nNodes2) 

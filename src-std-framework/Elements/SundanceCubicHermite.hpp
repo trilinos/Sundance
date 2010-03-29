@@ -61,7 +61,7 @@ public:
   int order() const {return 3;}
 
   /** return the number of nodes for this basis on the given cell type */
-  int nReferenceDOFs(
+  int nReferenceDOFsWithoutFacets(
     const CellType& maximalCellType,
     const CellType& cellType
     ) const ;

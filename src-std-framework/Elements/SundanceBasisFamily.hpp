@@ -80,9 +80,16 @@ public:
 
   /** \brief
    * Return the number of DOFs for this basis on the given 
-   * reference cell type.
+   * reference cell type, including its facets.
    */
-  int nReferenceDOFs(const CellType& maximalCellType,
+  int nReferenceDOFsWithFacets(const CellType& maximalCellType,
+    const CellType& cellType) const ;
+
+  /** \brief
+   * Return the number of DOFs for this basis on the given 
+   * reference cell type, not including those on facets.
+   */
+  int nReferenceDOFsWithoutFacets(const CellType& maximalCellType,
     const CellType& cellType) const ;
 
   /** 

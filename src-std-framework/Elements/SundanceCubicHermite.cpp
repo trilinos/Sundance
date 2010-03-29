@@ -88,7 +88,7 @@ void CubicHermite::print(std::ostream& os) const
   os << "CubicHermite";
 }
 
-int CubicHermite::nReferenceDOFs(
+int CubicHermite::nReferenceDOFsWithoutFacets(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const

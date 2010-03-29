@@ -35,6 +35,7 @@ SET(SerialTests
   PoissonPeano2D
   PoissonPeano3D
   StokesPeano2D 
+  MixedTest
 )
 
 

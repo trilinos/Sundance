@@ -73,15 +73,13 @@ void EdgeLocalizedBasis::print(std::ostream& os) const
   os << "EdgeLocalizedBasis()";
 }
 
-int EdgeLocalizedBasis::nReferenceDOFs(
+int EdgeLocalizedBasis::nReferenceDOFsWithoutFacets(
   const CellType& maximalCellType,
   const CellType& cellType
   ) const
 {
   switch(cellType)
   {
-    case TriangleCell:
-      return 3;
     case LineCell:
       return 1;
     default:
