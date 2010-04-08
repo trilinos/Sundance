@@ -60,7 +60,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+    ,transformationBuilder_(0)
 {
   init(maximalRegions(1), BasisArray(tuple(basis)));
 }
@@ -74,7 +74,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+    ,transformationBuilder_(0)
 {
   init(maximalRegions(basis.size()), basis);
 }
@@ -89,7 +89,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+    ,transformationBuilder_(0)
 {
   init(funcDomains, basis);
 }
@@ -105,7 +105,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+    ,transformationBuilder_(0)
 {
   init(tuple(funcDomains), BasisArray(tuple(basis)));
 }
@@ -121,7 +121,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+    ,transformationBuilder_(0)
 {
   init(Array<CellFilter>(basis.size(), funcDomains), basis);
 }
@@ -139,7 +139,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder( mesh , basis , map ))
+    ,transformationBuilder_(0)
 {
   init(map->funcDomains(), basis, bcIndices, true);
 }
@@ -154,7 +154,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder( mesh , basis , map ))
+    ,transformationBuilder_(0)
 {
   init(map->funcDomains(), basis);
 }
@@ -170,7 +170,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+    ,transformationBuilder_(0)
 {
   init(maximalRegions(spBasis.nterms()), 
        replicate(basis, spBasis.nterms()));
@@ -186,7 +186,7 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+    ,transformationBuilder_(0)
 {
   init(maximalRegions(basis.size() * spBasis.nterms()), 
        replicate(basis, spBasis.nterms()));
@@ -234,6 +234,8 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
   }
   RCP<Array<int> > dummyBCIndices;
   
+  // set up the transformation
+  transformationBuilder_ = rcp(new DiscreteSpaceTransfBuilder( mesh , basis , map_ ));
 
   initVectorSpace(dummyBCIndices, partitionBCs);
   initImporter();
@@ -268,6 +270,9 @@ void DiscreteSpace::init(
       DOFMapBuilder b;
       map_ = b.makeMap(mesh_, basisTop, cf);
     }
+
+  // set up the transformation
+  transformationBuilder_ = rcp(new DiscreteSpaceTransfBuilder( mesh_ , basis , map_ ));
 
   initVectorSpace(isBCIndex, partitionBCs);
 

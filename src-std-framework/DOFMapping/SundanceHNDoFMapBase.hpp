@@ -29,13 +29,17 @@ public:
 		    const ParameterList& verbParams ):
 		    		SpatiallyHomogeneousDOFMapBase(mesh, nFuncs, verbParams){;}
 
+	virtual ~HNDoFMapBase() {;}
+
 	/**
 	 * @param cellLID [in] the maxCell LID input
+	 * @param funcID  [in] the function ID
 	 * @param trafoMatrixSize [in/out]
 	 * @param doTransform [out]
 	 * @param transfMatrix [out] (we assume that the array is already pre-sized )*/
 	  virtual void getTrafoMatrixForCell(
 		    int cellLID,
+		    int funcID,
 		    int& trafoMatrixSize,
 		    bool& doTransform,
 		    Array<double>& transfMatrix ) const=0;
@@ -47,7 +51,7 @@ public:
 	   * @param funcID  [in] the function ID, (to wchich the DOFs belong)
 	   * @param dofs    [out] the global DoF s
 	   * @param coefs   [out] the coefficient of each global DoF */
-	  virtual void getDOFsForCell(
+	  virtual void getDOFsForHNCell(
 			int cellDim,
 			int cellLID,
 	        int funcID,

@@ -149,6 +149,8 @@ public:
   /** */
   static double& totalFlops() {static double rtn = 0; return rtn;}
 
+  BasisFamily &getTestBasis() { return testBasis_; }
+  BasisFamily &getUnknownBasis() { return unkBasis_; }
 
 protected:
 

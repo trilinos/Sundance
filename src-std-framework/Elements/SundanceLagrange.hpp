@@ -80,7 +80,20 @@ public:
     Array<Array<Array<double> > >& result,
     int verbosity=0) const ;
 
-
+  /** constraints for hanging DoFs*/
+   void getConstrainsForHNDoF(
+    	const int indexInParent,
+    	const int maxCellDim,
+    	const int maxNrChild,
+    	const int facetDim,
+    	const int facetIndex,
+    	const int nodeIndex,
+    	Array<int>& localDoFs,
+	    Array<int>& parentFacetDim,
+	    Array<int>& parentFacetIndex,
+	    Array<int>& parentFacetNode,
+    	Array<double>& coefs
+    	);
 
   /* Handleable boilerplate */
   GET_RCP(BasisFamilyBase);
@@ -118,6 +131,48 @@ private:
   void evalOnBrick(const Point& pt,
     const MultiIndex& deriv,
     Array<double>& result) const ;
+
+  /** get the exact position one DoF on the Ref Element
+   * this is needed for the treatment of hanging nodes
+   * @param maxCellDim [in] the MaxCell dim of this element
+   * @param facetDim   [in] the facet dim which the DoF is on
+   * @param facetIndex [in] the facet index which the DoF is on
+   * @param nodeIndex  [in] the node index of the DoF
+   * @param pos       [out] the position of the DoF
+   * */
+  void returnDoFPositionOnRef(
+	const int maxCellDim,
+	const int facetDim,
+	const int facetIndex,
+	const int nodeIndex,
+	Point& pos) const;
+
+  /** This method calls the "getReferenceDOFs" method and then for each DoF
+   * extracts the facet dimension, facet index and node in 3 different array <br>
+   * This method could be used for general purpose for other basis, where HN is possible
+   * @param maxCellDim [in]
+   * @param nrDoF  [in] nr of DoF for this element
+   * @param facetD [out]
+   * @param facetI [out]
+   * @param facetN [out] */
+  void  getDoFsOrdered(
+  		const CellType maxCellDim,
+  		int nrDoF,
+  		Array<int>& facetD,
+  		Array<int>& facetI,
+  		Array<int>& facetN);
+
+  /** */
+  bool doFInfromationCalculated_;
+
+  /** For each DoF the dimension of the element which is the DoF on*/
+  Array<int> facetD_;
+
+  /** For each DoF the facet index of the element*/
+  Array<int> facetI_;
+
+  /** For each DoF the facet index of the element*/
+  Array<int> facetN_;
 };
 }
 

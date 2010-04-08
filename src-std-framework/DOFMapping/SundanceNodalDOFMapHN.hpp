@@ -69,18 +69,20 @@ public:
 
 	/**
 	 * @param cellLID [in] the maxCell LID input
+	 * @param funcID [in] the function ID
 	 * @param trafoMatrixSize [in/out]
 	 * @param doTransform [out]
 	 * @param transfMatrix [out] (we assume that the array is already pre-sized )*/
-  virtual void getTrafoMatrixForCell(
+  void getTrafoMatrixForCell(
 	    int cellLID,
+	    int funcID,
 	    int& trafoMatrixSize,
 	    bool& doTransform,
 	    Array<double>& transfMatrix ) const;
 
 
   /** See subclass for docu */
-  virtual void getDOFsForCell(
+  void getDOFsForHNCell(
 		int cellDim,
 		int cellLID,
         int funcID,

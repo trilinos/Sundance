@@ -24,37 +24,29 @@ public:
 	virtual ~TransformationHN();
 
 	/** */
-	virtual void preApply(
-			const int multiplicity ,
-			const int vectorPerCell,
-			const CellJacobianBatch& JTrans,
-		    const CellJacobianBatch& JVol,
-			const Array<int>& facetIndex,
-			const RCP<Array<int> >& cellLIDs,
-			RCP<Array<double> >& A
-			) const ;
+  virtual void preApply( const int funcID ,
+			 const CellJacobianBatch& JTrans,
+			 const CellJacobianBatch& JVol,
+			 const Array<int>& facetIndex,
+			 const RCP<Array<int> >& cellLIDs,
+			 RCP<Array<double> >& A ) const ;
 
 	/** */
-	virtual void postApply(
-			const int multiplicity ,
-			const int vectorPerCell,
-			const CellJacobianBatch& JTrans,
-		    const CellJacobianBatch& JVol,
-			const Array<int>& facetIndex,
-			const RCP<Array<int> >& cellLIDs,
-			RCP<Array<double> >& A
-			) const ;
-
-	/** */
-	// this will potentially used in scatter process
-	virtual void preapplyTranspose(
-			const int multiplicity ,
-			const int vectorPerCell,
-			const int cellDim,
-			const Array<int>& cellLIDs,
-			const Array<int>& facetIndex,
-			Array<double>& A
-			) const;
+  virtual void postApply( const int funcID ,
+			  const CellJacobianBatch& JTrans,
+			  const CellJacobianBatch& JVol,
+			  const Array<int>& facetIndex,
+			  const RCP<Array<int> >& cellLIDs,
+			  RCP<Array<double> >& A
+			  ) const ;
+  
+  /** */
+  // this will potentially used in scatter process
+  virtual void preapplyTranspose( const int cellDim,
+				  const int funcID,
+				  const Array<int>& cellLIDs,
+				  const Array<int>& facetIndex,
+				  Array<double>& A ) const;
 
 protected:
 

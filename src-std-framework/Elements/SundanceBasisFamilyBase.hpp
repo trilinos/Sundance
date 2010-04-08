@@ -31,6 +31,7 @@
 #ifndef SUNDANCE_BASISFAMILYBASE_H
 #define SUNDANCE_BASISFAMILYBASE_H
 
+#include "SundanceCellJacobianBatch.hpp"
 #include "SundanceDefs.hpp"
 #include "SundanceBasisDOFTopologyBase.hpp"
 #include "SundanceTensorBasisBase.hpp"
@@ -64,6 +65,25 @@ public:
 
   /** */
   virtual bool lessThan(const BasisDOFTopologyBase* other) const ;
+
+  /** \brief Indicates whether mapping the basis requires an additional
+      correction */
+  virtual bool requiresBasisTransformation() const { return false; }
+  /** \brief Default transformation does nothing */
+  virtual void preApplyTransformation( const CellType &maxCellType ,
+				       const CellJacobianBatch& JVol,
+				       RCP<Array<double> >& A
+				       ) const {;}
+  /** \brief Default transformation does nothing */
+  virtual void postApplyTransformation( const CellType &maxCellType ,
+					const CellJacobianBatch& JVol,
+					RCP<Array<double> >& A
+					) const {;}
+  /** \brief Default transformation does nothing */
+  virtual void preApplyTransformationTranspose( const CellType &maxCellType ,
+						const CellJacobianBatch& JVol,
+						Array<double>& A ) const {;}
+
 };
 
 

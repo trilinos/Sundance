@@ -334,6 +334,7 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
 
 void NodalDOFMapHN::getTrafoMatrixForCell(
 	    int cellLID,
+	    int funcID,
 	    int& trafoMatrixSize,
 	    bool& doTransform,
 	    Array<double>& transfMatrix ) const {
@@ -353,7 +354,7 @@ void NodalDOFMapHN::getTrafoMatrixForCell(
 }
 
 /** Function for nodal plotting */
-void NodalDOFMapHN::getDOFsForCell(
+void NodalDOFMapHN::getDOFsForHNCell(
 	  int cellDim,
 	  int cellLID,
       int funcID,
@@ -378,6 +379,7 @@ void NodalDOFMapHN::getDOFsForCell(
 
 /** This function is only for TRISECTION implemented */
 // TODO: this code and functionality should actually in the basis function AND NOT HERE, this is just a first try!!!
+// todo: use the method of BasisFunction->getConstraintForHN()
 void NodalDOFMapHN::getPointLIDsForHN( int pointLID , int facetIndex ,
 		int maxCellIndex ,Array<int>& glbLIDs, Array<double>& coefsArray){
 
@@ -422,7 +424,6 @@ void NodalDOFMapHN::getPointLIDsForHN( int pointLID , int facetIndex ,
 	case 3:
 		glbLIDs.resize(4);
         // Todo: implement this for 3D , this migh get here much complicated ...
-		// TODO: this should actually in the basis function !!!
 		break;
 	}
 

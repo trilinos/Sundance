@@ -123,6 +123,7 @@ RCP<const MapStructure> DiscreteFunctionData
   const RCP<DOFMapBase>& map = space_.map();
   static Array<Array<int> > dofs;
   Array<int> nNodes;
+  int functionID = 0;
 
   RCP<const Set<int> > requestedFuncs = map->allowedFuncsOnCellBatch(cellDim,
     cellLID);
@@ -135,6 +136,7 @@ RCP<const MapStructure> DiscreteFunctionData
 
   if  (space_.getTransformation()->validTransformation())
   {
+	 SUNDANCE_OUT( Evaluator::classVerbosity() > 3 , "DiscreteFunctionData::getLocalValues() VALID TRAFO FOUND ... ")
 	 for (int b=0; b<nNodes.size(); b++)
 	 {
 	    int nFuncs = s->numFuncs(b);
@@ -144,12 +146,15 @@ RCP<const MapStructure> DiscreteFunctionData
         ghostView_->getElements(&(dofs[b][0]), dofs[b].size(), localValues[b]);
         // make transformation and fill the correct "localValues[b]" elements !!!! (if it is needed)
 	    // do the transformation for each function , ("nFuncs")
+        // nNodes[b] is the total number for one function inside the chunk
 	    space_.getTransformation()->getDoFsWithTransformation(
-	    		dofs[b] ,  b , dofs[b].size() , cellDim, cellLID ,ghostView_ , localValues[b] );
+	    		dofs[b] , functionID , b , nNodes[b] , nFuncs , cellDim, cellLID ,ghostView_ , localValues[b] );
+	    functionID += nFuncs;
 	 }
   }
   else  // if we do not need transformation then do the normal thing
   {
+	  SUNDANCE_OUT( Evaluator::classVerbosity() > 3 , "DiscreteFunctionData::getLocalValues() NO VALID TRAFO ... ")
 	  for (int b=0; b<nNodes.size(); b++)
 	  {
 	    int nFuncs = s->numFuncs(b);

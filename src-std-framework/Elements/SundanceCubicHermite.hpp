@@ -80,6 +80,22 @@ public:
     Array<Array<Array<double> > >& result,
     int verbosity=0) const ;
 
+  virtual bool requiresBasisTransformation() const { return true; }
+  
+  void preApplyTransformation( const CellType &maxCellType ,
+			       const CellJacobianBatch& JVol,
+			       RCP<Array<double> >& A ) const;
+
+  void postApplyTransformation( const CellType &maxCellType ,
+				const CellJacobianBatch& JVol,
+				RCP<Array<double> >& A ) const;
+
+  void preApplyTransformationTranspose( const CellType &maxCellType ,
+					const CellJacobianBatch& JVol,
+					Array<double>& A ) const;
+
+
+  
 
 
   /* Handleable boilerplate */
@@ -102,6 +118,16 @@ private:
   void evalOnTet(const Point& pt,
     const MultiIndex& deriv,
     Array<double>& result) const ;
+
+  void preApplyTransformationTriangle( const CellJacobianBatch& JVol,
+				       RCP<Array<double> >& A ) const;
+
+  void postApplyTransformationTriangle( const CellJacobianBatch& JVol,
+					RCP<Array<double> >& A ) const;
+
+  void preApplyTransformationTransposeTriangle( const CellJacobianBatch& JVol,
+						Array<double> & A ) const;
+
 
 };
 }

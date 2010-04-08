@@ -23,6 +23,7 @@ public:
 	virtual void preApply(
 			const int multiplicity ,
 			const int vectorPerCell,
+			const int funcID,
 			const CellJacobianBatch& JTrans,
 		    const CellJacobianBatch& JVol,
 			const Array<int>& facetIndex,
@@ -34,6 +35,7 @@ public:
 	virtual void postApply(
 			const int multiplicity ,
 			const int vectorPerCell,
+			const int funcID,
 			const CellJacobianBatch& JTrans,
 		    const CellJacobianBatch& JVol,
 			const Array<int>& facetIndex,
@@ -46,6 +48,7 @@ public:
 			const int multiplicity ,
 			const int vectorPerCell,
 			const int cellDim,
+			const int funcID,
 			const Array<int>& cellLIDs,
 			const Array<int>& facetIndex,
 			RCP<Array<double> >& A

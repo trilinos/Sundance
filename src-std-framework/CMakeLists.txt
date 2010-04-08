@@ -128,6 +128,7 @@ APPEND_SET(HEADERS
   DOFMapping/SundanceInhomogeneousNodalDOFMap.hpp
   DOFMapping/SundanceMapStructure.hpp
   DOFMapping/SundanceMixedDOFMap.hpp
+  DOFMapping/SundanceMixedDOFMapHN.hpp
   DOFMapping/SundanceNodalDOFMap.hpp
   DOFMapping/SundanceNodalDOFMapHN.hpp
   DOFMapping/SundancePartialElementDOFMap.hpp
@@ -142,6 +143,7 @@ APPEND_SET(SOURCES
   DOFMapping/SundanceInhomogeneousNodalDOFMap.cpp
   DOFMapping/SundanceMapStructure.cpp
   DOFMapping/SundanceMixedDOFMap.cpp
+  DOFMapping/SundanceMixedDOFMapHN.cpp
   DOFMapping/SundanceNodalDOFMap.cpp
   DOFMapping/SundanceNodalDOFMapHN.cpp
   DOFMapping/SundancePartialElementDOFMap.cpp
@@ -299,16 +301,18 @@ APPEND_SET(HEADERS
   ElementTransformation/SundanceTransformationBase.hpp
   ElementTransformation/SundanceAssemblyTransformationBuilder.hpp
   ElementTransformation/SundanceDiscreteSpaceTransfBuilder.hpp
-  ElementTransformation/SundanceTransformationHermite.hpp
+#  ElementTransformation/SundanceTransformationHermite.hpp
   ElementTransformation/SundanceTransformationHN.hpp
+  ElementTransformation/SundanceInequivalentElementTransformation.hpp
 )
 
 APPEND_SET(SOURCES
   ElementTransformation/SundanceTransformationBase.cpp
   ElementTransformation/SundanceAssemblyTransformationBuilder.cpp
   ElementTransformation/SundanceDiscreteSpaceTransfBuilder.cpp
-  ElementTransformation/SundanceTransformationHermite.cpp
+#  ElementTransformation/SundanceTransformationHermite.cpp
   ElementTransformation/SundanceTransformationHN.cpp
+  ElementTransformation/SundanceInequivalentElementTransformation.cpp
   )
 
 

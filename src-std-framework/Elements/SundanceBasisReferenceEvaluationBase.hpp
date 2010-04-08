@@ -102,6 +102,39 @@ x   *           Specifically,
     int verbosity = 0
     ) const = 0 ;  
 
+  /**
+   * Computes the constraints for DoFs which are on hanging elements. <br>
+   * The child cell is which constrains the hanging local DoF, and the parent cell is needed to find the
+   * global DoFs.
+   * @param indexInParent  [in] each (child)cell which has one hanging node, has a parent cell which
+   * has one facet, where there are global DoFs
+   * @param maxCellDim     [in] the dimension of the maximal cell
+   * @param maxNrChild     [in] how many children has one parent cell, this tells us if we have trisection or bisection
+   * @param facetDim       [in] the hanging element dimension which is a facet of the child cell
+   * @param facetIndex     [in] the hanging element facet index in the child cell
+   * @param nodeIndex      [in] one element (e.g edge) might have more than one DoF, specify which DoF on the
+   * elemnt do we want to constrain
+   * @param localDoFs      [out] the local DoFs in the parent cell which contribute to the hanging DoF
+   * @param parentFacetDim [out] the facet dimension where the local DoFs (localDoFs) are
+   * @param parentFacetIndex[out] the facet index where the local DoFs (localDoFs) are
+   * @param parentFacetNode[out] the facet node where the local DoFs (localDoFs) is (e.g.: one edge might have 2 DoFs in P3)
+   * @param coefs          [out] the belonging coefficients to the parents local DoF
+   *
+   */
+  virtual void  getConstrainsForHNDoF(
+  				    const int indexInParent,
+  				    const int maxCellDim,
+  				    const int maxNrChild,
+  				    const int facetDim,
+  				    const int facetIndex,
+  				    const int nodeIndex,
+  				    Array<int>& localDoFs,
+  			    	Array<int>& parentFacetDim,
+  			    	Array<int>& parentFacetIndex,
+  			    	Array<int>& parentFacetNode,
+  				    Array<double>& coefs
+  				    ) {};
+
 };
 
 }

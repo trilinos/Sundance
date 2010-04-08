@@ -122,13 +122,14 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
     if (HNMap != 0 ){
         Array<double> coefs;
         double sum = 0.0;
-    	HNMap->getDOFsForCell( cellDim, cellID, indices_[elem][0] ,  dofs , coefs );
+    	HNMap->getDOFsForHNCell( cellDim, cellID, indices_[elem][0] ,  dofs , coefs );
     	for (int jj = 0 ; jj < dofs.size() ; jj++)
     	{
     		sum += coefs[jj] * df_->ghostView()->getElement(dofs[jj]); //sum up the contributions
     	}
     	// return the contribution of the global DoFs
     	return sum;
+    	//return 1.0;
     }
     else
     {

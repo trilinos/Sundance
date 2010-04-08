@@ -1,25 +1,27 @@
 /*
- * SundanceTransformationBase.hpp
+ * SundanceInequivalentTransformation.hpp
  *
- *  Created on: Mar 14, 2010
- *      Author: benk
+ *  Created on: 5 April, 2010
+ *      Author: R.C. Kirby
  */
 
-#ifndef SUNDANCETRANSFORMATIONBASE_HPP_
-#define SUNDANCETRANSFORMATIONBASE_HPP_
+#ifndef SUNDANCEINEQUIVALENTELEMENTTRANSFORMATION_HPP_
+#define SUNDANCEINEQUIVALENTELEMENTTRANSFORMATION_HPP_
 
 #include "SundanceIntegralGroup.hpp"
+#include "SundanceTransformationBase.hpp"
+#include "SundanceMixedDOFMap.hpp"
 
 namespace Sundance {
 
-  class TransformationBase {
+  class InequivalentElementTransformation : public TransformationBase {
   public:
-
-    /** Trough the IntegralGroup we should have access to all information */
-    TransformationBase();
-
-    virtual ~TransformationBase();
-
+    
+    InequivalentElementTransformation( const Mesh &mesh, 
+				       const MixedDOFMap *map );
+    
+    virtual ~InequivalentElementTransformation() {;}
+    
     /** The transformation method */
     // this will potentially used in assembly  process
     virtual void preApply( const int funcID,
@@ -28,8 +30,8 @@ namespace Sundance {
 			   const Array<int>& facetIndex,
 			   const RCP<Array<int> >& cellLIDs,
 			   RCP<Array<double> >& A
-			   ) const = 0;
-
+			   ) const;
+    
     /** */
     // this will potentially used in assembly  process
     virtual void postApply( const int funcID,
@@ -38,7 +40,7 @@ namespace Sundance {
 			    const Array<int>& facetIndex,
 			    const RCP<Array<int> >& cellLIDs,
 			    RCP<Array<double> >& A
-			    ) const = 0;
+			    ) const;
 
     /** */
     // this will potentially used in scatter process
@@ -46,9 +48,7 @@ namespace Sundance {
 				    const int funcID,
 				    const Array<int>& cellLIDs,
 				    const Array<int>& facetIndex,
-				    Array<double>& A
-				    ) const = 0;
-
+				    Array<double>& A ) const;
   protected:
 
     /** */
@@ -58,11 +58,19 @@ namespace Sundance {
     void setverb(int c) { verb_ = c; }
 
   private :
+    /** reference to the mesh, needed for preapply transpose interface */
+    const Mesh &mesh_;
 
-    /** verbosity attribute */
+    /** reference to the basis; transformation calls are forwarded to it */
+    const MixedDOFMap *map_;
+
+    /** pointers to bases for each chunk */
+    Array<const BasisFamilyBase *> chunkBases_;
+
+    /** verbosity atribute */
     int verb_;
   };
 
 }
 
-#endif /* SUNDANCETRANSFORMATIONBASE_HPP_ */
+#endif /* SUNDANCEINEQUIVALENTELEMENTTRANSFORMATION_HPP_ */

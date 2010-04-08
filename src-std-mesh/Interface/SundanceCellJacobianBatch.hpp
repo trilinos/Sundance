@@ -112,6 +112,9 @@ public:
   double* jVals(int c)
     {return &(J_[c*jSize_]);}
 
+  /** Get a constant pointer to start of c-th Jacobian in the batch */
+  const double *jVals(int c) const { return &(J_[c*jSize_]); }
+
   /** */
   double* detJ(int c)
     {return &(detJ_[c]);}

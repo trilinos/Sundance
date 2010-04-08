@@ -43,7 +43,7 @@ using namespace Teuchos;
 
 
 Lagrange::Lagrange(int order)
-  : order_(order)
+  : order_(order) , doFInfromationCalculated_(false)
 {
 TEST_FOR_EXCEPTION(order < 0, RuntimeError,
                      "invalid polynomial order=" << order
@@ -553,32 +553,6 @@ void Lagrange::evalOnquad(const Point& pt,
 					+ 8.0*(x-1)*(y*y-1)                     - 8.0*(x*x-1)*(y*y-1);
 			tmp[8] = 16.0 - 16.0*x - 16.0*y + 16.0*x*y - 16.0*(x*x -1)*(y-1)
 					- 16.0*(x-1)*(y*y-1)                    + 16.0*(x*x-1)*(y*y-1);
-			/*
-	        result.resize(8);
-	        tmp.resize(8);
-	               //5  -5  -5   5  -2   0  -2   0
-			tmp[0] = 5.0 - 5.0*x - 5.0*y + 5.0*x*y - 2.0*(x*x -1)*(y-1)
-					- 2.0*(x-1)*(y*y-1);
-			       //2   1  -2  -1  -2   0   1   1
-			tmp[1] = 2.0 + 1.0*x - 2.0*y - 1.0*x*y - 2.0*(x*x -1)*(y-1)
-	                + 1.0*(x-1)*(y*y-1) + 1.0*(x+1)*(y*y-1);
-			       //2  -2   1  -1   1   1  -2   0
-			tmp[2] = 2.0 - 2.0*x + 1.0*y - 1.0*x*y + 1.0*(x*x -1)*(y-1) + 1.0*(x*x -1)*(y+1)
-					- 2.0*(x-1)*(y*y-1);
-			       //0   2   2  -3   1   1   1   1
-			tmp[3] =      2.0*x + 2.0*y - 3.0*x*y + 1.0*(x*x -1)*(y-1) + 1.0*(x*x -1)*(y+1)
-					+ 1.0*(x-1)*(y*y-1)  + 1.0*(x+1)*(y*y-1);
-			       //-4   4   4  -4   4   0   0   0
-			tmp[4] = -4.0 + 4.0*x + 4.0*y - 4.0*x*y + 4.0*(x*x -1)*(y-1);
-
-			       //-4   4   4  -4  -0   0   4   0
-			tmp[5] = -4.0 + 4.0*x + 4.0*y - 4.0*x*y
-					+ 4.0*(x-1)*(y*y-1);
-			       //0  -4   0   4  -0  -0  -2  -2
-			tmp[6] =      - 4.0*x         + 4.0*x*y
-					- 2.0*(x-1)*(y*y-1)  - 2.0*(x+1)*(y*y-1);
-			       //0   0  -4   4  -2  -2   0   0
-			tmp[7] =             - 4.0*y + 4.0*x*y - 2.0*(x*x -1)*(y-1) - 2.0*(x*x -1)*(y+1);*/
 			break;
 		default:{}
 		}
@@ -683,93 +657,6 @@ void Lagrange::evalOnBrick(const Point& pt,
 			tmp[7] = (x)*(y)*(z);
 			break;
 		case 2: // second order function in 3D
-			/*
-	        result.resize(20);
-	        tmp.resize(20);
-
-			// general form of the Lagrange polynom
-
-			// 1.0 + 1.0*x + 1.0*y + 1.0*z + 1.0*x*y + 1.0*x*z + 1.0*y*z + 1.0*x*y*z
-		   //+ 1.0*(x*x - 1)*(y-1)*(z-1) + 1.0*(x*x - 1)*(y-1)*(z+1) + 1.0*(x*x - 1)*(y+1)*(z-1) + 1.0*(x*x - 1)*(y+1)*(z+1)
-		   //+ 1.0*(y*y - 1)*(x-1)*(z-1) + 1.0*(y*y - 1)*(x-1)*(z+1) + 1.0*(y*y - 1)*(x+1)*(z-1) + 1.0*(y*y - 1)*(x+1)*(z+1)
-		   //+ 1.0*(z*z - 1)*(x-1)*(y-1) + 1.0*(z*z - 1)*(x-1)*(y+1) + 1.0*(z*z - 1)*(x+1)*(y-1) + 1.0*(z*z - 1)*(x+1)*(y+1);
-
-			tmp[0] = 7.0 - 7.0*x - 7.0*y - 7.0*z + 7.0*x*y + 7.0*x*z + 7.0*y*z - 7.0*x*y*z
-				   + 2.0*(x*x - 1)*(y-1)*(z-1)
-				   + 2.0*(y*y - 1)*(x-1)*(z-1)
-				   + 2.0*(z*z - 1)*(x-1)*(y-1);
-
-			tmp[1] = 2.0 + 3.0*x - 2.0*y - 2.0*z - 3.0*x*y - 3.0*x*z + 2.0*y*z + 3.0*x*y*z
-					+ 2.0*(x*x - 1)*(y-1)*(z-1)
-					- 1.0*(y*y - 1)*(x-1)*(z-1)                             - 1.0*(y*y - 1)*(x+1)*(z-1)
-                    - 1.0*(z*z - 1)*(x-1)*(y-1)                             - 1.0*(z*z - 1)*(x+1)*(y-1);
-
-			tmp[2] = 2.0 - 2.0*x + 3.0*y - 2.0*z - 3.0*x*y + 2.0*x*z - 3.0*y*z + 3.0*x*y*z
-				   - 1.0*(x*x - 1)*(y-1)*(z-1)                             - 1.0*(x*x - 1)*(y+1)*(z-1)
-				   + 2.0*(y*y - 1)*(x-1)*(z-1)
-				   - 1.0*(z*z - 1)*(x-1)*(y-1) - 1.0*(z*z - 1)*(x-1)*(y+1);
-
-			tmp[3] =       2.0*x + 2.0*y       - 1.0*x*y - 2.0*x*z - 2.0*y*z + 1.0*x*y*z
-					- 1.0*(x*x - 1)*(y-1)*(z-1)                             - 1.0*(x*x - 1)*(y+1)*(z-1)
-					- 1.0*(y*y - 1)*(x-1)*(z-1)                             - 1.0*(y*y - 1)*(x+1)*(z-1)
-					+ 0.5*(z*z - 1)*(x-1)*(y-1) + 0.5*(z*z - 1)*(x-1)*(y+1) + 0.5*(z*z - 1)*(x+1)*(y-1) + 0.5*(z*z - 1)*(x+1)*(y+1);
-
-			tmp[4] = 2.0 - 2.0*x - 2.0*y + 3.0*z + 2.0*x*y - 3.0*x*z - 3.0*y*z + 3.0*x*y*z
-					 - 1.0*(x*x - 1)*(y-1)*(z-1) - 1.0*(x*x - 1)*(y-1)*(z+1)
-					 - 1.0*(y*y - 1)*(x-1)*(z-1) - 1.0*(y*y - 1)*(x-1)*(z+1)
-					 + 2.0*(z*z - 1)*(x-1)*(y-1);
-
-			tmp[5] =      + 2.0*x +      + 2.0*z - 2.0*x*y - 1.0*x*z - 2.0*y*z + 1.0*x*y*z
-					- 1.0*(x*x - 1)*(y-1)*(z-1) - 1.0*(x*x - 1)*(y-1)*(z+1)
-					+ 0.5*(y*y - 1)*(x-1)*(z-1) + 0.5*(y*y - 1)*(x-1)*(z+1) + 0.5*(y*y - 1)*(x+1)*(z-1) + 0.5*(y*y - 1)*(x+1)*(z+1)
-					- 1.0*(z*z - 1)*(x-1)*(y-1)                             - 1.0*(z*z - 1)*(x+1)*(y-1);
-
-			tmp[6] =            2.0*y + 2.0*z - 2.0*x*y - 2.0*x*z - 1.0*y*z + 1.0*x*y*z
-			       + 0.5*(x*x - 1)*(y-1)*(z-1) + 0.5*(x*x - 1)*(y-1)*(z+1) + 0.5*(x*x - 1)*(y+1)*(z-1) + 0.5*(x*x - 1)*(y+1)*(z+1)
-				   - 1.0*(y*y - 1)*(x-1)*(z-1) - 1.0*(y*y - 1)*(x-1)*(z+1)
-				   - 1.0*(z*z - 1)*(x-1)*(y-1) - 1.0*(z*z - 1)*(x-1)*(y+1);
-
-			tmp[7] =                             2.0*x*y + 2.0*x*z + 2.0*y*z - 5.0*x*y*z
-				   + 0.5*(x*x - 1)*(y-1)*(z-1) + 0.5*(x*x - 1)*(y-1)*(z+1) + 0.5*(x*x - 1)*(y+1)*(z-1) + 0.5*(x*x - 1)*(y+1)*(z+1)
-				   + 0.5*(y*y - 1)*(x-1)*(z-1) + 0.5*(y*y - 1)*(x-1)*(z+1) + 0.5*(y*y - 1)*(x+1)*(z-1) + 0.5*(y*y - 1)*(x+1)*(z+1)
-				   + 0.5*(z*z - 1)*(x-1)*(y-1) + 0.5*(z*z - 1)*(x-1)*(y+1) + 0.5*(z*z - 1)*(x+1)*(y-1) + 0.5*(z*z - 1)*(x+1)*(y+1);
-
-			tmp[8] = -4.0 + 4.0*x + 4.0*y + 4.0*z - 4.0*x*y - 4.0*x*z - 4.0*y*z + 4.0*x*y*z
-				   - 4.0*(x*x - 1)*(y-1)*(z-1);
-
-			tmp[9] = -4.0 + 4.0*x + 4.0*y + 4.0*z - 4.0*x*y - 4.0*x*z - 4.0*y*z + 4.0*x*y*z
-				   - 4.0*(y*y - 1)*(x-1)*(z-1);
-
-			tmp[10] = -4.0 + 4.0*x + 4.0*y + 4.0*z - 4.0*x*y - 4.0*x*z - 4.0*y*z + 4.0*x*y*z
-					- 4.0*(z*z - 1)*(x-1)*(y-1);
-
-			tmp[11] =     - 4.0*x           + 4.0*x*y + 4.0*x*z          - 4.0*x*y*z
-					 + 2.0*(y*y - 1)*(x-1)*(z-1)                             + 2.0*(y*y - 1)*(x+1)*(z-1);
-
-			tmp[12] =     - 4.0*x             + 4.0*x*y + 4.0*x*z         - 4.0*x*y*z
-					 + 2.0*(z*z - 1)*(x-1)*(y-1)                         + 2.0*(z*z - 1)*(x+1)*(y-1);
-
-			tmp[13] =            - 4.0*y       + 4.0*x*y        + 4.0*y*z - 4.0*x*y*z
-					+ 2.0*(x*x - 1)*(y-1)*(z-1)                      + 2.0*(x*x - 1)*(y+1)*(z-1);
-
-			tmp[14] =              - 4.0*y         + 4.0*x*y        + 4.0*y*z - 4.0*x*y*z
-					 + 2.0*(z*z - 1)*(x-1)*(y-1) + 2.0*(z*z - 1)*(x-1)*(y+1);
-
-			tmp[15] =                            - 4.0*x*y                    + 4.0*x*y*z
-					- 1.0*(z*z - 1)*(x-1)*(y-1) - 1.0*(z*z - 1)*(x-1)*(y+1) - 1.0*(z*z - 1)*(x+1)*(y-1) - 1.0*(z*z - 1)*(x+1)*(y+1);
-
-			tmp[16] =                 - 4.0*z       + 4.0*x*z + 4.0*y*z - 4.0*x*y*z
-					+ 2.0*(x*x - 1)*(y-1)*(z-1) + 2.0*(x*x - 1)*(y-1)*(z+1);
-
-			tmp[17] =             - 4.0*z        + 4.0*x*z + 4.0*y*z - 4.0*x*y*z
-					+ 2.0*(y*y - 1)*(x-1)*(z-1) + 2.0*(y*y - 1)*(x-1)*(z+1);
-
-			tmp[18] =                                        - 4.0*x*z         + 4.0*x*y*z
-					- 1.0*(y*y - 1)*(x-1)*(z-1) - 1.0*(y*y - 1)*(x-1)*(z+1) - 1.0*(y*y - 1)*(x+1)*(z-1) - 1.0*(y*y - 1)*(x+1)*(z+1);
-
-			tmp[19] =                                                - 4.0*y*z + 4.0*x*y*z
-					- 1.0*(x*x - 1)*(y-1)*(z-1) - 1.0*(x*x - 1)*(y-1)*(z+1) - 1.0*(x*x - 1)*(y+1)*(z-1) - 1.0*(x*x - 1)*(y+1)*(z+1);*/
-
 	        result.resize(27);
 	        tmp.resize(27);
                    // 0.0 + 0.0*x + 0.0*y + 0.0*z + 0.0*x*y + 0.0*x*z + 0.0*y*z + 0.0*x*y*z
@@ -1042,5 +929,226 @@ void Lagrange::evalOnBrick(const Point& pt,
 		}
 }
 
+void Lagrange::getConstrainsForHNDoF(
+ 	const int indexInParent,
+ 	const int maxCellDim,
+ 	const int maxNrChild,
+ 	const int facetDim,
+ 	const int facetIndex,
+ 	const int nodeIndex,
+ 	Array<int>& localDoFs,
+  	Array<int>& parentFacetDim,
+  	Array<int>& parentFacetIndex,
+  	Array<int>& parentFacetNode,
+ 	Array<double>& coefs
+ 	) {
+
+	// the index in the Parent is very important
+	// - in case of Lagrange first get the position of the evaluation
+	// - then evaluate the refElement at that point
+	// - see which local DoFs are not zero and return them
+
+	Array<Array<Array<double> > >    result;
+	const SpatialDerivSpecifier      deriv;
+	int                              index = 0;
+
+	localDoFs.resize(0);
+	coefs.resize(0);
+	parentFacetDim.resize(0);
+	parentFacetIndex.resize(0);
+	parentFacetNode.resize(0);
 
 
+	switch (maxCellDim){
+	case 2:{ // 2D
+		const CellType maximalCellType = QuadCell;
+
+		switch (maxNrChild){
+		case 9:{ //trisection on quads
+			Point dofPos( 0.0 , 0.0 );
+            // get the position of the DoF on the refCell
+			SUNDANCE_OUT(this->verb() > 3 , ",maxCellDim=" << maxCellDim << ",facetDim="
+					<< facetDim << ",facetIndex=" << facetIndex << ",nodeIndex=" << nodeIndex
+					<< ",dofPos=" << dofPos);
+			returnDoFPositionOnRef( maxCellDim,
+			  facetDim, facetIndex, nodeIndex, dofPos);
+			dofPos = dofPos/3.0;
+			SUNDANCE_OUT(this->verb() > 3 ,  "dofPos=" << dofPos );
+
+			switch (indexInParent){
+			  case 0: {/* nothing to add */  break;}
+			  case 1: {dofPos[0] += 1.0/3.0; break;}
+			  case 2: {dofPos[0] += 2.0/3.0; break;}
+			  case 3: {dofPos[0] += 2.0/3.0; dofPos[1] += 1.0/3.0; break;}
+			  case 5: {dofPos[1] += 1.0/3.0; break;}
+			  case 6: {dofPos[1] += 2.0/3.0; break;}
+			  case 7: {dofPos[0] += 1.0/3.0; dofPos[1] += 2.0/3.0; break;}
+			  case 8: {dofPos[0] += 2.0/3.0; dofPos[1] += 2.0/3.0; break;}
+			}
+
+			SUNDANCE_OUT(this->verb() > 3 , "dofPos=" << dofPos );
+			Array<Point> tmp_points(1);
+			tmp_points[0] = dofPos;
+			refEval( maximalCellType , tmp_points ,
+			     deriv,  result , 4);
+
+		   break;}
+		case 4:{ //todo: bisection on quads
+		   break;
+		   }
+		}
+        // evalute the results from the bi or trisection
+		Array<double>& res = result[0][0];
+		SUNDANCE_OUT(this->verb() > 3 , "res=" << res );
+
+		// get those data only once (since it is rather costly)
+		if (doFInfromationCalculated_ == false)
+		{
+		  getDoFsOrdered( maximalCellType, res.size() , facetD_, facetI_, facetN_);
+		  doFInfromationCalculated_ = true;
+		}
+
+		// here take the "result" array and get the nonzero elements
+		index = 0;
+		for ( int i=0 ; i < res.size() ; i++){
+			// take only those DoFs which are non zero
+			if ( fabs(res[i]) > 1e-5 ){
+				localDoFs.resize(index+1);
+				coefs.resize(index+1);
+				parentFacetDim.resize(index+1);
+				parentFacetIndex.resize(index+1);
+				parentFacetNode.resize(index+1);
+				localDoFs[index] = i;
+				coefs[index] = res[i];
+				parentFacetDim[index] = facetD_[i];
+				parentFacetIndex[index] = facetI_[i];
+				parentFacetNode[index] = facetN_[i];
+				index++;
+			}
+		}
+
+		SUNDANCE_OUT(this->verb() > 3 , "localDoFs=" << localDoFs );
+		SUNDANCE_OUT(this->verb() > 3 , "coefs=" << coefs );
+		SUNDANCE_OUT(this->verb() > 3 , "parentFacetDim=" << parentFacetDim );
+		SUNDANCE_OUT(this->verb() > 3 , "parentFacetIndex=" << parentFacetIndex );
+		SUNDANCE_OUT(this->verb() > 3 , "parentFacetNode=" << parentFacetNode );
+	break;} // end 2D
+	case 3:{ // Todo: 3D
+		//const CellType maximalCellType = BrickCell;
+		switch (maxNrChild){
+		case 27:{ //trisection on bricks
+		break;}
+		case 8:{ //bisection on bricks
+		break;}
+		}
+	break;} //end 3D
+	}
+}
+
+/* -------------- Get the position of one DoF ----------------------- */
+void Lagrange::returnDoFPositionOnRef(
+	const int maxCellDim,
+	const int facetDim,
+	const int facetIndex,
+	const int nodeIndex,
+	Point& pos) const {
+
+	switch (facetDim){
+	case 0:{  // Point DoFs
+		switch (maxCellDim){
+		case 2:{
+			switch (facetIndex){
+			case 0: {pos[0] = 0.0; pos[1] = 0.0; break;}
+			case 1: {pos[0] = 1.0; pos[1] = 0.0; break;}
+			case 2: {pos[0] = 0.0; pos[1] = 1.0; break;}
+			case 3: {pos[0] = 1.0; pos[1] = 1.0; break;}
+			}
+			break;}
+		case 3:{
+			switch (facetIndex){
+			case 0: {pos[0] = 0.0; pos[1] = 0.0; pos[2] = 0.0; break;}
+			case 1: {pos[0] = 1.0; pos[1] = 0.0; pos[2] = 0.0; break;}
+			case 2: {pos[0] = 0.0; pos[1] = 1.0; pos[2] = 0.0; break;}
+			case 3: {pos[0] = 1.0; pos[1] = 1.0; pos[2] = 0.0; break;}
+			case 4: {pos[0] = 0.0; pos[1] = 0.0; pos[2] = 1.0; break;}
+			case 5: {pos[0] = 1.0; pos[1] = 0.0; pos[2] = 1.0; break;}
+			case 6: {pos[0] = 0.0; pos[1] = 1.0; pos[2] = 1.0; break;}
+			case 7: {pos[0] = 1.0; pos[1] = 1.0; pos[2] = 1.0; break;}
+			}
+			break;}
+		}
+		break;}
+	case 1:{  // Edge DoFs
+		switch (maxCellDim){
+		case 2:{
+			// here we calculate the position of the DoF on the edge
+			double posOnEdge = (1.0/ (double)(order())) +(double)(nodeIndex) / (double)(order()-1);
+			switch (facetIndex){
+			case 0: {pos[0] = 0.0+posOnEdge; pos[1] = 0.0; break;}
+			case 1: {pos[0] = 0.0; pos[1] = 0.0+posOnEdge; break;}
+			case 2: {pos[0] = 1.0; pos[1] = 0.0+posOnEdge; break;}
+			case 3: {pos[0] = 0.0+posOnEdge; pos[1] = 1.0; break;}
+			}
+			break;}
+		case 3:{ // todo: implement & check this
+			break;}
+		}
+		break;}
+	case 2:{ //face DoFs only in 3D
+		// todo: implement & check this
+		break;}
+	}
+
+}
+
+void Lagrange::getDoFsOrdered(
+		const CellType maxCellDim,
+		int nrDoF,
+		Array<int>& facetD,
+		Array<int>& facetI,
+		Array<int>& facetN)
+{
+	// this could be done once at initialization
+	// ----------------------------------------------------------------
+	Array<Array<Array<int> > > dofs_struct;
+	getReferenceDOFs(maxCellDim , maxCellDim , dofs_struct);
+	bool getNext;
+	facetD.resize(nrDoF); facetI.resize(nrDoF); facetN.resize(nrDoF);
+	int dimo=0 , indexo=0 , nodo=0;
+	for ( int i=0 ; i < nrDoF ; i++){
+		facetD[i] = dimo;
+		facetI[i] = indexo;
+		facetN[i] = nodo;
+		// found the next DoF and change the variables
+		// nodo,indexo,dimo
+		getNext = true;
+		while ( (getNext) && (dimo < dofs_struct.size() )){
+			//SUNDANCE_OUT(this->verb() > 3, "dimo=" << dimo << " ,indexo:" << indexo << ",nodo:" << nodo << ",maxCellDim:" << maxCellDim);
+			if (dofs_struct[dimo][indexo].size() > (nodo+1)){
+				nodo++; getNext = false;
+			}else{
+				nodo = 0;
+				if (dofs_struct[dimo].size() > (indexo+1)){
+					indexo++; getNext = false;
+				}else{
+					indexo = 0;
+					if (dofs_struct.size() > (dimo+1)){
+						dimo++; getNext = false;
+					}else{
+						// actually we should not arrived here
+						getNext = false;
+					}
+				}
+			}
+			//SUNDANCE_OUT(this->verb() > 3, "dofs_struct.size()=" << dofs_struct.size() << " ,dofs_struct[dimo].size():"
+			//		<< dofs_struct[dimo].size() << ",dofs_struct[dimo][indexo].size():" << dofs_struct[dimo][indexo].size());
+			if (dofs_struct.size() <= dimo ) {dimo++; getNext = true; continue;}
+			if (dofs_struct[dimo].size() <= indexo ) {dimo++; getNext = true; continue;}
+			if (dofs_struct[dimo][indexo].size() <= nodo ) {dimo++; getNext = true; continue;}
+		}
+	}
+	SUNDANCE_OUT(this->verb() > 3, "facetD=" << facetD );
+	SUNDANCE_OUT(this->verb() > 3, "facetI=" << facetI );
+	SUNDANCE_OUT(this->verb() > 3, "facetN=" << facetN );
+    // ------------------------------------------------
+}

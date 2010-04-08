@@ -71,13 +71,13 @@ int BasisFamily::size(const Array<BasisFamily>& b)
 }
 
 int BasisFamily::nReferenceDOFsWithFacets(const CellType& maximalCellType,
-  const CellType& cellType) const 
+					  const CellType& cellType) const 
 {
   return ptr()->nReferenceDOFsWithFacets(maximalCellType, cellType);
 }
 
 int BasisFamily::nReferenceDOFsWithoutFacets(const CellType& maximalCellType,
-  const CellType& cellType) const 
+					     const CellType& cellType) const 
 {
   return ptr()->nReferenceDOFsWithoutFacets(maximalCellType, cellType);
 }
@@ -110,8 +110,8 @@ BasisFamily BasisFamily::getBasis(const RCP<const CommonFuncDataStub>& funcData)
     }
 
   TEST_FOR_EXCEPTION(u==0 && t==0 && d==0, RuntimeError,
-    "BasisFamily::getBasis() argument is not a recognized "
-    "type of function data");
+		     "BasisFamily::getBasis() argument is not a recognized "
+		     "type of function data");
   return BasisFamily();
   
 }
@@ -127,80 +127,109 @@ RCP<BasisDOFTopologyBase> BasisFamily::getBasisTopology(const RCP<const CommonFu
 }
 
 
+void BasisFamily::getConstrainsForHNDoF( const int indexInParent,
+					 const int maxCellDim,
+					 const int maxNrChild,
+					 const int facetDim,
+					 const int facetIndex,
+					 const int nodeIndex,
+					 Array<int>& localDoFs,
+					 Array<int>& parentFacetDim,
+					 Array<int>& parentFacetIndex,
+					 Array<int>& parentFacetNode,
+					 Array<double>& coefs
+					 ) const
+{
+  Tabs tab;
+  int verb = 4;
+  SUNDANCE_MSG3( verb ,tab << "BasisFamily::getConstrainsForHNDoF IN: indexInParent:" << indexInParent
+		 << "  maxCellDim:" << maxCellDim << " maxNrChild:" << maxNrChild
+		 << " facetDim:" << facetDim << "  facetIndex:" << facetIndex << " nodeIndex:" << nodeIndex);
+  ptr()->getConstrainsForHNDoF( indexInParent, maxCellDim ,
+				maxNrChild , facetDim, facetIndex, nodeIndex, localDoFs, parentFacetDim ,
+				parentFacetIndex , parentFacetNode , coefs );
+  SUNDANCE_MSG3( verb , tab << "BasisFamily::getConstrainsForHNDoF OUT: localDoFs:" << localDoFs
+		 << " coefs:" << coefs);
+  SUNDANCE_MSG3( verb , tab << "BasisFamily::getConstrainsForHNDoF OUT: parentFacetDim:" << parentFacetDim );
+  SUNDANCE_MSG3( verb , tab << "BasisFamily::getConstrainsForHNDoF OUT: parentFacetIndex:" << parentFacetIndex );
+  SUNDANCE_MSG3( verb , tab << "BasisFamily::getConstrainsForHNDoF OUT: parentFacetNode:" << parentFacetNode );
+}
+
+
 void BasisFamily::refEval(
-    const CellType& cellType,
-    const Array<Point>& pts,
-    const SpatialDerivSpecifier& deriv,
-    Array<Array<Array<double> > >& result,
-    int verbosity) const
+			  const CellType& cellType,
+			  const Array<Point>& pts,
+			  const SpatialDerivSpecifier& deriv,
+			  Array<Array<Array<double> > >& result,
+			  int verbosity) const
 {
   Tabs tab;
   SUNDANCE_MSG3(verbosity, tab << "evaluating basis " << *this 
-    << " with spatial derivative " << deriv);
+		<< " with spatial derivative " << deriv);
   ptr()->refEval(cellType, pts, deriv, result, verbosity);
   string f = deriv.toString()+ "[phi_n]";
 
   if (verbosity >= 4)
-  {
-    Tabs tab1;
-    for (int q=0; q<pts.size(); q++)
     {
-      Tabs tab2;
-      Out::os() << tab1 << "evaluation point = " << pts[q] << endl;
-      Out::os() << tab2 << setw(5) << "n";
-      int nComps = result.size();
-      if (nComps == 1)
-      {
-        Out::os() << setw(20) <<  f << endl;
-      }
-      else
-      {
-        for (int d=0; d<nComps; d++)
-        {
-          string fd = f + "[" + Teuchos::toString(d) + "]";
-          Out::os() << setw(20) <<  fd;
-        }
-        Out::os() << endl;
-      }
-      for (int n=0; n<result[0][q].size(); n++)
-      {
-        Out::os() << tab2 << setw(5) << n;
-        for (int d=0; d<nComps; d++)
-        {
-          Out::os() << setw(20) <<  result[d][q][n];
-        }
-        Out::os() << endl;
-      }
+      Tabs tab1;
+      for (int q=0; q<pts.size(); q++)
+	{
+	  Tabs tab2;
+	  Out::os() << tab1 << "evaluation point = " << pts[q] << endl;
+	  Out::os() << tab2 << setw(5) << "n";
+	  int nComps = result.size();
+	  if (nComps == 1)
+	    {
+	      Out::os() << setw(20) <<  f << endl;
+	    }
+	  else
+	    {
+	      for (int d=0; d<nComps; d++)
+		{
+		  string fd = f + "[" + Teuchos::toString(d) + "]";
+		  Out::os() << setw(20) <<  fd;
+		}
+	      Out::os() << endl;
+	    }
+	  for (int n=0; n<result[0][q].size(); n++)
+	    {
+	      Out::os() << tab2 << setw(5) << n;
+	      for (int d=0; d<nComps; d++)
+		{
+		  Out::os() << setw(20) <<  result[d][q][n];
+		}
+	      Out::os() << endl;
+	    }
+	}
     }
-  }
 }
 
 
 namespace Sundance
 {
 
-Array<std::pair<int, int> > 
-vectorDimStructure(const Array<BasisFamily>& basis)
-{
-  Array<std::pair<int, int> > rtn;
-  for (int i=0; i<basis.size(); i++) 
+  Array<std::pair<int, int> > 
+  vectorDimStructure(const Array<BasisFamily>& basis)
   {
-    rtn.append(std::pair<int, int>(basis[i].tensorOrder(), basis[i].dim()));
+    Array<std::pair<int, int> > rtn;
+    for (int i=0; i<basis.size(); i++) 
+      {
+	rtn.append(std::pair<int, int>(basis[i].tensorOrder(), basis[i].dim()));
+      }
+    return rtn;
   }
-  return rtn;
-}
 
 
-Array<std::pair<int, int> > vectorDimStructure(const BasisFamily& basis)
-{
-  return vectorDimStructure(tuple(basis));
-}
+  Array<std::pair<int, int> > vectorDimStructure(const BasisFamily& basis)
+  {
+    return vectorDimStructure(tuple(basis));
+  }
 
-bool basisRestrictableToBoundary(const BasisFamily& b)
-{
-  const Lagrange* lag = dynamic_cast<const Lagrange*>(b.ptr().get());
-  const EdgeLocalizedBasis* elb = dynamic_cast<const EdgeLocalizedBasis*>(b.ptr().get());
-  return lag != 0 || elb != 0;
-}
+  bool basisRestrictableToBoundary(const BasisFamily& b)
+  {
+    const Lagrange* lag = dynamic_cast<const Lagrange*>(b.ptr().get());
+    const EdgeLocalizedBasis* elb = dynamic_cast<const EdgeLocalizedBasis*>(b.ptr().get());
+    return lag != 0 || elb != 0;
+  }
 
 }

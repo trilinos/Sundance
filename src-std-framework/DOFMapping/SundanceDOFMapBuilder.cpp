@@ -34,6 +34,7 @@
 #include "SundanceBasisFamily.hpp"
 #include "SundanceLagrange.hpp"
 #include "SundanceMixedDOFMap.hpp"
+#include "SundanceMixedDOFMapHN.hpp"
 #include "SundanceNodalDOFMap.hpp"
 #include "SundanceNodalDOFMapHN.hpp"
 #include "SundancePartialElementDOFMap.hpp"
@@ -135,7 +136,12 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   {
     SUNDANCE_LEVEL2("setup", "creating omnipresent mixed map");
     CellFilter maxCells = getMaxCellFilter(filters);
-    rtn = rcp(new MixedDOFMap(mesh, basis, maxCells, params()));
+    if (mesh.allowsHangingHodes()){
+    	rtn = rcp(new MixedDOFMapHN(mesh, basis, maxCells, params()));
+    }else
+    {
+    	rtn = rcp(new MixedDOFMap(mesh, basis, maxCells, params()));
+    }
   }
   else if (hasNodalBasis(basis))
   {

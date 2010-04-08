@@ -13,83 +13,91 @@
 #include "SundanceCellType.hpp"
 #include "SundanceTransformationBase.hpp"
 #include "SundanceTransformationHN.hpp"
+#include "SundanceInequivalentElementTransformation.hpp"
 
 namespace Sundance {
 
-class AssemblyTransformationBuilder {
+  class AssemblyTransformationBuilder {
 
-public:
+  public:
 
 
-	/** This is (mainly used from the Assemby Loop) <br>
+    /** This is (mainly used from the Assemby Loop) <br>
 	In case when the basis and the test space are different <br>
 	An Integral group migh have many members, but the test and trial space combination is UNIQUE !!!
 	Hanging node mesh with Hermit base might be tricky ... */
-	AssemblyTransformationBuilder(
-			               const RCP<IntegralGroup>& group ,
-			               const Array<RCP<DOFMapBase> >& rowMaps ,
-			               const Array<RCP<DOFMapBase> >& colMaps ,
-			               const Mesh& mesh);
+    AssemblyTransformationBuilder( const RCP<IntegralGroup>& group ,
+				   const Array<RCP<DOFMapBase> >& rowMaps ,
+				   const Array<RCP<DOFMapBase> >& colMaps ,
+				   const Mesh& mesh);
 
-	/** */
-	virtual ~AssemblyTransformationBuilder();
-
-
-	/** */
-	void applyTransformsToAssembly(
-            int groupIndex ,
-            int entryPerCell ,
-            CellType cellType ,
-            CellType maxCellType ,
-			const CellJacobianBatch& JTrans,
-		    const CellJacobianBatch& JVol,
-		    const Array<int>& facetNum,
-		    const RCP<Array<int> >& cellLIDs,
-		    RCP<Array<double> >& A);
+    /** */
+    virtual ~AssemblyTransformationBuilder();
 
 
-	/** return the preTransformation*/
-	const RCP<TransformationBase>& getPreTransformation() const { return preTransformation_; }
+    /** */
+    void applyTransformsToAssembly( int groupIndex ,
+				    int entryPerCell ,
+				    CellType cellType ,
+				    CellType maxCellType ,
+				    const CellJacobianBatch& JTrans,
+				    const CellJacobianBatch& JVol,
+				    const Array<int>& facetNum,
+				    const RCP<Array<int> >& cellLIDs,
+				    RCP<Array<double> >& A );
 
 
-	/** return the postTransformation*/
-	const RCP<TransformationBase>& getPostTransformation() const { return postTransformation_; }
+    /** return the preTransformation*/
+    const RCP<TransformationBase>& getPreTransformation() const { return preTransformation_; }
 
-	/** verbosity level */
-	int verb() const {return verb_;}
+    /** return the postTransformation*/
+    const RCP<TransformationBase>& getPostTransformation() const { return postTransformation_; }
 
-	/** set verbosity level */
-	void setVerbosity(int verb) {verb_=verb;}
+    /** verbosity level */
+    int verb() const {return verb_;}
 
-private:
+    /** set verbosity level */
+    void setVerbosity(int verb) {verb_=verb;}
 
-	/* verbosity */
-	int verb_;
+  private:
+
+    /* verbosity */
+    int verb_;
 
     /* number of columns of the matrix/vector which should be transformed */
-	int nrCol_;
+    int nrCol_;
 
     /* number of rows of the matrix/vector which should be transformed */
-	int nrRow_;
+    int nrRow_;
 
-	/** The pre-transformation */
-	mutable RCP<TransformationBase> preTransformation_;
+    /** The pre-transformation */
+    mutable RCP<TransformationBase> preTransformation_;
 
-	/** The post-transformation (might be the same as the pre-transformation, the RCP will take care of that) */
-	mutable RCP<TransformationBase> postTransformation_;
+    /** The post-transformation (might be the same as the pre-transformation, the RCP will take care of that) */
+    mutable RCP<TransformationBase> postTransformation_;
 
-	/** */
-	const DOFMapBase* _myRowDOFMap;
+    /** */
+    int testFuncID_;
 
-	/** */
-	const DOFMapBase* _myColDOFMap;
+    /** */
+    int unkFuncID_;
 
-	/** */
-	mutable bool hasTransformation_;
+    /** */
+    const DOFMapBase* _myRowDOFMap;
 
-	/** */
-	mutable bool onlyVectorTransformation_;
-};
+    /** */
+    const DOFMapBase* _myColDOFMap;
+
+    /** */
+    mutable bool hasTransformation_;
+
+    /** */
+    bool hasPreTransformation_;
+    bool hasPostTransformation_;
+
+    /** */
+    mutable bool onlyVectorTransformation_;
+  };
 
 }
 

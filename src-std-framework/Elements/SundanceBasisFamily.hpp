@@ -135,6 +135,55 @@ public:
     const SpatialDerivSpecifier& deriv,
     Array<Array<Array<double> > >& result,
     int verbosity) const ;
+
+  /**  */
+  void getConstrainsForHNDoF( const int indexInParent,
+			      const int maxCellDim,
+			      const int maxNrChild,
+			      const int facetDim,
+			      const int facetIndex,
+			      const int nodeIndex,
+			      Array<int>& localDoFs,
+			      Array<int>& parentFacetDim,
+			      Array<int>& parentFacetIndex,
+			      Array<int>& parentFacetNode,
+			      Array<double>& coefs
+			      ) const;
+
+
+
+  /** \brief Inform caller whether basis requires an element transformation */
+  bool requiresBasisTransformation() const { return ptr()->requiresBasisTransformation(); }
+
+
+  /** */
+  virtual void preApplyTransformation( const CellType &maxCellType ,
+				       const CellJacobianBatch& JVol,
+				       RCP<Array<double> >& A
+				       ) const 
+  { 
+    ptr()->preApplyTransformation( maxCellType ,
+				   JVol,				   A);
+  }
+  /**  */
+  virtual void postApplyTransformation( const CellType &maxCellType 
+,					const CellJacobianBatch& JVol,
+					RCP<Array<double> >& A ) const
+  {
+    ptr()->postApplyTransformation( maxCellType ,
+				    JVol,
+				    A);
+  }
+  
+  virtual void preApplyTransformationTranspose( const CellType &maxCellType ,
+						const CellJacobianBatch& JVol,
+						Array<double>& A ) const
+  {
+    ptr()->preApplyTransformationTranspose( maxCellType ,
+					    JVol ,
+					    A );
+  }
+
 };
 
 /** \relates BasisFamily */

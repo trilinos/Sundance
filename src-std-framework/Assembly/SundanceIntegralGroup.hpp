@@ -123,7 +123,11 @@ public:
   const Array<int>& termUsesMaximalCofacets() const
     {return termUsesMaximalCofacets_;}
 
-
+  /** \brief Extract basis used for test functions in this integral group */
+  const BasisFamily & getTestBasis() const { return integrals_[0]->getTestBasis(); }
+    
+  /** \brief Extract basis used for unknown functions in this integral group */
+  const BasisFamily & getUnknownBasis() const { return integrals_[0]->getUnknownBasis(); }
 
   /** Evaluate this integral group */
   bool evaluate(const CellJacobianBatch& JTrans,
