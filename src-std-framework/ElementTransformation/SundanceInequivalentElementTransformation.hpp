@@ -49,6 +49,9 @@ namespace Sundance {
 				    const Array<int>& cellLIDs,
 				    const Array<int>& facetIndex,
 				    Array<double>& A ) const;
+
+
+
   protected:
 
     /** */

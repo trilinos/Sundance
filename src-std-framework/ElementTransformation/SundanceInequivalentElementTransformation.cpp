@@ -6,12 +6,16 @@ namespace Sundance
 									const MixedDOFMap *map ):
     mesh_( mesh ), map_( map ), chunkBases_( map->nBasisChunks() )
   {
+	bool isAnyTransfReq = false;
     // extract all the bases from the dof map
     for (int i=0;i<map->nBasisChunks();i++) 
       {
 	chunkBases_[i] = dynamic_cast<const BasisFamilyBase *>(map->basis(i).get());
-      }
 
+	if (chunkBases_[i] != 0) { isAnyTransfReq = (isAnyTransfReq || chunkBases_[i]->requiresBasisTransformation()); }
+      }
+    // set the flag which shows if there is any transformation needed in the array of basis
+    setDoesAnyTransformation(isAnyTransfReq);
   }
 
   void InequivalentElementTransformation::preApply( const int funcID,
@@ -43,9 +47,13 @@ namespace Sundance
 							     const Array<int>& facetIndex,
 							     Array<double>& A ) const
   {
-    CellJacobianBatch JVol;
-    mesh_.getJacobians( mesh_.spatialDim() , cellLIDs , JVol );
-    chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformationTranspose( mesh_.cellType( mesh_.spatialDim() ) , JVol , A );
+	// do the transformation only when it is needed so we do not have to query the Jacobians
+	if (chunkBases_[map_->chunkForFuncID( funcID )]->requiresBasisTransformation())
+	{
+		CellJacobianBatch JVol;
+		mesh_.getJacobians( mesh_.spatialDim() , cellLIDs , JVol );
+		chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformationTranspose( mesh_.cellType( mesh_.spatialDim() ) , JVol , A );
+	}
   }
   
 

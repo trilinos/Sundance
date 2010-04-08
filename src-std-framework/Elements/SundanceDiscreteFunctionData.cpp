@@ -123,7 +123,6 @@ RCP<const MapStructure> DiscreteFunctionData
   const RCP<DOFMapBase>& map = space_.map();
   static Array<Array<int> > dofs;
   Array<int> nNodes;
-  int functionID = 0;
 
   RCP<const Set<int> > requestedFuncs = map->allowedFuncsOnCellBatch(cellDim,
     cellLID);
@@ -140,6 +139,7 @@ RCP<const MapStructure> DiscreteFunctionData
 	 for (int b=0; b<nNodes.size(); b++)
 	 {
 	    int nFuncs = s->numFuncs(b);
+	    Array<int> functionIDs = s->funcs(b);
 	    localValues[b].resize(nFuncs*nNodes[b]*cellLID.size());
 
 	    // first get the dofs values, which later will be transformed
@@ -148,8 +148,7 @@ RCP<const MapStructure> DiscreteFunctionData
 	    // do the transformation for each function , ("nFuncs")
         // nNodes[b] is the total number for one function inside the chunk
 	    space_.getTransformation()->getDoFsWithTransformation(
-	    		dofs[b] , functionID , b , nNodes[b] , nFuncs , cellDim, cellLID ,ghostView_ , localValues[b] );
-	    functionID += nFuncs;
+	    		dofs[b] , functionIDs , b , nNodes[b] , nFuncs , cellDim, cellLID ,ghostView_ , localValues[b] );
 	 }
   }
   else  // if we do not need transformation then do the normal thing

@@ -64,6 +64,7 @@ void TransformationHN::preApply( const int funcID,
       //SUNDANCE_MSG2( verb() , " TransformationHN::preApply() cellLID: " << cellLID << "  doTransform:" <<
       //		 doTransform << "  nrRow:" << nrRow << " nrCol:" << nrCol);
       //SUNDANCE_MSG2( verb() ," TransformationHN::preApply() Matrix:" << M);
+ 	  //SUNDANCE_MSG2( verb() , " TransformationHN::postApply() nrRow:" << nrRow << " nrCol:" << nrCol);
       // Make transformation with M^T from left
       multiplyFromLeftWithTransp( M , &(matrixAray[ i*nrRow*nrCol ]) , &(tmpArray[0]));
     }
@@ -102,6 +103,8 @@ void TransformationHN::postApply( const int funcID,
       //SUNDANCE_MSG2( verb() , " TransformationHN::postApply() cellLID: " << cellLID << "  doTransform:" <<
       //		 doTransform << "  nrRow:" << nrRow << " nrCol:" << nrCol);
       //SUNDANCE_MSG2( verb() , " TransformationHN::postApply() Matrix:" << M );
+	  // SUNDANCE_MSG2( verb() , " TransformationHN::postApply() nrRow:" << nrRow << " nrCol:" << nrCol);
+
       // Make transformation with M from right
       multiplyFromRight( &(matrixAray[ i*nrRow*nrCol ]) , M , &(tmpArray[0]));
     }

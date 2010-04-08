@@ -9,7 +9,7 @@
 
 namespace Sundance {
 
-TransformationBase::TransformationBase():verb_(0) {
+TransformationBase::TransformationBase():verb_(0) , doesAnyTransformation_(true) {
 }
 
 TransformationBase::~TransformationBase() {

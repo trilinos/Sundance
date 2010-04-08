@@ -46,23 +46,23 @@ namespace Sundance {
     /** If there is a valid transformation then returns true, else false */
     const inline bool validTransformation() const { return hasTransformation_; }
 
-    /** Function to make the local transformation for the discrete space
-     * @param dofs                 [in] the array with the DoF numbers
-     * @param functionID           [in] the function ID of the first function in this chunk
-     * @param chunkID              [in] function chunck ID
-     * @param nrDoFsPerCell        [in] nr DoF per Cell (per one chunk)
-     * @param nrFunctions          [in] nr of functions in this chunk
-     * @param ghostView            [in] the array where we have to get values from
-     * @param localValues          [out]  the transformed values */
-    void getDoFsWithTransformation( const Array<int>& dofs,
-				    const int functionID ,
-				    const int chunkID ,
-				    const int nrDoFsPerCell ,
-				    const int nrFunctions ,
-				    const int cellDim ,
-				    const Array<int>& cellLIDs,
-				    const RCP<GhostView<double> >& ghostView ,
-				    Array<double>& localValues) const;
+	/** Function to make the local transformation for the discrete space
+	 * @param dofs                 [in] the array with the DoF numbers
+	 * @param functionIDs           [in] the functionIDs of this chunk
+	 * @param chunkID              [in] function chunk ID
+	 * @param nrDoFsPerCell        [in] nr DoF per Cell (per one chunk)
+	 * @param nrFunctions          [in] nr of functions in this chunk
+	 * @param ghostView            [in] the array where we have to get values from
+	 * @param localValues          [out]  the transformed values */
+	void getDoFsWithTransformation(const Array<int>& dofs,
+			                             const Array<int>& functionIDs ,
+			                             const int chunkID ,
+			                             const int nrDoFsPerCell ,
+			                             const int nrFunctions ,
+			                 			 const int cellDim ,
+			                 			 const Array<int>& cellLIDs,
+			                             const RCP<GhostView<double> >& ghostView ,
+			                             Array<double>& localValues) const;
 
   protected:
 

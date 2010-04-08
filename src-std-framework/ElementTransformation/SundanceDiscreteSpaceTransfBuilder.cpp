@@ -39,6 +39,7 @@ DiscreteSpaceTransfBuilder::DiscreteSpaceTransfBuilder( const Mesh& mesh, const 
 	  SUNDANCE_MSG2( verb() , "DiscreteSpaceTransfBuilder::DiscreteSpaceTransfBuilder basis.size():" << basis.size());
 	  basisSize_ = basis.size();
 	  transformation_ = rcp((TransformationBase*)(new TransformationHN( myMap , 1 , basis.size() ))); //todo: basis.size is wrong
+	  // the transformation is always needed when we have a mesh with hanging nodes
 	  hasTransformation_ = true;
 	}
     }
@@ -47,16 +48,16 @@ DiscreteSpaceTransfBuilder::DiscreteSpaceTransfBuilder( const Mesh& mesh, const 
       const MixedDOFMap * myMap = dynamic_cast<const MixedDOFMap *>( map.get() );
       if (myMap != 0)
 	{
-	  hasTransformation_ = true;
 	  SUNDANCE_MSG2( verb() , "DiscreteSpaceTransfBuilder::DiscreteSpaceTransfBuilder basis.size():" << basis.size());
 	  basisSize_ = basis.size();
 	  transformation_ = rcp((TransformationBase*)(new InequivalentElementTransformation( mesh , myMap )));
+	  hasTransformation_ = transformation_->doesAnyTransformation();
 	}
     }
 }
 
 void DiscreteSpaceTransfBuilder::getDoFsWithTransformation( const Array<int>& dofs,
-							    const int functionID ,
+							    const Array<int>& functionIDs ,
 							    const int chunkID ,
 							    const int nrDoFsPerCell ,
 							    const int nrFunctions ,
@@ -67,7 +68,6 @@ void DiscreteSpaceTransfBuilder::getDoFsWithTransformation( const Array<int>& do
 {
   if (hasTransformation_) 
     {
-      // todo: We assume here that "funcID" does not matter, but in case of MixedDoFMap it matters
       SUNDANCE_MSG2( verb() , "DiscreteSpaceTransfBuilder::getDoFsWithTransformation()" );
       // get all the DoFs for this functionID
       int DoFPerElement = nrDoFsPerCell;
@@ -87,15 +87,18 @@ void DiscreteSpaceTransfBuilder::getDoFsWithTransformation( const Array<int>& do
 	    for (elemDof = 0 ; elemDof < DoFPerElement ; elemDof++)
 	      tmpArray[cellI*DoFPerElement + elemDof] = localValues[(nrFunctions*cellI+nf)*DoFPerElement + elemDof];
 	  }
-	  SUNDANCE_MSG2( verb() ,"getDoFsWithTransformation() before Transformation:" << tmpArray);
-	  // make the transformation for all elements once
-	  transformation_->preapplyTranspose( cellDim ,
-					      functionID + nf ,
-					      cellLIDs ,
-					      facetIndex,
-					      tmpArray );
-	  // copy the element values back
-	  SUNDANCE_MSG2( verb() , "getDoFsWithTransformation() after Transformation:" << tmpArray );
+	   SUNDANCE_MSG2( verb() ,"getDoFsWithTransformation() before Transformation:" << tmpArray);
+	   SUNDANCE_MSG2( verb() ,"getDoFsWithTransformation() chunk:" << chunkID <<" functionID:" << functionIDs[nf]);
+      // make the transformation for all elements once
+	   transformation_->preapplyTranspose(
+			 cellDim ,
+			 functionIDs[nf] ,
+			 cellLIDs ,
+			 facetIndex,
+			 tmpArray );
+	   // copy the element values back
+	   SUNDANCE_MSG2( verb() , "getDoFsWithTransformation() after Transformation:" << tmpArray );
+
 	  for(cellI = 0 ; cellI < cellLIDs.size() ; cellI++) {
 	    for (elemDof = 0 ; elemDof < DoFPerElement ; elemDof++)
 	      localValues[(nrFunctions*cellI+nf)*DoFPerElement + elemDof] = tmpArray[cellI*DoFPerElement + elemDof];

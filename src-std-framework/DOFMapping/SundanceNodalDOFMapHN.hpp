@@ -105,8 +105,12 @@ protected:
   void shareRemoteDOFs(const Array<Array<int> >& remoteNodes);
 
   /** This is a temporary function which later could be out source to the Basis */
-  void getPointLIDsForHN( int pointLID , int facetIndex ,
-		   int maxCellIndex , Array<int>& glbLIDs , Array<double>& coefsArray);
+  void getPointLIDsForHN( int pointLID ,
+		   int facetIndex ,
+		   int maxCellIndex ,
+		   Array<int>& glbLIDs ,
+		   Array<double>& coefsArray,
+		   Array<int>& nodeIndex );
 
   CellFilter maxCellFilter_;
 

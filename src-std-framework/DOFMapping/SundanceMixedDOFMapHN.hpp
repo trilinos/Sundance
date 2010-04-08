@@ -233,12 +233,6 @@ private:
    /** The basis for the transformation */
    mutable Array<RCP<BasisFamilyBase> > basis_;
 
-   /** map one function ID to basis chunk*/
-   Array<int> funcID_to_chunkBasis_;
-
-   /** map one function ID to function number inside one chunk*/
-   Array<int> funcID_to_funcNrInChunk_;
-
 /* ========= END hanging node treatment ======== */
 
   /** The number of nodes per cell, for each basis function type, 

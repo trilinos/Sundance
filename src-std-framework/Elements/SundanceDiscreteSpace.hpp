@@ -194,7 +194,7 @@ namespace Sundance
     /** */
     RCP<GhostImporter<double> > ghostImporter_;
 
-    /** Create one transformation builder */
+    /** Transformation builder in case when it is needed*/
     RCP<DiscreteSpaceTransfBuilder> transformationBuilder_;
 
   };

@@ -112,7 +112,6 @@ void NodalDOFMapHN::init()
                   int facetGID 
                     = mesh().mapLIDToGID(0, fLID);
                   remoteNodes[owner].append(facetGID);
-                  
                 }
               else {/* we can assign a DOF locally */
             	    SUNDANCE_MSG2(verb(), "NodalDOFMapHN::init() Doing point LID:" << fLID << " facet:" << f);
@@ -130,10 +129,10 @@ void NodalDOFMapHN::init()
                 	       nodeDofs_[fLID*nFuncs_ + i] = -1; // this means that this is not golbal DoF
                        }
                        Array<int> pointsLIDs;
+                       Array<int> facetIndex;
                        Array<double> coefs;
-
                        // get the global DoFs which contribute (what if that is not yet numbered?, then only the "fLIDs")
-                       getPointLIDsForHN( fLID, f, c , pointsLIDs, coefs );
+                       getPointLIDsForHN( fLID, f, c , pointsLIDs, coefs , facetIndex);
 
                 	   // also store the corresponding coefficients
                        hangingNodeLID_to_NodesLIDs_.put( fLID , pointsLIDs );
@@ -162,16 +161,13 @@ void NodalDOFMapHN::init()
     {
 	    if (hasCellHanging_[c]){
 	    	Array<int> HNDoFs;
-	    	Array<int> tmpArray;
-	    	// create the Trafo Matrix
 	    	Array<double> transMatrix;
-	    	transMatrix.resize(nFacets_*nFacets_);
-	    	for (int ii = 0 ; ii < nFacets_*nFacets_ ; ii++) transMatrix[ii] = 0.0;
-            // coefs
 	    	Array<double> coefs;
 
-	  		int insert_position = 0;
-	  		HNDoFs.resize(0);
+	  		HNDoFs.resize(4);
+	    	transMatrix.resize(nFacets_*nFacets_);
+	    	for (int ii = 0 ; ii < nFacets_*nFacets_ ; ii++) transMatrix[ii] = 0.0;
+
 	    	for (int f=0; f<nFacets_; f++)
 	    	{
 	  		  int fLID = facetLID_[c*nFacets_+f];
@@ -179,21 +175,24 @@ void NodalDOFMapHN::init()
 	  				  << " hanging:"<< nodeDofs_[fLID*nFuncs_] << "  array:" << HNDoFs);
               if (nodeDofs_[fLID*nFuncs_] < 0)
               {
-            	  tmpArray = hangingNodeLID_to_NodesLIDs_.get(fLID); //this must return a valid Array
-            	  coefs = hangindNodeLID_to_Coefs_.get(fLID); // get the coeficients
-                  for (int j=0 ; j < tmpArray.size() ; j++){
-                	  // look for tmpArray[j] in the existing set, insert there coefs[j] , if not found then size+1
-                	  returnInsertionPosition( HNDoFs , tmpArray[j] , insert_position);
-                	  transMatrix[f*nFacets_  + insert_position] = coefs[j];
+                  Array<int> pointsLIDs;
+                  Array<int> facetIndex;
+                  Array<double> coefs;
+                  // get the composing points
+                  getPointLIDsForHN( fLID, f, c , pointsLIDs, coefs , facetIndex);
+
+                  for (int j=0 ; j < pointsLIDs.size() ; j++){
+                	  // look for tmpArray[j] in the existing set, put there coefs[j]
+                	  HNDoFs[facetIndex[j]] = pointsLIDs[j];
+                	  transMatrix[f*nFacets_  + facetIndex[j]] = coefs[j];
                   }
               }
               else
               {
-            	  // look for fLID in the actual set and insert there 1.0, if not found then size+1
-            	  returnInsertionPosition( HNDoFs , fLID , insert_position);
-            	  transMatrix[f*nFacets_  + insert_position] = 1.0;
+            	  // look for fLID in the actual set and put there 1.0, if not found then size+1
+            	  HNDoFs[f] = fLID;
+            	  transMatrix[f*nFacets_  + f] = 1.0;
               }
-
 	    	}
 	    	// store the matrix corresponding to this cell
 	    	maxCellLIDwithHN_to_TrafoMatrix_.put( c , transMatrix );
@@ -201,7 +200,7 @@ void NodalDOFMapHN::init()
 	    	cellsWithHangingDoF_globalDoFs_.put( c , HNDoFs );
 
 	    	SUNDANCE_MSG2(verb(), tab << "NodalDOFMapHN initializing cellLID:" << c << " array:" << HNDoFs);
-	    	SUNDANCE_MSG2(verb(), tab << "NodalDOFMapHN initializing cellLID:" << c << " Trafoarray:" << transMatrix);
+	    	SUNDANCE_MSG2(verb(), tab << "NodalDOFMapHN initializing cellLID:" << c << " Trafo array:" << transMatrix);
 
 	    	// add the global DOFs to the array
 	    	for (int f=0; f<nFacets_; f++)
@@ -275,8 +274,6 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
     }
   else if (cellDim == 0)
     { // point integrals are also mostly used for BCs
-	  // Todo: the hanging nodes have at least 2 global DoFs which are involved
-	  // However for plotting this function might be needed !!! TODO:
       nNodes[0] = 1;
       dofs[0].resize(nCells * nFuncs_);
       Array<int>& dof0 = dofs[0];
@@ -297,7 +294,6 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
   else
     {
 	  // since edge or surface Integrals are mostly used for BCs, where are NO HN
-	  // Todo: later for inner edge integration we might have different number of DoFs involved
       int nFacets = mesh().numFacets(cellDim, cellLID[0], 0);
       nNodes[0] = nFacets;
       int dofsPerCell = nFuncs_ * nNodes[0];
@@ -378,52 +374,56 @@ void NodalDOFMapHN::getDOFsForHNCell(
 }
 
 /** This function is only for TRISECTION implemented */
-// TODO: this code and functionality should actually in the basis function AND NOT HERE, this is just a first try!!!
-// todo: use the method of BasisFunction->getConstraintForHN()
+// we might use the method of BasisFunction->getConstraintForHN(), but this should be faster
 void NodalDOFMapHN::getPointLIDsForHN( int pointLID , int facetIndex ,
-		int maxCellIndex ,Array<int>& glbLIDs, Array<double>& coefsArray){
+		int maxCellIndex ,Array<int>& glbLIDs, Array<double>& coefsArray , Array<int>& nodeIndex){
 
-	// resize the points array where there are global DoFs
-	glbLIDs.resize(2);
 	Array<int> facets;
     int indexInParent , parentLID , facetCase = 0;
     double divRatio = 0.5;
 	switch (dim_){
 	case 2:
+		// todo: eventually implement bisection as well (if it will be needed)
 		glbLIDs.resize(2);
+		nodeIndex.resize(2);
 		indexInParent = mesh().indexInParent(maxCellIndex);
 		switch (indexInParent){
-		  case 0: facetCase = (facetIndex == 1)? 0 : 1;
-		          divRatio = (1.0/3.0);  break;
-		  case 1: facetCase = 0;
-		          divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;
-		  case 2: facetCase = (facetIndex == 0)? 0 : 2;
-                  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;
-		  case 5: facetCase = 1;
-                  divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;
-		  case 3: facetCase = 2;
-                  divRatio = (facetIndex == 1)? (1.0/3.0) : (2.0/3.0);  break;
-		  case 6: facetCase = (facetIndex == 0)? 1 : 3;
-                  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;
-		  case 7: facetCase = 3;
-                  divRatio = (facetIndex == 2)? (1.0/3.0) : (2.0/3.0);  break;
-		  case 8: facetCase = (facetIndex == 1)? 2 : 3;
-                  divRatio = (2.0/3.0);  break;
+		  case 0: {facetCase = (facetIndex == 1)? 0 : 1;
+		          divRatio = (1.0/3.0);  break;}
+		  case 1: {facetCase = 0;
+		          divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;}
+		  case 2: {facetCase = (facetIndex == 0)? 0 : 2;
+                  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;}
+		  case 5: {facetCase = 1;
+                  divRatio = (facetIndex == 0)? (1.0/3.0) : (2.0/3.0);  break;}
+		  case 3: {facetCase = 2;
+                  divRatio = (facetIndex == 1)? (1.0/3.0) : (2.0/3.0);  break;}
+		  case 6: {facetCase = (facetIndex == 0)? 1 : 3;
+                  divRatio = (facetIndex == 0)? (2.0/3.0) : (1.0/3.0);  break;}
+		  case 7: {facetCase = 3;
+                  divRatio = (facetIndex == 2)? (1.0/3.0) : (2.0/3.0);  break;}
+		  case 8: {facetCase = (facetIndex == 1)? 2 : 3;
+                  divRatio = (2.0/3.0);  break;}
 		}
 		mesh().returnParentFacets(maxCellIndex , 0 ,facets , parentLID );
 		switch (facetCase){
-		   case 0: glbLIDs[0] = facets[0]; glbLIDs[1] = facets[1]; break;
-		   case 1: glbLIDs[0] = facets[0]; glbLIDs[1] = facets[2]; break;
-		   case 2: glbLIDs[0] = facets[1]; glbLIDs[1] = facets[3]; break;
-		   case 3: glbLIDs[0] = facets[2]; glbLIDs[1] = facets[3]; break;
+		   case 0: {glbLIDs[0] = facets[0]; glbLIDs[1] = facets[1];
+		            nodeIndex[0] = 0;  nodeIndex[1] = 1;  break;}
+		   case 1: {glbLIDs[0] = facets[0]; glbLIDs[1] = facets[2];
+		            nodeIndex[0] = 0;  nodeIndex[1] = 2;  break;}
+		   case 2: {glbLIDs[0] = facets[1]; glbLIDs[1] = facets[3];
+		            nodeIndex[0] = 1;  nodeIndex[1] = 3;   break;}
+		   case 3: {glbLIDs[0] = facets[2]; glbLIDs[1] = facets[3];
+		            nodeIndex[0] = 2;  nodeIndex[1] = 3;  break;}
 		}
 		 coefsArray.resize(2); coefsArray[0] = 1 - divRatio; coefsArray[1] = divRatio;
 		  SUNDANCE_MSG2(verb(),"NodalDOFMapHN::getPointLIDsForHN() fc=" << facetCase << " R=" << divRatio
-		               << " facetIndex:" << facetIndex <<   " indexInParent:" << indexInParent <<" glbLIDs:" << glbLIDs << " maxCellIndex:" << maxCellIndex);
+		               << " facetIndex:" << facetIndex <<   " indexInParent:" << indexInParent <<" glbLIDs:"
+		               << glbLIDs << " maxCellIndex:" << maxCellIndex << " nodeIndex:" << nodeIndex);
 		break;
 	case 3:
 		glbLIDs.resize(4);
-        // Todo: implement this for 3D , this migh get here much complicated ...
+        // Todo: implement this for 3D , this might get here much complicated ...
 		break;
 	}
 

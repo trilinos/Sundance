@@ -62,39 +62,39 @@ using namespace std;
 #define DM_NR_EDGE   52
 #define DM_NR_CELL   19
 
-#define DM_NR_EDGE_R   47
+#define DM_NR_EDGE_R   48
 #define DM_NR_CELL_R   17
 
 Point HNodeMesh2D::returnPoint(0.0 , 0.0);
 
-/** This is defined on the unit square */ //                                              9   10                   //14
-double HNodeMesh2D::_point_x_coords[29] = { 0.0, 1.0, 0.0, 1.0, P1 , 0.0, P1 , P2 , P2 , 1.0, P2 , 1.0, P1 , 0.0 , P1 ,
-		                                    P2 , P12 , P1 , P12 , P22 , /*20*/ P22 , P2 , P22 , P2 , P12 , P1 , P12 , P22  };
+// This is defined on the unit square //                                              9   10                   //1
+const double HNodeMesh2D::_point_x_coords[29] = { 0.0, 1.0, 0.0, 1.0, P1 , 0.0, P1 , P2 , P2 , 1.0, P2 , 1.0, P1 , 0.0 , P1 ,
+		                                    P2 , P12 , P1 , P12 , P22 ,    P22 , P2 , P22 , P2 , P12 , P1 , P12 , P22  };
 
-/** */                                    //                                              9   10                   //14
+//                                       //                                              9   10                   //14
 double HNodeMesh2D::_point_y_coords[29] = { 0.0, 0.0, 1.0, 1.0, 0.0 , P1, P1 , 0.0 , P1 , P1, P2 , P2 , P2 , P2 ,  1.0 ,
-                                            1.0 , P1 , P12 , P12 , P1 , /*20*/ P12 , P12 , P22 , P22 , P22 , P22 , P2 , P2  };
+                                            1.0 , P1 , P12 , P12 , P1 ,    P12 , P12 , P22 , P22 , P22 , P22 , P2 , P2  };
 
-/** */
+//
 int HNodeMesh2D::_edgePoints[52][2] = { {0,1} , {0,2} , {1,3} , {2,3} , {0,4} , {0,5} , {4,6} , {5,6} , {4,7} , {7,8} , {6,8},
 		                                {7,1} , {1,9} , {8,9} , {8,10}, {9,11},{10,11}, {6,12},{12,10}, {5,13},{13,12},{13,2},
 		                               {12,14}, {2,14},{10,15},{14,15}, {11,3}, {15,3}, {6,16}, {6,17},{16,18},{17,18},{16,19},
                                        {19,20},{18,20},{19,8} , {8,21},{20,21},{20,22},{21,23},{22,23},{18,24},{24,22},{17,25},
                                        {25,24},{25,12},{24,26},{12,26},{22,27},{26,27},{23,10},{27,10}};
 
-/** */
+//
 int HNodeMesh2D::_cellPoints[19][4] = { {0,1,2,3} , {0,4,5,6}, {4,7,6,8}, {7,1,8,9}, {8,9,10,11}, {6,8,12,10}, {5,6,13,12},
 		                               {13,12,2,14}, {12,10,14,15}, {10,11,15,3} , {6,16,17,18}, {16,19,18,20}, {19,8,20,21} ,
 		                               {20,21,22,23}, {18,20,24,22}, {17,18,25,24}, {25,24,12,26}, {24,22,26,27}, {22,23,27,10} };
 
-/** */
+//
 int HNodeMesh2D::_cellEdges[19][4] = { {0,1,2,3} , {4,5,6,7}, {8,6,9,10}, {11,9,12,13}, {13,14,15,16}, {10,17,14,18}, {7,19,17,20},
                                        {20,21,22,23}, {18,22,24,25}, {16,24,26,27} ,{28,29,30,31}, {32,30,33,34}, {35,33,36,37} ,
                                        {37,38,39,40}, {34,41,38,42}, {31,43,41,44}, {44,45,46,47}, {42,46,48,49}, {40,48,50,51} };
-/** */
+//
 int HNodeMesh2D::_isCellLeaf[19] = {  0 ,   1, 1, 1, 1, 0, 1, 1, 1, 1   ,   1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-/** The edge is not leaf when is not in at least one leaf cell(2D)*/
+//  The edge is not leaf when is not in at least one leaf cell(2D)
 int HNodeMesh2D::_isEdgeLeaf[52] = {  0,0,0,0,1,1,1,1,1,1  ,  1,1,1,1,1,1,1,1,1,1  ,  1,1,1,1,1,1,1,1,1,1  ,  1,1,1,1,1,1,1,1,1,1
 		                           ,  1,1,1,1,1,1,1,1,1,1  ,  1,1  };
 
@@ -108,17 +108,17 @@ int HNodeMesh2D::_CellReindex[19] = { -1 ,   0, 1, 2, 3, -1, 4, 5, 6, 7   ,   8,
 int HNodeMesh2D::_EdgeReindex[52] = {  -1,-1,-1,-1,0,1,2,3,4,5  ,  6,7,8,9,10,11,12,13,14,15  ,  16,17,18,19,20,21,22,23,24,25  ,
 		                               26,27,28,29,30,31,32,33,34,35  ,  36,37,38,39,40,41,42,43,44,45  ,  46,47  };
 
-/** */
+//
 int HNodeMesh2D::_parentCellIndex[19] = {0 , 0,0,0,0,0,0,0,0,0  , 5,5,5,5,5,5,5,5,5};
 
-/** */
+
 //int HNodeMesh2D::_IndexInParentCell[19] = {0 , 0,1,2,3,4,5,6,7,8  , 0,1,2,3,4,5,6,7,8};
 int HNodeMesh2D::_IndexInParentCell[19] = {0,1,2,3,5,6,7,8  , 0,1,2,3,4,5,6,7,8};
 
-/** */
+//
 int HNodeMesh2D::_cellLevel[19] = {1 , 2,2,2,2,2,2,2,2,2  ,  3,3,3,3,3,3,3,3,3 };
 
-/** */
+//
 int HNodeMesh2D::_pointMaxCoFacet[29][4] = {{ 1,-1,-1,-1} , {-1, 3,-1,-1} , {-1,-1, 7,-1} , {-1,-1,-1, 9} , { 1, 2,-1,-1},
 		                                    { 6,-1, 1,-1} , {5 ,6 ,2 , 1} , { 3, 2,-1,-1} , {4 ,5 ,3 , 2} , {-1, 4,-1, 3},
 		                                    { 9, 8, 4, 5} , {-1,9 ,-1, 4} , { 8, 7, 5, 6} , {7 ,-1, 6,-1} , {-1,-1, 8, 7},
@@ -126,7 +126,7 @@ int HNodeMesh2D::_pointMaxCoFacet[29][4] = {{ 1,-1,-1,-1} , {-1, 3,-1,-1} , {-1,
 		                                    {15,14,10,11} , {-1,15,-1,10} , {16,17,15,14} , {-1,16,-1,15} , {17,18,14,13},
 		                                    {18,-1,13,-1} , {-1,-1,17,18} , {-1,-1,16,17} , {-1,-1,-1,-1} };
 
-/** The hanging edges have on both side cells (this is the convention what I fixed )*/
+//  The hanging edges have on both side cells (this is the convention what I fixed )
 int HNodeMesh2D::_edgeMaxCoFacet[52][2] ={  { 0,-1},{ 0,-1},{-1, 0},{-1, 0},{ 1,-1},{ 1,-1},{ 2, 1},{ 6, 1},{2 ,-1},{ 3, 2},
 		                                    { 5, 2},{ 3,-1},{-1, 3},{ 4, 3},{ 4, 5},{-1, 4},{ 9, 4},{ 5, 6},{ 8, 5},{ 6,-1},
 		                                    { 7, 6},{ 7,-1},{ 8, 7},{-1, 7},{ 9, 8},{-1, 8},{-1, 9},{-1, 9},{12, 4},{12, 6},
@@ -166,10 +166,6 @@ void HNodeMesh2D::createMesh(
 	_ofs_y = offset_y;
 	_res_x = resolution_x;
 	_res_y = resolution_y;
-}
-
-
-HNodeMesh2D::~HNodeMesh2D() {
 }
 
 
@@ -241,9 +237,9 @@ void HNodeMesh2D::getJacobians(int cellDim, const Array<int>& cellLID,
 		      {
 		        case 2:
 				  LID = _Cellindex[cellLID[i]];
-		          J[0] =  (_point_x_coords[_cellPoints[LID][0]] - _point_x_coords[_cellPoints[LID][1]])*_ofs_x; //_ofs_x / _divFact[_cellLevel[LID]];
+		          J[0] =  (_point_x_coords[_cellPoints[LID][1]] - _point_x_coords[_cellPoints[LID][0]])*_ofs_x; //_ofs_x / _divFact[_cellLevel[LID]];
 		          J[1] = 0.0;  J[2] = 0.0;   //
-		          J[3] =  (_point_y_coords[_cellPoints[LID][0]] - _point_y_coords[_cellPoints[LID][2]])*_ofs_y; //_point_x_coords[]     //_ofs_y / _divFact[_cellLevel[LID]];
+		          J[3] =  (_point_y_coords[_cellPoints[LID][2]] - _point_y_coords[_cellPoints[LID][0]])*_ofs_y; //_point_x_coords[]     //_ofs_y / _divFact[_cellLevel[LID]];
 		        break;
 		        default:
 		          TEST_FOR_EXCEPTION(true, InternalError, "impossible switch value "
@@ -317,7 +313,6 @@ void HNodeMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
 	    << "]");
 
 	  int nQuad = refQuadPts.size();
-	  Array<double> J(cellDim*cellDim);
 	  Point pnt( 0.0 , 0.0 );
 	  Point pnt1( 0.0 , 0.0 );
 
@@ -360,14 +355,14 @@ void HNodeMesh2D::pushForward(int cellDim, const Array<int>& cellLID,
 }
 
 int HNodeMesh2D::ownerProcID(int cellDim, int cellLID) const  {
-	 SUNDANCE_VERB_HIGH("ownerProcID()");
+	 //SUNDANCE_VERB_HIGH("ownerProcID()");
 	 return 0;
 }
 
 
 int HNodeMesh2D::numFacets(int cellDim, int cellLID,
                       int facetDim) const  {
-	SUNDANCE_VERB_HIGH("numFacets()");
+	//SUNDANCE_VERB_HIGH("numFacets()");
 	if (cellDim==1) { // 1 dimension
          return 2; //one line has 2 points
     }
@@ -380,7 +375,7 @@ int HNodeMesh2D::numFacets(int cellDim, int cellLID,
 int HNodeMesh2D::facetLID(int cellDim, int cellLID,
                      int facetDim, int facetIndex,
                      int& facetOrientation) const  {
-	facetOrientation = 0;
+	facetOrientation = 1;
 	//printf("HNodeMesh2D::facetLID  cellDim: %d , cellLID: %d , facetDim %d , facetIndex:%d  \n" , cellDim , cellLID , facetDim , facetIndex );
 	int rnt = -1;
 	if (facetDim == 0){ // return the Number/ID of a Vertex
@@ -407,7 +402,7 @@ void HNodeMesh2D::getFacetLIDs(int cellDim,
                           int facetDim,
                           Array<int>& facetLID,
                           Array<int>& facetSign) const {
-	SUNDANCE_VERB_HIGH("getFacetLIDs()");
+	//SUNDANCE_VERB_HIGH("getFacetLIDs()");
 	//printf("PeanoMesh2D::getFacetLIDs()  cellDim:%d  cellLID.size():%d  facetDim:%d\n" , cellDim, (int)cellLID.size() , facetDim);
     int LID = 0 , cLID , facetOrientation ;
     int ptr = 0;
@@ -533,30 +528,30 @@ int HNodeMesh2D::maxCofacetLID(int cellDim, int cellLID,
 
 void HNodeMesh2D::getCofacets(int cellDim, int cellLID,
                  int cofacetDim, Array<int>& cofacetLIDs) const {
-    TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getCofacets() not implemented yet");
+    //TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getCofacets() not implemented yet");
 }
 
 
 void HNodeMesh2D::getMaxCofacetLIDs(const Array<int>& cellLIDs,
   MaximalCofacetBatch& cofacets) const {
-     TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getMaxCofacetLIDs() not implemented yet");
+     //TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getMaxCofacetLIDs() not implemented yet");
 }
 
 
 int HNodeMesh2D::mapGIDToLID(int cellDim, int globalIndex) const  {
-	SUNDANCE_VERB_HIGH("mapGIDToLID()");
+	//SUNDANCE_VERB_HIGH("mapGIDToLID()");
 	return globalIndex;
 }
 
 
 bool HNodeMesh2D::hasGID(int cellDim, int globalIndex) const {
-	SUNDANCE_VERB_HIGH("hasGID()");
+	//SUNDANCE_VERB_HIGH("hasGID()");
 	return true;
 }
 
 
 int HNodeMesh2D::mapLIDToGID(int cellDim, int localIndex) const  {
-	SUNDANCE_VERB_HIGH("mapLIDToGID()");
+	//SUNDANCE_VERB_HIGH("mapLIDToGID()");
 	return localIndex;
 }
 
@@ -575,40 +570,41 @@ CellType HNodeMesh2D::cellType(int cellDim) const  {
 
 
 int HNodeMesh2D::label(int cellDim, int cellLID) const {
-   TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::label() not implemented yet");
+   //TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::label() not implemented yet");
    return 0;
 }
 
 
 void HNodeMesh2D::getLabels(int cellDim, const Array<int>& cellLID,
 		Array<int>& labels) const {
-   TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getLabels() not implemented yet");
+   //TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getLabels() not implemented yet");
 }
 
 Set<int> HNodeMesh2D::getAllLabelsForDimension(int cellDim) const {
    Set<int>                 rtn;
-   TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getAllLabelsForDimension() not implemented yet");
+   //TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getAllLabelsForDimension() not implemented yet");
    return rtn;
 }
 
 void HNodeMesh2D::getLIDsForLabel(int cellDim, int label, Array<int>& cellLIDs) const {
-   TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getLIDsForLabel() not implemented yet");
+   //TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::getLIDsForLabel() not implemented yet");
 }
 
 void HNodeMesh2D::setLabel(int cellDim, int cellLID, int label) {
-   TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::setLabel() not implemented yet");
+   //TEST_FOR_EXCEPTION(true, InternalError," HNodeMesh2D::setLabel() not implemented yet");
 }
 
 
 void HNodeMesh2D::assignIntermediateCellGIDs(int cellDim) {
-	SUNDANCE_VERB_HIGH("assignIntermediateCellGIDs()");
+	//SUNDANCE_VERB_HIGH("assignIntermediateCellGIDs()");
 }
 
 
 bool HNodeMesh2D::hasIntermediateGIDs(int dim) const {
-	SUNDANCE_VERB_HIGH("hasIntermediateGIDs()");
+	//SUNDANCE_VERB_HIGH("hasIntermediateGIDs()");
 	return true; // true means they have been synchronized ... not used now
 }
+
 
 // =============================== HANGING NODE FUNCTIONS ==========================
 bool HNodeMesh2D::isElementHangingNode(int cellDim , int cellLID) const {
@@ -640,7 +636,7 @@ void HNodeMesh2D::returnParentFacets(  int childCellLID , int dimFacets ,
 	facetsLIDs[3] = facetLID_tree( 2 , parentCellLIDs ,  dimFacets , 3 );
 }
 
-/** only used in determining the parents*/
+// only used in determining the parents
 int HNodeMesh2D::facetLID_tree(int cellDim, int cellLID,
                      int facetDim, int facetIndex) const{
     int rnt = -1;

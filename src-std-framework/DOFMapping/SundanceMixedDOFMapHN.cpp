@@ -94,8 +94,6 @@ MixedDOFMapHN::MixedDOFMapHN(const Mesh& mesh,
   int nBasis = basis.size();
   basis_.resize(nBasis);
 
-  funcID_to_chunkBasis_.resize(nBasis);
-  funcID_to_funcNrInChunk_.resize(nBasis);
   nPoints_ = mesh.numCells(0);
 
   for (int i=0; i<nBasis; i++)
@@ -107,16 +105,12 @@ MixedDOFMapHN::MixedDOFMapHN(const Mesh& mesh,
       basisToChunkMap.put(bh, chunk);
       chunkFuncs.append(tuple(i));
       basis_[chunk] = rcp_dynamic_cast<BasisFamilyBase>(basis[i]);
-      funcID_to_chunkBasis_[i] = chunk;
-      funcID_to_funcNrInChunk_[i] = 0;
       chunk++;
     }
     else
     {
       int b = basisToChunkMap.get(bh);
       chunkFuncs[b].append(i);
-      funcID_to_chunkBasis_[i] = b;
-      funcID_to_funcNrInChunk_[i] = chunkFuncs[b].size()-1;
     }
   }
   basis_.resize(chunk);
@@ -847,7 +841,8 @@ void MixedDOFMapHN::buildMaximalDofTable()
 	// it is enough if we check the points if they are hanging
 	for (int jj = 0 ; jj < numFacets[0] ; jj++){
 		if (mesh().isElementHangingNode(0,facetLID[0][ c*numFacets[0] + jj])){
-			  // todo: if order > 0, but only for that basis ... (not as a cell)
+			  //    if order > 0, but only for that basis ... (not as a cell)
+			  //       but even if we mark for this as a hanging it is OK
 			  hasCellHanging_[cellLID[c]] = true;
 			  break;
 	    }
@@ -1151,10 +1146,11 @@ void MixedDOFMapHN::getTrafoMatrixForCell(
 	if (maxCellLIDwithHN_to_TrafoMatrix_.containsKey(cellLID))
 	{
 		// return the transformation matrix from the Map
-		SUNDANCE_VERB_MEDIUM( "getTrafoMatrixForCell() cellLID:" << cellLID << ",funcID:" <<
-				funcID << ",funcID_to_chunkBasis_[funcID]" << funcID_to_chunkBasis_[funcID]);
-		transfMatrix = (maxCellLIDwithHN_to_TrafoMatrix_.get( cellLID ))[funcID_to_chunkBasis_[funcID]]; // this should return a valid array
+		transfMatrix = (maxCellLIDwithHN_to_TrafoMatrix_.get( cellLID ))[chunkForFuncID(funcID)]; // this should return a valid array
 		trafoMatrixSize = sqrt(transfMatrix.size());
+		SUNDANCE_VERB_MEDIUM( "getTrafoMatrixForCell() cellLID:" << cellLID << ",funcID:" <<
+				funcID << ",chunkForFuncID(funcID):" << chunkForFuncID(funcID) << ", trafoMatrixSize:" << trafoMatrixSize);
+		SUNDANCE_VERB_MEDIUM( "getTrafoMatrixForCell() Matrix:" << std::endl << transfMatrix );
 		doTransform = true;
 	}
 	else  // no transformation needed, return false
@@ -1175,17 +1171,17 @@ void MixedDOFMapHN::getDOFsForHNCell(
 	// and that the element is a point (since this is called only for at the plotting)
 
 	// treat the cells only of dimension zero
-	if (  (cellDim == 0) && ( HN_To_globalFacetsLID_.containsKey(nPoints_*funcID_to_chunkBasis_[funcID] + cellLID)) )
+	if (  (cellDim == 0) && ( HN_To_globalFacetsLID_.containsKey(nPoints_*chunkForFuncID(funcID) + cellLID)) )
 	{
 		Array<int> facetLIDs;
 		Array<int> facetDim;
 		SUNDANCE_VERB_MEDIUM( "getDOFsForHNCell() cellDim:"<<cellDim<<" cellLID:"<<
-				cellLID<<"funcID:" << funcID <<",funcID_to_chunkBasis_[funcID]" << funcID_to_chunkBasis_[funcID]);
-		facetLIDs = HN_To_globalFacetsLID_.get( nPoints_*funcID_to_chunkBasis_[funcID] + cellLID );
-		facetDim = HN_To_globalFacetsDim_.get( nPoints_*funcID_to_chunkBasis_[funcID] + cellLID );
+				cellLID<<"funcID:" << funcID <<",chunkForFuncID(funcID)" << chunkForFuncID(funcID));
+		facetLIDs = HN_To_globalFacetsLID_.get( nPoints_*chunkForFuncID(funcID) + cellLID );
+		facetDim = HN_To_globalFacetsDim_.get( nPoints_*chunkForFuncID(funcID) + cellLID );
 		dofs.resize(facetLIDs.size());
-		int b = funcID_to_chunkBasis_[funcID];
-		int func = funcID_to_funcNrInChunk_[funcID];
+		int b = chunkForFuncID(funcID);
+		int func = indexForFuncID(funcID);
 		// return the DoFs belonging to the points and function which collaborate to the hanging node
 		for (int ind = 0 ; ind < facetLIDs.size() ; ind++){
 			// dofs_[cellDim][chunk][(cellLID*nFunc + func)*nNode + node]
@@ -1193,7 +1189,7 @@ void MixedDOFMapHN::getDOFsForHNCell(
 			     [facetLIDs[ind]*nDofsPerCell_[b][facetDim[ind]]+func*nNodesPerCell_[b][facetDim[ind]] + 0 ]; // node = 0
 		}
 		// get the coefficients
-		coefs = HN_To_coeffs_.get( nPoints_*funcID_to_chunkBasis_[funcID] + cellLID );
+		coefs = HN_To_coeffs_.get( nPoints_*chunkForFuncID(funcID) + cellLID );
 		SUNDANCE_VERB_MEDIUM(  "b=" << b);
 		SUNDANCE_VERB_MEDIUM(  "func=" << func);
 		SUNDANCE_VERB_MEDIUM(  "facetLIDs=" << facetLIDs);

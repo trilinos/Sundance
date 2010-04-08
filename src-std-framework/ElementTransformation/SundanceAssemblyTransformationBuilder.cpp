@@ -83,8 +83,9 @@ AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<Integral
 	  SUNDANCE_MSG2(verb(), "Vector trafo rowMaps.size:" << rowMaps.size());
 	  SUNDANCE_MSG2(verb(), "Vector trafo group->unkBlock():" << group->unkBlock());
 	  SUNDANCE_MSG2(verb(), "Vector trafo group->testBlock():"<< group->testBlock());
-	  _myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has alway one element ;-)
-
+	  _myRowDOFMap = rowMaps[group->testBlock()[0]].get(); // group->testBlock(), has always one element ;-)
+	  hasPreTransformation_ = true;
+	  hasPostTransformation_ = false;
 	  // create the NH transformation, only for pre apply
 	  const HNDoFMapBase* rowMap
 	    = dynamic_cast<const HNDoFMapBase*>(_myRowDOFMap);
@@ -95,7 +96,7 @@ AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<Integral
 	    }
 	  else
 	    {
-	      SUNDANCE_ERROR(" ");
+	      SUNDANCE_ERROR("AssemblyTransformationBuilder::AssemblyTransformationBuilder, wrong configuration , no Col DoFMap ");
 	    }
 	}
 	else

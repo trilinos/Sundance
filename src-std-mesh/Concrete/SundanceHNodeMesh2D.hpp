@@ -70,7 +70,7 @@ public:
     double resolution_y);
 
 	/** Dtor */
-	virtual ~HNodeMesh2D();
+	virtual ~HNodeMesh2D(){;}
 
   /**
    * Get the number of cells having dimension dim
@@ -281,7 +281,7 @@ public:
    * @param dimFacets [in] the dimension of the facets which we want to have
    * @param facetsLIDs [out] the LID of the parents facets (all) in the defined order
    * @param parentCellLIDs [out] the maxdim parent cell LID */
-   virtual void returnParentFacets( int childCellLID , int dimFacets ,
+    virtual void returnParentFacets( int childCellLID , int dimFacets ,
            Array<int> &facetsLIDs , int &parentCellLIDs ) const;
 
 private:
@@ -314,7 +314,7 @@ private:
   /**  */
   double _res_y;
 
-  static double _point_x_coords[29];
+  static const double _point_x_coords[29];
 
   static double _point_y_coords[29];
 
@@ -328,8 +328,8 @@ private:
 
   static int _isEdgeLeaf[52];
 
-/** Reindex the cells in the tree so that there will be only those elements visible
- * which are needed for computation, not leaf elements will be ignored */
+// Reindex the cells in the tree so that there will be only those elements visible
+// which are needed for computation, not leaf elements will be ignored
   static int _Cellindex[19];
   static int _Edgeindex[52];
   static int _CellReindex[19];
@@ -351,7 +351,6 @@ private:
   static int _cellLevel[19];
 
   static double _divFact[4];
-
 
   /** */
   static double _returnDoubleVect[2];

@@ -49,7 +49,13 @@ namespace Sundance {
 				    Array<double>& A
 				    ) const = 0;
 
+    /** TRUE if any of the basis needs transformation and FALSE if none */
+    bool doesAnyTransformation() const {return doesAnyTransformation_;}
+
   protected:
+
+    /** sets the flag */
+    void setDoesAnyTransformation(bool val) { doesAnyTransformation_ = val; }
 
     /** */
     int verb() const { return verb_; }
@@ -61,6 +67,10 @@ namespace Sundance {
 
     /** verbosity attribute */
     int verb_;
+
+    /** TRUE if any transformation is needed (done in the object) and FALSE if none */
+    bool doesAnyTransformation_;
+
   };
 
 }

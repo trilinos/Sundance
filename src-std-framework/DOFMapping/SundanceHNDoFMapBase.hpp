@@ -64,27 +64,6 @@ public:
 
 protected:
 
-	  /** Function used in the transformation matrix creation, where
-	   * we need to insert one node LID into the element list,
-	   * If the LID is already in the list then retrurn the position, otherwise add to the end <br>
-	   * (functionality similar to the Set)
-	   * */
-	  static inline void returnInsertionPosition(Array<int>& fLIDs , int fLID , int& insertPos){
-		  int pos;
-		  for(pos = 0 ; pos < fLIDs.size() ; pos++)
-		  {
-			if (fLIDs[pos] == fLID){
-				insertPos = pos; // we found, nothing to do now
-				break;
-			}
-		  }
-		  if (pos >= fLIDs.size()){ // add to the end
-			  insertPos = pos;
-			  fLIDs.resize(fLIDs.size()+1);
-			  fLIDs[insertPos] = fLID;
-		  }
-	  }
-
 };
 
 }
