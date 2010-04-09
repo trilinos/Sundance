@@ -108,9 +108,11 @@ double ExprFieldWrapper::getData(int cellDim, int cellID, int elem) const
   discreteSpace_.map()->getDOFsForCell(cellDim, cellID, indices_[elem][0] , dofs); //indecies[elem][0] should be OK!
 
   //cout << "Arguments ExprFieldWrapper::getData " << cellDim << "," << cellID << "," << elem << " DoFs:" << dofs <<std::endl;
+  //cout << "indices_[elem][0]:" << indices_[elem][0] << std::endl;
 
-  TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
-    "too many DOFs found in ExprFieldWrapper::getData()");
+  // This exception is not needed since the first value must be the nodal value
+  //TEST_FOR_EXCEPTION(dofs.size() > 1, RuntimeError,
+  //  "too many DOFs found in ExprFieldWrapper::getData()");
 
   // in case of hanging node the "dofs[0]" will be negative, in this case treate this case
   // in case of general basis function this should not be changed, when there are nodal values

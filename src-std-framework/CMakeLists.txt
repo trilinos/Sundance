@@ -301,7 +301,6 @@ APPEND_SET(HEADERS
   ElementTransformation/SundanceTransformationBase.hpp
   ElementTransformation/SundanceAssemblyTransformationBuilder.hpp
   ElementTransformation/SundanceDiscreteSpaceTransfBuilder.hpp
-#  ElementTransformation/SundanceTransformationHermite.hpp
   ElementTransformation/SundanceTransformationHN.hpp
   ElementTransformation/SundanceInequivalentElementTransformation.hpp
 )
@@ -310,7 +309,6 @@ APPEND_SET(SOURCES
   ElementTransformation/SundanceTransformationBase.cpp
   ElementTransformation/SundanceAssemblyTransformationBuilder.cpp
   ElementTransformation/SundanceDiscreteSpaceTransfBuilder.cpp
-#  ElementTransformation/SundanceTransformationHermite.cpp
   ElementTransformation/SundanceTransformationHN.cpp
   ElementTransformation/SundanceInequivalentElementTransformation.cpp
   )
