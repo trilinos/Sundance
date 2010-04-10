@@ -129,6 +129,77 @@ private:
   RCP<CellPredicateFunctorBase> func_;
 };
 
+
+
+
+
+/** */
+class PointCellPredicateFunctor 
+  : public CellPredicateFunctorBase
+{
+public:
+  /** */
+  PointCellPredicateFunctor(const Point& x, const double& tol=1.0e-12)
+    : x_(x), tol_(tol){}
+
+  /** */
+  bool operator()(const Point& x) const ;
+
+private:
+  Point x_;
+  double tol_;
+};
+
+
+
+/** */
+class CoordinateValueCellPredicateFunctor 
+  : public CellPredicateFunctorBase
+{
+public:
+  /** */
+  CoordinateValueCellPredicateFunctor(
+    int direction, const double& value, const double& tol=1.0e-12)
+    : direction_(direction), value_(value), tol_(tol) {}
+
+  /** */
+  bool operator()(const Point& x) const ;
+
+private:
+  int direction_;
+  double value_;
+  double tol_;
+};
+
+/** */
+class PointCellPredicate : public PositionalCellPredicate
+{
+public:
+  /** */
+  PointCellPredicate(const Point& x, const double& tol=1.0e-12)
+    : PositionalCellPredicate(rcp(new PointCellPredicateFunctor(x,tol)))
+    {}
+
+  /* */
+  GET_RCP(CellPredicateBase);
+};
+
+/** */
+class CoordinateValueCellPredicate : public PositionalCellPredicate
+{
+public:
+  /** */
+  CoordinateValueCellPredicate(int direction,
+    const double& value, const double& tol=1.0e-12)
+    : PositionalCellPredicate(
+      rcp(new CoordinateValueCellPredicateFunctor(direction,value,tol)))
+    {}
+
+  /* */
+  GET_RCP(CellPredicateBase);
+};
+
+
 }
 
 

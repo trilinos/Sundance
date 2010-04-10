@@ -86,3 +86,17 @@ XMLObject PositionalCellPredicate::toXML() const
   return rtn;
 }
 
+bool PointCellPredicateFunctor::operator()(const Point& x) const
+{
+  for (int i=0; i<x_.dim(); i++)
+  {
+    if (fabs(x[i]-x_[i]) > tol_) return false;
+  }
+  return true;
+}
+
+
+bool CoordinateValueCellPredicateFunctor::operator()(const Point& x) const
+{
+  return (fabs(x[direction_]-value_) < tol_);
+}

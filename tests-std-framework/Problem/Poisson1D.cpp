@@ -36,7 +36,7 @@
  */
 
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
+//CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
 
 int main(int argc, char** argv)
 {
@@ -60,7 +60,8 @@ int main(int argc, char** argv)
        * in the interior of the domain */
       CellFilter interior = new MaximalCellFilter();
       CellFilter points = new DimensionalCellFilter(0);
-      CellFilter leftPoint = points.subset(new LeftPointTest());
+      CellFilter leftPoint 
+        = points.subset(new CoordinateValueCellPredicate(0,0.0));
 
       
       /* Create unknown and test functions, discretized using first-order

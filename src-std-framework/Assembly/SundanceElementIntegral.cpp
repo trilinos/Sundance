@@ -205,7 +205,8 @@ ElementIntegral::ElementIntegral(int spatialDim,
     mesh_(mesh)
 {
   Tabs tab0(0);
-  SUNDANCE_MSG2(setupVerb(), tab0 << "constructing 2-form ElementIntegral");
+  SUNDANCE_MSG2(setupVerb(), tab0 
+    << "***** constructing 2-form ElementIntegral");
   /* if we're integrating a derivative along a facet, we may need to refer back
    * to the maximal cell. */
   bool okToRestrictTestToBdry = basisRestrictableToBoundary(testBasis);
