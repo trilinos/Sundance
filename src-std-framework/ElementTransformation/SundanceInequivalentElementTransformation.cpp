@@ -27,7 +27,12 @@ namespace Sundance
 						    ) const
   
   {
-    chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , JVol , A );
+	if (chunkBases_[map_->chunkForFuncID( funcID )]->requiresBasisTransformation())
+	{
+	   CellJacobianBatch JVol1;
+	   mesh_.getJacobians( mesh_.spatialDim() , *(cellLIDs.get()) , JVol1 );
+       chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , JVol1 , A );
+	}
   }
 
   void InequivalentElementTransformation::postApply( const int funcID,
@@ -38,7 +43,12 @@ namespace Sundance
 						     RCP<Array<double> >& A
 						     ) const
   {
-    chunkBases_[map_->chunkForFuncID( funcID )]->postApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , JVol , A );
+	if (chunkBases_[map_->chunkForFuncID( funcID )]->requiresBasisTransformation())
+	{
+	   CellJacobianBatch JVol1;
+	   mesh_.getJacobians( mesh_.spatialDim() , *(cellLIDs.get()) , JVol1 );
+       chunkBases_[map_->chunkForFuncID( funcID )]->postApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , JVol1 , A );
+	}
   }
   
   void InequivalentElementTransformation::preapplyTranspose( const int cellDim,
