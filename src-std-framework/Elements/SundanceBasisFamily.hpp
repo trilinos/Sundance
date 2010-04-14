@@ -158,28 +158,41 @@ public:
 
   /** */
   virtual void preApplyTransformation( const CellType &maxCellType ,
+				       const Mesh &mesh,
+				       const Array<int> &cellLIDs,
 				       const CellJacobianBatch& JVol,
 				       RCP<Array<double> >& A
 				       ) const 
   { 
     ptr()->preApplyTransformation( maxCellType ,
-				   JVol,				   A);
+				   mesh,
+				   cellLIDs,
+				   JVol,
+				   A);
   }
   /**  */
-  virtual void postApplyTransformation( const CellType &maxCellType 
-,					const CellJacobianBatch& JVol,
+  virtual void postApplyTransformation( const CellType &maxCellType ,
+					const Mesh &mesh,
+					const Array<int> &cellLIDs,
+					const CellJacobianBatch& JVol,
 					RCP<Array<double> >& A ) const
   {
     ptr()->postApplyTransformation( maxCellType ,
+				    mesh ,
+				    cellLIDs ,
 				    JVol,
 				    A);
   }
   
   virtual void preApplyTransformationTranspose( const CellType &maxCellType ,
+						const Mesh &mesh,
+						const Array<int> &cellLIDs,
 						const CellJacobianBatch& JVol,
 						Array<double>& A ) const
   {
     ptr()->preApplyTransformationTranspose( maxCellType ,
+					    mesh ,
+					    cellLIDs ,
 					    JVol ,
 					    A );
   }

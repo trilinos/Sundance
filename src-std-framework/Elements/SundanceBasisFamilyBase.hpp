@@ -37,6 +37,7 @@
 #include "SundanceTensorBasisBase.hpp"
 #include "SundanceBasisReferenceEvaluationBase.hpp"
 #include "SundanceHandleable.hpp"
+#include "SundanceMesh.hpp"
 #include "SundancePrintable.hpp"
 #include "SundanceObjectWithVerbosity.hpp"
 #include "SundanceTypeUtils.hpp"
@@ -71,16 +72,22 @@ public:
   virtual bool requiresBasisTransformation() const { return false; }
   /** \brief Default transformation does nothing */
   virtual void preApplyTransformation( const CellType &maxCellType ,
+				       const Mesh &mesh,
+				       const Array<int> &cellLIDs,
 				       const CellJacobianBatch& JVol,
 				       RCP<Array<double> >& A
 				       ) const {;}
   /** \brief Default transformation does nothing */
   virtual void postApplyTransformation( const CellType &maxCellType ,
+				       const Mesh &mesh,
+				       const Array<int> &cellLIDs,
 					const CellJacobianBatch& JVol,
 					RCP<Array<double> >& A
 					) const {;}
   /** \brief Default transformation does nothing */
   virtual void preApplyTransformationTranspose( const CellType &maxCellType ,
+						const Mesh &mesh,
+						const Array<int> &cellLIDs,
 						const CellJacobianBatch& JVol,
 						Array<double>& A ) const {;}
 

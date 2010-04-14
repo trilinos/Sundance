@@ -319,13 +319,15 @@ void CubicHermite::evalOnTet(const Point& pt,
 }
 
 void CubicHermite::preApplyTransformation( const CellType &maxCellType ,
+					   const Mesh &mesh, 
+					   const Array<int> &cellLIDs,
 					   const CellJacobianBatch& JVol,
 					   RCP<Array<double> >& A ) const
   {
     switch(maxCellType)
       {
       case TriangleCell:
-	preApplyTransformationTriangle( JVol , A );
+	preApplyTransformationTriangle( mesh , cellLIDs, JVol , A );
 	break;
       default:
 	TEST_FOR_EXCEPT(1);
@@ -335,13 +337,15 @@ void CubicHermite::preApplyTransformation( const CellType &maxCellType ,
   }
 
 void CubicHermite::postApplyTransformation( const CellType &maxCellType ,
+					    const Mesh &mesh, 
+					    const Array<int> &cellLIDs,
 					    const CellJacobianBatch& JVol,
 					    RCP<Array<double> >& A ) const
   {
     switch(maxCellType)
       {
       case TriangleCell:
-	postApplyTransformationTriangle( JVol , A );
+	postApplyTransformationTriangle( mesh , cellLIDs, JVol , A );
 	break;
       default:
 	TEST_FOR_EXCEPT(1);
@@ -351,13 +355,15 @@ void CubicHermite::postApplyTransformation( const CellType &maxCellType ,
   }
 
 void CubicHermite::preApplyTransformationTranspose( const CellType &maxCellType ,
+						    const Mesh &mesh, 
+						    const Array<int> &cellLIDs,
 						    const CellJacobianBatch& JVol ,
 						    Array<double> & A ) const
 {
   switch(maxCellType)
     {
     case TriangleCell:
-      preApplyTransformationTransposeTriangle( JVol , A );
+      preApplyTransformationTransposeTriangle( mesh , cellLIDs, JVol , A );
       break;
     default:
       TEST_FOR_EXCEPT(1);
@@ -367,116 +373,193 @@ void CubicHermite::preApplyTransformationTranspose( const CellType &maxCellType 
 }
 
 
-void CubicHermite::preApplyTransformationTriangle( const CellJacobianBatch& JVol,
+void CubicHermite::preApplyTransformationTriangle( const Mesh &mesh, 
+						   const Array<int> &cellLIDs,
+						   const CellJacobianBatch& JVol,
 						   RCP<Array<double> >& A) const
 {
-    Array<double> &Anoptr = *A;
-
-    // this applies M from the left on each cell
-    // A for each cell has 10 rows because it is Hermite
-    // so, this gives the number of columns per cell
-    const int numCols = Anoptr.size() / JVol.numCells() / 10;
-
-    for (int i=0;i<JVol.numCells();i++) 
-      {
-        const int cell_start = i * numCols * 10;
-	const double *invJ = JVol.jVals(i);
-
-        for (int j=0;j<numCols;j++) 
-          {
-            const int col_start = cell_start + 10 * j;
-            const double a1 = Anoptr[col_start + 1];
-            const double a2 = Anoptr[col_start + 2];
-            const double a4 = Anoptr[col_start + 4];
-            const double a5 = Anoptr[col_start + 5];
-            const double a7 = Anoptr[col_start + 7];
-            const double a8 = Anoptr[col_start + 8];
-            Anoptr[col_start+1] = invJ[0]*a1 + invJ[1]*a2;
-            Anoptr[col_start+2] = invJ[2]*a1 + invJ[3]*a2;
-            Anoptr[col_start+4] = invJ[0]*a4 + invJ[1]*a5;
-            Anoptr[col_start+5] = invJ[2]*a4 + invJ[3]*a5;
-            Anoptr[col_start+7] = invJ[0]*a7 + invJ[1]*a8;
-            Anoptr[col_start+8] = invJ[2]*a7 + invJ[3]*a8;
-          }
-      }
-
+  Array<double> &Anoptr = *A;
+  
+  Array<double> cellVertH;
+  getVertexH( mesh , cellLIDs , cellVertH );
+  
+  
+  // this applies M from the left on each cell
+  // A for each cell has 10 rows because it is Hermite
+  // so, this gives the number of columns per cell
+  const int numCols = Anoptr.size() / JVol.numCells() / 10;
+  
+  for (int i=0;i<JVol.numCells();i++) 
+    {
+      const int cell_start = i * numCols * 10;
+      const double *invJ = JVol.jVals(i);
+      
+      for (int j=0;j<numCols;j++) 
+	{
+	  const int col_start = cell_start + 10 * j;
+	  const double a1 = Anoptr[col_start + 1];
+	  const double a2 = Anoptr[col_start + 2];
+	  const double a4 = Anoptr[col_start + 4];
+	  const double a5 = Anoptr[col_start + 5];
+	  const double a7 = Anoptr[col_start + 7];
+	  const double a8 = Anoptr[col_start + 8];
+	  Anoptr[col_start+1] = (invJ[0]*a1 + invJ[1]*a2)/cellVertH[3*i];
+	  Anoptr[col_start+2] = (invJ[2]*a1 + invJ[3]*a2)/cellVertH[3*i];
+	  Anoptr[col_start+4] = (invJ[0]*a4 + invJ[1]*a5)/cellVertH[3*i+1];
+	  Anoptr[col_start+5] = (invJ[2]*a4 + invJ[3]*a5)/cellVertH[3*i+1];
+	  Anoptr[col_start+7] = (invJ[0]*a7 + invJ[1]*a8)/cellVertH[3*i+2];
+	  Anoptr[col_start+8] = (invJ[2]*a7 + invJ[3]*a8)/cellVertH[3*i+2];
+	}
+    }
+  
 }
 
-void CubicHermite::postApplyTransformationTriangle( const CellJacobianBatch& JVol,
+void CubicHermite::postApplyTransformationTriangle( const Mesh &mesh,
+						    const Array<int> &cellLIDs , 
+						    const CellJacobianBatch& JVol,
 						    RCP<Array<double> >& A ) const
 {
-    Array<double> invJ;
+  Array<double> &Anoptr = *A;
+  
+  Array<double> cellVertH;
+  getVertexH( mesh , cellLIDs , cellVertH );
+  
+  
+  const int numRows = Anoptr.size() / 10 / JVol.numCells();
+  
+  for (int i=0;i<JVol.numCells();i++) 
+    {
+      const double *invJ = JVol.jVals(i);
+      
+      const int cell_start = i * numRows * 10;
+      // handle columns 1 and 2
+      for (int j=0;j<numRows;j++) 
+	{
+	  const double a = Anoptr[cell_start + numRows + j];
+	  const double b = Anoptr[cell_start + 2*numRows + j];
+	  Anoptr[cell_start + numRows + j] = (invJ[0] * a + invJ[1] * b)/cellVertH[3*i];
+	  Anoptr[cell_start + 2*numRows + j] = (invJ[2] * a + invJ[3] * b)/cellVertH[3*i];
+	}
+      
+      // handle columns 4 and 5
+      for (int j=0;j<numRows;j++) 
+	{
+	  const double a = Anoptr[cell_start + 4*numRows + j];
+	  const double b = Anoptr[cell_start + 5*numRows + j];
+	  Anoptr[cell_start + 4*numRows + j] = (invJ[0] * a + invJ[1] * b)/cellVertH[3*i+1];
+	  Anoptr[cell_start + 5*numRows + j] = (invJ[2] * a + invJ[3] * b)/cellVertH[3*i+1];
+	}
+      
+      // handle columns 7 and 8
+      for (int j=0;j<numRows;j++) 
+	{
+	  const double a = Anoptr[cell_start + 7*numRows + j];
+	  const double b = Anoptr[cell_start + 8*numRows + j];
+	  Anoptr[cell_start + 7*numRows + j] = (invJ[0] * a + invJ[1] * b)/cellVertH[3*i+2];
+	  Anoptr[cell_start + 8*numRows + j] = (invJ[2] * a + invJ[3] * b)/cellVertH[3*i+2];
+	}
+      
+    }
+  
+  return;
+}
 
-    Array<double> &Anoptr = *A;
+void CubicHermite::preApplyTransformationTransposeTriangle( const Mesh &mesh,
+							    const Array<int> &cellLIDs,
+							    const CellJacobianBatch& JVol,
+							    Array<double>& A ) const
+{
+  // this applies M from the left on each cell
+  // A for each cell has 10 rows because it is Hermite
+  // so, this gives the number of columns per cell
+  const int numCols = A.size() / JVol.numCells() / 10;
+  
+  
+  Array<double> cellVertH;
+  getVertexH( mesh , cellLIDs , cellVertH );
+  
+  for (int i=0;i<JVol.numCells();i++) 
+    {
+      const int cell_start = i * numCols * 10;
+      const double *invJ = JVol.jVals(i);
+      
+      for (int j=0;j<numCols;j++) 
+	{
+	  const int col_start = cell_start + 10 * j;
+	  const double a1 = A[col_start + 1];
+	  const double a2 = A[col_start + 2];
+	  const double a4 = A[col_start + 4];
+	  const double a5 = A[col_start + 5];
+	  const double a7 = A[col_start + 7];
+	  const double a8 = A[col_start + 8];
+	  A[col_start+1] = (invJ[0]*a1 + invJ[2]*a2)/cellVertH[3*i];
+	  A[col_start+2] = (invJ[1]*a1 + invJ[3]*a2)/cellVertH[3*i];
+	  A[col_start+4] = (invJ[0]*a4 + invJ[2]*a5)/cellVertH[3*i+1];
+	  A[col_start+5] = (invJ[1]*a4 + invJ[3]*a5)/cellVertH[3*i+1];
+	  A[col_start+7] = (invJ[0]*a7 + invJ[2]*a8)/cellVertH[3*i+2];
+	  A[col_start+8] = (invJ[1]*a7 + invJ[3]*a8)/cellVertH[3*i+2];
+	}
+    }
+  
+}
 
-    const int numRows = Anoptr.size() / 10 / JVol.numCells();
+// cellVertexH is 3 * cellLIDs.size and has the appropriate h for each
+// vertex of each cell
+void CubicHermite::getVertexH( const Mesh &mesh, 
+			       const Array<int> &cellLIDs ,
+			       Array<double> &cellVertexH ) const
+{
+    // now I get the vertices that are included in the batch of cells
+    map<int,double> vert_h;
 
-    for (int i=0;i<JVol.numCells();i++) 
+    Array<int> cellVertLIDs(3);
+    Array<int> vertOrient(3);
+    const int cellDim = mesh.spatialDim();
+    // set up map structure
+    for (int i=0;i<cellLIDs.size();i++) 
       {
- 	const double *invJ = JVol.jVals(i);
+	const int cellLID = cellLIDs[i];
+	mesh.getFacetArray( cellDim , cellLID , 0 , cellVertLIDs , vertOrient );
+	for (int j=0;j<3;j++)
+	  {
+	    map<int,double>::iterator vert_h_cur = vert_h.find(cellVertLIDs[j]);
+	    if (vert_h_cur == vert_h.end())
+	      {
+		vert_h[cellVertLIDs[j]] = 0.0;
+	      }
+	  }
+      }
+    
+    // fill in numbers
+    for (map<int,double>::iterator it=vert_h.begin();it!=vert_h.end();++it)
+      {
+	const int vert = it->first;
+	it->second = 0.0;
+	// loop over maximal cofacets of each vertex
+	Array<int> incident_cells;
+	Array<double> cell_diams;
+	mesh.getCofacets( 0 , vert , cellDim , incident_cells );
+	mesh.getCellDiameters( 2 , incident_cells , cell_diams );
+	for (int i=0;i<cell_diams.size();i++) 
+	  {
+	    it->second += cell_diams[i];
+	  }
+	it->second /= cell_diams.size();
 
-        const int cell_start = i * numRows * 10;
-        // handle columns 1 and 2
-        for (int j=0;j<numRows;j++) 
-          {
-            const double a = Anoptr[cell_start + numRows + j];
-            const double b = Anoptr[cell_start + 2*numRows + j];
-            Anoptr[cell_start + numRows + j] = invJ[0] * a + invJ[1] * b;
-            Anoptr[cell_start + 2*numRows + j] = invJ[2] * a + invJ[3] * b;
-          }
+      }
 
-        // handle columns 4 and 5
-        for (int j=0;j<numRows;j++) 
-          {
-            const double a = Anoptr[cell_start + 4*numRows + j];
-            const double b = Anoptr[cell_start + 5*numRows + j];
-            Anoptr[cell_start + 4*numRows + j] = invJ[0] * a + invJ[1] * b;
-            Anoptr[cell_start + 5*numRows + j] = invJ[2] * a + invJ[3] * b;
-          }
+    cellVertexH.resize( 3 * cellLIDs.size() );
 
-        // handle columns 7 and 8
-        for (int j=0;j<numRows;j++) 
-          {
-            const double a = Anoptr[cell_start + 7*numRows + j];
-            const double b = Anoptr[cell_start + 8*numRows + j];
-            Anoptr[cell_start + 7*numRows + j] = invJ[0] * a + invJ[1] * b;
-            Anoptr[cell_start + 8*numRows + j] = invJ[2] * a + invJ[3] * b;
-          }
-
+    for (int i=0;i<cellLIDs.size();i++) 
+      {
+	const int cellLID = cellLIDs[i];
+	mesh.getFacetArray( cellDim , cellLID , 0 , cellVertLIDs , vertOrient );
+	for (int j=0;j<3;j++) 
+	  {
+	    cellVertexH[3*i+j] = vert_h[cellVertLIDs[j]];
+	  }
       }
 
     return;
-}
-
-void CubicHermite::preApplyTransformationTransposeTriangle( const CellJacobianBatch& JVol,
-							    Array<double>& A ) const
-{
-    // this applies M from the left on each cell
-    // A for each cell has 10 rows because it is Hermite
-    // so, this gives the number of columns per cell
-    const int numCols = A.size() / JVol.numCells() / 10;
-
-    for (int i=0;i<JVol.numCells();i++) 
-      {
-        const int cell_start = i * numCols * 10;
-	const double *invJ = JVol.jVals(i);
-
-        for (int j=0;j<numCols;j++) 
-          {
-            const int col_start = cell_start + 10 * j;
-            const double a1 = A[col_start + 1];
-            const double a2 = A[col_start + 2];
-            const double a4 = A[col_start + 4];
-            const double a5 = A[col_start + 5];
-            const double a7 = A[col_start + 7];
-            const double a8 = A[col_start + 8];
-            A[col_start+1] = invJ[0]*a1 + invJ[2]*a2;
-            A[col_start+2] = invJ[1]*a1 + invJ[3]*a2;
-            A[col_start+4] = invJ[0]*a4 + invJ[2]*a5;
-            A[col_start+5] = invJ[1]*a4 + invJ[3]*a5;
-            A[col_start+7] = invJ[0]*a7 + invJ[2]*a8;
-            A[col_start+8] = invJ[1]*a7 + invJ[3]*a8;
-          }
-      }
 
 }

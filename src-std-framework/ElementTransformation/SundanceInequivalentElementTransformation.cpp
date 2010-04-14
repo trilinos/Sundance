@@ -31,7 +31,7 @@ namespace Sundance
 	{
 	   CellJacobianBatch JVol1;
 	   mesh_.getJacobians( mesh_.spatialDim() , *(cellLIDs.get()) , JVol1 );
-       chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , JVol1 , A );
+	   chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , mesh_, *cellLIDs, JVol1 , A );
 	}
   }
 
@@ -47,7 +47,7 @@ namespace Sundance
 	{
 	   CellJacobianBatch JVol1;
 	   mesh_.getJacobians( mesh_.spatialDim() , *(cellLIDs.get()) , JVol1 );
-       chunkBases_[map_->chunkForFuncID( funcID )]->postApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , JVol1 , A );
+	   chunkBases_[map_->chunkForFuncID( funcID )]->postApplyTransformation( mesh_.cellType( mesh_.spatialDim() ) , mesh_ , *cellLIDs, JVol1 , A );
 	}
   }
   
@@ -62,7 +62,7 @@ namespace Sundance
 	{
 		CellJacobianBatch JVol;
 		mesh_.getJacobians( mesh_.spatialDim() , cellLIDs , JVol );
-		chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformationTranspose( mesh_.cellType( mesh_.spatialDim() ) , JVol , A );
+		chunkBases_[map_->chunkForFuncID( funcID )]->preApplyTransformationTranspose( mesh_.cellType( mesh_.spatialDim() ) , mesh_ ,  cellLIDs, JVol , A );
 	}
   }
   

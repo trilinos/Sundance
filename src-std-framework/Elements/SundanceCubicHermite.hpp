@@ -83,14 +83,20 @@ public:
   virtual bool requiresBasisTransformation() const { return true; }
   
   void preApplyTransformation( const CellType &maxCellType ,
+			       const Mesh &mesh, 
+			       const Array<int> &cellLIDs,
 			       const CellJacobianBatch& JVol,
 			       RCP<Array<double> >& A ) const;
 
   void postApplyTransformation( const CellType &maxCellType ,
+				const Mesh &mesh, 
+				const Array<int> &cellLIDs,
 				const CellJacobianBatch& JVol,
 				RCP<Array<double> >& A ) const;
 
   void preApplyTransformationTranspose( const CellType &maxCellType ,
+					const Mesh &mesh, 
+					const Array<int> &cellLIDs,
 					const CellJacobianBatch& JVol,
 					Array<double>& A ) const;
 
@@ -119,15 +125,25 @@ private:
     const MultiIndex& deriv,
     Array<double>& result) const ;
 
-  void preApplyTransformationTriangle( const CellJacobianBatch& JVol,
+  void preApplyTransformationTriangle( const Mesh &mesh, 
+				       const Array<int> &cellLIDs,
+				       const CellJacobianBatch& JVol,
 				       RCP<Array<double> >& A ) const;
 
-  void postApplyTransformationTriangle( const CellJacobianBatch& JVol,
+  void postApplyTransformationTriangle( const Mesh &mesh, 
+					const Array<int> &cellLIDs,
+					const CellJacobianBatch& JVol,
 					RCP<Array<double> >& A ) const;
 
-  void preApplyTransformationTransposeTriangle( const CellJacobianBatch& JVol,
+  void preApplyTransformationTransposeTriangle( const Mesh &mesh, 
+						const Array<int> &cellLIDs,
+						const CellJacobianBatch& JVol,
 						Array<double> & A ) const;
 
+
+  void getVertexH( const Mesh &mesh,
+		   const Array<int> &cellLIDs,
+		   Array<double> &cellVertexH ) const;
 
 };
 }
