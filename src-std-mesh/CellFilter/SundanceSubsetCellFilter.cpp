@@ -51,6 +51,10 @@ SubsetCellFilter::SubsetCellFilter(const CellFilter& superset,
     + predicate.description()+"]");
 }
 
+SubsetCellFilter::~SubsetCellFilter()
+{
+//  Out::os() << "~SubsetCellFilter()" << endl;
+}
 
 XMLObject SubsetCellFilter::toXML() const 
 {

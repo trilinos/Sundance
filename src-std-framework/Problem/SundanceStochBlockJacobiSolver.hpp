@@ -9,6 +9,9 @@ using TSFExtended::LinearOperator;
 using TSFExtended::Vector;
 using Sundance::SpectralBasis;
 
+namespace Sundance
+{
+
 class StochBlockJacobiSolver
 {
 public:
@@ -44,6 +47,6 @@ private:
   int maxIters_;
   int verbosity_;
 };
-
+}
 
 #endif

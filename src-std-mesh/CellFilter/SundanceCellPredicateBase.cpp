@@ -39,3 +39,8 @@ CellPredicateBase::CellPredicateBase()
   : mesh_(), cellDim_()
 {;}
 
+
+CellPredicateBase::~CellPredicateBase()
+{
+//  Out::os() << "~CellPredicateBase()" << endl;
+}

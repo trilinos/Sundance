@@ -89,3 +89,5 @@ namespace Sundance
 %include Discrete.i
 
 %include AToC.i  
+
+%include SpectralSolver.i  

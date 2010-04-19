@@ -66,7 +66,7 @@ public:
   CellPredicateBase();
 
   /** virtual dtor */
-  virtual ~CellPredicateBase(){;}
+  virtual ~CellPredicateBase();
       
   /** Test the predicate on a batch of cells */
   virtual void testBatch(const Array<int>& cellLID,

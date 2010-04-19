@@ -16,7 +16,7 @@ AssemblyTransformationBuilder::AssemblyTransformationBuilder( const RCP<Integral
 							      const Array<RCP<DOFMapBase> >& rowMaps ,
 							      const Array<RCP<DOFMapBase> >& colMaps ,
 							      const Mesh& mesh):
-  verb_(6),
+  verb_(0),
   nrCol_(group->nUnkNodes()) ,
   nrRow_(group->nTestNodes()) ,
   preTransformation_(0),

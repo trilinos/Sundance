@@ -68,7 +68,7 @@ public:
   CellFilterBase();
 
   /** virtual dtor */
-  virtual ~CellFilterBase(){;}
+  virtual ~CellFilterBase();
 
   /** Find the cells passing this filter on the given mesh. This
    * method will cache the cell sets it computes for each mesh  */

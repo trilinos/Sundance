@@ -50,7 +50,7 @@ public:
     const CellPredicate& predicate);
 
   /** */
-  virtual ~SubsetCellFilter(){;}
+  virtual ~SubsetCellFilter();
 
   /** Return the dimension of the cells that will be identified
    * by this filter when acting on the given mesh */

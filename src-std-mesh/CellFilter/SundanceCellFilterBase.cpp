@@ -43,6 +43,11 @@ CellFilterBase::CellFilterBase()
   : CellFilterStub(), cellSetCache_(), subsets_(), disjoints_(), name_()
 {;}
 
+CellFilterBase::~CellFilterBase()
+{
+//  Out::os() << "~CellFilterBase()" << endl;
+}
+
 CellSet CellFilterBase::getCells(const Mesh& mesh) const
 {
   if (cellSetCache_.ptr().get()==0)

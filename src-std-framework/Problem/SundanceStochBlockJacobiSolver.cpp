@@ -1,6 +1,8 @@
 #include "SundanceStochBlockJacobiSolver.hpp"
 #include "Sundance.hpp"
 
+namespace Sundance
+{
 
 void
 StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
@@ -57,7 +59,7 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
       for (int j=0; j<Q; j++)
       {
         double c_ij0 = pcBasis_.expectation(i,j,0);
-        if (fabs(c_ij0) > 0.0) 
+        if (std::fabs(c_ij0) > 0.0) 
         {
           b = b + c_ij0 * fBlock[j];
           nVecAdds++;
@@ -71,7 +73,7 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
         {
           if (j==0 && k==i) continue;
           double c_ijk = pcBasis_.expectation(i,j,k);
-          if (fabs(c_ijk) > 0.0)
+          if (std::fabs(c_ijk) > 0.0)
           {
             tmp = tmp + c_ijk * uPrev[k];
             nVecAdds++;
@@ -112,4 +114,5 @@ StochBlockJacobiSolver::solve(const Array<LinearOperator<double> >& KBlock,
 
   TEST_FOR_EXCEPT(!converged);
   xBlock = uCur;
+}
 }

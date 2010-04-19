@@ -78,6 +78,8 @@ public:
   CellFilter labeledSubset(int label) const ;
 
   CellFilter intersection(const CellFilter& other) const ;
+
+  CellFilter subset(const CellPredicate& cp) const ;
 };
 
 %extend CellFilter
@@ -129,6 +131,8 @@ public:
 %rename(BoundaryCellFilter) makeBoundaryCellFilter;
 %rename(DimensionalCellFilter) makeDimensionalCellFilter;
 %rename(PositionalCellPredicate) makePyFunctorCellPredicate;
+%rename(CoordinateValueCellPredicate) makeCoordinateValueCellPredicate;
+
 
 %inline %{
   /* Create a maximal cell filter */
@@ -162,6 +166,15 @@ public:
     Teuchos::RCP<Sundance::CellPredicateFunctorBase> f 
       = Teuchos::rcp(new Sundance::PySundanceCellPredicate(functor));
     return new Sundance::PositionalCellPredicate(f);
+  }
+  %}
+
+%inline %{
+  /*  */
+  Sundance::CellPredicate 
+    makeCoordinateValueCellPredicate(int dir, const double& val)
+  {
+    return new Sundance::CoordinateValueCellPredicate(dir, val);
   }
   %}
 

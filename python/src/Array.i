@@ -25,7 +25,8 @@ public:
      {
        return self->operator[](i);
      }
-     void __getitem__(int i, const T &x) 
+
+     void __setitem__(int i, const T &x) 
      {
        self->operator[](i) = x;
      }
