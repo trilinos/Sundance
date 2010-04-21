@@ -176,6 +176,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
 
 
     clp().throwExceptions(false);
+    clp().recogniseAllOptions(false);
 
     CommandLineProcessor::EParseCommandLineReturn rtn 
       = clp().parse(*argc, (char**) *argv);
@@ -192,7 +193,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
         cout << "Simulation built using Sundance version " 
              << VersionString::number() 
              << " (" << VersionString::date() << ")" << endl;
-      
+     
         cout << "Sundance is copyright (C) 2005 Sandia National Laboratories and is"
              << endl;
         cout << "licensed under the GNU Lesser General Public License, version 2.1" << endl;
