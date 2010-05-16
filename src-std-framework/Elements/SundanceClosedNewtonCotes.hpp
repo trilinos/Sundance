@@ -47,7 +47,7 @@ class ClosedNewtonCotes : public QuadratureFamilyBase
 {
 public:
   /** */
-  ClosedNewtonCotes();
+  ClosedNewtonCotes(int order=2);
 
   /** */
   virtual ~ClosedNewtonCotes(){;}
@@ -66,6 +66,8 @@ protected:
   /** compute a rule for the reference triangle cell */
   virtual void getTriangleRule(Array<Point>& quadPoints,
     Array<double>& quadWeights) const ;
+
+  
 
 };
 }

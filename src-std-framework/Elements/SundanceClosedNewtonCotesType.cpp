@@ -65,12 +65,12 @@ bool ClosedNewtonCotesType::supportsCellType(const CellType& cellType) const
 
 int ClosedNewtonCotesType::maxOrder(const CellType& cellType) const
 {
-  return 2;
+  return 3;
 }
 
 bool ClosedNewtonCotesType::supports(const CellType& cellType, int order) const
 {
-  if (order != 2) return false;
+  if (order <2 || order > 3) return false;
   switch(cellType)
     {
     case PointCell:
@@ -86,7 +86,5 @@ bool ClosedNewtonCotesType::supports(const CellType& cellType, int order) const
 
 QuadratureFamily ClosedNewtonCotesType::createQuadFamily(int order) const
 {
-  TEST_FOR_EXCEPTION(order != 2, RuntimeError,
-                     "order=" << order << " not supported");
-  return new ClosedNewtonCotes();
+  return new ClosedNewtonCotes(order);
 }

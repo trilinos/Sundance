@@ -283,7 +283,7 @@ int SundanceGlobal::finalize()
       cout << tab << "quadrature eval mediator: " << QuadratureEvalMediator::totalFlops() << endl;
     }
     /* we may need to skip timing summaries because of a Trilinos 6.0.x bug */
-    if (!(MPIComm::world().getNProc() > 1 && skipTimingOutput())) TimeMonitor::summarize();
+    if (!skipTimingOutput()) TimeMonitor::summarize();
     //  MPISession::finalize();
   }
   catch(std::exception& e)

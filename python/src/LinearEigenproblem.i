@@ -7,6 +7,7 @@
 
   // Sundance includes
 #include "SundanceLinearEigenproblem.hpp"
+#include "TSFAnasaziEigensolver.hpp"
 #include "PySundanceLinearSolver.hpp"
 
   %}
@@ -39,6 +40,28 @@ public:
 
 };
 }
+
+
+%rename(AnasaziEigensolver) makeAnasaziEigensolver;
+
+%inline %{
+  TSFExtended::Eigensolver<double> makeAnasaziEigensolver(const Teuchos::ParameterList& params)
+  {
+    return Eigensolver<double>(new TSFExtended::AnasaziEigensolver<double>(params));
+  }
+  %}
+
+%inline %{
+  /* Read an eigensolver from an XML file */
+  TSFExtended::Eigensolver<double> readEigensolver(const std::string& filename)
+  {
+    Teuchos::ParameterXMLFileReader reader(filename);
+    Teuchos::ParameterList solverParams = reader.getParameters();
+    TSFExtended::Eigensolver<double> solver = new TSFExtended::AnasaziEigensolver<double>(solverParams);
+    return solver;
+  }
+  %}
+
 
 %rename(ComplexArray) CompArray;
 %rename(VectorArray) VecArray;
