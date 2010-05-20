@@ -49,6 +49,7 @@ APPEND_SET(HEADERS
   CellFilter/SundancePositionalCellPredicate.hpp
   CellFilter/SundanceSideCellFilter.hpp
   CellFilter/SundanceSubsetCellFilter.hpp
+  CellFilter/SundanceSubsetManager.hpp
   CellFilter/SundanceCellCurvePredicate.hpp
   )
 

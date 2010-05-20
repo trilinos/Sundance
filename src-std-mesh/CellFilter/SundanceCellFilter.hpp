@@ -190,6 +190,15 @@ public:
    * the specified filter. */
   bool isDisjointWith(const CellFilter& other, const Mesh& mesh) const ;
 
+  /** Register a subset */
+  void registerSubset(const CellFilter& sub) const ;
+
+  /** Register a filter known to be disjoint */
+  void registerDisjoint(const CellFilter& sub) const ;
+
+  /** Register a labeled subset  */
+  void registerLabeledSubset(int label, const CellFilter& sub) const ;
+
     
   /** Indicate whether this is a null cell filter */
   bool isNullCellFilter() const ;
@@ -218,15 +227,12 @@ public:
   /** */
   void setName(const string& name) ;
 
-#ifndef DOXYGEN_DEVELOPER_ONLY
-
   /** */
   const CellFilterBase* cfbPtr() const ;
   /** */
   CellFilterBase* nonConstCfbPtr();
     
 private:
-#endif  /* DOXYGEN_DEVELOPER_ONLY */
 
 };
 

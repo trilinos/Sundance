@@ -37,6 +37,7 @@
 #include "SundanceNullCellFilterStub.hpp"
 #include "SundanceNullCellFilter.hpp"
 #include "SundanceTabs.hpp"
+#include "SundanceSubsetManager.hpp"
 
 using namespace Sundance;
 using namespace Sundance;
@@ -61,10 +62,10 @@ void CellFilter::setName(const string& name)
 CellSet CellFilter::getCells(const Mesh& mesh) const
 {
   if (isNull() || isNullCellFilter())
-    {
-      return new ExplicitCellSet(mesh, -1, 
-                                 NullCell);
-    }
+  {
+    return new ExplicitCellSet(mesh, -1, 
+      NullCell);
+  }
   return cfbPtr()->getCells(mesh);
 }
 
@@ -73,9 +74,9 @@ CellSet CellFilter::getCells(const Mesh& mesh) const
 int CellFilter::dimension(const Mesh& mesh) const
 {
   if (isNullCellFilter())
-    {
-      return -1;
-    }
+  {
+    return -1;
+  }
   return cfbPtr()->dimension(mesh);
 }
 
@@ -84,21 +85,21 @@ int CellFilter::dimension(const Mesh& mesh) const
 CellFilter CellFilter::operator+(const CellFilter& other) const 
 {
   if (isNull())
-    {
-      return other;
-    }
+  {
+    return other;
+  }
   else if (other.isNull())
-    {
-      return *this;
-    }
+  {
+    return *this;
+  }
   else
-    {
-      CellFilter rtn 
-        = new BinaryCellFilter(*this, other, BinaryCellFilter::Union);
-      rtn.cfbPtr()->registerSubset(*this);
-      rtn.cfbPtr()->registerSubset(other);
-      return rtn;
-    }
+  {
+    CellFilter rtn 
+      = new BinaryCellFilter(*this, other, BinaryCellFilter::Union);
+    rtn.registerSubset(*this);
+    rtn.registerSubset(other);
+    return rtn;
+  }
 }
 
 
@@ -106,31 +107,31 @@ CellFilter CellFilter::operator+(const CellFilter& other) const
 CellFilter CellFilter::operator-(const CellFilter& other) const 
 {
   if (other.isNull())
-    {
-      return *this;
-    }
+  {
+    return *this;
+  }
   else if (isKnownDisjointWith(other) || other.isKnownDisjointWith(*this))
-    {
-      return *this;
-    }
+  {
+    return *this;
+  }
   else if (isKnownSubsetOf(other))
-    {
-      CellFilter rtn;
-      return rtn;
-    }
+  {
+    CellFilter rtn;
+    return rtn;
+  }
   else if (*this == other)
-    {
-      CellFilter rtn;
-      return rtn;
-    }
+  {
+    CellFilter rtn;
+    return rtn;
+  }
   else
-    {
-      CellFilter rtn 
-        = new BinaryCellFilter(*this, other, BinaryCellFilter::Difference);
-      rtn.cfbPtr()->registerDisjoint(other);
-      this->cfbPtr()->registerSubset(rtn);
-      return rtn;
-    }
+  {
+    CellFilter rtn 
+      = new BinaryCellFilter(*this, other, BinaryCellFilter::Difference);
+    rtn.registerDisjoint(other);
+    this->registerSubset(rtn);
+    return rtn;
+  }
 }
 
 
@@ -138,35 +139,36 @@ CellFilter CellFilter::operator-(const CellFilter& other) const
 CellFilter CellFilter::intersection(const CellFilter& other) const 
 {
   if (isNull() || other.isNull())
-    {
-      CellFilter rtn;
-      return rtn;
-    }
+  {
+    CellFilter rtn;
+    return rtn;
+  }
   else if (isKnownDisjointWith(other) || other.isKnownDisjointWith(*this))
-    {
-      CellFilter rtn;
-      return rtn;
-    }
+  {
+    CellFilter rtn;
+    return rtn;
+  }
   else if (isKnownSubsetOf(other))
-    {
-      return *this;
-    }
+  {
+    return *this;
+  }
   else if (other.isKnownSubsetOf(*this))
-    {
-      return other;
-    }
+  {
+    return other;
+  }
   else if (*this==other)
-    {
-      return *this;
-    }
+  {
+    return *this;
+  }
   else
-    {
-      CellFilter rtn 
-        = new BinaryCellFilter(*this, other, BinaryCellFilter::Intersection);
-      this->cfbPtr()->registerSubset(rtn);
-      other.cfbPtr()->registerSubset(rtn);
-      return rtn;
-    }
+  {
+    CellFilter rtn 
+      = new BinaryCellFilter(*this, other, BinaryCellFilter::Intersection);
+    other.registerSubset(rtn);
+    this->registerSubset(rtn);
+    
+    return rtn;
+  }
 }
 
 
@@ -175,15 +177,16 @@ CellFilter CellFilter::labeledSubset(int label) const
 {
   CellPredicate pred = new LabelCellPredicate(label);
   CellFilter rtn = new SubsetCellFilter(*this, pred);
-  cfbPtr()->registerLabeledSubset(label, rtn);
-  cfbPtr()->registerSubset(rtn);
+  this->registerLabeledSubset(label, rtn);
+  this->registerSubset(rtn);
+
   return rtn;
 }
 
 CellFilter CellFilter::subset(const CellPredicate& pred) const
 {
   CellFilter rtn = new SubsetCellFilter(*this, pred);
-  cfbPtr()->registerSubset(rtn);
+  this->registerSubset(rtn);
   return rtn;
 }
 
@@ -191,18 +194,8 @@ CellFilter CellFilter::subset(const CellPredicate& pred) const
 CellFilter CellFilter::subset(const RCP<CellPredicateFunctorBase>& test) const
 {
   CellFilter rtn = new SubsetCellFilter(*this, CellPredicate(test));
-  cfbPtr()->registerSubset(rtn);
+  this->registerSubset(rtn);
   return rtn;
-}
-
-const Set<CellFilter>& CellFilter::knownSubsets() const
-{
-  return cfbPtr()->knownSubsets();
-}
-
-const Set<CellFilter>& CellFilter::knownDisjoints() const
-{
-  return cfbPtr()->knownDisjoints();
 }
 
 bool CellFilter::isKnownSubsetOf(const CellFilter& other) const
@@ -220,21 +213,21 @@ bool CellFilter::isKnownDisjointWith(const CellFilter& other) const
 }
 
 bool CellFilter::isSubsetOf(const CellFilter& other,
-                            const Mesh& mesh) const
+  const Mesh& mesh) const
 {
   if (isKnownSubsetOf(other)) 
-    {
-      return true;
-    }
+  {
+    return true;
+  }
   else
-    {
-      CellSet myCells = getCells(mesh);
-      CellSet yourCells = other.getCells(mesh);
-      CellSet inter = myCells.setIntersection(yourCells);
-      if (inter.begin() == inter.end()) return false;
-      CellSet diff = myCells.setDifference(inter);
-      return (diff.begin() == diff.end());
-    }
+  {
+    CellSet myCells = getCells(mesh);
+    CellSet yourCells = other.getCells(mesh);
+    CellSet inter = myCells.setIntersection(yourCells);
+    if (inter.begin() == inter.end()) return false;
+    CellSet diff = myCells.setDifference(inter);
+    return (diff.begin() == diff.end());
+  }
 }
 
 
@@ -250,6 +243,55 @@ bool CellFilter::operator!=(const CellFilter& other) const
 {
   return !( *this == other );
 }
+
+
+const Set<CellFilter>& CellFilter::knownSubsets() const
+{
+  return SubsetManager::getSubsets(*this);
+}
+const Set<CellFilter>& CellFilter::knownDisjoints() const
+{
+  return SubsetManager::getDisjoints(*this);
+}
+
+void CellFilter::registerSubset(const CellFilter& sub) const
+{
+  SubsetManager::registerSubset(*this, sub);
+  
+  for (Set<CellFilter>::const_iterator 
+         i=sub.knownSubsets().begin(); i!=sub.knownSubsets().end(); i++)
+  {
+    SubsetManager::registerSubset(*this, *i);
+  }
+}
+
+
+void CellFilter::registerDisjoint(const CellFilter& sub) const
+{
+  SubsetManager::registerDisjoint(*this, sub);
+  
+  for (Set<CellFilter>::const_iterator 
+         i=sub.knownDisjoints().begin(); i!=sub.knownDisjoints().end(); i++)
+  {
+    SubsetManager::registerDisjoint(*this, *i);
+  }
+}
+
+void CellFilter::registerLabeledSubset(int label, const CellFilter& sub) const
+{
+  SubsetManager::registerLabeledSubset(*this, label, sub);
+  
+  const Map<int, CellFilter>& subsub = SubsetManager::getLabeledSubsets(sub);
+
+  for (Map<int, CellFilter>::const_iterator 
+         iter=subsub.begin(); iter!=subsub.end(); iter++)
+  {
+    if (iter->first == label) continue;
+    SubsetManager::registerDisjoint(sub, iter->second);
+    SubsetManager::registerDisjoint(iter->second, sub);
+  }
+}
+
 
 XMLObject CellFilter::toXML() const 
 {

@@ -88,10 +88,10 @@ public:
   void registerDisjoint(const CellFilter& sub) const ;
 
   /** */
-  const Set<CellFilter>& knownSubsets() const {return subsets_;}
+  const Set<CellFilter>& knownSubsets() const ;
 
   /** */
-  const Set<CellFilter>& knownDisjoints() const {return disjoints_;}
+  const Set<CellFilter>& knownDisjoints() const ;
 
   /** */
   virtual string toString() const {return name_;}
@@ -111,15 +111,6 @@ protected:
 private:
   /** cache of previously computed cell sets */
   mutable CellSet cellSetCache_;
-
-  /** */
-  mutable Set<CellFilter> subsets_;
-
-  /** */
-  mutable Set<CellFilter> disjoints_;
-
-  /** */
-  mutable Sundance::Map<int, CellFilter> labeledSubsets_;
 
   /** */
   string name_;
