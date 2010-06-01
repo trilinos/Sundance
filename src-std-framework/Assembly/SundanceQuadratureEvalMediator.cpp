@@ -54,6 +54,8 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
+TEUCHOS_TIMER(coordEvalTimer, "Quad mediator: coord eval")
+
 
 QuadratureEvalMediator
 ::QuadratureEvalMediator(const Mesh& mesh, 
@@ -68,6 +70,11 @@ QuadratureEvalMediator
     physQuadPts_(),
     refFacetBasisVals_(2)
 {}
+
+Time& QuadratureEvalMediator::coordEvaluationTimer()
+{
+  return coordEvalTimer();
+}
 
 void QuadratureEvalMediator::setCellType(const CellType& cellType,
   const CellType& maxCellType,
@@ -229,6 +236,8 @@ void QuadratureEvalMediator::evalCoordExpr(const CoordExpr* expr,
   SUNDANCE_MSG2(verb(),tabs 
     << "QuadratureEvalMediator evaluating coord expr " 
     << expr->toString());
+
+  TimeMonitor timer(coordEvalTimer());
   
   computePhysQuadPts();
   int nQuad = physQuadPts_.length();

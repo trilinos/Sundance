@@ -56,6 +56,12 @@ TEUCHOS_TIMER(evalTimer, "Symbolic Evaluation")
       allOrdersMap_(numDerivSubsetTypes())
 {}
 
+
+Time& EvaluatableExpr::evaluationTimer()
+{
+  return evalTimer();
+}
+
 string EvaluatableExpr::derivType(const DerivSubsetSpecifier& dss) const
 {
   switch(dss)

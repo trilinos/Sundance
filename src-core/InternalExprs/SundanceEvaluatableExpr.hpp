@@ -251,7 +251,8 @@ public:
   virtual void registerSpatialDerivs(const EvalContext& context, 
     const Set<MultiIndex>& miSet) const ;
       
-                
+  /** */
+  static Time& evaluationTimer() ;
       
 protected:
 

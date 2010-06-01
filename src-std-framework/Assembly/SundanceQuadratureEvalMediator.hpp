@@ -114,6 +114,10 @@ public:
    */
   int numEvaluationCases() const {return numEvaluationCases_;}
 
+
+  /** */
+  static Time& coordEvaluationTimer() ;
+
 private:
 
 

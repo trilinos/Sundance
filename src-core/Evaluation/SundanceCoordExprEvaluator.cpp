@@ -121,7 +121,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
   if (doValue_)
     {
       Tabs tab2;
-      SUNDANCE_MSG3(mgr.verb(), tab2 << "computing derivative");
+      SUNDANCE_MSG3(mgr.verb(), tab2 << "computing value");
       vectorResults.resize(1);
       vectorResults[0] = mgr.popVector();
       mgr.evalCoordExpr(expr(), vectorResults[0]);
@@ -132,7 +132,7 @@ void CoordExprEvaluator::internalEval(const EvalManager& mgr,
   if (doDeriv_)
     {
       Tabs tab2;
-      SUNDANCE_MSG3(mgr.verb(), tab2 << "computing value");
+      SUNDANCE_MSG3(mgr.verb(), tab2 << "computing derivative");
       constantResults.resize(1);
       constantResults[0] = 1.0;
     }

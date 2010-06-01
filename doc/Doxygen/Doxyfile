@@ -372,13 +372,13 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../src-core/InternalExprs \
                          ../src-core/SymbolicTransformations \
                          ../src-core/UserExprs \
+                         ../src-std-mesh/CellFilter \
                          ../src-std-mesh/Concrete \
                          ../src-std-mesh/Interface \ 
                          ../src-std-mesh/Sources \ 
                          ../src-std-mesh/Transformations \ 
                          ../src-std-mesh/Writers \ 
                          ../src-std-framework/Assembly \
-                         ../src-std-framework/CellFilter \
                          ../src-std-framework/DOFMapping \
                          ../src-std-framework/Problem \
                          ../src-std-framework/Elements \
