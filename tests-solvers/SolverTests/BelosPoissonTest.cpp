@@ -43,6 +43,7 @@
 #include "TSFAztecSolver.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFLinearSolverBuilder.hpp"
+#include "TSFInverseOperatorDecl.hpp"
 #include "SundancePathUtils.hpp"
 #include "Teuchos_ParameterXMLFileReader.hpp"
 #include "TSFLinearCombinationImpl.hpp"
@@ -50,6 +51,7 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
 #include "TSFLinearSolverImpl.hpp"
+#include "TSFInverseOperatorImpl.hpp"
 
 #endif
 
@@ -103,14 +105,12 @@ int main(int argc, char *argv[])
     cout << "rhs is " << endl;
     b.print(cout);
 
-    Vector<double> ans = A.range().createMember();
 
-    cout << "slot for solution is " << endl;
-    ans.print(cout);
 
 
     LinearSolver<double> solver = LinearSolverBuilder::createSolver(solverParams);
-    solver.solve(A, b, ans);
+    LinearOperator<double> AInv = inverse(A, solver);
+    Vector<double> ans = AInv * b;
 
     cout << "answer is " << endl;
     ans.print(cout);
