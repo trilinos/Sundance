@@ -37,62 +37,79 @@
 
 namespace Sundance
 {
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Sundance;
-  using namespace Teuchos;
-
-    /** 
-     * NonlinearProblem encapsulates a discrete nonlinear problem
-     */
-  class NonlinearProblem 
-    : public ObjectWithClassVerbosity<NonlinearProblem>
-    {
-    public:
-      /** Empty ctor */
-      NonlinearProblem();
-
-      /** Construct with a mesh, equation set, bcs, test and unknown funcs,
-       * and a vector type */
-      NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-        const Expr& test, const Expr& unk, const Expr& u0, 
-        const TSFExtended::VectorType<double>& vecType,
-        bool partitionBCs = false);
-
-      /** Construct with a mesh, equation set, bcs, test and unknown funcs,
-       * parameters, and a vector type */
-      NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-        const Expr& test, const Expr& unk, const Expr& u0, 
-        const Expr& params, const Expr& paramVals,  
-        const TSFExtended::VectorType<double>& vecType,
-        bool partitionBCs = false);
+using namespace Teuchos;
 
 
-      /** */
-      NonlinearProblem(const RCP<Assembler>& assembler, 
-        const Expr& u0);
+/** 
+ * NonlinearProblem encapsulates a discrete nonlinear problem
+ */
+class NonlinearProblem 
+  : public ObjectWithClassVerbosity<NonlinearProblem>
+{
+public:
+  /** Empty ctor */
+  NonlinearProblem();
 
-      /** Compute direct sensitivities to parameters */
-      Expr computeSensitivities(const LinearSolver<double>& solver) const ;
+  /** Construct with a mesh, equation set, bcs, test and unknown funcs,
+   * and a vector type */
+  NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+    const Expr& test, const Expr& unk, const Expr& u0, 
+    const TSFExtended::VectorType<double>& vecType);
 
-      /** Solve the nonlinear problem */
-      NOX::StatusTest::StatusType solve(const NOXSolver& solver) const ;
+  /** Construct with a mesh, equation set, bcs, test and unknown funcs,
+   * parameters, and a vector type */
+  NonlinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
+    const Expr& test, const Expr& unk, const Expr& u0, 
+    const Expr& params, const Expr& paramVals,  
+    const TSFExtended::VectorType<double>& vecType);
 
-      /** Return the current evaluation point as a Sundance expression */
-      Expr getU0() const {return op_->getU0();}
 
-      /** Set an initial guess */
-      void setInitialGuess(const Expr& u0New)
-        {op_->setInitialGuess(u0New);}
+  /** */
+  NonlinearProblem(const RCP<Assembler>& assembler, 
+    const Expr& u0);
 
-    private:
+  /** Compute direct sensitivities to parameters */
+  Expr computeSensitivities(const LinearSolver<double>& solver) const 
+    {return op_->computeSensitivities(solver);}
+
+  /** Solve the nonlinear problem */
+  NOX::StatusTest::StatusType solve(const NOXSolver& solver) const ;
+
+  /** Return the current evaluation point as a Sundance expression */
+  Expr getU0() const {return op_->getU0();}
+
+  /** Set an initial guess */
+  void setInitialGuess(const Expr& u0New) {op_->setInitialGuess(u0New);}
       
-      /** */
-      RCP<NLOp> op_;
 
-    };
+  /** Compute the residual and Jacobian at the current evaluation point */
+  LinearOperator<double> computeJacobianAndFunction(Vector<double>& functionValue) const 
+    {return op_->computeJacobianAndFunction(functionValue);}
+      
+  /** Write the Jacobian and residual into the objects provided */
+  void computeJacobianAndFunction(LinearOperator<double>& J,
+    Vector<double>& resid) const 
+    {op_->computeJacobianAndFunction(J, resid);}
+
+  /** Compute the residual at the current eval point */
+  TSFExtended::Vector<double> computeFunctionValue() const 
+    {return op_->computeFunctionValue();}
+      
+  /** Write the residual into the object provided */
+  void computeFunctionValue(Vector<double>& resid) const 
+    {op_->computeFunctionValue(resid);}
+      
+  /** Get an initial guess */
+  TSFExtended::Vector<double> getInitialGuess() const 
+    {return op_->getInitialGuess();}
+      
+  /** Create the Jacobian object, but don't fill it in. */
+  LinearOperator<double> allocateJacobian() const 
+    {return op_->allocateJacobian();}
+
+private:
+  RCP<NLOp> op_;
+};
 }
 
 

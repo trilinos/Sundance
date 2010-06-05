@@ -1101,6 +1101,11 @@ EvalContext EquationSet::bcRqcToContext(ComputationType compType,
     InternalError,
     "EquationSet::bcRqcToContext() did not find key " 
     << compType);
+  TEST_FOR_EXCEPTION(!bcRqcToContext_.get(compType).containsKey(r),
+    InternalError, 
+    "EquationSet::bcRqcToContext(" << compType 
+    << ") did not find expected key " 
+    << r);
   return bcRqcToContext_.get(compType).get(r);
 }
 

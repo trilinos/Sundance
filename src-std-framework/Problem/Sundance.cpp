@@ -154,6 +154,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
     bool debugWait = false;
     bool showVersion = false;
     bool showBanner = true;
+    bool showTimings = false;
     bool cmdFpCheck = defaultFpCheck;
     int defaultWorkSetSize = 100;
     int cmdWorkSetSize = defaultWorkSetSize;
@@ -167,6 +168,8 @@ int SundanceGlobal::init(int* argc, char*** argv)
       "Show Sundance version number and exit");
     clp().setOption("banner", "nobanner", &showBanner, 
       "Show Sundance banner on root processor at start of run");
+    clp().setOption("timings", "notimings", &showTimings, 
+      "Show timings at end of run");
 
     clp().setOption("workset", &cmdWorkSetSize, 
       "Work set size");
@@ -215,6 +218,8 @@ int SundanceGlobal::init(int* argc, char*** argv)
       cout << "and is licensed under the GNU Lesser General Public License, version 2.1" << endl;
       cout << tab << endl;
     }
+
+    if (!showTimings) skipTimingOutput() = true;
 
     //      debugWait = true;
     if (debugWait)

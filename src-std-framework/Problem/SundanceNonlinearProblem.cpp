@@ -42,12 +42,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 using namespace std;
 using namespace TSFExtended;
@@ -69,28 +63,26 @@ NonlinearProblem::NonlinearProblem()
 
 
 NonlinearProblem::NonlinearProblem(const Mesh& mesh, 
-                                   const Expr& eqn, 
-                                   const Expr& bc,
-                                   const Expr& test, 
-                                   const Expr& unk, 
-                                   const Expr& u0, 
-  const VectorType<double>& vecType,
-  bool partitionBCs)
-  : op_(rcp(new NLOp(mesh, eqn, bc, test, unk, u0, vecType, partitionBCs)))
+  const Expr& eqn, 
+  const Expr& bc,
+  const Expr& test, 
+  const Expr& unk, 
+  const Expr& u0, 
+  const VectorType<double>& vecType)
+  : op_(rcp(new NLOp(mesh, eqn, bc, test, unk, u0, vecType)))
 {}
 
 NonlinearProblem::NonlinearProblem(const Mesh& mesh, 
-                                   const Expr& eqn, 
-                                   const Expr& bc,
-                                   const Expr& test, 
-                                   const Expr& unk, 
-                                   const Expr& u0, 
-                                   const Expr& params, 
-                                   const Expr& paramValues,  
-  const VectorType<double>& vecType,
-  bool partitionBCs)
-  : op_(rcp(new NLOp(mesh, eqn, bc, test, unk, u0, params, paramValues,
-        vecType, partitionBCs)))
+  const Expr& eqn, 
+  const Expr& bc,
+  const Expr& test, 
+  const Expr& unk, 
+  const Expr& u0, 
+  const Expr& params, 
+  const Expr& paramValues,  
+  const VectorType<double>& vecType)
+  : op_(rcp(new NLOp(mesh, eqn, bc, test, unk, u0, 
+        params, paramValues, vecType)))
 {}
 
 
@@ -98,6 +90,7 @@ NonlinearProblem::NonlinearProblem(const RCP<Assembler>& assembler,
                                    const Expr& u0)
   : op_(rcp(new NLOp(assembler, u0)))
 {}
+
 
 
 NOX::StatusTest::StatusType
@@ -111,8 +104,3 @@ NonlinearProblem::solve(const NOXSolver& solver) const
   return rtn;
 }
 
-Expr NonlinearProblem::
-computeSensitivities(const LinearSolver<double>& solver) const 
-{
-  return op_->computeSensitivities(solver);
-}

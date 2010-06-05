@@ -525,8 +525,11 @@ void Assembler::init(const Mesh& mesh,
     }
     
     /* If this RQC has never been used, we've made a mistake */
-    TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "rqc=" << rqc 
-      << " never used for any computation???");
+    /* Actually, no! Some terms might be unused in reduced-space methods */
+//    TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "rqc=" << rqc 
+//      << " never used for any computation???");
+    if (!rqcUsed) continue;
+
     SUNDANCE_MSG2(rqcVerb, tab12 << "creating evaluation mediator for rqc=" 
       << rqc);
     SUNDANCE_MSG2(rqcVerb, tab12 << "expr = " << expr);
@@ -656,9 +659,11 @@ void Assembler::init(const Mesh& mesh,
         SUNDANCE_MSG2(rqcVerb, tab1
           << "done with computation type " << compType);
       }
-      TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "BC rqc=" << rqc 
-        << " never used for any computation???");
-
+/* Turn this test off, because some terms might be unused in reduced-space
+ * methods */
+//      TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "BC rqc=" << rqc 
+//        << " never used for any computation???");
+    if (!rqcUsed) continue;
 
       SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
         << rqc << endl << tab1 << "expr = " << expr);

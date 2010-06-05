@@ -34,16 +34,14 @@ public:
    * and a vector type */
   NonlinearProblem(const Sundance::Mesh& mesh, const Sundance::Expr& eqn, const Sundance::Expr& bc,
     const Sundance::Expr& test, const Sundance::Expr& unk, const Sundance::Expr& u0, 
-    const TSFExtended::VectorType<double>& vecType,
-    bool partitionBCs = false);
+    const TSFExtended::VectorType<double>& vecType);
 
   /** Construct with a mesh, equation set, bcs, test and unknown funcs,
    * parameters, and a vector type */
   NonlinearProblem(const Sundance::Mesh& mesh, const Sundance::Expr& eqn, const Sundance::Expr& bc,
     const Sundance::Expr& test, const Sundance::Expr& unk, const Sundance::Expr& u0, 
     const Sundance::Expr& params, const Sundance::Expr& paramVals,  
-    const TSFExtended::VectorType<double>& vecType,
-    bool partitionBCs = false);
+    const TSFExtended::VectorType<double>& vecType);
 
 
   
