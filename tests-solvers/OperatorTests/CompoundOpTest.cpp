@@ -37,6 +37,7 @@
 #include "Teuchos_MPIComm.hpp"
 #include "TSFRandomSparseMatrixBuilderDecl.hpp"
 #include "TSFCompoundTester.hpp"
+#include "TSFMatrixMatrixTester.hpp"
 
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
@@ -68,11 +69,27 @@ int main(int argc, char *argv[])
       RandomSparseMatrixBuilder<double> BBuilder(nLocalRows, nLocalRows, 
         onProcDensity, offProcDensity, type);
 
+      /* Build some rectangular matrices to test products */
+      RandomSparseMatrixBuilder<double> CBuilder(2*nLocalRows, nLocalRows, 
+        onProcDensity, offProcDensity, type);
+      RandomSparseMatrixBuilder<double> DBuilder(3*nLocalRows, 2*nLocalRows, 
+        onProcDensity, offProcDensity, type);
+
       LinearOperator<double> A = ABuilder.getOp();
       LinearOperator<double> B = BBuilder.getOp();
 
-      cerr << "A = " << endl << A << endl;
-      cerr << "B = " << endl << B << endl;
+      LinearOperator<double> C = CBuilder.getOp();
+      LinearOperator<double> D = DBuilder.getOp();
+
+      Out::root() << "A = " << endl;
+      Out::os() << A << endl;
+      Out::root() << "B = " << endl;
+      Out::os() << B << endl;
+
+      Out::root() << "C = " << endl;
+      Out::os() << C << endl;
+      Out::root() << "D = " << endl;
+      Out::os() << D << endl;
       
       CompoundTester<double> tester(A, B, 
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
@@ -80,7 +97,28 @@ int main(int argc, char *argv[])
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 
-     bool allPass =  tester.runAllTests();
+      bool allPass =  tester.runAllTests();
+
+      Out::root() << endl << endl 
+                  << "testing multiplication of square matrices " 
+                  << endl << endl;
+
+      MatrixMatrixTester<double> mmTester(A, B, 
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
+
+      allPass = mmTester.runAllTests() && allPass;
+
+      Out::root() << endl << endl 
+                  << "testing multiplication of rectangular matrices " 
+                  << endl << endl;
+
+      MatrixMatrixTester<double> rectMMTester(C, D, 
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
+
+      allPass = rectMMTester.runAllTests() && allPass;
+
      if (!allPass) stat = -1;
     }
   catch(std::exception& e)
