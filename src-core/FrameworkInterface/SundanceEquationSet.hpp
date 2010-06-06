@@ -212,8 +212,7 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fields,
-    const Array<Expr>& fieldValues,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const Array<Expr>& fieldValues);
 
   /** Set up equations written in weak form with test functions. This
    * ctor should be used when setting up an ordinary forward problem.
@@ -273,8 +272,7 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fixedFields,
-    const Array<Expr>& fixedFieldValues,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const Array<Expr>& fixedFieldValues);
 
 
   /* Set up calculation of a functional and its first derivative wrt a 
@@ -318,8 +316,7 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fixedFields,
-    const Array<Expr>& fixedFieldValues,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const Array<Expr>& fixedFieldValues);
 
   /** Set up calculation of first and second variations of 
    * a functional. This ctor should be used when deriving the
@@ -333,16 +330,14 @@ public:
     const Expr& params,
     const Expr& paramValues,
     const Array<Expr>& fixedFields,
-    const Array<Expr>& fixedFieldValues,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const Array<Expr>& fixedFieldValues);
 
   /** */
   EquationSet(const RCP<FunctionSupportResolver>& fsr,
     const Array<Expr>& varLinearizationPts,
     const Array<Expr>& unkLinearizationPts, 
     const Expr& paramValues,
-    const Array<Expr>& fixedFieldValues,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const Array<Expr>& fixedFieldValues);
 
   //@}
 
@@ -413,6 +408,10 @@ public:
 
   /** Indicates whether any watch flags are active */
   bool hasActiveWatchFlag() const ;
+
+  /** Finds the maximum setting of the named watch type (e.g., "fill") across
+   * all terms in the equation */
+  int maxWatchFlagSetting(const string& param) const ;
 
   /** */
   const RCP<FunctionSupportResolver>& fsr() const {return fsr_;}
@@ -622,18 +621,6 @@ public:
 
 
 
-  /** */
-  static RCP<ParameterList> defaultVerbParams()
-    {
-      static RCP<ParameterList> rtn = rcp(new ParameterList("Equation Set"));
-      static int first = true;
-      if (first)
-      {
-        rtn->set<int>("setup", 0);
-        first = false;
-      }
-      return rtn;
-    }
 private:
 
   /**

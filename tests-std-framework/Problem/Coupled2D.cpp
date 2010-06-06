@@ -118,8 +118,6 @@ int main(int argc, char** argv)
       Expr bc = EssentialBC(left, du*u + dv*v, quad2)
         + EssentialBC(right, du*u + dv*v, quad2);
 
-      //      Assembler::classVerbosity() = 5;
-
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, List(dv,du), List(v,u), vecType);
 

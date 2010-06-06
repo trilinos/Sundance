@@ -88,13 +88,13 @@ int main(int argc, char** argv)
     Expr eqn = Integral(interior, v*u + p*q, quad);
     Expr dum;
 
-    int verb = 0;
     RCP<FunctionSupportResolver> fsr 
       = rcp(new FunctionSupportResolver(eqn, dum, tuple(List(v,q).flatten()), tuple(List(u,p).flatten()),
-          dum, dum, tuple(dum), false, verb));
+          dum, dum, tuple(dum), false));
           
     
-    DOFMapBuilder builder(mesh, fsr, false);
+    int verb = 0;
+    DOFMapBuilder builder(mesh, fsr, false, verb);
 
     for (int br = 0; br<builder.rowMap().size(); br++)
     {

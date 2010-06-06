@@ -91,8 +91,6 @@ int main(int argc, char** argv)
       /* We can now set up the linear problem! */
 
 
-      ParameterList verb = *LinearProblem::defaultVerbParams();
-      verb.sublist("Assembler").set<int>("evaluation",5);
       LinearProblem prob(mesh, eqn, bc, v, u, vecType); 
 
 #ifdef HAVE_CONFIG_H

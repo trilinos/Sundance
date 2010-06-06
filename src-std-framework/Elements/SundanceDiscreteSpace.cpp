@@ -37,11 +37,6 @@
 #include "Teuchos_MPIContainerComm.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 const int* vecPtr(const Array<int>& x)
@@ -52,52 +47,59 @@ const int* vecPtr(const Array<int>& x)
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
-                             const VectorType<double>& vecType)
-  : map_(),
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb), 
+    map_(),
     mesh_(mesh), 
     subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(maximalRegions(1), BasisArray(tuple(basis)));
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const VectorType<double>& vecType)
-  : map_(), 
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb),
+    map_(), 
     mesh_(mesh), 
     subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(maximalRegions(basis.size()), basis);
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const Array<CellFilter>& funcDomains,
-                             const VectorType<double>& vecType)
-  : map_(), 
+  const Array<CellFilter>& funcDomains,
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb),
+    map_(), 
     mesh_(mesh), 
     subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(funcDomains, basis);
 }
 
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
-                             const CellFilter& funcDomains,
-                             const VectorType<double>& vecType)
+  const CellFilter& funcDomains,
+  const VectorType<double>& vecType,
+  int setupVerb)
   : map_(), 
     mesh_(mesh), 
     subdomains_(),
@@ -105,23 +107,25 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(tuple(funcDomains), BasisArray(tuple(basis)));
 }
 
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const CellFilter& funcDomains,
-                             const VectorType<double>& vecType)
-  : map_(), 
+  const CellFilter& funcDomains,
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb),
+    map_(), 
     mesh_(mesh), 
     subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(Array<CellFilter>(basis.size(), funcDomains), basis);
 }
@@ -131,22 +135,25 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
   const RCP<DOFMapBase>& map,
   const RCP<Array<int> >& bcIndices,
-  const VectorType<double>& vecType)
-  : map_(map), 
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb),
+    map_(map), 
     mesh_(mesh),
     subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(map->funcDomains(), basis, bcIndices, true);
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const RCP<DOFMapBase>& map,
-                             const VectorType<double>& vecType)
+  const RCP<DOFMapBase>& map,
+  const VectorType<double>& vecType,
+  int setupVerb)
   : map_(map), 
     mesh_(mesh),
     subdomains_(),
@@ -154,58 +161,64 @@ DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(map->funcDomains(), basis);
 }
 
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
-                             const SpectralBasis& spBasis,
-                             const VectorType<double>& vecType)
-  : map_(),
+  const SpectralBasis& spBasis,
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb),
+    map_(),
     mesh_(mesh), 
     subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(maximalRegions(spBasis.nterms()), 
-       replicate(basis, spBasis.nterms()));
+    replicate(basis, spBasis.nterms()));
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                             const SpectralBasis& spBasis,
-                             const VectorType<double>& vecType)
-  : map_(), 
+  const SpectralBasis& spBasis,
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb),
+    map_(), 
     mesh_(mesh), 
     subdomains_(),
     basis_(),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(0)
+  ,transformationBuilder_(0)
 {
   init(maximalRegions(basis.size() * spBasis.nterms()), 
-       replicate(basis, spBasis.nterms()));
+    replicate(basis, spBasis.nterms()));
 }
 
 DiscreteSpace::DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-      const RCP<FunctionSupportResolver>& fsr,
-      const VectorType<double>& vecType)
-  : map_(), 
+  const RCP<FunctionSupportResolver>& fsr,
+  const VectorType<double>& vecType,
+  int setupVerb)
+  : setupVerb_(setupVerb),
+    map_(), 
     mesh_(mesh), 
     subdomains_(),
     basis_(basis),
     vecSpace_(), 
     vecType_(vecType),
     ghostImporter_()
-    ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
+  ,transformationBuilder_(new DiscreteSpaceTransfBuilder())
 {
   bool partitionBCs = false;
-  DOFMapBuilder builder(mesh, fsr, partitionBCs);
+  DOFMapBuilder builder(mesh, fsr, partitionBCs, setupVerb);
 
   map_ = builder.colMap()[0];
   Array<Set<CellFilter> > cf = builder.unkCellFilters()[0];
@@ -264,12 +277,12 @@ void DiscreteSpace::init(
   }
 
   if (map_.get()==0) 
-    {
-      Array<Set<CellFilter> > cf(regions.size());
-      for (int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
-      DOFMapBuilder b;
-      map_ = b.makeMap(mesh_, basisTop, cf);
-    }
+  {
+    Array<Set<CellFilter> > cf(regions.size());
+    for (int i=0; i<regions.size(); i++) cf[i] = makeSet(regions[i]);
+    DOFMapBuilder b(setupVerb_);
+    map_ = b.makeMap(mesh_, basisTop, cf);
+  }
 
   // set up the transformation
   transformationBuilder_ = rcp(new DiscreteSpaceTransfBuilder( mesh_ , basis , map_ ));
@@ -362,7 +375,7 @@ Array<CellFilter> DiscreteSpace::maximalRegions(int n) const
 
 
 void DiscreteSpace::importGhosts(const Vector<double>& x,
-                                 RCP<GhostView<double> >& ghostView) const
+  RCP<GhostView<double> >& ghostView) const
 {
   ghostImporter_->importView(x, ghostView);
 }

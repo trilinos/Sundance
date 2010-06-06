@@ -44,9 +44,8 @@ using namespace Teuchos;
 
 
 
-DOFMapBase::DOFMapBase(const Mesh& mesh,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
+DOFMapBase::DOFMapBase(const Mesh& mesh, int setupVerb)
+  : setupVerb_(setupVerb),
     localProcID_(mesh.comm().getRank()),
     mesh_(mesh),
     lowestLocalDOF_(),

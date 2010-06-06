@@ -38,15 +38,13 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 NodalDOFMap::NodalDOFMap(const Mesh& mesh, 
   int nFuncs, 
   const CellFilter& maxCellFilter,
-  const ParameterList& verbParams)
-  : SpatiallyHomogeneousDOFMapBase(mesh, nFuncs, verbParams),
+  int setupVerb)
+  : SpatiallyHomogeneousDOFMapBase(mesh, nFuncs, setupVerb),
     maxCellFilter_(maxCellFilter),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),
@@ -72,7 +70,7 @@ NodalDOFMap::getDOFsForCellBatch(int cellDim,
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
-  SUNDANCE_OUT(verbosity > 3, 
+  SUNDANCE_MSG3(verbosity, 
                tab << "NodalDOFMap::getDOFsForCellBatch(): cellDim=" << cellDim
                << " cellLID=" << cellLID);
 
@@ -146,7 +144,7 @@ void NodalDOFMap::init()
 { 
   Tabs tab;
 
-  SUNDANCE_VERB_LOW(tab << "initializing nodal DOF map");
+  SUNDANCE_MSG1(setupVerb(), tab << "initializing nodal DOF map");
 
   Array<Array<int> > remoteNodes(mesh().comm().getNProc());
   Array<int> hasProcessedCell(nNodes_, 0);
@@ -269,10 +267,10 @@ void NodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCellRequests
   Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
                "p=" << mesh().comm().getRank()
                << "synchronizing DOFs for cells of dimension 0");
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
                "p=" << mesh().comm().getRank()
                << " sending cell reqs d=0, GID=" 
                << outgoingCellRequests);
@@ -290,7 +288,7 @@ void NodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCellRequests
       const Array<int>& requestsFromProc = incomingCellRequests[p];
       int nReq = requestsFromProc.size();
 
-      SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
+      SUNDANCE_MSG4(setupVerb(), "p=" << mesh().comm().getRank() 
                             << " recv'd from proc=" << p
                             << " reqs for DOFs for cells " 
                             << requestsFromProc);
@@ -300,22 +298,22 @@ void NodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCellRequests
       for (int c=0; c<nReq; c++)
         {
           int GID = requestsFromProc[c];
-          SUNDANCE_OUT(this->verb() > 3,  
+          SUNDANCE_MSG3(setupVerb(),  
                        "p=" << rank
                        << " processing zero-cell with GID=" << GID); 
           int LID = mesh().mapGIDToLID(0, GID);
-          SUNDANCE_OUT(this->verb() > 3,  
+          SUNDANCE_MSG3(setupVerb(),  
                        "p=" << rank
                        << " LID=" << LID << " dofs=" 
                        << nodeDofs_[LID*nFuncs_]);
           outgoingDOFs[p][c] = nodeDofs_[LID*nFuncs_];
-          SUNDANCE_OUT(this->verb() > 3,  
+          SUNDANCE_MSG3(setupVerb(),  
                        "p=" << rank
                        << " done processing cell with GID=" << GID);
         }
     }
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
                "p=" << mesh().comm().getRank()
                << "answering DOF requests for cells of dimension 0");
 
@@ -324,7 +322,7 @@ void NodalDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCellRequests
                                   incomingDOFs,
                                   mesh().comm());
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
                "p=" << mesh().comm().getRank()
                << "communicated DOF answers for cells of dimension 0" );
 

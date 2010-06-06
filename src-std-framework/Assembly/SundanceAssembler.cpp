@@ -140,30 +140,14 @@ static Time& graphFlatteningTimer()
 }
 
 
-RCP<ParameterList> Assembler::defaultVerbParams()
-{
-  static RCP<ParameterList> rtn = rcp(new ParameterList("Assembler"));
-  static int first = true;
-  if (first)
-  {
-    rtn->set<int>("setup", 0);
-    rtn->set<int>("matrix config", 0);
-    rtn->set<int>("vector config", 0);
-    rtn->set("DOF Map", *DOFMapBase::defaultVerbParams());
-    first = false;
-  }
-  return rtn;
-}
 
 Assembler
 ::Assembler(const Mesh& mesh, 
   const RCP<EquationSet>& eqn,
   const Array<VectorType<double> >& rowVectorType,
   const Array<VectorType<double> >& colVectorType,
-  bool partitionBCs,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<Assembler>("Assembler", verbParams),
-    partitionBCs_(partitionBCs),
+  bool partitionBCs)
+  : partitionBCs_(partitionBCs),
     matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
     numConfiguredColumns_(0),
@@ -202,10 +186,8 @@ Assembler
 
 Assembler
 ::Assembler(const Mesh& mesh, 
-  const RCP<EquationSet>& eqn,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<Assembler>("Assembler", verbParams),
-    partitionBCs_(false),
+  const RCP<EquationSet>& eqn)
+  : partitionBCs_(false),
     matNeedsConfiguration_(true),
     matNeedsFinalization_(true),
     numConfiguredColumns_(0),
@@ -243,17 +225,12 @@ Assembler
   init(mesh, eqn);
 }
 
-void Assembler::init(const Mesh& mesh, 
-  const RCP<EquationSet>& eqn)
+void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
 {
   Tabs tab0(0);
 
   /* Decide a verbosity level for the overall setup */
-  int verb = this->verbLevel("setup");
-  if (eqn->hasActiveWatchFlag()) 
-  {
-    verb = max(verb, 1);
-  }
+  int verb = eqn->maxWatchFlagSetting("assembler setup");
 
   SUNDANCE_BANNER1(verb, tab0, "Assembler setup");
 
@@ -269,7 +246,7 @@ void Assembler::init(const Mesh& mesh,
 
 
   /* Create the DOF map for the row space */
-  DOFMapBuilder mapBuilder;
+  DOFMapBuilder mapBuilder(eqn->maxWatchFlagSetting("dof map setup"));
 
   if (compTypes.contains(VectorOnly) 
     || compTypes.contains(Sensitivities) 
@@ -278,7 +255,7 @@ void Assembler::init(const Mesh& mesh,
     Tabs tab1;
     SUNDANCE_MSG2(verb, tab1 << "building row spaces");
     mapBuilder = DOFMapBuilder(mesh, eqn->fsr(), partitionBCs_, 
-      verbSublist("DOF Map"));
+      eqn->maxWatchFlagSetting("dof map setup"));
 
     rowMap_ = mapBuilder.rowMap();
     isBCRow_ = mapBuilder.isBCRow();
@@ -528,18 +505,25 @@ void Assembler::init(const Mesh& mesh,
     /* Actually, no! Some terms might be unused in reduced-space methods */
 //    TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "rqc=" << rqc 
 //      << " never used for any computation???");
-    if (!rqcUsed) continue;
 
-    SUNDANCE_MSG2(rqcVerb, tab12 << "creating evaluation mediator for rqc=" 
-      << rqc);
-    SUNDANCE_MSG2(rqcVerb, tab12 << "expr = " << expr);
-
-    /* Finally, create an evaluation mediator for this RQC. The evaluation
-     * mediator is the object through which symbolic objects refer to
-     * mesh-dependent quantities (e.g., discrete functions) during
-     * evaluation.  */
-    mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
-          quad)));
+    if (rqcUsed)
+    {
+      SUNDANCE_MSG2(rqcVerb, tab12 << "creating evaluation mediator for rqc=" 
+        << rqc);
+      SUNDANCE_MSG2(rqcVerb, tab12 << "expr = " << expr);
+      
+      /* Finally, create an evaluation mediator for this RQC. The evaluation
+       * mediator is the object through which symbolic objects refer to
+       * mesh-dependent quantities (e.g., discrete functions) during
+       * evaluation.  */
+      mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
+            quad)));
+    }
+    else
+    {
+        SUNDANCE_MSG2(rqcVerb, tab1 << "creating empty eval mediator for unused rqc");
+        mediators_.append(RCP<StdFwkEvalMediator>());
+    }
     SUNDANCE_MSG2(rqcVerb, tab1 
       << "done with RQC");
   }
@@ -663,12 +647,18 @@ void Assembler::init(const Mesh& mesh,
  * methods */
 //      TEST_FOR_EXCEPTION(!rqcUsed, InternalError, "BC rqc=" << rqc 
 //        << " never used for any computation???");
-    if (!rqcUsed) continue;
-
-      SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
-        << rqc << endl << tab1 << "expr = " << expr);
-      mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
-            quad)));
+      if (rqcUsed)
+      {
+        SUNDANCE_MSG2(rqcVerb, tab1 << "creating evaluation mediator for BC rqc=" 
+          << rqc << endl << tab1 << "expr = " << expr);
+        mediators_.append(rcp(new QuadratureEvalMediator(mesh, cellDim, 
+              quad)));
+      }
+      else
+      {
+        SUNDANCE_MSG2(rqcVerb, tab1 << "creating empty eval mediator for unused BC rqc");
+        mediators_.append(RCP<StdFwkEvalMediator>());
+      }
     }
     SUNDANCE_MSG2(rqcVerb, tab1 
       << "done with BC RQC");
@@ -765,7 +755,9 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
   TimeMonitor timer(configTimer());
 
   Tabs tab0;
-  SUNDANCE_LEVEL1("vector config", tab0 << "in Assembler::configureVector()");
+  int verb = eqn_->maxWatchFlagSetting("vector config");
+  
+  SUNDANCE_MSG1(verb, tab0 << "in Assembler::configureVector()");
 
   /* Get the vector spaces for each block of equations */
   Array<VectorSpace<double> > vs(eqn_->numVarBlocks());
@@ -826,7 +818,8 @@ void Assembler::configureVector(Array<Vector<double> >& b) const
 void Assembler::configureVectorBlock(int br, Vector<double>& b) const 
 {
   Tabs tab0;
-  SUNDANCE_LEVEL2("vector config", tab0 << "in Assembler::configureVectorBlock()");
+  int verb = eqn_->maxWatchFlagSetting("vector config");
+  SUNDANCE_MSG2(verb, tab0 << "in Assembler::configureVectorBlock()");
   VectorSpace<double> vecSpace = privateRowSpace_[br]->vecSpace();
 
   b = vecSpace.createMember();
@@ -847,11 +840,12 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
   Array<Vector<double> >& b) const
 {
   TimeMonitor timer(configTimer());
+  int verb = eqn_->maxWatchFlagSetting("matrix config");
   
   if (matNeedsConfiguration_)
   {
     Tabs tab0;
-    SUNDANCE_LEVEL1("matrix config", tab0 << "in Assembler::configureMatrix()");
+    SUNDANCE_MSG1(verb, tab0 << "in Assembler::configureMatrix()");
     int nRowBlocks = rowMap_.size();
     int nColBlocks = colMap_.size();
     Array<Array<int> > isNonzero = findNonzeroBlocks();
@@ -882,7 +876,7 @@ void Assembler::configureMatrix(LinearOperator<double>& A,
   else
   {
     Tabs tab0;
-    SUNDANCE_LEVEL1("matrix config", 
+    SUNDANCE_MSG1(verb,
       tab0 << "Assembler::configureMatrix() not needed, proceeding to configure vector");
   }
   configureVector(b);
@@ -893,12 +887,13 @@ void Assembler::configureMatrixBlock(int br, int bc,
 {
   Tabs tab;
   TimeMonitor timer(configTimer());
+  int verb = eqn_->maxWatchFlagSetting("matrix config");
 
-  SUNDANCE_LEVEL1("matrix config", tab << "in Assembler::configureMatrixBlock()");
+  SUNDANCE_MSG1(verb, tab << "in configureMatrixBlock()");
   
-  SUNDANCE_LEVEL2("matrix config", tab << "Assembler: num rows = " << rowMap()[br]->numDOFs());
+  SUNDANCE_MSG2(verb, tab << "num rows = " << rowMap()[br]->numDOFs());
   
-  SUNDANCE_LEVEL2("matrix config", tab << "Assembler: num cols = " << colMap()[bc]->numDOFs());
+  SUNDANCE_MSG2(verb, tab << "num cols = " << colMap()[bc]->numDOFs());
   
   VectorSpace<double> rowSpace = privateRowSpace_[br]->vecSpace();
   VectorSpace<double> colSpace = privateColSpace_[bc]->vecSpace();
@@ -932,7 +927,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   if (false /* (icmf==0 || !matrixEliminatesRepeatedCols()) && ccmf != 0 */)
   {
     Tabs tab1;
-    SUNDANCE_LEVEL2("matrix config", tab1 << "Assembler: doing collective matrix structuring...");
+    SUNDANCE_MSG2(verb, tab1 << "Assembler: doing collective matrix structuring...");
     Array<int> graphData;
     Array<int> nnzPerRow;
     Array<int> rowPtrs;
@@ -945,7 +940,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
   else
   {
     Tabs tab1;
-    SUNDANCE_LEVEL2("matrix config", tab1 << "Assembler: doing incremental matrix structuring...");
+    SUNDANCE_MSG2(verb, tab1 << "Assembler: doing incremental matrix structuring...");
     incrementalGetGraph(br, bc, icmf);
     {
       TimeMonitor timer1(matFinalizeTimer());
@@ -953,7 +948,7 @@ void Assembler::configureMatrixBlock(int br, int bc,
     }
   }
   
-  SUNDANCE_LEVEL3("matrix config", tab << "Assembler: allocating matrix...");
+  SUNDANCE_MSG3(verb, tab << "Assembler: allocating matrix...");
   {
     TimeMonitor timer1(matAllocTimer());
     A = matFactory->createMatrix();
@@ -1001,7 +996,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
 
   SUNDANCE_BANNER1(verb, tab, "Assembly loop");
 
-  SUNDANCE_MSG2(verb, tab << "computation type is " << compType); 
+  SUNDANCE_MSG1(verb, tab << "computation type is " << compType); 
   /* Allocate space for the workset's list of cell local IDs.
    * Currently, a workset is an array of cell indices. It could be an array
    * of pointers to cell objects, cell iterators, or whatever is needed to
@@ -1085,20 +1080,23 @@ void Assembler::assemblyLoop(const ComputationType& compType,
     Tabs tab0;
 
     /* Set the verbosity level for this RQC */
-    int rqcVerb = verb;
+    int rqcVerb = 0;
     int evalVerb = 0;
+    int evalMedVerb = 0;
 
     /* Check for watch point, and set verbosity accordingly */
     if (rqc_[r].watch().isActive()) 
     {
       Tabs tab01;
-      rqcVerb=5;
+      rqcVerb=verb;
       evalVerb = rqc_[r].watch().param("evaluation");
+      evalMedVerb = rqc_[r].watch().param("eval mediator");
       kernel->setVerbosity(rqc_[r].watch().param("fill"));
 
-      SUNDANCE_MSG2(rqcVerb, tab0 << endl 
+      SUNDANCE_MSG1(rqcVerb, tab0 << endl 
         << tab0 << "-------------"
-        << endl << tab0 << " doing watched subregion r=" << r << " rqc=" 
+        << endl << tab0 << " doing watched subregion r=" << r << " of " 
+        << rqc_.size() << ", rqc=" 
         << rqc_[r]);    
       if (skipRqc[r]) 
       {
@@ -1304,7 +1302,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
 
       /* Optionally, print the evaluation results */
       SUNDANCE_MSG2(rqcVerb, tab1 << "====== done evaluating expressions") ;
-      if (evalVerb > 2) 
+      if (evalVerb > 3) 
       {
         displayEvaluationResults(contexts[r], evalExprs[r], constantCoeffs, 
           vectorCoeffs);
@@ -1558,8 +1556,7 @@ void Assembler::getGraph(int br, int bc,
 {
   TimeMonitor timer(graphBuildTimer());
   Tabs tab;
-
-
+  int verb = eqn_->maxWatchFlagSetting("matrix config");
 
 
   RCP<Array<int> > workSet = rcp(new Array<int>());
@@ -1571,7 +1568,8 @@ void Assembler::getGraph(int br, int bc,
   RCP<Array<Array<int> > > unkLocalDOFs
     = rcp(new Array<Array<int> >());
 
-  SUNDANCE_VERB_HIGH(tab << "Creating graph: there are " << rowMap_[br]->numLocalDOFs()
+  SUNDANCE_MSG3(verb, tab << "Creating graph: there are " 
+    << rowMap_[br]->numLocalDOFs()
     << " local equations");
 
 
@@ -1586,7 +1584,7 @@ void Assembler::getGraph(int br, int bc,
       CellFilter domain = eqn_->region(d);
       const Array<Set<int> >& requiredVars = eqn_->reducedVarsOnRegion(domain);
       const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(domain);
-      SUNDANCE_OUT(this->verb() > 2, 
+      SUNDANCE_MSG2(verb,
         tab0 << "cell set " << domain
         << " isBCRegion=" << eqn_->isBCRegion(d));
       int dim = domain.dimension(mesh_);
@@ -1595,7 +1593,7 @@ void Assembler::getGraph(int br, int bc,
       RCP<Set<OrderedPair<int, int> > > pairs ;
       if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
-      SUNDANCE_OUT(this->verb() > 2 && pairs.get() != 0, 
+      SUNDANCE_OUT(verb > 2 && pairs.get() != 0, 
         tab0 << "non-BC pairs = "
         << *pairs);
        
@@ -1605,7 +1603,7 @@ void Assembler::getGraph(int br, int bc,
         if (eqn_->hasBCVarUnkPairs(domain)) 
         {
           bcPairs = eqn_->bcVarUnkPairs(domain);
-          SUNDANCE_OUT(this->verb() > 2, tab0 << "BC pairs = "
+          SUNDANCE_OUT(verb > 2, tab0 << "BC pairs = "
             << *bcPairs);
         }
       }
@@ -1690,7 +1688,7 @@ void Assembler::getGraph(int br, int bc,
         RCP<const MapStructure> rowMapStruct 
           = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
             requiredVars[br], *testLocalDOFs,
-            numTestNodes, this->verb());
+            numTestNodes, verb);
         if (rowMap_[br].get()==colMap_[bc].get())
         {
           unkLocalDOFs = testLocalDOFs;
@@ -1701,7 +1699,7 @@ void Assembler::getGraph(int br, int bc,
         {
           colMapStruct = colMap_[br]->getDOFsForCellBatch(dim, *workSet, 
             requiredUnks[bc], 
-            *unkLocalDOFs, numUnkNodes, this->verb());
+            *unkLocalDOFs, numUnkNodes, verb);
         }
 
         if (pairs.get() != 0)
@@ -1825,7 +1823,7 @@ void Assembler
 {
   TimeMonitor timer(graphBuildTimer());
   Tabs tab;
-
+  int verb = eqn_->maxWatchFlagSetting("assembler setup");
 
   RCP<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());
@@ -1836,7 +1834,8 @@ void Assembler
   RCP<Array<Array<int> > > unkLocalDOFs
     = rcp(new Array<Array<int> >());
 
-  SUNDANCE_VERB_LOW(tab << "Creating graph: there are " << rowMap_[br]->numLocalDOFs()
+  SUNDANCE_MSG2(verb, tab << "Creating graph: there are " 
+    << rowMap_[br]->numLocalDOFs()
     << " local equations");
 
 
@@ -1848,7 +1847,7 @@ void Assembler
     const Array<Set<int> >& requiredUnks = eqn_->reducedUnksOnRegion(domain);
     Array<int> localVars = requiredVars[br].elements();
     Array<int> localUnks = requiredUnks[bc].elements();
-    SUNDANCE_OUT(this->verb() > 2, 
+    SUNDANCE_MSG3(verb,
       tab0 << "cell set " << domain
       << " isBCRegion=" << eqn_->isBCRegion(d));
     int dim = domain.dimension(mesh_);
@@ -1857,7 +1856,7 @@ void Assembler
     RCP<Set<OrderedPair<int, int> > > pairs ;
     if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
-    SUNDANCE_OUT(this->verb() > 2 && pairs.get() != 0, 
+    SUNDANCE_OUT(verb > 2 && pairs.get() != 0, 
       tab0 << "non-BC pairs = "
       << *pairs);
        
@@ -1867,7 +1866,7 @@ void Assembler
       if (eqn_->hasBCVarUnkPairs(domain)) 
       {
         bcPairs = eqn_->bcVarUnkPairs(domain);
-        SUNDANCE_OUT(this->verb() > 2, tab0 << "BC pairs = "
+        SUNDANCE_MSG3(verb, tab0 << "BC pairs = "
           << *bcPairs);
       }
     }
@@ -1951,7 +1950,7 @@ void Assembler
         = rowMap_[br]->getDOFsForCellBatch(dim, *workSet, 
           requiredVars[br],
           *testLocalDOFs,
-          numTestNodes, this->verb());
+          numTestNodes, verb);
 
       if (rowMap_[br].get()==colMap_[bc].get())
       {
@@ -1963,7 +1962,7 @@ void Assembler
       {
         colMapStruct = colMap_[bc]->getDOFsForCellBatch(dim, *workSet, 
           requiredUnks[bc],
-          *unkLocalDOFs, numUnkNodes, this->verb());
+          *unkLocalDOFs, numUnkNodes, verb);
       }
 
           
@@ -2043,6 +2042,8 @@ void Assembler
 
 Array<Array<int> > Assembler::findNonzeroBlocks() const
 {
+  int verb = eqn_->maxWatchFlagSetting("assembler setup");
+
   Array<Array<int> > rtn(eqn_->numVarBlocks());
   for (int br=0; br<rtn.size(); br++)
   {
@@ -2057,14 +2058,14 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
   {
     Tabs tab0;
     CellFilter domain = eqn_->region(d);
-    SUNDANCE_OUT(this->verb() > 2, 
+    SUNDANCE_MSG3(verb,
       tab0 << "cell set " << domain
       << " isBCRegion=" << eqn_->isBCRegion(d));
 
     RCP<Set<OrderedPair<int, int> > > pairs ;
     if (eqn_->hasVarUnkPairs(domain)) pairs = eqn_->varUnkPairs(domain);
 
-    SUNDANCE_OUT(this->verb() > 2 && pairs.get() != 0, 
+    SUNDANCE_OUT(verb > 2 && pairs.get() != 0, 
       tab0 << "non-BC pairs = "
       << *pairs);
        
@@ -2074,7 +2075,7 @@ Array<Array<int> > Assembler::findNonzeroBlocks() const
       if (eqn_->hasBCVarUnkPairs(domain)) 
       {
         bcPairs = eqn_->bcVarUnkPairs(domain);
-        SUNDANCE_OUT(this->verb() > 2, tab0 << "BC pairs = "
+        SUNDANCE_MSG3(verb, tab0 << "BC pairs = "
           << *bcPairs);
       }
     }
@@ -2205,4 +2206,9 @@ int& Assembler::workSetSize()
 {
   static int rtn = defaultWorkSetSize(); 
   return rtn;
+}
+
+int Assembler::maxWatchFlagSetting(const string& name) const 
+{
+  return eqnSet()->maxWatchFlagSetting(name);
 }

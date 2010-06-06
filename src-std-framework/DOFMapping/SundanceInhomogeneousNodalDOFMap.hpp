@@ -51,7 +51,8 @@ class InhomogeneousNodalDOFMap : public DOFMapBase
 public:
   /** */
   InhomogeneousNodalDOFMap(const Mesh& mesh, 
-    const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap, const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
+    const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap, 
+    int setupVerb);
       
   /** */
   virtual ~InhomogeneousNodalDOFMap(){;}

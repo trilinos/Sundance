@@ -43,17 +43,12 @@
 namespace Sundance
 {
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 /**
  *
  */
 class Functional
-  : public Sundance::ParameterControlledObjectWithVerbosity<Functional>
 {
 public:
   /** */
@@ -63,16 +58,14 @@ public:
   Functional(
     const Mesh& mesh, 
     const Expr& integral, 
-    const TSFExtended::VectorType<double>& vecType,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const TSFExtended::VectorType<double>& vecType);
 
   /** */
   Functional(
     const Mesh& mesh, 
     const Expr& integral, 
     const Expr& essentialBC,
-    const TSFExtended::VectorType<double>& vecType,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const TSFExtended::VectorType<double>& vecType);
 
   /** */
   LinearProblem linearVariationalProb(const Expr& var,
@@ -106,9 +99,6 @@ public:
   /** */
   const Mesh& mesh() const {return mesh_;}
     
-  /** */
-  static RCP<ParameterList> defaultVerbParams();
-                                  
 
 private:
   Mesh mesh_;

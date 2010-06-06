@@ -50,8 +50,8 @@ class NodalDOFMap : public SpatiallyHomogeneousDOFMapBase
 public:
   /** */
   NodalDOFMap(const Mesh& mesh, int nFuncs,
-    const CellFilter& maxCellFilter, 
-    const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
+    const CellFilter& maxCellFilter,
+    int setupVerb);
       
   /** */
   virtual ~NodalDOFMap(){;}

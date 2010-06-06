@@ -56,10 +56,8 @@ EquationSet::EquationSet(const Expr& eqns,
   const Expr& params,
   const Expr& paramEvalPts,
   const Array<Expr>& fields,
-  const Array<Expr>& fieldValues,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams),
-    fsr_(),
+  const Array<Expr>& fieldValues)
+  : fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
     regionQuadCombos_(),
@@ -88,7 +86,7 @@ EquationSet::EquationSet(const Expr& eqns,
   Expr unkParams;
 
   fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, unks, unkParams,
-      params, fields, true, verbLevel("setup")));
+      params, fields, true));
   
   compTypes_.put(FunctionalOnly);
 
@@ -115,10 +113,8 @@ EquationSet::EquationSet(const Expr& eqns,
   const Expr& params,
   const Expr& paramEvalPts,
   const Array<Expr>& fixedFields,
-  const Array<Expr>& fixedFieldValues,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams),
-    fsr_(),
+  const Array<Expr>& fixedFieldValues)
+  : fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
     regionQuadCombos_(),
@@ -145,7 +141,7 @@ EquationSet::EquationSet(const Expr& eqns,
 
   fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, 
       unks, unkParams,
-      params, fixedFields, false, verbLevel("setup")));
+      params, fixedFields, false));
 
   rqcToContext_.put(MatrixAndVector, Map<RegionQuadCombo, EvalContext>());
   bcRqcToContext_.put(MatrixAndVector, Map<RegionQuadCombo, EvalContext>());
@@ -190,10 +186,8 @@ EquationSet::EquationSet(const Expr& eqns,
   const Expr& params,
   const Expr& paramEvalPts,
   const Array<Expr>& fixedFields,
-  const Array<Expr>& fixedFieldValues,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams), 
-    fsr_(),
+  const Array<Expr>& fixedFieldValues)
+  : fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
     regionQuadCombos_(),
@@ -218,7 +212,7 @@ EquationSet::EquationSet(const Expr& eqns,
   Expr unkParams;
   fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, 
       unks, unkParams, params, fixedFields, 
-      isVariationalProblem_, verbLevel("setup")));
+      isVariationalProblem_));
 
   compTypes_.put(MatrixAndVector);
   compTypes_.put(VectorOnly);
@@ -252,10 +246,8 @@ EquationSet::EquationSet(const Expr& eqns,
   const Expr& params,
   const Expr& paramEvalPts,
   const Array<Expr>& fixedFields,
-  const Array<Expr>& fixedFieldValues,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<EquationSet>("Equation Set", verbParams),
-    fsr_(),
+  const Array<Expr>& fixedFieldValues)
+  : fsr_(),
     varUnkPairsOnRegions_(),
     bcVarUnkPairsOnRegions_(),
     regionQuadCombos_(),
@@ -284,7 +276,7 @@ EquationSet::EquationSet(const Expr& eqns,
   Array<Expr> unks;
   fsr_ = rcp(new FunctionSupportResolver(eqns, bcs, vars, 
       unks, unkParams,
-      params, fixedFields, isVariationalProblem_, verbLevel("setup")));
+      params, fixedFields, isVariationalProblem_));
 
   rqcToContext_.put(FunctionalAndGradient, Map<RegionQuadCombo, EvalContext>());
   bcRqcToContext_.put(FunctionalAndGradient, Map<RegionQuadCombo, EvalContext>());
@@ -330,7 +322,10 @@ void EquationSet::init(
   /* upgrade base verbosity level if one of the terms is being watched */
   if (integralSum->hasWatchedTerm() || (hasBCs && bcSum->hasWatchedTerm()))
   {
-    verb = 1;
+    int v1 = integralSum->eqnSetSetupVerb();
+    int v2 = 0;
+    if (hasBCs) v2 = bcSum->eqnSetSetupVerb();
+    verb = max(v1, v2);
   }
   SUNDANCE_BANNER1(verb, tab0, "EquationSet setup");
 
@@ -367,6 +362,8 @@ void EquationSet::init(
     bcRqcToSkip_[*i] = Set<RegionQuadCombo>();
   }
 
+  SUNDANCE_MSG1(verb, tab0 << "computation types = " << compTypes_);
+
 
 
   /* Now compile a list of all regions appearing in either the eqns or
@@ -382,10 +379,11 @@ void EquationSet::init(
     Tabs tab2;
     RegionQuadCombo rqc = r->first;
     int rqcVerb = verb;
+    int symbVerb = rqc.watch().param("symbolic preprocessing");
     if (rqc.watch().isActive()) 
     {
-      rqcVerb=rqc.watch().param("symbolic preprocessing");
-      SUNDANCE_MSG1(rqcVerb, tab15 << "processing RQC = " << rqc);
+      rqcVerb=rqc.watch().param("equation set setup");
+      SUNDANCE_MSG1(max(verb,rqcVerb), tab15 << "processing RQC = " << rqc);
     }
 
 
@@ -402,7 +400,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing matrix/vector calculation");
       Tabs tab3; 
       EvalContext context(rqc, makeSet(1,2), contextID[0]);
-      context.setSetupVerbosity(rqcVerb);
+      context.setSetupVerbosity(symbVerb);
       DerivSet nonzeros;
       
       if (isVariationalProblem_)
@@ -441,13 +439,15 @@ void EquationSet::init(
       if (nonzeros.size()==0) 
       {
         rqcToSkip_[MatrixAndVector].put(rqc);
-        continue;
       }
-      addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
-        nonzeros, false, rqcVerb);
-      rqcToContext_[MatrixAndVector].put(rqc, context);
-      regionQuadComboNonzeroDerivs_[MatrixAndVector].put(rqc, 
-        nonzeros);
+      else
+      {
+        addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
+          nonzeros, false, rqcVerb);
+        rqcToContext_[MatrixAndVector].put(rqc, context);
+        regionQuadComboNonzeroDerivs_[MatrixAndVector].put(rqc, 
+          nonzeros);
+      }
     }
 
 
@@ -458,7 +458,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing vector-only calculation");
       Tabs tab3; 
       EvalContext context(rqc, makeSet(1), contextID[1]);
-      context.setSetupVerbosity(rqcVerb);
+      context.setSetupVerbosity(symbVerb);
       DerivSet nonzeros;
       if (isVariationalProblem_)
       {
@@ -495,10 +495,12 @@ void EquationSet::init(
       if (nonzeros.size()==0) 
       {
         rqcToSkip_[VectorOnly].put(rqc);
-        continue;
       }
-      rqcToContext_[VectorOnly].put(rqc, context);
-      regionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
+      else
+      {
+        rqcToContext_[VectorOnly].put(rqc, context);
+        regionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
+      }
     }
 
 
@@ -508,7 +510,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing sensitivity calculation");
       Tabs tab3;
       EvalContext context(rqc, makeSet(2), contextID[4]);
-      context.setSetupVerbosity(rqcVerb);
+      context.setSetupVerbosity(symbVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
         ::setupSensitivities(term, toList(vars), 
@@ -526,10 +528,12 @@ void EquationSet::init(
       if (nonzeros.size()==0) 
       {
         rqcToSkip_[Sensitivities].put(rqc);
-        continue;
       }
-      rqcToContext_[Sensitivities].put(rqc, context);
-      regionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
+      else
+      {
+        rqcToContext_[Sensitivities].put(rqc, context);
+        regionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
+      }
     }
 
 
@@ -541,7 +545,7 @@ void EquationSet::init(
       Tabs tab3;
 
       EvalContext context(rqc, makeSet(0), contextID[2]);
-      context.setSetupVerbosity(rqcVerb);
+      context.setSetupVerbosity(symbVerb);
       DerivSet nonzeros;
       Expr fields;
       Expr fieldValues;
@@ -598,10 +602,12 @@ void EquationSet::init(
       if (nonzeros.size()==0) 
       {
         rqcToSkip_[FunctionalOnly].put(rqc);
-        continue;
       }
-      rqcToContext_[FunctionalOnly].put(rqc, context);
-      regionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
+      else
+      {
+        rqcToContext_[FunctionalOnly].put(rqc, context);
+        regionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
+      }
     }
     /* prepare calculation of functional value and gradient */
     if (compTypes_.contains(FunctionalAndGradient))
@@ -609,7 +615,7 @@ void EquationSet::init(
       SUNDANCE_MSG2(rqcVerb, tab2 << "preparing functional/gradient calculation");
       Tabs tab3;
       EvalContext context(rqc, makeSet(0,1), contextID[3]);
-      context.setSetupVerbosity(rqcVerb);
+      context.setSetupVerbosity(symbVerb);
       DerivSet nonzeros;
       nonzeros = SymbPreprocessor
         ::setupGradient(term, 
@@ -625,10 +631,12 @@ void EquationSet::init(
       if (nonzeros.size()==0) 
       {
         rqcToSkip_[FunctionalAndGradient].put(rqc);
-        continue;
       }
-      rqcToContext_[FunctionalAndGradient].put(rqc, context);
-      regionQuadComboNonzeroDerivs_[FunctionalAndGradient].put(rqc, nonzeros);
+      else
+      {
+        rqcToContext_[FunctionalAndGradient].put(rqc, context);
+        regionQuadComboNonzeroDerivs_[FunctionalAndGradient].put(rqc, nonzeros);
+      }
     }
   }
   
@@ -644,10 +652,11 @@ void EquationSet::init(
       Tabs tab15;
       RegionQuadCombo rqc = r->first;
       int rqcVerb = verb;
+      int symbVerb = rqc.watch().param("symbolic preprocessing");
       if (rqc.watch().isActive()) 
       {
-        rqcVerb=rqc.watch().param("symbolic preprocessing");
-        SUNDANCE_MSG1(verb, tab15 << "processing RQC = " << rqc);
+        rqcVerb=rqc.watch().param("equation set setup");
+        SUNDANCE_MSG1(verb, tab15 << "processing BC RQC = " << rqc);
       }
 
       rqcBCSet.put(rqc);
@@ -663,8 +672,9 @@ void EquationSet::init(
       if (compTypes_.contains(MatrixAndVector))
       {
         Tabs tab3;
+        SUNDANCE_MSG2(rqcVerb, tab3 << "preparing matrix/vector calculation");
         EvalContext context(rqc, makeSet(1,2), contextID[0]);
-        context.setSetupVerbosity(rqcVerb);
+        context.setSetupVerbosity(symbVerb);
         DerivSet nonzeros;
               
         if (isVariationalProblem_)
@@ -702,14 +712,15 @@ void EquationSet::init(
         if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[MatrixAndVector].put(rqc);
-          continue;
         }
-
-        addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
-          nonzeros, true, rqcVerb);
-        bcRqcToContext_[MatrixAndVector].put(rqc, context);
-        bcRegionQuadComboNonzeroDerivs_[MatrixAndVector].put(rqc, 
-          nonzeros);
+        else
+        {
+          addToVarUnkPairs(rqc.domain(), varFuncSet, unkFuncSet,
+            nonzeros, true, rqcVerb);
+          bcRqcToContext_[MatrixAndVector].put(rqc, context);
+          bcRegionQuadComboNonzeroDerivs_[MatrixAndVector].put(rqc, 
+            nonzeros);
+        }
       }
 
 
@@ -720,8 +731,9 @@ void EquationSet::init(
       if (compTypes_.contains(VectorOnly))
       {
         Tabs tab3;
+        SUNDANCE_MSG2(rqcVerb, tab3 << "preparing vector-only calculation");
         EvalContext context(rqc, makeSet(1), contextID[1]);
-        context.setSetupVerbosity(rqcVerb);
+        context.setSetupVerbosity(symbVerb);
         DerivSet nonzeros;
         if (isVariationalProblem_)
         {
@@ -757,10 +769,12 @@ void EquationSet::init(
         if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[VectorOnly].put(rqc);
-          continue;
         }
-        bcRqcToContext_[VectorOnly].put(rqc, context);
-        bcRegionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
+        else
+        {
+          bcRqcToContext_[VectorOnly].put(rqc, context);
+          bcRegionQuadComboNonzeroDerivs_[VectorOnly].put(rqc, nonzeros);
+        }
       }
 
 
@@ -774,8 +788,9 @@ void EquationSet::init(
       if (compTypes_.contains(Sensitivities))
       {
         Tabs tab3;
+        SUNDANCE_MSG2(rqcVerb, tab3 << "preparing sensitivity calculation");
         EvalContext context(rqc, makeSet(2), contextID[4]);
-        context.setSetupVerbosity(rqcVerb);
+        context.setSetupVerbosity(symbVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
           ::setupSensitivities(term, toList(vars), toList(unks), 
@@ -793,10 +808,12 @@ void EquationSet::init(
         if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[Sensitivities].put(rqc);
-          continue;
         }
-        bcRqcToContext_[Sensitivities].put(rqc, context);
-        bcRegionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
+        else
+        {
+          bcRqcToContext_[Sensitivities].put(rqc, context);
+          bcRegionQuadComboNonzeroDerivs_[Sensitivities].put(rqc, nonzeros);
+        }
       }
 
 
@@ -809,8 +826,9 @@ void EquationSet::init(
       if (compTypes_.contains(FunctionalOnly))
       {
         Tabs tab3;
+        SUNDANCE_MSG2(rqcVerb, tab3 << "preparing functional-only calculation");
         EvalContext context(rqc, makeSet(0), contextID[2]);
-        context.setSetupVerbosity(rqcVerb);
+        context.setSetupVerbosity(symbVerb);
         DerivSet nonzeros;
         Expr fields;
         Expr fieldValues;
@@ -865,10 +883,12 @@ void EquationSet::init(
         if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[FunctionalOnly].put(rqc);
-          continue;
         }
-        bcRqcToContext_[FunctionalOnly].put(rqc, context);
-        bcRegionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
+        else
+        {
+          bcRqcToContext_[FunctionalOnly].put(rqc, context);
+          bcRegionQuadComboNonzeroDerivs_[FunctionalOnly].put(rqc, nonzeros);
+        }
       }
 
 
@@ -878,8 +898,9 @@ void EquationSet::init(
       if (compTypes_.contains(FunctionalAndGradient))
       {
         Tabs tab3;
+        SUNDANCE_MSG2(rqcVerb, tab3 << "preparing functional and gradient calculation");
         EvalContext context(rqc, makeSet(0,1), contextID[3]);
-        context.setSetupVerbosity(rqcVerb);
+        context.setSetupVerbosity(symbVerb);
         DerivSet nonzeros;
         nonzeros = SymbPreprocessor
           ::setupGradient(term, 
@@ -896,10 +917,12 @@ void EquationSet::init(
         if (nonzeros.size()==0) 
         {
           bcRqcToSkip_[FunctionalAndGradient].put(rqc);
-          continue;
         }
-        bcRqcToContext_[FunctionalAndGradient].put(rqc, context);
-        bcRegionQuadComboNonzeroDerivs_[FunctionalAndGradient].put(rqc, nonzeros);
+        else
+        {
+          bcRqcToContext_[FunctionalAndGradient].put(rqc, context);
+          bcRegionQuadComboNonzeroDerivs_[FunctionalAndGradient].put(rqc, nonzeros);
+        }
       }
     }
   }
@@ -1010,6 +1033,23 @@ bool EquationSet::hasActiveWatchFlag() const
     if (bcRegionQuadCombos()[i].watch().isActive()) return true;
   }
   return false;
+}
+
+
+int EquationSet::maxWatchFlagSetting(const string& param) const 
+{
+  int rtn = 0;
+  for (int i=0; i<regionQuadCombos().size(); i++)
+  {
+    int v = regionQuadCombos()[i].watch().param(param);
+    if (v > rtn) rtn = v;
+  }
+  for (int i=0; i<bcRegionQuadCombos().size(); i++)
+  {
+    int v = bcRegionQuadCombos()[i].watch().param(param);
+    if (v > rtn) rtn = v;
+  }
+  return rtn;
 }
 
 Array<Expr> EquationSet::flattenSpectral(const Array<Expr>& expr) const

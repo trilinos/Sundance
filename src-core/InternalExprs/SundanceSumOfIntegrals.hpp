@@ -166,6 +166,9 @@ public:
 
   /** Look for a term with an active watchpoint */
   bool hasWatchedTerm() const ;
+
+  /** Find the maximum setup verbosity of the terms */
+  int eqnSetSetupVerb() const ;
   
 
 protected:

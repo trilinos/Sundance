@@ -56,7 +56,7 @@ public:
   MixedDOFMap(const Mesh& mesh, 
     const Array<RCP<BasisDOFTopologyBase> >& basis,
     const CellFilter& maxCells, 
-    const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
+    int setupVerb);
                         
   /** */
   virtual ~MixedDOFMap(){;}

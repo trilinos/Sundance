@@ -49,7 +49,6 @@ class FunctionSupportResolver;
 
 namespace Sundance
 {
-  using namespace Sundance;
   using namespace Teuchos;
   using namespace TSFExtended;
 
@@ -57,59 +56,69 @@ namespace Sundance
    * DiscreteSpace represents a discrete finite-element space (i.e., 
    * a mesh and a basis).
    */
-  class DiscreteSpace : public ObjectWithClassVerbosity<DiscreteSpace>
+  class DiscreteSpace
   {
   public:
     /** */
     DiscreteSpace(){;}
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
-                  const VectorType<double>& vecType);
+      const VectorType<double>& vecType,
+      int setupVerb = 0);
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
-                  const VectorType<double>& vecType);
+                  const VectorType<double>& vecType,
+      int setupVerb = 0);
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const Array<CellFilter>& regions,
-                  const VectorType<double>& vecType);
+                  const VectorType<double>& vecType,
+      int setupVerb = 0);
 
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                   const CellFilter& regions,
-                  const VectorType<double>& vecType);
+                  const VectorType<double>& vecType,
+      int setupVerb = 0);
 
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const CellFilter& regions,
-                  const VectorType<double>& vecType);
+                  const VectorType<double>& vecType,
+      int setupVerb = 0);
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const RCP<DOFMapBase>& map,
-                  const VectorType<double>& vecType);
+                  const VectorType<double>& vecType,
+      int setupVerb = 0);
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
       const RCP<DOFMapBase>& map,
       const RCP<Array<int> >& bcIndices,
-      const VectorType<double>& vecType);
+      const VectorType<double>& vecType,
+      int setupVerb = 0);
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisFamily& basis,
                   const SpectralBasis& spBasis,
-                  const VectorType<double>& vecType);
+                  const VectorType<double>& vecType,
+      int setupVerb = 0);
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
                   const SpectralBasis& spBasis,
-                  const VectorType<double>& vecType);
+                  const VectorType<double>& vecType,
+      int setupVerb = 0);
 
     /** */
     DiscreteSpace(const Mesh& mesh, const BasisArray& basis,
       const RCP<FunctionSupportResolver>& fsr,
-      const VectorType<double>& vecType);
+      const VectorType<double>& vecType,
+      int setupVerb = 0);
 
     /** */
     const RCP<DOFMapBase>& map() const {return map_;}
@@ -172,6 +181,8 @@ namespace Sundance
     /** */
     void initImporter();
 
+    /** */
+    int setupVerb_;
 
     /** */
     RCP<DOFMapBase> map_;

@@ -46,8 +46,8 @@ using namespace Teuchos;
 InhomogeneousNodalDOFMap
 ::InhomogeneousNodalDOFMap(const Mesh& mesh, 
   const Array<Map<Set<int>, CellFilter> >& funcSetToDomainMap,
-  const ParameterList& verbParams)
-  : DOFMapBase(mesh, verbParams),
+  int setupVerb)
+  : DOFMapBase(mesh, setupVerb),
     dim_(mesh.spatialDim()),
     basis_(rcp(new Lagrange(1))),
     nTotalFuncs_(),
@@ -64,9 +64,8 @@ InhomogeneousNodalDOFMap
     elemStructure_(),
     nodeStructure_()
 {
-  int verb = 0;
-  SUNDANCE_MSG1(verb, "in InhomogeneousNodalDOFMap ctor");
-  SUNDANCE_MSG2(verb, "func set to domain map " << funcSetToDomainMap);
+  SUNDANCE_MSG1(setupVerb, "in InhomogeneousNodalDOFMap ctor");
+  SUNDANCE_MSG2(setupVerb, "func set to domain map " << funcSetToDomainMap);
 
   /* count the total number of functions across all subdomains */
   Set<int> allFuncs;
@@ -81,7 +80,7 @@ InhomogeneousNodalDOFMap
 
   
   nTotalFuncs_ = allFuncs.size();
-  SUNDANCE_MSG2(verb, "found " << nTotalFuncs_ << " functions");
+  SUNDANCE_MSG2(setupVerb, "found " << nTotalFuncs_ << " functions");
   
 
   /* get flat arrays of subdomains and function arrays */
@@ -122,7 +121,7 @@ InhomogeneousNodalDOFMap
   {
     int d = subdomains[r].dimension(mesh);
     CellSet cells = subdomains[r].getCells(mesh);
-    SUNDANCE_MSG2(verb, "domain " << subdomains[r] << " has functions "
+    SUNDANCE_MSG2(setupVerb, "domain " << subdomains[r] << " has functions "
       << funcSets[r]);
       
     for (CellIterator c=cells.begin(); c!=cells.end(); c++)
@@ -185,7 +184,7 @@ InhomogeneousNodalDOFMap
     nodeToFuncSetIndexMap_[n] = funcComboIndex;
   }
 
-  SUNDANCE_MSG2(verb, "nodal func sets = " << nodalFuncSets_);
+  SUNDANCE_MSG2(setupVerb, "nodal func sets = " << nodalFuncSets_);
 
   nodeDofs_.resize(nodalFuncSets_.size());
   nodeStructure_.resize(nodalFuncSets_.size());

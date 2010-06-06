@@ -47,14 +47,14 @@ namespace Sundance
 /** 
  * 
  */
-class DOFMapBuilder : public ParameterControlledObjectWithVerbosity<DOFMapBase>
+class DOFMapBuilder 
 {
 public:
   /** */
-  DOFMapBuilder(const ParameterList& verbParams=*DOFMapBase::defaultVerbParams());
+  DOFMapBuilder(int setupVerb);
   /** */
   DOFMapBuilder(const Mesh& mesh, const RCP<FunctionSupportResolver>& fsr, 
-    bool findBCCols, const ParameterList& verbParams=*DOFMapBase::defaultVerbParams());
+    bool findBCCols, int setupVerb);
 
   /** */
   const Array<RCP<DOFMapBase> >& rowMap() const {return rowMap_;}
@@ -164,6 +164,8 @@ private:
   const MPIComm& comm() const {return mesh().comm();}
 
   void init(bool findBCCols);
+
+  int verb_;
 
   Mesh mesh_;
 

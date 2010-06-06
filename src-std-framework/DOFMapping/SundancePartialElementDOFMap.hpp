@@ -55,7 +55,7 @@ public:
   PartialElementDOFMap(const Mesh& mesh, 
     const CellFilter& subdomain,
     int nFuncs,
-    const ParameterList& verbParams);
+    int setupVerb);
       
   /** */
   virtual ~PartialElementDOFMap(){;}

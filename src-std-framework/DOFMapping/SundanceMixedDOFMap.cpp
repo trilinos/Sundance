@@ -38,8 +38,7 @@
 #include "Teuchos_Time.hpp"
 #include "Teuchos_TimeMonitor.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
+
 using namespace Sundance;
 using namespace Teuchos;
 
@@ -60,8 +59,8 @@ static Time& maxDOFBuildTimer()
 MixedDOFMap::MixedDOFMap(const Mesh& mesh, 
   const Array<RCP<BasisDOFTopologyBase> >& basis,
   const CellFilter& maxCells,
-  const ParameterList& verbParams)
-  : SpatiallyHomogeneousDOFMapBase(mesh, basis.size(), verbParams), 
+  int setupVerb)
+  : SpatiallyHomogeneousDOFMapBase(mesh, basis.size(), setupVerb), 
     maxCells_(maxCells),
     dim_(mesh.spatialDim()),
     dofs_(mesh.spatialDim()+1),
@@ -78,9 +77,8 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
     nFuncs_()
 {
   TimeMonitor timer(mixedDOFCtorTimer());
-  setVerbosity(DOFMapBase::classVerbosity());
   Tabs tab;
-  SUNDANCE_VERB_LOW(tab << "building mixed DOF map");
+  SUNDANCE_MSG1(setupVerb, tab << "building mixed DOF map");
 
   Sundance::Map<OrderedHandle<BasisDOFTopologyBase>, int> basisToChunkMap;
   Array<RCP<BasisDOFTopologyBase> > chunkBases;
@@ -106,7 +104,7 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
   }
 
   Tabs tab1;
-  SUNDANCE_VERB_MEDIUM(tab1 << "basis to chunk map = " << basisToChunkMap);
+  SUNDANCE_MSG2(setupVerb, tab1 << "basis to chunk map = " << basisToChunkMap);
 
 
   structure_ = rcp(new MapStructure(basis.size(), chunkBases, chunkFuncs));
@@ -124,7 +122,7 @@ MixedDOFMap::MixedDOFMap(const Mesh& mesh,
   /* do a sanity check */
   checkTable();
 
-  SUNDANCE_VERB_LOW(tab << "done building mixed DOF map");
+  SUNDANCE_MSG1(setupVerb, tab << "done building mixed DOF map");
 }
 
 
@@ -133,7 +131,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
   Tabs tab;
 
   /* gather functions into chunks sharing identical basis functions */
-  SUNDANCE_VERB_LOW(tab << "grouping like basis functions");
+  SUNDANCE_MSG1(setupVerb(), tab << "grouping like basis functions");
   
 
   /* now that we know the number of basis chunks, allocate arrays */
@@ -155,19 +153,19 @@ void MixedDOFMap::allocate(const Mesh& mesh)
   
 
   /* compute node counts for each cell dimension and each basis type */
-  SUNDANCE_VERB_LOW(tab << "working out DOF map node counts");
+  SUNDANCE_MSG1(setupVerb(), tab << "working out DOF map node counts");
   
   numFacets_.resize(dim_+1);
 
   for (int d=0; d<=dim_; d++)
   {
     Tabs tab1;
-    SUNDANCE_VERB_MEDIUM(tab << "allocating maps for cell dim=" << d);
+    SUNDANCE_MSG2(setupVerb(), tab << "allocating maps for cell dim=" << d);
     /* record the number of facets for each cell type so we're
      * not making a bunch of mesh calls */
     numFacets_[d].resize(d);
     for (int fd=0; fd<d; fd++) numFacets_[d][fd]=mesh.numFacets(d, 0, fd);
-    SUNDANCE_VERB_HIGH(tab1 << "num facets for dimension " << d << " is " 
+    SUNDANCE_MSG3(setupVerb(), tab1 << "num facets for dimension " << d << " is " 
       << numFacets_[d]);
 
     cellHasAnyDOFs_[d] = false;
@@ -179,10 +177,10 @@ void MixedDOFMap::allocate(const Mesh& mesh)
     for (int b=0; b<nBasisChunks(); b++)
     {
       Tabs tab2;
-      SUNDANCE_VERB_MEDIUM(tab1 << "basis chunk=" << b);
-      SUNDANCE_VERB_MEDIUM(tab2 << "basis=" << basis(b)->description());
+      SUNDANCE_MSG2(setupVerb(), tab1 << "basis chunk=" << b);
+      SUNDANCE_MSG2(setupVerb(), tab2 << "basis=" << basis(b)->description());
       int nNodes = basis(b).ptr()->nReferenceDOFsWithFacets(mesh.cellType(dim_), mesh.cellType(d));
-      SUNDANCE_VERB_MEDIUM(tab2 << "nNodes per cell=" << nNodes);
+      SUNDANCE_MSG2(setupVerb(), tab2 << "nNodes per cell=" << nNodes);
       if (nNodes == 0)
       {
         nNodesPerCell_[b][d] = 0;
@@ -197,7 +195,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
           localNodePtrs_[b][d]);
               
               
-        SUNDANCE_VERB_HIGH(tab2 << "node ptrs are " 
+        SUNDANCE_MSG3(setupVerb(), tab2 << "node ptrs are " 
           << localNodePtrs_[b][d]);
               
         /* with the node pointers in hand, we can work out the number
@@ -224,7 +222,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
         tmpMesh.assignIntermediateCellGIDs(d);
       }
           
-      SUNDANCE_VERB_HIGH(tab2 << 
+      SUNDANCE_MSG3(setupVerb(), tab2 << 
         "num nodes is " 
         << nNodesPerCell_[b][d]);
 
@@ -235,7 +233,7 @@ void MixedDOFMap::allocate(const Mesh& mesh)
           += numFacets_[d][dd]*nNodesPerCell_[b][dd];
       }
       totalNDofsPerCell_[b][d] = totalNNodesPerCell_[b][d] * nFuncs(b);
-      SUNDANCE_VERB_HIGH(tab2 << "totalNDofsPerCell " << totalNDofsPerCell_[b][d]);
+      SUNDANCE_MSG3(setupVerb(), tab2 << "totalNDofsPerCell " << totalNDofsPerCell_[b][d]);
 
       if (nNodes > 0)
       {
@@ -265,13 +263,13 @@ void MixedDOFMap::allocate(const Mesh& mesh)
     }
       
   }
-  SUNDANCE_VERB_LOW(tab << "done allocating DOF map");
+  SUNDANCE_MSG1(setupVerb(), tab << "done allocating DOF map");
 }
 
 void MixedDOFMap::initMap()
 {
   Tabs tab;
-  SUNDANCE_VERB_LOW(tab << "initializing DOF map");
+  SUNDANCE_MSG1(setupVerb(), tab << "initializing DOF map");
   /* start the DOF count at zero. */
   int nextDOF = 0;
 
@@ -307,7 +305,7 @@ void MixedDOFMap::initMap()
       if (isRemote(dim_, cellLID, owner))
       {
         int cellGID = mesh().mapLIDToGID(dim_, cellLID);
-        SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
+        SUNDANCE_MSG4(setupVerb(), "proc=" << comm().getRank() 
           << " thinks d-" << dim_ 
           << " cell GID=" << cellGID
           << " is owned remotely by p=" 
@@ -348,7 +346,7 @@ void MixedDOFMap::initMap()
             {
               int facetGID 
                 = mesh().mapLIDToGID(d, facetLID[f]);
-              SUNDANCE_VERB_EXTREME("proc=" << comm().getRank() 
+              SUNDANCE_MSG4(setupVerb(), "proc=" << comm().getRank() 
                 << " thinks d-" << d 
                 << " cell GID=" << facetGID
                 << " is owned remotely by p=" << owner);
@@ -397,7 +395,7 @@ void MixedDOFMap::initMap()
     setNumLocalDOFs(numLocalDOFs);
     setTotalNumDOFs(numLocalDOFs);
   }
-  SUNDANCE_VERB_LOW(tab << "done initializing DOF map");
+  SUNDANCE_MSG1(setupVerb(), tab << "done initializing DOF map");
 }
 
 void MixedDOFMap::shareDOFs(int cellDim,
@@ -410,10 +408,10 @@ void MixedDOFMap::shareDOFs(int cellDim,
   Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << "synchronizing DOFs for cells of dimension " << cellDim);
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << " sending cell reqs d=" << cellDim << " GID=" << outgoingCellRequests);
 
@@ -436,7 +434,7 @@ void MixedDOFMap::shareDOFs(int cellDim,
   }
   blockSize += sendOrientation;
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << rank
     << "recvd DOF requests for cells of dimension " << cellDim
     << " GID=" << incomingCellRequests);
@@ -449,7 +447,7 @@ void MixedDOFMap::shareDOFs(int cellDim,
     const Array<int>& requestsFromProc = incomingCellRequests[p];
     int nReq = requestsFromProc.size();
 
-    SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
+    SUNDANCE_MSG4(setupVerb(), "p=" << mesh().comm().getRank() 
       << " recv'd from proc=" << p
       << " reqs for DOFs for cells " 
       << requestsFromProc);
@@ -459,12 +457,12 @@ void MixedDOFMap::shareDOFs(int cellDim,
     for (int c=0; c<nReq; c++)
     {
       int GID = requestsFromProc[c];
-      SUNDANCE_OUT(this->verb() > 3,  
+      SUNDANCE_MSG3(setupVerb(),  
         "p=" << rank
         << " processing cell with d=" << cellDim 
         << " GID=" << GID);
       int LID = mesh().mapGIDToLID(cellDim, GID);
-      SUNDANCE_OUT(this->verb() > 3,  
+      SUNDANCE_MSG3(setupVerb(),  
         "p=" << rank
         << " LID=" << LID << " dofs=" << dofs_[cellDim]);
       int blockOffset = 0;
@@ -480,14 +478,14 @@ void MixedDOFMap::shareDOFs(int cellDim,
         outgoingDOFs[p][blockSize*(c+1) - 1] 
           = originalFacetOrientation_[cellDim-1][LID];
       }
-      SUNDANCE_OUT(this->verb() > 3,  
+      SUNDANCE_MSG3(setupVerb(),  
         "p=" << rank
         << " done processing cell with GID=" << GID);
     }
   }
  
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << "answering DOF requests for cells of dimension " << cellDim);
 
@@ -496,7 +494,7 @@ void MixedDOFMap::shareDOFs(int cellDim,
     incomingDOFs,
     mesh().comm());
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << "communicated DOF answers for cells of dimension " << cellDim);
 
@@ -536,7 +534,7 @@ void MixedDOFMap::setDOFs(int basisChunk, int cellDim, int cellLID,
   int& nextDOF, bool isRemote)
 {
   Tabs tab;
-  SUNDANCE_VERB_HIGH(tab << "setting DOFs for " << cellDim 
+  SUNDANCE_MSG3(setupVerb(), tab << "setting DOFs for " << cellDim 
     << "-cell " << cellLID);
   int nDofs = nDofsPerCell_[basisChunk][cellDim];
   if (nDofs==0) return;
@@ -573,7 +571,7 @@ RCP<const MapStructure> MixedDOFMap
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
-  SUNDANCE_OUT(verbosity > 3, 
+  SUNDANCE_MSG3(verbosity, 
     tab << "getDOFsForCellBatch(): cellDim=" << cellDim
     << " cellLID=" << cellLID);
 
@@ -591,7 +589,7 @@ RCP<const MapStructure> MixedDOFMap
       buildMaximalDofTable();
     }
 
-    SUNDANCE_VERB_EXTREME(tab1 << "getting dofs for maximal cells");
+    SUNDANCE_MSG4(verbosity, tab1 << "getting dofs for maximal cells");
 
     for (int b=0; b<nBasisChunks(); b++)
     {
@@ -612,7 +610,7 @@ RCP<const MapStructure> MixedDOFMap
   else
   {
     Tabs tab1;
-    SUNDANCE_VERB_EXTREME(tab1 << "getting dofs for non-maximal cells");
+    SUNDANCE_MSG4(verbosity, tab1 << "getting dofs for non-maximal cells");
   
     static Array<Array<int> > facetLID(3);
     static Array<Array<int> > facetOrientations(3);
@@ -637,12 +635,12 @@ RCP<const MapStructure> MixedDOFMap
       for (int c=0; c<nCells; c++)
       {
         Tabs tab2;
-        SUNDANCE_VERB_EXTREME(tab2 << "cell=" << c);
+        SUNDANCE_MSG4(verbosity, tab2 << "cell=" << c);
         int offset = dofsPerCell*c;
 
         /* first get the DOFs for the nodes associated with 
          * the cell's interior */
-        SUNDANCE_VERB_EXTREME(tab2 << "doing interior nodes");
+        SUNDANCE_MSG4(verbosity, tab2 << "doing interior nodes");
         int nInteriorNodes = nNodesPerCell_[b][cellDim];
         //              int nInteriorNodes = localNodePtrs_[b][cellDim][cellDim][0].size();
         if (nInteriorNodes > 0)
@@ -688,13 +686,13 @@ RCP<const MapStructure> MixedDOFMap
         for (int d=0; d<cellDim; d++)
         {
           Tabs tab2;
-          SUNDANCE_VERB_EXTREME(tab2 << "facet dim=" << d);
+          SUNDANCE_MSG4(verbosity, tab2 << "facet dim=" << d);
           if (nNodesPerCell_[b][d] == 0) continue;
           for (int f=0; f<numFacets[d]; f++)
           {
             Tabs tab3;
             int facetID = facetLID[d][c*numFacets[d]+f];
-            SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
+            SUNDANCE_MSG4(verbosity, tab2 << "f=" << f << " facetLID=" << facetID);
             if (localNodePtrs_[b][cellDim].size()==0) continue;
             int nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
             //const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
@@ -741,7 +739,7 @@ void MixedDOFMap::buildMaximalDofTable() const
   int cellDim = dim_;
   int nCells = mesh().numCells(dim_);
 
-  SUNDANCE_VERB_MEDIUM(tab << "building dofs for maximal cells");
+  SUNDANCE_MSG2(setupVerb(), tab << "building dofs for maximal cells");
 
   Array<Array<int> > facetLID(3);
   Array<Array<int> > facetOrientations(3);
@@ -776,17 +774,17 @@ void MixedDOFMap::buildMaximalDofTable() const
   for (int c=0; c<nCells; c++)
   {
     Tabs tab1;
-    SUNDANCE_VERB_EXTREME(tab1 << "working on cell=" << c 
+    SUNDANCE_MSG4(setupVerb(), tab1 << "working on cell=" << c 
       << " LID=" << cellLID[c]);
     /* first get the DOFs for the nodes associated with 
      * the cell's interior */
-    SUNDANCE_VERB_EXTREME(tab1 << "doing interior nodes");
+    SUNDANCE_MSG4(setupVerb(), tab1 << "doing interior nodes");
     for (int b=0; b<nBasisChunks(); b++)
     {
-      SUNDANCE_VERB_EXTREME(tab1 << "basis chunk=" << b); 
+      SUNDANCE_MSG4(setupVerb(), tab1 << "basis chunk=" << b); 
       if (nInteriorNodes[b]>0)
       {
-        SUNDANCE_VERB_EXTREME(tab1<< "nInteriorNodes = " <<nInteriorNodes[b]);
+        SUNDANCE_MSG4(setupVerb(), tab1<< "nInteriorNodes = " <<nInteriorNodes[b]);
         //const int* fromPtr = getInitialDOFPtrForCell(dim_, cellLID[c], b);
         int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
         int nf = nFuncs(b);
@@ -803,24 +801,24 @@ void MixedDOFMap::buildMaximalDofTable() const
       }
     }
       
-    SUNDANCE_VERB_EXTREME(tab1 << "doing facet nodes");
+    SUNDANCE_MSG4(setupVerb(), tab1 << "doing facet nodes");
     /* now get the DOFs for the nodes on the facets */
     for (int d=0; d<cellDim; d++)
     {
       Tabs tab2;
-      SUNDANCE_VERB_EXTREME(tab2 << "facet dim=" << d);
+      SUNDANCE_MSG4(setupVerb(), tab2 << "facet dim=" << d);
 
       for (int f=0; f<numFacets[d]; f++)
       {
         Tabs tab3;
         int facetID = facetLID[d][c*numFacets[d]+f];
-        SUNDANCE_VERB_EXTREME(tab2 << "f=" << f << " facetLID=" << facetID);
+        SUNDANCE_MSG4(setupVerb(), tab2 << "f=" << f << " facetLID=" << facetID);
 
         for (int b=0; b<nBasisChunks(); b++)
         {
           Tabs tab4;
-          SUNDANCE_VERB_EXTREME(tab4 << "basis chunk=" << b); 
-          SUNDANCE_VERB_EXTREME(tab4 << "num nodes per cell=" << nNodesPerCell_[b][d]); 
+          SUNDANCE_MSG4(setupVerb(), tab4 << "basis chunk=" << b); 
+          SUNDANCE_MSG4(setupVerb(), tab4 << "num nodes per cell=" << nNodesPerCell_[b][d]); 
           int nf = nFuncs(b);
           if (nDofsPerCell_[b][d]==0) continue;
           int nFacetNodes = 0;
@@ -828,21 +826,21 @@ void MixedDOFMap::buildMaximalDofTable() const
             nFacetNodes = localNodePtrs_[b][cellDim][d][f].size();
           if (nFacetNodes == 0) continue;
           //  const int* fromPtr = getInitialDOFPtrForCell(d, facetID, b);
-          SUNDANCE_VERB_EXTREME(tab4 << "dof table size=" << maximalDofs_[b].size()); 
+          SUNDANCE_MSG4(setupVerb(), tab4 << "dof table size=" << maximalDofs_[b].size()); 
           int* toPtr = &(maximalDofs_[b][nNodes[b]*nFuncs(b)*cellLID[c]]);
           const int* nodePtr = &(localNodePtrs_[b][cellDim][d][f][0]);
           for (int func=0; func<nf; func++)
           {
             Tabs tab5;
-            SUNDANCE_VERB_EXTREME(tab5 << "func=" << func); 
+            SUNDANCE_MSG4(setupVerb(), tab5 << "func=" << func); 
             if (d == 0 || nFacetNodes <= 1) /* orientation-independent */
             {
               Tabs tab6;
               for (int n=0; n<nFacetNodes; n++)
               {
-                SUNDANCE_VERB_EXTREME(tab5 << "n=" << n); 
+                SUNDANCE_MSG4(setupVerb(), tab5 << "n=" << n); 
                 int ptr = nodePtr[n];
-                SUNDANCE_VERB_EXTREME(tab6 << "ptr=" << ptr); 
+                SUNDANCE_MSG4(setupVerb(), tab6 << "ptr=" << ptr); 
 
                 toPtr[func*nNodes[b] + ptr] 
                   = dofs_[d][b][facetID*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
@@ -871,7 +869,7 @@ void MixedDOFMap::buildMaximalDofTable() const
 
   haveMaximalDofs_ = true;
 
-  SUNDANCE_VERB_MEDIUM(tab << "done building dofs for maximal cells");
+  SUNDANCE_MSG2(setupVerb(), tab << "done building dofs for maximal cells");
 }
 
 
@@ -880,18 +878,18 @@ void MixedDOFMap::buildMaximalDofTable() const
 
 void MixedDOFMap::computeOffsets(int dim, int localCount)
 {
-  if (verb() > 2)
+  if (setupVerb() > 2)
   {
     comm().synchronize();
     comm().synchronize();
     comm().synchronize();
     comm().synchronize();
   }
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_MSG2(setupVerb(), 
     "p=" << mesh().comm().getRank()
     << " sharing offsets for DOF numbering for dim=" << dim);
 
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_MSG2(setupVerb(), 
     "p=" << mesh().comm().getRank()
     << " I have " << localCount << " cells");
 
@@ -901,11 +899,11 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
     mesh().comm());
   int myOffset = dofOffsets[mesh().comm().getRank()];
 
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_MSG2(setupVerb(), 
     "p=" << mesh().comm().getRank()
     << " back from MPI accumulate");
 
-  if (verb() > 2)
+  if (setupVerb() > 2)
   {
     comm().synchronize();
     comm().synchronize();
@@ -925,10 +923,10 @@ void MixedDOFMap::computeOffsets(int dim, int localCount)
   setNumLocalDOFs(localCount);
   setTotalNumDOFs(totalDOFCount);
 
-  SUNDANCE_OUT(this->verb() > 2, 
+  SUNDANCE_MSG2(setupVerb(), 
     "p=" << mesh().comm().getRank() 
     << " done sharing offsets for DOF numbering for dim=" << dim);
-  if (verb() > 2)
+  if (setupVerb() > 2)
   {
     comm().synchronize();
     comm().synchronize();

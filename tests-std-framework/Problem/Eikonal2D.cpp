@@ -162,7 +162,6 @@ int main(int argc, char** argv)
 //      Expr exactSoln = epsilon * (log(I0) - log(I0r));
       Expr exactDisc = L2Projector(discSpace, exactSoln).project();
 
-      //      Evaluator::classVerbosity() = 5;
       
       /* this code writes the result to a file so we can visualize using paraview */
       /* Write the field in VTK format */

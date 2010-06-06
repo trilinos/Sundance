@@ -46,7 +46,6 @@ class Assembler;
  * a discrete linear problem. 
  */
 class LinearProblem 
-  : public Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>
 {
 public:
   /** Empty ctor */
@@ -56,37 +55,28 @@ public:
    * and a vector type. */
   LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, 
-    const TSFExtended::VectorType<double>& vecType,
-    const ParameterList& verbParams = *defaultVerbParams(),
-    bool partitionBCs = false
+    const TSFExtended::VectorType<double>& vecType
     );
     
   /** Construct with a mesh, equation set, bcs, and blocks of variables */
   LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
-    const BlockArray& test, const BlockArray& unk,
-    const ParameterList& verbParams = *defaultVerbParams(),
-    bool partitionBCs = false);
+    const BlockArray& test, const BlockArray& unk);
     
   /** Construct with a mesh, equation set, bcs, test and unknown funcs,
    * parameters, and a vector type. */
   LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const Expr& test, const Expr& unk, 
     const Expr& unkParams, const Expr& unkParamVals, 
-    const TSFExtended::VectorType<double>& vecType,
-    const ParameterList& verbParams = *defaultVerbParams(),
-    bool partitionBCs = false);
+    const TSFExtended::VectorType<double>& vecType);
     
   /** Construct with a mesh, equation set, bcs, parameters, and blocks of
       variables */
   LinearProblem(const Mesh& mesh, const Expr& eqn, const Expr& bc,
     const BlockArray& test, const BlockArray& unk, 
-    const Expr& unkParams, const Expr& unkParamVals,
-    const ParameterList& verbParams = *defaultVerbParams(),
-    bool partitionBCs = false);
+    const Expr& unkParams, const Expr& unkParamVals);
 
   /** */
-  LinearProblem(const RCP<Assembler>& assembler,
-    const ParameterList& verbParams = *defaultVerbParams());
+  LinearProblem(const RCP<Assembler>& assembler);
 
   /** Solve the problem using the specified solver algorithm */
   Expr solve(const LinearSolver<double>& solver) const ;
@@ -153,9 +143,6 @@ public:
     {return LinearSolveDriver::badVectorFilename();}
 
     
-  /** */
-  static RCP<ParameterList> defaultVerbParams();
-
 
 private:
 

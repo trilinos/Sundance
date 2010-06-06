@@ -100,7 +100,6 @@ int main(int argc, char** argv)
       /* Define the Dirichlet BC */
       Expr bc;
 
-      // Sundance::DOFMapBase::classVerbosity() = VerbExtreme;
       /* We can now set up the linear problem! */
       LinearProblem prob(mesh, eqn, bc, v, u, vecType);
 

@@ -87,10 +87,18 @@ RCP<ParameterList> WatchFlag::defaultParams()
     rtn->set<int>("evaluation", 0);
     rtn->set<int>("discrete function evaluation", 0);
     rtn->set<int>("symbolic preprocessing", 0);
+    rtn->set<int>("equation set setup", 0);
+    rtn->set<int>("assembler setup", 0);
+    rtn->set<int>("dof map setup", 0);
+    rtn->set<int>("dof map access", 0);
+    rtn->set<int>("eval mediator", 0);
     rtn->set<int>("integration setup", 0);
     rtn->set<int>("integration", 0);
-    rtn->set<int>("integral transformation", 0);
+    rtn->set<int>("integral transformation", 0);    
     rtn->set<int>("fill", 0);
+    rtn->set<int>("matrix config", 0);
+    rtn->set<int>("vector config", 0);
+    rtn->set<int>("solve control", 0);
     first = false;
   }
   return rtn;

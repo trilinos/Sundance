@@ -59,8 +59,7 @@ public:
     const Expr& unkParams,
     const Expr& params,
     const Array<Expr>& fixedFields,
-    bool isVariational,
-    int verb);
+    bool isVariational);
   
   
   /** \name Getting information about functions */

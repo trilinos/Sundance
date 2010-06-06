@@ -34,16 +34,14 @@
 #include "SundanceMaximalCellFilter.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 
 SpatiallyHomogeneousDOFMapBase
 ::SpatiallyHomogeneousDOFMapBase(const Mesh& mesh,
   int nTotalFuncs,
-  const ParameterList& verbParams)
-  : DOFMapBase(mesh, verbParams), allowedFuncs_(), funcDomains_()
+  int setupVerb)
+  : DOFMapBase(mesh, setupVerb), allowedFuncs_(), funcDomains_()
 {
   RCP<Set<int> > f = rcp(new Set<int>());
   for (int i=0; i<nTotalFuncs; i++) f->put(i);
@@ -62,65 +60,65 @@ void SpatiallyHomogeneousDOFMapBase::print(ostream& os) const
   RCP<const MapStructure> s = mapStruct();
 
   for (int p=0; p<mesh().comm().getNProc(); p++)
+  {
+    mesh().comm().synchronize();
+    mesh().comm().synchronize();
+    if (p == myRank)
     {
-      mesh().comm().synchronize();
-      mesh().comm().synchronize();
-      if (p == myRank)
+      os << tabs << 
+        "========= DOFMap on proc p=" << p << " =============" << std::endl;
+      for (int d=dim; d>=0; d--)
+      {
+        Tabs tabs1;
+        os << tabs1 << "dimension = " << d << std::endl;
+        for (int c=0; c<mesh().numCells(d); c++)
         {
-          os << tabs << 
-            "========= DOFMap on proc p=" << p << " =============" << std::endl;
-          for (int d=dim; d>=0; d--)
+          Tabs tabs2;
+          os << tabs2 << "Cell d=" << d << " LID=" << c << " GID=" 
+             << mesh().mapLIDToGID(d, c);
+          if (d==0) 
+          {
+            os << " x=" << mesh().nodePosition(c) << std::endl;
+          }
+          else 
+          {
+            Array<int> facetLIDs;
+            Array<int> facetDirs;
+            mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
+            Array<int> facetGIDs(facetLIDs.size());
+            for (int v=0; v<facetLIDs.size(); v++)
             {
-              Tabs tabs1;
-              os << tabs1 << "dimension = " << d << std::endl;
-              for (int c=0; c<mesh().numCells(d); c++)
-                {
-                  Tabs tabs2;
-                  os << tabs2 << "Cell d=" << d << " LID=" << c << " GID=" 
-                     << mesh().mapLIDToGID(d, c);
-                  if (d==0) 
-                    {
-                      os << " x=" << mesh().nodePosition(c) << std::endl;
-                    }
-                  else 
-                    {
-                      Array<int> facetLIDs;
-                      Array<int> facetDirs;
-                      mesh().getFacetArray(d, c, 0, facetLIDs, facetDirs);
-                      Array<int> facetGIDs(facetLIDs.size());
-                      for (int v=0; v<facetLIDs.size(); v++)
-                        {
-                          facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
-                        }
-                      os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
-                         << std::endl;
-                    }
-                  for (int b=0; b<s->numBasisChunks(); b++)
-                    {
-                      for (int f=0; f<s->funcs(b).size(); f++)
-                        {
-                          Tabs tabs3;
-                          Array<int> dofs;
-                          getDOFsForCell(d, c, s->funcs(b)[f], dofs);
-                          os << tabs3 << "f=" << s->funcs(b)[f] << " " 
-                             << dofs << std::endl;
-                          if (false)
-                            {
-                              os << tabs3 << "{";
-                              for (int i=0; i<dofs.size(); i++)
-                                {
-                                  if (i != 0) os << ", ";
-                                  if (isLocalDOF(dofs[i])) os << "L";
-                                  else os << "R";
-                                }
-                              os << "}" << std::endl;
-                            }
-                        }
-                    }
-                }
+              facetGIDs[v] = mesh().mapLIDToGID(0, facetLIDs[v]);
             }
+            os << " nodes LIDs=" << facetLIDs << " GIDs=" << facetGIDs
+               << std::endl;
+          }
+          for (int b=0; b<s->numBasisChunks(); b++)
+          {
+            for (int f=0; f<s->funcs(b).size(); f++)
+            {
+              Tabs tabs3;
+              Array<int> dofs;
+              getDOFsForCell(d, c, s->funcs(b)[f], dofs);
+              os << tabs3 << "f=" << s->funcs(b)[f] << " " 
+                 << dofs << std::endl;
+              if (false)
+              {
+                os << tabs3 << "{";
+                for (int i=0; i<dofs.size(); i++)
+                {
+                  if (i != 0) os << ", ";
+                  if (isLocalDOF(dofs[i])) os << "L";
+                  else os << "R";
+                }
+                os << "}" << std::endl;
+              }
+            }
+          }
         }
-      mesh().comm().synchronize();
-      mesh().comm().synchronize();
+      }
     }
+    mesh().comm().synchronize();
+    mesh().comm().synchronize();
+  }
 }

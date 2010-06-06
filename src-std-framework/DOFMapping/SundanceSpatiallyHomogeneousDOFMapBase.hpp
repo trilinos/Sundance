@@ -47,7 +47,8 @@ class SpatiallyHomogeneousDOFMapBase : public DOFMapBase
 public:
   /** */
   SpatiallyHomogeneousDOFMapBase(const Mesh& mesh, int nTotalFuncs, 
-    const ParameterList& verbParams = *DOFMapBase::defaultVerbParams()) ;
+    int setupVerb);
+
 
   /** */
   virtual ~SpatiallyHomogeneousDOFMapBase() {;}

@@ -55,10 +55,9 @@ using std::setw;
 
 namespace Sundance
 {
-double evaluateIntegral(const Mesh& mesh, const Expr& expr,
-  const ParameterList& verbParams)
+double evaluateIntegral(const Mesh& mesh, const Expr& expr)
 {
-  FunctionalEvaluator eval(mesh, expr, verbParams);
+  FunctionalEvaluator eval(mesh, expr);
   return eval.evaluate();
 }
 }
@@ -71,10 +70,8 @@ FunctionalEvaluator::FunctionalEvaluator()
 {}
 
 FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
-  const Expr& integral,
-  const ParameterList& verbParams)
-  : Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
-    assembler_(),
+  const Expr& integral)
+  : assembler_(),
     varValues_(),
     vecType_(),
     gradient_(1)
@@ -88,7 +85,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
     = rcp(new EquationSet(integral, bcs, params, params, fields, fields));
   
   
-  assembler_ = rcp(new Assembler(mesh, eqnSet, verbSublist("Assembler")));
+  assembler_ = rcp(new Assembler(mesh, eqnSet));
 }
 
 
@@ -97,10 +94,8 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& bcs,
   const Expr& var,
   const Expr& varValues,
-  const VectorType<double>& vectorType,
-  const ParameterList& verbParams)
-  : Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
-    assembler_(),
+  const VectorType<double>& vectorType)
+  : assembler_(),
     varValues_(varValues),
     vecType_(vectorType),
     gradient_(1)
@@ -113,7 +108,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, fixed, fixed));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false, verbSublist("Assembler")));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false));
 }
 
 
@@ -124,10 +119,8 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   const Expr& varEvalPts,
   const Expr& fields,
   const Expr& fieldValues,
-  const VectorType<double>& vectorType,
-  const ParameterList& verbParams)
-  : Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>("Functional Evaluator", verbParams),
-    assembler_(),
+  const VectorType<double>& vectorType)
+  : assembler_(),
     varValues_(varEvalPts),
     vecType_(vectorType),
     gradient_(1)
@@ -142,7 +135,7 @@ FunctionalEvaluator::FunctionalEvaluator(const Mesh& mesh,
   RCP<EquationSet> eqnSet 
     = rcp(new EquationSet(integral, bcs, v, v0, params, params, f, f0));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false, verbSublist("Assembler")));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vectorType), tuple(vectorType), false));
 }
 
 double FunctionalEvaluator::evaluate() const
@@ -288,18 +281,3 @@ double FunctionalEvaluator::fdGradientCheck(double h) const
   return maxErr;
 }
 
-
-
-RCP<ParameterList> FunctionalEvaluator::defaultVerbParams()
-{
-  static RCP<ParameterList> rtn = rcp(new ParameterList("Functional Evaluator"));
-  static int first = true;
-  if (first)
-  {
-    rtn->set<int>("global", 0);
-    rtn->set<int>("assembly", 0);
-    rtn->set("Assembler", *Assembler::defaultVerbParams());
-    first = false;
-  }
-  return rtn;
-}

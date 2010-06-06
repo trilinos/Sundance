@@ -44,12 +44,6 @@
 
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 using namespace std;
@@ -78,16 +72,14 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const Expr& bc,
   const Expr& test, 
   const Expr& unk, 
-  const VectorType<double>& vecType,
-  const ParameterList& verbParams,
-  bool partitionBCs)
-  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
-    assembler_(),
+  const VectorType<double>& vecType)
+  : assembler_(),
     A_(),
     rhs_(1),
     names_(1),
     solveDriver_()
 {
+  bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flattenSpectral();
   Expr v = test.flattenSpectral();
@@ -116,7 +108,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         fixedParams, fixedParamValues,
         fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs, verbSublist("Assembler")));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 }
 
 
@@ -127,16 +119,14 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const Expr& unk, 
   const Expr& unkParams, 
   const Expr& unkParamVals, 
-  const VectorType<double>& vecType, 
-  const ParameterList& verbParams,
-  bool partitionBCs)
-  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
-    assembler_(),
+  const VectorType<double>& vecType)
+  : assembler_(),
     A_(),
     rhs_(1),
     names_(1),
     solveDriver_()
 {
+  bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
   Expr u = unk.flattenSpectral();
   Expr v = test.flattenSpectral();
@@ -161,8 +151,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         fixedParams, fixedParams, 
         fixedFields, fixedFields));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs,
-      verbSublist("Assembler")));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, tuple(vecType), tuple(vecType), partitionBCs));
 }
 
 
@@ -171,16 +160,14 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const Expr& eqn, 
   const Expr& bc,
   const BlockArray& test, 
-  const BlockArray& unk, 
-  const ParameterList& verbParams,
-  bool partitionBCs)
-  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
-    assembler_(),
+  const BlockArray& unk)
+  : assembler_(),
     A_(),
     rhs_(1),
     names_(unk.size()),
     solveDriver_()
 {
+  bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
@@ -223,8 +210,7 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         fixedParams, fixedParamValues,
         fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs, 
-      verbSublist("Assembler")));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs));
 }
 
 
@@ -234,16 +220,14 @@ LinearProblem::LinearProblem(const Mesh& mesh,
   const BlockArray& test, 
   const BlockArray& unk,
   const Expr& unkParams, 
-  const Expr& unkParamVals,   
-  const ParameterList& verbParams,
-  bool partitionBCs)
-  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
-    assembler_(),
+  const Expr& unkParamVals)
+  : assembler_(),
     A_(),
     rhs_(1),
     names_(unk.size()),
     solveDriver_()
 {
+  bool partitionBCs = false;
   TimeMonitor timer(lpCtorTimer());
   Array<Expr> v(test.size());  
   Array<Expr> u(unk.size());
@@ -283,14 +267,11 @@ LinearProblem::LinearProblem(const Mesh& mesh,
         fixedParams, fixedParamValues,
         fixedFields, fixedFieldValues));
 
-  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs,
-      verbSublist("Assembler")));
+  assembler_ = rcp(new Assembler(mesh, eqnSet, testVecType, unkVecType, partitionBCs));
 }
 
-LinearProblem::LinearProblem(const RCP<Assembler>& assembler,
-  const ParameterList& verbParams) 
-  : Sundance::ParameterControlledObjectWithVerbosity<LinearProblem>("Linear Problem", verbParams),
-    assembler_(assembler),
+LinearProblem::LinearProblem(const RCP<Assembler>& assembler)
+  : assembler_(assembler),
     A_(),
     rhs_(1),
     names_()
@@ -302,7 +283,6 @@ LinearProblem::LinearProblem(const RCP<Assembler>& assembler,
   {
     for (int j=0; j<eqn->numUnks(i); j++) 
     {
-//          names_[i].append(eqn->unkFunc(i,j).toString());
       names_[i].append("u(" + Teuchos::toString(i) + ", "
         + Teuchos::toString(j) + ")");
     }
@@ -335,7 +315,8 @@ int LinearProblem::numBlockCols() const {return assembler_->colMap().size();}
 Array<Vector<double> > LinearProblem::getRHS() const 
 {
   Tabs tab;
-  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building vector");
+  SUNDANCE_MSG1(assembler_->maxWatchFlagSetting("solve control"),
+    tab << "LinearProblem::solve() building vector");
   assembler_->assemble(rhs_);
   return rhs_;
 }
@@ -344,7 +325,8 @@ Array<Vector<double> > LinearProblem::getRHS() const
 TSFExtended::LinearOperator<double> LinearProblem::getOperator() const 
 {
   Tabs tab;
-  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building matrix and vector");
+  SUNDANCE_MSG1(assembler_->maxWatchFlagSetting("solve control"),
+    tab << "LinearProblem::solve() building matrix and vector");
   assembler_->assemble(A_, rhs_);
   return A_;
 }
@@ -352,28 +334,27 @@ TSFExtended::LinearOperator<double> LinearProblem::getOperator() const
 Expr LinearProblem::solve(const LinearSolver<double>& solver) const 
 {
   Tabs tab;
+  int verb = assembler_->maxWatchFlagSetting("solve control");
   Array<Vector<double> > solnVec(rhs_.size());
   
-  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building system");
+  SUNDANCE_MSG1(verb, tab << "LinearProblem::solve() building system");
 
   assembler_->assemble(A_, rhs_);
   for (int i=0; i<rhs_.size(); i++)
     rhs_[i].scale(-1.0);
 
-  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() solving system");
+  SUNDANCE_MSG1(verb, tab << "LinearProblem::solve() solving system");
 
   Expr rtn;
 
   /* we're not checking the status of the solve, so failures should
-   * be fatal */
+   * be considered fatal */
   bool save = LinearSolveDriver::solveFailureIsFatal();
   LinearSolveDriver::solveFailureIsFatal() = true;
 
-  int vrb = verbLevel("solve control");
+  solveDriver_.solve(solver, A_, rhs_, solnSpace(), names_, verb, rtn);
 
-  solveDriver_.solve(solver, A_, rhs_, solnSpace(), names_, vrb, rtn);
-
-  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() done solving system");
+  SUNDANCE_MSG1(verb, tab << "LinearProblem::solve() done solving system");
 
   /* restore original failure-handling setting */
   LinearSolveDriver::solveFailureIsFatal()=save; 
@@ -386,9 +367,11 @@ SolverState<double> LinearProblem
   Expr& soln) const 
 {
   Tabs tab;
+  int verb = assembler_->maxWatchFlagSetting("solve control");
+
   Array<Vector<double> > solnVec(rhs_.size());
   
-  SUNDANCE_VERB_MEDIUM(tab << "LinearProblem::solve() building system");
+  SUNDANCE_MSG1(verb, tab << "LinearProblem::solve() building system");
 
   assembler_->assemble(A_, rhs_);
   for (int i=0; i<rhs_.size(); i++)
@@ -396,9 +379,8 @@ SolverState<double> LinearProblem
     rhs_[i].scale(-1.0);
   }
 
-  SUNDANCE_VERB_LOW(tab << "solving LinearProblem");
+  SUNDANCE_MSG1(verb, tab << "solving LinearProblem");
   
-  int verb = verbLevel("solve control");
   return solveDriver_.solve(solver, A_, rhs_, solnSpace(), names_, verb, soln);
 }
 
@@ -412,26 +394,9 @@ LinearProblem::convertToMonolithicVector(const Array<Vector<double> >& internalB
 
 Expr LinearProblem::formSolutionExpr(const Array<Vector<double> >& vec) const
 {
-  return solveDriver_.formSolutionExpr(vec, solnSpace(), names_,
-    verbLevel("solve control"));
+  int verb = assembler_->maxWatchFlagSetting("solve control");
+  return solveDriver_.formSolutionExpr(vec, solnSpace(), names_, verb);
 }
 
 
 
-
-
-RCP<ParameterList> LinearProblem::defaultVerbParams()
-{
-  static RCP<ParameterList> rtn = rcp(new ParameterList("Linear Problem"));
-  static int first = true;
-  if (first)
-  {
-    rtn->setName("Linear Problem");
-    rtn->set<int>("global", 0);
-    rtn->set<int>("assembly", 0);
-    rtn->set<int>("solve control", 0);
-    rtn->set("Assembler", *Assembler::defaultVerbParams());
-    first = false;
-  }
-  return rtn;
-}

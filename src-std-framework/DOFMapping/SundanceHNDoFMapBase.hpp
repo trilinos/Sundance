@@ -25,9 +25,8 @@ class HNDoFMapBase : public SpatiallyHomogeneousDOFMapBase
 public:
 
 	/** Empty Ctor */
-	HNDoFMapBase(const Mesh& mesh, int nFuncs,
-		    const ParameterList& verbParams ):
-		    		SpatiallyHomogeneousDOFMapBase(mesh, nFuncs, verbParams){;}
+	HNDoFMapBase(const Mesh& mesh, int nFuncs, int setupVerb) :
+		    		SpatiallyHomogeneousDOFMapBase(mesh, nFuncs, setupVerb){;}
 
 	virtual ~HNDoFMapBase() {;}
 

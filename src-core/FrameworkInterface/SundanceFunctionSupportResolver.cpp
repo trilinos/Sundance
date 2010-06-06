@@ -52,8 +52,7 @@ FunctionSupportResolver::FunctionSupportResolver(
   const Expr& unkParams,
   const Expr& fixedParams,
   const Array<Expr>& fixedFields,
-  bool isVariational,
-  int verb)
+  bool isVariational)
   : 
     eqns_(eqns),
     bcs_(bcs),
@@ -115,9 +114,13 @@ FunctionSupportResolver::FunctionSupportResolver(
   }
 
   /* upgrade base verbosity level if one of the terms is being watched */
+  int verb = 0;
   if (integralSum_->hasWatchedTerm() || (hasBCs && bcSum_->hasWatchedTerm()))
   {
-    verb = max(verb, 2);
+    int v1 = integralSum_->eqnSetSetupVerb();
+    int v2 = 0;
+    if (hasBCs) v2 = bcSum_->eqnSetSetupVerb();
+    verb = max(verb, max(v1, v2));
   }
   SUNDANCE_BANNER1(verb, tab0, "FunctionSupportResolver setup");
 
@@ -129,6 +132,8 @@ FunctionSupportResolver::FunctionSupportResolver(
   {
     SUNDANCE_MSG1(verb, tab1 << "Problem has no EssentialBCs");
   }
+
+  SUNDANCE_MSG1(verb, tab1 << "verbosity is " << verb);
 
   /* 
    * See whether the variational functions are TestFunction objects
@@ -289,6 +294,10 @@ FunctionSupportResolver::FunctionSupportResolver(
 
   /* Do the non-bc eqns first */
   SUNDANCE_MSG1(verb, tab1 << "processing integral terms");
+  {
+    Tabs tab2;
+    SUNDANCE_MSG3(verb, tab2 << integralSum_->rqcToExprMap());
+  }
   for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
          r=integralSum_->rqcToExprMap().begin(); 
        r!=integralSum_->rqcToExprMap().end(); r++)
@@ -299,8 +308,8 @@ FunctionSupportResolver::FunctionSupportResolver(
     int rqcVerb = verb;
     if (rqc.watch().isActive()) 
     {
-      rqcVerb=rqc.watch().param("symbolic preprocessing");
-      SUNDANCE_MSG1(rqcVerb, tab15 << "processing RQC = " << rqc);
+      rqcVerb=rqc.watch().param("equation set setup");
+      SUNDANCE_MSG1(max(verb, rqcVerb), tab15 << "processing RQC = " << rqc);
     }
 
     Expr term = r->second;
@@ -344,8 +353,8 @@ FunctionSupportResolver::FunctionSupportResolver(
       int rqcVerb = verb;
       if (rqc.watch().isActive()) 
       {
-        rqcVerb=rqc.watch().param("symbolic preprocessing");
-        SUNDANCE_MSG1(verb, tab15 << "processing RQC = " << rqc);
+        rqcVerb=rqc.watch().param("equation set setup");
+        SUNDANCE_MSG1(max(verb, rqcVerb), tab15 << "processing RQC = " << rqc);
       }
 
       Expr term = r->second;

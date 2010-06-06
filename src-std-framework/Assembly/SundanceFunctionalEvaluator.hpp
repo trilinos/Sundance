@@ -49,7 +49,6 @@ class Assembler;
  * 
  */
 class FunctionalEvaluator 
-  : public Sundance::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>
 {
 public:
   /** */
@@ -57,16 +56,16 @@ public:
 
   /** */
   FunctionalEvaluator(const Mesh& mesh, 
-    const Expr& integral,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const Expr& integral);
+
   /** */
   FunctionalEvaluator(const Mesh& mesh, 
     const Expr& integral,
     const Expr& bcs,
     const Expr& var,
     const Expr& varEvalPts,
-    const VectorType<double>& vectorType,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const VectorType<double>& vectorType);
+
   /** */
   FunctionalEvaluator(const Mesh& mesh, 
     const Expr& integral,
@@ -75,8 +74,7 @@ public:
     const Expr& varEvalPts,
     const Expr& fields,
     const Expr& fieldValues,
-    const VectorType<double>& vectorType,
-    const ParameterList& verbParams = *defaultVerbParams());
+    const VectorType<double>& vectorType);
 
 
   /** */
@@ -88,8 +86,6 @@ public:
   /** */
   double fdGradientCheck(double h) const ;
           
-  /** */
-  static RCP<ParameterList> defaultVerbParams();
 
 private:
 
@@ -111,8 +107,7 @@ private:
 };
 
 /** */
-double evaluateIntegral(const Mesh& mesh, const Expr& expr,
-  const ParameterList& verbParams = *FunctionalEvaluator::defaultVerbParams());
+double evaluateIntegral(const Mesh& mesh, const Expr& expr);
 
 
 }

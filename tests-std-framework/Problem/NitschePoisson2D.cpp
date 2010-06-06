@@ -131,8 +131,7 @@ int main( int argc , char **argv )
     Expr bc;
 
 
-    ParameterList verbParams = *LinearProblem::defaultVerbParams();
-    LinearProblem prob( mesh , eqn , bc , v , u , vecType, verbParams);
+    LinearProblem prob( mesh , eqn , bc , v , u , vecType);
 
 #ifdef HAVE_CONFIG_H
     ParameterXMLFileReader reader(searchForFile("SolverParameters/" + solverFile));

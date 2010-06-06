@@ -85,8 +85,6 @@ int main(int argc, char** argv)
       quad );
     Expr bc;
 
-    DOFMapBase::classVerbosity() = 5;
-
     /* We can now set up the linear problem! */
     LinearProblem prob(mesh, eqn, bc, 
       List(q, vx, vy, tx, ty),

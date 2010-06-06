@@ -304,3 +304,18 @@ bool SumOfIntegrals::hasWatchedTerm() const
 }
 
 
+
+int SumOfIntegrals::eqnSetSetupVerb() const 
+{
+  int rtn = 0;
+  for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
+         i=rqcToExprMap_.begin(); i!=rqcToExprMap_.end(); i++)
+  {
+    const RegionQuadCombo& rqc = i->first;
+    int v = rqc.watch().param("equation set setup");
+    if (v > rtn) rtn = v;
+  }
+  return rtn;
+}
+
+

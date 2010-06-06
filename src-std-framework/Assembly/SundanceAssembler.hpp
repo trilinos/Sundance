@@ -73,7 +73,6 @@ typedef std::set<int> ColSetType;
  * 
  */
 class Assembler 
-  : public ParameterControlledObjectWithVerbosity<Assembler>
 {
 public:
   /** */
@@ -82,15 +81,13 @@ public:
     const RCP<EquationSet>& eqn,
     const Array<VectorType<double> >& rowVectorType,
     const Array<VectorType<double> >& colVectorType,
-    bool partitionBCs,
-    const ParameterList& verbParams = *defaultVerbParams());
+    bool partitionBCs);
 
 
   /** */
   Assembler(
     const Mesh& mesh, 
-    const RCP<EquationSet>& eqn,
-    const ParameterList& verbParams= *defaultVerbParams());
+    const RCP<EquationSet>& eqn);
       
   /** */
   const Array<RCP<DOFMapBase> >& rowMap() const 
@@ -176,14 +173,13 @@ public:
     {return eqn_;}
 
   /** */
-  static RCP<ParameterList> defaultVerbParams();
+  int maxWatchFlagSetting(const string& param) const ;
 
 
 private:
 
   /** */
-  void init(const Mesh& mesh, 
-    const RCP<EquationSet>& eqn);
+  void init(const Mesh& mesh, const RCP<EquationSet>& eqn);
 
   /** */
   bool detectInternalBdry(int cellDim, const CellFilter& filter) const ;

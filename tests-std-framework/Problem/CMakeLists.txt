@@ -10,7 +10,6 @@ SET(DisabledTests
   PoissonBoltzmannDemo3D
   NoxAlgebraic 
   NonlinAlgebraic 
-  PartitionedPoisson1D 
 )
 
 SET(SerialTests
@@ -74,9 +73,6 @@ SET(MPITests
              HelmholtzEigen2D
    )
 
-IF (${PACKAGE_NAME}_ENABLE_MPI)
-  LIST(APPEND MPITests PartitionedPoisson1D)
-ENDIF()
 
 
 SET(SolverParamPath ${PACKAGE_SOURCE_DIR}/etc/SolverParameters)

@@ -74,8 +74,8 @@ static Time& findFuncDomainTimer()
 
 DOFMapBuilder::DOFMapBuilder(const Mesh& mesh, 
   const RCP<FunctionSupportResolver>& fsr, bool findBCCols,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
+  int setupVerb)
+  : verb_(setupVerb),
     mesh_(mesh),
     fsr_(fsr),
     rowMap_(),
@@ -87,8 +87,8 @@ DOFMapBuilder::DOFMapBuilder(const Mesh& mesh,
   init(findBCCols);
 }
 
-DOFMapBuilder::DOFMapBuilder(const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<DOFMapBase>("DOF Map", verbParams),
+DOFMapBuilder::DOFMapBuilder(int setupVerb)
+  : verb_(setupVerb),
     mesh_(),
     fsr_(),
     rowMap_(),
@@ -103,10 +103,10 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
   const Array<Set<CellFilter> >& filters) 
 {
   TimeMonitor timer(DOFBuilderCtorTimer());
-  SUNDANCE_LEVEL1("setup", "in DOFMapBuilder::makeMap()");
+  SUNDANCE_MSG1(verb_, "in DOFMapBuilder::makeMap()");
   for (int i=0; i<basis.size(); i++)
   {
-    SUNDANCE_LEVEL2("setup", "i=" << i 
+    SUNDANCE_MSG2(verb_, "i=" << i 
       << " basis=" << basis[i]->description()
       << " filters=" << filters[i]);
   }
@@ -115,14 +115,14 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
 
   if (allowNodalMap() && hasOmnipresentNodalMap(basis, mesh, filters))
   {
-    SUNDANCE_LEVEL2("setup", "creating omnipresent nodal map");
+    SUNDANCE_MSG2(verb_, "creating omnipresent nodal map");
     CellFilter maxCells = getMaxCellFilter(filters);
     // if the mesh allows hanging nodes then create different DOF Map
     if (mesh.allowsHangingHodes()){
-      rtn = rcp(new NodalDOFMapHN(mesh, basis.size(), maxCells, params()));
+      rtn = rcp(new NodalDOFMapHN(mesh, basis.size(), maxCells, verb_));
     }
     else {
-      rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells, params()));
+      rtn = rcp(new NodalDOFMap(mesh, basis.size(), maxCells, verb_));
     }
   }
   else if (hasCellBasis(basis) && hasCommonDomain(filters))
@@ -130,29 +130,29 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
     TEST_FOR_EXCEPTION(filters[0].size() != 1, RuntimeError,
       "only a single domain expected in construction of an element "
       "DOF map");
-    rtn = rcp(new PartialElementDOFMap(mesh, *filters[0].begin(), basis.size(), params()));
+    rtn = rcp(new PartialElementDOFMap(mesh, *filters[0].begin(), basis.size(), verb_));
   }
   else if (allFuncsAreOmnipresent(mesh, filters))
   {
-    SUNDANCE_LEVEL2("setup", "creating omnipresent mixed map");
+    SUNDANCE_MSG2(verb_, "creating omnipresent mixed map");
     CellFilter maxCells = getMaxCellFilter(filters);
     if (mesh.allowsHangingHodes()){
-    	rtn = rcp(new MixedDOFMapHN(mesh, basis, maxCells, params()));
+    	rtn = rcp(new MixedDOFMapHN(mesh, basis, maxCells, verb_));
     }else
     {
-    	rtn = rcp(new MixedDOFMap(mesh, basis, maxCells, params()));
+    	rtn = rcp(new MixedDOFMap(mesh, basis, maxCells, verb_));
     }
   }
   else if (hasNodalBasis(basis))
   {
-    SUNDANCE_LEVEL2("setup", "creating inhomogeneous nodal map");
+    SUNDANCE_MSG2(verb_, "creating inhomogeneous nodal map");
     Sundance::Map<CellFilter, Set<int> > fmap = domainToFuncSetMap(filters);
     Sundance::Map<CellFilter, Sundance::Map<Set<int>, CellSet> > inputChildren;
 
     Array<Sundance::Map<Set<int>, CellFilter> > disjoint 
       = DOFMapBuilder::funcDomains(mesh, fmap, inputChildren);
 
-    rtn = rcp(new InhomogeneousNodalDOFMap(mesh, disjoint, params()));
+    rtn = rcp(new InhomogeneousNodalDOFMap(mesh, disjoint, verb_));
   }
   else
   {
@@ -164,7 +164,7 @@ RCP<DOFMapBase> DOFMapBuilder::makeMap(const Mesh& mesh,
 
 Sundance::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(const Array<Set<CellFilter> >& filters) const 
 {
-  SUNDANCE_LEVEL2("setup", "in DOFMapBuilder::domainToFuncSetMap()");
+  SUNDANCE_MSG2(verb_, "in DOFMapBuilder::domainToFuncSetMap()");
   Map<CellFilter, Set<int> > rtn;
   for (int i=0; i<filters.size(); i++)
   {
@@ -186,7 +186,7 @@ Sundance::Map<CellFilter, Set<int> > DOFMapBuilder::domainToFuncSetMap(const Arr
   for (Map<CellFilter, Set<int> >::const_iterator 
          i=rtn.begin(); i!=rtn.end(); i++)
   {
-    SUNDANCE_LEVEL2("setup", "subdomain=" << i->first << ", functions="
+    SUNDANCE_MSG2(verb_, "subdomain=" << i->first << ", functions="
       << i->second);
   }
   return rtn;
@@ -323,9 +323,9 @@ Array<Sundance::Map<Set<int>, CellFilter> > DOFMapBuilder
 
 void DOFMapBuilder::init(bool findBCCols)
 {
-  SUNDANCE_LEVEL1("setup", "in DOFMapBuilder::init()");
-  SUNDANCE_LEVEL2("setup", "num var blocks=" << fsr_->numVarBlocks());
-  SUNDANCE_LEVEL2("setup", "num unk blocks=" << fsr_->numUnkBlocks());
+  SUNDANCE_MSG1(verb_, "in DOFMapBuilder::init()");
+  SUNDANCE_MSG2(verb_, "num var blocks=" << fsr_->numVarBlocks());
+  SUNDANCE_MSG2(verb_, "num unk blocks=" << fsr_->numUnkBlocks());
 
   rowMap_.resize(fsr_->numVarBlocks());
   colMap_.resize(fsr_->numUnkBlocks());
@@ -337,9 +337,9 @@ void DOFMapBuilder::init(bool findBCCols)
 
   for (int br=0; br<fsr_->numVarBlocks(); br++)
   {
-    SUNDANCE_LEVEL2("setup", "making map for block row=" << br);
+    SUNDANCE_MSG2(verb_, "making map for block row=" << br);
     rowMap_[br] = makeMap(mesh_, testBasis[br], testRegions[br]);
-    SUNDANCE_LEVEL2("setup", "marking BC rows for block row=" << br);
+    SUNDANCE_MSG2(verb_, "marking BC rows for block row=" << br);
     markBCRows(br);
   }      
 
@@ -355,10 +355,10 @@ void DOFMapBuilder::init(bool findBCCols)
     }
     else
     {
-      SUNDANCE_LEVEL2("setup", "making map for block col=" << bc);
+      SUNDANCE_MSG2(verb_, "making map for block col=" << bc);
       colMap_[bc] = makeMap(mesh_, unkBasis[bc], unkRegions[bc]);
     }
-    SUNDANCE_LEVEL2("setup", "marking BC cols for block col=" << bc);
+    SUNDANCE_MSG2(verb_, "marking BC cols for block col=" << bc);
     if (findBCCols) markBCCols(bc);
   }
 }

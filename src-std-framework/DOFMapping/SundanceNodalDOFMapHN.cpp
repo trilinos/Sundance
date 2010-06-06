@@ -38,15 +38,13 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 NodalDOFMapHN::NodalDOFMapHN(const Mesh& mesh,
   int nFuncs, 
   const CellFilter& maxCellFilter,
-  const ParameterList& verbParams)
-  : HNDoFMapBase(mesh, nFuncs, verbParams),
+  int setupVerb)
+  : HNDoFMapBase(mesh, nFuncs, setupVerb),
     maxCellFilter_(maxCellFilter),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),
@@ -71,7 +69,7 @@ void NodalDOFMapHN::init()
 { 
   Tabs tab;
 
-  SUNDANCE_MSG2(verb(), tab << "NodalDOFMapHN initializing nodal DOF map nrFunc:"
+  SUNDANCE_MSG2(setupVerb(), tab << "NodalDOFMapHN initializing nodal DOF map nrFunc:"
 		  << nFuncs_ << "  nNodes_:" << nNodes_ << " nElems_:" <<nElems_);
 
   Array<Array<int> > remoteNodes(mesh().comm().getNProc());
@@ -105,7 +103,7 @@ void NodalDOFMapHN::init()
           /* if the facet's DOFs have been assigned already,
            * we're done */
           int fLID = facetLID_[c*nFacets_+f];
-          SUNDANCE_MSG2(verb(), "NodalDOFMapHN::init() CellLID:"<< c <<"Try point LID:" << fLID << " facet:" << f);
+          SUNDANCE_MSG2(setupVerb(), "NodalDOFMapHN::init() CellLID:"<< c <<"Try point LID:" << fLID << " facet:" << f);
           if (hasProcessedCell[fLID] == 0) {
               /* the facet may be owned by another processor */
               if (isRemote(0, fLID, owner)) {
@@ -114,7 +112,7 @@ void NodalDOFMapHN::init()
                   remoteNodes[owner].append(facetGID);
                 }
               else {/* we can assign a DOF locally */
-            	    SUNDANCE_MSG2(verb(), "NodalDOFMapHN::init() Doing point LID:" << fLID << " facet:" << f);
+            	    SUNDANCE_MSG2(setupVerb(), "NodalDOFMapHN::init() Doing point LID:" << fLID << " facet:" << f);
                     // test if the node is not a hanging node
                     if ( mesh().isElementHangingNode(0,fLID) == false ){
                        /* assign DOFs , (for each function space) */
@@ -123,7 +121,7 @@ void NodalDOFMapHN::init()
                           nextDOF++;
                        }
                     } else {
-                       SUNDANCE_MSG2(verb(), "NodalDOFMapHN::init() Hanging node found LID:" << fLID);
+                       SUNDANCE_MSG2(setupVerb(), "NodalDOFMapHN::init() Hanging node found LID:" << fLID);
                   	   hasCellHanging_[c] = true;
                        for (int i=0; i<nFuncs_; i++){
                 	       nodeDofs_[fLID*nFuncs_ + i] = -1; // this means that this is not golbal DoF
@@ -171,7 +169,7 @@ void NodalDOFMapHN::init()
 	    	for (int f=0; f<nFacets_; f++)
 	    	{
 	  		  int fLID = facetLID_[c*nFacets_+f];
-	  		SUNDANCE_MSG2(verb(), tab << "NodalDOFMapHN cell:" << c << " facetLID:" << fLID
+	  		SUNDANCE_MSG2(setupVerb(), tab << "NodalDOFMapHN cell:" << c << " facetLID:" << fLID
 	  				  << " hanging:"<< nodeDofs_[fLID*nFuncs_] << "  array:" << HNDoFs);
               if (nodeDofs_[fLID*nFuncs_] < 0)
               {
@@ -199,8 +197,8 @@ void NodalDOFMapHN::init()
 	    	// store the point LID's which contribute to this cell
 	    	cellsWithHangingDoF_globalDoFs_.put( c , HNDoFs );
 
-	    	SUNDANCE_MSG2(verb(), tab << "NodalDOFMapHN initializing cellLID:" << c << " array:" << HNDoFs);
-	    	SUNDANCE_MSG2(verb(), tab << "NodalDOFMapHN initializing cellLID:" << c << " Trafo array:" << transMatrix);
+	    	SUNDANCE_MSG2(setupVerb(), tab << "NodalDOFMapHN initializing cellLID:" << c << " array:" << HNDoFs);
+	    	SUNDANCE_MSG2(setupVerb(), tab << "NodalDOFMapHN initializing cellLID:" << c << " Trafo array:" << transMatrix);
 
 	    	// add the global DOFs to the array
 	    	for (int f=0; f<nFacets_; f++)
@@ -211,7 +209,7 @@ void NodalDOFMapHN::init()
 	    			elemDofs_[(c*nFuncs_+i)*nFacets_ + f] = nodeDofs_[fLID*nFuncs_ + i];
 	    		}
 	    	}
-	    	SUNDANCE_MSG2(verb(),tab << "NodalDOFMapHN initializing cellLID:" << c << " elemDofs_:" << elemDofs_);
+	    	SUNDANCE_MSG2(setupVerb(),tab << "NodalDOFMapHN initializing cellLID:" << c << " elemDofs_:" << elemDofs_);
 	    }
 	    else {
 		/* set the element DOFs given the dofs of the facets */
@@ -223,7 +221,7 @@ void NodalDOFMapHN::init()
 	    			elemDofs_[(c*nFuncs_+i)*nFacets_ + f] = nodeDofs_[fLID*nFuncs_ + i];
 	    		}
 	    	}
-	    	  SUNDANCE_MSG2(verb(),tab << "NodalDOFMapHN initializing cellLID:" << c << " elemDofs_:" << elemDofs_);
+	    	  SUNDANCE_MSG2(setupVerb(),tab << "NodalDOFMapHN initializing cellLID:" << c << " elemDofs_:" << elemDofs_);
 	    }
     }
 }
@@ -239,7 +237,7 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
   TimeMonitor timer(batchedDofLookupTimer());
 
   Tabs tab;
-  SUNDANCE_MSG2(verb(),
+  SUNDANCE_MSG2(verbosity,
                tab << "NodalDOFMapHN::getDOFsForCellBatch(): cellDim=" << cellDim
                << " requestedFuncSet:" << requestedFuncSet
                << " cellLID=" << cellLID);
@@ -268,7 +266,7 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
                dof0[c*dofsPerElem + i] = elemDofs_[cellLID[c]*dofsPerElem+i];
                tmpArray[i] = elemDofs_[cellLID[c]*dofsPerElem+i];
             }
-            SUNDANCE_MSG2(verb(),tab << "NodalDOFMapHN::getDOFsForCellBatch cellDim:" <<
+            SUNDANCE_MSG2(verbosity,tab << "NodalDOFMapHN::getDOFsForCellBatch cellDim:" <<
             		cellDim << " cellLID:" << c << " array:" << tmpArray);
         }
     }
@@ -287,7 +285,7 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
               dof0[c*nFuncs_ + i] = nodeDofs_[cellLID[c]*nFuncs_+i];
               tmpArray[i] = nodeDofs_[cellLID[c]*nFuncs_+i];
             }
-          SUNDANCE_MSG2(verb(),tab << "NodalDOFMapHN::getDOFsForCellBatch cellDim:" <<
+          SUNDANCE_MSG2(verbosity,tab << "NodalDOFMapHN::getDOFsForCellBatch cellDim:" <<
           		cellDim << " pointLID:" << cellLID[c] << " array:" << tmpArray);
         }
     }
@@ -318,11 +316,11 @@ NodalDOFMapHN::getDOFsForCellBatch(int cellDim,
                   tmpArray[f*nFuncs_+i] = nodeDofs_[facetCellLID*nFuncs_+i];
                 }
             }
-          SUNDANCE_MSG2(verb(),tab << "NodalDOFMapHN::getDOFsForCellBatch cellDim:" <<
+          SUNDANCE_MSG2(verbosity,tab << "NodalDOFMapHN::getDOFsForCellBatch cellDim:" <<
           		cellDim << " edgeLID:" << cellLID[c] << " array:" << tmpArray);
         }
     }
-  SUNDANCE_MSG2(verb(),
+  SUNDANCE_MSG2(verbosity,
                 tab << "NodalDOFMapHN::getDOFsForCellBatch(): DONE");
   return structure_;
 }
@@ -417,7 +415,7 @@ void NodalDOFMapHN::getPointLIDsForHN( int pointLID , int facetIndex ,
 		            nodeIndex[0] = 2;  nodeIndex[1] = 3;  break;}
 		}
 		 coefsArray.resize(2); coefsArray[0] = 1 - divRatio; coefsArray[1] = divRatio;
-		  SUNDANCE_MSG2(verb(),"NodalDOFMapHN::getPointLIDsForHN() fc=" << facetCase << " R=" << divRatio
+		  SUNDANCE_MSG2(setupVerb(),"NodalDOFMapHN::getPointLIDsForHN() fc=" << facetCase << " R=" << divRatio
 		               << " facetIndex:" << facetIndex <<   " indexInParent:" << indexInParent <<" glbLIDs:"
 		               << glbLIDs << " maxCellIndex:" << maxCellIndex << " nodeIndex:" << nodeIndex);
 		break;
@@ -470,10 +468,10 @@ void NodalDOFMapHN::shareRemoteDOFs(const Array<Array<int> >& outgoingCellReques
   Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_MSG2(verb(),
+  SUNDANCE_MSG2(setupVerb(),
                "p=" << mesh().comm().getRank()
                << "synchronizing DOFs for cells of dimension 0");
-  SUNDANCE_MSG2(verb(),
+  SUNDANCE_MSG2(setupVerb(),
                "p=" << mesh().comm().getRank()
                << " sending cell reqs d=0, GID=" 
                << outgoingCellRequests);
@@ -491,7 +489,7 @@ void NodalDOFMapHN::shareRemoteDOFs(const Array<Array<int> >& outgoingCellReques
       const Array<int>& requestsFromProc = incomingCellRequests[p];
       int nReq = requestsFromProc.size();
 
-      SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
+      SUNDANCE_MSG4(setupVerb(), "p=" << mesh().comm().getRank() 
                             << " recv'd from proc=" << p
                             << " reqs for DOFs for cells " 
                             << requestsFromProc);
@@ -501,22 +499,22 @@ void NodalDOFMapHN::shareRemoteDOFs(const Array<Array<int> >& outgoingCellReques
       for (int c=0; c<nReq; c++)
         {
           int GID = requestsFromProc[c];
-          SUNDANCE_MSG2(verb(),
+          SUNDANCE_MSG2(setupVerb(),
                        "p=" << rank
                        << " processing zero-cell with GID=" << GID); 
           int LID = mesh().mapGIDToLID(0, GID);
-          SUNDANCE_MSG2(verb(),
+          SUNDANCE_MSG2(setupVerb(),
                        "p=" << rank
                        << " LID=" << LID << " dofs=" 
                        << nodeDofs_[LID*nFuncs_]);
           outgoingDOFs[p][c] = nodeDofs_[LID*nFuncs_];
-          SUNDANCE_MSG2(verb(),
+          SUNDANCE_MSG2(setupVerb(),
                        "p=" << rank
                        << " done processing cell with GID=" << GID);
         }
     }
 
-  SUNDANCE_MSG2(verb(),
+  SUNDANCE_MSG2(setupVerb(),
                "p=" << mesh().comm().getRank()
                << "answering DOF requests for cells of dimension 0");
 
@@ -525,7 +523,7 @@ void NodalDOFMapHN::shareRemoteDOFs(const Array<Array<int> >& outgoingCellReques
                                   incomingDOFs,
                                   mesh().comm());
 
-  SUNDANCE_MSG2(verb(),
+  SUNDANCE_MSG2(setupVerb(),
                "p=" << mesh().comm().getRank()
                << "communicated DOF answers for cells of dimension 0" );
 

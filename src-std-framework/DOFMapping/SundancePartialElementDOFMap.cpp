@@ -38,15 +38,13 @@
 #include "Teuchos_TimeMonitor.hpp"
 
 using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
 using namespace Teuchos;
 
 PartialElementDOFMap::PartialElementDOFMap(const Mesh& mesh, 
   const CellFilter& subdomain,
   int nFuncs,
-  const ParameterList& verbParams)
-  : DOFMapBase(mesh, verbParams),
+  int setupVerb)
+  : DOFMapBase(mesh, setupVerb),
     dim_(mesh.spatialDim()),
     nFuncs_(nFuncs),
     nElems_(mesh.numCells(mesh.spatialDim())),
@@ -75,7 +73,7 @@ PartialElementDOFMap::getDOFsForCellBatch(int cellDim,
 
 
   Tabs tab;
-  SUNDANCE_OUT(verbosity > 3, 
+  SUNDANCE_MSG3(verbosity, 
     tab << "PartialElementDOFMap::getDOFsForCellBatch(): cellDim=" 
     << cellDim
     << " cellLID=" << cellLID);
@@ -131,7 +129,7 @@ void PartialElementDOFMap::init()
 { 
   Tabs tab;
 
-  SUNDANCE_VERB_LOW(tab << "initializing element DOF map");
+  SUNDANCE_MSG1(setupVerb(), tab << "initializing element DOF map");
 
   int cellDim = mesh().spatialDim();
 
@@ -229,10 +227,10 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
   Array<Array<int> > outgoingDOFs(np);
   Array<Array<int> > incomingDOFs;
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << "synchronizing DOFs for cells of dimension 0");
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << " sending cell reqs d=0, GID=" 
     << outgoingCellRequests);
@@ -250,7 +248,7 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
     const Array<int>& requestsFromProc = incomingCellRequests[p];
     int nReq = requestsFromProc.size();
 
-    SUNDANCE_VERB_EXTREME("p=" << mesh().comm().getRank() 
+    SUNDANCE_MSG4(setupVerb(), "p=" << mesh().comm().getRank() 
       << " recv'd from proc=" << p
       << " reqs for DOFs for cells " 
       << requestsFromProc);
@@ -260,22 +258,22 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
     for (int c=0; c<nReq; c++)
     {
       int GID = requestsFromProc[c];
-      SUNDANCE_OUT(this->verb() > 3,  
+      SUNDANCE_MSG3(setupVerb(),  
         "p=" << rank
         << " processing zero-cell with GID=" << GID); 
       int LID = mesh().mapGIDToLID(cellDim, GID);
-      SUNDANCE_OUT(this->verb() > 3,  
+      SUNDANCE_MSG3(setupVerb(),  
         "p=" << rank
         << " LID=" << LID << " dofs=" 
         << elemDofs_[LID*nFuncs_]);
       outgoingDOFs[p][c] = elemDofs_[LID*nFuncs_];
-      SUNDANCE_OUT(this->verb() > 3,  
+      SUNDANCE_MSG3(setupVerb(),  
         "p=" << rank
         << " done processing cell with GID=" << GID);
     }
   }
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << "answering DOF requests for cells of dimension 0");
 
@@ -284,7 +282,7 @@ void PartialElementDOFMap::shareRemoteDOFs(const Array<Array<int> >& outgoingCel
     incomingDOFs,
     mesh().comm());
 
-  SUNDANCE_OUT(this->verb() > 2,  
+  SUNDANCE_MSG2(setupVerb(),  
     "p=" << mesh().comm().getRank()
     << "communicated DOF answers for cells of dimension 0" );
 

@@ -56,7 +56,6 @@ class Functional
 };
 
 class FunctionalEvaluator 
-  : public TSFExtended::ParameterControlledObjectWithVerbosity<FunctionalEvaluator>
 {
 public:
   /** */
@@ -64,16 +63,16 @@ public:
 
   /** */
   FunctionalEvaluator(const Sundance::Mesh& mesh, 
-    const Sundance::Expr& integral,
-    const Teuchos::ParameterList& verbParams = *defaultVerbParams());
+    const Sundance::Expr& integral);
+
   /** */
   FunctionalEvaluator(const Sundance::Mesh& mesh, 
     const Sundance::Expr& integral,
     const Sundance::Expr& bcs,
     const Sundance::Expr& var,
     const Sundance::Expr& varEvalPts,
-    const TSFExtended::VectorType<double>& vectorType,
-    const Teuchos::ParameterList& verbParams = *defaultVerbParams());
+    const TSFExtended::VectorType<double>& vectorType);
+
   /** */
   FunctionalEvaluator(const Sundance::Mesh& mesh, 
     const Sundance::Expr& integral,
@@ -82,8 +81,7 @@ public:
     const Sundance::Expr& varEvalPts,
     const Sundance::Expr& fields,
     const Sundance::Expr& fieldValues,
-    const TSFExtended::VectorType<double>& vectorType,
-    const Teuchos::ParameterList& verbParams = *defaultVerbParams());
+    const TSFExtended::VectorType<double>& vectorType);
 
 
   /** */

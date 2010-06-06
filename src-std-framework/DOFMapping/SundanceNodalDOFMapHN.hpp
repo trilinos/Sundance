@@ -52,7 +52,7 @@ public:
   /** */
   NodalDOFMapHN(const Mesh& mesh, int nFuncs,
     const CellFilter& maxCellFilter, 
-    const ParameterList& verbParams = *DOFMapBase::defaultVerbParams());
+    int setupVerb);
       
   /** */
   virtual ~NodalDOFMapHN(){;}

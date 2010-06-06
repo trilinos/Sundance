@@ -108,13 +108,12 @@ using namespace Teuchos;
  *
  * </ul>
  */
-class DOFMapBase : public Sundance::ParameterControlledObjectWithVerbosity<DOFMapBase>,
-                   public Sundance::Printable
+class DOFMapBase : public Sundance::Printable
 {
 public:
 
   /** \brief . */
-  DOFMapBase(const Mesh& mesh, const ParameterList& verbParams = *defaultVerbParams());
+  DOFMapBase(const Mesh& mesh, int setupVerb);
       
   /** \brief .
    *
@@ -317,21 +316,8 @@ public:
    */
   virtual bool isHomogeneous() const {return false;}
 
-  /** \brief Returns default values for verbosity control parameter list
-   * 
-   */
-  static RCP<ParameterList> defaultVerbParams()
-    {
-      static RCP<ParameterList> rtn = rcp(new ParameterList("DOF Map"));
-      static int first = true;
-      if (first)
-      {
-        rtn->set<int>("setup", 0);
-        first = false;
-      }
-      return rtn;
-    }
 
+  int setupVerb() const {return setupVerb_;}
 protected:
 
   void setLowestLocalDOF(int low) {lowestLocalDOF_ = low;}
@@ -350,7 +336,11 @@ protected:
 
   static Teuchos::Time& batchedDofLookupTimer() ;
 
+
+
 private:
+
+  int setupVerb_;
 
   int localProcID_;
 

@@ -40,19 +40,15 @@
 #include "SundanceEquationSet.hpp"
 #include "SundanceAssembler.hpp"
 
-using namespace Sundance;
-using namespace Sundance;
-using namespace Sundance;
+
 using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
 
 Functional::Functional(const Mesh& mesh, const Expr& integral, 
-  const TSFExtended::VectorType<double>& vecType,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<Functional>("Functional", verbParams),
-    mesh_(mesh),
+  const TSFExtended::VectorType<double>& vecType)
+  : mesh_(mesh),
     integral_(integral),
     bc_(),
     vecType_(vecType)
@@ -64,10 +60,8 @@ Functional::Functional(
   const Mesh& mesh, 
   const Expr& integral,  
   const Expr& essentialBC,
-  const TSFExtended::VectorType<double>& vecType,
-  const ParameterList& verbParams)
-  : ParameterControlledObjectWithVerbosity<Functional>("Functional", verbParams),
-    mesh_(mesh),
+  const TSFExtended::VectorType<double>& vecType)
+  : mesh_(mesh),
     integral_(integral),
     bc_(essentialBC),
     vecType_(vecType)
@@ -106,7 +100,7 @@ LinearProblem Functional::linearVariationalProb(
                           tuple(fixed), tuple(fixedEvalPts)));
 
   RCP<Assembler> assembler 
-    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false, verbSublist("Assembler")));
+    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false));
 
   return LinearProblem(assembler);
 }
@@ -133,7 +127,7 @@ NonlinearProblem Functional
                           tuple(fixed), tuple(fixedEvalPts)));
 
   RCP<Assembler> assembler 
-    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false, verbSublist("Assembler")));
+    = rcp(new Assembler(mesh_, eqn, tuple(vecType_), tuple(vecType_), false));
 
   return NonlinearProblem(assembler, unkEvalPts);
 }
@@ -168,17 +162,3 @@ FunctionalEvaluator Functional::evaluator(const Expr& var,
 
 
 
-RCP<ParameterList> Functional::defaultVerbParams()
-{
-  static RCP<ParameterList> rtn = rcp(new ParameterList("Functional"));
-  static int first = true;
-  if (first)
-  {
-    rtn->setName("Functional");
-    rtn->set<int>("global", 0);
-    rtn->set<int>("assembly", 0);
-    rtn->set("Assembler", *Assembler::defaultVerbParams());
-    first = false;
-  }
-  return rtn;
-}
