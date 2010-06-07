@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
       MatrixMatrixTester<double> mmTester(A, B, 
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
 
       allPass = mmTester.runAllTests() && allPass;
@@ -115,6 +116,7 @@ int main(int argc, char *argv[])
                   << endl << endl;
 
       MatrixMatrixTester<double> rectMMTester(C, D, 
+        TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10),
         TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
