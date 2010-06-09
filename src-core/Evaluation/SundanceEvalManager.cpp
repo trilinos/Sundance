@@ -56,7 +56,7 @@ EvalManager::EvalManager()
 void EvalManager::setVerbosity(int verb)
 {
   verb_ = verb;
-  if (mediator_.get()) mediator_->setVerbosity(verb);
+//  if (mediator_.get()) mediator_->setVerbosity(verb);
 }
 
 void EvalManager::evalCoordExpr(const CoordExpr* expr,

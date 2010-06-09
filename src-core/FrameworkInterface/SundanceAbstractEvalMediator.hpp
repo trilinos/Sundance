@@ -60,11 +60,14 @@ public:
   virtual ~AbstractEvalMediator(){;}
 
   /** */
-  void setVerbosity(int verb) const 
-    {verb_ = verb;}
+  void setVerbosity(int verb, int dfVerb) const 
+    {verb_ = verb; dfVerb_=dfVerb;}
 
   /** */
   int verb() const {return verb_;}
+
+  /** */
+  int dfVerb() const {return dfVerb_;}
 
           
 
@@ -90,6 +93,7 @@ public:
     RCP<EvalVector>& vec) const = 0 ;
 private:
   mutable int verb_;
+  mutable int dfVerb_;
 };
 }
 

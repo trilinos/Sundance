@@ -230,7 +230,9 @@ void Assembler::init(const Mesh& mesh, const RCP<EquationSet>& eqn)
   Tabs tab0(0);
 
   /* Decide a verbosity level for the overall setup */
-  int verb = eqn->maxWatchFlagSetting("assembler setup");
+  int verb = 0;
+  if (eqn->hasActiveWatchFlag())
+    verb = eqn->maxWatchFlagSetting("assembler setup");
 
   SUNDANCE_BANNER1(verb, tab0, "Assembler setup");
 
@@ -992,7 +994,8 @@ void Assembler::assemblyLoop(const ComputationType& compType,
 {
   Tabs tab;
   int verb = 0;
-  if (eqn_->hasActiveWatchFlag()) verb = max(verb, 1);
+  if (eqn_->hasActiveWatchFlag()) verb = max(eqn_->maxWatchFlagSetting("assembly loop"), 1);
+  
 
   SUNDANCE_BANNER1(verb, tab, "Assembly loop");
 
@@ -1083,6 +1086,8 @@ void Assembler::assemblyLoop(const ComputationType& compType,
     int rqcVerb = 0;
     int evalVerb = 0;
     int evalMedVerb = 0;
+    int dfEvalVerb = 0;
+    int fillVerb = 0;
 
     /* Check for watch point, and set verbosity accordingly */
     if (rqc_[r].watch().isActive()) 
@@ -1091,7 +1096,8 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       rqcVerb=verb;
       evalVerb = rqc_[r].watch().param("evaluation");
       evalMedVerb = rqc_[r].watch().param("eval mediator");
-      kernel->setVerbosity(rqc_[r].watch().param("fill"));
+      dfEvalVerb = rqc_[r].watch().param("discrete function evaluation");
+      fillVerb = rqc_[r].watch().param("fill");
 
       SUNDANCE_MSG1(rqcVerb, tab0 << endl 
         << tab0 << "-------------"
@@ -1108,8 +1114,13 @@ void Assembler::assemblyLoop(const ComputationType& compType,
         SUNDANCE_MSG2(rqcVerb, tab01 << "isBC= " << isBCRqc_[r]); 
       }
     }
+    else
+    {
+      SUNDANCE_MSG1(verb, tab0 << "unwatched region r=" << r << " of " << rqc_.size());
+    }
     Tabs tab01;
 
+    kernel->setVerbosity(fillVerb);
     
     /* Deciding whether we should skip this RQC in the current computation 
      * type. For example, a certain boundary surface might appear in the
@@ -1133,7 +1144,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
      * results, access to the evaluation mediator, and other administrative tasks. 
      */
     evalMgr_->setMediator(mediators_[r]);
-    mediators_[r]->setVerbosity(rqcVerb);
+    mediators_[r]->setVerbosity(evalMedVerb, dfEvalVerb);
 
     /* Tell the manager which CellFilter and QuadratureFamily we're currently working with. 
      * This is simply forwarded to the mediator, which needs to know the number
@@ -1238,10 +1249,7 @@ void Assembler::assemblyLoop(const ComputationType& compType,
       workSetCounter++;
 
       /* set the verbosity for the evaluation mediator */
-      if (evalVerb > 0)
-      { 
-        evalMgr_->setVerbosity(evalVerb);
-      }
+      evalMgr_->setVerbosity(evalVerb);
 
       /* Register the workset with the mediator. Internally, the mediator
        * will look up the cell Jacobians and facet indices needed for this calculation. It 
@@ -1360,8 +1368,9 @@ void Assembler::assemblyLoop(const ComputationType& compType,
     SUNDANCE_MSG2(rqcVerb, tab0 << "----- done looping over worksets");
     /* reset the kernel verbosity to the default */
     kernel->setVerbosity(oldKernelVerb);
+    SUNDANCE_MSG1(verb, tab0 << "----- done rqc");
   }
-  SUNDANCE_MSG2(verb, tab << "----- done looping over rqcs");
+  SUNDANCE_MSG1(verb, tab << "----- done looping over rqcs");
 
 
   /* Do any post-fill processing, such as MPI_AllReduce add on functional values. */
@@ -1823,7 +1832,7 @@ void Assembler
 {
   TimeMonitor timer(graphBuildTimer());
   Tabs tab;
-  int verb = eqn_->maxWatchFlagSetting("assembler setup");
+  int verb = eqn_->maxWatchFlagSetting("matrix config");
 
   RCP<Array<int> > workSet = rcp(new Array<int>());
   workSet->reserve(workSetSize());

@@ -146,7 +146,7 @@ FunctionalEvaluator Functional::evaluator(const Expr& var,
   return FunctionalEvaluator(mesh_, integral_, bc_,
                              var, 
                              varEvalPts, 
-                             fixedParams, fixedParamValues,
+                             fixed, fixedEvalPts,
                              vecType_);
 }
 

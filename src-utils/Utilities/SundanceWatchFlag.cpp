@@ -89,6 +89,7 @@ RCP<ParameterList> WatchFlag::defaultParams()
     rtn->set<int>("symbolic preprocessing", 0);
     rtn->set<int>("equation set setup", 0);
     rtn->set<int>("assembler setup", 0);
+    rtn->set<int>("assembly loop", 0);
     rtn->set<int>("dof map setup", 0);
     rtn->set<int>("dof map access", 0);
     rtn->set<int>("eval mediator", 0);

@@ -121,8 +121,11 @@ public:
   /** verbosity level */
   int verb() const {return verb_;}
 
-  /** set verbosity level */
-  void setVerbosity(int verb) {verb_=verb;}
+  /** set verbosity level.
+   * (This function needs to be virtual because certain subclasses need specialized
+   * implementations that propagate verbosity to children 
+  */
+  virtual void setVerbosity(int verb) {verb_=verb;}
 
 private:
   int verb_;

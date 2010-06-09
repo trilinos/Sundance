@@ -98,14 +98,21 @@ void StdFwkEvalMediator::setIntegrationSpec(
 void StdFwkEvalMediator::setCellBatch(
   const RCP<const Array<int> >& cellLID) 
 {
+  Tabs tab(0);
+  SUNDANCE_MSG1(verb(), tab << "eval med setting cell batch");
+  Tabs tab1;
+
   cellLID_ = cellLID; 
   cacheIsValid() = false; 
   jCacheIsValid_=false;
   cofacetCellsAreReady_ = false;
+
+  SUNDANCE_MSG2(verb(), tab1 << "getting volume Jacobians");
   mesh_.getJacobians(cellDim(), *cellLID, *JVol_);
   if (intCellSpec_!=NoTermsNeedCofacets) setupFacetTransformations();
 
   /* mark the function caches as invalid */
+  SUNDANCE_MSG2(verb(), tab1 << "flushing old function caches");
   Map<const DiscreteFunctionData*, bool>::iterator iter;
   for (iter = fCacheIsValid_.begin(); iter != fCacheIsValid_.end(); iter++)
     {
@@ -123,8 +130,8 @@ void StdFwkEvalMediator::setCellBatch(
 
 void StdFwkEvalMediator::setupFacetTransformations() const 
 {
-  Tabs tab;
-  SUNDANCE_MSG2(verb(), tab << "setting up facet transformations");
+  Tabs tab(0);
+  SUNDANCE_MSG1(verb(), tab << "setting up facet transformations");
   Tabs tab1;
 
   const Array<int>& cells = *cellLID_;
@@ -147,6 +154,7 @@ void StdFwkEvalMediator::setupFacetTransformations() const
         = mesh_.maxCofacetLID(cellDim(), cells[c], 0, (*facetIndices_)[c]);
     }
 
+  SUNDANCE_MSG2(verb(), tab1 << "getting facet Jacobians");
   mesh_.getJacobians(mesh_.spatialDim(), *maxCellLIDs_, *JTrans_);
   SUNDANCE_MSG2(verb(), tab << "setting up facet transformations");
 }
@@ -158,6 +166,12 @@ const CellJacobianBatch& StdFwkEvalMediator::JTrans() const
   /* If we're integrating a derivative on a boundary, JVol and JTrans will be
    * different. Otherwise, they'll be the same, and we use JVol for both
    * volume computations and vector transformations */
-  if (intCellSpec_ != NoTermsNeedCofacets) return *JTrans_;
-  return *JVol_;
+  if (intCellSpec_ != NoTermsNeedCofacets) 
+  {
+    return *JTrans_;
+  }
+  else
+  {
+    return *JVol_;
+  }
 }

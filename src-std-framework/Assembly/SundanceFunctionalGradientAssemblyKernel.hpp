@@ -101,6 +101,14 @@ public:
       vecKernel_->postLoopFinalization();
     }
 
+  /** */
+  void setVerbosity(int verb) 
+    {
+      AssemblyKernelBase::setVerbosity(verb);
+      funcKernel_->setVerbosity(verb);
+      vecKernel_->setVerbosity(verb);
+    }
+
 private:
   RCP<FunctionalAssemblyKernel> funcKernel_;
   RCP<VectorAssemblyKernel> vecKernel_;

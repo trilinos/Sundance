@@ -379,12 +379,13 @@ void EquationSet::init(
     Tabs tab2;
     RegionQuadCombo rqc = r->first;
     int rqcVerb = verb;
-    int symbVerb = rqc.watch().param("symbolic preprocessing");
+    int symbVerb = 0;
     if (rqc.watch().isActive()) 
     {
+      symbVerb = rqc.watch().param("symbolic preprocessing");
       rqcVerb=rqc.watch().param("equation set setup");
-      SUNDANCE_MSG1(max(verb,rqcVerb), tab15 << "processing RQC = " << rqc);
     }
+    SUNDANCE_MSG1(max(verb,rqcVerb), tab15 << "processing RQC = " << rqc);
 
 
     rqcSet.put(rqc);
@@ -645,6 +646,7 @@ void EquationSet::init(
   {
     /* functions found in the BCs both in the overall lists and 
      * also in the bc-specific lists */
+    SUNDANCE_MSG1(verb, tab1 << "processing essential BC terms");
     for (Sundance::Map<RegionQuadCombo, Expr>::const_iterator 
            r=bcSum->rqcToExprMap().begin(); 
          r!=bcSum->rqcToExprMap().end(); r++)
@@ -652,12 +654,13 @@ void EquationSet::init(
       Tabs tab15;
       RegionQuadCombo rqc = r->first;
       int rqcVerb = verb;
-      int symbVerb = rqc.watch().param("symbolic preprocessing");
+      int symbVerb = 0;
       if (rqc.watch().isActive()) 
       {
+        symbVerb = rqc.watch().param("symbolic preprocessing");
         rqcVerb=rqc.watch().param("equation set setup");
-        SUNDANCE_MSG1(verb, tab15 << "processing BC RQC = " << rqc);
       }
+      SUNDANCE_MSG1(verb, tab15 << "processing BC RQC = " << rqc);
 
       rqcBCSet.put(rqc);
       Expr term = r->second;
@@ -1039,6 +1042,7 @@ bool EquationSet::hasActiveWatchFlag() const
 int EquationSet::maxWatchFlagSetting(const string& param) const 
 {
   int rtn = 0;
+  if (!hasActiveWatchFlag()) return 0;
   for (int i=0; i<regionQuadCombos().size(); i++)
   {
     int v = regionQuadCombos()[i].watch().param(param);

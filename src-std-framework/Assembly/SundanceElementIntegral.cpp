@@ -85,9 +85,11 @@ ElementIntegral::ElementIntegral(int spatialDim,
     globalCurve_(globalCurve),
     mesh_(mesh)
 {
+  Tabs tab0;
+  SUNDANCE_MSG2(setupVerb(), tab0 << "constructing 0-form ElementIntegral");
   /* if we're integrating a derivative along a facet, we need to refer back
    * to the maximal cell. */
-  if (alwaysUseCofacets() && dim != spatialDim && !isInternalBdry)
+  if (alwaysUseCofacets() || (dim != spatialDim && !isInternalBdry))
   {
     evalCellType_ = maxCellType_;
     nFacetCases_ = numFacets(maxCellType, dim);

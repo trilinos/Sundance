@@ -156,7 +156,7 @@ int SundanceGlobal::init(int* argc, char*** argv)
     bool showBanner = true;
     bool showTimings = false;
     bool cmdFpCheck = defaultFpCheck;
-    int defaultWorkSetSize = 100;
+    int defaultWorkSetSize = 400;
     int cmdWorkSetSize = defaultWorkSetSize;
 
     Assembler::workSetSize() = defaultWorkSetSize;

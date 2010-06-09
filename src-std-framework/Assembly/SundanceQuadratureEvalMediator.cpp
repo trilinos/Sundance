@@ -418,8 +418,9 @@ void QuadratureEvalMediator
   {
     Tabs tab1;
     const MultiIndex& mi = multiIndices[i];
-    SUNDANCE_MSG2(verb(),
-      tab1 << "evaluating DF for multiindex " << mi << endl
+    SUNDANCE_MSG2(dfVerb(),
+      tab1 << "evaluating DF " << expr->name() 
+      << " for multiindex " << mi << endl
       << tab1 << "num cells = " << cellLID()->size() << endl
       << tab1 << "num quad points = " << nQuad << endl
       << tab1 << "my index = " << expr->myIndex() << endl
@@ -430,13 +431,14 @@ void QuadratureEvalMediator
     if (mi.order() == 0)
     {
       Tabs tab2;
+      SUNDANCE_MSG2(dfVerb(),tab2 << "in mi.order() == 0 branch");
       if (!fCache().containsKey(f) || !fCacheIsValid()[f])
       {
         fillFunctionCache(f, mi);
       }
       else
       {
-        SUNDANCE_MSG2(verb(),tab2 << "reusing function cache");
+        SUNDANCE_MSG2(dfVerb(),tab2 << "reusing function cache");
       }
 
       const RCP<const MapStructure>& mapStruct = mapStructCache()[f];
@@ -444,21 +446,21 @@ void QuadratureEvalMediator
       int funcIndex = mapStruct->indexForFuncID(myIndex);
       int nFuncs = mapStruct->numFuncs(chunk);
 
-      SUNDANCE_MSG3(verb(),tab2 << "chunk number = " << chunk << endl
+      SUNDANCE_MSG3(dfVerb(),tab2 << "chunk number = " << chunk << endl
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
       const RCP<Array<Array<double> > >& cacheVals 
         = fCache()[f];
 
-      SUNDANCE_MSG4(verb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
+      SUNDANCE_MSG4(dfVerb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
 
       const double* cachePtr = &((*cacheVals)[chunk][0]);
       double* vecPtr = vec[i]->start();
           
       int cellSize = nQuad*nFuncs;
       int offset = funcIndex*nQuad;
-      SUNDANCE_MSG3(verb(),tab2 << "cell size=" << cellSize << ", offset=" 
+      SUNDANCE_MSG3(dfVerb(),tab2 << "cell size=" << cellSize << ", offset=" 
         << offset);
       int k = 0;
       for (int c=0; c<cellLID()->size(); c++)
@@ -468,10 +470,10 @@ void QuadratureEvalMediator
           vecPtr[k] = cachePtr[c*cellSize + offset + q];
         }
       }
-      SUNDANCE_MSG4(verb(),tab2 << "result vector=");
-      if (verb() >= 5)
+      SUNDANCE_MSG4(dfVerb(),tab2 << "result vector=");
+      if (dfVerb() >= 5)
       {
-        vec[i]->print(cerr);
+        vec[i]->print(Out::os());
         computePhysQuadPts();
         k=0;
         for (int c=0; c<cellLID()->size(); c++)
@@ -492,13 +494,14 @@ void QuadratureEvalMediator
     else
     {
       Tabs tab2;
+      SUNDANCE_MSG2(dfVerb(),tab2 << "in mi.order() != 0 branch");
       if (!dfCache().containsKey(f) || !dfCacheIsValid()[f])
       {
         fillFunctionCache(f, mi);
       }
       else
       {
-        SUNDANCE_MSG3(verb(),tab2 << "reusing function cache");
+        SUNDANCE_MSG3(dfVerb(),tab2 << "reusing function cache");
       }
 
       RCP<const MapStructure> mapStruct = mapStructCache()[f];
@@ -507,14 +510,14 @@ void QuadratureEvalMediator
       int nFuncs = mapStruct->numFuncs(chunk);
 
 
-      SUNDANCE_MSG3(verb(),tab2 << "chunk number = " << chunk << endl
+      SUNDANCE_MSG3(dfVerb(),tab2 << "chunk number = " << chunk << endl
         << tab2 << "function index=" << funcIndex << " of nFuncs=" 
         << nFuncs);
 
       const RCP<Array<Array<double> > >& cacheVals 
         = dfCache()[f];
 
-      SUNDANCE_MSG4(verb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
+      SUNDANCE_MSG4(dfVerb(),tab2 << "cached function values=" << (*cacheVals)[chunk]);
 
       int dim = maxCellDim();
       int pDir = mi.firstOrderDirection();
@@ -525,7 +528,7 @@ void QuadratureEvalMediator
       int offset = funcIndex * nQuad * dim;
       int k = 0;
 
-      SUNDANCE_MSG3(verb(),tab2 << "dim=" << dim << ", pDir=" << pDir
+      SUNDANCE_MSG2(dfVerb(),tab2 << "dim=" << dim << ", pDir=" << pDir
         << ", cell size=" << cellSize << ", offset=" 
         << offset);
       for (int c=0; c<cellLID()->size(); c++)
@@ -535,10 +538,10 @@ void QuadratureEvalMediator
           vecPtr[k] = cachePtr[c*cellSize + offset + q*dim + pDir];
         }
       }
-      SUNDANCE_MSG4(verb(),tab2 << "result vector=");
-      if (verb() >= 5)
+      SUNDANCE_MSG4(dfVerb(),tab2 << "result vector=");
+      if (dfVerb() >= 5)
       {
-        vec[i]->print(cerr);
+        vec[i]->print(Out::os());
         computePhysQuadPts();
         k=0;
         for (int c=0; c<cellLID()->size(); c++)
@@ -564,8 +567,8 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 {
   Tabs tab0;
   
-  SUNDANCE_MSG2(verb(), tab0 << "QuadratureEvalMediator::fillFunctionCache()");
-  SUNDANCE_MSG2(verb(), tab0 << "multiIndex=" << mi);
+  SUNDANCE_MSG2(dfVerb(), tab0 << "QuadratureEvalMediator::fillFunctionCache()");
+  SUNDANCE_MSG2(dfVerb(), tab0 << "multiIndex=" << mi);
   
   
   int diffOrder = mi.order();
@@ -581,16 +584,16 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
 
   {
     Tabs tab1;
-    SUNDANCE_MSG2(verb(), tab1 << "packing local values");
+    SUNDANCE_MSG2(dfVerb(), tab1 << "packing local values");
     if (!localValueCacheIsValid().containsKey(f) 
       || !localValueCacheIsValid().get(f))
     {
       Tabs tab2;
-      SUNDANCE_MSG2(verb(), tab2 << "filling cache");
+      SUNDANCE_MSG2(dfVerb(), tab2 << "filling cache");
       localValues = rcp(new Array<Array<double> >());
       if (cellDim() != maxCellDim())
       {
-        if (verb() >= 2)
+        if (dfVerb() >= 2)
         {
           Out::os() << tab2 << "alwaysUseCofacets = " 
                     << ElementIntegral::alwaysUseCofacets() << endl;
@@ -622,7 +625,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     else
     {
       Tabs tab2;
-      SUNDANCE_MSG2(verb(), tab2 << "reusing cache");
+      SUNDANCE_MSG2(dfVerb(), tab2 << "reusing cache");
       localValues = localValueCache().get(f);
       mapStruct = mapStructCache().get(f);
     }
@@ -662,21 +665,21 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
   for (int chunk=0; chunk<mapStruct->numBasisChunks(); chunk++)
   {
     Tabs tab1;
-    SUNDANCE_MSG2(verb(), tab1 << "processing dof map chunk=" << chunk
+    SUNDANCE_MSG2(dfVerb(), tab1 << "processing dof map chunk=" << chunk
       << " of " << mapStruct->numBasisChunks());
     BasisFamily basis = rcp_dynamic_cast<BasisFamilyBase>(mapStruct->basis(chunk));
-    SUNDANCE_MSG4(verb(), tab1 << "basis=" << basis);
+    SUNDANCE_MSG4(dfVerb(), tab1 << "basis=" << basis);
 
     int nFuncs = mapStruct->numFuncs(chunk);
-    SUNDANCE_MSG2(verb(), tab1 << "num funcs in this chunk=" << nFuncs);
+    SUNDANCE_MSG2(dfVerb(), tab1 << "num funcs in this chunk=" << nFuncs);
     
 
     Array<double>& cache = (*cacheVals)[chunk];
 
     int nQuad = numQuadPts(cellType());
     int nCells = cellLID()->size();
-    SUNDANCE_MSG2(verb(), tab1 << "num quad points=" << nQuad);
-    SUNDANCE_MSG2(verb(), tab1 << "num cells=" << nCells);
+    SUNDANCE_MSG2(dfVerb(), tab1 << "num quad points=" << nQuad);
+    SUNDANCE_MSG2(dfVerb(), tab1 << "num cells=" << nCells);
 
     int nDir;
 
@@ -720,7 +723,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
     if (cellType() != evalCellType)
     {
       Tabs tab2;
-      SUNDANCE_MSG2(verb(), 
+      SUNDANCE_MSG2(dfVerb(), 
         tab2 << "evaluating by reference to maximal cell");
       
       RCP<Array<Array<Array<double> > > > refFacetBasisValues 
@@ -741,7 +744,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       double alpha = 1.0;
       double beta = 0.0;
 
-      SUNDANCE_MSG2(verb(), tab2 << "building transformation matrices cell-by-cell");
+      SUNDANCE_MSG2(dfVerb(), tab2 << "building transformation matrices cell-by-cell");
       int vecComp = 0;
       for (int c=0; c<nCells; c++)
       {
@@ -760,7 +763,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
        * between the ref basis values and the local function values.
        */
       Tabs tab2;
-      SUNDANCE_MSG2(verb(), tab2 << "building batch transformation matrix");
+      SUNDANCE_MSG2(dfVerb(), tab2 << "building batch transformation matrix");
 
       Array<Array<double> >* refBasisValues 
         = getRefBasisVals(basis, diffOrder);
@@ -774,7 +777,7 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
       double alpha = 1.0;
       double beta = 0.0;
       int vecComp = 0;
-      if (verb() >= 5)
+      if (dfVerb() >= 5)
       {
         Tabs tab3;
         Out::os() << tab2 << "Printing values at nodes" << endl;
@@ -823,16 +826,17 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         A, lda, B, ldb, beta, C, ldc );
     }
 
-    SUNDANCE_MSG2(verb(), tab1 << "doing transformations via dgemm");
+
     /* Transform derivatives to physical coordinates */
     const CellJacobianBatch& J = JTrans();
     double* C = &((*cacheVals)[chunk][0]);
     if (mi.order()==1)
     {
+      SUNDANCE_MSG2(dfVerb(), tab1 << "doing transformations via dgemm");
       Tabs tab2;
-      SUNDANCE_MSG2(verb(), tab2 << "Jacobian batch nCells=" << J.numCells());
-      SUNDANCE_MSG2(verb(), tab2 << "Jacobian batch cell dim=" << J.cellDim());
-      SUNDANCE_MSG2(verb(), tab2 << "Jacobian batch spatial dim=" << J.spatialDim());
+      SUNDANCE_MSG2(dfVerb(), tab2 << "Jacobian batch nCells=" << J.numCells());
+      SUNDANCE_MSG2(dfVerb(), tab2 << "Jacobian batch cell dim=" << J.cellDim());
+      SUNDANCE_MSG2(dfVerb(), tab2 << "Jacobian batch spatial dim=" << J.spatialDim());
     
       int nRhs = nQuad * nFuncs;
       for (int c=0; c<cellLID()->size(); c++)
@@ -841,13 +845,17 @@ void QuadratureEvalMediator::fillFunctionCache(const DiscreteFunctionData* f,
         J.applyInvJ(c, 0, rhsPtr, nRhs, false);
       }
     }
-    SUNDANCE_MSG2(verb(), tab1 << "done transformations");
+    else
+    {
+      SUNDANCE_MSG2(dfVerb(), tab1 << "no derivatives to transform");
+    }
+    SUNDANCE_MSG2(dfVerb(), tab1 << "done transformations");
   }
 
   jFlops = CellJacobianBatch::totalFlops() - jFlops;
   addFlops(flops + jFlops);
 
-  SUNDANCE_MSG2(verb(), 
+  SUNDANCE_MSG2(dfVerb(), 
     tab0 << "done QuadratureEvalMediator::fillFunctionCache()");
 }
 
