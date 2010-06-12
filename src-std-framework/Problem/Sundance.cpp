@@ -69,6 +69,9 @@ void handleException(std::exception& e)
 {SundanceGlobal::handleException(e);}
 
 
+bool passFailTest(bool pass)
+{return SundanceGlobal::passFailTest(pass);}
+
 bool passFailTest(double error, double tol)
 {return SundanceGlobal::passFailTest(error, tol);}
 
@@ -355,6 +358,23 @@ bool SundanceGlobal:: passFailTest(const string& statusMsg,
   if (MPIComm::world().getRank()==0)
   {
     if (status && pass)
+    {
+      cout << "test PASSED" << endl;
+    }
+    else
+    {
+      cout << "test FAILED" << endl;
+    }
+  }
+  testStatus() = pass!=true;
+  return pass;
+}
+
+bool SundanceGlobal:: passFailTest(bool pass)
+{
+  if (MPIComm::world().getRank()==0)
+  {
+    if (pass)
     {
       cout << "test PASSED" << endl;
     }

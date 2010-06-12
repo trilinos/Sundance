@@ -263,6 +263,7 @@ APPEND_SET(HEADERS
   Problem/SundanceModelEvaluatorBase.hpp
   Problem/SundanceNLPModelEvaluator.hpp
   Problem/SundanceNLOp.hpp
+  Problem/SundanceProblemTesting.hpp
   Problem/SundanceRivaraDriver.hpp
   Problem/SundanceStochBlockJacobiSolver.hpp
   Problem/SundanceNonlinearProblem.hpp 
@@ -284,6 +285,7 @@ APPEND_SET(SOURCES
   Problem/SundanceModelEvaluatorBase.cpp
   Problem/SundanceNLPModelEvaluator.cpp
   Problem/SundanceNLOp.cpp
+  Problem/SundanceProblemTesting.cpp
   Problem/SundanceRivaraDriver.cpp
   Problem/SundanceStochBlockJacobiSolver.cpp
   Problem/SundanceNonlinearProblem.cpp

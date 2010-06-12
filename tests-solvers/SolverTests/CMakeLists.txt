@@ -34,6 +34,7 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(SolverTestCopyFiles
                    aztec-ml.xml 
                    aztec-native.xml
                    aztec.xml
+                   belos-ml.xml
                    belos-ifpack.xml
                    bicgstab.xml
                    gmres.xml

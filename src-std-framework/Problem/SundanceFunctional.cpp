@@ -161,4 +161,38 @@ FunctionalEvaluator Functional::evaluator(const Expr& var,
 }
 
 
+namespace Sundance
+{
 
+double L2Norm(const Mesh& mesh, const CellFilter& domain,
+  const Expr& f, const QuadratureFamily& quad)
+{
+  Expr I2 = Integral(domain, f*f, quad);
+
+  return sqrt(evaluateIntegral(mesh, I2));
+}
+
+
+double H1Seminorm(
+  const Mesh& mesh,
+  const CellFilter& filter,
+  const Expr& f,
+  const QuadratureFamily& quad)
+{
+  Expr grad = gradient(mesh.spatialDim());
+  return L2Norm(mesh, filter, grad*f, quad);
+}
+  
+double H1Norm(
+  const Mesh& mesh,
+  const CellFilter& filter,
+  const Expr& f,
+  const QuadratureFamily& quad)
+{
+  Expr grad = gradient(mesh.spatialDim());
+  Expr g = grad*f;
+  Expr I2 = Integral(filter, f*f + g*g, quad);
+
+  return sqrt(evaluateIntegral(mesh, I2));  
+}
+}

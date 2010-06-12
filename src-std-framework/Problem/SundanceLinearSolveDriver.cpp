@@ -75,7 +75,7 @@ LinearSolveDriver::solve(const LinearSolver<double>& solver,
     SUNDANCE_MSG2(verb, tab1 << "solving with RHS #" << i 
       << " of " << rhs.size());
 
-    SolverState<double> state = solver.solve(A, rhs[i], solnVec[i]);
+    state = solver.solve(A, rhs[i], solnVec[i]);
     
     SUNDANCE_MSG2(verb, tab1 << "solve completed with status="
       << state.stateDescription());

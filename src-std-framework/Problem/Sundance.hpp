@@ -235,6 +235,9 @@ public:
 
 
   /** */
+  static bool passFailTest(bool pass);
+
+  /** */
   static bool passFailTest(double error, double tol);
 
   /** */
@@ -273,6 +276,9 @@ private:
 
 /** \relates SundanceGlobal */
 void handleException(std::exception& e);
+
+/** \relates SundanceGlobal */
+bool passFailTest(bool pass);
 
 /** \relates SundanceGlobal */
 bool passFailTest(double error, double tol);

@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     VectorType<double> type = new EpetraVectorType();
 
 
-    ParameterXMLFileReader reader("belos-ifpack.xml");
+    ParameterXMLFileReader reader("belos-ml.xml");
     ParameterList solverParams = reader.getParameters();
 
     /* create the range space  */
