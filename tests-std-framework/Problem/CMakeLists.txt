@@ -44,7 +44,6 @@ SET(MPITests
              LPTests1D
              Poisson2D
              RadDiff1D
-             Helmholtz1D
              CrankNicolsonHeat1D
              FieldIOTest
              BlockStochPoissonTest1D
