@@ -50,11 +50,12 @@ CellFilterBase::~CellFilterBase()
 
 CellSet CellFilterBase::getCells(const Mesh& mesh) const
 {
-  if (cellSetCache_.ptr().get()==0)
-    {
-      cellSetCache_ = internalGetCells(mesh);
-    }
-  return cellSetCache_;
+  int id = mesh.id();
+  if (!cellSetCache_.containsKey(id))
+  {
+    cellSetCache_.put(id, internalGetCells(mesh));
+  }
+  return cellSetCache_.get(id);
 }
 
 

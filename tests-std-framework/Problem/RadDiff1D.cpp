@@ -29,15 +29,117 @@
 /* @HEADER@ */
 
 #include "Sundance.hpp"
+#include "SundanceProblemTesting.hpp"
 
+int main()
+{
+  return 0;
+}
+
+#ifdef BLARF
 
 /** 
  * Solves the radiation diffusion equation in 1D
  */
 
 
-CELL_PREDICATE(LeftPointTest, {return fabs(x[0]) < 1.0e-10;})
-CELL_PREDICATE(RightPointTest, {return fabs(x[0]-1.0) < 1.0e-10;})
+double runRadDiff1D(int nx, double* hMean)
+{
+  LineDomain dom(0.0, 1.0, nx);
+  
+  VectorType<double> vecType = new EpetraVectorType();
+
+  CellFilter left = dom.left();
+  CellFilter right = dom.right();
+  CellFilter interior = dom.interior();
+
+  Mesh mesh = dom.mesh();
+
+  int p = 3;
+  Expr u = new UnknownFunction(new Lagrange(p), "u");
+  Expr v = new TestFunction(new Lagrange(p), "v");
+
+  Expr dx = new Derivative(0);
+  Expr x = new CoordExpr(0);
+
+  DiscreteSpace discSpace(mesh, new Lagrange(p), vecType);
+  L2Projector projector(discSpace, 1.0+x);
+  Expr u0 = projector.project();
+
+  
+  QuadratureFamily quad = new GaussianQuadrature(5*p-2);
+
+  Expr eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad);
+
+  Expr bc = EssentialBC(left, v*(u-1.0), quad)
+    + EssentialBC(right, v*(u-2.0), quad); 
+
+  /* Create a TSF NonlinearOperator object */
+  NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
+
+  
+  ParameterXMLFileReader reader("nox-newton.xml");
+  ParameterList noxParams = reader.getParameters();
+  LinearSolver<double> linSolver = LinearSolverBuilder::createSolver("aztec-ml.xml");
+  
+  NOXSolver solver(noxParams, linSolver);
+  
+  // Solve the nonlinear system
+  NOX::StatusTest::StatusType status = prob.solve(solver);
+  TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
+    runtime_error, "solve failed");
+
+  /* check solution */
+  Expr exactSoln = pow(15.0*x + 1.0, 0.25);
+      
+  Expr errExpr = Integral(interior, 
+    pow(u0-exactSoln, 2),
+    new GaussianQuadrature(4.0*p));
+    
+  Expr h = new CellDiameterExpr();
+  Expr hExpr = Integral(interior, h, new GaussianQuadrature(1));
+  Expr AExpr = Integral(interior, 1.0, new GaussianQuadrature(1));
+  
+  double errorSq = evaluateIntegral(mesh, errExpr);
+
+  double area = evaluateIntegral(mesh, AExpr);
+  *hMean = evaluateIntegral(mesh, hExpr)/area;
+
+  return sqrt(errorSq);
+}
+
+
+void fitExp(const Array<double>& h, const Array<double>& err,
+  double* p)
+{
+
+
+  Array<double> x(h.size());
+  Array<double> y(h.size());
+  double xBar = 0.0;
+  double yBar = 0.0;
+  for (int i=0; i<h.size(); i++)
+  {
+    x[i] = log(h[i]);
+    y[i] = log(err[i]);
+    xBar += x[i];
+    yBar += y[i];
+  }
+
+  xBar /= h.size();
+  yBar /= h.size();
+  
+  double u = 0.0;
+  double v = 0.0;
+  for (int i=0; i<h.size(); i++)
+  {
+    u += (x[i]-xBar)*(y[i]-yBar);
+    v += pow(x[i]-xBar,2.0);
+  }
+
+  *p = u/v;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -46,80 +148,29 @@ int main(int argc, char** argv)
       Sundance::init(&argc, &argv);
       int np = MPIComm::world().getNProc();
 
-      /* We will do our linear algebra using Epetra */
-      VectorType<double> vecType = new EpetraVectorType();
+      Array<int> N;
+      Array<double> h;
+      Array<double> err;
 
-      /* Create a mesh. It will be of type BasisSimplicialMesh, and will
-       * be built using a PartitionedLineMesher. */
-      MeshType meshType = new BasicSimplicialMeshType();
-      MeshSource mesher = new PartitionedLineMesher(0.0, 1.0, 100*np, meshType);
-      Mesh mesh = mesher.getMesh();
-
-      /* Create a cell filter that will identify the maximal cells
-       * in the interior of the domain */
-      CellFilter interior = new MaximalCellFilter();
-      CellFilter points = new DimensionalCellFilter(0);
-      CellFilter rightPoint = points.subset(new RightPointTest());
-      CellFilter leftPoint = points.subset(new LeftPointTest());
-
-      
-      
-      /* Create unknown and test functions, discretized using first-order
-       * Lagrange interpolants */
-      Expr u = new UnknownFunction(new Lagrange(1), "u");
-      Expr v = new TestFunction(new Lagrange(1), "v");
-
-      /* Create differential operator and coordinate function */
-      Expr dx = new Derivative(0);
-      Expr x = new CoordExpr(0);
-
-      /* Create a discrete space, and discretize the function 1.0+x on it */
-      DiscreteSpace discSpace(mesh, new Lagrange(1), vecType);
-      L2Projector projector(discSpace, 1.0+x);
-      Expr u0 = projector.project();
-
-      /* We need a quadrature rule for doing the integrations */
-      QuadratureFamily quad = new GaussianQuadrature(8);
-
-     
-      /* Define the weak form */
-      Expr eqn = Integral(interior, u*u*u*(dx*v)*(dx*u), quad);
-      /* Define the Dirichlet BC */
-      Expr bc = EssentialBC(leftPoint, v*(u-1.0), quad)
-        + EssentialBC(rightPoint, v*(u-2.0), quad); 
-
-      /* Create a TSF NonlinearOperator object */
-      NonlinearProblem prob(mesh, eqn, bc, v, u, u0, vecType);
-
-#ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(searchForFile("SolverParameters/nox.xml"));
-#else
-      ParameterXMLFileReader reader("nox.xml");
-#endif
-      ParameterList noxParams = reader.getParameters();
-
-      NOXSolver solver(noxParams);
-
-      // Solve the nonlinear system
-      NOX::StatusTest::StatusType status = prob.solve(solver);
-      TEST_FOR_EXCEPTION(status != NOX::StatusTest::Converged,
-        runtime_error, "solve failed");
-
-
-      /* check solution */
-      Expr exactSoln = pow(15.0*x + 1.0, 0.25);
-      
-      Expr errExpr = Integral(interior, 
-                              pow(u0-exactSoln, 2),
-                              new GaussianQuadrature(8));
-
-      double errorSq = evaluateIntegral(mesh, errExpr);
-      cerr << "error norm = " << sqrt(errorSq) << endl << endl;
-
-      
-
-      double tol = 1.0e-4;
-      Sundance::passFailTest(errorSq, tol);
+      for (int i=4; i<=7; i++)
+      {
+        int nx = lrint(pow(2.0, i));
+        double hMean;
+        double eps = runRadDiff1D(nx, &hMean);
+        N.append(nx*np);
+        h.append(hMean);
+        err.append(eps);
+      }
+      for (int i=0; i<N.size(); i++)
+      {
+        Out::root() << "nx=" << setw(10) << N[i]
+                    << " " << setw(20) << setprecision(5) << h[i] 
+                    << " " << setw(20) << setprecision(5) << err[i] 
+                    << endl;
+      }
+      double p;
+      fitExp(h, err, &p);
+      Out::root() << "exponent: " << p << endl;
 
     }
 	catch(exception& e)
@@ -128,3 +179,6 @@ int main(int argc, char** argv)
 		}
   Sundance::finalize(); return Sundance::testStatus(); 
 }
+
+
+#endif

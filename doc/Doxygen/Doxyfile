@@ -391,6 +391,7 @@ INPUT                  = ../doc/Doxygen/index.dox \
                          ../src-solvers/Vectors \
                          ../src-solvers/Testing \
                          ../src-solvers/Adapters \
+                         ../tests-std-framework/Problem/LPTests1D.cpp \
                          ../examples-tutorial
 
 
@@ -402,7 +403,7 @@ INPUT                  = ../doc/Doxygen/index.dox \
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx *.hpp 
 # *.h++ *.idl *.odl *.cs *.php *.php3 *.inc
 
-FILE_PATTERNS          = *.cpp *.hpp *.f *.c *.h *.dox
+FILE_PATTERNS          = *.cpp *.hpp *.f *.c *.h *.dox *.C *.H
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 

@@ -110,7 +110,7 @@ protected:
 
 private:
   /** cache of previously computed cell sets */
-  mutable CellSet cellSetCache_;
+  mutable Sundance::Map<int, CellSet> cellSetCache_;
 
   /** */
   string name_;

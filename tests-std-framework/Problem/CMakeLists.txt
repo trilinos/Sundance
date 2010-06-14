@@ -95,7 +95,8 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
                    gmres.xml
                    nox.xml            
                    nox-amesos.xml            
-                   nox-aztec.xml            
+                   nox-aztec.xml      
+                   nox-newton.xml                  
                    poissonParams.xml
                    userPrecParams.xml
   SOURCE_DIR ${SolverParamPath}

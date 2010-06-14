@@ -54,10 +54,16 @@ bool checkErrorNorms(
   double H1SemiTol,
   double H1Tol);
 
+/** 
+ * Compute the exponent \f$p\f$ that best fits the measured errors to a 
+ * power law \f$\epsilon=A h^p\f$. 
+ */
+double fitPower(const Array<double>& h, const Array<double>& err);
 
 
 /** 
- * This class bundles together a mesh of the 1D interval [a,b] with cell
+ * This class bundles together a sequence of uniform meshes
+ * of the 1D interval [a,b] with cell
  * filters defining the interior and boundaries. It is intended for quick 
  * and reliable setup of 1D test problems.
  */
@@ -65,10 +71,13 @@ class LineDomain
 {
 public:
   /** */
-  LineDomain(int nx);
+  LineDomain(const Array<int>& nx);
 
   /** */
-  LineDomain(double a, double b, int nx);
+  LineDomain(double a, double b, const Array<int>& nx);
+
+  /** */
+  int numMeshes() const {return mesh_.size();}
 
   /** */
   const CellFilter& left() const {return left_;}
@@ -80,7 +89,7 @@ public:
   const CellFilter& interior() const {return interior_;}
 
   /** */
-  const Mesh& mesh() const {return mesh_;}
+  const Mesh& mesh(int i) const {return mesh_[i];}
 
   /** */
   double a() const {return a_;}
@@ -89,18 +98,18 @@ public:
   double b() const {return b_;}
   
   /** */
-  int nx() const {return nx_;}
+  int nx(int i) const {return nx_[i];}
 
 private:
   void init();
 
   double a_;
   double b_;
-  int nx_;
+  Array<int> nx_;
   CellFilter interior_;
   CellFilter left_;
   CellFilter right_;
-  Mesh mesh_;
+  Array<Mesh> mesh_;
 };
 
 
@@ -148,8 +157,41 @@ private:
 /** \relates LPTestSpec */
 std::ostream& operator<<(std::ostream& os, const LPTestSpec& spec);
 
-/** */
-class LPTestBase
+class ForwardProblemTestBase;
+
+/**
+ * Base class for objects that compute error norms. 
+ */
+class ErrNormCalculatorBase
+{
+public:
+  /** Compute the error norm. In vector-valued problems we may need to
+   * compute multiple norms, so the return type is an array. */
+  virtual Array<double> computeNorms(const ForwardProblemTestBase* prob,
+    int meshIndex,
+    const Expr& numSoln, const Expr& exactSoln) const = 0 ;
+};
+
+/**
+ * Object to compute L2 norms of errors 
+ */
+class L2NormCalculator : public ErrNormCalculatorBase
+{
+public:
+  /** */
+  L2NormCalculator() {}
+
+  /** */
+  virtual Array<double> computeNorms(const ForwardProblemTestBase* prob,
+    int meshIndex,
+    const Expr& numSoln, const Expr& exactSoln) const ;
+
+};
+
+/** 
+ * 
+ */
+class ForwardProblemTestBase
 {
 public:
   /** */
@@ -159,29 +201,70 @@ public:
   virtual string name() const = 0 ;
 
   /** */
-  virtual Array<LPTestSpec> specs() const ;
-
-  /** */
   virtual Expr exactSoln() const = 0 ;
 
   /** */
   virtual VectorType<double> vecType() const ;
 
   /** */
-  virtual LinearProblem prob() const = 0 ;
-
-  /** */
-  virtual QuadratureFamily testQuad() const ;
-
-  /** */
   virtual Expr coord(int d) const ;
 
   /** */
-  virtual Mesh mesh() const = 0 ;
+  virtual Mesh getMesh(int i) const = 0 ;
 
   /** */
   virtual CellFilter interior() const = 0 ;
+
+  /** */
+  virtual RCP<ErrNormCalculatorBase> normCalculator() const ;
+
+  /** 
+   * Solve the problem on the \f$i\f$-th mesh. Return a bool indicating whether
+   * the solve succeeded. 
+   */
+  virtual bool solve(const Mesh& mesh, const LinearSolver<double>& solver,
+    Expr& soln) const = 0 ;
+
+  /** */
+  virtual int numMeshes() const = 0 ;
+
+  /** 
+   * Return the average cell size on the \f$i\f$-th mesh.
+   */
+  virtual double cellSize(int i) const ;
+
+  /** 
+   * Return the order of accuracy expected for the solution. If the problem
+   * is vector-valued, an array of expected orders is returned.  
+   */
+  virtual Array<int> pExpected() const = 0 ;
+
+private:
+  /** */
+  bool runSingleTest(const std::string& solverFile, const double& tol) const ;
+
+  /** */
+  bool runTestSequence(const std::string& solverFile, const double& tol) const ;
 };
+
+/** */
+class LPTestBase : public ForwardProblemTestBase
+{
+public:
+
+  /** */
+  virtual Array<LPTestSpec> specs() const ;
+
+  /** */
+  virtual LinearProblem prob(const Mesh& mesh) const = 0 ;
+
+  /** */
+  virtual bool solve(const Mesh& mesh, 
+    const LinearSolver<double>& solver,
+    Expr& soln) const ;
+};
+
+
 
 
 
@@ -190,19 +273,22 @@ class LP1DTestBase : public LPTestBase
 {
 public:
   /** */
-  LP1DTestBase(int nx);
+  LP1DTestBase(const Array<int>& nx);
 
   /** */
-  LP1DTestBase(double a, double b, int nx);
+  LP1DTestBase(double a, double b, const Array<int>& nx);
 
   /** */
   CellFilter interior() const {return domain_.interior();}
 
   /** */
-  Mesh mesh() const {return domain_.mesh();}
+  Mesh getMesh(int i) const {return domain_.mesh(i);}
 
   /** */
   const LineDomain& domain() const {return domain_;}
+
+  /** */
+  int numMeshes() const {return domain_.numMeshes();}
   
 private:
   LineDomain domain_;

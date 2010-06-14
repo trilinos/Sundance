@@ -43,6 +43,9 @@
 #include "TSFLinearSolverBuilder.hpp"
 #include "SundanceGaussianQuadrature.hpp"
 #include "SundanceCoordExpr.hpp"
+#include "SundanceCellDiameterExpr.hpp"
+#include "SundanceLinearProblem.hpp"
+#include "SundanceIntegral.hpp"
 
 namespace Sundance
 {
@@ -88,16 +91,43 @@ bool checkErrorNorms(
     && (fabs(H1Err) <= H1Tol) ;
 }
 
+double fitPower(const Array<double>& h, const Array<double>& err)
+{
+  Array<double> x(h.size());
+  Array<double> y(h.size());
+  double xBar = 0.0;
+  double yBar = 0.0;
+  for (int i=0; i<h.size(); i++)
+  {
+    x[i] = log(h[i]);
+    y[i] = log(err[i]);
+    xBar += x[i];
+    yBar += y[i];
+  }
+
+  xBar /= h.size();
+  yBar /= h.size();
+  
+  double u = 0.0;
+  double v = 0.0;
+  for (int i=0; i<h.size(); i++)
+  {
+    u += (x[i]-xBar)*(y[i]-yBar);
+    v += pow(x[i]-xBar,2.0);
+  }
+
+  return u/v;
+}
 
 /* -------- LineDomain ----------------- */
 
-LineDomain::LineDomain(int nx)
+LineDomain::LineDomain(const Array<int>& nx)
   : a_(0.0), b_(1.0), nx_(nx), interior_(new MaximalCellFilter()),
     left_(), right_(), mesh_()
 {init();}
 
 
-LineDomain::LineDomain(double a, double b, int nx)
+LineDomain::LineDomain(double a, double b, const Array<int>& nx)
   : a_(a), b_(b), nx_(nx), interior_(new MaximalCellFilter()),
     left_(), right_(), mesh_()
 {init();}
@@ -106,9 +136,12 @@ void LineDomain::init()
 {
   int np = MPIComm::world().getNProc();
   MeshType meshType = new BasicSimplicialMeshType();
-  MeshSource mesher = new PartitionedLineMesher(a_, b_, nx_*np, meshType);
-  mesh_ = mesher.getMesh();
-  
+  mesh_.resize(nx_.size());
+  for (int i=0; i<nx_.size(); i++)
+  {
+    MeshSource mesher = new PartitionedLineMesher(a_, b_, np*nx_[i], meshType);
+    mesh_[i] = mesher.getMesh();
+  }
   
   CellFilter points = new DimensionalCellFilter(0);
   left_ = points.subset(new CoordinateValueCellPredicate(0,a_));
@@ -116,6 +149,34 @@ void LineDomain::init()
 }
 
 
+
+Array<double> L2NormCalculator::computeNorms(
+  const ForwardProblemTestBase* prob,
+  int meshIndex,
+  const Expr& numSoln, const Expr& exactSoln) const
+{
+  Expr errFunc = (numSoln - exactSoln).flatten();
+
+  Mesh mesh = prob->getMesh(meshIndex);
+  CellFilter interior = prob->interior();
+
+  Array<int> p = prob->pExpected();
+  TEST_FOR_EXCEPTION(p.size() != errFunc.size(),
+    RuntimeError,
+    "size mismatch between array of expected orders (p=" << p << ") and "
+    "array of solutions: " << errFunc.size());
+ 
+  Array<double> rtn(p.size());
+  for (int i=0; i<errFunc.size(); i++)
+  {
+    QuadratureFamily quad = new GaussianQuadrature(2*p[i]);
+    double L2Err = L2Norm(mesh, interior, errFunc[i], quad);
+    rtn[i] = L2Err;
+  }  
+
+  return rtn;
+}
+  
 
 Array<LPTestSpec> LPTestBase::specs() const
 {
@@ -138,6 +199,7 @@ std::ostream& operator<<(std::ostream& os, const LPTestSpec& spec)
 
 
 
+
 bool LPTestSuite::run() const 
 {
   int np = MPIComm::world().getNProc();
@@ -155,8 +217,16 @@ bool LPTestSuite::run() const
         Out::root() << endl;
         Out::root() << endl;
         Out::root() << endl;
+        Out::root() << tab 
+                    << "-------------------------------------" 
+          "-------------------------------------" 
+                    << endl;
         Out::root() << tab << "running test " << tests_[i]->name()
                     << " with spec " << specs[j] << endl;
+        Out::root() << tab 
+                    << "-------------------------------------" 
+          "-------------------------------------" 
+                    << endl;
 
         std::string solverFile = specs[j].solverFile();
         double tol = specs[j].tol();
@@ -185,51 +255,98 @@ void LPTestSuite::registerTest(const RCP<LPTestBase>& test)
   tests_.append(test);
 }
 
-VectorType<double> LPTestBase::vecType() const
+VectorType<double> ForwardProblemTestBase::vecType() const
 {
   return new EpetraVectorType();
 }
 
-QuadratureFamily LPTestBase::testQuad() const
-{
-  return new GaussianQuadrature(8);
-}
-
-Expr LPTestBase::coord(int d) const 
+Expr ForwardProblemTestBase::coord(int d) const 
 {
   TEST_FOR_EXCEPT(d<0 || d>2);
   return new CoordExpr(d);
 }
 
-bool LPTestBase::run(const std::string& solverFile, double tol) const
+double ForwardProblemTestBase::cellSize(int i) const 
+{
+  Expr h = new CellDiameterExpr();
+  Expr hExpr = Integral(interior(), h, new GaussianQuadrature(1));
+  Expr AExpr = Integral(interior(), 1.0, new GaussianQuadrature(1));
+  
+  double area = evaluateIntegral(getMesh(i), AExpr);
+  double hMean = evaluateIntegral(getMesh(i), hExpr)/area;
+
+  return hMean;
+}
+
+RCP<ErrNormCalculatorBase> ForwardProblemTestBase::normCalculator() const
+{
+  return rcp(new L2NormCalculator());
+
+}
+bool ForwardProblemTestBase::run(const std::string& solverFile, 
+  double tol) const
+{
+  if (numMeshes()==1) return runSingleTest(solverFile, tol);
+  else return runTestSequence(solverFile, tol);
+}
+
+
+bool ForwardProblemTestBase::runTestSequence(const std::string& solverFile, 
+  const double& pTol) const
 {
   Tabs tab(0);
-  LinearProblem lp = prob();
-
-  
+  Out::root() << tab << "Running test sequence " << name() << endl;
 
   LinearSolver<double> solver 
     = LinearSolverBuilder::createSolver(solverFile);
 
-  Expr soln;
-  SolverState<double> state = lp.solve(solver, soln);
+  Expr exact = exactSoln();
 
-  if (state.finalState() != SolveConverged) 
+  Array<double> hList(numMeshes());
+  Array<Array<double> > errList(numMeshes());
+
+  for (int i=0; i<numMeshes(); i++)
   {
-    Out::root() << tab << "solver state: " << state << endl;
-    Out::root() << tab << "Solve failed!" << endl;
-    return false;
+    Tabs tab1;
+    Out::root() << tab1 << "running on mesh #" << i << endl;
+    Expr soln;
+    bool solveOK = solve(getMesh(i), solver, soln);
+    if (!solveOK) return false;
+
+    double h = cellSize(i);
+    Array<double> err = normCalculator()->computeNorms(
+      this, i, soln, exact);
+    hList[i] = h;
+    errList[i] = err;
   }
 
   bool allPass = true;
-  Expr exact = exactSoln();
-  for (int i=0; i<soln.size(); i++)
+  Out::root() << tab << "Error results: " << endl;
+  for (int f=0; f < pExpected().size(); f++)
   {
-    Out::root() << tab << "checking solution component i=" << i << endl;
-    bool pass = checkErrorNorms(mesh(), interior(), 
-      soln[i], exact[i],
-      testQuad(), tol, tol, tol);
-    allPass = pass && allPass;
+    Tabs tab1;
+    Out::root() << tab1 << "Variable #" << f << endl; 
+    Out::root() << endl << tab1 << "Error norm versus h" << endl;
+    Array<double> err;
+    for (int i=0; i<numMeshes(); i++)
+    {
+      Tabs tab2;
+      Out::root() << tab2 << setw(20) << setprecision(5) << hList[i] 
+                  << " " << setw(20) << setprecision(5) << errList[i][f] 
+                  << endl;
+      err.append(errList[i][f]); 
+    }
+    
+    double p = fitPower(hList, err);
+    Out::root() << tab << "Measured exponent: " << p << endl;
+    Out::root() << tab << "Expected exponent: " << pExpected()[f] << endl;
+    double pErr = fabs(p - pExpected()[f]) ;
+    Out::root() << tab << "Difference: " << setw(12) << pErr
+                << " Tolerance: " << setw(12) << pTol;
+    bool pass = pErr <= pTol;
+    if (!pass) Out::root() << "  <==== FAIL!";
+    Out::root() << endl;
+    allPass = allPass && pass;
   }
 
   return allPass;
@@ -237,10 +354,54 @@ bool LPTestBase::run(const std::string& solverFile, double tol) const
 
 
 
-LP1DTestBase::LP1DTestBase(int nx)
+bool ForwardProblemTestBase::runSingleTest(const std::string& solverFile, 
+  const double& tol) const
+{
+  Tabs tab(0);
+
+  LinearSolver<double> solver 
+    = LinearSolverBuilder::createSolver(solverFile);
+
+  Expr exact = exactSoln();
+
+  Expr soln;
+  bool solveOK = solve(getMesh(0), solver, soln);
+  if (!solveOK) return false;
+  
+  Array<double> err = normCalculator()->computeNorms(this, 0, 
+    soln, exact);
+  
+  for (int i=0; i<err.size(); i++)
+  {
+    Out::root() << tab << setw(20) << setprecision(5) << err[i] 
+                << " " << setw(20) << setprecision(5) << tol 
+              << endl;
+  }
+  return err[0] <= tol;
+}
+
+bool LPTestBase::solve(const Mesh& mesh,
+  const LinearSolver<double>& solver,
+  Expr& soln) const
+{
+  Tabs tab(0);
+  LinearProblem::solveFailureIsFatal() = false;
+  SolverState<double> state = prob(mesh).solve(solver, soln);
+
+  bool converged = (state.finalState() == SolveConverged) ;
+  if (!converged)
+  {
+    Out::root() << tab << "solve failed to converge!" << endl;
+    Tabs tab1;
+    Out::root() << tab1 << "state = " << state << endl;
+  }
+  return converged;
+}
+
+LP1DTestBase::LP1DTestBase(const Array<int>& nx)
   : domain_(nx) {}
 
-LP1DTestBase::LP1DTestBase(double a, double b, int nx)
+LP1DTestBase::LP1DTestBase(double a, double b, const Array<int>& nx)
   : domain_(a, b, nx) {}
 
 }

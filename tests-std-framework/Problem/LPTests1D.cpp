@@ -33,46 +33,88 @@
 #include "SundanceProblemTesting.hpp"
 
 
-/** Solves the Poisson equation in 1D with Lagrange(2) basis functions */
+/** 
+ * This class sets up a test that checks convergence rate for solution
+ * of the Poisson equation in 1D with Lagrange(2) basis functions.
+ * The test problem is 
+ * \f[ u'' = -\frac{1}{4}\pi^2 \sin(\pi x/2) \f]
+ * with boundary conditions
+ * \f[ u(0)=1, \;\;\; u'(1)=0. \f]
+ * The solution is \f$u(x)=\sin(\pi x/2)\f$.
+ *
+ * 
+ */
 class SimplePoisson1DTest : public LP1DTestBase
 {
 public:
-  /** */
-  SimplePoisson1DTest() 
-    : LP1DTestBase(10) {}
+  /** 
+   * Construct the test object. The constructor calls the base class
+   * constructor with a list of mesh sizes to be used. 
+   */
+  SimplePoisson1DTest(const Array<int>& nx) 
+    : LP1DTestBase(nx) {}
 
-  /** */
+  /** Return a descriptive name for the test */
   std::string name() const {return "SimplePoisson1D";}
 
-  /** */
+  /** Return the expected order of accuracy for the solutions. Because a
+   * problem might have multiple field variables, the expected orders of 
+   * accuracy for the different variables are returned as an array.  */
+  Array<int> pExpected() const {return tuple<int>(3);}
+
+  /** 
+   * Return an expression for the exact solution to the test problem.
+   */
   Expr exactSoln() const 
     {
       Expr x = coord(0);
+      const double pi = 4.0*atan(1.0);
 
-      return x*(x-2.0);
+      return sin(pi*x/2.0);
     }
 
-  /** */
-  LinearProblem prob() const
+  /** 
+   * Return a LP for the specified mesh. This function implements the
+   * prob() pure virtual function of class LPTestBase.
+   */
+  LinearProblem prob(const Mesh& mesh) const
     {
+      const double pi = 4.0*atan(1.0);
       CellFilter left = domain().left();
-      CellFilter right = domain().right();
 
       Expr u = new UnknownFunction(new Lagrange(2), "u");
       Expr v = new TestFunction(new Lagrange(2), "v");
       Expr dx = gradient(1);
+      Expr x = coord(0);
 
       QuadratureFamily quad = new GaussianQuadrature(4);
 
       Expr eqn = Integral(interior(), (dx*v)*(dx*u), quad)
-        + Integral(interior(), 2.0*v, quad);
+        + Integral(interior(), -0.25*pi*pi*sin(pi*x/2.0)*v, quad);
 
       Expr bc = EssentialBC(left, v*u, quad);
       
-      return LinearProblem(mesh(), eqn, bc, v, u, vecType());
+      return LinearProblem(mesh, eqn, bc, v, u, vecType());
     }
-  
+
+  /**
+   * Specify which linear solvers are to be used.
+   */
+  Array<LPTestSpec> specs() const
+    {
+      /* Use the standard solvers minus belos-ifpack, which has convergence
+       * troubles on the finest mesh */
+      double tol = 0.05;
+      return tuple(
+        LPTestSpec("amesos.xml", tol, makeSet<int>(1)),
+        LPTestSpec("aztec-ifpack.xml", tol),
+        LPTestSpec("aztec-ml.xml", tol),
+        LPTestSpec("belos-ml.xml", tol),
+        LPTestSpec("bicgstab.xml", tol)
+        );
+    }
 };
+
 
 
 
@@ -81,63 +123,59 @@ class Poisson1DTest : public LP1DTestBase
 {
 public:
   /** */
-  Poisson1DTest(int nx, const BasisFamily& basis) 
+  Poisson1DTest(const Array<int>& nx, const BasisFamily& basis) 
     : LP1DTestBase(nx), basis_(basis) {}
 
   /** */
-  std::string name() const {return "Poisson1D(nx=" 
-      + Teuchos::toString(domain().nx()) + ", order=" 
-      + Teuchos::toString(basis_.order()) + ")";}
+  std::string name() const {
+    TeuchosOStringStream ss;
+    ss << "Poisson1D(basis=";
+    basis_.print(ss);
+    ss << ")";
+    return ss.str();
+  }
+
+  /** */
+  Array<int> pExpected() const {return tuple<int>(basis_.order()+1);}
 
   /** */
   Expr exactSoln() const 
     {
       Expr x = coord(0);
-      int p = basis_.order();
-      return pow(1.0+x,p);
+      const double pi = 4.0*atan(1.0);
+
+      return sin(3.0*pi*x/2.0);
     }
 
   /** */
-  LinearProblem prob() const
+  LinearProblem prob(const Mesh& mesh) const
     {
       CellFilter left = domain().left();
-      CellFilter right = domain().right();
 
       Expr u = new UnknownFunction(basis_, "u");
       Expr v = new TestFunction(basis_, "v");
       Expr dx = gradient(1);
       Expr x = coord(0);
 
-      int p = basis_.order();
+      QuadratureFamily quad = new GaussianQuadrature(2*basis_.order());
 
-      QuadratureFamily quad = new GaussianQuadrature(2*p);
+      const double pi = 4.0*atan(1.0);
+      Expr eqn = Integral(interior(), (dx*v)*(dx*u), quad)
+        + Integral(interior(), -2.25*pi*pi*sin(3.0*pi*x/2.0)*v, quad);
 
-      Expr source;
-      if (p>1) source = p*(p-1.0)*pow(1.0+x, p-2.0);
-      else source = 0.0;
-
-      Expr ex = exactSoln();
-      Expr eqn = Integral(interior(), (dx*v)*(dx*u) + v*source, quad);
-      Expr bc = EssentialBC(left, v*(u-ex), quad)
-        + EssentialBC(right, v*(u-ex), quad);
+      Expr bc = EssentialBC(left, v*u, quad);
       
       
-      return LinearProblem(mesh(), eqn, bc, v, u, vecType());
+      return LinearProblem(mesh, eqn, bc, v, u, vecType());
     }
 
   /** */
   Array<LPTestSpec> specs() const
     {
-      /* use a tolerance of 10^-13 times an estimate of 
-       * the condition number. Belos-ifpack needs a looser tolerance. */
-      int np = MPIComm::world().getNProc();
-      int nx = domain().nx();
-      double cond =  pow((basis_.order()+1)*np*nx, 2.0);
-      double tol = 1.0e-13 * cond;
+      double tol = 0.05;
       return tuple(
         LPTestSpec("amesos.xml", tol, makeSet<int>(1)),
         LPTestSpec("aztec-ifpack.xml", tol),
-        LPTestSpec("belos-ifpack.xml", tol * 100.0),
         LPTestSpec("aztec-ml.xml", tol),
         LPTestSpec("belos-ml.xml", tol),
         LPTestSpec("bicgstab.xml", tol)
@@ -149,58 +187,59 @@ private:
 
 
 
+
 /** Performs L2 projection in 1D with user-specified basis functions */
 class Projection1DTest : public LP1DTestBase
 {
 public:
   /** */
-  Projection1DTest(int nx, const BasisFamily& basis) 
+  Projection1DTest(const Array<int>& nx, const BasisFamily& basis) 
     : LP1DTestBase(nx), basis_(basis) {}
 
   /** */
-  std::string name() const {return "Projection1D(nx=" 
-      + Teuchos::toString(domain().nx()) + ", order=" 
-      + Teuchos::toString(basis_.order()) + ")";}
+  std::string name() const 
+    {
+      TeuchosOStringStream ss;
+      ss << "Projection1D(basis=";
+      basis_.print(ss);
+      ss << ")";
+      return ss.str();
+    }
+
+  /** */
+  Array<int> pExpected() const {return tuple<int>(basis_.order()+1);}
 
   /** */
   Expr exactSoln() const 
     {
       Expr x = coord(0);
-      int p = basis_.order();
-      return pow(x,p);
+      return 10.0*x*exp(-1.0*x);
     }
 
   /** */
-  LinearProblem prob() const
+  LinearProblem prob(const Mesh& mesh) const
     {
       Expr u = new UnknownFunction(basis_, "u");
       Expr v = new TestFunction(basis_, "v");
       Expr x = coord(0);
 
       int p = basis_.order();
-
       QuadratureFamily quad = new GaussianQuadrature(2*p);
 
       Expr ex = exactSoln();
       Expr eqn = Integral(interior(), v*(u-ex), quad);
       Expr bc;
       
-      return LinearProblem(mesh(), eqn, bc, v, u, vecType());
+      return LinearProblem(mesh, eqn, bc, v, u, vecType());
     }
 
   /** */
   Array<LPTestSpec> specs() const
     {
-      /* use a tolerance times an estimate of 
-       * the condition number. Belos-ifpack needs a looser tolerance. */
-      int np = MPIComm::world().getNProc();
-      int nx = domain().nx();
-      double cond =  10.0*pow(np*nx, 2.0);
-      double tol = 1.0e-12 * cond;
+      double tol = 0.05;
       return tuple(
         LPTestSpec("amesos.xml", tol, makeSet<int>(1)),
         LPTestSpec("aztec-ifpack.xml", tol),
-        LPTestSpec("belos-ifpack.xml", tol * 10.0),
         LPTestSpec("aztec-ml.xml", tol),
         LPTestSpec("bicgstab.xml", tol)
         );
@@ -210,17 +249,17 @@ private:
 };
 
 
+
 /** Solves the Helmholtz equation in 1D with Lagrange(2) basis functions */
 class Helmholtz1DTest : public LP1DTestBase
 {
 public:
   /** */
-  Helmholtz1DTest(int nx) 
+  Helmholtz1DTest(const Array<int>& nx) 
     : LP1DTestBase(0.0, atan(1.0), nx) {}
 
   /** */
-  std::string name() const {return "Helmholtz1D(nx=" 
-      + Teuchos::toString(domain().nx()) + ")";}
+  std::string name() const {return "Helmholtz1D";}
 
   /** */
   Expr exactSoln() const 
@@ -230,7 +269,10 @@ public:
     }
 
   /** */
-  LinearProblem prob() const
+  Array<int> pExpected() const {return tuple(3);}
+
+  /** */
+  LinearProblem prob(const Mesh& mesh) const
     {
       CellFilter left = domain().left();
       CellFilter right = domain().right();
@@ -245,18 +287,13 @@ public:
       Expr eqn = Integral(interior(), (dx*v)*(dx*u) - v*u, quad);
       Expr bc = EssentialBC(left, v*(u-cos(x)), quad);
       
-      return LinearProblem(mesh(), eqn, bc, v, u, vecType());
+      return LinearProblem(mesh, eqn, bc, v, u, vecType());
     }
 
   /** */
   Array<LPTestSpec> specs() const
     {
-      /* use a tolerance of 10^-10 times an estimate of 
-       * the condition number. */
-      int np = MPIComm::world().getNProc();
-      int nx = domain().nx();
-      double cond = pow(3*np*nx, 2.0);
-      double tol = 1.0e-8 * cond;
+      double tol = 0.05;
       return tuple(
         LPTestSpec("amesos.xml", tol, makeSet<int>(1)),
         LPTestSpec("aztec-ifpack.xml", tol),
@@ -269,14 +306,12 @@ private:
 };
 
 
-
-
 /** */
 class Coupled1DTest : public LP1DTestBase
 {
 public:
   /** */
-  Coupled1DTest() : LP1DTestBase(128) {}
+  Coupled1DTest(const Array<int>& nx) : LP1DTestBase(nx) {}
 
   /** */
   std::string name() const {return "Coupled1D";}
@@ -296,16 +331,19 @@ public:
     }
 
   /** */
-  LinearProblem prob() const
+  Array<int> pExpected() const {return tuple(2, 2);}
+
+  /** */
+  LinearProblem prob(const Mesh& mesh) const
     {
       CellFilter left = domain().left();
       CellFilter right = domain().right();
 
 
-      Expr u = new UnknownFunction(new Lagrange(5), "u");
-      Expr v = new UnknownFunction(new Lagrange(3), "v");
-      Expr du = new TestFunction(new Lagrange(5), "du");
-      Expr dv = new TestFunction(new Lagrange(3), "dv");
+      Expr u = new UnknownFunction(new Lagrange(3), "u");
+      Expr v = new UnknownFunction(new Lagrange(1), "v");
+      Expr du = new TestFunction(new Lagrange(3), "du");
+      Expr dv = new TestFunction(new Lagrange(1), "dv");
 
       Expr dx = gradient(1);
       Expr x = coord(0);
@@ -321,7 +359,7 @@ public:
         + EssentialBC(right, du*u + dv*v, quad);
 
 
-      return LinearProblem(mesh(), eqn, bc, 
+      return LinearProblem(mesh, eqn, bc, 
         List(dv,du), List(v,u), vecType());
       
     }  
@@ -329,73 +367,16 @@ public:
   /** */
   Array<LPTestSpec> specs() const
     {
+      double tol = 0.05;
       return tuple(
-        LPTestSpec("amesos.xml", 1.0e-10, makeSet<int>(1)),
-        LPTestSpec("aztec-ifpack.xml", 1.0e-10),
-        LPTestSpec("belos-ifpack.xml", 1.0e-10),
-        LPTestSpec("bicgstab.xml", 1.0e-9)
+        LPTestSpec("amesos.xml", tol, makeSet<int>(1)),
+        LPTestSpec("aztec-ifpack.xml", tol),
+        LPTestSpec("belos-ifpack.xml", tol),
+        LPTestSpec("bicgstab.xml", tol)
         );
     }
 };
 
-
-
-
-
-
-
-/** */
-class PoissonCubicHermite1DTest : public LP1DTestBase
-{
-public:
-  /** */
-  PoissonCubicHermite1DTest() : LP1DTestBase(32) {}
-
-  /** */
-  std::string name() const {return "PoissonCubicHermite1D";}
-
-  /** */
-  Expr exactSoln() const 
-    {
-      Expr x = coord(0);
-      int p = 3;
-
-      return pow(1.0+x,p);
-    }
-
-  /** */
-  LinearProblem prob() const
-    {
-      CellFilter left = domain().left();
-      CellFilter right = domain().right();
-
-      Expr u = new UnknownFunction(new CubicHermite(), "u");
-      Expr v = new TestFunction(new CubicHermite(), "v");
-
-      Expr dx = gradient(1);
-      Expr x = coord(0);
-
-      int p = 3;
-
-      QuadratureFamily quad = new GaussianQuadrature(2*p);
-      Expr source = p*(p-1.0)*pow(1.0+x, p-2.0);
-
-      Expr ex = exactSoln();
-      Expr eqn = Integral(interior(), (dx*v)*(dx*u) + v*source, quad);
-      Expr bc;
-
-      return LinearProblem(mesh(), eqn, bc, v, u, vecType());
-    }
-  
-  /** */
-  Array<LPTestSpec> specs() const
-    {
-      return tuple(
-        LPTestSpec("bicgstab.xml", 1.0e-9)
-        );
-    }
-  
-};
 
 
 
@@ -409,27 +390,34 @@ int main(int argc, char** argv)
     Sundance::init(&argc, &argv);
     Tabs::showDepth() = false;
     LinearSolveDriver::solveFailureIsFatal() = false;
+    int np = MPIComm::world().getNProc();
 
     LPTestSuite tests;
 
-    tests.registerTest(rcp(new SimplePoisson1DTest()));
+    Array<int> nx = tuple(8, 16, 24, 32, 40);
 
-    for (int i=2; i<=5; i++)
+    tests.registerTest(rcp(new SimplePoisson1DTest(nx)));
+
+    for (int p=1; p<=3; p++)
     {
-      tests.registerTest(rcp(new Poisson1DTest(8, new Lagrange(i))));
-      tests.registerTest(rcp(new Poisson1DTest(8, new Bernstein(i))));
-      tests.registerTest(rcp(new Projection1DTest(8, new Lagrange(i))));
-      tests.registerTest(rcp(new Projection1DTest(8, new Bernstein(i))));
+      if (np==1 || np % 4 == 0) 
+      {
+        tests.registerTest(rcp(new Poisson1DTest(nx, new Lagrange(p))));
+        tests.registerTest(rcp(new Poisson1DTest(nx, new Bernstein(p))));
+        tests.registerTest(rcp(new Projection1DTest(nx, new Lagrange(p))));
+        tests.registerTest(rcp(new Projection1DTest(nx, new Bernstein(p))));
+      }
+      else
+      {
+        Out::root() << "skipping 1D tests needing numprocs=1 or 4" << endl;
+      }
     }
 
-    tests.registerTest(rcp(new Coupled1DTest())); 
+    tests.registerTest(rcp(new Helmholtz1DTest(nx))); 
 
-    tests.registerTest(rcp(new Helmholtz1DTest(32))); 
+    
+    tests.registerTest(rcp(new Coupled1DTest(nx))); 
 
-
-#ifdef ENABLE_CUBIC_HERMITE
-    tests.registerTest(rcp(new PoissonCubicHermite1DTest()));
-#endif
 
     bool pass = tests.run();
 

@@ -11,14 +11,8 @@
       <Parameter name="Max Iterations" type="int" value="20"/>
       <Parameter name="Tolerance" type="double" value="1e-10"/>
     </ParameterList>
-    <ParameterList name="Linear Solver">
-      <Parameter name="Graph Fill" type="int" value="1"/>
-      <Parameter name="Max Iterations" type="int" value="1000"/>
-      <Parameter name="Method" type="string" value="BICGSTAB"/>
-      <Parameter name="Precond" type="string" value="ILUK"/>
-      <Parameter name="Tolerance" type="double" value="1e-10"/>
-      <Parameter name="Type" type="string" value="TSF"/>
-      <Parameter name="Verbosity" type="int" value="0"/>
-    </ParameterList>
+    <!-- Note that no linear solver has been specified. You should use -->
+    <!-- the NOXSolver ctor that accepts a parameter list (this list)  -->
+    <!-- and a LinearSolver object.                                    -->
   </ParameterList>
 </ParameterList>
