@@ -58,6 +58,7 @@
 #include "SundancePointwiseUserDefFunctor.hpp"
 #include "SundanceUserDefFunctor.hpp"
 #include "SundanceUserDefOp.hpp"
+#include "SundanceVectorCalculus.hpp"
 
 /* Parametrized Curves */
 #include "SundanceCircle.hpp"
@@ -133,6 +134,9 @@
 #include "SundanceFunctional.hpp"
 #include "SundanceRivaraDriver.hpp"
 #include "SundanceExprFieldWrapper.hpp"
+#include "SundanceNitscheBC.hpp"
+#include "SundanceBlock.hpp"
+
 
 /* Solvers & stuff */
 #include "TSFVectorType.hpp"
@@ -147,6 +151,12 @@
 #include "TSFLinearSolverBuilder.hpp"
 #include "TSFMLOperator.hpp"
 #include "TSFParameterListPreconditionerFactory.hpp"
+#include "SundancePCDPreconditioner.hpp"
+#include "TSFEpetraMatrixMatrixProduct.hpp"
+#include "TSFEpetraMatrixMatrixSum.hpp"
+#include "TSFEpetraMatrixOps.hpp"
+
+
 
 /* Nonlinear solvers */
 #include "NOX.H"

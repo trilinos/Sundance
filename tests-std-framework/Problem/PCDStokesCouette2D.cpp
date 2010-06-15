@@ -1,7 +1,4 @@
 #include "Sundance.hpp"
-#include "SundanceBlock.hpp"
-#include "SundanceNitscheBC.hpp"
-#include "SundancePCDPreconditioner.hpp"
 
 int main( int argc , char **argv )
 {
