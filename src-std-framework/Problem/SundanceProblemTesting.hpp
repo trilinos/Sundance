@@ -154,6 +154,7 @@ private:
   double tol_;
 };
 
+
 /** \relates LPTestSpec */
 std::ostream& operator<<(std::ostream& os, const LPTestSpec& spec);
 
@@ -263,8 +264,6 @@ public:
     const LinearSolver<double>& solver,
     Expr& soln) const ;
 };
-
-
 
 
 

@@ -1097,57 +1097,5 @@ Expr List(const Expr& a, const Expr& b, const Expr& c,
 }
 
 
-Expr gradient(int dim)
-{
-  Array<Expr> rtn(dim);
-  for (int i=0; i<dim; i++)
-  {
-    rtn[i] = new Derivative(i);
-  }
-  return new ListExpr(rtn);
-}
-
-Expr div(const Expr& f)
-{
-  Expr rtn = 0.0;
-  for (int i=0; i<f.size(); i++)
-  {
-    Expr d = new Derivative(i);
-    rtn = rtn + d*f[i];
-  }
-  return rtn;
-}
-
-
-Expr cross(const Expr& a, const Expr& b)
-{
-  TEST_FOR_EXCEPTION(a.size() != b.size(), RuntimeError,
-    "mismatched vector sizes in cross(a,b): a.size()=" << a.size()
-    << ", b.size()=" << b.size());
-
-  TEST_FOR_EXCEPTION(a.size() < 2 || a.size() > 3, RuntimeError,
-    "cross(a,b) undefined for dim=" << a.size());
-
-  if (a.size()==2)
-  {
-    return a[0]*b[1] - a[1]*b[0];
-  }
-  else
-  {
-    return List(
-      cross(List(a[1],a[2]), List(b[1],b[2])),
-      -cross(List(a[0],a[2]), List(b[0],b[2])),
-      cross(List(a[0],a[1]), List(b[0],b[1]))
-      );
-  }
-}
-
-Expr curl(const Expr& f)
-{
-  Expr del = gradient(f.size());
-
-  return cross(del, f);
-}
-
 }
 

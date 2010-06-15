@@ -33,6 +33,7 @@
 
 #include "SundanceDefs.hpp"
 #include "SundanceLinearProblem.hpp"
+#include "SundanceVectorCalculus.hpp"
 #include "SundanceNonlinearProblem.hpp"
 #include "SundanceFunctionalEvaluator.hpp"
 #include "TSFNonlinearOperator.hpp"

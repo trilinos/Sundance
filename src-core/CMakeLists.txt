@@ -48,6 +48,7 @@ APPEND_SET(HEADERS
   UserExprs/SundanceUnknownParameter.hpp
   UserExprs/SundanceUserDefFunctor.hpp
   UserExprs/SundanceUserDefOp.hpp 
+  UserExprs/SundanceVectorCalculus.hpp 
   )
 
 APPEND_SET(SOURCES
@@ -66,6 +67,7 @@ APPEND_SET(SOURCES
   UserExprs/SundanceUnknownParameter.cpp
   UserExprs/SundanceUserDefFunctor.cpp
   UserExprs/SundanceUserDefOp.cpp
+  UserExprs/SundanceVectorCalculus.cpp 
   )
 
 #

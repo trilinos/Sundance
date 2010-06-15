@@ -21,6 +21,7 @@ SET(SerialTests
   Coupled2D
   Kepler 
   Stokes2D 
+  PCDStokesCouette2D
   LinearPartialDomain 
   NonlinearPartialDomain 
   AToCDensitySample
@@ -96,7 +97,8 @@ PACKAGE_COPY_FILES_TO_BINARY_DIR(TestCopyFiles
                    nox.xml            
                    nox-amesos.xml            
                    nox-aztec.xml      
-                   nox-newton.xml                  
+                   nox-newton.xml   
+                   pcd-outer-belos.xml               
                    poissonParams.xml
                    userPrecParams.xml
   SOURCE_DIR ${SolverParamPath}

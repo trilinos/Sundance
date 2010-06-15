@@ -175,6 +175,30 @@ public:
   /** */
   int maxWatchFlagSetting(const string& param) const ;
 
+  /** */
+  static Time& assemblyTimer() 
+    {
+      static RCP<Time> rtn 
+        = TimeMonitor::getNewTimer("assembly"); 
+      return *rtn;
+    }
+
+  /** */
+  static Time& configTimer() 
+    {
+      static RCP<Time> rtn 
+        = TimeMonitor::getNewTimer("matrix config"); 
+      return *rtn;
+    }
+  
+  /** */
+  static Time& fillTimer() 
+    {
+      static RCP<Time> rtn 
+        = TimeMonitor::getNewTimer("matrix/vector fill"); 
+      return *rtn;
+    }
+  
 
 private:
 

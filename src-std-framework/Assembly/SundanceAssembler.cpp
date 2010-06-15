@@ -80,12 +80,7 @@ using namespace Sundance;
 using namespace Teuchos;
 using namespace TSFExtended;
 
-static Time& assemblyTimer() 
-{
-  static RCP<Time> rtn 
-    = TimeMonitor::getNewTimer("assembly"); 
-  return *rtn;
-}
+
 
 static Time& assemblerCtorTimer() 
 {
@@ -95,12 +90,7 @@ static Time& assemblerCtorTimer()
 }
 
 
-static Time& configTimer() 
-{
-  static RCP<Time> rtn 
-    = TimeMonitor::getNewTimer("matrix config"); 
-  return *rtn;
-}
+
 
 static Time& graphBuildTimer() 
 {
@@ -1361,7 +1351,10 @@ void Assembler::assemblyLoop(const ComputationType& compType,
          * functions were used in this integration, and so provides to the assembly
          * kernel such information as is needed to look up the correct DOFs for this
          * batch of integrals. */
-        kernel->fill(isBCRqc_[r], *group, localValues);
+        {
+          TimeMonitor fillTM(fillTimer());
+          kernel->fill(isBCRqc_[r], *group, localValues);
+        }
       }
       SUNDANCE_MSG2(rqcVerb, tab1 << "----- done looping over integral groups");
     }
