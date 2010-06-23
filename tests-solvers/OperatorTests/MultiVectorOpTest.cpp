@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
       /* compute with operator */
       z2 = At * y;
       
+
       double errAt = (z1-z2).normInf();
       Out::root() << "error in At*y = " << errA << endl;
 

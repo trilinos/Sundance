@@ -149,5 +149,6 @@ int main(int argc, char *argv[])
       cerr << "Caught exception: " << e.what() << endl;
       return -1;
     }
+  return 0;
 }
 
