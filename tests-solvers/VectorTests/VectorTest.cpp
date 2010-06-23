@@ -69,6 +69,7 @@ bool runTest(int nProc, int rank, const VectorType<double>& vecType)
   VectorTester<double> tester(space, TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
    
   bool allPass = tester.runAllTests();
+  return allPass;
 }
 
 int main(int argc, char *argv[]) 
@@ -86,6 +87,7 @@ int main(int argc, char *argv[])
     bool allPass = true;
 
     allPass = runTest(nProc, rank, type1);
+
     if (rank==0)
     {
       allPass = runTest(1, rank, type2) && allPass;
@@ -93,7 +95,16 @@ int main(int argc, char *argv[])
 
     allPass = globalAnd(allPass);
       
-    if (!allPass) stat = -1;
+    if (!allPass) 
+    {
+	Out::root() << "detected a test that FAILED" << endl;
+	stat = -1;
+    }
+    else
+    {
+	Out::root() << "all tests PASSED" << endl;
+    }
+
 
   }
   catch(std::exception& e)
