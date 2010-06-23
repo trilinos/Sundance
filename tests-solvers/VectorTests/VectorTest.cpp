@@ -27,11 +27,14 @@
 //@HEADER
 
 #include "Teuchos_GlobalMPISession.hpp"
+#include "TSFGlobalAnd.hpp"
 #include "TSFVectorDecl.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFVectorSpaceDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
+#include "TSFSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
+#include "Teuchos_MPIComm.hpp"
 #include "TSFVectorTester.hpp"
 
 
@@ -44,48 +47,60 @@ using namespace TSFExtended;
 using namespace TSFExtendedOps;
 
 
+bool runTest(int nProc, int rank, const VectorType<double>& vecType)
+{
+  int n = 4;
+  int seed = 12345;
+  for (int i=0; i<rank; i++) seed = (seed * 371761) % 5476181;
+  cout << "seed = " << seed << endl;
+  srand48(seed);
+   
+  int dimension = nProc*n;
+  int low = n*rank;
+  std::vector<int> localRows(n);
+  for (int i=0; i<n; i++)
+  {
+    localRows[i] = low + i;
+  }
+   
+  VectorSpace<double> space = vecType.createSpace(dimension, n, 
+    &(localRows[0]), MPIComm::world());
+   
+  VectorTester<double> tester(space, TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
+   
+  bool allPass = tester.runAllTests();
+}
+
 int main(int argc, char *argv[]) 
 {
   int stat = 0;
   try
-    {
-      GlobalMPISession session(&argc, &argv);
+  {
+    GlobalMPISession session(&argc, &argv);
+    int nProc = session.getNProc();
+    int rank = session.getRank();
 
-      VectorType<double> type = new EpetraVectorType();
-
-      int n = 4;
-
-      int rank = session.getRank();
-      int nProc = session.getNProc();
-
-      int seed = 12345;
-      for (int i=0; i<rank; i++) seed = (seed * 371761) % 5476181;
-      cout << "seed = " << seed << endl;
-      srand48(seed);
-
-      int dimension = nProc*n;
-      int low = n*rank;
-      std::vector<int> localRows(n);
-      for (int i=0; i<n; i++)
-        {
-          localRows[i] = low + i;
-        }
-
-      VectorSpace<double> space = type.createSpace(dimension, n, 
-        &(localRows[0]), MPIComm::world());
-
-      VectorTester<double> tester(space, TestSpecifier<double>(true, 1.0e-13, 1.0e-10));
-
-      bool allPass = tester.runAllTests();
+    VectorType<double> type1 = new EpetraVectorType();
+    VectorType<double> type2 = new SerialVectorType();
       
-      if (!allPass) stat = -1;
+    bool allPass = true;
 
-    }
-  catch(std::exception& e)
+    allPass = runTest(nProc, rank, type1);
+    if (rank==0)
     {
-      cerr << "Caught exception: " << e.what() << endl;
-      stat = -1;
+      allPass = runTest(1, rank, type2) && allPass;
     }
+
+    allPass = globalAnd(allPass);
+      
+    if (!allPass) stat = -1;
+
+  }
+  catch(std::exception& e)
+  {
+    cerr << "Caught exception: " << e.what() << endl;
+    stat = -1;
+  }
   return stat;
 }
 

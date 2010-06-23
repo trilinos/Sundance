@@ -29,10 +29,13 @@
 
 #include <cstdlib>
 #include "Teuchos_GlobalMPISession.hpp"
+#include "TSFGlobalAnd.hpp"
 #include "TSFVectorDecl.hpp"
 #include "TSFLinearCombinationImpl.hpp"
 #include "TSFVectorType.hpp"
+#include "TSFVectorOpsDecl.hpp"
 #include "TSFEpetraVectorType.hpp"
+#include "TSFSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
 #include "Thyra_TestSpecifier.hpp"
@@ -43,6 +46,7 @@
 #ifndef HAVE_TEUCHOS_EXPLICIT_INSTANTIATION
 #include "TSFLinearOperatorImpl.hpp"
 #include "TSFVectorImpl.hpp"
+#include "TSFVectorOpsImpl.hpp"
 #include "TSFMultiVectorOperatorImpl.hpp"
 #endif
 
@@ -59,16 +63,16 @@ int main(int argc, char *argv[])
       GlobalMPISession session(&argc, &argv);
  
       /* create a distributed vector space for the multivector's vectors */
-      VectorType<double> type = new EpetraVectorType();
+      VectorType<double> rowType = new EpetraVectorType();
       int nLocalRows = 10;
       VectorSpace<double> space 
-        = type.createEvenlyPartitionedSpace(MPIComm::world(), nLocalRows);
+        = rowType.createEvenlyPartitionedSpace(MPIComm::world(), nLocalRows);
       
       /* create a replicated vector space for the small space of columns */
       int nVecs = 3;
-      RCP<const VectorSpaceBase<double> > rs =
-        Thyra::defaultSpmdVectorSpace<double>(nVecs);
-      VectorSpace<double> replSpace = rs;
+      VectorType<double> colType = new SerialVectorType();
+      VectorSpace<double> replSpace 
+        = colType.createEvenlyPartitionedSpace(MPIComm::world(), nVecs);
 
       /* create some random vectors */
       Teuchos::Array<Vector<double> > vecs(nVecs);
@@ -76,11 +80,7 @@ int main(int argc, char *argv[])
       {
         vecs[i] = space.createMember();
         /* do the operation elementwise */
-        SequentialIterator<double> j;
-        for (j=space.begin(); j != space.end(); j++)
-        {
-          vecs[i][j] = 2.0*(drand48()-0.5);
-        }  
+        randomize(vecs[i]);
       }
 
       /* Test multiplication by a multivector operator. We will compute
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
       
       double errA = (y1-y2).normInf();
 
-      cout << "error in A*x = " << errA << endl;
+      Out::root() << "error in A*x = " << errA << endl;
 
 
       /* Now test z = A^T * y */
@@ -130,17 +130,19 @@ int main(int argc, char *argv[])
       z2 = At * y;
       
       double errAt = (z1-z2).normInf();
-      cout << "error in At*y = " << errA << endl;
+      Out::root() << "error in At*y = " << errA << endl;
 
       double tol = 1.0e-13;
-      if (errA + errAt < tol)
+      bool pass = errA + errAt < tol;
+      pass = globalAnd(pass);
+      if (pass)
         {
-          cerr << "multivector op test PASSED" << endl;
+          Out::root() << "multivector op test PASSED" << endl;
         }
       else
         {
           stat = -1;
-          cerr << "multivector op test FAILED" << endl;
+          Out::root() << "multivector op test FAILED" << endl;
         }
     }
   catch(std::exception& e)

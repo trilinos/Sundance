@@ -30,12 +30,15 @@
 #include "TSFVectorDecl.hpp"
 #include "TSFInverseOperatorDecl.hpp"
 #include "TSFLoadableMatrix.hpp"
+#include "TSFGlobalAnd.hpp"
 #include "TSFVectorType.hpp"
 #include "TSFEpetraVectorType.hpp"
+#include "TSFSerialVectorType.hpp"
 #include "Teuchos_Time.hpp"
 #include "Teuchos_MPIComm.hpp"
 #include "TSFLinearSolverDecl.hpp"
-#include "TSFAztecSolver.hpp"
+#include "TSFLinearSolverBuilder.hpp"
+#include "TSFDenseLUSolver.hpp"
 #include "TSFMatrixLaplacian1D.hpp"
 #include "TSFLinearSolverBuilder.hpp"
 #include "SundancePathUtils.hpp"
@@ -54,89 +57,118 @@ using namespace TSFExtended;
 using namespace TSFExtendedOps;
 
 
-int main(int argc, char *argv[]) 
+bool runit(const VectorType<double>& vecType,
+  const LinearSolver<double>& solver)
 {
   typedef Teuchos::ScalarTraits<double> ST;
+
+  /* create the range space  */
+  int nLocalRows = 10;
+  
+  MatrixLaplacian1D builder(nLocalRows, vecType, false);
+
+  LinearOperator<double> A = builder.getOp();
+
+  Out::root() << "matrix is " << endl;
+  Out::os() << A << endl;
+
+  Vector<double> x = A.domain().createMember();
+
+  Thyra::randomize(-ST::one(),+ST::one(),x.ptr().ptr());
+
+  Out::root() << "input is " << endl;
+  Out::os() << x << endl;
+  Vector<double> y = A*x;
+
+  Out::root() << "rhs is " << endl;
+  Out::os() << y << endl;
+
+  Vector<double> ans = A.range().createMember();
+  
+  Out::root() << "slot for solution is " << endl;
+  Out::os() << ans << endl;
+
+  LinearOperator<double> AInv = inverse(A, solver);
+
+  ans = AInv * y;
+
+  Out::root() << "answer is " << endl;
+  Out::os() << ans << endl;
+      
+  double err = (x-ans).norm2();
+  Out::root() << "error norm = " << err << endl;
+
+  double tol = 1.0e-10;
+    
+  if (err <= tol)
+  {
+    Out::root() << "Poisson solve test PASSED" << endl;
+    return true;
+  }
+  else
+  {
+    Out::root() << "Poisson solve test FAILED" << endl;
+    return false;
+  }
+}
+
+
+int main(int argc, char *argv[]) 
+{
+  bool status = 0;
 
   try
   {
     GlobalMPISession session(&argc, &argv);
 
-    MPIComm::world().synchronize();
+    int nProc = session.getNProc();
+    int rank = session.getRank();
 
-    VectorType<double> type = new EpetraVectorType();
+    VectorType<double> epetra = new EpetraVectorType();
+    VectorType<double> serial = new SerialVectorType();
 
+    LinearSolver<double> denseLU = new DenseLUSolver();
+    LinearSolver<double> amesos = LinearSolverBuilder::createSolver("amesos.xml");
+    LinearSolver<double> belos_ml = LinearSolverBuilder::createSolver("belos-ml.xml");
+    LinearSolver<double> belos_ifpack = LinearSolverBuilder::createSolver("belos-ifpack.xml");
+    LinearSolver<double> aztec_ml = LinearSolverBuilder::createSolver("aztec-ml.xml");
+    LinearSolver<double> aztec_ifpack = LinearSolverBuilder::createSolver("aztec-ifpack.xml");
 
-#ifdef HAVE_CONFIG_H
-      ParameterXMLFileReader reader(Sundance::searchForFile("SolverParameters/poissonParams.xml"));
-#else
-      ParameterXMLFileReader reader("poissonParams.xml");
-#endif
+    bool allOK = true;
+    Out::root() << "Running Belos/ML" << endl;
+    allOK = runit(epetra, belos_ml) && allOK;
 
-    ParameterList solverParams = reader.getParameters();
+    Out::root() << "Running Belos/Ifpack" << endl;
+    allOK = runit(epetra, belos_ifpack) && allOK;
 
-    /* create the range space  */
-    int nLocalRows = solverParams.get<int>("nLocal");
+    Out::root() << "Running Aztec/ML" << endl;
+    allOK = runit(epetra, aztec_ml) && allOK;
 
-    bool symBC = solverParams.get<bool>("Symmetrize BCs");
+    Out::root() << "Running Aztec/Ifpack" << endl;
+    allOK = runit(epetra, aztec_ifpack) && allOK;
 
-    MatrixLaplacian1D builder(nLocalRows, type, symBC);
-
-    LinearOperator<double> A = builder.getOp();
-
-    Vector<double> x = A.domain().createMember();
-    int myRank = MPIComm::world().getRank();
-    int nProcs = MPIComm::world().getNProc();
-      
-
-    Thyra::randomize(-ST::one(),+ST::one(),x.ptr().ptr());
-#ifdef TRILINOS_6
-    if (myRank==0) x[0] = 0.0;
-    if (myRank==nProcs-1) x[nProcs * nLocalRows - 1] = 0.0;
-    // need to fix operator[] routine
-#else
-    if (myRank==0) x.setElement(0, 0);
-    if (myRank==nProcs-1) x.setElement(nProcs * nLocalRows - 1, 0.0);
-#endif
-    cout << "input is " << endl;
-    x.print(cout);
-    Vector<double> y = A*x;
-
-    cout << "rhs is " << endl;
-    y.print(cout);
-
-    Vector<double> ans = A.range().createMember();
-
-    cout << "slot for solution is " << endl;
-    ans.print(cout);
-
-    LinearSolver<double> solver 
-      = LinearSolverBuilder::createSolver(solverParams);
-
-    LinearOperator<double> AInv = inverse(A, solver);
-
-    ans = AInv * y;
-
-
-    cout << "solver is " << solver << endl;
-
-    cout << "answer is " << endl;
-    ans.print(cout);
-      
-    double err = (x-ans).norm2()/((double) nProcs * nLocalRows);
-    cout << "error norm = " << err << endl;
-
-    double tol = 1.0e-10;
-    
-    if (err <= tol)
+    if (nProc == 1)
     {
-      cout << "Poisson solve test PASSED" << endl;
-      return 0;
+      Out::root() << "Running Amesos (serial)" << endl;
+      allOK = runit(epetra, amesos) && allOK;
+    }
+
+    if (rank==0)
+    {
+      Out::root() << "Running dense LU (serial)" << endl;
+      allOK = runit(serial, denseLU) && allOK;
+    }
+
+    allOK = globalAnd(allOK);
+
+    if (allOK) 
+    {
+      Out::root() << "all Poisson solve tests PASSED!" << endl;
     }
     else
     {
-      cout << "Poisson solve test FAILED" << endl;
-      return 1;
+      status = -1;
+      Out::root() << "some Poisson solve tests FAILED!" << endl;
     }
   }
   catch(std::exception& e)
@@ -144,5 +176,6 @@ int main(int argc, char *argv[])
     cout << "Caught exception: " << e.what() << endl;
     return -1;
   }
+  return status;
 }
 
