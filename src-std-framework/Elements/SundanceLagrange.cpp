@@ -952,6 +952,8 @@ void Lagrange::getConstrainsForHNDoF(
 	const SpatialDerivSpecifier      deriv;
 	int                              index = 0;
 
+	//setVerbosity(6);
+
 	localDoFs.resize(0);
 	coefs.resize(0);
 	parentFacetDim.resize(0);
@@ -1063,7 +1065,7 @@ void Lagrange::getConstrainsForHNDoF(
 
     // evalute the results from the bi or trisection
 	Array<double>& res = result[0][0];
-	SUNDANCE_OUT(this->verb() > 3 , "res=" << res );
+	//SUNDANCE_OUT(this->verb() > 3 , "res=" << res );
 
 	// get those data only once (since it is rather costly)
 	if (doFInfromationCalculated_ == false)
@@ -1077,6 +1079,7 @@ void Lagrange::getConstrainsForHNDoF(
 	for ( int i=0 ; i < res.size() ; i++){
 		// take only those DoFs which are non zero
 		if ( fabs(res[i]) > 1e-5 ){
+			SUNDANCE_OUT(this->verb() > 3 , "found DoF i=" << i );
 			localDoFs.resize(index+1);
 			coefs.resize(index+1);
 			parentFacetDim.resize(index+1);
@@ -1203,22 +1206,30 @@ void Lagrange::getDoFsOrdered(
 		// nodo,indexo,dimo
 		getNext = true;
 		while ( (getNext) && (dimo < dofs_struct.size() )){
-			//SUNDANCE_OUT(this->verb() > 3, "dimo=" << dimo << " ,indexo:" << indexo << ",nodo:" << nodo << ",maxCellDim:" << maxCellDim);
-			if (dofs_struct[dimo][indexo].size() > (nodo+1)){
-				nodo++; getNext = false;
-			}else{
-				nodo = 0;
-				if (dofs_struct[dimo].size() > (indexo+1)){
-					indexo++; getNext = false;
-				}else{
-					indexo = 0;
-					if (dofs_struct.size() > (dimo+1)){
-						dimo++; getNext = false;
-					}else{
-						// actually we should not arrived here
-						getNext = false;
-					}
-				}
+			//SUNDANCE_OUT(this->verb() > 3, "dimo=" << dimo << " ,indexo:" << indexo << ",nodo:" << nodo <<
+			//		",maxCellDim:" << maxCellDim << " ,nrDoF:" << nrDoF);
+			if (dofs_struct[dimo].size() > (indexo+1))
+			{
+			    if (dofs_struct[dimo][indexo].size() > (nodo+1)){
+				  nodo++; getNext = false;
+			   }else{
+				  nodo = 0;
+				  if (dofs_struct[dimo].size() > (indexo+1)){
+					  indexo++; getNext = false;
+				  }else{
+					  indexo = 0;
+					  if (dofs_struct.size() > (dimo+1)){
+						  dimo++; getNext = false;
+					  }else{
+						  // actually we should not arrived here
+						  getNext = false;
+					  }
+				  }
+			   }
+		    }
+		    else
+		    {
+               dimo++; indexo = 0; nodo = 0; getNext = false;
 			}
 			//SUNDANCE_OUT(this->verb() > 3, "dofs_struct.size()=" << dofs_struct.size() << " ,dofs_struct[dimo].size():"
 			//		<< dofs_struct[dimo].size() << ",dofs_struct[dimo][indexo].size():" << dofs_struct[dimo][indexo].size());

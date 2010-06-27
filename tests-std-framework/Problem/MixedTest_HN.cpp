@@ -89,8 +89,6 @@ int main(int argc, char** argv)
       quad );
     Expr bc;
 
-    //DOFMapBase::classVerbosity() = 5;
-
     // We can now set up the linear problem!
     
     LinearProblem prob(mesh, eqn, bc, 
@@ -99,12 +97,6 @@ int main(int argc, char** argv)
 
     Array<Expr> exact = tuple(exactP, exactU[0], exactU[1],
       exactS[0], exactS[1]);
-
-    Out::os() << "row map" << endl;
-    prob.rowMap(0)->print(Out::os());
-    Out::os() << "col map" << endl;
-    prob.colMap(0)->print(Out::os());
-
 
     ParameterXMLFileReader reader(solverFile);
     ParameterList solverParams = reader.getParameters();

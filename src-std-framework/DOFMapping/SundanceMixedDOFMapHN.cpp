@@ -762,25 +762,15 @@ RCP<const MapStructure> MixedDOFMapHN
                   // if this is negative , then we have to correct it
                   if (toPtr1[func*nNodes[b] + ptr] < 0 )
                      {
-                	  int tmp = 1;
+                	  int fIndex = 1 , tmp1 = 1;
                 	  // get any cell which has this element
-                	  int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , tmp);
+                	  int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , fIndex);
                       Array<int> facetsLIDs;
-                      mesh().returnParentFacets( maxCell , d , facetsLIDs , tmp );
-                      //SUNDANCE_MSG3(verbosity,tab2 << "maxCell=" << maxCell << ", facetsLIDs:" << facetsLIDs);
-                      // get in the same way the point children from the child cell
-                      Array<int> childFacets(mesh().numFacets(mesh().spatialDim() , 0 , d ));
-                      for (int jk = 0 ; jk < childFacets.size() ; jk++)
-                    	  childFacets[jk] = mesh().facetLID( mesh().spatialDim() , maxCell, d , jk , tmp);
-                      //SUNDANCE_MSG3(verbosity,tab2 << "maxCell=" << maxCell << ", childFacets:" << childFacets);
-                      int fIndex = 0;
-                      // get the correct point facet index, by comparing the child cell point facets to the HN LID
-                      for (int jk = 0 ; jk < childFacets.size() ; jk++)
-                    	  if ( childFacets[jk] == facetID ) { fIndex = jk; break;}
-                      // here we use the correct (from the parent cell)facetLID
+                      mesh().returnParentFacets( maxCell , d , facetsLIDs , tmp1 );
+                      // return the parent facet at the same index
+                      SUNDANCE_MSG3(verbosity,tab2 << "f=" << f << " facetLID=" << facetID << " replaced by facetsLIDs[fIndex]:" << facetsLIDs[fIndex]);
                       toPtr1[func*nNodes[b] + ptr] //= fromPtr[func*nNodes[b] + n];
                                           = dofs_[d][b][facetsLIDs[fIndex]*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
-                      //SUNDANCE_MSG3(verbosity,tab2 << "f=" << f << " facetLID=" << facetID << " replaced by facetsLIDs[fIndex]:" << facetsLIDs[fIndex]);
                      }
                 }
               }
@@ -799,20 +789,14 @@ RCP<const MapStructure> MixedDOFMapHN
                   // if this is negative , then we have to correct it
                   if (toPtr1[func*nNodes[b]+ptr] < 0)
                      {
-                	  int tmp = 1;
+                	  int fIndex = 1 , tmp1 = 1;
                 	  // get any cell which has this element
-                	  int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , d , tmp);
+                	  int maxCell = mesh().maxCofacetLID( cellDim , cellLID[c] , 0 , fIndex);
                       Array<int> facetsLIDs;
-                      mesh().returnParentFacets( maxCell , d , facetsLIDs , tmp );
-                      // get in the same way the point children from the child cell
-                      Array<int> childFacets(mesh().numFacets(mesh().spatialDim() , 0 , d ));
-                      for (int jk = 0 ; jk < childFacets.size() ; jk++)
-                    	  childFacets[jk] = mesh().facetLID( mesh().spatialDim() , maxCell, d , jk , tmp);
-                      int fIndex = 0;
-                      // get the correct point facet index, by comparing the child cell point facets to the HN LID
-                      for (int jk = 0 ; jk < childFacets.size() ; jk++)
-                    	  if ( childFacets[jk] == facetID ) { fIndex = jk; break; }
-                      // here we use the correct (from the parent cell)facetLID
+                      mesh().returnParentFacets( maxCell , d , facetsLIDs , tmp1 );
+                      // return the parent facet at the same index
+                      // return the parent facet at the same index
+                      SUNDANCE_MSG3(verbosity,tab2 << "f=" << f << " facetLID=" << facetID << " replaced by facetsLIDs[fIndex]:" << facetsLIDs[fIndex]);
                       toPtr1[func*nNodes[b] + ptr] //= fromPtr[func*nNodes[b] + n];
                                           = dofs_[d][b][facetsLIDs[fIndex]*nDofsPerCell_[b][d]+func*nNodesPerCell_[b][d]+n];
                      }
